@@ -7,8 +7,18 @@
     "mozilla/components-imports": 1,
     "mozilla/import-globals-from": 1,
     "mozilla/this-top-level-scope": 1,
+    "no-unused-vars": 2,
+    "semi": [2, "always"],
+    "no-undef": 2,
   },
   "env": {
-    "es6": true
+    "es6": true,
+    "node": true,
+    "browser": true,
+  },
+  "globals": {
+    "require": true,
+    "StopIteration": true,
+    "exports": true,
   },
 }
