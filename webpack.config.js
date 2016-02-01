@@ -5,10 +5,10 @@ const path = require("path");
 const yaml = require("yamljs");
 const absolute = (relPath) => path.join(__dirname, relPath);
 
-const srcDir = absolute("./src");
+// const srcDir = absolute("./src");
 const srcPath = absolute("./src/main.js");
-const outputDir = absolute("./data");
-const outputFilename = "bundle.js"
+const outputDir = absolute("./data/content");
+const outputFilename = "bundle.js";
 
 let config = yaml.load("config.default.yml");
 try {

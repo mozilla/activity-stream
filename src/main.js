@@ -13,5 +13,19 @@ const Root = React.createClass({
   }
 });
 
+// TODO: clean this up
+window.dispatchEvent(new CustomEvent("content-to-addon", {
+  detail: JSON.stringify({type: "REQUEST_TOP_FRECENT_SITES"}),
+}));
+
+window.addEventListener("addon-to-content", payload => {
+  let msg = payload.detail;
+  if (!msg.type) {
+    console.warn(`Page.dispatch error: unknown message type`);
+    return;
+  }
+  store.dispatch(msg);
+});
+
 module.exports = Root;
-// ReactDOM.render(<Root />, document.getElementById("root"));
+ReactDOM.render(<Root />, document.getElementById("root"));

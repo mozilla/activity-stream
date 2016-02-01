@@ -4,4 +4,4 @@ npm-debug.log
 *.sw[po]
 
 dist/
-data/bundle.js
+data/content/bundle.js

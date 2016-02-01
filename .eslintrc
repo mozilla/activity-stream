@@ -1,7 +1,8 @@
 {
   // When adding items to this file please check for effects on sub-directories.
   "plugins": [
-    "mozilla"
+    "mozilla",
+    "react"
   ],
   "rules": {
     "mozilla/components-imports": 1,
@@ -10,6 +11,9 @@
     "no-unused-vars": 2,
     "semi": [2, "always"],
     "no-undef": 2,
+  },
+  "ecmaFeatures": {
+    "jsx": true
   },
   "env": {
     "es6": true,
@@ -20,5 +24,6 @@
     "require": true,
     "StopIteration": true,
     "exports": true,
-  },
+    "__CONFIG__": true
+  }
 }
