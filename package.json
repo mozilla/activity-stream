@@ -1,0 +1,31 @@
+{
+  "title": "activity-streams-experiment",
+  "name": "activity-streams",
+  "version": "0.0.1",
+  "description": "A feed-based view on user history",
+  "repository": "mozilla/activity-streams",
+  "bugs": {
+    "url": "https://github.com/mozilla/activity-streams/issues"
+  },
+  "main": "lib/index.js",
+  "author": "Mozilla",
+  "engines": {
+    "firefox": ">=38.0a1"
+  },
+  "license": "MPL-2.0",
+  "keywords": [
+    "mozilla",
+    "firefox",
+    "activity-streams"
+  ],
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-plugin-mozilla": "0.0.3",
+    "jpm": "^1.0.5"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "start": "jpm run /usr/bin/firefox --prefs dev-prefs.json",
+    "package": "jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi"
+  }
+}
