@@ -26,6 +26,7 @@
   "scripts": {
     "lint": "eslint .",
     "start": "jpm run /usr/bin/firefox --prefs dev-prefs.json",
-    "package": "jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi"
+    "package": "jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
+    "test": "jpm test"
   }
 }
