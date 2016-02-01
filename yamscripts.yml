@@ -1,0 +1,16 @@
+scripts:
+
+# start: Start watching/compiling assets,
+# launch addon with jpm run
+  start:
+    _parallel: true
+    webpack: 'webpack -w'
+    jpm: 'jpm run /usr/bin/firefox --prefs dev-prefs.json'
+
+# package: Build add-on
+  package: 'jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi'
+
+# test: Run tests with eslint, jpm
+  test:
+    lint: 'eslint .'
+    jpm: 'jpm test'
