@@ -1,16 +1,24 @@
 # This file compiles to package.json scripts.
-# When you add or modify anything, you *MUST* run npm run yamscripts
-# to compile your changes
+# When you add or modify anything, you *MUST* run:
+#      npm run yamscripts
+# to compile your changes.
 
 scripts:
+
+# bundle: Bundle assets for production
+  bundle:
+    webpack: webpack
+    css: node-sass src/main.scss -o data/content
+
 # start: Start watching/compiling assets,
-# launch addon with jpm run
   start:
     _parallel: true
     webpack: webpack -w
+    css: =>bundle:css && =>bundle:css -- -w
     server: live-server data/content --port=1963 --no-browser
 
-  run: jpm run -b nightly
+# firefox: Launch addon with jpm run
+  firefox: jpm run -b nightly
 
 # test: Run tests with eslint, jpm
   test:
@@ -24,4 +32,4 @@ scripts:
 # This is just to make sure we don't make commits with failing tests
 # or uncompiled yamscripts.yml. Run automatically with husky.
   precommit: =>test:lint && =>yamscripts
-  prepush: =>test
+  # prepush: =>test
