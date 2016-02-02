@@ -4,42 +4,7 @@
     <meta charset="utf8">
   </head>
   <body>
-      <p>Activity Streams!</p>
-
-      <h2>Initial Links</h2>
-      <div id="initial-links">
-      </div>
-
-      <h2>Places Changes</h2>
-      <ol id="places-changes">
-      </ol>
-
-      <script>
-          window.dispatchEvent(new CustomEvent("content-to-addon", {
-            detail: JSON.stringify({type: "REQUEST_TOP_FRECENT_SITES"}),
-          }));
-          window.addEventListener("addon-to-content", payload => {
-            let msg = payload.detail;
-            let initialLinks = document.querySelector('#initial-links');
-            let placesChanges = document.querySelector('#places-changes');
-            if (!msg.type) {
-              console.warn(`Page.dispatch error: unknown message type`);
-              return;
-            }
-            switch(msg.type) {
-              case "RECEIVE_TOP_FRECENT_SITES":
-                initialLinks.innerHTML = `<pre>${JSON.stringify(msg.data, null, 2)}</pre>`;
-                break;
-             case "RECEIVE_PLACES_CHANGES":
-                var newListItem = document.createElement("li");
-                var newPre = document.createElement("pre");
-                newPre.innerText = JSON.stringify(msg.data, null, 2);
-                newListItem.appendChild(newPre);
-
-                placesChanges.appendChild(newListItem);
-                break;
-            }
-          });
-      </script>
+    <div id="root"></div>
+    <script src="http://localhost:1963/bundle.js"></script>
   </body>
 </html>

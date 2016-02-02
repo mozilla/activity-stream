@@ -1,5 +1,7 @@
 node_modules
 npm-debug.log
-dist/
 .DS_Store
 *.sw[po]
+
+dist/
+data/content/bundle.js

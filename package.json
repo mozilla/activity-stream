@@ -18,15 +18,48 @@
     "firefox",
     "activity-streams"
   ],
+  "dependencies": {
+    "react": "0.14.7",
+    "react-dom": "0.14.7",
+    "react-redux": "4.1.2",
+    "redux": "3.2.0",
+    "redux-logger": "2.4.0",
+    "redux-thunk": "1.0.3"
+  },
   "devDependencies": {
+    "babel": "^6.3.26",
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-plugin-transform-es2015-destructuring": "^6.4.0",
+    "babel-plugin-transform-es2015-parameters": "^6.4.5",
+    "babel-plugin-transform-strict-mode": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
     "eslint": "^1.10.3",
     "eslint-plugin-mozilla": "0.0.3",
-    "jpm": "^1.0.5"
+    "eslint-plugin-react": "^3.16.1",
+    "husky": "^0.10.2",
+    "jpm": "^1.0.5",
+    "json-loader": "^0.5.4",
+    "live-server": "^0.9.1",
+    "npm-run-all": "^1.5.1",
+    "webpack": "^2.0.6-beta",
+    "webpack-notifier": "^1.2.1",
+    "yamljs": "^0.2.4",
+    "yamscripts": "^0.0.2"
   },
   "scripts": {
-    "lint": "eslint .",
-    "start": "jpm run /usr/bin/firefox --prefs dev-prefs.json",
+    "start": "npm-run-all --parallel start:*",
+    "start:webpack": "webpack -w",
+    "start:server": "live-server data/content --port=1963 --no-browser",
+    "run": "jpm run -b nightly",
+    "test": "npm-run-all test:*",
+    "test:lint": "eslint .",
+    "test:jpm": "jpm test",
     "package": "jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
-    "test": "jpm test"
+    "precommit": "npm run test:lint && npm run yamscripts",
+    "prepush": "npm run test",
+    "help": "yamscripts help",
+    "yamscripts": "yamscripts compile",
+    "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
   }
 }
