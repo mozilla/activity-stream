@@ -5,3 +5,4 @@ npm-debug.log
 
 dist/
 data/content/bundle.js
+data/content/main.css

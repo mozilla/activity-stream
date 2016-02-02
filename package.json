@@ -41,6 +41,7 @@
     "jpm": "^1.0.5",
     "json-loader": "^0.5.4",
     "live-server": "^0.9.1",
+    "node-sass": "^3.4.2",
     "npm-run-all": "^1.5.1",
     "webpack": "^2.0.6-beta",
     "webpack-notifier": "^1.2.1",
@@ -48,10 +49,14 @@
     "yamscripts": "^0.0.2"
   },
   "scripts": {
+    "bundle": "npm-run-all bundle:*",
+    "bundle:webpack": "webpack",
+    "bundle:css": "node-sass src/main.scss -o data/content",
     "start": "npm-run-all --parallel start:*",
     "start:webpack": "webpack -w",
+    "start:css": "npm run bundle:css && npm run bundle:css -- -w",
     "start:server": "live-server data/content --port=1963 --no-browser",
-    "run": "jpm run -b nightly",
+    "firefox": "jpm run -b nightly",
     "test": "npm-run-all test:*",
     "test:lint": "eslint .",
     "test:jpm": "jpm test",
