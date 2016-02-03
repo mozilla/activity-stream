@@ -1,0 +1,31 @@
+.head {
+  align-items: center;
+  background: #f5f6f7;
+  border-bottom: solid 1px #dfe0e1;
+  display: flex;
+  line-height: 30px;
+  padding: 10px;
+
+  section {
+    display: flex;
+
+    &.nav {
+
+    }
+
+    &.filters {
+      flex-grow: 1;
+    }
+
+    &.user-info {
+      span {
+        padding: 0 10px;
+      }
+
+      img {
+        border-radius: 15px;
+        height: 30px;
+      }
+    }
+  }
+}
