@@ -38,7 +38,7 @@ module.exports = {
       {test: /\.json$/, loader: "json"},
       {
         test: /\.jsx?$/,
-        include: /.\/(src)\//,
+        include: /.\/(src|test)\//,
         loader: "babel"
       }
     ]
