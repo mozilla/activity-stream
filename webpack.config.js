@@ -22,6 +22,7 @@ module.exports = {
     path: outputDir,
     filename: outputFilename,
   },
+  target: "web",
   resolve: {
     extensions: ["", ".js", ".jsx"],
     alias: {
