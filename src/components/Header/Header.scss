@@ -1,0 +1,37 @@
+.head {
+  align-items: center;
+  background: #fff;
+  border-bottom: solid 1px #dfe0e1;
+  display: flex;
+  height: 50px;
+  padding: 0 20px;
+
+  section {
+    align-items: center;
+    display: flex;
+
+    &.nav {
+      flex-grow: 1;
+      height: 100%;
+      width: 200px;
+
+      span {
+        border-right: solid 1px #f3f4f6;
+        display: inline-block;
+        min-width: 180px;
+        padding: 0 20px 0 0;
+      }
+    }
+
+    &.user-info {
+      span {
+        padding: 0 10px;
+      }
+
+      img {
+        border-radius: 15px;
+        height: 30px;
+      }
+    }
+  }
+}
