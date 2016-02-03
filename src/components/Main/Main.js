@@ -10,6 +10,7 @@ const Main = React.createClass({
       <Header
         userName="Luke Skywalker"
         userImage="https://cdninfinity-a.akamaihd.net/infinitycdn/web/assets/assets/images/icons/og_images/fb/character_luke-skywalker_img1.jpg"
+        showFilter="true"
       />
       Hello world!
 
