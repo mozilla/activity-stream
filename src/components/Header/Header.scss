@@ -1,33 +1,25 @@
 .head {
   align-items: center;
-  background: #f5f6f7;
+  background: #fff;
   border-bottom: solid 1px #dfe0e1;
   display: flex;
-  line-height: 30px;
-  padding: 5px;
+  height: 50px;
+  padding: 0 20px;
 
   section {
+    align-items: center;
     display: flex;
 
     &.nav {
-      border-right: solid 1px #dfe0e1;
-      width: 200px;
-    }
-
-    &.filters {
       flex-grow: 1;
-      padding: 0 20px;
+      height: 100%;
+      width: 200px;
 
-      .textbox-wrap {
-        background: #fff;
-        border: solid 1px #e5e5e5;
-        border-radius: 5px;
-      }
-
-      input {
-        border: none;
-        padding: 0 5px;
-        width: 300px;
+      span {
+        border-right: solid 1px #f3f4f6;
+        display: inline-block;
+        min-width: 180px;
+        padding: 0 20px 0 0;
       }
     }
 

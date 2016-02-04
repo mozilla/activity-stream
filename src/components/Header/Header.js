@@ -5,12 +5,7 @@ const Header = React.createClass({
     const props = this.props;
     return (<header className="head">
       <section className="nav">
-        Home
-      </section>
-      <section className="filters">
-        {props.showFilter && <div className="textbox-wrap">
-          <input type="text" placeholder="Filter" name="filter" />
-        </div>}
+        <span>Home</span>
       </section>
       <section className="user-info">
         {props.userName && <span>
@@ -26,7 +21,6 @@ const Header = React.createClass({
 Header.propTypes = {
   userName: React.PropTypes.string,
   userImage: React.PropTypes.string,
-  showFilter: React.PropTypes.bool,
 };
 
 module.exports = Header;
