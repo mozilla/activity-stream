@@ -7,12 +7,14 @@ scripts:
 
 # bundle: Bundle assets for production
   bundle:
+    static: cpx "src/static/**/*" data/content -C
     webpack: webpack
     css: node-sass src/main.scss -o data/content
 
 # start: Start watching/compiling assets,
   start:
     _parallel: true
+    static: =>bundle:static -- -w
     webpack: webpack -w
     css: =>bundle:css && =>bundle:css -- -w
     server: live-server data/content --port=1963 --no-browser

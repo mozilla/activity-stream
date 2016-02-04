@@ -66,9 +66,11 @@
   },
   "scripts": {
     "bundle": "npm-run-all bundle:*",
+    "bundle:static": "cpx \"src/static/**/*\" data/content -C",
     "bundle:webpack": "webpack",
     "bundle:css": "node-sass src/main.scss -o data/content",
     "start": "npm-run-all --parallel start:*",
+    "start:static": "npm run bundle:static -- -w",
     "start:webpack": "webpack -w",
     "start:css": "npm run bundle:css && npm run bundle:css -- -w",
     "start:server": "live-server data/content --port=1963 --no-browser",
