@@ -5,7 +5,7 @@ const Header = React.createClass({
     const props = this.props;
     return (<header className="head">
       <section className="nav">
-        <span>Home</span>
+        <h1>Home</h1>
       </section>
       <section className="user-info">
         {props.userName && <span>

@@ -1,0 +1,23 @@
+@import './styles/normalize';
+
+$light-grey: #F3F4F6;
+$mid-grey: #56565A;
+$dark-grey: #383E49;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  // TODO: actually figure out system font here
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  background: $light-grey;
+  color: $dark-grey;
+}
+
+// Components
+@import './components/Header/Header';
+@import './components/Base/Base';
