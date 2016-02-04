@@ -26,6 +26,9 @@ scripts:
     jpm: jpm test
     karma: karma start
 
+# tdd: Run tests continuously
+  tdd: karma start --no-single-run
+
 # package: Build add-on
   package: jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi
 

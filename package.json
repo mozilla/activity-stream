@@ -77,6 +77,7 @@
     "test:lint": "eslint .",
     "test:jpm": "jpm test",
     "test:karma": "karma start",
+    "tdd": "karma start --no-single-run",
     "package": "jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
     "precommit": "npm run test:lint && npm run yamscripts",
     "help": "yamscripts help",

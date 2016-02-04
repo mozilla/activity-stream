@@ -1,9 +1,16 @@
 const {createStore, applyMiddleware, combineReducers} = require("redux");
 const thunk = require("redux-thunk");
 const reducers = require("reducers/reducers");
+const {Channel} = require("lib/ReduxChannel");
+
+const channel = new Channel({
+  incoming: "addon-to-content",
+  outgoing: "content-to-addon"
+});
 
 const middleware = [
-  thunk
+  thunk,
+  channel.middleware
 ];
 
 // Logging for debugging redux actions
@@ -19,5 +26,7 @@ const store = createStore(
   combineReducers(reducers),
   applyMiddleware(...middleware)
 );
+
+channel.connectStore(store);
 
 module.exports = store;
