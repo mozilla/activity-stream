@@ -7,9 +7,9 @@ scripts:
 
 # bundle: Bundle assets for production
   bundle:
-    static: cpx "src/static/**/*" data/content -C
+    static: cpx "content-src/static/**/*" data/content -C
     webpack: webpack
-    css: node-sass src/main.scss -o data/content
+    css: node-sass content-src/main.scss -o data/content
 
 # start: Start watching/compiling assets,
   start:

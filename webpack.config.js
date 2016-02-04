@@ -5,8 +5,7 @@ const path = require("path");
 const yaml = require("yamljs");
 const absolute = (relPath) => path.join(__dirname, relPath);
 
-// const srcDir = absolute("./src");
-const srcPath = absolute("./src/main.js");
+const srcPath = absolute("./content-src/main.js");
 const outputDir = absolute("./data/content");
 const outputFilename = "bundle.js";
 
@@ -26,10 +25,10 @@ module.exports = {
   resolve: {
     extensions: ["", ".js", ".jsx"],
     alias: {
-      "components": absolute("./src/components"),
-      "reducers": absolute("./src/reducers"),
-      "actions": absolute("./src/actions"),
-      "lib": absolute("./src/lib"),
+      "components": absolute("./content-src/components"),
+      "reducers": absolute("./content-src/reducers"),
+      "actions": absolute("./content-src/actions"),
+      "lib": absolute("./content-src/lib"),
       "strings": absolute("./strings"),
       "test": absolute("./test")
     }
@@ -39,7 +38,7 @@ module.exports = {
       {test: /\.json$/, loader: "json"},
       {
         test: /\.jsx?$/,
-        include: /.\/(src|test)\//,
+        include: /.\/(content-src|test)\//,
         loader: "babel"
       }
     ]
