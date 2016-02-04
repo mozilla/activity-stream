@@ -1,3 +1,5 @@
+/* globals describe, it, beforeEach */
+
 const ActionManager = require("lib/ActionManager");
 const {assert} = require("chai");
 
@@ -63,19 +65,19 @@ describe("ActionManager", () => {
       am = new ActionManager(["FOO", "BAR"]);
     });
     it("should throw if an action definition does not return an object", () => {
-      am.defineActions({ Foo: () => null });
+      am.defineActions({Foo: () => null});
       assert.throws(() => {
         am.actions.Foo();
       }, "Looks like your action definition does not return an object.");
     });
     it("should throw if an action doesn't have a type", () => {
-      am.defineActions({ Foo: () => ({data: "data"}) });
+      am.defineActions({Foo: () => ({data: "data"})});
       assert.throws(() => {
         am.actions.Foo();
       }, "You must define a type for an action.");
     });
     it("should throw if an action has a non standard key", () => {
-      am.defineActions({ Foo: () => ({type: "FOO", foo: "data"}) });
+      am.defineActions({Foo: () => ({type: "FOO", foo: "data"})});
       assert.throws(() => {
         am.actions.Foo();
       }, "foo is not a standard action key. Should be one of type, data, query, meta");
@@ -88,7 +90,7 @@ describe("ActionManager", () => {
       am = new ActionManager(["FOO"]);
     });
     it("should throw if an action has type that wasn't defined in the action manager", () => {
-      am.defineActions({ Foo: () => ({type: "BAZ"}) });
+      am.defineActions({Foo: () => ({type: "BAZ"})});
       assert.throws(() => {
         am.actions.Foo();
       }, "BAZ is not defined in your ActionManager");
