@@ -11,3 +11,25 @@ main {
   align-items: center;
   justify-content: center;
 }
+
+.new-tab-wrapper {
+  max-width: 700px;
+}
+
+.placeholder-sites {
+  ul {
+    padding: 0;
+    margin: 0;
+  }
+  .site {
+    list-style: none;
+    padding: 0;
+  }
+  .img {
+    display: block;
+    width: 230px;
+    height: 150px;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+}
