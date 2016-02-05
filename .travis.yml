@@ -12,7 +12,10 @@ before_script:
   - ./node_modules/.bin/mozilla-download --branch mozilla-central --product firefox firefox
   - export FIREFOX_PATH=$TRAVIS_BUILD_DIR/firefox/firefox
   - export PATH=$FIREFOX_PATH:$PATH
+  - export JPM_FIREFOX_BINARY=`which firefox`
   - firefox -v
+  - echo $JPM_FIREFOX_BINARY
 
 script:
+
   - npm run travis
