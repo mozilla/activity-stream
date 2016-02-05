@@ -1,4 +1,9 @@
-.DS_Store
-.git/
-firefox/
-node_modules/
+.*
+*
+!/data/**
+!/lib/**
+!LICENSE
+!README.md
+!package.json
+!content-src/lib/ActionManager.js
+!content-src/actions/action-manager.js
