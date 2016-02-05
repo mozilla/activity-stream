@@ -3,6 +3,7 @@ const {connect} = require("react-redux");
 const {actions} = require("actions/action-manager");
 
 const Header = require("components/Header/Header");
+const TopSites = require("components/TopSites/TopSites");
 
 const Main = React.createClass({
   componentDidMount() {
@@ -20,11 +21,13 @@ const Main = React.createClass({
         userImage="https://cdninfinity-a.akamaihd.net/infinitycdn/web/assets/assets/images/icons/og_images/fb/character_luke-skywalker_img1.jpg"
       />
       <main>
-        <pre>
-        {JSON.stringify(props.Sites.frecent, null, 2)}
-        {JSON.stringify(props.Sites.changes, null, 2)}
-        </pre>
+        <TopSites sites={props.Sites.frecent} />
+
       </main>
+      <pre>
+      {JSON.stringify(props.Sites.frecent, null, 2)}
+      {JSON.stringify(props.Sites.changes, null, 2)}
+      </pre>
     </div>);
   }
 });

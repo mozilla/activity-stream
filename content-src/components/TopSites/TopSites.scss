@@ -1,0 +1,50 @@
+.top-sites {
+  flex-grow: 1;
+
+  .tile {
+    border: $tile-border;
+    border-radius: $tile-border-radius;
+    box-shadow: $tile-box-shadow;
+    color: $tile-text-color;
+    display: inline-block;
+    font-size: $tile-font-size;
+    height: $tile-height;
+    margin: $tile-gutter-h $tile-gutter-h $tile-gutter-v 0;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+    width: $tile-width;
+
+    .tile-img-container {
+      height: $tile-img-height;
+      overflow: hidden;
+      position: relative;
+      width: $tile-img-width;
+    }
+
+    .tile-img {
+      background-color: #FFF;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      border-radius: $tile-border-radius $tile-border-radius 0 0;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    .tile-title {
+      background-color: $tile-title-bg-color;
+      height: $tile-title-height;
+      line-height: $tile-title-height;
+      text-align: center;
+    }
+
+    &:hover .tile-title {
+      background-color: $tile-title-hover-color;
+      color: $tile-title-hover-text-color;
+    }
+  }
+}
