@@ -1,0 +1,4 @@
+.DS_Store
+.git/
+firefox/
+node_modules/
