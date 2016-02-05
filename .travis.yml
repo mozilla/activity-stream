@@ -17,5 +17,5 @@ before_script:
   - echo $JPM_FIREFOX_BINARY
 
 script:
-
+  - npm run bundle
   - npm run travis
