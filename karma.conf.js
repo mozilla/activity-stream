@@ -31,10 +31,10 @@ module.exports = function (config) {
       ]
     },
     files: [
-      "test/index.js"
+      "content-test/index.js"
     ],
     preprocessors: {
-      "test/**/*.js": ["webpack", "sourcemap"]
+      "content-test/**/*.js": ["webpack", "sourcemap"]
     },
     webpack: {
       devtool: "inline-source-map",

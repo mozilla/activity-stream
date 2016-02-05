@@ -27,8 +27,8 @@ function dispatch(action) {
   );
 }
 
-module.exports = function() {
-  window.addEventListener('content-to-addon', function(event) {
+module.exports = function () {
+  window.addEventListener('content-to-addon', function (event) {
     const action = JSON.parse(event.detail);
     switch(action.type) {
       case 'TOP_FRECENT_SITES_REQUEST':
