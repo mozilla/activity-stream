@@ -4,16 +4,18 @@ const TopSites = React.createClass({
   render() {
     const props = this.props;
     return (<section className="top-sites">
-      <div>Top Sites</div>
-      {props.sites.map((site) => (<a className="tile" href={site.url}>
-        <div className="tile-img-container">
-          {(site.leadImage || site.image) && <div className="tile-img"
-            style={{backgroundImage: `url(${site.leadImage || site.image})`}} />}
-        </div>
-        <div className="tile-title">
-          {site.title}
-        </div>
-      </a>))}
+      <h3 className="section-title">Top Sites</h3>
+      <div className="tiles-wrapper">
+        {props.sites.map((site) => (<a key={site.url} className="tile" href={site.url}>
+          <div className="tile-img-container">
+            {(site.leadImage || site.image) && <div className="tile-img"
+              style={{backgroundImage: `url(${site.leadImage || site.image})`}} />}
+          </div>
+          <div className="tile-title">
+            {site.title}
+          </div>
+        </a>))}
+      </div>
     </section>);
   }
 });
