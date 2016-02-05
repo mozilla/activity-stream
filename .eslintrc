@@ -15,6 +15,7 @@
     "computed-property-spacing": [2, "never"],
     "array-bracket-spacing": [2, "never"],
     "space-before-function-paren": [2, {"anonymous": "always", "named": "never"}],
+    "react/jsx-uses-react": 1,
   },
   "ecmaFeatures": {
     "jsx": true
@@ -23,6 +24,7 @@
     "es6": true,
     "node": true,
     "browser": true,
+    "mocha": true,
   },
   "globals": {
     "require": true,
