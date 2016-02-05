@@ -4,6 +4,23 @@ $light-grey: #F3F4F6;
 $mid-grey: #56565A;
 $dark-grey: #383E49;
 
+$tile-img-width: 90px;
+$tile-img-height: 64px;
+$tile-title-height: 26px;
+$tile-width: $tile-img-width + 2px;
+$tile-height: $tile-img-height + $tile-title-height + 2px;
+
+$tile-font-size: 13px;
+$tile-border-radius: 3px;
+$tile-box-shadow: 0 1px 3px #c1c1c1;
+$tile-border: 1px solid white;
+$tile-gutter-h: 12px;
+$tile-gutter-v: 12px;
+$tile-text-color: #5c5c5c;
+$tile-title-bg-color: #F2F2F2;
+$tile-title-hover-color: #333;
+$tile-title-hover-text-color: white;
+
 html,
 body,
 #root {
@@ -21,3 +38,4 @@ body {
 // Components
 @import './components/Header/Header';
 @import './components/Base/Base';
+@import './components/TopSites/TopSites';
