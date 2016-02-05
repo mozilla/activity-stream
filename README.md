@@ -1,5 +1,10 @@
 # Activity Streams Add-on
 
+## Tests
+
+Run `npm tests` to run the tests once. Run `npm run help` for more options.
+
+
 ## ActionManager
 When you instantiate an `ActionManager`, you give it a list of types which are valid for the application. If at any time you try to create an action with a type that isn't part of that list, it will throw an error. Yay!
 

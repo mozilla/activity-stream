@@ -1,3 +1,5 @@
 data/content/
 logs/
 test/
+node_modules/
+firefox/
