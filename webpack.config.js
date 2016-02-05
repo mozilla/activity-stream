@@ -30,7 +30,7 @@ module.exports = {
       "actions": absolute("./content-src/actions"),
       "lib": absolute("./content-src/lib"),
       "strings": absolute("./strings"),
-      "test": absolute("./test")
+      "test": absolute("./content-test")
     }
   },
   module: {
@@ -38,7 +38,7 @@ module.exports = {
       {test: /\.json$/, loader: "json"},
       {
         test: /\.jsx?$/,
-        include: /.\/(content-src|test)\//,
+        include: /.\/(content-src|content-test)\//,
         loader: "babel"
       }
     ]
