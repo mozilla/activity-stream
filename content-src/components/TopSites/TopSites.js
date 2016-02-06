@@ -4,14 +4,14 @@ const TopSites = React.createClass({
   render() {
     const props = this.props;
     return (<section className="top-sites">
-      <div>Top Sites</div>
       {props.sites.map((site) => (<a className="tile" href={site.url}>
         <div className="tile-img-container">
-          {(site.leadImage || site.image) && <div className="tile-img"
-            style={{backgroundImage: `url(${site.leadImage || site.image})`}} />}
+          {site.image && <div className="tile-img"
+            style={{backgroundImage: `url(${site.image.url})`}} />}
+          {!site.image && <span className="tile-letter-fallback">{(site.title || site.url)[0]}</span>}
         </div>
         <div className="tile-title">
-          {site.title}
+          {site.title || site.url}
         </div>
       </a>))}
     </section>);
@@ -21,7 +21,7 @@ const TopSites = React.createClass({
 TopSites.propTypes = {
   sites: React.PropTypes.arrayOf(
     React.PropTypes.shape({
-      title: React.PropTypes.string.isRequired,
+      title: React.PropTypes.string,
       image: React.PropTypes.string,
       leadImage: React.PropTypes.string,
       url: React.PropTypes.string.isRequired,

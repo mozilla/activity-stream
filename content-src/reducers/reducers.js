@@ -20,7 +20,7 @@ module.exports = {
   Bookmarks: (prevState = {rows: [], error: false}, action) => {
     const state = {};
     switch(action.type) {
-      case am.type("BOOKMARKS_RESPONSE"):
+      case am.type("RECENT_BOOKMARKS_RESPONSE"):
         if (action.error) {
           state.rows = [];
           state.error = action.data;

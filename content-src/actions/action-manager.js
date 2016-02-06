@@ -5,8 +5,8 @@ const am = new ActionManager([
   'TOP_FRECENT_SITES_REQUEST',
   'TOP_FRECENT_SITES_RESPONSE',
   'RECEIVE_PLACES_CHANGES',
-  'BOOKMARKS_REQUEST',
-  'BOOKMARKS_RESPONSE',
+  'RECENT_BOOKMARKS_REQUEST',
+  'RECENT_BOOKMARKS_RESPONSE',
 ]);
 
 function Response(type, data, options = {}) {
@@ -36,7 +36,7 @@ function RequestTopFrecent() {
 }
 
 function RequestBookmarks() {
-  return RequestExpect("BOOKMARKS_REQUEST", "BOOKMARKS_RESPONSE");
+  return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE");
 }
 
 am.defineActions({

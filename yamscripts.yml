@@ -18,6 +18,7 @@ scripts:
     webpack: webpack -w
     css: =>bundle:css && =>bundle:css -- -w
     server: live-server data/content --port=1963 --no-browser
+    fakeData: node ./scraper
 
 # firefox: Launch addon with jpm run
   firefox: jpm run -b nightly

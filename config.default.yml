@@ -1,2 +1,3 @@
 DEVELOPMENT: true
 LOGGING: true
+FAKE_DATA: true

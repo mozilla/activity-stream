@@ -20,6 +20,14 @@
       overflow: hidden;
       position: relative;
       width: $tile-img-width;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tile-letter-fallback {
+      text-transform: uppercase;
+      font-size: 34px;
     }
 
     .tile-img {

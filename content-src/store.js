@@ -22,6 +22,10 @@ if (__CONFIG__.LOGGING) {
   }));
 }
 
+if (__CONFIG__.FAKE_DATA) {
+  middleware.push(require("lib/fake-data-middleware"));
+}
+
 const store = createStore(
   combineReducers(reducers),
   applyMiddleware(...middleware)
