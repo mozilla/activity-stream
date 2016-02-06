@@ -8,7 +8,6 @@ const TopSites = require("components/TopSites/TopSites");
 // This is a quick placeholder
 const Sites = (props) => {
   return (<div className="placeholder-sites">
-    <h4>{props.title}</h4>
     <ul>
     {props.sites.map(site => {
       return (<li className="site" key={site.url}>
@@ -38,15 +37,18 @@ const Main = React.createClass({
       />
       <main>
         <div className="new-tab-wrapper">
-          <TopSites sites={props.Sites.frecent} />
-          <Sites title="History" sites={props.Sites.frecent} />
-          <Sites title="Bookmarks" sites={props.Bookmarks.rows} />
+          <div className="new-tab-left">
+            <h4>Top Sites</h4>
+            <TopSites sites={props.Sites.frecent} />
+            <h4>Spotlight</h4>
+            <Sites sites={props.Sites.frecent} />
+          </div>
+          <div className="new-tab-right">
+            <h4>Top Activity</h4>
+            <Sites sites={props.Bookmarks.rows} />
+          </div>
         </div>
       </main>
-      <pre>
-      {JSON.stringify(props.Sites.frecent, null, 2)}
-      {JSON.stringify(props.Sites.changes, null, 2)}
-      </pre>
     </div>);
   }
 });
