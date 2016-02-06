@@ -3,6 +3,7 @@
   background: #fff;
   border-bottom: solid 1px #dfe0e1;
   display: flex;
+  flex-shrink: 0;
   height: 50px;
   padding: 0 20px;
   box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.05);
