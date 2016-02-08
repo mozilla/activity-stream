@@ -2,6 +2,7 @@ node_modules
 npm-debug.log
 .DS_Store
 *.sw[po]
+*.xpi
 logs/
 dist/
 data/content/
