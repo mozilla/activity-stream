@@ -1,6 +1,7 @@
 /* globals XPCOMUtils, NetUtil, PlacesUtils */
 "use strict";
 
+const {before} = require("sdk/test/utils");
 const {PlacesProvider} = require("lib/PlacesProvider");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Ci, Cu} = require("chrome");
@@ -11,7 +12,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
                                   "resource://gre/modules/PlacesUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
-    "resource://gre/modules/NetUtil.jsm");
+                                  "resource://gre/modules/NetUtil.jsm");
 
 exports.test_LinkChecker_securityCheck = function(assert) {
   let urls = [
@@ -30,7 +31,6 @@ exports.test_LinkChecker_securityCheck = function(assert) {
 };
 
 exports.test_Links_getTopFrecentSites = function*(assert) {
-  yield PlacesTestUtils.clearHistory();
   let provider = PlacesProvider.links;
 
   let links = yield provider.getTopFrecentSites();
@@ -46,7 +46,6 @@ exports.test_Links_getTopFrecentSites = function*(assert) {
 };
 
 exports.test_Links_getTopFrecentSites_Order = function*(assert) {
-  yield PlacesTestUtils.clearHistory();
   let provider = PlacesProvider.links;
   let {
     TRANSITION_TYPED,
@@ -116,7 +115,6 @@ exports.test_Links_onLinkChanged = function*(assert) {
   yield PlacesTestUtils.addVisits(testURI);
   yield linkChangedPromise;
 
-  yield PlacesTestUtils.clearHistory();
   provider.uninit();
 };
 
@@ -192,5 +190,9 @@ exports.test_Links_onManyLinksChanged = function*(assert) {
   yield promise;
   provider.uninit();
 };
+
+before(exports, function*() {
+  yield PlacesTestUtils.clearHistory();
+});
 
 require("sdk/test").run(exports);
