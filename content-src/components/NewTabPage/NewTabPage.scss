@@ -1,0 +1,19 @@
+main.new-tab {
+  align-items: center;
+  justify-content: center;
+}
+
+.new-tab-wrapper {
+  display: flex;
+  max-height: 600px; // This will probably need to be refined
+  overflow-y: auto;
+  max-width: $wrapper-max-width;
+  .left {
+    width: 66%;
+    margin-right: 20px;
+  }
+  .right {
+    width: 33%;
+    min-width: 300px;
+  }
+}

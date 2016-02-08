@@ -19,9 +19,11 @@
     "activity-streams"
   ],
   "dependencies": {
+    "history": "1.17.0",
     "react": "0.14.7",
     "react-dom": "0.14.7",
     "react-redux": "4.1.2",
+    "react-router": "1.0.3",
     "redux": "3.2.0",
     "redux-logger": "2.4.0",
     "redux-thunk": "1.0.3"
@@ -63,6 +65,7 @@
     "node-sass": "^3.4.2",
     "npm-run-all": "^1.5.1",
     "react-addons-test-utils": "^0.14.7",
+    "redux-mock-store": "0.0.6",
     "requirejs": "^2.1.22",
     "webpack": "^1.12.12",
     "webpack-notifier": "^1.2.1",

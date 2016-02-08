@@ -1,0 +1,38 @@
+main.timeline {
+  padding: 0;
+  .wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  nav.sidebar {
+    color: #888B92;
+    display: block;
+    width: $header-nav-width;
+    background: $navy;
+    flex-shrink: 0;
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    a {
+      display: block;
+      background: none;
+      color: inherit;
+      padding: 15px 20px;
+      &.active,
+      &:hover {
+        background: darken($navy, 8%);
+      }
+      &.active {
+        border-left: 4px solid #E14164;
+      }
+    }
+  }
+  section.content {
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
