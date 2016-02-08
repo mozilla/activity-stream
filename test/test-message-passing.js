@@ -7,20 +7,19 @@ const httpd = require("./lib/httpd");
 const {doGetFile} = require("./lib/utils");
 const {Task} = require("resource://gre/modules/Task.jsm", {});
 
-
 const PORT = 8099;
 
-exports["test messages"] = function (assert, done) {
+exports["test messages"] = function(assert, done) {
   let path = "/dummy-activitystreams.html";
   let url = `http://localhost:${PORT}${path}`;
   let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
 
-  Task.spawn(function* () {
+  Task.spawn(function*() {
     let app = new ActivityStreams({pageURL: url});
     let openTabs = [];
 
     tabs.on("open", tab => {
-      tab.on('ready', tab => {
+      tab.on("ready", tab => {
         if (tab.url === url) {
           openTabs.push(tab);
         }

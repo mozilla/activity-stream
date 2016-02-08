@@ -7,8 +7,10 @@ const TestUtils = require("react-addons-test-utils");
 
 const fakeSites = require("lib/shim").data.fakeBookmarks;
 
-describe("ActivityFeed", function () {
-  let node, instance, el;
+describe("ActivityFeed", function() {
+  let node;
+  let instance;
+  let el;
   beforeEach(() => {
     node = document.createElement("div");
     instance = ReactDOM.render(<ActivityFeed sites={fakeSites} />, node);
@@ -29,9 +31,11 @@ describe("ActivityFeed", function () {
   });
 });
 
-describe("ActivityFeedItem", function () {
+describe("ActivityFeedItem", function() {
   const fakeSite = fakeSites[0];
-  let node, instance, el;
+  let node;
+  let instance;
+  let el;
   beforeEach(() => {
     node = document.createElement("div");
     instance = ReactDOM.render(<ActivityFeedItem {...fakeSite} />, node);

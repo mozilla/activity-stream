@@ -1,8 +1,9 @@
+/* globals XPCOMUtils, NetUtil, PlacesUtils */
 "use strict";
 
 const {PlacesProvider} = require("lib/PlacesProvider");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
-const {Cc, Ci, Cu, components} = require("chrome");
+const {Ci, Cu} = require("chrome");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
@@ -12,8 +13,8 @@ XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
 XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
     "resource://gre/modules/NetUtil.jsm");
 
-exports.test_LinkChecker_securityCheck = function(assert, done) {
-    let urls = [
+exports.test_LinkChecker_securityCheck = function(assert) {
+  let urls = [
     {url: "file://home/file/image.png", expected: false},
     {url: "resource:///modules/PlacesProvider.jsm", expected: false},
     {url: "javascript:alert('hello')", expected: false}, // jshint ignore:line
@@ -26,10 +27,9 @@ exports.test_LinkChecker_securityCheck = function(assert, done) {
     let observed = PlacesProvider.LinkChecker.checkLoadURI(url);
     assert.equal(observed, expected, `can load "${url}"?`);
   }
-  done();
 };
 
-exports.test_Links_getTopFrecentSites = function(assert, done) {
+exports.test_Links_getTopFrecentSites = function*(assert) {
   yield PlacesTestUtils.clearHistory();
   let provider = PlacesProvider.links;
 
@@ -45,7 +45,7 @@ exports.test_Links_getTopFrecentSites = function(assert, done) {
   assert.equal(links[0].url, testURI.spec, "added visit corresponds to added url");
 };
 
-exports.test_Links_getTopFrecentSites_Order = function(assert, done) {
+exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   yield PlacesTestUtils.clearHistory();
   let provider = PlacesProvider.links;
   let {
@@ -83,7 +83,7 @@ exports.test_Links_getTopFrecentSites_Order = function(assert, done) {
   }
 };
 
-exports.test_Links_onLinkChanged = function(assert, done) {
+exports.test_Links_onLinkChanged = function*(assert) {
   let provider = PlacesProvider.links;
   provider.init();
   assert.equal(true, true);
@@ -120,7 +120,7 @@ exports.test_Links_onLinkChanged = function(assert, done) {
   provider.uninit();
 };
 
-exports.test_Links_onClearHistory = function(assert, done) {
+exports.test_Links_onClearHistory = function*(assert) {
   let provider = PlacesProvider.links;
   provider.init();
 
@@ -144,7 +144,7 @@ exports.test_Links_onClearHistory = function(assert, done) {
   provider.uninit();
 };
 
-exports.test_Links_onDeleteURI = function(assert, done) {
+exports.test_Links_onDeleteURI = function*(assert) {
   let provider = PlacesProvider.links;
   provider.init();
 
@@ -167,7 +167,7 @@ exports.test_Links_onDeleteURI = function(assert, done) {
   provider.uninit();
 };
 
-exports.test_Links_onManyLinksChanged = function(assert, done) {
+exports.test_Links_onManyLinksChanged = function*(assert) {
   let provider = PlacesProvider.links;
   provider.init();
 

@@ -4,7 +4,7 @@ module.exports = {
   // This is just placeholder for now
   Sites: (prevState = {frecent: [], changes: []}, action) => {
     const state = {};
-    switch(action.type) {
+    switch (action.type) {
       case am.type("TOP_FRECENT_SITES_RESPONSE"):
         state.frecent = action.data;
         break;
@@ -19,7 +19,7 @@ module.exports = {
 
   Bookmarks: (prevState = {rows: [], error: false}, action) => {
     const state = {};
-    switch(action.type) {
+    switch (action.type) {
       case am.type("RECENT_BOOKMARKS_RESPONSE"):
         if (action.error) {
           state.rows = [];

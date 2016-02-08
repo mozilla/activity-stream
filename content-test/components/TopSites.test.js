@@ -19,7 +19,10 @@ const fakeProps = {
 
 describe("TopSites", () => {
 
-  let node, topSites, el;
+  let node;
+  let topSites;
+  let el;
+
   beforeEach(() => {
     node = document.createElement("div");
     topSites = ReactDOM.render(<TopSites {...fakeProps} />, node);

@@ -1,7 +1,7 @@
 const webpack = require("./webpack.config");
 const path = require("path");
 
-module.exports = function (config) {
+module.exports = function(config) {
   config.set({
     singleRun: true,
     browsers: ["FirefoxNightly"],
@@ -43,8 +43,8 @@ module.exports = function (config) {
         loaders: webpack.module.loaders,
         postLoaders: [{
           test: /\.js$/,
-          loader: 'istanbul-instrumenter',
-          include: [path.join(__dirname, '/src')]
+          loader: "istanbul-instrumenter",
+          include: [path.join(__dirname, "/src")]
         }]
       },
       plugins: webpack.plugins

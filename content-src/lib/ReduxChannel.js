@@ -5,8 +5,12 @@ const DEFAULT_OPTIONS = {
 
 class Channel {
   constructor(options = {}) {
-    if (!options.incoming) throw new Error("You must specify an incoming event name with the 'incoming' option.");
-    if (!options.outgoing) throw new Error("You must specify an outgoing event name with the 'outgoing' option.");
+    if (!options.incoming) {
+      throw new Error("You must specify an incoming event name with the 'incoming' option.");
+    }
+    if (!options.outgoing) {
+      throw new Error("You must specify an outgoing event name with the 'outgoing' option.");
+    }
     this.options = Object.assign({}, DEFAULT_OPTIONS, options);
     this.callbacks = new Set();
     this.timeouts = new Map();
@@ -42,7 +46,7 @@ class Channel {
   }
 
   get middleware() {
-    return store => next => function (action) {
+    return store => next => function(action) {
       const meta = action.meta || {};
       const timeouts = this.timeouts;
 
@@ -74,8 +78,7 @@ class Channel {
       if (meta.broadcast === this.options.outgoing) {
         this.broadcast(action);
       }
-
-     }.bind(this);
+    }.bind(this);
   }
 }
 

@@ -1,0 +1,9 @@
+{
+  "preset": "google",
+  "fileExtensions": [".js", ".jsm"],
+  "excludeFiles": ["test/lib/httpd.js", "test/test-httpd.js", "logs/**", "node_modules/**", "data/content/**"],
+  "maximumLineLength": false,
+  "esnext": true,
+  "validateQuoteMarks": true,
+  "requireCamelCaseOrUpperCaseIdentifiers": null
+}

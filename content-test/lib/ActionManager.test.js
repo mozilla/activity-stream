@@ -6,9 +6,9 @@ const {assert} = require("chai");
 describe("ActionManager", () => {
 
   describe("instance", () => {
-    if("should throw if types is not an array", () => {
+    it("should throw if types is not an array", () => {
       assert.throws(() => new ActionManager(), "You must instantiate ActionManager with an array of action types.");
-    })
+    });
     it("should create this._types", () => {
       const am = new ActionManager(["FOO", "BAR"]);
       assert.deepEqual(am._types, new Set(["FOO", "BAR"]));
@@ -21,18 +21,18 @@ describe("ActionManager", () => {
       const am = new ActionManager(["FOO", "BAR"]);
       assert.isArray(am.validators);
       assert.isObject(am.actions);
-      assert.property(am.actions, 'BaseAction');
+      assert.property(am.actions, "BaseAction");
     });
   });
 
   describe("#defineActions", () => {
-    it('should add actions to this.actions', () => {
+    it("should add actions to this.actions", () => {
       const am = new ActionManager(["FOO", "BAR"]);
       am.defineActions({Foo: () => {}});
-      assert.property(am.actions, 'Foo');
+      assert.property(am.actions, "Foo");
       assert.isFunction(am.actions.Foo);
     });
-    it('should return the result of the action definition', () => {
+    it("should return the result of the action definition", () => {
       const am = new ActionManager(["FOO", "BAR"]);
       function Foo(data) {
         return {type: "FOO", data};
@@ -41,17 +41,17 @@ describe("ActionManager", () => {
       const result = am.actions.Foo("data");
       assert.deepEqual(result, {type: "FOO", data: "data"});
     });
-    it('should run validations for defined actions', () => {
+    it("should run validations for defined actions", () => {
       const am = new ActionManager(["FOO"]);
       am.defineActions({Foo: () => {}, Bar: () => ({type: "BAR"})});
       assert.throws(() => {
         am.actions.Foo();
-      }, 'Looks like your action definition does not return an object.');
+      }, "Looks like your action definition does not return an object.");
       assert.throws(() => {
         am.actions.Bar();
-      }, 'BAR is not defined in your ActionManager');
+      }, "BAR is not defined in your ActionManager");
     });
-    it('should allow validations to be changed after definitions', () => {
+    it("should allow validations to be changed after definitions", () => {
       const am = new ActionManager(["FOO"]);
       am.defineActions({Foo: () => {}, Bar: () => ({type: "BAR"})});
       am.validators = [];
