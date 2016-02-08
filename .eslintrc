@@ -16,6 +16,7 @@
     "array-bracket-spacing": [2, "never"],
     "space-before-function-paren": [2, {"anonymous": "always", "named": "never"}],
     "react/jsx-uses-react": 1,
+    "no-trailing-spaces": [2, {"skipBlankLines": false}],
   },
   "ecmaFeatures": {
     "jsx": true
