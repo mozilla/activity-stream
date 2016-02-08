@@ -1,6 +1,8 @@
 .top-sites {
-  flex-grow: 1;
-
+  .tiles-wrapper {
+    margin-right: -20px;
+    text-align: center;
+  }
   .tile {
     border: $tile-border;
     border-radius: $tile-border-radius;
@@ -9,7 +11,7 @@
     display: inline-block;
     font-size: $tile-font-size;
     height: $tile-height;
-    margin: $tile-gutter-h $tile-gutter-h $tile-gutter-v 0;
+    margin: 0 $tile-gutter-h $tile-gutter-v 0;
     overflow: hidden;
     position: relative;
     text-decoration: none;

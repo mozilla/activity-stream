@@ -1,0 +1,28 @@
+$bg-grey: #F3F4F6;
+$light-grey: #A0A0A0;
+$mid-grey: #56565A;
+$dark-grey: #383E49;
+$link-blue: #00AFF7;
+
+$wrapper-max-width: 1100px;
+
+$tile-img-width: 100px;
+$tile-img-height: 100px;
+$tile-title-height: 26px;
+$tile-width: $tile-img-width + 2px;
+$tile-height: $tile-img-height + $tile-title-height + 2px;
+
+$tile-font-size: 13px;
+$tile-border-radius: 3px;
+$tile-box-shadow: 0 1px 3px #c1c1c1;
+$tile-border: 1px solid white;
+$tile-gutter-h: 20px;
+$tile-gutter-v: 20px;
+$tile-text-color: #5c5c5c;
+$tile-title-bg-color: #F2F2F2;
+$tile-title-hover-color: #333;
+$tile-title-hover-text-color: white;
+
+$feed-gutter: 20px;
+$feed-circle-size: 8px;
+$feed-icon-size: 40px;

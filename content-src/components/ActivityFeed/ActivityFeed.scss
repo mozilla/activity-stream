@@ -1,0 +1,94 @@
+.activity-feed {
+  font-size: 16px;
+  line-height: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feed-item {
+  padding-left: $feed-gutter + $feed-circle-size;
+  display: flex;
+  padding-bottom: $feed-gutter;
+  position: relative;
+
+  // This is the line/circle on the side
+  &:first-child {
+    &::before {
+      top: 50%;
+      margin-top: -($feed-gutter/2 + $feed-circle-size/2);
+    }
+  }
+  &:last-child {
+    &::before {
+      bottom: 50%;
+      margin-bottom: $feed-gutter/2 + $feed-circle-size/2;
+    }
+  }
+  &::after {
+    content: "";
+    display: block;
+    border-radius: 50%;
+    height: $feed-circle-size;
+    width: $feed-circle-size;
+    border: 2px solid $light-grey;
+    background: $bg-grey;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -($feed-gutter/2 + $feed-circle-size/2);
+  }
+  &::before {
+    content: "";
+    display: block;
+    width: 2px;
+    background: lighten($light-grey, 20%);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: ($feed-circle-size - 2)/2;
+  }
+}
+
+.feed-icon {
+  flex-shrink: 0;
+  margin-right: 10px;
+  width: $feed-icon-size;
+  height: $feed-icon-size;
+  background-size: cover;
+  border-radius: 4px;
+}
+.feed-details {
+  display: flex;
+  flex-grow: 1;
+  align-items: baseline;
+  overflow: hidden;
+  .feed-description {
+    flex-grow: 1;
+    overflow: hidden;
+    margin-right: 10px;
+
+    .feed-title {
+      font-weight: normal;
+      font-size: inherit;
+      margin: 0;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .feed-link {
+      font-size: 14px;
+      display: block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  .feed-stats {
+    text-align: right;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: $light-grey;
+  }
+}

@@ -1,7 +1,48 @@
 const fakeFrecent = [
   {
     title: "Facebook",
-    leadImage: "https://www.facebook.com/images/fb_icon_325x325.png",
+    image: "https://www.facebook.com/images/fb_icon_325x325.png",
+    url: "https://www.facebook.com",
+    type: "website"
+  },
+  {
+    title: "Youtube",
+    image: "//s.ytimg.com/yts/img/yt_1200-vfl4C3T0K.png",
+    description: "Share your videos with friends, family, and the world",
+    type: "website",
+    url: "https://youtube.com"
+  },
+  {
+    title: "Github",
+    image: "https://github.com/apple-touch-icon-144x144.png",
+    url: "https://github.com",
+    description: "GitHub is where people build software. More than 12 million people use GitHub to discover, fork, and contribute to over 31 million projects."
+  },
+  {
+    title: "Hacker News",
+    type: "website",
+    image: "https://news.ycombinator.com/y18.gif",
+    url: "https://news.ycombinator.com"
+  },
+  {
+    title: "CNN - Breaking News, Latest News and Videos",
+    type: "website",
+    description: "View the latest news and breaking news today for U.S., world, weather, entertainment, politics and health at CNN.com.",
+    image: "http://i.cdn.turner.com/cnn/.e/img/3.0/global/misc/apple-touch-icon.png",
+    url: "http://www.cnn.com/"
+  },
+  {
+    title: "reddit: the front page of the internet",
+    type: "website",
+    url: "https://www.reddit.com",
+    image: "//www.redditstatic.com/icon-touch.png"
+  }
+];
+
+const fakeBookmarks = [
+  {
+    title: "Facebook",
+    image: "https://www.facebook.com/images/fb_icon_325x325.png",
     url: "https://www.facebook.com",
     type: "website"
   },
@@ -34,6 +75,13 @@ module.exports = function () {
       case 'TOP_FRECENT_SITES_REQUEST':
         dispatch({type: 'TOP_FRECENT_SITES_RESPONSE', data: fakeFrecent});
         break;
+      case 'RECENT_BOOKMARKS_REQUEST':
+        dispatch({type: 'RECENT_BOOKMARKS_RESPONSE', data: fakeBookmarks});
     }
   }, false);
+};
+
+module.exports.data = {
+  fakeFrecent,
+  fakeBookmarks
 };

@@ -4,6 +4,7 @@ const {actions} = require("actions/action-manager");
 
 const Header = require("components/Header/Header");
 const TopSites = require("components/TopSites/TopSites");
+const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
 
 const Main = React.createClass({
   componentDidMount() {
@@ -21,13 +22,19 @@ const Main = React.createClass({
         userImage="https://cdninfinity-a.akamaihd.net/infinitycdn/web/assets/assets/images/icons/og_images/fb/character_luke-skywalker_img1.jpg"
       />
       <main>
-        <TopSites sites={props.Sites.frecent} />
+        <div className="new-tab-wrapper">
+          <div className="left">
+            <TopSites sites={props.Sites.frecent} />
+          </div>
+          <div className="right">
+            <h3 className="section-title">Top Activity</h3>
+            <ActivityFeed sites={props.Bookmarks.rows} />
 
+            <h3 className="section-title">Yesterday</h3>
+            <ActivityFeed sites={props.Bookmarks.rows} />
+          </div>
+        </div>
       </main>
-      <pre>
-      {JSON.stringify(props.Sites.frecent, null, 2)}
-      {JSON.stringify(props.Sites.changes, null, 2)}
-      </pre>
     </div>);
   }
 });
