@@ -37,17 +37,25 @@ class ActionManager {
   }
 
   validateStandardForm(action) {
-    if (!action) throw new Error('Looks like your action definition does not return an object.');
-    if (!action.type) throw new Error(`You must define a type for an action.`);
+    if (!action) {
+      throw new Error("Looks like your action definition does not return an object.");
+    }
+    if (!action.type) {
+      throw new Error(`You must define a type for an action.`);
+    }
     Object.keys(action).forEach(key => {
-      if (!VALID_KEYS.has(key)) throw new Error(`${key} is not a standard action key. Should be one of ${VALID_KEYS_STRING}`);
+      if (!VALID_KEYS.has(key)) {
+        throw new Error(`${key} is not a standard action key. Should be one of ${VALID_KEYS_STRING}`);
+      }
     });
     return action;
     // TODO schema validation
   }
 
   validateType(action = {}) {
-    if (!this._types.has(action.type)) throw new Error(`${action.type} is not defined in your ActionManager`);
+    if (!this._types.has(action.type)) {
+      throw new Error(`${action.type} is not defined in your ActionManager`);
+    }
     return action;
   }
 };

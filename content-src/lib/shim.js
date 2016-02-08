@@ -64,19 +64,19 @@ const fakeBookmarks = [
 
 function dispatch(action) {
   window.dispatchEvent(
-    new CustomEvent('addon-to-content', {detail: action})
+    new CustomEvent("addon-to-content", {detail: action})
   );
 }
 
-module.exports = function () {
-  window.addEventListener('content-to-addon', function (event) {
+module.exports = function() {
+  window.addEventListener("content-to-addon", function(event) {
     const action = JSON.parse(event.detail);
-    switch(action.type) {
-      case 'TOP_FRECENT_SITES_REQUEST':
-        dispatch({type: 'TOP_FRECENT_SITES_RESPONSE', data: fakeFrecent});
+    switch (action.type) {
+      case "TOP_FRECENT_SITES_REQUEST":
+        dispatch({type: "TOP_FRECENT_SITES_RESPONSE", data: fakeFrecent});
         break;
-      case 'RECENT_BOOKMARKS_REQUEST':
-        dispatch({type: 'RECENT_BOOKMARKS_RESPONSE', data: fakeBookmarks});
+      case "RECENT_BOOKMARKS_REQUEST":
+        dispatch({type: "RECENT_BOOKMARKS_RESPONSE", data: fakeBookmarks});
     }
   }, false);
 };

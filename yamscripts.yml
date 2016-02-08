@@ -25,7 +25,7 @@ scripts:
 # test: Run all tests once
   test:
     # test:lint: Run eslint
-    lint: eslint .
+    lint: eslint . && jscs .
     # test:jpm: Run jpm tests
     jpm: jpm test -b nightly
     # test:karma: Run content tests only

@@ -1,6 +1,7 @@
+/* globals XPCOMUtils, Task, PlacesUtils, Services */
 "use strict";
 
-const {Cc, Ci, Cu, components} = require("chrome");
+const {Ci, Cu, components} = require("chrome");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
@@ -9,12 +10,11 @@ Cu.import("resource://gre/modules/Task.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
   "resource://gre/modules/PlacesUtils.jsm");
 
-
 const PlacesTestUtils = Object.freeze({
   /**
    * Asynchronously adds visits to a page.
    *
-   * @param aPlaceInfo
+   * @param {nsIURI} placeInfo
    *        Can be an nsIURI, in such a case a single LINK visit will be added.
    *        Otherwise can be an object describing the visit to add, or an array
    *        of these objects:
@@ -26,19 +26,18 @@ const PlacesTestUtils = Object.freeze({
    *          }
    *
    * @return {Promise}
-   * @resolves When all visits have been added successfully.
-   * @rejects JavaScript exception.
+   *            resolves When all visits have been added successfully.
+   *            rejects JavaScript exception.
    */
   addVisits: Task.async(function*(placeInfo) {
     let promise = new Promise((resolve, reject) => {
       let places = [];
       if (placeInfo instanceof Ci.nsIURI) {
-        places.push({ uri: placeInfo });
-      }
-      else if (Array.isArray(placeInfo)) {
+        places.push({uri: placeInfo});
+      } else if (Array.isArray(placeInfo)) {
         places = places.concat(placeInfo);
       } else {
-        places.push(placeInfo)
+        places.push(placeInfo);
       }
 
       // Create mozIVisitInfo for each entry.
@@ -58,12 +57,12 @@ const PlacesTestUtils = Object.freeze({
       PlacesUtils.asyncHistory.updatePlaces(
         places,
         {
-          handleError: function AAV_handleError(resultCode, placeInfo) {
-            let ex = new Components.Exception("Unexpected error in adding visits.",
+          handleError: function AAV_handleError(resultCode, placeInfo) { // eslint-disable-line no-unused-vars
+            let ex = new components.Exception("Unexpected error in adding visits.",
                                               resultCode);
             reject(ex);
           },
-          handleResult: function () {},
+          handleResult: function() {},
           handleCompletion: function UP_handleCompletion() {
             resolve();
           }
@@ -77,12 +76,12 @@ const PlacesTestUtils = Object.freeze({
    * Clear all history.
    *
    * @return {Promise}
-   * @resolves When history was cleared successfully.
-   * @rejects JavaScript exception.
+   *            resolves When history was cleared successfully.
+   *            rejects JavaScript exception.
    */
   clearHistory() {
     let expirationFinished = new Promise(resolve => {
-      Services.obs.addObserver(function observe(subj, topic, data) {
+      Services.obs.addObserver(function observe(subj, topic, data) { // eslint-disable-line no-unused-vars
         Services.obs.removeObserver(observe, topic);
         resolve();
       }, PlacesUtils.TOPIC_EXPIRATION_FINISHED, false);

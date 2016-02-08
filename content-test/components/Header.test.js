@@ -9,7 +9,9 @@ const fakeProps = {
 
 describe("Header", () => {
 
-  let node, header, el;
+  let node;
+  let header;
+  let el;
   beforeEach(() => {
     node = document.createElement("div");
     header = ReactDOM.render(<Header {...fakeProps} />, node);

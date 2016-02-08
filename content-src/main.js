@@ -5,7 +5,7 @@ const {Provider} = require("react-redux");
 const Base = require("components/Base/Base");
 const store = require("./store");
 
-require('lib/shim')();
+require("lib/shim")();
 
 const Root = React.createClass({
   render() {
