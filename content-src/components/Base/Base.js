@@ -39,8 +39,6 @@ const Main = React.createClass({
   }
 });
 
-
-
 function select(state) {
   return state;
 }

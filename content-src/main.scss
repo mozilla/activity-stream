@@ -15,6 +15,15 @@ body {
   color: $dark-grey;
 }
 
+a {
+  color: $link-blue;
+  text-decoration: none;
+  &:hover {
+    color: lighten($link-blue, 10%);
+  }
+}
+
+
 // Components
 @import './components/Header/Header';
 @import './components/Base/Base';
