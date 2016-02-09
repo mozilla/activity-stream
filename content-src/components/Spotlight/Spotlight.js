@@ -1,11 +1,16 @@
 const React = require("react");
+const DEFAULT_LENGTH = 3;
+const SiteIcon = require("components/SiteIcon/SiteIcon");
 
 const SpotlightItem = React.createClass({
   render() {
     const site = this.props;
+    const imageUrl = site.images[0].url;
+    const iconUrl = site.favicon_url;
     return (<li className="spotlight-item">
-      <div className="spotlight-image" style={{backgroundImage: `url(${site.image})`}} ref="image">
-        <div className="spotlight-icon" style={{backgroundImage: `url(${site.icon})`}} ref="icon" />
+      <div className="spotlight-image" style={{backgroundImage: `url(${imageUrl})`}} ref="image">
+        <div className="spotlight-icon" style={{backgroundImage: `url(${iconUrl})`}} ref="icon" />
+        <SiteIcon className="spotlight-icon" site={site} ref="icon" height={32} width={32} />
       </div>
       <div className="spotlight-details">
         <div className="spotlight-info">
@@ -22,26 +27,31 @@ const SpotlightItem = React.createClass({
 
 SpotlightItem.propTypes = {
   url: React.PropTypes.string.isRequired,
-  image: React.PropTypes.string.isRequired,
-  icon: React.PropTypes.string.isRequired,
-  title: React.PropTypes.string.isRequired,
+  images: React.PropTypes.array,
+  favicon_url: React.PropTypes.string,
+  icons: React.PropTypes.array,
+  title: React.PropTypes.string,
   description: React.PropTypes.string.isRequired,
 };
 
 const Spotlight = React.createClass({
+  getDefaultProps() {
+    return {length: DEFAULT_LENGTH};
+  },
   render() {
-    const {props} = this;
+    const sites = this.props.sites.slice(0, this.props.length);
     return (<section className="spotlight">
       <h3 className="section-title">Spotlight</h3>
       <ul>
-        {props.sites.map(site => <SpotlightItem key={site.url} {...site} />)}
+        {sites.map(site => <SpotlightItem key={site.url} {...site} />)}
       </ul>
     </section>);
   }
 });
 
 Spotlight.propTypes = {
-  sites: React.PropTypes.array.isRequired
+  sites: React.PropTypes.array.isRequired,
+  length: React.PropTypes.number
 };
 
 module.exports = Spotlight;

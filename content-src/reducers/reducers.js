@@ -1,26 +1,10 @@
 const am = require("actions/action-manager");
 
-module.exports = {
-  // This is just placeholder for now
-  Sites: (prevState = {frecent: [], changes: []}, action) => {
+function setRowsOrError(type) {
+  return (prevState = {rows: [], error: false}, action) => {
     const state = {};
     switch (action.type) {
-      case am.type("TOP_FRECENT_SITES_RESPONSE"):
-        state.frecent = action.data;
-        break;
-      case am.type("RECEIVE_PLACES_CHANGES"):
-        state.changes = prevState.changes.concat(action.data);
-        break;
-      default:
-        return prevState;
-    }
-    return Object.assign({}, prevState, state);
-  },
-
-  Bookmarks: (prevState = {rows: [], error: false}, action) => {
-    const state = {};
-    switch (action.type) {
-      case am.type("RECENT_BOOKMARKS_RESPONSE"):
+      case am.type(type):
         if (action.error) {
           state.rows = [];
           state.error = action.data;
@@ -29,9 +13,16 @@ module.exports = {
           state.error = false;
         }
         break;
+      // TODO: Handle changes
       default:
         return prevState;
     }
     return Object.assign({}, prevState, state);
-  }
+  };
+}
+
+module.exports = {
+  TopSites: setRowsOrError("TOP_FRECENT_SITES_RESPONSE"),
+  History: setRowsOrError("RECENT_LINKS_RESPONSE"),
+  Bookmarks: setRowsOrError("RECENT_BOOKMARKS_RESPONSE")
 };

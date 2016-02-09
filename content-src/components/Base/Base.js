@@ -6,13 +6,10 @@ const Header = require("components/Header/Header");
 
 const Base = React.createClass({
   componentDidMount() {
-    // This should work!
     this.props.dispatch(actions.RequestTopFrecent());
 
-    // This should work!
     this.props.dispatch(actions.RequestLinks());
 
-    // This should fail, since nothing is implemented on the Firefox side
     this.props.dispatch(actions.RequestBookmarks());
   },
   render() {

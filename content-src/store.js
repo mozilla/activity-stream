@@ -10,7 +10,8 @@ const channel = new Channel({
 
 const middleware = [
   thunk,
-  channel.middleware
+  channel.middleware,
+  require("lib/embedly-middleware")
 ];
 
 // Logging for debugging redux actions

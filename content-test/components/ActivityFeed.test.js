@@ -1,6 +1,7 @@
 const {assert} = require("chai");
 const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const {ActivityFeedItem} = ActivityFeed;
+const SiteIcon = require("components/SiteIcon/SiteIcon");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
@@ -8,16 +9,11 @@ const TestUtils = require("react-addons-test-utils");
 const fakeSites = require("test/test-utils").mockData.Bookmarks.rows;
 
 describe("ActivityFeed", function() {
-  let node;
   let instance;
   let el;
   beforeEach(() => {
-    node = document.createElement("div");
-    instance = ReactDOM.render(<ActivityFeed sites={fakeSites} />, node);
+    instance = TestUtils.renderIntoDocument(<ActivityFeed sites={fakeSites} />);
     el = ReactDOM.findDOMNode(instance);
-  });
-  afterEach(() => {
-    ReactDOM.unmountComponentAtNode(node);
   });
 
   describe("valid sites", () => {
@@ -33,16 +29,11 @@ describe("ActivityFeed", function() {
 
 describe("ActivityFeedItem", function() {
   const fakeSite = fakeSites[0];
-  let node;
   let instance;
   let el;
   beforeEach(() => {
-    node = document.createElement("div");
-    instance = ReactDOM.render(<ActivityFeedItem {...fakeSite} />, node);
+    instance = TestUtils.renderIntoDocument(<ActivityFeedItem {...fakeSite} />);
     el = ReactDOM.findDOMNode(instance);
-  });
-  afterEach(() => {
-    ReactDOM.unmountComponentAtNode(node);
   });
 
   describe("valid sites", () => {
@@ -50,10 +41,17 @@ describe("ActivityFeedItem", function() {
       assert.ok(el);
     });
     it("should render the icon", () => {
-      assert.include(instance.refs.icon.style.backgroundImage, fakeSite.image);
+      assert.instanceOf(instance.refs.icon, SiteIcon);
+      assert.include(instance.refs.icon.props.site, fakeSite);
     });
-    it("should render the title", () => {
-      assert.equal(instance.refs.title.innerHTML, fakeSite.title);
+    it("should render the bookmarkTitle if it exists", () => {
+      assert.equal(instance.refs.title.innerHTML, fakeSite.bookmarkTitle);
+    });
+    it("should render the title if no bookmarkTitle exists", () => {
+      const fakeSiteCopy = JSON.parse(JSON.stringify(fakeSite));
+      delete fakeSiteCopy.bookmarkTitle;
+      instance = TestUtils.renderIntoDocument(<ActivityFeedItem {...fakeSiteCopy} />);
+      assert.equal(instance.refs.title.innerHTML, fakeSiteCopy.title);
     });
     it("should render the url link", () => {
       const linkEl = instance.refs.link;

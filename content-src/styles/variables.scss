@@ -31,11 +31,13 @@ $feed-gutter: 20px;
 $feed-circle-size: 8px;
 $feed-icon-size: 40px;
 
+$spotlight-info-height: 160px;
 $spotlight-item-width: 226px;
 $spotlight-img-height: 140px;
 $spotlight-icon-height: 35px;
 $spotlight-icon-width: 35px;
 $spotlight-icon-gutter: 10px;
-$spotlight-description-height: 80px;
+$spotlight-description-height: 70px;
+$spotlight-title-max-height: 39px;
 
 $timeline-max-width: 3 * $spotlight-item-width + 20px * 2;

@@ -1,13 +1,17 @@
 const React = require("react");
+const DEFAULT_LENGTH = 3;
+const SiteIcon = require("components/SiteIcon/SiteIcon");
+const ICON_SIZE = 40;
 
 const ActivityFeedItem = React.createClass({
   render() {
     const site = this.props;
+    const title = site.bookmarkTitle || site.title;
     return (<li className="feed-item">
-      <div className="feed-icon" style={{backgroundImage: `url(${site.image})`}} ref="icon" />
+      <SiteIcon ref="icon" className="feed-icon" site={site} width={ICON_SIZE} height={ICON_SIZE} />
       <div className="feed-details">
         <div className="feed-description">
-          <h4 className="feed-title" ref="title">{site.title}</h4>
+          <h4 className="feed-title" ref="title">{title}</h4>
           <a className="feed-link" href={site.url} ref="link">{site.url}</a>
         </div>
         <div className="feed-stats">
@@ -21,21 +25,27 @@ const ActivityFeedItem = React.createClass({
 
 ActivityFeedItem.propTypes = {
   url: React.PropTypes.string.isRequired,
-  image: React.PropTypes.string, // TODO: Have fallback for this, change to icon
-  title: React.PropTypes.string.isRequired
+  images: React.PropTypes.array,
+  title: React.PropTypes.string,
+  bookmarkTitle: React.PropTypes.string,
+  type: React.PropTypes.string
 };
 
 const ActivityFeed = React.createClass({
+  getDefaultProps() {
+    return {length: DEFAULT_LENGTH};
+  },
   render() {
-    const {props} = this;
+    const sites = this.props.sites.slice(0, this.props.length);
     return (<ul className="activity-feed">
-      {props.sites.map(site => <ActivityFeedItem key={site.url} {...site} />)}
+      {sites.map(site => <ActivityFeedItem key={site.url} {...site} />)}
     </ul>);
   }
 });
 
 ActivityFeed.propTypes = {
-  sites: React.PropTypes.array.isRequired
+  sites: React.PropTypes.array.isRequired,
+  length: React.PropTypes.number
 };
 
 module.exports = ActivityFeed;

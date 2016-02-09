@@ -23,20 +23,7 @@
       position: relative;
       width: $tile-img-width;
     }
-
-    .tile-img {
-      background-color: #FFF;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      border-radius: $tile-border-radius $tile-border-radius 0 0;
-      height: 100%;
-      left: 0;
-      position: absolute;
-      top: 0;
-      width: 100%;
-    }
-
+  
     .tile-title {
       background-color: $tile-title-bg-color;
       height: $tile-title-height;

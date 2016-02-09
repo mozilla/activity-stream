@@ -20,14 +20,13 @@ describe("NewTabPage", () => {
 
   it("should render TopSites components with correct data", () => {
     const topSites = TestUtils.findRenderedComponentWithType(instance, TopSites);
-    assert.equal(topSites.props.sites, fakeProps.Sites.frecent);
+    assert.equal(topSites.props.sites, fakeProps.TopSites.rows);
   });
 
   it("should render sites for ActivityFeeds with correct data", () => {
     const activityFeeds = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeed);
     assert.lengthOf(activityFeeds, 2);
-    activityFeeds.forEach(element => {
-      assert.equal(element.props.sites, fakeProps.Bookmarks.rows);
-    });
+    assert.equal(activityFeeds[0].props.sites, fakeProps.Bookmarks.rows);
+    assert.equal(activityFeeds[1].props.sites, fakeProps.History.rows);
   });
 });

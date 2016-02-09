@@ -50,14 +50,13 @@
   }
 }
 
-.feed-icon {
+.site-icon.feed-icon {
   flex-shrink: 0;
   margin-right: 10px;
-  width: $feed-icon-size;
-  height: $feed-icon-size;
-  background-size: cover;
   border-radius: 4px;
+  overflow: hidden;
 }
+
 .feed-details {
   display: flex;
   flex-grow: 1;
