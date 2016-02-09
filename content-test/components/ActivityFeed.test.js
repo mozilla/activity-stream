@@ -5,7 +5,7 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 
-const fakeSites = require("lib/shim").data.fakeBookmarks;
+const fakeSites = require("test/test-utils").mockData.Bookmarks.rows;
 
 describe("ActivityFeed", function() {
   let node;
