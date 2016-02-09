@@ -1,0 +1,56 @@
+.spotlight {
+  margin-right: -20px;
+
+  ul {
+    display: flex;
+    align-items: flex-start;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.spotlight-item {
+  background: white;
+  box-shadow: $tile-box-shadow;
+  display: inline-block;
+  margin-right: 20px;
+  width: $spotlight-item-width;
+
+  .spotlight-image {
+    position: relative;
+    background-size: cover;
+    height: $spotlight-img-height;
+  }
+
+  .spotlight-icon {
+    background-size: cover;
+    height: $spotlight-icon-height;
+    width: $spotlight-icon-width;
+    position: absolute;
+    left: $spotlight-icon-gutter;
+    top: $spotlight-icon-gutter;
+  }
+
+  .spotlight-title {
+    margin: 0 0 5px 0;
+
+    a {
+      color: $dark-grey;
+    }
+  }
+
+  .spotlight-info {
+    padding: 10px;
+  }
+
+  .spotlight-description {
+    margin: 10px 0;
+    height: $spotlight-description-height;
+  }
+
+  .spotlight-type {
+    color: $light-grey;
+    font-size: 11px;
+  }
+}

@@ -62,6 +62,33 @@ const fakeBookmarks = [
   }
 ];
 
+const fakeSpotlightItems = [
+  {
+    title: "Man tosses alligator through drive-thru",
+    type: "article",
+    description: "A Florida man faces multiple charges for throwing an alligator...",
+    icon: "http://i.cdn.turner.com/cnn/.e/img/3.0/global/misc/apple-touch-icon.png",
+    image: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Alligator_mississippiensis_defensive.jpg",
+    url: "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn"
+  },
+  {
+    title: "Cops: Alligator ate suspected burglar",
+    type: "article",
+    description: "Police say a suspected burglar was eaten by an alligator while hiding from police.",
+    icon: "http://i.cdn.turner.com/cnn/.e/img/3.0/global/misc/apple-touch-icon.png",
+    image: "http://www.trbimg.com/img-51b0cda2/turbine/la-me-ln-20130606-002/500/500x300",
+    url: "http://www.cnn.com/videos/us/2015/12/08/alligator-eats-suspected-burglar-hiding-police-pkg.news-13/video/playlists/alligator-encounters/"
+  },
+  {
+    title: "$63M lottery ticket 'too damaged'",
+    type: "article",
+    description: "Man sues over alleged winning lottery ticket",
+    icon: "http://i.cdn.turner.com/cnn/.e/img/3.0/global/misc/apple-touch-icon.png",
+    image: "http://media1.popsugar-assets.com/files/2015/03/23/775/n/1922398/8c40513f_Lottery.xxxlarge_2x.jpg",
+    url: "http://www.cnn.com/2016/02/05/us/man-claims-winning-lottery-ticket-feat/?iid=ob_homepage_deskrecommended_pool&iref=obnetwork"
+  },
+];
+
 function dispatch(action) {
   window.dispatchEvent(
     new CustomEvent("addon-to-content", {detail: action})
@@ -83,5 +110,6 @@ module.exports = function() {
 
 module.exports.data = {
   fakeFrecent,
-  fakeBookmarks
+  fakeBookmarks,
+  fakeSpotlightItems
 };
