@@ -12,7 +12,6 @@ exports["test messages"] = function*(assert) {
   let path = "/dummy-activitystreams.html";
   let url = `http://localhost:${PORT}${path}`;
   let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
-
   let app = new ActivityStreams({pageURL: url});
   let openTabs = [];
 
@@ -65,7 +64,7 @@ exports["test messages"] = function*(assert) {
   for (let tab of openTabs) {
     tab.close();
   }
-
+  app.unload();
   yield new Promise(resolve => {
     srv.stop(() => {
       resolve();
