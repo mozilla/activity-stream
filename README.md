@@ -2,14 +2,14 @@
 
 ## TLDR; I just want to try the add-on
 
-1. Make sure you have Firefox Nightly, node 4.0+ and at npm 2.0+ installed.
+1. Make sure you have Firefox Nightly, node 5.0+ and at npm 3.0+ installed.
 2. `npm install`
 3. `npm run once`
 
 ## Requirements
 
 * You must have at Firefox Nightly installed (our build scripts are configured to work with Nightly, and the add-on itself currently requires Firefox 45.0+)
-* node 4.0+, npm 2.0+ (You can install both [here](https://nodejs.org))
+* node 5.0+, npm 3.0+ (You can install both [here](https://nodejs.org))
 
 ## Installation
 
