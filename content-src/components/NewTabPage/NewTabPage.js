@@ -3,6 +3,10 @@ const {connect} = require("react-redux");
 
 const TopSites = require("components/TopSites/TopSites");
 const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
+const Spotlight = require("components/Spotlight/Spotlight");
+
+// TODO: replace this with the appropriate actions/reducers/shim.
+const fakeSpotlightItems = require("lib/shim").data.fakeSpotlightItems;
 
 const NewTabPage = React.createClass({
   render() {
@@ -11,6 +15,7 @@ const NewTabPage = React.createClass({
       <div className="new-tab-wrapper">
         <div className="left">
           <TopSites sites={props.Sites.frecent} />
+          <Spotlight sites={fakeSpotlightItems} />
         </div>
         <div className="right">
           <h3 className="section-title">Top Activity</h3>
