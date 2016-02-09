@@ -1,29 +1,33 @@
 main.timeline {
   padding: 0;
+
   .wrapper {
-    max-width: $timeline-max-width;
     margin-left: 20px;
+    max-width: $timeline-max-width;
   }
+
   nav.sidebar {
+    background: $navy;
     color: #888B92;
     display: block;
-    width: $header-nav-width;
-    background: $navy;
     flex-shrink: 0;
+    width: $header-nav-width;
+
     ul {
       list-style: none;
       margin: 0;
       padding: 0;
     }
+
     a {
-      display: block;
       background: none;
-      color: inherit;
-      padding: 15px;
       border-left: 4px solid transparent;
+      color: inherit;
+      display: block;
+      padding: 15px;
 
       .fa {
-        color: white;
+        color: #FFF;
         margin-right: 10px;
       }
 
@@ -31,15 +35,17 @@ main.timeline {
       &:hover {
         background: darken($navy, 8%);
       }
+
       &.active {
         border-color: #E14164;
       }
     }
   }
+
   section.content {
-    padding: 20px;
     flex-grow: 1;
-    overflow-y: auto;
     overflow-x: hidden;
+    overflow-y: auto;
+    padding: 20px;
   }
 }

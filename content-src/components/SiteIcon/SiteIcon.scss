@@ -3,15 +3,17 @@
     height: 100%;
     width: 100%;
   }
+
   .site-icon-image {
-    background-size: contain;
-    background-repeat: no-repeat;
     background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
   }
+
   .site-icon-fallback {
-    color: white;
-    display: flex;
     align-items: center;
+    color: #FFF;
+    display: flex;
     justify-content: center;
     text-transform: uppercase;
   }

@@ -3,6 +3,7 @@
     margin-right: -20px;
     text-align: center;
   }
+
   .tile {
     border: $tile-border;
     border-radius: $tile-border-radius;
@@ -23,7 +24,7 @@
       position: relative;
       width: $tile-img-width;
     }
-  
+
     .tile-title {
       background-color: $tile-title-bg-color;
       height: $tile-title-height;

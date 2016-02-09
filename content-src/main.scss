@@ -8,30 +8,32 @@ body,
 }
 
 body {
+  background: $bg-grey;
+  color: $dark-grey;
   // TODO: actually figure out system font here
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 16px;
-  background: $bg-grey;
-  color: $dark-grey;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-weight: normal;
 }
 
 a {
   color: $link-blue;
   text-decoration: none;
+
   &:hover {
     color: lighten($link-blue, 10%);
   }
 }
 
 .fa.fa-timeline {
-  height: 14px;
-  width: 16px;
   background-image: url('img/list-icon.svg');
+  height: 14px;
   vertical-align: middle;
+  width: 16px;
 }
 
 
