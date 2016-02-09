@@ -13,7 +13,7 @@ let config = yaml.load("config.default.yml");
 try {
   // Load user config if it exists
   config = Object.assign({}, config, yaml.load("config.yml"));
-} catch (e) {}
+} catch (e) {} // eslint-disable-line no-empty
 
 module.exports = {
   entry: srcPath,

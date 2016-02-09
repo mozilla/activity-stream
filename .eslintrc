@@ -4,33 +4,38 @@
     "mozilla",
     "react"
   ],
+  "extends": [
+    "eslint:recommended"
+  ],
   "rules": {
     "mozilla/components-imports": 1,
     "mozilla/import-globals-from": 1,
     "mozilla/this-top-level-scope": 1,
-    "no-unused-vars": 2,
-    "semi": [2, "always"],
-    "no-undef": 2,
-    "object-curly-spacing": [2, "never"],
-    "computed-property-spacing": [2, "never"],
-    "array-bracket-spacing": [2, "never"],
-    "space-before-function-paren": [2, {"anonymous": "never", "named": "never"}],
+
     "react/jsx-uses-react": 1,
+
+    "array-bracket-spacing": [2, "never"],
+    "comma-dangle": 0,
+    "computed-property-spacing": [2, "never"],
+    "no-console": 1,
     "no-trailing-spaces": [2, {"skipBlankLines": false}],
+    "no-undef": 2,
+    "no-unused-vars": 2,
+    "object-curly-spacing": [2, "never"],
+    "semi": [2, "always"],
+    "space-before-function-paren": [2, {"anonymous": "never", "named": "never"}]
   },
   "ecmaFeatures": {
     "jsx": true
   },
   "env": {
-    "es6": true,
-    "node": true,
     "browser": true,
+    "es6": true,
     "mocha": true,
+    "node": true,
   },
   "globals": {
-    "require": true,
     "StopIteration": true,
-    "exports": true,
     "__CONFIG__": true
   }
 }
