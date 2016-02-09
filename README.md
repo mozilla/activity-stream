@@ -1,5 +1,7 @@
 # Activity Streams Add-on
 
+*Requires at least Firefox 45*
+
 ## Tests
 
 Run `npm tests` to run the tests once. Run `npm run help` for more options.
