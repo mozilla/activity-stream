@@ -1,13 +1,52 @@
 # Activity Streams Add-on
 
-*Requires at least Firefox 45*
+## TLDR; I just want to try the add-on
 
-## Tests
+1. Make sure you have Firefox Nightly, node 5.0+ and at npm 3.0+ installed.
+2. `npm install`
+3. `npm run once`
+
+## Requirements
+
+* You must have at Firefox Nightly installed (our build scripts are configured to work with Nightly, and the add-on itself currently requires Firefox 45.0+)
+* node 5.0+, npm 3.0+ (You can install both [here](https://nodejs.org))
+
+## Installation
+
+Just clone the repo and install the dependencies.
+
+```
+git clone https://github.com/mozilla/activity-streams.git
+cd activity-streams
+npm install
+```
+## Running tasks
+
+You may run `npm run help` to see a description of all commands available, which you can run via `npm run [command]`. Here are some important ones:
+
+### Running the add-on
+
+If you just want to build assets and run the add-on to test it, you may simply run:
+
+`npm run once`
+
+### Developing the add-on
+
+If you want to watch assets and compile them continuously, you will want to run
+```
+npm run start
+```
+in one terminal session, and
+```
+npm run firefox
+```
+to start the add-on. This way, when you make changes to the `content-src` folder, they will be reflected immediately without needing to restart the add-on.
+
+### Running Tests
 
 Run `npm tests` to run the tests once. Run `npm run help` for more options.
 
-
-## ActionManager
+## Architecture - ActionManager
 When you instantiate an `ActionManager`, you give it a list of types which are valid for the application. If at any time you try to create an action with a type that isn't part of that list, it will throw an error. Yay!
 
 ```js

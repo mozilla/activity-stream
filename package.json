@@ -73,6 +73,7 @@
     "yamscripts": "^0.0.2"
   },
   "scripts": {
+    "once": "npm-run-all --parallel start firefox",
     "bundle": "npm-run-all bundle:*",
     "bundle:static": "cpx \"content-src/static/**/*\" data/content -C",
     "bundle:webpack": "webpack",
