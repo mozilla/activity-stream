@@ -6,7 +6,6 @@ main.new-tab {
 .new-tab-wrapper {
   display: flex;
   max-height: 600px; // This will probably need to be refined
-  overflow-y: auto;
   max-width: $wrapper-max-width;
   .left {
     width: 66%;
