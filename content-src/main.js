@@ -7,12 +7,12 @@ const store = require("./store");
 
 require("lib/shim")();
 
-const Root = React.createClass({
+class Root extends React.Component {
   render() {
     return (<Provider store={store}>
       <Routes />
     </Provider>);
   }
-});
+}
 
 ReactDOM.render(<Root />, document.getElementById("root"));

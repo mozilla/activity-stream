@@ -3,15 +3,18 @@ const {connect} = require("react-redux");
 
 const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
 
-const TimelinePage = React.createClass({
+class TimelinePage extends React.Component {
   render() {
     const props = this.props;
-    const navItems = [{title: "All", active: true}, {title: "Bookmarks"}];
+    const navItems = [
+      {title: "All", active: true},
+      {title: "Bookmarks"}
+    ];
     return (<main className="timeline">
       <nav className="sidebar">
         <ul>
-          {navItems.map(item => {
-            return (<li key={item.title}>
+          {navItems.map((item, idx) => {
+            return (<li key={idx}>
               <a className={item.active ? "active" : ""}>{item.title}</a>
             </li>);
           })}
@@ -25,7 +28,7 @@ const TimelinePage = React.createClass({
       </section>
     </main>);
   }
-});
+}
 
 function select(state) {
   return state;

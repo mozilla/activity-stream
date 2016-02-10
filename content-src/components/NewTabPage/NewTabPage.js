@@ -8,7 +8,7 @@ const Spotlight = require("components/Spotlight/Spotlight");
 // TODO: replace this with the appropriate actions/reducers/shim.
 const fakeSpotlightItems = require("lib/shim").data.fakeSpotlightItems;
 
-const NewTabPage = React.createClass({
+class NewTabPage extends React.Component {
   render() {
     const props = this.props;
     return (<main className="new-tab">
@@ -27,7 +27,7 @@ const NewTabPage = React.createClass({
       </div>
     </main>);
   }
-});
+}
 
 function select(state) {
   return state;

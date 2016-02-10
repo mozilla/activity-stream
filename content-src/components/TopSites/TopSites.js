@@ -1,6 +1,21 @@
 const React = require("react");
 
-const TopSites = React.createClass({
+class TopSites extends React.Component {
+  static get propTypes() {
+    return {
+      sites: React.PropTypes.arrayOf(
+        React.PropTypes.shape({
+          title: React.PropTypes.string.isRequired,
+          image: React.PropTypes.string,
+          leadImage: React.PropTypes.string,
+          url: React.PropTypes.string.isRequired,
+          type: React.PropTypes.string,
+          description: React.PropTypes.string
+        })
+      ).isRequired
+    };
+  }
+
   render() {
     const props = this.props;
     return (<section className="top-sites">
@@ -18,19 +33,6 @@ const TopSites = React.createClass({
       </div>
     </section>);
   }
-});
-
-TopSites.propTypes = {
-  sites: React.PropTypes.arrayOf(
-    React.PropTypes.shape({
-      title: React.PropTypes.string.isRequired,
-      image: React.PropTypes.string,
-      leadImage: React.PropTypes.string,
-      url: React.PropTypes.string.isRequired,
-      type: React.PropTypes.string,
-      description: React.PropTypes.string
-    })
-  ).isRequired
-};
+}
 
 module.exports = TopSites;

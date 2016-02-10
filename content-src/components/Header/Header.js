@@ -1,10 +1,22 @@
 const React = require("react");
 const {Link} = require("react-router");
 
-const Header = React.createClass({
-  getInitialState() {
-    return {showDropdown: false};
-  },
+class Header extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showDropdown: false
+    };
+  }
+
+  static get propTypes() {
+    return {
+      userImage: React.PropTypes.string,
+      userName: React.PropTypes.string
+    };
+  }
+
   render() {
     const props = this.props;
     return (<header className="head">
@@ -25,11 +37,6 @@ const Header = React.createClass({
       </section>
     </header>);
   }
-});
-
-Header.propTypes = {
-  userName: React.PropTypes.string,
-  userImage: React.PropTypes.string,
-};
+}
 
 module.exports = Header;

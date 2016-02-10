@@ -1,6 +1,14 @@
 const React = require("react");
 
-const ActivityFeedItem = React.createClass({
+class ActivityFeedItem extends React.Component {
+  static get propTypes() {
+    return {
+      image: React.PropTypes.string, // TODO: Have fallback for this, change to icon
+      title: React.PropTypes.string.isRequired,
+      url: React.PropTypes.string.isRequired
+    };
+  }
+
   render() {
     const site = this.props;
     return (<li className="feed-item">
@@ -17,26 +25,22 @@ const ActivityFeedItem = React.createClass({
       </div>
     </li>);
   }
-});
+}
 
-ActivityFeedItem.propTypes = {
-  url: React.PropTypes.string.isRequired,
-  image: React.PropTypes.string, // TODO: Have fallback for this, change to icon
-  title: React.PropTypes.string.isRequired
-};
+class ActivityFeed extends React.Component {
+  static get propTypes() {
+    return {
+      sites: React.PropTypes.array.isRequired
+    };
+  }
 
-const ActivityFeed = React.createClass({
   render() {
-    const {props} = this;
+    const props = this.props;
     return (<ul className="activity-feed">
       {props.sites.map(site => <ActivityFeedItem key={site.url} {...site} />)}
     </ul>);
   }
-});
-
-ActivityFeed.propTypes = {
-  sites: React.PropTypes.array.isRequired
-};
+}
 
 module.exports = ActivityFeed;
 module.exports.ActivityFeedItem = ActivityFeedItem;
