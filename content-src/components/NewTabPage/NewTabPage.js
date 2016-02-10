@@ -4,7 +4,7 @@ const {connect} = require("react-redux");
 const TopSites = require("components/TopSites/TopSites");
 const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
 
-const NewTabPage = React.createClass({
+class NewTabPage extends React.Component {
   render() {
     const props = this.props;
     return (<main className="new-tab">
@@ -22,7 +22,7 @@ const NewTabPage = React.createClass({
       </div>
     </main>);
   }
-});
+}
 
 function select(state) {
   return state;

@@ -1,9 +1,10 @@
-node_modules
-npm-debug.log
-.DS_Store
 *.sw[po]
 *.xpi
-logs/
-dist/
+.DS_Store
+config.yml
 data/content/
+dist/
 firefox/
+logs/
+node_modules
+npm-debug.log

@@ -4,14 +4,15 @@ const {actions} = require("actions/action-manager");
 
 const Header = require("components/Header/Header");
 
-const Base = React.createClass({
+class Base extends React.Component {
   componentDidMount() {
     // This should work!
     this.props.dispatch(actions.RequestTopFrecent());
 
     // This should fail, since nothing is implemented on the Firefox side
     this.props.dispatch(actions.RequestBookmarks());
-  },
+  }
+
   render() {
     const props = this.props;
     return (<div id="base">
@@ -24,7 +25,7 @@ const Base = React.createClass({
       {props.children}
     </div>);
   }
-});
+};
 
 function select(state) {
   return state;
