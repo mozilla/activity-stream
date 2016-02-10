@@ -58,7 +58,7 @@ class ActionManager {
     }
     return action;
   }
-};
+}
 
 // This is an extremely bare-bones action types
 // that can be used if you just want a plain action,
