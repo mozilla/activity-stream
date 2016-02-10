@@ -13,6 +13,17 @@
   h1 {
     font-size: inherit;
     margin: 0;
+    span {
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    .icon {
+      font-size: 14px;
+    }
+    .arrow {
+      font-size: 12px;
+      color: $light-grey;
+    }
   }
 
   section {
@@ -26,6 +37,12 @@
       width: $header-nav-width;
       background: #F3F4F6;
       border-right: 1px solid darken(#F3F4F6, 5%);
+      cursor: pointer;
+      &:hover {
+        .arrow {
+          color: $mid-grey;
+        }
+      }
     }
 
     &.spacer {

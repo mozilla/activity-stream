@@ -5,6 +5,10 @@ const Header = require("components/Header/Header");
 const React = require("react"); // eslint-disable-line no-unused-vars
 const ReactDOM = require("react-dom");
 const fakeProps = {
+  currentRoute: {
+    title: "Home",
+    path: "/"
+  }
 };
 
 describe("Header", () => {

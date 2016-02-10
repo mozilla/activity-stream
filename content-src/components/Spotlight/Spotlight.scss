@@ -16,6 +16,8 @@
   display: inline-block;
   margin-right: 20px;
   width: $spotlight-item-width;
+  border-radius: 3px;
+  overflow: hidden;
 
   .spotlight-image {
     position: relative;
@@ -45,6 +47,7 @@
   }
 
   .spotlight-description {
+    font-size: 14px;
     margin: 10px 0;
     height: $spotlight-description-height;
   }

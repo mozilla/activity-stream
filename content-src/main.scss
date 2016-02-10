@@ -15,12 +15,23 @@ body {
   color: $dark-grey;
 }
 
+h1, h2 {
+  font-weight: normal;
+}
+
 a {
   color: $link-blue;
   text-decoration: none;
   &:hover {
     color: lighten($link-blue, 10%);
   }
+}
+
+.fa.fa-timeline {
+  height: 14px;
+  width: 16px;
+  background-image: url('img/list-icon.svg');
+  vertical-align: middle;
 }
 
 

@@ -1,8 +1,8 @@
 main.timeline {
   padding: 0;
   .wrapper {
-    max-width: 900px;
-    margin: 0 auto;
+    max-width: $timeline-max-width;
+    margin-left: 20px;
   }
   nav.sidebar {
     color: #888B92;
@@ -19,13 +19,20 @@ main.timeline {
       display: block;
       background: none;
       color: inherit;
-      padding: 15px 20px;
+      padding: 15px;
+      border-left: 4px solid transparent;
+
+      .fa {
+        color: white;
+        margin-right: 10px;
+      }
+
       &.active,
       &:hover {
         background: darken($navy, 8%);
       }
       &.active {
-        border-left: 4px solid #E14164;
+        border-color: #E14164;
       }
     }
   }
