@@ -64,7 +64,6 @@ const PlacesTestUtils = Object.freeze({
           let error = new Error(`unexpected url change notification: ${aURI}`);
           return reject(error);
         }
-
         let count = urlCount.get(aURI.spec) + 1;
         urlCount.set(aURI.spec, count);
         notifCount++;
