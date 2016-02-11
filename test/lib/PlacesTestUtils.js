@@ -146,21 +146,17 @@ const PlacesTestUtils = Object.freeze({
 
   /**
    * Clear all history.
-   *
-   * @return {Promise}
-   *            resolves When history was cleared successfully.
-   *            rejects JavaScript exception.
    */
-  clearHistory() {
+  clearHistory: Task.async(function*() {
     let expirationFinished = new Promise(resolve => {
       Services.obs.addObserver(function observe(subj, topic, data) { // eslint-disable-line no-unused-vars
         Services.obs.removeObserver(observe, topic);
         resolve();
       }, PlacesUtils.TOPIC_EXPIRATION_FINISHED, false);
     });
-
-    return Promise.all([expirationFinished, PlacesUtils.history.clear()]);
-  },
+    yield PlacesUtils.history.clear();
+    yield expirationFinished;
+  }),
 });
 
 exports.PlacesTestUtils = PlacesTestUtils;
