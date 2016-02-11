@@ -1,7 +1,7 @@
 /* globals XPCOMUtils, Task, PlacesUtils, NetUtil, Services */
 "use strict";
 
-const {Ci, Cu, components} = require("chrome");
+const {Ci, Cu} = require("chrome");
 const {waitUntil} = require("sdk/test/utils");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -37,7 +37,7 @@ const PlacesTestUtils = Object.freeze({
 
     if (placeInfo instanceof Ci.nsIURI) {
       places.push({uri: placeInfo});
-    } else if (Array.isArray(placeInfo)) {
+    } else if (Symbol.iterator in Object(placeInfo)) {
       places.push(...placeInfo);
     } else {
       places.push(placeInfo);
@@ -66,10 +66,10 @@ const PlacesTestUtils = Object.freeze({
     let notifPromise = new Promise((resolve, reject) => {
       function collectNotifs(aURI) {
         if (!urlSet.has(aURI.spec)) {
-          reject(new Error("unexpected url change notification"));
+          let error = new Error(`unexpected url change notification: ${aURI}`);
+          return reject(error);
         }
-
-        let count = urlCount.get(aURI.spec, 0) + 1;
+        let count = urlCount.get(aURI.spec) + 1;
         urlCount.set(aURI.spec, count);
         notifCount++;
         if (count === 3) {
@@ -100,12 +100,11 @@ const PlacesTestUtils = Object.freeze({
       // Create mozIVisitInfo for each entry.
       let now = Date.now();
       for (let place of places) {
-        if (typeof place.title != "string") {
+        if (typeof place.title !== "string") {
           place.title = "test visit for " + place.uri.spec;
         }
         place.visits = [{
-          transitionType: place.transition === undefined ? Ci.nsINavHistoryService.TRANSITION_LINK
-                                                             : place.transition,
+          transitionType: place.transition ? place.transition : Ci.nsINavHistoryService.TRANSITION_LINK,
           visitDate: place.visitDate || (now++) * 1000,
           referrerURI: place.referrer
         }];
@@ -114,13 +113,14 @@ const PlacesTestUtils = Object.freeze({
       PlacesUtils.asyncHistory.updatePlaces(
         places,
         {
-          handleError: function AAV_handleError(resultCode, placeInfo) { // eslint-disable-line no-unused-vars
-            let ex = new components.Exception("Unexpected error in adding visits.",
-                                              resultCode);
-            reject(ex);
+          handleError(resultCode) { // eslint-disable-line no-unused-vars
+            let error = new Error(`Unexpected error in adding visits: ${resultCode}`);
+            reject(error);
           },
-          handleResult: function() {},
-          handleCompletion: function UP_handleCompletion() {
+          handleResult() {
+            //no-op
+          },
+          handleCompletion() {
             resolve();
           }
         }
