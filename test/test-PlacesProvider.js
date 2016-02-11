@@ -73,12 +73,24 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
 
   let links = yield provider.getTopFrecentSites();
   assert.equal(links.length, 0, "empty history yields empty links");
-  yield PlacesTestUtils.addVisits(visits);
+
+  let base64URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAA" +
+    "AAAA6fptVAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==";
+
+  let faviconData = {
+    "https://mozilla1.com/0": null,
+    "https://mozilla2.com/1": null,
+    "https://mozilla3.com/2": base64URL,
+    "https://mozilla4.com/3": null
+  };
+  yield PlacesTestUtils.addVisits(visits, faviconData);
 
   links = yield provider.getTopFrecentSites();
   assert.equal(links.length, visits.length, "number of links added is the same as obtain by getTopFrecentSites");
+
   for (let i = 0; i < links.length; i++) {
     assert.equal(links[i].url, visits[i].uri.spec, "links are obtained in the expected order");
+    assert.equal(faviconData[links[i].url], links[i].favicon, "favicon data is stored as expected");
   }
 };
 

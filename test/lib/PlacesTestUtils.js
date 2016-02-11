@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Task, PlacesUtils, Services */
+/* globals XPCOMUtils, Task, PlacesUtils, NetUtil, Services */
 "use strict";
 
 const {Ci, Cu, components} = require("chrome");
@@ -10,6 +10,9 @@ Cu.import("resource://gre/modules/Task.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
   "resource://gre/modules/PlacesUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
+  "resource://gre/modules/NetUtil.jsm");
 
 const PlacesTestUtils = Object.freeze({
 
@@ -26,8 +29,10 @@ const PlacesTestUtils = Object.freeze({
    *            [optional] visitDate: visit date in microseconds from the epoch
    *            [optional] referrer: nsIURI of the referrer for this visit
    *          }
+   *
+   * @param {Object} faviconURLs  keys are page URLs, values are associated favicon URLs.
    */
-  addVisits: Task.async(function*(placeInfo) {
+  addVisits: Task.async(function*(placeInfo, faviconURLs) {
     let places = [];
 
     if (placeInfo instanceof Ci.nsIURI) {
@@ -122,8 +127,34 @@ const PlacesTestUtils = Object.freeze({
       );
     });
 
+    let faviconPromises = [];
+    if (faviconURLs) {
+      for (let pageURL in faviconURLs) {
+        if (!faviconURLs[pageURL]) {
+          continue;
+        }
+        faviconPromises.push(new Promise((resolve, reject) => {
+          let uri = NetUtil.newURI(pageURL);
+          let faviconURI = NetUtil.newURI(faviconURLs[pageURL]);
+          try {
+            PlacesUtils.favicons.setAndFetchFaviconForPage(
+              uri, faviconURI, false,
+              PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, function() {
+                resolve();
+              },
+              Services.scriptSecurityManager.getSystemPrincipal());
+          } catch (ex) {
+            reject(ex);
+          }
+        }));
+      }
+    }
+
     yield notifPromise;
     yield insertPromise;
+    if (faviconPromises.length) {
+      yield Promise.all(faviconPromises);
+    }
 
     // poll every 10ms until history items appear on disk
     yield waitUntil(function*() {
