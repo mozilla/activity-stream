@@ -17,8 +17,8 @@ const TimelinePage = React.createClass({
     return (<main className="timeline">
       <nav className="sidebar">
         <ul>
-          {navItems.map(item => {
-            return (<li key={item.title}>
+          {navItems.map((item, idx) => {
+            return (<li key={idx}>
               <a className={item.active ? "active" : ""}>
                 <span className={`fa ${item.icon}`} /> {item.title}
               </a>

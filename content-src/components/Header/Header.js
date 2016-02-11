@@ -10,7 +10,7 @@ const Header = React.createClass({
     return (<header className="head">
       <section className="nav" onClick={() => this.setState({showDropdown: !this.state.showDropdown})}>
         <h1>
-          <span hidden={!props.currentRoute.icon} className={`icon fa ${props.currentRoute.icon}`} />
+          <span hidden={!props.currentRoute.icon} className={`icon fa ${props.currentRoute.icon || ""}`} />
           <span>{props.currentRoute.title}</span>
           <span className="arrow fa fa-chevron-down" />
         </h1>
