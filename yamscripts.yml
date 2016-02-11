@@ -49,7 +49,8 @@ scripts:
   # This is for ci
   travis:
     eslint: =>test:lint
-    jpm: jpm test -b $JPM_FIREFOX_BINARY -v
+    # TODO: Disabled due to https://github.com/mozilla/activity-streams/issues/93
+    # jpm: jpm test -b $JPM_FIREFOX_BINARY -v
     karma: karma start --reporters mocha,coverage,coveralls
 
   # This is just to make sure we don't make commits with failing tests
