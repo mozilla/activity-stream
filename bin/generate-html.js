@@ -1,7 +1,8 @@
 #! /usr/bin/env node
 "use strict";
 const defaults = {
-  baseUrl: "./"
+  baseUrl: "",
+  title: "New Tab"
 };
 
 function template(rawOptions) {
@@ -10,7 +11,8 @@ function template(rawOptions) {
 <!doctype html>
 <html lang=en-us>
   <head>
-    <meta charset="utf8">
+    <meta charset="utf-8">
+    <title>${options.title}</title>
     <link rel="stylesheet" href="${options.baseUrl}main.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   </head>
@@ -27,7 +29,7 @@ module.exports = template;
 if (require.main === module)  {
   // called from command line
   const args = require("minimist")(process.argv.slice(2), {
-    alias: {baseUrl: "b"}
+    alias: {baseUrl: "b", title: "t"}
   });
   process.stdout.write(template(args));
 }

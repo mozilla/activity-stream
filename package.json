@@ -84,7 +84,7 @@
     "start:static": "npm run bundle:static -- -w",
     "start:webpack": "webpack -w",
     "start:css": "npm run bundle:css && npm run bundle:css -- -w",
-    "start:html": "npm run bundle:html -- -b http://localhost:1963/",
+    "start:html": "npm run bundle:html -- --baseUrl http://localhost:1963/",
     "start:server": "live-server data/content --port=1963 --no-browser",
     "firefox": "jpm run -b nightly",
     "test": "npm-run-all test:*",
