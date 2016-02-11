@@ -6,7 +6,7 @@ const TopSites = React.createClass({
     return (<section className="top-sites">
       <h3 className="section-title">Top Sites</h3>
       <div className="tiles-wrapper">
-        {props.sites.map((site) => (<a key={site.url} className="tile" href={site.url}>
+        {props.sites.map((site, idx) => (<a key={idx} className="tile" href={site.url}>
           <div className="tile-img-container">
             {(site.leadImage || site.image) && <div className="tile-img"
               style={{backgroundImage: `url(${site.leadImage || site.image})`}} />}

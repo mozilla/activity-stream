@@ -29,7 +29,7 @@ const ActivityFeed = React.createClass({
   render() {
     const {props} = this;
     return (<ul className="activity-feed">
-      {props.sites.map(site => <ActivityFeedItem key={site.url} {...site} />)}
+      {props.sites.map((site, idx) => <ActivityFeedItem key={idx} {...site} />)}
     </ul>);
   }
 });
