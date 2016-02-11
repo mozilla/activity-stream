@@ -30,9 +30,8 @@ const PlacesTestUtils = Object.freeze({
    *            [optional] referrer: nsIURI of the referrer for this visit
    *          }
    *
-   * @param {Object} faviconURLs  keys are page URLs, values are associated favicon URLs.
    */
-  addVisits: Task.async(function*(placeInfo, faviconURLs) {
+  addVisits: Task.async(function*(placeInfo) {
     let places = [];
 
     if (placeInfo instanceof Ci.nsIURI) {
@@ -43,58 +42,24 @@ const PlacesTestUtils = Object.freeze({
       places.push(placeInfo);
     }
 
-    // Keep track of the number of rows for final validation
-    function* getPlacesRows() {
-      let conn = yield PlacesUtils.promiseDBConnection();
-      let rows = yield conn.execute("SELECT id, url, title, frecency FROM moz_places");
+    /**
+     * Keep track of the number of rows for final validation
+     * NOTE: Needs to be synchronous!
+     */
+    function getPlacesRows() {
+      let conn = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
+      let stmt = conn.createStatement("SELECT id, url, title, frecency FROM moz_places");
+      let rows = [];
+      while (stmt.executeStep()) {
+        rows.push({id: stmt.getInt32(0), url: stmt.getUTF8String(1), title: stmt.getUTF8String(2), frecency: stmt.getInt32(3)});
+      }
       return rows;
     }
-    let initialNumRows = yield Task.spawn(getPlacesRows).length;
+    let initialNumRows = getPlacesRows().length;
 
     // setup listeners for history events to validate db inserts and to ensure
     // that eventual queries will lead to expected results
     let urlList = places.map(place => place.uri.spec);
-    let urlSet = new Set(urlList);
-    let urlCount = Array.from(urlSet).reduce(
-        (map, next) => map.set(next, 0),
-        new Map()
-    );
-    // there are 3 notifications per place inserted
-    let totalCount = urlList.length * 3;
-    let notifCount = 0;
-
-    let notifPromise = new Promise((resolve, reject) => {
-      function collectNotifs(aURI) {
-        if (!urlSet.has(aURI.spec)) {
-          reject(new Error("unexpected url change notification"));
-        }
-
-        let count = urlCount.get(aURI.spec, 0) + 1;
-        urlCount.set(aURI.spec, count);
-        notifCount++;
-        if (count === 3) {
-          // ensure at most 3 notifs per URI obtained
-          urlSet.delete(aURI.spec);
-        }
-        if (notifCount === totalCount) {
-          PlacesUtils.history.removeObserver(historyObserver);
-          resolve();
-        }
-      }
-      let historyObserver = {
-        onFrecencyChanged(aURI) {
-          // we will receive 2 frecency change notifications
-          collectNotifs(aURI);
-        },
-        onTitleChanged(aURI) {
-          // we will receive 1 title change notification
-          collectNotifs(aURI);
-        },
-        QueryInterface: XPCOMUtils.generateQI([Ci.nsINavHistoryObserver,
-                                               Ci.nsISupportsWeakReference])
-      };
-      PlacesUtils.history.addObserver(historyObserver, true);
-    });
 
     let insertPromise = new Promise((resolve, reject) => {
       // Create mozIVisitInfo for each entry.
@@ -126,7 +91,35 @@ const PlacesTestUtils = Object.freeze({
         }
       );
     });
+    yield insertPromise;
 
+    let urlSet = new Set(urlList);
+    // poll every 10ms until history items appear on disk
+    yield waitUntil(function() {
+      // function needs to be synchronous!
+      let rows = getPlacesRows();
+      if ((rows.length - initialNumRows) !== urlList.length) {
+        return false;
+      }
+      let rowChecked = 0;
+      for (let row of rows) {
+        if (urlSet.has(row.url) && row.frecency > -1 && row.title) {
+          // check if all have completed
+          rowChecked++;
+        }
+      }
+      return rowChecked === urlList.length;
+    }, 10);
+
+    return urlList.length;
+  }),
+
+  /*
+   * Add Favicons
+   *
+   * @param {Object} faviconURLs  keys are page URLs, values are associated favicon URLs.
+   */
+  addFavicons: Task.async(function*(faviconURLs) {
     let faviconPromises = [];
     if (faviconURLs) {
       for (let pageURL in faviconURLs) {
@@ -150,29 +143,9 @@ const PlacesTestUtils = Object.freeze({
       }
     }
 
-    yield notifPromise;
-    yield insertPromise;
     if (faviconPromises.length) {
       yield Promise.all(faviconPromises);
     }
-
-    // poll every 10ms until history items appear on disk
-    yield waitUntil(function*() {
-      let rows = yield Task.spawn(getPlacesRows);
-      if ((rows.length - initialNumRows) !== urlList.length) {
-        return false;
-      }
-      let rowChecked = 0;
-      for (let row of rows) {
-        if (urlSet.has(row.url) && row.frecency > -1 && row.title) {
-          // check if all have completed
-          rowChecked++;
-        }
-      }
-      return rowChecked === urlList.length;
-    }, 10);
-
-    return urlList.length;
   }),
 
   /**
@@ -188,6 +161,16 @@ const PlacesTestUtils = Object.freeze({
     yield PlacesUtils.history.clear();
     yield expirationFinished;
   }),
+
+  /**
+   * Clear bookmarks
+   */
+  clearBookmarks() {
+    // Synchronous!
+    let conn = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
+    let stmt = conn.createStatement("DELETE FROM moz_bookmarks WHERE type = 1");
+    stmt.executeStep();
+  },
 });
 
 exports.PlacesTestUtils = PlacesTestUtils;
