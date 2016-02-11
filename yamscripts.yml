@@ -8,18 +8,24 @@ scripts:
 # once: Build/serve the assets and run the add-on
   once: npm-run-all --parallel start firefox
 
+  clean: rm -rf data/content/*
+
 # bundle: Bundle assets for production
   bundle:
-    static: cpx "content-src/static/**/*" data/content -C
+    pre: =>clean
+    static: cpx "content-src/static/**/*" data/content
     webpack: webpack
     css: node-sass content-src/main.scss -o data/content
+    html: node ./bin/generate-html.js > data/content/activity-streams.html
 
 # start: Start watching/compiling assets,
   start:
     _parallel: true
+    pre: =>clean
     static: =>bundle:static -- -w
     webpack: webpack -w
     css: =>bundle:css && =>bundle:css -- -w
+    html: =>bundle:html -- --baseUrl http://localhost:1963/
     server: live-server data/content --port=1963 --no-browser
 
 # firefox: Launch addon with jpm run
