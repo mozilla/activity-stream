@@ -1,8 +1,9 @@
 const React = require("react");
 const classNames = require("classnames");
+const utils = require("lib/utils");
 
 const DEFAULT_FALLBACK_BG_COLOR = [200, 200, 200];
-const MIN_RESOLUTION = 3;
+const MIN_RESOLUTION = 2;
 const FAVICON_SIZE = 16;
 
 function getSiteImage(site, width) {
@@ -12,14 +13,13 @@ function getSiteImage(site, width) {
   } else if (favicon_url && width / FAVICON_SIZE <= MIN_RESOLUTION) {
     return favicon_url;
   } else {
-    return false;
+    return null;
   }
 }
 
 const SiteIconImage = React.createClass({
   render() {
     // TODO: Do something more sophisticated than choose the first icon in the array
-    // const imageUrl = this.props.icons[0].url;
     return (<div className="site-icon-image" ref="image"
       style={{backgroundImage: `url(${getSiteImage(this.props, this.props.width)})`}}>
     </div>);
@@ -34,14 +34,26 @@ SiteIconImage.propTypes = {
   width: React.PropTypes.number
 };
 
+function getFallbackColors(favicon_colors) {
+  let backgroundColor = DEFAULT_FALLBACK_BG_COLOR;
+
+  if (favicon_colors && favicon_colors[0]) {
+    backgroundColor = favicon_colors[0].color;
+  }
+
+  return {
+    backgroundColor: utils.toRGBString(backgroundColor),
+    color: utils.getBlackOrWhite(...backgroundColor)
+  };
+}
+
 const SiteIconFallback = React.createClass({
   render() {
     const {favicon_colors, title, provider_name, provider_display} = this.props;
     const letter = (provider_name || provider_display || title)[0];
-    // TODO: do something more sophisticated than choose the first color
-    const color = favicon_colors && favicon_colors[0] && favicon_colors[0].color || DEFAULT_FALLBACK_BG_COLOR;
+    const style = getFallbackColors(favicon_colors);
     return (<div className="site-icon-fallback" ref="fallback"
-      style={{backgroundColor: `rgb(${color.join(", ")})`}}>
+      style={style}>
       {letter}
     </div>);
   }
@@ -80,7 +92,9 @@ SiteIcon.propTypes = {
   width: React.PropTypes.number,
   height: React.PropTypes.number,
   site: React.PropTypes.shape({
-    title: React.PropTypes.string.isRequired,
+    title: React.PropTypes.string,
+    provider_name: React.PropTypes.string,
+    provider_display: React.PropTypes.string,
     icons: React.PropTypes.array,
     favicon_colors: React.PropTypes.array
   }).isRequired

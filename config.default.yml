@@ -1,2 +1,9 @@
 DEVELOPMENT: true
 LOGGING: true
+
+# This will fire fake events; use this if you want to run the project
+# outside of the add-on
+USE_SHIM: false
+
+# Add this to use the embedly server to get enhanced data
+# API_KEY:

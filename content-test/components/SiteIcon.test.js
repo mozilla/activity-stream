@@ -35,7 +35,6 @@ describe("SiteIcon", () => {
       assert.instanceOf(instance, SiteIcon);
     });
     it("should add className if included on element", () => {
-      console.log(el);
       assert.equal(el.className, "site-icon foo");
     });
     it("should have a height/width by default", () => {

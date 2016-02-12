@@ -10,9 +10,9 @@ function buildQuery(items) {
 }
 
 const actionsToSupplement = new Set([
-  "TOP_FRECENT_SITES_RESPONSE",
-  "RECENT_BOOKMARKS_RESPONSE",
-  "RECENT_LINKS_RESPONSE"
+  am.type("TOP_FRECENT_SITES_RESPONSE"),
+  am.type("RECENT_BOOKMARKS_RESPONSE"),
+  am.type("RECENT_LINKS_RESPONSE")
 ].map(type => am.type(type)));
 
 module.exports = () => next => action => {
@@ -28,10 +28,13 @@ module.exports = () => next => action => {
     if (!action.data.length) {
       return next(action);
     }
-    fetch("http://localhost:1467/extract?" + buildQuery(action.data))
+    const sites = action.data.filter(site => {
+      return !(!site.url || /^place:/.test(site.url));
+    });
+    fetch("http://localhost:1467/extract?" + buildQuery(sites))
       .then(response => response.json())
       .then(json => {
-        const data = action.data.map((site, i) => {
+        const data = sites.map((site, i) => {
           const details = json[i];
           return Object.assign({}, site, {
             description: details.description,
