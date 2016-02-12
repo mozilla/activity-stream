@@ -7,6 +7,7 @@ const am = new ActionManager([
   "RECEIVE_PLACES_CHANGES",
   "RECENT_BOOKMARKS_REQUEST",
   "RECENT_BOOKMARKS_RESPONSE",
+  "RECEIVE_BOOKMARKS_CHANGES",
 ]);
 
 function Response(type, data, options = {}) {

@@ -1,6 +1,6 @@
 "use strict";
 
-const {Cc, Ci, components} = require("chrome");
+const {Cc, Ci, Cu, components} = require("chrome");
 const {stack: Cs} = components;
 
 function doGetFile(path, allowNonexistent) {
@@ -21,7 +21,7 @@ function doGetFile(path, allowNonexistent) {
     if (!allowNonexistent && !lf.exists()) {
       // Not using do_throw(): caller will continue.
       let stack = Cs.caller;
-      console.error(`[${stack.name} : ${stack.lineNumber}] ${lf.path} does not exist`);
+      Cu.reportError(`[${stack.name} : ${stack.lineNumber}] ${lf.path} does not exist`);
     }
 
     return lf;
