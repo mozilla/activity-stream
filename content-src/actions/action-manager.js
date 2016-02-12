@@ -7,6 +7,9 @@ const am = new ActionManager([
   "RECEIVE_PLACES_CHANGES",
   "RECENT_BOOKMARKS_REQUEST",
   "RECENT_BOOKMARKS_RESPONSE",
+  "RECEIVE_BOOKMARKS_CHANGES",
+  "RECENT_LINKS_REQUEST",
+  "RECENT_LINKS_RESPONSE",
 ]);
 
 function Response(type, data, options = {}) {
@@ -39,11 +42,16 @@ function RequestBookmarks() {
   return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE");
 }
 
+function RequestLinks() {
+  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE");
+}
+
 am.defineActions({
   Response,
   RequestExpect,
   RequestTopFrecent,
   RequestBookmarks,
+  RequestLinks,
 });
 
 module.exports = am;
