@@ -23,7 +23,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
 // may cause tiny time differences, which break expected sql ordering
 const TIME_NOW = (new Date()).getTime();
 
-// utility function to compute past timestap
+// utility function to compute past timestamp
 function timeDaysAgo(numDays) {
   return TIME_NOW - (numDays * 24 * 60 * 60 * 1000);
 }
