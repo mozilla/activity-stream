@@ -19,6 +19,15 @@ XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
 XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
                                   "resource://gre/modules/Bookmarks.jsm");
 
+// use time at the start of the tests, chnaging it inside timeDaysAgo()
+// may cause tiny time differences, which break expected sql ordering
+const TIME_NOW = (new Date()).getTime();
+
+// utility function to compute past timestap
+function timeDaysAgo(numDays) {
+  return TIME_NOW - (numDays * 24 * 60 * 60 * 1000);
+}
+
 exports.test_LinkChecker_securityCheck = function(assert) {
   let urls = [
     {url: "file://home/file/image.png", expected: false},
@@ -56,11 +65,6 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
     TRANSITION_TYPED,
     TRANSITION_LINK
   } = PlacesUtils.history;
-
-  function timeDaysAgo(numDays) {
-    let now = new Date();
-    return now.getTime() - (numDays * 24 * 60 * 60 * 1000);
-  }
 
   let timeEarlier = timeDaysAgo(0);
   let timeLater = timeDaysAgo(2);
@@ -107,11 +111,6 @@ exports.test_Links_getRecentLinks = function*(assert) {
     TRANSITION_LINK
   } = PlacesUtils.history;
 
-  function timeDaysAgo(numDays) {
-    let now = new Date();
-    return now.getTime() - (numDays * 24 * 60 * 60 * 1000);
-  }
-
   let visits = [
     // frecency 200
     {uri: NetUtil.newURI("https://mozilla1.com/0"), visitDate: timeDaysAgo(1), transition: TRANSITION_TYPED},
@@ -156,11 +155,6 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   provider.init();
 
   /** start setup **/
-  function timeDaysAgo(numDays) {
-    let now = new Date();
-    return now.getTime() - (numDays * 24 * 60 * 60 * 1000);
-  }
-
   let timeEarlier = timeDaysAgo(0);
   let timeLater = timeDaysAgo(2);
 
@@ -259,11 +253,6 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   provider.init();
 
   /** start setup **/
-  function timeDaysAgo(numDays) {
-    let now = new Date();
-    return now.getTime() - (numDays * 24 * 60 * 60 * 1000);
-  }
-
   let timeEarlier = timeDaysAgo(0);
   let timeLater = timeDaysAgo(2);
 
