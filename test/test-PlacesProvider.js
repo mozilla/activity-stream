@@ -140,9 +140,9 @@ exports.test_Links_getRecentLinks = function*(assert) {
   links = yield provider.getRecentLinks();
   assert.equal(links.length, visits.length, "number of links added is the same as obtain by getRecentLinks");
   assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
-  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-st link");
-  assert.equal(links[2].url, "https://mozilla3.com/2", "Expected 3-st link");
-  assert.equal(links[3].url, "https://mozilla4.com/3", "Expected 4-st link");
+  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-nd link");
+  assert.equal(links[2].url, "https://mozilla3.com/2", "Expected 3-rd link");
+  assert.equal(links[3].url, "https://mozilla4.com/3", "Expected 4-th link");
   assert.equal(faviconData[links[2].url], links[2].favicon, "favicon data is stored as expected");
 };
 
