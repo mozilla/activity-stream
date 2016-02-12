@@ -100,6 +100,53 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   }
 };
 
+exports.test_Links_getRecentLinks = function*(assert) {
+  let provider = PlacesProvider.links;
+  let {
+    TRANSITION_TYPED,
+    TRANSITION_LINK
+  } = PlacesUtils.history;
+
+  function timeDaysAgo(numDays) {
+    let now = new Date();
+    return now.getTime() - (numDays * 24 * 60 * 60 * 1000);
+  }
+
+  let visits = [
+    // frecency 200
+    {uri: NetUtil.newURI("https://mozilla1.com/0"), visitDate: timeDaysAgo(1), transition: TRANSITION_TYPED},
+    // sort by url, frecency 200
+    {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeDaysAgo(0), transition: TRANSITION_TYPED},
+    // sort by last visit date, frecency 200
+    {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeDaysAgo(2), transition: TRANSITION_TYPED},
+    // sort by frecency, frecency 10
+    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeDaysAgo(2), transition: TRANSITION_LINK},
+  ];
+
+  let links = yield provider.getRecentLinks();
+  assert.equal(links.length, 0, "empty history yields empty links");
+
+  let base64URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAA" +
+    "AAAA6fptVAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==";
+
+  let faviconData = {
+    "https://mozilla1.com/0": null,
+    "https://mozilla2.com/1": null,
+    "https://mozilla3.com/2": base64URL,
+    "https://mozilla4.com/3": null
+  };
+  yield PlacesTestUtils.addVisits(visits, faviconData);
+  yield PlacesTestUtils.addFavicons(faviconData);
+
+  links = yield provider.getRecentLinks();
+  assert.equal(links.length, visits.length, "number of links added is the same as obtain by getRecentLinks");
+  assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
+  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 1-st link");
+  assert.equal(links[2].url, "https://mozilla3.com/2", "Expected 1-st link");
+  assert.equal(links[3].url, "https://mozilla4.com/3", "Expected 1-st link");
+  assert.equal(faviconData[links[2].url], links[2].favicon, "favicon data is stored as expected");
+};
+
 exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   let provider = PlacesProvider.links;
   let {
