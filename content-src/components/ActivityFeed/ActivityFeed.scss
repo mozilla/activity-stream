@@ -25,6 +25,18 @@
       margin-bottom: $feed-gutter/2 + $feed-circle-size/2;
     }
   }
+
+  &::before {
+    content: "";
+    display: block;
+    width: 2px;
+    background: lighten($light-grey, 20%);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: ($feed-circle-size - 2)/2;
+  }
+
   &::after {
     content: "";
     display: block;
@@ -38,15 +50,20 @@
     left: 0;
     margin-top: -($feed-gutter/2 + $feed-circle-size/2);
   }
-  &::before {
-    content: "";
-    display: block;
-    width: 2px;
-    background: lighten($light-grey, 20%);
+
+  &:first-child::after {
+    background: none;
+    border: none;
+    height: auto;
+    width: auto;
+    content: "\f005";
+    font: normal normal normal 18px/1 FontAwesome;
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: ($feed-circle-size - 2)/2;
+    top: 50%;
+    left: 0;
+    margin-left: -4px;
+    margin-top: -($feed-gutter/2 + 18/2);
+    color: $star-blue;
   }
 }
 
