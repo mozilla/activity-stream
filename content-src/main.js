@@ -5,7 +5,9 @@ const {Provider} = require("react-redux");
 const Routes = require("components/Routes/Routes");
 const store = require("./store");
 
-require("lib/shim")();
+// if (__CONFIG__.USE_SHIM) {
+//   require("lib/shim")();
+// }
 
 const Root = React.createClass({
   render() {

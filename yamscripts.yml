@@ -27,6 +27,7 @@ scripts:
     css: =>bundle:css && =>bundle:css -- -w
     html: =>bundle:html -- --baseUrl http://localhost:1963/
     server: live-server data/content --port=1963 --no-browser
+    embedly: node ./embedly-server.js
 
 # firefox: Launch addon with jpm run
   firefox: jpm run -b nightly

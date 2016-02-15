@@ -4,8 +4,8 @@ const {SpotlightItem} = Spotlight;
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
-
-const fakeSpotlightItems = require("lib/shim").data.fakeSpotlightItems;
+const SiteIcon = require("components/SiteIcon/SiteIcon");
+const fakeSpotlightItems = require("lib/fake-data").History.rows;
 
 describe("Spotlight", function() {
   let node;
@@ -50,10 +50,11 @@ describe("SpotlightItem", function() {
       assert.ok(el);
     });
     it("should render the icon", () => {
-      assert.include(instance.refs.icon.style.backgroundImage, fakeSite.icon);
+      assert.instanceOf(instance.refs.icon, SiteIcon);
+      assert.include(instance.refs.icon.props.site, fakeSite);
     });
     it("should render the image", () => {
-      assert.include(instance.refs.image.style.backgroundImage, fakeSite.image);
+      assert.include(instance.refs.image.style.backgroundImage, fakeSite.images[0].url);
     });
     it("should render the url link with title", () => {
       const linkEl = instance.refs.link;

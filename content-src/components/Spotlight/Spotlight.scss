@@ -26,17 +26,17 @@
   }
 
   .spotlight-icon {
-    background-size: cover;
-    height: $spotlight-icon-height;
-    width: $spotlight-icon-width;
     position: absolute;
     left: $spotlight-icon-gutter;
     top: $spotlight-icon-gutter;
+    border-radius: 3px;
+    overflow: hidden;
   }
 
   .spotlight-title {
     margin: 0 0 5px 0;
-
+    max-height: $spotlight-title-max-height;
+    overflow: hidden;
     a {
       color: $dark-grey;
     }
@@ -44,12 +44,14 @@
 
   .spotlight-info {
     padding: 10px;
+    height: $spotlight-info-height;
   }
 
   .spotlight-description {
     font-size: 14px;
     margin: 10px 0;
     height: $spotlight-description-height;
+    overflow: hidden;
   }
 
   .spotlight-type {

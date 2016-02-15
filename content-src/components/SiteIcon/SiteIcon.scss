@@ -1,0 +1,18 @@
+.site-icon {
+  > div {
+    height: 100%;
+    width: 100%;
+  }
+  .site-icon-image {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .site-icon-fallback {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+  }
+}

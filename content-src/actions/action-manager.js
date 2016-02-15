@@ -9,7 +9,7 @@ const am = new ActionManager([
   "RECENT_BOOKMARKS_RESPONSE",
   "RECEIVE_BOOKMARKS_CHANGES",
   "RECENT_LINKS_REQUEST",
-  "RECENT_LINKS_RESPONSE",
+  "RECENT_LINKS_RESPONSE"
 ]);
 
 function Response(type, data, options = {}) {

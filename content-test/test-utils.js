@@ -1,11 +1,6 @@
 const React = require("react");
 const {Provider} = require("react-redux");
-const fakeSites = require("lib/shim").data;
-
-const mockData = {
-  Bookmarks: {rows: fakeSites.fakeBookmarks},
-  Sites: {frecent: fakeSites.fakeFrecent}
-};
+const mockData = require("lib/fake-data");
 
 module.exports = {
   mockData,

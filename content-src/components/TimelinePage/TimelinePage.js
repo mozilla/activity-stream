@@ -4,9 +4,6 @@ const {connect} = require("react-redux");
 const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 
-// TODO: replace this with the appropriate actions/reducers/shim.
-const fakeSpotlightItems = require("lib/shim").data.fakeSpotlightItems;
-
 const TimelinePage = React.createClass({
   render() {
     const props = this.props;
@@ -28,7 +25,7 @@ const TimelinePage = React.createClass({
       </nav>
       <section className="content">
         <div className="wrapper">
-          <Spotlight sites={fakeSpotlightItems} />
+          <Spotlight sites={props.History.rows} />
           <h3 className="section-title">Just now</h3>
           <ActivityFeed sites={props.Bookmarks.rows} />
         </div>
