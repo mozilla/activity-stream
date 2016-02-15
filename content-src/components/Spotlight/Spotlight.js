@@ -4,8 +4,8 @@ const SpotlightItem = React.createClass({
   render() {
     const site = this.props;
     return (<li className="spotlight-item">
-      <div className="spotlight-image" style={{backgroundImage: `url(${site.image})`}} ref="image">
-        <div className="spotlight-icon" style={{backgroundImage: `url(${site.icon})`}} ref="icon" />
+      <div className="spotlight-image" style={{backgroundImage: `url(${ site.image })`}} ref="image">
+        <div className="spotlight-icon" style={{backgroundImage: `url(${ site.icon })`}} ref="icon" />
       </div>
       <div className="spotlight-details">
         <div className="spotlight-info">
@@ -34,7 +34,7 @@ const Spotlight = React.createClass({
     return (<section className="spotlight">
       <h3 className="section-title">Spotlight</h3>
       <ul>
-        {props.sites.map(site => <SpotlightItem key={site.url} {...site} />)}
+        {props.sites.map((site) => <SpotlightItem key={site.url} {...site} />)}
       </ul>
     </section>);
   }

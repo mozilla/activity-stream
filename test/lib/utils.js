@@ -10,7 +10,7 @@ function doGetFile(path, allowNonexistent) {
       .get("CurWorkD", Ci.nsILocalFile);
 
     let bits = path.split("/");
-    for (let bit of bits.filter(bit => bit)) {
+    for (let bit of bits.filter((bit) => bit)) {
       if (bit !== "..") {
         lf.append(bit);
       } else {
@@ -21,12 +21,11 @@ function doGetFile(path, allowNonexistent) {
     if (!allowNonexistent && !lf.exists()) {
       // Not using do_throw(): caller will continue.
       let stack = Cs.caller;
-      Cu.reportError(`[${stack.name} : ${stack.lineNumber}] ${lf.path} does not exist`);
+      Cu.reportError(`[${ stack.name } : ${ stack.lineNumber }] ${ lf.path } does not exist`);
     }
 
     return lf;
-  }
-  catch (ex) {
+  } catch (ex) {
     doThrow(ex.toString(), Cs.caller);
   }
 
@@ -45,7 +44,7 @@ function doThrow(error, stack) {
     filename = error.fileName;
   }
 
-  throw(new Error(`Error at ${filename}`));
+  throw (new Error(`Error at ${ filename }`));
 }
 
 exports.doGetFile = doGetFile;

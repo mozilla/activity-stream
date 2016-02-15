@@ -26,7 +26,7 @@ describe("NewTabPage", () => {
   it("should render sites for ActivityFeeds with correct data", () => {
     const activityFeeds = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeed);
     assert.lengthOf(activityFeeds, 2);
-    activityFeeds.forEach(element => {
+    activityFeeds.forEach((element) => {
       assert.equal(element.props.sites, fakeProps.Bookmarks.rows);
     });
   });

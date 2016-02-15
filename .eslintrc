@@ -5,28 +5,66 @@
     "react"
   ],
   "extends": [
-    "eslint:recommended"
+    "eslint:recommended",
+    "strict",
+    "strict-react"
   ],
   "rules": {
     "mozilla/components-imports": 1,
     "mozilla/import-globals-from": 1,
     "mozilla/this-top-level-scope": 1,
 
+    "react/forbid-prop-types": 0,
+    "react/jsx-max-props-per-line": 0,
+    "react/jsx-no-bind": 1,
     "react/jsx-uses-react": 1,
+    "react/no-multi-comp": 0,
+    "react/prop-types": 1, // TODO: Remove this?
+
+    "filenames/filenames": 0,
 
     "array-bracket-spacing": [2, "never"],
+    "camelcase": 0,
     "comma-dangle": 0,
     "computed-property-spacing": [2, "never"],
+    "default-case": 0,
+    "func-names": 0,
+    "func-style": 0,
+    "global-require": 0,
+    "id-blacklist": 0,
+    "id-length": 0,
+    "id-match": 0,
+    "init-declarations": 0,
+    "max-len": 0,
+    "max-params": 0,
+    "newline-after-var": 0,
+    "no-bitwise": 0,
     "no-console": 1,
+    "no-empty-function": 0,
+    "no-inline-comments": 0,
+    "no-invalid-this": 0,
+    "no-magic-numbers": 0,
+    "no-negated-condition": 0,
+    "no-shadow": 0, // TODO: Remove this?
     "no-trailing-spaces": [2, {"skipBlankLines": false}],
     "no-undef": 2,
-    "no-unused-vars": 2,
+    "no-underscore-dangle": 0,
+    "no-use-before-define": [2, {"functions": false, "classes": false}],
+    "no-unused-vars": [2, {"vars": "all", "args": "none"}],
+    "no-warning-comments": 1,
     "object-curly-spacing": [2, "never"],
+    "prefer-arrow-callback": 0,
+    "prefer-const": 0, // TODO: Remove this.
+    "prefer-reflect": 0,
+    "quotes": [2, "double"],
     "semi": [2, "always"],
-    "space-before-function-paren": [2, {"anonymous": "never", "named": "never"}]
+    "space-before-function-paren": [2, {"anonymous": "never", "named": "never"}],
+    "strict": 0
   },
-  "ecmaFeatures": {
-    "jsx": true
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "env": {
     "browser": true,

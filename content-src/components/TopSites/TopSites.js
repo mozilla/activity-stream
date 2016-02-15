@@ -8,8 +8,8 @@ const TopSites = React.createClass({
       <div className="tiles-wrapper">
         {props.sites.map((site) => (<a key={site.url} className="tile" href={site.url}>
           <div className="tile-img-container">
-            {(site.leadImage || site.image) && <div className="tile-img"
-              style={{backgroundImage: `url(${site.leadImage || site.image})`}} />}
+            {(site.leadImage || site.image) &&
+              <div className="tile-img" style={{backgroundImage: `url(${ site.leadImage || site.image })`}} />}
           </div>
           <div className="tile-title">
             {site.title}

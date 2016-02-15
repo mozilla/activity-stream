@@ -12,15 +12,16 @@ const fakeProps = {
 };
 
 describe("Header", () => {
-
   let node;
   let header;
   let el;
+
   beforeEach(() => {
     node = document.createElement("div");
     header = ReactDOM.render(<Header {...fakeProps} />, node);
     el = ReactDOM.findDOMNode(header);
   });
+
   afterEach(() => {
     ReactDOM.unmountComponentAtNode(node);
   });
@@ -37,5 +38,4 @@ describe("Header", () => {
       assert.include(imgEl.src, "https://foo.com/user.jpg");
     });
   });
-
 });

@@ -17,13 +17,11 @@ const TimelinePage = React.createClass({
     return (<main className="timeline">
       <nav className="sidebar">
         <ul>
-          {navItems.map(item => {
-            return (<li key={item.title}>
-              <a className={item.active ? "active" : ""}>
-                <span className={`fa ${item.icon}`} /> {item.title}
-              </a>
-            </li>);
-          })}
+          {navItems.map((item) => (<li key={item.title}>
+            <a className={item.active ? "active" : ""}>
+              <span className={`fa ${ item.icon }`} /> {item.title}
+            </a>
+          </li>))}
         </ul>
       </nav>
       <section className="content">

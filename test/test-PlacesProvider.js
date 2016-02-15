@@ -22,17 +22,18 @@ XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
 // use time at the start of the tests, chnaging it inside timeDaysAgo()
 // may cause tiny time differences, which break expected sql ordering
 const TIME_NOW = (new Date()).getTime();
+const DAYS_IN_MS = 24 * 60 * 60 * 1000;
 
 // utility function to compute past timestamp
 function timeDaysAgo(numDays) {
-  return TIME_NOW - (numDays * 24 * 60 * 60 * 1000);
+  return TIME_NOW - (numDays * DAYS_IN_MS);
 }
 
 exports.test_LinkChecker_securityCheck = function(assert) {
   let urls = [
     {url: "file://home/file/image.png", expected: false},
     {url: "resource:///modules/PlacesProvider.jsm", expected: false},
-    {url: "javascript:alert('hello')", expected: false}, // jshint ignore:line
+    {url: "javascript:alert('hello')", expected: false}, // eslint-disable-line no-script-url
     {url: "data:image/png;base64,XXX", expected: false},
     {url: "about:newtab", expected: true},
     {url: "https://example.com", expected: true},
@@ -40,11 +41,11 @@ exports.test_LinkChecker_securityCheck = function(assert) {
   ];
   for (let {url, expected} of urls) {
     let observed = PlacesProvider.LinkChecker.checkLoadURI(url);
-    assert.equal(observed, expected, `can load "${url}"?`);
+    assert.equal(observed, expected, `can load "${ url }"?`);
   }
 };
 
-exports.test_Links_getTopFrecentSites = function*(assert) {
+exports.test_Links_getTopFrecentSites = function *(assert) {
   let provider = PlacesProvider.links;
 
   let links = yield provider.getTopFrecentSites();
@@ -59,7 +60,7 @@ exports.test_Links_getTopFrecentSites = function*(assert) {
   assert.equal(links[0].url, testURI.spec, "added visit corresponds to added url");
 };
 
-exports.test_Links_getTopFrecentSites_Order = function*(assert) {
+exports.test_Links_getTopFrecentSites_Order = function *(assert) {
   let provider = PlacesProvider.links;
   let {
     TRANSITION_TYPED,
@@ -104,7 +105,7 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   }
 };
 
-exports.test_Links_getRecentLinks = function*(assert) {
+exports.test_Links_getRecentLinks = function *(assert) {
   let provider = PlacesProvider.links;
   let {
     TRANSITION_TYPED,
@@ -146,7 +147,7 @@ exports.test_Links_getRecentLinks = function*(assert) {
   assert.equal(faviconData[links[2].url], links[2].favicon, "favicon data is stored as expected");
 };
 
-exports.test_Links_getRecentBookmarks_Order = function*(assert) {
+exports.test_Links_getRecentBookmarks_Order = function *(assert) {
   let provider = PlacesProvider.links;
   let {
     TRANSITION_TYPED,
@@ -175,7 +176,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
     {url: "https://mozilla1.com/2", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
   ];
 
-  let bookmarkURLSet = new Set(bookmarks.map(bm => bm.url));
+  let bookmarkURLSet = new Set(bookmarks.map((bm) => bm.url));
 
   let links = yield provider.getRecentBookmarks();
   assert.equal(links.length, 0, "empty bookmarks yields empty links");
@@ -226,7 +227,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   let conn = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
   for (let bm of createdBookmarks) {
     // we change the modified date based on creation dates, because due to asynchronicity, we don't know what got created first
-    let stmt = conn.createStatement(`UPDATE moz_bookmarks SET lastModified = ${modifiedTime} WHERE guid = "${bm.bookmarkGuid}"`);
+    let stmt = conn.createStatement(`UPDATE moz_bookmarks SET lastModified = ${ modifiedTime } WHERE guid = "${ bm.bookmarkGuid }"`);
     stmt.executeStep();
     modifiedTime -= (24 * 60 * 60);
   }
@@ -244,7 +245,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   provider.uninit();
 };
 
-exports.test_Links_bookmark_notifications = function*(assert) {
+exports.test_Links_bookmark_notifications = function *(assert) {
   let provider = PlacesProvider.links;
   let {
     TRANSITION_TYPED,
@@ -288,9 +289,7 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   yield PlacesTestUtils.addFavicons(faviconData);
   /** end setup **/
 
-  let bookmarkNotificationPromise;
-
-  bookmarkNotificationPromise = new Promise(resolve => {
+  let bookmarkNotificationPromise = new Promise((resolve) => {
     let addCount = 0;
     let newBookmarks = [];
     function handleEvent(eventName, data) {
@@ -313,7 +312,7 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   }
   let createdBookmarks = yield bookmarkNotificationPromise;
 
-  bookmarkNotificationPromise = new Promise(resolve => {
+  bookmarkNotificationPromise = new Promise((resolve) => {
     function handleEvent(eventName, data) {
       if (data.bookmarkTitle === "FOO") {
         resolve(data);
@@ -325,7 +324,7 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   Bookmarks.update({guid: bm.bookmarkGuid, title: "FOO"});
   yield bookmarkNotificationPromise;
 
-  bookmarkNotificationPromise = new Promise(resolve => {
+  bookmarkNotificationPromise = new Promise((resolve) => {
     function handleEvent(eventName, data) {
       if (data.url === bm.url) {
         resolve(data);
@@ -341,7 +340,7 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   provider.uninit();
 };
 
-exports.test_Links_onLinkChanged = function*(assert) {
+exports.test_Links_onLinkChanged = function *(assert) {
   let provider = PlacesProvider.links;
   provider.init();
   assert.equal(true, true);
@@ -349,7 +348,7 @@ exports.test_Links_onLinkChanged = function*(assert) {
   let url = "https://example.com/onFrecencyChanged1";
   let linkChangedMsgCount = 0;
 
-  let linkChangedPromise = new Promise(resolve => {
+  let linkChangedPromise = new Promise((resolve) => {
     let handler = (_, link) => { // jshint ignore:line
       /* There are 3 linkChanged events:
        * 1. visit insertion (-1 frecency by default)
@@ -357,10 +356,10 @@ exports.test_Links_onLinkChanged = function*(assert) {
        * 3. title change
        */
       if (link.url === url) {
-        assert.equal(link.url, url, `expected url on linkChanged event`);
+        assert.equal(link.url, url, "expected url on linkChanged event");
         linkChangedMsgCount += 1;
         if (linkChangedMsgCount === 3) {
-          assert.ok(true, `all linkChanged events captured`);
+          assert.ok(true, "all linkChanged events captured");
           provider.off("linkChanged", this);
           resolve();
         }
@@ -377,13 +376,13 @@ exports.test_Links_onLinkChanged = function*(assert) {
   provider.uninit();
 };
 
-exports.test_Links_onClearHistory = function*(assert) {
+exports.test_Links_onClearHistory = function *(assert) {
   let provider = PlacesProvider.links;
   provider.init();
 
-  let clearHistoryPromise = new Promise(resolve => {
+  let clearHistoryPromise = new Promise((resolve) => {
     let handler = () => {
-      assert.ok(true, `clearHistory event captured`);
+      assert.ok(true, "clearHistory event captured");
       provider.off("clearHistory", handler);
       resolve();
     };
@@ -392,7 +391,7 @@ exports.test_Links_onClearHistory = function*(assert) {
 
   // add visits
   for (let i = 0; i <= 10; i++) {
-    let url = `https://example.com/onClearHistory${i}`;
+    let url = `https://example.com/onClearHistory${ i }`;
     let testURI = NetUtil.newURI(url);
     yield PlacesTestUtils.addVisits(testURI);
   }
@@ -401,14 +400,14 @@ exports.test_Links_onClearHistory = function*(assert) {
   provider.uninit();
 };
 
-exports.test_Links_onDeleteURI = function*(assert) {
+exports.test_Links_onDeleteURI = function *(assert) {
   let provider = PlacesProvider.links;
   provider.init();
 
   let testURL = "https://example.com/toDelete";
 
-  let deleteURIPromise = new Promise(resolve => {
-    let handler = (_, {url}) => { // jshint ignore:line
+  let deleteURIPromise = new Promise((resolve) => {
+    let handler = (_, {url}) => {
       assert.equal(testURL, url, "deleted url and expected url are the same");
       provider.off("deleteURI", handler);
       resolve();
@@ -424,11 +423,11 @@ exports.test_Links_onDeleteURI = function*(assert) {
   provider.uninit();
 };
 
-exports.test_Links_onManyLinksChanged = function*(assert) {
+exports.test_Links_onManyLinksChanged = function *(assert) {
   let provider = PlacesProvider.links;
   provider.init();
 
-  let promise = new Promise(resolve => {
+  let promise = new Promise((resolve) => {
     let handler = () => {
       assert.ok(true);
       provider.off("manyLinksChanged", handler);
@@ -443,8 +442,8 @@ exports.test_Links_onManyLinksChanged = function*(assert) {
   yield PlacesTestUtils.addVisits(testURI);
 
   // trigger DecayFrecency
-  PlacesUtils.history.QueryInterface(Ci.nsIObserver).
-    observe(null, "idle-daily", "");
+  PlacesUtils.history.QueryInterface(Ci.nsIObserver)
+    .observe(null, "idle-daily", "");
 
   yield promise;
   provider.uninit();
@@ -452,22 +451,22 @@ exports.test_Links_onManyLinksChanged = function*(assert) {
 
 exports.test_Links__faviconBytesToDataURI = function(assert) {
   let tests = [
-    [{favicon: "bar".split("").map(s => s.charCodeAt(0)), mimeType: "foo"}],
-    [{favicon: "bar".split("").map(s => s.charCodeAt(0)), mimeType: "foo", xxyy: "quz"}]
+    [{favicon: "bar".split("").map((s) => s.charCodeAt(0)), mimeType: "foo"}],
+    [{favicon: "bar".split("").map((s) => s.charCodeAt(0)), mimeType: "foo", xxyy: "quz"}]
   ];
   let provider = PlacesProvider.links;
 
   for (let test of tests) {
     let clone = JSON.parse(JSON.stringify(test));
-    delete clone[0].mimeType;
-    clone[0].favicon = `data:foo;base64,${btoa("bar")}`;
+    delete clone[0].mimeType; // eslint-disable-line prefer-reflect
+    clone[0].favicon = `data:foo;base64,${ btoa("bar") }`;
     let result = provider._faviconBytesToDataURI(test);
     assert.equal(JSON.stringify(clone), JSON.stringify(result), "favicon converted to data uri");
   }
 };
 
-before(exports, function*() {
-  let faviconExpiredPromise = new Promise(resolve => {
+before(exports, function *() {
+  let faviconExpiredPromise = new Promise((resolve) => {
     systemEvents.once("places-favicons-expired", resolve);
   });
   yield PlacesUtils.favicons.expireAllFavicons();

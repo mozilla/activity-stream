@@ -23,14 +23,13 @@ class ActionManager {
   }
 
   defineActions(definitions) {
-    Object.keys(definitions).forEach(name => {
+    Object.keys(definitions).forEach((name) => {
       const definition = definitions[name];
-      const composed = (...args) => {
-        return compose([
-          ...this.validators,
-          definition
-        ], this)(...args);
-      };
+      const composed = (...args) => compose([
+        ...this.validators,
+        definition
+      ], this)(...args);
+
       composed.definition = definition;
       this.actions[name] = composed;
     });
@@ -41,11 +40,11 @@ class ActionManager {
       throw new Error("Looks like your action definition does not return an object.");
     }
     if (!action.type) {
-      throw new Error(`You must define a type for an action.`);
+      throw new Error("You must define a type for an action.");
     }
-    Object.keys(action).forEach(key => {
+    Object.keys(action).forEach((key) => {
       if (!VALID_KEYS.has(key)) {
-        throw new Error(`${key} is not a standard action key. Should be one of ${VALID_KEYS_STRING}`);
+        throw new Error(`${ key } is not a standard action key. Should be one of ${ VALID_KEYS_STRING }`);
       }
     });
     return action;
@@ -54,7 +53,7 @@ class ActionManager {
 
   validateType(action = {}) {
     if (!this._types.has(action.type)) {
-      throw new Error(`${action.type} is not defined in your ActionManager`);
+      throw new Error(`${ action.type } is not defined in your ActionManager`);
     }
     return action;
   }
