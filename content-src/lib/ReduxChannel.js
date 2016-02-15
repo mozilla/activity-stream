@@ -33,7 +33,7 @@ class Channel {
 
   runCallbacks(event) {
     const action = event.detail;
-    this.callbacks.forEach(cb => cb(action));
+    this.callbacks.forEach((cb) => cb(action));
   }
 
   broadcast(action) {
@@ -42,16 +42,17 @@ class Channel {
   }
 
   connectStore(store) {
-    this.on(action => store.dispatch(action));
+    this.on((action) => store.dispatch(action));
   }
 
   get middleware() {
-    return store => next => function(action) {
+    return (store) => (next) => function(action) {
       const meta = action.meta || {};
       const timeouts = this.timeouts;
 
       // Send action to the next step in the middleware
-      next(action);
+      // TODO: "Expected return with your callback function"
+      next(action); // eslint-disable-line callback-return
 
       // Check if we were expecting this action from a RequestExpect.
       // If so, clear the timeout and remote it from the list
@@ -66,7 +67,7 @@ class Channel {
       if (meta.expect) {
         const time = meta.timeout || this.options.timeout;
         const timeout = setTimeout(() => {
-          const error = new Error(`Expecting ${meta.expect} but it timed out after ${time}ms`);
+          const error = new Error(`Expecting ${ meta.expect } but it timed out after ${ time }ms`);
           error.name = "E_TIMEOUT";
           store.dispatch({type: meta.expect, error: true, data: error});
         }, time);

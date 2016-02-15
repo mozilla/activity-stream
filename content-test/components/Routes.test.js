@@ -8,8 +8,8 @@ const NewTabPage = require("components/NewTabPage/NewTabPage");
 const Provider = createMockProvider();
 
 describe("Router", () => {
-
   let instance;
+
   beforeEach(() => {
     instance = TestUtils.renderIntoDocument(<Provider><Routes /></Provider>);
   });
@@ -21,5 +21,4 @@ describe("Router", () => {
   it("should render NewTabPage by default", () => {
     TestUtils.findRenderedComponentWithType(instance, NewTabPage);
   });
-
 });

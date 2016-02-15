@@ -8,15 +8,15 @@ const {doGetFile} = require("./lib/utils");
 
 const PORT = 8099;
 
-exports["test messages"] = function*(assert) {
+exports["test messages"] = function *(assert) {
   let path = "/dummy-activitystreams.html";
-  let url = `http://localhost:${PORT}${path}`;
+  let url = `http://localhost:${ PORT }${ path }`;
   let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
   let app = new ActivityStreams({pageURL: url});
   let openTabs = [];
 
-  tabs.on("open", tab => {
-    tab.on("ready", tab => {
+  tabs.on("open", (tab) => {
+    tab.on("ready", (tab) => {
       if (tab.url === url) {
         openTabs.push(tab);
       }
@@ -24,7 +24,7 @@ exports["test messages"] = function*(assert) {
   });
 
   // test tab ping on load
-  let pingPromise = new Promise(resolve => {
+  let pingPromise = new Promise((resolve) => {
     app.once("PING", (name, params) => {
       assert.equal(params.msg.data, "foo", "Message data obtained");
       resolve(params.worker);
@@ -34,20 +34,20 @@ exports["test messages"] = function*(assert) {
   let worker = yield pingPromise;
 
   // test sending a message
-  let pingpongPromise = new Promise(resolve => {
+  let pingpongPromise = new Promise((resolve) => {
     app.once("PINGPONG", resolve);
   });
   app.send({type: "PONG"}, worker);
   yield pingpongPromise;
 
   // test message broadcast, but first open a new tab
-  pingPromise = new Promise(resolve => {
+  pingPromise = new Promise((resolve) => {
     app.once("PING", resolve);
   });
   tabs.open(url);
   yield pingPromise;
 
-  let broadcastResponsePromise = new Promise(resolve => {
+  let broadcastResponsePromise = new Promise((resolve) => {
     let count = 0;
     app.on("PINGPONG_ALL", function response() {
       count++;
@@ -65,7 +65,7 @@ exports["test messages"] = function*(assert) {
     tab.close();
   }
   app.unload();
-  yield new Promise(resolve => {
+  yield new Promise((resolve) => {
     srv.stop(() => {
       resolve();
     });

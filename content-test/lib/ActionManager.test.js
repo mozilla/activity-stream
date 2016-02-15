@@ -4,7 +4,6 @@ const ActionManager = require("lib/ActionManager");
 const {assert} = require("chai");
 
 describe("ActionManager", () => {
-
   describe("instance", () => {
     it("should throw if types is not an array", () => {
       assert.throws(() => new ActionManager(), "You must instantiate ActionManager with an array of action types.");
@@ -111,5 +110,4 @@ describe("ActionManager", () => {
       }, "BAZ is not defined in your ActionManager");
     });
   });
-
 });

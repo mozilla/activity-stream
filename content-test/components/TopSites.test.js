@@ -18,7 +18,6 @@ const fakeProps = {
 };
 
 describe("TopSites", () => {
-
   let node;
   let topSites;
   let el;
@@ -28,6 +27,7 @@ describe("TopSites", () => {
     topSites = ReactDOM.render(<TopSites {...fakeProps} />, node);
     el = ReactDOM.findDOMNode(topSites);
   });
+
   afterEach(() => {
     ReactDOM.unmountComponentAtNode(node);
   });
@@ -58,5 +58,4 @@ describe("TopSites", () => {
       assert.equal(linkEls[1].href, fakeProps.sites[1].url);
     });
   });
-
 });

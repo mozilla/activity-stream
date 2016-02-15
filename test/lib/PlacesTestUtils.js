@@ -31,7 +31,7 @@ const PlacesTestUtils = Object.freeze({
    *          }
    *
    */
-  addVisits: Task.async(function*(placeInfo) {
+  addVisits: Task.async(function *(placeInfo) {
     let places = [];
 
     if (placeInfo instanceof Ci.nsIURI) {
@@ -51,7 +51,12 @@ const PlacesTestUtils = Object.freeze({
       let stmt = conn.createStatement("SELECT id, url, title, frecency FROM moz_places");
       let rows = [];
       while (stmt.executeStep()) {
-        rows.push({id: stmt.getInt32(0), url: stmt.getUTF8String(1), title: stmt.getUTF8String(2), frecency: stmt.getInt32(3)});
+        rows.push({
+          id: stmt.getInt32(0),
+          url: stmt.getUTF8String(1),
+          title: stmt.getUTF8String(2),
+          frecency: stmt.getInt32(3)
+        });
       }
       return rows;
     }
@@ -59,18 +64,17 @@ const PlacesTestUtils = Object.freeze({
 
     // setup listeners for history events to validate db inserts and to ensure
     // that eventual queries will lead to expected results
-    let urlList = places.map(place => place.uri.spec);
+    let urlList = places.map((place) => place.uri.spec);
 
     let insertPromise = new Promise((resolve, reject) => {
       // Create mozIVisitInfo for each entry.
       let now = Date.now();
       for (let place of places) {
-        if (typeof place.title != "string") {
-          place.title = "test visit for " + place.uri.spec;
+        if (typeof place.title !== "string") {
+          place.title = `test visit for ${ place.uri.spec }`;
         }
         place.visits = [{
-          transitionType: place.transition === undefined ? Ci.nsINavHistoryService.TRANSITION_LINK
-                                                             : place.transition,
+          transitionType: Ci.nsINavHistoryService.TRANSITION_LINK || place.transition,
           visitDate: place.visitDate || (now++) * 1000,
           referrerURI: place.referrer
         }];
@@ -79,12 +83,12 @@ const PlacesTestUtils = Object.freeze({
       PlacesUtils.asyncHistory.updatePlaces(
         places,
         {
-          handleError: function AAV_handleError(resultCode, placeInfo) { // eslint-disable-line no-unused-vars
+          handleError: function AAV_handleError(resultCode, placeInfo) {
             let ex = new components.Exception("Unexpected error in adding visits.",
                                               resultCode);
             reject(ex);
           },
-          handleResult: function() {},
+          handleResult: function() {}, // eslint-disable-line object-shorthand
           handleCompletion: function UP_handleCompletion() {
             resolve();
           }
@@ -95,7 +99,7 @@ const PlacesTestUtils = Object.freeze({
 
     let urlSet = new Set(urlList);
     // poll every 10ms until history items appear on disk
-    yield waitUntil(function() {
+    yield waitUntil(() => {
       // function needs to be synchronous!
       let rows = getPlacesRows();
       if ((rows.length - initialNumRows) !== urlList.length) {
@@ -119,7 +123,7 @@ const PlacesTestUtils = Object.freeze({
    *
    * @param {Object} faviconURLs  keys are page URLs, values are associated favicon URLs.
    */
-  addFavicons: Task.async(function*(faviconURLs) {
+  addFavicons: Task.async(function *(faviconURLs) {
     let faviconPromises = [];
     if (faviconURLs) {
       for (let pageURL in faviconURLs) {
@@ -151,9 +155,9 @@ const PlacesTestUtils = Object.freeze({
   /**
    * Clear all history.
    */
-  clearHistory: Task.async(function*() {
-    let expirationFinished = new Promise(resolve => {
-      Services.obs.addObserver(function observe(subj, topic, data) { // eslint-disable-line no-unused-vars
+  clearHistory: Task.async(function *() {
+    let expirationFinished = new Promise((resolve) => {
+      Services.obs.addObserver(function observe(subj, topic, data) {
         Services.obs.removeObserver(observe, topic);
         resolve();
       }, PlacesUtils.TOPIC_EXPIRATION_FINISHED, false);
