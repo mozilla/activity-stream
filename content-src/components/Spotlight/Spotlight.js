@@ -6,10 +6,9 @@ const SpotlightItem = React.createClass({
   render() {
     const site = this.props;
     const imageUrl = site.images[0].url;
-    const iconUrl = site.favicon_url;
+    const description = site.description;
     return (<li className="spotlight-item">
       <div className="spotlight-image" style={{backgroundImage: `url(${imageUrl})`}} ref="image">
-        <div className="spotlight-icon" style={{backgroundImage: `url(${iconUrl})`}} ref="icon" />
         <SiteIcon className="spotlight-icon" site={site} ref="icon" height={32} width={32} />
       </div>
       <div className="spotlight-details">
@@ -17,7 +16,7 @@ const SpotlightItem = React.createClass({
           <h4 className="spotlight-title">
             <a href={site.url} ref="link">{site.title}</a>
           </h4>
-          <p className="spotlight-description" ref="description">{site.description}</p>
+          <p className="spotlight-description" ref="description">{description}</p>
           <div className="spotlight-type">Last opened on iPhone</div>
         </div>
       </div>
@@ -27,11 +26,15 @@ const SpotlightItem = React.createClass({
 
 SpotlightItem.propTypes = {
   url: React.PropTypes.string.isRequired,
-  images: React.PropTypes.array,
+  images: React.PropTypes.arrayOf(
+    React.PropTypes.shape({
+      url: React.PropTypes.string.isRequired
+    }).isRequired
+  ).isRequired,
   favicon_url: React.PropTypes.string,
   icons: React.PropTypes.array,
   title: React.PropTypes.string,
-  description: React.PropTypes.string.isRequired,
+  description: React.PropTypes.string
 };
 
 const Spotlight = React.createClass({
@@ -39,7 +42,12 @@ const Spotlight = React.createClass({
     return {length: DEFAULT_LENGTH};
   },
   render() {
-    const sites = this.props.sites.slice(0, this.props.length);
+    const sites = this.props.sites
+      .filter(site => {
+        // Don't use sites that don't have an image
+        return !!(site.images && site.images[0] && site.images[0].url);
+      })
+      .slice(0, this.props.length);
     return (<section className="spotlight">
       <h3 className="section-title">Spotlight</h3>
       <ul>

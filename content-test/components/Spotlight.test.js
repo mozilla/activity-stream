@@ -8,16 +8,11 @@ const SiteIcon = require("components/SiteIcon/SiteIcon");
 const fakeSpotlightItems = require("lib/fake-data").History.rows;
 
 describe("Spotlight", function() {
-  let node;
   let instance;
   let el;
   beforeEach(() => {
-    node = document.createElement("div");
-    instance = ReactDOM.render(<Spotlight sites={fakeSpotlightItems} />, node);
+    instance = TestUtils.renderIntoDocument(<Spotlight sites={fakeSpotlightItems} />);
     el = ReactDOM.findDOMNode(instance);
-  });
-  afterEach(() => {
-    ReactDOM.unmountComponentAtNode(node);
   });
 
   describe("valid sites", () => {
@@ -27,6 +22,18 @@ describe("Spotlight", function() {
     it("should render a SpotlightItem for each item", () => {
       const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
       assert.equal(children.length, 3);
+    });
+    it("should skip sites that do not have an images prop", () => {
+      const sites = [
+        {title: "Hello world", url: "bar.com", description: "123"},
+        {title: "Foo", url: "bar1.com", images: [{url: "foo.jpg"}]},
+        {title: "Bar", url: "bar2.com", images: [{url: "bar.jpg"}]},
+        {title: "Baz", url: "bar3.com", images: []},
+        {title: "Baz", url: "bar4.com", images: [{}]},
+      ];
+      const testInstance = TestUtils.renderIntoDocument(<Spotlight sites={sites} length={5} />);
+      const children = TestUtils.scryRenderedComponentsWithType(testInstance, SpotlightItem);
+      assert.equal(children.length, 2);
     });
   });
 });
