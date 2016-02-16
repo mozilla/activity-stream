@@ -62,7 +62,7 @@ exports["test messages"] = function*(assert) {
   yield broadcastResponsePromise;
 
   for (let tab of openTabs) {
-    tab.close();
+    yield tab.close();
   }
   app.unload();
   yield new Promise(resolve => {
