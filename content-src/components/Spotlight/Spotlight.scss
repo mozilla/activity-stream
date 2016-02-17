@@ -2,55 +2,56 @@
   margin-right: -20px;
 
   ul {
-    display: flex;
     align-items: flex-start;
+    display: flex;
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
 }
 
 .spotlight-item {
-  background: white;
+  background: $white;
+  border-radius: 3px;
   box-shadow: $tile-box-shadow;
   display: inline-block;
   margin-right: 20px;
-  width: $spotlight-item-width;
-  border-radius: 3px;
   overflow: hidden;
+  width: $spotlight-item-width;
 
   .spotlight-image {
-    position: relative;
     background-size: cover;
     height: $spotlight-img-height;
+    position: relative;
   }
 
   .spotlight-icon {
-    position: absolute;
-    left: $spotlight-icon-gutter;
-    top: $spotlight-icon-gutter;
     border-radius: 3px;
+    left: $spotlight-icon-gutter;
     overflow: hidden;
+    position: absolute;
+    top: $spotlight-icon-gutter;
   }
 
   .spotlight-title {
     margin: 0 0 5px 0;
     max-height: $spotlight-title-max-height;
     overflow: hidden;
+
     a {
       color: $dark-grey;
     }
   }
 
   .spotlight-info {
-    padding: 10px;
     height: $spotlight-info-height;
+    padding: 10px;
   }
 
   .spotlight-description {
     font-size: 14px;
-    margin: 10px 0;
     height: $spotlight-description-height;
+    margin: 10px 0;
     overflow: hidden;
   }
 

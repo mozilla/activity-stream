@@ -2,109 +2,112 @@
   font-size: 16px;
   line-height: 20px;
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 .feed-item {
-  padding-left: $feed-gutter + $feed-circle-size;
   display: flex;
   padding-bottom: $feed-gutter;
+  padding-left: $feed-gutter + $feed-circle-size;
   position: relative;
 
   // This is the line/circle on the side
   &:first-child {
     &::before {
+      margin-top: -($feed-gutter / 2 + $feed-circle-size / 2);
       top: 50%;
-      margin-top: -($feed-gutter/2 + $feed-circle-size/2);
     }
   }
+
   &:last-child {
     &::before {
       bottom: 50%;
-      margin-bottom: $feed-gutter/2 + $feed-circle-size/2;
+      margin-bottom: $feed-gutter / 2 + $feed-circle-size / 2;
     }
   }
 
   &::before {
-    content: "";
-    display: block;
-    width: 2px;
     background: lighten($light-grey, 20%);
+    bottom: 0;
+    content: '';
+    display: block;
+    left: ($feed-circle-size - 2) / 2;
     position: absolute;
     top: 0;
-    bottom: 0;
-    left: ($feed-circle-size - 2)/2;
+    width: 2px;
   }
 
   &::after {
-    content: "";
-    display: block;
-    border-radius: 50%;
-    height: $feed-circle-size;
-    width: $feed-circle-size;
-    border: 2px solid $light-grey;
     background: $bg-grey;
+    border: 2px solid $light-grey;
+    border-radius: 50%;
+    content: '';
+    display: block;
+    height: $feed-circle-size;
+    left: 0;
+    margin-top: -($feed-gutter / 2 + $feed-circle-size / 2);
     position: absolute;
     top: 50%;
-    left: 0;
-    margin-top: -($feed-gutter/2 + $feed-circle-size/2);
+    width: $feed-circle-size;
   }
 
   &:first-child::after {
     background: none;
-    border: none;
-    height: auto;
-    width: auto;
-    content: "\f005";
+    border: 0;
+    color: $star-blue;
+    content: '\f005';
     font: normal normal normal 18px/1 FontAwesome;
-    position: absolute;
-    top: 50%;
+    height: auto;
     left: 0;
     margin-left: -4px;
-    margin-top: -($feed-gutter/2 + 18/2);
-    color: $star-blue;
+    margin-top: -($feed-gutter / 2 + 18 / 2);
+    position: absolute;
+    top: 50%;
+    width: auto;
   }
 }
 
 .site-icon.feed-icon {
+  border-radius: 4px;
   flex-shrink: 0;
   margin-right: 10px;
-  border-radius: 4px;
   overflow: hidden;
 }
 
 .feed-details {
+  align-items: baseline;
   display: flex;
   flex-grow: 1;
-  align-items: baseline;
   overflow: hidden;
+
   .feed-description {
     flex-grow: 1;
-    overflow: hidden;
     margin-right: 10px;
+    overflow: hidden;
 
     .feed-title {
-      font-weight: normal;
       font-size: inherit;
+      font-weight: normal;
       margin: 0;
-      white-space: nowrap;
-      text-overflow: ellipsis;
       overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+
     .feed-link {
-      font-size: 14px;
       display: block;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+      font-size: 14px;
       overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
   .feed-stats {
-    text-align: right;
+    color: $light-grey;
     flex-shrink: 0;
     font-size: 13px;
-    color: $light-grey;
+    text-align: right;
   }
 }

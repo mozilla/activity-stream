@@ -7,12 +7,15 @@ main.new-tab {
   display: flex;
   max-height: 600px; // This will probably need to be refined
   max-width: $wrapper-max-width;
+  overflow-y: auto;
+
   .left {
-    width: 66%;
     margin-right: 20px;
+    width: 66%;
   }
+
   .right {
-    width: 33%;
     min-width: 300px;
+    width: 33%;
   }
 }
