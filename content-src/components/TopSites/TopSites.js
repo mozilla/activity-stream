@@ -1,6 +1,7 @@
 const React = require("react");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const DEFAULT_LENGTH = 6;
+const {toRGBString} = require("lib/utils");
 
 const TopSites = React.createClass({
   getDefaultProps() {
@@ -15,14 +16,18 @@ const TopSites = React.createClass({
     return (<section className="top-sites">
       <h3 className="section-title">Top Sites</h3>
       <div className="tiles-wrapper">
-        {sites.map((site) => (<a key={site.url} className="tile" href={site.url}>
-          <div className="tile-img-container">
-            <SiteIcon site={site} width={100} height={100} />
-          </div>
-          <div className="tile-title">
-            {site.provider_name}
-          </div>
-        </a>))}
+        {sites.map((site) => {
+          const color = site.favicon_colors && site.favicon_colors[0] && site.favicon_colors[0].color || [333, 333, 333];
+          const backgroundColor = toRGBString(...color, 0.6);
+          return (<a key={site.url} className="tile" href={site.url} style={{backgroundColor}}>
+            <div className="tile-img-container">
+              <SiteIcon site={site} width={32} height={32} />
+            </div>
+            <div className="tile-title">
+              {site.provider_name}
+            </div>
+          </a>);
+        })}
         {blankSites}
       </div>
     </section>);

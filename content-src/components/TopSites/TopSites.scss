@@ -5,11 +5,10 @@
   }
 
   .tile {
-    border: $tile-border;
+    @include item-shadow;
     border-radius: $tile-border-radius;
-    box-shadow: $tile-box-shadow;
-    color: $tile-text-color;
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
     font-size: $tile-font-size;
     height: $tile-height;
     margin: 0 $tile-gutter-h $tile-gutter-v 0;
@@ -17,12 +16,16 @@
     position: relative;
     text-decoration: none;
     width: $tile-width;
+    color: inherit;
 
     .tile-img-container {
-      height: $tile-img-height;
+      width: 100%;
       overflow: hidden;
       position: relative;
-      width: $tile-img-width;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .tile-title {
@@ -34,7 +37,6 @@
 
     &:hover .tile-title {
       background-color: $tile-title-hover-color;
-      color: $tile-title-hover-text-color;
     }
 
     &.tile-placeholder {

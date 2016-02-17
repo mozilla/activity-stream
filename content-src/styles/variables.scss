@@ -5,47 +5,59 @@ $dark-grey: #383E49;
 $link-blue: #00AFF7;
 $star-blue: #2B99FF;
 $navy: #383E49;
+$light-navy: #888B92;
+$sidebar-active-item-border-color: #E14164;
 $white: #FFF;
+$header-border-color: #DFE0E1;
 
-$wrapper-max-width: 1100px;
+$wrapper-max-width: 1062px;
 
 $header-box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.05);
 $header-nav-width: 250px;
 $header-border: solid 1px #DFE0E1;
 
-$sidebar-color: #888B92;
-$sidebar-active-item-border-color: #E14164;
-
-$tile-img-width: 100px;
-$tile-img-height: 100px;
+$tile-width: 100px;
+$tile-height: $tile-width;
 $tile-title-height: 26px;
-$tile-width: $tile-img-width + 2px;
-$tile-height: $tile-img-height + $tile-title-height + 2px;
 
 $tile-font-size: 13px;
 $tile-border-radius: 3px;
-$tile-box-shadow: 0 1px 3px #C1C1C1;
-$tile-border: 1px solid #FFF;
+$tile-border: 1px #FFF;
 $tile-gutter-h: 20px;
-$tile-gutter-v: 20px;
-$tile-text-color: #5C5C5C;
-$tile-title-bg-color: #F2F2F2;
-$tile-title-hover-color: #333;
-$tile-title-hover-text-color: #FFF;
+$tile-gutter-v: 10px;
+$tile-title-bg-color: rgba(255, 255, 255, 0.8);
+$tile-title-hover-color: #FFF;
 
-$feed-gutter: 20px;
+$feed-gutter-h: 20px;
+$feed-gutter-v: 16px;
 $feed-circle-size: 8px;
 $feed-icon-size: 40px;
 
-$spotlight-info-height: 160px;
+$spotlight-padding: 10px;
+$spotlight-item-height: $feed-icon-size * 6 + $feed-gutter-v * 5;
 $spotlight-item-width: 226px;
-$spotlight-img-height: 140px;
+$spotlight-img-height: 124px;
+$spotlight-info-height: 158px;
+
 $spotlight-icon-height: 35px;
 $spotlight-icon-width: 35px;
 $spotlight-icon-gutter: 10px;
-$spotlight-description-height: 70px;
+$spotlight-description-height: 87px;
 $spotlight-title-max-height: 39px;
 
 $timeline-max-width: 3 * $spotlight-item-width + 20px * 2;
 
-$placeholder-border: 2px dashed #C1C1C1;
+$item-shadow-border: darken($bg-grey, 7%);
+$item-shadow: none;
+$item-shadow-hover: 0 4px 9px -3px darken($bg-grey, 5%);
+
+@mixin item-shadow {
+  box-shadow: $item-shadow;
+  transition: box-shadow 0.1s ease-in-out;
+  border: 1px solid $item-shadow-border;
+
+  &:hover {
+    box-shadow: $item-shadow-hover;
+    border-color: darken($item-shadow-border, 5%);
+  }
+}

@@ -16,10 +16,10 @@ const NewTabPage = React.createClass({
         </div>
         <div className="right">
           <h3 className="section-title">Top Activity</h3>
-          <ActivityFeed sites={props.Bookmarks.rows} />
+          <ActivityFeed sites={props.Bookmarks.rows} length={2} />
 
           <h3 className="section-title">Yesterday</h3>
-          <ActivityFeed sites={props.History.rows} />
+          <ActivityFeed sites={props.History.rows} length={6} />
         </div>
       </div>
     </main>);
