@@ -34,7 +34,7 @@
   }
 
   .spotlight-title {
-    margin: 0 0 5px 0;
+    margin: 0 0 5px;
     max-height: $spotlight-title-max-height;
     overflow: hidden;
 
@@ -58,5 +58,12 @@
   .spotlight-type {
     color: $light-grey;
     font-size: 11px;
+  }
+
+  &.spotlight-placeholder {
+    background: none;
+    border: $placeholder-border;
+    box-shadow: none;
+    height: $spotlight-info-height + $spotlight-img-height;
   }
 }
