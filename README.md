@@ -20,6 +20,22 @@ git clone https://github.com/mozilla/activity-streams.git
 cd activity-streams
 npm install
 ```
+
+## Configuration
+
+Default configuration is in `config.default.yml`. Create a file called `config.yml` to override any default configuration.
+
+If you want to **run the add-on with the embedly server**, add the following to `config.yml`:
+```
+API_KEY: xxxx
+```
+(Ask someone on the team for the API key).
+
+If you want to run the content on http://localhost:1963 with **shim data** (i.e. outside the add-on), add the following to `config.yml`.
+```
+USE_SHIM: true
+```
+
 ## Running tasks
 
 You may run `npm run help` to see a description of all commands available, which you can run via `npm run [command]`. Here are some important ones:
