@@ -36,5 +36,11 @@
       background-color: $tile-title-hover-color;
       color: $tile-title-hover-text-color;
     }
+
+    &.tile-placeholder {
+      background: none;
+      border: $placeholder-border;
+      box-shadow: none;
+    }
   }
 }
