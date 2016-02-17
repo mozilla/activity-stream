@@ -1,10 +1,9 @@
 .head {
   align-items: center;
   background: $white;
-  border-bottom: solid 1px #DFE0E1;
+  border-bottom: $header-border;
   box-shadow: $header-box-shadow;
   display: flex;
-  display: relative;
   flex-shrink: 0;
   height: 50px;
   padding: 0;

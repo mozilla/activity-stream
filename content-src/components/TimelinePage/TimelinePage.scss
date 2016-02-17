@@ -8,7 +8,7 @@ main.timeline {
 
   nav.sidebar {
     background: $navy;
-    color: #888B92;
+    color: $sidebar-color;
     display: block;
     flex-shrink: 0;
     width: $header-nav-width;
@@ -37,7 +37,7 @@ main.timeline {
       }
 
       &.active {
-        border-color: #E14164;
+        border-color: $sidebar-active-item-border-color;
       }
     }
   }
