@@ -63,10 +63,12 @@ describe("SpotlightItem", function() {
     it("should render the image", () => {
       assert.include(instance.refs.image.style.backgroundImage, fakeSite.images[0].url);
     });
-    it("should render the url link with title", () => {
+    it("should render the url link", () => {
       const linkEl = instance.refs.link;
-      assert.equal(linkEl.innerHTML, fakeSite.title);
       assert.include(linkEl.href, fakeSite.url);
+    });
+    it("should render the title", () => {
+      assert.equal(instance.refs.title.innerHTML, fakeSite.title);
     });
     it("should render the description", () => {
       assert.include(instance.refs.description.innerHTML, fakeSite.description);

@@ -8,18 +8,20 @@ const SpotlightItem = React.createClass({
     const imageUrl = site.images[0].url;
     const description = site.description;
     return (<li className="spotlight-item">
-      <div className="spotlight-image" style={{backgroundImage: `url(${imageUrl})`}} ref="image">
-        <SiteIcon className="spotlight-icon" site={site} ref="icon" height={32} width={32} />
-      </div>
-      <div className="spotlight-details">
-        <div className="spotlight-info">
-          <h4 className="spotlight-title">
-            <a href={site.url} ref="link">{site.title}</a>
-          </h4>
-          <p className="spotlight-description" ref="description">{description}</p>
-          <div className="spotlight-type">Last opened on iPhone</div>
+      <a href={site.url} ref="link">
+        <div className="spotlight-image" style={{backgroundImage: `url(${imageUrl})`}} ref="image">
+          <SiteIcon className="spotlight-icon" site={site} ref="icon" height={32} width={32} />
         </div>
-      </div>
+        <div className="spotlight-details">
+          <div className="spotlight-info">
+            <h4 ref="title" className="spotlight-title">
+              {site.title}
+            </h4>
+            <p className="spotlight-description" ref="description">{description}</p>
+            <div className="spotlight-type">Last opened on iPhone</div>
+          </div>
+        </div>
+      </a>
     </li>);
   }
 });

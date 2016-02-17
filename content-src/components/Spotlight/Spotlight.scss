@@ -21,6 +21,11 @@
   overflow: hidden;
   position: relative;
 
+  > a {
+    display: block;
+    color: inherit;
+  }
+
   .spotlight-image {
     position: relative;
     background-size: cover;
@@ -41,13 +46,13 @@
     margin: 0 0 5px;
     max-height: $spotlight-title-max-height;
     overflow: hidden;
-
-    a {
-      color: $dark-grey;
-    }
+  }
+  &:hover .spotlight-title {
+    color: $link-blue;
   }
 
   .spotlight-info {
+    border-top: 1px solid $item-shadow-border;
     padding: $spotlight-padding;
     height: $spotlight-info-height;
   }

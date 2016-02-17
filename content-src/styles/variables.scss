@@ -51,6 +51,8 @@ $item-shadow-border: darken($bg-grey, 7%);
 $item-shadow: none;
 $item-shadow-hover: 0 4px 9px -3px darken($bg-grey, 5%);
 
+$placeholder-border: 2px dashed #C1C1C1;
+
 @mixin item-shadow {
   box-shadow: $item-shadow;
   transition: box-shadow 0.1s ease-in-out;
