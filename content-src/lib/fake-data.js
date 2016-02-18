@@ -2307,7 +2307,7 @@ module.exports = {
   "Bookmarks": {
     "rows": [
       {
-        "bookmarkTitle": "Facbook",
+        "bookmarkTitle": "Facebook",
         "title": "Facebook - Log In or Sign Up",
         "url": "https://www.facebook.com",
         "lastModified": 1455303110038000,
