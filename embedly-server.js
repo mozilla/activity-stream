@@ -19,7 +19,19 @@ try {
 }
 
 if (!config.API_KEY) {
-  console.log("No API_KEY found in config.yml. If you want to use embedly, you must add it."); // eslint-disable-line no-console
+  const message = `
+
+===============================================================
+WARNING: No API_KEY found in config.yml
+===============================================================
+If you want to see enhanced data, you must ask nchapman for the key.
+The README has more information about how to change configuration.
+We are working on deploying a dev server so you won't have to do this.
+Sorry!
+
+
+`;
+  console.log(message); // eslint-disable-line no-console
   process.exit(0);
 }
 console.log(config); // eslint-disable-line no-console

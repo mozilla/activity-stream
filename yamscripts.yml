@@ -6,7 +6,7 @@
 scripts:
 
 # once: Build/serve the assets and run the add-on
-  once: npm-run-all --parallel start firefox
+  once: =>bundle && npm-run-all --parallel start:embedly firefox
 
   clean: rm -rf data/content/*
 

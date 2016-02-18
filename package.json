@@ -81,7 +81,7 @@
     "yamscripts": "^0.0.2"
   },
   "scripts": {
-    "once": "npm-run-all --parallel start firefox",
+    "once": "npm run bundle && npm-run-all --parallel start:embedly firefox",
     "clean": "rm -rf data/content/*",
     "bundle": "npm-run-all bundle:*",
     "prebundle": "npm run clean",
