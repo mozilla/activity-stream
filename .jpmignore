@@ -1,6 +1,7 @@
 .DS_Store
 .git/
 npm-debug.log
+CHANGELOG.md
 content-test/
 dist/
 firefox/

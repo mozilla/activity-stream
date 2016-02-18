@@ -10,6 +10,8 @@ scripts:
 
   clean: rm -rf data/content/*
 
+  changelog: conventional-changelog -i CHANGELOG.md -s
+
 # bundle: Bundle assets for production
   bundle:
     pre: =>clean

@@ -41,6 +41,7 @@
     "chai-as-promised": "^5.2.0",
     "connect": "^3.4.1",
     "connect-query": "^0.2.0",
+    "conventional-changelog-cli": "1.1.1",
     "cors": "^2.7.1",
     "cpx": "^1.2.1",
     "eslint": "^1.10.3",
@@ -83,6 +84,7 @@
   "scripts": {
     "once": "npm-run-all --parallel start firefox",
     "clean": "rm -rf data/content/*",
+    "changelog": "conventional-changelog -i CHANGELOG.md -s",
     "bundle": "npm-run-all bundle:*",
     "prebundle": "npm run clean",
     "bundle:static": "cpx \"content-src/static/**/*\" data/content",
