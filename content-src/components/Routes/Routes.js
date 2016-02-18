@@ -9,7 +9,7 @@ const Routes = React.createClass({
     return (<Router history={history}>
       <Route path="/" component={require("components/Base/Base")}>
         <IndexRoute title="Home" component={require("components/NewTabPage/NewTabPage")} />
-        <Route title="Timeline" path="timeline" icon="fa-timeline" component={require("components/TimelinePage/TimelinePage")} />
+        <Route title="Activity Stream" path="timeline" icon="fa-timeline" component={require("components/TimelinePage/TimelinePage")} />
       </Route>
     </Router>);
   }
