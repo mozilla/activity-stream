@@ -50,7 +50,7 @@ const Spotlight = React.createClass({
       .slice(0, this.props.length);
     const blankSites = [];
     for (let i = 0; i < (this.props.length - sites.length); i++) {
-      blankSites.push(<li className="spotlight-item spotlight-placeholder" />);
+      blankSites.push(<li className="spotlight-item spotlight-placeholder" key={`blank-${i}`} />);
     }
     return (<section className="spotlight">
       <h3 className="section-title">Spotlight</h3>
