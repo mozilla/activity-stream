@@ -60,8 +60,9 @@ describe("SpotlightItem", function() {
       assert.instanceOf(instance.refs.icon, SiteIcon);
       assert.include(instance.refs.icon.props.site, fakeSite);
     });
-    it("should render the image", () => {
+    it("should render the image as a link", () => {
       assert.include(instance.refs.image.style.backgroundImage, fakeSite.images[0].url);
+      assert.include(instance.refs.image.href, fakeSite.url);
     });
     it("should render the url link with title", () => {
       const linkEl = instance.refs.link;
