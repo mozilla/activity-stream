@@ -8,14 +8,14 @@
 
 .feed-item {
   display: flex;
-  padding-bottom: $feed-gutter;
-  padding-left: $feed-gutter + $feed-circle-size;
+  padding-left: $feed-gutter-h + $feed-circle-size;
+  padding-bottom: $feed-gutter-v;
   position: relative;
 
   // This is the line/circle on the side
   &:first-child {
     &::before {
-      margin-top: -($feed-gutter / 2 + $feed-circle-size / 2);
+      margin-top: -($feed-gutter-v / 2 + $feed-circle-size / 2);
       top: 50%;
     }
   }
@@ -23,7 +23,7 @@
   &:last-child {
     &::before {
       bottom: 50%;
-      margin-bottom: $feed-gutter / 2 + $feed-circle-size / 2;
+      margin-bottom: $feed-gutter-v / 2 + $feed-circle-size / 2;
     }
   }
 
@@ -46,10 +46,10 @@
     display: block;
     height: $feed-circle-size;
     left: 0;
-    margin-top: -($feed-gutter / 2 + $feed-circle-size / 2);
     position: absolute;
     top: 50%;
     width: $feed-circle-size;
+    margin-top: -($feed-gutter-v / 2 + $feed-circle-size / 2);
   }
 
   &:first-child::after {
@@ -61,10 +61,7 @@
     height: auto;
     left: 0;
     margin-left: -4px;
-    margin-top: -($feed-gutter / 2 + 18 / 2);
-    position: absolute;
-    top: 50%;
-    width: auto;
+    margin-top: -($feed-gutter-v / 2 + 18 / 2);
   }
 }
 

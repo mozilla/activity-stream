@@ -1,6 +1,7 @@
 module.exports = {
   toRGBString(...color) {
-    return `rgb(${color.join(", ")})`;
+    const name = color.length === 4 ? "rgba" : "rgb";
+    return `${name}(${color.join(", ")})`;
   },
   getBlackOrWhite(r, g, b) {
     const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
