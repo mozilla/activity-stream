@@ -7,12 +7,13 @@ const ActivityFeedItem = React.createClass({
   render() {
     const site = this.props;
     const title = site.bookmarkTitle || site.title;
+    const prettyUrl = site.url.replace(/^https?:\/\/(www\.)?/i, "");
     return (<li className="feed-item">
       <SiteIcon ref="icon" className="feed-icon" site={site} width={ICON_SIZE} height={ICON_SIZE} />
       <div className="feed-details">
         <div className="feed-description">
           <h4 className="feed-title" ref="title">{title}</h4>
-          <a className="feed-link" href={site.url} ref="link">{site.url}</a>
+          <a className="feed-link" href={site.url} ref="link">{prettyUrl}</a>
         </div>
         <div className="feed-stats">
           <div>1:26pm</div>
