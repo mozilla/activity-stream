@@ -10,7 +10,7 @@ const TopSites = React.createClass({
     const sites = this.props.sites.slice(0, this.props.length);
     const blankSites = [];
     for (let i = 0; i < (this.props.length - sites.length); i++) {
-      blankSites.push(<div className="tile tile-placeholder" />);
+      blankSites.push(<div className="tile tile-placeholder" key={`blank-${i}`} />);
     }
     return (<section className="top-sites">
       <h3 className="section-title">Top Sites</h3>
