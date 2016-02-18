@@ -16,7 +16,7 @@ const Header = React.createClass({
         </h1>
         <ul className="nav-picker" hidden={!this.state.showDropdown}>
           <li hidden={props.currentRoute.path === "/"}><Link to="/">Home</Link></li>
-          <li hidden={props.currentRoute.path === "/timeline"}><Link to="/timeline">Timeline</Link></li>
+          <li hidden={props.currentRoute.path === "/timeline"}><Link to="/timeline">Activity Stream</Link></li>
         </ul>
       </section>
       <section className="spacer" />
