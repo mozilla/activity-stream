@@ -8,9 +8,9 @@ const SpotlightItem = React.createClass({
     const imageUrl = site.images[0].url;
     const description = site.description;
     return (<li className="spotlight-item">
-      <div className="spotlight-image" style={{backgroundImage: `url(${imageUrl})`}} ref="image">
+      <a href={site.url} className="spotlight-image" style={{backgroundImage: `url(${imageUrl})`}} ref="image">
         <SiteIcon className="spotlight-icon" site={site} ref="icon" height={32} width={32} />
-      </div>
+      </a>
       <div className="spotlight-details">
         <div className="spotlight-info">
           <h4 className="spotlight-title">

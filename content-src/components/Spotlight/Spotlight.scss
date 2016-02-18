@@ -21,6 +21,7 @@
 
   .spotlight-image {
     background-size: cover;
+    display: block;
     height: $spotlight-img-height;
     position: relative;
   }
