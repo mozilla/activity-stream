@@ -25,6 +25,12 @@ describe("TopSites", () => {
     ReactDOM.unmountComponentAtNode(node);
   });
 
+  it("should not throw if missing props", () => {
+    assert.doesNotThrow(() => {
+      TestUtils.renderIntoDocument(<TopSites sites={[{}]} />);
+    });
+  });
+
   describe("valid sites", () => {
     it("should create TopSites", () => {
       assert.instanceOf(topSites, TopSites);

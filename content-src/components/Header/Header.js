@@ -7,16 +7,17 @@ const Header = React.createClass({
   },
   render() {
     const props = this.props;
+    const currentRoute = props.currentRoute || {};
     return (<header className="head">
       <section className="nav" onClick={() => this.setState({showDropdown: !this.state.showDropdown})}>
         <h1>
-          <span hidden={!props.currentRoute.icon} className={`icon fa ${props.currentRoute.icon}`} />
-          <span>{props.currentRoute.title}</span>
+          <span hidden={!currentRoute.icon} className={`icon fa ${currentRoute.icon}`} />
+          <span>{currentRoute.title}</span>
           <span className="arrow fa fa-chevron-down" />
         </h1>
         <ul className="nav-picker" hidden={!this.state.showDropdown}>
-          <li hidden={props.currentRoute.path === "/"}><Link to="/">Home</Link></li>
-          <li hidden={props.currentRoute.path === "/timeline"}><Link to="/timeline">Activity Stream</Link></li>
+          <li hidden={currentRoute.path === "/"}><Link to="/">Home</Link></li>
+          <li hidden={currentRoute.path === "/timeline"}><Link to="/timeline">Activity Stream</Link></li>
         </ul>
       </section>
       <section className="spacer" />

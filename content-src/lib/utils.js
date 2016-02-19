@@ -8,6 +8,9 @@ module.exports = {
     return (yiq >= 128) ? "black" : "white";
   },
   prettyUrl(url) {
+    if (!url) {
+      return "";
+    }
     return url.replace(/^https?:\/\/(www\.)?/i, "");
   }
 };

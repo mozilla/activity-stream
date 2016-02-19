@@ -50,7 +50,7 @@ function getFallbackColors(favicon_colors) {
 const SiteIconFallback = React.createClass({
   render() {
     const {favicon_colors, title, provider_name, provider_display} = this.props;
-    const letter = (provider_name || provider_display || title)[0];
+    const letter = (provider_name || provider_display || title || "")[0];
     const style = getFallbackColors(favicon_colors);
     return (<div className="site-icon-fallback" ref="fallback"
       style={style}>
@@ -71,6 +71,7 @@ SiteIconFallback.propTypes = {
 const SiteIcon = React.createClass({
   getDefaultProps() {
     return {
+      site: {},
       height: 100,
       width: 100
     };

@@ -37,6 +37,12 @@ describe("ActivityFeedItem", function() {
     el = ReactDOM.findDOMNode(instance);
   });
 
+  it("should not throw if missing props", () => {
+    assert.doesNotThrow(() => {
+      TestUtils.renderIntoDocument(<ActivityFeedItem />);
+    });
+  });
+
   describe("valid sites", () => {
     it("should create the element", () => {
       assert.ok(el);
