@@ -1,6 +1,6 @@
 const {assert} = require("chai");
 const Spotlight = require("components/Spotlight/Spotlight");
-const {SpotlightItem} = Spotlight;
+const {SpotlightItem} = require("components/Spotlight/SpotlightItem");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
