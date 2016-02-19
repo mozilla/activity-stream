@@ -18,3 +18,19 @@ describe("getBlackOrWhite", () => {
     assert.equal(utils.getBlackOrWhite(40, 44, 52), "white");
   });
 });
+
+describe("prettyUrl()", () => {
+  it("should strip out leading http:// or https://", () => {
+    assert.equal(utils.prettyUrl("http://mozilla.org/"), "mozilla.org/");
+    assert.equal(utils.prettyUrl("https://mozilla.org/"), "mozilla.org/");
+  });
+
+  it("should strip out leading 'www.' subdomains", () => {
+    assert.equal(utils.prettyUrl("https://www.mozilla.org/"), "mozilla.org/");
+  });
+
+  it("should ignore non http[s] protocols", () => {
+    let url = "gopher://github.com/mozilla/";
+    assert.equal(utils.prettyUrl(url), url);
+  });
+});

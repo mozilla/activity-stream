@@ -5,6 +5,7 @@ const SiteIcon = require("components/SiteIcon/SiteIcon");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
+const {prettyUrl} = require("lib/utils");
 
 const fakeSites = require("test/test-utils").mockData.Bookmarks.rows;
 
@@ -55,7 +56,7 @@ describe("ActivityFeedItem", function() {
     });
     it("should render the url link", () => {
       const linkEl = instance.refs.link;
-      assert.equal(linkEl.innerHTML, fakeSite.url);
+      assert.equal(linkEl.innerHTML, prettyUrl(fakeSite.url));
       assert.include(linkEl.href, fakeSite.url);
     });
   });
