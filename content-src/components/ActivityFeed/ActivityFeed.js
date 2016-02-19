@@ -1,6 +1,8 @@
 const React = require("react");
-const DEFAULT_LENGTH = 3;
 const SiteIcon = require("components/SiteIcon/SiteIcon");
+const {prettyUrl} = require("lib/utils");
+
+const DEFAULT_LENGTH = 3;
 const ICON_SIZE = 40;
 
 const ActivityFeedItem = React.createClass({
@@ -12,7 +14,7 @@ const ActivityFeedItem = React.createClass({
       <div className="feed-details">
         <div className="feed-description">
           <h4 className="feed-title" ref="title">{title}</h4>
-          <a className="feed-link" href={site.url} ref="link">{site.url}</a>
+          <a className="feed-link" href={site.url} ref="link">{prettyUrl(site.url)}</a>
         </div>
         <div className="feed-stats">
           <div>1:26pm</div>
