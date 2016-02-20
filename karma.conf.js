@@ -4,7 +4,7 @@ const path = require("path");
 module.exports = function(config) {
   config.set({
     singleRun: true,
-    browsers: ["FirefoxNightly"],
+    browsers: ["Firefox"],
     frameworks: ["mocha"],
     reporters: ["mocha", "coverage"],
     coverageReporter: {
