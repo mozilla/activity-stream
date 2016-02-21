@@ -1,4 +1,7 @@
 .site-icon {
+  overflow: hidden;
+  border-radius: $site-icon-border-radius;
+
   > div {
     height: 100%;
     width: 100%;

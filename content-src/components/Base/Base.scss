@@ -8,10 +8,15 @@ main {
   display: flex;
   flex-grow: 1;
   padding: 20px;
+
+  section {
+    margin-bottom: $section-margin;
+  }
 }
 
 .section-title {
   color: $light-grey;
   font-size: 14px;
   font-weight: normal;
+  margin: 8px 0;
 }

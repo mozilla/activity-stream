@@ -1,4 +1,5 @@
-$bg-grey: #F3F4F6;
+$bg-color: #FFF;
+$bg-grey: #FBFBFB;
 $light-grey: #A0A0A0;
 $mid-grey: #56565A;
 $dark-grey: #383E49;
@@ -9,32 +10,36 @@ $light-navy: #888B92;
 $sidebar-active-item-border-color: #E14164;
 $white: #FFF;
 $header-border-color: #DFE0E1;
+$faintest-black: rgba(0, 0, 0, 0.1);
+$border-radius: 3px;
 
-$wrapper-max-width: 1062px;
+$base-gutter: 20px;
+
+$section-margin: 30px;
 
 $header-box-shadow: 0 4px 2px -3px rgba(0, 0, 0, 0.05);
 $header-nav-width: 250px;
 $header-border: solid 1px #DFE0E1;
 
-$tile-width: 100px;
+$tile-width: 96px;
 $tile-height: $tile-width;
 $tile-title-height: 26px;
-
 $tile-font-size: 13px;
-$tile-border-radius: 3px;
 $tile-border: 1px #FFF;
-$tile-gutter-h: 20px;
-$tile-gutter-v: 10px;
-$tile-title-bg-color: rgba(255, 255, 255, 0.8);
+$tile-gutter: $base-gutter;
+$tile-title-bg-color: rgba(255, 255, 255, 0.6);
 $tile-title-hover-color: #FFF;
+$tile-title-font-size: 12px;
 
-$feed-gutter-h: 20px;
+$wrapper-max-width: 6 * $tile-width + 5 * $tile-gutter;
+
+$feed-gutter-h: $base-gutter;
 $feed-gutter-v: 16px;
 $feed-circle-size: 8px;
 $feed-icon-size: 40px;
 
 $spotlight-padding: 10px;
-$spotlight-item-height: $feed-icon-size * 6 + $feed-gutter-v * 5;
+$spotlight-item-height: 250px;
 $spotlight-item-width: 226px;
 $spotlight-img-height: 124px;
 $spotlight-info-height: 158px;
@@ -42,24 +47,28 @@ $spotlight-info-height: 158px;
 $spotlight-icon-height: 35px;
 $spotlight-icon-width: 35px;
 $spotlight-icon-gutter: 10px;
-$spotlight-description-height: 87px;
-$spotlight-title-max-height: 39px;
+$spotlight-description-height: 34px;
+$spotlight-title-max-height: 36px;
 
 $timeline-max-width: 3 * $spotlight-item-width + 20px * 2;
 
-$item-shadow-border: darken($bg-grey, 7%);
-$item-shadow: none;
-$item-shadow-hover: 0 4px 9px -3px darken($bg-grey, 5%);
+$site-icon-border-radius: 3px;
+
+$search-input-left-label-width: 35px;
+$search-blue: #0996F8;
+$search-shadow: rgba(96, 181, 255, 0.75);
+$search-button-grey: #FBFBFB;
 
 $placeholder-border: 2px dashed #C1C1C1;
 
+$item-shadow: 0 1px 0 0 $faintest-black;
+$item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
+
 @mixin item-shadow {
   box-shadow: $item-shadow;
-  transition: box-shadow 0.1s ease-in-out;
-  border: 1px solid $item-shadow-border;
 
   &:hover {
     box-shadow: $item-shadow-hover;
-    border-color: darken($item-shadow-border, 5%);
+    transition: box-shadow 150ms;
   }
 }
