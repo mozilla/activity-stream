@@ -25,12 +25,12 @@ class ActionManager {
   defineActions(definitions) {
     Object.keys(definitions).forEach(name => {
       const definition = definitions[name];
-      const composed = (...args) => {
+      const composed = function() {
         return compose([
           ...this.validators,
           definition
-        ], this)(...args);
-      };
+        ], this).apply(null, arguments);
+      }.bind(this);
       composed.definition = definition;
       this.actions[name] = composed;
     });
@@ -70,15 +70,15 @@ function BaseAction(action) {
 // This is based on redux compose
 function compose([...funcs], context) {
   context = context || this;
-  return (...args) => {
+  return function() {
     if (funcs.length === 0) {
-      return args[0];
+      return arguments[0];
     }
 
     const last = funcs[funcs.length - 1];
     const rest = funcs.slice(0, -1);
 
-    return rest.reduceRight((composed, f) => f.bind(context)(composed), last(...args));
+    return rest.reduceRight((composed, f) => f.bind(context)(composed), last.apply(null, arguments));
   };
 }
 

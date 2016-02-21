@@ -3,15 +3,23 @@ language: node_js
 node_js:
   - "5.5.0"
 
+cache:
+  directories:
+    - node_modules
+
+addons:
+  firefox: latest-beta
+
 before_install:
   - "export DISPLAY=:99.0"
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16 -extension RANDR"
 
+install:
+  - npm config set spin false
+  - npm install
+
 before_script:
-  - cd $TRAVIS_BUILD_DIR
-  - ./node_modules/.bin/mozilla-download --branch mozilla-central --product firefox firefox
-  - export FIREFOX_PATH=$TRAVIS_BUILD_DIR/firefox/firefox
-  - export PATH=$FIREFOX_PATH:$PATH
+  - export FIREFOX_BIN=`which firefox`
   - export JPM_FIREFOX_BINARY=`which firefox`
   - firefox -v
   - echo $JPM_FIREFOX_BINARY
