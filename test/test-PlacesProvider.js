@@ -161,7 +161,7 @@ exports.test_Links_deleteHistoryLink = function*(assert) {
   ];
 
   let links = yield provider.getRecentLinks();
-  assert.equal(links.length, 0, "empty history yields empty links HAHAHAHA");
+  assert.equal(links.length, 0, "empty history yields empty links");
 
   yield PlacesTestUtils.addVisits(visits);
   links = yield provider.getRecentLinks();
