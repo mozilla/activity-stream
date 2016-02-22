@@ -5,5 +5,6 @@ LOGGING: true
 # outside of the add-on
 USE_SHIM: false
 
-# Add this to use the embedly server to get enhanced data
-# API_KEY:
+# This is the embedly proxy server
+# File issues at https://github.com/mozilla/embedly-proxy/issues
+EMBEDLY_ENDPOINT: "http://embedly-proxy.dev.mozaws.net/extract"
