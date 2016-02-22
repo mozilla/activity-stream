@@ -25,16 +25,23 @@ npm install
 
 Default configuration is in `config.default.yml`. Create a file called `config.yml` to override any default configuration.
 
-If you want to **run the add-on with the embedly server**, add the following to `config.yml`:
+## Embedly Proxy Server
+
+By default, the add-on will request data from embedly through a dev instance of our embedly proxy server. If you want to **run the add-on with a different endpoint**, change the following in `config.yml`:
+
 ```
-API_KEY: xxxx
+EMBEDLY_ENDPOINT: http://....
 ```
-(Ask someone on the team for the API key).
+Please file issues related to the embedly proxy server at https://github.com/mozilla/embedly-proxy/issues.
+
+## Using shim data
 
 If you want to run the content on http://localhost:1963 with **shim data** (i.e. outside the add-on), add the following to `config.yml`.
 ```
 USE_SHIM: true
 ```
+
+You can also disable the embedly service by setting `EMBEDLY_ENDPOINT` to an empty string.
 
 ## Running tasks
 

@@ -1,8 +1,8 @@
 const am = require("actions/action-manager");
-const isDevServerRunning = !!__CONFIG__.API_KEY;
+const embedlyEndpoint = __CONFIG__.EMBEDLY_ENDPOINT;
 
 function buildQuery(items) {
-  return items
+  return "?" + items
     .map(item => item.url)
     .map(encodeURIComponent)
     .map(url => "urls=" + url)
@@ -20,6 +20,11 @@ module.exports = () => next => action => {
   if (action.error) {
     return next(action);
   }
+
+  if (!embedlyEndpoint) {
+    return next(action);
+  }
+
   if (actionsToSupplement.has(action.type)) {
     if (!action.data.length) {
       return next(action);
@@ -28,16 +33,18 @@ module.exports = () => next => action => {
       return !(!site.url || /^place:/.test(site.url));
     });
 
-    // We can't fetch extra data if the embedly server is not running
-    if (!isDevServerRunning) {
+    if (!sites.length) {
       return next(action);
     }
 
-    fetch("http://localhost:1467/extract?" + buildQuery(sites))
+    fetch(embedlyEndpoint + buildQuery(sites))
       .then(response => response.json())
       .then(json => {
-        const data = sites.map((site, i) => {
-          const details = json[i];
+        const data = sites.map(site => {
+          const details = json[site.url];
+          if (!details) {
+            return site;
+          }
           return Object.assign({}, site, {
             description: details.description,
             title: details.title,

@@ -6,7 +6,7 @@
 scripts:
 
 # once: Build/serve the assets and run the add-on
-  once: =>bundle && npm-run-all --parallel start:embedly firefox
+  once: =>bundle && firefox
 
   clean: rm -rf data/content/*
 
@@ -29,7 +29,6 @@ scripts:
     css: =>bundle:css && =>bundle:css -- -w
     html: =>bundle:html -- --baseUrl http://localhost:1963/
     server: live-server data/content --port=1963 --no-browser
-    embedly: node ./embedly-server.js
 
 # firefox: Launch addon with jpm run
   firefox: jpm run -b beta
