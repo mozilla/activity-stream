@@ -146,6 +146,39 @@ exports.test_Links_getRecentLinks = function*(assert) {
   assert.equal(faviconData[links[2].url], links[2].favicon, "favicon data is stored as expected");
 };
 
+exports.test_Links_deleteHistoryLink = function*(assert) {
+  let provider = PlacesProvider.links;
+  let {
+    TRANSITION_TYPED,
+    TRANSITION_LINK
+  } = PlacesUtils.history;
+
+  let visits = [
+    // frecency 200
+    {uri: NetUtil.newURI("https://mozilla1.com/0"), visitDate: timeDaysAgo(1), transition: TRANSITION_TYPED},
+    // sort by url, frecency 200
+    {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeDaysAgo(0), transition: TRANSITION_LINK},
+  ];
+
+  let links = yield provider.getRecentLinks();
+  assert.equal(links.length, 0, "empty history yields empty links HAHAHAHA");
+
+  yield PlacesTestUtils.addVisits(visits);
+  links = yield provider.getRecentLinks();
+
+  assert.equal(links.length, visits.length, "number of links added is the same as obtain by getRecentLinks");
+  assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
+  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-nd link");
+
+  // delete a link
+  let deleted = yield provider.deleteHistoryLink("https://mozilla2.com/1");
+  assert.equal(deleted, true, "link is deleted");
+  // ensure that there's only one link left
+  links = yield provider.getRecentLinks();
+  assert.equal(links.length, 1, "only one link is left in history");
+  assert.equal(links[0].url, "https://mozilla1.com/0", "Expected 2-nd link");
+};
+
 exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   let provider = PlacesProvider.links;
   let {
