@@ -102,7 +102,7 @@
     "test": "npm-run-all test:*",
     "test:lint": "eslint . && jscs . && sass-lint -v -q",
     "test:jpm": "jpm test -b beta",
-    "test:karma": "karma start",
+    "test:karma": "karma start --browsers FirefoxNightly",
     "tdd": "karma start --no-single-run",
     "package": "jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
     "travis": "npm-run-all travis:*",

@@ -20,10 +20,6 @@ module.exports = () => next => action => {
   if (action.error) {
     return next(action);
   }
-  // We can't fetch extra data if the embedly server is not running
-  if (!isDevServerRunning) {
-    return next(action);
-  }
   if (actionsToSupplement.has(action.type)) {
     if (!action.data.length) {
       return next(action);
@@ -31,6 +27,12 @@ module.exports = () => next => action => {
     const sites = action.data.filter(site => {
       return !(!site.url || /^place:/.test(site.url));
     });
+
+    // We can't fetch extra data if the embedly server is not running
+    if (!isDevServerRunning) {
+      return next(action);
+    }
+
     fetch("http://localhost:1467/extract?" + buildQuery(sites))
       .then(response => response.json())
       .then(json => {

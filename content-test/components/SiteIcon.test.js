@@ -31,6 +31,12 @@ describe("SiteIcon", () => {
   beforeEach(() => setup());
 
   describe("SiteIcon", () => {
+    it("should not throw if missing props", () => {
+      assert.doesNotThrow(() => {
+        TestUtils.renderIntoDocument(<SiteIcon />);
+      });
+    });
+
     it("should create a SiteIcon instance", () => {
       assert.instanceOf(instance, SiteIcon);
     });

@@ -20,6 +20,12 @@ describe("getBlackOrWhite", () => {
 });
 
 describe("prettyUrl()", () => {
+
+  it("should return a blank string if url is falsey", () => {
+    assert.equal(utils.prettyUrl(), "");
+    assert.equal(utils.prettyUrl(null), "");
+  });
+
   it("should strip out leading http:// or https://", () => {
     assert.equal(utils.prettyUrl("http://mozilla.org/"), "mozilla.org/");
     assert.equal(utils.prettyUrl("https://mozilla.org/"), "mozilla.org/");
