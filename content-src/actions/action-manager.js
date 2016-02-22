@@ -9,8 +9,20 @@ const am = new ActionManager([
   "RECENT_BOOKMARKS_RESPONSE",
   "RECEIVE_BOOKMARKS_CHANGES",
   "RECENT_LINKS_REQUEST",
-  "RECENT_LINKS_RESPONSE"
+  "RECENT_LINKS_RESPONSE",
+  "NOTIFY_TELEMETRY"
 ]);
+
+function Notify(type, data) {
+  const action = {
+    type,
+    meta: {broadcast: "content-to-addon"}
+  };
+  if (data) {
+    action.data = data;
+  }
+  return action;
+}
 
 function Response(type, data, options = {}) {
   const action = {type, data};
@@ -46,12 +58,18 @@ function RequestLinks() {
   return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE");
 }
 
+function NotifyTelemetry(data) {
+  return Notify("NOTIFY_TELEMETRY", data);
+}
+
 am.defineActions({
+  Notify,
   Response,
   RequestExpect,
   RequestTopFrecent,
   RequestBookmarks,
   RequestLinks,
+  NotifyTelemetry
 });
 
 module.exports = am;
