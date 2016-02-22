@@ -41,7 +41,7 @@ scripts:
     # test:jpm: Run jpm tests
     jpm: jpm test -b beta
     # test:karma: Run content tests only
-    karma: karma start
+    karma: karma start --browsers FirefoxNightly
 
 # tdd: Run content tests continuously
   tdd: karma start --no-single-run
