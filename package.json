@@ -78,7 +78,7 @@
     "yamscripts": "^0.0.2"
   },
   "scripts": {
-    "once": "npm run bundle && firefox",
+    "once": "npm run bundle && npm run firefox",
     "clean": "rm -rf data/content/*",
     "changelog": "conventional-changelog -i CHANGELOG.md -s",
     "bundle": "npm-run-all bundle:*",
@@ -100,7 +100,7 @@
     "test:jpm": "jpm test -b beta",
     "test:karma": "karma start --browsers FirefoxNightly",
     "tdd": "karma start --no-single-run",
-    "package": "jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
+    "package": "npm run bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
     "travis": "npm-run-all travis:*",
     "travis:eslint": "npm run test:lint",
     "travis:jpm": "jpm test -b $JPM_FIREFOX_BINARY -v",
