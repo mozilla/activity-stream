@@ -8,7 +8,8 @@ const Header = React.createClass({
   render() {
     const props = this.props;
     const currentRoute = props.currentRoute || {};
-    return (<header className="head">
+    return (<header className="head" hidden={currentRoute.path === "/"}>
+
       <section className="nav" onClick={() => this.setState({showDropdown: !this.state.showDropdown})}>
         <h1>
           <span hidden={!currentRoute.icon} className={`icon fa ${currentRoute.icon}`} />
@@ -39,7 +40,7 @@ Header.propTypes = {
     title: React.PropTypes.string.isRequired,
     icon: React.PropTypes.string,
     path: React.PropTypes.string.isRequired
-  })
+  }).isRequired
 };
 
 module.exports = Header;

@@ -2,17 +2,17 @@
   .tiles-wrapper {
     margin-right: -20px;
     text-align: center;
+    display: flex;
   }
 
   .tile {
     @include item-shadow;
-    border-radius: $tile-border-radius;
-    display: inline-flex;
+    display: flex;
+    border-radius: $border-radius;
     flex-direction: column;
     font-size: $tile-font-size;
     height: $tile-height;
-    margin: 0 $tile-gutter-h $tile-gutter-v 0;
-    overflow: hidden;
+    margin: 0 $tile-gutter 0 0;
     position: relative;
     text-decoration: none;
     width: $tile-width;
@@ -29,10 +29,13 @@
     }
 
     .tile-title {
+      font-size: $tile-title-font-size;
+      border-radius: 0 0 $border-radius $border-radius;
       background-color: $tile-title-bg-color;
       height: $tile-title-height;
       line-height: $tile-title-height;
       text-align: center;
+      overflow: hidden;
     }
 
     &:hover .tile-title {

@@ -1,11 +1,36 @@
 const {assert} = require("chai");
 const Spotlight = require("components/Spotlight/Spotlight");
-const {SpotlightItem} = Spotlight;
+const {SpotlightItem, getBestImage, IMG_WIDTH, IMG_HEIGHT} = Spotlight;
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const fakeSpotlightItems = require("lib/fake-data").History.rows;
+
+const fakeSiteWithImage = {
+  "title": "man throws alligator in wendys wptv dnt cnn",
+  "url": "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn",
+  "description": "A Florida man faces multiple charges for throwing an alligator through a Wendy's drive-thru window. CNN's affiliate WPTV reports.",
+  "images": [
+    {
+      "url": "http://i2.cdn.turner.com/cnnnext/dam/assets/160209053130-man-throws-alligator-in-wendys-wptv-dnt-00004611-large-169.jpg",
+      "height": 259,
+      "width": 460,
+      "entropy": 3.98714569089,
+      "size": 14757
+    },
+  ]
+};
+
+// Tests that provided sites don't get rendered, because they don't
+// match the conditions for spotlight to use them
+function assertInvalidSite(site) {
+  // merge valid site with invalid props
+  const testSite = Object.assign({}, fakeSiteWithImage, site);
+  const testInstance = TestUtils.renderIntoDocument(<Spotlight sites={[testSite]} length={5} />);
+  const children = TestUtils.scryRenderedComponentsWithType(testInstance, SpotlightItem);
+  assert.equal(children.length, 0);
+}
 
 describe("Spotlight", function() {
   let instance;
@@ -23,23 +48,35 @@ describe("Spotlight", function() {
       const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
       assert.equal(children.length, 3);
     });
-    it("should skip sites that do not have an images prop", () => {
-      const sites = [
-        {title: "Hello world", url: "bar.com", description: "123"},
-        {title: "Foo", url: "bar1.com", images: [{url: "foo.jpg"}]},
-        {title: "Bar", url: "bar2.com", images: [{url: "bar.jpg"}]},
-        {title: "Baz", url: "bar3.com", images: []},
-        {title: "Baz", url: "bar4.com", images: [{}]},
-      ];
-      const testInstance = TestUtils.renderIntoDocument(<Spotlight sites={sites} length={5} />);
-      const children = TestUtils.scryRenderedComponentsWithType(testInstance, SpotlightItem);
-      assert.equal(children.length, 2);
+    it("should skip sites that do not have a title", () => {
+      assertInvalidSite({
+        title: null
+      });
+    });
+    it("should skip sites that do not have a description", () => {
+      assertInvalidSite({
+        description: null
+      });
+    });
+    it("should skip sites for which the title equals the description", () => {
+      assertInvalidSite({
+        title: "foo",
+        description: "foo"
+      });
+    });
+    it("should skip sites that do not have an images prop or an empty array", () => {
+      assertInvalidSite({
+        images: null
+      });
+      assertInvalidSite({
+        images: []
+      });
     });
   });
 });
 
 describe("SpotlightItem", function() {
-  const fakeSite = fakeSpotlightItems[0];
+  const fakeSite = fakeSiteWithImage;
   let node;
   let instance;
   let el;
@@ -73,5 +110,33 @@ describe("SpotlightItem", function() {
     it("should render the description", () => {
       assert.include(instance.refs.description.innerHTML, fakeSite.description);
     });
+  });
+});
+
+describe("getBestImage", () => {
+  it("should return null if images is falsey", () => {
+    assert.equal(getBestImage(), null);
+    assert.equal(getBestImage(null), null);
+  });
+  it("should return null if images is an empty array", () => {
+    assert.equal(getBestImage([]), null);
+  });
+  it("should use a valid image that is big enough", () => {
+    const img = {url: "foo.jpg", height: IMG_HEIGHT, width: IMG_WIDTH};
+    assert.equal(getBestImage([img]), img);
+  });
+  it("should skip images that are too small", () => {
+    assert.equal(getBestImage([{url: "foo.jpg", height: IMG_HEIGHT - 1, width: IMG_WIDTH}]), null);
+    assert.equal(getBestImage([{url: "foo.jpg", height: IMG_HEIGHT, width: IMG_WIDTH - 1}]), null);
+  });
+  it("should skip images without a url", () => {
+    assert.equal(getBestImage([{height: IMG_HEIGHT, width: IMG_WIDTH}]), null);
+  });
+  it("should use the image with the highest entropy", () => {
+    const images = [
+      {url: "foo.jpg", height: IMG_HEIGHT, width: IMG_WIDTH, entropy: 1},
+      {url: "bar.jpg", height: IMG_HEIGHT, width: IMG_WIDTH, entropy: 3}
+    ];
+    assert.equal(getBestImage(images), images[1]);
   });
 });

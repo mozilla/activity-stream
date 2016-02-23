@@ -8,7 +8,7 @@ body,
 }
 
 body {
-  background: $bg-grey;
+  background: $bg-color;
   color: $dark-grey;
   // TODO: actually figure out system font here
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -36,6 +36,16 @@ a {
   width: 16px;
 }
 
+.inner-border {
+  border: 1px solid $faintest-black;
+  border-radius: $border-radius;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 
 // Components
 @import './components/Header/Header';
@@ -46,3 +56,4 @@ a {
 @import './components/NewTabPage/NewTabPage';
 @import './components/TimelinePage/TimelinePage';
 @import './components/SiteIcon/SiteIcon';
+@import './components/Search/Search';

@@ -4,7 +4,6 @@ const assert = require("chai").assert;
 const Header = require("components/Header/Header");
 const React = require("react");
 const ReactDOM = require("react-dom");
-
 const fakeProps = {
   currentRoute: {
     title: "Home",
@@ -24,6 +23,12 @@ describe("Header", () => {
   });
   afterEach(() => {
     ReactDOM.unmountComponentAtNode(node);
+  });
+
+  it("should not throw if missing props", () => {
+    assert.doesNotThrow(() => {
+      ReactDOM.render(<Header  />, node);
+    });
   });
 
   describe("userImage", () => {

@@ -1,15 +1,46 @@
 const React = require("react");
-const DEFAULT_LENGTH = 3;
 const SiteIcon = require("components/SiteIcon/SiteIcon");
+const classNames = require("classnames");
+const DEFAULT_LENGTH = 3;
+const IMG_HEIGHT = 226;
+const IMG_WIDTH =  124;
+
+function getBestImage(images) {
+  if (!images || !images.length) {
+    return null;
+  }
+  const filteredImages = images.filter(image => {
+    if (!image.url) {
+      return false;
+    }
+    if (!image.width || image.width < IMG_WIDTH) {
+      return false;
+    }
+    if (!image.height || image.height < IMG_HEIGHT) {
+      return false;
+    }
+    return true;
+  });
+
+  if (!filteredImages.length) {
+    return null;
+  }
+
+  return filteredImages.reduce((prev, next) => {
+    return next.entropy > prev.entropy ? next : prev;
+  }) || null;
+}
 
 const SpotlightItem = React.createClass({
   render() {
     const site = this.props;
-    const imageUrl = site.images[0].url;
+    const image = getBestImage(site.images);
+    const imageUrl = image.url;
     const description = site.description;
+    const isPortrait = image.height > image.width;
     return (<li className="spotlight-item">
       <a href={site.url} ref="link">
-        <div className="spotlight-image" style={{backgroundImage: `url(${imageUrl})`}} ref="image">
+        <div className={classNames("spotlight-image", {portrait: isPortrait})} style={{backgroundImage: `url(${imageUrl})`}} ref="image">
           <SiteIcon className="spotlight-icon" site={site} ref="icon" height={32} width={32} />
         </div>
         <div className="spotlight-details">
@@ -21,6 +52,7 @@ const SpotlightItem = React.createClass({
             <div className="spotlight-type">Last opened on iPhone</div>
           </div>
         </div>
+        <div className="inner-border" />
       </a>
     </li>);
   }
@@ -46,8 +78,13 @@ const Spotlight = React.createClass({
   render() {
     const sites = this.props.sites
       .filter(site => {
-        // Don't use sites that don't have an image
-        return !!(site.images && site.images[0] && site.images[0].url);
+        // Don't use sites that don't look good
+        return !!(
+          getBestImage(site.images) &&
+          site.title &&
+          site.description &&
+          site.title !== site.description
+        );
       })
       .slice(0, this.props.length);
     const blankSites = [];
@@ -71,3 +108,6 @@ Spotlight.propTypes = {
 
 module.exports = Spotlight;
 module.exports.SpotlightItem = SpotlightItem;
+module.exports.getBestImage = getBestImage;
+module.exports.IMG_HEIGHT = IMG_HEIGHT;
+module.exports.IMG_WIDTH =  IMG_WIDTH;

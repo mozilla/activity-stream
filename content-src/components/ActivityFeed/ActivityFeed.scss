@@ -39,7 +39,7 @@
   }
 
   &::after {
-    background: $bg-grey;
+    background: $bg-color;
     border: 2px solid $light-grey;
     border-radius: 50%;
     content: '';
@@ -66,10 +66,8 @@
 }
 
 .site-icon.feed-icon {
-  border-radius: 4px;
   flex-shrink: 0;
   margin-right: 10px;
-  overflow: hidden;
 }
 
 .feed-details {
