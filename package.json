@@ -77,7 +77,7 @@
     "yamscripts": "^0.0.2"
   },
   "scripts": {
-    "once": "npm run bundle && firefox",
+    "once": "npm run bundle && npm run firefox",
     "clean": "rm -rf data/content/*",
     "changelog": "conventional-changelog -i CHANGELOG.md -s",
     "bundle": "npm-run-all bundle:*",
