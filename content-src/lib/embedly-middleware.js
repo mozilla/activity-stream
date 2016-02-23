@@ -1,5 +1,6 @@
 const am = require("actions/action-manager");
 const embedlyEndpoint = __CONFIG__.EMBEDLY_ENDPOINT;
+const {urlFilter, siteFilter} = require("lib/filters");
 
 function buildQuery(items) {
   return "?" + items
@@ -21,45 +22,41 @@ module.exports = () => next => action => {
     return next(action);
   }
 
-  if (!embedlyEndpoint) {
+  if (!actionsToSupplement.has(action.type)) {
     return next(action);
   }
 
-  if (actionsToSupplement.has(action.type)) {
-    if (!action.data.length) {
-      return next(action);
-    }
-    const sites = action.data.filter(site => {
-      return !(!site.url || /^place:/.test(site.url));
-    });
+  if (!action.data.length) {
+    return next(action);
+  }
 
-    if (!sites.length) {
-      return next(action);
-    }
+  const sites = action.data.filter(urlFilter);
+  const filteredAction = Object.assign({}, action, {data: sites});
 
-    fetch(embedlyEndpoint + buildQuery(sites))
-      .then(response => response.json())
-      .then(json => {
-        const data = sites.map(site => {
+  if (!sites.length) {
+    return next(filteredAction);
+  }
+
+  if (!embedlyEndpoint) {
+    return next(filteredAction);
+  }
+
+  fetch(embedlyEndpoint + buildQuery(sites))
+    .then(response => response.json())
+    .then(json => {
+
+      const data = sites
+        .map(site => {
           const details = json[site.url];
           if (!details) {
             return site;
           }
-          return Object.assign({}, site, {
-            description: details.description,
-            title: details.title,
-            images: details.images,
-            favicon_url: details.favicon_url,
-            favicon_colors: details.favicon_colors,
-            media: details.media,
-            provider_name: details.provider_name
-          });
-        });
-        const newAction = Object.assign({}, action, {data});
-        next(newAction);
-      })
-      .catch(() => next(action));
-  } else {
-    next(action);
-  }
+          return Object.assign({}, site, details);
+        })
+        .filter(siteFilter);
+
+      const newAction = Object.assign({}, action, {data});
+      next(newAction);
+    })
+    .catch(() => next(filteredAction));
 };
