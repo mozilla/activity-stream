@@ -3,7 +3,7 @@ const React = require("react");
 const TestUtils = require("react-addons-test-utils");
 
 const {NewTabPage} = require("components/NewTabPage/NewTabPage");
-const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
+const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const TopSites = require("components/TopSites/TopSites");
 
 const fakeProps = require("test/test-utils").mockData;
@@ -23,10 +23,8 @@ describe("NewTabPage", () => {
     assert.equal(topSites.props.sites, fakeProps.TopSites.rows);
   });
 
-  it("should render sites for ActivityFeeds with correct data", () => {
-    const activityFeeds = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeed);
-    assert.lengthOf(activityFeeds, 2);
-    assert.equal(activityFeeds[0].props.sites, fakeProps.Bookmarks.rows);
-    assert.equal(activityFeeds[1].props.sites, fakeProps.History.rows);
+  it("should render GroupedActivityFeed with correct data", () => {
+    const activityFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
+    assert.equal(activityFeed.props.sites, fakeProps.History.rows);
   });
 });

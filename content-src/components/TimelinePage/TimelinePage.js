@@ -1,7 +1,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
 
-const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
+const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 
 const TimelinePage = React.createClass({
@@ -26,8 +26,7 @@ const TimelinePage = React.createClass({
       <section className="content">
         <div className="wrapper">
           <Spotlight sites={props.History.rows} />
-          <h3 className="section-title">Just now</h3>
-          <ActivityFeed sites={props.Bookmarks.rows} />
+          <GroupedActivityFeed title="Just now" sites={props.History.rows} length="20" />
         </div>
       </section>
     </main>);

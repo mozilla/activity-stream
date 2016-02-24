@@ -1,6 +1,6 @@
 const {assert} = require("chai");
 const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
-const {ActivityFeedItem} = ActivityFeed;
+const {ActivityFeedItem, GroupedActivityFeed} = ActivityFeed;
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const React = require("react");
 const ReactDOM = require("react-dom");
@@ -64,6 +64,27 @@ describe("ActivityFeedItem", function() {
       const linkEl = instance.refs.link;
       assert.equal(linkEl.innerHTML, prettyUrl(fakeSite.url));
       assert.include(linkEl.href, fakeSite.url);
+    });
+  });
+});
+
+describe("GroupedActivityFeed", function() {
+  let instance;
+  let el;
+  beforeEach(() => {
+    instance = TestUtils.renderIntoDocument(<GroupedActivityFeed sites={fakeSites} />);
+    el = ReactDOM.findDOMNode(instance);
+  });
+
+  describe("valid grouped activity feed", () => {
+    it("should create the element", () => {
+      assert.ok(el);
+    });
+    it("should render an ActivityFeed for each date", () => {
+      const children = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeed);
+      // Each fakeSite has a different lastVisitDate, so there will be one
+      // ActivityFeed per site.
+      assert.equal(children.length, fakeSites.length);
     });
   });
 });

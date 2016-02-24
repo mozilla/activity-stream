@@ -984,7 +984,7 @@ module.exports = {
       {
         "title": "man throws alligator in wendys wptv dnt cnn",
         "url": "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn",
-        "lastVisitDate": null,
+        "lastVisitDate": 1456332698937517,
         "type": "history",
         "description": "A Florida man faces multiple charges for throwing an alligator through a Wendy's drive-thru window. CNN's affiliate WPTV reports.",
         "images": [
@@ -1205,7 +1205,7 @@ module.exports = {
       {
         "title": "alligator eats suspected burglar hiding police pkg news 13",
         "url": "http://www.cnn.com/videos/us/2015/12/08/alligator-eats-suspected-burglar-hiding-police-pkg.news-13/video/playlists/alligator-encounters/",
-        "lastVisitDate": null,
+        "lastVisitDate": 1456332698937517,
         "type": "history",
         "description": "Police say a suspected burglar was eaten by an alligator while hiding from police. News 13 reports.",
         "images": [
@@ -1442,7 +1442,7 @@ module.exports = {
       {
         "title": "Man sues over alleged winning lottery ticket - CNN.com",
         "url": "http://www.cnn.com/2016/02/05/us/man-claims-winning-lottery-ticket-feat/?iid=ob_homepage_deskrecommended_pool&iref=obnetwork",
-        "lastVisitDate": null,
+        "lastVisitDate": 1456332698937517,
         "type": "history",
         "description": "Brandy Milliner of Los Angeles County says he purchased a Super LottoPlus ticket at a 7-Eleven in Chatsworth, California, on August 8, 2015, which matched the six winning numbers. Milliner says he brought the ticket to lottery officials and was given a congratulatory note along with a photocopy of his ticket.",
         "images": [
@@ -1714,7 +1714,7 @@ module.exports = {
       {
         "title": "Facebook - Log In or Sign Up",
         "url": "https://www.facebook.com",
-        "lastVisitDate": null,
+        "lastVisitDate": 1456213800000000,
         "type": "history",
         "description": "Create an account or log into Facebook. Connect with friends, family and other people you know. Share photos and videos, send messages and get updates.",
         "images": [
@@ -1785,7 +1785,7 @@ module.exports = {
       {
         "title": "Cruz and Trump, signs of conservative media's grip on GOP (Opinion) - CNN.com",
         "url": "http://www.cnn.com/2016/02/03/opinions/conservative-media-power-smerconish-rosenwald/index.html",
-        "lastVisitDate": null,
+        "lastVisitDate": 1456197200000000,
         "type": "history",
         "description": "Yet the favored status of Ted Cruz and Donald Trump is actually unsurprising when viewed in the context of today's true Republican power brokers -- the people with microphones.",
         "images": [
@@ -2057,7 +2057,7 @@ module.exports = {
       {
         "title": "The Bouqs Gains A $12 Million Bushel in Series B Financing To Grow The Business",
         "url": "http://social.techcrunch.com/2016/02/03/the-bouqs-gains-a-12-million-bushel-in-series-b-financing-to-grow-the-business",
-        "lastVisitDate": null,
+        "lastVisitDate": 1456332698937517,
         "type": "history",
         "description": "We're a week and a half away from Valentine's Day, one of the biggest days for flower purchases everywhere and probably the best time for The Bouqs, an on-demand-ish flower startup to announce it pulled in $12 million in Series B financing.",
         "images": [
@@ -2311,6 +2311,7 @@ module.exports = {
         "title": "Facebook - Log In or Sign Up",
         "url": "https://www.facebook.com",
         "lastModified": 1455303110038000,
+        "lastVisitDate": 1456407816000000,
         "type": "bookmark",
         "description": "Create an account or log into Facebook. Connect with friends, family and other people you know. Share photos and videos, send messages and get updates.",
         "images": [
@@ -2383,6 +2384,7 @@ module.exports = {
         "title": "Cruz and Trump, signs of conservative media's grip on GOP (Opinion) - CNN.com",
         "url": "http://www.cnn.com/2016/02/03/opinions/conservative-media-power-smerconish-rosenwald/index.html",
         "lastModified": 1455303110038000,
+        "lastVisitDate": 1456321364000000,
         "type": "bookmark",
         "description": "Yet the favored status of Ted Cruz and Donald Trump is actually unsurprising when viewed in the context of today's true Republican power brokers -- the people with microphones.",
         "images": [
@@ -2655,8 +2657,8 @@ module.exports = {
         "bookmarkTitle": "The Bouqs Gains A $12 Million Bushel in Series B Financing To Grow The Business",
         "title": "The Bouqs Gains A $12 Million Bushel in Series B Financing To Grow The Business",
         "lastModified": 1455303109995000,
+        "lastVisitDate": 1456235009000000,
         "url": "http://social.techcrunch.com/2016/02/03/the-bouqs-gains-a-12-million-bushel-in-series-b-financing-to-grow-the-business",
-        "lastVisitDate": null,
         "type": "bookmark",
         "description": "We're a week and a half away from Valentine's Day, one of the biggest days for flower purchases everywhere and probably the best time for The Bouqs, an on-demand-ish flower startup to announce it pulled in $12 million in Series B financing.",
         "images": [

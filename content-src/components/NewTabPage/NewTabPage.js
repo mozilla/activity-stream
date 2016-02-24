@@ -2,7 +2,7 @@ const React = require("react");
 const {connect} = require("react-redux");
 
 const TopSites = require("components/TopSites/TopSites");
-const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
+const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
 
@@ -29,11 +29,7 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <h3 className="section-title">Top Activity</h3>
-            <ActivityFeed sites={props.Bookmarks.rows} length={2} />
-
-            <h3 className="section-title">Yesterday</h3>
-            <ActivityFeed sites={props.History.rows} length={6} />
+            <GroupedActivityFeed title="Top Activity" sites={props.History.rows} length={20} />
           </section>
         </div>
       </div>
