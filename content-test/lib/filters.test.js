@@ -1,16 +1,24 @@
 const {assert} = require("chai");
-const {createFilter, urlFilter, siteFilter} = require("lib/filters");
+const {createFilter, urlFilter, siteFilter, TEMP_MAX_LENGTH} = require("lib/filters");
+const urlParse = require("url-parse");
+
+function addParsedUrl(url) {
+  return {url, parsedUrl: urlParse(url)};
+}
 
 const fakeData = {
   get validUrls() {
     return [
-      {url: "http://foo.com"},
-      {url: "https://foo.org"},
-      {url: "HttP://blah.com"}
-    ];
+      "http://foo.com",
+      "https://foo.org",
+      "HttP://blah.com"
+    ].map(addParsedUrl);
   },
   get validSite() {
-    return {url: "http://foo.com", description: "blah", title: "blah"};
+    return Object.assign(
+      addParsedUrl("http://foo.com"),
+      {description: "blah", title: "blah"}
+    );
   }
 };
 
@@ -40,28 +48,28 @@ describe("urlFilter", () => {
     const urls = [{url: null}, {}, {url: ""}];
     assert.deepEqual(urls.filter(urlFilter), []);
   });
-  it("should remove urls > 100 characters", () => {
-    const urls = [{url: "http://" + new Array(100).join("d") + ".com"}];
+  it("should remove urls > max characters", () => {
+    const urls = [addParsedUrl("http://" + new Array(TEMP_MAX_LENGTH + 1).join("d") + ".com")];
     assert.deepEqual(urls.filter(urlFilter), []);
   });
   it("should remove urls that do not start with http/https", () => {
     const urls = [
-      {url: "places://foo/asdasd"},
-      {url: "ftp://asdasdads.com"},
-      {url: "garbage://asdasd.com"},
-    ];
+      "places://foo/asdasd",
+      "ftp://asdasdads.com",
+      "garbage://asdasd.com"
+    ].map(addParsedUrl);
     assert.deepEqual(urls.filter(urlFilter), []);
   });
   it("should remove localhost urls, but not urls that start with localhost", () => {
     const urls = [
-      {url: "http://localhost:4040"},
-      {url: "https://localhost:9999"},
-      {url: "HTTP://LOCALHOST"},
-      {url: "http://127.0.0.1:8000"},
-      {url: "http://0.0.0.0"},
-      {url: "http://localhost-foo.com"}
-    ];
-    assert.deepEqual(urls.filter(urlFilter), [{url: "http://localhost-foo.com"}]);
+      "http://localhost:4040",
+      "https://localhost:9999",
+      "HTTP://LOCALHOST",
+      "http://127.0.0.1:8000",
+      "http://0.0.0.0",
+      "http://localhost-foo.com"
+    ].map(addParsedUrl);
+    assert.deepEqual(urls.filter(urlFilter), [addParsedUrl("http://localhost-foo.com")]);
   });
 });
 

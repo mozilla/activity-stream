@@ -1,7 +1,7 @@
 const React = require("react");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const DEFAULT_LENGTH = 6;
-const {toRGBString} = require("lib/utils");
+const {toRGBString, prettyUrl} = require("lib/utils");
 
 const TopSites = React.createClass({
   getDefaultProps() {
@@ -20,8 +20,11 @@ const TopSites = React.createClass({
           let title;
           let color;
           try {
-            title = site.parsedUrl.hostname.replace("www.", "");
+            title = prettyUrl(site.parsedUrl.hostname);
           } catch (e) {
+            //
+          }
+          if (!title) {
             title = site.provider_name || site.title;
           }
           try {

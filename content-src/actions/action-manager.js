@@ -13,6 +13,14 @@ const am = new ActionManager([
   "NOTIFY_HISTORY_DELETE"
 ]);
 
+// This is a a set of actions that have sites in them,
+// so we can do stuff like filter them, add embedly data, etc.
+am.ACTIONS_WITH_SITES = new Set([
+  "TOP_FRECENT_SITES_RESPONSE",
+  "RECENT_BOOKMARKS_RESPONSE",
+  "RECENT_LINKS_RESPONSE"
+].map(type => am.type(type)));
+
 function Notify(type, data) {
   const action = {
     type,

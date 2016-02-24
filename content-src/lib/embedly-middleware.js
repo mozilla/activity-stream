@@ -1,6 +1,7 @@
 const am = require("actions/action-manager");
 const embedlyEndpoint = __CONFIG__.EMBEDLY_ENDPOINT;
 const {urlFilter, siteFilter} = require("lib/filters");
+const {innerDedupe} = require("lib/dedupe");
 
 function buildQuery(items) {
   return "?" + items
@@ -10,19 +11,13 @@ function buildQuery(items) {
     .join("&");
 }
 
-const actionsToSupplement = new Set([
-  am.type("TOP_FRECENT_SITES_RESPONSE"),
-  am.type("RECENT_BOOKMARKS_RESPONSE"),
-  am.type("RECENT_LINKS_RESPONSE")
-].map(type => am.type(type)));
-
 module.exports = () => next => action => {
   // We don't want to add extra data if the response is an error
   if (action.error) {
     return next(action);
   }
 
-  if (!actionsToSupplement.has(action.type)) {
+  if (!am.ACTIONS_WITH_SITES.has(action.type)) {
     return next(action);
   }
 
@@ -30,7 +25,8 @@ module.exports = () => next => action => {
     return next(action);
   }
 
-  const sites = action.data.filter(urlFilter);
+  const sites = innerDedupe(action.data.filter(urlFilter));
+
   const filteredAction = Object.assign({}, action, {data: sites});
 
   if (!sites.length) {
@@ -51,7 +47,7 @@ module.exports = () => next => action => {
           if (!details) {
             return site;
           }
-          return Object.assign({}, site, details);
+          return Object.assign({}, details, site);
         })
         .filter(siteFilter);
 
