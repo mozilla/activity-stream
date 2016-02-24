@@ -17,14 +17,25 @@ const TopSites = React.createClass({
       <h3 className="section-title">Top Sites</h3>
       <div className="tiles-wrapper">
         {sites.map((site) => {
-          const color = site.favicon_colors && site.favicon_colors[0] && site.favicon_colors[0].color || [333, 333, 333];
+          let title;
+          let color;
+          try {
+            title = site.parsedUrl.hostname.replace("www.", "");
+          } catch (e) {
+            title = site.provider_name || site.title;
+          }
+          try {
+            color = site.favicon_colors[0].color;
+          } catch (e) {
+            color = [251, 251, 251];
+          }
           const backgroundColor = toRGBString(...color, 0.8);
           return (<a key={site.url} className="tile" href={site.url} style={{backgroundColor}}>
             <div className="inner-border" />
             <div className="tile-img-container">
               <SiteIcon site={site} width={32} height={32} />
             </div>
-            <div className="tile-title">{site.provider_name}</div>
+            <div className="tile-title">{title}</div>
           </a>);
         })}
         {blankSites}
@@ -42,7 +53,8 @@ TopSites.propTypes = {
       url: React.PropTypes.string.isRequired,
       type: React.PropTypes.string,
       description: React.PropTypes.string,
-      provider_name: React.PropTypes.string
+      provider_name: React.PropTypes.string,
+      parsedUrl: React.PropTypes.object
     })
   ).isRequired
 };
