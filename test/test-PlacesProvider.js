@@ -23,9 +23,9 @@ XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
 // may cause tiny time differences, which break expected sql ordering
 const TIME_NOW = (new Date()).getTime();
 
-// utility function to compute past timestamp
+// utility function to compute past timestamp in microseconds
 function timeDaysAgo(numDays) {
-  return TIME_NOW - (numDays * 24 * 60 * 60 * 1000);
+  return (TIME_NOW - (numDays * 24 * 60 * 60 * 1000)) * 1000;
 }
 
 exports.test_LinkChecker_securityCheck = function(assert) {
@@ -150,6 +150,36 @@ exports.test_Links_getRecentLinks = function*(assert) {
   assert.equal(links[1].bookmarkGuid, bookmark.guid, "expected bookmark guid for second link");
   assert.equal(links[1].bookmarkDateCreated, new Date(bookmark.dateAdded).getTime(), "expected bookmark date for second link");
   assert.ok(!(links[0].bookmark || links[2].bookmark || links[3].bookmark), "other bookmarks are empty");
+};
+
+exports.test_Links_getFrecentLinks = function*(assert) {
+  let provider = PlacesProvider.links;
+  let {
+    TRANSITION_TYPED,
+    TRANSITION_LINK
+  } = PlacesUtils.history;
+
+  let visits = [
+    // frecency 200
+    {uri: NetUtil.newURI("https://mozilla1.com/0"), visitDate: timeDaysAgo(1), transition: TRANSITION_TYPED},
+    // sort by url, frecency 200
+    {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeDaysAgo(0), transition: TRANSITION_TYPED},
+    // sort by last visit date, frecency 200
+    {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeDaysAgo(4), transition: TRANSITION_TYPED},
+    // sort by frecency, frecency 10
+    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeDaysAgo(0), transition: TRANSITION_LINK},
+  ];
+
+  let links = yield provider.getRecentLinks();
+  assert.equal(links.length, 0, "empty history yields empty links");
+
+  yield PlacesTestUtils.addVisits(visits);
+
+  links = yield provider.getFrecentLinks();
+  assert.equal(links.length, 3, "exepect to find 3 links");
+  assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
+  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-nd link");
+  assert.equal(links[2].url, "https://mozilla4.com/3", "Expected 3-rd link");
 };
 
 exports.test_Links_deleteHistoryLink = function*(assert) {
