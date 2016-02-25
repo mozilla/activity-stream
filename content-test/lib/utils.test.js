@@ -31,12 +31,25 @@ describe("prettyUrl()", () => {
     assert.equal(utils.prettyUrl("https://mozilla.org/"), "mozilla.org/");
   });
 
+  it("should convert to lowercase", () => {
+    assert.equal(utils.prettyUrl("FOO.COM"), "foo.com");
+  });
+
   it("should strip out leading 'www.' subdomains", () => {
     assert.equal(utils.prettyUrl("https://www.mozilla.org/"), "mozilla.org/");
+  });
+
+  it("should strip out leading 'www.' for protocol-less URLS as well", () => {
+    assert.equal(utils.prettyUrl("www.foo.com"), "foo.com");
+    assert.equal(utils.prettyUrl("WWW.foo.com"), "foo.com");
   });
 
   it("should ignore non http[s] protocols", () => {
     let url = "gopher://github.com/mozilla/";
     assert.equal(utils.prettyUrl(url), url);
+  });
+
+  it("should not www if not first subdomain", () => {
+    assert.equal(utils.prettyUrl("foo.www.com"), "foo.www.com");
   });
 });

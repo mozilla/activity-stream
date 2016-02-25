@@ -1,6 +1,6 @@
-const urlParse = require("url-parse");
+const {log} = require("lib/logger");
 
-const TEMP_MAX_LENGTH = 100;
+const TEMP_MAX_LENGTH = 150;
 const ALLOWED_PROTOCOLS = new Set([
   "http:",
   "https:"
@@ -11,12 +11,12 @@ const DISALLOWED_HOSTS = new Set([
   "0.0.0.0"
 ]);
 
-function createFilter(definition) {
+function createFilter(definition, name) {
   return function(item) {
     let result = true;
-    const url = item && item.url && urlParse(item.url) || {};
-    definition.forEach(test => {
-      if (!test(item, url)) {
+    definition.forEach((test, i) => {
+      if (!test(item)) {
+        log(`omitting ${item.url}\nbecause it failed test #${i} of ${name}`);
         result = false;
       }
     });
@@ -26,11 +26,12 @@ function createFilter(definition) {
 
 const URL_FILTERS = [
   (item) => !!item.url,
+  (item) => !!item.parsedUrl,
   // This is temporary, until we can use POST-style requests
   // see https://github.com/mozilla/embedly-proxy/issues/1
-  (item) => item.url && item.url.length < TEMP_MAX_LENGTH,
-  (item, url) => ALLOWED_PROTOCOLS.has(url.protocol),
-  (item, url) => !DISALLOWED_HOSTS.has(url.hostname)
+  (item) => item.url && item.url.length <= TEMP_MAX_LENGTH,
+  (item) => item.parsedUrl && ALLOWED_PROTOCOLS.has(item.parsedUrl.protocol),
+  (item) => item.parsedUrl && !DISALLOWED_HOSTS.has(item.parsedUrl.hostname)
 ];
 
 const DATA_FILTERS = [
@@ -38,7 +39,8 @@ const DATA_FILTERS = [
 ];
 
 module.exports = {
+  TEMP_MAX_LENGTH,
   createFilter,
-  urlFilter: createFilter(URL_FILTERS),
-  siteFilter: createFilter(DATA_FILTERS)
+  urlFilter: createFilter(URL_FILTERS, "URL_FILTERS"),
+  siteFilter: createFilter(DATA_FILTERS, "DATA_FILTERS")
 };

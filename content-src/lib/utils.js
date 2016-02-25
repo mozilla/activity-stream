@@ -11,6 +11,6 @@ module.exports = {
     if (!url) {
       return "";
     }
-    return url.replace(/^https?:\/\/(www\.)?/i, "");
+    return url.replace(/^((https?:)?\/\/)?(www\.)?/i, "").toLowerCase();
   }
 };
