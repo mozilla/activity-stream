@@ -10,6 +10,8 @@ const am = new ActionManager([
   "RECEIVE_BOOKMARKS_CHANGES",
   "RECENT_LINKS_REQUEST",
   "RECENT_LINKS_RESPONSE",
+  "FRECENT_LINKS_REQUEST",
+  "FRECENT_LINKS_RESPONSE",
   "NOTIFY_HISTORY_DELETE"
 ]);
 
@@ -62,8 +64,12 @@ function RequestBookmarks() {
   return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE");
 }
 
-function RequestLinks() {
+function RequestRecentLinks() {
   return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE");
+}
+
+function RequestFrecentLinks() {
+  return RequestExpect("FRECENT_LINKS_REQUEST", "FRECENT_LINKS_RESPONSE");
 }
 
 function NotifyHistoryDelete(data) {
@@ -76,7 +82,8 @@ am.defineActions({
   RequestExpect,
   RequestTopFrecent,
   RequestBookmarks,
-  RequestLinks,
+  RequestRecentLinks,
+  RequestFrecentLinks,
   NotifyHistoryDelete,
 });
 
