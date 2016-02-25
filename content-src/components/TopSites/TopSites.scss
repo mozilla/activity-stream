@@ -35,6 +35,8 @@
       height: $tile-title-height;
       line-height: $tile-title-height;
       text-align: center;
+      padding: 0 5px;
+      text-overflow: ellipsis;
       overflow: hidden;
     }
 
