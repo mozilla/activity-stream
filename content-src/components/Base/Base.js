@@ -8,7 +8,9 @@ const Base = React.createClass({
   componentDidMount() {
     this.props.dispatch(actions.RequestTopFrecent());
 
-    this.props.dispatch(actions.RequestLinks());
+    this.props.dispatch(actions.RequestRecentLinks());
+
+    this.props.dispatch(actions.RequestFrecentLinks());
 
     this.props.dispatch(actions.RequestBookmarks());
   },
