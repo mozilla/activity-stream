@@ -138,7 +138,7 @@ exports.test_Links_getRecentLinks = function*(assert) {
   yield PlacesTestUtils.addFavicons(faviconData);
 
   // insert a bookmark
-  yield Bookmarks.insert({url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});
+  let bookmark = yield Bookmarks.insert({url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});
 
   links = yield provider.getRecentLinks();
   assert.equal(links.length, visits.length, "number of links added is the same as obtain by getRecentLinks");
@@ -147,7 +147,8 @@ exports.test_Links_getRecentLinks = function*(assert) {
   assert.equal(links[2].url, "https://mozilla3.com/2", "Expected 3-rd link");
   assert.equal(links[3].url, "https://mozilla4.com/3", "Expected 4-th link");
   assert.equal(faviconData[links[2].url], links[2].favicon, "favicon data is stored as expected");
-  assert.ok(links[1].bookmark != null, "expected non-null bookmark for second link");
+  assert.equal(links[1].bookmarkGuid, bookmark.guid, "expected bookmark guid for second link");
+  assert.equal(links[1].bookmarkDateCreated, new Date(bookmark.dateAdded).getTime(), "expected bookmark date for second link");
   assert.ok(!(links[0].bookmark || links[2].bookmark || links[3].bookmark), "other bookmarks are empty");
 };
 
