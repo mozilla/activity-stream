@@ -1,17 +1,21 @@
+/* globals Services */
+
 "use strict";
 
 const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");
-const ss = require("sdk/simple-storage");
 const {setTimeout} = require("sdk/timers");
 const {ActivityStreams} = require("lib/ActivityStreams");
+const {Cu} = require("chrome");
+
+Cu.import("resource://gre/modules/Services.jsm");
 
 let ACTIVITY_STREAMS_URL;
 let app;
 
 exports.test_TabTracker_init = function(assert) {
   for (let appURL of app.appURLs) {
-    assert.deepEqual(ss.storage.tabData[appURL], {}, "tabData at each URL storage starts out empty");
+    assert.deepEqual(app.tabData[appURL], {}, "tabData at each URL storage starts out empty");
   }
 };
 
@@ -30,18 +34,51 @@ exports.test_TabTracker_open_close_tab = function*(assert) {
   });
 
   for (let appURL of app.appURLs) {
-    assert.deepEqual(ss.storage.tabData[appURL], {}, "tabData at each URL storage starts out empty");
+    assert.deepEqual(app.tabData[appURL], {}, "tabData at each URL storage starts out empty");
   }
 
   tabs.open(ACTIVITY_STREAMS_URL);
 
   yield tabClosedPromise;
-  assert.equal(Object.keys(ss.storage.tabData).length, app.appURLs.length, "There is an entry for each of the URLS in appURLs");
-  assert.equal(Object.keys(ss.storage.tabData[ACTIVITY_STREAMS_URL]).length, 1, "There was only one activity streams tab");
-  assert.equal(ss.storage.tabData[ACTIVITY_STREAMS_URL]["-3-2"].activations.length, 1, "The activity streams page was only activated once");
 
-  let secondsOpen = ss.storage.tabData[ACTIVITY_STREAMS_URL]["-3-2"].activations[0].totalTime;
+  assert.equal(Object.keys(app.tabData).length, app.appURLs.length, "There is an entry for each of the URLS in appURLs");
+  assert.equal(Object.keys(app.tabData[ACTIVITY_STREAMS_URL]).length, 1, "There was only one activity streams tab");
+  assert.equal(app.tabData[ACTIVITY_STREAMS_URL]["-3-2"].activations.length, 1, "The activity streams page was only activated once");
+
+  let secondsOpen = app.tabData[ACTIVITY_STREAMS_URL]["-3-2"].activations[0].totalTime;
   assert.ok(secondsOpen > 0, "The tab should have stayed open for more than 0 seconds");
+};
+
+exports.test_TabTracker_send_deactivate_notification = function*(assert) {
+  let tabClosedPromise = new Promise(resolve => {
+    let onOpen = function(tab) {
+      tab.close(() => {
+        tabs.removeListener("pageshow", onOpen);
+      });
+    };
+
+    tabs.on("pageshow", onOpen);
+
+    let Observer = {
+      observe: function(subject, topic, data) {
+        if (topic === "tab-session-complete") {
+          assert.equal(Object.keys(JSON.parse(data)).length, app.appURLs.length,
+            "There is an entry for each of the URLS in appURLs in our notification");
+          resolve();
+        }
+      }
+    };
+
+    Services.obs.addObserver(Observer, "tab-session-complete");
+  });
+
+  for (let appURL of app.appURLs) {
+    assert.deepEqual(app.tabData[appURL], {}, "tabData at each URL storage starts out empty");
+  }
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+
+  yield tabClosedPromise;
 };
 
 exports.test_TabTracker_reactivating = function*(assert) {
@@ -60,7 +97,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
   });
 
   for (let appURL of app.appURLs) {
-    assert.deepEqual(ss.storage.tabData[appURL], {}, "tabData at each URL storage starts out empty");
+    assert.deepEqual(app.tabData[appURL], {}, "tabData at each URL storage starts out empty");
   }
 
   tabs.open("http://foo.com");
@@ -103,11 +140,11 @@ exports.test_TabTracker_reactivating = function*(assert) {
 
   yield tabClosedPromise;
 
-  assert.equal(Object.keys(ss.storage.tabData).length, app.appURLs.length, "There is an entry for each of the URLs in appURLs");
-  assert.equal(Object.keys(ss.storage.tabData[ACTIVITY_STREAMS_URL]).length, 1, "There was only one activity streams tab");
+  assert.equal(Object.keys(app.tabData).length, app.appURLs.length, "There is an entry for each of the URLs in appURLs");
+  assert.equal(Object.keys(app.tabData[ACTIVITY_STREAMS_URL]).length, 1, "There was only one activity streams tab");
 
-  let key = Object.keys(ss.storage.tabData[ACTIVITY_STREAMS_URL])[0];
-  assert.equal(ss.storage.tabData[ACTIVITY_STREAMS_URL][key].activations.length, 3, "The activity streams page was activated 3 times");
+  let key = Object.keys(app.tabData[ACTIVITY_STREAMS_URL])[0];
+  assert.equal(app.tabData[ACTIVITY_STREAMS_URL][key].activations.length, 3, "The activity streams page was activated 3 times");
 };
 
 before(exports, function() {
@@ -116,7 +153,6 @@ before(exports, function() {
 });
 
 after(exports, function() {
-  ss.storage = {};
   app.unload();
 });
 
