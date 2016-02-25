@@ -6,8 +6,28 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const {prettyUrl} = require("lib/utils");
+const moment = require("moment");
 
 const fakeSites = require("test/test-utils").mockData.Bookmarks.rows;
+const fakeSite = {
+  "title": "man throws alligator in wendys wptv dnt cnn",
+  "lastVisitDate": 1456426160465,
+  "url": "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn",
+  "description": "A Florida man faces multiple charges for throwing an alligator through a Wendy's drive-thru window. CNN's affiliate WPTV reports.",
+  "images": [
+    {
+      "url": "http://i2.cdn.turner.com/cnnnext/dam/assets/160209053130-man-throws-alligator-in-wendys-wptv-dnt-00004611-large-169.jpg",
+      "height": 259,
+      "width": 460,
+      "entropy": 3.98714569089,
+      "size": 14757
+    },
+  ]
+};
+const fakeSiteWithBookmark = Object.assign({}, fakeSite, {
+  "bookmarkDateCreate": 1456426165218,
+  "bookmarkGuid": "G6LXclyo_WAj"
+});
 
 describe("ActivityFeed", function() {
   let instance;
@@ -29,7 +49,6 @@ describe("ActivityFeed", function() {
 });
 
 describe("ActivityFeedItem", function() {
-  const fakeSite = fakeSites[0];
   let instance;
   let el;
   beforeEach(() => {
@@ -51,19 +70,24 @@ describe("ActivityFeedItem", function() {
       assert.instanceOf(instance.refs.icon, SiteIcon);
       assert.include(instance.refs.icon.props.site, fakeSite);
     });
-    it("should render the bookmarkTitle if it exists", () => {
-      assert.equal(instance.refs.title.innerHTML, fakeSite.bookmarkTitle);
-    });
-    it("should render the title if no bookmarkTitle exists", () => {
-      const fakeSiteCopy = JSON.parse(JSON.stringify(fakeSite));
-      delete fakeSiteCopy.bookmarkTitle;
-      instance = TestUtils.renderIntoDocument(<ActivityFeedItem {...fakeSiteCopy} />);
-      assert.equal(instance.refs.title.innerHTML, fakeSiteCopy.title);
+    it("should render the title", () => {
+      assert.equal(instance.refs.title.innerHTML, fakeSite.title);
     });
     it("should render the url link", () => {
       const linkEl = instance.refs.link;
       assert.equal(linkEl.innerHTML, prettyUrl(fakeSite.url));
       assert.include(linkEl.href, fakeSite.url);
+    });
+    it("should render the time", () => {
+      const lastVisitEl = instance.refs.lastVisit;
+      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.lastVisitDate).format("h:mma"));
+    });
+    it("should not have a bookmark class if no bookmarkGuid", () => {
+      assert.notInclude(el.className, "bookmark");
+    });
+    it("should have a bookmark class if the site has a bookmarkGuid", () => {
+      instance = TestUtils.renderIntoDocument(<ActivityFeedItem {...fakeSiteWithBookmark} />);
+      assert.include(ReactDOM.findDOMNode(instance).className, "bookmark");
     });
   });
 });
