@@ -18,7 +18,7 @@ const ActivityFeedItem = React.createClass({
           <a className="feed-link" href={site.url} ref="link">{prettyUrl(site.url)}</a>
         </div>
         <div className="feed-stats">
-          <div>{site.lastVisitDate && moment(site.lastVisitDate / 1000).format("h:mma")}</div>
+          <div>{site.lastVisitDate && moment(site.lastVisitDate).format("h:mma")}</div>
           <div>...</div>
         </div>
       </div>
@@ -58,7 +58,7 @@ function groupSitesByDate(sites) {
       continue;
     }
 
-    let day = moment(site.lastVisitDate / 1000).startOf("day").format();
+    let day = moment(site.lastVisitDate).startOf("day").format();
     if (!groupedSites.has(day)) {
       groupedSites.set(day, []);
     }
