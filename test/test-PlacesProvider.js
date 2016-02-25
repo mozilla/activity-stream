@@ -28,6 +28,12 @@ function timeDaysAgo(numDays) {
   return (TIME_NOW - (numDays * 24 * 60 * 60 * 1000)) * 1000;
 }
 
+// tests that timestamp falls within 10 days of now
+function isVisitDateOK(timestampMS) {
+  let range = 10 * 24 * 60 * 60 * 1000;
+  return Math.abs(Date.now() - timestampMS) < range;
+}
+
 exports.test_LinkChecker_securityCheck = function(assert) {
   let urls = [
     {url: "file://home/file/image.png", expected: false},
@@ -101,6 +107,7 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   for (let i = 0; i < links.length; i++) {
     assert.equal(links[i].url, visits[i].uri.spec, "links are obtained in the expected order");
     assert.equal(faviconData[links[i].url], links[i].favicon, "favicon data is stored as expected");
+    assert.ok(isVisitDateOK(links[i].lastVisitDate), "visit date within expected range");
   }
 };
 
@@ -149,6 +156,7 @@ exports.test_Links_getRecentLinks = function*(assert) {
   assert.equal(faviconData[links[2].url], links[2].favicon, "favicon data is stored as expected");
   assert.equal(links[1].bookmarkGuid, bookmark.guid, "expected bookmark guid for second link");
   assert.equal(links[1].bookmarkDateCreated, new Date(bookmark.dateAdded).getTime(), "expected bookmark date for second link");
+  assert.ok(isVisitDateOK(links[1].lastVisitDate), "visit date within expected range");
   assert.ok(!(links[0].bookmark || links[2].bookmark || links[3].bookmark), "other bookmarks are empty");
 };
 
@@ -213,6 +221,7 @@ exports.test_Links_deleteHistoryLink = function*(assert) {
   links = yield provider.getRecentLinks();
   assert.equal(links.length, 1, "only one link is left in history");
   assert.equal(links[0].url, "https://mozilla1.com/0", "Expected 2-nd link");
+  assert.ok(isVisitDateOK(links[0].lastVisitDate), "visit date within expected range");
 };
 
 exports.test_Links_getRecentBookmarks_Order = function*(assert) {
@@ -291,7 +300,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
    * is from most recent to least recent.
    * Synchronous!
    */
-  let modifiedTime = timeDaysAgo(0) * 1000;
+  let modifiedTime = timeDaysAgo(0);
   let conn = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
   for (let bm of createdBookmarks) {
     // we change the modified date based on creation dates, because due to asynchronicity, we don't know what got created first
@@ -306,6 +315,8 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   for (let i = 0; i < links.length; i++) {
     assert.equal(links[i].url, createdBookmarks[i].url, "links are obtained in the expected order");
     assert.equal(faviconData[links[i].url], links[i].favicon, "favicon data is stored as expected");
+    assert.ok(!links[i].lastVisitDate || isVisitDateOK(links[i].lastVisitDate), "set visit date is within expected range");
+    assert.ok(isVisitDateOK(links[i].lastModified), "lastModified date is within expected range");
   }
 
   // cleanup
