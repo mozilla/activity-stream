@@ -2,6 +2,7 @@ const React = require("react");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const {prettyUrl} = require("lib/utils");
 const moment = require("moment");
+const classNames = require("classnames");
 
 const DEFAULT_LENGTH = 3;
 const ICON_SIZE = 40;
@@ -9,8 +10,8 @@ const ICON_SIZE = 40;
 const ActivityFeedItem = React.createClass({
   render() {
     const site = this.props;
-    const title = site.bookmarkTitle || site.title;
-    return (<li className="feed-item">
+    const title = site.title;
+    return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
       <SiteIcon ref="icon" className="feed-icon" site={site} width={ICON_SIZE} height={ICON_SIZE} />
       <div className="feed-details">
         <div className="feed-description">
@@ -18,7 +19,7 @@ const ActivityFeedItem = React.createClass({
           <a className="feed-link" href={site.url} ref="link">{prettyUrl(site.url)}</a>
         </div>
         <div className="feed-stats">
-          <div>{site.lastVisitDate && moment(site.lastVisitDate).format("h:mma")}</div>
+          <div ref="lastVisit">{site.lastVisitDate && moment(site.lastVisitDate).format("h:mma")}</div>
           <div>...</div>
         </div>
       </div>

@@ -52,7 +52,7 @@
     margin-top: -($feed-gutter-v / 2 + $feed-circle-size / 2);
   }
 
-  &:first-child::after {
+  &.bookmark::after {
     background: none;
     border: 0;
     color: $star-blue;
@@ -62,6 +62,7 @@
     left: 0;
     margin-left: -4px;
     margin-top: -($feed-gutter-v / 2 + 18 / 2);
+    cursor: pointer;
   }
 }
 
