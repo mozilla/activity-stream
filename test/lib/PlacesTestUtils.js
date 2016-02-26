@@ -65,7 +65,7 @@ const PlacesTestUtils = Object.freeze({
       // Create mozIVisitInfo for each entry.
       let now = Date.now();
       for (let place of places) {
-        if (typeof place.title != "string") {
+        if (typeof place.title !== "string") {
           place.title = "test visit for " + place.uri.spec;
         }
         place.visits = [{
