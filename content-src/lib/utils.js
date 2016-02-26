@@ -18,11 +18,19 @@ module.exports = {
     return url.replace(/^((https?:)?\/\/)?(www\.)?/i, "").toLowerCase();
   },
 
-  sanitizeUrl(url) {
+  sanitizeUrl(site) {
+    if (!site) {
+      return "";
+    }
+
     const ALLOWED_QUERY_PARAMS = new Set(["id", "p", "q", "query", "s", "search", "sitesearch"]);
     const REMOVE_KEYS = ["auth", "password", "username"];
-    const parsedUrl = urlParse(url, true);
+    const parsedUrl = (typeof site === "string") ? urlParse(site, true) : site.parsedUrl;
     const safeQueryParams = {};
+
+    if (!parsedUrl) {
+      return "";
+    }
 
     // Remove any unwanted username/password from the parsed URL.
     REMOVE_KEYS.forEach((key) => parsedUrl.set(key, ""));

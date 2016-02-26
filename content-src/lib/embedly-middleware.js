@@ -6,8 +6,7 @@ const {sanitizeUrl} = require("lib/utils");
 
 function buildQuery(items) {
   return "?" + items
-    .map(item => item.url)
-    .map(url => sanitizeUrl(url))
+    .map(sanitizeUrl)
     .map(encodeURIComponent)
     .map(url => "urls=" + url)
     .join("&");
