@@ -1,4 +1,5 @@
 const React = require("react");
+const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const classNames = require("classnames");
 const DEFAULT_LENGTH = 3;
@@ -38,6 +39,16 @@ const SpotlightItem = React.createClass({
     const imageUrl = image.url;
     const description = site.description;
     const isPortrait = image.height > image.width;
+
+    let contextMessage;
+    if (site.bookmarkDateCreated) {
+      contextMessage = `Bookmarked ${moment(site.bookmarkDateCreated).fromNow()}`;
+    } else if (site.lastVisitDate) {
+      contextMessage = `Visited ${moment(site.lastVisitDate).fromNow()}`;
+    } else {
+      contextMessage = "Visited recently";
+    }
+
     return (<li className="spotlight-item">
       <a href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={{backgroundImage: `url(${imageUrl})`}} ref="image">
@@ -49,7 +60,7 @@ const SpotlightItem = React.createClass({
               {site.title}
             </h4>
             <p className="spotlight-description" ref="description">{description}</p>
-            <div className="spotlight-type">Last opened on iPhone</div>
+            <div className="spotlight-context" ref="contextMessage">{contextMessage}</div>
           </div>
         </div>
         <div className="inner-border" />

@@ -1,4 +1,5 @@
 const {assert} = require("chai");
+const moment = require("moment");
 const Spotlight = require("components/Spotlight/Spotlight");
 const {SpotlightItem, getBestImage, IMG_WIDTH, IMG_HEIGHT} = Spotlight;
 const React = require("react");
@@ -11,6 +12,7 @@ const fakeSiteWithImage = {
   "title": "man throws alligator in wendys wptv dnt cnn",
   "url": "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn",
   "description": "A Florida man faces multiple charges for throwing an alligator through a Wendy's drive-thru window. CNN's affiliate WPTV reports.",
+  "lastVisitDate": 1456426160465,
   "images": [
     {
       "url": "http://i2.cdn.turner.com/cnnnext/dam/assets/160209053130-man-throws-alligator-in-wendys-wptv-dnt-00004611-large-169.jpg",
@@ -109,6 +111,23 @@ describe("SpotlightItem", function() {
     });
     it("should render the description", () => {
       assert.include(instance.refs.description.innerHTML, fakeSite.description);
+    });
+    it("should render the lastVisitDate if it exists", () => {
+      assert.equal(instance.refs.contextMessage.innerHTML, `Visited ${moment(fakeSiteWithImage.lastVisitDate).fromNow()}`);
+    });
+    it("should render the bookmarkDateCreated if it exists", () => {
+      const props = Object.assign({}, fakeSite, {
+        bookmarkDateCreated: 1456426160465
+      });
+      instance = TestUtils.renderIntoDocument(<SpotlightItem {...props} />);
+      assert.equal(instance.refs.contextMessage.innerHTML, `Bookmarked ${moment(1456426160465).fromNow()}`);
+    });
+    it("should say 'Visited Recently' if no bookmark or timestamp are available", () => {
+      const props = Object.assign({}, fakeSite, {
+        lastVisitDate: null
+      });
+      instance = TestUtils.renderIntoDocument(<SpotlightItem {...props} />);
+      assert.equal(instance.refs.contextMessage.innerHTML, "Visited recently");
     });
   });
 });
