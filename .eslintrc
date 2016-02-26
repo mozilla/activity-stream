@@ -35,6 +35,7 @@
     "comma-dangle": 0,
     "computed-property-spacing": [2, "never"],
     "default-case": 0,
+    "eqeqeq": 1,
     "func-names": 0,
     "func-style": 0,
     "global-require": 0,
