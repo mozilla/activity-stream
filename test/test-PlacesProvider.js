@@ -452,10 +452,10 @@ exports.test_Links_onLinkChanged = function*(assert) {
        * 3. title change
        */
       if (link.url === url) {
-        assert.equal(link.url, url, `expected url on linkChanged event`);
+        assert.equal(link.url, url, "expected url on linkChanged event");
         linkChangedMsgCount += 1;
         if (linkChangedMsgCount === 3) {
-          assert.ok(true, `all linkChanged events captured`);
+          assert.ok(true, "all linkChanged events captured");
           provider.off("linkChanged", this);
           resolve();
         }
@@ -478,7 +478,7 @@ exports.test_Links_onClearHistory = function*(assert) {
 
   let clearHistoryPromise = new Promise(resolve => {
     let handler = () => {
-      assert.ok(true, `clearHistory event captured`);
+      assert.ok(true, "clearHistory event captured");
       provider.off("clearHistory", handler);
       resolve();
     };
