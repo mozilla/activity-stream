@@ -41,7 +41,7 @@ class ActionManager {
       throw new Error("Looks like your action definition does not return an object.");
     }
     if (!action.type) {
-      throw new Error(`You must define a type for an action.`);
+      throw new Error("You must define a type for an action.");
     }
     Object.keys(action).forEach(key => {
       if (!VALID_KEYS.has(key)) {

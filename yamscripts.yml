@@ -36,6 +36,7 @@ scripts:
 
 # test: Run all tests once
   test:
+    pre: =>bundle
     # test:lint: Run eslint
     lint: eslint . && jscs . && sass-lint -v -q
     # test:jpm: Run jpm tests
