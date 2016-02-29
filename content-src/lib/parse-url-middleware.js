@@ -15,7 +15,7 @@ module.exports = () => next => action => {
     if (!site.url) {
       return site;
     }
-    const parsedUrl = urlParse(site.url);
+    const parsedUrl = urlParse(site.url, true);
     if (!parsedUrl) {
       return null;
     }
