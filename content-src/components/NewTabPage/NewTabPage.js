@@ -29,7 +29,7 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <GroupedActivityFeed title="Top Activity" sites={props.History.rows} length={20} />
+            <GroupedActivityFeed title="Top Activity" sites={props.History.rows} length={6} />
           </section>
         </div>
       </div>
