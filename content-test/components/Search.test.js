@@ -22,4 +22,12 @@ describe("Search", () => {
     TestUtils.Simulate.change(input);
     TestUtils.Simulate.click(button);
   });
+  it("should call onSearch callback if value is empty", () => {
+    function onSearch() {
+      throw new Error("Should not call onSearch");
+    }
+    const instance = TestUtils.renderIntoDocument(<Search onSearch={onSearch} />);
+    const button = instance.refs.button;
+    TestUtils.Simulate.click(button);
+  });
 });
