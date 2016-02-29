@@ -1,4 +1,7 @@
-var urlParse = require("url-parse");
+const urlParse = require("url-parse");
+
+const ALLOWED_QUERY_PARAMS = new Set(["id", "p", "q", "query", "s", "search", "sitesearch"]);
+const REMOVE_KEYS = ["auth", "password", "username"];
 
 module.exports = {
   toRGBString(...color) {
@@ -23,8 +26,6 @@ module.exports = {
       return "";
     }
 
-    const ALLOWED_QUERY_PARAMS = new Set(["id", "p", "q", "query", "s", "search", "sitesearch"]);
-    const REMOVE_KEYS = ["auth", "password", "username"];
     const parsedUrl = (typeof site === "string") ? urlParse(site, true) : site.parsedUrl;
     const safeQueryParams = {};
 
