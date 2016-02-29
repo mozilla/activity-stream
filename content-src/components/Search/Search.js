@@ -6,14 +6,20 @@ const Search = React.createClass({
       onSearch: function() {}
     };
   },
+  doSearch(value) {
+    if (!value) {
+      return;
+    }
+    this.props.onSearch(value);
+  },
   render() {
-    return (<div className="search-wrapper">
+    return (<form className="search-wrapper">
       <span className="search-label fa fa-search" />
-      <input ref="input" placeholder="Search" required />
-      <button ref="button" onClick={() => this.props.onSearch(this.refs.input.value)}>
+      <input ref="input" type="search" placeholder="Search" required />
+      <button ref="button" onClick={() => this.doSearch(this.refs.input.value)}>
         <span className="fa fa-arrow-right" />
       </button>
-    </div>);
+    </form>);
   }
 });
 
