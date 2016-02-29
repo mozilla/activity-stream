@@ -9,7 +9,7 @@
   },
   "author": "Mozilla",
   "engines": {
-    "firefox": ">=45.0b1"
+    "firefox": ">=45.* <=*"
   },
   "main": "lib/main.js",
   "license": "MPL-2.0",
@@ -18,6 +18,8 @@
     "firefox",
     "activity-streams"
   ],
+  "updateURL": "https://moz-activity-streams.s3.amazonaws.com/dist/update.rdf",
+  "updateLink": "https://moz-activity-streams.s3.amazonaws.com/dist/activity-streams-latest.xpi",
   "dependencies": {
     "classnames": "2.2.3",
     "history": "1.17.0",

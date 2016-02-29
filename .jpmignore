@@ -1,6 +1,8 @@
 .DS_Store
 .git/
+activity-streams-env/
 npm-debug.log
+requirements.txt
 CHANGELOG.md
 content-test/
 dist/
@@ -12,7 +14,10 @@ node_modules/
 .gitignore
 .jpmignore
 .travis.yml
+.amo_config.json
 config.default.yml
+fabfile.py
+fabfile.pyc
 config.yml
 karma.conf.js
 npm-shrinkwrap.json
