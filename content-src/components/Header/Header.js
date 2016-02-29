@@ -2,23 +2,24 @@ const React = require("react");
 const {Link} = require("react-router");
 
 const Header = React.createClass({
+  getDefaultProps() {
+    return {links: []};
+  },
   getInitialState() {
     return {showDropdown: false};
   },
   render() {
     const props = this.props;
-    const currentRoute = props.currentRoute || {};
-    return (<header className="head" hidden={currentRoute.path === "/"}>
+    return (<header className="head">
 
       <section className="nav" onClick={() => this.setState({showDropdown: !this.state.showDropdown})}>
         <h1>
-          <span hidden={!currentRoute.icon} className={`icon fa ${currentRoute.icon}`} />
-          <span>{currentRoute.title}</span>
+          <span hidden={!props.icon} className={`icon fa ${props.icon}`} />
+          <span>{props.title}</span>
           <span className="arrow fa fa-chevron-down" />
         </h1>
         <ul className="nav-picker" hidden={!this.state.showDropdown}>
-          <li hidden={currentRoute.path === "/"}><Link to="/">Home</Link></li>
-          <li hidden={currentRoute.path === "/timeline"}><Link to="/timeline">Activity Stream</Link></li>
+          {props.links.map(link => <li key={link.to}><Link to={link.to}>{link.title}</Link></li>)}
         </ul>
       </section>
       <section className="spacer" />
@@ -36,11 +37,10 @@ const Header = React.createClass({
 Header.propTypes = {
   userName: React.PropTypes.string,
   userImage: React.PropTypes.string,
-  currentRoute: React.PropTypes.shape({
-    title: React.PropTypes.string.isRequired,
-    icon: React.PropTypes.string,
-    path: React.PropTypes.string.isRequired
-  }).isRequired
+  title: React.PropTypes.string.isRequired,
+  icon: React.PropTypes.string,
+  pathname: React.PropTypes.string.isRequired,
+  links: React.PropTypes.array.isRequired
 };
 
 module.exports = Header;
