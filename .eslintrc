@@ -61,6 +61,8 @@
     "no-unused-vars": [2, {"vars": "all", "args": "none"}],
     "no-warning-comments": 1,
     "object-curly-spacing": [2, "never"],
+    "no-var": 2,
+    "prefer-const": 0, // TODO: Change to `1`.
     "prefer-reflect": 0,
     "quotes": [2, "double"],
     "semi": [2, "always"],
