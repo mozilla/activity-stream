@@ -38,7 +38,7 @@ exports.test_LinkChecker_securityCheck = function(assert) {
   let urls = [
     {url: "file://home/file/image.png", expected: false},
     {url: "resource:///modules/PlacesProvider.jsm", expected: false},
-    {url: "javascript:alert('hello')", expected: false}, // jshint ignore:line
+    {url: "javascript:alert('hello')", expected: false},
     {url: "data:image/png;base64,XXX", expected: false},
     {url: "about:newtab", expected: true},
     {url: "https://example.com", expected: true},
@@ -445,7 +445,7 @@ exports.test_Links_onLinkChanged = function*(assert) {
   let linkChangedMsgCount = 0;
 
   let linkChangedPromise = new Promise(resolve => {
-    let handler = (_, link) => { // jshint ignore:line
+    let handler = (_, link) => {
       /* There are 3 linkChanged events:
        * 1. visit insertion (-1 frecency by default)
        * 2. frecency score update (after transition type calculation etc)
@@ -503,7 +503,7 @@ exports.test_Links_onDeleteURI = function*(assert) {
   let testURL = "https://example.com/toDelete";
 
   let deleteURIPromise = new Promise(resolve => {
-    let handler = (_, {url}) => { // jshint ignore:line
+    let handler = (_, {url}) => {
       assert.equal(testURL, url, "deleted url and expected url are the same");
       provider.off("deleteURI", handler);
       resolve();
