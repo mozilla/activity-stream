@@ -1,6 +1,6 @@
 .activity-feed {
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 1.4;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -8,10 +8,11 @@
 
 .feed-item {
   display: flex;
-  padding-left: $feed-gutter-h + $feed-circle-size;
+  align-items: center;
+  padding-left: $feed-gutter-h * 2 + $feed-circle-offset;
   padding-right: $feed-gutter-h;
-  padding-bottom: $feed-gutter-v / 2;
-  padding-top: $feed-gutter-v / 2;
+  padding-bottom: $feed-gutter-v;
+  padding-top: $feed-gutter-v;
   position: relative;
   border: 1px solid transparent;
   border-radius: $border-radius;
@@ -36,7 +37,7 @@
     bottom: -1px;
     content: '';
     display: block;
-    left: $feed-circle-size;
+    left: $feed-gutter-h * 2 - $feed-circle-size;
     position: absolute;
     top: -1px;
     width: 2px;
@@ -49,7 +50,7 @@
     content: '';
     display: block;
     height: $feed-circle-size;
-    left: ($feed-circle-size + 2) / 2;
+    left: $feed-gutter-h + 1;
     position: absolute;
     top: 50%;
     width: $feed-circle-size;
@@ -63,7 +64,6 @@
     content: '\f005';
     font: normal normal normal 18px/1 FontAwesome;
     height: auto;
-    left: ($feed-circle-size + 2) / 2;
     margin-left: -4px;
     margin-top: -9px;
     cursor: pointer;
@@ -110,7 +110,7 @@
   }
 
   &:hover {
-    background: $bg-grey;
+    background: $feed-hover-color;
     border: 1px solid $faintest-black;
 
     .action-items-container {
@@ -122,9 +122,25 @@
   }
 }
 
-.site-icon.feed-icon {
-  flex-shrink: 0;
+.site-icon.feed-icon,
+.feed-icon-image {
+  width: 32px;
+  height: 32px;
   margin-right: 10px;
+}
+
+.feed-icon-image {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid $faintest-black;
+  border-radius: $border-radius;
+
+  .site-icon.feed-icon {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+  }
 }
 
 .feed-details {
@@ -149,7 +165,6 @@
 
     .feed-link {
       display: block;
-      font-size: 14px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -159,7 +174,6 @@
   .feed-stats {
     color: $light-grey;
     flex-shrink: 0;
-    font-size: 13px;
     text-align: right;
   }
 }

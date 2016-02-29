@@ -3,12 +3,13 @@ const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
 const {actions} = require("actions/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
-const {prettyUrl} = require("lib/utils");
+const {prettyUrl, getRandomFromTimestamp} = require("lib/utils");
 const moment = require("moment");
 const classNames = require("classnames");
 
 const DEFAULT_LENGTH = 3;
-const ICON_SIZE = 40;
+const ICON_SIZE = 16;
+const TOP_LEFT_ICON_SIZE = 20;
 
 const ActivityFeedItem = React.createClass({
   getDefaultProps() {
@@ -21,8 +22,23 @@ const ActivityFeedItem = React.createClass({
     const title = site.title;
     const date = site.dateDisplay;
 
+    let icon;
+    const iconProps = {
+      ref: "icon",
+      className: "feed-icon",
+      site,
+      iconSize: ICON_SIZE
+    };
+    if (site.showImage && site.images && site.images[0]) {
+      icon = (<div className="feed-icon-image" style={{backgroundImage: `url(${site.images[0].url})`}}>
+        <SiteIcon {...iconProps} width={TOP_LEFT_ICON_SIZE} height={TOP_LEFT_ICON_SIZE} />
+      </div>);
+    } else {
+      icon = (<SiteIcon {...iconProps} />);
+    }
+
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
-      <SiteIcon ref="icon" className="feed-icon" site={site} width={ICON_SIZE} height={ICON_SIZE} />
+      {icon}
       <div className="feed-details">
         <div className="feed-description">
           <h4 className="feed-title" ref="title">{title}</h4>
@@ -60,7 +76,10 @@ const ActivityFeed = React.createClass({
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
     return (<ul className="activity-feed">
-      {sites.map(site => <ActivityFeedItem key={site.url} onDelete={this.props.onDelete} {...site} />)}
+      {sites.map((site, i) => <ActivityFeedItem key={i}
+        onDelete={this.props.onDelete}
+        showImage={getRandomFromTimestamp(0.2, site)}
+        {...site} />)}
     </ul>);
   }
 });

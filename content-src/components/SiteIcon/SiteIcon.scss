@@ -1,23 +1,50 @@
-.site-icon {
-  overflow: hidden;
-  border-radius: $site-icon-border-radius;
 
-  > div {
-    height: 100%;
-    width: 100%;
+
+.site-icon {
+  position: relative;
+  border-radius: $site-icon-border-radius;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .site-icon-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
   }
 
-  .site-icon-image {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
+  .site-icon-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: $border-radius;
   }
 
   .site-icon-fallback {
-    align-items: center;
-    color: $white;
-    display: flex;
-    justify-content: center;
     text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .site-icon-title {
+    width: 100%;
+    font-size: $tile-title-font-size;
+    border-radius: 0 0 $border-radius $border-radius;
+    background-color: $tile-title-bg-color;
+    height: $tile-title-height;
+    line-height: $tile-title-height;
+    text-align: center;
+    padding: 0 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  &:hover .site-icon-title {
+    background-color: $tile-title-hover-color;
   }
 }

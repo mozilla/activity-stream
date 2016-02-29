@@ -11,6 +11,7 @@ $sidebar-active-item-border-color: #E14164;
 $white: #FFF;
 $header-border-color: #DFE0E1;
 $faintest-black: rgba(0, 0, 0, 0.1);
+$faint-black: rgba(0, 0, 0, 0.2);
 $border-radius: 3px;
 $pink: #E6196F;
 $green: #4EB748;
@@ -25,22 +26,24 @@ $header-border: solid 1px #DFE0E1;
 
 $tile-width: 96px;
 $tile-height: $tile-width;
-$tile-title-height: 26px;
+$tile-title-height: 22px;
 $tile-font-size: 13px;
 $tile-border: 1px #FFF;
 $tile-gutter: $base-gutter;
 $tile-title-bg-color: rgba(255, 255, 255, 0.6);
 $tile-title-hover-color: #FFF;
-$tile-title-font-size: 12px;
+$tile-title-font-size: 11px;
 $tile-close-border: 1px solid rgba(0, 0, 0, 0.2);
 $tile-close-boxshadow: 0 2px 0 rgba(0, 0, 0, 0.1);
 
 $wrapper-max-width: 6 * $tile-width + 5 * $tile-gutter;
 
-$feed-gutter-h: $base-gutter;
-$feed-gutter-v: 16px;
+$feed-gutter-h: 12px;
+$feed-gutter-v: 12px;
 $feed-circle-size: 8px;
+$feed-circle-offset: 16px;
 $feed-icon-size: 40px;
+$feed-hover-color: rgba(0, 0, 0, 0.06);
 
 $spotlight-padding: 10px;
 $spotlight-item-height: 250px;

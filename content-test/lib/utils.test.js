@@ -54,6 +54,39 @@ describe("prettyUrl()", () => {
   });
 });
 
+describe("getRandomColor", () => {
+  it("should get a random color", () => {
+    const color = utils.getRandomColor();
+    assert.isArray(color);
+    assert.lengthOf(color, 3);
+    assert.include(utils.RANDOM_COLORS, color);
+  });
+  it("should get a random color base on a numerical key", () => {
+    const color = utils.getRandomColor(21319);
+    assert.equal(utils.RANDOM_COLORS[9], color);
+  });
+  it("should get a random color base on a letter", () => {
+    const color = utils.getRandomColor("boo"); // Char code of "b" is 98
+    assert.equal(utils.RANDOM_COLORS[8], color);
+  });
+});
+
+describe("getRandomFromTimestamp", () => {
+  it("should return true or false", () => {
+    assert.isBoolean(utils.getRandomFromTimestamp(0.5, {lastVisitDate: 1023123}));
+  });
+  it("should return the same value for the same timestamp", () => {
+    const getValue = () => utils.getRandomFromTimestamp(0.5, {lastVisitDate: 1023123});
+    const value = getValue();
+    assert.equal(getValue(), value);
+    assert.equal(getValue(), value);
+    assert.equal(getValue(), value);
+    assert.equal(getValue(), value);
+    assert.equal(getValue(), value);
+    assert.equal(getValue(), value);
+  });
+});
+
 describe("sanitizeUrl()", () => {
   it("should return a blank string if url is falsey", () => {
     assert.equal(utils.sanitizeUrl(""), "");
