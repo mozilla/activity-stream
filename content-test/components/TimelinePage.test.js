@@ -1,11 +1,15 @@
 const {assert} = require("chai");
 const React = require("react");
 const TestUtils = require("react-addons-test-utils");
+
 const TimelinePage = require("components/TimelinePage/TimelinePage");
-const {TimelineHistory} = require("components/TimelinePage/TimelineHistory");
-const {TimelineBookmarks} = require("components/TimelinePage/TimelineBookmarks");
+const ConnectedTimelineHistory = require("components/TimelinePage/TimelineHistory");
+const {TimelineHistory} = ConnectedTimelineHistory;
+const ConnectedTimelineBookmarks = require("components/TimelinePage/TimelineBookmarks");
+const {TimelineBookmarks} = ConnectedTimelineBookmarks;
 const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
-const {mockData} = require("test/test-utils");
+
+const {mockData, renderWithProvider} = require("test/test-utils");
 
 describe("Timeline", () => {
 
@@ -52,6 +56,12 @@ describe("Timeline", () => {
       const activityFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
       assert.equal(activityFeed.props.sites, fakeProps.History.rows);
     });
+
+    it("should render the connected container with the correct props", () => {
+      const container = renderWithProvider(ConnectedTimelineHistory);
+      const inner = TestUtils.findRenderedComponentWithType(container, TimelineHistory);
+      Object.keys(fakeProps).forEach(key => assert.property(inner.props, key));
+    });
   });
 
   describe("TimelineBookmarks", () => {
@@ -68,6 +78,12 @@ describe("Timeline", () => {
     it("should render GroupedActivityFeed with correct data", () => {
       const activityFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
       assert.equal(activityFeed.props.sites, fakeProps.Bookmarks.rows);
+    });
+
+    it("should render the connected container with the correct props", () => {
+      const container = renderWithProvider(ConnectedTimelineBookmarks);
+      const inner = TestUtils.findRenderedComponentWithType(container, TimelineBookmarks);
+      Object.keys(fakeProps).forEach(key => assert.property(inner.props, key));
     });
   });
 

@@ -11,6 +11,8 @@ const ActivityFeedItem = React.createClass({
   render() {
     const site = this.props;
     const title = site.title;
+    const date = site.dateDisplay;
+
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
       <SiteIcon ref="icon" className="feed-icon" site={site} width={ICON_SIZE} height={ICON_SIZE} />
       <div className="feed-details">
@@ -19,7 +21,7 @@ const ActivityFeedItem = React.createClass({
           <a className="feed-link" href={site.url} ref="link">{prettyUrl(site.url)}</a>
         </div>
         <div className="feed-stats">
-          <div ref="lastVisit">{site.lastVisitDate && moment(site.lastVisitDate).format("h:mma")}</div>
+          <div ref="lastVisit">{date && moment(date).format("h:mma")}</div>
           <div>...</div>
         </div>
       </div>
@@ -32,7 +34,8 @@ ActivityFeedItem.propTypes = {
   images: React.PropTypes.array,
   title: React.PropTypes.string,
   bookmarkTitle: React.PropTypes.string,
-  type: React.PropTypes.string
+  type: React.PropTypes.string,
+  dateDisplay: React.PropTypes.number
 };
 
 const ActivityFeed = React.createClass({
@@ -55,11 +58,12 @@ ActivityFeed.propTypes = {
 function groupSitesByDate(sites) {
   let groupedSites = new Map();
   for (let site of sites) {
-    if (!Number.isInteger(site.lastVisitDate)) {
+    const date = site.dateDisplay;
+    if (!Number.isInteger(date)) {
       continue;
     }
 
-    let day = moment(site.lastVisitDate).startOf("day").format();
+    let day = moment(date).startOf("day").format();
     if (!groupedSites.has(day)) {
       groupedSites.set(day, []);
     }
@@ -70,10 +74,17 @@ function groupSitesByDate(sites) {
 
 const GroupedActivityFeed = React.createClass({
   getDefaultProps() {
-    return {length: DEFAULT_LENGTH};
+    return {
+      length: DEFAULT_LENGTH,
+      dateKey: "lastVisitDate"
+    };
   },
   render() {
-    const sites = this.props.sites.slice(0, this.props.length);
+    const sites = this.props.sites
+      .slice(0, this.props.length)
+      .map(site => {
+        return Object.assign({}, site, {dateDisplay: site[this.props.dateKey]});
+      });
     const groupedSites = groupSitesByDate(sites);
     return (<div className="grouped-activity-feed">
       {this.props.title &&
@@ -100,7 +111,8 @@ const GroupedActivityFeed = React.createClass({
 GroupedActivityFeed.propTypes = {
   sites: React.PropTypes.array.isRequired,
   length: React.PropTypes.number,
-  title: React.PropTypes.string
+  title: React.PropTypes.string,
+  dateKey: React.PropTypes.string
 };
 
 module.exports = ActivityFeed;

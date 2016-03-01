@@ -5,3 +5,5 @@ chai.use(require("chai-as-promised"));
 chai.should();
 
 files.forEach(file => req(file));
+
+// require("test/components/NewTabPage.test.js");

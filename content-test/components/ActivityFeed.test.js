@@ -11,7 +11,7 @@ const moment = require("moment");
 const fakeSites = require("test/test-utils").mockData.Bookmarks.rows;
 const fakeSite = {
   "title": "man throws alligator in wendys wptv dnt cnn",
-  "lastVisitDate": 1456426160465,
+  "dateDisplay": 1456426160465,
   "url": "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn",
   "description": "A Florida man faces multiple charges for throwing an alligator through a Wendy's drive-thru window. CNN's affiliate WPTV reports.",
   "images": [
@@ -25,7 +25,7 @@ const fakeSite = {
   ]
 };
 const fakeSiteWithBookmark = Object.assign({}, fakeSite, {
-  "bookmarkDateCreate": 1456426165218,
+  "bookmarkDateCreated": 1456426165218,
   "bookmarkGuid": "G6LXclyo_WAj"
 });
 
@@ -80,7 +80,7 @@ describe("ActivityFeedItem", function() {
     });
     it("should render the time", () => {
       const lastVisitEl = instance.refs.lastVisit;
-      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.lastVisitDate).format("h:mma"));
+      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.dateDisplay).format("h:mma"));
     });
     it("should not have a bookmark class if no bookmarkGuid", () => {
       assert.notInclude(el.className, "bookmark");

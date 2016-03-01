@@ -3,37 +3,11 @@ const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const classNames = require("classnames");
 const DEFAULT_LENGTH = 3;
-const IMG_HEIGHT = 226;
-const IMG_WIDTH =  124;
-
-function getBestImage(images) {
-  if (!images || !images.length) {
-    return null;
-  }
-  const filteredImages = images.filter(image => {
-    if (!image.url) {
-      return false;
-    }
-    if (!image.width || image.width < IMG_WIDTH) {
-      return false;
-    }
-    if (!image.height || image.height < IMG_HEIGHT) {
-      return false;
-    }
-    return true;
-  });
-
-  if (!filteredImages.length) {
-    return null;
-  }
-
-  return filteredImages[0];
-}
 
 const SpotlightItem = React.createClass({
   render() {
     const site = this.props;
-    const image = getBestImage(site.images);
+    const image = site.bestImage;
     const imageUrl = image.url;
     const description = site.description;
     const isPortrait = image.height > image.width;
@@ -71,15 +45,10 @@ const SpotlightItem = React.createClass({
 
 SpotlightItem.propTypes = {
   url: React.PropTypes.string.isRequired,
-  images: React.PropTypes.arrayOf(
-    React.PropTypes.shape({
-      url: React.PropTypes.string.isRequired
-    }).isRequired
-  ).isRequired,
+  bestImage: React.PropTypes.object.isRequired,
   favicon_url: React.PropTypes.string,
-  icons: React.PropTypes.array,
-  title: React.PropTypes.string,
-  description: React.PropTypes.string
+  title: React.PropTypes.string.isRequired,
+  description: React.PropTypes.string.isRequired
 };
 
 const Spotlight = React.createClass({
@@ -87,17 +56,7 @@ const Spotlight = React.createClass({
     return {length: DEFAULT_LENGTH};
   },
   render() {
-    const sites = this.props.sites
-      .filter(site => {
-        // Don't use sites that don't look good
-        return !!(
-          getBestImage(site.images) &&
-          site.title &&
-          site.description &&
-          site.title !== site.description
-        );
-      })
-      .slice(0, this.props.length);
+    const sites = this.props.sites.slice(0, this.props.length);
     const blankSites = [];
     for (let i = 0; i < (this.props.length - sites.length); i++) {
       blankSites.push(<li className="spotlight-item spotlight-placeholder" key={`blank-${i}`} />);
@@ -119,6 +78,3 @@ Spotlight.propTypes = {
 
 module.exports = Spotlight;
 module.exports.SpotlightItem = SpotlightItem;
-module.exports.getBestImage = getBestImage;
-module.exports.IMG_HEIGHT = IMG_HEIGHT;
-module.exports.IMG_WIDTH =  IMG_WIDTH;

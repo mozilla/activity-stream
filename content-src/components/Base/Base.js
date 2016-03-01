@@ -1,5 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
+const {justDispatch} = require("selectors/selectors");
 const {actions} = require("actions/action-manager");
 
 const Base = React.createClass({
@@ -21,4 +22,4 @@ const Base = React.createClass({
   }
 });
 
-module.exports = connect(() => ({}))(Base);
+module.exports = connect(justDispatch)(Base);
