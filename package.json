@@ -9,7 +9,7 @@
   },
   "author": "Mozilla",
   "engines": {
-    "firefox": ">=45.* <=*"
+    "firefox": ">=45.0 <=*"
   },
   "main": "lib/main.js",
   "license": "MPL-2.0",
