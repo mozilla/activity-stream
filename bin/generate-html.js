@@ -18,6 +18,7 @@ function template(rawOptions) {
   </head>
   <body>
     <div id="root"></div>
+    <script src="${options.baseUrl}vendor.bundle.js"></script>
     <script src="${options.baseUrl}bundle.js"></script>
   </body>
 </html>
