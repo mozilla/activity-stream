@@ -50,9 +50,6 @@ function RequestExpect(type, expect, options = {}) {
   if (options.timeout) {
     action.meta.timeout = options.timeout;
   }
-  if (options.query) {
-    action.query = options.query;
-  }
   if (options.data) {
     action.data = options.data;
   }
