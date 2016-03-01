@@ -43,6 +43,7 @@ exports.test_LinkChecker_securityCheck = function(assert) {
     {url: "about:newtab", expected: true},
     {url: "https://example.com", expected: true},
     {url: "ftp://example.com", expected: true},
+    {url: "place:sort=foo", expected: false},
   ];
   for (let {url, expected} of urls) {
     let observed = PlacesProvider.LinkChecker.checkLoadURI(url);
