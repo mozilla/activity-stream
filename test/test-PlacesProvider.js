@@ -317,6 +317,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
     assert.equal(faviconData[links[i].url], links[i].favicon, "favicon data is stored as expected");
     assert.ok(!links[i].lastVisitDate || isVisitDateOK(links[i].lastVisitDate), "set visit date is within expected range");
     assert.ok(isVisitDateOK(links[i].lastModified), "lastModified date is within expected range");
+    assert.ok(isVisitDateOK(links[i].bookmarkDateCreated), "bookmarkDateCreated date is within expected range");
   }
 
   // cleanup
