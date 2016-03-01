@@ -22,6 +22,7 @@
   "updateLink": "https://moz-activity-streams.s3.amazonaws.com/dist/activity-streams-latest.xpi",
   "dependencies": {
     "classnames": "2.2.3",
+    "fancy-dedupe": "0.1.0",
     "history": "1.17.0",
     "moment": "2.11.2",
     "react": "0.14.7",
@@ -31,6 +32,7 @@
     "redux": "3.2.0",
     "redux-logger": "2.4.0",
     "redux-thunk": "1.0.3",
+    "reselect": "^2.0.3",
     "url-parse": "1.0.5"
   },
   "devDependencies": {
@@ -104,7 +106,7 @@
     "test:lint": "eslint . && jscs . && sass-lint -v -q",
     "test:jpm": "jpm test -b beta",
     "test:karma": "NODE_ENV=test karma start --browsers FirefoxNightly",
-    "tdd": "karma start --no-single-run",
+    "tdd": "NODE_ENV=test karma start --no-single-run --browsers Chrome",
     "package": "npm run bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
     "travis": "npm-run-all travis:*",
     "travis:eslint": "npm run test:lint",

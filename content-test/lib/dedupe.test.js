@@ -1,13 +1,15 @@
-const {createDedupeKey, innerDedupe} = require("lib/dedupe");
 const {assert} = require("chai");
 const urlParse = require("url-parse");
+
+const dedupe = require("lib/dedupe");
+const {createDedupeKey} = dedupe;
 
 function createSite(url) {
   return {url, parsedUrl: urlParse(url)};
 }
 
 describe("createDedupeKey", () => {
-  it("should return null if parsedUrl is missing", () => {
+  it("should return null if url is missing", () => {
     assert.isNull(createDedupeKey({url: ""}));
   });
   it("should create a key for a url", () => {
@@ -36,7 +38,7 @@ describe("createDedupeKey", () => {
   });
 });
 
-describe("innerDedupe", () => {
+describe("dedupe", () => {
   it("should dedupe sites", () => {
     const sites = [
       "http://facebook.com",
@@ -48,7 +50,7 @@ describe("innerDedupe", () => {
     const result = [
       "http://facebook.com"
     ].map(createSite);
-    assert.deepEqual(innerDedupe(sites), result);
+    assert.deepEqual(dedupe.one(sites), result);
   });
   it("should not ignore paths and querystrings", () => {
     const sites = [
@@ -56,6 +58,6 @@ describe("innerDedupe", () => {
       "http://facebook.com/foo",
       "http://facebook.com?bar=bar"
     ].map(createSite);
-    assert.deepEqual(innerDedupe(sites), sites);
+    assert.deepEqual(dedupe.one(sites), sites);
   });
 });
