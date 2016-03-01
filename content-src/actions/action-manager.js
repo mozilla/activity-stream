@@ -16,7 +16,8 @@ const am = new ActionManager([
   "NOTIFY_PERFORM_SEARCH",
   "RECEIVE_CURRENT_ENGINE",
   "SEARCH_STATE_REQUEST",
-  "SEARCH_STATE_RESPONSE"
+  "SEARCH_STATE_RESPONSE",
+  "NOTIFY_ROUTE_CHANGE",
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -88,6 +89,10 @@ function NotifyPerformSearch(data) {
   return Notify("NOTIFY_PERFORM_SEARCH", data);
 }
 
+function NotifyRouteChange(data) {
+  return Notify("NOTIFY_ROUTE_CHANGE", data);
+}
+
 am.defineActions({
   Notify,
   Response,
@@ -99,6 +104,7 @@ am.defineActions({
   RequestSearchState,
   NotifyHistoryDelete,
   NotifyPerformSearch,
+  NotifyRouteChange,
 });
 
 module.exports = am;
