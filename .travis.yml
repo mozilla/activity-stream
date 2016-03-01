@@ -27,3 +27,6 @@ before_script:
 script:
   - npm run bundle
   - npm run travis
+
+notifications:
+  email: false
