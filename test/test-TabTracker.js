@@ -36,7 +36,7 @@ exports.test_TabTracker_open_close_tab = function*(assert) {
   tabs.open(ACTIVITY_STREAMS_URL);
 
   yield tabClosedPromise;
-  assert.equal(Object.keys(ss.storage.tabData).length, 3, "There are 3 pages to keep track of");
+  assert.equal(Object.keys(ss.storage.tabData).length, app.appURLs.length, "There is an entry for each of the URLS in appURLs");
   assert.equal(Object.keys(ss.storage.tabData[ACTIVITY_STREAMS_URL]).length, 1, "There was only one activity streams tab");
   assert.equal(ss.storage.tabData[ACTIVITY_STREAMS_URL]["-3-2"].activations.length, 1, "The activity streams page was only activated once");
 
@@ -103,7 +103,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
 
   yield tabClosedPromise;
 
-  assert.equal(Object.keys(ss.storage.tabData).length, 3, "There are 3 pages to keep track of");
+  assert.equal(Object.keys(ss.storage.tabData).length, app.appURLs.length, "There is an entry for each of the URLs in appURLs");
   assert.equal(Object.keys(ss.storage.tabData[ACTIVITY_STREAMS_URL]).length, 1, "There was only one activity streams tab");
 
   let key = Object.keys(ss.storage.tabData[ACTIVITY_STREAMS_URL])[0];
