@@ -1,7 +1,7 @@
 {
   "title": "activity-streams-experiment",
   "name": "activity-streams",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A feed-based view on user history",
   "repository": "mozilla/activity-streams",
   "bugs": {
