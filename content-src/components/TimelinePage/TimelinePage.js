@@ -1,41 +1,40 @@
 const React = require("react");
-const {connect} = require("react-redux");
-
-const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
-const Spotlight = require("components/Spotlight/Spotlight");
+const {Link} = require("react-router");
+const classNames = require("classnames");
+const Header = require("components/Header/Header");
 
 const TimelinePage = React.createClass({
   render() {
     const props = this.props;
+    const pathname = props.location && props.location.pathname;
     const navItems = [
-      {title: "All", active: true, icon: "fa-firefox"},
-      {title: "Bookmarks", icon: "fa-star"}
+      {title: "All", to: "/timeline", active: true, icon: "fa-firefox"},
+      {title: "Bookmarks", to: "/timeline/bookmarks", icon: "fa-star"}
     ];
-    return (<main className="timeline">
-      <nav className="sidebar">
-        <ul>
-          {navItems.map(item => {
-            return (<li key={item.title}>
-              <a className={item.active ? "active" : ""}>
-                <span className={`fa ${item.icon}`} /> {item.title}
-              </a>
-            </li>);
-          })}
-        </ul>
-      </nav>
-      <section className="content">
-        <div className="wrapper">
-          <Spotlight sites={props.History.rows} />
-          <GroupedActivityFeed title="Just now" sites={props.History.rows} length={20} />
-        </div>
-      </section>
-    </main>);
+    return (<div className="outer-wrapper">
+      <Header
+        title="Activity Stream"
+        icon="fa-timeline"
+        pathname={pathname}
+        links={[{title: "Home", to: "/"}]} />
+      <main className="timeline">
+        <nav className="sidebar">
+          <ul>
+            {navItems.map(item => {
+              return (<li key={item.to}>
+                <Link to={item.to} className={classNames({active: item.to === pathname})}>
+                  <span className={`fa ${item.icon}`} /> <span className="link-title">{item.title}</span>
+                </Link>
+              </li>);
+            })}
+          </ul>
+        </nav>
+        <section className="content">
+          {this.props.children}
+        </section>
+      </main>
+    </div>);
   }
 });
 
-function select(state) {
-  return state;
-}
-
-module.exports = connect(select)(TimelinePage);
-module.exports.TimelinePage = TimelinePage;
+module.exports = TimelinePage;

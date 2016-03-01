@@ -45,6 +45,8 @@ const SpotlightItem = React.createClass({
       contextMessage = `Bookmarked ${moment(site.bookmarkDateCreated).fromNow()}`;
     } else if (site.lastVisitDate) {
       contextMessage = `Visited ${moment(site.lastVisitDate).fromNow()}`;
+    } else if (site.type === "bookmark") {
+      contextMessage = "Bookmarked recently";
     } else {
       contextMessage = "Visited recently";
     }
