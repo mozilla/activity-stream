@@ -11,6 +11,8 @@ const Base = React.createClass({
     this.props.dispatch(actions.RequestFrecentLinks());
 
     this.props.dispatch(actions.RequestBookmarks());
+
+    this.props.dispatch(actions.RequestSearchState());
   },
   render() {
     return (<div id="base">
