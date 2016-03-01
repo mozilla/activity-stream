@@ -1,10 +1,20 @@
 const React = require("react");
 const {Router, Route, IndexRoute} = require("react-router");
 const {createHashHistory} = require("history");
+const {connect} = require("react-redux");
+const {actions} = require("actions/action-manager");
 
 const history = createHashHistory({queryKey: false});
 
 const Routes = React.createClass({
+  componentDidMount() {
+    this.unlisten = history.listen(location => {
+      this.props.dispatch(actions.NotifyRouteChange(location));
+    });
+  },
+  componentDidUnmount() {
+    this.unlisten();
+  },
   render() {
     return (<Router history={history}>
       <Route path="/" component={require("components/Base/Base")}>
@@ -18,4 +28,4 @@ const Routes = React.createClass({
   }
 });
 
-module.exports = Routes;
+module.exports = connect(() => ({}))(Routes);
