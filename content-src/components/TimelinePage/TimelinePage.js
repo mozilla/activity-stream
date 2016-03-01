@@ -26,7 +26,7 @@ const TimelinePage = React.createClass({
       <section className="content">
         <div className="wrapper">
           <Spotlight sites={props.History.rows} />
-          <GroupedActivityFeed title="Just now" sites={props.History.rows} length="20" />
+          <GroupedActivityFeed title="Just now" sites={props.History.rows} length={20} />
         </div>
       </section>
     </main>);
