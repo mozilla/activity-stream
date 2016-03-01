@@ -12,7 +12,11 @@ const am = new ActionManager([
   "RECENT_LINKS_RESPONSE",
   "FRECENT_LINKS_REQUEST",
   "FRECENT_LINKS_RESPONSE",
-  "NOTIFY_HISTORY_DELETE"
+  "NOTIFY_HISTORY_DELETE",
+  "NOTIFY_PERFORM_SEARCH",
+  "RECEIVE_CURRENT_ENGINE",
+  "SEARCH_STATE_REQUEST",
+  "SEARCH_STATE_RESPONSE"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -72,8 +76,16 @@ function RequestFrecentLinks() {
   return RequestExpect("FRECENT_LINKS_REQUEST", "FRECENT_LINKS_RESPONSE");
 }
 
+function RequestSearchState() {
+  return RequestExpect("SEARCH_STATE_REQUEST", "SEARCH_STATE_RESPONSE");
+}
+
 function NotifyHistoryDelete(data) {
   return Notify("NOTIFY_HISTORY_DELETE", data);
+}
+
+function NotifyPerformSearch(data) {
+  return Notify("NOTIFY_PERFORM_SEARCH", data);
 }
 
 am.defineActions({
@@ -84,7 +96,9 @@ am.defineActions({
   RequestBookmarks,
   RequestRecentLinks,
   RequestFrecentLinks,
+  RequestSearchState,
   NotifyHistoryDelete,
+  NotifyPerformSearch,
 });
 
 module.exports = am;
