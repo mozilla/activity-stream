@@ -48,6 +48,11 @@ function doThrow(error, stack) {
   throw(new Error(`Error at ${filename}`));
 }
 
+function doDump(object, trailer) {
+  dump(JSON.stringify(object, null, 1) + trailer); // eslint-disable-line no-undef
+}
+
 exports.doGetFile = doGetFile;
 exports.doThrow = doThrow;
+exports.doDump = doDump;
 
