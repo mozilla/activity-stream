@@ -159,6 +159,19 @@ exports.test_Links_getRecentLinks = function*(assert) {
   assert.equal(links[1].bookmarkDateCreated, new Date(bookmark.dateAdded).getTime(), "expected bookmark date for second link");
   assert.ok(isVisitDateOK(links[1].lastVisitDate), "visit date within expected range");
   assert.ok(!(links[0].bookmark || links[2].bookmark || links[3].bookmark), "other bookmarks are empty");
+
+  // test beforeDate functionality
+  let theDate = timeDaysAgo(1) / 1000 - 1000;
+  links = yield provider.getRecentLinks({beforeDate: theDate});
+  assert.equal(links.length, 2, "should only see two links inserted 2 days ago");
+  assert.equal(links[0].url, "https://mozilla3.com/2", "Expected 1-st link");
+  assert.equal(links[1].url, "https://mozilla4.com/3", "Expected 2-nd link");
+
+  // test beforeDate functionality
+  links = yield provider.getRecentLinks({afterDate: theDate});
+  assert.equal(links.length, 2, "should only see two links inserted after the date");
+  assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
+  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-nd link");
 };
 
 exports.test_Links_getFrecentLinks = function*(assert) {

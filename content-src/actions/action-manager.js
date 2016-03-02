@@ -50,8 +50,8 @@ function RequestExpect(type, expect, options = {}) {
   if (options.timeout) {
     action.meta.timeout = options.timeout;
   }
-  if (options.query) {
-    action.query = options.query;
+  if (options.data) {
+    action.data = options.data;
   }
   return action;
 }
@@ -64,8 +64,8 @@ function RequestBookmarks() {
   return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE");
 }
 
-function RequestRecentLinks() {
-  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE");
+function RequestRecentLinks(data) {
+  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", {data: data});
 }
 
 function RequestFrecentLinks() {
