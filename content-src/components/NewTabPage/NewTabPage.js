@@ -5,11 +5,12 @@ const TopSites = require("components/TopSites/TopSites");
 const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
+const {actions} = require("actions/action-manager");
 
 const NewTabPage = React.createClass({
   // TODO: Replace with real search api via addon
   onSearch(value) {
-    window.location = `https://search.yahoo.com/search?p=${encodeURIComponent(value)}`;
+    this.props.dispatch(actions.NotifyPerformSearch(value));
   },
   render() {
     const props = this.props;

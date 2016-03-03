@@ -2904,5 +2904,12 @@ module.exports = {
       }
     ],
     "error": false
+  },
+  "Search": {
+    "currentEngine": {
+      "name": "Google",
+      "placeholder": "Search With Google",
+      "iconBuffer": {}
+    }
   }
 };
