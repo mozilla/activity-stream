@@ -28,7 +28,7 @@ module.exports = (IS_PRODUCTION) => {
   }
 
   const defineConfig = {
-    "process.env": {NODE_ENV: IS_PRODUCTION ? "\"production\"" : "\"development\""}
+    "process.env": {NODE_ENV: IS_PRODUCTION ? '"production"' : '"development"'}
   };
 
   Object.keys(config).forEach(key => {
