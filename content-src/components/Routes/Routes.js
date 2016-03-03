@@ -7,16 +7,21 @@ const {actions} = require("actions/action-manager");
 const history = createHashHistory({queryKey: false});
 
 const Routes = React.createClass({
-  onChange(data) {
-    this.props.dispatch(actions.NotifyRouteChange(data));
+  componentDidMount() {
+    this.unlisten = history.listen(location => {
+      this.props.dispatch(actions.NotifyRouteChange(location));
+    });
+  },
+  componentDidUnmount() {
+    this.unlisten();
   },
   render() {
     return (<Router history={history}>
       <Route path="/" component={require("components/Base/Base")}>
-        <IndexRoute title="Home" component={require("components/NewTabPage/NewTabPage")} onEnter={data => this.onChange(data)} />
+        <IndexRoute title="Home" component={require("components/NewTabPage/NewTabPage")} />
         <Route title="Activity Stream" path="timeline" component={require("components/TimelinePage/TimelinePage")}>
-          <IndexRoute title="History" component={require("components/TimelinePage/TimelineHistory")} onEnter={data => this.onChange(data)} />
-          <Route title="History" path="bookmarks" component={require("components/TimelinePage/TimelineBookmarks")} onEnter={data => this.onChange(data)} />
+          <IndexRoute title="History" component={require("components/TimelinePage/TimelineHistory")} />
+          <Route title="History" path="bookmarks" component={require("components/TimelinePage/TimelineBookmarks")} />
         </Route>
       </Route>
     </Router>);
