@@ -7,54 +7,26 @@ const tabs = require("sdk/tabs");
 const {setTimeout} = require("sdk/timers");
 const {ActivityStreams} = require("lib/ActivityStreams");
 const {Cu} = require("chrome");
-
 Cu.import("resource://gre/modules/Services.jsm");
+
+const EXPECTED_KEYS = ["url", "tab_id", "session_duration"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
 
 exports.test_TabTracker_init = function(assert) {
-  for (let appURL of app.appURLs) {
-    assert.deepEqual(app.tabData[appURL], {}, "tabData at each URL storage starts out empty");
-  }
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
 };
 
 exports.test_TabTracker_open_close_tab = function*(assert) {
+  let pingData;
   let tabClosedPromise = new Promise(resolve => {
     let onOpen = function(tab) {
       setTimeout(function() {
         tab.close(() => {
           tabs.removeListener("pageshow", onOpen);
-          resolve();
         });
       }, 10);
-    };
-
-    tabs.on("pageshow", onOpen);
-  });
-
-  for (let appURL of app.appURLs) {
-    assert.deepEqual(app.tabData[appURL], {}, "tabData at each URL storage starts out empty");
-  }
-
-  tabs.open(ACTIVITY_STREAMS_URL);
-
-  yield tabClosedPromise;
-
-  assert.equal(Object.keys(app.tabData).length, app.appURLs.length, "There is an entry for each of the URLS in appURLs");
-  assert.equal(Object.keys(app.tabData[ACTIVITY_STREAMS_URL]).length, 1, "There was only one activity streams tab");
-  assert.equal(app.tabData[ACTIVITY_STREAMS_URL]["-3-2"].activations.length, 1, "The activity streams page was only activated once");
-
-  let secondsOpen = app.tabData[ACTIVITY_STREAMS_URL]["-3-2"].activations[0].totalTime;
-  assert.ok(secondsOpen > 0, "The tab should have stayed open for more than 0 seconds");
-};
-
-exports.test_TabTracker_send_deactivate_notification = function*(assert) {
-  let tabClosedPromise = new Promise(resolve => {
-    let onOpen = function(tab) {
-      tab.close(() => {
-        tabs.removeListener("pageshow", onOpen);
-      });
     };
 
     tabs.on("pageshow", onOpen);
@@ -62,8 +34,8 @@ exports.test_TabTracker_send_deactivate_notification = function*(assert) {
     let Observer = {
       observe: function(subject, topic, data) {
         if (topic === "tab-session-complete") {
-          assert.equal(Object.keys(JSON.parse(data)).length, app.appURLs.length,
-            "There is an entry for each of the URLS in appURLs in our notification");
+          pingData = JSON.parse(data);
+          Services.obs.removeObserver(this, "tab-session-complete");
           resolve();
         }
       }
@@ -72,17 +44,39 @@ exports.test_TabTracker_send_deactivate_notification = function*(assert) {
     Services.obs.addObserver(Observer, "tab-session-complete");
   });
 
-  for (let appURL of app.appURLs) {
-    assert.deepEqual(app.tabData[appURL], {}, "tabData at each URL storage starts out empty");
-  }
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
 
   tabs.open(ACTIVITY_STREAMS_URL);
-
   yield tabClosedPromise;
+
+  assert.equal(Object.keys(pingData).length,EXPECTED_KEYS.length, "We have as many attributes as we expect");
+  for (let key of EXPECTED_KEYS) {
+    assert.ok(pingData[key], `${key} is an attribute in our tab data.`);
+  }
+
+  let secondsOpen = pingData.session_duration;
+  assert.ok(secondsOpen > 0, "The tab should have stayed open for more than 0 seconds");
 };
 
 exports.test_TabTracker_reactivating = function*(assert) {
   let openTabs = [];
+  let pingData = [];
+
+  let pingsSentPromise = new Promise(resolve => {
+    let Observer = {
+      observe: function(subject, topic, data) {
+        if (topic === "tab-session-complete") {
+          pingData.push(JSON.parse(data));
+          if (pingData.length === 3) {
+            Services.obs.removeObserver(this, "tab-session-complete");
+            resolve();
+          }
+        }
+      }
+    };
+
+    Services.obs.addObserver(Observer, "tab-session-complete");
+  });
 
   let tabsOpenedPromise = new Promise(resolve => {
     let onOpen = function(tab) {
@@ -96,9 +90,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
     tabs.on("pageshow", onOpen);
   });
 
-  for (let appURL of app.appURLs) {
-    assert.deepEqual(app.tabData[appURL], {}, "tabData at each URL storage starts out empty");
-  }
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
 
   tabs.open("http://foo.com");
   tabs.open(ACTIVITY_STREAMS_URL);
@@ -139,12 +131,15 @@ exports.test_TabTracker_reactivating = function*(assert) {
   });
 
   yield tabClosedPromise;
+  yield pingsSentPromise;
 
-  assert.equal(Object.keys(app.tabData).length, app.appURLs.length, "There is an entry for each of the URLs in appURLs");
-  assert.equal(Object.keys(app.tabData[ACTIVITY_STREAMS_URL]).length, 1, "There was only one activity streams tab");
-
-  let key = Object.keys(app.tabData[ACTIVITY_STREAMS_URL])[0];
-  assert.equal(app.tabData[ACTIVITY_STREAMS_URL][key].activations.length, 3, "The activity streams page was activated 3 times");
+  assert.equal(pingData.length, 3, "The activity streams page was activated 3 times");
+  for (let ping of pingData) {
+    assert.equal(Object.keys(ping).length,EXPECTED_KEYS.length, "We have as many attributes as we expect");
+    for (let key of EXPECTED_KEYS) {
+      assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
+    }
+  }
 };
 
 before(exports, function() {
