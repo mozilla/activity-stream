@@ -151,11 +151,11 @@ describe("getBestImage", () => {
   it("should skip images without a url", () => {
     assert.equal(getBestImage([{height: IMG_HEIGHT, width: IMG_WIDTH}]), null);
   });
-  it("should use the image with the highest entropy", () => {
+  it("should use the first image in the array", () => {
     const images = [
       {url: "foo.jpg", height: IMG_HEIGHT, width: IMG_WIDTH, entropy: 1},
       {url: "bar.jpg", height: IMG_HEIGHT, width: IMG_WIDTH, entropy: 3}
     ];
-    assert.equal(getBestImage(images), images[1]);
+    assert.equal(getBestImage(images), images[0]);
   });
 });

@@ -27,9 +27,7 @@ function getBestImage(images) {
     return null;
   }
 
-  return filteredImages.reduce((prev, next) => {
-    return next.entropy > prev.entropy ? next : prev;
-  }) || null;
+  return filteredImages[0];
 }
 
 const SpotlightItem = React.createClass({
