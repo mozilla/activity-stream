@@ -2,21 +2,47 @@
 const WebpackNotifierPlugin = require("webpack-notifier");
 const webpack = require("webpack");
 const path = require("path");
-const yaml = require("yamljs");
 const absolute = (relPath) => path.join(__dirname, relPath);
+const webpackConfig = require("./bin/webpack-config");
 
 const srcPath = absolute("./content-src/main.js");
 const outputDir = absolute("./data/content");
 const outputFilename = "bundle.js";
 
-let config = yaml.load("config.default.yml");
-try {
-  // Load user config if it exists
-  config = Object.assign({}, config, yaml.load("config.yml"));
-} catch (e) {} // eslint-disable-line no-empty
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const IS_TEST = process.env.NODE_ENV === "test";
+
+let plugins =  [
+  new WebpackNotifierPlugin(),
+  new webpack.DefinePlugin(webpackConfig(IS_PRODUCTION))
+];
+
+if (!IS_TEST) {
+  plugins.push(new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"));
+}
+
+if (IS_PRODUCTION) {
+  plugins = plugins.concat([
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      test: /vendor/,
+      compress: {
+        warnings: false
+      }
+    }),
+    new webpack.optimize.DedupePlugin()
+  ]);
+}
 
 module.exports = {
-  entry: srcPath,
+  entry: {
+    app: srcPath,
+    vendor: [
+      "react",
+      "react-dom",
+      "moment"
+    ]
+  },
   output: {
     path: outputDir,
     filename: outputFilename,
@@ -43,9 +69,6 @@ module.exports = {
       }
     ]
   },
-  devtool: "eval", // This is for Firefox
-  plugins: [
-    new WebpackNotifierPlugin(),
-    new webpack.DefinePlugin({__CONFIG__: JSON.stringify(config)})
-  ]
+  devtool: IS_PRODUCTION ? null : "eval", // This is for Firefox
+  plugins
 };

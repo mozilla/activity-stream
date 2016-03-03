@@ -8,7 +8,7 @@ scripts:
 # once: Build/serve the assets and run the add-on
   once: =>bundle && =>firefox
 
-  clean: rm -rf data/content/*
+  clean: rm -rf data/content/* && mkdir -p data/content
 
   changelog: conventional-changelog -i CHANGELOG.md -s
 
@@ -16,9 +16,10 @@ scripts:
   bundle:
     pre: =>clean
     static: cpx "content-src/static/**/*" data/content
-    webpack: webpack
+    webpack: NODE_ENV=production webpack
     css: node-sass content-src/main.scss -o data/content
     html: node ./bin/generate-html.js > data/content/activity-streams.html
+    post: du -hs ./data/content/*
 
 # start: Start watching/compiling assets,
   start:
@@ -40,7 +41,7 @@ scripts:
     # test:jpm: Run jpm tests
     jpm: jpm test -b beta
     # test:karma: Run content tests only
-    karma: karma start --browsers FirefoxNightly
+    karma: NODE_ENV=test karma start --browsers FirefoxNightly
 
 # tdd: Run content tests continuously
   tdd: karma start --no-single-run
@@ -52,7 +53,7 @@ scripts:
   travis:
     eslint: =>test:lint
     jpm: jpm test -b $JPM_FIREFOX_BINARY -v
-    karma: karma start --reporters mocha,coverage,coveralls
+    karma: NODE_ENV=test karma start --reporters mocha,coverage,coveralls
 
   # This is just to make sure we don't make commits with failing tests
   # or uncompiled yamscripts.yml. Run automatically with husky.
