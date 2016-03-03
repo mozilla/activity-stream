@@ -64,7 +64,7 @@
     "no-var": 2,
     "prefer-const": 0, // TODO: Change to `1`.
     "prefer-reflect": 0,
-    "quotes": [2, "double"],
+    "quotes": [2, "double", "avoid-escape"],
     "semi": [2, "always"],
     "space-before-function-paren": [2, {"anonymous": "never", "named": "never"}],
     "strict": 0
