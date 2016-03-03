@@ -23,13 +23,7 @@ function getBestImage(images) {
     return true;
   });
 
-  if (!filteredImages.length) {
-    return null;
-  }
-
-  return filteredImages.reduce((prev, next) => {
-    return next.entropy > prev.entropy ? next : prev;
-  }) || null;
+  return filteredImages[0] || null;
 }
 
 const SpotlightItem = React.createClass({
