@@ -57,7 +57,6 @@
     "no-trailing-spaces": [2, {"skipBlankLines": false}],
     "no-undef": 2,
     "no-underscore-dangle": 0,
-    "no-use-before-define": [1, {"functions": false, "classes": false}],
     "no-unused-vars": [2, {"vars": "all", "args": "none"}],
     "no-warning-comments": 1,
     "object-curly-spacing": [2, "never"],
