@@ -12,7 +12,7 @@ const Routes = React.createClass({
       this.props.dispatch(actions.NotifyRouteChange(location));
     });
   },
-  componentDidUnmount() {
+  componentWillUnmount() {
     this.unlisten();
   },
   render() {
