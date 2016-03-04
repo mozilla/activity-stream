@@ -106,7 +106,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
   let activationsPromise = new Promise(resolve => {
     tabs.on("activate", function() {
       numActivations++;
-      if (numActivations == activationsGoal) {
+      if (numActivations === activationsGoal) {
         tabs.removeListener("activate", this);
         resolve();
       }
@@ -122,7 +122,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
   let tabClosedPromise = new Promise(resolve => {
     for (let i in openTabs) {
       openTabs[i].close(() => {
-        if (i == openTabs.length - 1) {
+        if (Number(i) === openTabs.length - 1) {
           // We've closed the last tab
           resolve();
         }
