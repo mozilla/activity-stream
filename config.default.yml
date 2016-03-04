@@ -7,4 +7,4 @@ USE_SHIM: false
 
 # This is the embedly proxy server
 # File issues at https://github.com/mozilla/embedly-proxy/issues
-EMBEDLY_ENDPOINT: "http://embedly-proxy.dev.mozaws.net/extract"
+EMBEDLY_ENDPOINT: "https://embedly-proxy.dev.mozaws.net/extract"
