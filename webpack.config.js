@@ -54,6 +54,7 @@ module.exports = {
       "components": absolute("./content-src/components"),
       "reducers": absolute("./content-src/reducers"),
       "actions": absolute("./content-src/actions"),
+      "selectors": absolute("./content-src/selectors"),
       "lib": absolute("./content-src/lib"),
       "strings": absolute("./strings"),
       "test": absolute("./content-test")

@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-
+const {dedupedSites} = require("selectors/selectors");
 const TopSites = require("components/TopSites/TopSites");
 const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
@@ -26,11 +26,11 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <Spotlight sites={props.History.rows} />
+            <Spotlight sites={props.Spotlight.rows} />
           </section>
 
           <section>
-            <GroupedActivityFeed title="Top Activity" sites={props.History.rows} length={6} />
+            <GroupedActivityFeed title="Top Activity" sites={props.TopActivity.rows} length={6} />
           </section>
         </div>
       </div>
@@ -38,9 +38,5 @@ const NewTabPage = React.createClass({
   }
 });
 
-function select(state) {
-  return state;
-}
-
-module.exports = connect(select)(NewTabPage);
+module.exports = connect(dedupedSites)(NewTabPage);
 module.exports.NewTabPage = NewTabPage;
