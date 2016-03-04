@@ -1,4 +1,4 @@
-/* globals Services */
+/* globals Services, ClientID */
 
 "use strict";
 
@@ -8,8 +8,9 @@ const {setTimeout} = require("sdk/timers");
 const {ActivityStreams} = require("lib/ActivityStreams");
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/ClientID.jsm");
 
-const EXPECTED_KEYS = ["url", "tab_id", "session_duration"];
+const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
@@ -54,6 +55,10 @@ exports.test_TabTracker_open_close_tab = function*(assert) {
     assert.ok(pingData[key], `${key} is an attribute in our tab data.`);
   }
 
+  let clientID = yield ClientID.getClientID();
+  assert.equal(pingData.client_id, clientID, "client ID is what is expected");
+  assert.equal(pingData.unload_reason, "close", "unloaded due to close");
+
   let secondsOpen = pingData.session_duration;
   assert.ok(secondsOpen > 0, "The tab should have stayed open for more than 0 seconds");
 };
@@ -67,7 +72,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
       observe: function(subject, topic, data) {
         if (topic === "tab-session-complete") {
           pingData.push(JSON.parse(data));
-          if (pingData.length === 3) {
+          if (pingData.length === 4) {
             Services.obs.removeObserver(this, "tab-session-complete");
             resolve();
           }
@@ -101,7 +106,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
   assert.equal(tabs.activeTab.url, ACTIVITY_STREAMS_URL, "The activity stream should be the currently active tab");
 
   // Activate and deactivate the activity streams page tab 3 times.
-  let activationsGoal = 5;
+  let activationsGoal = 4;
   let numActivations = 0;
   let activationsPromise = new Promise(resolve => {
     tabs.on("activate", function() {
@@ -113,7 +118,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
     });
   });
 
-  for (let i = 0; i < openTabs.length * 3; i++) {
+  for (let i = 0; i < openTabs.length * 3 - 1; i++) {
     openTabs[i % 2].activate();
   }
   yield activationsPromise;
@@ -133,8 +138,11 @@ exports.test_TabTracker_reactivating = function*(assert) {
   yield tabClosedPromise;
   yield pingsSentPromise;
 
-  assert.equal(pingData.length, 3, "The activity streams page was activated 3 times");
-  for (let ping of pingData) {
+  let unloadReasons = ["navigation", "unfocus", "unfocus", "close"];
+  assert.equal(pingData.length, 4, "The activity streams page was activated 4 times");
+  for (let i in pingData) {
+    let ping = pingData[i];
+    assert.equal(ping.unload_reason, unloadReasons[i], "Unloaded for the expected reason");
     assert.equal(Object.keys(ping).length,EXPECTED_KEYS.length, "We have as many attributes as we expect");
     for (let key of EXPECTED_KEYS) {
       assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
@@ -142,8 +150,9 @@ exports.test_TabTracker_reactivating = function*(assert) {
   }
 };
 
-before(exports, function() {
-  app = new ActivityStreams({telemetry: true});
+before(exports, function*() {
+  let clientID = yield ClientID.getClientID();
+  app = new ActivityStreams({telemetry: true, clientID});
   ACTIVITY_STREAMS_URL = app.appURLs[1];
 });
 
