@@ -1,7 +1,55 @@
-<a name="0.0.1"></a>
-## 0.0.1 (2016-02-18)
+<a name="1.0.2"></a>
+## 1.0.2 (2016-03-04)
+
+* 1.0.2 ([0bc6cc3](https://github.com/mozilla/activity-streams/commit/0bc6cc3))
+* Added tests for afterDate ([88f4a82](https://github.com/mozilla/activity-streams/commit/88f4a82))
+* fix(api) - Bug 173 Filter out URLs with "places" url scheme ([2e6e504](https://github.com/mozilla/activity-streams/commit/2e6e504))
+* Remove options query ([354f5ab](https://github.com/mozilla/activity-streams/commit/354f5ab))
+* chore(build): #245 Add production config for webpack ([a76fbab](https://github.com/mozilla/activity-streams/commit/a76fbab))
+* chore(https): use https for embedly proxy ([991bfca](https://github.com/mozilla/activity-streams/commit/991bfca))
+* chore(lint): Add ESLint eqeqeq rule ([73de69e](https://github.com/mozilla/activity-streams/commit/73de69e))
+* chore(lint): Add no-var rule and disabled prefer-const rule ([9d9bd06](https://github.com/mozilla/activity-streams/commit/9d9bd06))
+* chore(lint): Fix some ESLint errors ([0614ee5](https://github.com/mozilla/activity-streams/commit/0614ee5))
+* chore(lint): Remove 'no-use-before-define' ESLint rule ([ab4ca1a](https://github.com/mozilla/activity-streams/commit/ab4ca1a))
+* chore(travis): #216 Disable travis emails ([a97d424](https://github.com/mozilla/activity-streams/commit/a97d424))
+* chore(travis): sleep to wait for xvfb ([63ccd52](https://github.com/mozilla/activity-streams/commit/63ccd52))
+* feat(content): #220 Dedupe sites via redux selectors ([9a26b79](https://github.com/mozilla/activity-streams/commit/9a26b79))
+* feat(content): #225 Bookmarks filter on Timeline ([d687ed1](https://github.com/mozilla/activity-streams/commit/d687ed1))
+* feat(links pagination): Bug 198 Add some sort of pagination to Recent Links API query ([b91fedb](https://github.com/mozilla/activity-streams/commit/b91fedb))
+* feat(lint): Update to eslint@2 and add more ESLint rules ([cb99f07](https://github.com/mozilla/activity-streams/commit/cb99f07))
+* fix(addon): #206 reset the NewTabURL on unload ([1443b51](https://github.com/mozilla/activity-streams/commit/1443b51))
+* fix(addon): #209 Save tab data in memory instead of simple storage and send notification on tab sess ([f571e5d](https://github.com/mozilla/activity-streams/commit/f571e5d))
+* fix(addon): #223 hide app URLs in all cases ([ac34ae6](https://github.com/mozilla/activity-streams/commit/ac34ae6))
+* fix(addon): #243 execute search with correct engine ([cdec00e](https://github.com/mozilla/activity-streams/commit/cdec00e))
+* fix(addon): #27 Update data collection format. ([28fa50b](https://github.com/mozilla/activity-streams/commit/28fa50b))
+* fix(content): #262 s/componentDidUnmount/componentWillUnmount/ ([6d8796a](https://github.com/mozilla/activity-streams/commit/6d8796a))
+* fix(entropy): Grab the first available image instead of highest entropy ([54ec6cb](https://github.com/mozilla/activity-streams/commit/54ec6cb))
+* fix(props): Convert GroupedActivityFeed length to number in jsx ([1b466a3](https://github.com/mozilla/activity-streams/commit/1b466a3))
+* test(addon): add test for bookmarkDateCreated ([81d0faa](https://github.com/mozilla/activity-streams/commit/81d0faa))
+* test(addon): tests for SearchProvider interface ([59eca00](https://github.com/mozilla/activity-streams/commit/59eca00))
+* test(addon): update tests to use appURL.length instead of hard-coded value ([4188d3d](https://github.com/mozilla/activity-streams/commit/4188d3d))
 
 
+
+<a name="1.0.1"></a>
+## 1.0.1 (2016-03-04)
+
+* 1.0.1 ([ee729ff](https://github.com/mozilla/activity-streams/commit/ee729ff))
+* fix (addon): #55 Remove listeners for real. ([6fe5948](https://github.com/mozilla/activity-streams/commit/6fe5948)), closes [#55](https://github.com/mozilla/activity-streams/issues/55)
+* fix(addon): make addon run on Firefox 45 ([20e4b0b](https://github.com/mozilla/activity-streams/commit/20e4b0b))
+
+
+
+<a name="1.0.0"></a>
+# 1.0.0 (2016-02-29)
+
+* style(content): #195 add padding, ellipsis to TopSites title ([d91726f](https://github.com/mozilla/activity-streams/commit/d91726f))
+* style(content): #46  New styles, move static content files to src/static ([63d7b52](https://github.com/mozilla/activity-streams/commit/63d7b52))
+* style(content): A bunch of small tweaks to get closer to spec ([d9eac03](https://github.com/mozilla/activity-streams/commit/d9eac03))
+* style(content): Add base link style ([fc1af48](https://github.com/mozilla/activity-streams/commit/fc1af48))
+* style(content): Added star icon for bookmarks ([aa7c0c5](https://github.com/mozilla/activity-streams/commit/aa7c0c5))
+* style(content): Minor style improvements, fa for dev ([511b80d](https://github.com/mozilla/activity-streams/commit/511b80d))
+* 1.0.0 ([a26a72b](https://github.com/mozilla/activity-streams/commit/a26a72b))
 * Add LICENSE file. ([6053b65](https://github.com/mozilla/activity-streams/commit/6053b65))
 * add list icon ([064fd5f](https://github.com/mozilla/activity-streams/commit/064fd5f))
 * add precommit hook, react eslint rules ([51897e1](https://github.com/mozilla/activity-streams/commit/51897e1))
@@ -10,14 +58,60 @@
 * bare addon skeleton ([871ea18](https://github.com/mozilla/activity-streams/commit/871ea18))
 * chore(lint) fix some linting warnings ([ec5dd11](https://github.com/mozilla/activity-streams/commit/ec5dd11))
 * chore(scripts) #84 script to generate html ([a337a6f](https://github.com/mozilla/activity-streams/commit/a337a6f))
+* feat(addon-ui) #94 hide url in awesomebar ([a50a6ec](https://github.com/mozilla/activity-streams/commit/a50a6ec))
+* feat(content) #160 Group activity feed by date and display time. ([88d5e69](https://github.com/mozilla/activity-streams/commit/88d5e69))
 * feat(content) #45 top sites ui component ([3987091](https://github.com/mozilla/activity-streams/commit/3987091))
 * first commit ([c69e598](https://github.com/mozilla/activity-streams/commit/c69e598))
+* fix(content) #182 Dedupe sites within components ([227a981](https://github.com/mozilla/activity-streams/commit/227a981))
+* fix(content) #202: Use real labels for spotlight bookmarks v.s. visits ([ce78241](https://github.com/mozilla/activity-streams/commit/ce78241))
 * initial activity-stream addon ([2591daa](https://github.com/mozilla/activity-streams/commit/2591daa))
 * initial gitignore ([04303f0](https://github.com/mozilla/activity-streams/commit/04303f0))
+* Move prettyUrl() into lib/utils.js ([22451c5](https://github.com/mozilla/activity-streams/commit/22451c5))
 * test npm script ([ee03d4c](https://github.com/mozilla/activity-streams/commit/ee03d4c))
-
-### chore
-
+* fix(addon): #123 Fix include path to include hashes ([4df8538](https://github.com/mozilla/activity-streams/commit/4df8538))
+* fix(addon): #145 Make addon work on Firefox 45 ([bd0448a](https://github.com/mozilla/activity-streams/commit/bd0448a))
+* fix(addon): #174 Fix this this issue ([6081566](https://github.com/mozilla/activity-streams/commit/6081566))
+* fix(addon): Fix ActivityStreams option defaulting, main.js exports ([34aa212](https://github.com/mozilla/activity-streams/commit/34aa212))
+* fix(addon): Make max history items limit 25 ([82309fd](https://github.com/mozilla/activity-streams/commit/82309fd))
+* fix(content): #106 s/Timeline/Activity Stream/ ([2044d8b](https://github.com/mozilla/activity-streams/commit/2044d8b))
+* fix(content): #133 add key to blank placeholder nodes ([4220a61](https://github.com/mozilla/activity-streams/commit/4220a61))
+* fix(content): #177 Handle filtering of URLs and embedly data more gracefully ([5b3515b](https://github.com/mozilla/activity-streams/commit/5b3515b))
+* fix(content): #180 Use hostname for top sites title ([52f1dfb](https://github.com/mozilla/activity-streams/commit/52f1dfb))
+* fix(content): #210 show real bookmark ui in ActivityFeed ([e185cc9](https://github.com/mozilla/activity-streams/commit/e185cc9))
+* fix(content): Limit ActivityFeed to 6 results on NewTabPage ([0821f79](https://github.com/mozilla/activity-streams/commit/0821f79))
+* fix(content): Make spotlight elements clickable ([15234fc](https://github.com/mozilla/activity-streams/commit/15234fc))
+* fix(content): Make sure components do not throw if some data is missing ([3b297bb](https://github.com/mozilla/activity-streams/commit/3b297bb))
+* fix(content): Only show sites in Spotlight if it has atleast one image ([f1b4f7c](https://github.com/mozilla/activity-streams/commit/f1b4f7c))
+* fix(content): Pressing enter should trigger search ([af03396](https://github.com/mozilla/activity-streams/commit/af03396))
+* fix(content): restore shim option ([e6d161d](https://github.com/mozilla/activity-streams/commit/e6d161d))
+* fix(date handling): #204 - correct dates in content-src ([0139f6a](https://github.com/mozilla/activity-streams/commit/0139f6a))
+* fix(date handling): #204 bookmark modification date ([4b349b1](https://github.com/mozilla/activity-streams/commit/4b349b1))
+* fix(date handling): #204 last visit date handling ([f73eeea](https://github.com/mozilla/activity-streams/commit/f73eeea))
+* fix(npm): fix once command ([1daf0c6](https://github.com/mozilla/activity-streams/commit/1daf0c6))
+* fix(scripts): #88 Fix npm run once, add warning about key ([d06430a](https://github.com/mozilla/activity-streams/commit/d06430a))
+* fix(tests): fix concurrency problem in Places tests ([e512877](https://github.com/mozilla/activity-streams/commit/e512877))
+* fix(tests): unload app in test-message-passing ([e33f1d6](https://github.com/mozilla/activity-streams/commit/e33f1d6))
+* tests(embedly): Add tests for utils.sanitizeUrl() ([6ef12a3](https://github.com/mozilla/activity-streams/commit/6ef12a3))
+* feat(addon-ui): #69 toolbar button for activity streams timeline ([de8dac0](https://github.com/mozilla/activity-streams/commit/de8dac0))
+* feat(bookmarks): #30 recent bookmarks query and emitters ([3114191](https://github.com/mozilla/activity-streams/commit/3114191))
+* feat(build): Add scss ([3b6cf03](https://github.com/mozilla/activity-streams/commit/3b6cf03))
+* feat(changelog): Adding CHANGELOG.md (via npm run changelog) ([bebda0d](https://github.com/mozilla/activity-streams/commit/bebda0d))
+* feat(content): #114 add placeholder boxes to spotlight ([df3afd6](https://github.com/mozilla/activity-streams/commit/df3afd6))
+* feat(content): #114 add placeholder boxes to top sites ([a94e7fa](https://github.com/mozilla/activity-streams/commit/a94e7fa))
+* feat(content): #12 Add SiteIcon, embedly data server ([4babd63](https://github.com/mozilla/activity-streams/commit/4babd63))
+* feat(content): #163 New layout for new tab ([2c543e5](https://github.com/mozilla/activity-streams/commit/2c543e5))
+* feat(content): #29 Header boilerplate and initial styles. ([51a0dba](https://github.com/mozilla/activity-streams/commit/51a0dba))
+* feat(content): #34 Implement ActivityFeed component ([93d15cd](https://github.com/mozilla/activity-streams/commit/93d15cd))
+* feat(content): #35 Implement Spotlight component ([1d8ad80](https://github.com/mozilla/activity-streams/commit/1d8ad80))
+* feat(content): #44 Add routing ([3e7b4d0](https://github.com/mozilla/activity-streams/commit/3e7b4d0))
+* feat(delete history api): #149 delete link call and notify emitters ([1d21464](https://github.com/mozilla/activity-streams/commit/1d21464))
+* feat(embedly): Remove basic auth and query string data for embedly requests ([aea3f66](https://github.com/mozilla/activity-streams/commit/aea3f66))
+* feat(frecent links): #164 Time-constrained top frecent links API ([dd4a8d3](https://github.com/mozilla/activity-streams/commit/dd4a8d3))
+* feat(lint): Add Sass Linting to the test:lint pipeline ([00ede21](https://github.com/mozilla/activity-streams/commit/00ede21))
+* feat(messaging): #17 Action manager and redux-channel ([cf82fab](https://github.com/mozilla/activity-streams/commit/cf82fab))
+* feat(recent links):  #165 Add bookmark status to Recent Links API query ([10bd728](https://github.com/mozilla/activity-streams/commit/10bd728))
+* feat(recent links): add bookmark guid and date created to the query ([2213d8f](https://github.com/mozilla/activity-streams/commit/2213d8f))
+* feat(recentlinks): #65 recent links query and emitters ([e629a2d](https://github.com/mozilla/activity-streams/commit/e629a2d))
 * chore(addon): #22 add .jpmignore ([07e62ed](https://github.com/mozilla/activity-streams/commit/07e62ed))
 * chore(addon): #22 more linter rules ([fe623cf](https://github.com/mozilla/activity-streams/commit/fe623cf))
 * chore(addon): #22 move tests for content to content-test ([1ffb3d8](https://github.com/mozilla/activity-streams/commit/1ffb3d8))
@@ -26,76 +120,46 @@
 * chore(ci): #51 Fix jpm binary path for travis ([6f76b7d](https://github.com/mozilla/activity-streams/commit/6f76b7d))
 * chore(ci): Add travis configuration ([a0cc5ce](https://github.com/mozilla/activity-streams/commit/a0cc5ce))
 * chore(ci): tweak .eslintrc so it works for tests ([2e145cd](https://github.com/mozilla/activity-streams/commit/2e145cd))
+* chore(comment): Change Max links to 20 from 100 ([7fb6407](https://github.com/mozilla/activity-streams/commit/7fb6407))
+* chore(content): #157 Use the dev server endpoint for embedly ([b351100](https://github.com/mozilla/activity-streams/commit/b351100))
 * chore(content): #38 Set up karma for content unit testing ([118fd36](https://github.com/mozilla/activity-streams/commit/118fd36))
+* chore(content): Add logger for dev ([ca6855e](https://github.com/mozilla/activity-streams/commit/ca6855e))
 * chore(content): Add USE_SHIM config ([29f1a0c](https://github.com/mozilla/activity-streams/commit/29f1a0c))
 * chore(content): Rename src to content-src ([441233f](https://github.com/mozilla/activity-streams/commit/441233f))
+* chore(deploy): #219 s3 deployment scripts for addon ([91947aa](https://github.com/mozilla/activity-streams/commit/91947aa))
 * chore(docs): add config docs ([dfde40e](https://github.com/mozilla/activity-streams/commit/dfde40e))
 * chore(git): ignore xpi files ([fbd4041](https://github.com/mozilla/activity-streams/commit/fbd4041))
 * chore(jpm): Add .jpmignore ([f8a48e4](https://github.com/mozilla/activity-streams/commit/f8a48e4))
 * chore(jpm): Use blacklist in .jpmignore since * is broken ([2b12a70](https://github.com/mozilla/activity-streams/commit/2b12a70))
 * chore(jscs): exclude firefox files ([b084306](https://github.com/mozilla/activity-streams/commit/b084306))
 * chore(lint): #42 jscs and eslint fixes ([2169c07](https://github.com/mozilla/activity-streams/commit/2169c07))
+* chore(lint): Convert var to const and group const variables ([4a8fb20](https://github.com/mozilla/activity-streams/commit/4a8fb20))
 * chore(lint): ensure there are no trailing spaces ([c917ebe](https://github.com/mozilla/activity-streams/commit/c917ebe))
 * chore(lint): Extend the ESLint recommended rules ([c4c5e03](https://github.com/mozilla/activity-streams/commit/c4c5e03))
 * chore(lint): fix console warning ([3391008](https://github.com/mozilla/activity-streams/commit/3391008))
 * chore(lint): Tweak some Sass-Lint rules and vars ([4c84416](https://github.com/mozilla/activity-streams/commit/4c84416))
 * chore(npm): #77 Update npm-shrinkwrap.json ([3b86f80](https://github.com/mozilla/activity-streams/commit/3b86f80))
 * chore(npm): Add cpx dependency, add bundle task to ci ([c3251e6](https://github.com/mozilla/activity-streams/commit/c3251e6))
+* chore(npm): always bundle assets before generating a package ([b54ba46](https://github.com/mozilla/activity-streams/commit/b54ba46))
+* chore(npm): remove shrinkwrap ([9667289](https://github.com/mozilla/activity-streams/commit/9667289))
 * chore(npm): Use webpack v1, add npm shrinkwrap ([2f29fa4](https://github.com/mozilla/activity-streams/commit/2f29fa4))
 * chore(refactor): refactor timeDaysAgo ([45997f5](https://github.com/mozilla/activity-streams/commit/45997f5))
 * chore(scripts): Add once command for people who want to try the add-on ([c95261c](https://github.com/mozilla/activity-streams/commit/c95261c))
 * chore(test): fix test ([c8068d2](https://github.com/mozilla/activity-streams/commit/c8068d2))
+* chore(tests): Use Nightly for karma locally since paths for beta/stable are the same ([af7b14a](https://github.com/mozilla/activity-streams/commit/af7b14a))
+* chore(travis): cache node modules, remove npm spinner ([00d0452](https://github.com/mozilla/activity-streams/commit/00d0452))
+* chore(typo): Fixing Facebook typo in fake shim data ([19ffac0](https://github.com/mozilla/activity-streams/commit/19ffac0))
 * chore(typo): pdehaan-ing test message ([b52e766](https://github.com/mozilla/activity-streams/commit/b52e766))
+* chore(typo): removed HAHAHA ([31d4259](https://github.com/mozilla/activity-streams/commit/31d4259))
 * chore(typo): spelling errors ([bbe8cfc](https://github.com/mozilla/activity-streams/commit/bbe8cfc))
-
-### doc
-
-* doc(readme): update prereqs for build ([cec7db5](https://github.com/mozilla/activity-streams/commit/cec7db5))
-
-### docs
-
-* docs(readme): #71 Add run instructions to readme ([11b5c6b](https://github.com/mozilla/activity-streams/commit/11b5c6b))
-
-### feat
-
-* feat(addon-ui): #69 toolbar button for activity streams timeline ([de8dac0](https://github.com/mozilla/activity-streams/commit/de8dac0))
-* feat(bookmarks): #30 recent bookmarks query and emitters ([3114191](https://github.com/mozilla/activity-streams/commit/3114191))
-* feat(build): Add scss ([3b6cf03](https://github.com/mozilla/activity-streams/commit/3b6cf03))
-* feat(content): #114 add placeholder boxes to spotlight ([df3afd6](https://github.com/mozilla/activity-streams/commit/df3afd6))
-* feat(content): #114 add placeholder boxes to top sites ([a94e7fa](https://github.com/mozilla/activity-streams/commit/a94e7fa))
-* feat(content): #12 Add SiteIcon, embedly data server ([4babd63](https://github.com/mozilla/activity-streams/commit/4babd63))
-* feat(content): #29 Header boilerplate and initial styles. ([51a0dba](https://github.com/mozilla/activity-streams/commit/51a0dba))
-* feat(content): #34 Implement ActivityFeed component ([93d15cd](https://github.com/mozilla/activity-streams/commit/93d15cd))
-* feat(content): #35 Implement Spotlight component ([1d8ad80](https://github.com/mozilla/activity-streams/commit/1d8ad80))
-* feat(content): #44 Add routing ([3e7b4d0](https://github.com/mozilla/activity-streams/commit/3e7b4d0))
-* feat(lint): Add Sass Linting to the test:lint pipeline ([00ede21](https://github.com/mozilla/activity-streams/commit/00ede21))
-* feat(messaging): #17 Action manager and redux-channel ([cf82fab](https://github.com/mozilla/activity-streams/commit/cf82fab))
-* feat(recentlinks): #65 recent links query and emitters ([e629a2d](https://github.com/mozilla/activity-streams/commit/e629a2d))
-
-### feature
-
 * feature(addon): #23 Query favicons from places_db. ([db1c809](https://github.com/mozilla/activity-streams/commit/db1c809))
-
-### fix
-
-* fix(addon): Fix ActivityStreams option defaulting, main.js exports ([34aa212](https://github.com/mozilla/activity-streams/commit/34aa212))
-* fix(content): Only show sites in Spotlight if it has atleast one image ([f1b4f7c](https://github.com/mozilla/activity-streams/commit/f1b4f7c))
-* fix(content): restore shim option ([e6d161d](https://github.com/mozilla/activity-streams/commit/e6d161d))
-* fix(tests): fix concurrency problem in Places tests ([e512877](https://github.com/mozilla/activity-streams/commit/e512877))
-* fix(tests): unload app in test-message-passing ([e33f1d6](https://github.com/mozilla/activity-streams/commit/e33f1d6))
-
-### refactor
-
+* feature(addon): #28 Tab open time data collection. ([6daca43](https://github.com/mozilla/activity-streams/commit/6daca43))
+* refactor(ActivityFeed): Remove leading http(s)://(www.) from displayed URLs ([c201f9b](https://github.com/mozilla/activity-streams/commit/c201f9b))
 * refactor(tests): #66 use generator in test-message instead of Task ([3d4837b](https://github.com/mozilla/activity-streams/commit/3d4837b))
-
-### style
-
-* style(content): #46  New styles, move static content files to src/static ([63d7b52](https://github.com/mozilla/activity-streams/commit/63d7b52))
-* style(content): Add base link style ([fc1af48](https://github.com/mozilla/activity-streams/commit/fc1af48))
-* style(content): Added star icon for bookmarks ([aa7c0c5](https://github.com/mozilla/activity-streams/commit/aa7c0c5))
-* style(content): Minor style improvements, fa for dev ([511b80d](https://github.com/mozilla/activity-streams/commit/511b80d))
-
-### test
-
 * test(addon): #20 Port PlacesProvider tests from Firefox. ([7e1f652](https://github.com/mozilla/activity-streams/commit/7e1f652))
 * test(addon): #23 Add favicon test. ([6a12466](https://github.com/mozilla/activity-streams/commit/6a12466))
+* docs(readme): #71 Add run instructions to readme ([11b5c6b](https://github.com/mozilla/activity-streams/commit/11b5c6b))
+* doc(readme): update prereqs for build ([cec7db5](https://github.com/mozilla/activity-streams/commit/cec7db5))
+
+
+
