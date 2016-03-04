@@ -1,4 +1,4 @@
 DEVELOPMENT: false
 LOGGING: false
 USE_SHIM: false
-EMBEDLY_ENDPOINT: "http://embedly-proxy.dev.mozaws.net/extract"
+EMBEDLY_ENDPOINT: "https://embedly-proxy.dev.mozaws.net/extract"
