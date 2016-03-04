@@ -45,7 +45,6 @@
     "babel-preset-react": "^6.3.13",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
-    "colors": "^1.1.2",
     "conventional-changelog-cli": "^1.1.1",
     "cpx": "^1.2.1",
     "eslint": "^2.2.0",
@@ -79,8 +78,8 @@
     "requirejs": "^2.1.22",
     "sass-lint": "^1.5.0",
     "webpack": "^1.12.12",
+    "webpack-env-loader-plugin": "0.1.4",
     "webpack-notifier": "^1.2.1",
-    "yamljs": "^0.2.4",
     "yamscripts": "^0.0.2"
   },
   "scripts": {

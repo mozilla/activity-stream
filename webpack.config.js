@@ -3,25 +3,29 @@ const WebpackNotifierPlugin = require("webpack-notifier");
 const webpack = require("webpack");
 const path = require("path");
 const absolute = (relPath) => path.join(__dirname, relPath);
-const webpackConfig = require("./bin/webpack-config");
+const EnvLoaderPlugin = require("webpack-env-loader-plugin");
 
 const srcPath = absolute("./content-src/main.js");
 const outputDir = absolute("./data/content");
 const outputFilename = "bundle.js";
 
-const IS_PRODUCTION = process.env.NODE_ENV === "production";
-const IS_TEST = process.env.NODE_ENV === "test";
+let env = process.env.NODE_ENV || "development";
 
 let plugins =  [
   new WebpackNotifierPlugin(),
-  new webpack.DefinePlugin(webpackConfig(IS_PRODUCTION))
+  new EnvLoaderPlugin({
+    env,
+    filePattern: "config.{env}.yml",
+    loadLocalOverride: env === "development" ? "config.yml" : null,
+    reactEnv: true
+  })
 ];
 
-if (!IS_TEST) {
+if (env !== "test") {
   plugins.push(new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"));
 }
 
-if (IS_PRODUCTION) {
+if (env === "production") {
   plugins = plugins.concat([
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({
@@ -70,6 +74,6 @@ module.exports = {
       }
     ]
   },
-  devtool: IS_PRODUCTION ? null : "eval", // This is for Firefox
+  devtool: env === "production" ? null : "eval", // This is for Firefox
   plugins
 };
