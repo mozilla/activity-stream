@@ -8,13 +8,18 @@ const FAVICON_SIZE = 16;
 
 function getSiteImage(site, width) {
   const {favicon_url, icons} = site;
+  let url = null;
   if (icons && icons.length) {
-    return icons[0].url;
+    url = icons[0].url;
   } else if (favicon_url && width / FAVICON_SIZE <= MIN_RESOLUTION) {
-    return favicon_url;
-  } else {
-    return null;
+    url = favicon_url;
   }
+
+  if (url && url.startsWith("//")) {
+    url = `https:${url}`;
+  }
+
+  return url;
 }
 
 const SiteIconImage = React.createClass({

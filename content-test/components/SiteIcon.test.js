@@ -7,7 +7,7 @@ const {SiteIconImage, SiteIconFallback, DEFAULT_FALLBACK_BG_COLOR} = SiteIcon;
 
 const fakeProps = {
   site: {
-    icons: [{url: "icon.png"}],
+    icons: [{url: "//example.com/icon.png"}],
     title: "Foo",
     favicon_colors: [{color: [11, 11, 11]}]
   },
@@ -80,7 +80,8 @@ describe("SiteIcon", () => {
 
     it("should display the icon image", () => {
       assert.ok(iconEl.style.backgroundImage);
-      assert.include(iconEl.style.backgroundImage, fakeProps.site.icons[0].url);
+      // protocol relative URLs should be converted to https://....
+      assert.include(iconEl.style.backgroundImage, "https:" + fakeProps.site.icons[0].url);
     });
   });
 
