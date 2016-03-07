@@ -48,7 +48,7 @@ scripts:
   tdd: NODE_ENV=test karma start --no-single-run --browsers Chrome
 
 # package: Build add-on
-  package: =>bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi
+  package: =>bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi && mv @activity-streams-$npm_package_version.update.rdf dist/update.rdf
 
   # This is for ci
   travis:
