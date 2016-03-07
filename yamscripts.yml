@@ -26,6 +26,7 @@ scripts:
     _parallel: true
     pre: =>clean
     static: =>bundle:static -- -w
+    copyTestImages: cpx "node_modules/tippy-top-sites/images/**/*" data/content/favicons/images
     webpack: webpack -w
     css: =>bundle:css && =>bundle:css -- -w
     html: =>bundle:html -- --baseUrl http://localhost:1963/

@@ -1,4 +1,5 @@
 const fakeData = require("lib/fake-data");
+const faker = require("test/faker");
 
 function dispatch(action) {
   window.dispatchEvent(
@@ -14,10 +15,26 @@ module.exports = function() {
         dispatch({type: "TOP_FRECENT_SITES_RESPONSE", data: fakeData.TopSites.rows});
         break;
       case "RECENT_BOOKMARKS_REQUEST":
-        dispatch({type: "RECENT_BOOKMARKS_RESPONSE", data: fakeData.Bookmarks.rows});
+        if (action.meta && action.meta.append) {
+          dispatch({
+            type: "RECENT_BOOKMARKS_RESPONSE",
+            data: faker.createRows({beforeDate: action.data.beforeDate, type: "bookmark"}),
+            meta: {append: true}
+          });
+        } else {
+          dispatch({type: "RECENT_BOOKMARKS_RESPONSE", data: fakeData.Bookmarks.rows});
+        }
         break;
       case "RECENT_LINKS_REQUEST":
-        dispatch({type: "RECENT_LINKS_RESPONSE", data: fakeData.History.rows});
+        if (action.meta && action.meta.append) {
+          dispatch({
+            type: "RECENT_LINKS_RESPONSE",
+            data: faker.createRows({beforeDate: action.data.beforeDate}),
+            meta: {append: true}
+          });
+        } else {
+          dispatch({type: "RECENT_LINKS_RESPONSE", data: fakeData.History.rows});
+        }
         break;
       case "FRECENT_LINKS_REQUEST":
         dispatch({type: "FRECENT_LINKS_RESPONSE", data: fakeData.FrecentHistory.rows});

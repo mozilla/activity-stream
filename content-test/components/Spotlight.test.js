@@ -6,21 +6,11 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
-const fakeSpotlightItems = require("test/test-utils").mockData.Spotlight.rows;
+const {mockData, faker} = require("test/test-utils");
 
-const fakeSiteWithImage = {
-  "title": "man throws alligator in wendys wptv dnt cnn",
-  "url": "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn",
-  "description": "A Florida man faces multiple charges for throwing an alligator through a Wendy's drive-thru window. CNN's affiliate WPTV reports.",
-  "lastVisitDate": 1456426160465,
-  "bestImage": {
-    "url": "http://i2.cdn.turner.com/cnnnext/dam/assets/160209053130-man-throws-alligator-in-wendys-wptv-dnt-00004611-large-169.jpg",
-    "height": 259,
-    "width": 460,
-    "entropy": 3.98714569089,
-    "size": 14757
-  }
-};
+const fakeSpotlightItems = mockData.Spotlight.rows;
+const fakeSiteWithImage = faker.createSite();
+fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 
 describe("Spotlight", function() {
   let instance;
