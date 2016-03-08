@@ -1,4 +1,7 @@
 const React = require("react");
+const {connect} = require("react-redux");
+const {justDispatch} = require("selectors/selectors");
+const {actions} = require("actions/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const DEFAULT_LENGTH = 6;
 const {toRGBString, prettyUrl} = require("lib/utils");
@@ -6,6 +9,9 @@ const {toRGBString, prettyUrl} = require("lib/utils");
 const TopSites = React.createClass({
   getDefaultProps() {
     return {length: DEFAULT_LENGTH};
+  },
+  onDelete(url) {
+    this.props.dispatch(actions.NotifyHistoryDelete(url));
   },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
@@ -39,6 +45,7 @@ const TopSites = React.createClass({
               <SiteIcon site={site} width={32} height={32} />
             </div>
             <div className="tile-title">{title}</div>
+            <div className="tile-close-icon" onClick={(ev) => {ev.preventDefault(); this.onDelete(site.url);}}></div>
           </a>);
         })}
         {blankSites}
@@ -62,4 +69,5 @@ TopSites.propTypes = {
   ).isRequired
 };
 
-module.exports = TopSites;
+module.exports = connect(justDispatch)(TopSites);
+module.exports.TopSites = TopSites;

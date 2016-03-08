@@ -9,13 +9,17 @@
 .feed-item {
   display: flex;
   padding-left: $feed-gutter-h + $feed-circle-size;
-  padding-bottom: $feed-gutter-v;
+  padding-right: $feed-gutter-h;
+  padding-bottom: $feed-gutter-v / 2;
+  padding-top: $feed-gutter-v / 2;
   position: relative;
+  border: 1px solid transparent;
+  border-radius: $border-radius;
 
   // This is the line/circle on the side
   &:first-child {
     &::before {
-      margin-top: -($feed-gutter-v / 2 + $feed-circle-size / 2);
+      margin-top: -($feed-circle-size / 2);
       top: 50%;
     }
   }
@@ -23,18 +27,18 @@
   &:last-child {
     &::before {
       bottom: 50%;
-      margin-bottom: $feed-gutter-v / 2 + $feed-circle-size / 2;
+      margin-bottom: $feed-circle-size / 2;
     }
   }
 
   &::before {
     background: lighten($light-grey, 20%);
-    bottom: 0;
+    bottom: -1px;
     content: '';
     display: block;
-    left: ($feed-circle-size - 2) / 2;
+    left: $feed-circle-size;
     position: absolute;
-    top: 0;
+    top: -1px;
     width: 2px;
   }
 
@@ -45,11 +49,11 @@
     content: '';
     display: block;
     height: $feed-circle-size;
-    left: 0;
+    left: ($feed-circle-size + 2) / 2;
     position: absolute;
     top: 50%;
     width: $feed-circle-size;
-    margin-top: -($feed-gutter-v / 2 + $feed-circle-size / 2);
+    margin-top: -($feed-circle-size / 2);
   }
 
   &.bookmark::after {
@@ -59,10 +63,62 @@
     content: '\f005';
     font: normal normal normal 18px/1 FontAwesome;
     height: auto;
-    left: 0;
+    left: ($feed-circle-size + 2) / 2;
     margin-left: -4px;
-    margin-top: -($feed-gutter-v / 2 + 18 / 2);
+    margin-top: -9px;
     cursor: pointer;
+  }
+
+  .action-items-container {
+    background: $bg-grey;
+    border: solid 1px $faintest-black;
+    border-radius: $border-radius;
+    position: absolute;
+    right: -5px;
+    bottom: -5px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+  }
+
+  .action-item {
+    cursor: pointer;
+    width: 40px;
+    height: 32px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-right: solid 1px $faintest-black;
+    padding: 10px 8px;
+
+    &:last-child {
+      border-right: 0;
+    }
+
+    &.icon-more {
+      background-image: url('img/glyph-more-16.svg');
+    }
+
+    &.icon-delete {
+      background-image: url('img/glyph-delete-16.svg');
+    }
+
+    &.icon-share {
+      background-image: url('img/glyph-share-16.svg');
+    }
+  }
+
+  &:hover {
+    background: $bg-grey;
+    border: 1px solid $faintest-black;
+
+    .action-items-container {
+      opacity: 1;
+      transition-delay: 250ms;
+      transition-property: opacity;
+      transition-duration: 250ms;
+    }
   }
 }
 

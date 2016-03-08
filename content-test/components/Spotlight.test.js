@@ -1,7 +1,7 @@
 const {assert} = require("chai");
 const moment = require("moment");
-const Spotlight = require("components/Spotlight/Spotlight");
-const {SpotlightItem} = Spotlight;
+const ConnectedSpotlight = require("components/Spotlight/Spotlight");
+const {Spotlight, SpotlightItem} = ConnectedSpotlight;
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
@@ -92,6 +92,15 @@ describe("SpotlightItem", function() {
       });
       instance = TestUtils.renderIntoDocument(<SpotlightItem {...props} />);
       assert.equal(instance.refs.contextMessage.innerHTML, "Visited recently");
+    });
+    it("should call onDelete callback with url when delete icon is pressed", done => {
+      function onDelete(url) {
+        assert.equal(url, fakeSite.url);
+        done();
+      }
+      const spotlight = TestUtils.renderIntoDocument(<SpotlightItem onDelete={onDelete} {...fakeSite} />);
+      const button = spotlight.refs.delete;
+      TestUtils.Simulate.click(button);
     });
   });
 });

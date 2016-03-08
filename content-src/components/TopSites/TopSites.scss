@@ -7,6 +7,7 @@
 
   .tile {
     @include item-shadow;
+    @include tile-close;
     display: flex;
     border-radius: $border-radius;
     flex-direction: column;

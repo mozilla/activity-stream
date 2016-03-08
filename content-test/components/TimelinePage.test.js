@@ -19,7 +19,7 @@ describe("Timeline", () => {
     };
     let instance;
     beforeEach(() => {
-      instance = TestUtils.renderIntoDocument(<TimelinePage {...fakeProps}>
+      instance = renderWithProvider(<TimelinePage {...fakeProps}>
         <div className="fake-child">Hello world</div>
       </TimelinePage>);
     });
@@ -45,7 +45,7 @@ describe("Timeline", () => {
     const fakeProps = mockData;
 
     beforeEach(() => {
-      instance = TestUtils.renderIntoDocument(<TimelineHistory {...fakeProps} />);
+      instance = renderWithProvider(<TimelineHistory {...fakeProps} />);
     });
 
     it("should create a page", () => {
@@ -58,7 +58,7 @@ describe("Timeline", () => {
     });
 
     it("should render the connected container with the correct props", () => {
-      const container = renderWithProvider(ConnectedTimelineHistory);
+      const container = renderWithProvider(<ConnectedTimelineHistory />);
       const inner = TestUtils.findRenderedComponentWithType(container, TimelineHistory);
       Object.keys(TimelineHistory.propTypes).forEach(key => assert.property(inner.props, key));
     });
@@ -68,7 +68,7 @@ describe("Timeline", () => {
     let instance;
     const fakeProps = mockData;
     beforeEach(() => {
-      instance = TestUtils.renderIntoDocument(<TimelineBookmarks {...fakeProps} />);
+      instance = renderWithProvider(<TimelineBookmarks {...fakeProps} />);
     });
 
     it("should create a page", () => {
@@ -81,7 +81,7 @@ describe("Timeline", () => {
     });
 
     it("should render the connected container with the correct props", () => {
-      const container = renderWithProvider(ConnectedTimelineBookmarks);
+      const container = renderWithProvider(<ConnectedTimelineBookmarks />);
       const inner = TestUtils.findRenderedComponentWithType(container, TimelineBookmarks);
       Object.keys(TimelineBookmarks.propTypes).forEach(key => assert.property(inner.props, key));
     });

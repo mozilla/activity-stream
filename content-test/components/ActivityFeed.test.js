@@ -1,6 +1,6 @@
 const {assert} = require("chai");
-const ActivityFeed = require("components/ActivityFeed/ActivityFeed");
-const {ActivityFeedItem, GroupedActivityFeed} = ActivityFeed;
+const ConnectedActivityFeed = require("components/ActivityFeed/ActivityFeed");
+const {ActivityFeedItem, ActivityFeed, GroupedActivityFeed} = ConnectedActivityFeed;
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const React = require("react");
 const ReactDOM = require("react-dom");
@@ -88,6 +88,15 @@ describe("ActivityFeedItem", function() {
     it("should have a bookmark class if the site has a bookmarkGuid", () => {
       instance = TestUtils.renderIntoDocument(<ActivityFeedItem {...fakeSiteWithBookmark} />);
       assert.include(ReactDOM.findDOMNode(instance).className, "bookmark");
+    });
+    it("should call onDelete callback with url when delete icon is pressed", done => {
+      function onDelete(url) {
+        assert.equal(url, fakeSite.url);
+        done();
+      }
+      const item = TestUtils.renderIntoDocument(<ActivityFeedItem onDelete={onDelete} {...fakeSite} />);
+      const button = item.refs.delete;
+      TestUtils.Simulate.click(button);
     });
   });
 });

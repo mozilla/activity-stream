@@ -13,6 +13,9 @@ function setRowsOrError(type) {
           state.error = false;
         }
         break;
+      case "NOTIFY_HISTORY_DELETE":
+        state.rows = prevState.rows.filter(val => val.url !== action.data);
+        break;
       // TODO: Handle changes
       default:
         return prevState;
