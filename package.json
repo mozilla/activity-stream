@@ -117,5 +117,13 @@
     "help": "yamscripts help",
     "yamscripts": "yamscripts compile",
     "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
-  }
+  },
+  "preferences": [
+    {
+      "name": "performance.log",
+      "title": "Enable Performance Logging",
+      "type": "bool",
+      "value": false
+    }
+  ]
 }

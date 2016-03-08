@@ -1,10 +1,11 @@
 const am = require("actions/action-manager");
 
 function setRowsOrError(type) {
-  return (prevState = {rows: [], error: false}, action) => {
+  return (prevState = {rows: [], error: false, init: false}, action) => {
     const state = {};
     switch (action.type) {
       case am.type(type):
+        state.init = true;
         if (action.error) {
           state.rows = [];
           state.error = action.data;
@@ -25,10 +26,11 @@ function setRowsOrError(type) {
 }
 
 function setSearchState(type) {
-  return (prevState = {currentEngine: {}, error: false}, action) => {
+  return (prevState = {currentEngine: {}, error: false, init: false}, action) => {
     const state = {};
     switch (action.type) {
       case am.type(type):
+        state.init = true;
         if (action.error) {
           state.currentEngine = {};
           state.error = action.data;

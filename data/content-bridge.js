@@ -18,3 +18,7 @@ self.port.on("addon-to-content", function(data) {
 window.addEventListener("pagehide", function() {
   self.port.emit("content-to-addon", {type: "pagehide"});
 }, false);
+
+document.onreadystatechange = function() {
+  self.port.emit("content-to-addon", {type: "NOTIFY_PERFORMANCE", data: "DOC_READY_STATE=" + document.readyState});
+};
