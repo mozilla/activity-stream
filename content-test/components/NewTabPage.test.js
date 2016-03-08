@@ -13,7 +13,7 @@ const fakeProps = mockData;
 describe("NewTabPage", () => {
   let instance;
   beforeEach(() => {
-    instance = TestUtils.renderIntoDocument(<NewTabPage {...fakeProps} />);
+    instance = renderWithProvider(<NewTabPage {...fakeProps} />);
   });
 
   it("should create a page", () => {
@@ -36,7 +36,7 @@ describe("NewTabPage", () => {
   });
 
   it("should render connected component with correct props", () => {
-    const container = renderWithProvider(ConnectedNewTabPage);
+    const container = renderWithProvider(<ConnectedNewTabPage/>);
     const inner = TestUtils.findRenderedComponentWithType(container, NewTabPage);
     Object.keys(fakeProps).forEach(key => assert.property(inner.props, key));
   });

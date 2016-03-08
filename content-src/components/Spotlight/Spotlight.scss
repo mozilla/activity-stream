@@ -13,13 +13,13 @@
 
 .spotlight-item {
   @include item-shadow;
+  @include tile-close;
   background: $white;
   display: inline-block;
   margin-right: $base-gutter;
   width: $spotlight-item-width;
   border-radius: $border-radius;
   height: $spotlight-item-height;
-  overflow: hidden;
   position: relative;
 
   > a {

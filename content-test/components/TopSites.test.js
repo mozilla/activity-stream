@@ -3,7 +3,8 @@ const TestUtils = require("react-addons-test-utils");
 const React = require("react");
 const ReactDOM = require("react-dom");
 
-const TopSites = require("components/TopSites/TopSites");
+const ConnectedTopSites = require("components/TopSites/TopSites");
+const {TopSites} = ConnectedTopSites;
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 
 const fakeProps = {

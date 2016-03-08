@@ -2,7 +2,7 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {dedupedSites} = require("selectors/selectors");
 
-const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
+const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 
 const TimelineHistory = React.createClass({

@@ -18,9 +18,10 @@ function createMockProvider(data = mockData) {
   });
 }
 
-function renderWithProvider(Connected) {
+function renderWithProvider(component) {
   const ProviderWrapper = createMockProvider();
-  return TestUtils.renderIntoDocument(<ProviderWrapper><Connected /></ProviderWrapper>);
+  const container = TestUtils.renderIntoDocument(<ProviderWrapper>{component}</ProviderWrapper>);
+  return TestUtils.findRenderedComponentWithType(container, component.type);
 }
 
 module.exports = {

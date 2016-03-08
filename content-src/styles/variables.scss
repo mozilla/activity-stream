@@ -30,6 +30,8 @@ $tile-gutter: $base-gutter;
 $tile-title-bg-color: rgba(255, 255, 255, 0.6);
 $tile-title-hover-color: #FFF;
 $tile-title-font-size: 12px;
+$tile-close-border: 1px solid rgba(0, 0, 0, 0.2);
+$tile-close-boxshadow: 0 2px 0 rgba(0, 0, 0, 0.1);
 
 $wrapper-max-width: 6 * $tile-width + 5 * $tile-gutter;
 
@@ -70,5 +72,35 @@ $item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
   &:hover {
     box-shadow: $item-shadow-hover;
     transition: box-shadow 150ms;
+  }
+}
+
+@mixin tile-close {
+  .tile-close-icon {
+    cursor: pointer;
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 28px;
+    height: 28px;
+    background-color: $white;
+    background-image: url('img/glyph-delete-16.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-clip: padding-box;
+    border: $tile-close-border;
+    border-radius: 100%;
+    box-shadow: $tile-close-boxshadow;
+    transform: scale(0.25);
+    opacity: 0;
+    transition-property: transform, opacity;
+    transition-duration: 200ms;
+    z-index: 399;
+  }
+
+  &:hover .tile-close-icon {
+    transform: scale(1);
+    opacity: 1;
+    transition-delay: 500ms;
   }
 }

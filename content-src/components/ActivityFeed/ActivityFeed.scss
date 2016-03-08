@@ -9,8 +9,12 @@
 .feed-item {
   display: flex;
   padding-left: $feed-gutter-h + $feed-circle-size;
-  padding-bottom: $feed-gutter-v;
+  padding-right: $feed-gutter-h;
+  padding-bottom: $feed-gutter-v / 2;
+  padding-top: $feed-gutter-v / 2;
   position: relative;
+  border: 1px solid $white;
+  border-radius: $border-radius;
 
   // This is the line/circle on the side
   &:first-child {
@@ -63,6 +67,58 @@
     margin-left: -4px;
     margin-top: -($feed-gutter-v / 2 + 18 / 2);
     cursor: pointer;
+  }
+
+  .action-items-container {
+    background: $white;
+    border: solid 1px $light-grey;
+    border-radius: $border-radius;
+    position: absolute;
+    right: -5px;
+    bottom: -5px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+  }
+
+  .action-item {
+    cursor: pointer;
+    width: 40px;
+    height: 32px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-right: solid 1px $light-grey;
+    padding: 10px 8px;
+
+    &:last-child {
+      border-right: 0;
+    }
+
+    &.icon-more {
+      background-image: url('img/glyph-more-16.svg');
+    }
+
+    &.icon-delete {
+      background-image: url('img/glyph-delete-16.svg');
+    }
+
+    &.icon-share {
+      background-image: url('img/glyph-share-16.svg');
+    }
+  }
+
+  &:hover {
+    background: $bg-grey;
+    border: 1px solid $faintest-black;
+
+    .action-items-container {
+      opacity: 1;
+      transition-delay: 250ms;
+      transition-property: opacity;
+      transition-duration: 250ms;
+    }
   }
 }
 

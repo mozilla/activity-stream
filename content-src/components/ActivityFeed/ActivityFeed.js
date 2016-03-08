@@ -1,4 +1,7 @@
 const React = require("react");
+const {connect} = require("react-redux");
+const {justDispatch} = require("selectors/selectors");
+const {actions} = require("actions/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const {prettyUrl} = require("lib/utils");
 const moment = require("moment");
@@ -8,6 +11,11 @@ const DEFAULT_LENGTH = 3;
 const ICON_SIZE = 40;
 
 const ActivityFeedItem = React.createClass({
+  getDefaultProps() {
+    return {
+      onDelete: function() {}
+    };
+  },
   render() {
     const site = this.props;
     const title = site.title;
@@ -22,8 +30,12 @@ const ActivityFeedItem = React.createClass({
         </div>
         <div className="feed-stats">
           <div ref="lastVisit">{date && moment(date).format("h:mma")}</div>
-          <div>...</div>
         </div>
+      </div>
+      <div className="action-items-container">
+        <div className="action-item icon-delete" ref="delete" onClick={() => this.props.onDelete(site.url)}></div>
+        <div className="action-item icon-share" onClick={() => alert("Sorry. We are still working on this feature.")}></div>
+        <div className="action-item icon-more" onClick={() => alert("Sorry. We are still working on this feature.")}></div>
       </div>
     </li>);
   }
@@ -40,12 +52,15 @@ ActivityFeedItem.propTypes = {
 
 const ActivityFeed = React.createClass({
   getDefaultProps() {
-    return {length: DEFAULT_LENGTH};
+    return {
+      length: DEFAULT_LENGTH,
+      onDelete: function() {}
+    };
   },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
     return (<ul className="activity-feed">
-      {sites.map(site => <ActivityFeedItem key={site.url} {...site} />)}
+      {sites.map(site => <ActivityFeedItem key={site.url} onDelete={this.props.onDelete} {...site} />)}
     </ul>);
   }
 });
@@ -79,6 +94,9 @@ const GroupedActivityFeed = React.createClass({
       dateKey: "lastVisitDate"
     };
   },
+  onDelete(url) {
+    this.props.dispatch(actions.NotifyHistoryDelete(url));
+  },
   render() {
     const sites = this.props.sites
       .slice(0, this.props.length)
@@ -101,7 +119,7 @@ const GroupedActivityFeed = React.createClass({
           {dateLabel !== "Today" &&
             <h3 className="section-title">{dateLabel}</h3>
           }
-          <ActivityFeed key={date} sites={groupedSites.get(date)} length={groupedSites.get(date).length} />
+          <ActivityFeed key={date} onDelete={this.onDelete} sites={groupedSites.get(date)} length={groupedSites.get(date).length} />
         </div>);
       })}
     </div>);
@@ -115,6 +133,7 @@ GroupedActivityFeed.propTypes = {
   dateKey: React.PropTypes.string
 };
 
-module.exports = ActivityFeed;
+module.exports = connect(justDispatch)(GroupedActivityFeed);
 module.exports.ActivityFeedItem = ActivityFeedItem;
+module.exports.ActivityFeed = ActivityFeed;
 module.exports.GroupedActivityFeed = GroupedActivityFeed;

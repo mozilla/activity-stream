@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+  <style>
+    line,
+    path {
+      stroke: #4d4d4d;
+      stroke-width: 2px;
+      fill: none;
+      stroke-linecap: round;
+    }
+
+    .base {
+      stroke: none;
+      stroke-width: 0;
+      fill: #4d4d4d;
+    }
+  </style>
+  
+  <g>
+    <path class="base" d="M3,9v3a1,1,0,0,0,1,1h8a1,1,0,0,0,1-1V9h2v4a2,2,0,0,1-2,2H3a2,2,0,0,1-2-2V9H3Z"/>
+    <path stroke="red" d="M4,5L8,1l4,4"/>
+    <line x1="8" y1="1" x2="8" y2="10" stroke="red" stroke-width="2"/>
+  </g>
+</svg>

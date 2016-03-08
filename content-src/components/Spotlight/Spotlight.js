@@ -1,10 +1,18 @@
 const React = require("react");
+const {connect} = require("react-redux");
+const {justDispatch} = require("selectors/selectors");
+const {actions} = require("actions/action-manager");
 const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const classNames = require("classnames");
 const DEFAULT_LENGTH = 3;
 
 const SpotlightItem = React.createClass({
+  getDefaultProps() {
+    return {
+      onDelete: function() {}
+    };
+  },
   render() {
     const site = this.props;
     const image = site.bestImage;
@@ -39,6 +47,7 @@ const SpotlightItem = React.createClass({
         </div>
         <div className="inner-border" />
       </a>
+      <div className="tile-close-icon" ref="delete" onClick={() => this.props.onDelete(site.url)}></div>
     </li>);
   }
 });
@@ -48,12 +57,16 @@ SpotlightItem.propTypes = {
   bestImage: React.PropTypes.object.isRequired,
   favicon_url: React.PropTypes.string,
   title: React.PropTypes.string.isRequired,
-  description: React.PropTypes.string.isRequired
+  description: React.PropTypes.string.isRequired,
+  onDelete: React.PropTypes.func
 };
 
 const Spotlight = React.createClass({
   getDefaultProps() {
     return {length: DEFAULT_LENGTH};
+  },
+  onDelete(url) {
+    this.props.dispatch(actions.NotifyHistoryDelete(url));
   },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
@@ -64,7 +77,7 @@ const Spotlight = React.createClass({
     return (<section className="spotlight">
       <h3 className="section-title">Spotlight</h3>
       <ul>
-        {sites.map(site => <SpotlightItem key={site.url} {...site} />)}
+        {sites.map(site => <SpotlightItem key={site.url} onDelete={this.onDelete} {...site} />)}
         {blankSites}
       </ul>
     </section>);
@@ -76,5 +89,6 @@ Spotlight.propTypes = {
   length: React.PropTypes.number
 };
 
-module.exports = Spotlight;
+module.exports = connect(justDispatch)(Spotlight);
+module.exports.Spotlight = Spotlight;
 module.exports.SpotlightItem = SpotlightItem;
