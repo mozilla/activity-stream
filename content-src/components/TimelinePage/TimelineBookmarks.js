@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {dedupedSites} = require("selectors/selectors");
+const {selectSpotlight} = require("selectors/selectors");
 
 const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
@@ -15,5 +15,16 @@ const TimelineBookmarks = React.createClass({
   }
 });
 
-module.exports = connect(dedupedSites)(TimelineBookmarks);
+TimelineBookmarks.propTypes = {
+  Spotlight: React.PropTypes.object.isRequired,
+  Bookmarks: React.PropTypes.object.isRequired
+};
+
+module.exports = connect(state => {
+  return {
+    Spotlight: selectSpotlight(state),
+    Bookmarks: state.Bookmarks
+  };
+})(TimelineBookmarks);
+
 module.exports.TimelineBookmarks = TimelineBookmarks;

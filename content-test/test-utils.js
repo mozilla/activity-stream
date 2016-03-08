@@ -1,7 +1,7 @@
 const React = require("react");
 const {Provider} = require("react-redux");
 const mockData = require("lib/fake-data");
-const {dedupedSites} = require("selectors/selectors");
+const {selectNewTabSites} = require("selectors/selectors");
 const TestUtils = require("react-addons-test-utils");
 
 function createMockProvider(data = mockData) {
@@ -25,7 +25,7 @@ function renderWithProvider(Connected) {
 
 module.exports = {
   rawMockData: mockData,
-  mockData: dedupedSites(mockData),
+  mockData: Object.assign({}, mockData, selectNewTabSites(mockData)),
   createMockProvider,
   renderWithProvider
 };

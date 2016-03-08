@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {dedupedSites} = require("selectors/selectors");
+const {selectNewTabSites} = require("selectors/selectors");
 const TopSites = require("components/TopSites/TopSites");
 const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
@@ -38,5 +38,12 @@ const NewTabPage = React.createClass({
   }
 });
 
-module.exports = connect(dedupedSites)(NewTabPage);
+NewTabPage.propTypes = {
+  TopSites: React.PropTypes.object.isRequired,
+  Spotlight: React.PropTypes.object.isRequired,
+  TopActivity: React.PropTypes.object.isRequired,
+  dispatch: React.PropTypes.func.isRequired
+};
+
+module.exports = connect(selectNewTabSites)(NewTabPage);
 module.exports.NewTabPage = NewTabPage;

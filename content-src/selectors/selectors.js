@@ -8,9 +8,9 @@ const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
 module.exports.justDispatch = (() => ({}));
 
 const selectSpotlight = module.exports.selectSpotlight = createSelector(
-  [state => state.History],
-  (History) => {
-    const rows = History.rows
+  [state => state.FrecentHistory],
+  (FrecentHistory) => {
+    const rows = FrecentHistory.rows
     .map(site => {
       const bestImage = getBestImage(site.images);
       return Object.assign({}, site, {bestImage});
@@ -23,27 +23,26 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
         site.title !== site.description
       );
     });
-    return Object.assign({}, History, {rows});
+    return Object.assign({}, FrecentHistory, {rows});
   }
 );
 
-module.exports.dedupedSites = createSelector(
+module.exports.selectNewTabSites = createSelector(
   [
     state => state.TopSites,
-    state => state.History,
-    state => state.Bookmarks,
+    state => state.FrecentHistory,
     selectSpotlight
   ],
-  (TopSites, History, Bookmarks, Spotlight) => {
+  (TopSites, FrecentHistory, Spotlight) => {
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
     spotlightRows = spotlightRows.slice(0, SPOTLIGHT_LENGTH);
-    const topActivityRows = dedupe.group([topSitesRows, spotlightRows, History.rows])[2];
+    const topActivityRows = dedupe.group([topSitesRows, spotlightRows, FrecentHistory.rows])[2].sort((a, b) => {
+      return b.lastVisitDate - a.lastVisitDate;
+    });
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
-      Spotlight: Object.assign({}, History, {rows: spotlightRows}),
-      TopActivity: Object.assign({}, History, {rows: topActivityRows}),
-      History,
-      Bookmarks
+      Spotlight: Object.assign({}, FrecentHistory, {rows: spotlightRows}),
+      TopActivity: Object.assign({}, FrecentHistory, {rows: topActivityRows})
     };
   }
 );

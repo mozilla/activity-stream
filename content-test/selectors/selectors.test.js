@@ -7,7 +7,7 @@ const dedupe = require("lib/dedupe");
 const {
   justDispatch,
   selectSpotlight,
-  dedupedSites,
+  selectNewTabSites,
   SPOTLIGHT_LENGTH
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
@@ -54,7 +54,7 @@ describe("selectors", () => {
     // match the conditions for spotlight to use them
     function assertInvalidSite(site) {
       const testSite = Object.assign({}, validSpotlightSite, site);
-      const emptyState = selectSpotlight({History: {rows: [testSite]}});
+      const emptyState = selectSpotlight({FrecentHistory: {rows: [testSite]}});
       assert.lengthOf(emptyState.rows, 0);
     }
 
@@ -93,12 +93,10 @@ describe("selectors", () => {
       });
     });
   });
-  describe("dedupedSites", () => {
-    let state = dedupedSites(fakeState);
+  describe("selectNewTabSites", () => {
+    let state = selectNewTabSites(fakeState);
     it("should return the right properties", () => {
       [
-        "Bookmarks",
-        "History",
         "Spotlight",
         "TopActivity",
         "TopSites"
@@ -106,16 +104,30 @@ describe("selectors", () => {
         assert.property(state, prop);
       });
     });
-    it("should not modify Bookmarks or History", () => {
-      assert.equal(state.Bookmarks, fakeState.Bookmarks);
-      assert.equal(state.History, fakeState.History);
-    });
     it("should use first 3 items of selectSpotlight for Spotlight", () => {
       assert.deepEqual(state.Spotlight.rows, selectSpotlight(fakeState).rows.slice(0, SPOTLIGHT_LENGTH));
     });
     it("should dedupe TopSites, Spotlight, and TopActivity", () => {
       const groups = [state.TopSites.rows, state.Spotlight.rows, state.TopActivity.rows];
       assert.deepEqual(groups, dedupe.group(groups));
+    });
+    it("should sort TopActivity by dateLastVisited", () => {
+      state = selectNewTabSites({
+        TopSites: {rows: []},
+        Spotlight: {rows: []},
+        FrecentHistory: {rows: [
+          {url: "foo.com", lastVisitDate: 1},
+          {url: "bar.com", lastVisitDate: 4},
+          {url: "baz.com", lastVisitDate: 3}
+        ]}
+      });
+      assert.deepEqual(state.TopActivity.rows,
+        [
+          {url: "bar.com", lastVisitDate: 4},
+          {url: "baz.com", lastVisitDate: 3},
+          {url: "foo.com", lastVisitDate: 1}
+        ]
+      );
     });
   });
 });
