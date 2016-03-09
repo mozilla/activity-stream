@@ -60,7 +60,7 @@ describe("Timeline", () => {
     it("should render the connected container with the correct props", () => {
       const container = renderWithProvider(ConnectedTimelineHistory);
       const inner = TestUtils.findRenderedComponentWithType(container, TimelineHistory);
-      Object.keys(fakeProps).forEach(key => assert.property(inner.props, key));
+      Object.keys(TimelineHistory.propTypes).forEach(key => assert.property(inner.props, key));
     });
   });
 
@@ -83,7 +83,7 @@ describe("Timeline", () => {
     it("should render the connected container with the correct props", () => {
       const container = renderWithProvider(ConnectedTimelineBookmarks);
       const inner = TestUtils.findRenderedComponentWithType(container, TimelineBookmarks);
-      Object.keys(fakeProps).forEach(key => assert.property(inner.props, key));
+      Object.keys(TimelineBookmarks.propTypes).forEach(key => assert.property(inner.props, key));
     });
   });
 

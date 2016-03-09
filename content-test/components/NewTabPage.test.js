@@ -38,6 +38,6 @@ describe("NewTabPage", () => {
   it("should render connected component with correct props", () => {
     const container = renderWithProvider(ConnectedNewTabPage);
     const inner = TestUtils.findRenderedComponentWithType(container, NewTabPage);
-    Object.keys(fakeProps).forEach(key => assert.property(inner.props, key));
+    Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
   });
 });

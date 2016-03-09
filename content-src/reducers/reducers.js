@@ -49,6 +49,7 @@ function setSearchState(type) {
 
 module.exports = {
   TopSites: setRowsOrError("TOP_FRECENT_SITES_RESPONSE"),
+  FrecentHistory: setRowsOrError("FRECENT_LINKS_RESPONSE"),
   History: setRowsOrError("RECENT_LINKS_RESPONSE"),
   Bookmarks: setRowsOrError("RECENT_BOOKMARKS_RESPONSE"),
   Search: setSearchState("SEARCH_STATE_RESPONSE")
