@@ -19,6 +19,7 @@ const Routes = React.createClass({
     return (<Router history={history}>
       <Route path="/" component={require("components/Base/Base")}>
         <IndexRoute title="Home" component={require("components/NewTabPage/NewTabPage")} />
+        <Route title="DebugPage" path="debug" component={require("components/DebugPage/DebugPage")} />
         <Route title="Activity Stream" path="timeline" component={require("components/TimelinePage/TimelinePage")}>
           <IndexRoute title="History" component={require("components/TimelinePage/TimelineHistory")} />
           <Route title="History" path="bookmarks" component={require("components/TimelinePage/TimelineBookmarks")} />

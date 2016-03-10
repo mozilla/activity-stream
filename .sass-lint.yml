@@ -6,6 +6,7 @@ files:
 
 
 rules:
+  class-name-format: 0
   extends-before-declarations: 2
   extends-before-mixins: 2
   force-element-nesting: 0
