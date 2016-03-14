@@ -18,7 +18,7 @@ const ActivityFeedItem = React.createClass({
   },
   render() {
     const site = this.props;
-    const title = site.title;
+    const title = site.title || site.provider_display || (site.parsedUrl && site.parsedUrl.hostname);
     const date = site.dateDisplay;
 
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
@@ -47,7 +47,11 @@ ActivityFeedItem.propTypes = {
   title: React.PropTypes.string,
   bookmarkTitle: React.PropTypes.string,
   type: React.PropTypes.string,
-  dateDisplay: React.PropTypes.number
+  dateDisplay: React.PropTypes.number,
+  provider_display: React.PropTypes.string,
+  parsedUrl: React.PropTypes.shape({
+    hostname: React.PropTypes.string
+  })
 };
 
 const ActivityFeed = React.createClass({
