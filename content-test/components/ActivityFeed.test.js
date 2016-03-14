@@ -21,7 +21,7 @@ const fakeSite = {
       "width": 460,
       "entropy": 3.98714569089,
       "size": 14757
-    },
+    }
   ]
 };
 const fakeSiteWithBookmark = Object.assign({}, fakeSite, {
