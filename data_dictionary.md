@@ -23,7 +23,7 @@
 }
 ```
 
-The `about:newtab` page will ping (HTTPS POST) [Onyx](https://github.com/mozilla/onyx) every time the page loses focus.
+The Activity Stream page will ping (HTTPS POST) [Onyx](https://github.com/mozilla/onyx) every time the page loses focus.
 
 | KEY | DESCRIPTION | &nbsp; |
 |-----|-------------|:-----:|
@@ -37,7 +37,7 @@ The `about:newtab` page will ping (HTTPS POST) [Onyx](https://github.com/mozilla
 | `tab_id` | The Firefox generated unique id for the tab. | :one:
 | `total_bookmarks` | The total number of bookmarks in the user's places db. | :one:
 | `total_history_size` | The number of history items currently in the user's places db. | :one:
-| `unload_reason` | The reason the about:newtab page lost focus. | :one:
+| `unload_reason` | The reason the Activity Stream page lost focus. | :one:
 | `ver` | The version of the Onyx API the ping was sent to. | :one:
 | `ip` | The IP address of the client. | :two:
 | `locale` | The browser chrome's language (eg. en-US). | :two:
