@@ -8,6 +8,7 @@ const {
   justDispatch,
   selectSpotlight,
   selectNewTabSites,
+  selectSiteIcon,
   SPOTLIGHT_LENGTH
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
@@ -128,6 +129,59 @@ describe("selectors", () => {
           {url: "foo.com", lastVisitDate: 1}
         ]
       );
+    });
+  });
+  describe("selectSiteIcon", () => {
+    const siteWithFavicon = {
+      url: "http://foo.com",
+      favicon_url: "http://foo.com/favicon.ico",
+      favicon: "http://foo.com/favicon-16.ico",
+      favicon_colors: [{color: [11, 11, 11]}]
+    };
+    let state;
+    beforeEach(() => {
+      state = selectSiteIcon(siteWithFavicon);
+    });
+
+    it("should not throw", () => {
+      assert.doesNotThrow(() => {
+        selectSiteIcon({});
+      });
+    });
+
+    it("should have a url", () => {
+      assert.equal(state.url, siteWithFavicon.url);
+    });
+    it("should select favicon_url", () => {
+      assert.equal(state.favicon, siteWithFavicon.favicon_url);
+    });
+    it("should fall back to favicon_url", () => {
+      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_url: null}));
+      assert.equal(state.favicon, siteWithFavicon.favicon);
+    });
+    it("should select the first letter of the hostname", () => {
+      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {url: "http://kate.com"}));
+      assert.equal(state.firstLetter, "k");
+    });
+    it("should create a background color", () => {
+      assert.equal(state.backgroundColor, `rgba(11, 11, 11, ${selectSiteIcon.BACKGROUND_FADE})`);
+    });
+    it("should create an opaque background color if there is no favicon", () => {
+      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_url: null, favicon: null}));
+      assert.equal(state.backgroundColor, "rgba(11, 11, 11, 1)");
+    });
+    it("should create a random background color if no favicon color exists", () => {
+      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_colors: null}));
+      assert.ok(state.backgroundColor);
+    });
+    it("should create a contrasting font color", () => {
+      const darkColor = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_colors: [{color: [1, 1, 1]}]}));
+      assert.equal(darkColor.fontColor, "white");
+      const lightColor = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_colors: [{color: [200, 200, 200]}]}));
+      assert.equal(lightColor.fontColor, "black");
+    });
+    it("should add a label (hostname)", () => {
+      assert.equal(state.label, "foo.com");
     });
   });
 });

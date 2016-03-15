@@ -19,6 +19,9 @@ module.exports = function() {
       case "RECENT_LINKS_REQUEST":
         dispatch({type: "RECENT_LINKS_RESPONSE", data: fakeData.History.rows});
         break;
+      case "FRECENT_LINKS_REQUEST":
+        dispatch({type: "FRECENT_LINKS_RESPONSE", data: fakeData.FrecentHistory.rows});
+        break;
     }
   }, false);
 };

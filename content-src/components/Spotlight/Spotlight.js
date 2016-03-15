@@ -5,6 +5,7 @@ const {actions} = require("actions/action-manager");
 const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const classNames = require("classnames");
+
 const DEFAULT_LENGTH = 3;
 
 const SpotlightItem = React.createClass({
@@ -34,7 +35,7 @@ const SpotlightItem = React.createClass({
     return (<li className="spotlight-item">
       <a href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={{backgroundImage: `url(${imageUrl})`}} ref="image">
-          <SiteIcon className="spotlight-icon" site={site} ref="icon" height={32} width={32} />
+          <SiteIcon className="spotlight-icon" site={site} ref="icon" showBackground={false} faviconSize={32} />
         </div>
         <div className="spotlight-details">
           <div className="spotlight-info">

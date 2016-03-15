@@ -1,9 +1,12 @@
 const {createSelector} = require("reselect");
 const dedupe = require("lib/dedupe");
 const getBestImage = require("lib/getBestImage");
+const {prettyUrl, getBlackOrWhite, toRGBString, getRandomColor} = require("lib/utils");
+const urlParse = require("url-parse");
 
 const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
+const BACKGROUND_FADE = 0.5;
 
 module.exports.justDispatch = (() => ({}));
 
@@ -46,3 +49,27 @@ module.exports.selectNewTabSites = createSelector(
     };
   }
 );
+
+module.exports.selectSiteIcon = createSelector(
+  site => site,
+  site => {
+    const favicon = site.favicon_url || site.favicon;
+    const parsedUrl = site.parsedUrl || urlParse(site.url || "") ;
+    const label = prettyUrl(parsedUrl.hostname);
+    let background = getRandomColor(label);
+    try { background = site.favicon_colors[0].color || background; } catch (e) {/**/}
+    const backgroundColor = toRGBString(...background, favicon ? BACKGROUND_FADE : 1);
+    const fontColor = getBlackOrWhite(...background);
+    const firstLetter = prettyUrl(parsedUrl.hostname)[0];
+    return {
+      url: site.url,
+      favicon,
+      firstLetter,
+      backgroundColor,
+      fontColor,
+      label
+    };
+  }
+);
+
+module.exports.selectSiteIcon.BACKGROUND_FADE = BACKGROUND_FADE;
