@@ -124,6 +124,12 @@
       "title": "Enable Performance Logging",
       "type": "bool",
       "value": false
+    },
+    {
+      "name": "query.cache",
+      "title": "Enable query caching mode",
+      "type": "bool",
+      "value": true
     }
   ]
 }
