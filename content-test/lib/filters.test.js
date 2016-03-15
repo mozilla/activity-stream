@@ -1,5 +1,5 @@
 const {assert} = require("chai");
-const {createFilter, urlFilter, siteFilter, TEMP_MAX_LENGTH} = require("lib/filters");
+const {createFilter, urlFilter, siteFilter} = require("lib/filters");
 const urlParse = require("url-parse");
 
 function addParsedUrl(url) {
@@ -46,10 +46,6 @@ describe("urlFilter", () => {
   });
   it("should require truthly urls", () => {
     const urls = [{url: null}, {}, {url: ""}];
-    assert.deepEqual(urls.filter(urlFilter), []);
-  });
-  it("should remove urls > max characters", () => {
-    const urls = [addParsedUrl("http://" + new Array(TEMP_MAX_LENGTH + 1).join("d") + ".com")];
     assert.deepEqual(urls.filter(urlFilter), []);
   });
   it("should remove urls that do not start with http/https", () => {

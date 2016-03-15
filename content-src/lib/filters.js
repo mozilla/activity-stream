@@ -1,6 +1,5 @@
 const {log} = require("lib/logger");
 
-const TEMP_MAX_LENGTH = 150;
 const ALLOWED_PROTOCOLS = new Set([
   "http:",
   "https:"
@@ -27,9 +26,6 @@ function createFilter(definition, name) {
 const URL_FILTERS = [
   (item) => !!item.url,
   (item) => !!item.parsedUrl,
-  // This is temporary, until we can use POST-style requests
-  // see https://github.com/mozilla/embedly-proxy/issues/1
-  (item) => item.url && item.url.length <= TEMP_MAX_LENGTH,
   (item) => item.parsedUrl && ALLOWED_PROTOCOLS.has(item.parsedUrl.protocol),
   (item) => item.parsedUrl && !DISALLOWED_HOSTS.has(item.parsedUrl.hostname)
 ];
@@ -39,7 +35,6 @@ const DATA_FILTERS = [
 ];
 
 module.exports = {
-  TEMP_MAX_LENGTH,
   createFilter,
   urlFilter: createFilter(URL_FILTERS, "URL_FILTERS"),
   siteFilter: createFilter(DATA_FILTERS, "DATA_FILTERS")
