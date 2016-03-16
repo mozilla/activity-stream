@@ -12,10 +12,6 @@ const path = "/dummy-activitystreams.html";
 const url = `http://localhost:${PORT}${path}`;
 const otherUrl = `http://localhost:${PORT}/dummy-other.html`;
 
-function log(text) {
-  console.log(`setup: ${text}`); // eslint-disable-line no-console
-}
-
 let srv;
 let app;
 let openTabs;
@@ -23,7 +19,6 @@ let openTabs;
 exports["test load worker"] = function(assert, done) {
   app = new ActivityStreams({pageURL: url});
   function onReady(tab) {
-    log("ready 1");
     if (tab.url === url) {
       assert.equal(app.workers.size, 1, "Worker is loaded");
     }
@@ -38,7 +33,6 @@ exports["test removing worker on url change"] = function(assert, done) {
   app = new ActivityStreams({
     pageURL: url,
     onRemoveWorker() {
-      log("ready 2: change");
       assert.equal(app.workers.size, 0, "app.worker should be removed on a url change");
       done();
     }
@@ -46,7 +40,6 @@ exports["test removing worker on url change"] = function(assert, done) {
   function onReady(tab) {
     assert.equal(app.workers.size, 1, "app.worker should be added");
     tab.url = otherUrl;
-    log("setting url");
   }
   tabs.once("ready", onReady);
 
