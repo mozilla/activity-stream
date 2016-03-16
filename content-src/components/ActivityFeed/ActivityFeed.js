@@ -7,7 +7,6 @@ const {prettyUrl, getRandomFromTimestamp} = require("lib/utils");
 const moment = require("moment");
 const classNames = require("classnames");
 
-const DEFAULT_LENGTH = 3;
 const ICON_SIZE = 16;
 const TOP_LEFT_ICON_SIZE = 20;
 
@@ -73,7 +72,6 @@ ActivityFeedItem.propTypes = {
 const ActivityFeed = React.createClass({
   getDefaultProps() {
     return {
-      length: DEFAULT_LENGTH,
       onDelete: function() {}
     };
   },
@@ -113,7 +111,6 @@ function groupSitesByDate(sites) {
 const GroupedActivityFeed = React.createClass({
   getDefaultProps() {
     return {
-      length: DEFAULT_LENGTH,
       dateKey: "lastVisitDate"
     };
   },

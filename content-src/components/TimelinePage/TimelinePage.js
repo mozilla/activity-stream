@@ -18,7 +18,7 @@ const TimelinePage = React.createClass({
         pathname={pathname}
         links={[{title: "Home", to: "/"}]} />
       <main className="timeline">
-        <nav className="sidebar">
+        <nav className="sidebar" onScroll={this.onScroll}>
           <ul>
             {navItems.map(item => {
               return (<li key={item.to}>

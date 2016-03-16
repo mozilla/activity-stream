@@ -4,12 +4,14 @@ const mockData = require("lib/fake-data");
 const {selectNewTabSites} = require("selectors/selectors");
 const TestUtils = require("react-addons-test-utils");
 
-function createMockProvider(data = mockData) {
-  const store = {
-    getState: () => data,
-    dispatch: () => {},
-    subscribe: () => {}
-  };
+const DEFAULT_STORE = {
+  getState: () => mockData,
+  dispatch: () => {},
+  subscribe: () => {}
+};
+
+function createMockProvider(custom = {}) {
+  const store = Object.assign({}, DEFAULT_STORE, custom);
   store.subscribe = () => {};
   return React.createClass({
     render() {
@@ -18,8 +20,8 @@ function createMockProvider(data = mockData) {
   });
 }
 
-function renderWithProvider(component) {
-  const ProviderWrapper = createMockProvider();
+function renderWithProvider(component, store) {
+  const ProviderWrapper = createMockProvider(store);
   const container = TestUtils.renderIntoDocument(<ProviderWrapper>{component}</ProviderWrapper>);
   return TestUtils.findRenderedComponentWithType(container, component.type);
 }

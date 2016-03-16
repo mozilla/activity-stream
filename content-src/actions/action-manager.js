@@ -46,6 +46,9 @@ function Response(type, data, options = {}) {
   if (options.error) {
     action.error = true;
   }
+  if (options.append) {
+    action.meta = {append: true};
+  }
   return action;
 }
 
@@ -60,6 +63,9 @@ function RequestExpect(type, expect, options = {}) {
   if (options.data) {
     action.data = options.data;
   }
+  if (options.append) {
+    action.meta.append = true;
+  }
   return action;
 }
 
@@ -71,8 +77,15 @@ function RequestBookmarks() {
   return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE");
 }
 
-function RequestRecentLinks(data) {
-  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", {data: data});
+function RequestRecentLinks(options) {
+  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", options);
+}
+
+function RequestMoreRecentLinks(beforeDate) {
+  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", {
+    data: {beforeDate},
+    append: true
+  });
 }
 
 function RequestFrecentLinks() {
@@ -106,6 +119,7 @@ am.defineActions({
   RequestTopFrecent,
   RequestBookmarks,
   RequestRecentLinks,
+  RequestMoreRecentLinks,
   RequestFrecentLinks,
   RequestSearchState,
   NotifyHistoryDelete,
