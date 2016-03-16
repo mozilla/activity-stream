@@ -1,3 +1,4 @@
 {
-  
+  "xpinstall.signatures.required": false,
+  "extensions.@activity-streams.sdk.console.logLevel": "info"
 }
