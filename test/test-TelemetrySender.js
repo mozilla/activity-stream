@@ -1,4 +1,4 @@
-/* globals Services */
+/* globals Services, Locale */
 "use strict";
 
 const {Cu, CC} = require("chrome");
@@ -6,8 +6,10 @@ const {before, after} = require("sdk/test/utils");
 const {ActivityStreams} = require("lib/ActivityStreams");
 const {Loader} = require("sdk/test/loader");
 const loader = Loader(module);
+const self = require("sdk/self");
 const httpd = loader.require("./lib/httpd");
 
+Cu.import("resource://gre/modules/Locale.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
@@ -19,7 +21,11 @@ const samplePing = JSON.stringify({
   tab_id: "-3-2",
   unload_reason: "close",
   client_id: "b8abfda8-0c57-9b48-af8b-c5ef87b2b673",
-  session_duration: 10
+  session_duration: 10,
+  addon_version: self.version,
+  load_reason: "other",
+  source: "other",
+  locale: Locale.getLocale()
 });
 
 exports.test_TelemetrySender_init = function(assert, done) {
