@@ -101,11 +101,11 @@
     "start:css": "npm run bundle:css && npm run bundle:css -- -w",
     "start:html": "npm run bundle:html -- --baseUrl http://localhost:1963/",
     "start:server": "live-server data/content --port=1963 --no-browser",
-    "firefox": "jpm run -b beta",
+    "firefox": "jpm run -b beta --prefs ./dev-prefs.json",
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle",
     "test:lint": "eslint . && jscs . && sass-lint -v -q",
-    "test:jpm": "jpm test -b beta",
+    "test:jpm": "jpm test -b beta --prefs ./dev-prefs.json",
     "test:karma": "NODE_ENV=test karma start --browsers FirefoxNightly",
     "tdd": "NODE_ENV=test karma start --no-single-run --browsers Chrome",
     "package": "npm run bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
@@ -130,6 +130,12 @@
       "title": "Enable query caching mode",
       "type": "bool",
       "value": true
+    },
+    {
+      "name": "telemetry.ping.endpoint",
+      "title": "Telemetry server endpoint",
+      "type": "string",
+      "value": "https://tiles.services.mozilla.com/v3/links/activity-stream"
     }
   ]
 }
