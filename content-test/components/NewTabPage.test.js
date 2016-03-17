@@ -20,6 +20,10 @@ describe("NewTabPage", () => {
     assert.ok(TestUtils.isCompositeComponentWithType(instance, NewTabPage));
   });
 
+  it("should set the title to New Tab", () => {
+    assert.equal(document.title, "New Tab");
+  });
+
   it("should render TopSites components with correct data", () => {
     const topSites = TestUtils.findRenderedComponentWithType(instance, TopSites);
     assert.equal(topSites.props.sites, fakeProps.TopSites.rows);

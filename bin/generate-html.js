@@ -2,7 +2,7 @@
 "use strict";
 const defaults = {
   baseUrl: "",
-  title: "New Tab"
+  title: "Loading..."
 };
 
 function template(rawOptions) {

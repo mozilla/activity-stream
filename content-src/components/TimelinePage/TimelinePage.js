@@ -4,6 +4,9 @@ const classNames = require("classnames");
 const Header = require("components/Header/Header");
 
 const TimelinePage = React.createClass({
+  componentDidMount() {
+    document.title = "Activity Stream";
+  },
   render() {
     const props = this.props;
     const pathname = props.location && props.location.pathname;
