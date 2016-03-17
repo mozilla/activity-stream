@@ -1,3 +1,13 @@
+.grouped-activity-feed {
+  > div {
+    border-bottom: solid 1px $faintest-black;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
 .activity-feed {
   font-size: 13px;
   line-height: 1.4;

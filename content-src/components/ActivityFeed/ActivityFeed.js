@@ -14,7 +14,8 @@ const TOP_LEFT_ICON_SIZE = 20;
 const ActivityFeedItem = React.createClass({
   getDefaultProps() {
     return {
-      onDelete: function() {}
+      onDelete: function() {},
+      showDate: false
     };
   },
   render() {
@@ -37,6 +38,13 @@ const ActivityFeedItem = React.createClass({
       icon = (<SiteIcon {...iconProps} />);
     }
 
+    let dateLabel = "";
+    if (date && this.props.showDate) {
+      dateLabel = moment(date).calendar();
+    } else if (date) {
+      dateLabel = moment(date).format("h:mma");
+    }
+
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
       {icon}
       <div className="feed-details">
@@ -45,7 +53,7 @@ const ActivityFeedItem = React.createClass({
           <a className="feed-link" href={site.url} ref="link">{prettyUrl(site.url)}</a>
         </div>
         <div className="feed-stats">
-          <div ref="lastVisit">{date && moment(date).format("h:mma")}</div>
+          <div ref="lastVisit">{dateLabel}</div>
         </div>
       </div>
       <div className="action-items-container">
@@ -83,6 +91,7 @@ const ActivityFeed = React.createClass({
       {sites.map((site, i) => <ActivityFeedItem key={i}
         onDelete={this.props.onDelete}
         showImage={getRandomFromTimestamp(0.2, site)}
+        showDate={i === 0}
         {...site} />)}
     </ul>);
   }
@@ -132,16 +141,7 @@ const GroupedActivityFeed = React.createClass({
         <h3 className="section-title">{this.props.title}</h3>
       }
       {Array.from(groupedSites.keys()).map(date => {
-        let dateLabel = moment(date).calendar(null, {
-          sameDay: "[Today]",
-          lastDay: "[Yesterday]",
-          lastWeek: "[Last] dddd",
-          sameElse: "DD/MM/YYYY"
-        });
         return (<div key={date}>
-          {dateLabel !== "Today" &&
-            <h3 className="section-title">{dateLabel}</h3>
-          }
           <ActivityFeed key={date} onDelete={this.onDelete} sites={groupedSites.get(date)} length={groupedSites.get(date).length} />
         </div>);
       })}

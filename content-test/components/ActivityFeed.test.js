@@ -98,6 +98,11 @@ describe("ActivityFeedItem", function() {
       const button = item.refs.delete;
       TestUtils.Simulate.click(button);
     });
+    it("should render date if showDate=true", () => {
+      const item = TestUtils.renderIntoDocument(<ActivityFeedItem showDate={true} {...fakeSite} />);
+      const lastVisitEl = item.refs.lastVisit;
+      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.dateDisplay).calendar());
+    });
   });
 });
 
