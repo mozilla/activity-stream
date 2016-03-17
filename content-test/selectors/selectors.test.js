@@ -120,13 +120,18 @@ describe("selectors", () => {
           {url: "foo.com", lastVisitDate: 1},
           {url: "bar.com", lastVisitDate: 4},
           {url: "baz.com", lastVisitDate: 3}
-        ]}
+        ]},
+        History: {rows: [
+          {url: "foo1.com", lastVisitDate: 1},
+          {url: "bar2.com", lastVisitDate: 4},
+          {url: "baz3.com", lastVisitDate: 3}
+        ]},
       });
       assert.deepEqual(state.TopActivity.rows,
         [
-          {url: "bar.com", lastVisitDate: 4},
-          {url: "baz.com", lastVisitDate: 3},
-          {url: "foo.com", lastVisitDate: 1}
+          {url: "bar2.com", lastVisitDate: 4},
+          {url: "baz3.com", lastVisitDate: 3},
+          {url: "foo1.com", lastVisitDate: 1}
         ]
       );
     });

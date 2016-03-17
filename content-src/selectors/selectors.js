@@ -34,19 +34,20 @@ module.exports.selectNewTabSites = createSelector(
   [
     state => state.TopSites,
     state => state.FrecentHistory,
+    state => state.History,
     selectSpotlight
   ],
-  (TopSites, FrecentHistory, Spotlight) => {
+  (TopSites, FrecentHistory, History, Spotlight) => {
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
     spotlightRows = spotlightRows.slice(0, SPOTLIGHT_LENGTH);
-    const topActivityRows = dedupe.group([topSitesRows, spotlightRows, FrecentHistory.rows])[2].sort((a, b) => {
+    const topActivityRows = dedupe.group([topSitesRows, spotlightRows, History.rows])[2].sort((a, b) => {
       return b.lastVisitDate - a.lastVisitDate;
     });
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Spotlight: Object.assign({}, FrecentHistory, {rows: spotlightRows}),
       TopActivity: Object.assign({}, FrecentHistory, {rows: topActivityRows}),
-      isReady: TopSites.init && FrecentHistory.init
+      isReady: TopSites.init && FrecentHistory.init && History.init
     };
   }
 );
