@@ -28,6 +28,10 @@ describe("Timeline", () => {
       assert.ok(TestUtils.isCompositeComponentWithType(instance, TimelinePage));
     });
 
+    it("should set the title to Activity Stream", () => {
+      assert.equal(document.title, "Activity Stream");
+    });
+
     it("should render children", () => {
       const result = TestUtils.findRenderedDOMComponentWithClass(instance, "fake-child");
       TestUtils.isDOMComponent(result);

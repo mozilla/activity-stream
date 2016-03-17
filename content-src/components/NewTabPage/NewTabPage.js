@@ -13,6 +13,9 @@ const NewTabPage = React.createClass({
   onSearch(value) {
     this.props.dispatch(actions.NotifyPerformSearch(value));
   },
+  componentDidMount() {
+    document.title = "New Tab";
+  },
   componentDidUpdate() {
     if (this.props.isReady) {
       this.props.dispatch(actions.NotifyTelemetry("NEWTAB_RENDER"));
