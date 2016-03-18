@@ -10,7 +10,7 @@ const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
-const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason"];
+const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version", "load_reason", "source", "locale"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
