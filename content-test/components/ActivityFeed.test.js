@@ -66,6 +66,10 @@ describe("ActivityFeedItem", function() {
     it("should create the element", () => {
       assert.ok(el);
     });
+    it("should render the link", () => {
+      const linkEl = instance.refs.link;
+      assert.equal(linkEl.href, fakeSite.url);
+    });
     it("should render the icon", () => {
       assert.instanceOf(instance.refs.icon, SiteIcon);
       assert.include(instance.refs.icon.props.site, fakeSite);
@@ -73,10 +77,9 @@ describe("ActivityFeedItem", function() {
     it("should render the title", () => {
       assert.equal(instance.refs.title.innerHTML, fakeSite.title);
     });
-    it("should render the url link", () => {
-      const linkEl = instance.refs.link;
-      assert.equal(linkEl.innerHTML, prettyUrl(fakeSite.url));
-      assert.include(linkEl.href, fakeSite.url);
+    it("should render the url", () => {
+      const urlEl = instance.refs.url;
+      assert.equal(urlEl.innerHTML, prettyUrl(fakeSite.url));
     });
     it("should render the time", () => {
       const lastVisitEl = instance.refs.lastVisit;
