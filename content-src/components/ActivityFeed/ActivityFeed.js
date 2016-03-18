@@ -45,16 +45,18 @@ const ActivityFeedItem = React.createClass({
     }
 
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
-      {icon}
-      <div className="feed-details">
-        <div className="feed-description">
-          <h4 className="feed-title" ref="title">{title}</h4>
-          <a className="feed-link" href={site.url} ref="link">{prettyUrl(site.url)}</a>
+      <a href={site.url} ref="link">
+        {icon}
+        <div className="feed-details">
+          <div className="feed-description">
+            <h4 className="feed-title" ref="title">{title}</h4>
+            <span className="feed-url" ref="url">{prettyUrl(site.url)}</span>
+          </div>
+          <div className="feed-stats">
+            <div ref="lastVisit">{dateLabel}</div>
+          </div>
         </div>
-        <div className="feed-stats">
-          <div ref="lastVisit">{dateLabel}</div>
-        </div>
-      </div>
+      </a>
       <div className="action-items-container">
         <div className="action-item icon-delete" ref="delete" onClick={() => this.props.onDelete(site.url)}></div>
         <div className="action-item icon-share" onClick={() => alert("Sorry. We are still working on this feature.")}></div>

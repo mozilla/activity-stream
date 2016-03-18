@@ -19,13 +19,19 @@
 .feed-item {
   display: flex;
   align-items: center;
-  padding-left: $feed-gutter-h * 2 + $feed-circle-offset;
-  padding-right: $feed-gutter-h;
-  padding-bottom: $feed-gutter-v;
-  padding-top: $feed-gutter-v;
   position: relative;
   border: 1px solid transparent;
   border-radius: $border-radius;
+
+  > a {
+    display: flex;
+    padding-left: $feed-gutter-h * 2 + $feed-circle-offset;
+    padding-right: $feed-gutter-h;
+    padding-bottom: $feed-gutter-v;
+    padding-top: $feed-gutter-v;
+    color: inherit;
+    width: 100%;
+  }
 
   // This is the line/circle on the side
   &:first-child {
@@ -173,11 +179,12 @@
       white-space: nowrap;
     }
 
-    .feed-link {
+    .feed-url {
       display: block;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      color: $link-blue;
     }
   }
 
