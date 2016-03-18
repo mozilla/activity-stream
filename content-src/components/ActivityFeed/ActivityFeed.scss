@@ -151,6 +151,7 @@
   background-position: center;
   border: 1px solid $faintest-black;
   border-radius: $border-radius;
+  flex-shrink: 0;
 
   .site-icon.feed-icon {
     position: absolute;
