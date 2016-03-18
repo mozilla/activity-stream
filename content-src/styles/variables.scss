@@ -1,5 +1,6 @@
 $bg-color: #FFF;
 $bg-grey: #FBFBFB;
+$very-light-grey: #EBEBEB;
 $light-grey: #A0A0A0;
 $mid-grey: #56565A;
 $dark-grey: #383E49;
@@ -70,6 +71,13 @@ $placeholder-border: 2px dashed #C1C1C1;
 
 $item-shadow: 0 1px 0 0 $faintest-black;
 $item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
+
+$loader-height: 25px;
+$loader-width: 25px;
+$loader-border-width: 5px;
+$loader-color: $search-blue;
+$loader-color-light: rgba($loader-color, 0.1);
+$loader-duration: 1.3s;
 
 @mixin item-shadow {
   box-shadow: $item-shadow;

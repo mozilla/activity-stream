@@ -1,7 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {selectSpotlight} = require("selectors/selectors");
-
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 
