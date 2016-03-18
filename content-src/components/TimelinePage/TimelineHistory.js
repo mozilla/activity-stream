@@ -1,16 +1,27 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {selectSpotlight} = require("selectors/selectors");
-
+const {RequestMoreRecentLinks} = require("actions/action-manager").actions;
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
+const LoadMore = require("components/LoadMore/LoadMore");
 
 const TimelineHistory = React.createClass({
+  getMore() {
+    const history = this.props.History.rows;
+    if (!history.length) {
+      return;
+    }
+    const beforeDate = history[history.length - 1].lastVisitDate;
+    this.props.dispatch(RequestMoreRecentLinks(beforeDate));
+  },
   render() {
     const props = this.props;
     return (<div className="wrapper">
       <Spotlight sites={props.Spotlight.rows} />
-      <GroupedActivityFeed title="Just now" sites={props.History.rows} length={20} />
+      <GroupedActivityFeed title="Just now" sites={props.History.rows} />
+      <LoadMore loading={props.History.isLoading} hidden={!props.History.canLoadMore || !props.History.rows.length} onClick={this.getMore}
+        label="See more activity"/>
     </div>);
   }
 });

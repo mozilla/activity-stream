@@ -1,0 +1,25 @@
+.loader {
+  color: $light-grey;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+
+  .spinner {
+    flex-shrink: 0;
+    margin-right: 10px;
+    width: $loader-height;
+    height: $loader-height;
+    display: inline-block;
+    border-radius: 50%;
+    background: transparent;
+    border-top: $loader-border-width solid $loader-color-light;
+    border-right: $loader-border-width solid $loader-color-light;
+    border-bottom: $loader-border-width solid $loader-color;
+    border-left: $loader-border-width solid $loader-color;
+    animation: spin $loader-duration linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
