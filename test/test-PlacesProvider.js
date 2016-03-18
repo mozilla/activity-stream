@@ -326,7 +326,8 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
     // we change the modified date based on creation dates, because due to asynchronicity, we don't know what got created first
     let stmt = conn.createStatement(`UPDATE moz_bookmarks SET lastModified = ${modifiedTime} WHERE guid = "${bm.bookmarkGuid}"`);
     stmt.executeStep();
-    modifiedTime -= (24 * 60 * 60);
+    // decrement modifiedTime by daily microseconds
+    modifiedTime -= (24 * 60 * 60 * 1000 * 1000);
   }
 
   links = yield provider.getRecentBookmarks();
@@ -338,6 +339,24 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
     assert.ok(!links[i].lastVisitDate || isVisitDateOK(links[i].lastVisitDate), "set visit date is within expected range");
     assert.ok(isVisitDateOK(links[i].lastModified), "lastModified date is within expected range");
     assert.ok(isVisitDateOK(links[i].bookmarkDateCreated), "bookmarkDateCreated date is within expected range");
+  }
+
+  // test beforeDate and atferDate functionality
+  // set yesterday timestamp in milliseconds
+  let yesterday = timeDaysAgo(1) / 1000 - 1000;
+
+  // this should select bookmarks modified after yesterday
+  links = yield provider.getRecentBookmarks({afterDate: yesterday});
+  assert.equal(links.length, 2, "Two bookmarks were modifed since yesterday");
+  for (let i = 0; i < links.length; i++) {
+    assert.ok(links[i].lastModified > yesterday, "bookmark lastModifed date is after yesterday");
+  }
+
+  // this should select bookmarks modified before yesterday
+  links = yield provider.getRecentBookmarks({beforeDate: yesterday});
+  assert.equal(links.length, 1, "One bookmark was modifed before yesterday");
+  for (let i = 0; i < links.length; i++) {
+    assert.ok(links[i].lastModified < yesterday, "bookmark lastModifed date is before yesterday");
   }
 
   // cleanup
