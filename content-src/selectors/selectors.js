@@ -7,6 +7,7 @@ const urlParse = require("url-parse");
 const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
 const BACKGROUND_FADE = 0.5;
+const DEFAULT_FAVICON_BG_COLOR = [250, 250, 250];
 
 module.exports.justDispatch = (() => ({}));
 
@@ -58,7 +59,7 @@ module.exports.selectSiteIcon = createSelector(
     const favicon = site.favicon_url || site.favicon;
     const parsedUrl = site.parsedUrl || urlParse(site.url || "") ;
     const label = prettyUrl(parsedUrl.hostname);
-    let background = getRandomColor(label);
+    let background = favicon ? DEFAULT_FAVICON_BG_COLOR : getRandomColor(label);
     try { background = site.favicon_colors[0].color || background; } catch (e) {/**/}
     const backgroundColor = toRGBString(...background, favicon ? BACKGROUND_FADE : 1);
     const fontColor = getBlackOrWhite(...background);
