@@ -132,6 +132,12 @@
       "value": true
     },
     {
+      "name": "telemetry",
+      "title": "Enable system error and usage data collection",
+      "type": "bool",
+      "value": true
+    },
+    {
       "name": "telemetry.ping.endpoint",
       "title": "Telemetry server endpoint",
       "type": "string",

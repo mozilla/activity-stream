@@ -7,6 +7,7 @@ const tabs = require("sdk/tabs");
 const {setTimeout} = require("sdk/timers");
 const {ActivityStreams} = require("lib/ActivityStreams");
 const {Cu} = require("chrome");
+const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
@@ -152,7 +153,8 @@ exports.test_TabTracker_reactivating = function*(assert) {
 
 before(exports, function*() {
   let clientID = yield ClientID.getClientID();
-  app = new ActivityStreams({telemetry: true, clientID});
+  simplePrefs.prefs.telemetry = true;
+  app = new ActivityStreams({clientID});
   ACTIVITY_STREAMS_URL = app.appURLs[1];
 });
 
