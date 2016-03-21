@@ -73,8 +73,15 @@ function RequestTopFrecent() {
   return RequestExpect("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE");
 }
 
-function RequestBookmarks() {
-  return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE");
+function RequestBookmarks(options) {
+  return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE", options);
+}
+
+function RequestMoreBookmarks(beforeDate) {
+  return RequestBookmarks({
+    data: {beforeDate},
+    append: true
+  });
 }
 
 function RequestRecentLinks(options) {
@@ -118,6 +125,7 @@ am.defineActions({
   RequestExpect,
   RequestTopFrecent,
   RequestBookmarks,
+  RequestMoreBookmarks,
   RequestRecentLinks,
   RequestMoreRecentLinks,
   RequestFrecentLinks,
