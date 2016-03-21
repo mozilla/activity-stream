@@ -209,6 +209,47 @@ exports.test_TabTracker_prefs = function*(assert) {
   assert.ok(app._tabTracker.enabled, "tab tracker is enabled");
 };
 
+exports.test_TabTracker_latency = function*(assert) {
+  let pingData;
+  let tabClosedPromise = new Promise(resolve => {
+    let onOpen = function(tab) {
+      function onPageLoaded() {
+        Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
+        setTimeout(function() {
+          tab.close(() => {
+            tabs.removeListener("pageshow", onOpen);
+          });
+        }, 10);
+      }
+      Services.obs.addObserver(onPageLoaded, "performance-log-complete");
+    };
+
+    tabs.on("pageshow", onOpen);
+
+    let Observer = {
+      observe: function(subject, topic, data) {
+        if (topic === "tab-session-complete") {
+          pingData = JSON.parse(data);
+          Services.obs.removeObserver(this, "tab-session-complete");
+          resolve();
+        }
+      }
+    };
+
+    Services.obs.addObserver(Observer, "tab-session-complete");
+  });
+
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+  yield tabClosedPromise;
+  let expectedKeys = EXPECTED_KEYS.concat("load_latency");
+  assert.equal(Object.keys(pingData).length,expectedKeys.length, "We have as many attributes as we expect");
+  for (let key of expectedKeys) {
+    assert.ok(pingData[key], `${key} is an attribute in our tab data.`);
+  }
+};
+
 before(exports, function*() {
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
