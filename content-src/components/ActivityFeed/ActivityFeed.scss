@@ -3,7 +3,7 @@
     border-bottom: solid 1px $faintest-black;
 
     &:last-child {
-      border-bottom: none;
+      border-bottom: 0;
     }
   }
 }
@@ -151,6 +151,7 @@
   background-position: center;
   border: 1px solid $faintest-black;
   border-radius: $border-radius;
+  flex-shrink: 0;
 
   .site-icon.feed-icon {
     position: absolute;
