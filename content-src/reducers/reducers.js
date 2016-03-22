@@ -1,4 +1,4 @@
-const am = require("actions/action-manager");
+const am = require("common/action-manager");
 
 const DEFAULT_ROWS_OR_ERRORS_STATE = {
   rows: [],

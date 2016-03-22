@@ -1,4 +1,4 @@
-const am = require("actions/action-manager");
+const am = require("common/action-manager");
 const embedlyEndpoint = __CONFIG__.EMBEDLY_ENDPOINT;
 const {urlFilter, siteFilter} = require("lib/filters");
 const dedupe = require("lib/dedupe");

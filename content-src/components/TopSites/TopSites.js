@@ -1,7 +1,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
-const {actions} = require("actions/action-manager");
+const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const DEFAULT_LENGTH = 6;
 

@@ -1,5 +1,5 @@
 // This has to be relative so the firefox add-on side can read the path
-const ActionManager = require("../lib/ActionManager");
+const ActionManager = require("./ActionManager");
 
 const am = new ActionManager([
   "TOP_FRECENT_SITES_REQUEST",
