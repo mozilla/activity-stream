@@ -16,6 +16,35 @@ const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload
 let ACTIVITY_STREAMS_URL;
 let app;
 
+function createPingSentPromise(pingData, expectedPingCount) {
+  return new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic === "tab-session-complete") {
+        pingData.push(JSON.parse(data));
+        if (pingData.length === expectedPingCount) {
+          Services.obs.removeObserver(observe, "tab-session-complete");
+          resolve();
+        }
+      }
+    }
+    Services.obs.addObserver(observe, "tab-session-complete");
+  });
+}
+
+function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedUnloadReasons) {
+  let numActivations = expectedLoadReasons.length;
+  assert.equal(pingData.length, numActivations, `The activity streams page was activated ${numActivations} times`);
+  for (let i in pingData) {
+    let ping = pingData[i];
+    assert.equal(ping.load_reason, expectedLoadReasons[i], "Loaded for the expected reason");
+    assert.equal(ping.unload_reason, expectedUnloadReasons[i], "Unloaded for the expected reason");
+    assert.equal(Object.keys(ping).length,EXPECTED_KEYS.length, "We have as many attributes as we expect");
+    for (let key of EXPECTED_KEYS) {
+      assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
+    }
+  }
+}
+
 exports.test_TabTracker_init = function(assert) {
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
 };
@@ -68,21 +97,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
   let openTabs = [];
   let pingData = [];
 
-  let pingsSentPromise = new Promise(resolve => {
-    let Observer = {
-      observe: function(subject, topic, data) {
-        if (topic === "tab-session-complete") {
-          pingData.push(JSON.parse(data));
-          if (pingData.length === 4) {
-            Services.obs.removeObserver(this, "tab-session-complete");
-            resolve();
-          }
-        }
-      }
-    };
-
-    Services.obs.addObserver(Observer, "tab-session-complete");
-  });
+  let pingsSentPromise = createPingSentPromise(pingData, 4);
 
   let tabsOpenedPromise = new Promise(resolve => {
     let onOpen = function(tab) {
@@ -139,16 +154,51 @@ exports.test_TabTracker_reactivating = function*(assert) {
   yield tabClosedPromise;
   yield pingsSentPromise;
 
+  let loadReasons = ["newtab", "none", "focus", "focus"];
   let unloadReasons = ["navigation", "unfocus", "unfocus", "close"];
-  assert.equal(pingData.length, 4, "The activity streams page was activated 4 times");
-  for (let i in pingData) {
-    let ping = pingData[i];
-    assert.equal(ping.unload_reason, unloadReasons[i], "Unloaded for the expected reason");
-    assert.equal(Object.keys(ping).length,EXPECTED_KEYS.length, "We have as many attributes as we expect");
-    for (let key of EXPECTED_KEYS) {
-      assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
-    }
-  }
+  checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
+};
+
+exports.test_TabTracker_refresh = function*(assert) {
+  let openTab;
+  let numLoads = 0;
+  let pingData = [];
+
+  let pingsSentPromise = createPingSentPromise(pingData, 2);
+
+  let tabOpenedPromise = new Promise(resolve => {
+    let onOpen = function(tab) {
+      openTab = tab;
+      numLoads++;
+      if (numLoads === 1) {
+        openTab.reload();
+      } else {
+        tabs.removeListener("ready", onOpen);
+        resolve();
+      }
+    };
+    tabs.on("ready", onOpen);
+  });
+
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+
+  yield tabOpenedPromise;
+
+  // Close both tabs.
+  let tabClosedPromise = new Promise(resolve => {
+    openTab.close(() => {
+      resolve();
+    });
+  });
+
+  yield tabClosedPromise;
+  yield pingsSentPromise;
+
+  let loadReasons = ["newtab", "refresh"];
+  let unloadReasons = ["refresh", "close"];
+  checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
 };
 
 exports.test_TabTracker_prefs = function*(assert) {
