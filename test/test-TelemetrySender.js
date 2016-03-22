@@ -8,6 +8,7 @@ const {Loader} = require("sdk/test/loader");
 const loader = Loader(module);
 const self = require("sdk/self");
 const httpd = loader.require("./lib/httpd");
+const simplePrefs = require("sdk/simple-prefs");
 
 Cu.import("resource://gre/modules/Locale.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
@@ -29,7 +30,7 @@ const samplePing = JSON.stringify({
 });
 
 exports.test_TelemetrySender_init = function(assert, done) {
-  assert.ok(app.options.pingEndpoint, "The ping endpoint is set");
+  assert.ok(app._telemetrySender._pingEndpoint, "The ping endpoint is set");
 
   let srv = httpd.startServerAsync(port);
 
@@ -46,11 +47,22 @@ exports.test_TelemetrySender_init = function(assert, done) {
   Services.obs.notifyObservers(null, "tab-session-complete", samplePing);
 };
 
+exports.test_TelemetrySender_prefs = function*(assert) {
+  simplePrefs.prefs.telemetry = false;
+  assert.ok(!app._telemetrySender.enabled, "telemetry is disabled");
+
+  simplePrefs.prefs.telemetry = true;
+  assert.ok(app._telemetrySender.enabled, "telemetry is enabled");
+
+  let testEndpoint = "https://example.com/";
+  simplePrefs.prefs["telemetry.ping.endpoint"] = testEndpoint;
+  assert.equal(app._telemetrySender._pingEndpoint, testEndpoint, "expected ping endpoint received");
+};
+
 before(exports, function*() {
-  app = new ActivityStreams({
-    pingEndpoint: "http://localhost:" + port + "/activity-streams",
-    telemetry: true,
-  });
+  simplePrefs.prefs.telemetry = true;
+  simplePrefs.prefs["telemetry.ping.endpoint"] = `http://localhost:${port}/activity-streams`;
+  app = new ActivityStreams();
 });
 
 after(exports, function() {
