@@ -151,6 +151,14 @@ exports.test_TabTracker_reactivating = function*(assert) {
   }
 };
 
+exports.test_TabTracker_prefs = function*(assert) {
+  simplePrefs.prefs.telemetry = false;
+  assert.ok(!app._tabTracker.enabled, "tab tracker is disabled");
+
+  simplePrefs.prefs.telemetry = true;
+  assert.ok(app._tabTracker.enabled, "tab tracker is enabled");
+};
+
 before(exports, function*() {
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
