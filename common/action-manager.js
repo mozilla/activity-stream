@@ -89,7 +89,7 @@ function RequestRecentLinks(options) {
 }
 
 function RequestMoreRecentLinks(beforeDate) {
-  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", {
+  return RequestRecentLinks({
     data: {beforeDate},
     append: true
   });
