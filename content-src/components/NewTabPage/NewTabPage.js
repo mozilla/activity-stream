@@ -5,7 +5,7 @@ const TopSites = require("components/TopSites/TopSites");
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
-const {actions} = require("actions/action-manager");
+const {actions} = require("common/action-manager");
 const {Link} = require("react-router");
 
 const NewTabPage = React.createClass({

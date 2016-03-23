@@ -85,7 +85,7 @@ To dispatch actions, all you have to do is call `am.actions.YourActionType(...)`
 By default, there is a `Action` type action defined which simply takes an object as an argument. However, it is a good idea to define actions that are specific enough to prevent typos and formatting errors.
 
 ```js
-const {actions} = require("actions/action-manager");
+const {actions} = require("common/action-manager");
 
 // These are all equivalent
 this.dispatch(actions.Action({
