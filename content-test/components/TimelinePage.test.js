@@ -113,10 +113,16 @@ describe("Timeline", () => {
 
   describe("TimelineBookmarks", () => {
     let instance;
+    let loadMore;
     const fakeProps = mockData;
-    beforeEach(() => {
-      instance = renderWithProvider(<TimelineBookmarks {...fakeProps} />);
-    });
+
+    function setup(customProps = {}, dispatch) {
+      const props = Object.assign({}, fakeProps, customProps);
+      instance = renderWithProvider(<TimelineBookmarks {...props} />, dispatch && {dispatch});
+      loadMore = TestUtils.findRenderedComponentWithType(instance, LoadMore);
+    }
+
+    beforeEach(setup);
 
     it("should create a page", () => {
       assert.ok(TestUtils.isCompositeComponentWithType(instance, TimelineBookmarks));
@@ -131,6 +137,43 @@ describe("Timeline", () => {
       const container = renderWithProvider(<ConnectedTimelineBookmarks />);
       const inner = TestUtils.findRenderedComponentWithType(container, TimelineBookmarks);
       Object.keys(TimelineBookmarks.propTypes).forEach(key => assert.property(inner.props, key));
+    });
+
+    it("should have a LoadMore element", () => {
+      assert.ok(loadMore);
+    });
+
+    it("should show a loader if Bookmarks.isLoading is true", () => {
+      setup({
+        Bookmarks: {
+          isLoading: true,
+          canLoadMore: true,
+          rows: [{url: "https://foo.com"}]
+        }
+      });
+      assert.equal(ReactDOM.findDOMNode(loadMore.refs.loader).hidden, false);
+    });
+
+    it("should hide LoadMore if canLoadMore is false", () => {
+      setup({
+        Bookmarks: {
+          isLoading: false,
+          canLoadMore: false,
+          rows: [{url: "https://foo.com"}]
+        }
+      });
+      assert.equal(ReactDOM.findDOMNode(loadMore).hidden, true);
+    });
+
+    it("should hide LoadMore if rows are empty", () => {
+      setup({
+        Bookmarks: {
+          isLoading: false,
+          canLoadMore: true,
+          rows: []
+        }
+      });
+      assert.equal(ReactDOM.findDOMNode(loadMore).hidden, true);
     });
   });
 

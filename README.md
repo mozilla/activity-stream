@@ -77,7 +77,7 @@ const am = new ActionManager(["STUFF_REQUEST", "STUFF_RESPONSE"]);
 
 ```
 
-You can find the action manager instance for Activity streams at `src/actions/action-manager`.
+You can find the action manager instance for Activity streams at `common/action-manager`.
 
 ### Dispatching actions
 To dispatch actions, all you have to do is call `am.actions.YourActionType(...)`.
