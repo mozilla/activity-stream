@@ -31,15 +31,32 @@ function createPingSentPromise(pingData, expectedPingCount) {
   });
 }
 
-function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedUnloadReasons) {
+function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedUnloadReasons, hasLoadLatency) {
   let numActivations = expectedLoadReasons.length;
   assert.equal(pingData.length, numActivations, `The activity streams page was activated ${numActivations} times`);
   for (let i in pingData) {
     let ping = pingData[i];
     assert.equal(ping.load_reason, expectedLoadReasons[i], "Loaded for the expected reason");
     assert.equal(ping.unload_reason, expectedUnloadReasons[i], "Unloaded for the expected reason");
-    assert.equal(Object.keys(ping).length,EXPECTED_KEYS.length, "We have as many attributes as we expect");
-    for (let key of EXPECTED_KEYS) {
+    // setup expected keys list and modify ping based on hasLoadLatency flag
+    let expectedKeys;
+    switch (hasLoadLatency) {
+      case false:
+        // expectedKeys must NOT have load_latency key - the test closes tab session(s) before page loads
+        expectedKeys = EXPECTED_KEYS;
+        break;
+      case true:
+        // expectedKeys must have load_latency key - the test waits for page load before cloasing tab session(s)
+        expectedKeys = EXPECTED_KEYS.concat("load_latency");
+        break;
+      default:
+        // behaivor is undefined - the ping may or may not contian load_latency key, hence we remove load_latency
+        // from the ping to avoid intermittent test failure
+        expectedKeys = EXPECTED_KEYS;
+        delete ping.load_latency;
+    }
+    assert.equal(Object.keys(ping).length,expectedKeys.length, "We have as many attributes as we expect");
+    for (let key of expectedKeys) {
       assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
     }
   }
@@ -80,10 +97,7 @@ exports.test_TabTracker_open_close_tab = function*(assert) {
   tabs.open(ACTIVITY_STREAMS_URL);
   yield tabClosedPromise;
 
-  assert.equal(Object.keys(pingData).length,EXPECTED_KEYS.length, "We have as many attributes as we expect");
-  for (let key of EXPECTED_KEYS) {
-    assert.ok(pingData[key], `${key} is an attribute in our tab data.`);
-  }
+  checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], false);
 
   let clientID = yield ClientID.getClientID();
   assert.equal(pingData.client_id, clientID, "client ID is what is expected");
@@ -207,6 +221,43 @@ exports.test_TabTracker_prefs = function*(assert) {
 
   simplePrefs.prefs.telemetry = true;
   assert.ok(app._tabTracker.enabled, "tab tracker is enabled");
+};
+
+exports.test_TabTracker_latency = function*(assert) {
+  let pingData;
+  let tabClosedPromise = new Promise(resolve => {
+    let onOpen = function(tab) {
+      function onPageLoaded(subject, topic, data) {
+        Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
+        setTimeout(function() {
+          tab.close(() => {
+            tabs.removeListener("pageshow", onOpen);
+          });
+        }, 10);
+      }
+      Services.obs.addObserver(onPageLoaded, "performance-log-complete");
+    };
+
+    tabs.on("pageshow", onOpen);
+
+    let Observer = {
+      observe: function(subject, topic, data) {
+        if (topic === "tab-session-complete") {
+          pingData = JSON.parse(data);
+          Services.obs.removeObserver(this, "tab-session-complete");
+          resolve();
+        }
+      }
+    };
+
+    Services.obs.addObserver(Observer, "tab-session-complete");
+  });
+
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+  yield tabClosedPromise;
+  checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
 };
 
 before(exports, function*() {
