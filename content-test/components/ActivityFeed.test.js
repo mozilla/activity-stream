@@ -83,7 +83,7 @@ describe("ActivityFeedItem", function() {
     });
     it("should render the time", () => {
       const lastVisitEl = instance.refs.lastVisit;
-      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.dateDisplay).format("h:mma"));
+      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.dateDisplay).format("h:mm A"));
     });
     it("should not have a bookmark class if no bookmarkGuid", () => {
       assert.notInclude(el.className, "bookmark");

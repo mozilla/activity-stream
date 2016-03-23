@@ -41,7 +41,7 @@ const ActivityFeedItem = React.createClass({
     if (date && this.props.showDate) {
       dateLabel = moment(date).calendar();
     } else if (date) {
-      dateLabel = moment(date).format("h:mma");
+      dateLabel = moment(date).format("h:mm A");
     }
 
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
