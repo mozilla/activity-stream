@@ -70,7 +70,7 @@ module.exports = {
       {test: /\.json$/, loader: "json"},
       {
         test: /\.jsx?$/,
-        include: /.\/(content-src|content-test)\//,
+        include: /.\/(common|content-src|content-test)\//,
         loader: "babel"
       }
     ]
