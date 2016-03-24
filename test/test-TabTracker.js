@@ -64,24 +64,6 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
   }
 }
 
-function isTabDataEmpty(assert) {
-  // practically app.tabData should always be {} on startup, however the app
-  // may fire "activity-streams-places-cache-complete" notification, and that
-  // will create historySize and bookmarksSize entries in the tabData object
-  // To be on a safe side, let's make sure that tabData is either empty or
-  // contains only startup keys
-  let tabKeys = Object.keys(app.tabData);
-  if (tabKeys.length == 0) {
-    // nothing to check
-    return;
-  }
-  let allowedKeysOnStartup = ["historySize", "bookmarkSize"];
-  assert.equal(tabKeys.length, allowedKeysOnStartup.length, "Expected number of tabData keys on startup");
-  for (let key of allowedKeysOnStartup) {
-    assert.notEqual(app.tabData[key], undefined, `${key} is an attribute in tab data on startup`);
-  }
-}
-
 function waitForPageLoadAndSessionComplete() {
   return new Promise(resolve => {
     let onOpen = function(tab) {
@@ -110,7 +92,7 @@ function waitForPageLoadAndSessionComplete() {
 }
 
 exports.test_TabTracker_init = function(assert) {
-  isTabDataEmpty(assert);
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
 };
 
 exports.test_TabTracker_open_close_tab = function*(assert) {
@@ -139,7 +121,7 @@ exports.test_TabTracker_open_close_tab = function*(assert) {
     Services.obs.addObserver(Observer, "tab-session-complete");
   });
 
-  isTabDataEmpty(assert);
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
 
   tabs.open(ACTIVITY_STREAMS_URL);
   yield tabClosedPromise;
@@ -172,7 +154,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
     tabs.on("pageshow", onOpen);
   });
 
-  isTabDataEmpty(assert);
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
 
   tabs.open("http://foo.com");
   tabs.open(ACTIVITY_STREAMS_URL);
@@ -241,7 +223,7 @@ exports.test_TabTracker_refresh = function*(assert) {
     tabs.on("ready", onOpen);
   });
 
-  isTabDataEmpty(assert);
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
 
   tabs.open(ACTIVITY_STREAMS_URL);
 
@@ -271,14 +253,14 @@ exports.test_TabTracker_prefs = function*(assert) {
 };
 
 exports.test_TabTracker_latency = function*(assert) {
-  isTabDataEmpty(assert);
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
   tabs.open(ACTIVITY_STREAMS_URL);
   let pingData = yield waitForPageLoadAndSessionComplete();
   checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
 };
 
 exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
-  isTabDataEmpty(assert);
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
   tabs.open(ACTIVITY_STREAMS_URL);
   let pingData = yield waitForPageLoadAndSessionComplete();
   checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
