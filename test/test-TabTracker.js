@@ -6,12 +6,14 @@ const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");
 const {setTimeout} = require("sdk/timers");
 const {ActivityStreams} = require("lib/ActivityStreams");
+const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Cu} = require("chrome");
 const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
-const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version", "load_reason", "source", "locale"];
+const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version",
+                       "load_reason", "source", "locale", "historySize", "bookmarkSize"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
@@ -62,8 +64,53 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
   }
 }
 
+function isTabDataEmpty(assert) {
+  // practically app.tabData should always be {} on startup, however the app
+  // may fire "activity-streams-places-cache-complete" notification, and that
+  // will create historySize and bookmarksSize entries in the tabData object
+  // To be on a safe side, let's make sure that tabData is either empty or
+  // contains only startup keys
+  let tabKeys = Object.keys(app.tabData);
+  if (tabKeys.length == 0) {
+    // nothing to check
+    return;
+  }
+  let allowedKeysOnStartup = ["historySize", "bookmarkSize"];
+  assert.equal(tabKeys.length, allowedKeysOnStartup.length, "Expected number of tabData keys on startup");
+  for (let key of allowedKeysOnStartup) {
+    assert.notEqual(app.tabData[key], undefined, `${key} is an attribute in tab data on startup`);
+  }
+}
+
+function waitForPageLoadAndSessionComplete() {
+  return new Promise(resolve => {
+    let onOpen = function(tab) {
+      function onPageLoaded(subject, topic, data) {
+        Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
+        setTimeout(function() {
+          tab.close(() => {
+            tabs.removeListener("pageshow", onOpen);
+          });
+        }, 10);
+      }
+      Services.obs.addObserver(onPageLoaded, "performance-log-complete");
+    };
+
+    tabs.on("pageshow", onOpen);
+
+    function onSessionComplete(subject, topic, data) {
+      if (topic === "tab-session-complete") {
+        Services.obs.removeObserver(onSessionComplete, "tab-session-complete");
+        resolve(JSON.parse(data));
+      }
+    }
+
+    Services.obs.addObserver(onSessionComplete, "tab-session-complete");
+  });
+}
+
 exports.test_TabTracker_init = function(assert) {
-  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  isTabDataEmpty(assert);
 };
 
 exports.test_TabTracker_open_close_tab = function*(assert) {
@@ -92,7 +139,7 @@ exports.test_TabTracker_open_close_tab = function*(assert) {
     Services.obs.addObserver(Observer, "tab-session-complete");
   });
 
-  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  isTabDataEmpty(assert);
 
   tabs.open(ACTIVITY_STREAMS_URL);
   yield tabClosedPromise;
@@ -125,7 +172,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
     tabs.on("pageshow", onOpen);
   });
 
-  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  isTabDataEmpty(assert);
 
   tabs.open("http://foo.com");
   tabs.open(ACTIVITY_STREAMS_URL);
@@ -194,7 +241,7 @@ exports.test_TabTracker_refresh = function*(assert) {
     tabs.on("ready", onOpen);
   });
 
-  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  isTabDataEmpty(assert);
 
   tabs.open(ACTIVITY_STREAMS_URL);
 
@@ -224,40 +271,43 @@ exports.test_TabTracker_prefs = function*(assert) {
 };
 
 exports.test_TabTracker_latency = function*(assert) {
-  let pingData;
-  let tabClosedPromise = new Promise(resolve => {
-    let onOpen = function(tab) {
-      function onPageLoaded(subject, topic, data) {
-        Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
-        setTimeout(function() {
-          tab.close(() => {
-            tabs.removeListener("pageshow", onOpen);
-          });
-        }, 10);
-      }
-      Services.obs.addObserver(onPageLoaded, "performance-log-complete");
-    };
+  isTabDataEmpty(assert);
+  tabs.open(ACTIVITY_STREAMS_URL);
+  let pingData = yield waitForPageLoadAndSessionComplete();
+  checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
+};
 
-    tabs.on("pageshow", onOpen);
+exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
+  PlacesTestUtils.clearBookmarks();
+  yield PlacesTestUtils.clearHistory();
+  isTabDataEmpty(assert);
+  tabs.open(ACTIVITY_STREAMS_URL);
+  let pingData = yield waitForPageLoadAndSessionComplete();
+  checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
+  assert.equal(pingData.historySize, 0, "Nothing in history");
+  assert.equal(pingData.bookmarkSize, 0, "Nothing in bookmarks");
 
-    let Observer = {
-      observe: function(subject, topic, data) {
-        if (topic === "tab-session-complete") {
-          pingData = JSON.parse(data);
-          Services.obs.removeObserver(this, "tab-session-complete");
-          resolve();
-        }
-      }
-    };
+  // add visits and bookmark them
+  yield PlacesTestUtils.insertAndBookmarkVisit("https://mozilla1.com/0");
+  yield PlacesTestUtils.insertAndBookmarkVisit("https://mozilla2.com/1");
 
-    Services.obs.addObserver(Observer, "tab-session-complete");
+  // trigger query re-caching and wait for its completion
+  yield new Promise(resolve => {
+    function onCacheComplete() {
+      Services.obs.removeObserver(onCacheComplete, "activity-streams-places-cache-complete");
+      resolve();
+    }
+    Services.obs.addObserver(onCacheComplete, "activity-streams-places-cache-complete");
+    app._handlePlacesChanges("bookmark");
   });
 
-  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
-
   tabs.open(ACTIVITY_STREAMS_URL);
-  yield tabClosedPromise;
-  checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
+  pingData = yield waitForPageLoadAndSessionComplete();
+  assert.equal(pingData.historySize, 2, "2 new visits history");
+  assert.equal(pingData.bookmarkSize, 2, "2 new bookmarks");
+
+  PlacesTestUtils.clearBookmarks();
+  yield PlacesTestUtils.clearHistory();
 };
 
 before(exports, function*() {
