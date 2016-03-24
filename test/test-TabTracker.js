@@ -278,8 +278,6 @@ exports.test_TabTracker_latency = function*(assert) {
 };
 
 exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
-  PlacesTestUtils.clearBookmarks();
-  yield PlacesTestUtils.clearHistory();
   isTabDataEmpty(assert);
   tabs.open(ACTIVITY_STREAMS_URL);
   let pingData = yield waitForPageLoadAndSessionComplete();
@@ -311,6 +309,13 @@ exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
 };
 
 before(exports, function*() {
+  // we have to clear bookmarks and history before tests
+  // to ensure that the app does not pick history or
+  // bookmarks sizes from the previous test runs
+  PlacesTestUtils.clearBookmarks();
+  yield PlacesTestUtils.clearHistory();
+
+  // initialize the app now
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
   app = new ActivityStreams({clientID});
