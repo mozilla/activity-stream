@@ -6,12 +6,14 @@ const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");
 const {setTimeout} = require("sdk/timers");
 const {ActivityStreams} = require("lib/ActivityStreams");
+const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Cu} = require("chrome");
 const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
-const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version", "load_reason", "source", "locale"];
+const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version",
+                       "load_reason", "source", "locale", "historySize", "bookmarkSize"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
@@ -60,6 +62,33 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
       assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
     }
   }
+}
+
+function waitForPageLoadAndSessionComplete() {
+  return new Promise(resolve => {
+    let onOpen = function(tab) {
+      function onPageLoaded(subject, topic, data) {
+        Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
+        setTimeout(function() {
+          tab.close(() => {
+            tabs.removeListener("pageshow", onOpen);
+          });
+        }, 10);
+      }
+      Services.obs.addObserver(onPageLoaded, "performance-log-complete");
+    };
+
+    tabs.on("pageshow", onOpen);
+
+    function onSessionComplete(subject, topic, data) {
+      if (topic === "tab-session-complete") {
+        Services.obs.removeObserver(onSessionComplete, "tab-session-complete");
+        resolve(JSON.parse(data));
+      }
+    }
+
+    Services.obs.addObserver(onSessionComplete, "tab-session-complete");
+  });
 }
 
 exports.test_TabTracker_init = function(assert) {
@@ -224,43 +253,51 @@ exports.test_TabTracker_prefs = function*(assert) {
 };
 
 exports.test_TabTracker_latency = function*(assert) {
-  let pingData;
-  let tabClosedPromise = new Promise(resolve => {
-    let onOpen = function(tab) {
-      function onPageLoaded(subject, topic, data) {
-        Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
-        setTimeout(function() {
-          tab.close(() => {
-            tabs.removeListener("pageshow", onOpen);
-          });
-        }, 10);
-      }
-      Services.obs.addObserver(onPageLoaded, "performance-log-complete");
-    };
-
-    tabs.on("pageshow", onOpen);
-
-    let Observer = {
-      observe: function(subject, topic, data) {
-        if (topic === "tab-session-complete") {
-          pingData = JSON.parse(data);
-          Services.obs.removeObserver(this, "tab-session-complete");
-          resolve();
-        }
-      }
-    };
-
-    Services.obs.addObserver(Observer, "tab-session-complete");
-  });
-
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
-
   tabs.open(ACTIVITY_STREAMS_URL);
-  yield tabClosedPromise;
+  let pingData = yield waitForPageLoadAndSessionComplete();
   checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
 };
 
+exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  tabs.open(ACTIVITY_STREAMS_URL);
+  let pingData = yield waitForPageLoadAndSessionComplete();
+  checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
+  assert.equal(pingData.historySize, 0, "Nothing in history");
+  assert.equal(pingData.bookmarkSize, 0, "Nothing in bookmarks");
+
+  // add visits and bookmark them
+  yield PlacesTestUtils.insertAndBookmarkVisit("https://mozilla1.com/0");
+  yield PlacesTestUtils.insertAndBookmarkVisit("https://mozilla2.com/1");
+
+  // trigger query re-caching and wait for its completion
+  yield new Promise(resolve => {
+    function onCacheComplete() {
+      Services.obs.removeObserver(onCacheComplete, "activity-streams-places-cache-complete");
+      resolve();
+    }
+    Services.obs.addObserver(onCacheComplete, "activity-streams-places-cache-complete");
+    app._handlePlacesChanges("bookmark");
+  });
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+  pingData = yield waitForPageLoadAndSessionComplete();
+  assert.equal(pingData.historySize, 2, "2 new visits history");
+  assert.equal(pingData.bookmarkSize, 2, "2 new bookmarks");
+
+  PlacesTestUtils.clearBookmarks();
+  yield PlacesTestUtils.clearHistory();
+};
+
 before(exports, function*() {
+  // we have to clear bookmarks and history before tests
+  // to ensure that the app does not pick history or
+  // bookmarks sizes from the previous test runs
+  PlacesTestUtils.clearBookmarks();
+  yield PlacesTestUtils.clearHistory();
+
+  // initialize the app now
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
   app = new ActivityStreams({clientID});

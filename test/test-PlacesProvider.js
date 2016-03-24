@@ -277,6 +277,8 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
 
   let links = yield provider.getRecentBookmarks();
   assert.equal(links.length, 0, "empty bookmarks yields empty links");
+  let bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, 0, "empty bookmarks yields 0 size");
 
   let base64URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAA" +
     "AAAA6fptVAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==";
@@ -358,6 +360,9 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   for (let i = 0; i < links.length; i++) {
     assert.ok(links[i].lastModified < yesterday, "bookmark lastModifed date is before yesterday");
   }
+
+  bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, createdBookmarks.length, "expected count of bookmarks");
 
   // cleanup
   yield Bookmarks.remove({guid: folder.guid});
@@ -584,6 +589,20 @@ exports.test_Links__faviconBytesToDataURI = function(assert) {
     let result = provider._faviconBytesToDataURI(test);
     assert.equal(JSON.stringify(clone), JSON.stringify(result), "favicon converted to data uri");
   }
+};
+
+exports.test_Links_getHistorySize = function*(assert) {
+  let provider = PlacesProvider.links;
+
+  let size = yield provider.getHistorySize();
+  assert.equal(size, 0, "empty history has 0 size");
+
+  // add a visit
+  let testURI = NetUtil.newURI("http://mozilla.com");
+  yield PlacesTestUtils.addVisits(testURI);
+
+  size = yield provider.getHistorySize();
+  assert.equal(size, 1, "expected history size");
 };
 
 before(exports, function*() {

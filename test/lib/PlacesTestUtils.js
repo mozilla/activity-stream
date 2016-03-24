@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Task, PlacesUtils, NetUtil, Services */
+/* globals XPCOMUtils, Task, PlacesUtils, NetUtil, Services, Bookmarks */
 "use strict";
 
 const {Ci, Cu, components} = require("chrome");
@@ -13,6 +13,9 @@ XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
 
 XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
   "resource://gre/modules/NetUtil.jsm");
+
+XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
+  "resource://gre/modules/Bookmarks.jsm");
 
 const PlacesTestUtils = Object.freeze({
 
@@ -171,6 +174,14 @@ const PlacesTestUtils = Object.freeze({
     let stmt = conn.createStatement("DELETE FROM moz_bookmarks WHERE type = 1");
     stmt.executeStep();
   },
+
+  /*
+   * Insert and bookmark a vists
+   */
+  insertAndBookmarkVisit: Task.async(function*(url) {
+    yield this.addVisits({uri: NetUtil.newURI(url), visitDate: Date.now(), transition: PlacesUtils.history.TRANSITION_LINK});
+    yield Bookmarks.insert({url: url, parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});
+  }),
 });
 
 exports.PlacesTestUtils = PlacesTestUtils;
