@@ -76,7 +76,7 @@ const Spotlight = React.createClass({
       blankSites.push(<li className="spotlight-item spotlight-placeholder" key={`blank-${i}`} />);
     }
     return (<section className="spotlight">
-      <h3 className="section-title">Spotlight</h3>
+      <h3 className="section-title">Featured</h3>
       <ul>
         {sites.map(site => <SpotlightItem key={site.url} onDelete={this.onDelete} {...site} />)}
         {blankSites}
