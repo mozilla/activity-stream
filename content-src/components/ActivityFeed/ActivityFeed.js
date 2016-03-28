@@ -9,6 +9,7 @@ const classNames = require("classnames");
 
 const ICON_SIZE = 16;
 const TOP_LEFT_ICON_SIZE = 20;
+const SESSION_DIFF = 600000;
 
 const ActivityFeedItem = React.createClass({
   getDefaultProps() {
@@ -91,7 +92,7 @@ const ActivityFeed = React.createClass({
       {sites.map((site, i) => <ActivityFeedItem key={i}
         onDelete={this.props.onDelete}
         showImage={getRandomFromTimestamp(0.2, site)}
-        showDate={i === 0}
+        showDate={this.props.showDate && i === 0}
         {...site} />)}
     </ul>);
   }
@@ -99,7 +100,8 @@ const ActivityFeed = React.createClass({
 
 ActivityFeed.propTypes = {
   sites: React.PropTypes.array.isRequired,
-  length: React.PropTypes.number
+  length: React.PropTypes.number,
+  showDate: React.PropTypes.bool
 };
 
 function groupSitesByDate(sites) {
@@ -116,7 +118,24 @@ function groupSitesByDate(sites) {
     }
     groupedSites.get(day).push(site);
   }
+  groupedSites.forEach((value, key) => {
+    const sessions = groupSitesBySession(value);
+    groupedSites.set(key, sessions);
+  });
   return groupedSites;
+}
+
+function groupSitesBySession(sites) {
+  const sessions = [[]];
+  sites.forEach((site, i) => {
+    const currentSession = sessions[sessions.length - 1];
+    const nextSite = sites[i + 1];
+    currentSession.push(site);
+    if (nextSite && Math.abs(site.dateDisplay - nextSite.dateDisplay) > SESSION_DIFF) {
+      sessions.push([]);
+    }
+  });
+  return sessions;
 }
 
 const GroupedActivityFeed = React.createClass({
@@ -141,7 +160,14 @@ const GroupedActivityFeed = React.createClass({
       }
       {Array.from(groupedSites.keys()).map(date => {
         return (<div key={date}>
-          <ActivityFeed key={date} onDelete={this.onDelete} sites={groupedSites.get(date)} length={groupedSites.get(date).length} />
+          {groupedSites.get(date).map((sites, i) => {
+            return (<ActivityFeed
+              key={date + "-session-" + i}
+              onDelete={this.onDelete}
+              sites={sites}
+              length={sites.length}
+              showDate={i === 0} />);
+          })}
         </div>);
       })}
     </div>);
@@ -159,3 +185,4 @@ module.exports = connect(justDispatch)(GroupedActivityFeed);
 module.exports.ActivityFeedItem = ActivityFeedItem;
 module.exports.ActivityFeed = ActivityFeed;
 module.exports.GroupedActivityFeed = GroupedActivityFeed;
+module.exports.groupSitesBySession = groupSitesBySession;
