@@ -1,6 +1,6 @@
 const {assert} = require("chai");
 const ConnectedActivityFeed = require("components/ActivityFeed/ActivityFeed");
-const {ActivityFeedItem, ActivityFeed, GroupedActivityFeed} = ConnectedActivityFeed;
+const {ActivityFeedItem, ActivityFeed, GroupedActivityFeed, groupSitesBySession} = ConnectedActivityFeed;
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const React = require("react");
 const ReactDOM = require("react-dom");
@@ -83,7 +83,7 @@ describe("ActivityFeedItem", function() {
     });
     it("should render the time", () => {
       const lastVisitEl = instance.refs.lastVisit;
-      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.dateDisplay).format("h:mma"));
+      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.dateDisplay).format("h:mm A"));
     });
     it("should not have a bookmark class if no bookmarkGuid", () => {
       assert.notInclude(el.className, "bookmark");
@@ -127,5 +127,31 @@ describe("GroupedActivityFeed", function() {
       // ActivityFeed per site.
       assert.equal(children.length, fakeSites.length);
     });
+  });
+});
+
+describe("groupSitesBySession", () => {
+  const testDate = 1456420000000;
+  const minute = 60000;
+  const testSites = [
+    {url: "foo1.com", dateDisplay: testDate},
+    {url: "foo2.com", dateDisplay: testDate - 3 * minute},
+    {url: "foo3.com", dateDisplay: testDate - 14 * minute},
+    {url: "foo4.com", dateDisplay: testDate - 15 * minute},
+  ];
+  const result = groupSitesBySession(testSites);
+  it("should create an array of arrays", () => {
+    assert.isArray(result);
+    result.forEach(group => assert.isArray);
+  });
+  it("should split sites after a 10 minute gap", () => {
+    assert.lengthOf(result, 2);
+  });
+  it("should contain the right items", () => {
+    assert.deepEqual(result[0], [testSites[0], testSites[1]]);
+    assert.deepEqual(result[1], [testSites[2], testSites[3]]);
+  });
+  it("should work for ascending order", () => {
+    assert.lengthOf(groupSitesBySession(testSites.reverse()), 2);
   });
 });

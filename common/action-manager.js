@@ -1,5 +1,5 @@
 // This has to be relative so the firefox add-on side can read the path
-const ActionManager = require("../lib/ActionManager");
+const ActionManager = require("./ActionManager");
 
 const am = new ActionManager([
   "TOP_FRECENT_SITES_REQUEST",
@@ -73,8 +73,15 @@ function RequestTopFrecent() {
   return RequestExpect("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE");
 }
 
-function RequestBookmarks() {
-  return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE");
+function RequestBookmarks(options) {
+  return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE", options);
+}
+
+function RequestMoreBookmarks(beforeDate) {
+  return RequestBookmarks({
+    data: {beforeDate},
+    append: true
+  });
 }
 
 function RequestRecentLinks(options) {
@@ -82,7 +89,7 @@ function RequestRecentLinks(options) {
 }
 
 function RequestMoreRecentLinks(beforeDate) {
-  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", {
+  return RequestRecentLinks({
     data: {beforeDate},
     append: true
   });
@@ -118,6 +125,7 @@ am.defineActions({
   RequestExpect,
   RequestTopFrecent,
   RequestBookmarks,
+  RequestMoreBookmarks,
   RequestRecentLinks,
   RequestMoreRecentLinks,
   RequestFrecentLinks,

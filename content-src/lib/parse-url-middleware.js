@@ -1,5 +1,5 @@
 const urlParse = require("url-parse");
-const am = require("actions/action-manager");
+const am = require("common/action-manager");
 
 module.exports = () => next => action => {
 

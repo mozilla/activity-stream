@@ -55,6 +55,7 @@ module.exports = {
   resolve: {
     extensions: ["", ".js", ".jsx"],
     alias: {
+      "common": absolute("./common"),
       "components": absolute("./content-src/components"),
       "reducers": absolute("./content-src/reducers"),
       "actions": absolute("./content-src/actions"),
@@ -69,7 +70,7 @@ module.exports = {
       {test: /\.json$/, loader: "json"},
       {
         test: /\.jsx?$/,
-        include: /.\/(content-src|content-test)\//,
+        include: /.\/(common|content-src|content-test)\//,
         loader: "babel"
       }
     ]

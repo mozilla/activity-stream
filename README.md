@@ -77,7 +77,7 @@ const am = new ActionManager(["STUFF_REQUEST", "STUFF_RESPONSE"]);
 
 ```
 
-You can find the action manager instance for Activity streams at `src/actions/action-manager`.
+You can find the action manager instance for Activity streams at `common/action-manager`.
 
 ### Dispatching actions
 To dispatch actions, all you have to do is call `am.actions.YourActionType(...)`.
@@ -85,7 +85,7 @@ To dispatch actions, all you have to do is call `am.actions.YourActionType(...)`
 By default, there is a `Action` type action defined which simply takes an object as an argument. However, it is a good idea to define actions that are specific enough to prevent typos and formatting errors.
 
 ```js
-const {actions} = require("actions/action-manager");
+const {actions} = require("common/action-manager");
 
 // These are all equivalent
 this.dispatch(actions.Action({

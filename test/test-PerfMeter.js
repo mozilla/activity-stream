@@ -128,9 +128,9 @@ exports.test_PerfMeter_events = function*(assert) {
   // if the tab structure doesn't re-initialize after reload
   verifyPerfEvents(events, assert);
   // verify the first three expected events on reload
-  assert.ok(events[0].tag === "TAB_RELOAD" && events[0].start == 0, "Expected TAB_RELOAD");
-  assert.ok(events[1].tag === "TAB_READY" && events[0].start == 0, "Expected TAB_READY");
-  assert.ok(events[2].tag === "WORKER_ATTACHED" && events[0].start == 0, "Expected WORKER_ATTACHED");
+  assert.ok(events[0].tag === "TAB_RELOAD" && events[0].start === 0, "Expected TAB_RELOAD");
+  assert.ok(events[1].tag === "TAB_READY" && events[0].start === 0, "Expected TAB_READY");
+  assert.ok(events[2].tag === "WORKER_ATTACHED" && events[0].start === 0, "Expected WORKER_ATTACHED");
 
   tabData.tab.close();
 };
@@ -194,7 +194,7 @@ exports.test_PerfMeter_tab_hygiene = function*(assert) {
     let closeCounter = 4;
     function onClose() {
       closeCounter--;
-      if (closeCounter == 0) {
+      if (closeCounter === 0) {
         resolve();
       }
     }

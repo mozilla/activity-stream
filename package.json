@@ -1,7 +1,7 @@
 {
   "title": "activity-streams-experiment",
   "name": "activity-streams",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A feed-based view on user history",
   "repository": "mozilla/activity-streams",
   "bugs": {
@@ -128,6 +128,12 @@
     {
       "name": "query.cache",
       "title": "Enable query caching mode",
+      "type": "bool",
+      "value": true
+    },
+    {
+      "name": "telemetry",
+      "title": "Enable system error and usage data collection",
       "type": "bool",
       "value": true
     },

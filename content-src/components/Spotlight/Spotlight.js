@@ -1,7 +1,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
-const {actions} = require("actions/action-manager");
+const {actions} = require("common/action-manager");
 const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const classNames = require("classnames");
@@ -76,7 +76,7 @@ const Spotlight = React.createClass({
       blankSites.push(<li className="spotlight-item spotlight-placeholder" key={`blank-${i}`} />);
     }
     return (<section className="spotlight">
-      <h3 className="section-title">Spotlight</h3>
+      <h3 className="section-title">Featured</h3>
       <ul>
         {sites.map(site => <SpotlightItem key={site.url} onDelete={this.onDelete} {...site} />)}
         {blankSites}
