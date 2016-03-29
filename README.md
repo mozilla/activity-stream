@@ -114,8 +114,8 @@ Most new actions will actually be extensions of new ones. To do this, simply cal
 It is generally **not** a good idea to call `this.actions.SomeAction` inside another action, as that will result in the validators being run twice. Use the plain `SomeAction` function instead, or you can access it from `this.actions.SomeAction.definition`.
 
 ```js
-function Request(type, query) {
-  return {type, query};
+function Request(type, data) {
+  return {type, data};
 }
 function GetFoo() {
   return Request(foo);
@@ -134,15 +134,12 @@ In this project we use a modified version of the `Standard Flux Action`. Our sta
   // Required.
   type: "SOMETHING_REQUEST",
 
-  // Only for response-type actions.
-  // If the response is successful, it should be an array OR object.
-  // If the response is an error, it should be an Error.
+  // For request or response-type actions.
+  // For responses:
+  //    If the response is successful, it should be an array OR object.
+  //    If the response is an error, it should be an Error.
   // Optional.
   data: {},
-
-  // Only for request-type actions. Should be an object.
-  // Optional.
-  query: {}
 
   // This should be included for actions that contain errors
   // It should be true, or omitted if not applicable.
@@ -153,15 +150,19 @@ In this project we use a modified version of the `Standard Flux Action`. Our sta
     // This is to indicate that the application should receive the
     // following action within a specified time period, or a timeout
     // error should be thrown
-    expect: "SOMETHING_RESPONSE"
+    expect: "SOMETHING_RESPONSE",
 
     // Optional. A custom timeout for an 'expect' type action.
-    timeout: 10000
+    timeout: 10000,
 
     // This indicates to the ReduxChannel middleware that
     // the action should broadcast via message passing to the other
     // side of the channel.
-    broadcast: "content-to-addon"
+    broadcast: "content-to-addon",
+
+    // This indicates new results should be appended to old results,
+    // instead of replacing them.
+    append: true
   }
 }
 ```
