@@ -155,7 +155,7 @@ const GroupedActivityFeed = React.createClass({
       });
     const groupedSites = groupSitesByDate(sites);
     return (<div className="grouped-activity-feed">
-      {this.props.title &&
+      {sites.length > 0 && this.props.title &&
         <h3 className="section-title">{this.props.title}</h3>
       }
       {Array.from(groupedSites.keys()).map(date => {
