@@ -127,6 +127,10 @@ describe("GroupedActivityFeed", function() {
       // ActivityFeed per site.
       assert.equal(children.length, fakeSites.length);
     });
+    it("shouldn't render title if there are no sites", () => {
+      const item = TestUtils.renderIntoDocument(<GroupedActivityFeed sites={[]} title="Fake Title" />);
+      assert.isNull(ReactDOM.findDOMNode(item).querySelector(".section-title"));
+    });
   });
 });
 
