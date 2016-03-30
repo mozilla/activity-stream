@@ -1,7 +1,7 @@
 # Activity Stream Pings
 
 The Activity Stream addon sends two distinct types of pings to the backend (HTTPS POST) [Onyx server](https://github.com/mozilla/onyx) :
-- a `session` ping that describes the ending of an Ativity Stream session (lose focus event on Activity Stream), and
+- a `session` ping that describes the ending of an Activity Stream session (lose focus event on Activity Stream), and
 - an `event` ping that records specific data about individual user interactions while interacting with Activity Stream
 
 
