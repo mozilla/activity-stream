@@ -14,6 +14,8 @@ const SESSION_DIFF = 600000;
 const ActivityFeedItem = React.createClass({
   getDefaultProps() {
     return {
+      onShare: function() {},
+      onClick: function() {},
       onDelete: function() {},
       showDate: false
     };
@@ -46,7 +48,7 @@ const ActivityFeedItem = React.createClass({
     }
 
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
-      <a href={site.url} ref="link">
+      <a onClick={this.props.onClick} href={site.url} ref="link">
         <span className="star" hidden={!site.bookmarkGuid} />
         {icon}
         <div className="feed-details">
@@ -61,7 +63,7 @@ const ActivityFeedItem = React.createClass({
       </a>
       <div className="action-items-container">
         <div className="action-item icon-delete" ref="delete" onClick={() => this.props.onDelete(site.url)}></div>
-        <div className="action-item icon-share" onClick={() => alert("Sorry. We are still working on this feature.")}></div>
+        <div className="action-item icon-share" ref="share" onClick={() => this.props.onShare(site.url)}></div>
         <div className="action-item icon-more" onClick={() => alert("Sorry. We are still working on this feature.")}></div>
       </div>
     </li>);
@@ -69,6 +71,8 @@ const ActivityFeedItem = React.createClass({
 });
 
 ActivityFeedItem.propTypes = {
+  onShare: React.PropTypes.func,
+  onClick: React.PropTypes.func,
   url: React.PropTypes.string.isRequired,
   images: React.PropTypes.array,
   title: React.PropTypes.string,
@@ -79,30 +83,6 @@ ActivityFeedItem.propTypes = {
   parsedUrl: React.PropTypes.shape({
     hostname: React.PropTypes.string
   })
-};
-
-const ActivityFeed = React.createClass({
-  getDefaultProps() {
-    return {
-      onDelete: function() {}
-    };
-  },
-  render() {
-    const sites = this.props.sites.slice(0, this.props.length);
-    return (<ul className="activity-feed">
-      {sites.map((site, i) => <ActivityFeedItem key={i}
-        onDelete={this.props.onDelete}
-        showImage={getRandomFromTimestamp(0.2, site)}
-        showDate={this.props.showDate && i === 0}
-        {...site} />)}
-    </ul>);
-  }
-});
-
-ActivityFeed.propTypes = {
-  sites: React.PropTypes.array.isRequired,
-  length: React.PropTypes.number,
-  showDate: React.PropTypes.bool
 };
 
 function groupSitesByDate(sites) {
@@ -145,8 +125,37 @@ const GroupedActivityFeed = React.createClass({
       dateKey: "lastVisitDate"
     };
   },
-  onDelete(url) {
-    this.props.dispatch(actions.NotifyHistoryDelete(url));
+  onClickFactory(index) {
+    return () => {
+      this.props.dispatch(actions.NotifyEvent({
+        event: "CLICK",
+        page: this.props.page,
+        source: "ACTIVITY_FEED",
+        action_position: index
+      }));
+    };
+  },
+  onDeleteFactory(index) {
+    return url => {
+      this.props.dispatch(actions.NotifyHistoryDelete(url));
+      this.props.dispatch(actions.NotifyEvent({
+        event: "DELETE",
+        page: this.props.page,
+        source: "ACTIVITY_FEED",
+        action_position: index
+      }));
+    };
+  },
+  onShareFactory(index) {
+    return url => {
+      alert("Sorry. We are still working on this feature.");
+      this.props.dispatch(actions.NotifyEvent({
+        event: "SHARE",
+        page: this.props.page,
+        source: "ACTIVITY_FEED",
+        action_position: index
+      }));
+    };
   },
   render() {
     const sites = this.props.sites
@@ -155,19 +164,27 @@ const GroupedActivityFeed = React.createClass({
         return Object.assign({}, site, {dateDisplay: site[this.props.dateKey]});
       });
     const groupedSites = groupSitesByDate(sites);
+    let globalCount = -1;
     return (<div className="grouped-activity-feed">
       {sites.length > 0 && this.props.title &&
         <h3 className="section-title">{this.props.title}</h3>
       }
       {Array.from(groupedSites.keys()).map(date => {
         return (<div key={date}>
-          {groupedSites.get(date).map((sites, i) => {
-            return (<ActivityFeed
-              key={date + "-session-" + i}
-              onDelete={this.onDelete}
-              sites={sites}
-              length={sites.length}
-              showDate={i === 0} />);
+          {groupedSites.get(date).map((sites, outerIndex) => {
+            return (<ul key={date + "-" + outerIndex} className="activity-feed">
+              {sites.map((site, i) => {
+                globalCount++;
+                return (<ActivityFeedItem
+                    key={i}
+                    onClick={this.onClickFactory(globalCount)}
+                    onShare={this.onShareFactory(globalCount)}
+                    onDelete={this.onDeleteFactory(globalCount)}
+                    showImage={getRandomFromTimestamp(0.2, site)}
+                    showDate={i === 0}
+                    {...site} />);
+              })}
+            </ul>);
           })}
         </div>);
       })}
@@ -179,11 +196,11 @@ GroupedActivityFeed.propTypes = {
   sites: React.PropTypes.array.isRequired,
   length: React.PropTypes.number,
   title: React.PropTypes.string,
-  dateKey: React.PropTypes.string
+  dateKey: React.PropTypes.string,
+  page: React.PropTypes.string
 };
 
 module.exports = connect(justDispatch)(GroupedActivityFeed);
 module.exports.ActivityFeedItem = ActivityFeedItem;
-module.exports.ActivityFeed = ActivityFeed;
 module.exports.GroupedActivityFeed = GroupedActivityFeed;
 module.exports.groupSitesBySession = groupSitesBySession;
