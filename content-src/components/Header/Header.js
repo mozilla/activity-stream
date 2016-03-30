@@ -1,24 +1,34 @@
 const React = require("react");
 const {Link} = require("react-router");
+const classNames = require("classnames");
 
 const Header = React.createClass({
   getDefaultProps() {
-    return {links: []};
+    return {
+      links: [],
+      disabled: false
+    };
   },
   getInitialState() {
     return {showDropdown: false};
+  },
+  onClick() {
+    if (this.props.disabled) {
+      return;
+    }
+    this.setState({showDropdown: !this.state.showDropdown});
   },
   render() {
     const props = this.props;
     return (<header className="head">
 
-      <section className="nav" onClick={() => this.setState({showDropdown: !this.state.showDropdown})}>
+      <section ref="clickElement" className={classNames("nav", {"disabled": props.disabled})} onClick={this.onClick}>
         <h1>
           <span hidden={!props.icon} className={`icon fa ${props.icon}`} />
           <span>{props.title}</span>
-          <span className="arrow fa fa-chevron-down" />
+          <span ref="caret" hidden={props.disabled} className="arrow fa fa-chevron-down" />
         </h1>
-        <ul className="nav-picker" hidden={!this.state.showDropdown}>
+        <ul ref="dropdown" className="nav-picker" hidden={!this.state.showDropdown}>
           {props.links.map(link => <li key={link.to}><Link to={link.to}>{link.title}</Link></li>)}
         </ul>
       </section>
@@ -40,7 +50,8 @@ Header.propTypes = {
   title: React.PropTypes.string.isRequired,
   icon: React.PropTypes.string,
   pathname: React.PropTypes.string.isRequired,
-  links: React.PropTypes.array.isRequired
+  links: React.PropTypes.array.isRequired,
+  disabled: React.PropTypes.bool
 };
 
 module.exports = Header;
