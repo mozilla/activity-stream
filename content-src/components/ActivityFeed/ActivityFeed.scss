@@ -74,15 +74,18 @@
   }
 
   &.bookmark::after {
-    background: none;
+    display: none;
+  }
+
+  &.bookmark .star {
+    background: url('img/glyph-bookmark-16-blue.svg') no-repeat center center;
+    background-size: 18px;
     border: 0;
-    color: $star-blue;
-    content: '\f005';
-    font: normal normal normal 18px/1 FontAwesome;
-    height: auto;
-    margin-left: -4px;
-    margin-top: -9px;
-    cursor: pointer;
+    height: 18px;
+    width: 18px;
+    position: absolute;
+    top: 19px;
+    left: 8px;
   }
 
   .action-items-container {

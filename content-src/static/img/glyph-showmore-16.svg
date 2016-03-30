@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #a0a0a0;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <g id="glyph-showmore-16">
+    <path class="cls-1" d="M469.114,333.172l-8.485,8.485a1,1,0,0,1-1.415,0l-0.022-.022h0l-8.485-8.485a1,1,0,0,1,0-1.414l1.414-1.414a1,1,0,0,1,1.415,0l6.386,6.386,6.364-6.364a1,1,0,0,1,1.414,0l1.414,1.414A1,1,0,0,1,469.114,333.172Z" transform="translate(-444 -320)"/>
+  </g>
+</svg>

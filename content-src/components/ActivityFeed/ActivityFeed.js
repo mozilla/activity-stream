@@ -47,6 +47,7 @@ const ActivityFeedItem = React.createClass({
 
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
       <a href={site.url} ref="link">
+        <span className="star" hidden={!site.bookmarkGuid} />
         {icon}
         <div className="feed-details">
           <div className="feed-description">

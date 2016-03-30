@@ -11,10 +11,13 @@
     align-items: center;
     color: inherit;
 
-    .fa {
-      color: $light-grey;
+    .arrow {
       margin-right: 18px;
-      font-size: 11px;
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      background-image: url('img/glyph-showmore-16.svg');
+      background-size: 15px;
     }
 
     &:hover {

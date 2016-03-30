@@ -20,12 +20,23 @@
     }
 
     .icon {
+      display: inline-block;
       font-size: 14px;
+
+      &.timeline {
+        background-image: url('img/list-icon.svg');
+        height: 14px;
+        vertical-align: middle;
+        width: 16px;
+      }
     }
 
     .arrow {
-      color: $light-grey;
-      font-size: 12px;
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      background-image: url('img/glyph-showmore-16.svg');
+      background-size: 15px;
     }
   }
 

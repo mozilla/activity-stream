@@ -14,10 +14,10 @@ const Search = React.createClass({
   },
   render() {
     return (<form className="search-wrapper">
-      <span className="search-label fa fa-search" />
+      <span className="search-label" />
       <input ref="input" type="search" placeholder="Search" required />
       <button ref="button" onClick={() => this.doSearch(this.refs.input.value)}>
-        <span className="fa fa-arrow-right" />
+        <span />
       </button>
     </form>);
   }
