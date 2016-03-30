@@ -15,7 +15,7 @@ const Base = React.createClass({
 
     this.props.dispatch(actions.RequestSearchState());
 
-    this.props.dispatch(actions.NotifyTelemetry("BASE_MOUNTED"));
+    this.props.dispatch(actions.NotifyPerf("BASE_MOUNTED"));
   },
   render() {
     return (<div id="base">

@@ -29,6 +29,35 @@ describe("Spotlight", function() {
       assert.equal(children.length, 3);
     });
   });
+
+  describe("events", () => {
+    it("should fire a click event when delete is clicked", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "CLICK");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "SPOTLIGHT");
+          assert.equal(a.data.action_position, 0);
+          done();
+        }
+      }
+      instance = TestUtils.renderIntoDocument(<Spotlight dispatch={dispatch} sites={fakeSpotlightItems} />);
+      TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
+    });
+    it("should fire a delete event when delete is clicked", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "DELETE");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "SPOTLIGHT");
+          assert.equal(a.data.action_position, 1);
+          done();
+        }
+      }
+      instance = TestUtils.renderIntoDocument(<Spotlight dispatch={dispatch} sites={fakeSpotlightItems} />);
+      TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[1].refs.delete);
+    });
+  });
 });
 
 describe("SpotlightItem", function() {

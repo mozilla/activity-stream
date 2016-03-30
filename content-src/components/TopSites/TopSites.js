@@ -7,10 +7,28 @@ const DEFAULT_LENGTH = 6;
 
 const TopSites = React.createClass({
   getDefaultProps() {
-    return {length: DEFAULT_LENGTH};
+    return {
+      length: DEFAULT_LENGTH,
+      // This is for event reporting
+      page: "NEW_TAB"
+    };
   },
-  onDelete(url) {
+  onDelete(url, index) {
     this.props.dispatch(actions.NotifyHistoryDelete(url));
+    this.props.dispatch(actions.NotifyEvent({
+      event: "DELETE",
+      page: this.props.page,
+      source: "TOP_SITES",
+      action_position: index
+    }));
+  },
+  onClick(index) {
+    this.props.dispatch(actions.NotifyEvent({
+      event: "CLICK",
+      page: this.props.page,
+      source: "TOP_SITES",
+      action_position: index
+    }));
   },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
@@ -21,11 +39,11 @@ const TopSites = React.createClass({
     return (<section className="top-sites">
       <h3 className="section-title">Top Sites</h3>
       <div className="tiles-wrapper">
-        {sites.map((site) => {
-          return (<a key={site.url} className="tile" href={site.url}>
+        {sites.map((site, i) => {
+          return (<a onClick={() => this.onClick(i)} key={site.url} className="tile" href={site.url}>
             <div className="inner-border" />
             <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
-            <div className="tile-close-icon" onClick={(ev) => {ev.preventDefault(); this.onDelete(site.url);}}></div>
+            <div className="tile-close-icon" onClick={(ev) => {ev.preventDefault(); this.onDelete(site.url, i);}}></div>
           </a>);
         })}
         {blankSites}
@@ -36,6 +54,7 @@ const TopSites = React.createClass({
 
 TopSites.propTypes = {
   length: React.PropTypes.number,
+  page: React.PropTypes.string,
   sites: React.PropTypes.arrayOf(
     React.PropTypes.shape({
       url: React.PropTypes.string.isRequired,

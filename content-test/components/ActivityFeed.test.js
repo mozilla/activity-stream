@@ -1,6 +1,6 @@
 const {assert} = require("chai");
 const ConnectedActivityFeed = require("components/ActivityFeed/ActivityFeed");
-const {ActivityFeedItem, ActivityFeed, GroupedActivityFeed, groupSitesBySession} = ConnectedActivityFeed;
+const {ActivityFeedItem, GroupedActivityFeed, groupSitesBySession} = ConnectedActivityFeed;
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const React = require("react");
 const ReactDOM = require("react-dom");
@@ -8,8 +8,7 @@ const TestUtils = require("react-addons-test-utils");
 const {prettyUrl} = require("lib/utils");
 const moment = require("moment");
 
-const {mockData, faker, overrideConsoleError} = require("test/test-utils");
-const fakeSites = mockData.Bookmarks.rows;
+const {faker, overrideConsoleError} = require("test/test-utils");
 const fakeSite = {
   "title": "man throws alligator in wendys wptv dnt cnn",
   "dateDisplay": 1456426160465,
@@ -28,25 +27,6 @@ const fakeSite = {
 const fakeSiteWithBookmark = Object.assign({}, fakeSite, {
   "bookmarkDateCreated": 1456426165218,
   "bookmarkGuid": "G6LXclyo_WAj"
-});
-
-describe("ActivityFeed", function() {
-  let instance;
-  let el;
-  beforeEach(() => {
-    instance = TestUtils.renderIntoDocument(<ActivityFeed sites={fakeSites} />);
-    el = ReactDOM.findDOMNode(instance);
-  });
-
-  describe("valid sites", () => {
-    it("should create the element", () => {
-      assert.ok(el);
-    });
-    it("should render an ActivityFeedItem for each site", () => {
-      const children = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeedItem);
-      assert.equal(children.length, fakeSites.length);
-    });
-  });
 });
 
 describe("ActivityFeedItem", function() {
@@ -131,7 +111,7 @@ describe("GroupedActivityFeed", function() {
       assert.ok(el);
     });
     it("should render an ActivityFeed for each date", () => {
-      const children = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeed);
+      const children = TestUtils.scryRenderedDOMComponentsWithClass(instance, "activity-feed");
       // Each fakeSite is minimum of 24 hours apart
       // ActivityFeed per site.
       assert.equal(children.length, sites.length);
@@ -139,6 +119,50 @@ describe("GroupedActivityFeed", function() {
     it("shouldn't render title if there are no sites", () => {
       const item = TestUtils.renderIntoDocument(<GroupedActivityFeed sites={[]} title="Fake Title" />);
       assert.isNull(ReactDOM.findDOMNode(item).querySelector(".section-title"));
+    });
+  });
+
+  describe("events", () => {
+    it("should send an event onClick", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "CLICK");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.action_position, 0);
+          done();
+        }
+      }
+      instance = TestUtils.renderIntoDocument(<GroupedActivityFeed dispatch={dispatch} page={"NEW_TAB"} sites={sites} />);
+      const link = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeedItem)[0].refs.link;
+      TestUtils.Simulate.click(link);
+    });
+    it("should send an event onDelete", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "DELETE");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "ACTIVITY_FEED");
+          assert.equal(a.data.action_position, 1);
+          done();
+        }
+      }
+      instance = TestUtils.renderIntoDocument(<GroupedActivityFeed dispatch={dispatch} page={"NEW_TAB"} sites={sites} />);
+      const link = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeedItem)[1].refs.delete;
+      TestUtils.Simulate.click(link);
+    });
+    it("should send an event onShare", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "SHARE");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "ACTIVITY_FEED");
+          assert.equal(a.data.action_position, 2);
+          done();
+        }
+      }
+      instance = TestUtils.renderIntoDocument(<GroupedActivityFeed dispatch={dispatch} page={"NEW_TAB"} sites={sites} />);
+      const link = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeedItem)[2].refs.share;
+      TestUtils.Simulate.click(link);
     });
   });
 });

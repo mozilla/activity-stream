@@ -33,7 +33,7 @@ const SpotlightItem = React.createClass({
     }
 
     return (<li className="spotlight-item">
-      <a href={site.url} ref="link">
+      <a onClick={this.props.onClick} href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={{backgroundImage: `url(${imageUrl})`}} ref="image">
           <SiteIcon className="spotlight-icon" site={site} ref="icon" showBackground={false} faviconSize={32} />
         </div>
@@ -59,15 +59,37 @@ SpotlightItem.propTypes = {
   favicon_url: React.PropTypes.string,
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string.isRequired,
-  onDelete: React.PropTypes.func
+  onDelete: React.PropTypes.func,
+  onClick: React.PropTypes.func
 };
 
 const Spotlight = React.createClass({
   getDefaultProps() {
-    return {length: DEFAULT_LENGTH};
+    return {
+      length: DEFAULT_LENGTH,
+      page: "NEW_TAB"
+    };
   },
-  onDelete(url) {
-    this.props.dispatch(actions.NotifyHistoryDelete(url));
+  onClickFactory(index) {
+    return () => {
+      this.props.dispatch(actions.NotifyEvent({
+        event: "CLICK",
+        page: this.props.page,
+        source: "SPOTLIGHT",
+        action_position: index
+      }));
+    };
+  },
+  onDeleteFactory(index) {
+    return url => {
+      this.props.dispatch(actions.NotifyHistoryDelete(url));
+      this.props.dispatch(actions.NotifyEvent({
+        event: "DELETE",
+        page: this.props.page,
+        source: "SPOTLIGHT",
+        action_position: index
+      }));
+    };
   },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
@@ -78,7 +100,11 @@ const Spotlight = React.createClass({
     return (<section className="spotlight">
       <h3 className="section-title">Highlights</h3>
       <ul>
-        {sites.map(site => <SpotlightItem key={site.url} onDelete={this.onDelete} {...site} />)}
+        {sites.map((site, i) => <SpotlightItem index={i}
+          key={site.url}
+          onDelete={url => this.onDeleteFactory(i)}
+          onClick={() => this.onClickFactory(i)}
+          {...site} />)}
         {blankSites}
       </ul>
     </section>);
@@ -86,6 +112,7 @@ const Spotlight = React.createClass({
 });
 
 Spotlight.propTypes = {
+  page: React.PropTypes.string,
   sites: React.PropTypes.array.isRequired,
   length: React.PropTypes.number
 };
