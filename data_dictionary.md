@@ -18,13 +18,12 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
   "locale": "en-US",
   "max_scroll_depth": 145,
   "session_duration": 1635,
-  "tab_id": 3,
+  "tab_id": "1-3",
   "timestamp": 1457396660000,
   "total_bookmarks": 19,
   "total_history_size": 9,
   "ua": "python-requests/2.9.1",
   "unload_reason": "close",
-  "ver": "3"
 }
 ```
 
@@ -33,18 +32,17 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
 ```json
 {
   "action": "activity_stream_event",
+  "action_position": 4,
   "addon_version": "1.0.0",
-  "click_position": 4,
   "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
   "date": "2016-03-07",
   "event": "delete",
   "ip": "10.192.171.13",
   "locale": "en-US",
   "source": "top_sites",
-  "tab_id": 3,
+  "tab_id": "1-3",
   "timestamp": 1457396660000,
   "ua": "python-requests/2.9.1",
-  "ver": "3"
 }
 ```
 
