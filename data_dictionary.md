@@ -24,6 +24,7 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
   "total_history_size": 9,
   "ua": "python-requests/2.9.1",
   "unload_reason": "close",
+  "page": "newtab or timeline",
 }
 ```
 
@@ -32,7 +33,7 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
 ```json
 {
   
-  "source": "top sites, or bookamrks, or..."
+  "source": "top sites, or bookamrks, or...",
   "action_position": 3,
   "event": "click or scroll or search or delete",
   "page": "newtab or timeline",
