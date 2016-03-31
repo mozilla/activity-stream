@@ -49,7 +49,7 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
 
 | KEY | DESCRIPTION | &nbsp; |
 |-----|-------------|:-----:|
-| `action` | Always `activity_stream`. | :one:
+| `action` | Either `activity_stream_event` or `activity_stream_session`. | :one:
 | `addon_version` | The version of the Activity Stream addon. | :one:
 | `click_position` | The index of the element in the `source` that was clicked. | :one:
 | `client_id` | An identifier for this client. | :one:
