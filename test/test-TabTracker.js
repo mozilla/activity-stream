@@ -13,7 +13,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
 const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version",
-                       "load_reason", "source", "locale", "historySize", "bookmarkSize"];
+                       "page", "load_reason", "source", "locale", "historySize", "bookmarkSize"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
@@ -65,20 +65,34 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
 }
 
 function waitForPageLoadAndSessionComplete() {
-  return new Promise(resolve => {
-    let onOpen = function(tab) {
-      function onPageLoaded(subject, topic, data) {
-        Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
-        setTimeout(function() {
-          tab.close(() => {
-            tabs.removeListener("pageshow", onOpen);
-          });
-        }, 10);
-      }
-      Services.obs.addObserver(onPageLoaded, "performance-log-complete");
-    };
+  function onShow(tab) {
+    function onPageLoaded(subject, topic, data) {
+      Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
+      setTimeout(function() {
+        tab.close(() => {
+          tabs.removeListener("pageshow", onShow);
+        });
+      }, 10);
+    }
+    Services.obs.addObserver(onPageLoaded, "performance-log-complete");
+  }
+  return waitSessionComplete(onShow);
+}
 
-    tabs.on("pageshow", onOpen);
+function waitForPageShowAndSessionComplete() {
+  function onShow(tab) {
+    setTimeout(function() {
+      tab.close(() => {
+        tabs.removeListener("pageshow", onShow);
+      });
+    }, 10);
+  }
+  return waitSessionComplete(onShow);
+}
+
+function waitSessionComplete(onShow) {
+  return new Promise(resolve => {
+    tabs.on("pageshow", onShow);
 
     function onSessionComplete(subject, topic, data) {
       if (topic === "tab-session-complete") {
@@ -96,35 +110,9 @@ exports.test_TabTracker_init = function(assert) {
 };
 
 exports.test_TabTracker_open_close_tab = function*(assert) {
-  let pingData;
-  let tabClosedPromise = new Promise(resolve => {
-    let onOpen = function(tab) {
-      setTimeout(function() {
-        tab.close(() => {
-          tabs.removeListener("pageshow", onOpen);
-        });
-      }, 10);
-    };
-
-    tabs.on("pageshow", onOpen);
-
-    let Observer = {
-      observe: function(subject, topic, data) {
-        if (topic === "tab-session-complete") {
-          pingData = JSON.parse(data);
-          Services.obs.removeObserver(this, "tab-session-complete");
-          resolve();
-        }
-      }
-    };
-
-    Services.obs.addObserver(Observer, "tab-session-complete");
-  });
-
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
-
   tabs.open(ACTIVITY_STREAMS_URL);
-  yield tabClosedPromise;
+  let pingData = yield waitForPageShowAndSessionComplete();
 
   checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], false);
 
@@ -288,6 +276,17 @@ exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
 
   PlacesTestUtils.clearBookmarks();
   yield PlacesTestUtils.clearHistory();
+};
+
+exports.test_TabTracker_pageType = function*(assert) {
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  tabs.open(ACTIVITY_STREAMS_URL);
+  let pingData = yield waitForPageLoadAndSessionComplete();
+  assert.equal(pingData.page, "newtab", "page type is newtab");
+  // open timeline page
+  tabs.open(app.appURLs[2]);
+  pingData = yield waitForPageShowAndSessionComplete();
+  assert.equal(pingData.page, "timeline", "page type is timeline");
 };
 
 before(exports, function*() {
