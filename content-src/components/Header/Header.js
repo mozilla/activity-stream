@@ -1,5 +1,6 @@
 const React = require("react");
 const {Link} = require("react-router");
+const {l10n} = require("lib/utils");
 
 const Header = React.createClass({
   getDefaultProps() {
@@ -15,11 +16,11 @@ const Header = React.createClass({
       <section className="nav" onClick={() => this.setState({showDropdown: !this.state.showDropdown})}>
         <h1>
           <span hidden={!props.icon} className={`icon fa ${props.icon}`} />
-          <span>{props.title}</span>
+          <span {...l10n(props)}>{props.title}</span>
           <span className="arrow fa fa-chevron-down" />
         </h1>
         <ul className="nav-picker" hidden={!this.state.showDropdown}>
-          {props.links.map(link => <li key={link.to}><Link to={link.to}>{link.title}</Link></li>)}
+          {props.links.map(link => <li key={link.to}><Link to={link.to} {...l10n(link)}>{link.title}</Link></li>)}
         </ul>
       </section>
       <section className="spacer" />

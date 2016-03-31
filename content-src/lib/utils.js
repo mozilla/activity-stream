@@ -79,5 +79,18 @@ module.exports = {
   getRandomFromTimestamp(percent, site) {
     const n = (site.lastVisitDate || site.bookmarkDateCreated || Math.round(Math.random() * 100)) % 100;
     return n <= percent * 100;
+  },
+
+  // before: data-l10n-id={this.props['data-l10n-id']}
+  // after:  {...l10n(this.props)}
+  l10n(props) {
+    return Object.keys(props).filter(
+      key => key.startsWith("data-l10n-")
+    ).reduce(
+      (l10nProps, key) => Object.assign({}, l10nProps, {
+        [key]: key === "data-l10n-args" ?
+          JSON.stringify(props[key]) : props[key]
+      }), {}
+    );
   }
 };

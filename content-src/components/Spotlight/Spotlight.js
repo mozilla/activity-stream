@@ -5,6 +5,7 @@ const {actions} = require("common/action-manager");
 const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const classNames = require("classnames");
+const {l10n} = require("lib/utils");
 
 const DEFAULT_LENGTH = 3;
 
@@ -21,15 +22,31 @@ const SpotlightItem = React.createClass({
     const description = site.description;
     const isPortrait = image.height > image.width;
 
-    let contextMessage;
+    let l10nData;
     if (site.bookmarkDateCreated) {
-      contextMessage = `Bookmarked ${moment(site.bookmarkDateCreated).fromNow()}`;
+      l10nData = {
+        "data-l10n-id": "spotlight-context-bookmarked-relative",
+        "data-l10n-args": {
+          // TODO Use Intl's RelativeTimeFormat
+          fromNow: moment(site.bookmarkDateCreated).fromNow()
+        }
+      };
     } else if (site.lastVisitDate) {
-      contextMessage = `Visited ${moment(site.lastVisitDate).fromNow()}`;
+      l10nData = {
+        "data-l10n-id": "spotlight-context-visited-relative",
+        "data-l10n-args": {
+          // TODO Use Intl's RelativeTimeFormat
+          fromNow: moment(site.lastVisitDate).fromNow()
+        }
+      };
     } else if (site.type === "bookmark") {
-      contextMessage = "Bookmarked recently";
+      l10nData = {
+        "data-l10n-id": "spotlight-context-bookmarked-recently",
+      };
     } else {
-      contextMessage = "Visited recently";
+      l10nData = {
+        "data-l10n-id": "spotlight-context-visited-recently",
+      };
     }
 
     return (<li className="spotlight-item">
@@ -43,7 +60,7 @@ const SpotlightItem = React.createClass({
               {site.title}
             </h4>
             <p className="spotlight-description" ref="description">{description}</p>
-            <div className="spotlight-context" ref="contextMessage">{contextMessage}</div>
+            <div {...l10n(l10nData)} className="spotlight-context" ref="contextMessage"></div>
           </div>
         </div>
         <div className="inner-border" />
@@ -76,7 +93,7 @@ const Spotlight = React.createClass({
       blankSites.push(<li className="spotlight-item spotlight-placeholder" key={`blank-${i}`} />);
     }
     return (<section className="spotlight">
-      <h3 className="section-title">Featured</h3>
+      <h3 data-l10n-id="spotlight-title" className="section-title">Featured</h3>
       <ul>
         {sites.map(site => <SpotlightItem key={site.url} onDelete={this.onDelete} {...site} />)}
         {blankSites}

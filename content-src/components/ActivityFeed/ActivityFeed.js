@@ -3,7 +3,7 @@ const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
-const {prettyUrl, getRandomFromTimestamp} = require("lib/utils");
+const {prettyUrl, getRandomFromTimestamp, l10n} = require("lib/utils");
 const moment = require("moment");
 const classNames = require("classnames");
 
@@ -40,8 +40,11 @@ const ActivityFeedItem = React.createClass({
 
     let dateLabel = "";
     if (date && this.props.showDate) {
+      // TODO how to implement this in L20n?
+      // See http://momentjs.com/docs/#/displaying/calendar-time/
       dateLabel = moment(date).calendar();
     } else if (date) {
+      // TODO use Intl's DateTimeFormat
       dateLabel = moment(date).format("h:mm A");
     }
 
@@ -155,8 +158,8 @@ const GroupedActivityFeed = React.createClass({
       });
     const groupedSites = groupSitesByDate(sites);
     return (<div className="grouped-activity-feed">
-      {sites.length > 0 && this.props.title &&
-        <h3 className="section-title">{this.props.title}</h3>
+      {sites.length > 0 && this.props.title && this.props["data-l10n-id"] &&
+        <h3 className="section-title" {...l10n(this.props)}>{this.props.title}</h3>
       }
       {Array.from(groupedSites.keys()).map(date => {
         return (<div key={date}>

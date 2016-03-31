@@ -14,7 +14,10 @@ const NewTabPage = React.createClass({
     this.props.dispatch(actions.NotifyPerformSearch(value));
   },
   componentDidMount() {
-    document.title = "New Tab";
+    document.l10n.setAttributes(
+      document.head.querySelector("title"),
+      "new-tab-title"
+    );
   },
   componentDidUpdate() {
     if (this.props.isReady) {
@@ -39,7 +42,7 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <GroupedActivityFeed title="Recent Activity" sites={props.TopActivity.rows} length={6} />
+            <GroupedActivityFeed data-l10n-id="new-tab-feed-title" title="Recent Activity" sites={props.TopActivity.rows} length={6} />
           </section>
         </div>
       </div>

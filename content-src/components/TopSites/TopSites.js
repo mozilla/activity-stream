@@ -19,7 +19,7 @@ const TopSites = React.createClass({
       blankSites.push(<div className="tile tile-placeholder" key={`blank-${i}`} />);
     }
     return (<section className="top-sites">
-      <h3 className="section-title">Top Sites</h3>
+      <h3 data-l10n-id="top-sites-title" className="section-title">Top Sites</h3>
       <div className="tiles-wrapper">
         {sites.map((site) => {
           return (<a key={site.url} className="tile" href={site.url}>

@@ -44,7 +44,8 @@ module.exports = {
     vendor: [
       "react",
       "react-dom",
-      "moment"
+      "moment",
+      "l20n"
     ]
   },
   output: {
@@ -62,7 +63,8 @@ module.exports = {
       "selectors": absolute("./content-src/selectors"),
       "lib": absolute("./content-src/lib"),
       "strings": absolute("./strings"),
-      "test": absolute("./content-test")
+      "test": absolute("./content-test"),
+      "l20n": absolute("./node_modules/l20n/dist/compat/web/l20n.js")
     }
   },
   module: {

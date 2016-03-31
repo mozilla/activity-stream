@@ -8,7 +8,7 @@ const Loader = React.createClass({
   },
   render() {
     return (<div className="loader" hidden={!this.props.show}>
-      <div className="spinner"/> Loading...
+      <div data-l10n-id="loader-spinner" className="spinner"/> Loading...
     </div>);
   }
 });

@@ -19,9 +19,9 @@ const TimelineHistory = React.createClass({
     const props = this.props;
     return (<div className="wrapper">
       <Spotlight sites={props.Spotlight.rows} />
-      <GroupedActivityFeed title="Just now" sites={props.History.rows} />
+      <GroupedActivityFeed data-l10n-id="timeline-history-feed-title" title="Just now" sites={props.History.rows} />
       <LoadMore loading={props.History.isLoading} hidden={!props.History.canLoadMore || !props.History.rows.length} onClick={this.getMore}
-        label="See more activity"/>
+        data-l10n-id="timeline-history-load-more" label="See more activity"/>
     </div>);
   }
 });
