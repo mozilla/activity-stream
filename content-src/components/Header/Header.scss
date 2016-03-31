@@ -42,6 +42,10 @@
       position: relative;
       width: $header-nav-width;
 
+      &.disabled {
+        cursor: default;
+      }
+
       &:hover {
         .arrow {
           color: $mid-grey;

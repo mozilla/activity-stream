@@ -16,6 +16,7 @@ const TimelinePage = React.createClass({
     ];
     return (<div className="outer-wrapper">
       <Header
+        disabled={true}
         title="Activity Stream"
         icon="fa-timeline"
         pathname={pathname}

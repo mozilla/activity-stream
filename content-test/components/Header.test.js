@@ -4,6 +4,7 @@ const assert = require("chai").assert;
 const Header = require("components/Header/Header");
 const React = require("react");
 const ReactDOM = require("react-dom");
+const TestUtils = require("react-addons-test-utils");
 const fakeProps = {
   currentRoute: {
     title: "Home",
@@ -29,6 +30,31 @@ describe("Header", () => {
     assert.doesNotThrow(() => {
       ReactDOM.render(<Header  />, node);
     });
+  });
+
+  it("should hide dropdown be default", () => {
+    assert.isTrue(header.refs.dropdown.hidden);
+  });
+
+  it("should show dropdown on click", () => {
+    TestUtils.Simulate.click(header.refs.clickElement);
+    assert.isTrue(header.state.showDropdown);
+    assert.isFalse(header.refs.dropdown.hidden);
+  });
+
+  it("should show caret/arrow by default", () => {
+    assert.isFalse(header.refs.caret.hidden);
+  });
+
+  it("should not show caret/arrow if props.disabled is true", () => {
+    header = ReactDOM.render(<Header {...fakeProps} disabled={true} />, node);
+    assert.isTrue(header.refs.caret.hidden);
+  });
+
+  it("should not set showDropdown on click if props.disabled", () => {
+    header = ReactDOM.render(<Header {...fakeProps} disabled={true} />, node);
+    TestUtils.Simulate.click(header.refs.clickElement);
+    assert.isFalse(header.state.showDropdown);
   });
 
   describe("userImage", () => {
