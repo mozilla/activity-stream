@@ -41,7 +41,6 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
   "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
   "locale": "en-US",
   "tab_id": "1-3",
-  // server side fields
   "date": "2016-03-07",
   "ip": "10.192.171.13",
   "timestamp": 1457396660000,
