@@ -5,8 +5,11 @@ const TopSites = require("components/TopSites/TopSites");
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
+const LoadMore = require("components/LoadMore/LoadMore");
 const {actions} = require("common/action-manager");
 const {Link} = require("react-router");
+
+const MAX_TOP_ACTIVITY_ITEMS = 10;
 
 const NewTabPage = React.createClass({
   // TODO: Replace with real search api via addon
@@ -39,7 +42,8 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <GroupedActivityFeed title="Recent Activity" sites={props.TopActivity.rows} length={10} />
+            <GroupedActivityFeed title="Recent Activity" sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} />
+            <LoadMore to="/timeline" label="See more activity" hidden={props.TopActivity.rows.length < MAX_TOP_ACTIVITY_ITEMS} />
           </section>
         </div>
       </div>
