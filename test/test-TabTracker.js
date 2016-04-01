@@ -13,7 +13,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
 const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version",
-                       "page", "load_reason", "source", "locale", "historySize", "bookmarkSize"];
+                       "page", "load_reason", "source", "locale", "historySize", "bookmarkSize", "action"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
@@ -230,6 +230,36 @@ exports.test_TabTracker_refresh = function*(assert) {
   let loadReasons = ["newtab", "refresh"];
   let unloadReasons = ["refresh", "close"];
   checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
+};
+
+exports.test_TabTracker_action_pings = function*(assert) {
+  let userEventPromise = new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic === "user-action-event") {
+        Services.obs.removeObserver(observe, "user-action-event");
+        resolve(JSON.parse(data));
+      }
+    }
+    Services.obs.addObserver(observe, "user-action-event");
+  });
+
+  let eventData = {
+    msg: {
+      data: {
+        source: "topsites",
+        action_position: 3,
+        event: "click"
+      }
+    }
+  };
+  app._handleUserEvent("NEW_USER_EVENT", eventData);
+
+  let pingData = yield userEventPromise;
+  let additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page"];
+  for (let key of additionalKeys) {
+    assert.ok(pingData[key], `The ping has the additional key ${key}`);
+  }
+  assert.deepEqual(eventData.msg.data, pingData, "We receive the expected ping data.");
 };
 
 exports.test_TabTracker_prefs = function*(assert) {
