@@ -8,7 +8,8 @@ const TestUtils = require("react-addons-test-utils");
 const {prettyUrl} = require("lib/utils");
 const moment = require("moment");
 
-const fakeSites = require("test/test-utils").mockData.Bookmarks.rows;
+const {mockData, faker} = require("test/test-utils");
+const fakeSites = mockData.Bookmarks.rows;
 const fakeSite = {
   "title": "man throws alligator in wendys wptv dnt cnn",
   "dateDisplay": 1456426160465,
@@ -112,8 +113,14 @@ describe("ActivityFeedItem", function() {
 describe("GroupedActivityFeed", function() {
   let instance;
   let el;
+  let sites;
   beforeEach(() => {
-    instance = TestUtils.renderIntoDocument(<GroupedActivityFeed sites={fakeSites} />);
+    sites = [
+      faker.createSite({moment: faker.moment()}),
+      faker.createSite({moment: faker.moment().subtract(2, "days")}),
+      faker.createSite({moment: faker.moment().subtract(4, "days")}),
+    ];
+    instance = TestUtils.renderIntoDocument(<GroupedActivityFeed sites={sites} />);
     el = ReactDOM.findDOMNode(instance);
   });
 
@@ -123,9 +130,9 @@ describe("GroupedActivityFeed", function() {
     });
     it("should render an ActivityFeed for each date", () => {
       const children = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeed);
-      // Each fakeSite has a different lastVisitDate, so there will be one
+      // Each fakeSite is minimum of 24 hours apart
       // ActivityFeed per site.
-      assert.equal(children.length, fakeSites.length);
+      assert.equal(children.length, sites.length);
     });
     it("shouldn't render title if there are no sites", () => {
       const item = TestUtils.renderIntoDocument(<GroupedActivityFeed sites={[]} title="Fake Title" />);

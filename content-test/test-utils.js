@@ -30,5 +30,6 @@ module.exports = {
   rawMockData: mockData,
   mockData: Object.assign({}, mockData, selectNewTabSites(mockData)),
   createMockProvider,
-  renderWithProvider
+  renderWithProvider,
+  faker: require("test/faker")
 };
