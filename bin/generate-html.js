@@ -14,7 +14,6 @@ function template(rawOptions) {
     <meta charset="utf-8">
     <title>${options.title}</title>
     <link rel="stylesheet" href="${options.baseUrl}main.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   </head>
   <body>
     <div id="root"></div>

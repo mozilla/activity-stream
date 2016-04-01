@@ -24,9 +24,9 @@ const Header = React.createClass({
 
       <section ref="clickElement" className={classNames("nav", {"disabled": props.disabled})} onClick={this.onClick}>
         <h1>
-          <span hidden={!props.icon} className={`icon fa ${props.icon}`} />
+          <span hidden={!props.icon} className={`icon ${props.icon}`} />
           <span>{props.title}</span>
-          <span ref="caret" hidden={props.disabled} className="arrow fa fa-chevron-down" />
+          <span ref="caret" hidden={props.disabled} className="arrow" />
         </h1>
         <ul ref="dropdown" className="nav-picker" hidden={!this.state.showDropdown}>
           {props.links.map(link => <li key={link.to}><Link to={link.to}>{link.title}</Link></li>)}

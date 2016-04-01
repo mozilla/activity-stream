@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <g id="glyph-activityStream-16">
+    <path class="cls-1" d="M138,322h24a4,4,0,0,1,4,4v20a4,4,0,0,1-4,4H138a4,4,0,0,1-4-4V326A4,4,0,0,1,138,322Zm0,20h4v4h-4v-4Zm0-8h4v4h-4v-4Zm0-8h4v4h-4v-4Zm6,16h18v4H144v-4Zm0-8h18v4H144v-4Zm0-8h18v4H144v-4Z" transform="translate(-134 -320)"/>
+  </g>
+</svg>

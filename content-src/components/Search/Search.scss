@@ -23,13 +23,13 @@
   }
 
   .search-label {
+    background: url('img/glyph-search-16.svg') no-repeat center center;
+    background-size: 20px;
     position: absolute;
     top: 0;
     left: 0;
-    color: $light-grey;
     height: 100%;
     width: $search-input-left-label-width;
-    font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -41,14 +41,21 @@
     margin-left: -1px;
     background: $search-button-grey;
     border: 1px solid $faintest-black;
-    padding: 8px 15px;
-    color: $light-grey;
+    padding: 10px 15px 6px;
     transition: box-shadow 150ms;
     box-shadow: none;
 
     &:active,
     &:focus {
       z-index: 1;
+    }
+
+    span {
+      background: url('img/glyph-forward-16.svg') no-repeat center center;
+      background-size: 16px;
+      display: inline-block;
+      height: 16px;
+      width: 16px;
     }
   }
 

@@ -10,9 +10,9 @@ const LoadMore = React.createClass({
   },
   render() {
     const link = this.props.to ?
-      (<Link to={this.props.to}><span className="fa fa-chevron-down" /> {this.props.label}</Link>) :
+      (<Link to={this.props.to}><span className="arrow" /> {this.props.label}</Link>) :
       (<a href="#" onClick={e => { e.preventDefault(); this.props.onClick(); }}>
-          <span className="fa fa-chevron-down" /> {this.props.label}
+          <span className="arrow" /> {this.props.label}
         </a>);
     return (<div hidden={this.props.hidden}>
       <Loader ref="loader" show={this.props.loading} />
