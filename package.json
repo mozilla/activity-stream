@@ -79,7 +79,7 @@
     "redux-mock-store": "0.0.6",
     "requirejs": "^2.1.22",
     "sass-lint": "^1.5.0",
-    "tippy-top-sites": "github:nchapman/tippy-top-sites",
+    "tippy-top-sites": "^0.1.0",
     "webpack": "^1.12.12",
     "webpack-env-loader-plugin": "0.1.4",
     "webpack-notifier": "^1.2.1",
