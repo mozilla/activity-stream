@@ -5,11 +5,10 @@ const Header = require("components/Header/Header");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
+const {overrideConsoleError} = require("test/test-utils");
 const fakeProps = {
-  currentRoute: {
-    title: "Home",
-    path: "/"
-  }
+  title: "Home",
+  pathname: "/"
 };
 
 describe("Header", () => {
@@ -27,9 +26,13 @@ describe("Header", () => {
   });
 
   it("should not throw if missing props", () => {
+
     assert.doesNotThrow(() => {
-      ReactDOM.render(<Header  />, node);
+      const restore = overrideConsoleError();
+      ReactDOM.render(<Header />, node);
+      restore();
     });
+
   });
 
   it("should hide dropdown be default", () => {

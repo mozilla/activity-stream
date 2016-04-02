@@ -12,6 +12,8 @@ scripts:
 
   changelog: conventional-changelog -i CHANGELOG.md -s
 
+  copyTestImages: cpx "node_modules/tippy-top-sites/images/**/*" data/content/favicons/images
+
 # bundle: Bundle assets for production
   bundle:
     pre: =>clean
@@ -24,9 +26,8 @@ scripts:
 # start: Start watching/compiling assets,
   start:
     _parallel: true
-    pre: =>clean
+    pre: =>clean && =>copyTestImages
     static: =>bundle:static -- -w
-    copyTestImages: cpx "node_modules/tippy-top-sites/images/**/*" data/content/favicons/images
     webpack: webpack -w
     css: =>bundle:css && =>bundle:css -- -w
     html: =>bundle:html -- --baseUrl http://localhost:1963/
@@ -37,7 +38,7 @@ scripts:
 
 # test: Run all tests once
   test:
-    pre: =>bundle
+    pre: =>bundle && =>copyTestImages
     # test:lint: Run eslint
     lint: eslint . && jscs . && sass-lint -v -q
     # test:jpm: Run jpm tests

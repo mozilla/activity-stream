@@ -2,6 +2,7 @@ const assert = require("chai").assert;
 const TestUtils = require("react-addons-test-utils");
 const React = require("react");
 const ReactDOM = require("react-dom");
+const {overrideConsoleError} = require("test/test-utils");
 
 const ConnectedTopSites = require("components/TopSites/TopSites");
 const {TopSites} = ConnectedTopSites;
@@ -36,7 +37,9 @@ describe("TopSites", () => {
 
   it("should not throw if missing props", () => {
     assert.doesNotThrow(() => {
+      const restore = overrideConsoleError();
       TestUtils.renderIntoDocument(<TopSites sites={[{}]} />);
+      restore();
     });
   });
 
