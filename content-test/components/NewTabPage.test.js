@@ -13,7 +13,7 @@ const fakeProps = mockData;
 describe("NewTabPage", () => {
   let instance;
   beforeEach(() => {
-    instance = renderWithProvider(<NewTabPage {...fakeProps} />);
+    instance = renderWithProvider(<NewTabPage {...fakeProps} dispatch={() => {}} />);
   });
 
   it("should create a page", () => {

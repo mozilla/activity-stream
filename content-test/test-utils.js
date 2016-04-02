@@ -26,10 +26,19 @@ function renderWithProvider(component, store) {
   return TestUtils.findRenderedComponentWithType(container, component.type);
 }
 
+function overrideConsoleError(onError = () => {}) {
+  const originalError = console.error;
+  console.error = onError;
+  return () => {
+    console.error = originalError;
+  };
+}
+
 module.exports = {
   rawMockData: mockData,
   mockData: Object.assign({}, mockData, selectNewTabSites(mockData)),
   createMockProvider,
   renderWithProvider,
-  faker: require("test/faker")
+  faker: require("test/faker"),
+  overrideConsoleError
 };

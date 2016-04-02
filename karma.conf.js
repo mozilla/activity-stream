@@ -31,8 +31,12 @@ module.exports = function(config) {
       ]
     },
     files: [
-      "content-test/index.js"
+      "content-test/index.js",
+      {pattern: "data/content/favicons/**/*", watched: false, included: false, served: true}
     ],
+    proxies: {
+      "/favicons/": "/base/data/content/favicons/"
+    },
     preprocessors: {
       "content-test/**/*.js": ["webpack", "sourcemap"]
     },
