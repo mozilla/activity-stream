@@ -19,6 +19,7 @@ const am = new ActionManager([
   "SEARCH_STATE_RESPONSE",
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_PERFORMANCE",
+  "NEW_USER_EVENT",
 ]);
 
 // This is a a set of actions that have sites in them,
