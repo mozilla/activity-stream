@@ -145,6 +145,12 @@
       "title": "Telemetry server endpoint",
       "type": "string",
       "value": "https://tiles.services.mozilla.com/v3/links/activity-stream"
+    },
+    {
+      "name": "embedly.endpoint",
+      "title": "Embedly Endpoint",
+      "type": "string",
+      "value": "https://embedly-proxy.dev.mozaws.net/v2/extract"
     }
   ]
 }

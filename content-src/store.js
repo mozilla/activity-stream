@@ -12,7 +12,6 @@ const middleware = [
   thunk,
   channel.middleware,
   require("lib/parse-url-middleware"),
-  require("lib/embedly-middleware")
 ];
 
 // Logging for debugging redux actions
