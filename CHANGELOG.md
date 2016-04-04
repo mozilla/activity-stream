@@ -1,3 +1,14 @@
+<a name="1.0.6"></a>
+## 1.0.6 (2016-04-04)
+
+* 1.0.5 changelog ([f4ef71e](https://github.com/mozilla/activity-streams/commit/f4ef71e))
+* 1.0.6 ([f7d5aa1](https://github.com/mozilla/activity-streams/commit/f7d5aa1))
+* Revert "critical style fixes for april 1 release" ([e999e7f](https://github.com/mozilla/activity-streams/commit/e999e7f))
+* chore(readme): #358 Update data dictionary ([cd6e686](https://github.com/mozilla/activity-streams/commit/cd6e686))
+* feature(addon): #427 Addon handling of UX user event notifications. ([a9af8f4](https://github.com/mozilla/activity-streams/commit/a9af8f4))
+
+
+
 <a name="1.0.5"></a>
 ## 1.0.5 (2016-04-01)
 
