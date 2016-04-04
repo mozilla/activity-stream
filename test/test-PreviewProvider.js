@@ -116,7 +116,7 @@ exports.test_dedupe_urls = function*(assert) {
   });
 };
 
-exports.test_mock_embedly_request = function*(assert, done) {
+exports.test_mock_embedly_request = function*(assert) {
   const fakeData = [{"url": "http://example.com/", "title": null, "lastVisitDate": 1459537019061, "frecency": 2000, "favicon": null, "type": "history", "sanitizedURL": "http://example.com/", "cacheKey": "example.com/"}];
   const fakeDataExpected = {"urls": {
     "http://example.com/": {
@@ -148,7 +148,9 @@ exports.test_mock_embedly_request = function*(assert, done) {
   let cachedLinks = previewProvider.getCachedLinks(fakeData);
   assert.ok(cachedLinks.some(e => e.cacheKey === ss.storage.embedlyData[fakeDataExpected.urls["http://example.com/"].cacheKey].cacheKey), "the cached link is now retrieved next time");
 
-  srv.stop(done);
+  yield new Promise(resolve => {
+    srv.stop(resolve);
+  });
 };
 
 before(exports, function*() {
