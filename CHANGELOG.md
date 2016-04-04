@@ -1,3 +1,12 @@
+<a name="1.0.7"></a>
+## 1.0.7 (2016-04-04)
+
+* 1.0.6 changelog ([a304156](https://github.com/mozilla/activity-streams/commit/a304156))
+* 1.0.7 ([5e2656a](https://github.com/mozilla/activity-streams/commit/5e2656a))
+* feat(addon): #258 Implement embedly client in the addon ([e860311](https://github.com/mozilla/activity-streams/commit/e860311))
+
+
+
 <a name="1.0.6"></a>
 ## 1.0.6 (2016-04-04)
 
