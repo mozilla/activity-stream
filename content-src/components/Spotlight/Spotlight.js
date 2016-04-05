@@ -11,6 +11,7 @@ const DEFAULT_LENGTH = 3;
 const SpotlightItem = React.createClass({
   getDefaultProps() {
     return {
+      onClick: function() {},
       onDelete: function() {}
     };
   },
@@ -75,7 +76,7 @@ const Spotlight = React.createClass({
       this.props.dispatch(actions.NotifyEvent({
         event: "CLICK",
         page: this.props.page,
-        source: "SPOTLIGHT",
+        source: "FEATURED",
         action_position: index
       }));
     };
@@ -86,7 +87,7 @@ const Spotlight = React.createClass({
       this.props.dispatch(actions.NotifyEvent({
         event: "DELETE",
         page: this.props.page,
-        source: "SPOTLIGHT",
+        source: "FEATURED",
         action_position: index
       }));
     };
@@ -102,8 +103,8 @@ const Spotlight = React.createClass({
       <ul>
         {sites.map((site, i) => <SpotlightItem index={i}
           key={site.url}
-          onDelete={url => this.onDeleteFactory(i)}
-          onClick={() => this.onClickFactory(i)}
+          onDelete={this.onDeleteFactory(i)}
+          onClick={this.onClickFactory(i)}
           {...site} />)}
         {blankSites}
       </ul>
@@ -112,7 +113,7 @@ const Spotlight = React.createClass({
 });
 
 Spotlight.propTypes = {
-  page: React.PropTypes.string,
+  page: React.PropTypes.string.isRequired,
   sites: React.PropTypes.array.isRequired,
   length: React.PropTypes.number
 };

@@ -36,12 +36,12 @@ describe("Spotlight", function() {
         if (a.type === "NOTIFY_USER_EVENT") {
           assert.equal(a.data.event, "CLICK");
           assert.equal(a.data.page, "NEW_TAB");
-          assert.equal(a.data.source, "SPOTLIGHT");
+          assert.equal(a.data.source, "FEATURED");
           assert.equal(a.data.action_position, 0);
           done();
         }
       }
-      instance = TestUtils.renderIntoDocument(<Spotlight dispatch={dispatch} sites={fakeSpotlightItems} />);
+      instance = TestUtils.renderIntoDocument(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSpotlightItems} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
     });
     it("should fire a delete event when delete is clicked", done => {
@@ -49,12 +49,12 @@ describe("Spotlight", function() {
         if (a.type === "NOTIFY_USER_EVENT") {
           assert.equal(a.data.event, "DELETE");
           assert.equal(a.data.page, "NEW_TAB");
-          assert.equal(a.data.source, "SPOTLIGHT");
+          assert.equal(a.data.source, "FEATURED");
           assert.equal(a.data.action_position, 1);
           done();
         }
       }
-      instance = TestUtils.renderIntoDocument(<Spotlight dispatch={dispatch} sites={fakeSpotlightItems} />);
+      instance = TestUtils.renderIntoDocument(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSpotlightItems} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[1].refs.delete);
     });
   });
