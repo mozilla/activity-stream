@@ -8,7 +8,7 @@ const TestUtils = require("react-addons-test-utils");
 const {prettyUrl} = require("lib/utils");
 const moment = require("moment");
 
-const {mockData, faker} = require("test/test-utils");
+const {mockData, faker, overrideConsoleError} = require("test/test-utils");
 const fakeSites = mockData.Bookmarks.rows;
 const fakeSite = {
   "title": "man throws alligator in wendys wptv dnt cnn",
@@ -59,7 +59,9 @@ describe("ActivityFeedItem", function() {
 
   it("should not throw if missing props", () => {
     assert.doesNotThrow(() => {
+      const restore = overrideConsoleError();
       TestUtils.renderIntoDocument(<ActivityFeedItem />);
+      restore();
     });
   });
 

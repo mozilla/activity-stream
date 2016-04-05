@@ -50,7 +50,7 @@ Header.propTypes = {
   title: React.PropTypes.string.isRequired,
   icon: React.PropTypes.string,
   pathname: React.PropTypes.string.isRequired,
-  links: React.PropTypes.array.isRequired,
+  links: React.PropTypes.array,
   disabled: React.PropTypes.bool
 };
 
