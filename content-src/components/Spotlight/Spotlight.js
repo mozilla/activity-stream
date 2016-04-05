@@ -83,7 +83,7 @@ const Spotlight = React.createClass({
   },
   onDeleteFactory(index) {
     return url => {
-      this.props.dispatch(actions.NotifyHistoryDelete(url));
+      this.props.dispatch(actions.BlockUrl(url));
       this.props.dispatch(actions.NotifyEvent({
         event: "DELETE",
         page: this.props.page,

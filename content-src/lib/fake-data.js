@@ -23,5 +23,8 @@ module.exports = {
       "placeholder": "Search With Google",
       "iconBuffer": {}
     }
+  },
+  "Blocked": {
+    "urls": new Set()
   }
 };

@@ -13,6 +13,7 @@ const am = new ActionManager([
   "RECENT_LINKS_RESPONSE",
   "FRECENT_LINKS_REQUEST",
   "FRECENT_LINKS_RESPONSE",
+  "BLOCK_URL",
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_PERFORM_SEARCH",
   "RECEIVE_CURRENT_ENGINE",
@@ -20,7 +21,6 @@ const am = new ActionManager([
   "SEARCH_STATE_RESPONSE",
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_PERFORMANCE",
-  "NOTIFY_TELEMETRY",
   "NOTIFY_USER_EVENT"
 ]);
 
@@ -106,6 +106,14 @@ function RequestSearchState() {
   return RequestExpect("SEARCH_STATE_REQUEST", "SEARCH_STATE_RESPONSE");
 }
 
+function BlockUrl(url) {
+  alert("We're still working on this feature. Thanks for your patience!");
+  return {
+    type: "BLOCK_URL",
+    data: url
+  };
+}
+
 function NotifyHistoryDelete(data) {
   return Notify("NOTIFY_HISTORY_DELETE", data);
 }
@@ -146,6 +154,7 @@ am.defineActions({
   RequestMoreRecentLinks,
   RequestFrecentLinks,
   RequestSearchState,
+  BlockUrl,
   NotifyHistoryDelete,
   NotifyPerformSearch,
   NotifyRouteChange,
