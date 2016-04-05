@@ -10,7 +10,7 @@ const TopSites = React.createClass({
     return {length: DEFAULT_LENGTH};
   },
   onDelete(url) {
-    this.props.dispatch(actions.NotifyHistoryDelete(url));
+    this.props.dispatch(actions.BlockUrl(url));
   },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);

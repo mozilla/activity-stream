@@ -68,10 +68,24 @@ function setSearchState(type) {
   };
 }
 
+function Blocked(prevState = {urls: new Set()}, action) {
+  let state = {};
+  switch (action.type) {
+    case am.type("BLOCK_URL"):
+      state.urls = new Set(prevState.urls);
+      state.urls.add(action.data);
+      break;
+    default:
+      return prevState;
+  }
+  return Object.assign({}, prevState, state);
+}
+
 module.exports = {
   TopSites: setRowsOrError("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE"),
   FrecentHistory: setRowsOrError("RECENT_LINKS_REQUEST", "FRECENT_LINKS_RESPONSE"),
   History: setRowsOrError("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE"),
   Bookmarks: setRowsOrError("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE"),
-  Search: setSearchState("SEARCH_STATE_RESPONSE")
+  Search: setSearchState("SEARCH_STATE_RESPONSE"),
+  Blocked
 };

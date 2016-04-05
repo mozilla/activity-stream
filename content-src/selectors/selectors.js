@@ -36,14 +36,24 @@ module.exports.selectNewTabSites = createSelector(
     state => state.TopSites,
     state => state.FrecentHistory,
     state => state.History,
-    selectSpotlight
+    selectSpotlight,
+    state => state.Blocked
   ],
-  (TopSites, FrecentHistory, History, Spotlight) => {
-    let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
+  (TopSites, FrecentHistory, History, Spotlight, Blocked) => {
+
+    // Remove duplicates
+    let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]).map(sites => {
+      return sites.filter(site => !Blocked.urls.has(site.url));
+    });
+
+    // Limit spotlight length
     spotlightRows = spotlightRows.slice(0, SPOTLIGHT_LENGTH);
+
+    // Dedupe top activity
     const topActivityRows = dedupe.group([topSitesRows, spotlightRows, History.rows])[2].sort((a, b) => {
       return b.lastVisitDate - a.lastVisitDate;
     });
+
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Spotlight: Object.assign({}, FrecentHistory, {rows: spotlightRows}),
