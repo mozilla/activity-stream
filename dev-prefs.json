@@ -1,5 +1,6 @@
 {
   "xpinstall.signatures.required": false,
   "extensions.@activity-streams.sdk.console.logLevel": "info",
-  "extensions.@activity-streams.telemetry.ping.endpoint": "https://onyx_tiles.stage.mozaws.net/v3/links/activity-stream"
+  "extensions.@activity-streams.telemetry.ping.endpoint": "https://onyx_tiles.stage.mozaws.net/v3/links/activity-stream",
+  "extensions.@activity-streams.embedly.endpoint": "https://embedly-proxy.stage.mozaws.net/v2/extract"
 }
