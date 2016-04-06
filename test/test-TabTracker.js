@@ -246,9 +246,9 @@ exports.test_TabTracker_action_pings = function*(assert) {
   let eventData = {
     msg: {
       data: {
-        source: "topsites",
+        source: "TOP_SITES",
         action_position: 3,
-        event: "click"
+        event: "CLICK"
       }
     }
   };
@@ -260,6 +260,37 @@ exports.test_TabTracker_action_pings = function*(assert) {
     assert.ok(pingData[key], `The ping has the additional key ${key}`);
   }
   assert.deepEqual(eventData.msg.data, pingData, "We receive the expected ping data.");
+};
+
+exports.test_TabTracker_user_event_listener = function*(assert) {
+  let eventData = {
+    type: "NOTIFY_USER_EVENT",
+    data: {
+      source: "TOP_SITES",
+      action_position: 3,
+      event: "CLICK"
+    }
+  };
+  tabs.open(ACTIVITY_STREAMS_URL);
+  const pingData = yield new Promise(resolve => {
+    let tab;
+    function observe(subject, topic, data) {
+      if (topic === "user-action-event") {
+        Services.obs.removeObserver(observe, "user-action-event");
+        tab.close();
+        console.log("OMG", data);
+        resolve(JSON.parse(data));
+      }
+    }
+    Services.obs.addObserver(observe, "user-action-event");
+    tabs.once("activate", function(t) {
+      tab = t;
+      tab.attach({
+        contentScript: `self.port.emit("content-to-addon", ${JSON.stringify(eventData)});`
+      });
+    });
+  });
+  assert.deepEqual(pingData.msg.data, eventData);
 };
 
 exports.test_TabTracker_prefs = function*(assert) {
@@ -312,11 +343,11 @@ exports.test_TabTracker_pageType = function*(assert) {
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
   tabs.open(ACTIVITY_STREAMS_URL);
   let pingData = yield waitForPageLoadAndSessionComplete();
-  assert.equal(pingData.page, "NEW_TAB", "page type is newtab");
+  assert.equal(pingData.page, "newtab", "page type is newtab");
   // open timeline page
   tabs.open(app.appURLs[2]);
   pingData = yield waitForPageShowAndSessionComplete();
-  assert.equal(pingData.page, "TIMELINE_ALL", "page type is timeline");
+  assert.equal(pingData.page, "timeline", "page type is timeline");
 };
 
 before(exports, function*() {
