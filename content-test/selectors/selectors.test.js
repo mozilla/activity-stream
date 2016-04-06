@@ -112,6 +112,23 @@ describe("selectors", () => {
       const groups = [state.TopSites.rows, state.Spotlight.rows, state.TopActivity.rows];
       assert.deepEqual(groups, dedupe.group(groups));
     });
+    it("should remove urls in block list", () => {
+      state = selectNewTabSites({
+        TopSites: {rows: [
+          {url: "foo1.com", lastVisitDate: 1},
+          {url: "bar2.com", lastVisitDate: 4},
+          {url: "baz3.com", lastVisitDate: 3}
+        ]},
+        Spotlight: {rows: []},
+        FrecentHistory: {rows: []},
+        History: {rows: []},
+        Blocked: {urls: new Set(["foo1.com"])}
+      });
+      assert.deepEqual(state.TopSites.rows, [
+        {url: "bar2.com", lastVisitDate: 4},
+        {url: "baz3.com", lastVisitDate: 3}
+      ]);
+    });
     it("should sort TopActivity by dateLastVisited", () => {
       state = selectNewTabSites({
         TopSites: {rows: []},
@@ -126,6 +143,7 @@ describe("selectors", () => {
           {url: "bar2.com", lastVisitDate: 4},
           {url: "baz3.com", lastVisitDate: 3}
         ]},
+        Blocked: {urls: new Set()}
       });
       assert.deepEqual(state.TopActivity.rows,
         [
