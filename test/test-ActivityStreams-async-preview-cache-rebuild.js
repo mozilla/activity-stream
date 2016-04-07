@@ -54,7 +54,7 @@ let makeCountingCachePromise = (name, target) => {
   });
 };
 
-exports["test preview cache invalidation works"] = function*(assert) {
+exports["test preview cache repopulation works"] = function*(assert) {
   let placesCachePromise;
   let previewsCachePromise;
 
@@ -64,11 +64,11 @@ exports["test preview cache invalidation works"] = function*(assert) {
   yield placesCachePromise;
   yield previewsCachePromise;
 
-  let expectedInvalidations = 3;
-  let previewsCountPromise = makeCountingCachePromise("previews", expectedInvalidations);
-  let numInvalidations = yield previewsCountPromise;
+  let expectedRepopulations = 3;
+  let previewsCountPromise = makeCountingCachePromise("previews", expectedRepopulations);
+  let numRepopulations = yield previewsCountPromise;
 
-  assert.equal(numInvalidations, expectedInvalidations, "preview cache successfully invalidated periodically");
+  assert.equal(numRepopulations, expectedRepopulations, "preview cache successfully repopulated periodically");
   app.unload();
 };
 
