@@ -176,7 +176,7 @@ const GroupedActivityFeed = React.createClass({
               {sites.map((site, i) => {
                 globalCount++;
                 return (<ActivityFeedItem
-                    key={i}
+                    key={site[this.props.dateKey]}
                     onClick={this.onClickFactory(globalCount)}
                     onShare={this.onShareFactory(globalCount)}
                     onDelete={this.onDeleteFactory(globalCount)}
