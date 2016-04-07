@@ -182,7 +182,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
   yield placesCachePromise;
 
   // phase 2: add history visit and don't count
-  gApp._rebuildInProgress = true;
+  gApp._populatingCache.places = true;
 
   let visits = [
     {uri: NetUtil.newURI("https://example.com/1"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
@@ -202,7 +202,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
       resolve();
     });
   });
-  gApp._rebuildInProgress = false;
+  gApp._populatingCache.places = false;
   Services.obs.removeObserver(countNotif, notif);
   yield new Promise(resolve => {
     srv.stop(() => {
