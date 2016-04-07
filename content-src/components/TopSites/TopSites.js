@@ -14,7 +14,7 @@ const TopSites = React.createClass({
     };
   },
   onDelete(url, index) {
-    this.props.dispatch(actions.NotifyHistoryDelete(url));
+    this.props.dispatch(actions.BlockUrl(url));
     this.props.dispatch(actions.NotifyEvent({
       event: "DELETE",
       page: this.props.page,

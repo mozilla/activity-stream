@@ -7,6 +7,7 @@ const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const {mockData, faker} = require("test/test-utils");
+const am = require("common/action-manager");
 
 const fakeSpotlightItems = mockData.Spotlight.rows;
 const fakeSiteWithImage = faker.createSite();
@@ -30,7 +31,20 @@ describe("Spotlight", function() {
     });
   });
 
-  describe("events", () => {
+  describe("actions", () => {
+    it("should fire a block action when delete button is clicked", done => {
+      let url;
+      function dispatch(a) {
+        if (a.type === am.type("BLOCK_URL")) {
+          assert.equal(a.data, url);
+          done();
+        }
+      }
+      instance = TestUtils.renderIntoDocument(<Spotlight sites={fakeSpotlightItems} dispatch={dispatch} />);
+      const firstItem = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0];
+      url = firstItem.props.url;
+      TestUtils.Simulate.click(firstItem.refs.delete);
+    });
     it("should fire a click event when delete is clicked", done => {
       function dispatch(a) {
         if (a.type === "NOTIFY_USER_EVENT") {
