@@ -168,14 +168,7 @@ exports.test_mock_embedly_request = function*(assert) {
   const fakeData = [fakeSite];
   const fakeDataCached = {"urls": {
     "http://example.com/": {
-      "title": null,
-      "lastVisitDate": 1459537019000,
-      "frecency": 1000,
-      "favicon": null,
-      "type": "history",
-      "embedlyMetaData": "some embedly metadata",
-      "sanitizedURL": "http://example.com/",
-      "cacheKey": "example.com/"
+      "embedlyMetaData": "some embedly metadata"
     }
   }};
 
@@ -189,18 +182,26 @@ exports.test_mock_embedly_request = function*(assert) {
 
   yield gPreviewProvider._asyncFetchAndCache(fakeData);
 
-  assert.ok(ss.storage.embedlyData[fakeDataCached.urls["http://example.com/"].cacheKey], "the cache created an entry with the cache key");
-  assert.deepEqual(ss.storage.embedlyData[fakeDataCached.urls["http://example.com/"].cacheKey].embedlyMetaData, "some embedly metadata", "the cache saved the embedly data");
-  assert.ok(ss.storage.embedlyData[fakeDataCached.urls["http://example.com/"].cacheKey].accessTime, "the cached saved a time stamp");
+  assert.deepEqual(ss.storage.embedlyData[fakeSite.cacheKey].embedlyMetaData, "some embedly metadata", "the cache saved the embedly data");
+  assert.ok(ss.storage.embedlyData[fakeSite.cacheKey].accessTime, "the cached saved a time stamp");
 
   let cachedLinks = gPreviewProvider.getCachedLinks(fakeData);
   assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getCachedLinks should prioritize new data");
   assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getCachedLinks should prioritize new data");
-  assert.ok(cachedLinks.some(e => e.cacheKey === ss.storage.embedlyData[fakeDataCached.urls["http://example.com/"].cacheKey].cacheKey), "the cached link is now retrieved next time");
+  assert.ok(ss.storage.embedlyData[fakeSite.cacheKey], "the cached link is now retrieved next time");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
   });
+};
+
+exports.test_get_cached_disabled = function*(assert) {
+  const fakeData = [
+    {url: "http://foo.com/", lastVisitDate: 1459537019061}
+  ];
+  simplePrefs.prefs["previews.enabled"] = false;
+  let cachedLinks = gPreviewProvider.getCachedLinks(fakeData);
+  assert.deepEqual(cachedLinks, fakeData, "if disabled, should return links as is");
 };
 
 before(exports, function*() {
