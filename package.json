@@ -105,7 +105,7 @@
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle && npm run copyTestImages",
     "test:lint": "eslint . && jscs . && sass-lint -v -q",
-    "test:jpm": "jpm test -b beta --prefs ./dev-prefs.json",
+    "test:jpm": "jpm test -b beta --prefs ./test-prefs.json",
     "test:karma": "NODE_ENV=test karma start --browsers FirefoxNightly",
     "tdd": "NODE_ENV=test karma start --no-single-run --browsers Chrome",
     "package": "npm run bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
@@ -128,6 +128,12 @@
     {
       "name": "query.cache",
       "title": "Enable query caching mode",
+      "type": "bool",
+      "value": true
+    },
+    {
+      "name": "previews.enabled",
+      "title": "Enable rich link previews",
       "type": "bool",
       "value": true
     },

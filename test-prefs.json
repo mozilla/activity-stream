@@ -1,0 +1,8 @@
+{
+  "xpinstall.signatures.required": false,
+  "extensions.@activity-streams.sdk.console.logLevel": "info",
+  "extensions.@activity-streams.performance.log": false,
+  "extensions.@activity-streams.previews.enabled": false,
+  "extensions.@activity-streams.telemetry": true,
+  "extensions.@activity-streams.telemetry.ping.endpoint": "https://onyx_tiles.stage.mozaws.net/v3/links/activity-stream"
+}
