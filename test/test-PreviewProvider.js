@@ -154,12 +154,23 @@ exports.test_dedupe_urls = function*(assert) {
 };
 
 exports.test_mock_embedly_request = function*(assert) {
-  const fakeData = [{"url": "http://example.com/", "title": null, "lastVisitDate": 1459537019061, "frecency": 2000, "favicon": null, "type": "history", "sanitizedURL": "http://example.com/", "cacheKey": "example.com/"}];
-  const fakeDataExpected = {"urls": {
+  const fakeSite = {
+    "url": "http://example.com/",
+    "title": null,
+    "lastVisitDate": 1459537019061,
+    "frecency": 2000,
+    "favicon": null,
+    "bookmarkDateCreated": 1459537019061,
+    "type": "history",
+    "sanitizedURL": "http://example.com/",
+    "cacheKey": "example.com/"
+  };
+  const fakeData = [fakeSite];
+  const fakeDataCached = {"urls": {
     "http://example.com/": {
       "title": null,
-      "lastVisitDate": 1459537019061,
-      "frecency": 2000,
+      "lastVisitDate": 1459537019000,
+      "frecency": 1000,
       "favicon": null,
       "type": "history",
       "embedlyMetaData": "some embedly metadata",
@@ -173,17 +184,19 @@ exports.test_mock_embedly_request = function*(assert) {
 
   srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
     response.setHeader("Content-Type", "application/json", false);
-    response.write(JSON.stringify(fakeDataExpected));
+    response.write(JSON.stringify(fakeDataCached));
   });
 
   yield gPreviewProvider._asyncFetchAndCache(fakeData);
 
-  assert.ok(ss.storage.embedlyData[fakeDataExpected.urls["http://example.com/"].cacheKey], "the cache created an entry with the cache key");
-  assert.deepEqual(ss.storage.embedlyData[fakeDataExpected.urls["http://example.com/"].cacheKey].embedlyMetaData, "some embedly metadata", "the cache saved the embedly data");
-  assert.ok(ss.storage.embedlyData[fakeDataExpected.urls["http://example.com/"].cacheKey].accessTime, "the cached saved a time stamp");
+  assert.ok(ss.storage.embedlyData[fakeDataCached.urls["http://example.com/"].cacheKey], "the cache created an entry with the cache key");
+  assert.deepEqual(ss.storage.embedlyData[fakeDataCached.urls["http://example.com/"].cacheKey].embedlyMetaData, "some embedly metadata", "the cache saved the embedly data");
+  assert.ok(ss.storage.embedlyData[fakeDataCached.urls["http://example.com/"].cacheKey].accessTime, "the cached saved a time stamp");
 
   let cachedLinks = gPreviewProvider.getCachedLinks(fakeData);
-  assert.ok(cachedLinks.some(e => e.cacheKey === ss.storage.embedlyData[fakeDataExpected.urls["http://example.com/"].cacheKey].cacheKey), "the cached link is now retrieved next time");
+  assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getCachedLinks should prioritize new data");
+  assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getCachedLinks should prioritize new data");
+  assert.ok(cachedLinks.some(e => e.cacheKey === ss.storage.embedlyData[fakeDataCached.urls["http://example.com/"].cacheKey].cacheKey), "the cached link is now retrieved next time");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
