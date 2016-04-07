@@ -10,18 +10,23 @@ const {actions} = require("common/action-manager");
 const {Link} = require("react-router");
 
 const MAX_TOP_ACTIVITY_ITEMS = 10;
+const PAGE_NAME = "NEW_TAB";
 
 const NewTabPage = React.createClass({
   // TODO: Replace with real search api via addon
   onSearch(value) {
     this.props.dispatch(actions.NotifyPerformSearch(value));
+    this.props.dispatch(actions.NotifyEvent({
+      event: "SEARCH",
+      page: PAGE_NAME
+    }));
   },
   componentDidMount() {
     document.title = "New Tab";
   },
   componentDidUpdate() {
     if (this.props.isReady) {
-      this.props.dispatch(actions.NotifyTelemetry("NEWTAB_RENDER"));
+      this.props.dispatch(actions.NotifyPerf("NEWTAB_RENDER"));
     }
   },
   render() {
@@ -38,11 +43,11 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <Spotlight sites={props.Spotlight.rows} />
+            <Spotlight page={PAGE_NAME} sites={props.Spotlight.rows} />
           </section>
 
           <section>
-            <GroupedActivityFeed title="Recent Activity" sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} />
+            <GroupedActivityFeed title="Recent Activity" sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME} />
             <LoadMore to="/timeline" label="See more activity" hidden={props.TopActivity.rows.length < MAX_TOP_ACTIVITY_ITEMS} />
           </section>
         </div>

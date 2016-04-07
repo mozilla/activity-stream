@@ -252,7 +252,7 @@ exports.test_TabTracker_action_pings = function*(assert) {
       }
     }
   };
-  app._handleUserEvent("NEW_USER_EVENT", eventData);
+  app._handleUserEvent("NOTIFY_USER_EVENT", eventData);
 
   let pingData = yield userEventPromise;
   let additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page"];
@@ -312,11 +312,11 @@ exports.test_TabTracker_pageType = function*(assert) {
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
   tabs.open(ACTIVITY_STREAMS_URL);
   let pingData = yield waitForPageLoadAndSessionComplete();
-  assert.equal(pingData.page, "newtab", "page type is newtab");
+  assert.equal(pingData.page, "NEW_TAB", "page type is newtab");
   // open timeline page
   tabs.open(app.appURLs[2]);
   pingData = yield waitForPageShowAndSessionComplete();
-  assert.equal(pingData.page, "timeline", "page type is timeline");
+  assert.equal(pingData.page, "TIMELINE_ALL", "page type is timeline");
 };
 
 before(exports, function*() {

@@ -106,7 +106,7 @@ describe("selectors", () => {
       });
     });
     it("should use first 3 items of selectSpotlight for Spotlight", () => {
-      assert.deepEqual(state.Spotlight.rows, selectSpotlight(fakeState).rows.slice(0, SPOTLIGHT_LENGTH));
+      assert.lengthOf(state.Spotlight.rows, SPOTLIGHT_LENGTH);
     });
     it("should dedupe TopSites, Spotlight, and TopActivity", () => {
       const groups = [state.TopSites.rows, state.Spotlight.rows, state.TopActivity.rows];
