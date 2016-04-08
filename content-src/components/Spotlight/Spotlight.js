@@ -102,7 +102,7 @@ const Spotlight = React.createClass({
       <h3 className="section-title">Highlights</h3>
       <ul>
         {sites.map((site, i) => <SpotlightItem index={i}
-          key={site.url}
+          key={site.lastVisitDate || i}
           onDelete={this.onDeleteFactory(i)}
           onClick={this.onClickFactory(i)}
           {...site} />)}
