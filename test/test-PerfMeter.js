@@ -1,4 +1,4 @@
-/* globals Services */
+/* globals Services, XPCOMUtils, windowMediator, SessionStore */
 
 "use strict";
 const simplePrefs = require("sdk/simple-prefs");
@@ -9,6 +9,14 @@ const {ActivityStreams} = require("lib/ActivityStreams");
 const {PerfMeter} = require("lib/PerfMeter");
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyServiceGetter(this, "windowMediator",
+                                   "@mozilla.org/appshell/window-mediator;1",
+                                   "nsIWindowMediator");
+
+XPCOMUtils.defineLazyModuleGetter(this, "SessionStore",
+                                  "resource:///modules/sessionstore/SessionStore.jsm");
 
 let app;
 
@@ -218,6 +226,85 @@ exports.test_PerfMeter_sample_stats = function*(assert) {
   perfMeter._addSampleValue(3);
   // the std is sqrt(2/3) anbd should be equal to 0.82
   assert.deepEqual(perfMeter._computeStats(), {total: 3, mean: 2, std: 0.82, median: 2}, "stats match");
+};
+
+exports.test_PerfMeter_tab_restore = function*(assert) {
+  let browserWindow = windowMediator.getMostRecentWindow("navigator:browser");
+  let gBrowser = browserWindow.gBrowser;
+  let appUrl = app.appURLs[1];
+
+  Services.prefs.setBoolPref("browser.sessionstore.debug", true);
+
+  function promiseLoadURI(tab, uri) {
+    return new Promise(resolve => {
+      tab.addEventListener("load", function onLoad() {
+        tab.removeEventListener("load", onLoad);
+        resolve();
+      });
+      tab.linkedBrowser.loadURI(uri);
+    });
+  }
+
+  function promiseRemoveTab(tab) {
+    return new Promise(resolve => {
+      let {messageManager: mm, frameLoader} = tab.linkedBrowser;
+      mm.addMessageListener("SessionStore:update", function onMessage(msg) {
+        if (msg.targetFrameLoader === frameLoader && msg.data.isFinal) {
+          mm.removeMessageListener("SessionStore:update", onMessage);
+          resolve();
+        }
+      }, true);
+
+      if (!tab.closing) {
+        tab.ownerDocument.defaultView.gBrowser.removeTab(tab);
+      }
+    });
+  }
+
+  // Open an activity streams tab and verify perf log working
+  let tab = yield new Promise(resolve => {
+    let tab;
+    function onNotify(subject, topic, data) {
+      Services.obs.removeObserver(onNotify, "performance-log-complete");
+      resolve(tab);
+    }
+    Services.obs.addObserver(onNotify, "performance-log-complete");
+    tab = gBrowser.addTab(appUrl);
+  });
+
+  // Go to a new URL.
+  yield promiseLoadURI(tab, "about:about");
+
+  // Close the tab.
+  yield promiseRemoveTab(tab);
+
+  // Unclose the tab.
+  tab = yield new Promise(resolve => {
+    let tab;
+    function onRestore(subject, topic, data) {
+      Services.obs.removeObserver(onRestore, "sessionstore-debug-tab-restored");
+      resolve(tab);
+    }
+    Services.obs.addObserver(onRestore, "sessionstore-debug-tab-restored");
+    tab = SessionStore.undoCloseTab(browserWindow);
+  });
+
+  // Simulate back button and verify perf log is still working
+  yield new Promise(resolve => {
+    function onNotify(subject, topic, data) {
+      assert.equal(tab.linkedBrowser.currentURI.spec, appUrl);
+      Services.obs.removeObserver(onNotify, "performance-log-complete");
+      resolve();
+    }
+    Services.obs.addObserver(onNotify, "performance-log-complete");
+
+    tab.linkedBrowser.goBack();
+  });
+
+  // Close tab
+  yield promiseRemoveTab(tab);
+
+  Services.prefs.clearUserPref("browser.sessionstore.debug");
 };
 
 before(exports, function() {
