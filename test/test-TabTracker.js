@@ -61,6 +61,7 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
     for (let key of expectedKeys) {
       assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
     }
+    assert.notEqual(ping.session_duration, 0, "session_duration is not 0");
   }
 }
 
@@ -128,7 +129,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
   let openTabs = [];
   let pingData = [];
 
-  let pingsSentPromise = createPingSentPromise(pingData, 4);
+  let pingsSentPromise = createPingSentPromise(pingData, 3);
 
   let tabsOpenedPromise = new Promise(resolve => {
     let onOpen = function(tab) {
@@ -156,7 +157,7 @@ exports.test_TabTracker_reactivating = function*(assert) {
   let activationsGoal = 4;
   let numActivations = 0;
   let activationsPromise = new Promise(resolve => {
-    tabs.on("activate", function() {
+    tabs.on("activate", function(tab) {
       numActivations++;
       if (numActivations === activationsGoal) {
         tabs.removeListener("activate", this);
@@ -185,8 +186,8 @@ exports.test_TabTracker_reactivating = function*(assert) {
   yield tabClosedPromise;
   yield pingsSentPromise;
 
-  let loadReasons = ["newtab", "none", "focus", "focus"];
-  let unloadReasons = ["navigation", "unfocus", "unfocus", "close"];
+  let loadReasons = ["newtab", "focus", "focus"];
+  let unloadReasons = ["unfocus", "unfocus", "close"];
   checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
 };
 
@@ -317,6 +318,58 @@ exports.test_TabTracker_pageType = function*(assert) {
   tabs.open(app.appURLs[2]);
   pingData = yield waitForPageShowAndSessionComplete();
   assert.equal(pingData.page, "TIMELINE_ALL", "page type is timeline");
+};
+
+exports.test_TabTracker_session_reports = function*(assert) {
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+
+  // set up an observer that bumps the counter everytime ping is sent
+  let pingCounter = 0;
+  function pingBumper(subject, topic, data) {
+    if (topic === "tab-session-complete") {
+      pingCounter ++;
+    }
+  }
+  Services.obs.addObserver(pingBumper, "tab-session-complete");
+
+  // open the non-realted page
+  tabs.open("http://www.example.com");
+  yield new Promise(resolve => {
+    let onOpen = function(tab) {
+      tabs.removeListener("ready", onOpen);
+      tab.close(resolve());
+    };
+    tabs.on("ready", onOpen);
+  });
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+  yield waitForPageLoadAndSessionComplete();
+
+  // ping counter should be 1, since the first open shouldn't sent any pings
+  assert.equal(pingCounter, 1, "expected a single ping");
+
+  // now load an AS page, and change its tab url to trigger the report
+  yield new Promise(resolve => {
+    let onOpen = function(tab) {
+      if (tab.url === "http://www.example.com/") {
+        // second page load - simply close the tab
+        tabs.removeListener("ready", onOpen);
+        setTimeout(function() {
+          tab.close(resolve);
+        }, 10);
+      } else {
+        // we are replacing AS page with non-AS url, and it should gererate another ping
+        tab.url = "http://www.example.com/";
+      }
+    };
+    tabs.on("ready", onOpen);
+    tabs.open(ACTIVITY_STREAMS_URL);
+  });
+
+  assert.equal(pingCounter, 2, "expected two pings");
+
+  // remove session ping observer
+  Services.obs.removeObserver(pingBumper, "tab-session-complete");
 };
 
 before(exports, function*() {
