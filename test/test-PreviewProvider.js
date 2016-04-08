@@ -180,7 +180,7 @@ exports.test_mock_embedly_request = function*(assert) {
     response.write(JSON.stringify(fakeDataCached));
   });
 
-  yield gPreviewProvider._asyncFetchAndCache(fakeData);
+  yield gPreviewProvider.asyncSaveNewLinks(fakeData);
 
   assert.deepEqual(ss.storage.embedlyData[fakeSite.cacheKey].embedlyMetaData, "some embedly metadata", "the cache saved the embedly data");
   assert.ok(ss.storage.embedlyData[fakeSite.cacheKey].accessTime, "the cached saved a time stamp");
