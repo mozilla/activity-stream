@@ -36,14 +36,14 @@ const SpotlightItem = React.createClass({
     return (<li className="spotlight-item">
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={{backgroundImage: `url(${imageUrl})`}} ref="image">
-          <SiteIcon className="spotlight-icon" site={site} ref="icon" showBackground={false} faviconSize={32} />
+          <SiteIcon className="spotlight-icon" height={40} width={40} site={site} ref="icon" showBackground={true} border={false} faviconSize={32} />
         </div>
         <div className="spotlight-details">
           <div className="spotlight-info">
-            <h4 ref="title" className="spotlight-title">
-              {site.title}
-            </h4>
-            <p className="spotlight-description" ref="description">{description}</p>
+            <div className="spotlight-text">
+              <h4 ref="title" className="spotlight-title">{site.title}</h4>
+              <p className="spotlight-description" ref="description">{description}</p>
+            </div>
             <div className="spotlight-context" ref="contextMessage">{contextMessage}</div>
           </div>
         </div>

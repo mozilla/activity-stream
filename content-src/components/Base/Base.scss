@@ -16,8 +16,8 @@ main {
 }
 
 .section-title {
-  color: $light-grey;
-  font-size: 13px;
+  color: $section-title-color;
+  font-size: $section-title-font-size;
   font-weight: normal;
-  margin: 8px 0;
+  margin: 0 0 $section-title-bottom-margin;
 }

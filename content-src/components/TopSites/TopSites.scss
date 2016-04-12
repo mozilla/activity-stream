@@ -10,6 +10,7 @@
     @include tile-close;
     display: flex;
     border-radius: $border-radius;
+    flex-shrink: 0;
     flex-direction: column;
     font-size: $tile-font-size;
     height: $tile-height;
@@ -30,7 +31,7 @@
     }
 
     &.tile-placeholder {
-      background: none;
+      background: $placeholder-background;
       border: $placeholder-border;
       box-shadow: none;
     }

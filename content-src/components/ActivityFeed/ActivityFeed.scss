@@ -9,7 +9,7 @@
 }
 
 .activity-feed {
-  font-size: 13px;
+  font-size: $feed-font-size;
   line-height: 1.4;
   list-style: none;
   margin: 0;
@@ -66,7 +66,7 @@
     content: '';
     display: block;
     height: $feed-circle-size;
-    left: $feed-gutter-h + 1;
+    left: $feed-gutter-h + 3;
     position: absolute;
     top: 50%;
     width: $feed-circle-size;
@@ -193,7 +193,7 @@
   }
 
   .feed-stats {
-    color: $light-grey;
+    color: $feed-date-font-color;
     flex-shrink: 0;
     text-align: right;
   }
