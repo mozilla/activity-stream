@@ -41,9 +41,9 @@ const TopSites = React.createClass({
       <div className="tiles-wrapper">
         {sites.map((site, i) => {
           return (<a onClick={() => this.onClick(i)} key={site.lastVisitDate || i} className="tile" href={site.url}>
-            <div className="inner-border" />
             <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
             <div className="tile-close-icon" onClick={(ev) => {ev.preventDefault(); this.onDelete(site.url, i);}}></div>
+            <div className="inner-border" />
           </a>);
         })}
         {blankSites}
