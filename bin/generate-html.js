@@ -11,7 +11,6 @@ function template(rawOptions) {
 <!doctype html>
 <html lang=en-us>
   <head>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src http: data:; style-src 'unsafe-inline'">
     <meta charset="utf-8">
     <title>${options.title}</title>
     <link rel="stylesheet" href="${options.baseUrl}main.css" />
