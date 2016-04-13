@@ -18,6 +18,7 @@ $pink: #E6196F;
 $green: #4EB748;
 
 $wrapper-max-width: 696px;
+$break-point: $wrapper-max-width + 40px;
 
 $base-gutter: 24px;
 $section-margin: 41px;
@@ -56,7 +57,7 @@ $feed-circle-color: #CECECE;
 
 $spotlight-padding: $base-gutter / 2;
 $spotlight-item-height: 262px;
-$spotlight-item-width: 226px;
+$spotlight-item-width: ($wrapper-max-width - $base-gutter * 2) / 3;
 $spotlight-img-height: 130px;
 $spotlight-text-height: 86px;
 $spotlight-font-size: 13px;

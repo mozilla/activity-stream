@@ -1,16 +1,18 @@
 .top-sites {
   .tiles-wrapper {
     margin-right: -20px;
-    text-align: center;
-    display: flex;
+    @media (min-width: $break-point) {
+      display: flex;
+    }
+
   }
 
   .tile {
     @include item-shadow;
     @include tile-close;
-    display: flex;
-    border-radius: $border-radius;
+    display: inline-flex;
     flex-shrink: 0;
+    border-radius: $border-radius;
     flex-direction: column;
     font-size: $tile-font-size;
     height: $tile-height;
@@ -19,6 +21,11 @@
     text-decoration: none;
     width: $tile-width;
     color: inherit;
+    margin-bottom: $tile-gutter;
+    @media (min-width: $break-point) {
+      margin-bottom: 0;
+    }
+
 
     .tile-img-container {
       width: 100%;
