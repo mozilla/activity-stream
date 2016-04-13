@@ -5,7 +5,6 @@ const TopSites = require("components/TopSites/TopSites");
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
-const LoadMore = require("components/LoadMore/LoadMore");
 const {actions} = require("common/action-manager");
 const {Link} = require("react-router");
 
@@ -48,7 +47,9 @@ const NewTabPage = React.createClass({
 
           <section>
             <GroupedActivityFeed title="Recent Activity" sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME} />
-            <LoadMore to="/timeline" label="See more activity" hidden={props.TopActivity.rows.length < MAX_TOP_ACTIVITY_ITEMS} />
+            <p className="timeline-link-container">
+              <Link className="timeline-link" to="/timeline">See all activity</Link>
+            </p>
           </section>
         </div>
       </div>
