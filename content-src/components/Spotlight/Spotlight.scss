@@ -21,6 +21,13 @@
   border-radius: $border-radius;
   height: $spotlight-item-height;
   position: relative;
+  @media (min-width: $break-point) {
+    flex-shrink: 0;
+  }
+
+  .inner-border {
+    border-color: $faintest-black;
+  }
 
   > a {
     display: block;
@@ -49,10 +56,10 @@
   }
 
   .spotlight-title {
-    margin: 0 0 5px;
-    max-height: $spotlight-title-max-height;
-    overflow: hidden;
+    margin: 0 0 $spotlight-title-margin-bottom;
     font-size: inherit;
+    line-height: inherit;
+    word-wrap: break-word;
   }
 
   &:hover .spotlight-title {
@@ -61,14 +68,16 @@
 
   .spotlight-info {
     padding: $spotlight-padding;
-    height: $spotlight-info-height;
+  }
+
+  .spotlight-text {
+    max-height: $spotlight-text-height;
+    overflow: hidden;
   }
 
   .spotlight-description {
-    font-size: 14px;
-    height: $spotlight-description-height;
-    margin: 10px 0;
-    overflow: hidden;
+    font-size: $spotlight-font-size;
+    margin: 0;
   }
 
   .spotlight-context {
@@ -83,7 +92,7 @@
   }
 
   &.spotlight-placeholder {
-    background: none;
+    background: $placeholder-background;
     border: $placeholder-border;
     box-shadow: none;
     height: $spotlight-item-height;

@@ -1,14 +1,17 @@
 .top-sites {
   .tiles-wrapper {
     margin-right: -20px;
-    text-align: center;
-    display: flex;
+    @media (min-width: $break-point) {
+      display: flex;
+    }
+
   }
 
   .tile {
     @include item-shadow;
     @include tile-close;
-    display: flex;
+    display: inline-flex;
+    flex-shrink: 0;
     border-radius: $border-radius;
     flex-direction: column;
     font-size: $tile-font-size;
@@ -18,6 +21,11 @@
     text-decoration: none;
     width: $tile-width;
     color: inherit;
+    margin-bottom: $tile-gutter;
+    @media (min-width: $break-point) {
+      margin-bottom: 0;
+    }
+
 
     .tile-img-container {
       width: 100%;
@@ -30,7 +38,7 @@
     }
 
     &.tile-placeholder {
-      background: none;
+      background: $placeholder-background;
       border: $placeholder-border;
       box-shadow: none;
     }

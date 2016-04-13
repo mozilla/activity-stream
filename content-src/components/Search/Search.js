@@ -17,7 +17,7 @@ const Search = React.createClass({
       <span className="search-label" />
       <input ref="input" type="search" placeholder="Search" required />
       <button ref="button" onClick={() => this.doSearch(this.refs.input.value)}>
-        <span />
+        <span className="sr-only">Search</span>
       </button>
     </form>);
   }

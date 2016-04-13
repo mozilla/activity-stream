@@ -1,16 +1,16 @@
 .search-wrapper {
   display: flex;
   position: relative;
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin: $search-margin-top 0 $search-margin-bottom;
   width: 100%;
+  height: $search-height;
 
   input {
-    border-radius: $border-radius 0 0 $border-radius;
+    border-radius: $search-border-radius 0 0 $search-border-radius;
     flex-grow: 1;
     margin: 0;
     padding: 8px 12px 8px $search-input-left-label-width;
-    border: 1px solid $faintest-black;
+    border: 1px solid $search-input-border-color;
     outline: none;
     box-shadow: none;
 
@@ -39,29 +39,24 @@
   button {
     border-radius: 0 $border-radius $border-radius 0;
     margin-left: -1px;
-    background: $search-button-grey;
-    border: 1px solid $faintest-black;
-    padding: 10px 15px 6px;
+    border: 1px solid $search-button-border-color;
+    width: $search-button-width;
+    padding: 0;
     transition: box-shadow 150ms;
     box-shadow: none;
+    background: $search-button-grey url('img/glyph-forward-16.svg') no-repeat center center;
+    background-size: 16px 16px;
 
     &:active,
     &:focus {
       z-index: 1;
     }
-
-    span {
-      background: url('img/glyph-forward-16.svg') no-repeat center center;
-      background-size: 16px;
-      display: inline-block;
-      height: 16px;
-      width: 16px;
-    }
   }
 
   input:valid + button {
-    background: $search-blue;
-    border-color: $faintest-black;
+    background-color: $search-blue;
+    background-image: url('img/glyph-forward-16-white.svg');
+    border-color: $faint-black;
     color: $white;
 
     &:focus {

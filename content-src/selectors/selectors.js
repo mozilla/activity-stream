@@ -7,7 +7,7 @@ const urlParse = require("url-parse");
 const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
 const BACKGROUND_FADE = 0.5;
-const DEFAULT_FAVICON_BG_COLOR = [250, 250, 250];
+const DEFAULT_FAVICON_BG_COLOR = [255, 255, 255];
 
 module.exports.justDispatch = (() => ({}));
 

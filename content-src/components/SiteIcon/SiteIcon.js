@@ -10,7 +10,8 @@ const SiteIcon = React.createClass({
       width: null,
       faviconSize: 16,
       showTitle: false,
-      showBackground: true
+      showBackground: true,
+      border: true
     };
   },
   render() {
@@ -18,6 +19,7 @@ const SiteIcon = React.createClass({
     const {width, height, faviconSize, showTitle} = this.props;
     const showFallback = !site.favicon;
     const showBackground = this.props.showBackground || showFallback;
+    const showBorder = this.props.border;
 
     const fontSize = faviconSize * 0.9;
     const fontWeight = (fontSize > 20) ? 200 : 400;
@@ -29,7 +31,7 @@ const SiteIcon = React.createClass({
     const style = {width, height, backgroundColor: showBackground && "white"};
     return (<div className={classNames("site-icon", this.props.className)} style={style}>
       <div ref="background" hidden={!showBackground} className="site-icon-background" style={{backgroundColor: site.backgroundColor}} />
-      <div ref="border" hidden={!showBackground} className="inner-border" />
+      <div ref="border" hidden={!showBackground || !showBorder} className="inner-border" />
       <div className="site-icon-wrapper">
         <img ref="favicon" width={faviconSize} height={faviconSize} className="site-icon-favicon" hidden={showFallback} src={site.favicon} />
         <span ref="fallback" className="site-icon-fallback" style={fallbackStyle} hidden={!showFallback}>{site.firstLetter}</span>
