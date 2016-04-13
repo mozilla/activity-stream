@@ -7,13 +7,13 @@ const defaults = {
 
 function template(rawOptions) {
   const options = Object.assign({}, defaults, rawOptions || {});
-  return `
-<!doctype html>
-<html lang=en-us>
+  return `<!doctype html>
+<html lang="en-us">
   <head>
     <meta charset="utf-8">
     <title>${options.title}</title>
     <link rel="stylesheet" href="${options.baseUrl}main.css" />
+    <link rel="icon" type="image/svg+xml" href="${options.baseUrl}img/glyph-activityStream-16.svg">
   </head>
   <body>
     <div id="root"></div>
