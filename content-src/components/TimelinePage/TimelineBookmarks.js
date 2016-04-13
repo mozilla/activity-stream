@@ -4,6 +4,8 @@ const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const {RequestMoreBookmarks, NotifyEvent} = require("common/action-manager").actions;
 const LoadMore = require("components/LoadMore/LoadMore");
 
+const PAGE_NAME = "TIMELINE_BOOKMARKS";
+
 const TimelineBookmarks = React.createClass({
   getMore() {
     const bookmarks = this.props.Bookmarks.rows;
@@ -21,7 +23,7 @@ const TimelineBookmarks = React.createClass({
   render() {
     const props = this.props;
     return (<div className="wrapper">
-      <GroupedActivityFeed title="Just now" sites={props.Bookmarks.rows} length={20} dateKey="bookmarkDateCreated" />
+      <GroupedActivityFeed title="Just now" sites={props.Bookmarks.rows} length={20} dateKey="bookmarkDateCreated" page={PAGE_NAME} />
       <LoadMore
         loading={props.Bookmarks.isLoading}
         hidden={!props.Bookmarks.canLoadMore || !props.Bookmarks.rows.length}
