@@ -55,7 +55,10 @@ describe("selectors", () => {
     // match the conditions for spotlight to use them
     function assertInvalidSite(site) {
       const testSite = Object.assign({}, validSpotlightSite, site);
-      const emptyState = selectSpotlight({FrecentHistory: {rows: [testSite]}});
+      const emptyState = selectSpotlight({
+        FrecentHistory: {rows: [testSite]},
+        Blocked: {urls: new Set()}
+      });
       assert.lengthOf(emptyState.rows, 0);
     }
 
@@ -92,6 +95,14 @@ describe("selectors", () => {
       assertInvalidSite({
         images: []
       });
+    });
+    it("should remove urls in block list", () => {
+      let frecent = fakeState.FrecentHistory.rows.splice(0,3);
+      state = selectSpotlight({
+        FrecentHistory: {rows: frecent},
+        Blocked: {urls: new Set([frecent[0].url])}
+      });
+      assert.equal(state.rows.length, frecent.length - 1);
     });
   });
   describe("selectNewTabSites", () => {

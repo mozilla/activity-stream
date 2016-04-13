@@ -12,9 +12,10 @@ const DEFAULT_FAVICON_BG_COLOR = [255, 255, 255];
 module.exports.justDispatch = (() => ({}));
 
 const selectSpotlight = module.exports.selectSpotlight = createSelector(
-  [state => state.FrecentHistory],
-  (FrecentHistory) => {
+  [state => state.FrecentHistory, state => state.Blocked],
+  (FrecentHistory, Blocked) => {
     const rows = FrecentHistory.rows
+    .filter(site => !Blocked.urls.has(site.url))
     .map(site => {
       const bestImage = getBestImage(site.images);
       return Object.assign({}, site, {bestImage});
