@@ -1,5 +1,7 @@
 # Activity Streams Add-on
 
+[![](https://img.shields.io/badge/available_on-Test_Pilot-0996F8.svg)](https://testpilot.firefox.com/experiments/activity-stream)
+
 ## TLDR; I just want to try the add-on
 
 1. Make sure you have Firefox Beta, node 5.0+ and at npm 3.0+ installed.
