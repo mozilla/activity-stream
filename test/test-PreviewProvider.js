@@ -45,6 +45,14 @@ exports.test_enabling = function*(assert) {
   assert.equal(Object.keys(ss.storage.embedlyData).length, 0, "empty object");
 };
 
+exports.test_access_update = function*(assert) {
+  let currentTime = Date.now();
+  let twoDaysAgo = currentTime - (2 * 24 * 60 * 60 * 1000);
+  ss.storage.embedlyData.item_1 = {accessTime: twoDaysAgo};
+  gPreviewProvider.getCachedLinks([{cacheKey: "item_1"}]);
+  assert.ok(ss.storage.embedlyData.item_1.accessTime > twoDaysAgo, "access time is updated");
+};
+
 exports.test_periodic_cleanup = function*(assert) {
   let oldTimeout = gPreviewProvider.options.cacheTimeout;
   gPreviewProvider.options.cacheTimeout = 50;
