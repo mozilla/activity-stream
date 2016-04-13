@@ -1,7 +1,7 @@
 const DEFAULT_PAGE = "NEW_TAB";
 const urlPatternToPageMap = new Map([
   [/\/timeline$/, "TIMELINE_ALL"],
-  [/\/timeline\/bookmarks$/, "TIMELINE_BOOMARKS"]
+  [/\/timeline\/bookmarks$/, "TIMELINE_BOOKMARKS"]
 ]);
 
 const constants = {
