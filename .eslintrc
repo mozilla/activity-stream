@@ -33,11 +33,13 @@
     "array-bracket-spacing": [2, "never"],
     "camelcase": 0,
     "comma-dangle": 0,
+    "comma-spacing": 2,
     "computed-property-spacing": [2, "never"],
     "default-case": 0,
     "eqeqeq": 2,
     "func-names": 0,
     "func-style": 0,
+    "generator-star-spacing": [2, {"before": false, "after": false}],
     "global-require": 0,
     "id-blacklist": 0,
     "id-length": 0,
@@ -66,6 +68,8 @@
     "quotes": [2, "double", "avoid-escape"],
     "semi": [2, "always"],
     "space-before-function-paren": [2, {"anonymous": "never", "named": "never"}],
+    "space-infix-ops": 2,
+    "space-unary-ops": 2,
     "strict": 0
   }
 }

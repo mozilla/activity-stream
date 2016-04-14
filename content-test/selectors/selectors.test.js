@@ -97,7 +97,7 @@ describe("selectors", () => {
       });
     });
     it("should remove urls in block list", () => {
-      let frecent = fakeState.FrecentHistory.rows.splice(0,3);
+      let frecent = fakeState.FrecentHistory.rows.splice(0, 3);
       state = selectSpotlight({
         FrecentHistory: {rows: frecent},
         Blocked: {urls: new Set([frecent[0].url])}

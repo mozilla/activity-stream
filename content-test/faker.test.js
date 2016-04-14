@@ -52,20 +52,20 @@ describe("randomWeighter", () => {
       {weight: 1, value: 1},
       {weight: 3, value: 2}
     ]);
-    assert.include([1,2], result);
+    assert.include([1, 2], result);
   });
   it("should work for options.values", () => {
     const result = randomWeighter([
       {weight: 1, values: [1, 2, 3]},
       {weight: 3, values: [4, 5, 6]}
     ]);
-    assert.include([1,2,3,4,5,6], result);
+    assert.include([1, 2, 3, 4, 5, 6], result);
   });
   it("should work for options.range", () => {
     const result = randomWeighter([
       {weight: 1, range: [1, 10]}
     ]);
-    assert.include([1,2,3,4,5,6,7,8,9,10], result);
+    assert.include([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], result);
   });
 
 });
