@@ -9,7 +9,9 @@ const {
   selectSpotlight,
   selectNewTabSites,
   selectSiteIcon,
-  SPOTLIGHT_LENGTH
+  getBackgroundRGB,
+  SPOTLIGHT_LENGTH,
+  DEFAULT_FAVICON_BG_COLOR
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
 
@@ -54,12 +56,14 @@ describe("selectors", () => {
     // Tests that provided sites don't get selected, because they don't
     // match the conditions for spotlight to use them
     function assertInvalidSite(site) {
-      const testSite = Object.assign({}, validSpotlightSite, site);
-      const emptyState = selectSpotlight({
-        FrecentHistory: {rows: [testSite]},
+      const invalidSite = Object.assign({}, validSpotlightSite, site);
+      const result = selectSpotlight({
+        FrecentHistory: {rows: [invalidSite, validSpotlightSite]},
         Blocked: {urls: new Set()}
       });
-      assert.lengthOf(emptyState.rows, 0);
+      assert.lengthOf(result.rows, 2);
+      assert.equal(result.rows[0].url, validSpotlightSite.url);
+      assert.equal(result.rows[1].url, invalidSite.url);
     }
 
     it("should have the same properties as History", () => {
@@ -72,23 +76,50 @@ describe("selectors", () => {
         assert.property(site.bestImage, "url");
       });
     });
-    it("should skip sites that do not have a title", () => {
+    it("should add a backgroundColor for items that dont have an image", () => {
+      const site = {
+        url: "https://foo.com",
+        favicon_colors: [{color: [11, 11, 11]}]
+      };
+      const results = selectSpotlight({
+        FrecentHistory: {rows: [site]},
+        Blocked: {urls: new Set()}
+      });
+      assert.deepEqual(results.rows[0].backgroundColor, "rgba(11, 11, 11, 0.4)");
+    });
+    it("should use a fallback bg color if no favicon_colors are available", () => {
+      const site = {url: "https://foo.com"};
+      const results = selectSpotlight({
+        FrecentHistory: {rows: [site]},
+        Blocked: {urls: new Set()}
+      });
+      assert.ok(results.rows[0].backgroundColor, "should have a bg color");
+    });
+    it("should sort sites that do not have a title to the end", () => {
       assertInvalidSite({
         title: null
       });
     });
-    it("should skip sites that do not have a description", () => {
+    it("should sort sites that do not have a description to the end", () => {
       assertInvalidSite({
         description: null
       });
     });
-    it("should skip sites for which the title equals the description", () => {
+    it("should sort sites for which the title equals the description to the end", () => {
       assertInvalidSite({
         title: "foo",
         description: "foo"
       });
     });
-    it("should skip sites that do not have an images prop or an empty array", () => {
+    it("should sort sites that do not have an images prop or an empty array to the end", () => {
+      assertInvalidSite({
+        images: null
+      });
+      assertInvalidSite({
+        images: []
+      });
+    });
+    it("should append History sites to the end", () => {
       assertInvalidSite({
         images: null
       });
@@ -217,5 +248,24 @@ describe("selectors", () => {
     it("should add a label (hostname)", () => {
       assert.equal(state.label, "foo.com");
     });
+  });
+});
+
+describe("getBackgroundRGB", () => {
+  it("should use favicon_colors if available", () => {
+    assert.deepEqual(
+      getBackgroundRGB({url: "http://foo.com", favicon_colors: [{color: [11, 11, 11]}]}),
+      [11, 11, 11]
+    );
+  });
+  it("should use a default bg if a favicon is supplied", () => {
+    const result = getBackgroundRGB({url: "http://foo.com", favicon_url: "adsd.ico"});
+    assert.ok(result);
+    assert.deepEqual(result, DEFAULT_FAVICON_BG_COLOR);
+  });
+  it("should use a random color if no favicon_colors or favicon", () => {
+    const result = getBackgroundRGB({url: "http://foo.com"});
+    assert.ok(result);
+    assert.notDeepEqual(result, DEFAULT_FAVICON_BG_COLOR);
   });
 });
