@@ -13,7 +13,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
 const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version",
-                       "page", "load_reason", "source", "locale", "historySize", "bookmarkSize", "action"];
+                       "page", "load_reason", "locale", "historySize", "bookmarkSize", "action"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
