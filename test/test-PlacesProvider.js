@@ -112,6 +112,34 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   }
 };
 
+exports.test_Links_getHighlightsLinks = function*(assert) {
+  let provider = PlacesProvider.links;
+  let {
+    TRANSITION_TYPED,
+  } = PlacesUtils.history;
+
+  let timeToday = timeDaysAgo(0);
+  let timeEarlier = timeDaysAgo(2);
+
+  let visits = [
+    {uri: NetUtil.newURI("https://example1.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example2.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example3.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://mail.google.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
+  ];
+
+  let links = yield provider.getHighlightsLinks();
+  assert.equal(links.length, 0, "empty history yields empty links");
+  yield PlacesTestUtils.addVisits(visits);
+
+  let recentLinks = yield provider.getRecentLinks();
+  assert.equal(recentLinks.length, visits.length, "number of links added is the same as obtain by getRecentLinks");
+
+  // note: this is a sanity test because the query may change
+  links = yield provider.getHighlightsLinks();
+  assert.equal(links.length, 1, "getHighlightsLinks filters links by date and hostname");
+};
+
 exports.test_Links_getRecentLinks = function*(assert) {
   let provider = PlacesProvider.links;
   let {
