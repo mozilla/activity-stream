@@ -37,6 +37,14 @@ exports.test_cache_invalidation = function*(assert) {
   assert.equal(Object.keys(ss.storage.embedlyData).length, 1, "items cleaned up");
 };
 
+exports.test_enabling = function*(assert) {
+  assert.equal(Object.keys(ss.storage.embedlyData).length, 0, "empty object");
+  simplePrefs.prefs["previews.enabled"] = false;
+  assert.equal(ss.storage.embedlyData, undefined, "embedlyData is undefined");
+  simplePrefs.prefs["previews.enabled"] = true;
+  assert.equal(Object.keys(ss.storage.embedlyData).length, 0, "empty object");
+};
+
 exports.test_periodic_cleanup = function*(assert) {
   let oldTimeout = gPreviewProvider.options.cacheTimeout;
   gPreviewProvider.options.cacheTimeout = 50;
