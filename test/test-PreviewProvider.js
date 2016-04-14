@@ -72,20 +72,20 @@ exports.test_filter_urls = function*(assert) {
   const fakeData = {
     get validLinks() {
       return [
-        {"url": "http://foo.com/","title": "blah"},
-        {"url": "https://www.foo.com/","title": "blah"},
-        {"url": "hTTp://fOo.com/","title": "blah"},
+        {"url": "http://foo.com/", "title": "blah"},
+        {"url": "https://www.foo.com/", "title": "blah"},
+        {"url": "hTTp://fOo.com/", "title": "blah"},
         {"url": "http://localhost-foo.com", "title": "blah"}
       ];
     },
     get invalidLinks() {
       return [
-        {"url": "","title": "blah"},
-        {"url": "ftp://foo.com/","title": "blah"},
-        {"url": "garbage://foo.com/","title": "blah"},
-        {"url": "HTTP://localhost:8080/","title": "blah"},
-        {"url": "http://127.0.0.1","title": "blah"},
-        {"url": "http://0.0.0.0","title": "blah"},
+        {"url": "", "title": "blah"},
+        {"url": "ftp://foo.com/", "title": "blah"},
+        {"url": "garbage://foo.com/", "title": "blah"},
+        {"url": "HTTP://localhost:8080/", "title": "blah"},
+        {"url": "http://127.0.0.1", "title": "blah"},
+        {"url": "http://0.0.0.0", "title": "blah"},
         {"url": null, "title": "blah"}
       ];
     },
@@ -135,21 +135,21 @@ exports.test_sanitize_urls = function*(assert) {
 
 exports.test_dedupe_urls = function*(assert) {
   const fakeData = [
-    {"url": "http://foo.com/","title": "blah"},
-    {"url": "http://www.foo.com/","title": "blah"},
-    {"url": "https://foo.com/","title": "blah"},
-    {"url": "http://foo.com/bar/foobar","title": "blah"},
-    {"url": "http://foo.com/bar////foobar","title": "blah"},
-    {"url": "https://www.foo.com/?q=param","title": "blah"},
-    {"url": "hTTp://fOo.com/","title": "blah"},
+    {"url": "http://foo.com/", "title": "blah"},
+    {"url": "http://www.foo.com/", "title": "blah"},
+    {"url": "https://foo.com/", "title": "blah"},
+    {"url": "http://foo.com/bar/foobar", "title": "blah"},
+    {"url": "http://foo.com/bar////foobar", "title": "blah"},
+    {"url": "https://www.foo.com/?q=param", "title": "blah"},
+    {"url": "hTTp://fOo.com/", "title": "blah"},
     {"url": "http://localhost-foo.com", "title": "blah"}
   ];
 
   // dedupe a set of sanitized links while maintaining their original url
   let uniqueLinks = gPreviewProvider._uniqueLinks(fakeData);
   let expectedUrls = [
-    {"url": "http://foo.com/","title": "blah"},
-    {"url": "http://foo.com/bar/foobar","title": "blah"},
+    {"url": "http://foo.com/", "title": "blah"},
+    {"url": "http://foo.com/bar/foobar", "title": "blah"},
     {"url": "http://localhost-foo.com", "title": "blah"}
   ];
 

@@ -57,7 +57,7 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
         expectedKeys = EXPECTED_KEYS;
         delete ping.load_latency;
     }
-    assert.equal(Object.keys(ping).length,expectedKeys.length, "We have as many attributes as we expect");
+    assert.equal(Object.keys(ping).length, expectedKeys.length, "We have as many attributes as we expect");
     for (let key of expectedKeys) {
       assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
     }
@@ -327,7 +327,7 @@ exports.test_TabTracker_session_reports = function*(assert) {
   let pingCounter = 0;
   function pingBumper(subject, topic, data) {
     if (topic === "tab-session-complete") {
-      pingCounter ++;
+      pingCounter++;
     }
   }
   Services.obs.addObserver(pingBumper, "tab-session-complete");

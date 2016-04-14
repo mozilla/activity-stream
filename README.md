@@ -17,7 +17,7 @@
 
 Just clone the repo and install the dependencies.
 
-```
+```sh
 git clone https://github.com/mozilla/activity-streams.git
 cd activity-streams
 npm install
@@ -31,7 +31,7 @@ Default configuration is in `config.default.yml`. Create a file called `config.y
 
 By default, the add-on will request data from embedly through a dev instance of our embedly proxy server. If you want to **run the add-on with a different endpoint**, change the following in `config.yml`:
 
-```
+```yaml
 EMBEDLY_ENDPOINT: http://....
 ```
 Please file issues related to the embedly proxy server at https://github.com/mozilla/embedly-proxy/issues.
@@ -39,7 +39,7 @@ Please file issues related to the embedly proxy server at https://github.com/moz
 ## Using shim data
 
 If you want to run the content on http://localhost:1963 with **shim data** (i.e. outside the add-on), add the following to `config.yml`.
-```
+```yaml
 USE_SHIM: true
 ```
 
@@ -58,11 +58,11 @@ If you just want to build assets and run the add-on to test it, you may simply r
 ### Developing the add-on
 
 If you want to watch assets and compile them continuously, you will want to run
-```
+```sh
 npm run start
 ```
 in one terminal session, and
-```
+```sh
 npm run firefox
 ```
 to start the add-on. This way, when you make changes to the `content-src` folder, they will be reflected immediately without needing to restart the add-on.
@@ -76,7 +76,6 @@ When you instantiate an `ActionManager`, you give it a list of types which are v
 
 ```js
 const am = new ActionManager(["STUFF_REQUEST", "STUFF_RESPONSE"]);
-
 ```
 
 You can find the action manager instance for Activity streams at `common/action-manager`.
