@@ -12,14 +12,15 @@ const SpotlightItem = React.createClass({
   getDefaultProps() {
     return {
       onClick: function() {},
-      onDelete: function() {}
+      onDelete: function() {},
+      bestImage: {}
     };
   },
   render() {
     const site = this.props;
     const image = site.bestImage;
     const imageUrl = image.url;
-    const description = site.description;
+    const description = site.description || site.url;
     const isPortrait = image.height > image.width;
 
     let contextMessage;
@@ -33,9 +34,17 @@ const SpotlightItem = React.createClass({
       contextMessage = "Visited recently";
     }
 
+    const style = {};
+
+    if (imageUrl) {
+      style.backgroundImage = `url(${imageUrl})`;
+    } else {
+      style.backgroundColor = site.backgroundColor;
+    }
+
     return (<li className="spotlight-item">
       <a onClick={this.props.onClick} href={site.url} ref="link">
-        <div className={classNames("spotlight-image", {portrait: isPortrait})} style={{backgroundImage: `url(${imageUrl})`}} ref="image">
+        <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image">
           <SiteIcon className="spotlight-icon" height={40} width={40} site={site} ref="icon" showBackground={true} border={false} faviconSize={32} />
         </div>
         <div className="spotlight-details">
@@ -56,10 +65,10 @@ const SpotlightItem = React.createClass({
 
 SpotlightItem.propTypes = {
   url: React.PropTypes.string.isRequired,
-  bestImage: React.PropTypes.object.isRequired,
+  bestImage: React.PropTypes.object,
   favicon_url: React.PropTypes.string,
   title: React.PropTypes.string.isRequired,
-  description: React.PropTypes.string.isRequired,
+  description: React.PropTypes.string,
   onDelete: React.PropTypes.func,
   onClick: React.PropTypes.func
 };
