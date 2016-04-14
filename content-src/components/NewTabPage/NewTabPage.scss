@@ -7,12 +7,14 @@
 .timeline-link-container {
   text-align: left;
 }
+
 .timeline-link {
   font-size: 12px;
   border: 1px solid $faintest-black;
   border-radius: 3px;
   padding: 4px 16px;
   color: $light-grey;
+
   &:hover {
     background: $very-light-grey;
     color: inherit;
