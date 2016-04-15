@@ -12,7 +12,15 @@ module.exports = function() {
     const action = JSON.parse(event.detail);
     switch (action.type) {
       case "TOP_FRECENT_SITES_REQUEST":
-        dispatch({type: "TOP_FRECENT_SITES_RESPONSE", data: fakeData.TopSites.rows});
+        dispatch({type: "TOP_FRECENT_SITES_RESPONSE", data: fakeData.TopSites.rows.map(site => {
+          return Object.assign({}, site, {
+            // images: [],
+            // favicon: null,
+            // favicon_url: null,
+            // favicon_colors: null,
+            // description: null
+          });
+        })});
         break;
       case "RECENT_BOOKMARKS_REQUEST":
         if (action.meta && action.meta.append) {
@@ -37,7 +45,15 @@ module.exports = function() {
         }
         break;
       case "FRECENT_LINKS_REQUEST":
-        dispatch({type: "FRECENT_LINKS_RESPONSE", data: fakeData.FrecentHistory.rows});
+        dispatch({type: "FRECENT_LINKS_RESPONSE", data: fakeData.FrecentHistory.rows.map(site => {
+          return Object.assign({}, site, {
+            // images: [],
+            // favicon: null,
+            // favicon_url: null,
+            // favicon_colors: null,
+            // description: null
+          });
+        })});
         break;
     }
   }, false);
