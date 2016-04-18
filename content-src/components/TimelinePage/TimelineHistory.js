@@ -26,7 +26,11 @@ const TimelineHistory = React.createClass({
     const props = this.props;
     return (<div className="wrapper">
       <Spotlight page={PAGE_NAME} sites={props.Spotlight.rows} />
-      <GroupedActivityFeed title="Just now" sites={props.History.rows} page={PAGE_NAME} />
+      <GroupedActivityFeed
+        title="Just now"
+        sites={props.History.rows}
+        page={PAGE_NAME}
+        showDateHeadings={true} />
       <LoadMore loading={props.History.isLoading} hidden={!props.History.canLoadMore || !props.History.rows.length} onClick={this.getMore}
         label="See more activity"/>
     </div>);

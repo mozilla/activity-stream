@@ -1,8 +1,12 @@
 .grouped-activity-feed {
-  > div {
+  .group {
     border-bottom: solid 1px $faintest-black;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
 
     &:last-child {
+      padding-bottom: 0;
+      margin-bottom: 0;
       border-bottom: 0;
     }
   }
