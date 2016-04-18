@@ -68,10 +68,11 @@ module.exports.selectNewTabSites = createSelector(
     state => state.TopSites,
     state => state.FrecentHistory,
     state => state.History,
+    state => state.Highlights,
     selectSpotlight,
     state => state.Blocked
   ],
-  (TopSites, FrecentHistory, History, Spotlight, Blocked) => {
+  (TopSites, FrecentHistory, History, Highlights, Spotlight, Blocked) => {
 
     // Removed blocked
     [TopSites, Spotlight] = [TopSites, Spotlight].map(item => {
@@ -93,7 +94,7 @@ module.exports.selectNewTabSites = createSelector(
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Spotlight: Object.assign({}, FrecentHistory, {rows: spotlightRows}),
       TopActivity: Object.assign({}, History, {rows: topActivityRows}),
-      isReady: TopSites.init && FrecentHistory.init && History.init
+      isReady: TopSites.init && FrecentHistory.init && History.init && Highlights.init
     };
   }
 );

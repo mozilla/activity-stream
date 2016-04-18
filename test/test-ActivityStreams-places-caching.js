@@ -34,7 +34,8 @@ let makeNotifsPromise = (cacheStatus) => {
         "getTopFrecentSites-cache",
         "getRecentBookmarks-cache",
         "getRecentLinks-cache",
-        "getFrecentLinks-cache"
+        "getFrecentLinks-cache",
+        "getHighlightsLinks-cache",
     ]);
     let notifCount = 0;
     let observer = function(subject, topic, data) {

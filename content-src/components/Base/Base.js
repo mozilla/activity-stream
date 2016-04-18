@@ -15,6 +15,8 @@ const Base = React.createClass({
 
     this.props.dispatch(actions.RequestSearchState());
 
+    this.props.dispatch(actions.RequestHighlightsLinks());
+
     this.props.dispatch(actions.NotifyPerf("BASE_MOUNTED"));
   },
   render() {

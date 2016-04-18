@@ -42,6 +42,7 @@ module.exports = connect(state => {
       FrecentHistory: state.FrecentHistory,
       History: state.History,
       Bookmarks: state.Bookmarks,
+      Highlights: state.Highlights,
     }
   };
 })(DebugPage);
