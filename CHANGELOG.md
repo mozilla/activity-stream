@@ -1,8 +1,37 @@
+<a name="1.0.9"></a>
+## 1.0.9 (2016-04-18)
+
+* 1.0.8 changelog ([525be33](https://github.com/mozilla/activity-streams/commit/525be33))
+* 1.0.9 ([e6ee1a6](https://github.com/mozilla/activity-streams/commit/e6ee1a6))
+* Add TestPilot badge to README ([36e5cbc](https://github.com/mozilla/activity-streams/commit/36e5cbc))
+* fix (addon): #472 fix more async issues ([3ca6787](https://github.com/mozilla/activity-streams/commit/3ca6787)), closes [#472](https://github.com/mozilla/activity-streams/issues/472)
+* fix (content) #500 add missing page property for GroupedActivityFeed ([4c00333](https://github.com/mozilla/activity-streams/commit/4c00333)), closes [#500](https://github.com/mozilla/activity-streams/issues/500)
+* fix (content): #490 apply block list to selectSpotlight ([6d18a1a](https://github.com/mozilla/activity-streams/commit/6d18a1a)), closes [#490](https://github.com/mozilla/activity-streams/issues/490)
+* fix (content): #490 apply block list to selectSpotlight ([b46363f](https://github.com/mozilla/activity-streams/commit/b46363f)), closes [#490](https://github.com/mozilla/activity-streams/issues/490)
+* fix(addon) Remove source field from Tab-session ping ([ef05749](https://github.com/mozilla/activity-streams/commit/ef05749))
+* Revert "Merge pull request #499 from mozilla/emtwo/CSP" ([ddc9fb8](https://github.com/mozilla/activity-streams/commit/ddc9fb8))
+* Tweak ESLint rules and Sass variables ([00f3725](https://github.com/mozilla/activity-streams/commit/00f3725))
+* feat(content): Empty case for highlights ([e355547](https://github.com/mozilla/activity-streams/commit/e355547))
+* fix(caching): #513 handle toggling rich previews properly ([ebd3b72](https://github.com/mozilla/activity-streams/commit/ebd3b72))
+* fix(content): #458 always show link to timeline on newtab ([7f006d0](https://github.com/mozilla/activity-streams/commit/7f006d0))
+* fix(content): #498 Handle different size highlight boxes ([0915090](https://github.com/mozilla/activity-streams/commit/0915090))
+* fix(favicon): Add activity-stream SVG favicon ([cc82c56](https://github.com/mozilla/activity-streams/commit/cc82c56))
+* fix(icon): Add icon to about:addons ([550af1c](https://github.com/mozilla/activity-streams/commit/550af1c))
+* fix(package): Add homepage to package.json ([6b27180](https://github.com/mozilla/activity-streams/commit/6b27180))
+* fix(scss): Fix some sass-lint warnings ([6b92be6](https://github.com/mozilla/activity-streams/commit/6b92be6))
+* style(content): #386 bring top sites border to top ([2841a72](https://github.com/mozilla/activity-streams/commit/2841a72))
+* style(content): #396 Fix spacing, colors, fonts ([d56c6b5](https://github.com/mozilla/activity-streams/commit/d56c6b5))
+* style(content): Set default bg of topsites to white ([4fec351](https://github.com/mozilla/activity-streams/commit/4fec351))
+* chore(content): #310 Add meta tag for CSP. ([d131195](https://github.com/mozilla/activity-streams/commit/d131195))
+
+
+
 <a name="1.0.8"></a>
 ## 1.0.8 (2016-04-07)
 
 * 1.0.7 changelog ([f34b8e7](https://github.com/mozilla/activity-streams/commit/f34b8e7))
 * 1.0.8 ([7e0bc5a](https://github.com/mozilla/activity-streams/commit/7e0bc5a))
+* chore(content) #91 Use timestamp for keys ([81fa591](https://github.com/mozilla/activity-streams/commit/81fa591))
 * chore(addon): #468 Only store embedly data in the cache ([0b1f89e](https://github.com/mozilla/activity-streams/commit/0b1f89e))
 * chore(proxy): #463 change embedly proxy target to staging environment ([bc5b149](https://github.com/mozilla/activity-streams/commit/bc5b149))
 * chore(test): Add images to karma, fix warnings ([08fffef](https://github.com/mozilla/activity-streams/commit/08fffef))
@@ -10,6 +39,8 @@
 * fix(addon): #468 Prioritize new data in getCachedLinks ([8cca0b3](https://github.com/mozilla/activity-streams/commit/8cca0b3))
 * fix(cache): #475 fix infinite cache rebuild timeout for Preview Provider with refactor ([5ae80d3](https://github.com/mozilla/activity-streams/commit/5ae80d3))
 * fix(caching): make preview cache repopulation deterministic ([02f89af](https://github.com/mozilla/activity-streams/commit/02f89af))
+* fix(content): #396 Use history in TopActivity ([31a8869](https://github.com/mozilla/activity-streams/commit/31a8869))
+* fix(reporting): Fixed incorrectly reported tab sessions ([7a485ce](https://github.com/mozilla/activity-streams/commit/7a485ce))
 * fix(telemetry): #475 remove observer only when needed in TabTracker ([b8a85ec](https://github.com/mozilla/activity-streams/commit/b8a85ec))
 * feat(content): #387 Track user events ([dfc951e](https://github.com/mozilla/activity-streams/commit/dfc951e))
 * feat(content): #392 Blocking for spotlight and top sites ([6fdef5d](https://github.com/mozilla/activity-streams/commit/6fdef5d))
