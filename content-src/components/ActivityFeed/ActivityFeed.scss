@@ -89,7 +89,7 @@
     width: 18px;
     position: absolute;
     top: 19px;
-    left: 8px;
+    left: $feed-gutter-h - 2;
   }
 
   .action-items-container {
