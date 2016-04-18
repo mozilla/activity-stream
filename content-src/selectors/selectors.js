@@ -88,7 +88,7 @@ module.exports.selectNewTabSites = createSelector(
     // Dedupe top activity
     const topActivityRows = dedupe.group([topSitesRows, spotlightRows, History.rows])[2].sort((a, b) => {
       return b.lastVisitDate - a.lastVisitDate;
-    });
+    }).filter(site => !Blocked.urls.has(site.url));
 
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
@@ -116,6 +116,34 @@ const selectSiteIcon = createSelector(
       backgroundColor,
       fontColor,
       label
+    };
+  }
+);
+
+// Timeline History view
+module.exports.selectHistory = createSelector(
+  [
+    selectSpotlight,
+    state => state.History,
+    state => state.Blocked
+  ],
+  (Spotlight, History, Blocked) => {
+    return {
+      Spotlight,
+      History: Object.assign({}, History, {rows: History.rows.filter(site => !Blocked.urls.has(site.url))})
+    };
+  }
+);
+
+// Timeline Bookmarks
+module.exports.selectBookmarks = createSelector(
+  [
+    state => state.Bookmarks,
+    state => state.Blocked
+  ],
+  (Bookmarks, Blocked) => {
+    return {
+      Bookmarks: Object.assign({}, Bookmarks, {rows: Bookmarks.rows.filter(site => !Blocked.urls.has(site.url))})
     };
   }
 );

@@ -38,7 +38,7 @@ const NewTabPage = React.createClass({
 
         <div className="delayedFadeIn">
           <section>
-            <TopSites sites={props.TopSites.rows} />
+            <TopSites page={PAGE_NAME} sites={props.TopSites.rows} />
           </section>
 
           <section>

@@ -78,4 +78,46 @@ describe("NewTabPage", () => {
     });
   });
 
+  describe("delete events", () => {
+    it("should have the correct page, source, index for top site delete menu", done => {
+      setupConnected(a => {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "TOP_SITES");
+          assert.equal(a.data.action_position, 0);
+          done();
+        }
+      });
+      const item = TestUtils.findRenderedComponentWithType(instance, TopSites);
+      const deleteLink = TestUtils.scryRenderedDOMComponentsWithClass(item, "context-menu-link")[0];
+      TestUtils.Simulate.click(deleteLink);
+    });
+    it("should have the correct page, source, index for spotlight delete menu", done => {
+      setupConnected(a => {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "FEATURED");
+          assert.equal(a.data.action_position, 0);
+          done();
+        }
+      });
+      const item = TestUtils.findRenderedComponentWithType(instance, Spotlight);
+      const deleteLink = TestUtils.scryRenderedDOMComponentsWithClass(item, "context-menu-link")[0];
+      TestUtils.Simulate.click(deleteLink);
+    });
+    it("should have the correct page, source, index for activity feed", done => {
+      setupConnected(a => {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "ACTIVITY_FEED");
+          assert.equal(a.data.action_position, 0);
+          done();
+        }
+      });
+      const item = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
+      const deleteLink = TestUtils.scryRenderedDOMComponentsWithClass(item, "context-menu-link")[0];
+      TestUtils.Simulate.click(deleteLink);
+    });
+  });
+
 });

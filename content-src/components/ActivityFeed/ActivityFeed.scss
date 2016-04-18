@@ -132,6 +132,7 @@
     }
   }
 
+  &.fixed,
   &:hover {
     background: $feed-hover-color;
     border: 1px solid $faintest-black;
