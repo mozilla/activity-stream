@@ -10,6 +10,14 @@ const classNames = require("classnames");
 const ICON_SIZE = 16;
 const TOP_LEFT_ICON_SIZE = 20;
 const SESSION_DIFF = 600000;
+const CALENDAR_HEADINGS = {
+  sameDay: "[Today]",
+  nextDay: "[Tomorrow]",
+  nextWeek: "dddd",
+  lastDay: "[Yesterday]",
+  lastWeek: "[Last] dddd",
+  sameElse: "DD/MM/YYYY"
+};
 
 const ActivityFeedItem = React.createClass({
   getDefaultProps() {
@@ -122,7 +130,8 @@ function groupSitesBySession(sites) {
 const GroupedActivityFeed = React.createClass({
   getDefaultProps() {
     return {
-      dateKey: "lastVisitDate"
+      dateKey: "lastVisitDate",
+      showDateHeadings: false
     };
   },
   onClickFactory(index) {
@@ -167,10 +176,13 @@ const GroupedActivityFeed = React.createClass({
     let globalCount = -1;
     return (<div className="grouped-activity-feed">
       {sites.length > 0 && this.props.title &&
-        <h3 className="section-title">{this.props.title}</h3>
+        <h3 ref="title" className="section-title">{this.props.title}</h3>
       }
-      {Array.from(groupedSites.keys()).map(date => {
-        return (<div key={date}>
+      {Array.from(groupedSites.keys()).map((date, dateIndex) => {
+        return (<div className="group" key={date}>
+          {this.props.showDateHeadings && dateIndex > 0 &&
+            <h3 className="section-title">{moment(date).startOf("day").calendar(null, CALENDAR_HEADINGS)}</h3>
+          }
           {groupedSites.get(date).map((sites, outerIndex) => {
             return (<ul key={date + "-" + outerIndex} className="activity-feed">
               {sites.map((site, i) => {
@@ -181,7 +193,7 @@ const GroupedActivityFeed = React.createClass({
                     onShare={this.onShareFactory(globalCount)}
                     onDelete={this.onDeleteFactory(globalCount)}
                     showImage={getRandomFromTimestamp(0.2, site)}
-                    showDate={i === 0}
+                    showDate={!this.props.showDateHeadings && outerIndex === 0 && i === 0}
                     {...site} />);
               })}
             </ul>);
@@ -197,7 +209,8 @@ GroupedActivityFeed.propTypes = {
   length: React.PropTypes.number,
   title: React.PropTypes.string,
   dateKey: React.PropTypes.string,
-  page: React.PropTypes.string
+  page: React.PropTypes.string,
+  showDateHeadings: React.PropTypes.bool
 };
 
 module.exports = connect(justDispatch)(GroupedActivityFeed);

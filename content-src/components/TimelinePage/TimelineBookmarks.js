@@ -23,7 +23,14 @@ const TimelineBookmarks = React.createClass({
   render() {
     const props = this.props;
     return (<div className="wrapper">
-      <GroupedActivityFeed title="Just now" sites={props.Bookmarks.rows} length={20} dateKey="bookmarkDateCreated" page={PAGE_NAME} />
+      <GroupedActivityFeed
+        title="Just now"
+        sites={props.Bookmarks.rows}
+        length={20}
+        dateKey="bookmarkDateCreated"
+        page={PAGE_NAME}
+        showDateHeadings={true}
+         />
       <LoadMore
         loading={props.Bookmarks.isLoading}
         hidden={!props.Bookmarks.canLoadMore || !props.Bookmarks.rows.length}
