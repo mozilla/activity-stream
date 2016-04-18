@@ -13,6 +13,8 @@ const am = new ActionManager([
   "RECENT_LINKS_RESPONSE",
   "FRECENT_LINKS_REQUEST",
   "FRECENT_LINKS_RESPONSE",
+  "HIGHLIGHTS_LINKS_REQUEST",
+  "HIGHLIGHTS_LINKS_RESPONSE",
   "BLOCK_URL",
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_PERFORM_SEARCH",
@@ -30,7 +32,8 @@ am.ACTIONS_WITH_SITES = new Set([
   "TOP_FRECENT_SITES_RESPONSE",
   "RECENT_BOOKMARKS_RESPONSE",
   "RECENT_LINKS_RESPONSE",
-  "FRECENT_LINKS_RESPONSE"
+  "FRECENT_LINKS_RESPONSE",
+  "HIGHLIGHTS_LINKS_RESPONSE",
 ].map(type => am.type(type)));
 
 function Notify(type, data) {
@@ -102,6 +105,10 @@ function RequestFrecentLinks() {
   return RequestExpect("FRECENT_LINKS_REQUEST", "FRECENT_LINKS_RESPONSE");
 }
 
+function RequestHighlightsLinks() {
+  return RequestExpect("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE");
+}
+
 function RequestSearchState() {
   return RequestExpect("SEARCH_STATE_REQUEST", "SEARCH_STATE_RESPONSE");
 }
@@ -153,6 +160,7 @@ am.defineActions({
   RequestRecentLinks,
   RequestMoreRecentLinks,
   RequestFrecentLinks,
+  RequestHighlightsLinks,
   RequestSearchState,
   BlockUrl,
   NotifyHistoryDelete,

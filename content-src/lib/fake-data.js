@@ -13,6 +13,10 @@ module.exports = {
     "rows": faker.createRows({images: 3}),
     "error": false
   },
+  "Highlights": {
+    "rows": faker.createRows({images: 3}),
+    "error": false
+  },
   "Bookmarks": {
     "rows": faker.createRows({images: 3, type: "bookmark"}),
     "error": false

@@ -55,6 +55,9 @@ module.exports = function() {
           });
         })});
         break;
+      case "HIGHLIGHTS_LINKS_REQUEST":
+        dispatch({type: "HIGHLIGHTS_LINKS_RESPONSE", data: fakeData.Highlights.rows});
+        break;
     }
   }, false);
 };
