@@ -2,12 +2,17 @@
   font-size: 14px;
   margin-right: -$base-gutter;
 
-  ul {
+  ul.spotlight-list {
     align-items: flex-start;
     display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
+  }
+
+  .context-menu {
+    top: 14px;
+    right: -12px;
   }
 }
 

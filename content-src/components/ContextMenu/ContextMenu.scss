@@ -1,0 +1,32 @@
+.context-menu {
+  position: absolute;
+  font-size: $context-menu-font-size;
+  box-shadow: $context-menu-shadow;
+  top: 100%;
+  right: 0;
+  z-index: 10000;
+  background: $bg-grey;
+  border-radius: $context-menu-border-radius;
+
+  > ul {
+    margin: 0;
+    padding: $context-menu-outer-padding 0;
+    list-style: none;
+
+    > li {
+      > a {
+        cursor: pointer;
+        color: inherit;
+        display: block;
+        white-space: nowrap;
+        padding: $context-menu-item-padding;
+        line-height: 1;
+
+        &:hover {
+          background: $star-blue;
+          color: $white;
+        }
+      }
+    }
+  }
+}

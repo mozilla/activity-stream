@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {selectSpotlight} = require("selectors/selectors");
+const {selectHistory} = require("selectors/selectors");
 const {RequestMoreRecentLinks, NotifyEvent} = require("common/action-manager").actions;
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
@@ -42,11 +42,6 @@ TimelineHistory.propTypes = {
   History: React.PropTypes.object.isRequired
 };
 
-module.exports = connect(state => {
-  return {
-    Spotlight: selectSpotlight(state),
-    History: state.History
-  };
-})(TimelineHistory);
+module.exports = connect(selectHistory)(TimelineHistory);
 
 module.exports.TimelineHistory = TimelineHistory;

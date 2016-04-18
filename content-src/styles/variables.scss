@@ -98,10 +98,17 @@ $loader-color: $search-blue;
 $loader-color-light: rgba($loader-color, 0.1);
 $loader-duration: 1.3s;
 
+$context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.2);
+$context-menu-font-size: 14px;
+$context-menu-border-radius: 5px;
+$context-menu-outer-padding: 5px;
+$context-menu-item-padding: 3px 20px;
+
 @mixin item-shadow {
   box-shadow: $item-shadow;
 
-  &:hover {
+  &:hover,
+  &.active {
     box-shadow: $item-shadow-hover;
     transition: box-shadow 150ms;
   }
@@ -130,9 +137,12 @@ $loader-duration: 1.3s;
     z-index: 399;
   }
 
-  &:hover .tile-close-icon {
-    transform: scale(1);
-    opacity: 1;
-    transition-delay: 500ms;
+  &:hover,
+  &.active {
+    .tile-close-icon {
+      transform: scale(1);
+      opacity: 1;
+      transition-delay: 500ms;
+    }
   }
 }

@@ -2,12 +2,12 @@ const assert = require("chai").assert;
 const TestUtils = require("react-addons-test-utils");
 const React = require("react");
 const ReactDOM = require("react-dom");
-const {overrideConsoleError} = require("test/test-utils");
+const {overrideConsoleError, renderWithProvider} = require("test/test-utils");
 
 const ConnectedTopSites = require("components/TopSites/TopSites");
 const {TopSites} = ConnectedTopSites;
+const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
-const am = require("common/action-manager");
 
 const fakeProps = {
   sites: [
@@ -23,23 +23,18 @@ const fakeProps = {
 
 describe("TopSites", () => {
 
-  let node;
   let topSites;
   let el;
 
   beforeEach(() => {
-    node = document.createElement("div");
-    topSites = ReactDOM.render(<TopSites {...fakeProps} />, node);
+    topSites = renderWithProvider(<TopSites {...fakeProps} />);
     el = ReactDOM.findDOMNode(topSites);
-  });
-  afterEach(() => {
-    ReactDOM.unmountComponentAtNode(node);
   });
 
   it("should not throw if missing props", () => {
     assert.doesNotThrow(() => {
       const restore = overrideConsoleError();
-      TestUtils.renderIntoDocument(<TopSites sites={[{}]} />);
+      renderWithProvider(<TopSites sites={[{}]} />);
       restore();
     });
   });
@@ -62,18 +57,12 @@ describe("TopSites", () => {
       assert.include(linkEls[0].href, fakeProps.sites[0].url);
       assert.include(linkEls[1].href, fakeProps.sites[1].url);
     });
-  });
 
-  describe("actions", () => {
-    it("should fire a block action when delete button is clicked", done => {
-      function dispatch(a) {
-        if (a.type === am.type("BLOCK_URL")) {
-          assert.equal(a.data, fakeProps.sites[0].url);
-          done();
-        }
-      }
-      const instance = TestUtils.renderIntoDocument(<TopSites dispatch={dispatch} sites={fakeProps.sites} />);
-      TestUtils.Simulate.click(TestUtils.scryRenderedDOMComponentsWithClass(instance, "tile-close-icon")[0]);
+    it("should show delete menu when delete button is clicked", () => {
+      const button = TestUtils.scryRenderedDOMComponentsWithClass(topSites, "tile-close-icon")[0];
+      TestUtils.Simulate.click(button);
+      const deleteMenu = TestUtils.scryRenderedComponentsWithType(topSites, DeleteMenu)[0];
+      assert.equal(deleteMenu.props.visible, true);
     });
   });
 
