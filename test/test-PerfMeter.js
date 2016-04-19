@@ -6,6 +6,7 @@ const simplePrefs = require("sdk/simple-prefs");
 const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");
 const {ActivityStreams} = require("lib/ActivityStreams");
+const {PerfMeter} = require("lib/PerfMeter");
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/Services.jsm");
 
@@ -206,6 +207,17 @@ exports.test_PerfMeter_tab_hygiene = function*(assert) {
 
   // all tabs data should be gone
   assert.deepEqual(app.performanceData, {}, "no performance data");
+};
+
+exports.test_PerfMeter_sample_stats = function*(assert) {
+  let perfMeter = new PerfMeter("http://foo.com");
+  perfMeter._addSampleValue(2);
+  assert.deepEqual(perfMeter._computeStats(), {total: 1, mean: 2, std: 0, median: 2}, "stats match");
+  perfMeter._addSampleValue(1);
+  assert.deepEqual(perfMeter._computeStats(), {total: 2, mean: 1.5, std: 0.5, median: 1.5}, "stats match");
+  perfMeter._addSampleValue(3);
+  // the std is sqrt(2/3) anbd should be equal to 0.82
+  assert.deepEqual(perfMeter._computeStats(), {total: 3, mean: 2, std: 0.82, median: 2}, "stats match");
 };
 
 before(exports, function() {
