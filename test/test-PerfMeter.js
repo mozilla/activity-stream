@@ -254,7 +254,7 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
     });
   }
 
-  // open an activity streams tab and verify perf log working
+  // Open an activity streams tab and verify perf log working
   let tab = yield new Promise(resolve => {
     let tab;
     function onNotify(subject, topic, data) {
@@ -265,11 +265,13 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
     tab = gBrowser.addTab(appUrl);
   });
 
+  // Go to a new URL.
   yield promiseLoadURI(tab, "about:about");
 
-  // close tab
+  // Close the tab.
   yield promiseRemoveTab(tab);
 
+  // Unclose the tab.
   tab = yield new Promise(resolve => {
     // HACK: This timer isn't needed in nightly (48) but beta (46) has some timing issue
     // and this hack fixes it.
@@ -285,7 +287,7 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
     }, 100);
   });
 
-  // restore tab, "hit back button" and verify perf log is still working
+  // Simulate back button and verify perf log is still working
   yield new Promise(resolve => {
     function onNotify(subject, topic, data) {
       assert.equal(tab.linkedBrowser.currentURI.spec, appUrl);
@@ -297,7 +299,7 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
     tab.linkedBrowser.goBack();
   });
 
-  // close tab
+  // Close tab
   yield promiseRemoveTab(tab);
 };
 
