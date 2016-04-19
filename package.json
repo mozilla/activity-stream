@@ -157,5 +157,8 @@
   },
   "title": "activity-streams-experiment",
   "updateLink": "https://moz-activity-streams.s3.amazonaws.com/dist/activity-streams-latest.xpi",
-  "updateURL": "https://moz-activity-streams.s3.amazonaws.com/dist/update.rdf"
+  "updateURL": "https://moz-activity-streams.s3.amazonaws.com/dist/update.rdf",
+  "permissions": {
+    "private-browsing": true
+  }
 }
