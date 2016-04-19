@@ -55,6 +55,14 @@ exports.test_access_update = function*(assert) {
   assert.ok(ss.storage.embedlyData.item_1.accessTime > twoDaysAgo, "access time is updated");
 };
 
+exports.test_long_hibernation = function*(assert) {
+  let currentTime = Date.now();
+  let fortyDaysAgo = currentTime - (40 * 24 * 60 * 60 * 1000);
+  ss.storage.embedlyData.item_1 = {accessTime: fortyDaysAgo};
+  gPreviewProvider.getCachedLinks([{cacheKey: "item_1"}]);
+  assert.ok(ss.storage.embedlyData.item_1.accessTime >= currentTime, "access time is updated");
+};
+
 exports.test_periodic_cleanup = function*(assert) {
   let oldThreshold = gPreviewProvider.options.cacheCleanupPeriod;
   gPreviewProvider.options.cacheCleanupPeriod = 30;
