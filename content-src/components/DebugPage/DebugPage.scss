@@ -1,7 +1,41 @@
 .debug-page {
+  label {
+    display: block;
+  }
+
   textarea {
     width: 100%;
     height: 500px;
+  }
+
+  .ui-tester {
+    display: flex;
+    margin-bottom: 20px;
+
+    .form-group {
+      margin-right: 20px;
+    }
+  }
+
+  .new-tab-wrapper {
+    max-width: 1000px;
+
+    .spotlight-item {
+      float: left;
+      margin-bottom: 12px;
+    }
+
+    .top-sites {
+
+      .tiles-wrapper {
+        display: block;
+      }
+
+      .tile {
+        float: left;
+        margin-bottom: 12px;
+      }
+    }
   }
 }
 
