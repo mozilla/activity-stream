@@ -5,6 +5,7 @@ const simplePrefs = require("sdk/simple-prefs");
 
 const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");
+const {setTimeout} = require("sdk/timers");
 const {ActivityStreams} = require("lib/ActivityStreams");
 const {PerfMeter} = require("lib/PerfMeter");
 const {Cu} = require("chrome");
@@ -253,7 +254,7 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
     });
   }
 
-  // open an activity streams tab
+  // open an activity streams tab and verify perf log working
   let tab = yield new Promise(resolve => {
     let tab;
     function onNotify(subject, topic, data) {
@@ -269,8 +270,22 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
   // close tab
   yield promiseRemoveTab(tab);
 
+  tab = yield new Promise(resolve => {
+    // HACK: This timer isn't needed in nightly (48) but beta (46) has some timing issue
+    // and this hack fixes it.
+    setTimeout(() => {
+      resolve(SessionStore.undoCloseTab(browserWindow));
+    }, 100);
+  });
+
+  // HACK: busy loop wait.
+  yield new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, 100);
+  });
+
   // restore tab, "hit back button" and verify perf log is still working
-  tab = SessionStore.undoCloseTab(browserWindow);
   yield new Promise(resolve => {
     function onNotify(subject, topic, data) {
       assert.equal(tab.linkedBrowser.currentURI.spec, appUrl);
