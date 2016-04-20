@@ -51,7 +51,7 @@ exports.test_access_update = function*(assert) {
   let currentTime = Date.now();
   let twoDaysAgo = currentTime - (2 * 24 * 60 * 60 * 1000);
   ss.storage.embedlyData.item_1 = {accessTime: twoDaysAgo};
-  gPreviewProvider.getCachedLinks([{cacheKey: "item_1"}]);
+  gPreviewProvider.getEnhancedLinks([{cacheKey: "item_1"}]);
   assert.ok(ss.storage.embedlyData.item_1.accessTime > twoDaysAgo, "access time is updated");
 };
 
@@ -59,7 +59,7 @@ exports.test_long_hibernation = function*(assert) {
   let currentTime = Date.now();
   let fortyDaysAgo = currentTime - (40 * 24 * 60 * 60 * 1000);
   ss.storage.embedlyData.item_1 = {accessTime: fortyDaysAgo};
-  gPreviewProvider.getCachedLinks([{cacheKey: "item_1"}]);
+  gPreviewProvider.getEnhancedLinks([{cacheKey: "item_1"}]);
   assert.ok(ss.storage.embedlyData.item_1.accessTime >= currentTime, "access time is updated");
 };
 
@@ -293,9 +293,9 @@ exports.test_mock_embedly_request = function*(assert) {
   assert.deepEqual(ss.storage.embedlyData[fakeSite.cacheKey].embedlyMetaData, "some embedly metadata", "the cache saved the embedly data");
   assert.ok(ss.storage.embedlyData[fakeSite.cacheKey].accessTime, "the cached saved a time stamp");
 
-  let cachedLinks = gPreviewProvider.getCachedLinks(fakeData);
-  assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getCachedLinks should prioritize new data");
-  assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getCachedLinks should prioritize new data");
+  let cachedLinks = gPreviewProvider.getEnhancedLinks(fakeData);
+  assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getEnhancedLinks should prioritize new data");
+  assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getEnhancedLinks should prioritize new data");
   assert.ok(ss.storage.embedlyData[fakeSite.cacheKey], "the cached link is now retrieved next time");
 
   yield new Promise(resolve => {
@@ -303,13 +303,24 @@ exports.test_mock_embedly_request = function*(assert) {
   });
 };
 
-exports.test_get_cached_disabled = function*(assert) {
+exports.test_get_enhanced_disabled = function*(assert) {
   const fakeData = [
     {url: "http://foo.com/", lastVisitDate: 1459537019061}
   ];
   simplePrefs.prefs["previews.enabled"] = false;
-  let cachedLinks = gPreviewProvider.getCachedLinks(fakeData);
+  let cachedLinks = gPreviewProvider.getEnhancedLinks(fakeData);
   assert.deepEqual(cachedLinks, fakeData, "if disabled, should return links as is");
+};
+
+exports.test_get_enhanced_previews_only = function*(assert) {
+  ss.storage.embedlyData["example.com/"] = {sanitizedURL: "http://example.com/", cacheKey: "example.com/", url: "http://example.com/"};
+  let links;
+
+  links = gPreviewProvider.getEnhancedLinks([{cacheKey: "example.com/"}, {cacheKey: "foo.com"}]);
+  assert.equal(links.length, 2, "by default getEnhancedLinks returns links with and without previews");
+
+  links = gPreviewProvider.getEnhancedLinks([{cacheKey: "example.com/"}, {cacheKey: "foo.com"}], true);
+  assert.equal(links.length, 1, "when previewOnly is set, return only links with previews");
 };
 
 before(exports, function*() {
