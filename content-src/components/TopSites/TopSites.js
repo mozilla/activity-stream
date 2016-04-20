@@ -2,25 +2,24 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
+const classNames = require("classnames");
+const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const DEFAULT_LENGTH = 6;
 
 const TopSites = React.createClass({
+  getInitialState() {
+    return {
+      showContextMenu: false,
+      activeTile: null
+    };
+  },
   getDefaultProps() {
     return {
       length: DEFAULT_LENGTH,
       // This is for event reporting
       page: "NEW_TAB"
     };
-  },
-  onDelete(url, index) {
-    this.props.dispatch(actions.BlockUrl(url));
-    this.props.dispatch(actions.NotifyEvent({
-      event: "DELETE",
-      page: this.props.page,
-      source: "TOP_SITES",
-      action_position: index
-    }));
   },
   onClick(index) {
     this.props.dispatch(actions.NotifyEvent({
@@ -40,11 +39,26 @@ const TopSites = React.createClass({
       <h3 className="section-title">Top Sites</h3>
       <div className="tiles-wrapper">
         {sites.map((site, i) => {
-          return (<a onClick={() => this.onClick(i)} key={site.lastVisitDate || i} className="tile" href={site.url}>
-            <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
-            <div className="tile-close-icon" onClick={(ev) => {ev.preventDefault(); this.onDelete(site.url, i);}}></div>
-            <div className="inner-border" />
-          </a>);
+          const isActive = this.state.showContextMenu && this.state.activeTile === i;
+          return (<div key={site.lastVisitDate || i}>
+            <a onClick={() => this.onClick(i)} className={classNames("tile", {active: isActive})} href={site.url}>
+              <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
+              <div className="tile-close-icon" onClick={(ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.setState({showContextMenu: true, activeTile: i});
+              }}></div>
+              <div className="inner-border" />
+            </a>
+            <DeleteMenu
+              visible={isActive}
+              onUpdate={val => this.setState({showContextMenu: val})}
+              url={site.url}
+              page={this.props.page}
+              index={i}
+              source="TOP_SITES"
+              />
+        </div>);
         })}
         {blankSites}
       </div>
@@ -54,7 +68,7 @@ const TopSites = React.createClass({
 
 TopSites.propTypes = {
   length: React.PropTypes.number,
-  page: React.PropTypes.string,
+  page: React.PropTypes.string.isRequired,
   sites: React.PropTypes.arrayOf(
     React.PropTypes.shape({
       url: React.PropTypes.string.isRequired,

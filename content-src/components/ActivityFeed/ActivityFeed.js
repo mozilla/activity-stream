@@ -3,6 +3,7 @@ const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
+const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
 const {prettyUrl, getRandomFromTimestamp} = require("lib/utils");
 const moment = require("moment");
 const classNames = require("classnames");
@@ -20,13 +21,20 @@ const CALENDAR_HEADINGS = {
 };
 
 const ActivityFeedItem = React.createClass({
+  getInitialState() {
+    return {
+      showContextMenu: false
+    };
+  },
   getDefaultProps() {
     return {
       onShare: function() {},
       onClick: function() {},
-      onDelete: function() {},
       showDate: false
     };
+  },
+  onDeleteClick() {
+    this.setState({showContextMenu: true});
   },
   render() {
     const site = this.props;
@@ -55,7 +63,7 @@ const ActivityFeedItem = React.createClass({
       dateLabel = moment(date).format("h:mm A");
     }
 
-    return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid})}>
+    return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid, fixed: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <span className="star" hidden={!site.bookmarkGuid} />
         {icon}
@@ -70,15 +78,26 @@ const ActivityFeedItem = React.createClass({
         </div>
       </a>
       <div className="action-items-container">
-        <div className="action-item icon-delete" ref="delete" onClick={() => this.props.onDelete(site.url)}></div>
+        <div className="action-item icon-delete" ref="delete" onClick={this.onDeleteClick}></div>
         <div className="action-item icon-share" ref="share" onClick={() => this.props.onShare(site.url)}></div>
         <div className="action-item icon-more" onClick={() => alert("Sorry. We are still working on this feature.")}></div>
       </div>
+      <DeleteMenu
+        visible={this.state.showContextMenu}
+        onUpdate={val => this.setState({showContextMenu: val})}
+        url={site.url}
+        page={this.props.page}
+        index={this.props.index}
+        source={this.props.source}
+        />
     </li>);
   }
 });
 
 ActivityFeedItem.propTypes = {
+  page: React.PropTypes.string,
+  source: React.PropTypes.string,
+  index: React.PropTypes.number,
   onShare: React.PropTypes.func,
   onClick: React.PropTypes.func,
   url: React.PropTypes.string.isRequired,
@@ -144,17 +163,6 @@ const GroupedActivityFeed = React.createClass({
       }));
     };
   },
-  onDeleteFactory(index) {
-    return url => {
-      this.props.dispatch(actions.NotifyHistoryDelete(url));
-      this.props.dispatch(actions.NotifyEvent({
-        event: "DELETE",
-        page: this.props.page,
-        source: "ACTIVITY_FEED",
-        action_position: index
-      }));
-    };
-  },
   onShareFactory(index) {
     return url => {
       alert("Sorry. We are still working on this feature.");
@@ -191,8 +199,10 @@ const GroupedActivityFeed = React.createClass({
                     key={site[this.props.dateKey]}
                     onClick={this.onClickFactory(globalCount)}
                     onShare={this.onShareFactory(globalCount)}
-                    onDelete={this.onDeleteFactory(globalCount)}
                     showImage={getRandomFromTimestamp(0.2, site)}
+                    index={globalCount}
+                    page={this.props.page}
+                    source="ACTIVITY_FEED"
                     showDate={!this.props.showDateHeadings && outerIndex === 0 && i === 0}
                     {...site} />);
               })}

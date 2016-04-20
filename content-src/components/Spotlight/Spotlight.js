@@ -4,15 +4,20 @@ const {justDispatch} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
+const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
 const classNames = require("classnames");
 
 const DEFAULT_LENGTH = 3;
 
 const SpotlightItem = React.createClass({
+  getInitialState() {
+    return {
+      showContextMenu: false
+    };
+  },
   getDefaultProps() {
     return {
       onClick: function() {},
-      onDelete: function() {},
       bestImage: {}
     };
   },
@@ -42,7 +47,7 @@ const SpotlightItem = React.createClass({
       style.backgroundColor = site.backgroundColor;
     }
 
-    return (<li className="spotlight-item">
+    return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image">
           <SiteIcon className="spotlight-icon" height={40} width={40} site={site} ref="icon" showBackground={true} border={false} faviconSize={32} />
@@ -58,18 +63,28 @@ const SpotlightItem = React.createClass({
         </div>
         <div className="inner-border" />
       </a>
-      <div className="tile-close-icon" ref="delete" onClick={() => this.props.onDelete(site.url)}></div>
+      <div className="tile-close-icon" ref="delete" onClick={() => this.setState({showContextMenu: true})}></div>
+      <DeleteMenu
+        visible={this.state.showContextMenu}
+        onUpdate={val => this.setState({showContextMenu: val})}
+        url={site.url}
+        page={this.props.page}
+        index={this.props.index}
+        source={this.props.source}
+        />
     </li>);
   }
 });
 
 SpotlightItem.propTypes = {
+  page: React.PropTypes.string,
+  source: React.PropTypes.string,
+  index: React.PropTypes.number,
   url: React.PropTypes.string.isRequired,
   bestImage: React.PropTypes.object,
   favicon_url: React.PropTypes.string,
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string,
-  onDelete: React.PropTypes.func,
   onClick: React.PropTypes.func
 };
 
@@ -90,17 +105,6 @@ const Spotlight = React.createClass({
       }));
     };
   },
-  onDeleteFactory(index) {
-    return url => {
-      this.props.dispatch(actions.BlockUrl(url));
-      this.props.dispatch(actions.NotifyEvent({
-        event: "DELETE",
-        page: this.props.page,
-        source: "FEATURED",
-        action_position: index
-      }));
-    };
-  },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
     const blankSites = [];
@@ -109,10 +113,12 @@ const Spotlight = React.createClass({
     }
     return (<section className="spotlight">
       <h3 className="section-title">Highlights</h3>
-      <ul>
-        {sites.map((site, i) => <SpotlightItem index={i}
+      <ul className="spotlight-list">
+        {sites.map((site, i) => <SpotlightItem
+          index={i}
           key={site.lastVisitDate || i}
-          onDelete={this.onDeleteFactory(i)}
+          page={this.props.page}
+          source="FEATURED"
           onClick={this.onClickFactory(i)}
           {...site} />)}
         {blankSites}

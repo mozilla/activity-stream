@@ -17,6 +17,7 @@ const am = new ActionManager([
   "HIGHLIGHTS_LINKS_RESPONSE",
   "BLOCK_URL",
   "NOTIFY_HISTORY_DELETE",
+  "NOTIFY_HISTORY_DELETE_CANCELLED",
   "NOTIFY_PERFORM_SEARCH",
   "RECEIVE_CURRENT_ENGINE",
   "SEARCH_STATE_REQUEST",
@@ -122,7 +123,11 @@ function BlockUrl(url) {
 }
 
 function NotifyHistoryDelete(data) {
-  return Notify("NOTIFY_HISTORY_DELETE", data);
+  if (confirm("Are you sure you want to delete this from your entire history? This action cannot be undone.")) {
+    return Notify("NOTIFY_HISTORY_DELETE", data);
+  } else {
+    return {type: "NOTIFY_HISTORY_DELETE_CANCELLED"};
+  }
 }
 
 function NotifyPerformSearch(data) {
