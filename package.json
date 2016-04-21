@@ -1,7 +1,7 @@
 {
   "name": "activity-streams",
   "description": "A feed-based view on user history",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "author": "Mozilla (https://mozilla.org/)",
   "bugs": {
     "url": "https://github.com/mozilla/activity-streams/issues"
