@@ -42,6 +42,7 @@ module.exports = {
       "background_color": "#049ff5"
     }
   ].map(item => {
+    item.type = FIRST_RUN_TYPE;
     item.favicon_url = FAVICON_PATH + item.favicon_url;
     return item;
   }),

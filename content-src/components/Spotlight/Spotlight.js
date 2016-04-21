@@ -6,6 +6,7 @@ const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
 const classNames = require("classnames");
+const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const DEFAULT_LENGTH = 3;
 
@@ -65,7 +66,10 @@ const SpotlightItem = React.createClass({
         </div>
         <div className="inner-border" />
       </a>
-      <div className="tile-close-icon" ref="delete" onClick={() => this.setState({showContextMenu: true})}></div>
+      <div
+        hidden={site.type === FIRST_RUN_TYPE}
+        className="tile-close-icon" ref="delete"
+        onClick={() => this.setState({showContextMenu: true})} />
       <DeleteMenu
         visible={this.state.showContextMenu}
         onUpdate={val => this.setState({showContextMenu: val})}

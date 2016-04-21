@@ -8,7 +8,7 @@ const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const {mockData, faker, renderWithProvider} = require("test/test-utils");
-
+const firstRunData = require("lib/first-run-data");
 const fakeSpotlightItems = mockData.Spotlight.rows;
 const fakeSiteWithImage = faker.createSite();
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
@@ -101,6 +101,10 @@ describe("SpotlightItem", function() {
       });
       instance = renderWithProvider(<SpotlightItem {...props} />);
       assert.equal(instance.refs.contextMessage.innerHTML, "Visited recently");
+    });
+    it("should not show delete icon for first run items", () => {
+      instance = renderWithProvider(<SpotlightItem {...firstRunData.Highlights[0]} />);
+      assert.equal(instance.refs.delete.hidden, true);
     });
     it("should show delete menu when delete icon is pressed", () => {
       const button = instance.refs.delete;
