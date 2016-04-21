@@ -73,27 +73,27 @@ describe("SpotlightItem", function() {
       assert.include(linkEl.href, fakeSite.url);
     });
     it("should render the title", () => {
-      assert.equal(instance.refs.title.innerHTML, fakeSite.title);
+      assert.equal(instance.refs.title.textContent, fakeSite.title);
     });
     it("should render the description", () => {
-      assert.include(instance.refs.description.innerHTML, fakeSite.description);
+      assert.include(instance.refs.description.textContent, fakeSite.description);
     });
     it("should render the lastVisitDate if it exists", () => {
-      assert.equal(instance.refs.contextMessage.innerHTML, `Visited ${moment(fakeSiteWithImage.lastVisitDate).fromNow()}`);
+      assert.equal(instance.refs.contextMessage.textContent, `Visited ${moment(fakeSiteWithImage.lastVisitDate).fromNow()}`);
     });
     it("should render the bookmarkDateCreated if it exists", () => {
       const props = Object.assign({}, fakeSite, {
         bookmarkDateCreated: 1456426160465
       });
       instance = renderWithProvider(<SpotlightItem {...props} />);
-      assert.equal(instance.refs.contextMessage.innerHTML, `Bookmarked ${moment(1456426160465).fromNow()}`);
+      assert.equal(instance.refs.contextMessage.textContent, `Bookmarked ${moment(1456426160465).fromNow()}`);
     });
     it("should say 'Visited Recently' if no bookmark or timestamp are available", () => {
       const props = Object.assign({}, fakeSite, {
         lastVisitDate: null
       });
       instance = renderWithProvider(<SpotlightItem {...props} />);
-      assert.equal(instance.refs.contextMessage.innerHTML, "Visited recently");
+      assert.equal(instance.refs.contextMessage.textContent, "Visited recently");
     });
     it("should show delete menu when delete icon is pressed", () => {
       const button = instance.refs.delete;

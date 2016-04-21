@@ -60,15 +60,15 @@ describe("ActivityFeedItem", function() {
       assert.include(instance.refs.icon.props.site, fakeSite);
     });
     it("should render the title", () => {
-      assert.equal(instance.refs.title.innerHTML, fakeSite.title);
+      assert.equal(instance.refs.title.textContent, fakeSite.title);
     });
     it("should render the url", () => {
       const urlEl = instance.refs.url;
-      assert.equal(urlEl.innerHTML, prettyUrl(fakeSite.url));
+      assert.equal(urlEl.textContent, prettyUrl(fakeSite.url));
     });
     it("should render the time", () => {
       const lastVisitEl = instance.refs.lastVisit;
-      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.dateDisplay).format("h:mm A"));
+      assert.equal(lastVisitEl.textContent, moment(fakeSite.dateDisplay).format("h:mm A"));
     });
     it("should not have a bookmark class if no bookmarkGuid", () => {
       assert.notInclude(el.className, "bookmark");
@@ -87,7 +87,7 @@ describe("ActivityFeedItem", function() {
     it("should render date if showDate=true", () => {
       const item = renderWithProvider(<ActivityFeedItem showDate={true} {...fakeSite} />);
       const lastVisitEl = item.refs.lastVisit;
-      assert.equal(lastVisitEl.innerHTML, moment(fakeSite.dateDisplay).calendar());
+      assert.equal(lastVisitEl.textContent, moment(fakeSite.dateDisplay).calendar());
     });
   });
 });
