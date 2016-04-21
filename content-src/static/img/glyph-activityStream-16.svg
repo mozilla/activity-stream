@@ -1,12 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
   <defs>
     <style>
       .cls-1 {
+        fill: #fff;
+        opacity: 0.1;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
         fill-rule: evenodd;
+      }
+
+      .cls-2 {
+        fill: #4d4d4d;
+      }
+
+      .cls-3 {
+        opacity: 0.12;
       }
     </style>
   </defs>
-  <g id="glyph-activityStream-16">
-    <path class="cls-1" d="M138,322h24a4,4,0,0,1,4,4v20a4,4,0,0,1-4,4H138a4,4,0,0,1-4-4V326A4,4,0,0,1,138,322Zm0,20h4v4h-4v-4Zm0-8h4v4h-4v-4Zm0-8h4v4h-4v-4Zm6,16h18v4H144v-4Zm0-8h18v4H144v-4Zm0-8h18v4H144v-4Z" transform="translate(-134 -320)"/>
-  </g>
+  <path id="Sidebars_copy_10" data-name="Sidebars copy 10" class="cls-1" d="M29,32H5a3,3,0,0,1-3-3V25a3,3,0,0,0,3,3H29a3,3,0,0,0,3-3v4A3,3,0,0,1,29,32Z"/>
+  <path id="Sidebars_copy_8" data-name="Sidebars copy 8" class="cls-2" d="M29,30H5a3,3,0,0,1-3-3V5A3,3,0,0,1,5,2H29a3,3,0,0,1,3,3V27A3,3,0,0,1,29,30ZM10,14a2,2,0,0,0-4,0v2a2,2,0,0,0,4,0V14Zm6,2a2,2,0,0,0-4,0v4a2,2,0,0,0,4,0V16Zm6-6a2,2,0,0,0-4,0V22a2,2,0,0,0,4,0V10Zm6,2a2,2,0,0,0-4,0v4a2,2,0,0,0,4,0V12Z"/>
+  <path id="Sidebars_copy_9" data-name="Sidebars copy 9" class="cls-3" d="M29,4H5A3,3,0,0,0,2,7V5A3,3,0,0,1,5,2H29a3,3,0,0,1,3,3V7A3,3,0,0,0,29,4ZM8,20a2,2,0,0,1-2-2V16a2,2,0,0,0,4,0v2A2,2,0,0,1,8,20Zm6,4a2,2,0,0,1-2-2V20a2,2,0,0,0,4,0v2A2,2,0,0,1,14,24Zm6,2a2,2,0,0,1-2-2V22a2,2,0,0,0,4,0v2A2,2,0,0,1,20,26Zm6-6a2,2,0,0,1-2-2V16a2,2,0,0,0,4,0v2A2,2,0,0,1,26,20Z"/>
 </svg>
