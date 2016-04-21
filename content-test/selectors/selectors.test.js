@@ -3,7 +3,7 @@ const {connect} = require("react-redux");
 const React = require("react");
 const TestUtils = require("react-addons-test-utils");
 const dedupe = require("lib/dedupe");
-
+const firstRunData = require("lib/first-run-data");
 const {
   justDispatch,
   selectSpotlight,
@@ -61,13 +61,13 @@ describe("selectors", () => {
         FrecentHistory: {rows: [invalidSite, validSpotlightSite]},
         Blocked: {urls: new Set()}
       });
-      assert.lengthOf(result.rows, 2);
+      assert.lengthOf(result.rows, 2 + firstRunData.Highlights.length);
       assert.equal(result.rows[0].url, validSpotlightSite.url);
       assert.equal(result.rows[1].url, invalidSite.url);
     }
 
-    it("should have the same properties as History", () => {
-      assert.deepEqual(Object.keys(state), Object.keys(fakeState.History));
+    it("should have the same properties as FrecentHistory", () => {
+      assert.deepEqual(Object.keys(state), Object.keys(fakeState.FrecentHistory));
     });
     it("should add a bestImage for each item", () => {
       state.rows.forEach(site => {
@@ -87,6 +87,18 @@ describe("selectors", () => {
       });
       assert.deepEqual(results.rows[0].backgroundColor, "rgba(11, 11, 11, 0.4)");
     });
+    it("should use site.background_color for items that dont have an image if it exists", () => {
+      const site = {
+        url: "https://foo.com",
+        background_color: "#111111",
+        favicon_colors: [{color: [11, 11, 11]}]
+      };
+      const results = selectSpotlight({
+        FrecentHistory: {rows: [site]},
+        Blocked: {urls: new Set()}
+      });
+      assert.equal(results.rows[0].backgroundColor, "#111111");
+    });
     it("should use a fallback bg color if no favicon_colors are available", () => {
       const site = {url: "https://foo.com"};
       const results = selectSpotlight({
@@ -94,6 +106,15 @@ describe("selectors", () => {
         Blocked: {urls: new Set()}
       });
       assert.ok(results.rows[0].backgroundColor, "should have a bg color");
+    });
+    it("should include first run items if FrecentHistory is empty", () => {
+      const results = selectSpotlight({
+        FrecentHistory: {rows: []},
+        Blocked: {urls: new Set()}
+      });
+      firstRunData.Highlights.forEach((item, i) => {
+        assert.equal(results.rows[i].url, item.url);
+      });
     });
     it("should sort sites that do not have a title to the end", () => {
       assertInvalidSite({
@@ -133,7 +154,7 @@ describe("selectors", () => {
         FrecentHistory: {rows: frecent},
         Blocked: {urls: new Set([frecent[0].url])}
       });
-      assert.equal(state.rows.length, frecent.length - 1);
+      assert.equal(state.rows.length, firstRunData.Highlights.length + frecent.length - 1);
     });
   });
   describe("selectNewTabSites", () => {
@@ -169,7 +190,7 @@ describe("selectors", () => {
       assert.deepEqual(state.TopSites.rows, [
         {url: "bar2.com", lastVisitDate: 4},
         {url: "baz3.com", lastVisitDate: 3}
-      ]);
+      ].concat(firstRunData.TopSites).splice(0, 6));
     });
     it("should sort TopActivity by dateLastVisited", () => {
       state = selectNewTabSites({
@@ -227,6 +248,10 @@ describe("selectors", () => {
     it("should select the first letter of the hostname", () => {
       state = selectSiteIcon(Object.assign({}, siteWithFavicon, {url: "http://kate.com"}));
       assert.equal(state.firstLetter, "k");
+    });
+    it("should use site.background_color if it exists", () => {
+      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {background_color: "#111111"}));
+      assert.equal(state.backgroundColor, "#111111");
     });
     it("should create a background color", () => {
       assert.equal(state.backgroundColor, `rgba(11, 11, 11, ${selectSiteIcon.BACKGROUND_FADE})`);

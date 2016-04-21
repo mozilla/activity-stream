@@ -1,6 +1,7 @@
 const {createSelector} = require("reselect");
 const dedupe = require("lib/dedupe");
 const getBestImage = require("lib/getBestImage");
+const firstRunData = require("lib/first-run-data");
 const {prettyUrl, getBlackOrWhite, toRGBString, getRandomColor} = require("lib/utils");
 const urlParse = require("url-parse");
 
@@ -39,19 +40,27 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   (FrecentHistory, Blocked) => {
     const rows = FrecentHistory.rows
     .filter(site => !Blocked.urls.has(site.url))
+    .concat(firstRunData.Highlights)
     .map(site => {
       const newProps = {};
       const bestImage = getBestImage(site.images);
       if (bestImage) {
         newProps.bestImage = bestImage;
       }
-      newProps.backgroundColor = toRGBString(...getBackgroundRGB(site, [200, 200, 200]), BACKGROUND_FADE - 0.1);
+
+      // Use site.background_color if it's defined, otherwise calculate one based on
+      // the favicon_colors or a default color.
+      newProps.backgroundColor = site.background_color || toRGBString(...getBackgroundRGB(site, [200, 200, 200]), BACKGROUND_FADE - 0.1);
       return Object.assign({}, site, newProps);
     })
     .sort((site1, site2) => {
       const site1Valid = isValidSpotlightSite(site1);
       const site2Valid = isValidSpotlightSite(site2);
-      if (site1Valid && site2Valid) {
+      if (site2.type === firstRunData.FIRST_RUN_TYPE) {
+        return -1;
+      } else if (site1.type === firstRunData.FIRST_RUN_TYPE) {
+        return 1;
+      } else if (site1Valid && site2Valid) {
         return 0;
       } else if (site2Valid) {
         return 1;
@@ -59,13 +68,30 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
         return -1;
       }
     });
+
     return Object.assign({}, FrecentHistory, {rows});
+  }
+);
+
+const selectTopSites = createSelector(
+  [
+    state => state.TopSites,
+    state => state.Blocked
+  ],
+  (TopSites, Blocked) => {
+    return Object.assign({}, TopSites, {
+      rows: TopSites.rows
+        // Removed blocked URLs
+        .filter(site => !Blocked.urls.has(site.url))
+        // Add first run stuff to the end
+        .concat(firstRunData.TopSites)
+    });
   }
 );
 
 module.exports.selectNewTabSites = createSelector(
   [
-    state => state.TopSites,
+    selectTopSites,
     state => state.FrecentHistory,
     state => state.History,
     state => state.Highlights,
@@ -73,11 +99,6 @@ module.exports.selectNewTabSites = createSelector(
     state => state.Blocked
   ],
   (TopSites, FrecentHistory, History, Highlights, Spotlight, Blocked) => {
-
-    // Removed blocked
-    [TopSites, Spotlight] = [TopSites, Spotlight].map(item => {
-      return Object.assign({}, item, {rows: item.rows.filter(site => !Blocked.urls.has(site.url))});
-    });
 
     // Remove duplicates
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
@@ -106,7 +127,7 @@ const selectSiteIcon = createSelector(
     const parsedUrl = site.parsedUrl || urlParse(site.url || "") ;
     const label = prettyUrl(parsedUrl.hostname);
     const backgroundRGB = getBackgroundRGB(site);
-    const backgroundColor = toRGBString(...backgroundRGB, favicon ? BACKGROUND_FADE : 1);
+    const backgroundColor = site.background_color || toRGBString(...backgroundRGB, favicon ? BACKGROUND_FADE : 1);
     const fontColor = getBlackOrWhite(...backgroundRGB);
     const firstLetter = prettyUrl(parsedUrl.hostname)[0];
     return {
