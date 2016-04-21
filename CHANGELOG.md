@@ -1,3 +1,27 @@
+<a name="1.0.10"></a>
+## 1.0.10 (2016-04-21)
+
+* 1.0.10 ([1b9b91e](https://github.com/mozilla/activity-streams/commit/1b9b91e))
+* 1.0.9 changelog ([27a5641](https://github.com/mozilla/activity-streams/commit/27a5641))
+* fix (addon): #460, #467 fix for tab restore ([1d1699d](https://github.com/mozilla/activity-streams/commit/1d1699d)), closes [#460](https://github.com/mozilla/activity-streams/issues/460) [#467](https://github.com/mozilla/activity-streams/issues/467)
+* fix (addon): #532 no activity stream for private browsing windows ([e475ba9](https://github.com/mozilla/activity-streams/commit/e475ba9)), closes [#532](https://github.com/mozilla/activity-streams/issues/532)
+* fix (content): #509 make the header and sidebar fixed ([611bbef](https://github.com/mozilla/activity-streams/commit/611bbef)), closes [#509](https://github.com/mozilla/activity-streams/issues/509)
+* feat(caching): #440 lazily clean up cache ([11aaf03](https://github.com/mozilla/activity-streams/commit/11aaf03))
+* feat(caching): allow for long hibernation preview caches ([ed1c538](https://github.com/mozilla/activity-streams/commit/ed1c538))
+* feat(caching): return links even when there are no previews available for history-type queries ([1f9f5a0](https://github.com/mozilla/activity-streams/commit/1f9f5a0))
+* feat(caching): update preview caches periodically ([7538b61](https://github.com/mozilla/activity-streams/commit/7538b61))
+* feat(content): #398 Show date headings on Timeline ([bbd49a4](https://github.com/mozilla/activity-streams/commit/bbd49a4))
+* feat(content): #483 Add delete context menu ([2cc40ac](https://github.com/mozilla/activity-streams/commit/2cc40ac))
+* feat(highlights): new highlights query ([5407fda](https://github.com/mozilla/activity-streams/commit/5407fda))
+* feat(highlights): request highlights from content ([84ce568](https://github.com/mozilla/activity-streams/commit/84ce568))
+* fix(addon): #539 Add v to list of allowed query params ([ba4dca7](https://github.com/mozilla/activity-streams/commit/ba4dca7))
+* fix(caching): finish gracefully when there is missing data in cleanup job ([64a22fd](https://github.com/mozilla/activity-streams/commit/64a22fd))
+* fix(caching): update access time each time link is retrieved from cache ([977a877](https://github.com/mozilla/activity-streams/commit/977a877))
+* chore(debugger): Added ui component and data source tester ([4d7f951](https://github.com/mozilla/activity-streams/commit/4d7f951))
+* style(content): #526 Fix star position ([07c0cca](https://github.com/mozilla/activity-streams/commit/07c0cca))
+
+
+
 <a name="1.0.9"></a>
 ## 1.0.9 (2016-04-18)
 
@@ -12,6 +36,7 @@
 * Revert "Merge pull request #499 from mozilla/emtwo/CSP" ([ddc9fb8](https://github.com/mozilla/activity-streams/commit/ddc9fb8))
 * Tweak ESLint rules and Sass variables ([00f3725](https://github.com/mozilla/activity-streams/commit/00f3725))
 * feat(content): Empty case for highlights ([e355547](https://github.com/mozilla/activity-streams/commit/e355547))
+* feat(reporting): add performance stats logging ([52bd124](https://github.com/mozilla/activity-streams/commit/52bd124))
 * fix(caching): #513 handle toggling rich previews properly ([ebd3b72](https://github.com/mozilla/activity-streams/commit/ebd3b72))
 * fix(content): #458 always show link to timeline on newtab ([7f006d0](https://github.com/mozilla/activity-streams/commit/7f006d0))
 * fix(content): #498 Handle different size highlight boxes ([0915090](https://github.com/mozilla/activity-streams/commit/0915090))
