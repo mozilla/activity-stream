@@ -29,7 +29,9 @@ const SpotlightItem = React.createClass({
     const isPortrait = image.height > image.width;
 
     let contextMessage;
-    if (site.bookmarkDateCreated) {
+    if (site.context_message) {
+      contextMessage = site.context_message;
+    } else if (site.bookmarkDateCreated) {
       contextMessage = `Bookmarked ${moment(site.bookmarkDateCreated).fromNow()}`;
     } else if (site.lastVisitDate) {
       contextMessage = `Visited ${moment(site.lastVisitDate).fromNow()}`;

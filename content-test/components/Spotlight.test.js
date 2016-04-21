@@ -78,6 +78,13 @@ describe("SpotlightItem", function() {
     it("should render the description", () => {
       assert.include(instance.refs.description.innerHTML, fakeSite.description);
     });
+    it("should use the context_message if it exists", () => {
+      const props = Object.assign({}, fakeSite, {
+        context_message: "Foo bar baz"
+      });
+      instance = renderWithProvider(<SpotlightItem {...props} />);
+      assert.equal(instance.refs.contextMessage.innerHTML, "Foo bar baz");
+    });
     it("should render the lastVisitDate if it exists", () => {
       assert.equal(instance.refs.contextMessage.innerHTML, `Visited ${moment(fakeSiteWithImage.lastVisitDate).fromNow()}`);
     });
