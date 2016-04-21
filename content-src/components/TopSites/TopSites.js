@@ -6,6 +6,7 @@ const classNames = require("classnames");
 const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const DEFAULT_LENGTH = 6;
+const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const TopSites = React.createClass({
   getInitialState() {
@@ -43,7 +44,7 @@ const TopSites = React.createClass({
           return (<div key={site.lastVisitDate || i}>
             <a onClick={() => this.onClick(i)} className={classNames("tile", {active: isActive})} href={site.url}>
               <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
-              <div className="tile-close-icon" onClick={(ev) => {
+              <div hidden={site.type === FIRST_RUN_TYPE} className="tile-close-icon" onClick={(ev) => {
                 ev.preventDefault();
                 ev.stopPropagation();
                 this.setState({showContextMenu: true, activeTile: i});

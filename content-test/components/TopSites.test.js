@@ -3,7 +3,7 @@ const TestUtils = require("react-addons-test-utils");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const {overrideConsoleError, renderWithProvider} = require("test/test-utils");
-
+const firstRunData = require("lib/first-run-data");
 const ConnectedTopSites = require("components/TopSites/TopSites");
 const {TopSites} = ConnectedTopSites;
 const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
@@ -56,6 +56,12 @@ describe("TopSites", () => {
       assert.equal(linkEls.length, fakeProps.sites.length);
       assert.include(linkEls[0].href, fakeProps.sites[0].url);
       assert.include(linkEls[1].href, fakeProps.sites[1].url);
+    });
+
+    it("should hide the delete button for first run items", () => {
+      topSites = renderWithProvider(<TopSites sites={firstRunData.TopSites} />);
+      const button = TestUtils.scryRenderedDOMComponentsWithClass(topSites, "tile-close-icon")[0];
+      assert.equal(button.hidden, true);
     });
 
     it("should show delete menu when delete button is clicked", () => {
