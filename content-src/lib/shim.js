@@ -44,17 +44,6 @@ module.exports = function() {
           dispatch({type: "RECENT_LINKS_RESPONSE", data: fakeData.History.rows});
         }
         break;
-      case "FRECENT_LINKS_REQUEST":
-        dispatch({type: "FRECENT_LINKS_RESPONSE", data: fakeData.FrecentHistory.rows.map(site => {
-          return Object.assign({}, site, {
-            // images: [],
-            // favicon: null,
-            // favicon_url: null,
-            // favicon_colors: null,
-            // description: null
-          });
-        })});
-        break;
       case "HIGHLIGHTS_LINKS_REQUEST":
         dispatch({type: "HIGHLIGHTS_LINKS_RESPONSE", data: fakeData.Highlights.rows});
         break;
