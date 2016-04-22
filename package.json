@@ -145,7 +145,7 @@
     "test:jpm": "jpm test -b beta --prefs ./test-prefs.json",
     "test:karma": "NODE_ENV=test karma start --browsers FirefoxNightly",
     "tdd": "NODE_ENV=test karma start --no-single-run --browsers Chrome",
-    "package": "npm run bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
+    "package": "npm run bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi && mv @activity-streams-$npm_package_version.update.rdf dist/update.rdf",
     "travis": "npm-run-all travis:*",
     "travis:eslint": "npm run test:lint",
     "travis:jpm": "jpm test -b $JPM_FIREFOX_BINARY -v",
