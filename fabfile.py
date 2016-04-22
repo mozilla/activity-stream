@@ -1,3 +1,4 @@
+import os
 import time
 import hashlib
 import json
@@ -11,10 +12,39 @@ from pathlib import Path
 env.bucket_name = "moz-activity-streams"
 S3 = boto.connect_s3()
 
+DEV_BUCKET = "https://moz-activity-streams-dev.s3.amazonaws.com"
+DEV_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(DEV_BUCKET)
+DEV_UPDATE_URL = "{}/dist/update.rdf".format(DEV_BUCKET)
+
+
+def make_dev_manifest(fresh_manifest=True):
+    if to_bool(fresh_manifest):
+        restore_manifest()
+
+    with open("./package.json", "r+") as f:
+        current_time = int(time.time())
+        manifest = json.load(f)
+        manifest["title"] = "{} dev".format(manifest["title"])
+        manifest["updateLink"] = DEV_UPDATE_LINK
+        manifest["updateURL"] = DEV_UPDATE_URL
+        manifest["version"] = "{}-dev-{}".format(
+            manifest["version"], current_time)
+        f.seek(0)
+        f.truncate(0)
+        json.dump(manifest, f,
+                  sort_keys=True, indent=2, separators=(',', ': '))
+
+
+def restore_manifest():
+    local("git checkout -- ./package.json")
+
 
 def to_bool(value):
     if not isinstance(value, bool):
-        return strtobool(value)
+        try:
+            return strtobool(value)
+        except:
+            return True if value else False
     else:
         return value
 
@@ -27,10 +57,18 @@ def get_s3_headers():
 
 
 def package(signing_key, signing_password):
+    try:
+        print "Cleaning local artifacts"
+        local("rm *.rdf")
+        local("rm *.xpi")
+    except:
+        print "Nothing to clean"
     local("npm install")
     local("npm run package")
+    print "signing..."
     local("./node_modules/jpm/bin/jpm sign --api-key {} --api-secret {}"
-          .format(signing_key, signing_password))
+          .format(signing_key, signing_password), capture=True)
+    print "signing successful!"
     local("mv activity_streams_experiment-*.xpi dist/")
     local("mv \@activity-streams-*.update.rdf dist/update.rdf")
     local("rm dist/activity-streams-*.xpi")
@@ -92,17 +130,49 @@ def upload_to_s3(bucket_name, file_path=None):
         "./dist/update.rdf", headers=headers)
     update_manifest.set_acl("public-read")
 
-    return (k, latest, update_manifest)
+
+def upload_html_to_s3(bucket_name, file_path=None):
+    if file_path is None:
+        file_path = "dist/latest/latest.html"
+
+    bucket = S3.get_bucket(bucket_name)
+
+    def upload_text():
+        headers = get_s3_headers()
+        headers["Content-Type"] = "text/html"
+        key = Key(bucket)
+        key.name = "dist/latest.html"
+        key.set_contents_from_filename(file_path, headers=headers)
+        key.set_acl("public-read")
+
+    # upload latest html if different
+    key = bucket.get_key("dist/latest.html")
+    if key is None:
+        upload_text()
+    else:
+        md5_hash = hashlib.md5(file_path.open("rb").read()).hexdigest()
+        if key.etag[1:-1] != md5_hash:
+            upload_text()
 
 
-def deploy(run_package=True, signing_key=None, signing_password=None):
+def deploy(run_package=True, dev_deploy=False,
+           signing_key=None, signing_password=None):
     if not (signing_key is not None and signing_password is not None):
-        with open(".amo_config.json", "r") as f:
-            amo_config = json.load(f)
-            signing_key = amo_config["api-key"]
-            signing_password = amo_config["api-secret"]
+        config_path = os.environ.get("AMO_CONFIG_FILE", ".amo_config.json")
+        if os.path.isfile(config_path):
+            with open(config_path, "r") as f:
+                amo_config = json.load(f)
+                signing_key = amo_config["api-key"]
+                signing_password = amo_config["api-secret"]
+        else:
+            signing_key = os.environ["AMO_KEY"]
+            signing_password = os.environ["AMO_PASSWORD"]
 
     start = time.time()
+
+    if dev_deploy:
+        print "Making Dev deploy"
+        make_dev_manifest()
 
     run_package = to_bool(run_package)
     end_signing = None
@@ -110,9 +180,13 @@ def deploy(run_package=True, signing_key=None, signing_password=None):
         package(signing_key, signing_password)
         end_signing = time.time()
 
+    if dev_deploy:
+        restore_manifest()
+
     latest = get_latest_package_path()
 
     key, latest, update_manifest = upload_to_s3(env.bucket_name, latest)
+    upload_html_to_s3(env.bucket_name, "dist/latest/latest.html")
     end = time.time()
 
     time_taken = int(end-start)
