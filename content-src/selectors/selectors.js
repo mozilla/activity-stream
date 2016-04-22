@@ -91,12 +91,11 @@ const selectTopSites = createSelector(
 module.exports.selectNewTabSites = createSelector(
   [
     selectTopSites,
-    state => state.Highlights,
     state => state.History,
     selectSpotlight,
     state => state.Blocked
   ],
-  (TopSites, Highlights, History, Spotlight, Blocked) => {
+  (TopSites, History, Spotlight, Blocked) => {
 
     // Remove duplicates
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
@@ -111,9 +110,9 @@ module.exports.selectNewTabSites = createSelector(
 
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
-      Spotlight: Object.assign({}, Highlights, {rows: spotlightRows}),
+      Spotlight: Object.assign({}, Spotlight, {rows: spotlightRows}),
       TopActivity: Object.assign({}, History, {rows: topActivityRows}),
-      isReady: TopSites.init && Highlights.init && History.init
+      isReady: TopSites.init && History.init
     };
   }
 );
