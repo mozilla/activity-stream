@@ -13,7 +13,7 @@ function template(rawOptions) {
     <meta charset="utf-8">
     <title>${options.title}</title>
     <link rel="stylesheet" href="${options.baseUrl}main.css" />
-    <link rel="icon" type="image/svg+xml" href="${options.baseUrl}img/glyph-activityStream-16.svg">
+    <link rel="icon" type="image/svg+xml" href="${options.baseUrl}img/newtab-icon.svg">
   </head>
   <body>
     <div id="root"></div>
