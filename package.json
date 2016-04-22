@@ -142,7 +142,7 @@
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle && npm run copyTestImages",
     "test:lint": "eslint . && jscs . && sass-lint -v -q",
-    "test:jpm": "jpm test --prefs ./test-prefs.json",
+    "test:jpm": "BINARY=${JPM_FIREFOX_BINARY:\"firefox\"} jpm test -b $BINARY --prefs ./test-prefs.json",
     "test:karma": "NODE_ENV=test karma start",
     "posttest": "cat logs/reports/coverage/text-summary.txt",
     "tdd": "NODE_ENV=test npm run copyTestImages && karma start --no-single-run --browsers Chrome",
