@@ -142,6 +142,7 @@
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle && npm run copyTestImages",
     "test:lint": "eslint . && jscs . && sass-lint -v -q",
+    "test:checkbinary": "echo \"JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}\"",
     "test:jpm": "jpm test -b ${JPM_FIREFOX_BINARY:-\"firefox\"} --prefs ./test-prefs.json",
     "test:karma": "NODE_ENV=test karma start",
     "posttest": "cat logs/reports/coverage/text-summary.txt",

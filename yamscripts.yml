@@ -41,6 +41,7 @@ scripts:
     pre: =>bundle && =>copyTestImages
     # test:lint: Run eslint
     lint: eslint . && jscs . && sass-lint -v -q
+    checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests
     jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"firefox"} --prefs ./test-prefs.json
     # test:karma: Run content tests only
