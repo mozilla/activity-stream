@@ -8,7 +8,7 @@ cache:
     - node_modules
 
 addons:
-  firefox: latest-beta
+  firefox: "latest-beta"
 
 before_install:
   # see https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
@@ -27,7 +27,6 @@ before_script:
   - echo $JPM_FIREFOX_BINARY
 
 script:
-  - npm run bundle
   - npm run travis
 
 notifications:

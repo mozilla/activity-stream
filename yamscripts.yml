@@ -41,22 +41,21 @@ scripts:
     pre: =>bundle && =>copyTestImages
     # test:lint: Run eslint
     lint: eslint . && jscs . && sass-lint -v -q
+    checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests
-    jpm: jpm test -b beta --prefs ./test-prefs.json
+    jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"firefox"} --prefs ./test-prefs.json
     # test:karma: Run content tests only
-    karma: NODE_ENV=test karma start --browsers FirefoxNightly
+    karma: NODE_ENV=test karma start
+    post: cat logs/reports/coverage/text-summary.txt
 
 # tdd: Run content tests continuously
-  tdd: NODE_ENV=test karma start --no-single-run --browsers Chrome
+  tdd: NODE_ENV=test =>copyTestImages && karma start --no-single-run --browsers Chrome
 
 # package: Build add-on
   package: =>bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi
 
   # This is for ci
-  travis:
-    eslint: =>test:lint
-    jpm: jpm test -b $JPM_FIREFOX_BINARY -v
-    karma: NODE_ENV=test karma start --reporters mocha,coverage,coveralls
+  travis: =>test
 
   # This is just to make sure we don't make commits with failing tests
   # or uncompiled yamscripts.yml. Run automatically with husky.

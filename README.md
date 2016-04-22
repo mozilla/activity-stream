@@ -1,6 +1,7 @@
 # Activity Streams Add-on
 
 [![](https://img.shields.io/badge/available_on-Test_Pilot-0996F8.svg)](https://testpilot.firefox.com/experiments/activity-stream)
+[![Coverage Status](https://coveralls.io/repos/github/mozilla/activity-streams/badge.svg?branch=master)](https://coveralls.io/github/mozilla/activity-streams?branch=master)
 
 ## TLDR; I just want to try the add-on
 
