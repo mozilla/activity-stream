@@ -125,7 +125,7 @@
     "changelog": "conventional-changelog -i CHANGELOG.md -s",
     "copyTestImages": "cpx \"node_modules/tippy-top-sites/images/**/*\" data/content/favicons/images",
     "bundle": "npm-run-all bundle:*",
-    "prebundle": "npm run clean",
+    "prebundle": "npm run clean && npm run copyTestImages",
     "bundle:static": "cpx \"content-src/static/**/*\" data/content",
     "bundle:webpack": "NODE_ENV=production webpack",
     "bundle:css": "node-sass content-src/main.scss -o data/content",

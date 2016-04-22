@@ -50,7 +50,7 @@ module.exports = {
     {
       "title": "Firefox Sync",
       "description": "Take your Web with you",
-      "url": "https://mozilla-europe.org/firefox/sync",
+      "url": "https://www.mozilla.org/firefox/sync/",
       "image_url": "firstrun-sync.png",
       "favicon_url": "firstrun-sync-icon.png",
       "background_color": "#5AC6f8",
@@ -59,7 +59,7 @@ module.exports = {
     {
       "title": "More ways to customize",
       "description": "Themes and add-ons allow you to customize Firefox",
-      "url": "https://fastestfirefox.com/firefox/desktop/customize",
+      "url": "https://www.mozilla.org/firefox/desktop/customize/",
       "image_url": "firstrun-customize.png",
       "favicon_url": "firstrun-customize-icon.png",
       "background_color": "#735C72",
@@ -68,7 +68,7 @@ module.exports = {
     {
       "title": "Get Firefox on all your devices",
       "description": "Install Firefox for Android and iOS from your favorite app store",
-      "url": "https://www.mozilla.org/en-US/firefox/android",
+      "url": "https://www.mozilla.org/firefox/android/",
       "image_url": "firstrun-mobile.png",
       "favicon_url": "firstrun-mobile-icon.png",
       "background_color": "#0775A7",
