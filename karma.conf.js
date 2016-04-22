@@ -1,12 +1,17 @@
 const webpack = require("./webpack.config");
 const path = require("path");
 
+const reporters = ["mocha", "coverage"];
+if (process.env.TRAVIS) {
+  reporters.push("coveralls");
+}
+
 module.exports = function(config) {
   config.set({
     singleRun: true,
     browsers: ["Firefox"],
     frameworks: ["mocha"],
-    reporters: ["mocha", "coverage"],
+    reporters,
     coverageReporter: {
       dir: "logs/reports/coverage",
       reporters: [
@@ -48,7 +53,8 @@ module.exports = function(config) {
         postLoaders: [{
           test: /\.js$/,
           loader: "istanbul-instrumenter",
-          include: [path.join(__dirname, "/src")]
+          include: [path.join(__dirname, "/content-src")],
+          exclude: [/DebugPage/]
         }]
       },
       plugins: webpack.plugins
