@@ -7,6 +7,7 @@ const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
 const {actions} = require("common/action-manager");
 const {Link} = require("react-router");
+const setFavicon = require("lib/set-favicon");
 
 const MAX_TOP_ACTIVITY_ITEMS = 10;
 const PAGE_NAME = "NEW_TAB";
@@ -22,6 +23,7 @@ const NewTabPage = React.createClass({
   },
   componentDidMount() {
     document.title = "New Tab";
+    setFavicon("newtab-icon.svg");
   },
   componentDidUpdate() {
     if (this.props.isReady) {
