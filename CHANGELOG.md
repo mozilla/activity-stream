@@ -1,3 +1,13 @@
+<a name="1.0.11"></a>
+## 1.0.11 (2016-04-22)
+
+* 1.0.10 changelog ([bed8081](https://github.com/mozilla/activity-streams/commit/bed8081))
+* 1.0.11 ([ee3c83f](https://github.com/mozilla/activity-streams/commit/ee3c83f))
+* New icon for the add-on ([fc0c812](https://github.com/mozilla/activity-streams/commit/fc0c812))
+* tests(content): #462 Fix intermittent test failure issue ([2a66fa0](https://github.com/mozilla/activity-streams/commit/2a66fa0))
+
+
+
 <a name="1.0.10"></a>
 ## 1.0.10 (2016-04-21)
 
