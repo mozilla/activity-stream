@@ -34,7 +34,6 @@ let makeNotifsPromise = (cacheStatus) => {
         "getTopFrecentSites-cache",
         "getRecentBookmarks-cache",
         "getRecentLinks-cache",
-        "getFrecentLinks-cache",
         "getHighlightsLinks-cache",
     ]);
     let notifCount = 0;

@@ -28,7 +28,7 @@ const DebugPage = React.createClass({
   getInitialState() {
     return {
       component: "Spotlight",
-      dataSource: "Highlights"
+      dataSource: "Spotlight"
     };
   },
   render() {
@@ -44,7 +44,7 @@ const DebugPage = React.createClass({
           <div className="form-group">
             <label>UI Component</label>
             <select value={this.state.component} onChange={e => this.setState({component: e.target.value})}>
-              <option value={"Spotlight"}>Highlight</option>
+              <option value={"Spotlight"}>Spotlight</option>
               <option value={"TopSites"}>Top Sites</option>
               <option value={"ActivityFeed"}>Activity Feed</option>
             </select>
@@ -62,7 +62,7 @@ const DebugPage = React.createClass({
           {this.state.component === "Spotlight" &&
             <div className="spotlight">
               {selectSpotlight({
-                Highlights: this.props.raw[this.state.dataSource],
+                Spotlight: this.props.raw[this.state.dataSource],
                 Blocked: {urls: new Set()}
               }).rows.map((item, i) => {
                 return (<SpotlightItem key={i} {...item} />);
@@ -92,7 +92,7 @@ module.exports = connect(state => {
       TopSites: state.TopSites,
       History: state.History,
       Bookmarks: state.Bookmarks,
-      Highlights: state.Highlights,
+      Spotlight: state.Spotlight,
     }
   };
 })(DebugPage);
