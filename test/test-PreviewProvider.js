@@ -250,6 +250,7 @@ exports.test_dedupe_urls = function*(assert) {
   let expectedUrls = [
     {"url": "http://foo.com/", "title": "blah"},
     {"url": "http://foo.com/bar/foobar", "title": "blah"},
+    {"url": "https://www.foo.com/?q=param", "title": "blah"},
     {"url": "http://localhost-foo.com", "title": "blah"}
   ];
 
