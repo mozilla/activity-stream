@@ -77,7 +77,7 @@ describe("DeleteMenu", () => {
     });
     TestUtils.Simulate.click(deleteLink);
   });
-  it("should fire a block event when Never show this page is clicked", done => {
+  it("should fire a block event when Never show on this page is clicked", done => {
     setup(null, {
       dispatch(a) {
         if (a.type === "BLOCK_URL") {
@@ -86,10 +86,10 @@ describe("DeleteMenu", () => {
         }
       }
     });
-    assert.equal(blockLink.innerHTML, "Never show this page");
+    assert.equal(blockLink.innerHTML, "Never show on this page");
     TestUtils.Simulate.click(blockLink);
   });
-  it("should fire a user event for Never show this page", done => {
+  it("should fire a user event for Never show on this page", done => {
     setup({
       page: "NEW_TAB",
       source: "FEATURED",
