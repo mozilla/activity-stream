@@ -58,7 +58,7 @@ describe("selectors", () => {
     function assertInvalidSite(site) {
       const invalidSite = Object.assign({}, validSpotlightSite, site);
       const result = selectSpotlight({
-        FrecentHistory: {rows: [invalidSite, validSpotlightSite]},
+        Highlights: {rows: [invalidSite, validSpotlightSite]},
         Blocked: {urls: new Set()}
       });
       assert.lengthOf(result.rows, 2 + firstRunData.Highlights.length);
@@ -66,8 +66,8 @@ describe("selectors", () => {
       assert.equal(result.rows[1].url, invalidSite.url);
     }
 
-    it("should have the same properties as FrecentHistory", () => {
-      assert.deepEqual(Object.keys(state), Object.keys(fakeState.FrecentHistory));
+    it("should have the same properties as Highlights", () => {
+      assert.deepEqual(Object.keys(state), Object.keys(fakeState.Highlights));
     });
     it("should add a bestImage for each item", () => {
       state.rows.forEach(site => {
@@ -82,7 +82,7 @@ describe("selectors", () => {
         favicon_colors: [{color: [11, 11, 11]}]
       };
       const results = selectSpotlight({
-        FrecentHistory: {rows: [site]},
+        Highlights: {rows: [site]},
         Blocked: {urls: new Set()}
       });
       assert.deepEqual(results.rows[0].backgroundColor, "rgba(11, 11, 11, 0.4)");
@@ -94,7 +94,7 @@ describe("selectors", () => {
         favicon_colors: [{color: [11, 11, 11]}]
       };
       const results = selectSpotlight({
-        FrecentHistory: {rows: [site]},
+        Highlights: {rows: [site]},
         Blocked: {urls: new Set()}
       });
       assert.equal(results.rows[0].backgroundColor, "#111111");
@@ -102,14 +102,14 @@ describe("selectors", () => {
     it("should use a fallback bg color if no favicon_colors are available", () => {
       const site = {url: "https://foo.com"};
       const results = selectSpotlight({
-        FrecentHistory: {rows: [site]},
+        Highlights: {rows: [site]},
         Blocked: {urls: new Set()}
       });
       assert.ok(results.rows[0].backgroundColor, "should have a bg color");
     });
-    it("should include first run items if FrecentHistory is empty", () => {
+    it("should include first run items if Highlights is empty", () => {
       const results = selectSpotlight({
-        FrecentHistory: {rows: []},
+        Highlights: {rows: []},
         Blocked: {urls: new Set()}
       });
       firstRunData.Highlights.forEach((item, i) => {
@@ -149,9 +149,9 @@ describe("selectors", () => {
       });
     });
     it("should remove urls in block list", () => {
-      let frecent = fakeState.FrecentHistory.rows.splice(0, 3);
+      let frecent = fakeState.Highlights.rows.splice(0, 3);
       state = selectSpotlight({
-        FrecentHistory: {rows: frecent},
+        Highlights: {rows: frecent},
         Blocked: {urls: new Set([frecent[0].url])}
       });
       assert.equal(state.rows.length, firstRunData.Highlights.length + frecent.length - 1);
@@ -183,7 +183,7 @@ describe("selectors", () => {
           {url: "baz3.com", lastVisitDate: 3}
         ]},
         Spotlight: {rows: []},
-        FrecentHistory: {rows: []},
+        Highlights: {rows: []},
         History: {rows: []},
         Blocked: {urls: new Set(["foo1.com"])}
       });
@@ -196,7 +196,7 @@ describe("selectors", () => {
       state = selectNewTabSites({
         TopSites: {rows: []},
         Spotlight: {rows: []},
-        FrecentHistory: {rows: [
+        Highlights: {rows: [
           {url: "foo.com", lastVisitDate: 1},
           {url: "bar.com", lastVisitDate: 4},
           {url: "baz.com", lastVisitDate: 3}

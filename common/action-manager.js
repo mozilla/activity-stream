@@ -11,8 +11,6 @@ const am = new ActionManager([
   "RECEIVE_BOOKMARKS_CHANGES",
   "RECENT_LINKS_REQUEST",
   "RECENT_LINKS_RESPONSE",
-  "FRECENT_LINKS_REQUEST",
-  "FRECENT_LINKS_RESPONSE",
   "HIGHLIGHTS_LINKS_REQUEST",
   "HIGHLIGHTS_LINKS_RESPONSE",
   "BLOCK_URL",
@@ -33,7 +31,6 @@ am.ACTIONS_WITH_SITES = new Set([
   "TOP_FRECENT_SITES_RESPONSE",
   "RECENT_BOOKMARKS_RESPONSE",
   "RECENT_LINKS_RESPONSE",
-  "FRECENT_LINKS_RESPONSE",
   "HIGHLIGHTS_LINKS_RESPONSE",
 ].map(type => am.type(type)));
 
@@ -102,10 +99,6 @@ function RequestMoreRecentLinks(beforeDate) {
   });
 }
 
-function RequestFrecentLinks() {
-  return RequestExpect("FRECENT_LINKS_REQUEST", "FRECENT_LINKS_RESPONSE");
-}
-
 function RequestHighlightsLinks() {
   return RequestExpect("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE");
 }
@@ -164,7 +157,6 @@ am.defineActions({
   RequestMoreBookmarks,
   RequestRecentLinks,
   RequestMoreRecentLinks,
-  RequestFrecentLinks,
   RequestHighlightsLinks,
   RequestSearchState,
   BlockUrl,

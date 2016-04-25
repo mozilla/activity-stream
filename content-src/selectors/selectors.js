@@ -34,11 +34,11 @@ function isValidSpotlightSite(site) {
 
 const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
-    state => state.FrecentHistory,
+    state => state.Highlights,
     state => state.Blocked
   ],
-  (FrecentHistory, Blocked) => {
-    const rows = FrecentHistory.rows
+  (Highlights, Blocked) => {
+    const rows = Highlights.rows
     .filter(site => !Blocked.urls.has(site.url))
     .concat(firstRunData.Highlights)
     .map(site => {
@@ -68,8 +68,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
         return -1;
       }
     });
-
-    return Object.assign({}, FrecentHistory, {rows});
+    return Object.assign({}, Highlights, {rows});
   }
 );
 
@@ -92,13 +91,11 @@ const selectTopSites = createSelector(
 module.exports.selectNewTabSites = createSelector(
   [
     selectTopSites,
-    state => state.FrecentHistory,
     state => state.History,
-    state => state.Highlights,
     selectSpotlight,
     state => state.Blocked
   ],
-  (TopSites, FrecentHistory, History, Highlights, Spotlight, Blocked) => {
+  (TopSites, History, Spotlight, Blocked) => {
 
     // Remove duplicates
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
@@ -113,9 +110,9 @@ module.exports.selectNewTabSites = createSelector(
 
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
-      Spotlight: Object.assign({}, FrecentHistory, {rows: spotlightRows}),
+      Spotlight: Object.assign({}, Spotlight, {rows: spotlightRows}),
       TopActivity: Object.assign({}, History, {rows: topActivityRows}),
-      isReady: TopSites.init && FrecentHistory.init && History.init && Highlights.init
+      isReady: TopSites.init && History.init && Spotlight.init
     };
   }
 );
