@@ -1,3 +1,17 @@
+<a name="1.0.12"></a>
+## 1.0.12 (2016-04-25)
+
+* 1.0.11 changelog ([6641515](https://github.com/mozilla/activity-streams/commit/6641515))
+* 1.0.12 ([f59e135](https://github.com/mozilla/activity-streams/commit/f59e135))
+* feat(content): #200 Add first run data ([61e97ca](https://github.com/mozilla/activity-streams/commit/61e97ca))
+* feat(content): #200 hide delete on first run items ([ee76df6](https://github.com/mozilla/activity-streams/commit/ee76df6))
+* feat(highlights): #533 replace frecent history with highlights for spotlight in content ([d204cf1](https://github.com/mozilla/activity-streams/commit/d204cf1))
+* fix(addon): #555 Add search to cache key ([86a38a3](https://github.com/mozilla/activity-streams/commit/86a38a3))
+* chore(tests): #363 Fix coveralls reporting ([5919d9e](https://github.com/mozilla/activity-streams/commit/5919d9e))
+* style(content): #545 Add favicon for newtab ([dcd8274](https://github.com/mozilla/activity-streams/commit/dcd8274))
+
+
+
 <a name="1.0.11"></a>
 ## 1.0.11 (2016-04-22)
 
