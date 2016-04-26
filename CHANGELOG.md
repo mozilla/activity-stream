@@ -1,3 +1,21 @@
+<a name="1.0.13"></a>
+## 1.0.13 (2016-04-26)
+
+* 1.0.12 changelog ([d48c021](https://github.com/mozilla/activity-streams/commit/d48c021))
+* 1.0.13 ([9e38866](https://github.com/mozilla/activity-streams/commit/9e38866))
+* fix (content): #559 scroll to top on route change ([e903760](https://github.com/mozilla/activity-streams/commit/e903760)), closes [#559](https://github.com/mozilla/activity-streams/issues/559)
+* New New Tab Icon ([ea801b9](https://github.com/mozilla/activity-streams/commit/ea801b9))
+* chore(ci): #442 continous integration deployments for master on travis CI ([daffd46](https://github.com/mozilla/activity-streams/commit/daffd46))
+* chore(ci): #442 deployment automation for dev builds ([d8beb4d](https://github.com/mozilla/activity-streams/commit/d8beb4d))
+* chore(README): Firefox beta no longer required ([b096383](https://github.com/mozilla/activity-streams/commit/b096383))
+* fix(content): #554 only include default sites if init is true ([fc04d53](https://github.com/mozilla/activity-streams/commit/fc04d53))
+* fix(content): #558 Dont clear rows for error append actions ([b36eb26](https://github.com/mozilla/activity-streams/commit/b36eb26))
+* fix(content): Updating wording of block action ([83ffca9](https://github.com/mozilla/activity-streams/commit/83ffca9))
+* fix(debug): #574 Use Highlights on debug page ([f215e4f](https://github.com/mozilla/activity-streams/commit/f215e4f))
+* fix(jpm): Use stable for npm run firefox ([ef23a9a](https://github.com/mozilla/activity-streams/commit/ef23a9a))
+
+
+
 <a name="1.0.12"></a>
 ## 1.0.12 (2016-04-25)
 
