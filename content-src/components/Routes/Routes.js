@@ -10,6 +10,7 @@ const Routes = React.createClass({
   componentDidMount() {
     this.unlisten = history.listen(location => {
       this.props.dispatch(actions.NotifyRouteChange(location));
+      window.scroll(0, 0);
     });
   },
   componentWillUnmount() {
