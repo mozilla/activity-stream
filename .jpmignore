@@ -4,6 +4,7 @@ bin/
 content-src/
 content-test/
 dist/
+artifacts/
 firefox/
 logs/
 node_modules/
