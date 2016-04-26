@@ -4,6 +4,7 @@ bin/
 content-src/
 content-test/
 dist/
+artifacts/
 firefox/
 logs/
 node_modules/
@@ -32,3 +33,4 @@ npm-shrinkwrap.json
 requirements.txt
 webpack.config.js
 yamscripts.yml
+continuous-integration.sh
