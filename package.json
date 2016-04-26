@@ -146,7 +146,7 @@
     "test:jpm": "jpm test -b ${JPM_FIREFOX_BINARY:-\"firefox\"} --prefs ./test-prefs.json",
     "test:karma": "NODE_ENV=test karma start",
     "posttest": "cat logs/reports/coverage/text-summary.txt",
-    "tdd": "NODE_ENV=test npm run copyTestImages && karma start --no-single-run --browsers Chrome",
+    "tdd": "npm run test:karma -- --no-single-run --browsers Chrome",
     "package": "npm run bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
     "travis": "npm run test",
     "precommit": "npm run test:lint && npm run yamscripts",

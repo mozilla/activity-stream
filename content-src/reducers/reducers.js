@@ -1,45 +1,5 @@
 const am = require("common/action-manager");
-
-const DEFAULT_ROWS_OR_ERRORS_STATE = {
-  rows: [],
-  error: false,
-  init: false,
-  isLoading: false,
-  canLoadMore: true
-};
-
-function setRowsOrError(requestType, responseType) {
-  return (prevState = DEFAULT_ROWS_OR_ERRORS_STATE, action) => {
-    const state = {};
-    const meta = action.meta || {};
-    switch (action.type) {
-      case am.type(requestType):
-        state.isLoading = true;
-        break;
-      case am.type(responseType):
-        state.init = true;
-        state.isLoading = false;
-        if (action.error) {
-          state.rows = [];
-          state.error = action.data;
-        } else {
-          state.rows = meta.append ? prevState.rows.concat(action.data) : action.data;
-          state.error = false;
-          if (!action.data.length) {
-            state.canLoadMore = false;
-          }
-        }
-        break;
-      case "NOTIFY_HISTORY_DELETE":
-        state.rows = prevState.rows.filter(val => val.url !== action.data);
-        break;
-      // TODO: Handle changes
-      default:
-        return prevState;
-    }
-    return Object.assign({}, prevState, state);
-  };
-}
+const setRowsOrError = require("reducers/SetRowsOrError");
 
 function setSearchState(type) {
   return (prevState = {currentEngine: {}, error: false, init: false}, action) => {

@@ -49,7 +49,7 @@ scripts:
     post: cat logs/reports/coverage/text-summary.txt
 
 # tdd: Run content tests continuously
-  tdd: NODE_ENV=test =>copyTestImages && karma start --no-single-run --browsers Chrome
+  tdd: =>test:karma -- --no-single-run --browsers Chrome
 
 # package: Build add-on
   package: =>bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi
