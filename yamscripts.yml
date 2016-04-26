@@ -34,7 +34,7 @@ scripts:
     server: live-server data/content --port=1963 --no-browser
 
 # firefox: Launch addon with jpm run
-  firefox: jpm run -b beta --prefs ./dev-prefs.json
+  firefox: jpm run --prefs ./dev-prefs.json
 
 # test: Run all tests once
   test:

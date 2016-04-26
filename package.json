@@ -138,7 +138,7 @@
     "start:css": "npm run bundle:css && npm run bundle:css -- -w",
     "start:html": "npm run bundle:html -- --baseUrl http://localhost:1963/",
     "start:server": "live-server data/content --port=1963 --no-browser",
-    "firefox": "jpm run -b beta --prefs ./dev-prefs.json",
+    "firefox": "jpm run --prefs ./dev-prefs.json",
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle && npm run copyTestImages",
     "test:lint": "eslint . && jscs . && sass-lint -v -q",
