@@ -11,7 +11,7 @@
 
 ## Requirements
 
-* You must have at Firefox Beta (45.0+) installed
+* You must have at Firefox (45.0+) installed
 * node 5.0+, npm 3.0+ (You can install both [here](https://nodejs.org))
 
 ## Installation
