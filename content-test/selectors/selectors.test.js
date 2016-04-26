@@ -58,7 +58,7 @@ describe("selectors", () => {
     function assertInvalidSite(site) {
       const invalidSite = Object.assign({}, validSpotlightSite, site);
       const result = selectSpotlight({
-        Highlights: {rows: [invalidSite, validSpotlightSite]},
+        Highlights: {init: true, rows: [invalidSite, validSpotlightSite]},
         Blocked: {urls: new Set()}
       });
       assert.lengthOf(result.rows, 2 + firstRunData.Highlights.length);
@@ -94,7 +94,7 @@ describe("selectors", () => {
         favicon_colors: [{color: [11, 11, 11]}]
       };
       const results = selectSpotlight({
-        Highlights: {rows: [site]},
+        Highlights: {init: true, rows: [site]},
         Blocked: {urls: new Set()}
       });
       assert.equal(results.rows[0].backgroundColor, "#111111");
@@ -102,19 +102,26 @@ describe("selectors", () => {
     it("should use a fallback bg color if no favicon_colors are available", () => {
       const site = {url: "https://foo.com"};
       const results = selectSpotlight({
-        Highlights: {rows: [site]},
+        Highlights: {init: true, rows: [site]},
         Blocked: {urls: new Set()}
       });
       assert.ok(results.rows[0].backgroundColor, "should have a bg color");
     });
-    it("should include first run items if Highlights is empty", () => {
+    it("should include first run items if init is true and Highlights is empty", () => {
       const results = selectSpotlight({
-        Highlights: {rows: []},
+        Highlights: {init: true, rows: []},
         Blocked: {urls: new Set()}
       });
       firstRunData.Highlights.forEach((item, i) => {
         assert.equal(results.rows[i].url, item.url);
       });
+    });
+    it("should not include first run items if init is false", () => {
+      const results = selectSpotlight({
+        Highlights: {init: false, rows: []},
+        Blocked: {urls: new Set()}
+      });
+      assert.lengthOf(results.rows, 0);
     });
     it("should sort sites that do not have a title to the end", () => {
       assertInvalidSite({
@@ -151,7 +158,7 @@ describe("selectors", () => {
     it("should remove urls in block list", () => {
       let frecent = fakeState.Highlights.rows.splice(0, 3);
       state = selectSpotlight({
-        Highlights: {rows: frecent},
+        Highlights: {init: true, rows: frecent},
         Blocked: {urls: new Set([frecent[0].url])}
       });
       assert.equal(state.rows.length, firstRunData.Highlights.length + frecent.length - 1);
@@ -177,7 +184,7 @@ describe("selectors", () => {
     });
     it("should remove urls in block list", () => {
       state = selectNewTabSites({
-        TopSites: {rows: [
+        TopSites: {init: true, rows: [
           {url: "foo1.com", lastVisitDate: 1},
           {url: "bar2.com", lastVisitDate: 4},
           {url: "baz3.com", lastVisitDate: 3}
@@ -191,30 +198,6 @@ describe("selectors", () => {
         {url: "bar2.com", lastVisitDate: 4},
         {url: "baz3.com", lastVisitDate: 3}
       ].concat(firstRunData.TopSites).splice(0, 6));
-    });
-    it("should sort TopActivity by dateLastVisited", () => {
-      state = selectNewTabSites({
-        TopSites: {rows: []},
-        Spotlight: {rows: []},
-        Highlights: {rows: [
-          {url: "foo.com", lastVisitDate: 1},
-          {url: "bar.com", lastVisitDate: 4},
-          {url: "baz.com", lastVisitDate: 3}
-        ]},
-        History: {rows: [
-          {url: "foo1.com", lastVisitDate: 1},
-          {url: "bar2.com", lastVisitDate: 4},
-          {url: "baz3.com", lastVisitDate: 3}
-        ]},
-        Blocked: {urls: new Set()}
-      });
-      assert.deepEqual(state.TopActivity.rows,
-        [
-          {url: "bar2.com", lastVisitDate: 4},
-          {url: "baz3.com", lastVisitDate: 3},
-          {url: "foo1.com", lastVisitDate: 1}
-        ]
-      );
     });
   });
   describe("selectSiteIcon", () => {

@@ -40,7 +40,8 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   (Highlights, Blocked) => {
     const rows = Highlights.rows
     .filter(site => !Blocked.urls.has(site.url))
-    .concat(firstRunData.Highlights)
+    // Only concat first run data if init is true
+    .concat(Highlights.init ? firstRunData.Highlights : [])
     .map(site => {
       const newProps = {};
       const bestImage = getBestImage(site.images);
@@ -82,8 +83,8 @@ const selectTopSites = createSelector(
       rows: TopSites.rows
         // Removed blocked URLs
         .filter(site => !Blocked.urls.has(site.url))
-        // Add first run stuff to the end
-        .concat(firstRunData.TopSites)
+        // Add first run stuff to the end if init has already happened
+        .concat(TopSites.init ? firstRunData.TopSites : [])
     });
   }
 );
@@ -98,20 +99,19 @@ module.exports.selectNewTabSites = createSelector(
   (TopSites, History, Spotlight, Blocked) => {
 
     // Remove duplicates
+    // Note that we have to limit the length of topsites, spotlight so we
+    // don't dedupe against stuff that isn't shown
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
-
-    // Limit spotlight length
     spotlightRows = spotlightRows.slice(0, SPOTLIGHT_LENGTH);
-
-    // Dedupe top activity
-    const topActivityRows = dedupe.group([topSitesRows, spotlightRows, History.rows])[2].sort((a, b) => {
-      return b.lastVisitDate - a.lastVisitDate;
-    }).filter(site => !Blocked.urls.has(site.url));
+    const historyRows = dedupe.group([
+      topSitesRows,
+      spotlightRows,
+      History.rows.filter(site => !Blocked.urls.has(site.url))])[2];
 
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Spotlight: Object.assign({}, Spotlight, {rows: spotlightRows}),
-      TopActivity: Object.assign({}, History, {rows: topActivityRows}),
+      TopActivity: Object.assign({}, History, {rows: historyRows}),
       isReady: TopSites.init && History.init && Spotlight.init
     };
   }
