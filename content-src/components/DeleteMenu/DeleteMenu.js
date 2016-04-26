@@ -29,7 +29,7 @@ const DeleteMenu = React.createClass({
       onUpdate={this.props.onUpdate}
       options={[
         {label: "Remove from History", onClick: this.onDelete},
-        {label: "Never show this page", onClick: this.onBlock}
+        {label: "Never show on this page", onClick: this.onBlock}
       ]} />);
   }
 });
