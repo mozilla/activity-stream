@@ -28,7 +28,7 @@ const DebugPage = React.createClass({
   getInitialState() {
     return {
       component: "Spotlight",
-      dataSource: "Spotlight"
+      dataSource: "Highlights"
     };
   },
   render() {
@@ -62,7 +62,7 @@ const DebugPage = React.createClass({
           {this.state.component === "Spotlight" &&
             <div className="spotlight">
               {selectSpotlight({
-                Spotlight: this.props.raw[this.state.dataSource],
+                Highlights: this.props.raw[this.state.dataSource],
                 Blocked: {urls: new Set()}
               }).rows.map((item, i) => {
                 return (<SpotlightItem key={i} {...item} />);
@@ -92,7 +92,7 @@ module.exports = connect(state => {
       TopSites: state.TopSites,
       History: state.History,
       Bookmarks: state.Bookmarks,
-      Spotlight: state.Spotlight,
+      Highlights: state.Highlights,
     }
   };
 })(DebugPage);
