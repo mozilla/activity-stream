@@ -5,16 +5,17 @@ import json
 from operator import itemgetter
 from distutils.util import strtobool
 import boto
-from fabric.api import local, env
+from fabric.api import local, env, hide
 from boto.s3.key import Key
 from pathlib import Path
 
 env.bucket_name = "moz-activity-streams"
+env.bucket_name_dev = "moz-activity-streams-dev"
 S3 = boto.connect_s3()
 
-DEV_BUCKET = "https://moz-activity-streams-dev.s3.amazonaws.com"
-DEV_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(DEV_BUCKET)
-DEV_UPDATE_URL = "{}/dist/update.rdf".format(DEV_BUCKET)
+DEV_BUCKET_URL = "https://moz-activity-streams-dev.s3.amazonaws.com"
+DEV_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(DEV_BUCKET_URL)
+DEV_UPDATE_URL = "{}/dist/update.rdf".format(DEV_BUCKET_URL)
 
 
 def make_dev_manifest(fresh_manifest=True):
@@ -66,8 +67,9 @@ def package(signing_key, signing_password):
     local("npm install")
     local("npm run package")
     print "signing..."
-    local("./node_modules/jpm/bin/jpm sign --api-key {} --api-secret {}"
-          .format(signing_key, signing_password), capture=True)
+    with hide("running"):
+        local("./node_modules/jpm/bin/jpm sign --api-key {} --api-secret {}"
+              .format(signing_key, signing_password))
     print "signing successful!"
     local("mv activity_streams_experiment-*.xpi dist/")
     local("mv \@activity-streams-*.update.rdf dist/update.rdf")
@@ -106,7 +108,6 @@ def upload_to_s3(bucket_name, file_path=None):
             update_manifest = bucket.get_key("dist/update.rdf")
             return (k, latest, update_manifest)
 
-    print "uploading {}".format(dir_path)
     headers = get_s3_headers()
     headers["Content-Type"] = "application/x-xpinstall"
 
@@ -130,6 +131,8 @@ def upload_to_s3(bucket_name, file_path=None):
         "./dist/update.rdf", headers=headers)
     update_manifest.set_acl("public-read")
 
+    return (k, latest, update_manifest)
+
 
 def upload_html_to_s3(bucket_name, file_path=None):
     if file_path is None:
@@ -150,7 +153,7 @@ def upload_html_to_s3(bucket_name, file_path=None):
     if key is None:
         upload_text()
     else:
-        md5_hash = hashlib.md5(file_path.open("rb").read()).hexdigest()
+        md5_hash = hashlib.md5(open(file_path, "rb").read()).hexdigest()
         if key.etag[1:-1] != md5_hash:
             upload_text()
 
@@ -170,8 +173,10 @@ def deploy(run_package=True, dev_deploy=False,
 
     start = time.time()
 
+    bucket_name = env.bucket_name
     if dev_deploy:
         print "Making Dev deploy"
+        bucket_name = env.bucket_name_dev
         make_dev_manifest()
 
     run_package = to_bool(run_package)
@@ -185,8 +190,9 @@ def deploy(run_package=True, dev_deploy=False,
 
     latest = get_latest_package_path()
 
-    key, latest, update_manifest = upload_to_s3(env.bucket_name, latest)
-    upload_html_to_s3(env.bucket_name, "dist/latest/latest.html")
+    print "uploading {} to bucket {}".format(latest, bucket_name)
+    key, latest, update_manifest = upload_to_s3(bucket_name, latest)
+    upload_html_to_s3(bucket_name, "dist/latest/latest.html")
     end = time.time()
 
     time_taken = int(end-start)

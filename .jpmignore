@@ -32,3 +32,4 @@ npm-shrinkwrap.json
 requirements.txt
 webpack.config.js
 yamscripts.yml
+continuous-integration.sh
