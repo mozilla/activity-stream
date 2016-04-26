@@ -1,20 +1,51 @@
+import os
 import time
 import hashlib
 import json
 from operator import itemgetter
 from distutils.util import strtobool
 import boto
-from fabric.api import local, env
+from fabric.api import local, env, hide
 from boto.s3.key import Key
 from pathlib import Path
 
 env.bucket_name = "moz-activity-streams"
+env.bucket_name_dev = "moz-activity-streams-dev"
 S3 = boto.connect_s3()
+
+DEV_BUCKET_URL = "https://moz-activity-streams-dev.s3.amazonaws.com"
+DEV_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(DEV_BUCKET_URL)
+DEV_UPDATE_URL = "{}/dist/update.rdf".format(DEV_BUCKET_URL)
+
+
+def make_dev_manifest(fresh_manifest=True):
+    if to_bool(fresh_manifest):
+        restore_manifest()
+
+    with open("./package.json", "r+") as f:
+        current_time = int(time.time())
+        manifest = json.load(f)
+        manifest["title"] = "{} dev".format(manifest["title"])
+        manifest["updateLink"] = DEV_UPDATE_LINK
+        manifest["updateURL"] = DEV_UPDATE_URL
+        manifest["version"] = "{}-dev-{}".format(
+            manifest["version"], current_time)
+        f.seek(0)
+        f.truncate(0)
+        json.dump(manifest, f,
+                  sort_keys=True, indent=2, separators=(',', ': '))
+
+
+def restore_manifest():
+    local("git checkout -- ./package.json")
 
 
 def to_bool(value):
     if not isinstance(value, bool):
-        return strtobool(value)
+        try:
+            return strtobool(value)
+        except:
+            return True if value else False
     else:
         return value
 
@@ -27,10 +58,19 @@ def get_s3_headers():
 
 
 def package(signing_key, signing_password):
+    try:
+        print "Cleaning local artifacts"
+        local("rm *.rdf")
+        local("rm *.xpi")
+    except:
+        print "Nothing to clean"
     local("npm install")
     local("npm run package")
-    local("./node_modules/jpm/bin/jpm sign --api-key {} --api-secret {}"
-          .format(signing_key, signing_password))
+    print "signing..."
+    with hide("running"):
+        local("./node_modules/jpm/bin/jpm sign --api-key {} --api-secret {}"
+              .format(signing_key, signing_password))
+    print "signing successful!"
     local("mv activity_streams_experiment-*.xpi dist/")
     local("mv \@activity-streams-*.update.rdf dist/update.rdf")
     local("rm dist/activity-streams-*.xpi")
@@ -68,7 +108,6 @@ def upload_to_s3(bucket_name, file_path=None):
             update_manifest = bucket.get_key("dist/update.rdf")
             return (k, latest, update_manifest)
 
-    print "uploading {}".format(dir_path)
     headers = get_s3_headers()
     headers["Content-Type"] = "application/x-xpinstall"
 
@@ -95,14 +134,50 @@ def upload_to_s3(bucket_name, file_path=None):
     return (k, latest, update_manifest)
 
 
-def deploy(run_package=True, signing_key=None, signing_password=None):
+def upload_html_to_s3(bucket_name, file_path=None):
+    if file_path is None:
+        file_path = "artifacts/latest/latest.html"
+
+    bucket = S3.get_bucket(bucket_name)
+
+    def upload_text():
+        headers = get_s3_headers()
+        headers["Content-Type"] = "text/html"
+        key = Key(bucket)
+        key.name = "dist/latest.html"
+        key.set_contents_from_filename(file_path, headers=headers)
+        key.set_acl("public-read")
+
+    # upload latest html if different
+    key = bucket.get_key("dist/latest.html")
+    if key is None:
+        upload_text()
+    else:
+        md5_hash = hashlib.md5(open(file_path, "rb").read()).hexdigest()
+        if key.etag[1:-1] != md5_hash:
+            upload_text()
+
+
+def deploy(run_package=True, dev_deploy=False,
+           signing_key=None, signing_password=None):
     if not (signing_key is not None and signing_password is not None):
-        with open(".amo_config.json", "r") as f:
-            amo_config = json.load(f)
-            signing_key = amo_config["api-key"]
-            signing_password = amo_config["api-secret"]
+        config_path = os.environ.get("AMO_CONFIG_FILE", ".amo_config.json")
+        if os.path.isfile(config_path):
+            with open(config_path, "r") as f:
+                amo_config = json.load(f)
+                signing_key = amo_config["api-key"]
+                signing_password = amo_config["api-secret"]
+        else:
+            signing_key = os.environ["AMO_KEY"]
+            signing_password = os.environ["AMO_PASSWORD"]
 
     start = time.time()
+
+    bucket_name = env.bucket_name
+    if dev_deploy:
+        print "Making Dev deploy"
+        bucket_name = env.bucket_name_dev
+        make_dev_manifest()
 
     run_package = to_bool(run_package)
     end_signing = None
@@ -110,9 +185,14 @@ def deploy(run_package=True, signing_key=None, signing_password=None):
         package(signing_key, signing_password)
         end_signing = time.time()
 
+    if dev_deploy:
+        restore_manifest()
+
     latest = get_latest_package_path()
 
-    key, latest, update_manifest = upload_to_s3(env.bucket_name, latest)
+    print "uploading {} to bucket {}".format(latest, bucket_name)
+    key, latest, update_manifest = upload_to_s3(bucket_name, latest)
+    upload_html_to_s3(bucket_name, "artifacts/latest/latest.html")
     end = time.time()
 
     time_taken = int(end-start)
