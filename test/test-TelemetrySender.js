@@ -54,6 +54,9 @@ exports.test_TelemetrySender_prefs = function*(assert) {
   simplePrefs.prefs.telemetry = true;
   assert.ok(app._telemetrySender.enabled, "telemetry is enabled");
 
+  simplePrefs.prefs["performance.log"] = true;
+  assert.ok(app._telemetrySender.logging, "logging is enabled");
+
   let testEndpoint = "https://example.com/";
   simplePrefs.prefs["telemetry.ping.endpoint"] = testEndpoint;
   assert.equal(app._telemetrySender._pingEndpoint, testEndpoint, "expected ping endpoint received");
@@ -61,6 +64,7 @@ exports.test_TelemetrySender_prefs = function*(assert) {
 
 before(exports, function*() {
   simplePrefs.prefs.telemetry = true;
+  simplePrefs.prefs["performance.log"] = false;
   simplePrefs.prefs["telemetry.ping.endpoint"] = `http://localhost:${port}/activity-streams`;
   app = new ActivityStreams();
 });
