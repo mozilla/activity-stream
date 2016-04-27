@@ -17,7 +17,7 @@ const CALENDAR_HEADINGS = {
   nextWeek: "dddd",
   lastDay: "[Yesterday]",
   lastWeek: "[Last] dddd",
-  sameElse: "DD/MM/YYYY"
+  sameElse: "dddd MMMM D, YYYY"
 };
 
 const ActivityFeedItem = React.createClass({
