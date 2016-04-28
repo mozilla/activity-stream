@@ -106,6 +106,13 @@
       "value": true
     },
     {
+      "name": "query.blockedURLs",
+      "title": "Blocked URLs",
+      "type": "string",
+      "value": "[]",
+      "hidden": true
+    },
+    {
       "name": "telemetry.ping.endpoint",
       "title": "Telemetry server endpoint",
       "type": "string",
