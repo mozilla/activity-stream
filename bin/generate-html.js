@@ -11,7 +11,7 @@ function template(rawOptions) {
 <html lang="en-us">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' ws:; script-src 'unsafe-inline' 'self' 'unsafe-eval'; img-src http: https: data:; style-src 'self' 'unsafe-inline'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src ws:; script-src 'unsafe-inline' 'self' 'unsafe-eval'; img-src http: https: data:; style-src 'self' 'unsafe-inline'">
     <title>${options.title}</title>
     <link rel="stylesheet" href="${options.baseUrl}main.css" />
     <link rel="icon" type="image/svg+xml" href="${options.baseUrl}img/newtab-icon.svg">
