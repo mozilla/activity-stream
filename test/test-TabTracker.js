@@ -263,6 +263,35 @@ exports.test_TabTracker_action_pings = function*(assert) {
   assert.deepEqual(eventData.msg.data, pingData, "We receive the expected ping data.");
 };
 
+exports.test_TabTracker_handleRouteChange_FirstLoad = function(assert) {
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  app._tabTracker.handleRouteChange({}, {isFirstLoad: true});
+  assert.deepEqual(app.tabData, {}, "tabData unaffected by isFirstLoad route change");
+};
+
+exports.test_TabTracker_handleRouteChange = function*(assert) {
+  const tabData = {
+    url: ACTIVITY_STREAMS_URL,
+    id: "-3-4",
+    on: () => {},
+    removeListener: () => {}
+  };
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  const pingData = yield new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic !== "tab-session-complete") {
+        return;
+      }
+      Services.obs.removeObserver(observe, "tab-session-complete");
+      resolve(JSON.parse(data));
+    }
+    Services.obs.addObserver(observe, "tab-session-complete");
+    app._tabTracker.onOpen(tabData);
+    app._tabTracker.handleRouteChange(tabData, {isFirstLoad: false});
+  });
+  assert.equal(pingData.unload_reason, "route_change");
+};
+
 exports.test_TabTracker_prefs = function*(assert) {
   simplePrefs.prefs.telemetry = false;
   assert.ok(!app._tabTracker.enabled, "tab tracker is disabled");

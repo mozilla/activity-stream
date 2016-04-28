@@ -5,11 +5,15 @@ const {connect} = require("react-redux");
 const {actions} = require("common/action-manager");
 
 const history = createHashHistory({queryKey: false});
+let isFirstLoad = true;
 
 const Routes = React.createClass({
   componentDidMount() {
     this.unlisten = history.listen(location => {
-      this.props.dispatch(actions.NotifyRouteChange(location));
+      this.props.dispatch(actions.NotifyRouteChange(Object.assign({}, location, {isFirstLoad})));
+      if (isFirstLoad) {
+        isFirstLoad = false;
+      }
       window.scroll(0, 0);
     });
   },
