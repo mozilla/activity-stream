@@ -123,6 +123,38 @@ exports["test cache invalidation on history change"] = function*(assert) {
   assert.ok(true, "places cache rebuilt after clearing history");
 };
 
+exports["test cache invalidation on blocklist change"] = function*(assert) {
+  let placesCachePromise;
+
+  placesCachePromise = makePlacesCachePromise();
+  let visits = [
+    {uri: NetUtil.newURI("https://example1.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example2.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
+  ];
+
+  yield PlacesTestUtils.addVisits(visits);
+  yield placesCachePromise;
+
+  assert.ok(true, "places cache rebuilt after adding links");
+
+  placesCachePromise = makePlacesCachePromise();
+  PlacesProvider.links.blockURL("https://example1.com/");
+  yield placesCachePromise;
+  placesCachePromise = makePlacesCachePromise();
+  PlacesProvider.links.blockURL("https://example2.com/");
+  yield placesCachePromise;
+
+  placesCachePromise = makePlacesCachePromise();
+  PlacesProvider.links.unblockURL("https://example1.com/");
+  yield placesCachePromise;
+
+  placesCachePromise = makePlacesCachePromise();
+  PlacesProvider.links.unblockAll();
+  yield placesCachePromise;
+
+  assert.ok(true, "places cache rebuilt after clearing history");
+};
+
 exports["test rebuilds don't clobber each other"] = function*(assert) {
   let placesCachePromise;
 

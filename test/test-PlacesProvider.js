@@ -658,8 +658,8 @@ exports.test_blocked_urls = function*(assert) {
   links = yield provider.getRecentLinks();
   assert.equal(links.length, visits.length, "added links and fetched links are the same");
 
-  provider.blockedURLs.save("https://example3.com/");
-  provider.blockedURLs.save("https://example4.com/");
+  provider.blockURL("https://example3.com/");
+  provider.blockURL("https://example4.com/");
 
   links = yield provider.getRecentLinks();
   assert.equal(links.length, visits.length - 2, "fetched links have two less link");
@@ -672,17 +672,17 @@ exports.test_blocked_urls = function*(assert) {
   sizeQueryResult = yield provider.getHistorySize({ignoreBlocked: true});
   assert.equal(sizeQueryResult, visits.length, "history honors ignoreBlocked");
 
-  provider.blockedURLs.remove("https://example4.com/");
+  provider.unblockURL("https://example4.com/");
 
   links = yield provider.getRecentLinks();
   assert.equal(links.length, visits.length - 1, "fetched links have one less link");
 
-  provider.blockedURLs.clear();
+  provider.unblockAll();
   links = yield provider.getRecentLinks();
   assert.equal(links.length, visits.length, "fetched links have the expected number of links");
 
   // bookmarks
-  provider.blockedURLs.save("https://example5.com/");
+  provider.blockURL("https://example5.com/");
   links = yield provider.getRecentBookmarks();
   assert.equal(links.length, 0, "bookmarks are blocked as well");
   sizeQueryResult = yield provider.getBookmarksSize();
@@ -693,7 +693,7 @@ exports.test_blocked_urls = function*(assert) {
   sizeQueryResult = yield provider.getBookmarksSize({ignoreBlocked: true});
   assert.equal(sizeQueryResult, 1, "bookmarkSize honors ignoreBlocked");
 
-  provider.blockedURLs.remove("https://example5.com/");
+  provider.unblockURL("https://example5.com/");
   links = yield provider.getRecentBookmarks();
   assert.equal(links.length, 1, "expected number of bookmarks");
   sizeQueryResult = yield provider.getBookmarksSize();
