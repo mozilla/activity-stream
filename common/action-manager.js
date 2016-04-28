@@ -14,6 +14,9 @@ const am = new ActionManager([
   "HIGHLIGHTS_LINKS_REQUEST",
   "HIGHLIGHTS_LINKS_RESPONSE",
   "BLOCK_URL",
+  "NOTIFY_BLOCK_URL",
+  "NOTIFY_UNBLOCK_URL",
+  "NOTIFY_UNBLOCK_ALL",
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_HISTORY_DELETE_CANCELLED",
   "NOTIFY_PERFORM_SEARCH",
@@ -123,6 +126,18 @@ function NotifyHistoryDelete(data) {
   }
 }
 
+function NotifyBlockURL(url) {
+  return Notify("NOTIFY_BLOCK_URL", {type: "NOTIFY_BLOCK_URL", data: url});
+}
+
+function NotifyUnblockURL(url) {
+  return Notify("NOTIFY_UNBLOCK_URL", {type: "NOTIFY_UNBLOCK_URL", data: url});
+}
+
+function NotifyUnblockAll() {
+  return Notify("NOTIFY_UNBLOCK_ALL", {type: "NOTIFY_UNBLOCK_ALL"});
+}
+
 function NotifyPerformSearch(data) {
   return Notify("NOTIFY_PERFORM_SEARCH", data);
 }
@@ -160,6 +175,9 @@ am.defineActions({
   RequestHighlightsLinks,
   RequestSearchState,
   BlockUrl,
+  NotifyBlockURL,
+  NotifyUnblockURL,
+  NotifyUnblockAll,
   NotifyHistoryDelete,
   NotifyPerformSearch,
   NotifyRouteChange,
