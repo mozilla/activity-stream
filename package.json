@@ -106,16 +106,25 @@
       "value": true
     },
     {
+      "name": "query.blockedURLs",
+      "title": "Blocked URLs",
+      "type": "string",
+      "value": "[]",
+      "hidden": true
+    },
+    {
       "name": "telemetry.ping.endpoint",
       "title": "Telemetry server endpoint",
       "type": "string",
-      "value": "https://tiles.services.mozilla.com/v3/links/activity-stream"
+      "value": "https://tiles.services.mozilla.com/v3/links/activity-stream",
+      "hidden": true
     },
     {
       "name": "embedly.endpoint",
       "title": "Embedly Endpoint",
       "type": "string",
-      "value": "https://embedly-proxy.stage.mozaws.net/v2/extract"
+      "value": "https://embedly-proxy.stage.mozaws.net/v2/extract",
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-streams",

@@ -633,6 +633,73 @@ exports.test_Links_getHistorySize = function*(assert) {
   assert.equal(size, 1, "expected history size");
 };
 
+exports.test_blocked_urls = function*(assert) {
+  let provider = PlacesProvider.links;
+  let {
+    TRANSITION_TYPED,
+  } = PlacesUtils.history;
+
+  let timeToday = timeDaysAgo(0);
+  let timeEarlier = timeDaysAgo(2);
+
+  let visits = [
+    {uri: NetUtil.newURI("https://example1.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example2.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example3.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example4.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
+  ];
+  yield PlacesTestUtils.addVisits(visits);
+  yield Bookmarks.insert({url: "https://example5.com/", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});
+
+  let links;
+  let sizeQueryResult;
+
+  // history
+  links = yield provider.getRecentLinks();
+  assert.equal(links.length, visits.length, "added links and fetched links are the same");
+
+  provider.blockURL("https://example3.com/");
+  provider.blockURL("https://example4.com/");
+
+  links = yield provider.getRecentLinks();
+  assert.equal(links.length, visits.length - 2, "fetched links have two less link");
+
+  sizeQueryResult = yield provider.getHistorySize();
+  assert.equal(sizeQueryResult, visits.length - 2, "history size honors blocklist");
+
+  links = yield provider.getRecentLinks({ignoreBlocked: true});
+  assert.equal(links.length, visits.length, "ignore blocked returns all links");
+  sizeQueryResult = yield provider.getHistorySize({ignoreBlocked: true});
+  assert.equal(sizeQueryResult, visits.length, "history honors ignoreBlocked");
+
+  provider.unblockURL("https://example4.com/");
+
+  links = yield provider.getRecentLinks();
+  assert.equal(links.length, visits.length - 1, "fetched links have one less link");
+
+  provider.unblockAll();
+  links = yield provider.getRecentLinks();
+  assert.equal(links.length, visits.length, "fetched links have the expected number of links");
+
+  // bookmarks
+  provider.blockURL("https://example5.com/");
+  links = yield provider.getRecentBookmarks();
+  assert.equal(links.length, 0, "bookmarks are blocked as well");
+  sizeQueryResult = yield provider.getBookmarksSize();
+  assert.equal(links.length, 0, "bookmark size is zero");
+
+  links = yield provider.getRecentBookmarks({ignoreBlocked: true});
+  assert.equal(links.length, 1, "ignore blocked returns all links");
+  sizeQueryResult = yield provider.getBookmarksSize({ignoreBlocked: true});
+  assert.equal(sizeQueryResult, 1, "bookmarkSize honors ignoreBlocked");
+
+  provider.unblockURL("https://example5.com/");
+  links = yield provider.getRecentBookmarks();
+  assert.equal(links.length, 1, "expected number of bookmarks");
+  sizeQueryResult = yield provider.getBookmarksSize();
+  assert.equal(sizeQueryResult, 1, "bookmark size is one");
+};
+
 before(exports, function*() {
   let faviconExpiredPromise = new Promise(resolve => {
     systemEvents.once("places-favicons-expired", resolve);
