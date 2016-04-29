@@ -2,16 +2,20 @@
 "use strict";
 const defaults = {
   baseUrl: "",
-  title: "Loading..."
+  title: "Loading...",
+  csp: "on"
 };
 
 function template(rawOptions) {
   const options = Object.assign({}, defaults, rawOptions || {});
+  const csp = options.csp === "on" ?
+    "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; connect-src ws:; script-src 'self'; img-src http: https: data:; style-src 'self' 'unsafe-inline'\">" :
+    "";
   return `<!doctype html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src ws:; script-src 'unsafe-inline' 'self' 'unsafe-eval'; img-src http: https: data:; style-src 'self' 'unsafe-inline'">
+    ${csp}
     <title>${options.title}</title>
     <link rel="stylesheet" href="${options.baseUrl}main.css" />
     <link rel="icon" type="image/svg+xml" href="${options.baseUrl}img/newtab-icon.svg">
