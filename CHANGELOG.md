@@ -1,3 +1,21 @@
+<a name="1.0.14"></a>
+## 1.0.14 (2016-04-29)
+
+* 1.0.13 changelog ([97bcd0a](https://github.com/mozilla/activity-streams/commit/97bcd0a))
+* 1.0.14 ([0bd871d](https://github.com/mozilla/activity-streams/commit/0bd871d))
+* chore (content): #310 Add meta tag for CSP ([14ea41e](https://github.com/mozilla/activity-streams/commit/14ea41e))
+* feat(blocking): #484 blocking APIs ([b08bf93](https://github.com/mozilla/activity-streams/commit/b08bf93))
+* feat(blocking): #484 persist blocking URLs ([829f5ca](https://github.com/mozilla/activity-streams/commit/829f5ca))
+* feat(reporting): #477 End session on route change ([f0fe8e9](https://github.com/mozilla/activity-streams/commit/f0fe8e9))
+* chore(addon): Update description in package.json ([5eb9032](https://github.com/mozilla/activity-streams/commit/5eb9032))
+* chore(prefs): hide API endpoint prefs ([3cf22af](https://github.com/mozilla/activity-streams/commit/3cf22af))
+* chore(reporting): #585 Add logger for telemetry ([03e22ec](https://github.com/mozilla/activity-streams/commit/03e22ec))
+* chore(reporting): #585 Document telemetry events ([1db7e6b](https://github.com/mozilla/activity-streams/commit/1db7e6b))
+* fix(content): #590 Update search placeholder ([ce2a9d2](https://github.com/mozilla/activity-streams/commit/ce2a9d2))
+* fix(content): #592 Change date format for headers ([83c8e25](https://github.com/mozilla/activity-streams/commit/83c8e25))
+
+
+
 <a name="1.0.13"></a>
 ## 1.0.13 (2016-04-26)
 
