@@ -9,7 +9,7 @@ const defaults = {
 function template(rawOptions) {
   const options = Object.assign({}, defaults, rawOptions || {});
   const csp = options.csp === "on" ?
-    "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; connect-src ws:; script-src 'self'; img-src http: https: data:; style-src 'self' 'unsafe-inline'\">" :
+    "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; img-src http: https: data:; style-src 'self' 'unsafe-inline'\">" :
     "";
   return `<!doctype html>
 <html lang="en-us">
