@@ -1,6 +1,6 @@
 {
   "name": "activity-streams",
-  "description": "A feed-based view on user history",
+  "description": "A rich visual history feed and a reimagined home page make it easier than ever to find exactly what you're looking for in Firefox.",
   "version": "1.0.13",
   "author": "Mozilla (https://mozilla.org/)",
   "bugs": {
