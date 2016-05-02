@@ -80,7 +80,7 @@ describe("DeleteMenu", () => {
   it("should fire a block event when Never show on this page is clicked", done => {
     setup(null, {
       dispatch(a) {
-        if (a.type === "BLOCK_URL") {
+        if (a.type === "NOTIFY_BLOCK_URL") {
           assert.equal(a.data, DEFAULT_PROPS.url);
           done();
         }

@@ -20,7 +20,7 @@ const DeleteMenu = React.createClass({
     this.userEvent("DELETE");
   },
   onBlock(url, index) {
-    this.props.dispatch(actions.BlockUrl(this.props.url));
+    this.props.dispatch(actions.NotifyBlockURL(this.props.url));
     this.userEvent("BLOCK");
   },
   render() {

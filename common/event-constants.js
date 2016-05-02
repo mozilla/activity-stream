@@ -12,6 +12,8 @@ const constants = {
     "CLICK",
     "DELETE",
     "BLOCK",
+    "UNBLOCK",
+    "UNBLOCK_ALL",
     "SHARE",
     "LOAD_MORE",
     "SEARCH"
