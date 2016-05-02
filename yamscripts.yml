@@ -14,9 +14,11 @@ scripts:
 
   copyTestImages: cpx "node_modules/tippy-top-sites/images/**/*" data/content/favicons/images
 
+  copyTopSitesJson: cpx "node_modules/tippy-top-sites/top_sites.json" data/content/favicons
+
 # bundle: Bundle assets for production
   bundle:
-    pre: =>clean && =>copyTestImages
+    pre: =>clean && =>copyTestImages && =>copyTopSitesJson
     static: cpx "content-src/static/**/*" data/content
     webpack: NODE_ENV=production webpack
     css: node-sass content-src/main.scss -o data/content
@@ -26,7 +28,7 @@ scripts:
 # start: Start watching/compiling assets,
   start:
     _parallel: true
-    pre: =>clean && =>copyTestImages
+    pre: =>clean && =>copyTestImages && =>copyTopSitesJson
     static: =>bundle:static -- -w
     webpack: webpack -w
     css: =>bundle:css && =>bundle:css -- -w
@@ -38,7 +40,7 @@ scripts:
 
 # test: Run all tests once
   test:
-    pre: =>bundle && =>copyTestImages
+    pre: =>bundle && =>copyTestImages && =>copyTopSitesJson
     # test:lint: Run eslint
     lint: eslint . && jscs . && sass-lint -v -q
     checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
