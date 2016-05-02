@@ -73,18 +73,18 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   }
 );
 
-const selectTopSites = createSelector(
+const selectTopSites = module.exports.selectTopSites = createSelector(
   [
     state => state.TopSites,
     state => state.Blocked
   ],
   (TopSites, Blocked) => {
     return Object.assign({}, TopSites, {
-      rows: TopSites.rows
+      rows: dedupe.one(TopSites.rows
         // Removed blocked URLs
         .filter(site => !Blocked.urls.has(site.url))
         // Add first run stuff to the end if init has already happened
-        .concat(TopSites.init ? firstRunData.TopSites : [])
+        .concat(TopSites.init ? firstRunData.TopSites : []))
     });
   }
 );

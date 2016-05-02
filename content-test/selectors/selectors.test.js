@@ -7,6 +7,7 @@ const firstRunData = require("lib/first-run-data");
 const {
   justDispatch,
   selectSpotlight,
+  selectTopSites,
   selectNewTabSites,
   selectSiteIcon,
   getBackgroundRGB,
@@ -162,6 +163,42 @@ describe("selectors", () => {
         Blocked: {urls: new Set([frecent[0].url])}
       });
       assert.equal(state.rows.length, firstRunData.Highlights.length + frecent.length - 1);
+    });
+  });
+  describe("selectTopSites", () => {
+    it("should add default sites if init is true", () => {
+      const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
+      const result = selectTopSites({
+        TopSites: {init: true, rows},
+        Blocked: {urls: new Set()}
+      });
+      assert.isTrue(result.init);
+      assert.deepEqual(result.rows, rows.concat(firstRunData.TopSites));
+    });
+    it("should not add default sites if init is false", () => {
+      const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
+      const result = selectTopSites({
+        TopSites: {init: false, rows},
+        Blocked: {urls: new Set()}
+      });
+      assert.isFalse(result.init);
+      assert.deepEqual(result.rows, rows);
+    });
+    it("should dedupe by url", () => {
+      const rows = [{url: "http://foo.com"}, {url: "http://www.foo.com"}];
+      const result = selectTopSites({
+        TopSites: {init: false, rows},
+        Blocked: {urls: new Set()}
+      });
+      assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
+    });
+    it("should remove items in the block list", () => {
+      const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
+      const result = selectTopSites({
+        TopSites: {init: false, rows},
+        Blocked: {urls: new Set(["http://bar.com"])}
+      });
+      assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
     });
   });
   describe("selectNewTabSites", () => {
