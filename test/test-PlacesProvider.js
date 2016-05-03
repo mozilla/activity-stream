@@ -331,7 +331,9 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
       newBookmarks.push(data);
       if (bookmarks.length === addCount) {
         provider.off("bookmarkAdded", handleEvent);
-        resolve(newBookmarks);
+        // Note: bookmarks are sorted by bookmarkDateCreated which depends on the order of calls made to Bookmarks.insert().
+        // Thus, newBookmarks reversed represents the correct sorted order of generated bookmarks.
+        resolve(newBookmarks.reverse());
       }
     }
     provider.on("bookmarkAdded", handleEvent);
@@ -371,7 +373,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
     assert.ok(isVisitDateOK(links[i].bookmarkDateCreated), "bookmarkDateCreated date is within expected range");
   }
 
-  // test beforeDate and atferDate functionality
+  // test beforeDate and afterDate functionality
   // set yesterday timestamp in milliseconds
   let yesterday = timeDaysAgo(1) / 1000 - 1000;
 
