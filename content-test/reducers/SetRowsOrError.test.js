@@ -72,10 +72,13 @@ describe("setRowsOrError", () => {
     assert.deepEqual(state.rows, prevRows);
   });
 
-  it("should remove rows that are deleted", () => {
-    const action = {type: "NOTIFY_HISTORY_DELETE", data: "http://foo.com"};
-    const prevRows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
-    const state = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
-    assert.deepEqual(state.rows, [{url: "http://bar.com"}]);
-  });
+  ((event) => {
+    it(`should remove a row removed via ${event}`, () => {
+      const action = {type: event, data: "http://foo.com"};
+      const prevRows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
+      const state = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
+      assert.deepEqual(state.rows, [{url: "http://bar.com"}]);
+    });
+  })("NOTIFY_HISTORY_DELETE", "NOTIFY_BLOCK_URL");
+
 });

@@ -13,7 +13,6 @@ const am = new ActionManager([
   "RECENT_LINKS_RESPONSE",
   "HIGHLIGHTS_LINKS_REQUEST",
   "HIGHLIGHTS_LINKS_RESPONSE",
-  "BLOCK_URL",
   "NOTIFY_BLOCK_URL",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UNBLOCK_ALL",
@@ -110,14 +109,6 @@ function RequestSearchState() {
   return RequestExpect("SEARCH_STATE_REQUEST", "SEARCH_STATE_RESPONSE");
 }
 
-function BlockUrl(url) {
-  alert("We're still working on this feature. Thanks for your patience!");
-  return {
-    type: "BLOCK_URL",
-    data: url
-  };
-}
-
 function NotifyHistoryDelete(data) {
   if (confirm("Are you sure you want to delete this from your entire history? This action cannot be undone.")) {
     return Notify("NOTIFY_HISTORY_DELETE", data);
@@ -127,15 +118,15 @@ function NotifyHistoryDelete(data) {
 }
 
 function NotifyBlockURL(url) {
-  return Notify("NOTIFY_BLOCK_URL", {type: "NOTIFY_BLOCK_URL", data: url});
+  return Notify("NOTIFY_BLOCK_URL", url);
 }
 
 function NotifyUnblockURL(url) {
-  return Notify("NOTIFY_UNBLOCK_URL", {type: "NOTIFY_UNBLOCK_URL", data: url});
+  return Notify("NOTIFY_UNBLOCK_URL", url);
 }
 
 function NotifyUnblockAll() {
-  return Notify("NOTIFY_UNBLOCK_ALL", {type: "NOTIFY_UNBLOCK_ALL"});
+  return Notify("NOTIFY_UNBLOCK_ALL");
 }
 
 function NotifyPerformSearch(data) {
@@ -174,7 +165,6 @@ am.defineActions({
   RequestMoreRecentLinks,
   RequestHighlightsLinks,
   RequestSearchState,
-  BlockUrl,
   NotifyBlockURL,
   NotifyUnblockURL,
   NotifyUnblockAll,

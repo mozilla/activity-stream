@@ -20,7 +20,10 @@ describe("NewTabPage", () => {
   });
 
   function setupConnected(dispatch = () => {}) {
-    instance = renderWithProvider(<ConnectedNewTabPage />, {dispatch});
+    instance = TestUtils.findRenderedComponentWithType(
+      renderWithProvider(<ConnectedNewTabPage />, {dispatch}),
+      NewTabPage
+    );
     searchInstance = TestUtils.findRenderedComponentWithType(instance, Search);
   }
 
@@ -76,6 +79,37 @@ describe("NewTabPage", () => {
       TestUtils.Simulate.change(searchInstance.refs.input);
       TestUtils.Simulate.click(searchInstance.refs.button);
     });
+  });
+
+  describe("settings", () => {
+    it("should hide the settings menu by default", () => {
+      assert.equal(instance.refs.settingsMenu.props.visible, false);
+    });
+    it("should show the settings menu when the settings button is clicked", () => {
+      TestUtils.Simulate.click(instance.refs.settingsLink);
+      assert.equal(instance.refs.settingsMenu.props.visible, true);
+    });
+    it("should fire a user event when unblock all is clicked", done => {
+      setupConnected(a => {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "UNBLOCK_ALL");
+          assert.equal(a.data.page, "NEW_TAB");
+          done();
+        }
+      });
+      const blockLink = TestUtils.scryRenderedDOMComponentsWithClass(instance.refs.settingsMenu, "context-menu-link")[0];
+      TestUtils.Simulate.click(blockLink);
+    });
+    it("should create an action when unblock all is clicked", done => {
+      setupConnected(a => {
+        if (a.type === "NOTIFY_UNBLOCK_ALL") {
+          done();
+        }
+      });
+      const blockLink = TestUtils.scryRenderedDOMComponentsWithClass(instance.refs.settingsMenu, "context-menu-link")[0];
+      TestUtils.Simulate.click(blockLink);
+    });
+
   });
 
   describe("delete events", () => {

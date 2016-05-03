@@ -30,6 +30,7 @@ module.exports = function setRowsOrError(requestType, responseType) {
           }
         }
         break;
+      case am.type("NOTIFY_BLOCK_URL"):
       case am.type("NOTIFY_HISTORY_DELETE"):
         state.rows = prevState.rows.filter(val => val.url !== action.data);
         break;

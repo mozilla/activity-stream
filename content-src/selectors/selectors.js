@@ -34,12 +34,10 @@ function isValidSpotlightSite(site) {
 
 const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
-    state => state.Highlights,
-    state => state.Blocked
+    state => state.Highlights
   ],
-  (Highlights, Blocked) => {
+  (Highlights) => {
     const rows = Highlights.rows
-    .filter(site => !Blocked.urls.has(site.url))
     // Only concat first run data if init is true
     .concat(Highlights.init ? firstRunData.Highlights : [])
     .map(site => {
@@ -75,14 +73,11 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
 
 const selectTopSites = module.exports.selectTopSites = createSelector(
   [
-    state => state.TopSites,
-    state => state.Blocked
+    state => state.TopSites
   ],
-  (TopSites, Blocked) => {
+  (TopSites) => {
     return Object.assign({}, TopSites, {
       rows: dedupe.one(TopSites.rows
-        // Removed blocked URLs
-        .filter(site => !Blocked.urls.has(site.url))
         // Add first run stuff to the end if init has already happened
         .concat(TopSites.init ? firstRunData.TopSites : []))
     });
@@ -93,10 +88,9 @@ module.exports.selectNewTabSites = createSelector(
   [
     selectTopSites,
     state => state.History,
-    selectSpotlight,
-    state => state.Blocked
+    selectSpotlight
   ],
-  (TopSites, History, Spotlight, Blocked) => {
+  (TopSites, History, Spotlight) => {
 
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
@@ -106,7 +100,7 @@ module.exports.selectNewTabSites = createSelector(
     const historyRows = dedupe.group([
       topSitesRows,
       spotlightRows,
-      History.rows.filter(site => !Blocked.urls.has(site.url))])[2];
+      History.rows])[2];
 
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
@@ -142,29 +136,18 @@ const selectSiteIcon = createSelector(
 module.exports.selectHistory = createSelector(
   [
     selectSpotlight,
-    state => state.History,
-    state => state.Blocked
+    state => state.History
   ],
-  (Spotlight, History, Blocked) => {
+  (Spotlight, History) => {
     return {
       Spotlight,
-      History: Object.assign({}, History, {rows: History.rows.filter(site => !Blocked.urls.has(site.url))})
+      History
     };
   }
 );
 
 // Timeline Bookmarks
-module.exports.selectBookmarks = createSelector(
-  [
-    state => state.Bookmarks,
-    state => state.Blocked
-  ],
-  (Bookmarks, Blocked) => {
-    return {
-      Bookmarks: Object.assign({}, Bookmarks, {rows: Bookmarks.rows.filter(site => !Blocked.urls.has(site.url))})
-    };
-  }
-);
+module.exports.selectBookmarks = state => ({Bookmarks: state.Bookmarks});
 
 module.exports.selectSiteIcon = selectSiteIcon;
 module.exports.selectSiteIcon.BACKGROUND_FADE = BACKGROUND_FADE;

@@ -5,21 +5,33 @@ const TopSites = require("components/TopSites/TopSites");
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
+const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
 const {Link} = require("react-router");
 const setFavicon = require("lib/set-favicon");
-
+const classNames = require("classnames");
 const MAX_TOP_ACTIVITY_ITEMS = 10;
 const PAGE_NAME = "NEW_TAB";
 
 const NewTabPage = React.createClass({
-  // TODO: Replace with real search api via addon
   onSearch(value) {
     this.props.dispatch(actions.NotifyPerformSearch(value));
     this.props.dispatch(actions.NotifyEvent({
       event: "SEARCH",
       page: PAGE_NAME
     }));
+  },
+  getInitialState() {
+    return {
+      showSettingsMenu: false
+    };
+  },
+  resetBlockList() {
+    this.props.dispatch(actions.NotifyEvent({
+      event: "UNBLOCK_ALL",
+      page: PAGE_NAME
+    }));
+    this.props.dispatch(actions.NotifyUnblockAll());
   },
   componentDidMount() {
     document.title = "New Tab";
@@ -49,9 +61,24 @@ const NewTabPage = React.createClass({
 
           <section>
             <GroupedActivityFeed title="Recent Activity" sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME} />
-            <p className="timeline-link-container">
-              <Link className="timeline-link" to="/timeline">See all activity</Link>
-            </p>
+            <div className="bottom-links-container">
+              <Link className="bottom-link" to="/timeline"><span className="icon timeline" /> See all activity</Link>
+              <span className="link-wrapper-right">
+                <a
+                  ref="settingsLink"
+                  className={classNames("bottom-link", {active: this.state.showSettingsMenu})}
+                  onClick={() => this.setState({showSettingsMenu: !this.state.showSettingsMenu})} >
+                    <span className="icon settings" /> Settings
+                </a>
+                <ContextMenu
+                  ref="settingsMenu"
+                  visible={this.state.showSettingsMenu}
+                  onUpdate={showSettingsMenu => this.setState({showSettingsMenu})}
+                  options={[
+                    {label: "Reset Block List", onClick: this.resetBlockList}
+                  ]} />
+              </span>
+            </div>
           </section>
         </div>
       </div>

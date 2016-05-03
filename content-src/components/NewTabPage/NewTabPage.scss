@@ -4,20 +4,54 @@
   margin: 0 auto;
 }
 
-.timeline-link-container {
+.bottom-links-container {
   text-align: left;
+
+  .link-wrapper-right {
+    float: right;
+    position: relative;
+  }
+
+  .context-menu {
+    top: auto;
+    bottom: 100%;
+  }
 }
 
-.timeline-link {
+.bottom-link {
+  cursor: pointer;
+  display: inline-block;
   font-size: 12px;
   border: 1px solid $faintest-black;
   border-radius: 3px;
-  padding: 4px 16px;
+  padding: 8px 13px;
   color: $light-grey;
 
-  &:hover {
+  .icon {
+    float: left;
+    height: 16px;
+    vertical-align: middle;
+    width: 16px;
+    margin-right: 8px;
+    opacity: 0.4;
+
+    &.timeline {
+      background-image: url('img/glyph-activityStream-16.svg');
+    }
+
+    &.settings {
+      background-image: url('img/glyph-settings-16.svg');
+    }
+  }
+
+  &:hover,
+  &.active {
     background: $very-light-grey;
     color: inherit;
+
+    .icon {
+      opacity: 1;
+    }
   }
 }
 

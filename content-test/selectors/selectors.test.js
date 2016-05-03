@@ -59,8 +59,7 @@ describe("selectors", () => {
     function assertInvalidSite(site) {
       const invalidSite = Object.assign({}, validSpotlightSite, site);
       const result = selectSpotlight({
-        Highlights: {init: true, rows: [invalidSite, validSpotlightSite]},
-        Blocked: {urls: new Set()}
+        Highlights: {init: true, rows: [invalidSite, validSpotlightSite]}
       });
       assert.lengthOf(result.rows, 2 + firstRunData.Highlights.length);
       assert.equal(result.rows[0].url, validSpotlightSite.url);
@@ -83,8 +82,7 @@ describe("selectors", () => {
         favicon_colors: [{color: [11, 11, 11]}]
       };
       const results = selectSpotlight({
-        Highlights: {rows: [site]},
-        Blocked: {urls: new Set()}
+        Highlights: {rows: [site]}
       });
       assert.deepEqual(results.rows[0].backgroundColor, "rgba(11, 11, 11, 0.4)");
     });
@@ -95,23 +93,20 @@ describe("selectors", () => {
         favicon_colors: [{color: [11, 11, 11]}]
       };
       const results = selectSpotlight({
-        Highlights: {init: true, rows: [site]},
-        Blocked: {urls: new Set()}
+        Highlights: {init: true, rows: [site]}
       });
       assert.equal(results.rows[0].backgroundColor, "#111111");
     });
     it("should use a fallback bg color if no favicon_colors are available", () => {
       const site = {url: "https://foo.com"};
       const results = selectSpotlight({
-        Highlights: {init: true, rows: [site]},
-        Blocked: {urls: new Set()}
+        Highlights: {init: true, rows: [site]}
       });
       assert.ok(results.rows[0].backgroundColor, "should have a bg color");
     });
     it("should include first run items if init is true and Highlights is empty", () => {
       const results = selectSpotlight({
-        Highlights: {init: true, rows: []},
-        Blocked: {urls: new Set()}
+        Highlights: {init: true, rows: []}
       });
       firstRunData.Highlights.forEach((item, i) => {
         assert.equal(results.rows[i].url, item.url);
@@ -119,8 +114,7 @@ describe("selectors", () => {
     });
     it("should not include first run items if init is false", () => {
       const results = selectSpotlight({
-        Highlights: {init: false, rows: []},
-        Blocked: {urls: new Set()}
+        Highlights: {init: false, rows: []}
       });
       assert.lengthOf(results.rows, 0);
     });
@@ -156,21 +150,12 @@ describe("selectors", () => {
         images: []
       });
     });
-    it("should remove urls in block list", () => {
-      let frecent = fakeState.Highlights.rows.splice(0, 3);
-      state = selectSpotlight({
-        Highlights: {init: true, rows: frecent},
-        Blocked: {urls: new Set([frecent[0].url])}
-      });
-      assert.equal(state.rows.length, firstRunData.Highlights.length + frecent.length - 1);
-    });
   });
   describe("selectTopSites", () => {
     it("should add default sites if init is true", () => {
       const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
       const result = selectTopSites({
-        TopSites: {init: true, rows},
-        Blocked: {urls: new Set()}
+        TopSites: {init: true, rows}
       });
       assert.isTrue(result.init);
       assert.deepEqual(result.rows, rows.concat(firstRunData.TopSites));
@@ -178,8 +163,7 @@ describe("selectors", () => {
     it("should not add default sites if init is false", () => {
       const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
       const result = selectTopSites({
-        TopSites: {init: false, rows},
-        Blocked: {urls: new Set()}
+        TopSites: {init: false, rows}
       });
       assert.isFalse(result.init);
       assert.deepEqual(result.rows, rows);
@@ -187,16 +171,7 @@ describe("selectors", () => {
     it("should dedupe by url", () => {
       const rows = [{url: "http://foo.com"}, {url: "http://www.foo.com"}];
       const result = selectTopSites({
-        TopSites: {init: false, rows},
-        Blocked: {urls: new Set()}
-      });
-      assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
-    });
-    it("should remove items in the block list", () => {
-      const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
-      const result = selectTopSites({
-        TopSites: {init: false, rows},
-        Blocked: {urls: new Set(["http://bar.com"])}
+        TopSites: {init: false, rows}
       });
       assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
     });
@@ -218,23 +193,6 @@ describe("selectors", () => {
     it("should dedupe TopSites, Spotlight, and TopActivity", () => {
       const groups = [state.TopSites.rows, state.Spotlight.rows, state.TopActivity.rows];
       assert.deepEqual(groups, dedupe.group(groups));
-    });
-    it("should remove urls in block list", () => {
-      state = selectNewTabSites({
-        TopSites: {init: true, rows: [
-          {url: "foo1.com", lastVisitDate: 1},
-          {url: "bar2.com", lastVisitDate: 4},
-          {url: "baz3.com", lastVisitDate: 3}
-        ]},
-        Spotlight: {rows: []},
-        Highlights: {rows: []},
-        History: {rows: []},
-        Blocked: {urls: new Set(["foo1.com"])}
-      });
-      assert.deepEqual(state.TopSites.rows, [
-        {url: "bar2.com", lastVisitDate: 4},
-        {url: "baz3.com", lastVisitDate: 3}
-      ].concat(firstRunData.TopSites).splice(0, 6));
     });
   });
   describe("selectSiteIcon", () => {

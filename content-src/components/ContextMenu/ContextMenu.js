@@ -18,7 +18,7 @@ const ContextMenu = React.createClass({
     }
   },
   render() {
-    return (<div hidden={!this.props.visible} className="context-menu">
+    return (<span hidden={!this.props.visible} className="context-menu">
       <ul>
         {this.props.options.map((option, i) => {
           return (<li key={i}><a className="context-menu-link" onClick={() => {
@@ -27,7 +27,7 @@ const ContextMenu = React.createClass({
           }}>{option.label}</a></li>);
         })}
       </ul>
-    </div>);
+    </span>);
   }
 });
 
