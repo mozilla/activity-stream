@@ -88,6 +88,10 @@ exports["test TippyTopProvider processSite"] = function*(assert) {
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
     background_color: "#fff"
   }, tippyTopProvider.processSite(site));
+
+  // Test with a known site but prepend a non www subdomain. It shouldnt match.
+  site = {url: "https://support.mozilla.org"};
+  assert.deepEqual(site, tippyTopProvider.processSite(site));
 };
 
 require("sdk/test").run(exports);
