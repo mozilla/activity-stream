@@ -93,7 +93,8 @@
       "name": "query.cache",
       "title": "Enable query caching mode",
       "type": "bool",
-      "value": true
+      "value": true,
+      "hidden": true
     },
     {
       "name": "previews.enabled",
