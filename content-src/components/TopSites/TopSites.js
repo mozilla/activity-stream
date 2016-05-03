@@ -41,7 +41,7 @@ const TopSites = React.createClass({
       <div className="tiles-wrapper">
         {sites.map((site, i) => {
           const isActive = this.state.showContextMenu && this.state.activeTile === i;
-          return (<div key={site.lastVisitDate || i}>
+          return (<div className="tile-outer" key={site.lastVisitDate || i}>
             <a onClick={() => this.onClick(i)} className={classNames("tile", {active: isActive})} href={site.url}>
               <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
               <div hidden={site.type === FIRST_RUN_TYPE} className="tile-close-icon" onClick={(ev) => {

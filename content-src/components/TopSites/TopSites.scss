@@ -5,15 +5,20 @@
     @media (min-width: $break-point) {
       display: flex;
     }
-
-    > div {
-      position: relative;
-    }
   }
 
   .context-menu {
     top: 14px;
     right: 12px;
+  }
+
+  // This is a container for the delete menu
+  .tile-outer {
+    position: relative;
+    display: inline-block;
+    @media (min-width: $break-point) {
+      display: block;
+    }
   }
 
   .tile {
