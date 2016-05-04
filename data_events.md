@@ -130,8 +130,8 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "load_reason": "[newtab | focus]",
   "unload_reason": "[navigation | unfocus | refresh]",
 
-  "historySize": 446,
-  "bookmarkSize": 57,
+  "total_history_size": 446,
+  "total_bookmarks": 57,
   "tab_id": "-5-2",
   "load_latency": 774,
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
