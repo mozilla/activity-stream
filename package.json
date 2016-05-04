@@ -85,8 +85,7 @@
       "name": "performance.log",
       "title": "Enable Performance Logging",
       "type": "bool",
-      "value": false,
-      "hidden": true
+      "value": false
     },
     {
       "name": "query.cache",
@@ -99,15 +98,13 @@
       "name": "previews.enabled",
       "title": "Enable rich link previews",
       "type": "bool",
-      "value": true,
-      "hidden": true
+      "value": true
     },
     {
       "name": "telemetry",
       "title": "Enable system error and usage data collection",
       "type": "bool",
-      "value": true,
-      "hidden": true
+      "value": true
     },
     {
       "name": "query.blockedURLs",
