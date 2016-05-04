@@ -13,12 +13,62 @@ exports.test_memoizer = function*(assert) {
     return ++count;
   };
   let func = gMemoizer.memoize("testKey", testFunc);
-  assert.equal(func(), 1, "test function executes");
-  assert.equal(func(), 1, "cached result is obtained");
+  let result;
+
+  result = yield func();
+  assert.equal(result, 1, "test function executes");
+
+  result = yield func();
+  assert.equal(result, 1, "cached result is obtained");
 
   gMemoizer.invalidateMemos(["testKey"]);
-  assert.equal(func(), 2, "test function executes");
-  assert.equal(func(), 2, "cached result is obtained");
+  result = yield func();
+  assert.equal(result, 2, "test function executes");
+
+  result = yield func();
+  assert.equal(result, 2, "cached result is obtained");
+};
+
+exports.test_memoizer_replace_opt = function*(assert) {
+  let count = 0;
+  let testFunc = () => {
+    return ++count;
+  };
+  let func = gMemoizer.memoize("testKey", testFunc);
+  let result;
+
+  result = yield func();
+  assert.equal(result, 1, "test function executes");
+
+  result = yield func();
+  assert.equal(result, 1, "cached result is obtained");
+
+  result = yield func({replace: true});
+  assert.equal(result, 2, "test function executes");
+
+  result = yield func();
+  assert.equal(result, 2, "cached result is obtained");
+};
+
+exports.test_memoizer_replace_opt_sub_key = function*(assert) {
+  let count = 0;
+  let testFunc = () => {
+    return ++count;
+  };
+  let func = gMemoizer.memoize("testKey", testFunc);
+  let result;
+
+  result = yield func("sub-key");
+  assert.equal(result, 1, "test function executes");
+
+  result = yield func("sub-key");
+  assert.equal(result, 1, "cached result is obtained");
+
+  result = yield func("sub-key", {replace: true});
+  assert.equal(result, 2, "test function executes");
+
+  result = yield func("sub-key");
+  assert.equal(result, 2, "cached result is obtained");
 };
 
 exports.test_memoizer_prefs = function*(assert) {
@@ -28,11 +78,17 @@ exports.test_memoizer_prefs = function*(assert) {
     return ++count;
   };
   let func = gMemoizer.memoize("testKey", testFunc);
-  assert.equal(func(), 1, "test function executes");
-  assert.equal(func(), 2, "test function executes");
+  let result;
+
+  result = yield func();
+  assert.equal(result, 1, "test function executes");
+
+  result = yield func();
+  assert.equal(result, 2, "test function executes");
 
   simplePrefs.prefs["query.cache"] = true;
-  assert.equal(func(), 2, "cached result is obtained");
+  result = yield func();
+  assert.equal(result, 2, "cached result is obtained");
 };
 
 exports.test_memoizer_simple_params = function*(assert) {
@@ -42,10 +98,19 @@ exports.test_memoizer_simple_params = function*(assert) {
     return count * factor;
   };
   let func = gMemoizer.memoize("testKey", testFunc);
-  assert.equal(func(1), 1, "test function executes");
-  assert.equal(func(1), 1, "cached result is obtained");
-  assert.equal(func(2), 4, "cache takes into account arguments");
-  assert.equal(func(2), 4, "cached result is obtained");
+  let result;
+
+  result = yield func(1);
+  assert.equal(result, 1, "test function executes");
+
+  result = yield func(1);
+  assert.equal(result, 1, "cached result is obtained");
+
+  result = yield func(2);
+  assert.equal(result, 4, "cache takes into account arguments");
+
+  result = yield func(2);
+  assert.equal(result, 4, "cached result is obtained");
 };
 
 exports.test_memoizer_object_params = function*(assert) {
@@ -55,14 +120,24 @@ exports.test_memoizer_object_params = function*(assert) {
     return count * options.factor;
   };
   let func = gMemoizer.memoize("testKey", testFunc);
-  assert.equal(func({factor: 1}), 1, "test function executes");
-  assert.equal(func({factor: 1}), 1, "cached result is obtained");
-  assert.equal(func({factor: 2}), 4, "cache takes into account arguments");
-  assert.equal(func({factor: 2}), 4, "cached result is obtained");
+  let result;
+
+  result = yield func({factor: 1});
+  assert.equal(result, 1, "test function executes");
+
+  result = yield func({factor: 1});
+  assert.equal(result, 1, "cached result is obtained");
+
+  result = yield func({factor: 2});
+  assert.equal(result, 4, "cache takes into account arguments");
+
+  result = yield func({factor: 2});
+  assert.equal(result, 4, "cached result is obtained");
 };
 
 before(exports, function*() {
   gMemoizer = new Memoizer();
+  gMemoizer.reset();
   simplePrefs.prefs["query.cache"] = true;
 });
 

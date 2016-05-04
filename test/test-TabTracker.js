@@ -412,6 +412,7 @@ before(exports, function*() {
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
   app = new ActivityStreams({clientID});
+  app._memoizer.reset();
   ACTIVITY_STREAMS_URL = app.appURLs[1];
 });
 
