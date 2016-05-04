@@ -29,6 +29,48 @@ exports.test_memoizer = function*(assert) {
   assert.equal(result, 2, "cached result is obtained");
 };
 
+exports.test_memoizer_replace_opt = function*(assert) {
+  let count = 0;
+  let testFunc = () => {
+    return ++count;
+  };
+  let func = gMemoizer.memoize("testKey", testFunc);
+  let result;
+
+  result = yield func();
+  assert.equal(result, 1, "test function executes");
+
+  result = yield func();
+  assert.equal(result, 1, "cached result is obtained");
+
+  result = yield func({replace: true});
+  assert.equal(result, 2, "test function executes");
+
+  result = yield func();
+  assert.equal(result, 2, "cached result is obtained");
+};
+
+exports.test_memoizer_replace_opt_sub_key = function*(assert) {
+  let count = 0;
+  let testFunc = () => {
+    return ++count;
+  };
+  let func = gMemoizer.memoize("testKey", testFunc);
+  let result;
+
+  result = yield func("sub-key");
+  assert.equal(result, 1, "test function executes");
+
+  result = yield func("sub-key");
+  assert.equal(result, 1, "cached result is obtained");
+
+  result = yield func("sub-key", {replace: true});
+  assert.equal(result, 2, "test function executes");
+
+  result = yield func("sub-key");
+  assert.equal(result, 2, "cached result is obtained");
+};
+
 exports.test_memoizer_prefs = function*(assert) {
   simplePrefs.prefs["query.cache"] = false;
   let count = 0;
