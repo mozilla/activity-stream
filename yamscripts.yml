@@ -8,7 +8,7 @@ scripts:
 # once: Build/serve the assets and run the add-on
   once: =>bundle && =>firefox
 
-  clean: rm -rf data/content/* && mkdir -p data/content
+  clean: rimraf data/content/* && mkdirp data/content
 
   changelog: conventional-changelog -i CHANGELOG.md -s
 
