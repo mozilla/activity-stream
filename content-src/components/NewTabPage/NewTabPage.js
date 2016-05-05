@@ -61,24 +61,25 @@ const NewTabPage = React.createClass({
 
           <section>
             <GroupedActivityFeed title="Recent Activity" sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME} />
-            <div className="bottom-links-container">
-              <Link className="bottom-link" to="/timeline"><span className="icon timeline" /> See all activity</Link>
-              <span className="link-wrapper-right">
-                <a
-                  ref="settingsLink"
-                  className={classNames("bottom-link", {active: this.state.showSettingsMenu})}
-                  onClick={() => this.setState({showSettingsMenu: !this.state.showSettingsMenu})} >
-                    <span className="icon settings" /> Settings
-                </a>
-                <ContextMenu
-                  ref="settingsMenu"
-                  visible={this.state.showSettingsMenu}
-                  onUpdate={showSettingsMenu => this.setState({showSettingsMenu})}
-                  options={[
-                    {label: "Reset Block List", onClick: this.resetBlockList}
-                  ]} />
-              </span>
-            </div>
+          </section>
+
+          <section className="bottom-links-container">
+            <Link className="bottom-link" to="/timeline"><span className="icon timeline" /> See all activity</Link>
+            <span className="link-wrapper-right">
+              <a
+                ref="settingsLink"
+                className={classNames("bottom-link expand", {active: this.state.showSettingsMenu})}
+                onClick={() => this.setState({showSettingsMenu: !this.state.showSettingsMenu})} >
+                  <span className="icon settings" /> <span className="text">Settings</span>
+              </a>
+              <ContextMenu
+                ref="settingsMenu"
+                visible={this.state.showSettingsMenu}
+                onUpdate={showSettingsMenu => this.setState({showSettingsMenu})}
+                options={[
+                  {label: "Reset Block List", onClick: this.resetBlockList}
+                ]} />
+            </span>
           </section>
         </div>
       </div>
