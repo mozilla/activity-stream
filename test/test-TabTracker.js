@@ -13,7 +13,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
 const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version",
-                       "page", "load_reason", "locale", "historySize", "bookmarkSize", "action"];
+                       "page", "load_reason", "locale", "total_history_size", "total_bookmarks", "action"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
@@ -312,8 +312,8 @@ exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
   tabs.open(ACTIVITY_STREAMS_URL);
   let pingData = yield waitForPageLoadAndSessionComplete();
   checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
-  assert.equal(pingData.historySize, 0, "Nothing in history");
-  assert.equal(pingData.bookmarkSize, 0, "Nothing in bookmarks");
+  assert.equal(pingData.total_history_size, 0, "Nothing in history");
+  assert.equal(pingData.total_bookmarks, 0, "Nothing in bookmarks");
 
   // add visits and bookmark them
   yield PlacesTestUtils.insertAndBookmarkVisit("https://mozilla1.com/0");
@@ -331,8 +331,8 @@ exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
 
   tabs.open(ACTIVITY_STREAMS_URL);
   pingData = yield waitForPageLoadAndSessionComplete();
-  assert.equal(pingData.historySize, 2, "2 new visits history");
-  assert.equal(pingData.bookmarkSize, 2, "2 new bookmarks");
+  assert.equal(pingData.total_history_size, 2, "2 new visits history");
+  assert.equal(pingData.total_bookmarks, 2, "2 new bookmarks");
 
   PlacesTestUtils.clearBookmarks();
   yield PlacesTestUtils.clearHistory();
