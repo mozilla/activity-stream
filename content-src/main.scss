@@ -53,6 +53,15 @@ a {
   z-index: 100;
 }
 
+.show-on-init {
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+
+  &.on {
+    opacity: 1;
+  }
+}
+
 // Components
 @import './components/Header/Header';
 @import './components/Base/Base';

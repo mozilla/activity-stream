@@ -4,6 +4,7 @@ const {selectBookmarks} = require("selectors/selectors");
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const {RequestMoreBookmarks, NotifyEvent} = require("common/action-manager").actions;
 const LoadMore = require("components/LoadMore/LoadMore");
+const classNames = require("classnames");
 
 const PAGE_NAME = "TIMELINE_BOOKMARKS";
 
@@ -23,7 +24,7 @@ const TimelineBookmarks = React.createClass({
   },
   render() {
     const props = this.props;
-    return (<div className="wrapper">
+    return (<div className={classNames("wrapper", "show-on-init", {on: props.Bookmarks.init})}>
       <GroupedActivityFeed
         title="Just now"
         sites={props.Bookmarks.rows}
