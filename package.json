@@ -61,7 +61,7 @@
     "react-addons-test-utils": "0.14.7",
     "requirejs": "2.1.22",
     "rimraf": "2.5.2",
-    "sass-lint": "1.5.0",
+    "sass-lint": "1.7.0",
     "tippy-top-sites": "0.1.0",
     "webpack": "1.12.12",
     "webpack-env-loader-plugin": "0.1.4",
