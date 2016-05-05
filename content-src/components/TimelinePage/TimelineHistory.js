@@ -5,6 +5,7 @@ const {RequestMoreRecentLinks, NotifyEvent} = require("common/action-manager").a
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const LoadMore = require("components/LoadMore/LoadMore");
+const classNames = require("classnames");
 
 const PAGE_NAME = "TIMELINE_ALL";
 
@@ -24,7 +25,7 @@ const TimelineHistory = React.createClass({
   },
   render() {
     const props = this.props;
-    return (<div className="wrapper">
+    return (<div className={classNames("wrapper", "show-on-init", {on: props.History.init})}>
       <Spotlight page={PAGE_NAME} sites={props.Spotlight.rows} />
       <GroupedActivityFeed
         title="Just now"

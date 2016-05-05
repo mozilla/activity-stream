@@ -50,7 +50,7 @@ const NewTabPage = React.createClass({
           <Search onSearch={this.onSearch} />
         </section>
 
-        <div className="delayedFadeIn">
+        <div className={classNames("show-on-init", {on: this.props.isReady})}>
           <section>
             <TopSites page={PAGE_NAME} sites={props.TopSites.rows} />
           </section>
