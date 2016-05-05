@@ -126,7 +126,7 @@
       "name": "embedly.endpoint",
       "title": "Embedly Endpoint",
       "type": "string",
-      "value": "https://embedly-proxy.stage.mozaws.net/v2/extract",
+      "value": "https://embedly-proxy.services.mozilla.com/v2/extract",
       "hidden": true
     }
   ],
