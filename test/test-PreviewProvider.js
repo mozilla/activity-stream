@@ -231,6 +231,11 @@ exports.test_sanitize_urls = function*(assert) {
   let removeHash = "http://www.foobar.com/";
   sanitizedUrl = gPreviewProvider._sanitizeURL("http://www.foobar.com/#id=20");
   assert.equal(removeHash, sanitizedUrl, "removed hash field");
+
+  // Test with a %s in the query params
+  let expectedUrl = "https://bugzilla.mozilla.org/buglist.cgi";
+  sanitizedUrl = gPreviewProvider._sanitizeURL("https://bugzilla.mozilla.org/buglist.cgi?quicksearch=%s");
+  assert.equal(expectedUrl, sanitizedUrl, "invalid param exception swallowed");
 };
 
 exports.test_dedupe_urls = function*(assert) {
