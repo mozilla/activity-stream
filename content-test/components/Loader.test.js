@@ -24,4 +24,16 @@ describe("Loader", () => {
     setup({show: true});
     assert.isFalse(el.hidden);
   });
+  it("should render a custom label", () => {
+    setup({label: "Hello world"});
+    assert.equal(el.textContent, " Hello world");
+  });
+  it("should add className to the default className", () => {
+    setup({className: "foo"});
+    assert.equal(el.className, "loader foo");
+  });
+  it("should add 'centered' class for centered prop", () => {
+    setup({centered: true});
+    assert.equal(el.className, "loader centered");
+  });
 });
