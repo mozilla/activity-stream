@@ -5,6 +5,7 @@ const TopSites = require("components/TopSites/TopSites");
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
+const Loader = require("components/Loader/Loader");
 const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
 const {Link} = require("react-router");
@@ -49,6 +50,13 @@ const NewTabPage = React.createClass({
         <section>
           <Search onSearch={this.onSearch} />
         </section>
+
+        <Loader
+          className="loading-notice"
+          show={!this.props.isReady}
+          label="Hang on tight! We are analyzing your history to personalize your experience"
+          centered
+        />
 
         <div className={classNames("show-on-init", {on: this.props.isReady})}>
           <section>
