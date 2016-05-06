@@ -35,6 +35,7 @@ script:
   - npm run travis
 
 deploy:
+    skip_cleanup: true
     provider: script
     script: bin/continuous-integration.sh
     on:
