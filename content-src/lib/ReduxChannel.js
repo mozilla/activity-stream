@@ -1,5 +1,5 @@
 const DEFAULT_OPTIONS = {
-  timeout: 5000,
+  timeout: 20000,
   target: window
 };
 
