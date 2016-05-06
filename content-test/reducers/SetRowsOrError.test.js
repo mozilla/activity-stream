@@ -24,10 +24,10 @@ describe("setRowsOrError", () => {
     assert.isTrue(state.isLoading);
   });
 
-  it("should set init to true / loading to false when a response is received", () => {
+  it("should not set init to true and should set loading to false when a response is received", () => {
     const action = {type: RESPONSE_TYPE};
     const state = reducer(undefined, action);
-    assert.isTrue(state.init);
+    assert.isFalse(state.init);
     assert.isFalse(state.isLoading);
   });
 
