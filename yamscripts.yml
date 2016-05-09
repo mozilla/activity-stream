@@ -45,7 +45,7 @@ scripts:
     lint: eslint . && jscs . && sass-lint -v -q
     checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests
-    jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"firefox"} --prefs ./test-prefs.json
+    jpm: jpm test -b -v ${JPM_FIREFOX_BINARY:-"firefox"} --prefs ./test-prefs.json
     # test:karma: Run content tests only
     karma: NODE_ENV=test karma start
     post: cat logs/reports/coverage/text-summary.txt
