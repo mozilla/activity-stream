@@ -1,7 +1,7 @@
-# Activity Streams Add-on
+# Activity Stream Add-on
 
 [![](https://img.shields.io/badge/available_on-Test_Pilot-0996F8.svg)](https://testpilot.firefox.com/experiments/activity-stream)
-[![Coverage Status](https://coveralls.io/repos/github/mozilla/activity-streams/badge.svg?branch=master)](https://coveralls.io/github/mozilla/activity-streams?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/mozilla/activity-stream/badge.svg?branch=master)](https://coveralls.io/github/mozilla/activity-stream?branch=master)
 
 ## TLDR; I just want to try the add-on
 
@@ -19,8 +19,8 @@
 Just clone the repo and install the dependencies.
 
 ```sh
-git clone https://github.com/mozilla/activity-streams.git
-cd activity-streams
+git clone https://github.com/mozilla/activity-stream.git
+cd activity-stream
 npm install
 ```
 
@@ -79,7 +79,7 @@ When you instantiate an `ActionManager`, you give it a list of types which are v
 const am = new ActionManager(["STUFF_REQUEST", "STUFF_RESPONSE"]);
 ```
 
-You can find the action manager instance for Activity streams at `common/action-manager`.
+You can find the action manager instance for Activity stream at `common/action-manager`.
 
 ### Dispatching actions
 To dispatch actions, all you have to do is call `am.actions.YourActionType(...)`.
