@@ -4,6 +4,10 @@
   align-items: center;
   font-size: 13px;
 
+  &.centered {
+    justify-content: center;
+  }
+
   .spinner {
     flex-shrink: 0;
     margin-right: 10px;

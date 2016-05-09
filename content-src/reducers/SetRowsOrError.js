@@ -17,12 +17,12 @@ module.exports = function setRowsOrError(requestType, responseType) {
         state.isLoading = true;
         break;
       case am.type(responseType):
-        state.init = true;
         state.isLoading = false;
         if (action.error) {
           state.rows = meta.append ? prevState.rows : [];
           state.error = action.data;
         } else {
+          state.init = true;
           state.rows = meta.append ? prevState.rows.concat(action.data) : action.data;
           state.error = false;
           if (!action.data || !action.data.length) {
