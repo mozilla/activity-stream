@@ -4,7 +4,7 @@
   "version": "1.0.15",
   "author": "Mozilla (https://mozilla.org/)",
   "bugs": {
-    "url": "https://github.com/mozilla/activity-streams/issues"
+    "url": "https://github.com/mozilla/activity-stream/issues"
   },
   "dependencies": {
     "classnames": "2.2.3",
@@ -72,12 +72,12 @@
   "engines": {
     "firefox": ">=45.0 <=*"
   },
-  "homepage": "https://github.com/mozilla/activity-streams",
+  "homepage": "https://github.com/mozilla/activity-stream",
   "icon": "resource://activity-streams/data/content/img/ActivityStream-32.svg",
   "keywords": [
     "mozilla",
     "firefox",
-    "activity-streams"
+    "activity-stream"
   ],
   "license": "MPL-2.0",
   "main": "lib/main.js",
@@ -129,7 +129,7 @@
       "hidden": true
     }
   ],
-  "repository": "mozilla/activity-streams",
+  "repository": "mozilla/activity-stream",
   "scripts": {
     "once": "npm run bundle && npm run firefox",
     "clean": "rimraf data/content/* && mkdirp data/content",
@@ -166,7 +166,7 @@
     "yamscripts": "yamscripts compile",
     "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
   },
-  "title": "activity-streams-experiment",
+  "title": "Activity Stream",
   "updateLink": "https://moz-activity-streams.s3.amazonaws.com/dist/activity-streams-latest.xpi",
   "updateURL": "https://moz-activity-streams.s3.amazonaws.com/dist/update.rdf",
   "permissions": {
