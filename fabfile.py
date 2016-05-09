@@ -11,6 +11,7 @@ from pathlib import Path
 
 env.bucket_name = "moz-activity-streams"
 env.bucket_name_dev = "moz-activity-streams-dev"
+env.amo_addon_name = "activity_streams_experiment"
 S3 = boto.connect_s3()
 
 DEV_BUCKET_URL = "https://moz-activity-streams-dev.s3.amazonaws.com"
@@ -25,7 +26,7 @@ def make_dev_manifest(fresh_manifest=True):
     with open("./package.json", "r+") as f:
         current_time = int(time.time())
         manifest = json.load(f)
-        manifest["title"] = "{} dev".format(manifest["title"])
+        manifest["title"] = "{} Dev".format(manifest["title"])
         manifest["updateLink"] = DEV_UPDATE_LINK
         manifest["updateURL"] = DEV_UPDATE_URL
         manifest["version"] = "{}-dev-{}".format(
@@ -71,7 +72,7 @@ def package(signing_key, signing_password):
         local("./node_modules/jpm/bin/jpm sign --api-key {} --api-secret {}"
               .format(signing_key, signing_password))
     print "signing successful!"
-    local("mv activity_streams_experiment-*.xpi dist/")
+    local("mv {}-*.xpi dist/".format(env.amo_addon_name))
     local("mv \@activity-streams-*.update.rdf dist/update.rdf")
     local("rm dist/activity-streams-*.xpi")
 
