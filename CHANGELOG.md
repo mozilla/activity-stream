@@ -1,3 +1,22 @@
+<a name="1.0.16"></a>
+## 1.0.16 (2016-05-10)
+
+* 1.0.15 changelog ([0ff3de0](https://github.com/mozilla/activity-stream/commit/0ff3de0))
+* 1.0.16 ([91c516a](https://github.com/mozilla/activity-stream/commit/91c516a))
+* fix (addon): #646 do not throw exception on invalid uri component ([edc3547](https://github.com/mozilla/activity-stream/commit/edc3547)), closes [#646](https://github.com/mozilla/activity-stream/issues/646)
+* fix(addon): send all links including those without embedly ([8d5fa28](https://github.com/mozilla/activity-stream/commit/8d5fa28))
+* fix(concurrency): guard against handlers called when ActivityStream object is gone ([1d78b8d](https://github.com/mozilla/activity-stream/commit/1d78b8d))
+* fix(travis): #650 skip cleanup for travis deploy ([61dda27](https://github.com/mozilla/activity-stream/commit/61dda27))
+* feat(content): add loading ui for >2s of loading ([54ea1f8](https://github.com/mozilla/activity-stream/commit/54ea1f8))
+* chore(meta): drop plural from activity stream in addon metadata ([eb4b6d4](https://github.com/mozilla/activity-stream/commit/eb4b6d4))
+* chore(previews): #565 use prod embedly proxy ([bdd89ba](https://github.com/mozilla/activity-stream/commit/bdd89ba))
+* chore(travis): Lock to 47.0 ([fd11f23](https://github.com/mozilla/activity-stream/commit/fd11f23))
+* chore(webpack): add json-loader to dependencies ([9937604](https://github.com/mozilla/activity-stream/commit/9937604))
+* style(content): #427 Fix buttons on New Tab Page ([ea981fd](https://github.com/mozilla/activity-stream/commit/ea981fd))
+* style(content): #610 Fade in main sections on init ([1755758](https://github.com/mozilla/activity-stream/commit/1755758))
+
+
+
 <a name="1.0.15"></a>
 ## 1.0.15 (2016-05-05)
 
