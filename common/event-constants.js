@@ -11,6 +11,7 @@ const constants = {
   events: new Set([
     "CLICK",
     "DELETE",
+    "BOOKMARK_DELETE",
     "BLOCK",
     "UNBLOCK",
     "UNBLOCK_ALL",
