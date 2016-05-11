@@ -70,7 +70,7 @@ to start the add-on. This way, when you make changes to the `content-src` folder
 
 ### Running Tests
 
-Run `npm tests` to run the tests once. Run `npm run help` for more options.
+Run `npm test` to run the tests once. Run `npm run help` for more options.
 
 ## Architecture - ActionManager
 When you instantiate an `ActionManager`, you give it a list of types which are valid for the application. If at any time you try to create an action with a type that isn't part of that list, it will throw an error. Yay!
