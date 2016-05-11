@@ -16,6 +16,7 @@ const am = new ActionManager([
   "NOTIFY_BLOCK_URL",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UNBLOCK_ALL",
+  "NOTIFY_BOOKMARK_DELETE",
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_HISTORY_DELETE_CANCELLED",
   "NOTIFY_PERFORM_SEARCH",
@@ -109,6 +110,10 @@ function RequestSearchState() {
   return RequestExpect("SEARCH_STATE_REQUEST", "SEARCH_STATE_RESPONSE");
 }
 
+function NotifyBookmarkDelete(data) {
+  return Notify("NOTIFY_BOOKMARK_DELETE", data);
+}
+
 function NotifyHistoryDelete(data) {
   if (confirm("Are you sure you want to delete this from your entire history? This action cannot be undone.")) {
     return Notify("NOTIFY_HISTORY_DELETE", data);
@@ -168,6 +173,7 @@ am.defineActions({
   NotifyBlockURL,
   NotifyUnblockURL,
   NotifyUnblockAll,
+  NotifyBookmarkDelete,
   NotifyHistoryDelete,
   NotifyPerformSearch,
   NotifyRouteChange,
