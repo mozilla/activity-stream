@@ -238,6 +238,38 @@ exports.test_Links_getFrecentLinks = function*(assert) {
   assert.equal(links[3].url, "https://mozilla4.com/3", "Expected 4th link");
 };
 
+exports.test_Links_deleteBookmark = function*(assert) {
+  let provider = PlacesProvider.links;
+
+  let bookmarks = [
+    {url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
+    {url: "https://mozilla1.com/1", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
+  ];
+
+  let links = yield provider.getRecentBookmarks();
+  assert.equal(links.length, 0, "empty bookmarks yields empty links");
+  let bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, 0, "empty bookmarks yields 0 size");
+
+  for (let placeInfo of bookmarks) {
+    yield Bookmarks.insert(placeInfo);
+  }
+
+  links = yield provider.getRecentBookmarks();
+  assert.equal(links.length, 2, "2 bookmarks on bookmark list");
+  bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, 2, "size 2 for 2 bookmarks added");
+
+  let bookmarkGuid = links[0].bookmarkGuid;
+  let deleted = yield provider.deleteBookmark(bookmarkGuid);
+  assert.equal(deleted.guid, bookmarkGuid, "the correct bookmark was deleted");
+
+  links = yield provider.getRecentBookmarks();
+  assert.equal(links.length, 1, "1 bookmark after deleting");
+  bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, 1, "size 1 after deleting");
+};
+
 exports.test_Links_deleteHistoryLink = function*(assert) {
   let provider = PlacesProvider.links;
   let {
