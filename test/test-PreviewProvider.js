@@ -168,6 +168,43 @@ exports.test_update_links = function*(assert) {
   });
 };
 
+exports.test_only_request_links_once = function*(assert) {
+  const msg1 = [{"url": "a.com", "sanitizedURL": "a.com", "cacheKey": "a.com"},
+                {"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com"},
+                {"url": "c.com", "sanitizedURL": "c.com", "cacheKey": "c.com"}];
+
+  const msg2 = [{"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com"},
+                {"url": "c.com", "sanitizedURL": "c.com", "cacheKey": "c.com"},
+                {"url": "d.com", "sanitizedURL": "d.com", "cacheKey": "d.com"}];
+
+  assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
+  let srv = httpd.startServerAsync(gPort);
+
+  let urlsRequested = {};
+  srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
+    let data = JSON.parse(
+        NetUtil.readInputStreamToString(
+          request.bodyInputStream,
+          request.bodyInputStream.available()
+        )
+    );
+    data.urls.forEach(url => urlsRequested[url] = (urlsRequested[url] + 1) || 1);
+    response.setHeader("Content-Type", "application/json", false);
+    response.write(JSON.stringify({"urls": {urlsRequested}}));
+  });
+
+  gPreviewProvider.asyncSaveLinks(msg1);
+  yield gPreviewProvider.asyncSaveLinks(msg2);
+
+  for (let url in urlsRequested) {
+    assert.equal(urlsRequested[url], 1, "URL was requested only once");
+  }
+
+  yield new Promise(resolve => {
+    srv.stop(resolve);
+  });
+};
+
 exports.test_filter_urls = function*(assert) {
   const fakeData = {
     get validLinks() {
@@ -268,20 +305,22 @@ exports.test_dedupe_urls = function*(assert) {
 };
 
 exports.test_mock_embedly_request = function*(assert) {
+  // the url in this test must be unique to other urls in this test file since
+  // we are testing for unique requests. See https://github.com/mozilla/activity-stream/issues/671
   const fakeSite = {
-    "url": "http://example.com/",
+    "url": "http://someuniqueurl.com/",
     "title": null,
     "lastVisitDate": 1459537019061,
     "frecency": 2000,
     "favicon": null,
     "bookmarkDateCreated": 1459537019061,
     "type": "history",
-    "sanitizedURL": "http://example.com/",
-    "cacheKey": "example.com/"
+    "sanitizedURL": "http://someuniqueurl.com/",
+    "cacheKey": "someuniqueurl.com/"
   };
   const fakeData = [fakeSite];
   const fakeDataCached = {"urls": {
-    "http://example.com/": {
+    "http://someuniqueurl.com/": {
       "embedlyMetaData": "some embedly metadata"
     }
   }};
