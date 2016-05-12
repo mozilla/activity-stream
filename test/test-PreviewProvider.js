@@ -4,6 +4,7 @@
 
 const {before, after} = require("sdk/test/utils");
 const simplePrefs = require("sdk/simple-prefs");
+const self = require("sdk/self");
 const {Loader} = require("sdk/test/loader");
 const {setTimeout} = require("sdk/timers");
 const loader = Loader(module);
@@ -323,10 +324,14 @@ exports.test_mock_embedly_request = function*(assert) {
     }
   }};
 
+  const embedlyVersionQuery = "?addon_version=";
   assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
-  let srv = httpd.startServerAsync(gPort);
 
+  let srv = httpd.startServerAsync(gPort);
   srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
+    // first, check that we're hitting the correct endpoint, which has the version included
+    assert.deepEqual(gPreviewProvider._embedlyEndpoint,
+      `http://localhost:${gPort}/embedlyLinkData${embedlyVersionQuery}${self.version}`, "we're hitting the correct endpoint");
     response.setHeader("Content-Type", "application/json", false);
     response.write(JSON.stringify(fakeDataCached));
   });
