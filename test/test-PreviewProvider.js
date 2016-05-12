@@ -304,6 +304,45 @@ exports.test_dedupe_urls = function*(assert) {
   });
 };
 
+exports.test_throw_out_non_requested_responses = function*(assert) {
+  const fakeSite1 = {"url": "http://example1.com/", "sanitizedURL": "http://example1.com/", "cacheKey": "example1.com/"};
+  const fakeSite2 = {"url": "http://example2.com/", "sanitizedURL": "http://example2.com/", "cacheKey": "example2.com/"};
+  const fakeSite3 = {"url": "http://example3.com/", "sanitizedURL": "http://example3.com/", "cacheKey": "example3.com/"};
+  // send only the first two sites
+  const fakeData = [fakeSite1, fakeSite2];
+
+  const fakeResponse = {"urls": {
+    "http://example1.com/": {
+      "embedlyMetaData": "some good embedly metadata for fake site 1"
+    },
+    "http://example2.com/": {
+      "embedlyMetaData": "some good embedly metadata for fake site 2"
+    },
+    "http://example3.com/": {
+      "embedlyMetaData": "oh no I didn't request this!"
+    }
+  }};
+
+  assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
+  let srv = httpd.startServerAsync(gPort);
+
+  srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
+    response.setHeader("Content-Type", "application/json", false);
+    response.write(JSON.stringify(fakeResponse));
+  });
+
+  yield gPreviewProvider.asyncSaveLinks(fakeData);
+
+  // our cache should contain example1.com and example2.com, and should not contain example3.com
+  assert.ok(ss.storage.embedlyData[fakeSite1.cacheKey].embedlyMetaData, "first site was saved as expected");
+  assert.ok(ss.storage.embedlyData[fakeSite2.cacheKey].embedlyMetaData, "second site was saved as expected");
+  assert.throws(() => ss.storage.embedlyData[fakeSite3.cacheKey].embedlyMetaData, "third site was not found in the cache");
+
+  yield new Promise(resolve => {
+    srv.stop(resolve);
+  });
+},
+
 exports.test_mock_embedly_request = function*(assert) {
   const fakeSite = {
     "url": "http://example.com/",
