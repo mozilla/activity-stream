@@ -134,9 +134,9 @@ exports.test_periodic_update = function*(assert) {
 exports.test_update_links = function*(assert) {
   let currentTime = Date.now();
   let fourDaysAgo = currentTime - (4 * 24 * 60 * 60 * 1000);
-  ss.storage.embedlyData.item_1 = {accessTime: fourDaysAgo, sanitizedURL: "http://example.com/1", cacheKey: "item_1"};
-  ss.storage.embedlyData.item_2 = {accessTime: fourDaysAgo, refreshTime: fourDaysAgo, sanitizedURL: "http://example.com/2", cacheKey: "item_2"};
-  ss.storage.embedlyData.item_3 = {accessTime: currentTime, refreshTime: currentTime, sanitizedURL: "http://example.com/3", cacheKey: "item_3"};
+  ss.storage.embedlyData["example.com/1"] = {url: "http://example.com/1", accessTime: fourDaysAgo, sanitizedURL: "http://example.com/1", cacheKey: "example.com/1"};
+  ss.storage.embedlyData["example.com/2"] = {url: "http://example.com/2", accessTime: fourDaysAgo, refreshTime: fourDaysAgo, sanitizedURL: "http://example.com/2", cacheKey: "example.com/2"};
+  ss.storage.embedlyData["example.com/3"] = {url: "http://example.com/3", accessTime: currentTime, refreshTime: currentTime, sanitizedURL: "http://example.com/3", cacheKey: "example.com/3"};
 
   assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
   let srv = httpd.startServerAsync(gPort);
@@ -148,6 +148,7 @@ exports.test_update_links = function*(assert) {
           request.bodyInputStream.available()
         )
     );
+    data.urls.forEach(link => assert.notEqual(link, null, "there are no null links"));
     let urls = {};
     for (let url of data.urls) {
       urls[url] = {"embedlyMetaData": "some embedly metadata"};
@@ -157,12 +158,12 @@ exports.test_update_links = function*(assert) {
   });
   yield gPreviewProvider.asyncUpdateLinks();
 
-  assert.equal(ss.storage.embedlyData.item_1.accessTime, fourDaysAgo, "link 1 access time is unchanged");
-  assert.ok(ss.storage.embedlyData.item_1.refreshTime, "link 1 refresh time is set");
-  assert.equal(ss.storage.embedlyData.item_2.accessTime, fourDaysAgo, "link 2 access time is unchanged");
-  assert.notEqual(ss.storage.embedlyData.item_2.refreshTime, fourDaysAgo, "link 2 refresh time is updated");
-  assert.equal(ss.storage.embedlyData.item_3.accessTime, currentTime, "link 3 access time is unchanged");
-  assert.equal(ss.storage.embedlyData.item_3.refreshTime, currentTime, "link 3 refresh time is unchanged");
+  assert.equal(ss.storage.embedlyData["example.com/1"].accessTime, fourDaysAgo, "link 1 access time is unchanged");
+  assert.ok(ss.storage.embedlyData["example.com/1"].refreshTime, "link 1 refresh time is set");
+  assert.equal(ss.storage.embedlyData["example.com/2"].accessTime, fourDaysAgo, "link 2 access time is unchanged");
+  assert.notEqual(ss.storage.embedlyData["example.com/2"].refreshTime, fourDaysAgo, "link 2 refresh time is updated");
+  assert.equal(ss.storage.embedlyData["example.com/3"].accessTime, currentTime, "link 3 access time is unchanged");
+  assert.equal(ss.storage.embedlyData["example.com/3"].refreshTime, currentTime, "link 3 refresh time is unchanged");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
