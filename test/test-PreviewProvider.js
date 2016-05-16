@@ -277,6 +277,25 @@ exports.test_sanitize_urls = function*(assert) {
   assert.equal(expectedUrl, sanitizedUrl, "%s doesn't cause unhandled exception");
 };
 
+exports.test_process_links = function*(assert) {
+  const fakeData = [
+    {"url": "http://foo.com/#foo", "title": "blah"},
+    {"url": "http://foo.com/#bar", "title": "blah"},
+    {"url": "http://www.foo.com/", "title": "blah"},
+    {"url": "https://foo.com/", "title": "blah"}
+  ];
+
+  const processedLinks = gPreviewProvider.processLinks(fakeData);
+
+  assert.equal(fakeData.length, processedLinks.length, "should not deduplicate or remove any links");
+
+  processedLinks.forEach((link, i) => {
+    assert.equal(link.url, fakeData[i].url, "each site has its original url");
+    assert.ok(link.sanitizedURL, "links have sanitizedURLs");
+    assert.ok(link.cacheKey, "links have cacheKeys");
+  });
+};
+
 exports.test_dedupe_urls = function*(assert) {
   const fakeData = [
     {"url": "http://foo.com/", "title": "blah"},
@@ -299,8 +318,6 @@ exports.test_dedupe_urls = function*(assert) {
   ];
 
   uniqueLinks.forEach((link, i) => {
-    assert.ok(link.sanitizedURL, "each site has a 'sanitizedURL' field");
-    assert.ok(link.cacheKey, "each site has a 'cacheKey' field");
     assert.ok(link.url, "each site has it's original url");
     assert.equal(link.url, expectedUrls[i].url, "links have been deduped");
   });
