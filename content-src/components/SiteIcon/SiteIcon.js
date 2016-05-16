@@ -33,8 +33,8 @@ const SiteIcon = React.createClass({
       <div ref="background" hidden={!showBackground} className="site-icon-background" style={{backgroundColor: site.backgroundColor}} />
       <div ref="border" hidden={!showBackground || !showBorder} className="inner-border" />
       <div className="site-icon-wrapper">
-        <img ref="favicon" width={faviconSize} height={faviconSize} className="site-icon-favicon" hidden={showFallback} src={site.favicon} />
-        <span ref="fallback" className="site-icon-fallback" style={fallbackStyle} hidden={!showFallback}>{site.firstLetter}</span>
+        <img ref="favicon" width={faviconSize} height={faviconSize} className="site-icon-favicon" hidden={true} src={site.favicon} />
+        <span ref="fallback" className="site-icon-fallback" style={fallbackStyle} hidden={false}>{site.firstLetter}</span>
       </div>
       <div ref="title" hidden={!showTitle} className="site-icon-title">{site.label}</div>
     </div>);
