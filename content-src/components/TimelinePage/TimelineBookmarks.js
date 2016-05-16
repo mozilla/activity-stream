@@ -26,7 +26,6 @@ const TimelineBookmarks = React.createClass({
     const props = this.props;
     return (<div className={classNames("wrapper", "show-on-init", {on: props.Bookmarks.init})}>
       <GroupedActivityFeed
-        title="Just now"
         sites={props.Bookmarks.rows}
         length={20}
         dateKey="bookmarkDateCreated"

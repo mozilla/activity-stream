@@ -28,7 +28,6 @@ const TimelineHistory = React.createClass({
     return (<div className={classNames("wrapper", "show-on-init", {on: props.History.init})}>
       <Spotlight page={PAGE_NAME} sites={props.Spotlight.rows} />
       <GroupedActivityFeed
-        title="Just now"
         sites={props.History.rows}
         page={PAGE_NAME}
         showDateHeadings={true} />

@@ -144,10 +144,11 @@ describe("GroupedActivityFeed", function() {
     it("should show date headings if showDateHeadings is true", () => {
       const item = renderWithProvider(<GroupedActivityFeed showDateHeadings={true} sites={sites} />);
       const titles = TestUtils.scryRenderedDOMComponentsWithClass(item, "section-title");
-      assert.lengthOf(titles, 3);
-      assert.equal(titles[0].innerHTML, "Yesterday");
-      assert.equal(titles[1].innerHTML, m3.format("[Last] dddd"));
-      assert.equal(titles[2].innerHTML, m4.format("dddd MMMM D, YYYY"));
+      assert.lengthOf(titles, 4);
+      assert.equal(titles[0].innerHTML, "Today");
+      assert.equal(titles[1].innerHTML, "Yesterday");
+      assert.equal(titles[2].innerHTML, m3.format("[Last] dddd"));
+      assert.equal(titles[3].innerHTML, m4.format("dddd MMMM D, YYYY"));
     });
     it("should not show date headings if showDateHeadings is false", () => {
       const item = renderWithProvider(<GroupedActivityFeed showDateHeadings={false} sites={sites} />);
