@@ -61,7 +61,9 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
     for (let key of expectedKeys) {
       assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
     }
-    assert.notEqual(ping.session_duration, 0, "session_duration is not 0");
+    if (ping.load_reason !== "none") {
+      assert.notEqual(ping.session_duration, 0, "session_duration is not 0");
+    }
   }
 }
 
@@ -123,6 +125,56 @@ exports.test_TabTracker_open_close_tab = function*(assert) {
 
   let secondsOpen = pingData.session_duration;
   assert.ok(secondsOpen > 0, "The tab should have stayed open for more than 0 seconds");
+};
+
+exports.test_TabTracker_unfocus_unloaded_tab = function*(assert) {
+  let openTabs = [];
+  let pingData = [];
+
+  let pingsSentPromise = createPingSentPromise(pingData, 3);
+
+  let tabsOpenedPromise = new Promise(resolve => {
+    let onOpen = function(tab) {
+      openTabs.push(tab);
+      if (openTabs.length === 2) {
+        tabs.removeListener("pageshow", onOpen);
+        resolve();
+      }
+    };
+
+    tabs.on("pageshow", onOpen);
+  });
+
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+  setTimeout(() => {
+    tabs.open(ACTIVITY_STREAMS_URL);
+  }, 0);
+
+  // Wait until both tabs have opened
+  yield tabsOpenedPromise;
+
+  // Close both tabs.
+  let tabClosedPromise = new Promise(resolve => {
+    for (let i in openTabs) {
+      openTabs[i].close(() => {
+        if (Number(i) === openTabs.length - 1) {
+          // We've closed the last tab
+          resolve();
+        }
+      });
+    }
+  });
+
+  yield tabClosedPromise;
+  yield pingsSentPromise;
+
+  // The third load reason is none because we activate a tab then
+  // quickly close it before it loads.
+  let loadReasons = ["none", "newtab", "focus"];
+  let unloadReasons = ["unfocus", "close", "close"];
+  checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
 };
 
 exports.test_TabTracker_reactivating = function*(assert) {
