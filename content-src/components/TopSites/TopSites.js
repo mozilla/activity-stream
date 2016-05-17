@@ -55,6 +55,7 @@ const TopSites = React.createClass({
               visible={isActive}
               onUpdate={val => this.setState({showContextMenu: val})}
               url={site.url}
+              bookmarkGuid={site.bookmarkGuid}
               page={this.props.page}
               index={i}
               source="TOP_SITES"

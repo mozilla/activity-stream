@@ -34,6 +34,9 @@ module.exports = function setRowsOrError(requestType, responseType) {
       case am.type("NOTIFY_HISTORY_DELETE"):
         state.rows = prevState.rows.filter(val => val.url !== action.data);
         break;
+      case am.type("NOTIFY_BOOKMARK_DELETE"):
+        state.rows = prevState.rows.filter(val => val.bookmarkGuid !== action.data);
+        break;
       default:
         return prevState;
     }

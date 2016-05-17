@@ -81,4 +81,13 @@ describe("setRowsOrError", () => {
     });
   })("NOTIFY_HISTORY_DELETE", "NOTIFY_BLOCK_URL");
 
+  ((event) => {
+    it(`should remove a row removed via ${event}`, () => {
+      const action = {type: event, data: "boorkmarkFOO"};
+      const prevRows = [{bookmarkGuid: "boorkmarkFOO"}, {bookmarkGuid: "boorkmarkBAR"}];
+      const state = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
+      assert.deepEqual(state.rows, [{bookmarkGuid: "boorkmarkBAR"}]);
+    });
+  })("NOTIFY_BOOKMARK_DELETE", "NOTIFY_BLOCK_URL");
+
 });

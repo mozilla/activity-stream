@@ -11,6 +11,9 @@ const DEFAULT_PROPS = {
   visible: false
 };
 
+// Bookmark guid for testing
+const BOOKMARK_GUID = "testBookmark";
+
 // In the menu, the delete option is first,
 // and the block option is second.
 const DELETE_INDEX = 0;
@@ -47,7 +50,7 @@ describe("DeleteMenu", () => {
     const links = TestUtils.scryRenderedDOMComponentsWithClass(instance, "context-menu-link");
     assert.lengthOf(links, 2);
   });
-  it("should fire a delete event when Remove from History is clicked", done => {
+  it("should fire a delete history event when Remove from History is clicked", done => {
     setup(null, {
       dispatch(a) {
         if (a.type === "NOTIFY_HISTORY_DELETE") {
@@ -59,6 +62,20 @@ describe("DeleteMenu", () => {
     assert.equal(deleteLink.innerHTML, "Remove from History");
     TestUtils.Simulate.click(deleteLink);
   });
+  it("should fire a delete bookmark event when Remove from Bookmarks is clicked", done => {
+    setup({
+      bookmarkGuid: BOOKMARK_GUID,
+    }, {
+      dispatch(a) {
+        if (a.type === "NOTIFY_BOOKMARK_DELETE") {
+          assert.equal(a.data, BOOKMARK_GUID);
+          done();
+        }
+      }
+    });
+    assert.equal(deleteLink.innerHTML, "Remove from Bookmarks");
+    TestUtils.Simulate.click(deleteLink);
+  });
   it("should fire a user event for Remove from History", done => {
     setup({
       page: "NEW_TAB",
@@ -68,6 +85,25 @@ describe("DeleteMenu", () => {
       dispatch(a) {
         if (a.type === "NOTIFY_USER_EVENT") {
           assert.equal(a.data.event, "DELETE");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "FEATURED");
+          assert.equal(a.data.action_position, 3);
+          done();
+        }
+      }
+    });
+    TestUtils.Simulate.click(deleteLink);
+  });
+  it("should fire a user event for Remove from Bookmarks", done => {
+    setup({
+      page: "NEW_TAB",
+      source: "FEATURED",
+      bookmarkGuid: BOOKMARK_GUID,
+      index: 3
+    }, {
+      dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "BOOKMARK_DELETE");
           assert.equal(a.data.page, "NEW_TAB");
           assert.equal(a.data.source, "FEATURED");
           assert.equal(a.data.action_position, 3);

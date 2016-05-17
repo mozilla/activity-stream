@@ -86,6 +86,7 @@ const ActivityFeedItem = React.createClass({
         visible={this.state.showContextMenu}
         onUpdate={val => this.setState({showContextMenu: val})}
         url={site.url}
+        bookmarkGuid={site.bookmarkGuid}
         page={this.props.page}
         index={this.props.index}
         source={this.props.source}
