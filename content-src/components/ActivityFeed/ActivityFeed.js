@@ -193,7 +193,7 @@ const GroupedActivityFeed = React.createClass({
               {sites.map((site, i) => {
                 globalCount++;
                 return (<ActivityFeedItem
-                    key={i}
+                    key={site.guid || i}
                     onClick={this.onClickFactory(globalCount)}
                     onShare={this.onShareFactory(globalCount)}
                     showImage={getRandomFromTimestamp(0.2, site)}
