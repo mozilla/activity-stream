@@ -244,6 +244,52 @@ exports.test_TabTracker_reactivating = function*(assert) {
   checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
 };
 
+exports.test_TabTracker_close_window_with_multitabs = function*(assert) {
+  let pingData = [];
+  let openTabs = [];
+
+  let pingsSentPromise = createPingSentPromise(pingData, 2);
+
+  let tabsOpenedPromise = new Promise(resolve => {
+    let onOpen = function(tab) {
+      openTabs.push(tab);
+      if (openTabs.length === 2) {
+        tabs.removeListener("ready", onOpen);
+        resolve();
+      }
+    };
+
+    tabs.on("ready", onOpen);
+  });
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+  // open another tab a bit later so that the first one could completely load
+  setTimeout(function() {
+    tabs.open(ACTIVITY_STREAMS_URL);
+  }, 1000);
+
+  yield tabsOpenedPromise;
+
+  // close both tabs
+  let tabClosedPromise = new Promise(resolve => {
+    for (let i in openTabs) {
+      openTabs[i].close(() => {
+        if (Number(i) === openTabs.length - 1) {
+          // We've closed the last tab
+          resolve();
+        }
+      });
+    }
+  });
+
+  yield tabClosedPromise;
+  yield pingsSentPromise;
+  let loadReasons = ["newtab", "newtab"];
+  let unloadReasons = ["unfocus", "close"];
+  checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
+};
+
 exports.test_TabTracker_refresh = function*(assert) {
   let openTab;
   let numLoads = 0;
