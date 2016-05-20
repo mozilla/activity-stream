@@ -67,6 +67,7 @@ function createSite(options = {}) {
     "lastVisitDate": date.valueOf(),
     "frecency": faker.random.number({min: 10, max: 2000}),
     "type": options.type,
+    "guid": faker.random.uuid(),
 
     // This is embedly
     "description": faker.lorem.sentences(),
