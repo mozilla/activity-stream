@@ -97,7 +97,10 @@ describe("SiteIcon", () => {
       assert.equal(instance.refs.background.style.backgroundColor, "rgb(0, 0, 0)");
     });
     it("should use the first letter of the host name", () => {
-      assert.equal(instance.refs.fallback.innerHTML, "f");
+      assert.equal(instance.refs.fallback.dataset.firstLetter, "f");
+    });
+    it("should not affect the content text", () => {
+      assert.equal(instance.refs.fallback.innerHTML, "");
     });
   });
 });
