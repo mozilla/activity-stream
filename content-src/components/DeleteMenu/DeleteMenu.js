@@ -15,22 +15,34 @@ const DeleteMenu = React.createClass({
       }));
     }
   },
-  onDelete() {
+  onDeleteHistory() {
     this.props.dispatch(actions.NotifyHistoryDelete(this.props.url));
     this.userEvent("DELETE");
+  },
+  onDeleteBookmark() {
+    this.props.dispatch(actions.NotifyBookmarkDelete(this.props.bookmarkGuid));
+    this.userEvent("BOOKMARK_DELETE");
   },
   onBlock(url, index) {
     this.props.dispatch(actions.NotifyBlockURL(this.props.url));
     this.userEvent("BLOCK");
   },
   render() {
+    const menuOptions = [];
+
+    // Add the correct remove option for either a bookmark or a history link
+    if (this.props.bookmarkGuid) {
+      menuOptions.push({label: "Remove from Bookmarks", onClick: this.onDeleteBookmark});
+    } else {
+      menuOptions.push({label: "Remove from History", onClick: this.onDeleteHistory});
+    }
+
+    menuOptions.push({label: "Never show on this page", onClick: this.onBlock});
+
     return (<ContextMenu
       visible={this.props.visible}
       onUpdate={this.props.onUpdate}
-      options={[
-        {label: "Remove from History", onClick: this.onDelete},
-        {label: "Never show on this page", onClick: this.onBlock}
-      ]} />);
+      options={menuOptions} />);
   }
 });
 
