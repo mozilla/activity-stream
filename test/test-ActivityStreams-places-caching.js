@@ -11,6 +11,7 @@ const {doGetFile} = require("./lib/utils");
 const {ActivityStreams} = require("lib/ActivityStreams");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {PlacesProvider} = require("lib/PlacesProvider");
+const {makeCachePromise} = require("./lib/cachePromises");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
@@ -55,19 +56,6 @@ let makeNotifsPromise = (cacheStatus) => {
   });
 };
 
-let makePlacesCachePromise = () => {
-  return new Promise(resolve => {
-    let precacheNotif = "activity-streams-places-cache-complete";
-    let waitForCache = (subject, topic, data) => {
-      if (topic === precacheNotif) {
-        Services.obs.removeObserver(waitForCache, precacheNotif);
-        resolve();
-      }
-    };
-    Services.obs.addObserver(waitForCache, precacheNotif);
-  });
-};
-
 exports["test caching follows prefs"] = function*(assert) {
   let tabList = [];
 
@@ -106,7 +94,7 @@ exports["test caching follows prefs"] = function*(assert) {
 exports["test cache invalidation on history change"] = function*(assert) {
   let placesCachePromise;
 
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   let visits = [
     {uri: NetUtil.newURI("https://example.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
   ];
@@ -116,7 +104,7 @@ exports["test cache invalidation on history change"] = function*(assert) {
 
   assert.ok(true, "places cache rebuilt after adding links");
 
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   yield PlacesTestUtils.clearHistory();
   yield placesCachePromise;
 
@@ -126,7 +114,7 @@ exports["test cache invalidation on history change"] = function*(assert) {
 exports["test cache invalidation on blocklist change"] = function*(assert) {
   let placesCachePromise;
 
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   let visits = [
     {uri: NetUtil.newURI("https://example1.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example2.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
@@ -137,18 +125,18 @@ exports["test cache invalidation on blocklist change"] = function*(assert) {
 
   assert.ok(true, "places cache rebuilt after adding links");
 
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   PlacesProvider.links.blockURL("https://example1.com/");
   yield placesCachePromise;
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   PlacesProvider.links.blockURL("https://example2.com/");
   yield placesCachePromise;
 
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   PlacesProvider.links.unblockURL("https://example1.com/");
   yield placesCachePromise;
 
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   PlacesProvider.links.unblockAll();
   yield placesCachePromise;
 
@@ -164,7 +152,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
   let url = `http://localhost:${port}${path}`;
   let srv = httpd.startServerAsync(port, null, doGetFile("test/resources"));
   gApp.unload();
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   gApp = new ActivityStreams({pageURL: url});
   yield placesCachePromise;
 
@@ -209,7 +197,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
   Services.obs.addObserver(countNotif, notif);
 
   // phase 1: add history visit and count
-  placesCachePromise = makePlacesCachePromise();
+  placesCachePromise = makeCachePromise("places");
   yield PlacesTestUtils.addVisits({uri: NetUtil.newURI("https://example.com/0"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED});
   yield placesCachePromise;
 
@@ -245,7 +233,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
 
 before(exports, function*() {
   simplePrefs.prefs["query.cache"] = true;
-  let placesCachePromise = makePlacesCachePromise();
+  let placesCachePromise = makeCachePromise("places");
   PlacesProvider.links.init();
   gApp = new ActivityStreams();
   gAppURL = gApp.appURLs[1];
