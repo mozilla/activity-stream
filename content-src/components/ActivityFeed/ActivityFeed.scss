@@ -172,6 +172,7 @@
   align-items: baseline;
   display: flex;
   flex-grow: 1;
+  flex-wrap: wrap;
   overflow: hidden;
 
   .feed-description {
