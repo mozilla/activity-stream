@@ -9,6 +9,7 @@
   "dependencies": {
     "classnames": "2.2.3",
     "fancy-dedupe": "0.1.0",
+    "get-youtube-id": "^1.0.0",
     "history": "1.17.0",
     "moment": "2.11.2",
     "react": "0.14.8",

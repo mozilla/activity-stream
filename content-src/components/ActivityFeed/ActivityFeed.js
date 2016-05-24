@@ -1,8 +1,9 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {justDispatch} = require("selectors/selectors");
+const {justDispatch, selectSitePreview} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
+const MediaPreview = require("components/MediaPreview/MediaPreview");
 const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
 const {prettyUrl, getRandomFromTimestamp} = require("lib/utils");
 const moment = require("moment");
@@ -63,6 +64,17 @@ const ActivityFeedItem = React.createClass({
       dateLabel = moment(date).format("h:mm A");
     }
 
+    let preview;
+    if (site.media && site.media.type === "video") {
+      const previewInfo = selectSitePreview(site);
+      if (previewInfo.previewURL) {
+        const previewProps = {
+          previewInfo,
+        };
+        preview = (<MediaPreview {...previewProps} />);
+      }
+    }
+
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid, fixed: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <span className="star" hidden={!site.bookmarkGuid} />
@@ -71,6 +83,7 @@ const ActivityFeedItem = React.createClass({
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{title}</h4>
             <span className="feed-url" ref="url">{prettyUrl(site.url)}</span>
+            {preview}
           </div>
           <div className="feed-stats">
             <div ref="lastVisit">{dateLabel}</div>
