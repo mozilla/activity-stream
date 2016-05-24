@@ -1,6 +1,7 @@
 const {createSelector} = require("reselect");
 const dedupe = require("lib/dedupe");
 const getBestImage = require("lib/getBestImage");
+const getVideoPreview = require("lib/getVideoPreview");
 const firstRunData = require("lib/first-run-data");
 const {prettyUrl, getBlackOrWhite, toRGBString, getRandomColor} = require("lib/utils");
 const urlParse = require("url-parse");
@@ -128,6 +129,26 @@ const selectSiteIcon = createSelector(
       backgroundColor,
       fontColor,
       label
+    };
+  }
+);
+
+module.exports.selectSitePreview = createSelector(
+  site => site,
+  site => {
+    const type = site.media ? site.media.type : null;
+    let thumbnail = null;
+    let previewURL = null;
+    if (type) {
+      thumbnail = getBestImage(site.images);
+      if (type === "video") {
+        previewURL = getVideoPreview(site.url);
+      }
+    }
+    return {
+      type,
+      thumbnail,
+      previewURL
     };
   }
 );
