@@ -7,15 +7,12 @@ const Search = React.createClass({
     };
   },
   doSearch(value) {
-    if (!value) {
-      return;
-    }
     this.props.onSearch(value);
   },
   render() {
     return (<form className="search-wrapper">
       <span className="search-label" />
-      <input ref="input" type="search" placeholder="Search the Web" required />
+      <input ref="input" type="search" placeholder="Search the Web" />
       <button ref="button" onClick={() => this.doSearch(this.refs.input.value)}>
         <span className="sr-only">Search</span>
       </button>
