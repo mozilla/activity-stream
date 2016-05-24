@@ -20,6 +20,16 @@
       transition: box-shadow 150ms;
       box-shadow: 0 0 0 2px $search-shadow;
     }
+
+    &:focus + button {
+      z-index: 1;
+      border-color: $search-blue;
+      transition: box-shadow 150ms;
+      box-shadow: 0 0 0 2px $search-shadow;
+      background-color: $search-blue;
+      background-image: url('img/glyph-forward-16-white.svg');
+      color: $white;
+    }
   }
 
   .search-label {
@@ -47,29 +57,14 @@
     background: $search-button-grey url('img/glyph-forward-16.svg') no-repeat center center;
     background-size: 16px 16px;
 
-    &:active,
-    &:focus {
-      z-index: 1;
-    }
-  }
-
-  input:valid + button {
-    background-color: $search-blue;
-    background-image: url('img/glyph-forward-16-white.svg');
-    border-color: $faint-black;
-    color: $white;
-
-    &:focus {
-      border-color: $white;
-      box-shadow: 0 0 0 2px $search-shadow;
-    }
-
     &:hover {
-      background-color: darken($search-blue, 5%);
-    }
-
-    &:active {
-      background-color: darken($search-blue, 10%);
+      z-index: 1;
+      border-color: $search-blue;
+      transition: box-shadow 150ms;
+      box-shadow: 0 0 0 2px $search-shadow;
+      background-color: $search-blue;
+      background-image: url('img/glyph-forward-16-white.svg');
+      color: $white;
     }
   }
 }
