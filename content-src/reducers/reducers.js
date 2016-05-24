@@ -1,5 +1,6 @@
 const am = require("common/action-manager");
 const setRowsOrError = require("reducers/SetRowsOrError");
+const {LINKS_QUERY_LIMIT} = require("common/constants");
 
 function setSearchState(type) {
   return (prevState = {currentEngine: {}, error: false, init: false}, action) => {
@@ -30,8 +31,8 @@ function setSearchState(type) {
 
 module.exports = {
   TopSites: setRowsOrError("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE"),
-  History: setRowsOrError("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE"),
-  Bookmarks: setRowsOrError("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE"),
+  History: setRowsOrError("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", LINKS_QUERY_LIMIT),
+  Bookmarks: setRowsOrError("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE", LINKS_QUERY_LIMIT),
   Highlights: setRowsOrError("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE"),
   Search: setSearchState("SEARCH_STATE_RESPONSE")
 };

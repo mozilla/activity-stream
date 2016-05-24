@@ -8,7 +8,7 @@ const DEFAULTS = {
   canLoadMore: true
 };
 
-module.exports = function setRowsOrError(requestType, responseType) {
+module.exports = function setRowsOrError(requestType, responseType, querySize) {
   return (prevState = DEFAULTS, action) => {
     const state = {};
     const meta = action.meta || {};
@@ -25,7 +25,13 @@ module.exports = function setRowsOrError(requestType, responseType) {
           state.init = true;
           state.rows = meta.append ? prevState.rows.concat(action.data) : action.data;
           state.error = false;
+          // If there is no data, we definitely can't load more.
           if (!action.data || !action.data.length) {
+            state.canLoadMore = false;
+          }
+          // If the results returned are less than the query size,
+          // we should be on our last page of results.
+          else if (querySize && action.data.length < querySize) {
             state.canLoadMore = false;
           }
         }
