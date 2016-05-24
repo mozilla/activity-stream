@@ -1,3 +1,17 @@
+<a name="1.0.18"></a>
+## 1.0.18 (2016-05-24)
+
+* 1.0.17 changelog ([527f2f3](https://github.com/mozilla/activity-stream/commit/527f2f3))
+* 1.0.18 ([f622774](https://github.com/mozilla/activity-stream/commit/f622774))
+* fix(addon): #698 Don't send session pings for inactive tabs when closing the broswer window ([bdf921c](https://github.com/mozilla/activity-stream/commit/bdf921c))
+* fix(addon): #716 Don't send session pings for tabs that finish loading in the background. ([a4c798d](https://github.com/mozilla/activity-stream/commit/a4c798d))
+* fix(addon): Add an unique id for each item sent to content ([a617dd4](https://github.com/mozilla/activity-stream/commit/a617dd4))
+* fix(addon): Bug 1273164 - The search bar from New Tab page is no longer working on latest Nightly ve ([cd35ce2](https://github.com/mozilla/activity-stream/commit/cd35ce2))
+* fix(content): #632 Bug 1269777 - Google search string from context menu wrongly searches ([02f5f70](https://github.com/mozilla/activity-stream/commit/02f5f70))
+* fix(content): #723 Bug 1273923 - Remove 'Please fill out this field' tooltip ([95fdbf6](https://github.com/mozilla/activity-stream/commit/95fdbf6))
+
+
+
 <a name="1.0.17"></a>
 ## 1.0.17 (2016-05-17)
 
@@ -6,12 +20,14 @@
 * Correct running tests command ([6a99f31](https://github.com/mozilla/activity-stream/commit/6a99f31))
 * fix (content): #604 remove custom titles from GroupedActivityFeed ([9838e39](https://github.com/mozilla/activity-stream/commit/9838e39)), closes [#604](https://github.com/mozilla/activity-stream/issues/604)
 * fix (content): #675 use cacheKey instead of lastVisitDate as react child key ([d19be4d](https://github.com/mozilla/activity-stream/commit/d19be4d)), closes [#675](https://github.com/mozilla/activity-stream/issues/675)
+* feat(addon): #679 Send addon version to embedly proxy ([4bf2606](https://github.com/mozilla/activity-stream/commit/4bf2606))
+* feat(addon): add the API to remove a bookmark ([17122bd](https://github.com/mozilla/activity-stream/commit/17122bd))
+* feat(content): add Remove Bookmark UI ([47ca9bd](https://github.com/mozilla/activity-stream/commit/47ca9bd))
 * fix(addon): #518 Fix Embedly proxy receiving null URLs ([d12f4d0](https://github.com/mozilla/activity-stream/commit/d12f4d0))
+* fix(addon): #638 Dedupe history for embedly only ([f7295ae](https://github.com/mozilla/activity-stream/commit/f7295ae))
 * fix(addon): #671 Reduce duplicate queries to embedly ([a5d6ad1](https://github.com/mozilla/activity-stream/commit/a5d6ad1))
 * fix(lint): order sass rules by alphabetical order ([61ec559](https://github.com/mozilla/activity-stream/commit/61ec559))
 * tests(addon): #428 Ensure embedly client throws out non-requested responses ([c0d9e80](https://github.com/mozilla/activity-stream/commit/c0d9e80))
-* feat(addon): #679 Send addon version to embedly proxy ([4bf2606](https://github.com/mozilla/activity-stream/commit/4bf2606))
-* feat(addon): add the API to remove a bookmark ([17122bd](https://github.com/mozilla/activity-stream/commit/17122bd))
 
 
 
