@@ -27,6 +27,10 @@
   .site-icon-fallback {
     text-transform: uppercase;
     opacity: 0.75;
+
+    &::after {
+      content: attr(data-first-letter);
+    }
   }
 
   .site-icon-title {
