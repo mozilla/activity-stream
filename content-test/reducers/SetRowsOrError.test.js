@@ -72,6 +72,37 @@ describe("setRowsOrError", () => {
     assert.deepEqual(state.rows, prevRows);
   });
 
+  it("should set canLoadMore to true by default", () => {
+    const action = {
+      type: RESPONSE_TYPE,
+      data: [{url: "a"}, {url: "b"}]
+    };
+    const state = reducer(undefined, action);
+    assert.isTrue(state.canLoadMore);
+  });
+
+  it("should set canLoadMore to false when data is missing", () => {
+    const state = reducer(undefined, {type: RESPONSE_TYPE});
+    assert.isFalse(state.canLoadMore);
+  });
+
+  it("should set canLoadMore to false when there are 0 items", () => {
+    const state = reducer(undefined, {type: RESPONSE_TYPE, data: []});
+    assert.isFalse(state.canLoadMore);
+  });
+
+  it("should set canLoadMore to false when the results are less than the querySize", () => {
+    reducer = setRowsOrError(REQUEST_TYPE, RESPONSE_TYPE, 3);
+    const state = reducer(undefined, {type: RESPONSE_TYPE, data: [{url: "a"}, {url: "b"}]});
+    assert.isFalse(state.canLoadMore);
+  });
+
+  it("should set canLoadMore to true when the results are equal to the querySize", () => {
+    reducer = setRowsOrError(REQUEST_TYPE, RESPONSE_TYPE, 3);
+    const state = reducer(undefined, {type: RESPONSE_TYPE, data: [{url: "a"}, {url: "b"}, {url: "c"}]});
+    assert.isTrue(state.canLoadMore);
+  });
+
   ((event) => {
     it(`should remove a row removed via ${event}`, () => {
       const action = {type: event, data: "http://foo.com"};
