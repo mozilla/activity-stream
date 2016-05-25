@@ -11,19 +11,10 @@
   .spinner {
     flex-shrink: 0;
     margin-right: 10px;
-    width: $loader-height;
-    height: $loader-height;
+    width: $loader-size;
+    height: $loader-size;
     display: inline-block;
-    border-radius: 50%;
-    background: transparent;
-    border-top: $loader-border-width solid $loader-color-light;
-    border-right: $loader-border-width solid $loader-color-light;
-    border-bottom: $loader-border-width solid $loader-color;
-    border-left: $loader-border-width solid $loader-color;
-    animation: spin $loader-duration linear infinite;
+    background-image: url('img/loading@2x.png');
+    background-size: $loader-size $loader-size;
   }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }

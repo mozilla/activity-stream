@@ -17,6 +17,7 @@ const constants = {
     "UNBLOCK_ALL",
     "SHARE",
     "LOAD_MORE",
+    "LOAD_MORE_SCROLL",
     "SEARCH"
   ]),
   sources: new Set([
