@@ -9,5 +9,9 @@ module.exports = {
   HIGHLIGHTS_THRESHOLDS: {
     created: "-3 day",
     visited: "-30 minutes",
-  }
+  },
+
+  // This is how many pixels before the bottom that
+  // infinite scroll is triggered
+  INFINITE_SCROLL_THRESHOLD: 20
 };

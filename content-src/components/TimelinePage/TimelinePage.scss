@@ -1,6 +1,7 @@
 main.timeline {
   margin-top: 50px;
   padding: 0;
+  overflow: hidden;
 
   .wrapper {
     margin-left: 20px;
@@ -66,5 +67,9 @@ main.timeline {
     background: $bg-grey;
     margin-bottom: 0;
     margin-left: $header-nav-width;
+    .infinite-scroll {
+      margin-top: $base-gutter/2;
+      margin-left: $feed-gutter-h;
+    }
   }
 }
