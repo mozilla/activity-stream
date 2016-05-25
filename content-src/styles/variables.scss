@@ -91,12 +91,7 @@ $placeholder-border: 1px solid $faintest-black;
 $item-shadow: 0 1px 0 0 $faintest-black;
 $item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
 
-$loader-height: 25px;
-$loader-width: 25px;
-$loader-border-width: 5px;
-$loader-color: $search-blue;
-$loader-color-light: rgba($loader-color, 0.1);
-$loader-duration: 1.3s;
+$loader-size: 16px;
 
 $context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.2);
 $context-menu-font-size: 14px;
