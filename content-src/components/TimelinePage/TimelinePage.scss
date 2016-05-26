@@ -67,8 +67,9 @@ main.timeline {
     background: $bg-grey;
     margin-bottom: 0;
     margin-left: $header-nav-width;
+
     .infinite-scroll {
-      margin-top: $base-gutter/2;
+      margin-top: $base-gutter / 2;
       margin-left: $feed-gutter-h;
     }
   }
