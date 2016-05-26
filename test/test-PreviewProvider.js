@@ -434,7 +434,8 @@ exports.test_get_enhanced_previews_only = function*(assert) {
 before(exports, function*() {
   simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/embedlyLinkData`;
   simplePrefs.prefs["previews.enabled"] = true;
-  gPreviewProvider = new PreviewProvider({initFresh: true});
+  let mockTabTracker = {handlePerformanceEvent: function() {}, generateEvent: function() {}};
+  gPreviewProvider = new PreviewProvider(mockTabTracker, {initFresh: true});
 });
 
 after(exports, function*() {
