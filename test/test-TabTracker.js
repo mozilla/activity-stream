@@ -399,6 +399,41 @@ exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
   }
 };
 
+exports.test_TabTracker_performance_action_pings = function*(assert) {
+  let performanceEventPromise = new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic === "performance-event") {
+        Services.obs.removeObserver(observe, "performance-event");
+        resolve(JSON.parse(data));
+      }
+    }
+    Services.obs.addObserver(observe, "performance-event");
+  });
+
+  let eventData1 = {
+    msg: {
+      data: {
+        source: "TOP_FRECENT_SITES_REQUEST",
+        event_id: "{c4f7e4a0-947b-7343-8a56-934c724492cc}",
+        event: "previewCacheHit",
+        value: 1
+      }
+    }
+  };
+  const event1 = app._tabTracker.generateEvent({source: "TOP_FRECENT_SITES_REQUEST"});
+  app._tabTracker.handlePerformanceEvent(event1, "previewCacheHit", 1);
+
+  let pingData = yield performanceEventPromise;
+  let additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page"];
+  for (let key of additionalKeys) {
+    assert.ok(pingData[key], `The ping has the additional key ${key}`);
+  }
+  assert.ok(/{[0-9a-f\-]+}/.test(eventData1.msg.data.event_id), "ping has a UUID as an event ID");
+  assert.deepEqual(eventData1.msg.data.source, pingData.source, "the ping has the correct source");
+  assert.deepEqual(eventData1.msg.data.event, pingData.event, "the ping has the correct event");
+  assert.deepEqual(eventData1.msg.data.value, pingData.value, "the ping has the correct value");
+};
+
 exports.test_TabTracker_handleRouteChange_FirstLoad = function(assert) {
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
   app._tabTracker.handleRouteChange({}, {isFirstLoad: true});
