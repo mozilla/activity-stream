@@ -6,7 +6,7 @@ const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Loader = require("components/Loader/Loader");
 const classNames = require("classnames");
-const {INFINITE_SCROLL_THRESHOLD} = require("common/constants");
+const {INFINITE_SCROLL_THRESHOLD, SCROLL_TOP_OFFSET} = require("common/constants");
 const debounce = require("lodash.debounce");
 
 const TimelineFeed = React.createClass({
@@ -23,46 +23,40 @@ const TimelineFeed = React.createClass({
       source: "ACTIVITY_FEED"
     }));
   },
-  scrollTop(value) {
-    if (value) {
-      this.refs.scrollElement.scrollTop = value;
-    } else {
-      return this.refs.scrollElement.scrollTop;
-    }
-  },
   windowHeight: null,
-  onScroll: debounce(function() {
-    // This is for tests
-    if (this.props.onScroll) {
-      this.props.onScroll();
-    }
-
-    if (!this.windowHeight) {
-      this.onResize();
-    }
-
+  handleScroll(values) {
     const {Feed} = this.props;
-    const scrollHeight = this.refs.scrollElement.scrollHeight;
-    const scrollBottom = this.scrollTop() + this.windowHeight;
+    const {scrollTop, scrollHeight} = values;
+
     if (!Feed.canLoadMore || Feed.isLoading) {
       return;
     }
 
-    if (scrollHeight - scrollBottom < INFINITE_SCROLL_THRESHOLD) {
+    if (!this.windowHeight) {
+      this.windowHeight = window.innerHeight;
+    }
+
+    if (scrollHeight - (scrollTop + this.windowHeight - SCROLL_TOP_OFFSET) < INFINITE_SCROLL_THRESHOLD) {
       this.loadMore();
     }
+  },
+  onResize: debounce(function() {
+    this.windowHeight = window.innerHeight;
+  }, 100),
+  onScroll: debounce(function() {
+    this.handleScroll({
+      scrollHeight: this.refs.scrollElement.scrollHeight,
+      scrollTop: this.refs.scrollElement.scrollTop
+    });
   }, 100),
   componentDidUpdate(prevProps) {
     // Firefox will emit a scroll event if we don't do this
     // There is a weird behaviour that makes the scroll bar stick in a lower
     // position sometimes if we set scrollTop to 0 instead of 1
     if (!prevProps.Feed.init && this.props.Feed.init) {
-      this.scrollTop(1);
+      this.refs.scrollElement.scrollTop = 1;
     }
   },
-  onResize: debounce(function() {
-    this.windowHeight = window.innerHeight;
-  }, 100),
   componentDidMount() {
     window.addEventListener("resize", this.onResize);
   },
@@ -90,8 +84,7 @@ TimelineFeed.propTypes = {
   Feed: React.PropTypes.object.isRequired,
   pageName: React.PropTypes.string.isRequired,
   loadMoreAction: React.PropTypes.func.isRequired,
-  dateKey: React.PropTypes.string.isRequired,
-  onScroll: React.PropTypes.func
+  dateKey: React.PropTypes.string.isRequired
 };
 
 module.exports = connect(justDispatch)(TimelineFeed);

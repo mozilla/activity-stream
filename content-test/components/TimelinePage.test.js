@@ -14,6 +14,7 @@ const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const Loader = require("components/Loader/Loader");
 const Spotlight = require("components/Spotlight/Spotlight");
 const {mockData, renderWithProvider} = require("test/test-utils");
+const {INFINITE_SCROLL_THRESHOLD, SCROLL_TOP_OFFSET} = require("common/constants");
 
 describe("Timeline", () => {
 
@@ -57,11 +58,11 @@ describe("Timeline", () => {
       Feed: {
         init: true,
         isLoading: false,
-        canLoadMore: false,
+        canLoadMore: true,
         rows: mockData.History.rows,
       },
       dateKey: "lastVisitDate",
-      pageName: "TEST_PAGE",
+      pageName: "TIMELINE_ALL",
       loadMoreAction: () => {}
     };
 
@@ -100,29 +101,90 @@ describe("Timeline", () => {
       });
       it("should show Loader if History.isLoading is true", () => {
         setup({
-          Feed: {
-            isLoading: true,
-            canLoadMore: true,
-            rows: [{url: "https://foo.com"}]
-          }
+          Feed: Object.assign({}, fakeProps.Feed, {isLoading: true}),
         });
         assert.equal(loaderEl.hidden, false);
       });
     });
-    // Trying to get this to work
-    // describe("Scrolling", () => {
-    //   let scrollEl;
-    //   beforeEach(() => {
-    //     scrollEl = instance.refs.scrollElement;
-    //     // set the height of the wrapper to something big
-    //     // so we can actually scroll
-    //     instance.refs.wrapper.style.height = "3000px";
-    //   });
-    //   it("should trigger onScroll when the user scrolls", done => {
-    //     setup({onScroll: () => done()});
-    //     TestUtils.Simulate.scroll(scrollEl, {target: scrollEl, deltaY: 1});
-    //   });
-    // });
+
+    describe("#loadMore", () => {
+      it("should dispatch loadMoreAction", done => {
+        setup({loadMoreAction: () => "foo"}, action => {
+          assert.equal(action, "foo");
+          done();
+        });
+        instance.loadMore();
+      });
+      it("should select the {dateKey} of the last item", done => {
+        setup({
+          dateKey: "foo",
+          Feed: Object.assign({}, fakeProps.Feed, {
+            rows: [
+              {url: "asd.com", foo: 3},
+              {url: "blah.com", foo: 2},
+              {url: "324ads.com", foo: 1}
+            ]
+          }),
+          loadMoreAction: date => {
+            assert.equal(date, 1);
+            done();
+          }
+        });
+        instance.loadMore();
+      });
+      it("should dispatch a NotifyEvent", done => {
+        setup({}, action => {
+          if (action && action.type === "NOTIFY_USER_EVENT") {
+            assert.equal(action.type, "NOTIFY_USER_EVENT");
+            assert.equal(action.data.event, "LOAD_MORE_SCROLL");
+            assert.equal(action.data.page, fakeProps.pageName);
+            done();
+          }
+        });
+        instance.loadMore();
+      });
+    });
+
+    describe("#handleScroll", function() {
+      it("should set this.windowHeight if it is falsey", () => {
+        instance.windowHeight = null;
+        instance.handleScroll({scrollTop: 0, scrollHeight: 5000});
+        assert.equal(instance.windowHeight, window.innerHeight);
+      });
+      it("should not call loadMore if the scrollTop is before the threshold", () => {
+        setup({loadMoreAction: () => {
+          throw new Error("Should not call loadMore");
+        }});
+        instance.windowHeight = 200;
+        instance.handleScroll({scrollTop: 0, scrollHeight: 400});
+      });
+      it("should loadMore if the scrollTop is past the threshold", done => {
+        setup({loadMoreAction: () => done()});
+        instance.windowHeight = 200;
+        const scrollTop = 200 + SCROLL_TOP_OFFSET - INFINITE_SCROLL_THRESHOLD + 1;
+        instance.handleScroll({scrollTop, scrollHeight: 200});
+      });
+      it("should not call loadMore if canLoadMore is false", () => {
+        setup({
+          Feed: Object.assign({}, fakeProps.Feed, {canLoadMore: false}),
+          loadMoreAction: () => {
+            throw new Error("Should not call loadMore");
+          }
+        });
+        instance.windowHeight = 200;
+        instance.handleScroll({scrollTop: 1000, scrollHeight: 200});
+      });
+      it("should not call loadMore if isLoading is true", () => {
+        setup({
+          Feed: Object.assign({}, fakeProps.Feed, {isLoading: true}),
+          loadMoreAction: () => {
+            throw new Error("Should not call loadMore");
+          }
+        });
+        instance.windowHeight = 200;
+        instance.handleScroll({scrollTop: 1000, scrollHeight: 200});
+      });
+    });
 
   });
 
