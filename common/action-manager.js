@@ -87,7 +87,8 @@ function RequestBookmarks(options) {
 function RequestMoreBookmarks(beforeDate) {
   return RequestBookmarks({
     data: {beforeDate},
-    append: true
+    append: true,
+    skipPreviewRequest: true
   });
 }
 
@@ -98,7 +99,8 @@ function RequestRecentLinks(options) {
 function RequestMoreRecentLinks(beforeDate) {
   return RequestRecentLinks({
     data: {beforeDate},
-    append: true
+    append: true,
+    skipPreviewRequest: true
   });
 }
 

@@ -36,9 +36,7 @@ const TimelinePage = React.createClass({
             })}
           </ul>
         </nav>
-        <section className="content">
-          {this.props.children}
-        </section>
+        {this.props.children}
       </main>
     </div>);
   }
