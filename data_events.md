@@ -147,9 +147,9 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
 
 Here are different scenarios that cause a session end event to be sent and the corresponding `"unload_reason"` included in the ping:
 
-1. After a search: `"navigation"`
-2. Clicking on something (top site, highlight, activity feed item): `"navigation"`
+1. After a search: `"search"`
+2. Clicking on something (top site, highlight, activity feed item): `"click"`
 3. Switching to another tab: `"unfocus"`
-4. Closing the browser: `"unfocus"`
+4. Closing the browser: `"close"`
 5. Refreshing: `"refresh"`
 6. Navigating to a new URL via the url bar: `"navigation"`

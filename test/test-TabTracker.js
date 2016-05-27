@@ -362,6 +362,43 @@ exports.test_TabTracker_action_pings = function*(assert) {
   assert.deepEqual(eventData.msg.data, pingData, "We receive the expected ping data.");
 };
 
+exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
+  let events = ["CLICK", "SEARCH"];
+  for (let event of events) {
+    tabs.open(ACTIVITY_STREAMS_URL);
+    let userEventPromise = new Promise(resolve => {
+      function observe(subject, topic, data) {
+        if (topic === "user-action-event") {
+          Services.obs.removeObserver(observe, "user-action-event");
+          resolve(JSON.parse(data));
+        }
+      }
+      Services.obs.addObserver(observe, "user-action-event");
+    });
+
+    let eventData = {
+      msg: {
+        data: {
+          source: "topsites",
+          action_position: 3,
+          event: event
+        }
+      }
+    };
+    app._handleUserEvent("NOTIFY_USER_EVENT", eventData);
+
+    let pingData = yield userEventPromise;
+    let additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page"];
+    for (let key of additionalKeys) {
+      assert.ok(pingData[key], `The ping has the additional key ${key}`);
+    }
+    assert.deepEqual(eventData.msg.data, pingData, "We receive the expected ping data.");
+
+    pingData = yield waitForPageShowAndSessionComplete();
+    checkLoadUnloadReasons(assert, [pingData], ["newtab"], [event.toLowerCase()], false);
+  }
+};
+
 exports.test_TabTracker_handleRouteChange_FirstLoad = function(assert) {
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
   app._tabTracker.handleRouteChange({}, {isFirstLoad: true});
