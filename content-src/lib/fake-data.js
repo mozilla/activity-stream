@@ -23,5 +23,9 @@ module.exports = {
       "placeholder": "Search With Google",
       "iconBuffer": {}
     }
+  },
+  "Experiments": {
+    "data": {reverseMenuOptions: false},
+    "error": false
   }
 };

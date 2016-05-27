@@ -1,18 +1,22 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {justDispatch} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const ContextMenu = require("components/ContextMenu/ContextMenu");
 
 const DeleteMenu = React.createClass({
   userEvent(event) {
     if (this.props.page && this.props.source) {
-      this.props.dispatch(actions.NotifyEvent({
+      let payload = {
         event,
         page: this.props.page,
         source: this.props.source,
         action_position: this.props.index
-      }));
+      };
+
+      if (this.props.experimentData.reverseMenuOptions) {
+        payload.experiment_id = this.props.experimentData.id;
+      }
+      this.props.dispatch(actions.NotifyEvent(payload));
     }
   },
   onDeleteHistory() {
@@ -39,6 +43,10 @@ const DeleteMenu = React.createClass({
 
     menuOptions.push({label: "Never show on this page", onClick: this.onBlock});
 
+    if (this.props.experimentData.reverseMenuOptions) {
+      menuOptions.reverse();
+    }
+
     return (<ContextMenu
       visible={this.props.visible}
       onUpdate={this.props.onUpdate}
@@ -57,4 +65,6 @@ DeleteMenu.propTypes = {
   index: React.PropTypes.number
 };
 
-module.exports = connect(justDispatch)(DeleteMenu);
+module.exports = connect(state => {
+  return {experimentData: state.Experiments.data};
+})(DeleteMenu);

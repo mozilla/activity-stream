@@ -2,7 +2,7 @@ const {assert} = require("chai");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
-const {renderWithProvider} = require("test/test-utils");
+const {renderWithProvider, rawMockData} = require("test/test-utils");
 const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
 
 const DEFAULT_PROPS = {
@@ -93,6 +93,31 @@ describe("DeleteMenu", () => {
       }
     });
     TestUtils.Simulate.click(deleteLink);
+  });
+  it("should fire a user event with experiment_id when the experiment is enabled", done => {
+    setup({
+      page: "NEW_TAB",
+      source: "FEATURED",
+      index: 3
+    }, {
+      getState() {
+        return Object.assign({}, rawMockData,
+              {Experiments: {data: {id: "exp-001", reverseMenuOptions: true}, error: false}});
+      },
+      dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "DELETE");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "FEATURED");
+          assert.equal(a.data.action_position, 3);
+          assert.equal(a.data.experiment_id, "exp-001");
+          done();
+        }
+      }
+    });
+    // The menu options will be reversed in the experiment, click on the blockLink should
+    // trigger the "DELETE" event
+    TestUtils.Simulate.click(blockLink);
   });
   it("should fire a user event for Remove from Bookmarks", done => {
     setup({
