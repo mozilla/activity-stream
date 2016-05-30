@@ -178,6 +178,57 @@ exports.test_TabTracker_unfocus_unloaded_tab = function*(assert) {
   checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
 };
 
+exports.test_TabTracker_back_button_load = function*(assert) {
+  let openTab;
+  let numLoads = 0;
+  let pingData = [];
+
+  let pingsSentPromise = createPingSentPromise(pingData, 2);
+
+  let tabOpenedPromise = new Promise(resolve => {
+    let onOpen = function(tab) {
+      openTab = tab;
+      numLoads++;
+      if (numLoads === 1) {
+        // Wait one event loop tick to ensure the event handlers in TabTracker
+        // run first before we reload.
+        setTimeout(() => {
+          openTab.reload();
+        }, 0);
+      } else {
+        // Note: Since there is no way to trigger the "back" button for the purpose
+        // of the test, here we are mimic it by ending a session due to refresh
+        // then clearing the data before getting to the 'pageshow' event in
+        // TabTracker.
+        app._tabTracker._clearTabData();
+        tabs.removeListener("pageshow", onOpen);
+        resolve();
+      }
+    };
+    tabs.on("pageshow", onOpen);
+  });
+
+  assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+
+  tabs.open(ACTIVITY_STREAMS_URL);
+
+  yield tabOpenedPromise;
+
+  // Close both tabs.
+  let tabClosedPromise = new Promise(resolve => {
+    openTab.close(() => {
+      resolve();
+    });
+  });
+
+  yield tabClosedPromise;
+  yield pingsSentPromise;
+
+  let loadReasons = ["newtab", "back_button"];
+  let unloadReasons = ["refresh", "close"];
+  checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
+};
+
 exports.test_TabTracker_reactivating = function*(assert) {
   let openTabs = [];
   let pingData = [];
