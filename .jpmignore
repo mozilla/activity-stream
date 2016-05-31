@@ -9,6 +9,7 @@ firefox/
 logs/
 node_modules/
 test/
+addon-src/
 
 .amo_config.json
 .babelrc

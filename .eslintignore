@@ -1,4 +1,4 @@
 data/content/
 logs/
 firefox/
-lib/SeedRandom.js
+lib/vendor.bundle.js

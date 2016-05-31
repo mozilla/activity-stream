@@ -13,7 +13,9 @@
   },
   "globals": {
     "StopIteration": true,
-    "__CONFIG__": true
+    "__CONFIG__": true,
+    "platform_exports": true,
+    "platform_require": true
   },
   "plugins": [
     "mozilla",

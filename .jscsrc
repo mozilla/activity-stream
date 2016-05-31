@@ -1,7 +1,7 @@
 {
   "preset": "google",
   "fileExtensions": [".js", ".jsm"],
-  "excludeFiles": ["test/lib/httpd.js", "test/test-httpd.js", "logs/**", "node_modules/**", "data/content/**", "firefox/**", "lib/SeedRandom.js"],
+  "excludeFiles": ["test/lib/httpd.js", "test/test-httpd.js", "logs/**", "node_modules/**", "data/content/**", "firefox/**", "**/*.bundle.js"],
   "maximumLineLength": false,
   "esnext": true,
   "validateQuoteMarks": false,
