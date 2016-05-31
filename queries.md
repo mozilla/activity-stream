@@ -6,7 +6,7 @@
 
 The highlights query is composed of two parts:
 
-( A ) Select **1 item** from History where:
+( A ) Attempt to select **1 item** from History where:
 
 * the item has a bookmark
 * the date the bookmark was created (`bookmarkDateCreated`) is in the last 3 days
@@ -14,11 +14,14 @@ The highlights query is composed of two parts:
 
 Items are ordered (descending) by the date the bookmark was created (`bookmarkDateCreated`), meaning that newer item will come first.
 
+If no item exists, the first spot will be replaced by items in the following query:
+
 ( B ) Then, select up to **20 items** from History, where:
 
-* the item was NOT visited (`last_visit_date`) in the last 30 minutes
+* the `last_visit_date` is earlier than 30 minutes ago
+* the item has been visited no more than 3 times (`visit_count`)
 * the `rev_host` is unique (no two results returned should have the same `rev_host`
-* the `rev_host` is NOT one of "www.google.com", "www.google.ca", "calendar.google.com", "mail.google.com", "mail.yahoo.com", "search.yahoo.com", "localhost", "t.co", "."
+* the `rev_host` is NOT one of the blacklisted items in `REV_HOST_BLACKLIST` (See `lib/PlacesProvider.js` for this list)
 
 Item are ordered (descending) by last visit date (`last_visit_date`), meaning that more recent items will come first.
 
@@ -41,11 +44,6 @@ Item are ordered (descending) by last visit date (`last_visit_date`), meaning th
 
 Some requirements/adjustments are also made to the initial query after enhanced data is received from Embedly and the links are placed in the UI:
 
+* All links in the query are returned to the UI, **regardless of whether or not they have embedly preview data available**. This means that some links will (temporarily) have no images, colors, etc.
 * Links that are already in the Top Sites section are removed from Highlights
-* Links that have **images and good titles/descriptions** are prioritized are sorted before those that do not
-* Only links that **already have cached data available** are returned to the UI, meaning that not all links returned from the query will reach the UI.
-
-### Possible empty conditions
-
-* A new profile or empty history with no bookmarks, in the first 30 minutes of usage.
-* The embedly cache is empty/all items returned do not yet have cached data
+* For Highlights, links that have **images and good titles/descriptions** are prioritized are sorted before those that do not
