@@ -21,6 +21,7 @@ scripts:
     pre: =>clean && =>copyTestImages && =>copyTopSitesJson
     static: cpx "content-src/static/**/*" data/content
     webpack: NODE_ENV=production webpack
+    webpackAddon: webpack --config webpack.addon.config.js
     css: node-sass content-src/main.scss -o data/content
     html: node ./bin/generate-html.js > data/content/activity-streams.html
     post: du -hs ./data/content/*
@@ -31,12 +32,13 @@ scripts:
     pre: =>clean && =>copyTestImages && =>copyTopSitesJson
     static: =>bundle:static -- -w
     webpack: webpack -w
+    webpackAddon: =>bundle:webpackAddon -- -w
     css: =>bundle:css && =>bundle:css -- -w
     html: =>bundle:html -- --baseUrl http://localhost:1963/ --csp off
     server: live-server data/content --port=1963 --no-browser
 
 # firefox: Launch addon with jpm run
-  firefox: jpm run --prefs ./dev-prefs.json
+  firefox: =>bundle:webpackAddon && jpm run --prefs ./dev-prefs.json
 
 # test: Run all tests once
   test:
