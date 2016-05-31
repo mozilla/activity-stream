@@ -87,12 +87,7 @@ const DebugPage = React.createClass({
 module.exports = connect(state => {
   return {
     newTab: selectNewTabSites(state),
-    raw: {
-      TopSites: state.TopSites,
-      History: state.History,
-      Bookmarks: state.Bookmarks,
-      Highlights: state.Highlights,
-    }
+    raw: state
   };
 })(DebugPage);
 
