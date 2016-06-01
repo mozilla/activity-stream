@@ -104,72 +104,6 @@ exports.test_periodic_cleanup = function*(assert) {
   gPreviewProvider.options.cacheCleanupPeriod = oldThreshold;
 };
 
-exports.test_periodic_update = function*(assert) {
-  let oldTimeout = gPreviewProvider.options.cacheUpdateInterval;
-  gPreviewProvider.options.cacheUpdateInterval = 10;
-
-  // cycle enabled pref to reset timeouts
-  simplePrefs.prefs["previews.enabled"] = false;
-  simplePrefs.prefs["previews.enabled"] = true;
-
-  let countingUpdatePromise = new Promise(resolve => {
-    let notif = "activity-streams-preview-cache-update";
-    let count = 0;
-    let waitForNotif = (subject, topic, data) => {
-      if (topic === notif) {
-        count++;
-        if (count === 3) {
-          Services.obs.removeObserver(waitForNotif, notif);
-          resolve(count);
-        }
-      }
-    };
-    Services.obs.addObserver(waitForNotif, notif);
-  });
-  let count = yield countingUpdatePromise;
-  assert.equal(count, 3, "update called expected number of times");
-  gPreviewProvider.options.cacheUpdateInterval = oldTimeout;
-};
-
-exports.test_update_links = function*(assert) {
-  let currentTime = Date.now();
-  let fourDaysAgo = currentTime - (4 * 24 * 60 * 60 * 1000);
-  ss.storage.embedlyData["example.com/1"] = {url: "http://example.com/1", accessTime: fourDaysAgo, sanitizedURL: "http://example.com/1", cacheKey: "example.com/1"};
-  ss.storage.embedlyData["example.com/2"] = {url: "http://example.com/2", accessTime: fourDaysAgo, refreshTime: fourDaysAgo, sanitizedURL: "http://example.com/2", cacheKey: "example.com/2"};
-  ss.storage.embedlyData["example.com/3"] = {url: "http://example.com/3", accessTime: currentTime, refreshTime: currentTime, sanitizedURL: "http://example.com/3", cacheKey: "example.com/3"};
-
-  assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
-  let srv = httpd.startServerAsync(gPort);
-
-  srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
-    let data = JSON.parse(
-        NetUtil.readInputStreamToString(
-          request.bodyInputStream,
-          request.bodyInputStream.available()
-        )
-    );
-    data.urls.forEach(link => assert.notEqual(link, null, "there are no null links"));
-    let urls = {};
-    for (let url of data.urls) {
-      urls[url] = {"embedlyMetaData": "some embedly metadata"};
-    }
-    response.setHeader("Content-Type", "application/json", false);
-    response.write(JSON.stringify({urls}));
-  });
-  yield gPreviewProvider.asyncUpdateLinks();
-
-  assert.equal(ss.storage.embedlyData["example.com/1"].accessTime, fourDaysAgo, "link 1 access time is unchanged");
-  assert.ok(ss.storage.embedlyData["example.com/1"].refreshTime, "link 1 refresh time is set");
-  assert.equal(ss.storage.embedlyData["example.com/2"].accessTime, fourDaysAgo, "link 2 access time is unchanged");
-  assert.notEqual(ss.storage.embedlyData["example.com/2"].refreshTime, fourDaysAgo, "link 2 refresh time is updated");
-  assert.equal(ss.storage.embedlyData["example.com/3"].accessTime, currentTime, "link 3 access time is unchanged");
-  assert.equal(ss.storage.embedlyData["example.com/3"].refreshTime, currentTime, "link 3 refresh time is unchanged");
-
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
-
 exports.test_only_request_links_once = function*(assert) {
   const msg1 = [{"url": "a.com", "sanitizedURL": "a.com", "cacheKey": "a.com"},
                 {"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com"},
@@ -201,6 +135,49 @@ exports.test_only_request_links_once = function*(assert) {
   for (let url in urlsRequested) {
     assert.equal(urlsRequested[url], 1, "URL was requested only once");
   }
+
+  yield new Promise(resolve => {
+    srv.stop(resolve);
+  });
+};
+
+exports.test_is_link_expired = function(assert) {
+  const refreshTime = Date.now() - (gPreviewProvider.options.cacheRefreshAge + 1000);
+  ss.storage.embedlyData["a.com"] = {"url": "a.com", "sanitizedURL": "a.com", "cacheKey": "a.com", refreshTime};
+  assert.equal(gPreviewProvider.isLinkExpired({cacheKey: "a.com"}), true, "expired link should return true");
+  ss.storage.embedlyData["b.com"] = {"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com", refreshTime: new Date()};
+  assert.equal(gPreviewProvider.isLinkExpired({cacheKey: "b.com"}), false, "non-expired link should return false");
+};
+
+exports.test_request_links_if_expired = function*(assert) {
+  const oldTime = Date.now() - (gPreviewProvider.options.cacheRefreshAge + 1000);
+  const links = [{"url": "a.com", "sanitizedURL": "a.com", "cacheKey": "a.com"},
+                {"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com"},
+                {"url": "c.com", "sanitizedURL": "c.com", "cacheKey": "c.com"}];
+  links.forEach(link => {
+    ss.storage.embedlyData[link.cacheKey] = Object.assign({}, link, {refreshTime: new Date()});
+  });
+  ss.storage.embedlyData["a.com"].refreshTime = oldTime;
+
+  assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
+  let srv = httpd.startServerAsync(gPort);
+
+  let urlsRequested = [];
+  srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
+    let data = JSON.parse(
+        NetUtil.readInputStreamToString(
+          request.bodyInputStream,
+          request.bodyInputStream.available()
+        )
+    );
+    data.urls.forEach(url => urlsRequested.push(url));
+    response.setHeader("Content-Type", "application/json", false);
+    response.write(JSON.stringify({"urls": {urlsRequested}}));
+  });
+
+  yield gPreviewProvider.asyncSaveLinks(links);
+
+  assert.deepEqual(urlsRequested, ["a.com"], "we should only request the expired URL");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
