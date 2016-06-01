@@ -42,6 +42,9 @@ const TimelineFeed = React.createClass({
   },
   onResize: debounce(function() {
     this.windowHeight = window.innerHeight;
+
+    // After resizing, check if we can fit in more data.
+    this.onScroll();
   }, 100),
   onScroll: debounce(function() {
     this.handleScroll({
@@ -55,6 +58,9 @@ const TimelineFeed = React.createClass({
     // position sometimes if we set scrollTop to 0 instead of 1
     if (!prevProps.Feed.init && this.props.Feed.init) {
       this.refs.scrollElement.scrollTop = 1;
+
+      // Check if we can fit in more.
+      this.onScroll();
     }
   },
   componentDidMount() {
