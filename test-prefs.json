@@ -1,5 +1,6 @@
 {
   "xpinstall.signatures.required": false,
+  "javascript.options.strict": false,
   "extensions.@activity-streams.sdk.console.logLevel": "info",
   "extensions.@activity-streams.performance.log": false,
   "extensions.@activity-streams.previews.enabled": false,
