@@ -81,9 +81,13 @@ $search-input-left-label-width: 35px;
 $search-input-border-color: #BFBFBF;
 $search-blue: #0996F8;
 $search-shadow: rgba(96, 181, 255, 0.75);
+$search-box-shadow: rgba(0, 0, 0, 0.1);
 $search-button-grey: #FBFBFB;
 $search-button-border-color: #D4D4D4;
 $search-button-width: 64px;
+$search-text: #666;
+$search-section-background: #F7F7F7;
+$search-border-color: #EAEAEA;
 
 $placeholder-background: transparent;
 $placeholder-border: 1px solid $faintest-black;
@@ -140,4 +144,10 @@ $context-menu-item-padding: 3px 20px;
       transition-delay: 500ms;
     }
   }
+}
+
+@mixin list-items {
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
