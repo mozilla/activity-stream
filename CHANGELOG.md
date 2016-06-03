@@ -1,3 +1,27 @@
+<a name="1.0.19"></a>
+## 1.0.19 (2016-06-03)
+
+* 1.0.18 changelog ([be87f6b](https://github.com/mozilla/activity-stream/commit/be87f6b))
+* 1.0.19 ([acf3081](https://github.com/mozilla/activity-stream/commit/acf3081))
+* Add a description of performance ping #705 ([dedff7f](https://github.com/mozilla/activity-stream/commit/dedff7f))
+* fix (addon): #663 rebuild the places cache after 30 minutes ([b138aee](https://github.com/mozilla/activity-stream/commit/b138aee)), closes [#663](https://github.com/mozilla/activity-stream/issues/663)
+* fix (content): #774 fix zoom, resize, high res issues ([dce0f65](https://github.com/mozilla/activity-stream/commit/dce0f65)), closes [#774](https://github.com/mozilla/activity-stream/issues/774)
+* Refactor cache updating strategy ([6a6b784](https://github.com/mozilla/activity-stream/commit/6a6b784))
+* test(addon): Reduce useless jpm test output ([c061867](https://github.com/mozilla/activity-stream/commit/c061867))
+* chore(addon): #781 use webpack in addon for external deps ([d9c6fa9](https://github.com/mozilla/activity-stream/commit/d9c6fa9))
+* fix(addon): #687 move tippytop to getEnhancedLinks ([dd70e49](https://github.com/mozilla/activity-stream/commit/dd70e49))
+* fix(addon): #707 Provide more specific unload_reason other than navigation ([a029fac](https://github.com/mozilla/activity-stream/commit/a029fac)), closes [#745](https://github.com/mozilla/activity-stream/issues/745)
+* fix(addon): #759 Add session_id for all pings. ([db04f13](https://github.com/mozilla/activity-stream/commit/db04f13))
+* fix(addon): #760 Add pageshow event to keep track of clicks on the 'back' button. ([7dcea80](https://github.com/mozilla/activity-stream/commit/7dcea80))
+* fix(prefs): Switch to production embedly-proxy URL ([5075b1c](https://github.com/mozilla/activity-stream/commit/5075b1c))
+* feat(addon): #417 Dont request embedly data for appended items ([ef799db](https://github.com/mozilla/activity-stream/commit/ef799db))
+* feat(addon): #417 infinite scroll ([620d109](https://github.com/mozilla/activity-stream/commit/620d109))
+* feat(addon): #732 Create experiment for DeleteMenu ([216842e](https://github.com/mozilla/activity-stream/commit/216842e))
+* feat(metrics): #705 Collect proxy telemetries from addon ([b514783](https://github.com/mozilla/activity-stream/commit/b514783))
+* fix(addon): #454 Hide Load More if < 20 items on history ([005ba6f](https://github.com/mozilla/activity-stream/commit/005ba6f))
+
+
+
 <a name="1.0.18"></a>
 ## 1.0.18 (2016-05-24)
 
