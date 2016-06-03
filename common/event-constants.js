@@ -5,6 +5,8 @@ const urlPatternToPageMap = new Map([
 ]);
 
 const constants = {
+  CONTENT_TO_ADDON: "content-to-addon",
+  ADDON_TO_CONTENT: "addon-to-content",
   urlPatternToPageMap,
   defaultPage: DEFAULT_PAGE,
   pages: new Set(Array.from(urlPatternToPageMap.values()).concat(DEFAULT_PAGE)),
