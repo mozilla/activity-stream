@@ -42,7 +42,7 @@ am.ACTIONS_WITH_SITES = new Set([
 function Notify(type, data) {
   const action = {
     type,
-    meta: {broadcast: "content-to-addon"}
+    meta: {broadcast: eventConstants.CONTENT_TO_ADDON}
   };
   if (data) {
     action.data = data;
@@ -64,7 +64,7 @@ function Response(type, data, options = {}) {
 function RequestExpect(type, expect, options = {}) {
   const action = {
     type,
-    meta: {broadcast: "content-to-addon", expect}
+    meta: {broadcast: eventConstants.CONTENT_TO_ADDON, expect}
   };
   if (options.timeout) {
     action.meta.timeout = options.timeout;
