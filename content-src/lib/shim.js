@@ -1,14 +1,15 @@
 const fakeData = require("lib/fake-data");
 const faker = require("test/faker");
+const {ADDON_TO_CONTENT, CONTENT_TO_ADDON} = require("common/event-constants");
 
 function dispatch(action) {
   window.dispatchEvent(
-    new CustomEvent("addon-to-content", {detail: action})
+    new CustomEvent(ADDON_TO_CONTENT, {detail: action})
   );
 }
 
 module.exports = function() {
-  window.addEventListener("content-to-addon", function(event) {
+  window.addEventListener(CONTENT_TO_ADDON, function(event) {
     const action = JSON.parse(event.detail);
     switch (action.type) {
       case "TOP_FRECENT_SITES_REQUEST":
