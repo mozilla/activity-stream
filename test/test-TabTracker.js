@@ -396,6 +396,7 @@ exports.test_TabTracker_action_pings = function*(assert) {
 
   let eventData = {
     msg: {
+      type: "NOTIFY_USER_EVENT",
       data: {
         source: "topsites",
         action_position: 3,
@@ -403,7 +404,7 @@ exports.test_TabTracker_action_pings = function*(assert) {
       }
     }
   };
-  app._handleUserEvent("NOTIFY_USER_EVENT", eventData);
+  app._handleUserEvent(eventData);
 
   let pingData = yield userEventPromise;
   let additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page"];
@@ -445,6 +446,7 @@ exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
 
     let eventData = {
       msg: {
+        type: "NOTIFY_USER_EVENT",
         data: {
           source: "topsites",
           action_position: 3,
@@ -452,7 +454,7 @@ exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
         }
       }
     };
-    app._handleUserEvent("NOTIFY_USER_EVENT", eventData);
+    app._handleUserEvent(eventData);
 
     let eventPingData = yield userEventPromise;
     let additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page"];

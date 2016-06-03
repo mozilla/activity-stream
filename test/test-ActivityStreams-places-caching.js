@@ -12,6 +12,7 @@ const {ActivityStreams} = require("lib/ActivityStreams");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {PlacesProvider} = require("lib/PlacesProvider");
 const {makeCachePromise} = require("./lib/cachePromises");
+const {CONTENT_TO_ADDON} = require("common/event-constants");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
@@ -158,7 +159,12 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
 
   // open page
   let pageReadyPromise = new Promise(resolve => {
-    gApp.once("PAGE_READY", resolve);
+    gApp.on(CONTENT_TO_ADDON, function handler(name, {msg}) {
+      if (msg.type === "PAGE_READY") {
+        gApp.off(CONTENT_TO_ADDON, handler);
+        resolve();
+      }
+    });
   });
 
   let openTab;
@@ -178,12 +184,12 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
         changeMsgCount++;
         if (changeMsgCount === 15) {
           // we expect 5 history entries, i.e. 15 places changes
-          gApp.off("CHANGE_ACK", countChanges);
+          gApp.off(CONTENT_TO_ADDON, countChanges);
           resolve();
         }
       }
     };
-    gApp.on("CHANGE_ACK", countChanges);
+    gApp.on(CONTENT_TO_ADDON, countChanges);
   });
 
   // notifications setup. The order is important as the tab open above will trigger a history change
