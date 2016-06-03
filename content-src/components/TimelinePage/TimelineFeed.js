@@ -24,7 +24,7 @@ const TimelineFeed = React.createClass({
     }));
   },
   windowHeight: null,
-  handleScroll(values) {
+  maybeLoadMoreData(values) {
     const {Feed} = this.props;
     const {scrollTop, scrollHeight} = values;
 
@@ -44,10 +44,10 @@ const TimelineFeed = React.createClass({
     this.windowHeight = window.innerHeight;
 
     // After resizing, check if we can fit in more data.
-    this.onScroll();
+    this.loadMoreDataIfNeeded();
   }, 100),
-  onScroll: debounce(function() {
-    this.handleScroll({
+  loadMoreDataIfNeeded: debounce(function() {
+    this.maybeLoadMoreData({
       scrollHeight: this.refs.scrollElement.scrollHeight,
       scrollTop: this.refs.scrollElement.scrollTop
     });
@@ -58,20 +58,24 @@ const TimelineFeed = React.createClass({
     // position sometimes if we set scrollTop to 0 instead of 1
     if (!prevProps.Feed.init && this.props.Feed.init) {
       this.refs.scrollElement.scrollTop = 1;
-
-      // Check if we can fit in more.
-      this.onScroll();
     }
+
+    // After loading data, check if we can fit in even more data.
+    this.loadMoreDataIfNeeded();
   },
   componentDidMount() {
     window.addEventListener("resize", this.onResize);
+
+    // Check if we can fit in more data. This is needed for the case of switching
+    // routes (for example, from history to bookmarks).
+    this.loadMoreDataIfNeeded();
   },
   componentWillUnmount() {
     window.removeEventListener("resize", this.onResize);
   },
   render() {
     const props = this.props;
-    return (<section className="content" ref="scrollElement" onScroll={!props.Feed.isLoading && props.Feed.canLoadMore && this.onScroll}>
+    return (<section className="content" ref="scrollElement" onScroll={!props.Feed.isLoading && props.Feed.canLoadMore && this.loadMoreDataIfNeeded}>
       <div ref="wrapper" className={classNames("wrapper", "show-on-init", {on: props.Feed.init})}>
         {props.Spotlight ? <Spotlight page={this.props.pageName} sites={props.Spotlight.rows} /> : null }
         <GroupedActivityFeed
