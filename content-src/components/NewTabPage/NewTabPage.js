@@ -15,13 +15,6 @@ const MAX_TOP_ACTIVITY_ITEMS = 10;
 const PAGE_NAME = "NEW_TAB";
 
 const NewTabPage = React.createClass({
-  onSearch(value) {
-    this.props.dispatch(actions.NotifyPerformSearch(value));
-    this.props.dispatch(actions.NotifyEvent({
-      event: "SEARCH",
-      page: PAGE_NAME
-    }));
-  },
   getInitialState() {
     return {
       showSettingsMenu: false
@@ -48,7 +41,7 @@ const NewTabPage = React.createClass({
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
         <section>
-          <Search onSearch={this.onSearch} />
+          <Search/>
         </section>
 
         <Loader
