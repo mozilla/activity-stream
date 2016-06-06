@@ -21,6 +21,7 @@
 }
 
 .feed-item {
+  @include link-menu-button;
   display: flex;
   align-items: center;
   position: relative;
@@ -132,7 +133,7 @@
     }
   }
 
-  &.fixed,
+  &.active,
   &:hover {
     background: $feed-hover-color;
     border: 1px solid $faintest-black;

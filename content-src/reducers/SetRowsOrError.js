@@ -36,6 +36,17 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
           }
         }
         break;
+      case am.type("RECEIVE_BOOKMARKS_CHANGES"):
+        state.rows = prevState.rows.map(site => {
+          if (site.type === "history" && site.url === action.data.url) {
+            const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
+            const frecency = typeof action.data.frecency !== "undefined" ? action.data.frecency : site.frecency;
+            return Object.assign({}, site, {bookmarkGuid, bookmarkTitle, frecency, bookmarkDateCreated: lastModified});
+          } else {
+            return site;
+          }
+        });
+        break;
       case am.type("NOTIFY_BLOCK_URL"):
       case am.type("NOTIFY_HISTORY_DELETE"):
         state.rows = prevState.rows.filter(val => val.url !== action.data);

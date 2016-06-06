@@ -3,10 +3,10 @@ const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const classNames = require("classnames");
-const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
+const LinkMenu = require("components/LinkMenu/LinkMenu");
+const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const DEFAULT_LENGTH = 6;
-const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const TopSites = React.createClass({
   getInitialState() {
@@ -44,21 +44,20 @@ const TopSites = React.createClass({
           return (<div className="tile-outer" key={site.guid || site.cacheKey || i}>
             <a onClick={() => this.onClick(i)} className={classNames("tile", {active: isActive})} href={site.url}>
               <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
-              <div hidden={site.type === FIRST_RUN_TYPE} className="tile-close-icon" onClick={(ev) => {
+              <LinkMenuButton onClick={(ev) => {
                 ev.preventDefault();
                 ev.stopPropagation();
                 this.setState({showContextMenu: true, activeTile: i});
-              }}></div>
+              }} />
               <div className="inner-border" />
             </a>
-            <DeleteMenu
+            <LinkMenu
               visible={isActive}
               onUpdate={val => this.setState({showContextMenu: val})}
-              url={site.url}
-              bookmarkGuid={site.bookmarkGuid}
+              site={site}
               page={this.props.page}
-              index={i}
               source="TOP_SITES"
+              index={i}
               />
         </div>);
         })}
