@@ -3,7 +3,8 @@ const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
-const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
+const LinkMenu = require("components/LinkMenu/LinkMenu");
+const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {prettyUrl, getRandomFromTimestamp} = require("lib/utils");
 const moment = require("moment");
 const classNames = require("classnames");
@@ -33,9 +34,6 @@ const ActivityFeedItem = React.createClass({
       showDate: false
     };
   },
-  onDeleteClick() {
-    this.setState({showContextMenu: true});
-  },
   render() {
     const site = this.props;
     const title = site.title || site.provider_display || (site.parsedUrl && site.parsedUrl.hostname);
@@ -63,7 +61,7 @@ const ActivityFeedItem = React.createClass({
       dateLabel = moment(date).format("h:mm A");
     }
 
-    return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid, fixed: this.state.showContextMenu})}>
+    return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid, active: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <span className="star" hidden={!site.bookmarkGuid} />
         {icon}
@@ -77,19 +75,15 @@ const ActivityFeedItem = React.createClass({
           </div>
         </div>
       </a>
-      <div className="action-items-container">
-        <div className="action-item icon-delete" ref="delete" onClick={this.onDeleteClick}></div>
-        <div className="action-item icon-share" ref="share" onClick={() => this.props.onShare(site.url)}></div>
-        <div className="action-item icon-more" onClick={() => alert("Sorry. We are still working on this feature.")}></div>
-      </div>
-      <DeleteMenu
+      <LinkMenuButton onClick={() => this.setState({showContextMenu: true})} />
+      <LinkMenu
         visible={this.state.showContextMenu}
         onUpdate={val => this.setState({showContextMenu: val})}
-        url={site.url}
-        bookmarkGuid={site.bookmarkGuid}
+        allowBlock={this.props.page === "NEW_TAB"}
+        site={site}
         page={this.props.page}
-        index={this.props.index}
         source={this.props.source}
+        index={this.props.index}
         />
     </li>);
   }

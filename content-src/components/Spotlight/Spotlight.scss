@@ -9,16 +9,11 @@
     margin: 0;
     padding: 0;
   }
-
-  .context-menu {
-    top: 14px;
-    right: -12px;
-  }
 }
 
 .spotlight-item {
   @include item-shadow;
-  @include tile-close;
+  @include link-menu-button;
   background: $white;
   display: inline-block;
   margin-right: $base-gutter;

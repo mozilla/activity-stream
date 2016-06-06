@@ -4,9 +4,9 @@ const {justDispatch} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
-const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
+const LinkMenu = require("components/LinkMenu/LinkMenu");
+const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const classNames = require("classnames");
-const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const DEFAULT_LENGTH = 3;
 
@@ -66,15 +66,11 @@ const SpotlightItem = React.createClass({
         </div>
         <div className="inner-border" />
       </a>
-      <div
-        hidden={site.type === FIRST_RUN_TYPE}
-        className="tile-close-icon" ref="delete"
-        onClick={() => this.setState({showContextMenu: true})} />
-      <DeleteMenu
+      <LinkMenuButton onClick={() => this.setState({showContextMenu: true})} />
+      <LinkMenu
         visible={this.state.showContextMenu}
         onUpdate={val => this.setState({showContextMenu: val})}
-        url={site.url}
-        bookmarkGuid={site.bookmarkGuid}
+        site={site}
         page={this.props.page}
         index={this.props.index}
         source={this.props.source}

@@ -118,8 +118,8 @@ function RequestExperiments() {
   return RequestExpect("EXPERIMENTS_REQUEST", "EXPERIMENTS_RESPONSE");
 }
 
-function NotifyBookmarkDelete(data) {
-  return Notify("NOTIFY_BOOKMARK_DELETE", data);
+function NotifyBookmarkDelete(bookmarkGuid) {
+  return Notify("NOTIFY_BOOKMARK_DELETE", bookmarkGuid);
 }
 
 function NotifyHistoryDelete(data) {

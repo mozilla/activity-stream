@@ -44,17 +44,34 @@ describe("ContextMenu", () => {
     setup({options});
     assert.equal(links.length, options.length);
   });
+  it("should add a ref for options if provided", () => {
+    const options = [
+      {label: "Test", onClick: () => {}, ref: "foo"}
+    ];
+    setup({options});
+    assert.ok(instance.refs.foo);
+  });
   it("should call the onClick function when an option button is clicked", done => {
     setup({options: [{label: "Foo", onClick() {
       done();
     }}]});
     TestUtils.Simulate.click(links[0]);
   });
+  it("should call the onUserEvent function when an option button is clicked and has a userEvent", done => {
+    setup({
+      onUserEvent: type => {
+        assert.equal(type, "FOO");
+        done();
+      },
+      options: [{label: "Foo", userEvent: "FOO", onClick() {}}]
+    });
+    TestUtils.Simulate.click(links[0]);
+  });
   it("should call onUpdate with false when an option is clicked", done => {
     setup({
       visible: true,
       options: [{label: "Test", onClick: () => {}}],
-      onUpdate: value => {
+      onUpdate: (value) => {
         assert.isFalse(value);
         done();
       }

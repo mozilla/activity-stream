@@ -1,7 +1,8 @@
 const {assert} = require("chai");
 const ConnectedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const {ActivityFeedItem, GroupedActivityFeed, groupSitesBySession} = ConnectedActivityFeed;
-const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
+const LinkMenu = require("components/LinkMenu/LinkMenu");
+const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const React = require("react");
 const ReactDOM = require("react-dom");
@@ -77,12 +78,12 @@ describe("ActivityFeedItem", function() {
       instance = renderWithProvider(<ActivityFeedItem {...fakeSiteWithBookmark} />);
       assert.include(ReactDOM.findDOMNode(instance).className, "bookmark");
     });
-    it("should show the delete menu when the delete button is clicked", () => {
+    it("should show the link menu when the link button is clicked", () => {
       const item = renderWithProvider(<ActivityFeedItem {...fakeSite} />);
-      const button = item.refs.delete;
+      const button = ReactDOM.findDOMNode(TestUtils.findRenderedComponentWithType(item, LinkMenuButton));
       TestUtils.Simulate.click(button);
-      const deleteMenu = TestUtils.findRenderedComponentWithType(item, DeleteMenu);
-      assert.equal(deleteMenu.props.visible, true);
+      const menu = TestUtils.findRenderedComponentWithType(item, LinkMenu);
+      assert.equal(menu.props.visible, true);
     });
     it("should render date if showDate=true", () => {
       const item = renderWithProvider(<ActivityFeedItem showDate={true} {...fakeSite} />);
@@ -169,20 +170,6 @@ describe("GroupedActivityFeed", function() {
       }
       instance = renderWithProvider(<GroupedActivityFeed dispatch={dispatch} page={"NEW_TAB"} sites={sites} />);
       const link = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeedItem)[0].refs.link;
-      TestUtils.Simulate.click(link);
-    });
-    it("should send an event onShare", done => {
-      function dispatch(a) {
-        if (a.type === "NOTIFY_USER_EVENT") {
-          assert.equal(a.data.event, "SHARE");
-          assert.equal(a.data.page, "NEW_TAB");
-          assert.equal(a.data.source, "ACTIVITY_FEED");
-          assert.equal(a.data.action_position, 2);
-          done();
-        }
-      }
-      instance = renderWithProvider(<GroupedActivityFeed dispatch={dispatch} page={"NEW_TAB"} sites={sites} />);
-      const link = TestUtils.scryRenderedComponentsWithType(instance, ActivityFeedItem)[2].refs.share;
       TestUtils.Simulate.click(link);
     });
   });
