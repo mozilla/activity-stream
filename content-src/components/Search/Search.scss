@@ -5,11 +5,141 @@
   width: 100%;
   height: $search-height;
 
+  .search-container {
+    z-index: 999;
+    background: $bg-color;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin-top: -2px;
+    border: 1px solid $search-input-border-color;
+    font-size: 12px;
+    box-shadow: 0 5px 10px $search-box-shadow;
+
+    .search-title {
+      color: $search-text;
+      padding: 5px 10px;
+      background-color: $search-section-background;
+      display: flex;
+      align-items: center;
+
+      #current-engine-icon {
+        margin-right: 8px;
+      }
+    }
+
+    section {
+      border-bottom: 1px solid $search-border-color;
+      margin-bottom: 0;
+    }
+
+    .search-suggestions {
+      ul {
+        @include list-items;
+
+        li a {
+          color: $black;
+          display: block;
+          padding: 4px 36px;
+
+          &:hover,
+          &.active {
+            background: $search-blue;
+            color: $bg-color;
+          }
+        }
+      }
+    }
+
+    .history-search-suggestions {
+      border-bottom: 0;
+
+      ul {
+        @include list-items;
+
+        li a {
+          color: $black;
+          display: block;
+          padding: 4px 10px;
+
+          &:hover,
+          &.active {
+            background: $search-blue;
+            color: $bg-color;
+          }
+
+          &:hover > #historyIcon,
+          &.active > #historyIcon {
+            background-image: url('img/glyph-search-history.svg#search-history-active');
+          }
+        }
+      }
+    }
+
+    .history-search-suggestions #historyIcon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: -3px;
+      background-image: url('img/glyph-search-history.svg#search-history');
+    }
+
+    .search-partners {
+      ul {
+        @include list-items;
+
+        li {
+          display: inline-block;
+          padding: 5px 0;
+
+          a {
+            display: block;
+            padding: 3px 16px;
+            border-right: 1px solid $search-input-border-color;
+          }
+
+          &:hover,
+          &.active {
+            background: $search-blue;
+            color: $white;
+
+            a {
+              border-color: transparent;
+            }
+          }
+        }
+      }
+    }
+
+    .search-settings {
+      button {
+        color: $search-text;
+        margin: 0;
+        padding: 0;
+        height: 32px;
+        text-align: center;
+        width: 100%;
+        border-style: solid none none;
+        border-radius: 0;
+        background: $search-section-background;
+        border-top: 0;
+
+        &:hover,
+        &.active {
+          background: $very-light-grey;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
   input {
     border-radius: $search-border-radius 0 0 $search-border-radius;
     flex-grow: 1;
     margin: 0;
-    padding: 8px 12px 8px $search-input-left-label-width;
+    padding: 6px 12px 8px $search-input-left-label-width;
     border: 1px solid $search-input-border-color;
     outline: none;
     box-shadow: none;
@@ -18,14 +148,14 @@
       z-index: 1;
       border-color: $search-blue;
       transition: box-shadow 150ms;
-      box-shadow: 0 0 0 2px $search-shadow;
+      box-shadow: 0 0 0 0.5px $search-shadow;
     }
 
     &:focus + button {
       z-index: 1;
       border-color: $search-blue;
       transition: box-shadow 150ms;
-      box-shadow: 0 0 0 2px $search-shadow;
+      box-shadow: 0 0 0 0.5px $search-shadow;
       background-color: $search-blue;
       background-image: url('img/glyph-forward-16-white.svg');
       color: $white;
@@ -61,7 +191,7 @@
       z-index: 1;
       border-color: $search-blue;
       transition: box-shadow 150ms;
-      box-shadow: 0 0 0 2px $search-shadow;
+      box-shadow: 0 0 0 0.5px $search-shadow;
       background-color: $search-blue;
       background-image: url('img/glyph-forward-16-white.svg');
       color: $white;
