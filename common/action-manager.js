@@ -28,7 +28,8 @@ const am = new ActionManager([
   "SEARCH_STATE_RESPONSE",
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_PERFORMANCE",
-  "NOTIFY_USER_EVENT"
+  "NOTIFY_USER_EVENT",
+  "NOTIFY_OPEN_WINDOW"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -172,6 +173,10 @@ function NotifyEvent(data) {
   return Notify("NOTIFY_USER_EVENT", data);
 }
 
+function NotifyOpenWindow(data) {
+  return Notify("NOTIFY_OPEN_WINDOW", data);
+}
+
 am.defineActions({
   Notify,
   Response,
@@ -193,7 +198,8 @@ am.defineActions({
   NotifyPerformSearch,
   NotifyRouteChange,
   NotifyPerf,
-  NotifyEvent
+  NotifyEvent,
+  NotifyOpenWindow
 });
 
 module.exports = am;
