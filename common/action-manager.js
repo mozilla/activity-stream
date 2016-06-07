@@ -18,6 +18,7 @@ const am = new ActionManager([
   "NOTIFY_BLOCK_URL",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UNBLOCK_ALL",
+  "NOTIFY_BOOKMARK_ADD",
   "NOTIFY_BOOKMARK_DELETE",
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_HISTORY_DELETE_CANCELLED",
@@ -118,6 +119,10 @@ function RequestExperiments() {
   return RequestExpect("EXPERIMENTS_REQUEST", "EXPERIMENTS_RESPONSE");
 }
 
+function NotifyBookmarkAdd(url) {
+  return Notify("NOTIFY_BOOKMARK_ADD", url);
+}
+
 function NotifyBookmarkDelete(bookmarkGuid) {
   return Notify("NOTIFY_BOOKMARK_DELETE", bookmarkGuid);
 }
@@ -182,6 +187,7 @@ am.defineActions({
   NotifyBlockURL,
   NotifyUnblockURL,
   NotifyUnblockAll,
+  NotifyBookmarkAdd,
   NotifyBookmarkDelete,
   NotifyHistoryDelete,
   NotifyPerformSearch,
