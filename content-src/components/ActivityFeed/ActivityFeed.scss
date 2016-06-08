@@ -42,7 +42,7 @@
   &:first-child {
     &::before {
       margin-top: -($feed-circle-size / 2);
-      top: 50%;
+      top: 32px;
     }
   }
 
@@ -73,7 +73,7 @@
     height: $feed-circle-size;
     left: $feed-gutter-h + 3;
     position: absolute;
-    top: 50%;
+    top: 28px;
     width: $feed-circle-size;
     margin-top: -($feed-circle-size / 2);
   }
@@ -173,6 +173,7 @@
   align-items: baseline;
   display: flex;
   flex-grow: 1;
+  flex-wrap: wrap;
   overflow: hidden;
 
   .feed-description {

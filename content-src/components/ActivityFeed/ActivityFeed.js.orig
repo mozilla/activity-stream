@@ -3,9 +3,13 @@ const {connect} = require("react-redux");
 const {justDispatch, selectSitePreview} = require("selectors/selectors");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
+<<<<<<< 57e3a72dbfa35ba40cf0ded51edf880554c33158
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
+=======
 const MediaPreview = require("components/MediaPreview/MediaPreview");
+const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
+>>>>>>> feat(content): show inline video players for youtube and vimeo
 const {prettyUrl, getRandomFromTimestamp} = require("lib/utils");
 const moment = require("moment");
 const classNames = require("classnames");
@@ -62,6 +66,9 @@ const ActivityFeedItem = React.createClass({
       dateLabel = moment(date).format("h:mm A");
     }
 
+<<<<<<< 57e3a72dbfa35ba40cf0ded51edf880554c33158
+    return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid, active: this.state.showContextMenu})}>
+=======
     let preview;
     if (site.media && site.media.type === "video") {
       const previewInfo = selectSitePreview(site);
@@ -73,15 +80,20 @@ const ActivityFeedItem = React.createClass({
       }
     }
 
-    return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid, active: this.state.showContextMenu})}>
+    return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid, fixed: this.state.showContextMenu})}>
+>>>>>>> feat(content): show inline video players for youtube and vimeo
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <span className="star" hidden={!site.bookmarkGuid} />
         {icon}
         <div className="feed-details">
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{title}</h4>
+<<<<<<< 57e3a72dbfa35ba40cf0ded51edf880554c33158
             <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)}/>
+=======
+            <span className="feed-url" ref="url">{prettyUrl(site.url)}</span>
             {preview}
+>>>>>>> feat(content): show inline video players for youtube and vimeo
           </div>
           <div className="feed-stats">
             <div ref="lastVisit" className="last-visit" data-last-visit={dateLabel}/>
