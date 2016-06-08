@@ -194,6 +194,10 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       color: $link-blue;
+
+      &::after {
+        content: attr(data-feed-url);
+      }
     }
   }
 
@@ -201,5 +205,11 @@
     color: $feed-date-font-color;
     flex-shrink: 0;
     text-align: right;
+  }
+
+  .last-visit {
+    &::after {
+      content: attr(data-last-visit);
+    }
   }
 }
