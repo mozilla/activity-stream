@@ -145,10 +145,10 @@ describe("Timeline", () => {
       });
     });
 
-    describe("#handleScroll", function() {
+    describe("#maybeLoadMoreData", function() {
       it("should set this.windowHeight if it is falsey", () => {
         instance.windowHeight = null;
-        instance.handleScroll({scrollTop: 0, scrollHeight: 5000});
+        instance.maybeLoadMoreData({scrollTop: 0, scrollHeight: 5000});
         assert.equal(instance.windowHeight, window.innerHeight);
       });
       it("should not call loadMore if the scrollTop is before the threshold", () => {
@@ -156,13 +156,13 @@ describe("Timeline", () => {
           throw new Error("Should not call loadMore");
         }});
         instance.windowHeight = 200;
-        instance.handleScroll({scrollTop: 0, scrollHeight: 400});
+        instance.maybeLoadMoreData({scrollTop: 0, scrollHeight: 400});
       });
       it("should loadMore if the scrollTop is past the threshold", done => {
         setup({loadMoreAction: () => done()});
         instance.windowHeight = 200;
         const scrollTop = 200 + SCROLL_TOP_OFFSET - INFINITE_SCROLL_THRESHOLD + 1;
-        instance.handleScroll({scrollTop, scrollHeight: 200});
+        instance.maybeLoadMoreData({scrollTop, scrollHeight: 200});
       });
       it("should not call loadMore if canLoadMore is false", () => {
         setup({
@@ -172,7 +172,7 @@ describe("Timeline", () => {
           }
         });
         instance.windowHeight = 200;
-        instance.handleScroll({scrollTop: 1000, scrollHeight: 200});
+        instance.maybeLoadMoreData({scrollTop: 1000, scrollHeight: 200});
       });
       it("should not call loadMore if isLoading is true", () => {
         setup({
@@ -182,7 +182,7 @@ describe("Timeline", () => {
           }
         });
         instance.windowHeight = 200;
-        instance.handleScroll({scrollTop: 1000, scrollHeight: 200});
+        instance.maybeLoadMoreData({scrollTop: 1000, scrollHeight: 200});
       });
     });
 
