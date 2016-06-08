@@ -6,6 +6,7 @@ const am = new ActionManager([
   "TOP_FRECENT_SITES_REQUEST",
   "TOP_FRECENT_SITES_RESPONSE",
   "RECEIVE_PLACES_CHANGES",
+  "RECEIVE_CURRENT_ENGINE",
   "RECENT_BOOKMARKS_REQUEST",
   "RECENT_BOOKMARKS_RESPONSE",
   "RECEIVE_BOOKMARKS_CHANGES",
@@ -22,12 +23,20 @@ const am = new ActionManager([
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_HISTORY_DELETE_CANCELLED",
   "NOTIFY_PERFORM_SEARCH",
-  "RECEIVE_CURRENT_ENGINE",
   "SEARCH_STATE_REQUEST",
   "SEARCH_STATE_RESPONSE",
+  "SEARCH_UISTRINGS_REQUEST",
+  "SEARCH_UISTRINGS_RESPONSE",
+  "SEARCH_SUGGESTIONS_REQUEST",
+  "SEARCH_SUGGESTIONS_RESPONSE",
+  "SEARCH_CYCLE_CURRENT_ENGINE_REQUEST",
+  "SEARCH_CYCLE_CURRENT_ENGINE_RESPONSE",
+  "NOTIFY_REMOVE_FORM_HISTORY_ENTRY",
+  "NOTIFY_MANAGE_ENGINES",
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_PERFORMANCE",
-  "NOTIFY_USER_EVENT"
+  "NOTIFY_USER_EVENT",
+  "NOTIFY_UPDATE_SEARCH_STRING"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -114,6 +123,30 @@ function RequestSearchState() {
   return RequestExpect("SEARCH_STATE_REQUEST", "SEARCH_STATE_RESPONSE");
 }
 
+function RequestSearchStrings() {
+  return RequestExpect("SEARCH_UISTRINGS_REQUEST", "SEARCH_UISTRINGS_RESPONSE");
+}
+
+function RequestSearchSuggestions(data) {
+  return RequestExpect("SEARCH_SUGGESTIONS_REQUEST", "SEARCH_SUGGESTIONS_RESPONSE", {data});
+}
+
+function NotifyRemoveFormHistory(data) {
+  return Notify("NOTIFY_REMOVE_FORM_HISTORY_ENTRY", data);
+}
+
+function NotifyCycleEngine(data) {
+  return Notify("SEARCH_CYCLE_CURRENT_ENGINE_REQUEST", data);
+}
+
+function NotifyManageEngines() {
+  return Notify("NOTIFY_MANAGE_ENGINES");
+}
+
+function NotifyUpdateSearchString(searchString) {
+   return Notify("NOTIFY_UPDATE_SEARCH_STRING", {searchString});
+ }
+
 function RequestExperiments() {
   return RequestExpect("EXPERIMENTS_REQUEST", "EXPERIMENTS_RESPONSE");
 }
@@ -178,6 +211,8 @@ am.defineActions({
   RequestMoreRecentLinks,
   RequestHighlightsLinks,
   RequestSearchState,
+  RequestSearchStrings,
+  RequestSearchSuggestions,
   RequestExperiments,
   NotifyBlockURL,
   NotifyUnblockURL,
@@ -187,7 +222,11 @@ am.defineActions({
   NotifyPerformSearch,
   NotifyRouteChange,
   NotifyPerf,
-  NotifyEvent
+  NotifyEvent,
+  NotifyUpdateSearchString,
+  NotifyManageEngines,
+  NotifyRemoveFormHistory,
+  NotifyCycleEngine
 });
 
 module.exports = am;
