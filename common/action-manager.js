@@ -18,6 +18,7 @@ const am = new ActionManager([
   "NOTIFY_BLOCK_URL",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UNBLOCK_ALL",
+  "NOTIFY_BOOKMARK_ADD",
   "NOTIFY_BOOKMARK_DELETE",
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_HISTORY_DELETE_CANCELLED",
@@ -27,7 +28,8 @@ const am = new ActionManager([
   "SEARCH_STATE_RESPONSE",
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_PERFORMANCE",
-  "NOTIFY_USER_EVENT"
+  "NOTIFY_USER_EVENT",
+  "NOTIFY_OPEN_WINDOW"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -118,8 +120,12 @@ function RequestExperiments() {
   return RequestExpect("EXPERIMENTS_REQUEST", "EXPERIMENTS_RESPONSE");
 }
 
-function NotifyBookmarkDelete(data) {
-  return Notify("NOTIFY_BOOKMARK_DELETE", data);
+function NotifyBookmarkAdd(url) {
+  return Notify("NOTIFY_BOOKMARK_ADD", url);
+}
+
+function NotifyBookmarkDelete(bookmarkGuid) {
+  return Notify("NOTIFY_BOOKMARK_DELETE", bookmarkGuid);
 }
 
 function NotifyHistoryDelete(data) {
@@ -167,6 +173,10 @@ function NotifyEvent(data) {
   return Notify("NOTIFY_USER_EVENT", data);
 }
 
+function NotifyOpenWindow(data) {
+  return Notify("NOTIFY_OPEN_WINDOW", data);
+}
+
 am.defineActions({
   Notify,
   Response,
@@ -182,12 +192,14 @@ am.defineActions({
   NotifyBlockURL,
   NotifyUnblockURL,
   NotifyUnblockAll,
+  NotifyBookmarkAdd,
   NotifyBookmarkDelete,
   NotifyHistoryDelete,
   NotifyPerformSearch,
   NotifyRouteChange,
   NotifyPerf,
-  NotifyEvent
+  NotifyEvent,
+  NotifyOpenWindow
 });
 
 module.exports = am;

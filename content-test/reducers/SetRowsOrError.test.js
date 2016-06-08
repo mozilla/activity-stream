@@ -5,6 +5,7 @@ const RESPONSE_TYPE = "RECENT_LINKS_RESPONSE";
 
 describe("setRowsOrError", () => {
   let reducer;
+
   beforeEach(() => {
     reducer = setRowsOrError(REQUEST_TYPE, RESPONSE_TYPE);
   });
@@ -103,6 +104,49 @@ describe("setRowsOrError", () => {
     assert.isTrue(state.canLoadMore);
   });
 
+  it("should set bookmark status of history items on RECEIVE_BOOKMARKS_CHANGES", () => {
+    const action = {type: "RECEIVE_BOOKMARKS_CHANGES", data: {
+      bookmarkGuid: "bookmark123",
+      lastModified: 1234124,
+      frecency: 200,
+      bookmarkTitle: "foo",
+      url: "https://foo.com"
+    }};
+    const prevRows = [
+      {type: "history", url: "blah.com"},
+      {type: "history", url: "https://foo.com", frecency: 1}
+    ];
+    const result = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
+    const newRow = result.rows[1];
+    assert.equal(newRow.bookmarkGuid, action.data.bookmarkGuid, "should have the right bookmarkGuid");
+    assert.equal(newRow.bookmarkDateCreated, action.data.lastModified, "should have the right bookmarkDateCreated");
+    assert.equal(newRow.frecency, action.data.frecency, "should have the right frecency");
+    assert.equal(newRow.bookmarkTitle, action.data.bookmarkTitle, "should have the right bookmarkTitle");
+  });
+
+  it("should remove bookmark status of history items on RECEIVE_BOOKMARKS_CHANGES", () => {
+    const action = {type: "RECEIVE_BOOKMARKS_CHANGES", data: {
+      url: "https://foo.com"
+    }};
+    const prevRows = [
+      {type: "history", url: "blah.com"},
+      {
+        type: "history",
+        bookmarkGuid: "bookmark123",
+        bookmarkDateCreated: 1234124,
+        frecency: 200,
+        bookmarkTitle: "foo",
+        url: "https://foo.com"
+      }
+    ];
+    const result = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
+    const newRow = result.rows[1];
+    assert.isUndefined(newRow.bookmarkGuid, "should remove bookmarkGuid");
+    assert.isUndefined(newRow.bookmarkDateCreated, "should remove bookmarkDateCreated");
+    assert.equal(newRow.frecency, prevRows[1].frecency, "should not change the frecency");
+    assert.isUndefined(newRow.bookmarkTitle, "should remove bookmarkTitle");
+  });
+
   ((event) => {
     it(`should remove a row removed via ${event}`, () => {
       const action = {type: event, data: "http://foo.com"};
@@ -112,13 +156,12 @@ describe("setRowsOrError", () => {
     });
   })("NOTIFY_HISTORY_DELETE", "NOTIFY_BLOCK_URL");
 
-  ((event) => {
-    it(`should remove a row removed via ${event}`, () => {
-      const action = {type: event, data: "boorkmarkFOO"};
-      const prevRows = [{bookmarkGuid: "boorkmarkFOO"}, {bookmarkGuid: "boorkmarkBAR"}];
-      const state = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
-      assert.deepEqual(state.rows, [{bookmarkGuid: "boorkmarkBAR"}]);
-    });
-  })("NOTIFY_BOOKMARK_DELETE", "NOTIFY_BLOCK_URL");
+  it("should remove \"NOTIFY_BOOKMARK_DELETE\" if request type is \"RECENT_BOOKMARKS_REQUEST\"", () => {
+    reducer = setRowsOrError("RECENT_BOOKMARKS_REQUEST", "RECENT_LINKS_RESPONSE");
+    const action = {type: "NOTIFY_BOOKMARK_DELETE", data: "boorkmarkFOO"};
+    const prevRows = [{bookmarkGuid: "boorkmarkFOO"}, {bookmarkGuid: "boorkmarkBAR"}];
+    const state = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
+    assert.deepEqual(state.rows, [{bookmarkGuid: "boorkmarkBAR"}]);
+  });
 
 });

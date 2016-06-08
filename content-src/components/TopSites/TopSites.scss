@@ -7,15 +7,11 @@
     }
   }
 
-  .context-menu {
-    top: 14px;
-    right: 12px;
-  }
-
   // This is a container for the delete menu
   .tile-outer {
     position: relative;
     display: inline-block;
+    margin: 0 $tile-gutter 0 0;
     @media (min-width: $break-point) {
       display: block;
     }
@@ -23,14 +19,13 @@
 
   .tile {
     @include item-shadow;
-    @include tile-close;
+    @include link-menu-button;
     display: inline-flex;
     flex-shrink: 0;
     border-radius: $border-radius;
     flex-direction: column;
     font-size: $tile-font-size;
     height: $tile-height;
-    margin: 0 $tile-gutter 0 0;
     position: relative;
     text-decoration: none;
     width: $tile-width;

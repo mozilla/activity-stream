@@ -2,13 +2,13 @@ const {assert} = require("chai");
 const moment = require("moment");
 const ConnectedSpotlight = require("components/Spotlight/Spotlight");
 const {Spotlight, SpotlightItem} = ConnectedSpotlight;
-const DeleteMenu = require("components/DeleteMenu/DeleteMenu");
+const LinkMenu = require("components/LinkMenu/LinkMenu");
+const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const {mockData, faker, renderWithProvider} = require("test/test-utils");
-const firstRunData = require("lib/first-run-data");
 const fakeSpotlightItems = mockData.Spotlight.rows;
 const fakeSiteWithImage = faker.createSite();
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
@@ -102,15 +102,11 @@ describe("SpotlightItem", function() {
       instance = renderWithProvider(<SpotlightItem {...props} />);
       assert.equal(instance.refs.contextMessage.textContent, "Visited recently");
     });
-    it("should not show delete icon for first run items", () => {
-      instance = renderWithProvider(<SpotlightItem {...firstRunData.Highlights[0]} />);
-      assert.equal(instance.refs.delete.hidden, true);
-    });
-    it("should show delete menu when delete icon is pressed", () => {
-      const button = instance.refs.delete;
+    it("should show link menu when link button is pressed", () => {
+      const button = ReactDOM.findDOMNode(TestUtils.findRenderedComponentWithType(instance, LinkMenuButton));
       TestUtils.Simulate.click(button);
-      const deleteMenu = TestUtils.findRenderedComponentWithType(instance, DeleteMenu);
-      assert.equal(deleteMenu.props.visible, true);
+      const menu = TestUtils.findRenderedComponentWithType(instance, LinkMenu);
+      assert.equal(menu.props.visible, true);
     });
   });
 });

@@ -238,6 +238,29 @@ exports.test_Links_getFrecentLinks = function*(assert) {
   assert.equal(links[3].url, "https://mozilla4.com/3", "Expected 4th link");
 };
 
+exports.test_Links_asyncAddBookmark = function*(assert) {
+  let provider = PlacesProvider.links;
+
+  let bookmarks = [
+    "https://mozilla1.com/0",
+    "https://mozilla1.com/1"
+  ];
+
+  let links = yield provider.getRecentBookmarks();
+  assert.equal(links.length, 0, "empty bookmarks yields empty links");
+  let bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, 0, "empty bookmarks yields 0 size");
+
+  for (let url of bookmarks) {
+    yield provider.asyncAddBookmark(url);
+  }
+
+  links = yield provider.getRecentBookmarks();
+  assert.equal(links.length, 2, "2 bookmarks on bookmark list");
+  bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, 2, "size 2 for 2 bookmarks added");
+};
+
 exports.test_Links_asyncDeleteBookmark = function*(assert) {
   let provider = PlacesProvider.links;
 

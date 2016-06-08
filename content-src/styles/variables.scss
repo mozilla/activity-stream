@@ -41,8 +41,10 @@ $tile-border: 1px $white;
 $tile-title-bg-color: rgba($white, 0.6);
 $tile-title-hover-color: $white;
 $tile-title-font-size: 11px;
-$tile-close-border: 1px solid rgba($black, 0.2);
-$tile-close-boxshadow: 0 2px 0 rgba($black, 0.1);
+
+$link-menu-button-size: 27px;
+$link-menu-button-border: 1px solid rgba($black, 0.2);
+$link-menu-button-boxshadow: 0 2px 0 rgba($black, 0.1);
 
 $feed-font-size: 12px;
 $feed-date-font-color: #BFBFBF;
@@ -93,7 +95,8 @@ $item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
 
 $loader-size: 16px;
 
-$context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.2);
+$context-menu-border-color: rgba(0, 0, 0, 0.2);
+$context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px $context-menu-border-color;
 $context-menu-font-size: 14px;
 $context-menu-border-radius: 5px;
 $context-menu-outer-padding: 5px;
@@ -109,35 +112,12 @@ $context-menu-item-padding: 3px 20px;
   }
 }
 
-@mixin tile-close {
-  .tile-close-icon {
-    cursor: pointer;
-    position: absolute;
-    top: -14px;
-    right: -14px;
-    width: 28px;
-    height: 28px;
-    background-color: $white;
-    background-image: url('img/glyph-delete-16.svg');
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-clip: padding-box;
-    border: $tile-close-border;
-    border-radius: 100%;
-    box-shadow: $tile-close-boxshadow;
-    transform: scale(0.25);
-    opacity: 0;
-    transition-property: transform, opacity;
-    transition-duration: 200ms;
-    z-index: 399;
-  }
-
+@mixin link-menu-button {
   &:hover,
   &.active {
-    .tile-close-icon {
+    .link-menu-button {
       transform: scale(1);
       opacity: 1;
-      transition-delay: 500ms;
     }
   }
 }
