@@ -70,10 +70,10 @@ const ActivityFeedItem = React.createClass({
         <div className="feed-details">
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{title}</h4>
-            <span className="feed-url" ref="url">{prettyUrl(site.url)}</span>
+            <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)}/>
           </div>
           <div className="feed-stats">
-            <div ref="lastVisit">{dateLabel}</div>
+            <div ref="lastVisit" className="last-visit" data-last-visit={dateLabel}/>
           </div>
         </div>
       </a>
