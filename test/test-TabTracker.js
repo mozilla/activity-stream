@@ -224,7 +224,7 @@ exports.test_TabTracker_back_button_load = function*(assert) {
   yield tabClosedPromise;
   yield pingsSentPromise;
 
-  let loadReasons = ["newtab", "back_button"];
+  let loadReasons = ["newtab", "newtab"];
   let unloadReasons = ["refresh", "close"];
   checkLoadUnloadReasons(assert, pingData, loadReasons, unloadReasons);
 };
