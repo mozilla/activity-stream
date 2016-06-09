@@ -18,11 +18,19 @@ module.exports = {
     "error": false
   },
   "Search": {
+    "error": false,
+    "searchString": "he",
+    "suggestions": ["help", "helloworld"],
+    "formHistory": ["hello"],
     "currentEngine": {
       "name": "Google",
-      "placeholder": "Search With Google",
-      "iconBuffer": {}
-    }
+      "icon": ""
+    },
+    "engines": [{"name": "Google", "icon": ""}, {"name": "Yahoo", "icon": ""}],
+    "searchPlaceholder": "",
+    "searchSettings": "",
+    "searchHeader": "",
+    "searchForSomethingWith": ""
   },
   "Experiments": {
     "data": {reverseMenuOptions: false},
