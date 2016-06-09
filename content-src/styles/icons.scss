@@ -1,0 +1,74 @@
+.icon {
+  display: inline-block;
+  width: $icon-size;
+  height: $icon-size;
+  background-size: $icon-size;
+  background-position: center center;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+
+  &.icon-spacer {
+    margin-right: 8px;
+  }
+
+  &.icon-activity-stream {
+    background-image: url('img/glyph-activityStream-16.svg');
+  }
+
+  &.icon-arrow {
+    background-image: url('img/glyph-showmore-16.svg');
+  }
+
+  &.icon-bookmark {
+    background-image: url('img/glyph-bookmark-16.svg');
+  }
+
+  &.icon-bookmark-white {
+    background-image: url('img/glyph-bookmark-16-white.svg');
+  }
+
+  &.icon-bookmark-remove {
+    background-image: url('img/glyph-bookmark-remove-16.svg');
+  }
+
+  &.icon-delete {
+    background-image: url('img/glyph-delete-16.svg');
+  }
+
+  &.icon-dismiss {
+    background-image: url('img/glyph-dismiss-16.svg');
+  }
+
+  &.icon-firefox-white {
+    background-image: url('img/glyph-firefox-white-16.svg');
+  }
+
+  &.icon-new-window {
+    background-image: url('img/glyph-newWindow-16.svg');
+  }
+
+  &.icon-new-window-private {
+    background-image: url('img/glyph-newWindow-private-16.svg');
+  }
+
+  &.icon-forward {
+    background-image: url('img/glyph-forward-16.svg');
+  }
+
+  &.icon-search {
+    background-image: url('img/glyph-search-16.svg');
+  }
+
+  &.icon-settings {
+    background-image: url('img/glyph-settings-16.svg');
+  }
+
+  &.icon-showMore {
+    background-image: url('img/glyph-show-more-16.svg');
+  }
+
+  &.icon-timeline {
+    background-image: url('img/list-icon.svg');
+  }
+
+}

@@ -63,19 +63,7 @@
 
   .icon {
     float: left;
-    height: 16px;
-    vertical-align: middle;
-    width: 16px;
-    margin-right: 8px;
     opacity: 0.4;
-
-    &.timeline {
-      background-image: url('img/glyph-activityStream-16.svg');
-    }
-
-    &.settings {
-      background-image: url('img/glyph-settings-16.svg');
-    }
   }
 
   &:hover,

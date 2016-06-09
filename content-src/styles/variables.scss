@@ -100,7 +100,9 @@ $context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px $context-menu-bor
 $context-menu-font-size: 14px;
 $context-menu-border-radius: 5px;
 $context-menu-outer-padding: 5px;
-$context-menu-item-padding: 3px 20px;
+$context-menu-item-padding: 3px 12px;
+
+$icon-size: 16px;
 
 @mixin item-shadow {
   box-shadow: $item-shadow;
