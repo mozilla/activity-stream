@@ -269,7 +269,7 @@ const Search = React.createClass({
             const active = (this.state.activeSuggestionIndex === suggestionsIdIndex);
             const activeEngine = this.getActiveEngine();
             return (<li key={suggestion} role="presentation">
-            <a ref={"search-suggestions-" + suggestionsIdIndex++ } id={"search-suggestions-" + suggestionsIdIndex++ }
+            <a ref={suggestion} id={"search-suggestions-" + suggestionsIdIndex++ }
               className={active ? "active" : ""} role="option"
               aria-selected={active}
               onClick={() => this.performSearch({engineName: activeEngine, searchString: suggestion})}>{suggestion}</a>
