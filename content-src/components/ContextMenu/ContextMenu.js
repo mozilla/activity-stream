@@ -34,6 +34,7 @@ const ContextMenu = React.createClass({
                 this.props.onUserEvent(option.userEvent);
               }
             }}>
+            {option.icon && <span className={"icon icon-spacer icon-" + option.icon} />}
             {option.label}
           </a></li>);
         })}
@@ -49,6 +50,7 @@ ContextMenu.propTypes = {
   options: React.PropTypes.arrayOf(React.PropTypes.shape({
     type: React.PropTypes.string,
     label: React.PropTypes.string,
+    icon: React.PropTypes.string,
     onClick: React.PropTypes.func,
     userEvent: React.PropTypes.string,
     ref: React.PropTypes.string

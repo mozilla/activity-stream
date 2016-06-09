@@ -66,13 +66,13 @@ const NewTabPage = React.createClass({
           </section>
 
           <section className="bottom-links-container">
-            <Link className="bottom-link" to="/timeline"><span className="icon timeline" /> See all activity</Link>
+            <Link className="bottom-link" to="/timeline"><span className="icon icon-spacer icon-activity-stream" /> See all activity</Link>
             <span className="link-wrapper-right">
               <a
                 ref="settingsLink"
                 className={classNames("bottom-link expand", {active: this.state.showSettingsMenu})}
                 onClick={() => this.setState({showSettingsMenu: !this.state.showSettingsMenu})} >
-                  <span className="icon settings" /> <span className="text">Settings</span>
+                  <span className="icon icon-spacer icon-settings" /> <span className="text">Settings</span>
               </a>
               <ContextMenu
                 ref="settingsMenu"
