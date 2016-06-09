@@ -37,12 +37,14 @@ const LinkMenu = React.createClass({
       allowBlock && {
         ref: "dismiss",
         label: "Dismiss",
+        icon: "dismiss",
         userEvent: "BLOCK",
         onClick: () => dispatch(actions.NotifyBlockURL(site.url))
       },
       {
         ref: "delete",
         label: "Delete from History",
+        icon: "delete",
         userEvent: "DELETE",
         onClick: () => dispatch(actions.NotifyHistoryDelete(site.url))
       }
@@ -56,11 +58,13 @@ const LinkMenu = React.createClass({
       (site.bookmarkGuid ? {
         ref: "removeBookmark",
         label: "Remove Bookmark",
+        icon: "bookmark-remove",
         userEvent: "BOOKMARK_DELETE",
         onClick: () => dispatch(actions.NotifyBookmarkDelete(site.bookmarkGuid))
       } : {
         ref: "addBookmark",
         label: "Bookmark",
+        icon: "bookmark",
         userEvent: "BOOKMARK_ADD",
         onClick: () => dispatch(actions.NotifyBookmarkAdd(site.url))
       }),
@@ -68,12 +72,14 @@ const LinkMenu = React.createClass({
       {
         ref: "openWindow",
         label: "Open in a New Window",
+        icon: "new-window",
         userEvent: "OPEN_NEW_WINDOW",
         onClick: () => dispatch(actions.NotifyOpenWindow({url: site.url}))
       },
       {
         ref: "openPrivate",
         label: "Open in a Private Window",
+        icon: "new-window-private",
         userEvent: "OPEN_PRIVATE_WINDOW",
         onClick: () => dispatch(actions.NotifyOpenWindow({url: site.url, isPrivate: true}))
       }]
