@@ -241,7 +241,7 @@ describe("Search", () => {
     assert.equal(instance.state.activeEngineIndex, 0);
     assert.equal(instance.state.activeIndex, 2);
     // Moving up one more will reset the active engine, as there are no more engines
-    // to visit, and will reset the the active index
+    // to visit, and will decrease the active index
     TestUtils.Simulate.keyDown(instance.refs.searchInput, {key: "ArrowUp"});
     assert.equal(instance.state.activeEngineIndex, -1);
     assert.equal(instance.state.activeIndex, 1);
@@ -256,7 +256,7 @@ describe("Search", () => {
     setup(props);
     // make sure the drop down is 'visible', set the active suggestion to -1, as we
     // are navigating through engines list and the active engine to the first available
-    // engine. Press tab to move forwards to next available engine
+    // engine. Press 'Tab' to move forwards to next available engine
     instance.setState({focus: true, activeSuggestionIndex: -1, activeIndex: 2, activeEngineIndex: 0});
     TestUtils.Simulate.keyDown(instance.refs.searchInput, {key: "Tab"});
     assert.equal(instance.state.activeEngineIndex, 1);
@@ -272,7 +272,7 @@ describe("Search", () => {
     setup(props);
     // make sure the drop down is 'visible', set the active suggestion to -1, as we
     // are navigating through engines list and the active engine to the second available
-    // engine. Press Tab + Shift to move backwards to next available engine
+    // engine. Press 'Shift + Tab' to move backwards to next available engine
     instance.setState({focus: true, activeSuggestionIndex: -1, activeIndex: 3, activeEngineIndex: 1});
     TestUtils.Simulate.keyDown(instance.refs.searchInput, {key: "Tab", shiftKey: true});
     assert.equal(instance.state.activeEngineIndex, 0);
@@ -343,7 +343,7 @@ describe("Search", () => {
     // available suggestion, and the active engine to -1 so it uses the default
     // engine. Click on the suggestion.
     instance.setState({focus: true, activeSuggestionIndex: 0, activeIndex: 0, activeEngineIndex: -1});
-    TestUtils.Simulate.click(instance.refs["search-suggestions-0"]);
+    TestUtils.Simulate.click(instance.refs.hello);
   });
 
   it("should perform a search if you click on a non-default engine with a search string provided", done => {
