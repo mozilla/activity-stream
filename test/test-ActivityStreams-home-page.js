@@ -6,7 +6,7 @@ const ss = require("sdk/simple-storage");
 const {ActivityStreams} = require("lib/ActivityStreams");
 
 exports["test activity stream loads on home page when appropriate"] = function*(assert) {
-  prefService.set("browser.startup.homepage", "about:home");
+  prefService.reset("browser.startup.homepage");
   let url = "http://foo.bar/baz";
   let app = new ActivityStreams({pageURL: url});
 
@@ -26,12 +26,12 @@ exports["test activity stream loads on home page when appropriate"] = function*(
 
   // If we override the pref and the user changes it back to about:home,
   // ActivityStream shouldn't change it on next load.
-  prefService.set("browser.startup.homepage", "about:home");
+  prefService.reset("browser.startup.homepage");
   ss.storage.homepageOverriden = true;
   app = new ActivityStreams({pageURL: url});
-  assert.equal("about:home", prefService.get("browser.startup.homepage"));
+  assert.ok(!prefService.isSet("browser.startup.homepage"));
   app.unload();
-  assert.equal("about:home", prefService.get("browser.startup.homepage"));
+  assert.ok(!prefService.isSet("browser.startup.homepage"));
 
 };
 
