@@ -1,3 +1,34 @@
+<a name="1.1.0"></a>
+# 1.1.0 (2016-06-10)
+
+* 1.0.19 changelog ([6500a89](https://github.com/mozilla/activity-stream/commit/6500a89))
+* 1.1.0 ([46f876d](https://github.com/mozilla/activity-stream/commit/46f876d))
+* feat (addon): #724 set home page to Activity Stream (#785) ([2bc5b11](https://github.com/mozilla/activity-stream/commit/2bc5b11))
+* fix (content): #774 more fixes related to more data on zoom/scroll/resizing ([d208b1f](https://github.com/mozilla/activity-stream/commit/d208b1f)), closes [#774](https://github.com/mozilla/activity-stream/issues/774)
+* fix(addon): #796 Fix delete observer notification ([aa1165d](https://github.com/mozilla/activity-stream/commit/aa1165d))
+* fix(addon): #808 fix uncertain load_reason for the back button ([1308fed](https://github.com/mozilla/activity-stream/commit/1308fed))
+* fix(addon): #821 - increase group size for experiment delete menu ([f7de231](https://github.com/mozilla/activity-stream/commit/f7de231))
+* fix(content): #632 Bug 1269777 - Google search string from context menu wrongly searches ([c7051a6](https://github.com/mozilla/activity-stream/commit/c7051a6))
+* fix(content): #833 Separator for delete is in the wrong place ([fbcb520](https://github.com/mozilla/activity-stream/commit/fbcb520))
+* fix(content): Fix position of settings menu ([88ff8f1](https://github.com/mozilla/activity-stream/commit/88ff8f1))
+* fix(content): Fix suggestion index ([df08594](https://github.com/mozilla/activity-stream/commit/df08594))
+* fix(content): Remove delete menu ([fe751ec](https://github.com/mozilla/activity-stream/commit/fe751ec))
+* chore(addon): Refactor message passing listeners ([0988039](https://github.com/mozilla/activity-stream/commit/0988039))
+* chore(content): Remove unused styles ([6841369](https://github.com/mozilla/activity-stream/commit/6841369))
+* chore(content): Use CONTENT_TO_ADDON constant ([c40df12](https://github.com/mozilla/activity-stream/commit/c40df12))
+* feat(addon): #701 Add bookmark api ([04a4481](https://github.com/mozilla/activity-stream/commit/04a4481))
+* feat(addon): #701 Open window api ([60df5e3](https://github.com/mozilla/activity-stream/commit/60df5e3))
+* feat(addon): #775 Get Search working in Activity Stream ([7e5bbd6](https://github.com/mozilla/activity-stream/commit/7e5bbd6))
+* feat(addon): #790 collect uninstall event pings ([1a2baf4](https://github.com/mozilla/activity-stream/commit/1a2baf4))
+* feat(addon): set browser pref to store bigger favicons ([0dcceeb](https://github.com/mozilla/activity-stream/commit/0dcceeb))
+* feat(content): #701 New context menu for links ([a72a1d8](https://github.com/mozilla/activity-stream/commit/a72a1d8))
+* feat(content): #824 Add icons.scss ([c50caad](https://github.com/mozilla/activity-stream/commit/c50caad))
+* feat(content): show inline video players for youtube and vimeo ([81c9b56](https://github.com/mozilla/activity-stream/commit/81c9b56))
+* bug(content): remove css that breaks timestamp alignment ([301557c](https://github.com/mozilla/activity-stream/commit/301557c))
+* bug(content): remove unwanted .orig files ([c5b923d](https://github.com/mozilla/activity-stream/commit/c5b923d))
+
+
+
 <a name="1.0.19"></a>
 ## 1.0.19 (2016-06-03)
 
@@ -18,7 +49,6 @@
 * feat(addon): #417 infinite scroll ([620d109](https://github.com/mozilla/activity-stream/commit/620d109))
 * feat(addon): #732 Create experiment for DeleteMenu ([216842e](https://github.com/mozilla/activity-stream/commit/216842e))
 * feat(metrics): #705 Collect proxy telemetries from addon ([b514783](https://github.com/mozilla/activity-stream/commit/b514783))
-* fix(addon): #454 Hide Load More if < 20 items on history ([005ba6f](https://github.com/mozilla/activity-stream/commit/005ba6f))
 
 
 
@@ -27,6 +57,7 @@
 
 * 1.0.17 changelog ([527f2f3](https://github.com/mozilla/activity-stream/commit/527f2f3))
 * 1.0.18 ([f622774](https://github.com/mozilla/activity-stream/commit/f622774))
+* fix(addon): #454 Hide Load More if < 20 items on history ([005ba6f](https://github.com/mozilla/activity-stream/commit/005ba6f))
 * fix(addon): #698 Don't send session pings for inactive tabs when closing the broswer window ([bdf921c](https://github.com/mozilla/activity-stream/commit/bdf921c))
 * fix(addon): #716 Don't send session pings for tabs that finish loading in the background. ([a4c798d](https://github.com/mozilla/activity-stream/commit/a4c798d))
 * fix(addon): Add an unique id for each item sent to content ([a617dd4](https://github.com/mozilla/activity-stream/commit/a617dd4))
