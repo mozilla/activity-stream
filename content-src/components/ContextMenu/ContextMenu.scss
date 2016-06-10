@@ -24,10 +24,11 @@
       > a {
         cursor: pointer;
         color: inherit;
-        display: block;
         white-space: nowrap;
         padding: $context-menu-item-padding;
-        line-height: 1;
+        line-height: $icon-size;
+        display: flex;
+        align-items: center;
 
         &:hover {
           background: $star-blue;

@@ -24,7 +24,7 @@ const Header = React.createClass({
 
       <section ref="clickElement" className={classNames("nav", {"disabled": props.disabled})} onClick={this.onClick}>
         <h1>
-          <span hidden={!props.icon} className={`icon ${props.icon}`} />
+          <span hidden={!props.icon} className={`icon icon-spacer icon-${props.icon}`} />
           <span>{props.title}</span>
           <span ref="caret" hidden={props.disabled} className="arrow" />
         </h1>

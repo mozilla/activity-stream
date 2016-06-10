@@ -13,8 +13,8 @@ const TimelinePage = React.createClass({
     const props = this.props;
     const pathname = props.location && props.location.pathname;
     const navItems = [
-      {title: "All", to: "/timeline", active: true, icon: "firefox"},
-      {title: "Bookmarks", to: "/timeline/bookmarks", icon: "star"}
+      {title: "All", to: "/timeline", active: true, icon: "firefox-white"},
+      {title: "Bookmarks", to: "/timeline/bookmarks", icon: "bookmark-white"}
     ];
     return (<div className="outer-wrapper">
       <Header
@@ -29,7 +29,7 @@ const TimelinePage = React.createClass({
             {navItems.map(item => {
               return (<li key={item.to}>
                 <Link to={item.to} className={classNames({active: item.to === pathname})}>
-                  <span className={`icon ${item.icon}`} />
+                  <span className={`icon icon-${item.icon}`} />
                   <span className="link-title">{item.title}</span>
                 </Link>
               </li>);
