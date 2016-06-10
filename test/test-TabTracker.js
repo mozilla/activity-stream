@@ -649,6 +649,23 @@ exports.test_TabTracker_session_reports = function*(assert) {
   Services.obs.removeObserver(pingBumper, "tab-session-complete");
 };
 
+exports.test_TabTracker_disable_ping = function*(assert) {
+  let userEventPromise = new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic === "user-action-event") {
+        Services.obs.removeObserver(observe, "user-action-event");
+        resolve(JSON.parse(data));
+      }
+    }
+    Services.obs.addObserver(observe, "user-action-event");
+  });
+
+  // manually trigger the "disable" or "uninstall" event
+  app.unload("disable");
+  let pingData = yield userEventPromise;
+  assert.deepEqual("disable", pingData.event, "the ping has the correct event");
+};
+
 before(exports, function*() {
   // we have to clear bookmarks and history before tests
   // to ensure that the app does not pick history or
