@@ -93,46 +93,6 @@
     left: $feed-gutter-h - 2;
   }
 
-  .action-items-container {
-    background: $bg-grey;
-    border: solid 1px $faintest-black;
-    border-radius: $border-radius;
-    position: absolute;
-    right: -5px;
-    bottom: -5px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: center;
-    opacity: 0;
-  }
-
-  .action-item {
-    cursor: pointer;
-    width: 40px;
-    height: 32px;
-    background-position: center center;
-    background-repeat: no-repeat;
-    border-right: solid 1px $faintest-black;
-    padding: 10px 8px;
-
-    &:last-child {
-      border-right: 0;
-    }
-
-    &.icon-more {
-      background-image: url('img/glyph-more-16.svg');
-    }
-
-    &.icon-delete {
-      background-image: url('img/glyph-delete-16.svg');
-    }
-
-    &.icon-share {
-      background-image: url('img/glyph-share-16.svg');
-    }
-  }
-
   &.active,
   &:hover {
     background: $feed-hover-color;
