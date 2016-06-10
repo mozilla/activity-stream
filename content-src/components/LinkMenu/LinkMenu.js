@@ -33,7 +33,6 @@ const LinkMenu = React.createClass({
     // Don't add delete options for default links
     // that show up if your history is empty
     const deleteOptions = isNotDefault ? [
-      {type: "separator"},
       allowBlock && {
         ref: "dismiss",
         label: "Dismiss",
@@ -53,6 +52,8 @@ const LinkMenu = React.createClass({
     if (Experiments.data.reverseMenuOptions) {
       deleteOptions.reverse();
     }
+
+    deleteOptions.unshift({type: "separator"});
 
     return [
       (site.bookmarkGuid ? {
