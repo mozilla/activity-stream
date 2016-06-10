@@ -30,28 +30,33 @@ const LinkMenu = React.createClass({
     const {site, allowBlock, Experiments, dispatch} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
+    let deleteOptions;
+
     // Don't add delete options for default links
     // that show up if your history is empty
-    const deleteOptions = isNotDefault ? [
-      {type: "separator"},
-      allowBlock && {
-        ref: "dismiss",
-        label: "Dismiss",
-        icon: "dismiss",
-        userEvent: "BLOCK",
-        onClick: () => dispatch(actions.NotifyBlockURL(site.url))
-      },
-      {
-        ref: "delete",
-        label: "Delete from History",
-        icon: "delete",
-        userEvent: "DELETE",
-        onClick: () => dispatch(actions.NotifyHistoryDelete(site.url))
-      }
-    ] : [];
+    if (isNotDefault) {
+      deleteOptions = [
+        allowBlock && {
+          ref: "dismiss",
+          label: "Dismiss",
+          icon: "dismiss",
+          userEvent: "BLOCK",
+          onClick: () => dispatch(actions.NotifyBlockURL(site.url))
+        },
+        {
+          ref: "delete",
+          label: "Delete from History",
+          icon: "delete",
+          userEvent: "DELETE",
+          onClick: () => dispatch(actions.NotifyHistoryDelete(site.url))
+        }
+      ];
 
-    if (Experiments.data.reverseMenuOptions) {
-      deleteOptions.reverse();
+      if (Experiments.data.reverseMenuOptions) {
+        deleteOptions.reverse();
+      }
+
+      deleteOptions.unshift({type: "separator"});
     }
 
     return [

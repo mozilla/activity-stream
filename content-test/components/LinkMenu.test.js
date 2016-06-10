@@ -55,6 +55,7 @@ describe("LinkMenu", () => {
     setup({site: {url: "https://foo.com", type: FIRST_RUN_TYPE}});
     assert.isUndefined(contextMenu.refs.dismiss, "hide dismiss");
     assert.isUndefined(contextMenu.refs.delete, "hide delete");
+    assert.lengthOf(contextMenu.props.options, 4);
   });
 
   it("should hide dismiss option if allowBlock is false", () => {
@@ -130,20 +131,20 @@ describe("LinkMenu", () => {
   });
 
   describe("experiment", () => {
+    it("should have the delete options in the right order", () => {
+      const options = contextMenu.props.options;
+      assert.equal(options[options.length - 1].ref, "delete", "Last option is delete");
+      assert.equal(options[options.length - 2].ref, "dismiss", "Second last option is dismiss");
+      assert.equal(options[options.length - 3].type, "separator", "Third last option is a separator");
+    });
     it("should reverse delete options", () => {
       setup({}, {getState() {
         return {Experiments: {data: {reverseMenuOptions: true}}};
       }});
-      let deleteIndex;
-      let dismissIndex;
-      contextMenu.props.options.forEach((o, i) => {
-        if (o.ref === "dismiss") {
-          dismissIndex = i;
-        } else if (o.ref === "delete") {
-          deleteIndex = i;
-        }
-      });
-      assert.isBelow(deleteIndex, dismissIndex);
+      const options = contextMenu.props.options;
+      assert.equal(options[options.length - 1].ref, "dismiss", "Last option is dismiss");
+      assert.equal(options[options.length - 2].ref, "delete", "Second last option is delete");
+      assert.equal(options[options.length - 3].type, "separator", "Third last option is a separator");
     });
     it("should not send the experiment id with non-delete user events", done => {
       setup({}, {
