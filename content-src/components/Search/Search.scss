@@ -16,6 +16,7 @@
     border: 1px solid $search-input-border-color;
     font-size: 12px;
     box-shadow: 0 5px 10px $faintest-black;
+    overflow: hidden;
 
     .search-title {
       color: $search-text;
@@ -23,6 +24,7 @@
       background-color: $search-section-background;
       display: flex;
       align-items: center;
+      word-break: break-all;
 
       #current-engine-icon {
         margin-right: 8px;
