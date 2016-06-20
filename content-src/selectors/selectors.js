@@ -14,6 +14,11 @@ const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
 module.exports.justDispatch = (() => ({}));
 
 function getBackgroundRGB(site) {
+
+  // This is from firefox
+  if (site.favicon_color) {
+    return site.favicon_color;
+  }
   if (site.favicon_colors && site.favicon_colors[0] && site.favicon_colors[0].color) {
     return site.favicon_colors[0].color;
   }
