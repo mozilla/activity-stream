@@ -39,15 +39,8 @@
         @include list-items;
 
         li a {
-          color: $black;
-          display: block;
+          @include list-link;
           padding: 4px 36px;
-
-          &:hover,
-          &.active {
-            background: $search-blue;
-            color: $bg-color;
-          }
         }
       }
     }
@@ -59,15 +52,8 @@
         @include list-items;
 
         li a {
-          color: $black;
-          display: block;
+          @include list-link;
           padding: 4px 10px;
-
-          &:hover,
-          &.active {
-            background: $search-blue;
-            color: $bg-color;
-          }
 
           &:hover > #historyIcon,
           &.active > #historyIcon {

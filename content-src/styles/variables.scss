@@ -132,3 +132,15 @@ $icon-size: 16px;
   margin: 0;
   list-style: none;
 }
+
+@mixin list-link {
+  cursor: default;
+  color: $black;
+  display: block;
+
+  &:hover,
+  &.active {
+    background: $search-blue;
+    color: $bg-color;
+  }
+}
