@@ -200,7 +200,12 @@ const Search = React.createClass({
           newIndex = -1;
           numSuggestions--;
         }
-        break;
+        this.setState({
+          activeIndex: newIndex,
+          activeSuggestionIndex: newSuggestionIndex,
+          activeEngineIndex: newEngineIndex
+        });
+        return;
       case "Enter":
         e.preventDefault();
         // If the change settings button is selected, fire the action for it.
