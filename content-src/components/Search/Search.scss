@@ -1,4 +1,5 @@
 .search-wrapper {
+  cursor: default;
   display: flex;
   position: relative;
   margin: $search-margin-top 0 $search-margin-bottom;
@@ -25,6 +26,10 @@
       display: flex;
       align-items: center;
       word-break: break-all;
+
+      p {
+        margin: 0;
+      }
 
       #current-engine-icon {
         margin-right: 8px;
