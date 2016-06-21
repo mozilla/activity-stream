@@ -283,7 +283,7 @@ const Search = React.createClass({
         </ul>
       </section>
       <section className="search-title">
-           <span>{this.props.searchForSomethingWith.replace("%S", searchString)}</span>
+        <p>{this.props.searchForSomethingWith}<span><b> {searchString} </b></span>with:</p>
       </section>
       <section className="search-partners" role="group">
             <ul>
