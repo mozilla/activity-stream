@@ -13,15 +13,19 @@ exports["test activity stream loads on home page when appropriate"] = function*(
   // By default, the home page should be set to ActivityStream.
   assert.equal(url + "#/", prefService.get("browser.startup.homepage"));
 
-  // Unload ActivityStream and it should be unset.
+  // Unload ActivityStream and the home page should still be ours.
   app.unload();
+  assert.equal(url + "#/", prefService.get("browser.startup.homepage"));
+
+  // Unload ActivityStream with reason="disable" and it should be unset.
+  app.unload("disable");
   assert.ok(!prefService.isSet("browser.startup.homepage"));
 
   // If the pref is already overriden, ActivityStream shouldn't change it.
   prefService.set("browser.startup.homepage", "https://example.com");
   app = new ActivityStreams({pageURL: url});
   assert.equal("https://example.com", prefService.get("browser.startup.homepage"));
-  app.unload();
+  app.unload("disable");
   assert.equal("https://example.com", prefService.get("browser.startup.homepage"));
 
   // If we override the pref and the user changes it back to about:home,
