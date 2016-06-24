@@ -45,7 +45,6 @@ module.exports = function Search(type) {
       case am.type("SEARCH_SUGGESTIONS_RESPONSE"):
         state.formHistory = action.data.formHistory || [];
         state.suggestions = action.data.suggestions || [];
-        state.searchString = action.data.searchString;
         break;
       case am.type("SEARCH_CYCLE_CURRENT_ENGINE_RESPONSE"):
         state.currentEngine = action.data.currentEngine;
