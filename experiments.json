@@ -1,0 +1,31 @@
+{
+  "sample": {
+    "name": "Sample Experiment",
+    "active": false,
+    "description": "This is just a sample experiment. It will not be included since active is false",
+    "control": {
+      "value": "#000",
+      "description": "This is black"
+    },
+    "variant": {
+      "id": "do-not-delete-this-is-a-sample",
+      "value": "#FFF",
+      "threshold": 0.5,
+      "description": "This is white"
+    }
+  },
+  "reverseMenuOptions": {
+    "name": "Delete order",
+    "description": "Tests whether or not the order of block and delete impact how often people use them",
+    "control": {
+      "value": false,
+      "description": "Delete is first, block is second"
+    },
+    "variant": {
+      "id": "exp-001-delete-menu",
+      "value": true,
+      "threshold": 0.5,
+      "description": "Block is first, delete is second"
+    }
+  }
+}

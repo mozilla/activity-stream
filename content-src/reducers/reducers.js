@@ -2,22 +2,7 @@
 "use strict";
 const setRowsOrError = require("reducers/SetRowsOrError");
 const setSearchContent = require("reducers/setSearchContent");
-
-function Experiments(prevState = {data: {}, error: false}, action) {
-  if (action.type !== "EXPERIMENTS_RESPONSE") {
-    return prevState;
-  } else if (action.error) {
-    return {
-      error: action.data,
-      data: prevState.data
-    };
-  } else {
-    return {
-      error: false,
-      data: action.data
-    };
-  }
-}
+const Experiments = require("reducers/Experiments");
 
 module.exports = {
   TopSites: setRowsOrError("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE"),
