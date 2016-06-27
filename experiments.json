@@ -1,0 +1,16 @@
+{
+  "reverseMenuOptions": {
+    "id": "exp-001-delete-menu",
+    "name": "Delete order",
+    "description": "Tests whether or not the order of block and delete impact how often people use them",
+    "control": {
+      "value": false,
+      "description": "Delete is first, block is second"
+    },
+    "variant": {
+      "value": true,
+      "threshold": 0.5,
+      "description": "Block is first, delete is second"
+    }
+  }
+}
