@@ -63,5 +63,4 @@ scripts:
 
   # This is just to make sure we don't make commits with failing tests
   # or uncompiled yamscripts.yml. Run automatically with husky.
-  precommit: =>test:lint && =>yamscripts
-  # prepush: =>test
+  prepush: =>test:lint && =>yamscripts
