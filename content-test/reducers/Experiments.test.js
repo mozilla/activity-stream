@@ -12,11 +12,18 @@ describe("Experiments reducer", () => {
     const state = Experiments(undefined, {});
     assert.isObject(state.data);
     Object.keys(definitions).forEach(key => {
+      if (definitions[key].active === false) {
+        return;
+      }
       assert.property(state.data, key, `has data.${key}`);
       assert.isObject(state.data[key], `data.${key} is an object`);
       assert.equal(state.data[key].value, definitions[key].control.value, `data.${key}.value is ${definitions[key].control.value}`);
       assert.isFalse(state.data[key].inExperiment, `data.${key}.inExperiment is false`);
     });
+  });
+  it("should ignore experiments with active.false", () => {
+    const state = Experiments(undefined, {});
+    assert.notProperty(state.data, "sample", "should not have sample, since active=false");
   });
   it("should ignore events other than EXPERIMENTS_RESPONSE", () => {
     const prevState = {error: false, data: {}};

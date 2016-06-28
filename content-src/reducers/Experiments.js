@@ -3,6 +3,9 @@ const defaultState = {data: {}, error: false};
 
 // Start with control values
 Object.keys(definitions).forEach(key => {
+  if (definitions[key].active === false) {
+    return;
+  }
   defaultState.data[key] = {
     value: definitions[key].control.value,
     inExperiment: false

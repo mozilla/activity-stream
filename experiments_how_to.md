@@ -22,6 +22,11 @@ First, you should add a definition of your experiment. Your experiment should ha
     // This is a short description of the experiment, also used in the display of results.
     "description": "Tests whether the button performs better as blue or red",
 
+    // active
+    // This is an OPTIONAL field. Once the experiment is done, set active to false,
+    // and it will not be included in the experiment data
+    "active": true,
+
     // control
     // This is a definition of the control option, which should represent the state
     // of the application before the change.

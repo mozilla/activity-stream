@@ -1,4 +1,19 @@
 {
+  "sample": {
+    "id": "do-not-delete-this-is-a-sample",
+    "name": "Sample Experiment",
+    "active": false,
+    "description": "This is just a sample experiment. It will not be included since active is false",
+    "control": {
+      "value": "#000",
+      "description": "This is black"
+    },
+    "variant": {
+      "value": "#FFF",
+      "threshold": 0.5,
+      "description": "This is white"
+    }
+  },
   "reverseMenuOptions": {
     "id": "exp-001-delete-menu",
     "name": "Delete order",
