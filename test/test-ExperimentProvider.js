@@ -60,6 +60,7 @@ exports["test ExperimentProvider.data"] = assert => {
   }, "clientID '012j' should result in variant being picked");
 };
 
+// Note: assert.throws tests seem to cause intermittent random failures
 // exports["test ExperimentProvider.validateExperiment"] = assert => {
 //   assert.throws(
 //     () => setup("foo", {foo: createExperiment({id: null})}),
@@ -94,6 +95,24 @@ exports["test ExperimentProvider.data"] = assert => {
 //     () => setup("foo", {foo: createExperiment({variant: {value: 123, threshold: 123}})}),
 //     /variant.threshold must be less than 1/, "should throw if variant.threshold is > 1");
 // };
+
+exports["test ExperimentProvider skips experiments with active = false"] = assert => {
+  setup("foo", {
+    foo: {
+      active: false,
+      name: "foo",
+      id: "asdasd",
+      control: {
+        value: "bloo"
+      },
+      variant: {
+        threshold: 0.3,
+        value: "blah"
+      }
+    }
+  });
+  assert.deepEqual(experimentProvider.data, {}, "should have empty .data");
+};
 
 exports["test ActivityStreams has experimentProvider instance"] = assert => {
   const as = new ActivityStreams({clientID: "k88"});
