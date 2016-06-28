@@ -122,6 +122,17 @@ const Search = React.createClass({
       case "ArrowUp":
         if (index > -1) {
           newIndex--;
+
+          // if we've reached the top of the suggestions list and press 'up' once more,
+          // we keep the table visible but display the origial search string. This
+          // behaviour is meant to match about:newtab
+          if (newIndex === -1) {
+            this.setState({focus: true});
+            this.props.dispatch(actions.NotifyUpdateSearchString(originalSearchString));
+            newSuggestionIndex = -1;
+            newIndex = -1;
+            break;
+          }
           if (index < numSuggestions) {
             // We are in suggestions, move on up.
             newSuggestionIndex--;
@@ -229,6 +240,13 @@ const Search = React.createClass({
       activeEngineIndex: newEngineIndex
     });
   },
+
+  onMouseMove(newIndex) {
+    this.setState({
+      activeIndex: newIndex,
+      activeSuggestionIndex: newIndex,
+    });
+  },
   render() {
     const {currentEngine, searchString, suggestions, formHistory, engines} = this.props;
     let suggestionsIdIndex = 0;
@@ -259,8 +277,10 @@ const Search = React.createClass({
           {formHistory.map(suggestion => {
             const active = (this.state.activeSuggestionIndex === suggestionsIdIndex);
             const activeEngine = this.getActiveEngine();
-            return (<li key={suggestion} role="presentation">
-                  <a id={"history-search-suggestions-" + suggestionsIdIndex++ }
+            const suggestionIndex = suggestionsIdIndex++;
+            return (<li key={suggestion} role="option">
+                  <a id={"history-search-suggestions-" + suggestionIndex }
+                     onMouseMove={() => this.onMouseMove(suggestionIndex)}
                      className={active ? "active" : ""} role="option"
                      aria-selected={active} onClick={() => this.performSearch({engineName: activeEngine, searchString: suggestion})}>
                      <div id="historyIcon" className={active ? "active" : ""}></div>{suggestion}</a>
@@ -273,8 +293,10 @@ const Search = React.createClass({
           {suggestions.map(suggestion => {
             const active = (this.state.activeSuggestionIndex === suggestionsIdIndex);
             const activeEngine = this.getActiveEngine();
-            return (<li key={suggestion} role="presentation">
-            <a ref={suggestion} id={"search-suggestions-" + suggestionsIdIndex++ }
+            const suggestionIndex = suggestionsIdIndex++;
+            return (<li key={suggestion} role="option">
+            <a ref={suggestion} id={"search-suggestions-" + suggestionIndex }
+              onMouseMove={() => this.onMouseMove(suggestionIndex)}
               className={active ? "active" : ""} role="option"
               aria-selected={active}
               onClick={() => this.performSearch({engineName: activeEngine, searchString: suggestion})}>{suggestion}</a>

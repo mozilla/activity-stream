@@ -366,4 +366,22 @@ describe("Search", () => {
     instance.setState({focus: true, activeSuggestionIndex: -1, activeIndex: -1, activeEngineIndex: -1});
     TestUtils.Simulate.click(instance.refs.Yahoo);
   });
+
+  it("should keep the drop down visible and display the original search string when no suggestion is selected", () => {
+    const props = {
+      searchString: "h",
+      suggestions: ["hello", "hi"]
+    };
+    setup(props);
+    // make sure the drop down is 'visible', set the active suggestion to the first
+    // available suggestion, and move up one time.
+    instance.setState({focus: true, activeSuggestionIndex: 0, activeIndex: 0});
+    TestUtils.Simulate.keyDown(instance.refs.searchInput, {key: "ArrowUp"});
+    // the drop down should still be visible, but we want to display the original search string
+    // and reset all the indices to -1
+    assert.equal(instance.state.focus, true);
+    assert.equal(instance.state.searchString, "h");
+    assert.equal(instance.state.activeSuggestionIndex, -1);
+    assert.equal(instance.state.activeIndex, -1);
+  });
 });
