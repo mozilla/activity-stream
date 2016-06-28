@@ -15,7 +15,7 @@ const DEFAULT_PROPS = {
   source: "ACTIVITY_FEED",
   index: 3
 };
-const EXPERIMENT_DATA = {Experiments: {data: {id: "exp-01", reverseMenuOptions: true}}};
+const EXPERIMENT_DATA = {Experiments: {data: {reverseMenuOptions: {id: "exp-01", value: true, inExperiment: true}}}};
 
 describe("LinkMenu", () => {
   let instance;
@@ -145,9 +145,7 @@ describe("LinkMenu", () => {
       assert.equal(options[options.length - 3].type, "separator", "Third last option is a separator");
     });
     it("should reverse delete options", () => {
-      setup({}, {getState() {
-        return {Experiments: {data: {reverseMenuOptions: true}}};
-      }});
+      setup({}, {getState: () => EXPERIMENT_DATA});
       const options = contextMenu.props.options;
       assert.equal(options[options.length - 1].ref, "dismiss", "Last option is dismiss");
       assert.equal(options[options.length - 2].ref, "delete", "Second last option is delete");
