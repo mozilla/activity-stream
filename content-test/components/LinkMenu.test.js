@@ -58,8 +58,8 @@ describe("LinkMenu", () => {
     assert.lengthOf(contextMenu.props.options, 4);
   });
 
-  it("should hide delete options for bookmarks", () => {
-    setup({site: {url: "https://foo.com", bookmarkGuid: "asdasd23123"}});
+  it("should hide delete options for bookmarks page", () => {
+    setup({site: {url: "https://foo.com"}, page: "TIMELINE_BOOKMARKS"});
     assert.isUndefined(contextMenu.refs.dismiss, "hide dismiss");
     assert.isUndefined(contextMenu.refs.delete, "hide delete");
     assert.lengthOf(contextMenu.props.options, 4);

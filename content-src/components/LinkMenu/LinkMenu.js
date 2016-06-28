@@ -27,14 +27,14 @@ const LinkMenu = React.createClass({
     }
   },
   getOptions() {
-    const {site, allowBlock, Experiments, dispatch} = this.props;
+    const {site, allowBlock, Experiments, dispatch, page} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
     let deleteOptions;
 
     // Don't add delete options for default links
     // that show up if your history is empty
-    if (isNotDefault && !site.bookmarkGuid) {
+    if (isNotDefault && page !== "TIMELINE_BOOKMARKS") {
       deleteOptions = [
         allowBlock && {
           ref: "dismiss",
