@@ -5,12 +5,18 @@ const MIN_CONTROL = 0.2;
 
 describe("Experiment Definitions", () => {
   let control = 1;
+  const variantIDs = new Set();
   Object.keys(definitions).forEach(key => {
     const experiment = definitions[key];
-    if (experiment.active !== false) {
-      control -= experiment.variant.threshold;
-    }
     describe(`experiment: ${key}`, () => {
+      after(() => {
+        if (experiment.active !== false) {
+          control -= experiment.variant.threshold;
+        }
+        if (experiment.variant && experiment.variant.id) {
+          variantIDs.add(experiment.variant.id);
+        }
+      });
       it("should have .name", () => {
         assert.property(experiment, "name", "exists");
         assert.isString(experiment.name);
@@ -33,6 +39,10 @@ describe("Experiment Definitions", () => {
       it("should have .variant", () => {
         assert.property(experiment, "variant", "exists");
         assert.isObject(experiment.variant);
+      });
+      it("should have .variant.id", () => {
+        assert.property(experiment.variant, "id", "exists");
+        assert.ok(!variantIDs.has(experiment.variant.id), "id should be unique");
       });
       it("should have .variant.description", () => {
         assert.property(experiment.variant, "description", "exists");
