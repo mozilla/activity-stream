@@ -4,7 +4,7 @@ const absolute = (relPath) => require("path").join(__dirname, relPath);
 
 module.exports = {
   entry: {
-    "vendor": absolute("addon-src/vendor.js")
+    "vendor": absolute("lib/vendor-src.js")
   },
   output: {
     path: absolute("lib"),

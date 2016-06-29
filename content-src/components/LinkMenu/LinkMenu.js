@@ -12,7 +12,7 @@ const LinkMenu = React.createClass({
     };
   },
   userEvent(event) {
-    const {page, source, index, Experiments, dispatch} = this.props;
+    const {page, source, index, dispatch} = this.props;
     if (page && source) {
       let payload = {
         event,
@@ -20,14 +20,11 @@ const LinkMenu = React.createClass({
         source: source,
         action_position: index
       };
-      if (["BLOCK", "DELETE"].includes(event) && Experiments.data.reverseMenuOptions) {
-        payload.experiment_id = Experiments.data.id;
-      }
       dispatch(actions.NotifyEvent(payload));
     }
   },
   getOptions() {
-    const {site, allowBlock, Experiments, dispatch, page} = this.props;
+    const {site, allowBlock, reverseMenuOptions, dispatch, page} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
     let deleteOptions;
@@ -52,7 +49,7 @@ const LinkMenu = React.createClass({
         }
       ];
 
-      if (Experiments.data.reverseMenuOptions) {
+      if (reverseMenuOptions.value) {
         deleteOptions.reverse();
       }
 
@@ -114,4 +111,8 @@ LinkMenu.propTypes = {
   index: React.PropTypes.number
 };
 
-module.exports = connect(({Experiments}) => ({Experiments}))(LinkMenu);
+module.exports = connect(({Experiments}) => {
+  return {
+    reverseMenuOptions: Experiments.data.reverseMenuOptions
+  };
+})(LinkMenu);
