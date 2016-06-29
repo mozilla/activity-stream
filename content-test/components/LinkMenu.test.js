@@ -151,29 +151,5 @@ describe("LinkMenu", () => {
       assert.equal(options[options.length - 2].ref, "delete", "Second last option is delete");
       assert.equal(options[options.length - 3].type, "separator", "Third last option is a separator");
     });
-    it("should not send the experiment id with non-delete user events", done => {
-      setup({}, {
-        getState: () => EXPERIMENT_DATA,
-        dispatch(action) {
-          if (action.type === "NOTIFY_USER_EVENT") {
-            assert.isUndefined(action.data.experiment_id);
-            done();
-          }
-        }
-      });
-      TestUtils.Simulate.click(contextMenu.refs.openWindow);
-    });
-    it("should send the experiment id with user events", done => {
-      setup({}, {
-        getState: () => EXPERIMENT_DATA,
-        dispatch(action) {
-          if (action.type === "NOTIFY_USER_EVENT") {
-            assert.equal(action.data.experiment_id, "exp-01");
-            done();
-          }
-        }
-      });
-      TestUtils.Simulate.click(contextMenu.refs.delete);
-    });
   });
 });

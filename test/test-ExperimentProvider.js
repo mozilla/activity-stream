@@ -7,7 +7,6 @@ const {ActivityStreams} = require("lib/ActivityStreams");
 const DEFAULT_CLIENT_ID = "foo";
 const DEFAULT_TEST_EXPERIMENTS = {
   foo: {
-    id: "foo_01",
     name: "Foo Test",
     description: "A test about foo",
     control: {
@@ -15,6 +14,7 @@ const DEFAULT_TEST_EXPERIMENTS = {
       description: "Foo is 42 by default"
     },
     variant: {
+      id: "foo_01",
       value: 84,
       threshold: 0.5,
       description: "Twice the foo"
@@ -24,13 +24,8 @@ const DEFAULT_TEST_EXPERIMENTS = {
 
 let experimentProvider;
 
-// // Utility for generating an experiment based on a valid definition
-// function createExperiment(details = {}) {
-//   return Object.assign({}, DEFAULT_TEST_EXPERIMENTS.foo, details);
-// }
-
-function setup(clientID = DEFAULT_CLIENT_ID, experiments = DEFAULT_TEST_EXPERIMENTS) {
-  return experimentProvider = new ExperimentProvider(clientID, experiments);
+function setup(clientID = DEFAULT_CLIENT_ID, experiments = DEFAULT_TEST_EXPERIMENTS, n) {
+  return experimentProvider = new ExperimentProvider(clientID, experiments, n && (() => n));
 }
 
 exports["test ExperimentProvider"] = assert => {
@@ -47,65 +42,55 @@ exports["test ExperimentProvider._rng"] = assert => {
   assert.equal(Math.round(experimentProvider._rng() * 100) / 100, 0.08, "seed 012j should generate 0.08");
 };
 
+exports["test ExperimentProvider.experimentId"] = assert => {
+  setup(undefined, undefined, 0.8);
+  assert.equal(experimentProvider.experimentId, null, "should be null for control group");
+  setup(undefined, undefined, 0.1);
+  assert.equal(experimentProvider.experimentId, "foo_01", "should be foo_01 if in experiment");
+};
+
 exports["test ExperimentProvider.data"] = assert => {
   setup("baz");
   assert.equal(experimentProvider.data, experimentProvider._data, ".data should return return this._data");
   assert.deepEqual(experimentProvider.data, {
-    foo: {id: "foo_01", value: 42, inExperiment: false}
+    foo: {value: 42, inExperiment: false}
   }, "clientID 'baz' should result in control being picked");
 
   setup("012j");
   assert.deepEqual(experimentProvider.data, {
-    foo: {id: "foo_01", value: 84, inExperiment: true}
+    foo: {value: 84, inExperiment: true}
   }, "clientID '012j' should result in variant being picked");
 };
 
-// Note: assert.throws tests seem to cause intermittent random failures
-// exports["test ExperimentProvider.validateExperiment"] = assert => {
-//   assert.throws(
-//     () => setup("foo", {foo: createExperiment({id: null})}),
-//     /missing an id/, "should throw if id is ommitted");
-//   assert.throws(
-//     () => setup("foo", {foo: createExperiment({name: null})}),
-//     /missing a name/, "should throw if name is ommitted");
-//   assert.throws(
-//     () => setup("foo", {foo: createExperiment({control: null})}),
-//     /missing control/, "should throw if control is ommitted");
-//   assert.throws(
-//     () => setup("foo", {foo: createExperiment({control: {description: "whatever"}})}),
-//     /missing control.value/, "should throw if control.value is ommitted");
-//   assert.ok(
-//     () => setup("foo", {foo: createExperiment({control: {value: 0}})}),
-//     "should not throw for falsey values"
-//   );
-//   assert.throws(
-//     () => setup("foo", {foo: createExperiment({variant: null})}),
-//     /missing variant/, "should throw if variant is ommitted");
-//   assert.throws(
-//     () => setup("foo", {foo: createExperiment({variant: {threshold: 0.1}})}),
-//     /missing variant.value/, "should throw if variant.value is ommitted");
-//   assert.ok(
-//     () => setup("foo", {foo: createExperiment({variant: {value: 0}})}),
-//     "should not throw for falsey values"
-//   );
-//   assert.throws(
-//     () => setup("foo", {foo: createExperiment({variant: {value: 123}})}),
-//     /missing variant.threshold/, "should throw if variant.threshold is ommitted");
-//   assert.throws(
-//     () => setup("foo", {foo: createExperiment({variant: {value: 123, threshold: 123}})}),
-//     /variant.threshold must be less than 1/, "should throw if variant.threshold is > 1");
-// };
+exports["test ExperimentProvider only selects one experiment"] = assert => {
+  const randomNumber = 0.2;
+  setup("foo", {
+    kitty: {
+      name: "kitty",
+      control: {value: false},
+      variant: {id: "kitty_01", threshold: 0.2, value: true}
+    },
+    dachshund: {
+      name: "dachshund",
+      control: {value: false},
+      variant: {id: "dachshund_01", threshold: 0.2, value: true}
+    },
+  }, randomNumber);
+  assert.equal(experimentProvider.data.dachshund.inExperiment, true, "dachshund should be selected");
+  assert.equal(experimentProvider.data.kitty.inExperiment, false, "kitty should not be selected");
+  assert.equal(experimentProvider.experimentId, "dachshund_01", "the experimentId should be dachshund_01");
+};
 
 exports["test ExperimentProvider skips experiments with active = false"] = assert => {
   setup("foo", {
     foo: {
       active: false,
       name: "foo",
-      id: "asdasd",
       control: {
         value: "bloo"
       },
       variant: {
+        id: "asdasd",
         threshold: 0.3,
         value: "blah"
       }

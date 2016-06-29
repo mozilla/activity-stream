@@ -10,10 +10,6 @@ First, you should add a definition of your experiment. Your experiment should ha
 {
   "buttonColor": {
 
-    // id
-    // This is used for reporting purposes. Make sure it is unique!
-    "id": "button_color_01",
-
     // name
     // This is a human readable name, used for the display of results.
     "name": "Button Color"
@@ -40,11 +36,17 @@ First, you should add a definition of your experiment. Your experiment should ha
     // variant
     // This represents the change you want to test
     "variant": {
+      // id
+      // This is used for reporting purposes. Make sure it is unique!
+      "id": "button_color_01",
+
       // This may be any value.
       "value": "rgb(45, 161, 250)",
+
       // This defines what percentage of users should get this change, as a decimal value < 1.
       // In this case, 20% of users would get the change.
       "threshold": 0.2,
+
       // This should describe what the the change does. Used for display.
       "description": "Blue button color"
     }
@@ -84,18 +86,4 @@ If your code is on the Firefox side (everything in `/lib`), you should look for 
     console.log(this._experimentProvider.data.buttonColor.value);
   },
   ...
-```
-## Step 3: Send the experiment id with any user events
-
-For the user events related to the experiments, you will want to send along the experiment ID under the `experiment_id` field for any users that are included in the experiment. You can use the `inExperiment` property to determine this
-
-```js
-const clickEvent = {
-  type: "CLICK",
-  ...
-};
-if (this.props.Experiments.inExperiment) {
-  clickEvent.experiment_id = this.props.Experiments.data.buttonColor.id;
-}
-this.dispatch(actions.NotifyEvent(clickEvent));
 ```

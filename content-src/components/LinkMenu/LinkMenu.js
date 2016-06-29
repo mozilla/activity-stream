@@ -12,7 +12,7 @@ const LinkMenu = React.createClass({
     };
   },
   userEvent(event) {
-    const {page, source, index, reverseMenuOptions, dispatch} = this.props;
+    const {page, source, index, dispatch} = this.props;
     if (page && source) {
       let payload = {
         event,
@@ -20,9 +20,6 @@ const LinkMenu = React.createClass({
         source: source,
         action_position: index
       };
-      if (["BLOCK", "DELETE"].includes(event) && reverseMenuOptions.inExperiment) {
-        payload.experiment_id = reverseMenuOptions.id;
-      }
       dispatch(actions.NotifyEvent(payload));
     }
   },

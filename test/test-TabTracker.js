@@ -13,7 +13,8 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 
 const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version",
-                       "page", "load_reason", "locale", "total_history_size", "total_bookmarks", "action", "session_id"];
+                       "page", "load_reason", "locale", "total_history_size", "total_bookmarks", "action",
+                       "experiment_id", "session_id"];
 
 let ACTIVITY_STREAMS_URL;
 let app;
@@ -411,6 +412,7 @@ exports.test_TabTracker_action_pings = function*(assert) {
   for (let key of additionalKeys) {
     assert.ok(pingData[key], `The ping has the additional key ${key}`);
   }
+  assert.equal(eventData.msg.data.experiment_id, "foo_01", "the ping has the correct experiment_id");
   assert.deepEqual(eventData.msg.data.source, pingData.source, "the ping has the correct source");
   assert.deepEqual(eventData.msg.data.event, pingData.event, "the ping has the correct event");
   assert.deepEqual(eventData.msg.data.action_position, pingData.action_position, "the ping has the correct action_position");
@@ -676,7 +678,18 @@ before(exports, function*() {
   // initialize the app now
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
-  app = new ActivityStreams({clientID});
+  // Return 0.1 from rng will trigger the variant
+  app = new ActivityStreams({
+    clientID,
+    experiments: {
+      test: {
+        name: "foo",
+        control: {value: false},
+        variant: {id: "foo_01", value: true, threshold: 0.5}
+      }
+    },
+    rng: () => 0.1
+  });
   app._memoizer.reset();
   ACTIVITY_STREAMS_URL = app.appURLs[1];
 });
