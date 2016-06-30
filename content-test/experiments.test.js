@@ -8,11 +8,11 @@ describe("Experiment Definitions", () => {
   const variantIDs = new Set();
   Object.keys(definitions).forEach(key => {
     const experiment = definitions[key];
+    if (experiment.active !== false) {
+      control -= experiment.variant.threshold;
+    }
     describe(`experiment: ${key}`, () => {
       after(() => {
-        if (experiment.active !== false) {
-          control -= experiment.variant.threshold;
-        }
         if (experiment.variant && experiment.variant.id) {
           variantIDs.add(experiment.variant.id);
         }
