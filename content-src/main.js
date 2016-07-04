@@ -17,4 +17,13 @@ const Root = React.createClass({
   }
 });
 
-ReactDOM.render(<Root />, document.getElementById("root"));
+function renderRootWhenAddonIsReady() {
+  if (window.navigator.activity_streams_addon) {
+    ReactDOM.render(<Root />, document.getElementById("root"));
+  } else {
+    // If the content bridge to the addon isn't set up yet, try again soon.
+    setTimeout(renderRootWhenAddonIsReady, 50);
+  }
+}
+
+renderRootWhenAddonIsReady();
