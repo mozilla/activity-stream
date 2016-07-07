@@ -164,4 +164,9 @@ describe("setRowsOrError", () => {
     assert.deepEqual(state.rows, [{bookmarkGuid: "boorkmarkBAR"}]);
   });
 
+  it("should set the 'recommendationShown' status on RECEIVE_RECOMMENDATION_TOGGLE", () => {
+    const action = {type: "RECEIVE_RECOMMENDATION_TOGGLE", data: {recommendationStatus: false}};
+    const state = reducer(undefined, action);
+    assert.isFalse(state.recommendationShown);
+  });
 });

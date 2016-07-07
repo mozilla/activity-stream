@@ -94,14 +94,22 @@ module.exports.selectNewTabSites = createSelector(
   [
     selectTopSites,
     state => state.History,
-    selectSpotlight
+    selectSpotlight,
+    state => state.Experiments
   ],
-  (TopSites, History, Spotlight) => {
+  (TopSites, History, Spotlight, Experiments) => {
 
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
     // don't dedupe against stuff that isn't shown
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
+
+    // Find the index of the recommendation. If we have an index, find that recommmendation and put it
+    // in the third highlights spot
+    let recommendation = spotlightRows.findIndex(element => element.recommended);
+    if (recommendation >= 0) {
+      spotlightRows.splice(2, 0, spotlightRows.splice(recommendation, 1)[0]);
+    }
     spotlightRows = spotlightRows.slice(0, SPOTLIGHT_LENGTH);
     const historyRows = dedupe.group([
       topSitesRows,
@@ -112,7 +120,8 @@ module.exports.selectNewTabSites = createSelector(
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Spotlight: Object.assign({}, Spotlight, {rows: spotlightRows}),
       TopActivity: Object.assign({}, History, {rows: historyRows}),
-      isReady: TopSites.init && History.init && Spotlight.init
+      isReady: TopSites.init && History.init && Spotlight.init && Experiments.init,
+      showRecommendationOption: Experiments.values.recommendedHighlight
     };
   }
 );

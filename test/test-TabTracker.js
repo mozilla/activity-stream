@@ -412,7 +412,6 @@ exports.test_TabTracker_action_pings = function*(assert) {
   for (let key of additionalKeys) {
     assert.ok(pingData[key], `The ping has the additional key ${key}`);
   }
-  assert.equal(eventData.msg.data.experiment_id, "foo_01", "the ping has the correct experiment_id");
   assert.deepEqual(eventData.msg.data.source, pingData.source, "the ping has the correct source");
   assert.deepEqual(eventData.msg.data.event, pingData.event, "the ping has the correct event");
   assert.deepEqual(eventData.msg.data.action_position, pingData.action_position, "the ping has the correct action_position");
@@ -669,6 +668,7 @@ exports.test_TabTracker_disable_ping = function*(assert) {
 };
 
 before(exports, function*() {
+  simplePrefs.prefs.recommendations = false;
   // we have to clear bookmarks and history before tests
   // to ensure that the app does not pick history or
   // bookmarks sizes from the previous test runs
@@ -678,17 +678,9 @@ before(exports, function*() {
   // initialize the app now
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
-  // Return 0.1 from rng will trigger the variant
+
   app = new ActivityStreams({
-    clientID,
-    experiments: {
-      test: {
-        name: "foo",
-        control: {value: false},
-        variant: {id: "foo_01", value: true, threshold: 0.5}
-      }
-    },
-    rng: () => 0.1
+    clientID
   });
   app._memoizer.reset();
   ACTIVITY_STREAMS_URL = app.appURLs[1];

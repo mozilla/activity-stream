@@ -239,6 +239,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
 
 before(exports, function*() {
   simplePrefs.prefs["query.cache"] = true;
+  simplePrefs.prefs.recommendations = false;
   let placesCachePromise = makeCachePromise("places");
   PlacesProvider.links.init();
   gApp = new ActivityStreams();

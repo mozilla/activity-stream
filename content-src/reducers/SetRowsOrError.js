@@ -5,7 +5,8 @@ const DEFAULTS = {
   error: false,
   init: false,
   isLoading: false,
-  canLoadMore: true
+  canLoadMore: true,
+  recommendationShown: true
 };
 
 module.exports = function setRowsOrError(requestType, responseType, querySize) {
@@ -46,6 +47,9 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
             return site;
           }
         });
+        break;
+      case am.type("RECEIVE_RECOMMENDATION_TOGGLE"):
+        state.recommendationShown = action.data.recommendationStatus;
         break;
       case am.type("NOTIFY_BLOCK_URL"):
       case am.type("NOTIFY_HISTORY_DELETE"):

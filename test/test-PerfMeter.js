@@ -308,6 +308,7 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
 };
 
 before(exports, function() {
+  simplePrefs.prefs.recommendations = false;
   simplePrefs.prefs["performance.log"] = true;
   app = new ActivityStreams();
 });

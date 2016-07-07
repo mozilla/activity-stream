@@ -63,6 +63,7 @@ exports.test_TelemetrySender_prefs = function*(assert) {
 };
 
 before(exports, function*() {
+  simplePrefs.prefs.recommendations = false;
   simplePrefs.prefs.telemetry = true;
   simplePrefs.prefs["performance.log"] = false;
   simplePrefs.prefs["telemetry.ping.endpoint"] = `http://localhost:${port}/activity-streams`;
