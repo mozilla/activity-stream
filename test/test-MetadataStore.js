@@ -80,7 +80,7 @@ exports.test_insert_twice = function*(assert) {
   } catch (e) {
     error = true;
   }
-  assert.ok(error, "Reinsert the same page should be rejected!");
+  assert.ok(error, "Re-insert the same page should be rejected!");
   yield gMetadataStore.asyncDrop();
   yield waitForDrop();
 };
@@ -109,6 +109,17 @@ exports.test_async_insert_all = function*(assert) {
   assert.deepEqual(items[7], [3, 5]);
 };
 
+exports.test_data_expiry = function*(assert) {
+  let item = Object.assign({}, metadataFixture[0]);
+  gMetadataStore.enableDataExpiryCron(100);
+  item.expired_at = Date.now();
+  yield gMetadataStore.asyncInsert([].concat(item, metadataFixture.slice(1, 3)));
+  yield waitUntil(() => {return true;}, 1000); // wait for the timer to trigger
+  let items = yield gMetadataStore.executeQuery("SELECT * FROM page_metadata");
+  assert.equal(items.length, 2, "It should have deleted the expired page");
+  gMetadataStore.disableDataExpiryCron();
+};
+
 before(exports, function*() {
   yield gMetadataStore.asyncConnect();
 });
@@ -116,9 +127,7 @@ before(exports, function*() {
 after(exports, function*() {
   yield gMetadataStore.asyncDrop();
   yield waitForDrop();
-  while (gMetadataStore.transactionInProgress) {
-    yield;
-  }
+  yield waitUntil(() => {return !gMetadataStore.transactionInProgress;}, 10);
   yield gMetadataStore.asyncClose();
 });
 

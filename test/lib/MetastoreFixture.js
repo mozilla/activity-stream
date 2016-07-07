@@ -136,7 +136,7 @@ const gMetadataFixture = [
     description: "Did you know? Mozilla - the maker of Firefox - fights to keep the Internet a global public resource open and accessible to all.",
     title: "We're building a better Internet",
     media: {type: "video", url: "https://www.mozilla.org/media/video/mozilla.mp4"},
-    expired_at: "2016-10-01 00:00:00",
+    expired_at: 1475280000000, // "2016-10-01 00:00:00",
     type: "html",
     favicon_colors,
     images
@@ -148,7 +148,7 @@ const gMetadataFixture = [
     description: "Download Mozilla Firefox, a free Web browser. Firefox is created by a global non-profit dedicated to putting individuals in control online. Get Firefox for Windows, Mac OS X, Linux, Android and iOS today!",
     title: "Browse Freely",
     media: {type: "video", url: "https://www.mozilla.org/media/video/firefox.mp4"},
-    expired_at: "2016-10-01 00:00:00",
+    expired_at: 1475280000000, // "2016-10-01 00:00:00",
     type: "html",
     favicon_colors: favicon_colors_firefox,
     images: images_firefox
@@ -160,7 +160,7 @@ const gMetadataFixture = [
     description: "Download Mozilla Firefox, a free Web browser. Firefox is created by a global non-profit dedicated to putting individuals in control online. Get Firefox for Windows, Mac OS X, Linux, Android and iOS today!",
     title: "Browse Freely",
     media: {type: "video", url: "https://www.mozilla.org/media/video/firefox.mp4"},
-    expired_at: "2016-10-01 00:00:00",
+    expired_at: 1475280000000, // "2016-10-01 00:00:00",
     type: "html",
     favicon_colors: favicon_colors_firefox,
     images: images_firefox
