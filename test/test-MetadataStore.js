@@ -31,13 +31,13 @@ function waitForDrop() {
     }
 
     try {
-      let nMetadata = yield gMetadataStore.executeQuery(
+      let nMetadata = yield gMetadataStore.asyncExecuteQuery(
         "SELECT count(*) as count FROM page_metadata",
         {"columns": ["count"]});
-      let nImages = yield gMetadataStore.executeQuery(
+      let nImages = yield gMetadataStore.asyncExecuteQuery(
         "SELECT count(*) as count FROM page_images",
         {"columns": ["count"]});
-      let nMetadataImages = yield gMetadataStore.executeQuery(
+      let nMetadataImages = yield gMetadataStore.asyncExecuteQuery(
         "SELECT count(*) as count FROM page_metadata_images",
         {"columns": ["count"]});
       return !nMetadata[0].count &&
@@ -57,11 +57,11 @@ exports.test_insert_single = function*(assert) {
   for (let metadata of metadataFixture) {
     yield gMetadataStore.asyncInsert([metadata]);
 
-    let items = yield gMetadataStore.executeQuery("SELECT * FROM page_metadata");
+    let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
     assert.equal(items.length, 1);
-    items = yield gMetadataStore.executeQuery("SELECT * FROM page_images");
+    items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_images");
     assert.equal(metadata.images.length + 1, items.length);
-    items = yield gMetadataStore.executeQuery("SELECT * FROM page_metadata_images");
+    items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
     assert.equal(metadata.images.length + 1, items.length);
     yield gMetadataStore.asyncDrop();
     yield waitForDrop();
@@ -72,7 +72,7 @@ exports.test_insert_twice = function*(assert) {
   const metadata = metadataFixture[0];
   yield gMetadataStore.asyncInsert([metadata]);
 
-  let items = yield gMetadataStore.executeQuery("SELECT * FROM page_metadata");
+  let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
   assert.equal(items.length, 1);
   let error = false;
   try {
@@ -93,11 +93,11 @@ exports.test_insert_twice = function*(assert) {
 exports.test_async_insert_all = function*(assert) {
   yield gMetadataStore.asyncInsert(metadataFixture);
 
-  let items = yield gMetadataStore.executeQuery("SELECT * FROM page_metadata");
+  let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
   assert.equal(items.length, 3);
-  items = yield gMetadataStore.executeQuery("SELECT * FROM page_images");
+  items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_images");
   assert.equal(items.length, 5); // page #1(1 + 1) + page #2&#3(1 + 2)
-  items = yield gMetadataStore.executeQuery("SELECT * FROM page_metadata_images");
+  items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
   assert.deepEqual(items.length, 8);
   assert.deepEqual(items[0], [1, 1]);
   assert.deepEqual(items[1], [1, 2]);
@@ -111,13 +111,13 @@ exports.test_async_insert_all = function*(assert) {
 
 exports.test_data_expiry = function*(assert) {
   let item = Object.assign({}, metadataFixture[0]);
-  gMetadataStore.enableDataExpiryCron(100);
+  gMetadataStore.enableDataExpiryJob(100);
   item.expired_at = Date.now();
   yield gMetadataStore.asyncInsert([].concat(item, metadataFixture.slice(1, 3)));
   yield waitUntil(() => {return true;}, 1000); // wait for the timer to trigger
-  let items = yield gMetadataStore.executeQuery("SELECT * FROM page_metadata");
+  let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
   assert.equal(items.length, 2, "It should have deleted the expired page");
-  gMetadataStore.disableDataExpiryCron();
+  gMetadataStore.disableDataExpiryJob();
 };
 
 before(exports, function*() {
