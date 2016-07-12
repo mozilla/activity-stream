@@ -13,6 +13,7 @@
     "history": "1.17.0",
     "lodash.debounce": "4.0.6",
     "moment": "2.11.2",
+    "page-metadata-parser": "^0.2.0",
     "react": "0.14.8",
     "react-dom": "0.14.8",
     "react-json-inspector": "6.1.3",
@@ -143,6 +144,12 @@
       "title": "Show me recommendations",
       "type": "bool",
       "value": true
+    },
+    {
+      "name": "page.scraper",
+      "title": "Turn on page metadata scraper",
+      "type": "bool",
+      "value": false
     }
   ],
   "repository": "mozilla/activity-stream",
