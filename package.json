@@ -63,6 +63,7 @@
     "mocha": "2.4.5",
     "node-sass": "3.4.2",
     "npm-run-all": "1.5.1",
+    "raw-loader": "^0.5.1",
     "react-addons-test-utils": "0.14.7",
     "requirejs": "2.1.22",
     "rimraf": "2.5.2",
