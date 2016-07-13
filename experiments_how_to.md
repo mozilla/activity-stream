@@ -56,14 +56,14 @@ First, you should add a definition of your experiment. Your experiment should ha
 
 ## Step 2: Create a code path based on experiment data
 
-If your code is on the *content* side (React), the value for your experiment will be available on the Redux store in `Experiments.data`. Here is an example of how you might use it:
+If your code is on the *content* side (React), the value for your experiment will be available on the Redux store in `Experiments.values`. Here is an example of how you might use it:
 
 ```js
 const {connect} = require("react-redux");
 
 const MyFormComponent = React.createClass({
   const style =  {
-    backgroundColor: this.props.Experiments.data.buttonColor.value
+    backgroundColor: this.props.Experiments.values.buttonColor
   };
   render() {
     return (<button style={style}>Press me</button>);
@@ -83,7 +83,7 @@ If your code is on the Firefox side (everything in `/lib`), you should look for 
   ...
   myFunction() {
     // This would log either red or blue
-    console.log(this._experimentProvider.data.buttonColor.value);
+    console.log(this._experimentProvider.data.buttonColor);
   },
   ...
 ```

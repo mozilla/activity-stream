@@ -49,7 +49,7 @@ const LinkMenu = React.createClass({
         }
       ];
 
-      if (reverseMenuOptions.value) {
+      if (reverseMenuOptions) {
         deleteOptions.reverse();
       }
 
@@ -113,6 +113,6 @@ LinkMenu.propTypes = {
 
 module.exports = connect(({Experiments}) => {
   return {
-    reverseMenuOptions: Experiments.data.reverseMenuOptions
+    reverseMenuOptions: Experiments.values.reverseMenuOptions
   };
 })(LinkMenu);
