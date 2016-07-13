@@ -158,7 +158,7 @@
     "start:css": "npm run bundle:css && npm run bundle:css -- -w",
     "start:html": "npm run bundle:html -- --baseUrl http://localhost:1963/ --csp off",
     "start:server": "live-server data/content --port=1963 --no-browser",
-    "storybook": "start-storybook -p 9001",
+    "storybook": "start-storybook -p 9001 -s ./data/content",
     "firefox": "npm run bundle:webpackAddon && jpm run --prefs ./dev-prefs.json",
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle && npm run copyTestImages && npm run copyTopSitesJson",
