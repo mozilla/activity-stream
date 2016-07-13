@@ -15,7 +15,7 @@ const DEFAULT_PROPS = {
   source: "ACTIVITY_FEED",
   index: 3
 };
-const EXPERIMENT_DATA = {Experiments: {data: {reverseMenuOptions: {id: "exp-01", value: true, inExperiment: true}}}};
+const EXPERIMENT_DATA = {Experiments: {data: {reverseMenuOptions: true}}};
 
 describe("LinkMenu", () => {
   let instance;
