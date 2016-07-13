@@ -33,7 +33,7 @@ module.exports = {
     "searchForSomethingWith": ""
   },
   "Experiments": {
-    "data": {reverseMenuOptions: {inExperiment: false}},
+    "values": {},
     "error": false
   }
 };
