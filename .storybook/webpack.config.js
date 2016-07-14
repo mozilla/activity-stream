@@ -10,7 +10,7 @@ module.exports = {
       {test: /\.json$/, loader: "json"},
       {
         test: /\.css?$/,
-        loaders: [ 'style', 'raw' ],
+        loaders: ['style', 'raw'],
         include: path.resolve(__dirname, '../')
       }
     ]
