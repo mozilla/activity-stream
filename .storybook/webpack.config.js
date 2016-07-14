@@ -14,5 +14,6 @@ module.exports = {
         include: path.resolve(__dirname, '../')
       }
     ]
-  }
+  },
+  devtool: "eval-sourcemap"
 };
