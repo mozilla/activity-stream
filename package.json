@@ -130,6 +130,19 @@
       "type": "string",
       "value": "https://embedly-proxy.services.mozilla.com/v2/extract",
       "hidden": true
+    },
+    {
+      "name": "pocket.endpoint",
+      "title": "Pocket Endpoint",
+      "type": "string",
+      "value": "http://cloudvm.jaredkerim.com/v2/recommendations",
+      "hidden": true
+    },
+    {
+      "name": "recommendations",
+      "title": "Show me recommendations",
+      "type": "bool",
+      "value": true
     }
   ],
   "repository": "mozilla/activity-stream",
