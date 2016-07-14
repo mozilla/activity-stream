@@ -1,4 +1,4 @@
-const { configure } = require('@kadira/storybook');
+const {configure} = require('@kadira/storybook');
 
 require("../data/content/main.css");
 
