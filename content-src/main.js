@@ -18,7 +18,7 @@ const Root = React.createClass({
 });
 
 function renderRootWhenAddonIsReady() {
-  if (window.navigator.activity_streams_addon) {
+  if (window.navigator.activity_streams_addon || __CONFIG__.USE_SHIM) {
     ReactDOM.render(<Root />, document.getElementById("root"));
   } else {
     // If the content bridge to the addon isn't set up yet, try again soon.
