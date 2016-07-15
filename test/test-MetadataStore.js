@@ -68,12 +68,69 @@ exports.test_insert_single = function*(assert) {
   }
 };
 
+/**
+ * Test insert a partial record
+ */
+exports.test_insert_partial = function*(assert) {
+  yield gMetadataStore.asyncInsert([{
+    places_url: "http://foobar.com",
+    cache_key: "foobar.com/"
+  }]);
+  let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
+  assert.equal(items.length, 1, "Page is inserted");
+  items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_images");
+  assert.equal(items.length, 0, "No images were inserted");
+  items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
+  assert.equal(items.length, 0, "No metadata_images were inserted");
+  yield gMetadataStore.asyncDrop();
+  yield waitForDrop();
+};
+
+/**
+ * Test insert a record with images without colors or sizes
+ */
+exports.test_insert_partial_images = function*(assert) {
+  yield gMetadataStore.asyncInsert([{
+    places_url: "http://foobar.com",
+    cache_key: "foobar.com/",
+    images: [
+      {url: "http://foobar.com/blah.com"}
+    ]
+  }]);
+  let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
+  assert.equal(items.length, 1, "Page is inserted");
+  items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_images");
+  assert.equal(items.length, 1, "1 image was inserted");
+  items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
+  assert.equal(items.length, 1, "1 metadata_image was inserted");
+  yield gMetadataStore.asyncDrop();
+  yield waitForDrop();
+};
+
+/**
+ * Test missing required fields for insert should throw an error
+ */
+exports.test_insert_required_fields = function*(assert) {
+  const correctMessage = "Objects to insert must include a places_url";
+  let error;
+  try {
+    yield gMetadataStore.asyncInsert([{}]);
+  } catch (e) {
+    error = e;
+  }
+  assert.ok(error, "Error was thrown for missing cache_key");
+  assert.equal(error.message, correctMessage, "Has the right error message");
+
+  yield gMetadataStore.asyncDrop();
+  yield waitForDrop();
+};
+
 exports.test_insert_twice = function*(assert) {
   const metadata = metadataFixture[0];
   yield gMetadataStore.asyncInsert([metadata]);
 
   let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
-  assert.equal(items.length, 1);
+  assert.equal(items.length, 1, "Page is inserted");
   let error = false;
   try {
     yield gMetadataStore.asyncInsert([metadata]);
