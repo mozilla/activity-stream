@@ -107,6 +107,17 @@ $context-menu-item-padding: 3px 12px;
 
 $icon-size: 16px;
 
+$tooltip-height: 50px;
+$tooltip-background-color: #FFF3CE;
+$tooltip-border-radius: 5px;
+$tooltip-border-properties:  1px solid rgba(0, 0, 0, 0.27);
+$tooltip-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14);
+$tooltip-padding: 10px 30px;
+$tooltip-margin: 17px 0 0 8px;
+$tooltip-anchor-width: 8px;
+$tooltip-anchor-height: 8px;
+$tooltip-anchor-margin: -42px 0 0 -24px;
+
 @mixin item-shadow {
   box-shadow: $item-shadow;
 
