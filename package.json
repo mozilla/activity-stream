@@ -142,7 +142,7 @@
       "name": "recommendations",
       "title": "Show me recommendations",
       "type": "bool",
-      "value": true
+      "value": false
     }
   ],
   "repository": "mozilla/activity-stream",
