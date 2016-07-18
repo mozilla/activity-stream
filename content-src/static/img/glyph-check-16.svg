@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+  <style>
+    path {
+      fill: #4d4d4d;
+    }
+  </style>
+
+
+	<path id="glyph-check" d="M285.113,191.457l-4.718-4.718a1.4,1.4,0,0,1,1.978-1.978l2.74,2.741,6.471-6.47a1.4,1.4,0,0,1,1.977,1.977Z" transform="translate(-279 -178)"/>
+
+</svg>

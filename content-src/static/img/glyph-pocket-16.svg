@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16">
+  <style>
+    path {
+      fill: #999999;
+    }
+
+  </style>
+
+
+	<path id="glyph-pocket" d="M255.829,181.325l-0.949,3.542-0.949,3.541a0.849,0.849,0,0,1-1.421.381l-1.534-1.534-2.829,2.829h0l-0.707.707a1,1,0,0,1-1.414,0l-0.707-.707h0l-0.707-.707-2.121,2.121a1,1,0,0,1-1.415,0l-0.707-.707a1,1,0,0,1,0-1.414l3.536-3.536a1,1,0,0,1,1.414,0l0.707,0.707h0l0.707,0.708,2.122-2.122-1.531-1.53a0.85,0.85,0,0,1,.381-1.422l3.542-.949,3.542-.949A0.85,0.85,0,0,1,255.829,181.325Z" transform="translate(-240 -178)"/>
+
+</svg>
