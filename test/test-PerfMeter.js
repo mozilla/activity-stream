@@ -309,7 +309,12 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
 
 before(exports, function() {
   simplePrefs.prefs["performance.log"] = true;
-  app = new ActivityStreams();
+  const mockMetadataStore = {
+    asyncConnect() { return Promise.resolve();},
+    asyncDrop() { return Promise.resolve();},
+    asyncClose() { return Promise.resolve();}
+  };
+  app = new ActivityStreams(mockMetadataStore);
 });
 
 after(exports, function() {

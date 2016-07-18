@@ -23,6 +23,11 @@ XPCOMUtils.defineLazyModuleGetter(this, "Task",
 
 let gInitialCachePref = simplePrefs.prefs["query.cache"];
 let gPreviewProvider;
+const mockMetadataStore = {
+  asyncConnect() { return Promise.resolve();},
+  asyncDrop() { return Promise.resolve();},
+  asyncClose() { return Promise.resolve();}
+};
 
 exports["test preview cache repopulation works"] = function*(assert) {
   let placesCachePromise;
@@ -30,7 +35,7 @@ exports["test preview cache repopulation works"] = function*(assert) {
 
   placesCachePromise = makeCachePromise("places");
   previewsCachePromise = makeCachePromise("previews");
-  let app = new ActivityStreams({previewCacheTimeout: 100});
+  let app = new ActivityStreams(mockMetadataStore, {previewCacheTimeout: 100});
   yield placesCachePromise;
   yield previewsCachePromise;
 
@@ -44,7 +49,7 @@ exports["test preview cache repopulation works"] = function*(assert) {
 
 exports["test places cache repopulation works"] = function*(assert) {
   let placesCachePromise = makeCachePromise("places");
-  let app = new ActivityStreams({placesCacheTimeout: 100});
+  let app = new ActivityStreams(mockMetadataStore, {placesCacheTimeout: 100});
   yield placesCachePromise;
 
   let expectedRepopulations = 3;

@@ -679,7 +679,12 @@ before(exports, function*() {
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
   // Return 0.1 from rng will trigger the variant
-  app = new ActivityStreams({
+  const mockMetadataStore = {
+    asyncConnect() { return Promise.resolve();},
+    asyncDrop() { return Promise.resolve();},
+    asyncClose() { return Promise.resolve();}
+  };
+  app = new ActivityStreams(mockMetadataStore, {
     clientID,
     experiments: {
       test: {

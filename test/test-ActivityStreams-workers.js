@@ -11,13 +11,18 @@ const PORT = 8099;
 const path = "/dummy-activitystreams.html";
 const url = `http://localhost:${PORT}${path}`;
 const otherUrl = `http://localhost:${PORT}/dummy-other.html`;
+const mockMetadataStore = {
+  asyncConnect() { return Promise.resolve();},
+  asyncDrop() { return Promise.resolve();},
+  asyncClose() { return Promise.resolve();}
+};
 
 let srv;
 let app;
 let openTabs;
 
 exports["test load worker"] = function(assert, done) {
-  app = new ActivityStreams({pageURL: url});
+  app = new ActivityStreams(mockMetadataStore, {pageURL: url});
   function onReady(tab) {
     if (tab.url === url) {
       assert.equal(app.workers.size, 1, "Worker is loaded");
@@ -30,7 +35,7 @@ exports["test load worker"] = function(assert, done) {
 };
 
 exports["test removing worker on url change"] = function(assert, done) {
-  app = new ActivityStreams({
+  app = new ActivityStreams(mockMetadataStore, {
     pageURL: url,
     onRemoveWorker() {
       assert.equal(app.workers.size, 0, "app.worker should be removed on a url change");
@@ -49,7 +54,7 @@ exports["test removing worker on url change"] = function(assert, done) {
 
 exports["test workers for page reload"] = function(assert, done) {
   let isFirstLoad = true;
-  app = new ActivityStreams({
+  app = new ActivityStreams(mockMetadataStore, {
     pageURL: url,
     onAddWorker() {
       if (isFirstLoad) {
