@@ -19,38 +19,6 @@ const gMetadataStore = new MetadataStore();
  */
 
 /**
- * This function could be used to ensure the "asyncDrop" actually commit
- * the transaction. It appears that the transaction might be still in
- * the uncommitted state despite its promise is resolved in Sqlite.jsm.
- * Hence, it has to poll for the table info periodically to comfirm that
- */
-function waitForDrop() {
-  return waitUntil(function*() {
-    if (gMetadataStore.transactionInProgress) {
-      return false;
-    }
-
-    try {
-      let nMetadata = yield gMetadataStore.asyncExecuteQuery(
-        "SELECT count(*) as count FROM page_metadata",
-        {"columns": ["count"]});
-      let nImages = yield gMetadataStore.asyncExecuteQuery(
-        "SELECT count(*) as count FROM page_images",
-        {"columns": ["count"]});
-      let nMetadataImages = yield gMetadataStore.asyncExecuteQuery(
-        "SELECT count(*) as count FROM page_metadata_images",
-        {"columns": ["count"]});
-      return !nMetadata[0].count &&
-        !nImages[0].count &&
-        !nMetadataImages[0].count;
-    } catch (e) {
-      /* ignore whatever error that makes the query above fail */
-      return false;
-    }
-  }, 10);
-}
-
-/**
  * Test insert every single page separately
  */
 exports.test_insert_single = function*(assert) {
@@ -64,7 +32,6 @@ exports.test_insert_single = function*(assert) {
     items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
     assert.equal(metadata.images.length + 1, items.length);
     yield gMetadataStore.asyncDrop();
-    yield waitForDrop();
   }
 };
 
@@ -82,8 +49,6 @@ exports.test_insert_partial = function*(assert) {
   assert.equal(items.length, 0, "No images were inserted");
   items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
   assert.equal(items.length, 0, "No metadata_images were inserted");
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
 };
 
 /**
@@ -103,8 +68,6 @@ exports.test_insert_partial_images = function*(assert) {
   assert.equal(items.length, 1, "1 image was inserted");
   items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
   assert.equal(items.length, 1, "1 metadata_image was inserted");
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
 };
 
 /**
@@ -120,9 +83,6 @@ exports.test_insert_required_fields = function*(assert) {
   }
   assert.ok(error, "Error was thrown for missing cache_key");
   assert.equal(error.message, correctMessage, "Has the right error message");
-
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
 };
 
 exports.test_insert_twice = function*(assert) {
@@ -138,8 +98,6 @@ exports.test_insert_twice = function*(assert) {
     error = true;
   }
   assert.ok(error, "Re-insert the same page should be rejected!");
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
 };
 
 /**
@@ -183,8 +141,6 @@ before(exports, function*() {
 
 after(exports, function*() {
   yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
-  yield waitUntil(() => {return !gMetadataStore.transactionInProgress;}, 10);
   yield gMetadataStore.asyncClose();
 });
 
