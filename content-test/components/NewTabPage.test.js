@@ -61,27 +61,38 @@ describe("NewTabPage", () => {
       TestUtils.Simulate.click(instance.refs.settingsLink);
       assert.equal(instance.refs.settingsMenu.props.visible, true);
     });
-    it("should fire a user event when unblock all is clicked", done => {
+  });
+
+  describe("hide recommendations", () => {
+    it("should fire a user event when toggle recommendations is clicked", done => {
       setupConnected(a => {
         if (a.type === "NOTIFY_USER_EVENT") {
-          assert.equal(a.data.event, "UNBLOCK_ALL");
+          assert.equal(a.data.event, "TOGGLE_RECOMMENDATION");
           assert.equal(a.data.page, "NEW_TAB");
           done();
         }
       });
-      const blockLink = TestUtils.scryRenderedDOMComponentsWithClass(instance.refs.settingsMenu, "context-menu-link")[0];
-      TestUtils.Simulate.click(blockLink);
+      const toggleRecommendation = TestUtils.scryRenderedDOMComponentsWithClass(instance.refs.settingsMenu, "context-menu-link")[0];
+      TestUtils.Simulate.click(toggleRecommendation);
     });
-    it("should create an action when unblock all is clicked", done => {
+    it("should create an action when toggle recommendations is clicked", done => {
       setupConnected(a => {
-        if (a.type === "NOTIFY_UNBLOCK_ALL") {
+        if (a.type === "NOTIFY_TOGGLE_RECOMMENDATIONS") {
           done();
         }
       });
-      const blockLink = TestUtils.scryRenderedDOMComponentsWithClass(instance.refs.settingsMenu, "context-menu-link")[0];
-      TestUtils.Simulate.click(blockLink);
+      const toggleRecommendation = TestUtils.scryRenderedDOMComponentsWithClass(instance.refs.settingsMenu, "context-menu-link")[0];
+      TestUtils.Simulate.click(toggleRecommendation);
     });
-
+    it("should re-request highlights when toggle recommendations is clicked", done => {
+      setupConnected(a => {
+        if (a.type === "HIGHLIGHTS_LINKS_REQUEST") {
+          done();
+        }
+      });
+      const toggleRecommendation = TestUtils.scryRenderedDOMComponentsWithClass(instance.refs.settingsMenu, "context-menu-link")[0];
+      TestUtils.Simulate.click(toggleRecommendation);
+    });
   });
 
   describe("delete events", () => {
