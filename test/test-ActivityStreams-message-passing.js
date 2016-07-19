@@ -3,18 +3,13 @@
 const test = require("sdk/test");
 const tabs = require("sdk/tabs");
 const {before, after} = require("sdk/test/utils");
-const {ActivityStreams} = require("lib/ActivityStreams");
 const httpd = require("./lib/httpd");
-const {doGetFile} = require("./lib/utils");
+const {doGetFile, getTestActivityStream} = require("./lib/utils");
 const {CONTENT_TO_ADDON} = require("common/event-constants");
 
 const PORT = 8099;
 const PATH = "/dummy-activitystreams.html";
-const mockMetadataStore = {
-  asyncConnect() { return Promise.resolve();},
-  asyncDrop() { return Promise.resolve();},
-  asyncClose() { return Promise.resolve();}
-};
+
 let url = `http://localhost:${PORT}${PATH}`;
 let srv;
 let app;
@@ -88,7 +83,7 @@ exports["test app.broadcast message"] = function*(assert) {
 
 before(exports, function() {
   srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
-  app = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  app = getTestActivityStream({pageURL: url});
   openTabs = [];
 });
 

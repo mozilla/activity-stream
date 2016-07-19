@@ -1,20 +1,14 @@
 "use strict";
 
 const test = require("sdk/test");
+const {getTestActivityStream} = require("./lib/utils");
 const prefService = require("sdk/preferences/service");
 const ss = require("sdk/simple-storage");
-const {ActivityStreams} = require("lib/ActivityStreams");
-
-const mockMetadataStore = {
-  asyncConnect() { return Promise.resolve();},
-  asyncDrop() { return Promise.resolve();},
-  asyncClose() { return Promise.resolve();}
-};
 
 exports["test activity stream loads on home page when appropriate"] = function*(assert) {
   prefService.reset("browser.startup.homepage");
   let url = "http://foo.bar/baz";
-  let app = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  let app = getTestActivityStream({pageURL: url});
 
   // By default, the home page should be set to ActivityStream.
   assert.equal(url + "#/", prefService.get("browser.startup.homepage"));
@@ -29,7 +23,7 @@ exports["test activity stream loads on home page when appropriate"] = function*(
 
   // If the pref is already overriden, ActivityStream shouldn't change it.
   prefService.set("browser.startup.homepage", "https://example.com");
-  app = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  app = getTestActivityStream({pageURL: url});
   assert.equal("https://example.com", prefService.get("browser.startup.homepage"));
   app.unload("disable");
   assert.equal("https://example.com", prefService.get("browser.startup.homepage"));
@@ -38,7 +32,7 @@ exports["test activity stream loads on home page when appropriate"] = function*(
   // ActivityStream shouldn't change it on next load.
   prefService.reset("browser.startup.homepage");
   ss.storage.homepageOverriden = true;
-  app = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  app = getTestActivityStream({pageURL: url});
   assert.ok(!prefService.isSet("browser.startup.homepage"));
   app.unload();
   assert.ok(!prefService.isSet("browser.startup.homepage"));
