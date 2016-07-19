@@ -19,13 +19,16 @@ function getBackgroundRGB(site) {
   if (site.favicon_color) {
     return site.favicon_color;
   }
+
+  if (site.favicons && site.favicons[0] && site.favicons[0].color) {
+    return site.favicons[0].color;
+  }
+
   if (site.favicon_colors && site.favicon_colors[0] && site.favicon_colors[0].color) {
     return site.favicon_colors[0].color;
   }
 
-  const favicon = site.favicon_url || site.favicon;
-  const parsedUrl = site.parsedUrl || urlParse(site.url || "") ;
-  const label = prettyUrl(parsedUrl.hostname);
+  const {favicon, label} = selectSiteProperties(site);
   return favicon ? DEFAULT_FAVICON_BG_COLOR : getRandomColor(label);
 }
 
@@ -126,12 +129,18 @@ module.exports.selectNewTabSites = createSelector(
   }
 );
 
+function selectSiteProperties(site) {
+  const metadataFavicon = site.favicons && site.favicons[0] && site.favicons[0].url;
+  const favicon = site.favicon_url || metadataFavicon || site.favicon;
+  const parsedUrl = site.parsedUrl || urlParse(site.url || "") ;
+  const label = prettyUrl(parsedUrl.hostname);
+  return {favicon, parsedUrl, label};
+}
+
 const selectSiteIcon = createSelector(
   site => site,
   site => {
-    const favicon = site.favicon_url || site.favicon;
-    const parsedUrl = site.parsedUrl || urlParse(site.url || "") ;
-    const label = prettyUrl(parsedUrl.hostname);
+    const {favicon, parsedUrl, label} = selectSiteProperties(site);
     const backgroundRGB = getBackgroundRGB(site);
     const backgroundColor = site.background_color || toRGBString(...backgroundRGB, favicon ? BACKGROUND_FADE : 1);
     const fontColor = getBlackOrWhite(...backgroundRGB);
