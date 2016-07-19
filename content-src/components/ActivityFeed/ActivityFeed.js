@@ -62,17 +62,6 @@ const ActivityFeedItem = React.createClass({
       dateLabel = moment(date).format("h:mm A");
     }
 
-    let preview;
-    if (site.media && site.media.type === "video") {
-      const previewInfo = selectSitePreview(site);
-      if (previewInfo.previewURL) {
-        const previewProps = {
-          previewInfo,
-        };
-        preview = (<MediaPreview {...previewProps} />);
-      }
-    }
-
     return (<li className={classNames("feed-item", {bookmark: site.bookmarkGuid, active: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <span className="star" hidden={!site.bookmarkGuid} />
@@ -81,7 +70,7 @@ const ActivityFeedItem = React.createClass({
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{title}</h4>
             <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)}/>
-            {preview}
+            {this.props.preview && <MediaPreview previewInfo={this.props.preview} />}
           </div>
           <div className="feed-stats">
             <div ref="lastVisit" className="last-visit" data-last-visit={dateLabel}/>
@@ -103,6 +92,7 @@ const ActivityFeedItem = React.createClass({
 });
 
 ActivityFeedItem.propTypes = {
+  preview: React.PropTypes.object,
   page: React.PropTypes.string,
   source: React.PropTypes.string,
   index: React.PropTypes.number,
@@ -183,6 +173,7 @@ const GroupedActivityFeed = React.createClass({
     };
   },
   render() {
+    let maxPreviews = this.props.maxPreviews;
     const sites = this.props.sites
       .slice(0, this.props.length)
       .map(site => {
@@ -200,6 +191,18 @@ const GroupedActivityFeed = React.createClass({
             return (<ul key={date + "-" + outerIndex} className="activity-feed">
               {sites.map((site, i) => {
                 globalCount++;
+                let preview = null;
+                if (typeof maxPreviews === "undefined" || maxPreviews > 0) {
+                  if (site.media && site.media.type === "video") {
+                    preview = selectSitePreview(site);
+                  }
+                  if (preview && !preview.previewURL) {
+                    preview = null;
+                  }
+                  if (preview && maxPreviews >= 0) {
+                    maxPreviews -= 1;
+                  }
+                }
                 return (<ActivityFeedItem
                     key={site.guid || i}
                     onClick={this.onClickFactory(globalCount)}
@@ -209,6 +212,7 @@ const GroupedActivityFeed = React.createClass({
                     page={this.props.page}
                     source="ACTIVITY_FEED"
                     showDate={!this.props.showDateHeadings && outerIndex === 0 && i === 0}
+                    preview={preview}
                     {...site} />);
               })}
             </ul>);
