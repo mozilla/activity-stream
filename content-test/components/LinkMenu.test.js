@@ -65,6 +65,11 @@ describe("LinkMenu", () => {
     assert.lengthOf(contextMenu.props.options, 4);
   });
 
+  it("should hide delete from history option for recommendation", () => {
+    setup({site: {url: "https://foo.com", recommended: true}});
+    assert.isUndefined(contextMenu.refs.delete, "hide delete");
+  });
+
   it("should hide dismiss option if allowBlock is false", () => {
     setup({allowBlock: false});
     assert.isUndefined(contextMenu.refs.dismiss, "hide dismiss");
@@ -134,6 +139,37 @@ describe("LinkMenu", () => {
       event: "NOTIFY_HISTORY_DELETE",
       eventData: DEFAULT_PROPS.site.url,
       userEvent: "DELETE"
+    });
+  });
+
+  describe("dismiss recommendation", () => {
+    function checkBlockRecommendation(options) {
+      it(`should ${options.ref} recommendation`, done => {
+        let count = 0;
+        setup({site: {url: "https://foo.com", recommended: true}}, {dispatch(action) {
+          if (action.type === options.event) {
+            assert.deepEqual(action.data, options.eventData, "event data");
+            count++;
+          }
+          if (action.type === "NOTIFY_USER_EVENT") {
+            assert.equal(action.data.event, options.userEvent);
+            assert.equal(action.data.page, DEFAULT_PROPS.page);
+            assert.equal(action.data.source, DEFAULT_PROPS.source);
+            assert.equal(action.data.action_position, DEFAULT_PROPS.index);
+            count++;
+          }
+          if (count === 2) {
+            done();
+          }
+        }});
+        TestUtils.Simulate.click(contextMenu.refs[options.ref]);
+      });
+    }
+    checkBlockRecommendation({
+      ref: "dismiss",
+      event: "NOTIFY_BLOCK_RECOMMENDATION",
+      eventData: DEFAULT_PROPS.site.url,
+      userEvent: "BLOCK"
     });
   });
 
