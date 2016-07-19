@@ -66,7 +66,12 @@ before(exports, function*() {
   simplePrefs.prefs.telemetry = true;
   simplePrefs.prefs["performance.log"] = false;
   simplePrefs.prefs["telemetry.ping.endpoint"] = `http://localhost:${port}/activity-streams`;
-  app = new ActivityStreams();
+  const mockMetadataStore = {
+    asyncConnect() { return Promise.resolve();},
+    asyncDrop() { return Promise.resolve();},
+    asyncClose() { return Promise.resolve();}
+  };
+  app = new ActivityStreams(mockMetadataStore);
 });
 
 after(exports, function() {

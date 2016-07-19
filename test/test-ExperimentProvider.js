@@ -100,7 +100,12 @@ exports["test ExperimentProvider skips experiments with active = false"] = asser
 };
 
 exports["test ActivityStreams has experimentProvider instance"] = assert => {
-  const as = new ActivityStreams({clientID: "k88"});
+  const mockMetadataStore = {
+    asyncConnect() { return Promise.resolve();},
+    asyncDrop() { return Promise.resolve();},
+    asyncClose() { return Promise.resolve();}
+  };
+  const as = new ActivityStreams(mockMetadataStore, {clientID: "k88"});
   assert.ok(as._experimentProvider instanceof ExperimentProvider, "should have _experimentProvider");
   assert.equal(as._experimentProvider._clientID, "k88", "should use clientID");
   as.unload();

@@ -30,6 +30,12 @@ let gApp;
 let gAppURL;
 let gInitialCachePref = simplePrefs.prefs["query.cache"];
 
+const mockMetadataStore = {
+  asyncConnect() { return Promise.resolve();},
+  asyncDrop() { return Promise.resolve();},
+  asyncClose() { return Promise.resolve();}
+};
+
 let makeNotifsPromise = (cacheStatus) => {
   return new Promise(resolve => {
     let notifSet = new Set([
@@ -154,7 +160,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
   let srv = httpd.startServerAsync(port, null, doGetFile("test/resources"));
   gApp.unload();
   placesCachePromise = makeCachePromise("places");
-  gApp = new ActivityStreams({pageURL: url});
+  gApp = new ActivityStreams(mockMetadataStore, {pageURL: url});
   yield placesCachePromise;
 
   // open page
@@ -241,7 +247,7 @@ before(exports, function*() {
   simplePrefs.prefs["query.cache"] = true;
   let placesCachePromise = makeCachePromise("places");
   PlacesProvider.links.init();
-  gApp = new ActivityStreams();
+  gApp = new ActivityStreams(mockMetadataStore);
   gAppURL = gApp.appURLs[1];
   yield placesCachePromise;
 });
