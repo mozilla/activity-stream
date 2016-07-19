@@ -1,6 +1,7 @@
 "use strict";
 
 const {Cc, Ci, Cu, components} = require("chrome");
+const {ActivityStreams} = require("lib/ActivityStreams");
 const {stack: Cs} = components;
 
 function doGetFile(path, allowNonexistent) {
@@ -52,7 +53,17 @@ function doDump(object, trailer) {
   dump(JSON.stringify(object, null, 1) + trailer); // eslint-disable-line no-undef
 }
 
+function mockActivityStream(options = {}) {
+  const mockMetadataStore = {
+    asyncConnect() { return Promise.resolve();},
+    asyncDrop() { return Promise.resolve();},
+    asyncClose() { return Promise.resolve();}
+  };
+  let mockApp = new ActivityStreams(mockMetadataStore, options);
+  return mockApp;
+}
+
 exports.doGetFile = doGetFile;
 exports.doThrow = doThrow;
 exports.doDump = doDump;
-
+exports.mockActivityStream = mockActivityStream;

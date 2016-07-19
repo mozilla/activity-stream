@@ -5,7 +5,7 @@
 const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");
 const {setTimeout} = require("sdk/timers");
-const {ActivityStreams} = require("lib/ActivityStreams");
+const {mockActivityStream} = require("./lib/utils");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Cu} = require("chrome");
 const simplePrefs = require("sdk/simple-prefs");
@@ -679,12 +679,7 @@ before(exports, function*() {
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
   // Return 0.1 from rng will trigger the variant
-  const mockMetadataStore = {
-    asyncConnect() { return Promise.resolve();},
-    asyncDrop() { return Promise.resolve();},
-    asyncClose() { return Promise.resolve();}
-  };
-  app = new ActivityStreams(mockMetadataStore, {
+  app = mockActivityStream({
     clientID,
     experiments: {
       test: {

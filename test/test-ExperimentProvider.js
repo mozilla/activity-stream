@@ -2,7 +2,7 @@
 
 const test = require("sdk/test");
 const {ExperimentProvider} = require("lib/ExperimentProvider");
-const {ActivityStreams} = require("lib/ActivityStreams");
+const {mockActivityStream} = require("./lib/utils");
 
 const DEFAULT_CLIENT_ID = "foo";
 const DEFAULT_TEST_EXPERIMENTS = {
@@ -100,12 +100,7 @@ exports["test ExperimentProvider skips experiments with active = false"] = asser
 };
 
 exports["test ActivityStreams has experimentProvider instance"] = assert => {
-  const mockMetadataStore = {
-    asyncConnect() { return Promise.resolve();},
-    asyncDrop() { return Promise.resolve();},
-    asyncClose() { return Promise.resolve();}
-  };
-  const as = new ActivityStreams(mockMetadataStore, {clientID: "k88"});
+  const as = mockActivityStream({clientID: "k88"});
   assert.ok(as._experimentProvider instanceof ExperimentProvider, "should have _experimentProvider");
   assert.equal(as._experimentProvider._clientID, "k88", "should use clientID");
   as.unload();

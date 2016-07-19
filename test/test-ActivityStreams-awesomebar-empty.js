@@ -5,9 +5,8 @@ const test = require("sdk/test");
 const tabs = require("sdk/tabs");
 const windows = require("sdk/windows").browserWindows;
 const {viewFor} = require("sdk/view/core");
-const {ActivityStreams} = require("lib/ActivityStreams");
 const httpd = require("./lib/httpd");
-const {doGetFile} = require("./lib/utils");
+const {doGetFile, mockActivityStream} = require("./lib/utils");
 
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -17,17 +16,12 @@ XPCOMUtils.defineLazyServiceGetter(this, "windowMediator",
                                    "nsIWindowMediator");
 
 const PORT = 8199;
-const mockMetadataStore = {
-  asyncConnect() { return Promise.resolve();},
-  asyncDrop() { return Promise.resolve();},
-  asyncClose() { return Promise.resolve();}
-};
 
 exports["test awesomebar is empty for all app urls"] = function*(assert) {
   let path = "/dummy-activitystreams.html";
   let url = `http://localhost:${PORT}${path}`;
   let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
-  let app = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  let app = mockActivityStream({pageURL: url});
 
   for (let appURL of app.appURLs) {
     yield new Promise(resolve => tabs.open({
@@ -50,7 +44,7 @@ exports["test awesomebar is empty for all app urls in new windows too"] = functi
   let path = "/dummy-activitystreams.html";
   let url = `http://localhost:${PORT}${path}`;
   let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
-  let app = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  let app = mockActivityStream({pageURL: url});
 
   for (let appURL of app.appURLs) {
     yield new Promise(resolve => windows.open({
@@ -73,7 +67,7 @@ exports["test awesomebar remains empty on route changes"] = function*(assert) {
   let path = "/dummy-activitystreams.html";
   let url = `http://localhost:${PORT}${path}`;
   let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
-  let app = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  let app = mockActivityStream({pageURL: url});
 
   yield new Promise(resolve => tabs.open({
     url: app.appURLs[0],
@@ -103,7 +97,7 @@ exports["test awesomebar doesn't clear out what user typed"] = function*(assert)
   let path = "/dummy-activitystreams.html";
   let url = `http://localhost:${PORT}${path}`;
   let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
-  let app = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  let app = mockActivityStream({pageURL: url});
 
   yield new Promise(resolve => tabs.open({
     url: app.appURLs[0],
