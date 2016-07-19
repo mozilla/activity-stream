@@ -4,6 +4,7 @@
 const {before, after, waitUntil} = require("sdk/test/utils");
 const {MetadataStore} = require("lib/MetadataStore.js");
 const {metadataFixture} = require("./lib/MetastoreFixture.js");
+const fileIO = require("sdk/io/file");
 
 const gMetadataStore = new MetadataStore();
 
@@ -19,12 +20,12 @@ const gMetadataStore = new MetadataStore();
  */
 
 /**
- * This function could be used to ensure the "asyncDrop" actually commit
+ * This function could be used to ensure the "asyncReset" actually commit
  * the transaction. It appears that the transaction might be still in
  * the uncommitted state despite its promise is resolved in Sqlite.jsm.
  * Hence, it has to poll for the table info periodically to comfirm that
  */
-function waitForDrop() {
+function waitForAsyncReset() {
   return waitUntil(function*() {
     if (gMetadataStore.transactionInProgress) {
       return false;
@@ -63,8 +64,8 @@ exports.test_insert_single = function*(assert) {
     assert.equal(metadata.images.length + 1, items.length);
     items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
     assert.equal(metadata.images.length + 1, items.length);
-    yield gMetadataStore.asyncDrop();
-    yield waitForDrop();
+    yield gMetadataStore.asyncReset();
+    yield waitForAsyncReset();
   }
 };
 
@@ -82,8 +83,6 @@ exports.test_insert_partial = function*(assert) {
   assert.equal(items.length, 0, "No images were inserted");
   items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
   assert.equal(items.length, 0, "No metadata_images were inserted");
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
 };
 
 /**
@@ -103,8 +102,6 @@ exports.test_insert_partial_images = function*(assert) {
   assert.equal(items.length, 1, "1 image was inserted");
   items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
   assert.equal(items.length, 1, "1 metadata_image was inserted");
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
 };
 
 /**
@@ -120,9 +117,6 @@ exports.test_insert_required_fields = function*(assert) {
   }
   assert.ok(error, "Error was thrown for missing cache_key");
   assert.equal(error.message, correctMessage, "Has the right error message");
-
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
 };
 
 exports.test_insert_twice = function*(assert) {
@@ -138,8 +132,6 @@ exports.test_insert_twice = function*(assert) {
     error = true;
   }
   assert.ok(error, "Re-insert the same page should be rejected!");
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
 };
 
 /**
@@ -177,14 +169,19 @@ exports.test_data_expiry = function*(assert) {
   gMetadataStore.disableDataExpiryJob();
 };
 
+exports.test_delete = function*(assert) {
+  yield gMetadataStore.asyncInsert(metadataFixture);
+  yield gMetadataStore.asyncTearDown();
+  assert.ok(!fileIO.exists(gMetadataStore._path), "It should remove the SQLite file");
+};
+
 before(exports, function*() {
   yield gMetadataStore.asyncConnect();
 });
 
 after(exports, function*() {
-  yield gMetadataStore.asyncDrop();
-  yield waitForDrop();
-  yield waitUntil(() => {return !gMetadataStore.transactionInProgress;}, 10);
+  yield gMetadataStore.asyncReset();
+  yield waitForAsyncReset();
   yield gMetadataStore.asyncClose();
 });
 
