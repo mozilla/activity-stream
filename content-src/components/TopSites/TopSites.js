@@ -44,13 +44,12 @@ const TopSites = React.createClass({
           return (<div className="tile-outer" key={site.guid || site.cacheKey || i}>
             <a onClick={() => this.onClick(i)} className={classNames("tile", {active: isActive})} href={site.url}>
               <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
-              <LinkMenuButton onClick={(ev) => {
-                ev.preventDefault();
-                ev.stopPropagation();
-                this.setState({showContextMenu: true, activeTile: i});
-              }} />
               <div className="inner-border" />
             </a>
+            <LinkMenuButton onClick={(ev) => {
+              ev.preventDefault();
+              this.setState({showContextMenu: true, activeTile: i});
+            }} />
             <LinkMenu
               visible={isActive}
               onUpdate={val => this.setState({showContextMenu: val})}
