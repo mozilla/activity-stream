@@ -7,8 +7,7 @@ const test = require("sdk/test");
 const tabs = require("sdk/tabs");
 const simplePrefs = require("sdk/simple-prefs");
 const httpd = require("./lib/httpd");
-const {doGetFile} = require("./lib/utils");
-const {ActivityStreams} = require("lib/ActivityStreams");
+const {doGetFile, getTestActivityStream} = require("./lib/utils");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {PlacesProvider} = require("lib/PlacesProvider");
 const {makeCachePromise} = require("./lib/cachePromises");
@@ -29,12 +28,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "Task",
 let gApp;
 let gAppURL;
 let gInitialCachePref = simplePrefs.prefs["query.cache"];
-
-const mockMetadataStore = {
-  asyncConnect() { return Promise.resolve();},
-  asyncDrop() { return Promise.resolve();},
-  asyncClose() { return Promise.resolve();}
-};
 
 let makeNotifsPromise = (cacheStatus) => {
   return new Promise(resolve => {
@@ -160,7 +153,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
   let srv = httpd.startServerAsync(port, null, doGetFile("test/resources"));
   gApp.unload();
   placesCachePromise = makeCachePromise("places");
-  gApp = new ActivityStreams(mockMetadataStore, {pageURL: url});
+  gApp = getTestActivityStream({pageURL: url});
   yield placesCachePromise;
 
   // open page
@@ -247,7 +240,7 @@ before(exports, function*() {
   simplePrefs.prefs["query.cache"] = true;
   let placesCachePromise = makeCachePromise("places");
   PlacesProvider.links.init();
-  gApp = new ActivityStreams(mockMetadataStore);
+  gApp = getTestActivityStream();
   gAppURL = gApp.appURLs[1];
   yield placesCachePromise;
 });

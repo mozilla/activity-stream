@@ -3,7 +3,7 @@
 
 const {Cu, CC} = require("chrome");
 const {before, after} = require("sdk/test/utils");
-const {ActivityStreams} = require("lib/ActivityStreams");
+const {getTestActivityStream} = require("./lib/utils");
 const {Loader} = require("sdk/test/loader");
 const loader = Loader(module);
 const self = require("sdk/self");
@@ -66,12 +66,7 @@ before(exports, function*() {
   simplePrefs.prefs.telemetry = true;
   simplePrefs.prefs["performance.log"] = false;
   simplePrefs.prefs["telemetry.ping.endpoint"] = `http://localhost:${port}/activity-streams`;
-  const mockMetadataStore = {
-    asyncConnect() { return Promise.resolve();},
-    asyncDrop() { return Promise.resolve();},
-    asyncClose() { return Promise.resolve();}
-  };
-  app = new ActivityStreams(mockMetadataStore);
+  app = getTestActivityStream();
 });
 
 after(exports, function() {
