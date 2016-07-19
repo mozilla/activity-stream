@@ -13,7 +13,8 @@ const DEFAULT_LENGTH = 3;
 const SpotlightItem = React.createClass({
   getInitialState() {
     return {
-      showContextMenu: false
+      showContextMenu: false,
+      hover: false
     };
   },
   getDefaultProps() {
@@ -22,12 +23,23 @@ const SpotlightItem = React.createClass({
       bestImage: {}
     };
   },
+  onMouseIn(site) {
+    if (site.recommended) {
+      this.setState({hover: true});
+    }
+  },
+  onMouseOut(site) {
+    if (site.recommended) {
+      this.setState({hover: false});
+    }
+  },
   render() {
     const site = this.props;
     const image = site.bestImage;
     const imageUrl = image.url;
     const description = site.description || site.url;
     const isPortrait = image.height > image.width;
+    let timestamp = site.timestamp;
 
     let contextMessage;
     if (site.context_message) {
@@ -38,6 +50,8 @@ const SpotlightItem = React.createClass({
       contextMessage = `Visited ${moment(site.lastVisitDate).fromNow()}`;
     } else if (site.type === "bookmark") {
       contextMessage = "Bookmarked recently";
+    } else if (site.recommended === true) {
+      contextMessage = "Trending";
     } else {
       contextMessage = "Visited recently";
     }
@@ -50,6 +64,10 @@ const SpotlightItem = React.createClass({
       style.backgroundColor = site.backgroundColor;
     }
 
+    const toolTipStyle = {
+      display: this.state.hover ? "block" : "none"
+    };
+
     return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image">
@@ -61,11 +79,22 @@ const SpotlightItem = React.createClass({
               <h4 ref="title" className="spotlight-title">{site.title}</h4>
               <p className="spotlight-description" ref="description">{description}</p>
             </div>
-            <div className="spotlight-context" ref="contextMessage">{contextMessage}</div>
+            <div className="spotlight-context"
+              onMouseOver={() => this.onMouseIn(site)}
+              onMouseOut={() => this.onMouseOut(site)}>
+              {site.recommended ? <div className="icon icon-pocket"></div> : null}
+              <div className={site.recommended ? "recommended-context" : ""}
+              data-timestamp={site.recommended ? `${timestamp}` : ""}
+              ref="contextMessage">{contextMessage}</div>
+            </div>
           </div>
         </div>
         <div className="inner-border" />
       </a>
+        <div className="spotlight-tooltip" style={toolTipStyle}>
+        This page is trending on Pocket right now.
+        <div className="anchor"></div>
+        </div>
       <LinkMenuButton onClick={() => this.setState({showContextMenu: true})} />
       <LinkMenu
         visible={this.state.showContextMenu}
@@ -98,7 +127,7 @@ const Spotlight = React.createClass({
       page: "NEW_TAB"
     };
   },
-  onClickFactory(index) {
+  onClickFactory(index, site) {
     return () => {
       this.props.dispatch(actions.NotifyEvent({
         event: "CLICK",
@@ -106,6 +135,9 @@ const Spotlight = React.createClass({
         source: "FEATURED",
         action_position: index
       }));
+      if (site.recommended) {
+        this.props.dispatch(actions.NotifyBlockRecommendation(site.url));
+      }
     };
   },
   render() {
@@ -122,7 +154,7 @@ const Spotlight = React.createClass({
           key={site.guid || site.cacheKey || i}
           page={this.props.page}
           source="FEATURED"
-          onClick={this.onClickFactory(i)}
+          onClick={this.onClickFactory(i, site)}
           {...site} />)}
         {blankSites}
       </ul>
