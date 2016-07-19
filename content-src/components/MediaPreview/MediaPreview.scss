@@ -14,7 +14,7 @@
     content: '';
     width: 65px;
     height: 40px;
-    background: url($image-path + 'playButton@2x.png') no-repeat center center;
+    background: url('#{$image-path}playButton@2x.png') no-repeat center center;
     background-size: 65px 40px;
     display: block;
   }

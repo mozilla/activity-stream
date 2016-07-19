@@ -83,7 +83,7 @@
   }
 
   &.bookmark .star {
-    background: url($image-path + 'glyph-bookmark-16-blue.svg') no-repeat center center;
+    background: url('#{$image-path}glyph-bookmark-16-blue.svg') no-repeat center center;
     background-size: 18px;
     border: 0;
     height: 18px;
