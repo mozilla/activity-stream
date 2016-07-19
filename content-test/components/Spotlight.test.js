@@ -102,6 +102,26 @@ describe("SpotlightItem", function() {
       instance = renderWithProvider(<SpotlightItem {...props} />);
       assert.equal(instance.refs.contextMessage.textContent, "Visited recently");
     });
+    it("should say 'Trending' if it is a recommendation and have a timestamp", () => {
+      const props = Object.assign({}, fakeSite, {
+        recommended: true,
+        lastVisitDate: null,
+        timestamp: 1456426160465
+      });
+      instance = renderWithProvider(<SpotlightItem {...props} />);
+      assert.equal(instance.refs.contextMessage.textContent, "Trending");
+      assert.equal(instance.refs.contextMessage.dataset.timestamp, moment(1456426160465).fromNow());
+    });
+    it("should render the tooltip when hovering over a recommendation's context_message", () => {
+      const props = Object.assign({}, fakeSite, {
+        recommended: true,
+        lastVisitDate: null
+      });
+      instance = renderWithProvider(<SpotlightItem {...props} />);
+      assert.isTrue(instance.refs.spotlightTooltip.hidden);
+      TestUtils.Simulate.mouseOver(instance.refs.spotlightContext);
+      assert.isFalse(instance.refs.spotlightTooltip.hidden);
+    });
     it("should show link menu when link button is pressed", () => {
       const button = ReactDOM.findDOMNode(TestUtils.findRenderedComponentWithType(instance, LinkMenuButton));
       TestUtils.Simulate.click(button);

@@ -38,9 +38,16 @@ const LinkMenu = React.createClass({
           label: "Dismiss",
           icon: "dismiss",
           userEvent: "BLOCK",
-          onClick: () => dispatch(actions.NotifyBlockURL(site.url))
+          onClick: () => {
+            if (site.recommended) {
+              dispatch(actions.NotifyBlockRecommendation(site.url));
+              dispatch(actions.RequestHighlightsLinks());
+            } else {
+              dispatch(actions.NotifyBlockURL(site.url));
+            }
+          }
         },
-        {
+        !site.recommended && {
           ref: "delete",
           label: "Delete from History",
           icon: "delete",
@@ -102,7 +109,8 @@ LinkMenu.propTypes = {
   allowBlock: React.PropTypes.bool,
   site: React.PropTypes.shape({
     url: React.PropTypes.string.isRequired,
-    bookmarkGuid: React.PropTypes.string
+    bookmarkGuid: React.PropTypes.string,
+    recommended: React.PropTypes.bool
   }).isRequired,
 
   // This is for events
