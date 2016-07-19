@@ -166,7 +166,7 @@ module.exports.selectHistory = createSelector(
   ],
   (Spotlight, History) => {
     return {
-      Spotlight,
+      Spotlight: Object.assign({}, Spotlight, {rows: dedupe.one(Spotlight.rows)}),
       History
     };
   }
