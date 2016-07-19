@@ -62,7 +62,7 @@ const NewTabPage = React.createClass({
 
           <section>
             <h3 ref="title" className="section-title">Recent Activity</h3>
-            <GroupedActivityFeed sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME} />
+            <GroupedActivityFeed sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME} maxPreviews={1} />
           </section>
 
           <section className="bottom-links-container">

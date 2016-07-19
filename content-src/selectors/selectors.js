@@ -148,8 +148,10 @@ module.exports.selectSitePreview = createSelector(
       thumbnail = getBestImage(site.images);
       if (type === "video") {
         previewURL = getVideoPreview(site.url);
+        console.log("previewURL", site.url, previewURL);
       }
     }
+
     return {
       type,
       thumbnail,

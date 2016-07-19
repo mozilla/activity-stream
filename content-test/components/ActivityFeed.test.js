@@ -4,6 +4,7 @@ const {ActivityFeedItem, GroupedActivityFeed, groupSitesBySession} = ConnectedAc
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
+const MediaPreview = require("components/MediaPreview/MediaPreview");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
@@ -155,6 +156,30 @@ describe("GroupedActivityFeed", function() {
       const item = renderWithProvider(<GroupedActivityFeed showDateHeadings={false} sites={sites} />);
       const titles = TestUtils.scryRenderedDOMComponentsWithClass(item, "section-title");
       assert.lengthOf(titles, 0);
+    });
+  });
+
+  describe("maxPreviews", () => {
+    const sites = ["lDv68xYHFXM", "xDv68xYHFXM", "1Dv68xYHFXM", "0Dv68xYHFXM"].map(url => {
+      return faker.createSite({override: {
+        url: `https://www.youtube.com/watch?v=${url}`,
+        media: {type: "video"}
+      }});
+    });
+    it("should create previews for all items by default", () => {
+      const feed = renderWithProvider(<GroupedActivityFeed sites={sites} />);
+      const previews = TestUtils.scryRenderedComponentsWithType(feed, MediaPreview);
+      assert.lengthOf(previews, sites.length, "one preview per site");
+    });
+    it("should create no previews if maxPreviews=0", () => {
+      const feed = renderWithProvider(<GroupedActivityFeed sites={sites} maxPreviews={0} />);
+      const previews = TestUtils.scryRenderedComponentsWithType(feed, MediaPreview);
+      assert.lengthOf(previews, 0, "no previews");
+    });
+    it("should create previews for n sites if maxPreviews=n", () => {
+      const feed = renderWithProvider(<GroupedActivityFeed sites={sites} maxPreviews={1} />);
+      const previews = TestUtils.scryRenderedComponentsWithType(feed, MediaPreview);
+      assert.lengthOf(previews, 1, "only one preview");
     });
   });
 
