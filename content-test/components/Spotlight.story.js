@@ -9,7 +9,7 @@ const Provider = createMockProvider({
 
 const Container = props => (
   <Provider>
-    <div style={{padding: "10px"}}>
+    <div style={{padding: "20px"}}>
       {props.children}
     </div>
   </Provider>
