@@ -9,6 +9,7 @@
 
   // This is a container for the delete menu
   .tile-outer {
+    @include link-menu-button;
     position: relative;
     display: inline-block;
     margin: 0 $tile-gutter 0 0;
@@ -19,7 +20,6 @@
 
   .tile {
     @include item-shadow;
-    @include link-menu-button;
     display: inline-flex;
     flex-shrink: 0;
     border-radius: $border-radius;
