@@ -27,5 +27,19 @@
       "threshold": 0.5,
       "description": "Block is first, delete is second"
     }
+  },
+  "recommendedHighlight": {
+    "name": "Recommended Highlights",
+    "description": "Show a recommendation from Pocket to the user",
+    "control": {
+      "value": false,
+      "description": "Do not show a recommendation"
+    },
+    "variant": {
+      "id": "exp-002-recommended-highlights",
+      "value": true,
+      "threshold": 0.3,
+      "description": "Show a recommendation in the third highlights spot"
+    }
   }
 }

@@ -135,7 +135,7 @@
       "name": "pocket.endpoint",
       "title": "Pocket Endpoint",
       "type": "string",
-      "value": "",
+      "value": "http://cloudvm.jaredkerim.com/v2/recommendations",
       "hidden": true
     },
     {
