@@ -18,16 +18,19 @@ const NewTabPage = React.createClass({
   getInitialState() {
     return {
       showSettingsMenu: false,
-      renderedOnce: false
+      renderedOnce: false,
+      showRecommendations: true,
     };
   },
   toggleRecommendation() {
     this.props.dispatch(actions.NotifyEvent({
       event: "TOGGLE_RECOMMENDATION",
-      page: PAGE_NAME
+      page: PAGE_NAME,
+      showRecommendations: !this.state.showRecommendations
     }));
     this.props.dispatch(actions.NotifyToggleRecommendations());
     this.props.dispatch(actions.RequestHighlightsLinks());
+    this.setState({showRecommendations: !this.state.showRecommendations});
   },
   componentDidMount() {
     document.title = "New Tab";
