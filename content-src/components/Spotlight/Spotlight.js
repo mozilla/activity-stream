@@ -134,7 +134,9 @@ const Spotlight = React.createClass({
         event: "CLICK",
         page: this.props.page,
         source: "FEATURED",
-        action_position: index
+        action_position: index,
+        url: site.recommended ? site.url : null,
+        recommender_type: site.recommended ? site.recommender_type : null
       }));
       if (site.recommended) {
         this.props.dispatch(actions.NotifyBlockRecommendation(site.url));
