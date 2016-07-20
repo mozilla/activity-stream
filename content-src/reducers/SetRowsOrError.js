@@ -36,7 +36,7 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
           }
         }
         break;
-      case am.type("RECEIVE_BOOKMARKS_CHANGES"):
+      case am.type("RECEIVE_BOOKMARK_ADDED"):
         state.rows = prevState.rows.map(site => {
           if (site.type === "history" && site.url === action.data.url) {
             const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
@@ -47,12 +47,26 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
           }
         });
         break;
+      case requestType === am.type("RECENT_BOOKMARKS_REQUEST") && am.type("RECEIVE_BOOKMARK_REMOVED"):
+        state.rows = prevState.rows.filter(val => val.url !== action.data.url);
+        break;
+      case am.type("RECEIVE_BOOKMARK_REMOVED"):
+        state.rows = prevState.rows.map(site => {
+          if (site.url === action.data.url) {
+            const frecency = typeof action.data.frecency !== "undefined" ? action.data.frecency : site.frecency;
+            const newSite = Object.assign({}, site, {frecency});
+            delete newSite.bookmarkGuid;
+            delete newSite.bookmarkTitle;
+            delete newSite.bookmarkDateCreated;
+            return newSite;
+          } else {
+            return site;
+          }
+        });
+        break;
       case am.type("NOTIFY_BLOCK_URL"):
       case am.type("NOTIFY_HISTORY_DELETE"):
         state.rows = prevState.rows.filter(val => val.url !== action.data);
-        break;
-      case requestType === am.type("RECENT_BOOKMARKS_REQUEST") && am.type("NOTIFY_BOOKMARK_DELETE"):
-        state.rows = prevState.rows.filter(val => val.bookmarkGuid !== action.data);
         break;
       default:
         return prevState;

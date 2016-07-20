@@ -104,8 +104,8 @@ describe("setRowsOrError", () => {
     assert.isTrue(state.canLoadMore);
   });
 
-  it("should set bookmark status of history items on RECEIVE_BOOKMARKS_CHANGES", () => {
-    const action = {type: "RECEIVE_BOOKMARKS_CHANGES", data: {
+  it("should set bookmark status of history items on RECEIVE_BOOKMARK_ADDED", () => {
+    const action = {type: "RECEIVE_BOOKMARK_ADDED", data: {
       bookmarkGuid: "bookmark123",
       lastModified: 1234124,
       frecency: 200,
@@ -124,9 +124,10 @@ describe("setRowsOrError", () => {
     assert.equal(newRow.bookmarkTitle, action.data.bookmarkTitle, "should have the right bookmarkTitle");
   });
 
-  it("should remove bookmark status of history items on RECEIVE_BOOKMARKS_CHANGES", () => {
-    const action = {type: "RECEIVE_BOOKMARKS_CHANGES", data: {
-      url: "https://foo.com"
+  it("should remove bookmark status of history items on RECEIVE_BOOKMARK_REMOVED", () => {
+    const action = {type: "RECEIVE_BOOKMARK_REMOVED", data: {
+      url: "https://foo.com",
+      bookmarkId: 123
     }};
     const prevRows = [
       {type: "history", url: "blah.com"},
@@ -156,12 +157,12 @@ describe("setRowsOrError", () => {
     });
   })("NOTIFY_HISTORY_DELETE", "NOTIFY_BLOCK_URL");
 
-  it("should remove \"NOTIFY_BOOKMARK_DELETE\" if request type is \"RECENT_BOOKMARKS_REQUEST\"", () => {
+  it("should remove a bookmark for \"RECEIVE_BOOKMARK_REMOVED\" if request type is \"RECENT_BOOKMARKS_REQUEST\"", () => {
     reducer = setRowsOrError("RECENT_BOOKMARKS_REQUEST", "RECENT_LINKS_RESPONSE");
-    const action = {type: "NOTIFY_BOOKMARK_DELETE", data: "boorkmarkFOO"};
-    const prevRows = [{bookmarkGuid: "boorkmarkFOO"}, {bookmarkGuid: "boorkmarkBAR"}];
+    const action = {type: "RECEIVE_BOOKMARK_REMOVED", data: {url: "http://foo.com", id: 123}};
+    const prevRows = [{url: "http://foo.com", bookmarkGuid: "boorkmarkFOO"}, {url: "http://bar.com", bookmarkGuid: "boorkmarkBAR"}];
     const state = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
-    assert.deepEqual(state.rows, [{bookmarkGuid: "boorkmarkBAR"}]);
+    assert.deepEqual(state.rows, [{url: "http://bar.com", bookmarkGuid: "boorkmarkBAR"}]);
   });
 
 });
