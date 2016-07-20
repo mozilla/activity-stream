@@ -66,7 +66,7 @@
     "requirejs": "2.1.22",
     "rimraf": "2.5.2",
     "sass-lint": "1.7.0",
-    "tippy-top-sites": "0.1.0",
+    "tippy-top-sites": "0.2.0",
     "webpack": "1.12.12",
     "webpack-env-loader-plugin": "0.1.4",
     "webpack-notifier": "1.2.1",
