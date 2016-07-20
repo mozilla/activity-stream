@@ -4,6 +4,7 @@
 const {before, after, waitUntil} = require("sdk/test/utils");
 const {MetadataStore} = require("lib/MetadataStore.js");
 const {metadataFixture} = require("./lib/MetastoreFixture.js");
+const fileIO = require("sdk/io/file");
 
 const gMetadataStore = new MetadataStore();
 
@@ -31,7 +32,7 @@ exports.test_insert_single = function*(assert) {
     assert.equal(metadata.images.length + 1, items.length);
     items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata_images");
     assert.equal(metadata.images.length + 1, items.length);
-    yield gMetadataStore.asyncDrop();
+    yield gMetadataStore.asyncReset();
   }
 };
 
@@ -135,12 +136,18 @@ exports.test_data_expiry = function*(assert) {
   gMetadataStore.disableDataExpiryJob();
 };
 
+exports.test_delete = function*(assert) {
+  yield gMetadataStore.asyncInsert(metadataFixture);
+  yield gMetadataStore.asyncTearDown();
+  assert.ok(!fileIO.exists(gMetadataStore._path), "It should remove the SQLite file");
+};
+
 before(exports, function*() {
   yield gMetadataStore.asyncConnect();
 });
 
 after(exports, function*() {
-  yield gMetadataStore.asyncDrop();
+  yield gMetadataStore.asyncReset();
   yield gMetadataStore.asyncClose();
 });
 

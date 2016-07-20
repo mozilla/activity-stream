@@ -56,7 +56,7 @@ function doDump(object, trailer) {
 function getTestActivityStream(options = {}) {
   const mockMetadataStore = {
     asyncConnect() { return Promise.resolve();},
-    asyncDrop() { return Promise.resolve();},
+    asyncReset() { return Promise.resolve();},
     asyncClose() { return Promise.resolve();}
   };
   let mockApp = new ActivityStreams(mockMetadataStore, options);
