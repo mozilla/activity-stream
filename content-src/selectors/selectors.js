@@ -157,6 +157,7 @@ module.exports.selectSitePreview = createSelector(
         previewURL = getVideoPreview(site.url);
       }
     }
+
     return {
       type,
       thumbnail,
