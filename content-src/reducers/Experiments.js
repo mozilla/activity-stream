@@ -1,5 +1,5 @@
 const definitions = require("../../experiments.json");
-const defaultState = {values: {}, error: false};
+const defaultState = {values: {}, error: false, init: false};
 
 // Start with control values
 Object.keys(definitions).forEach(key => {
@@ -19,6 +19,7 @@ module.exports = function Experiments(prevState = defaultState, action) {
     };
   } else {
     return {
+      init: true,
       error: false,
       values: action.data
     };
