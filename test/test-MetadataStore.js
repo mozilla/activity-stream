@@ -158,6 +158,22 @@ exports.test_async_insert_all = function*(assert) {
   assert.deepEqual(items[7], [3, 5]);
 };
 
+exports.test_async_get_by_cache_key = function*(assert) {
+  yield gMetadataStore.asyncInsert(metadataFixture);
+
+  for (let fixture of metadataFixture) {
+    let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey([fixture.cache_key]);
+    assert.equal(metaObjects.length, 1, "It should fetch one metadata record");
+    let metaObject = metaObjects[0];
+    assert.equal(metaObject.favicons.length, 1, "It should fetch one favicon");
+    assert.equal(metaObject.images.length, fixture.images.length, "It should fetch one favicon");
+  }
+
+  let cacheKeys = metadataFixture.map(fixture => {return fixture.cache_key;});
+  let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey(cacheKeys);
+  assert.equal(metaObjects.length, metadataFixture.length, "It should fetch all metadata records");
+};
+
 exports.test_data_expiry = function*(assert) {
   let item = Object.assign({}, metadataFixture[0]);
   gMetadataStore.enableDataExpiryJob(100);
