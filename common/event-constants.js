@@ -23,7 +23,6 @@ const constants = {
     "SEARCH",
     "SHARE",
     "UNBLOCK",
-    "UNBLOCK_ALL",
     "TOGGLE_RECOMMENDATION",
     "NEW_RECOMMENDATION"
   ]),
