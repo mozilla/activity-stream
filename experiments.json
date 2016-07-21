@@ -16,6 +16,7 @@
   },
   "reverseMenuOptions": {
     "name": "Delete order",
+    "active": false,
     "description": "Tests whether or not the order of block and delete impact how often people use them",
     "control": {
       "value": false,
