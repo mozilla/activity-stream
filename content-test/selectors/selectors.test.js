@@ -184,7 +184,8 @@ describe("selectors", () => {
       [
         "Spotlight",
         "TopActivity",
-        "TopSites"
+        "TopSites",
+        "showRecommendationOption"
       ].forEach(prop => {
         assert.property(state, prop);
       });
@@ -195,6 +196,14 @@ describe("selectors", () => {
     it("should dedupe TopSites, Spotlight, and TopActivity", () => {
       const groups = [state.TopSites.rows, state.Spotlight.rows, state.TopActivity.rows];
       assert.deepEqual(groups, dedupe.group(groups));
+    });
+    it("should not give showRecommendationOption if we are not in the experiment", () => {
+      assert.deepEqual(state.showRecommendationOption, undefined);
+    });
+    it("should give a showRecommendationOption if we are in the experiment", () => {
+      const experimentsData = {Experiments: {values: {recommendedHighlight: true}}};
+      state = selectNewTabSites(Object.assign({}, fakeState, experimentsData));
+      assert.isTrue(state.showRecommendationOption);
     });
   });
   describe("selectSiteIcon", () => {

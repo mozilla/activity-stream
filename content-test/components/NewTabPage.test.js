@@ -61,6 +61,11 @@ describe("NewTabPage", () => {
       TestUtils.Simulate.click(instance.refs.settingsLink);
       assert.equal(instance.refs.settingsMenu.props.visible, true);
     });
+    it("should show the setting button if we have recommendations", () => {
+      let fakePropsWithRecommendations = Object.assign({}, mockData, {showRecommendationOption: true});
+      instance = renderWithProvider(<NewTabPage {...fakePropsWithRecommendations} dispatch={() => {}} />);
+      assert.equal(instance.refs.settingsLink.hidden, false);
+    });
   });
 
   describe("hide recommendations", () => {
