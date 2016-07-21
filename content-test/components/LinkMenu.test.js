@@ -15,7 +15,6 @@ const DEFAULT_PROPS = {
   source: "ACTIVITY_FEED",
   index: 3
 };
-const EXPERIMENT_DATA = {Experiments: {values: {reverseMenuOptions: true}}};
 
 describe("LinkMenu", () => {
   let instance;
@@ -170,22 +169,6 @@ describe("LinkMenu", () => {
       event: "NOTIFY_BLOCK_RECOMMENDATION",
       eventData: DEFAULT_PROPS.site.url,
       userEvent: "BLOCK"
-    });
-  });
-
-  describe("experiment", () => {
-    it("should have the delete options in the right order", () => {
-      const options = contextMenu.props.options;
-      assert.equal(options[options.length - 1].ref, "delete", "Last option is delete");
-      assert.equal(options[options.length - 2].ref, "dismiss", "Second last option is dismiss");
-      assert.equal(options[options.length - 3].type, "separator", "Third last option is a separator");
-    });
-    it("should reverse delete options", () => {
-      setup({}, {getState: () => EXPERIMENT_DATA});
-      const options = contextMenu.props.options;
-      assert.equal(options[options.length - 1].ref, "dismiss", "Last option is dismiss");
-      assert.equal(options[options.length - 2].ref, "delete", "Second last option is delete");
-      assert.equal(options[options.length - 3].type, "separator", "Third last option is a separator");
     });
   });
 });
