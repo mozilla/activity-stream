@@ -125,7 +125,7 @@ function RequestMoreRecentLinks(beforeDate) {
 }
 
 function RequestHighlightsLinks() {
-  return RequestExpect("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE", {meta: {getRecommendation: true}});
+  return RequestExpect("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE");
 }
 
 function RequestSearchState() {
