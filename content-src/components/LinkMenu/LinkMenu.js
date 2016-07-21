@@ -1,5 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
+const {justDispatch} = require("selectors/selectors");
 const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
 const {FIRST_RUN_TYPE} = require("lib/first-run-data");
@@ -124,8 +125,4 @@ LinkMenu.propTypes = {
   recommender_type: React.PropTypes.string
 };
 
-module.exports = connect(({Experiments}) => {
-  return {
-    reverseMenuOptions: Experiments.values.reverseMenuOptions
-  };
-})(LinkMenu);
+module.exports = connect(justDispatch)(LinkMenu);
