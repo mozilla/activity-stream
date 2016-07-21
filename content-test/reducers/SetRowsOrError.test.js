@@ -165,4 +165,15 @@ describe("setRowsOrError", () => {
     assert.deepEqual(state.rows, [{url: "http://bar.com", bookmarkGuid: "boorkmarkBAR"}]);
   });
 
+  it("should set the 'recommendationShown' status on RECEIVE_RECOMMENDATION_TOGGLE", () => {
+    const action = {type: "RECEIVE_RECOMMENDATION_TOGGLE", data: {recommendationStatus: false}};
+    const state = reducer(undefined, action);
+    assert.isFalse(state.recommendationShown);
+  });
+
+  it("should get the inital 'recommendationShown' status when prefs are requested", () => {
+    const action = {type: "PREFS_RESPONSE", data: {recommendationStatus: true}};
+    const state = reducer(undefined, action);
+    assert.isTrue(state.recommendationShown);
+  });
 });

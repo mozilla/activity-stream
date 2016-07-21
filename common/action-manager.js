@@ -42,7 +42,9 @@ const am = new ActionManager([
   "NOTIFY_UPDATE_SEARCH_STRING",
   "NOTIFY_BLOCK_RECOMMENDATION",
   "NOTIFY_TOGGLE_RECOMMENDATIONS",
-  "RECEIVE_RECOMMENDATION_TOGGLE"
+  "RECEIVE_RECOMMENDATION_TOGGLE",
+  "PREFS_REQUEST",
+  "PREFS_RESPONSE"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -126,6 +128,10 @@ function RequestMoreRecentLinks(beforeDate) {
 
 function RequestHighlightsLinks() {
   return RequestExpect("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE");
+}
+
+function RequestInitialPrefs() {
+  return RequestExpect("PREFS_REQUEST", "PREFS_RESPONSE");
 }
 
 function RequestSearchState() {
@@ -235,6 +241,7 @@ am.defineActions({
   RequestRecentLinks,
   RequestMoreRecentLinks,
   RequestHighlightsLinks,
+  RequestInitialPrefs,
   RequestSearchState,
   RequestSearchStrings,
   RequestSearchSuggestions,
