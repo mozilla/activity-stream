@@ -139,6 +139,7 @@ exports.test_random_recommendation = function*(assert) {
   assert.equal(recommendation.url, fakeRecommendedContent[0].url, "we picked the correct url");
   assert.equal(recommendation.timestamp, fakeRecommendedContent[0].timestamp, "it has the correct timestamp");
   assert.ok(recommendation.recommended, "it's been stamped as a recommended url");
+  assert.ok(recommendation.recommender_type, "it's been stamped with a recommender type");
 
   // getting a random recommendation should return null if there are no recommendations to show
   fakeRecommendedContent = [];
@@ -157,7 +158,8 @@ before(exports, function*() {
       return a;
     }
   };
-  gRecommendationProvider = new RecommendationProvider(mockPreviewProvider);
+  const mockTabTracker = {handleUserEvent: function() {}, generateEvent: function() {}, handlePerformanceEvent: function() {}};
+  gRecommendationProvider = new RecommendationProvider(mockPreviewProvider, mockTabTracker);
 });
 
 after(exports, function*() {
