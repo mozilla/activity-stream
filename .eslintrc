@@ -18,6 +18,7 @@
     "platform_require": true
   },
   "plugins": [
+    "json",
     "mozilla",
     "react"
   ],
@@ -44,6 +45,7 @@
     "array-callback-return": 2,
     "arrow-spacing": 2,
     "block-scoped-var": 2,
+    "brace-style": 0,
     "camelcase": 0,
     "comma-dangle": 0,
     "comma-spacing": 2,
@@ -52,6 +54,7 @@
     "consistent-this": [2, "use-bind"],
     "curly": [2, "all"],
     "default-case": 0,
+    "dot-notation": 2,
     "eol-last": 2,
     "eqeqeq": 2,
     "func-names": 0,
@@ -62,8 +65,11 @@
     "id-blacklist": 0,
     "id-length": 0,
     "id-match": 0,
+    "indent": [2, 2, {"SwitchCase": 1}],
     "init-declarations": 0,
     "jsx-quotes": [2, "prefer-double"],
+    "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
+    "keyword-spacing": 2,
     "linebreak-style": [2, "unix"],
     "max-len": 0,
     "max-params": 0,
@@ -131,14 +137,17 @@
     "no-whitespace-before-property": 2,
     "no-with": 2,
     "object-curly-spacing": [2, "never"],
+    "one-var": [2, "never"],
     "one-var-declaration-per-line": [2, "initializations"],
     "operator-assignment": [2, "always"],
+    "operator-linebreak": [2, "after"],
     "prefer-const": 0, // TODO: Change to `1`?
     "prefer-reflect": 0,
     "quotes": [2, "double", "avoid-escape"],
     "radix": [2, "always"],
     "semi": [2, "always"],
     "sort-imports": 2,
+    "space-before-blocks": [2, "always"],
     "space-before-function-paren": [2, {"anonymous": "never", "named": "never"}],
     "space-in-parens": [2, "never"],
     "space-infix-ops": 2,
@@ -146,7 +155,8 @@
     "spaced-comment": [2, "always"],
     "strict": 0,
     "template-curly-spacing": [2, "never"],
+    "valid-jsdoc": [0, {"requireReturn": false, "requireParamDescription": false, "requireReturnDescription": false}],
     "yield-star-spacing": [2, "after"],
-    "yoda": [2, "never"],
+    "yoda": [2, "never"]
   }
 }
