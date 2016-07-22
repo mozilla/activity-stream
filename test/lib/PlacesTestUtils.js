@@ -72,8 +72,7 @@ const PlacesTestUtils = Object.freeze({
           place.title = "test visit for " + place.uri.spec;
         }
         place.visits = [{
-          transitionType: place.transition === undefined ? Ci.nsINavHistoryService.TRANSITION_LINK
-                                                             : place.transition,
+          transitionType: place.transition === undefined ? Ci.nsINavHistoryService.TRANSITION_LINK : place.transition,
           visitDate: place.visitDate || (now++) * 1000,
           referrerURI: place.referrer
         }];

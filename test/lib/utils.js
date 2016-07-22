@@ -46,7 +46,7 @@ function doThrow(error, stack) {
     filename = error.fileName;
   }
 
-  throw(new Error(`Error at ${filename}`));
+  throw (new Error(`Error at ${filename}`));
 }
 
 function doDump(object, trailer) {
