@@ -8,17 +8,20 @@ const LinkMenu = React.createClass({
   getDefaultProps() {
     return {
       visible: false,
-      allowBlock: true
+      allowBlock: true,
+      site: {}
     };
   },
   userEvent(event) {
-    const {page, source, index, dispatch} = this.props;
+    const {page, source, index, dispatch, site} = this.props;
     if (page && source) {
       let payload = {
         event,
         page: page,
         source: source,
-        action_position: index
+        action_position: index,
+        url: site.recommended ? site.url : null,
+        recommender_type: site.recommended ? site.recommender_type : null
       };
       dispatch(actions.NotifyEvent(payload));
     }
@@ -116,7 +119,9 @@ LinkMenu.propTypes = {
   // This is for events
   page: React.PropTypes.string,
   source: React.PropTypes.string,
-  index: React.PropTypes.number
+  index: React.PropTypes.number,
+  url: React.PropTypes.string,
+  recommender_type: React.PropTypes.string
 };
 
 module.exports = connect(({Experiments}) => {

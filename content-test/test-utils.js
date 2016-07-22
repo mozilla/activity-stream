@@ -38,7 +38,7 @@ function overrideConsoleError(onError = () => {}) {
 
 module.exports = {
   rawMockData: mockData,
-  mockData: Object.assign({}, mockData, selectNewTabSites(mockData), {showRecommendationOption: true}),
+  mockData: Object.assign({}, mockData, selectNewTabSites(mockData)),
   createMockProvider,
   renderWithProvider,
   faker: require("test/faker"),
