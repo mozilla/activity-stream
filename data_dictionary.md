@@ -45,7 +45,9 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
   "receive_at": 1457396660000,
   "source": "top sites, or bookmarks, or...",
   "tab_id": "1-3",
-  "ua": "python-requests/2.9.1",
+  "ua": "python-requests/2.9.1",  
+  "url": "https://www.example.com",
+  "recommender_type": "pocket-trending"
 }
 ```
 
@@ -93,6 +95,8 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
 | `unload_reason` | The reason the Activity Stream page lost focus. | :one:
 | `value` | An integer that represents the measured performance value. Can store counts, times in milliseconds, and should always be a positive integer.| :one:
 | `ver` | The version of the Onyx API the ping was sent to. | :one:
+| `url` | The URL of the recommendation shown in one of the highlights spots, if any. | :one:
+| `recommender_type` | The type of recommendation that is being shown, if any. | :one:
 
 **Where:**
 

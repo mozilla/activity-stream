@@ -63,7 +63,9 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "url": "https://www.example.com" | null,
+  "recommender_type": "pocket-trending" | null
 }
 ```
 
@@ -95,7 +97,9 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "tab_id": "-5-4",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "url": "https://www.example.com" | null,
+  "recommender_type": "pocket-trending" | null
 }
 ```
 
