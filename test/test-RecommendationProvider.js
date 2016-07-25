@@ -11,11 +11,11 @@ const gPort = 8079;
 let gRecommendationProvider;
 let gPrefPocket = simplePrefs.prefs["pocket.endpoint"];
 let fakeResponse = {"urls": [
-  {url: "http://example.com/1", timestamp: 1467781200000},
-  {url: "http://example.com/2", timestamp: 1467694800000},
-  {url: "http://example.com/3", timestamp: 0},
-  {url: "http://example.com/4", timestamp: 1467383640000},
-  {url: "http://example.com/5", timestamp: 1467262800000},
+  {url: "http://example.com/1"},
+  {url: "http://example.com/2"},
+  {url: "http://example.com/3"},
+  {url: "http://example.com/4"},
+  {url: "http://example.com/5"},
 ]};
 
 exports.test_get_recommended_content = function*(assert) {
@@ -128,7 +128,7 @@ exports.test_set_blocked_recommendation = function*(assert) {
 
 exports.test_random_recommendation = function*(assert) {
   // create a fake recommendation and a fake blocked recommendation
-  let fakeRecommendedContent = [{url: "http://pickme.com", timestamp: 1467999273}];
+  let fakeRecommendedContent = [{url: "http://pickme.com"}];
   const fakeBlockedRecommendedContent = new Set();
   fakeBlockedRecommendedContent.add("http://blockme.com");
   gRecommendationProvider._recommendedContent = fakeRecommendedContent;
@@ -137,7 +137,6 @@ exports.test_random_recommendation = function*(assert) {
 
   // we should filter out the blocked one and set the current recommendation to the fake recommended content
   assert.equal(recommendation.url, fakeRecommendedContent[0].url, "we picked the correct url");
-  assert.equal(recommendation.timestamp, fakeRecommendedContent[0].timestamp, "it has the correct timestamp");
   assert.ok(recommendation.recommended, "it's been stamped as a recommended url");
   assert.ok(recommendation.recommender_type, "it's been stamped with a recommender type");
 

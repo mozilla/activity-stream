@@ -94,11 +94,6 @@
   .recommended-context {
     margin-top: -15px;
     margin-left: 20px;
-
-    &::after {
-      content: attr(data-timestamp);
-      float: right;
-    }
   }
 
   &.spotlight-placeholder {

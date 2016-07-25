@@ -123,22 +123,13 @@ describe("SpotlightItem", function() {
       assert.equal(instance.refs.contextMessage.textContent, "Visited recently");
     });
     describe("recommendations", () => {
-      it("should say 'Trending' if it is a recommendation and have a timestamp", () => {
+      it("should say 'Trending' if it is a recommendation", () => {
         const props = Object.assign({}, fakeSite, {
           recommended: true,
           lastVisitDate: null,
-          timestamp: 1456426160465
         });
         instance = renderWithProvider(<SpotlightItem {...props} />);
         assert.equal(instance.refs.contextMessage.textContent, "Trending");
-        assert.equal(instance.refs.contextMessage.dataset.timestamp, moment(1456426160465).fromNow());
-      });
-      it("if the recommendation's timestamp is 0 don't show a timestamp", () => {
-        const props = Object.assign({}, fakeSite, {
-          timestamp: 0
-        });
-        instance = renderWithProvider(<SpotlightItem {...props} />);
-        assert.equal(instance.refs.contextMessage.dataset.timestamp, "");
       });
       it("should render the tooltip when hovering over a recommendation's context_message", () => {
         const props = Object.assign({}, fakeSite, {
