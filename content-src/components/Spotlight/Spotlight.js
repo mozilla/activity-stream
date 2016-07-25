@@ -39,12 +39,6 @@ const SpotlightItem = React.createClass({
     const imageUrl = image.url;
     const description = site.description || site.url;
     const isPortrait = image.height > image.width;
-    let relativeTimestamp;
-    if (site.timestamp === 0) {
-      relativeTimestamp = "";
-    } else {
-      relativeTimestamp = moment(site.timestamp).fromNow();
-    }
 
     let contextMessage;
     if (site.context_message) {
@@ -85,7 +79,6 @@ const SpotlightItem = React.createClass({
               onMouseOut={() => this.onMouseOut(site)}>
               {site.recommended ? <div className="icon icon-pocket"></div> : null}
               <div className={site.recommended ? "recommended-context" : ""}
-              data-timestamp={site.recommended ? `${relativeTimestamp}` : ""}
               ref="contextMessage">{contextMessage}</div>
             </div>
           </div>
