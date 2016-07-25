@@ -79,18 +79,7 @@
     font-size: $spotlight-font-size;
     margin: 0;
   }
-
-  .spotlight-context {
-    padding: $spotlight-padding;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    color: $light-grey;
-    font-size: 11px;
-    overflow: hidden;
-  }
-
+  
   .recommended-context {
     margin-top: -15px;
     margin-left: 20px;

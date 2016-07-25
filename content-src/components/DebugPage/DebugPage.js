@@ -4,6 +4,7 @@ const {selectNewTabSites, selectSpotlight} = require("selectors/selectors");
 const {SpotlightItem} = require("components/Spotlight/Spotlight");
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const TopSites = require("components/TopSites/TopSites");
+const faker = require("test/faker");
 
 // Only include this in DEVELOPMENT builds
 let JSONTree;
@@ -28,57 +29,73 @@ const DebugPage = React.createClass({
   getInitialState() {
     return {
       component: "Spotlight",
-      dataSource: "Highlights"
+      dataSource: "Highlights",
+      highlightData: [
+        faker.createSpotlightItem(),
+        faker.createSpotlightItem({type: "bookmark"}),
+        faker.createSpotlightItem({isRecommended: true})
+      ]
     };
   },
   render() {
     const plainText = JSON.stringify({raw: this.props.raw, newTab: this.props.newTab}, null, 2);
     return (<main className="debug-page">
       <div className="new-tab-wrapper">
-        <h2>Plain text</h2>
-        <textarea value={plainText} />
-        <Viewer {...this.props} />
+        <section>
+          <h2>Plain text</h2>
+          <textarea value={plainText} />
+          <Viewer {...this.props} />
+        </section>
 
-        <h2>UI tester</h2>
-        <div className="ui-tester">
-          <div className="form-group">
-            <label>UI Component</label>
-            <select value={this.state.component} onChange={e => this.setState({component: e.target.value})}>
-              <option value={"Spotlight"}>Spotlight</option>
-              <option value={"TopSites"}>Top Sites</option>
-              <option value={"ActivityFeed"}>Activity Feed</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Data Source</label>
-            <select value={this.state.dataSource} onChange={e => this.setState({dataSource: e.target.value})}>
-              {Object.keys(this.props.raw).map(source => {
-                return (<option key={source} value={source}>{source}</option>);
-              })}
-            </select>
-          </div>
-        </div>
-        <div>
-          {this.state.component === "Spotlight" &&
-            <div className="spotlight">
-              {selectSpotlight({
-                Highlights: this.props.raw[this.state.dataSource]
-              }).rows.map((item, i) => {
-                return (<SpotlightItem key={i} {...item} />);
-              })}
+        <section>
+          <h2>UI tester</h2>
+          <div className="ui-tester">
+            <div className="form-group">
+              <label>UI Component</label>
+              <select value={this.state.component} onChange={e => this.setState({component: e.target.value})}>
+                <option value={"Spotlight"}>Spotlight</option>
+                <option value={"TopSites"}>Top Sites</option>
+                <option value={"ActivityFeed"}>Activity Feed</option>
+              </select>
             </div>
-          }
-          {this.state.component === "TopSites" &&
-            <TopSites
-              sites={this.props.raw[this.state.dataSource].rows}
-              length={this.props.raw[this.state.dataSource].rows.length} />
-          }
-          {this.state.component === "ActivityFeed" &&
-            <GroupedActivityFeed
-              sites={this.props.raw[this.state.dataSource].rows}
-              length={this.props.raw[this.state.dataSource].rows.length} />
-          }
-        </div>
+            <div className="form-group">
+              <label>Data Source</label>
+              <select value={this.state.dataSource} onChange={e => this.setState({dataSource: e.target.value})}>
+                {Object.keys(this.props.raw).map(source => {
+                  return (<option key={source} value={source}>{source}</option>);
+                })}
+              </select>
+            </div>
+          </div>
+          <div>
+            {this.state.component === "Spotlight" &&
+              <div className="spotlight">
+                {selectSpotlight({
+                  Highlights: this.props.raw[this.state.dataSource]
+                }).rows.map((item, i) => {
+                  return (<SpotlightItem key={i} {...item} />);
+                })}
+              </div>
+            }
+            {this.state.component === "TopSites" &&
+              <TopSites
+                sites={this.props.raw[this.state.dataSource].rows}
+                length={this.props.raw[this.state.dataSource].rows.length} />
+            }
+            {this.state.component === "ActivityFeed" &&
+              <GroupedActivityFeed
+                sites={this.props.raw[this.state.dataSource].rows}
+                length={this.props.raw[this.state.dataSource].rows.length} />
+            }
+          </div>
+        </section>
+
+        <section>
+          <h2>Highlight tester</h2>
+          {this.state.highlightData.map((item, i) => (
+            <SpotlightItem key={i} {...item} />
+          ))}
+        </section>
       </div>
     </main>);
   }

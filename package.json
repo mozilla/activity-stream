@@ -12,7 +12,7 @@
     "get-youtube-id": "1.0.0",
     "history": "1.17.0",
     "lodash.debounce": "4.0.6",
-    "moment": "2.11.2",
+    "moment": "2.14.1",
     "react": "0.14.8",
     "react-dom": "0.14.8",
     "react-json-inspector": "6.1.3",
