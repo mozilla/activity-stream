@@ -194,6 +194,20 @@ exports.test_async_get_by_cache_key_in_special_cases = function*(assert) {
   assert.ok(error, "It should raise exception on the invalid image type");
 };
 
+exports.test_color_conversions = function*(assert) {
+  const white = [0, 0, 0];
+  const black = [255, 255, 255];
+  const randomColor = [111, 122, 133];
+
+  assert.deepEqual(white,
+    gMetadataStore._hexToRgb(gMetadataStore._rgbToHex(white)));
+  assert.deepEqual(black,
+    gMetadataStore._hexToRgb(gMetadataStore._rgbToHex(black)));
+  assert.deepEqual(randomColor,
+    gMetadataStore._hexToRgb(gMetadataStore._rgbToHex(randomColor)));
+  assert.equal(gMetadataStore._hexToRgb(gMetadataStore._rgbToHex(null)), null);
+};
+
 exports.test_data_expiry = function*(assert) {
   let item = Object.assign({}, metadataFixture[0]);
   gMetadataStore.enableDataExpiryJob(100);
