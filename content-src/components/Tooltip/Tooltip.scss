@@ -4,6 +4,7 @@
   transition-delay: 250ms;
   transition-property: opacity;
   transition-duration: 250ms;
+
   .tooltip-container:hover & {
     pointer-events: all;
     opacity: 1;
@@ -23,7 +24,8 @@
   padding: $tooltip-padding;
   box-shadow: $tooltip-box-shadow;
   z-index: 999;
-  .anchor {
+
+  .tooltip-tip {
     position: absolute;
     top: -5px;
     left: 10px;

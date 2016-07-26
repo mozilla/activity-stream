@@ -11,9 +11,9 @@
 }
 
 .spotlight-item {
-  font-size: 14px;
   @include item-shadow;
   @include link-menu-button;
+  font-size: 14px;
   background: $white;
   display: inline-block;
   margin-right: $base-gutter;

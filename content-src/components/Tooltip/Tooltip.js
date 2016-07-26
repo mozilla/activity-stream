@@ -10,7 +10,7 @@ const Tooltip = React.createClass({
     }
     return (<div className="tooltip" style={style}>
       {this.props.label}
-      <div className="anchor"></div>
+      <div className="tooltip-tip" />
     </div>);
   }
 });
@@ -21,11 +21,3 @@ Tooltip.propTypes = {
 };
 
 module.exports = Tooltip;
-
-// <div className="spotlight-context" ref="spotlightContext"
-//   onMouseOver={() => this.onMouseIn(site)}
-//   onMouseOut={() => this.onMouseOut(site)}>
-//   {site.recommended ? <div className="icon icon-pocket"></div> : null}
-//   <div className={site.recommended ? "recommended-context" : ""}
-//   ref="contextMessage">{contextMessage}</div>
-// </div>
