@@ -1,23 +1,23 @@
 const React = require("react");
-const moment = require("moment");
 const highlightTypes = require("./types");
 const Tooltip = require("components/Tooltip/Tooltip");
+const getRelativeTime = require("lib/getRelativeTime");
 
 const HighlightContext = React.createClass({
   render() {
     let timestamp;
     const type = this.props.type;
     const {icon, label, showTimestamp, tooltip} = Object.assign({}, highlightTypes[type], this.props);
-    if (showTimestamp !== false) {
-      timestamp = moment(this.props.date).fromNow();
+    if (this.props.date && showTimestamp !== false) {
+      timestamp = getRelativeTime(this.props.date);
     }
     return (<div className="highlight-context tooltip-container">
       <span className="hc-icon">
-        <span className={`icon icon-${icon}`} /><span className="sr-only">{this.props.type}</span>
+        <span ref="icon" className={`icon icon-${icon}`} /><span className="sr-only">{this.props.type}</span>
       </span>
-      <span className="hc-label">{label}</span>
-      <span className="hc-timestamp">{timestamp}</span>
-      {tooltip && <Tooltip label={tooltip} />}
+      <span ref="label" className="hc-label">{label}</span>
+      <span hidden={!timestamp} ref="timestamp" className="hc-timestamp">{timestamp}</span>
+      {tooltip && <Tooltip ref="tooltip" label={tooltip} />}
     </div>);
   }
 });
@@ -29,3 +29,4 @@ HighlightContext.propTypes = {
 };
 
 module.exports = HighlightContext;
+module.exports.types = highlightTypes;

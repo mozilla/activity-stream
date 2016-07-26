@@ -1,9 +1,10 @@
 const {assert} = require("chai");
-const moment = require("moment");
 const ConnectedSpotlight = require("components/Spotlight/Spotlight");
 const {Spotlight, SpotlightItem} = ConnectedSpotlight;
+const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
+const HighlightContext = require("components/HighlightContext/HighlightContext");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
@@ -11,6 +12,7 @@ const SiteIcon = require("components/SiteIcon/SiteIcon");
 const {mockData, faker, renderWithProvider} = require("test/test-utils");
 const fakeSpotlightItems = mockData.Spotlight.rows;
 const fakeSiteWithImage = faker.createSite();
+
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 
 describe("Spotlight", function() {
@@ -98,55 +100,20 @@ describe("SpotlightItem", function() {
     it("should render the description", () => {
       assert.include(instance.refs.description.textContent, fakeSite.description);
     });
-    it("should use the context_message if it exists", () => {
-      const props = Object.assign({}, fakeSite, {
-        context_message: "Foo bar baz"
-      });
-      instance = renderWithProvider(<SpotlightItem {...props} />);
-      assert.equal(instance.refs.contextMessage.innerHTML, "Foo bar baz");
-    });
-    it("should render the lastVisitDate if it exists", () => {
-      assert.equal(instance.refs.contextMessage.textContent, `Visited ${moment(fakeSiteWithImage.lastVisitDate).fromNow()}`);
-    });
-    it("should render the bookmarkDateCreated if it exists", () => {
-      const props = Object.assign({}, fakeSite, {
-        bookmarkDateCreated: 1456426160465
-      });
-      instance = renderWithProvider(<SpotlightItem {...props} />);
-      assert.equal(instance.refs.contextMessage.textContent, `Bookmarked ${moment(1456426160465).fromNow()}`);
-    });
-    it("should say 'Visited Recently' if no bookmark or timestamp are available", () => {
-      const props = Object.assign({}, fakeSite, {
-        lastVisitDate: null
-      });
-      instance = renderWithProvider(<SpotlightItem {...props} />);
-      assert.equal(instance.refs.contextMessage.textContent, "Visited recently");
-    });
-    describe("recommendations", () => {
-      it("should say 'Trending' if it is a recommendation", () => {
-        const props = Object.assign({}, fakeSite, {
-          recommended: true,
-          lastVisitDate: null,
-        });
-        instance = renderWithProvider(<SpotlightItem {...props} />);
-        assert.equal(instance.refs.contextMessage.textContent, "Trending");
-      });
-      it("should render the tooltip when hovering over a recommendation's context_message", () => {
-        const props = Object.assign({}, fakeSite, {
-          recommended: true,
-          lastVisitDate: null
-        });
-        instance = renderWithProvider(<SpotlightItem {...props} />);
-        assert.isTrue(instance.refs.spotlightTooltip.hidden);
-        TestUtils.Simulate.mouseOver(instance.refs.spotlightContext);
-        assert.isFalse(instance.refs.spotlightTooltip.hidden);
-      });
-    });
     it("should show link menu when link button is pressed", () => {
       const button = ReactDOM.findDOMNode(TestUtils.findRenderedComponentWithType(instance, LinkMenuButton));
       TestUtils.Simulate.click(button);
       const menu = TestUtils.findRenderedComponentWithType(instance, LinkMenu);
       assert.equal(menu.props.visible, true);
+    });
+    it("should render a HighlightContext with the right props", () => {
+      const site = Object.assign({}, fakeSiteWithImage, {bookmarkDateCreated: Date.now()});
+      instance = renderWithProvider(<SpotlightItem {...site} />);
+      const hc = TestUtils.findRenderedComponentWithType(instance, HighlightContext);
+      const props = getHighlightContextFromSite(site);
+      assert.equal(hc.props.type, "bookmark");
+      assert.deepEqual(hc.props, props);
+
     });
   });
 });

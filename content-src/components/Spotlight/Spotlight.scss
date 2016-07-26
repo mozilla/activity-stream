@@ -11,9 +11,9 @@
 }
 
 .spotlight-item {
-  font-size: 14px;
   @include item-shadow;
   @include link-menu-button;
+  font-size: 14px;
   background: $white;
   display: inline-block;
   margin-right: $base-gutter;
@@ -78,11 +78,6 @@
   .spotlight-description {
     font-size: $spotlight-font-size;
     margin: 0;
-  }
-
-  .recommended-context {
-    margin-top: -15px;
-    margin-left: 20px;
   }
 
   &.spotlight-placeholder {

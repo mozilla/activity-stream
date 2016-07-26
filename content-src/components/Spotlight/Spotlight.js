@@ -1,45 +1,15 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
+const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");
 const classNames = require("classnames");
-const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const DEFAULT_LENGTH = 3;
-
-function getContextInfo(site) {
-  const result = {};
-
-  if (site.context_message) {
-    result.label = site.context_message;
-  }
-
-  if (site.recommended) {
-    result.type = "recommended";
-  } else if (site.type === FIRST_RUN_TYPE) {
-    result.type = "firstRun";
-  } else if (site.type === "bookmark") {
-    result.type = "bookmark";
-    result.date = site.bookmarkDateCreated;
-  // syncedFrom and isOpen are not currently implemented, but they
-  // will be added in the future
-  } else if (site.syncedFrom) {
-    result.type = "synced";
-    result.label = "Synced from " + site.syncedFrom;
-    result.date = site.lastVisitDate;
-  } else if (site.isOpen) {
-    result.type = "open";
-    result.date = site.lastVisitDate;
-  } else {
-    result.type = "history";
-    result.date = site.lastVisitDate;
-  }
-  return result;
-}
 
 const SpotlightItem = React.createClass({
   getInitialState() {
@@ -90,7 +60,7 @@ const SpotlightItem = React.createClass({
               <h4 ref="title" className="spotlight-title">{site.title}</h4>
               <p className="spotlight-description" ref="description">{description}</p>
             </div>
-            <HighlightContext {...getContextInfo(site)} />
+            <HighlightContext {...getHighlightContextFromSite(site)} />
           </div>
         </div>
         <div className="inner-border" />
@@ -173,4 +143,3 @@ Spotlight.propTypes = {
 module.exports = connect(justDispatch)(Spotlight);
 module.exports.Spotlight = Spotlight;
 module.exports.SpotlightItem = SpotlightItem;
-module.exports.getContextInfo = getContextInfo;

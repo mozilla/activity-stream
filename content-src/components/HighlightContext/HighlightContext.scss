@@ -8,20 +8,21 @@
   font-size: 11px;
   display: flex;
   align-items: center;
+
   .hc-icon {
     opacity: 0.5;
     font-size: 13px;
     margin-right: 6px;
+
     .icon {
       display: block;
     }
   }
+
   .hc-label {
     flex-grow: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  .hc-timestamp {
   }
 }
