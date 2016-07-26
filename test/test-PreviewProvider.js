@@ -52,7 +52,7 @@ exports.test_access_update = function*(assert) {
   let currentTime = Date.now();
   let twoDaysAgo = currentTime - (2 * 24 * 60 * 60 * 1000);
   ss.storage.embedlyData.item_1 = {accessTime: twoDaysAgo};
-  gPreviewProvider._getEnhancedLinks([{cacheKey: "item_1"}]);
+  gPreviewProvider._getEnhancedLinks([{cache_key: "item_1"}]);
   assert.ok(ss.storage.embedlyData.item_1.accessTime > twoDaysAgo, "access time is updated");
 };
 
@@ -60,7 +60,7 @@ exports.test_long_hibernation = function*(assert) {
   let currentTime = Date.now();
   let fortyDaysAgo = currentTime - (40 * 24 * 60 * 60 * 1000);
   ss.storage.embedlyData.item_1 = {accessTime: fortyDaysAgo};
-  gPreviewProvider._getEnhancedLinks([{cacheKey: "item_1"}]);
+  gPreviewProvider._getEnhancedLinks([{cache_key: "item_1"}]);
   assert.ok(ss.storage.embedlyData.item_1.accessTime >= currentTime, "access time is updated");
 };
 
@@ -105,13 +105,13 @@ exports.test_periodic_cleanup = function*(assert) {
 };
 
 exports.test_only_request_links_once = function*(assert) {
-  const msg1 = [{"url": "a.com", "sanitizedURL": "a.com", "cacheKey": "a.com"},
-                {"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com"},
-                {"url": "c.com", "sanitizedURL": "c.com", "cacheKey": "c.com"}];
+  const msg1 = [{"url": "a.com", "sanitized_url": "a.com", "cache_key": "a.com"},
+                {"url": "b.com", "sanitized_url": "b.com", "cache_key": "b.com"},
+                {"url": "c.com", "sanitized_url": "c.com", "cache_key": "c.com"}];
 
-  const msg2 = [{"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com"},
-                {"url": "c.com", "sanitizedURL": "c.com", "cacheKey": "c.com"},
-                {"url": "d.com", "sanitizedURL": "d.com", "cacheKey": "d.com"}];
+  const msg2 = [{"url": "b.com", "sanitized_url": "b.com", "cache_key": "b.com"},
+                {"url": "c.com", "sanitized_url": "c.com", "cache_key": "c.com"},
+                {"url": "d.com", "sanitized_url": "d.com", "cache_key": "d.com"}];
 
   assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
   let srv = httpd.startServerAsync(gPort);
@@ -143,19 +143,19 @@ exports.test_only_request_links_once = function*(assert) {
 
 exports.test_is_link_expired = function(assert) {
   const refreshTime = Date.now() - (gPreviewProvider.options.cacheRefreshAge + 1000);
-  ss.storage.embedlyData["a.com"] = {"url": "a.com", "sanitizedURL": "a.com", "cacheKey": "a.com", refreshTime};
-  assert.equal(gPreviewProvider._isLinkExpired({cacheKey: "a.com"}), true, "expired link should return true");
-  ss.storage.embedlyData["b.com"] = {"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com", refreshTime: new Date()};
-  assert.equal(gPreviewProvider._isLinkExpired({cacheKey: "b.com"}), false, "non-expired link should return false");
+  ss.storage.embedlyData["a.com"] = {"url": "a.com", "sanitized_url": "a.com", "cache_key": "a.com", refreshTime};
+  assert.equal(gPreviewProvider._isLinkExpired({cache_key: "a.com"}), true, "expired link should return true");
+  ss.storage.embedlyData["b.com"] = {"url": "b.com", "sanitized_url": "b.com", "cache_key": "b.com", refreshTime: new Date()};
+  assert.equal(gPreviewProvider._isLinkExpired({cache_key: "b.com"}), false, "non-expired link should return false");
 };
 
 exports.test_request_links_if_expired = function*(assert) {
   const oldTime = Date.now() - (gPreviewProvider.options.cacheRefreshAge + 1000);
-  const links = [{"url": "a.com", "sanitizedURL": "a.com", "cacheKey": "a.com"},
-                {"url": "b.com", "sanitizedURL": "b.com", "cacheKey": "b.com"},
-                {"url": "c.com", "sanitizedURL": "c.com", "cacheKey": "c.com"}];
+  const links = [{"url": "a.com", "sanitized_url": "a.com", "cache_key": "a.com"},
+                {"url": "b.com", "sanitized_url": "b.com", "cache_key": "b.com"},
+                {"url": "c.com", "sanitized_url": "c.com", "cache_key": "c.com"}];
   links.forEach(link => {
-    ss.storage.embedlyData[link.cacheKey] = Object.assign({}, link, {refreshTime: new Date()});
+    ss.storage.embedlyData[link.cache_key] = Object.assign({}, link, {refreshTime: new Date()});
   });
   ss.storage.embedlyData["a.com"].refreshTime = oldTime;
 
@@ -268,8 +268,8 @@ exports.test_process_links = function*(assert) {
 
   processedLinks.forEach((link, i) => {
     assert.equal(link.url, fakeData[i].url, "each site has its original url");
-    assert.ok(link.sanitizedURL, "links have sanitizedURLs");
-    assert.ok(link.cacheKey, "links have cacheKeys");
+    assert.ok(link.sanitized_url, "links have sanitizedURLs");
+    assert.ok(link.cache_key, "links have cacheKeys");
   });
 };
 
@@ -301,10 +301,10 @@ exports.test_dedupe_urls = function*(assert) {
 };
 
 exports.test_throw_out_non_requested_responses = function*(assert) {
-  const fakeSite1 = {"url": "http://example1.com/", "sanitizedURL": "http://example1.com/", "cacheKey": "example1.com/"};
-  const fakeSite2 = {"url": "http://example2.com/", "sanitizedURL": "http://example2.com/", "cacheKey": "example2.com/"};
-  const fakeSite3 = {"url": "http://example3.com/", "sanitizedURL": "http://example3.com/", "cacheKey": "example3.com/"};
-  const fakeSite4 = {"url": "http://example4.com/", "sanitizedURL": "http://example4.com/", "cacheKey": "example4.com/"};
+  const fakeSite1 = {"url": "http://example1.com/", "sanitized_url": "http://example1.com/", "cache_key": "example1.com/"};
+  const fakeSite2 = {"url": "http://example2.com/", "sanitized_url": "http://example2.com/", "cache_key": "example2.com/"};
+  const fakeSite3 = {"url": "http://example3.com/", "sanitized_url": "http://example3.com/", "cache_key": "example3.com/"};
+  const fakeSite4 = {"url": "http://example4.com/", "sanitized_url": "http://example4.com/", "cache_key": "example4.com/"};
   // send site 1, 2, 4
   const fakeData = [fakeSite1, fakeSite2, fakeSite4];
 
@@ -332,11 +332,11 @@ exports.test_throw_out_non_requested_responses = function*(assert) {
   yield gPreviewProvider._asyncSaveLinks(fakeData);
 
   // cache should contain example1.com and example2.com
-  assert.ok(ss.storage.embedlyData[fakeSite1.cacheKey].embedlyMetaData, "first site was saved as expected");
-  assert.ok(ss.storage.embedlyData[fakeSite2.cacheKey].embedlyMetaData, "second site was saved as expected");
+  assert.ok(ss.storage.embedlyData[fakeSite1.cache_key].embedlyMetaData, "first site was saved as expected");
+  assert.ok(ss.storage.embedlyData[fakeSite2.cache_key].embedlyMetaData, "second site was saved as expected");
   // cache should not contain example3.com and example4.com
-  assert.throws(() => ss.storage.embedlyData[fakeSite3.cacheKey].embedlyMetaData, "third site was not found in the cache");
-  assert.throws(() => ss.storage.embedlyData[fakeSite4.cacheKey].embedlyMetaData, "fourth site was not found in the cache");
+  assert.throws(() => ss.storage.embedlyData[fakeSite3.cache_key].embedlyMetaData, "third site was not found in the cache");
+  assert.throws(() => ss.storage.embedlyData[fakeSite4.cache_key].embedlyMetaData, "fourth site was not found in the cache");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
@@ -352,8 +352,8 @@ exports.test_mock_embedly_request = function*(assert) {
     "favicon": null,
     "bookmarkDateCreated": 1459537019061,
     "type": "history",
-    "sanitizedURL": "http://example.com/",
-    "cacheKey": "example.com/"
+    "sanitized_url": "http://example.com/",
+    "cache_key": "example.com/"
   };
   const fakeData = [fakeSite];
   const fakeDataCached = {"urls": {
@@ -375,13 +375,13 @@ exports.test_mock_embedly_request = function*(assert) {
 
   yield gPreviewProvider._asyncSaveLinks(fakeData);
 
-  assert.deepEqual(ss.storage.embedlyData[fakeSite.cacheKey].embedlyMetaData, "some embedly metadata", "the cache saved the embedly data");
-  assert.ok(ss.storage.embedlyData[fakeSite.cacheKey].accessTime, "the cached saved a time stamp");
+  assert.deepEqual(ss.storage.embedlyData[fakeSite.cache_key].embedlyMetaData, "some embedly metadata", "the cache saved the embedly data");
+  assert.ok(ss.storage.embedlyData[fakeSite.cache_key].accessTime, "the cached saved a time stamp");
 
   let cachedLinks = gPreviewProvider._getEnhancedLinks(fakeData);
   assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getEnhancedLinks should prioritize new data");
   assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getEnhancedLinks should prioritize new data");
-  assert.ok(ss.storage.embedlyData[fakeSite.cacheKey], "the cached link is now retrieved next time");
+  assert.ok(ss.storage.embedlyData[fakeSite.cache_key], "the cached link is now retrieved next time");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
@@ -398,13 +398,13 @@ exports.test_get_enhanced_disabled = function*(assert) {
 };
 
 exports.test_get_enhanced_previews_only = function*(assert) {
-  ss.storage.embedlyData["example.com/"] = {sanitizedURL: "http://example.com/", cacheKey: "example.com/", url: "http://example.com/"};
+  ss.storage.embedlyData["example.com/"] = {sanitized_url: "http://example.com/", cache_key: "example.com/", url: "http://example.com/"};
   let links;
 
-  links = gPreviewProvider._getEnhancedLinks([{cacheKey: "example.com/"}, {cacheKey: "foo.com"}]);
+  links = gPreviewProvider._getEnhancedLinks([{cache_key: "example.com/"}, {cache_key: "foo.com"}]);
   assert.equal(links.length, 2, "by default getEnhancedLinks returns links with and without previews");
 
-  links = gPreviewProvider._getEnhancedLinks([{cacheKey: "example.com/"}, {cacheKey: "foo.com"}], true);
+  links = gPreviewProvider._getEnhancedLinks([{cache_key: "example.com/"}, {cache_key: "foo.com"}], true);
   assert.equal(links.length, 1, "when previewOnly is set, return only links with previews");
 };
 
