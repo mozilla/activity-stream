@@ -8,7 +8,7 @@ module.exports = {
     label: "Visited",
     icon: "historyItem"
   },
-  activeTab: {
+  open: {
     label: "Open",
     icon: "tab"
   },
@@ -22,7 +22,8 @@ module.exports = {
   },
   recommended: {
     label: "Trending",
-    icon: "pocket"
+    icon: "pocket",
+    tooltip: "This page is trending on Pocket right now."
   },
   topic: {
     label: "Topic",

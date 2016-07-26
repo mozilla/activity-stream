@@ -6,18 +6,21 @@
   right: 0;
   color: $light-grey;
   font-size: 11px;
-  overflow: hidden;
   display: flex;
   align-items: center;
   .hc-icon {
     opacity: 0.5;
     font-size: 13px;
-    display: flex;
-    align-items: center;
     margin-right: 6px;
+    .icon {
+      display: block;
+    }
   }
   .hc-label {
     flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .hc-timestamp {
   }

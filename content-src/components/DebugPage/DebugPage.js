@@ -33,7 +33,9 @@ const DebugPage = React.createClass({
       highlightData: [
         faker.createSpotlightItem(),
         faker.createSpotlightItem({type: "bookmark"}),
-        faker.createSpotlightItem({isRecommended: true})
+        faker.createSpotlightItem({isRecommended: true}),
+        faker.createSpotlightItem({override: {syncedFrom: "Nick's iPhone"}}),
+        faker.createSpotlightItem({override: {isOpen: true}})
       ]
     };
   },
@@ -91,7 +93,7 @@ const DebugPage = React.createClass({
         </section>
 
         <section>
-          <h2>Highlight tester</h2>
+          <h2>Highlight Types</h2>
           {this.state.highlightData.map((item, i) => (
             <SpotlightItem key={i} {...item} />
           ))}

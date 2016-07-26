@@ -11,14 +11,6 @@ const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const DEFAULT_LENGTH = 3;
 
-// <div className="spotlight-context" ref="spotlightContext"
-//   onMouseOver={() => this.onMouseIn(site)}
-//   onMouseOut={() => this.onMouseOut(site)}>
-//   {site.recommended ? <div className="icon icon-pocket"></div> : null}
-//   <div className={site.recommended ? "recommended-context" : ""}
-//   ref="contextMessage">{contextMessage}</div>
-// </div>
-
 function getContextInfo(site) {
   const result = {};
 
@@ -33,11 +25,19 @@ function getContextInfo(site) {
   } else if (site.type === "bookmark") {
     result.type = "bookmark";
     result.date = site.bookmarkDateCreated;
+  // syncedFrom and isOpen are not currently implemented, but they
+  // will be added in the future
+  } else if (site.syncedFrom) {
+    result.type = "synced";
+    result.label = "Synced from " + site.syncedFrom;
+    result.date = site.lastVisitDate;
+  } else if (site.isOpen) {
+    result.type = "open";
+    result.date = site.lastVisitDate;
   } else {
     result.type = "history";
     result.date = site.lastVisitDate;
   }
-
   return result;
 }
 
@@ -95,10 +95,6 @@ const SpotlightItem = React.createClass({
         </div>
         <div className="inner-border" />
       </a>
-        <div className="spotlight-tooltip" ref="spotlightTooltip" hidden={!this.state.hover}>
-        This page is trending on Pocket right now.
-        <div className="anchor"></div>
-        </div>
       <LinkMenuButton onClick={() => this.setState({showContextMenu: true})} />
       <LinkMenu
         visible={this.state.showContextMenu}

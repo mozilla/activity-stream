@@ -59,7 +59,7 @@ $feed-line-color: rgba($black, 0.05);
 $feed-circle-color: #CECECE;
 
 $spotlight-padding: $base-gutter / 2;
-$spotlight-item-height: 262px;
+$spotlight-item-height: 270px;
 $spotlight-item-width: ($wrapper-max-width - $base-gutter * 2) / 3;
 $spotlight-img-height: 130px;
 $spotlight-text-height: 86px;
@@ -113,7 +113,6 @@ $tooltip-border-radius: 5px;
 $tooltip-border-properties:  1px solid rgba(0, 0, 0, 0.27);
 $tooltip-box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14);
 $tooltip-padding: 10px 30px;
-$tooltip-margin: 17px 0 0 8px;
 $tooltip-anchor-width: 8px;
 $tooltip-anchor-height: 8px;
 $tooltip-anchor-margin: -42px 0 0 -24px;
