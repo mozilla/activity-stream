@@ -23,6 +23,7 @@ module.exports = {
   recommended: {
     label: "Trending",
     icon: "pocket",
+    showTimestamp: false,
     tooltip: "This page is trending on Pocket right now."
   },
   topic: {
