@@ -1,5 +1,4 @@
 .spotlight {
-  font-size: 14px;
   margin-right: -$base-gutter;
 
   ul.spotlight-list {
@@ -14,6 +13,7 @@
 .spotlight-item {
   @include item-shadow;
   @include link-menu-button;
+  font-size: 14px;
   background: $white;
   display: inline-block;
   margin-right: $base-gutter;
@@ -80,54 +80,10 @@
     margin: 0;
   }
 
-  .spotlight-context {
-    padding: $spotlight-padding;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    color: $light-grey;
-    font-size: 11px;
-    overflow: hidden;
-  }
-
-  .recommended-context {
-    margin-top: -15px;
-    margin-left: 20px;
-  }
-
   &.spotlight-placeholder {
     background: $placeholder-background;
     border: $placeholder-border;
     box-shadow: none;
     height: $spotlight-item-height;
-  }
-
-  .spotlight-tooltip {
-    width: $spotlight-item-width;
-    height: $tooltip-height;
-    background-color: $tooltip-background-color;
-    position: relative;
-    margin: $tooltip-margin;
-    border-radius: $tooltip-border-radius;
-    border: $tooltip-border-properties;
-    text-align: center;
-    font-size: 11px;
-    padding: $tooltip-padding;
-    box-shadow: $tooltip-box-shadow;
-    z-index: 999;
-  }
-
-  .anchor {
-    width: $tooltip-anchor-width;
-    height: $tooltip-anchor-height;
-    background-color: $tooltip-background-color;
-    display: block;
-    position: relative;
-    margin: $tooltip-anchor-margin;
-    transform: rotate(45deg);
-    border: $tooltip-border-properties;
-    border-bottom-style: none;
-    border-right-style: none;
   }
 }

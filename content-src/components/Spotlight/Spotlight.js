@@ -1,11 +1,12 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
+const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");
 const {actions} = require("common/action-manager");
-const moment = require("moment");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
+const HighlightContext = require("components/HighlightContext/HighlightContext");
 const classNames = require("classnames");
 
 const DEFAULT_LENGTH = 3;
@@ -40,21 +41,6 @@ const SpotlightItem = React.createClass({
     const description = site.description || site.url;
     const isPortrait = image.height > image.width;
 
-    let contextMessage;
-    if (site.context_message) {
-      contextMessage = site.context_message;
-    } else if (site.bookmarkDateCreated) {
-      contextMessage = `Bookmarked ${moment(site.bookmarkDateCreated).fromNow()}`;
-    } else if (site.lastVisitDate) {
-      contextMessage = `Visited ${moment(site.lastVisitDate).fromNow()}`;
-    } else if (site.type === "bookmark") {
-      contextMessage = "Bookmarked recently";
-    } else if (site.recommended) {
-      contextMessage = "Trending";
-    } else {
-      contextMessage = "Visited recently";
-    }
-
     const style = {};
 
     if (imageUrl) {
@@ -74,21 +60,11 @@ const SpotlightItem = React.createClass({
               <h4 ref="title" className="spotlight-title">{site.title}</h4>
               <p className="spotlight-description" ref="description">{description}</p>
             </div>
-            <div className="spotlight-context" ref="spotlightContext"
-              onMouseOver={() => this.onMouseIn(site)}
-              onMouseOut={() => this.onMouseOut(site)}>
-              {site.recommended ? <div className="icon icon-pocket"></div> : null}
-              <div className={site.recommended ? "recommended-context" : ""}
-              ref="contextMessage">{contextMessage}</div>
-            </div>
+            <HighlightContext {...getHighlightContextFromSite(site)} />
           </div>
         </div>
         <div className="inner-border" />
       </a>
-        <div className="spotlight-tooltip" ref="spotlightTooltip" hidden={!this.state.hover}>
-        This page is trending on Pocket right now.
-        <div className="anchor"></div>
-        </div>
       <LinkMenuButton onClick={() => this.setState({showContextMenu: true})} />
       <LinkMenu
         visible={this.state.showContextMenu}

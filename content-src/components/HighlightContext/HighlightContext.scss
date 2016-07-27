@@ -1,0 +1,28 @@
+.highlight-context {
+  padding: $spotlight-padding;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: $light-grey;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+
+  .hc-icon {
+    opacity: 0.5;
+    font-size: 13px;
+    margin-right: 6px;
+
+    .icon {
+      display: block;
+    }
+  }
+
+  .hc-label {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

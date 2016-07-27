@@ -1,6 +1,7 @@
 const faker = require("faker");
 const moment = require("moment");
 const tiptop = require("tippy-top-sites");
+const {selectSpotlight} = require("selectors/selectors");
 
 const BASE_TIP_TOP_FAVICON_URL = "favicons/images/";
 
@@ -46,6 +47,13 @@ const CREATE_SITE_DEFAULTS = {
   hasBookmark: false
 };
 
+// Options:
+// date
+// type
+// images
+// hasBookmark
+// isRecommended
+// override
 function createSite(options = {}) {
   options = Object.assign({}, CREATE_SITE_DEFAULTS, options);
 
@@ -80,6 +88,10 @@ function createSite(options = {}) {
     Object.assign(site, options.override);
   }
 
+  if (options.isRecommended) {
+    site.recommended = true;
+  }
+
   // Add images if options.images > 0
   if (options.images) {
     site.images = arrayOf(createImage, options.images);
@@ -111,6 +123,14 @@ function createSite(options = {}) {
   }
 
   return site;
+}
+
+function createSpotlightItem(options = {}) {
+  if (!options.images) {
+    options.images = 1;
+  }
+  const site = createSite(options);
+  return selectSpotlight({Highlights: {rows: [site]}}).rows[0];
 }
 
 function range(min, max, increment = 1) {
@@ -172,6 +192,7 @@ function createRows({
 module.exports = {
   arrayOf,
   createSite,
+  createSpotlightItem,
   createRows,
   createWeightedArray,
   randomWeighter,
