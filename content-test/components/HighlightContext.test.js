@@ -66,6 +66,11 @@ describe("HighlightContext", () => {
     assert.equal(instance.refs.tooltip.props.label, types.recommended.tooltip);
   });
 
+  it("should show not show a timestamps for recommended links", () => {
+    setup({type: "recommended", date: Date.now()});
+    assert.equal(instance.refs.timestamp.hidden, true);
+  });
+
   it("should have a .tooltip-container class", () => {
     setup();
     assert.include(el.className, "tooltip-container");
