@@ -33,6 +33,10 @@ describe("SiteIcon", () => {
     });
   });
 
+  it("should have default state", () => {
+    assert.isFalse(instance.state.showFallback);
+  });
+
   it("should create a SiteIcon instance", () => {
     assert.instanceOf(instance, SiteIcon);
   });
@@ -70,6 +74,12 @@ describe("SiteIcon", () => {
       assert.isTrue(instance.refs.fallback.hidden);
     });
 
+    it("should show fallback when forced even if favicon exists on site", () => {
+      instance.setState({showFallback: true});
+      assert.isTrue(instance.refs.favicon.hidden);
+      assert.isFalse(instance.refs.fallback.hidden);
+    });
+
     it("should set favicon_url", () => {
       assert.equal(instance.refs.favicon.src, fakeProps.site.favicon_url);
     });
@@ -77,6 +87,14 @@ describe("SiteIcon", () => {
     it("should use favicon as a fallback to favicon_url", () => {
       setup({}, {favicon_url: null, favicon: "https://www.wikipedia.org/static/favicon/wikipedia.ico"});
       assert.equal(instance.refs.favicon.src, "https://www.wikipedia.org/static/favicon/wikipedia.ico");
+    });
+
+    it("should use favicon for 16x16 favicon", done => {
+      setup({}, {favicon_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAD0lEQVQYV2P4jwYYRrYAAID5%2FwHnXPpAAAAAAElFTkSuQmCC"});
+      instance.refs.favicon.addEventListener("load", () => {
+        assert.isFalse(instance.state.showFallback);
+        done();
+      });
     });
   });
 
@@ -92,6 +110,13 @@ describe("SiteIcon", () => {
     it("should show fallback if there is no icons property", () => {
       assert.isFalse(instance.refs.fallback.hidden);
       assert.isTrue(instance.refs.favicon.hidden);
+    });
+    it("should show fallback on small 1x1 favicon", done => {
+      setup({}, {favicon_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEElEQVR42gEFAPr%2FAP%2F%2F%2F%2F8J%2BwP9vTv7fQAAAABJRU5ErkJggg%3D%3D"});
+      instance.refs.favicon.addEventListener("load", () => {
+        assert.isTrue(instance.state.showFallback);
+        done();
+      });
     });
     it("should have an opaque background color", () => {
       assert.equal(instance.refs.background.style.backgroundColor, "rgb(0, 0, 0)");
