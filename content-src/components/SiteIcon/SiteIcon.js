@@ -18,7 +18,7 @@ const SiteIcon = React.createClass({
     return {showFallback: false};
   },
   handleFavicon() {
-    // Use the fallback if we end up with a small 1x1 favicon.
+    // Use the fallback if we end up with a small 1x1 or errored favicon.
     if (this.refs.favicon.naturalHeight <= 1 || this.refs.favicon.naturalWidth <= 1) {
       this.setState({showFallback: true});
     }
@@ -48,6 +48,7 @@ const SiteIcon = React.createClass({
           className="site-icon-favicon"
           hidden={showFallback}
           src={site.favicon}
+          onError={this.handleFavicon}
           onLoad={this.handleFavicon} />
         <span ref="fallback" className="site-icon-fallback" style={fallbackStyle} hidden={!showFallback} data-first-letter={site.firstLetter} />
       </div>
