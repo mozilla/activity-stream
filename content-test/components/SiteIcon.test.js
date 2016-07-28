@@ -118,6 +118,13 @@ describe("SiteIcon", () => {
         done();
       });
     });
+    it("should show fallback for bad favicon", done => {
+      setup({}, {favicon_url: "data:text/plain,not an image"});
+      instance.refs.favicon.addEventListener("error", () => {
+        assert.isTrue(instance.state.showFallback);
+        done();
+      });
+    });
     it("should have an opaque background color", () => {
       assert.equal(instance.refs.background.style.backgroundColor, "rgb(0, 0, 0)");
     });
