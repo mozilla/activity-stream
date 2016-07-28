@@ -14,10 +14,19 @@ const SiteIcon = React.createClass({
       border: true
     };
   },
+  getInitialState() {
+    return {showFallback: false};
+  },
+  handleFavicon() {
+    // Use the fallback if we end up with a small 1x1 favicon.
+    if (this.refs.favicon.naturalHeight <= 1 || this.refs.favicon.naturalWidth <= 1) {
+      this.setState({showFallback: true});
+    }
+  },
   render() {
     const site = selectSiteIcon(this.props.site);
     const {width, height, faviconSize, showTitle} = this.props;
-    const showFallback = !site.favicon;
+    const showFallback = this.state.showFallback || !site.favicon;
     const showBackground = this.props.showBackground || showFallback;
     const showBorder = this.props.border;
 
@@ -33,7 +42,13 @@ const SiteIcon = React.createClass({
       <div ref="background" hidden={!showBackground} className="site-icon-background" style={{backgroundColor: site.backgroundColor}} />
       <div ref="border" hidden={!showBackground || !showBorder} className="inner-border" />
       <div className="site-icon-wrapper">
-        <img ref="favicon" width={faviconSize} height={faviconSize} className="site-icon-favicon" hidden={showFallback} src={site.favicon} />
+        <img ref="favicon"
+          width={faviconSize}
+          height={faviconSize}
+          className="site-icon-favicon"
+          hidden={showFallback}
+          src={site.favicon}
+          onLoad={this.handleFavicon} />
         <span ref="fallback" className="site-icon-fallback" style={fallbackStyle} hidden={!showFallback} data-first-letter={site.firstLetter} />
       </div>
       <div ref="title" hidden={!showTitle} className="site-icon-title">{site.label}</div>
