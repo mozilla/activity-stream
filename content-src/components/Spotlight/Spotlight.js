@@ -104,6 +104,7 @@ const Spotlight = React.createClass({
         page: this.props.page,
         source: "FEATURED",
         action_position: index,
+        highlight_type: site.type,
         url: site.recommended ? site.url : null,
         recommender_type: site.recommended ? site.recommender_type : null
       }));
