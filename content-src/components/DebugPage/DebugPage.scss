@@ -58,7 +58,7 @@
   cursor: default;
 }
 
-.json-inspector__line:after {
+.json-inspector__line::after {
   content: '';
   position: absolute;
   top: 0;
@@ -69,7 +69,7 @@
   pointer-events: none;
 }
 
-.json-inspector__line:hover:after {
+.json-inspector__line:hover::after {
   background: $faintest-black;
 }
 
@@ -132,10 +132,10 @@
   color: $dark-grey;
 }
 
-.json-inspector__show-original:before {
+.json-inspector__show-original::before {
   content: '⥂';
 }
 
-.json-inspector__show-original:hover:after {
+.json-inspector__show-original:hover::after {
   content: ' expand';
 }
