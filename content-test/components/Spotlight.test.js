@@ -41,6 +41,7 @@ describe("Spotlight", function() {
           assert.equal(a.data.page, "NEW_TAB");
           assert.equal(a.data.source, "FEATURED");
           assert.equal(a.data.action_position, 0);
+          assert.equal(a.data.highlight_type, fakeSpotlightItems[0].type);
           assert.equal(a.data.url, null);
           assert.equal(a.data.recommender_type, null);
           done();
@@ -56,6 +57,7 @@ describe("Spotlight", function() {
           assert.equal(a.data.page, "NEW_TAB");
           assert.equal(a.data.source, "FEATURED");
           assert.equal(a.data.action_position, 0);
+          assert.equal(a.data.highlight_type, fakeSpotlightItems[0].type);
           assert.equal(a.data.url, fakeRecommendation.url);
           assert.equal(a.data.recommender_type, fakeRecommendation.recommender_type);
           done();
