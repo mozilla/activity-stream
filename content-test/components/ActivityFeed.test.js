@@ -18,6 +18,7 @@ const fakeSite = {
   "dateDisplay": 1456426160465,
   "url": "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn",
   "description": "A Florida man faces multiple charges for throwing an alligator through a Wendy's drive-thru window. CNN's affiliate WPTV reports.",
+  "score": 0.5,
   "images": [
     {
       "url": "http://i2.cdn.turner.com/cnnnext/dam/assets/160209053130-man-throws-alligator-in-wendys-wptv-dnt-00004611-large-169.jpg",
@@ -92,6 +93,30 @@ describe("ActivityFeedItem", () => {
       assert.equal(lastVisitEl, moment(fakeSite.dateDisplay).calendar());
     });
   });
+
+  describe("weighted highlights set to true", () => {
+    beforeEach(() => {
+      let props = Object.assign({}, fakeSite, {displayMoreHighlights: true});
+      instance = renderWithProvider(<ActivityFeedItem {...props} />);
+      el = ReactDOM.findDOMNode(instance);
+    });
+    it("should render site description when `displayMoreHighlights` prop is true", () => {
+      assert.isNotNull(instance.refs.description);
+      assert.equal(instance.refs.description.textContent, fakeSite.description);
+    });
+  });
+
+  describe("weighted highlights set to false", () => {
+    beforeEach(() => {
+      let props = Object.assign({}, fakeSite, {displayMoreHighlights: false});
+      instance = renderWithProvider(<ActivityFeedItem {...props} />);
+      el = ReactDOM.findDOMNode(instance);
+    });
+
+    it("should not render site description when `displayMoreHighlights` prop is false", () => {
+      assert.equal(instance.refs.description, undefined);
+    });
+  });
 });
 
 describe("GroupedActivityFeed", () => {
@@ -104,7 +129,7 @@ describe("GroupedActivityFeed", () => {
       faker.createSite({moment: faker.moment().subtract(2, "days")}),
       faker.createSite({moment: faker.moment().subtract(4, "days")})
     ];
-    instance = renderWithProvider(<GroupedActivityFeed sites={sites} />);
+    instance = renderWithProvider(<GroupedActivityFeed sites={sites} displayMoreHighlights={false} />);
     el = ReactDOM.findDOMNode(instance);
   });
 
@@ -119,7 +144,7 @@ describe("GroupedActivityFeed", () => {
       assert.equal(children.length, sites.length);
     });
     it("shouldn't render title if there are no sites", () => {
-      const item = renderWithProvider(<GroupedActivityFeed sites={[]} title="Fake Title" />);
+      const item = renderWithProvider(<GroupedActivityFeed sites={[]} title="Fake Title" displayMoreHighlights={false} />);
       assert.isUndefined(item.refs.title);
     });
   });
