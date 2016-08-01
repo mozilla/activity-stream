@@ -542,7 +542,7 @@ exports.test_TabTracker_handleRouteChange = function*(assert) {
   assert.equal(pingData.unload_reason, "route_change");
 };
 
-exports.test_TabTracker_prefs = function*(assert) {
+exports.test_TabTracker_prefs = function(assert) {
   simplePrefs.prefs.telemetry = false;
   assert.ok(!app._tabTracker.enabled, "tab tracker is disabled");
 
