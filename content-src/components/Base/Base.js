@@ -5,6 +5,8 @@ const {actions} = require("common/action-manager");
 
 const Base = React.createClass({
   componentDidMount() {
+    this.props.dispatch(actions.RequestWeightedHighlights());
+
     this.props.dispatch(actions.RequestTopFrecent());
 
     this.props.dispatch(actions.RequestRecentLinks());

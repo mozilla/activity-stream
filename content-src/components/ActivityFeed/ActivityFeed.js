@@ -35,6 +35,16 @@ const ActivityFeedItem = React.createClass({
       showDate: false
     };
   },
+  _renderItemMeta() {
+    if (this.props.displayMoreHighlights) {
+      return (<div>
+        <p>Score: {this.props.score.toFixed(2)}</p>
+        <p ref="description">{this.props.description}</p>
+      </div>);
+    }
+
+    return null;
+  },
   render() {
     const site = this.props;
     const title = site.title || site.provider_display || (site.parsedUrl && site.parsedUrl.hostname);
@@ -69,7 +79,8 @@ const ActivityFeedItem = React.createClass({
         <div className="feed-details">
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{title}</h4>
-            <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)} />
+            {this._renderItemMeta()}
+            <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)}/>
             {this.props.preview && <MediaPreview previewInfo={this.props.preview} />}
           </div>
           <div className="feed-stats">
@@ -203,6 +214,7 @@ const GroupedActivityFeed = React.createClass({
                   }
                 }
                 return (<ActivityFeedItem
+                    displayMoreHighlights={this.props.displayMoreHighlights}
                     key={site.guid || i}
                     onClick={this.onClickFactory(globalCount)}
                     onShare={this.onShareFactory(globalCount)}

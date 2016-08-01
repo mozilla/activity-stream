@@ -9,7 +9,9 @@ const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");
 const classNames = require("classnames");
 
-const DEFAULT_LENGTH = 3;
+const {
+    SPOTLIGHT_DEFAULT_LENGTH
+} = require("common/constants");
 
 const SpotlightItem = React.createClass({
   getInitialState() {
@@ -92,7 +94,7 @@ SpotlightItem.propTypes = {
 const Spotlight = React.createClass({
   getDefaultProps() {
     return {
-      length: DEFAULT_LENGTH,
+      length: SPOTLIGHT_DEFAULT_LENGTH,
       page: "NEW_TAB"
     };
   },

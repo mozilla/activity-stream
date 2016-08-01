@@ -11,8 +11,9 @@ const {actions} = require("common/action-manager");
 const {Link} = require("react-router");
 const setFavicon = require("lib/set-favicon");
 const classNames = require("classnames");
-const MAX_TOP_ACTIVITY_ITEMS = 10;
 const PAGE_NAME = "NEW_TAB";
+
+const {SPOTLIGHT_DEFAULT_LENGTH, MAX_TOP_ACTIVITY_ITEMS} = require("common/constants");
 
 const NewTabPage = React.createClass({
   getInitialState() {
@@ -42,11 +43,23 @@ const NewTabPage = React.createClass({
       this.setState({renderedOnce: true});
     }
   },
+  _renderGroupedSectionTitle() {
+    let title = this.props.WeightedHighlights.weightedHighlights ? "More Highlights" : "Recent Activity";
+    return <h3 ref="title" className="section-title">{title}</h3>;
+  },
   render() {
     const props = this.props;
     const recommendationLabel = "Show Trending Highlights";
     const recommendationIcon = props.Spotlight.recommendationShown ? "check" : "   ";
     const showRecommendationOption = props.showRecommendationOption;
+    let spotlightSource = props.Spotlight.rows;
+    let groupedFeedSource = props.TopActivity.rows;
+
+    if (this.props.WeightedHighlights.weightedHighlights) {
+      spotlightSource = props.WeightedHighlights.rows.slice(0, SPOTLIGHT_DEFAULT_LENGTH);
+      groupedFeedSource = props.WeightedHighlights.rows.slice(SPOTLIGHT_DEFAULT_LENGTH);
+    }
+
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
         <section>
@@ -65,12 +78,13 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <Spotlight page={PAGE_NAME} sites={props.Spotlight.rows} />
+            <Spotlight page={PAGE_NAME} sites={spotlightSource} />
           </section>
 
           <section>
-            <h3 ref="title" className="section-title">Recent Activity</h3>
-            <GroupedActivityFeed sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME} maxPreviews={1} />
+            {this._renderGroupedSectionTitle()}
+            <GroupedActivityFeed sites={groupedFeedSource} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME}
+                                 maxPreviews={1} displayMoreHighlights={props.WeightedHighlights.weightedHighlights} />
           </section>
 
           <section className="bottom-links-container">
@@ -101,6 +115,7 @@ const NewTabPage = React.createClass({
 });
 
 NewTabPage.propTypes = {
+  WeightedHighlights: React.PropTypes.object.isRequired,
   TopSites: React.PropTypes.object.isRequired,
   Spotlight: React.PropTypes.object.isRequired,
   TopActivity: React.PropTypes.object.isRequired,

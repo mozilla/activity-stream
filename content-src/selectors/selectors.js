@@ -31,6 +31,21 @@ function getBackgroundRGB(site) {
   return favicon ? DEFAULT_FAVICON_BG_COLOR : getRandomColor(label);
 }
 
+function assignImageAndBackgroundColor(rows) {
+  return rows.map(site => {
+    const newProps = {};
+    const bestImage = getBestImage(site.images);
+    if (bestImage) {
+      newProps.bestImage = bestImage;
+    }
+
+    // Use site.background_color if it's defined, otherwise calculate one based on
+    // the favicon_colors or a default color.
+    newProps.backgroundColor = site.background_color || toRGBString(...getBackgroundRGB(site, [200, 200, 200]), BACKGROUND_FADE - 0.1);
+    return Object.assign({}, site, newProps);
+  });
+}
+
 module.exports.getBackgroundRGB = getBackgroundRGB;
 
 function isValidSpotlightSite(site) {
@@ -44,22 +59,10 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights
   ],
-  Highlights => {
-    const rows = Highlights.rows
-      // Only concat first run data if init is true
-      .concat(Highlights.init ? firstRunData.Highlights : [])
-      .map(site => {
-        const newProps = {};
-        const bestImage = getBestImage(site.images);
-        if (bestImage) {
-          newProps.bestImage = bestImage;
-        }
-
-        // Use site.background_color if it's defined, otherwise calculate one based on
-        // the favicon_colors or a default color.
-        newProps.backgroundColor = site.background_color || toRGBString(...getBackgroundRGB(site, [200, 200, 200]), BACKGROUND_FADE - 0.1);
-        return Object.assign({}, site, newProps);
-      })
+  (Highlights) => {
+    // Only concat first run data if init is true
+    const highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
+    const rows = assignImageAndBackgroundColor(highlightRows)
       .sort((site1, site2) => {
         const site1Valid = isValidSpotlightSite(site1);
         const site2Valid = isValidSpotlightSite(site2);
@@ -94,12 +97,14 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
 
 module.exports.selectNewTabSites = createSelector(
   [
+    state => state.WeightedHighlights,
     selectTopSites,
     state => state.History,
     selectSpotlight,
     state => state.Experiments
   ],
-  (TopSites, History, Spotlight, Experiments) => {
+  (WeightedHighlights, TopSites, History, Spotlight, Experiments) => {
+    let weightedHighlightsRows = assignImageAndBackgroundColor(WeightedHighlights.rows);
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
     // don't dedupe against stuff that isn't shown
@@ -118,6 +123,7 @@ module.exports.selectNewTabSites = createSelector(
       History.rows])[2];
 
     return {
+      WeightedHighlights: Object.assign({}, WeightedHighlights, {rows: weightedHighlightsRows}),
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Spotlight: Object.assign({}, Spotlight, {rows: spotlightRows}),
       TopActivity: Object.assign({}, History, {rows: historyRows}),
