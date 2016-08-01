@@ -1,6 +1,6 @@
 const {createStore, applyMiddleware, combineReducers} = require("redux");
 const {ADDON_TO_CONTENT, CONTENT_TO_ADDON} = require("common/event-constants");
-const thunk = require("redux-thunk");
+const thunk = require("redux-thunk").default;
 const reducers = require("reducers/reducers");
 const {Channel} = require("lib/ReduxChannel");
 
