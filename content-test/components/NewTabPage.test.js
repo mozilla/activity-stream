@@ -53,6 +53,39 @@ describe("NewTabPage", () => {
     Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
   });
 
+  describe("weightedHighlights pref false", () => {
+    beforeEach(() => {
+      let pref = {
+        WeightedHighlights: {
+          weightedHighlights: false
+        }
+      };
+      let prefOff = Object.assign({}, fakeProps, pref);
+      instance = renderWithProvider(<NewTabPage {...prefOff} dispatch={() => {}} />);
+    });
+
+    it("should render `Recent Activity` title", () => {
+      assert.equal(instance.refs.title.textContent, "Recent Activity");
+    });
+  });
+
+  describe("weightedHighlights pref true", () => {
+    beforeEach(() => {
+      let pref = {
+        WeightedHighlights: {
+          weightedHighlights: true,
+          rows: []
+        }
+      };
+      let prefOn = Object.assign({}, fakeProps, pref);
+      instance = renderWithProvider(<NewTabPage {...prefOn} dispatch={() => {}} />);
+    });
+
+    it("should render `More Highlights` title", () => {
+      assert.equal(instance.refs.title.textContent, "More Highlights");
+    });
+  });
+
   describe("settings", () => {
     it("should hide the settings menu by default", () => {
       assert.equal(instance.refs.settingsMenu.props.visible, false);
