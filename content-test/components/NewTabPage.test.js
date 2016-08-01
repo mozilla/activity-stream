@@ -52,7 +52,6 @@ describe("NewTabPage", () => {
     const inner = TestUtils.findRenderedComponentWithType(container, NewTabPage);
     Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
   });
-
   describe("settings", () => {
     it("should hide the settings menu by default", () => {
       assert.equal(instance.refs.settingsMenu.props.visible, false);
