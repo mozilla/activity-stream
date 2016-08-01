@@ -2,7 +2,7 @@
 
 const {TippyTopProvider} = require("lib/TippyTopProvider");
 
-exports["test TippyTopProvider init"] = function*(assert) {
+exports["test TippyTopProvider init"] = function(assert) {
   // Test the default init
   let tippyTopProvider = new TippyTopProvider();
   let site = {url: "http://somecraycrayurl.com"};
@@ -19,7 +19,7 @@ exports["test TippyTopProvider init"] = function*(assert) {
   assert.deepEqual(site, tippyTopProvider.processSite(site));
 };
 
-exports["test TippyTopProvider processSite"] = function*(assert) {
+exports["test TippyTopProvider processSite"] = function(assert) {
   // Test init with options
   let tippyTopProvider = new TippyTopProvider({
     sites: [{

@@ -4,7 +4,7 @@ const {before} = require("sdk/test/utils");
 const {PlacesProvider} = require("lib/PlacesProvider");
 const simplePrefs = require("sdk/simple-prefs");
 
-exports["test blocklist init"] = function*(assert) {
+exports["test blocklist init"] = function(assert) {
   let blockedURLs;
 
   blockedURLs = new PlacesProvider.BlockedURLs("test.blocklist");
@@ -24,7 +24,7 @@ exports["test blocklist init"] = function*(assert) {
   assert.equal(simplePrefs.prefs["test.blocklist"], "[]", "cleared pref is found");
 };
 
-exports["test blocklist basic functions"] = function*(assert) {
+exports["test blocklist basic functions"] = function(assert) {
   let blockedURLs;
 
   simplePrefs.prefs["test.blocklist"] = JSON.stringify(["foo"]);
@@ -56,7 +56,7 @@ exports["test blocklist basic functions"] = function*(assert) {
   assert.equal(simplePrefs.prefs["test.blocklist"], "[]", "cleared pref is found");
 };
 
-before(exports, function*() {
+before(exports, function() {
   simplePrefs.prefs["test.blocklist"] = JSON.stringify([]);
 });
 

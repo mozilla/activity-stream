@@ -218,7 +218,7 @@ exports.test_on_an_invalid_connection = function*(assert) {
   assert.equal(metaObjects.length, 0, "It should return an empty array if the connection is closed or not established");
 },
 
-exports.test_color_conversions = function*(assert) {
+exports.test_color_conversions = function(assert) {
   const white = [0, 0, 0];
   const black = [255, 255, 255];
   const randomColor = [111, 122, 133];

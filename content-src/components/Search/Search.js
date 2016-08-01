@@ -283,7 +283,7 @@ const Search = React.createClass({
                      onMouseMove={() => this.onMouseMove(suggestionIndex)}
                      className={active ? "active" : ""} role="option"
                      aria-selected={active} onClick={() => this.performSearch({engineName: activeEngine, searchString: suggestion})}>
-                     <div id="historyIcon" className={active ? "active" : ""}></div>{suggestion}</a>
+                     <div id="historyIcon" className={active ? "active" : ""} />{suggestion}</a>
                 </li>);
           })}
         </ul>

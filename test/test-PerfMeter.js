@@ -217,7 +217,7 @@ exports.test_PerfMeter_tab_hygiene = function*(assert) {
   assert.deepEqual(app.performanceData, {}, "no performance data");
 };
 
-exports.test_PerfMeter_sample_stats = function*(assert) {
+exports.test_PerfMeter_sample_stats = function(assert) {
   let perfMeter = new PerfMeter("http://foo.com");
   perfMeter._addSampleValue(2);
   assert.deepEqual(perfMeter._computeStats(), {total: 1, mean: 2, std: 0, median: 2}, "stats match");

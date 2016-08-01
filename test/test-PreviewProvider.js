@@ -68,7 +68,7 @@ exports.test_only_request_links_once = function*(assert) {
   });
 };
 
-exports.test_filter_urls = function*(assert) {
+exports.test_filter_urls = function(assert) {
   const fakeData = {
     get validLinks() {
       return [
@@ -100,7 +100,7 @@ exports.test_filter_urls = function*(assert) {
   assert.deepEqual(badUrls, [], "all bad links are removed");
 };
 
-exports.test_sanitize_urls = function*(assert) {
+exports.test_sanitize_urls = function(assert) {
   let sanitizedUrl = gPreviewProvider._sanitizeURL(null);
   assert.equal(sanitizedUrl, "", "if an empty url is passed, return the empty string");
 
@@ -138,7 +138,7 @@ exports.test_sanitize_urls = function*(assert) {
   assert.equal(expectedUrl, sanitizedUrl, "%s doesn't cause unhandled exception");
 };
 
-exports.test_process_links = function*(assert) {
+exports.test_process_links = function(assert) {
   const fakeData = [
     {"url": "http://foo.com/#foo", "title": "blah"},
     {"url": "http://foo.com/#bar", "title": "blah"},
@@ -160,7 +160,7 @@ exports.test_process_links = function*(assert) {
   });
 };
 
-exports.test_dedupe_urls = function*(assert) {
+exports.test_dedupe_urls = function(assert) {
   const fakeData = [
     {"url": "http://foo.com/", "title": "blah"},
     {"url": "http://www.foo.com/", "title": "blah"},
@@ -302,7 +302,7 @@ exports.test_get_enhanced_previews_only = function*(assert) {
   assert.equal(links.length, 1, "when previewOnly is set, return only links with previews");
 };
 
-before(exports, function*() {
+before(exports, function() {
   simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/embedlyLinkData`;
   simplePrefs.prefs["previews.enabled"] = true;
   let mockMetadataStore = {
@@ -324,7 +324,7 @@ before(exports, function*() {
   gPreviewProvider = new PreviewProvider(mockTabTracker, mockMetadataStore, {initFresh: true});
 });
 
-after(exports, function*() {
+after(exports, function() {
   simplePrefs.prefs["embedly.endpoint"] = gPrefEmbedly;
   simplePrefs.prefs["previews.enabled"] = gPrefEnabled;
   gMetadataStore = [];

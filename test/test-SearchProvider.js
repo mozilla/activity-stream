@@ -20,9 +20,9 @@ function hasProp(assert, obj) {
   };
 }
 
-exports.test_SearchProvider_state = function*(assert) {
+exports.test_SearchProvider_state = function(assert) {
   // get inital state of search and check that it has the corret properties
-  let state = yield SearchProvider.search.asyncGetCurrentState();
+  let state = SearchProvider.search.currentState;
   let stateProps = hasProp(assert, state);
   ["engines", "currentEngine"].forEach(stateProps);
 
