@@ -194,6 +194,30 @@ exports.test_async_get_by_cache_key_in_special_cases = function*(assert) {
   assert.ok(error, "It should raise exception on the invalid image type");
 };
 
+exports.test_on_an_invalid_connection = function*(assert) {
+  yield gMetadataStore.asyncClose();
+
+  let error = false;
+  try {
+    yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
+  } catch (e) {
+    error = true;
+  }
+  assert.ok(error, "It should raise exception if the connection is closed or not established");
+
+  error = false;
+  try {
+    yield gMetadataStore.asycnInsert(metadataFixture);
+  } catch (e) {
+    error = true;
+  }
+  assert.ok(error, "It should raise exception if the connection is closed or not established");
+
+  let cacheKeys = metadataFixture.map(fixture => {return fixture.cache_key;});
+  let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey(cacheKeys);
+  assert.equal(metaObjects.length, 0, "It should return an empty array if the connection is closed or not established");
+},
+
 exports.test_color_conversions = function*(assert) {
   const white = [0, 0, 0];
   const black = [255, 255, 255];
