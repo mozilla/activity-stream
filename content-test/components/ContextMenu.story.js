@@ -8,7 +8,10 @@ const DEFAULT_OPTIONS = [
   {label: "Grapes", onClick: () => {}}
 ];
 
-// This is so we can show the context menu
+// This is so we can show the context menu.  Note that this is only
+// necessary because ContextMenu has certain implicit dependencies on
+// its container.  Fully encapsulated components (hopefully any new
+// new ones!) should be renderable without needing a container!
 const ContextMenuContainer = React.createClass({
   getInitialState() {
     return {visible: true};

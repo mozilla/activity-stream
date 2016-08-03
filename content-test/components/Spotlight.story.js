@@ -7,6 +7,8 @@ const Provider = createMockProvider({
   dispatch: action("dispatched a redux action")
 });
 
+// XXX should get rid of container here.  See comment in ContextMenu.story
+// for details.
 const Container = props => (
   <Provider>
     <div style={{padding: "20px"}}>
