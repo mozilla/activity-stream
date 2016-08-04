@@ -11,7 +11,7 @@ const outputFilename = "bundle.js";
 
 let env = process.env.NODE_ENV || "development";
 
-let plugins =  [
+let plugins = [
   new WebpackNotifierPlugin(),
   new EnvLoaderPlugin({
     env,

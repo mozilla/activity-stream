@@ -64,7 +64,7 @@ describe("Spotlight", function() {
         }
       }
       let fakeSitesWithRecommendation = fakeSpotlightItems;
-      let fakeRecommendation =  {url: "http://example.com", recommender_type: "pocket-trending", recommended: true};
+      let fakeRecommendation = {url: "http://example.com", recommender_type: "pocket-trending", recommended: true};
       fakeSitesWithRecommendation[0] = Object.assign({}, fakeSitesWithRecommendation[0], fakeRecommendation);
       instance = renderWithProvider(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSitesWithRecommendation} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
