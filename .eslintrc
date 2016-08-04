@@ -78,6 +78,7 @@
     "no-array-constructor": 2,
     "no-bitwise": 0,
     "no-caller": 2,
+    "no-catch-shadow": 2,
     "no-class-assign": 2,
     "no-console": 1,
     "no-const-assign": 2,
