@@ -1,5 +1,5 @@
 const IMG_HEIGHT = 226;
-const IMG_WIDTH =  124;
+const IMG_WIDTH = 124;
 
 module.exports = function getBestImage(images) {
   if (!images || !images.length) {
