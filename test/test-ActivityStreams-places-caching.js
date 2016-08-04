@@ -29,7 +29,7 @@ let gApp;
 let gAppURL;
 let gInitialCachePref = simplePrefs.prefs["query.cache"];
 
-let makeNotifsPromise = (cacheStatus) => {
+let makeNotifsPromise = cacheStatus => {
   return new Promise(resolve => {
     let notifSet = new Set([
       "getTopFrecentSites-cache",

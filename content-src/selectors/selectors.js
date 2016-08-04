@@ -45,7 +45,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights
   ],
-  (Highlights) => {
+  Highlights => {
     const rows = Highlights.rows
       // Only concat first run data if init is true
       .concat(Highlights.init ? firstRunData.Highlights : [])
@@ -84,7 +84,7 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
   [
     state => state.TopSites
   ],
-  (TopSites) => {
+  TopSites => {
     return Object.assign({}, TopSites, {
       rows: dedupe.one(TopSites.rows
         // Add first run stuff to the end if init has already happened
