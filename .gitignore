@@ -12,4 +12,3 @@ firefox/
 config.yml
 .amo_config.json
 lib/vendor.bundle.js
-.out/
