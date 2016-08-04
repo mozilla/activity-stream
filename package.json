@@ -170,7 +170,7 @@
     "firefox": "npm run bundle:webpackAddon && jpm run --prefs ./dev-prefs.json",
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle && npm run copyTestImages && npm run copyTopSitesJson",
-    "test:lint": "eslint --ext=.js,.jsx,.json . && sass-lint -v -q",
+    "test:lint": "ls -las ./node_modules/.bin && eslint --ext=.js,.jsx,.json . && sass-lint -v -q",
     "test:checkbinary": "echo \"JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}\"",
     "test:jpm": "jpm test -b ${JPM_FIREFOX_BINARY:-\"firefox\"} --prefs ./test-prefs.json -v",
     "test:karma": "NODE_ENV=test karma start",
