@@ -159,8 +159,8 @@ function NotifyManageEngines() {
 }
 
 function NotifyUpdateSearchString(searchString) {
-   return Notify("NOTIFY_UPDATE_SEARCH_STRING", {searchString});
- }
+  return Notify("NOTIFY_UPDATE_SEARCH_STRING", {searchString});
+}
 
 function RequestExperiments() {
   return RequestExpect("EXPERIMENTS_REQUEST", "EXPERIMENTS_RESPONSE");

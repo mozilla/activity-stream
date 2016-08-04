@@ -32,10 +32,10 @@ let gInitialCachePref = simplePrefs.prefs["query.cache"];
 let makeNotifsPromise = (cacheStatus) => {
   return new Promise(resolve => {
     let notifSet = new Set([
-        "getTopFrecentSites-cache",
-        "getRecentBookmarks-cache",
-        "getRecentLinks-cache",
-        "getHighlightsLinks-cache",
+      "getTopFrecentSites-cache",
+      "getRecentBookmarks-cache",
+      "getRecentLinks-cache",
+      "getHighlightsLinks-cache",
     ]);
     let notifCount = 0;
     let observer = function(subject, topic, data) {

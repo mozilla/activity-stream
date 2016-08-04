@@ -29,10 +29,10 @@ exports.test_metadatastore_saves_new_links = function*(assert) {
     {cache_key: "https://www.mozilla.org/en-US/firefox/new/", places_url: "https://www.mozilla.org/en-US/firefox/new"},
     {cache_key: "https://notinDB.com/", places_url: "https://www.notinDB.com/", sanitized_url: "https://www.notinDB.com/"}];
   const fakeResponse = {"urls": {
-      "https://www.notinDB.com/": {
-        "embedlyMetaData": "some embedly metadata"
-      }
-    }};
+    "https://www.notinDB.com/": {
+      "embedlyMetaData": "some embedly metadata"
+    }
+  }};
 
   let srv = httpd.startServerAsync(gPort);
   srv.registerPathHandler("/previewProviderMetadataStore", function handle(request, response) {
