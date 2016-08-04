@@ -64,3 +64,10 @@ scripts:
   # This is just to make sure we don't make commits with failing tests
   # or uncompiled yamscripts.yml. Run automatically with husky.
   prepush: =>test:lint && =>yamscripts
+
+# storybook: build a local react-storybook containing local stories for dev
+  storybook: NODE_ENV=test start-storybook -p 9001 -s ./data/content
+
+# build-storybook: for use by storybooks.io github integration into PRs
+  build-storybook: =>bundle && build-storybook -s ./data/content -o ./.out
+
