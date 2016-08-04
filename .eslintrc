@@ -30,6 +30,7 @@
     "mozilla/import-globals-from": 1,
     "mozilla/this-top-level-scope": 1,
 
+    "react/jsx-boolean-value": [2, "always"],
     "react/jsx-equals-spacing": [2, "never"],
     "react/jsx-no-duplicate-props": 2,
     "react/jsx-no-undef": 2,

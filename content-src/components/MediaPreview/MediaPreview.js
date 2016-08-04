@@ -31,7 +31,7 @@ const MediaPreview = React.createClass({
                         type="text/html"
                         ref="previewPlayer"
                         frameBorder="0"
-                        allowFullScreen></iframe>);
+                        allowFullScreen={true}></iframe>);
     }
 
     const style = previewInfo.thumbnail ? {backgroundImage: `url(${previewInfo.thumbnail.url})`} : null;
