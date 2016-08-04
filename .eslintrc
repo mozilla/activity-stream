@@ -67,6 +67,7 @@
     "init-declarations": 0,
     "jsx-quotes": [2, "prefer-double"],
     "key-spacing": [2, {"beforeColon": false, "afterColon": true, "mode": "strict"}],
+    "keyword-spacing": [2, {"before": true, "after": true}],
     "linebreak-style": [2, "unix"],
     "max-len": 0,
     "max-params": 0,
