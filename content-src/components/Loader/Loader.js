@@ -10,7 +10,7 @@ const Loader = React.createClass({
   },
   render() {
     return (<div className={classNames("loader", this.props.className, {centered: this.props.centered})} hidden={!this.props.show}>
-      <div className="spinner"/> {this.props.label}
+      <div className="spinner" /> {this.props.label}
     </div>);
   }
 });
