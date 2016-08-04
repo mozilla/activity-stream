@@ -54,6 +54,7 @@
     "consistent-this": [2, "use-bind"],
     "curly": [2, "all"],
     "default-case": 0,
+    "dot-location": [2, "property"],
     "dot-notation": 2,
     "eol-last": 2,
     "eqeqeq": 2,

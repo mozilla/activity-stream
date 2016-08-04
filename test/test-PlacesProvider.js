@@ -653,8 +653,7 @@ exports.test_Links_onManyLinksChanged = function*(assert) {
   yield PlacesTestUtils.addVisits(testURI);
 
   // trigger DecayFrecency
-  PlacesUtils.history.QueryInterface(Ci.nsIObserver).
-    observe(null, "idle-daily", "");
+  PlacesUtils.history.QueryInterface(Ci.nsIObserver).observe(null, "idle-daily", "");
 
   yield promise;
   provider.uninit();
