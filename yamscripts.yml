@@ -38,7 +38,7 @@ scripts:
     server: live-server data/content --port=1963 --no-browser
 
 # firefox: Launch addon with jpm run
-  firefox: =>bundle:webpackAddon && jpm run --prefs ./dev-prefs.json
+  firefox: =>bundle:webpackAddon && jpm run -b nightly --prefs ./dev-prefs.json
 
 # test: Run all tests once
   test:
@@ -47,7 +47,7 @@ scripts:
     lint: eslint --ext=.js,.jsx,.json . && sass-lint -v -q
     checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests
-    jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"firefox"} --prefs ./test-prefs.json -v
+    jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./test-prefs.json -v
     # test:karma: Run content tests only
     karma: NODE_ENV=test karma start
     post: cat logs/reports/coverage/text-summary.txt
