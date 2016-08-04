@@ -18,8 +18,8 @@ const LinkMenu = React.createClass({
     if (page && source) {
       let payload = {
         event,
-        page: page,
-        source: source,
+        page,
+        source,
         action_position: index,
       };
       if (site.recommended) {

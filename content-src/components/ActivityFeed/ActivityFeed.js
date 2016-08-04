@@ -30,8 +30,8 @@ const ActivityFeedItem = React.createClass({
   },
   getDefaultProps() {
     return {
-      onShare: function() {},
-      onClick: function() {},
+      onShare() {},
+      onClick() {},
       showDate: false
     };
   },

@@ -452,7 +452,7 @@ exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
         data: {
           source: "topsites",
           action_position: 3,
-          event: event
+          event
         }
       }
     };

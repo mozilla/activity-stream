@@ -20,7 +20,7 @@ const SpotlightItem = React.createClass({
   },
   getDefaultProps() {
     return {
-      onClick: function() {},
+      onClick() {},
       bestImage: {}
     };
   },
