@@ -185,7 +185,7 @@
     "package": "npm run bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi",
     "travis": "npm run test",
     "prepush": "npm run test:lint && npm run yamscripts",
-    "storybook": "NODE_ENV=test start-storybook -p 9001 -s ./data/content",
+    "storybook": "start-storybook -p 9001 -s ./data/content",
     "build-storybook": "npm run bundle && build-storybook -s ./data/content -o ./.out",
     "help": "yamscripts help",
     "yamscripts": "yamscripts compile",

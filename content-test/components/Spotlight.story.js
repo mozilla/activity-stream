@@ -17,6 +17,10 @@ const Container = props => (
   </Provider>
 );
 
+// Note that if a site image is not in the cache, it can take a while
+// (eg 10 seconds) to load, because the image load starts very late, for
+// unclear reasons.  Presumably something to do with faker, tippy-top-sites,
+// or Spotlight (aka Highlight) itself.
 storiesOf("Highlight", module)
   .add("All valid properties", () => {
     const site = createSite({images: 1});
