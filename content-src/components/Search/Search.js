@@ -262,14 +262,14 @@ const Search = React.createClass({
         onFocus={() => this.setState({focus: true})}
         onChange={e => this.setValueAndSuggestions(e.target.value)}
         onKeyDown={e => this.handleKeyPress(e)}
-        onBlur={() => setTimeout(() => this.resetState(), 200)}/>
+        onBlur={() => setTimeout(() => this.resetState(), 200)} />
       <button ref="performSearchButton"
         onClick={e => {e.preventDefault(); this.performSearch({engineName: currentEngine.name, searchString});}}>
         <span className="sr-only">Search</span>
       </button>
       <div className="search-container" role="presentation" hidden={!this.getDropdownVisible()}>
       <section className="search-title" hidden={!formHistory.concat(suggestions).length}>
-        <img id="current-engine-icon" src={currentEngine.iconBuffer} alt={currentEngine.name.charAt(0)} width="16px" height="16px"/>
+        <img id="current-engine-icon" src={currentEngine.iconBuffer} alt={currentEngine.name.charAt(0)} width="16px" height="16px" />
         {this.props.searchHeader.replace("%S", currentEngine.name)}
       </section>
       <section className="history-search-suggestions" hidden={!formHistory.length}>
@@ -315,7 +315,7 @@ const Search = React.createClass({
               return (<li key={option.name} className={active ? "active" : ""}>
                 <a ref={option.name} id={"search-partners-" + enginesIdIndex++} aria-selected={active}
                       onClick={() => this.performSearch({engineName: option.name, searchString: this.getActiveSuggestion() || searchString})}>
-                <img src={icon} alt={option.name} width="16" height="16"/></a>
+                <img src={icon} alt={option.name} width="16" height="16" /></a>
               </li>);
             })}
             </ul>
