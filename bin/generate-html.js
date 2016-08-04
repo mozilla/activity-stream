@@ -31,7 +31,7 @@ function template(rawOptions) {
 
 module.exports = template;
 
-if (require.main === module)  {
+if (require.main === module) {
   // called from command line
   const args = require("minimist")(process.argv.slice(2), {
     alias: {baseUrl: "b", title: "t"}
