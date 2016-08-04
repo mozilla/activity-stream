@@ -36,7 +36,6 @@ exports["test activity stream loads on home page when appropriate"] = function*(
   assert.ok(!prefService.isSet("browser.startup.homepage"));
   app.unload();
   assert.ok(!prefService.isSet("browser.startup.homepage"));
-
 };
 
 test.run(exports);
