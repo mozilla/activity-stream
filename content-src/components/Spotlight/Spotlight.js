@@ -72,8 +72,7 @@ const SpotlightItem = React.createClass({
         site={site}
         page={this.props.page}
         index={this.props.index}
-        source={this.props.source}
-        />
+        source={this.props.source}/>
     </li>);
   }
 });
