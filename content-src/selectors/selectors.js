@@ -130,7 +130,7 @@ module.exports.selectNewTabSites = createSelector(
 function selectSiteProperties(site) {
   const metadataFavicon = site.favicons && site.favicons[0] && site.favicons[0].url;
   const favicon = site.favicon_url || metadataFavicon || site.favicon;
-  const parsedUrl = site.parsedUrl || urlParse(site.url || "") ;
+  const parsedUrl = site.parsedUrl || urlParse(site.url || "");
   const label = prettyUrl(parsedUrl.hostname);
   return {favicon, parsedUrl, label};
 }
