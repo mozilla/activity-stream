@@ -46,7 +46,7 @@ const TopSites = React.createClass({
               <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
               <div className="inner-border" />
             </a>
-            <LinkMenuButton onClick={(ev) => {
+            <LinkMenuButton onClick={ev => {
               ev.preventDefault();
               this.setState({showContextMenu: true, activeTile: i});
             }} />

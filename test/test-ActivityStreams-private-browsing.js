@@ -17,7 +17,7 @@ exports["test activity stream doesn't load in private windows"] = function*(asse
   let window = yield new Promise(resolve => windows.open({
     url: "about:privatebrowsing",
     isPrivate: true,
-    onOpen: (window) => {
+    onOpen: window => {
       resolve(window);
     }
   }));
@@ -27,7 +27,7 @@ exports["test activity stream doesn't load in private windows"] = function*(asse
     yield new Promise(resolve => {
       window.tabs.open({
         url: appURL,
-        onReady: (tab) => {
+        onReady: tab => {
           assert.equal(tab.url, "about:privatebrowsing");
           tab.close(resolve);
         }

@@ -148,7 +148,7 @@ describe("setRowsOrError", () => {
     assert.isUndefined(newRow.bookmarkTitle, "should remove bookmarkTitle");
   });
 
-  ((event) => {
+  (event => {
     it(`should remove a row removed via ${event}`, () => {
       const action = {type: event, data: "http://foo.com"};
       const prevRows = [{url: "http://foo.com"}, {url: "http://bar.com"}];

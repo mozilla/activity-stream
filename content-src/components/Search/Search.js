@@ -324,7 +324,7 @@ const Search = React.createClass({
           <button id="search-settings-button" ref="searchSettingsButton"
             className={this.getSettingsButtonIsActive() ? "active" : ""}
             aria-selected={this.getSettingsButtonIsActive()}
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault();
               this.manageEngines();
             }}>{this.props.searchSettings}

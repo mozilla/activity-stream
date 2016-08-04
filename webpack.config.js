@@ -2,7 +2,7 @@
 const WebpackNotifierPlugin = require("webpack-notifier");
 const webpack = require("webpack");
 const path = require("path");
-const absolute = (relPath) => path.join(__dirname, relPath);
+const absolute = relPath => path.join(__dirname, relPath);
 const EnvLoaderPlugin = require("webpack-env-loader-plugin");
 
 const srcPath = absolute("./content-src/main.js");
