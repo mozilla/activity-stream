@@ -55,11 +55,11 @@ function doDump(object, trailer) {
 
 function getTestActivityStream(options = {}) {
   const mockMetadataStore = {
-    asyncConnect() { return Promise.resolve();},
-    asyncReset() { return Promise.resolve();},
-    asyncClose() { return Promise.resolve();},
-    asyncInsert() { return Promise.resolve();},
-    asyncGetMetadataByCacheKey() { return Promise.resolve([]);},
+    asyncConnect() {return Promise.resolve();},
+    asyncReset() {return Promise.resolve();},
+    asyncClose() {return Promise.resolve();},
+    asyncInsert() {return Promise.resolve();},
+    asyncGetMetadataByCacheKey() {return Promise.resolve([]);},
   };
   let mockApp = new ActivityStreams(mockMetadataStore, options);
   return mockApp;

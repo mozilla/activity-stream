@@ -45,6 +45,7 @@
     "arrow-parens": [2, "as-needed"],
     "arrow-spacing": 2,
     "block-scoped-var": 2,
+    "block-spacing": [2, "never"],
     "camelcase": 0,
     "comma-dangle": 0,
     "comma-spacing": 2,
