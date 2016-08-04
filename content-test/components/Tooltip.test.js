@@ -38,5 +38,4 @@ describe("Tooltip", () => {
     setup({label: "foo", visible: false});
     assert.equal(el.style.display, "none");
   });
-
 });

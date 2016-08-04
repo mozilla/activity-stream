@@ -115,7 +115,6 @@ describe("SpotlightItem", function() {
       const props = getHighlightContextFromSite(site);
       assert.equal(hc.props.type, "bookmark");
       assert.deepEqual(hc.props, props);
-
     });
   });
 });

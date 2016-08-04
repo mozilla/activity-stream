@@ -152,6 +152,7 @@
     "one-var-declaration-per-line": [2, "initializations"],
     "operator-assignment": [2, "always"],
     "operator-linebreak": [2, "after"],
+    "padded-blocks": [2, "never"],
     "prefer-const": 0, // TODO: Change to `1`?
     "prefer-reflect": 0,
     "quotes": [2, "double", "avoid-escape"],
