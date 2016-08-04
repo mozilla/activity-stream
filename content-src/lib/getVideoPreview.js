@@ -10,7 +10,7 @@ module.exports = function getVideoPreview(url) {
 };
 
 const getVideoURL = {
-  youtube: function(url) {
+  youtube(url) {
     let videoId = getYouTubeID(url, {fuzzy: false});
     if (!videoId) {
       return null;
@@ -19,7 +19,7 @@ const getVideoURL = {
     return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
   },
 
-  vimeo: function(url) {
+  vimeo(url) {
     const vimeoRegex = /(http|https)?:\/\/(www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|)(\d+)(?:|\/\?)/;
     let idMatches = url.match(vimeoRegex);
     if (!idMatches) {

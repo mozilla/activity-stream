@@ -4,7 +4,7 @@ const {actions} = require("common/action-manager");
 const PAGE_NAME = "NEW_TAB";
 
 const Search = React.createClass({
-  getInitialState: function() {
+  getInitialState() {
     return {
       focus: false,
       activeIndex: -1,
@@ -13,33 +13,33 @@ const Search = React.createClass({
       searchString: this.props.searchString
     };
   },
-  resetState: function() {
+  resetState() {
     this.setState(this.getInitialState());
   },
-  manageEngines: function() {
+  manageEngines() {
     this.props.dispatch(actions.NotifyManageEngines());
   },
-  setValueAndSuggestions: function(value) {
+  setValueAndSuggestions(value) {
     this.setState({activeIndex: -1, activeSuggestionIndex: -1, searchString: value});
     this.props.dispatch(actions.NotifyUpdateSearchString(value));
     this.props.dispatch(actions.RequestSearchSuggestions({engineName: this.props.currentEngine.name, searchString: value}));
   },
-  getActiveSuggestion: function() {
+  getActiveSuggestion() {
     const suggestions = this.props.formHistory.concat(this.props.suggestions);
     const index = this.state.activeSuggestionIndex;
     return (suggestions && suggestions.length && index >= 0) ? suggestions[index] : null;
   },
-  getActiveEngine: function() {
+  getActiveEngine() {
     const index = this.state.activeEngineIndex;
     return (index >= 0) ? this.props.engines[index].name : this.props.currentEngine.name;
   },
-  getSettingsButtonIsActive: function() {
+  getSettingsButtonIsActive() {
     const index = this.state.activeIndex;
     const numSuggestions = this.props.formHistory.concat(this.props.suggestions).length;
     const numEngines = this.props.engines.length;
     return index === numSuggestions + numEngines;
   },
-  getActiveDescendantId: function() {
+  getActiveDescendantId() {
     // Returns the ID of the element being currently in focus, if any.
     const index = this.state.activeIndex;
     const numSuggestions = this.props.formHistory.concat(this.props.suggestions).length;
@@ -53,10 +53,10 @@ const Search = React.createClass({
     }
     return null;
   },
-  getDropdownVisible: function() {
+  getDropdownVisible() {
     return !!(this.props.searchString && this.state.focus);
   },
-  performSearch: function(options) {
+  performSearch(options) {
     let searchData = {
       engineName: options.engineName,
       searchString: options.searchString,
@@ -68,13 +68,13 @@ const Search = React.createClass({
       page: PAGE_NAME
     }));
   },
-  removeFormHistory: function(suggestion) {
+  removeFormHistory(suggestion) {
     this.props.dispatch(actions.NotifyRemoveFormHistory(suggestion));
   },
-  cycleCurrentEngine: function(index) {
+  cycleCurrentEngine(index) {
     this.props.dispatch(actions.NotifyCycleEngine(this.props.engines[index].name));
   },
-  handleKeyPress: function(e) {
+  handleKeyPress(e) {
     // Handle the keyboard navigation of the widget.
 
     // If the dropdown isn't visible, we don't handle the event.

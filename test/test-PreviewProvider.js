@@ -306,11 +306,11 @@ before(exports, function() {
   simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/embedlyLinkData`;
   simplePrefs.prefs["previews.enabled"] = true;
   let mockMetadataStore = {
-    asyncInsert: function(data) {
+    asyncInsert(data) {
       gMetadataStore.push(data);
       return gMetadataStore;
     },
-    asyncGetMetadataByCacheKey: function(cacheKeys) {
+    asyncGetMetadataByCacheKey(cacheKeys) {
       let items = [];
       gMetadataStore.forEach(item => {
         if (cacheKeys.includes(item.cache_key)) {
@@ -320,7 +320,7 @@ before(exports, function() {
       return items;
     }
   };
-  let mockTabTracker = {handlePerformanceEvent: function() {}, generateEvent: function() {}};
+  let mockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
   gPreviewProvider = new PreviewProvider(mockTabTracker, mockMetadataStore, {initFresh: true});
 });
 
