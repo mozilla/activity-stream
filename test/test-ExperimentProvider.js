@@ -25,7 +25,7 @@ const DEFAULT_TEST_EXPERIMENTS = {
 let experimentProvider;
 
 function setup(clientID = DEFAULT_CLIENT_ID, experiments = DEFAULT_TEST_EXPERIMENTS, n) {
-  return experimentProvider = new ExperimentProvider(clientID, experiments, n && (() => n));
+  return (experimentProvider = new ExperimentProvider(clientID, experiments, n && (() => n)));
 }
 
 exports["test ExperimentProvider"] = assert => {
