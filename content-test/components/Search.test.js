@@ -23,7 +23,7 @@ describe("Search", () => {
 
   function setup(customProps = {}) {
     const props = Object.assign({}, DEFAULT_PROPS, customProps);
-    instance = TestUtils.renderIntoDocument(<Search {...props}/>);
+    instance = TestUtils.renderIntoDocument(<Search {...props} />);
   }
 
   beforeEach(setup);
