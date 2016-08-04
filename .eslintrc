@@ -117,6 +117,7 @@
     "no-octal-escape": 2,
     "no-path-concat": 2,
     "no-proto": 2,
+    "no-return-assign": [2, "except-parens"],
     "no-script-url": 2,
     "no-self-compare": 2,
     "no-sequences": 2,
