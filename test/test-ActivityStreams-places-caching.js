@@ -51,7 +51,7 @@ let makeNotifsPromise = (cacheStatus) => {
     };
 
     for (let notif of notifSet) {
-      Services.obs.addObserver(observer, notif);
+      Services.obs.addObserver(observer, notif, false);
     }
   });
 };
@@ -199,7 +199,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
       notifCount++;
     }
   };
-  Services.obs.addObserver(countNotif, notif);
+  Services.obs.addObserver(countNotif, notif, false);
 
   // phase 1: add history visit and count
   placesCachePromise = makeCachePromise("places");

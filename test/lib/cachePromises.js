@@ -13,7 +13,7 @@ let makeCachePromise = (name) => {
         resolve();
       }
     };
-    Services.obs.addObserver(waitForCache, precacheNotif);
+    Services.obs.addObserver(waitForCache, precacheNotif, false);
   });
 };
 
@@ -30,7 +30,7 @@ let makeCountingCachePromise = (name, target) => {
         }
       }
     };
-    Services.obs.addObserver(waitForCache, precacheNotif);
+    Services.obs.addObserver(waitForCache, precacheNotif, false);
   });
 };
 
