@@ -151,13 +151,13 @@ before(exports, function*() {
   simplePrefs.prefs["pocket.endpoint"] = `http://localhost:${gPort}/pocketRecommendations`;
   // PreviewProvider needs to attach some metadata to these recommendations
   const mockPreviewProvider = {
-    getLinkMetadata: function(links) {
+    getLinkMetadata(links) {
       let a = [];
       links.forEach(item => a.push(Object.assign({}, item, {metadata: "some metadata"})));
       return a;
     }
   };
-  const mockTabTracker = {handleUserEvent: function() {}, generateEvent: function() {}, handlePerformanceEvent: function() {}};
+  const mockTabTracker = {handleUserEvent() {}, generateEvent() {}, handlePerformanceEvent() {}};
   gRecommendationProvider = new RecommendationProvider(mockPreviewProvider, mockTabTracker);
 });
 
