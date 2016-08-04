@@ -21,9 +21,11 @@ const LinkMenu = React.createClass({
         page: page,
         source: source,
         action_position: index,
-        url: site.recommended ? site.url : null,
-        recommender_type: site.recommended ? site.recommender_type : null
       };
+      if (site.recommended) {
+        payload.url = site.url;
+        payload.recommender_type = site.recommender_type;
+      }
       dispatch(actions.NotifyEvent(payload));
     }
   },
