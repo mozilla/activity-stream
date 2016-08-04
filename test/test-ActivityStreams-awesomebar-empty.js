@@ -26,7 +26,7 @@ exports["test awesomebar is empty for all app urls"] = function*(assert) {
   for (let appURL of app.appURLs) {
     yield new Promise(resolve => tabs.open({
       url: appURL,
-      onReady: (tab) => {
+      onReady: tab => {
         let browserWindow = windowMediator.getMostRecentWindow("navigator:browser");
         assert.equal(browserWindow.gURLBar.value, "");
         tab.close(resolve);
@@ -49,7 +49,7 @@ exports["test awesomebar is empty for all app urls in new windows too"] = functi
   for (let appURL of app.appURLs) {
     yield new Promise(resolve => windows.open({
       url: appURL,
-      onOpen: (window) => {
+      onOpen: window => {
         let chromeWindow = viewFor(window);
         assert.equal(chromeWindow.gURLBar.value, "");
         window.close(resolve);
@@ -71,7 +71,7 @@ exports["test awesomebar remains empty on route changes"] = function*(assert) {
 
   yield new Promise(resolve => tabs.open({
     url: app.appURLs[0],
-    onReady: (tab) => {
+    onReady: tab => {
       let browserWindow = windowMediator.getMostRecentWindow("navigator:browser");
 
       // The url bar should be empty.
@@ -101,7 +101,7 @@ exports["test awesomebar doesn't clear out what user typed"] = function*(assert)
 
   yield new Promise(resolve => tabs.open({
     url: app.appURLs[0],
-    onReady: (tab) => {
+    onReady: tab => {
       let browserWindow = windowMediator.getMostRecentWindow("navigator:browser");
 
       // The url bar should be empty.

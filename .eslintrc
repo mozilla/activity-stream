@@ -42,6 +42,7 @@
     "accessor-pairs": [2, {"setWithoutGet": true, "getWithoutSet": false}],
     "array-bracket-spacing": [2, "never"],
     "array-callback-return": 2,
+    "arrow-parens": [2, "as-needed"],
     "arrow-spacing": 2,
     "block-scoped-var": 2,
     "camelcase": 0,

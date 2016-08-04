@@ -1,6 +1,6 @@
 "use strict";
 const webpack = require("webpack");
-const absolute = (relPath) => require("path").join(__dirname, relPath);
+const absolute = relPath => require("path").join(__dirname, relPath);
 
 module.exports = {
   entry: {

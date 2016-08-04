@@ -13,10 +13,10 @@ const {PreviewProvider} = require("lib/PreviewProvider");
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
 const DISALLOWED_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
 const URL_FILTERS = [
-  (item) => !!item.url,
-  (item) => !!(new URL(item.url)),
-  (item) => ALLOWED_PROTOCOLS.has(new URL(item.url).protocol),
-  (item) => !DISALLOWED_HOSTS.has(new URL(item.url).hostname)
+  item => !!item.url,
+  item => !!(new URL(item.url)),
+  item => ALLOWED_PROTOCOLS.has(new URL(item.url).protocol),
+  item => !DISALLOWED_HOSTS.has(new URL(item.url).hostname)
 ];
 
 Cu.importGlobalProperties(["URL"]);

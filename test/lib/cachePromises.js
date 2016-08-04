@@ -4,7 +4,7 @@
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/Services.jsm");
 
-let makeCachePromise = (name) => {
+let makeCachePromise = name => {
   return new Promise(resolve => {
     let precacheNotif = `activity-streams-${name}-cache-complete`;
     let waitForCache = (subject, topic, data) => {
