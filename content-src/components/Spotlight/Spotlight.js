@@ -99,15 +99,18 @@ const Spotlight = React.createClass({
   },
   onClickFactory(index, site) {
     return () => {
-      this.props.dispatch(actions.NotifyEvent({
+      let payload = {
         event: "CLICK",
         page: this.props.page,
         source: "FEATURED",
         action_position: index,
         highlight_type: site.type,
-        url: site.recommended ? site.url : null,
-        recommender_type: site.recommended ? site.recommender_type : null
-      }));
+      };
+      if (site.recommended) {
+        payload.url = site.url;
+        payload.recommender_type = site.recommender_type;
+      }
+      this.props.dispatch(actions.NotifyEvent(payload));
       if (site.recommended) {
         this.props.dispatch(actions.NotifyBlockRecommendation(site.url));
       }
