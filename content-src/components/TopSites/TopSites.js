@@ -43,7 +43,7 @@ const TopSites = React.createClass({
           const isActive = this.state.showContextMenu && this.state.activeTile === i;
           return (<div className={classNames("tile-outer", {active: isActive})} key={site.guid || site.cache_key || i}>
             <a onClick={() => this.onClick(i)} className="tile" href={site.url}>
-              <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle />
+              <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle={true} />
               <div className="inner-border" />
             </a>
             <LinkMenuButton onClick={ev => {
