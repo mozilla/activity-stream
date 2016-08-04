@@ -17,7 +17,6 @@ const {mockData, renderWithProvider} = require("test/test-utils");
 const {INFINITE_SCROLL_THRESHOLD, SCROLL_TOP_OFFSET} = require("common/constants");
 
 describe("Timeline", () => {
-
   describe("TimelinePage", () => {
     const fakeProps = {
       location: {pathname: "/timeline"}
@@ -185,7 +184,6 @@ describe("Timeline", () => {
         instance.maybeLoadMoreData({scrollTop: 1000, scrollHeight: 200});
       });
     });
-
   });
 
   describe("TimelineHistory", () => {
@@ -231,5 +229,4 @@ describe("Timeline", () => {
       Object.keys(TimelineBookmarks.propTypes).forEach(key => assert.property(inner.props, key));
     });
   });
-
 });

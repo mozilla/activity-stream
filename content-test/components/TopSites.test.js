@@ -22,7 +22,6 @@ const fakeProps = {
 };
 
 describe("TopSites", () => {
-
   let topSites;
   let el;
 
@@ -72,5 +71,4 @@ describe("TopSites", () => {
       assert.include(tileOuter.className, "active");
     });
   });
-
 });

@@ -14,7 +14,6 @@ const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
 module.exports.justDispatch = (() => ({}));
 
 function getBackgroundRGB(site) {
-
   // This is from firefox
   if (site.favicon_color) {
     return site.favicon_color;
@@ -101,7 +100,6 @@ module.exports.selectNewTabSites = createSelector(
     state => state.Experiments
   ],
   (TopSites, History, Spotlight, Experiments) => {
-
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
     // don't dedupe against stuff that isn't shown

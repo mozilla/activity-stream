@@ -141,5 +141,4 @@ describe("NewTabPage", () => {
       TestUtils.Simulate.click(deleteLink);
     });
   });
-
 });

@@ -12,7 +12,6 @@ const fakeProps = {
 };
 
 describe("Header", () => {
-
   let node;
   let header;
   let el;
@@ -26,13 +25,11 @@ describe("Header", () => {
   });
 
   it("should not throw if missing props", () => {
-
     assert.doesNotThrow(() => {
       const restore = overrideConsoleError();
       ReactDOM.render(<Header />, node);
       restore();
     });
-
   });
 
   it("should hide dropdown be default", () => {
@@ -72,5 +69,4 @@ describe("Header", () => {
       assert.include(imgEl.src, "https://foo.com/user.jpg");
     });
   });
-
 });
