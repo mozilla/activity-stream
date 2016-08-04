@@ -1,11 +1,7 @@
 "use strict";
 const webpack = require("webpack");
-const {plugins, resolve} = require("../webpack.config");
+const {plugins, resolve} = require("../webpack.common");
 const path = require("path");
-
-// XXX note that currently, we need to make sure that CommonsChunkPlugin is not
-// included in plugins, so we assume that NODE_ENV has been set to "test" in
-// the storybook script in package.json.  We should do something less fragile...
 
 module.exports = {
   resolve,
