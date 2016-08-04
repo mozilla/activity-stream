@@ -57,8 +57,7 @@ const NewTabPage = React.createClass({
           className="loading-notice"
           show={!this.props.isReady}
           label="Hang on tight! We are analyzing your history to personalize your experience"
-          centered={true}
-        />
+          centered={true}/>
 
         <div className={classNames("show-on-init", {on: this.props.isReady})}>
           <section>

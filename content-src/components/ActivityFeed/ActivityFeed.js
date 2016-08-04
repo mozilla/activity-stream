@@ -85,8 +85,7 @@ const ActivityFeedItem = React.createClass({
         site={site}
         page={this.props.page}
         source={this.props.source}
-        index={this.props.index}
-        />
+        index={this.props.index}/>
     </li>);
   }
 });

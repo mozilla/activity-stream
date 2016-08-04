@@ -56,8 +56,7 @@ const TopSites = React.createClass({
               site={site}
               page={this.props.page}
               source="TOP_SITES"
-              index={i}
-              />
+              index={i}/>
         </div>);
         })}
         {blankSites}
