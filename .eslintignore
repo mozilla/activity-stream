@@ -2,3 +2,4 @@ data/content/
 logs/
 firefox/
 lib/vendor.bundle.js
+activity-streams-env/
