@@ -56,7 +56,7 @@ scripts:
   tdd: =>test:karma -- --no-single-run --browsers Chrome
 
 # package: Build add-on
-  package: =>bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi
+  package: =>bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
 
   # This is for ci
   travis: =>test

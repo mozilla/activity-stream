@@ -176,7 +176,7 @@
     "test:karma": "NODE_ENV=test karma start",
     "posttest": "cat logs/reports/coverage/text-summary.txt",
     "tdd": "npm run test:karma -- --no-single-run --browsers Chrome",
-    "package": "npm run bundle && jpm xpi && mv @activity-streams-$npm_package_version.xpi dist/activity-streams-$npm_package_version.xpi",
+    "package": "npm run bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi",
     "travis": "npm run test",
     "prepush": "npm run test:lint && npm run yamscripts",
     "help": "yamscripts help",
