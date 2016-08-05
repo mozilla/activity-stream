@@ -36,8 +36,8 @@ const NewTabPage = React.createClass({
     document.title = "New Tab";
     setFavicon("newtab-icon.svg");
   },
-  componentDidUpdate() {
-    if (this.props.isReady && !this.state.renderedOnce) {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isReady && !this.state.renderedOnce) {
       this.props.dispatch(actions.NotifyPerf("NEWTAB_RENDER"));
       this.setState({renderedOnce: true});
     }
