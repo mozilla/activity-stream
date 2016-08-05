@@ -45,7 +45,7 @@ const Search = React.createClass({
     const numSuggestions = this.props.formHistory.concat(this.props.suggestions).length;
     const numEngines = this.props.engines.length;
     if (index < numSuggestions) {
-      return "search-suggestions-" + "history-search-suggestions-" + index;
+      return `${index < this.props.formHistory.length ? "history-" : ""}search-suggestions-${index}`;
     } else if (index < numSuggestions + numEngines) {
       return "search-partners-" + (index - numSuggestions);
     } else if (index === numSuggestions + numEngines) {
