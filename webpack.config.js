@@ -1,6 +1,6 @@
 "use strict";
 const webpack = require("webpack");
-const {plugins, resolve} = require("./webpack.common");
+const webpack_common = require("./webpack.common");
 const path = require("path");
 const absolute = (relPath) => path.join(__dirname, relPath);
 
@@ -11,7 +11,8 @@ const outputFilename = "bundle.js";
 let env = process.env.NODE_ENV || "development";
 
 if (env !== "test") {
-  plugins.push(new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"));
+  webpack_common.plugins.push(
+    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"));
 }
 
 module.exports = {
@@ -39,6 +40,6 @@ module.exports = {
     ]
   },
   devtool: env === "production" ? null : "eval", // This is for Firefox
-  plugins: plugins,
-  resolve: resolve
+  plugins: webpack_common.plugins,
+  resolve: webpack_common.resolve
 };
