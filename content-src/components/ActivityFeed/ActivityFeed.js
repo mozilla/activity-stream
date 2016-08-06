@@ -36,7 +36,6 @@ const ActivityFeedItem = React.createClass({
   _renderItemMeta() {
     if (this.props.displayMoreHighlights) {
       return (<div>
-        <p>Score: {this.props.score.toFixed(2)}</p>
         <p ref="description">{this.props.description}</p>
       </div>);
     }
@@ -179,6 +178,28 @@ const GroupedActivityFeed = React.createClass({
     };
   },
   render() {
+    if (this.props.displayMoreHighlights) {
+      return (<div className="grouped-activity-feed">
+        <div className="group">
+          <ul className="activity-feed">
+            {this.props.sites.map((site, index) => {
+              return (<ActivityFeedItem
+                displayMoreHighlights={this.props.displayMoreHighlights}
+                key={site.guid || index}
+                onClick={this.onClickFactory(index)}
+                onShare={this.onShareFactory(index)}
+                showImage={true}
+                index={index}
+                page={this.props.page}
+                source="ACTIVITY_FEED"
+                showDate={false}
+                {...site} />);
+            })}
+          </ul>
+        </div>
+      </div>);
+    }
+
     let maxPreviews = this.props.maxPreviews;
     const sites = this.props.sites
       .slice(0, this.props.length)
