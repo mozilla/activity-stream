@@ -142,6 +142,20 @@
       "title": "Show me recommendations",
       "type": "bool",
       "value": true
+    },
+    {
+      "name": "as-simple-storage.writePeriod",
+      "title": "as-simple-storage wirte period",
+      "type": "integer",
+      "value": 300000,
+      "hidden": true
+    },
+    {
+      "name": "as-simple-storage.quota",
+      "title": "as-simple-storage quota",
+      "type": "integer",
+      "value": 20971520,
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-stream",
