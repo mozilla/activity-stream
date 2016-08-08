@@ -43,8 +43,16 @@ const NewTabPage = React.createClass({
       this.setState({renderedOnce: true});
     }
   },
+  _hasWeightedHighligts() {
+    return this.props.WeightedHighlights.weightedHighlights && this.props.WeightedHighlights.rows.length;
+  },
   _renderGroupedSectionTitle() {
-    let title = this.props.WeightedHighlights.weightedHighlights ? "More Highlights" : "Recent Activity";
+    let title = "Recent Activity";
+
+    if (this._hasWeightedHighligts()) {
+      title = "More Highlights";
+    }
+
     return <h3 ref="title" className="section-title">{title}</h3>;
   },
   render() {
@@ -55,7 +63,7 @@ const NewTabPage = React.createClass({
     let spotlightSource = props.Spotlight.rows;
     let groupedFeedSource = props.TopActivity.rows;
 
-    if (this.props.WeightedHighlights.weightedHighlights) {
+    if (this._hasWeightedHighligts()) {
       spotlightSource = props.WeightedHighlights.rows.slice(0, SPOTLIGHT_DEFAULT_LENGTH);
       groupedFeedSource = props.WeightedHighlights.rows.slice(SPOTLIGHT_DEFAULT_LENGTH);
     }
