@@ -135,13 +135,13 @@ exports.test_memoizer_object_params = function*(assert) {
   assert.equal(result, 4, "cached result is obtained");
 };
 
-before(exports, function*() {
+before(exports, function() {
   gMemoizer = new Memoizer();
   gMemoizer.reset();
   simplePrefs.prefs["query.cache"] = true;
 });
 
-after(exports, function*() {
+after(exports, function() {
   gMemoizer.uninit();
   simplePrefs.prefs["query.cache"] = gInitialCachePref || false;
 });

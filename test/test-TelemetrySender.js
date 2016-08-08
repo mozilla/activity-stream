@@ -47,7 +47,7 @@ exports.test_TelemetrySender_init = function(assert, done) {
   Services.obs.notifyObservers(null, "tab-session-complete", samplePing);
 };
 
-exports.test_TelemetrySender_prefs = function*(assert) {
+exports.test_TelemetrySender_prefs = function(assert) {
   simplePrefs.prefs.telemetry = false;
   assert.ok(!app._telemetrySender.enabled, "telemetry is disabled");
 
@@ -62,7 +62,7 @@ exports.test_TelemetrySender_prefs = function*(assert) {
   assert.equal(app._telemetrySender._pingEndpoint, testEndpoint, "expected ping endpoint received");
 };
 
-before(exports, function*() {
+before(exports, function() {
   simplePrefs.prefs.telemetry = true;
   simplePrefs.prefs["performance.log"] = false;
   simplePrefs.prefs["telemetry.ping.endpoint"] = `http://localhost:${port}/activity-streams`;
