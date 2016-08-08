@@ -150,6 +150,29 @@
       "type": "bool",
       "value": false,
       "hidden": true
+    },
+    {
+      "name": "as-simple-storage.writePeriod",
+      "title": "as-simple-storage write period",
+      "description": "Write period for activity stream's persistent in-memory storage",
+      "type": "integer",
+      "value": 300000,
+      "hidden": true
+    },
+    {
+      "name": "as-simple-storage.quota",
+      "title": "as-simple-storage quota",
+      "description": "Disk quota for activity stream's persistent in-memory storage",
+      "type": "integer",
+      "value": 20971520,
+      "hidden": true
+    },
+    {
+      "name": "metadata-store.query.cache",
+      "title": "Enable metadata store query cache",
+      "type": "bool",
+      "value": true,
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-stream",
