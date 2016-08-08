@@ -74,7 +74,7 @@ describe("NewTabPage", () => {
       let pref = {
         WeightedHighlights: {
           weightedHighlights: true,
-          rows: []
+          rows: fakeProps.WeightedHighlights.rows
         }
       };
       let prefOn = Object.assign({}, fakeProps, pref);
