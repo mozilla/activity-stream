@@ -30,7 +30,7 @@ function createPingSentPromise(pingData, expectedPingCount) {
         }
       }
     }
-    Services.obs.addObserver(observe, "tab-session-complete");
+    Services.obs.addObserver(observe, "tab-session-complete", false);
   });
 }
 
@@ -58,10 +58,10 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
         expectedKeys = EXPECTED_KEYS;
         delete ping.load_latency;
     }
-    assert.equal(Object.keys(ping).length, expectedKeys.length, "We have as many attributes as we expect");
     for (let key of expectedKeys) {
       assert.notEqual(ping[key], undefined, `${key} is an attribute in our tab data.`);
     }
+    assert.equal(Object.keys(ping).length, expectedKeys.length, "We have as many attributes as we expect");
     if (ping.load_reason !== "none") {
       assert.notEqual(ping.session_duration, 0, "session_duration is not 0");
     }
@@ -78,7 +78,7 @@ function waitForPageLoadAndSessionComplete() {
         });
       }, 10);
     }
-    Services.obs.addObserver(onPageLoaded, "performance-log-complete");
+    Services.obs.addObserver(onPageLoaded, "performance-log-complete", false);
   }
   return waitSessionComplete(onShow);
 }
@@ -105,7 +105,7 @@ function waitSessionComplete(onShow) {
       }
     }
 
-    Services.obs.addObserver(onSessionComplete, "tab-session-complete");
+    Services.obs.addObserver(onSessionComplete, "tab-session-complete", false);
   });
 }
 
@@ -392,7 +392,7 @@ exports.test_TabTracker_action_pings = function*(assert) {
         resolve(JSON.parse(data));
       }
     }
-    Services.obs.addObserver(observe, "user-action-event");
+    Services.obs.addObserver(observe, "user-action-event", false);
   });
 
   let eventData = {
@@ -443,7 +443,7 @@ exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
           resolve(JSON.parse(data));
         }
       }
-      Services.obs.addObserver(observe, "user-action-event");
+      Services.obs.addObserver(observe, "user-action-event", false);
     });
 
     let eventData = {
@@ -486,7 +486,7 @@ exports.test_TabTracker_performance_action_pings = function*(assert) {
         resolve(JSON.parse(data));
       }
     }
-    Services.obs.addObserver(observe, "performance-event");
+    Services.obs.addObserver(observe, "performance-event", false);
   });
 
   let eventData1 = {
@@ -535,7 +535,7 @@ exports.test_TabTracker_handleRouteChange = function*(assert) {
       Services.obs.removeObserver(observe, "tab-session-complete");
       resolve(JSON.parse(data));
     }
-    Services.obs.addObserver(observe, "tab-session-complete");
+    Services.obs.addObserver(observe, "tab-session-complete", false);
     app._tabTracker.onOpen(tabData);
     app._tabTracker.handleRouteChange(tabData, {isFirstLoad: false});
   });
@@ -575,7 +575,7 @@ exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
       Services.obs.removeObserver(onCacheComplete, "activity-streams-places-cache-complete");
       resolve();
     }
-    Services.obs.addObserver(onCacheComplete, "activity-streams-places-cache-complete");
+    Services.obs.addObserver(onCacheComplete, "activity-streams-places-cache-complete", false);
     app._handlePlacesChanges("bookmark");
   });
 
@@ -609,7 +609,7 @@ exports.test_TabTracker_session_reports = function*(assert) {
       pingCounter++;
     }
   }
-  Services.obs.addObserver(pingBumper, "tab-session-complete");
+  Services.obs.addObserver(pingBumper, "tab-session-complete", false);
 
   // open the non-realted page
   tabs.open("http://www.example.com");
@@ -659,7 +659,7 @@ exports.test_TabTracker_disable_ping = function*(assert) {
         resolve(JSON.parse(data));
       }
     }
-    Services.obs.addObserver(observe, "user-action-event");
+    Services.obs.addObserver(observe, "user-action-event", false);
   });
 
   // manually trigger the "disable" or "uninstall" event
