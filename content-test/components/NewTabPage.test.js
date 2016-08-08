@@ -70,6 +70,9 @@ describe("NewTabPage", () => {
   });
 
   describe("weightedHighlights pref true", () => {
+    let moreHighlights;
+    let highlights;
+
     beforeEach(() => {
       let pref = {
         WeightedHighlights: {
@@ -77,12 +80,32 @@ describe("NewTabPage", () => {
           rows: fakeProps.WeightedHighlights.rows
         }
       };
+      highlights = fakeProps.WeightedHighlights.rows.slice(0, 3);
+      moreHighlights = fakeProps.WeightedHighlights.rows.slice(3);
       let prefOn = Object.assign({}, fakeProps, pref);
       instance = renderWithProvider(<NewTabPage {...prefOn} dispatch={() => {}} />);
     });
 
     it("should render `More Highlights` title", () => {
       assert.equal(instance.refs.title.textContent, "More Highlights");
+    });
+
+    it("should render Spotlight with correct data", () => {
+      const spotlight = TestUtils.findRenderedComponentWithType(instance, Spotlight);
+
+      assert.equal(spotlight.props.sites.length, highlights.length);
+      spotlight.props.sites.forEach(function(entry, idx) {
+        assert.equal(entry, highlights[idx]);
+      });
+    });
+
+    it("should render GroupedActivityFeed with correct data", () => {
+      const activityFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
+
+      assert.equal(activityFeed.props.sites.length, moreHighlights.length);
+      activityFeed.props.sites.forEach(function(entry, idx) {
+        assert.equal(entry, moreHighlights[idx]);
+      });
     });
   });
 
