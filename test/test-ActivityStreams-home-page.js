@@ -5,7 +5,7 @@ const {getTestActivityStream} = require("./lib/utils");
 const prefService = require("sdk/preferences/service");
 const ss = require("sdk/simple-storage");
 
-exports["test activity stream loads on home page when appropriate"] = function*(assert) {
+exports["test activity stream loads on home page when appropriate"] = function(assert) {
   prefService.reset("browser.startup.homepage");
   let url = "http://foo.bar/baz";
   let app = getTestActivityStream({pageURL: url});

@@ -68,7 +68,7 @@ exports.test_update_recommendations = function*(assert) {
   });
 };
 
-exports.test_get_a_recommendation = function*(assert) {
+exports.test_get_a_recommendation = function(assert) {
   // create a fake recommendation and get it
   let fakeRecommendedContent = [{url: "http://example1.com"}, {url: "http://example2.com"}];
   gRecommendationProvider._recommendedContent = fakeRecommendedContent;
@@ -89,7 +89,7 @@ exports.test_get_a_recommendation = function*(assert) {
   assert.equal(gRecommendationProvider._currentRecommendation, null, "the current recommendation stays null");
 };
 
-exports.test_get_a_new_recommendation = function*(assert) {
+exports.test_get_a_new_recommendation = function(assert) {
   // create a fake recommendation and get it
   const fakeRecommendedContent = [{url: "http://example1.com"}, {url: "http://example2.com"}];
   gRecommendationProvider._recommendedContent = fakeRecommendedContent;
@@ -104,7 +104,7 @@ exports.test_get_a_new_recommendation = function*(assert) {
   assert.notEqual(gRecommendationProvider._currentRecommendation.url, oldCurrentRecommendation.url, "got a new recommendation");
 };
 
-exports.test_set_blocked_recommendation = function*(assert) {
+exports.test_set_blocked_recommendation = function(assert) {
   // create a fake recommendation and a fake blocked recommendation
   const fakeRecommendedContent = [{url: "http://pickme.com"}];
   const fakeBlockedRecommendedContent = new Set();
@@ -126,7 +126,7 @@ exports.test_set_blocked_recommendation = function*(assert) {
   assert.equal(gRecommendationProvider._currentRecommendation.url, newRecommendation.url, "picked a new recommendation");
 };
 
-exports.test_random_recommendation = function*(assert) {
+exports.test_random_recommendation = function(assert) {
   // create a fake recommendation and a fake blocked recommendation
   let fakeRecommendedContent = [{url: "http://pickme.com"}];
   const fakeBlockedRecommendedContent = new Set();
@@ -147,7 +147,7 @@ exports.test_random_recommendation = function*(assert) {
   assert.equal(recommendation, null, "there are no allowed recommendations so we don't have a recommendation to show");
 };
 
-before(exports, function*() {
+before(exports, function() {
   simplePrefs.prefs["pocket.endpoint"] = `http://localhost:${gPort}/pocketRecommendations`;
   // PreviewProvider needs to attach some metadata to these recommendations
   const mockPreviewProvider = {
@@ -161,7 +161,7 @@ before(exports, function*() {
   gRecommendationProvider = new RecommendationProvider(mockPreviewProvider, mockTabTracker);
 });
 
-after(exports, function*() {
+after(exports, function() {
   simplePrefs.prefs["pocket.endpoint"] = gPrefPocket;
   gRecommendationProvider.uninit();
 });
