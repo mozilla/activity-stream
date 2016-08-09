@@ -53,7 +53,7 @@ am.ACTIONS_WITH_SITES = new Set([
   "TOP_FRECENT_SITES_RESPONSE",
   "RECENT_BOOKMARKS_RESPONSE",
   "RECENT_LINKS_RESPONSE",
-  "HIGHLIGHTS_LINKS_RESPONSE",
+  "HIGHLIGHTS_LINKS_RESPONSE"
 ].map(type => am.type(type)));
 
 function Notify(type, data) {

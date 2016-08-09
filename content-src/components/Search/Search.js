@@ -244,7 +244,7 @@ const Search = React.createClass({
   onMouseMove(newIndex) {
     this.setState({
       activeIndex: newIndex,
-      activeSuggestionIndex: newIndex,
+      activeSuggestionIndex: newIndex
     });
   },
   render() {

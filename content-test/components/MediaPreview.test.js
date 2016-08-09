@@ -10,9 +10,9 @@ const fakeProps = {
     thumbnail: {
       "url": "https://i.ytimg.com/vi/lDv68xYHFXM/hqdefault.jpg",
       "height": 360,
-      "width": 480,
+      "width": 480
     },
-    type: "video",
+    type: "video"
   }
 };
 

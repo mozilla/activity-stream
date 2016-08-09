@@ -20,7 +20,7 @@ const LinkMenu = React.createClass({
         event,
         page,
         source,
-        action_position: index,
+        action_position: index
       };
       if (site.recommended) {
         payload.url = site.url;

@@ -10,7 +10,7 @@ const MediaPreview = React.createClass({
 
   getDefaultProps() {
     return {
-      previewInfo: {},
+      previewInfo: {}
     };
   },
 
@@ -46,7 +46,7 @@ MediaPreview.propTypes = {
   previewInfo: React.PropTypes.shape({
     previewURL: React.PropTypes.string,
     thumbnail: React.PropTypes.object,
-    type: React.PropTypes.string,
+    type: React.PropTypes.string
   })
 };
 

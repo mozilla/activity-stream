@@ -73,7 +73,7 @@ function verifyPerfEvents(eventsArray, assert) {
     "HIGHLIGHTS_LINKS_REQUEST",
     "HIGHLIGHTS_LINKS_RESPONSE",
     "SEARCH_STATE_RESPONSE",
-    "NOTIFY_PERFORMANCE",
+    "NOTIFY_PERFORMANCE"
   ]);
 
   let expectedData = new Set([

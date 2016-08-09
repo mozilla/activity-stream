@@ -58,7 +58,7 @@ describe("Timeline", () => {
         init: true,
         isLoading: false,
         canLoadMore: true,
-        rows: mockData.History.rows,
+        rows: mockData.History.rows
       },
       dateKey: "lastVisitDate",
       pageName: "TIMELINE_ALL",
@@ -100,7 +100,7 @@ describe("Timeline", () => {
       });
       it("should show Loader if History.isLoading is true", () => {
         setup({
-          Feed: Object.assign({}, fakeProps.Feed, {isLoading: true}),
+          Feed: Object.assign({}, fakeProps.Feed, {isLoading: true})
         });
         assert.equal(loaderEl.hidden, false);
       });

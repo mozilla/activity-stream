@@ -35,7 +35,7 @@ let makeNotifsPromise = cacheStatus => {
       "getTopFrecentSites-cache",
       "getRecentBookmarks-cache",
       "getRecentLinks-cache",
-      "getHighlightsLinks-cache",
+      "getHighlightsLinks-cache"
     ]);
     let notifCount = 0;
     let observer = function(subject, topic, data) {
@@ -96,7 +96,7 @@ exports["test cache invalidation on history change"] = function*(assert) {
 
   placesCachePromise = makeCachePromise("places");
   let visits = [
-    {uri: NetUtil.newURI("https://example.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED}
   ];
 
   yield PlacesTestUtils.addVisits(visits);
@@ -117,7 +117,7 @@ exports["test cache invalidation on blocklist change"] = function*(assert) {
   placesCachePromise = makeCachePromise("places");
   let visits = [
     {uri: NetUtil.newURI("https://example1.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://example2.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example2.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED}
   ];
 
   yield PlacesTestUtils.addVisits(visits);
@@ -213,7 +213,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
     {uri: NetUtil.newURI("https://example.com/1"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example.com/2"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example.com/3"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://example.com/4"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example.com/4"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED}
   ];
   yield PlacesTestUtils.addVisits(visits);
 

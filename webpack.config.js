@@ -49,7 +49,7 @@ module.exports = {
   },
   output: {
     path: outputDir,
-    filename: outputFilename,
+    filename: outputFilename
   },
   target: "web",
   resolve: {

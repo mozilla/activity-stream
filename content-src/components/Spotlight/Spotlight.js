@@ -103,7 +103,7 @@ const Spotlight = React.createClass({
         page: this.props.page,
         source: "FEATURED",
         action_position: index,
-        highlight_type: site.type,
+        highlight_type: site.type
       };
       if (site.recommended) {
         payload.url = site.url;
