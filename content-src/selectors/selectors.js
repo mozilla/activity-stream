@@ -14,7 +14,6 @@ const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
 module.exports.justDispatch = (() => ({}));
 
 function getBackgroundRGB(site) {
-
   // This is from firefox
   if (site.favicon_color) {
     return site.favicon_color;
@@ -45,7 +44,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights
   ],
-  (Highlights) => {
+  Highlights => {
     const rows = Highlights.rows
       // Only concat first run data if init is true
       .concat(Highlights.init ? firstRunData.Highlights : [])
@@ -84,7 +83,7 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
   [
     state => state.TopSites
   ],
-  (TopSites) => {
+  TopSites => {
     return Object.assign({}, TopSites, {
       rows: dedupe.one(TopSites.rows
         // Add first run stuff to the end if init has already happened
@@ -101,7 +100,6 @@ module.exports.selectNewTabSites = createSelector(
     state => state.Experiments
   ],
   (TopSites, History, Spotlight, Experiments) => {
-
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
     // don't dedupe against stuff that isn't shown
@@ -132,7 +130,7 @@ module.exports.selectNewTabSites = createSelector(
 function selectSiteProperties(site) {
   const metadataFavicon = site.favicons && site.favicons[0] && site.favicons[0].url;
   const favicon = site.favicon_url || metadataFavicon || site.favicon;
-  const parsedUrl = site.parsedUrl || urlParse(site.url || "") ;
+  const parsedUrl = site.parsedUrl || urlParse(site.url || "");
   const label = prettyUrl(parsedUrl.hostname);
   return {favicon, parsedUrl, label};
 }

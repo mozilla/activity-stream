@@ -71,7 +71,7 @@ describe("ContextMenu", () => {
     setup({
       visible: true,
       options: [{label: "Test", onClick: () => {}}],
-      onUpdate: (value) => {
+      onUpdate: value => {
         assert.isFalse(value);
         done();
       }

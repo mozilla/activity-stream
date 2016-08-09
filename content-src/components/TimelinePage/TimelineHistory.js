@@ -12,8 +12,7 @@ const TimelineHistory = React.createClass({
       dateKey={"lastVisitDate"}
       pageName={"TIMELINE_ALL"}
       Feed={props.History}
-      Spotlight={props.Spotlight}
-    />);
+      Spotlight={props.Spotlight} />);
   }
 });
 

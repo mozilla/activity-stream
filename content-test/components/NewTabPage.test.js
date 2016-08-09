@@ -48,7 +48,7 @@ describe("NewTabPage", () => {
   });
 
   it("should render connected component with correct props", () => {
-    const container = renderWithProvider(<ConnectedNewTabPage/>);
+    const container = renderWithProvider(<ConnectedNewTabPage />);
     const inner = TestUtils.findRenderedComponentWithType(container, NewTabPage);
     Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
   });
@@ -141,5 +141,4 @@ describe("NewTabPage", () => {
       TestUtils.Simulate.click(deleteLink);
     });
   });
-
 });

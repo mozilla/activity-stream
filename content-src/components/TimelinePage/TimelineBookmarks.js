@@ -11,8 +11,7 @@ const TimelineBookmarks = React.createClass({
       loadMoreAction={RequestMoreBookmarks}
       dateKey={"bookmarkDateCreated"}
       pageName={"TIMELINE_BOOKMARKS"}
-      Feed={props.Bookmarks}
-    />);
+      Feed={props.Bookmarks} />);
   }
 });
 

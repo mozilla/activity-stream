@@ -23,14 +23,14 @@ describe("Search", () => {
 
   function setup(customProps = {}) {
     const props = Object.assign({}, DEFAULT_PROPS, customProps);
-    instance = TestUtils.renderIntoDocument(<Search {...props}/>);
+    instance = TestUtils.renderIntoDocument(<Search {...props} />);
   }
 
   beforeEach(setup);
 
   it("should send a perform search event when you click the search button", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "NOTIFY_PERFORM_SEARCH") {
           assert.equal(action.data.searchString, "hello");
           done();
@@ -45,7 +45,7 @@ describe("Search", () => {
 
   it("should request suggestions when input field changes", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "SEARCH_SUGGESTIONS_REQUEST") {
           assert.equal(action.data.searchString, "hello");
           done();
@@ -61,7 +61,7 @@ describe("Search", () => {
 
   it("should update the search string when input field changes", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "NOTIFY_UPDATE_SEARCH_STRING") {
           assert.equal(action.data.searchString, "hello");
           done();
@@ -77,7 +77,7 @@ describe("Search", () => {
 
   it("should fire a manage engines event when the search settings button is clicked", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "NOTIFY_MANAGE_ENGINES") {
           done();
         }
@@ -128,7 +128,7 @@ describe("Search", () => {
 
   it("should send perform search event if suggestion is active and enter key is pressed", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "NOTIFY_PERFORM_SEARCH") {
           assert.equal(action.data.searchString, "hello");
           assert.equal(action.data.engineName, "Google");
@@ -149,7 +149,7 @@ describe("Search", () => {
 
   it("should send remove form history event with proper key binding", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "NOTIFY_REMOVE_FORM_HISTORY_ENTRY") {
           assert.equal(action.data, "hello");
           done();
@@ -281,7 +281,7 @@ describe("Search", () => {
 
   it("should send cycle current engine event with proper key down binding and update current engine", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "SEARCH_CYCLE_CURRENT_ENGINE_REQUEST") {
           assert.equal(action.data, "Yahoo");
         }
@@ -304,7 +304,7 @@ describe("Search", () => {
 
   it("should send cycle current engine event with proper key up binding and update current engine", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "SEARCH_CYCLE_CURRENT_ENGINE_REQUEST") {
           assert.equal(action.data, "Google");
         }
@@ -327,7 +327,7 @@ describe("Search", () => {
 
   it("should perform a search if you click on a suggestion", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "NOTIFY_PERFORM_SEARCH") {
           assert.equal(action.data.searchString, "hello");
           assert.equal(action.data.engineName, "Google");
@@ -348,7 +348,7 @@ describe("Search", () => {
 
   it("should perform a search if you click on a non-default engine with a search string provided", done => {
     const props = {
-      dispatch: (action) => {
+      dispatch: action => {
         if (action.type === "NOTIFY_PERFORM_SEARCH") {
           assert.equal(action.data.searchString, "hello");
           assert.equal(action.data.engineName, "Yahoo");

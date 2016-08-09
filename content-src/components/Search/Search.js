@@ -4,7 +4,7 @@ const {actions} = require("common/action-manager");
 const PAGE_NAME = "NEW_TAB";
 
 const Search = React.createClass({
-  getInitialState: function() {
+  getInitialState() {
     return {
       focus: false,
       activeIndex: -1,
@@ -13,33 +13,33 @@ const Search = React.createClass({
       searchString: this.props.searchString
     };
   },
-  resetState: function() {
+  resetState() {
     this.setState(this.getInitialState());
   },
-  manageEngines: function() {
+  manageEngines() {
     this.props.dispatch(actions.NotifyManageEngines());
   },
-  setValueAndSuggestions: function(value) {
+  setValueAndSuggestions(value) {
     this.setState({activeIndex: -1, activeSuggestionIndex: -1, searchString: value});
     this.props.dispatch(actions.NotifyUpdateSearchString(value));
     this.props.dispatch(actions.RequestSearchSuggestions({engineName: this.props.currentEngine.name, searchString: value}));
   },
-  getActiveSuggestion: function() {
+  getActiveSuggestion() {
     const suggestions = this.props.formHistory.concat(this.props.suggestions);
     const index = this.state.activeSuggestionIndex;
     return (suggestions && suggestions.length && index >= 0) ? suggestions[index] : null;
   },
-  getActiveEngine: function() {
+  getActiveEngine() {
     const index = this.state.activeEngineIndex;
     return (index >= 0) ? this.props.engines[index].name : this.props.currentEngine.name;
   },
-  getSettingsButtonIsActive: function() {
+  getSettingsButtonIsActive() {
     const index = this.state.activeIndex;
     const numSuggestions = this.props.formHistory.concat(this.props.suggestions).length;
     const numEngines = this.props.engines.length;
     return index === numSuggestions + numEngines;
   },
-  getActiveDescendantId: function() {
+  getActiveDescendantId() {
     // Returns the ID of the element being currently in focus, if any.
     const index = this.state.activeIndex;
     const numSuggestions = this.props.formHistory.concat(this.props.suggestions).length;
@@ -53,10 +53,10 @@ const Search = React.createClass({
     }
     return null;
   },
-  getDropdownVisible: function() {
+  getDropdownVisible() {
     return !!(this.props.searchString && this.state.focus);
   },
-  performSearch: function(options) {
+  performSearch(options) {
     let searchData = {
       engineName: options.engineName,
       searchString: options.searchString,
@@ -68,13 +68,13 @@ const Search = React.createClass({
       page: PAGE_NAME
     }));
   },
-  removeFormHistory: function(suggestion) {
+  removeFormHistory(suggestion) {
     this.props.dispatch(actions.NotifyRemoveFormHistory(suggestion));
   },
-  cycleCurrentEngine: function(index) {
+  cycleCurrentEngine(index) {
     this.props.dispatch(actions.NotifyCycleEngine(this.props.engines[index].name));
   },
-  handleKeyPress: function(e) {
+  handleKeyPress(e) {
     // Handle the keyboard navigation of the widget.
 
     // If the dropdown isn't visible, we don't handle the event.
@@ -262,14 +262,14 @@ const Search = React.createClass({
         onFocus={() => this.setState({focus: true})}
         onChange={e => this.setValueAndSuggestions(e.target.value)}
         onKeyDown={e => this.handleKeyPress(e)}
-        onBlur={() => setTimeout(() => this.resetState(), 200)}/>
+        onBlur={() => setTimeout(() => this.resetState(), 200)} />
       <button ref="performSearchButton"
-        onClick={e => { e.preventDefault(); this.performSearch({engineName: currentEngine.name, searchString});}}>
+        onClick={e => {e.preventDefault(); this.performSearch({engineName: currentEngine.name, searchString});}}>
         <span className="sr-only">Search</span>
       </button>
       <div className="search-container" role="presentation" hidden={!this.getDropdownVisible()}>
       <section className="search-title" hidden={!formHistory.concat(suggestions).length}>
-        <img id="current-engine-icon" src={currentEngine.iconBuffer} alt={currentEngine.name.charAt(0)} width="16px" height="16px"/>
+        <img id="current-engine-icon" src={currentEngine.iconBuffer} alt={currentEngine.name.charAt(0)} width="16px" height="16px" />
         {this.props.searchHeader.replace("%S", currentEngine.name)}
       </section>
       <section className="history-search-suggestions" hidden={!formHistory.length}>
@@ -279,7 +279,7 @@ const Search = React.createClass({
             const activeEngine = this.getActiveEngine();
             const suggestionIndex = suggestionsIdIndex++;
             return (<li key={suggestion} role="option">
-                  <a id={"history-search-suggestions-" + suggestionIndex }
+                  <a id={"history-search-suggestions-" + suggestionIndex}
                      onMouseMove={() => this.onMouseMove(suggestionIndex)}
                      className={active ? "active" : ""} role="option"
                      aria-selected={active} onClick={() => this.performSearch({engineName: activeEngine, searchString: suggestion})}>
@@ -295,7 +295,7 @@ const Search = React.createClass({
             const activeEngine = this.getActiveEngine();
             const suggestionIndex = suggestionsIdIndex++;
             return (<li key={suggestion} role="option">
-            <a ref={suggestion} id={"search-suggestions-" + suggestionIndex }
+            <a ref={suggestion} id={"search-suggestions-" + suggestionIndex}
               onMouseMove={() => this.onMouseMove(suggestionIndex)}
               className={active ? "active" : ""} role="option"
               aria-selected={active}
@@ -313,9 +313,9 @@ const Search = React.createClass({
               const icon = option.icon;
               const active = (this.state.activeEngineIndex === enginesIdIndex);
               return (<li key={option.name} className={active ? "active" : ""}>
-                <a ref={option.name} id={"search-partners-" + enginesIdIndex++ } aria-selected={active}
+                <a ref={option.name} id={"search-partners-" + enginesIdIndex++} aria-selected={active}
                       onClick={() => this.performSearch({engineName: option.name, searchString: this.getActiveSuggestion() || searchString})}>
-                <img src={icon} alt={option.name} width="16" height="16"/></a>
+                <img src={icon} alt={option.name} width="16" height="16" /></a>
               </li>);
             })}
             </ul>
@@ -324,7 +324,7 @@ const Search = React.createClass({
           <button id="search-settings-button" ref="searchSettingsButton"
             className={this.getSettingsButtonIsActive() ? "active" : ""}
             aria-selected={this.getSettingsButtonIsActive()}
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault();
               this.manageEngines();
             }}>{this.props.searchSettings}

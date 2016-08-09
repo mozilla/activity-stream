@@ -2,7 +2,6 @@ const urlParse = require("url-parse");
 const am = require("common/action-manager");
 
 module.exports = () => next => action => {
-
   if (!am.ACTIONS_WITH_SITES.has(action.type)) {
     return next(action);
   }

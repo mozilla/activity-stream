@@ -11,7 +11,7 @@ const LoadMore = React.createClass({
   render() {
     const link = this.props.to ?
       (<Link to={this.props.to}><span className="arrow" /> {this.props.label}</Link>) :
-      (<a href="#" onClick={e => { e.preventDefault(); this.props.onClick(); }}>
+      (<a href="#" onClick={e => {e.preventDefault(); this.props.onClick();}}>
           <span className="arrow" /> {this.props.label}
         </a>);
     return (<div className="load-more" hidden={this.props.hidden}>

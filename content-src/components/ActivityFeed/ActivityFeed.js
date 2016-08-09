@@ -30,8 +30,8 @@ const ActivityFeedItem = React.createClass({
   },
   getDefaultProps() {
     return {
-      onShare: function() {},
-      onClick: function() {},
+      onShare() {},
+      onClick() {},
       showDate: false
     };
   },
@@ -69,11 +69,11 @@ const ActivityFeedItem = React.createClass({
         <div className="feed-details">
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{title}</h4>
-            <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)}/>
+            <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)} />
             {this.props.preview && <MediaPreview previewInfo={this.props.preview} />}
           </div>
           <div className="feed-stats">
-            <div ref="lastVisit" className="last-visit" data-last-visit={dateLabel}/>
+            <div ref="lastVisit" className="last-visit" data-last-visit={dateLabel} />
           </div>
         </div>
       </a>
@@ -85,8 +85,7 @@ const ActivityFeedItem = React.createClass({
         site={site}
         page={this.props.page}
         source={this.props.source}
-        index={this.props.index}
-        />
+        index={this.props.index} />
     </li>);
   }
 });

@@ -49,5 +49,4 @@ describe("LoadMore", () => {
     assert.isTrue(ReactDOM.findDOMNode(instance.refs.action).hidden, "action should be hidden");
     assert.isFalse(ReactDOM.findDOMNode(instance.refs.loader).hidden, "loader should not be hidden");
   });
-
 });

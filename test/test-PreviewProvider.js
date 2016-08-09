@@ -13,10 +13,10 @@ const {PreviewProvider} = require("lib/PreviewProvider");
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
 const DISALLOWED_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
 const URL_FILTERS = [
-  (item) => !!item.url,
-  (item) => !!(new URL(item.url)),
-  (item) => ALLOWED_PROTOCOLS.has(new URL(item.url).protocol),
-  (item) => !DISALLOWED_HOSTS.has(new URL(item.url).hostname)
+  item => !!item.url,
+  item => !!(new URL(item.url)),
+  item => ALLOWED_PROTOCOLS.has(new URL(item.url).protocol),
+  item => !DISALLOWED_HOSTS.has(new URL(item.url).hostname)
 ];
 
 Cu.importGlobalProperties(["URL"]);
@@ -306,11 +306,11 @@ before(exports, function() {
   simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/embedlyLinkData`;
   simplePrefs.prefs["previews.enabled"] = true;
   let mockMetadataStore = {
-    asyncInsert: function(data) {
+    asyncInsert(data) {
       gMetadataStore.push(data);
       return gMetadataStore;
     },
-    asyncGetMetadataByCacheKey: function(cacheKeys) {
+    asyncGetMetadataByCacheKey(cacheKeys) {
       let items = [];
       gMetadataStore.forEach(item => {
         if (cacheKeys.includes(item.cache_key)) {
@@ -320,7 +320,7 @@ before(exports, function() {
       return items;
     }
   };
-  let mockTabTracker = {handlePerformanceEvent: function() {}, generateEvent: function() {}};
+  let mockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
   gPreviewProvider = new PreviewProvider(mockTabTracker, mockMetadataStore, {initFresh: true});
 });
 
