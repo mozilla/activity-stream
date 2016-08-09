@@ -49,7 +49,7 @@ exports.test_only_request_links_once = function*(assert) {
         )
     );
     // count the times each url has been requested
-    data.urls.forEach(url => urlsRequested[url] = (urlsRequested[url] + 1) || 1);
+    data.urls.forEach(url => (urlsRequested[url] = (urlsRequested[url] + 1) || 1));
     response.setHeader("Content-Type", "application/json", false);
     response.write(JSON.stringify({"urls": {urlsRequested}}));
   });
