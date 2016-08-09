@@ -51,18 +51,29 @@ describe("selectors", () => {
   describe("selectSpotlight", () => {
     let state = selectSpotlight(fakeState);
 
-    // Tests that provided sites don't get selected, because they don't
+    function setup(custom) {
+      state = selectSpotlight(Object.assign({}, fakeState, custom));
+      return state;
+    }
+
+    beforeEach(() => setup());
+
+    // Tests that provided sites are sorted to the bottom, because they don't
     // match the conditions for spotlight to use them
     function assertInvalidSite(site) {
       const invalidSite = Object.assign({}, validSpotlightSite, site);
-      const result = selectSpotlight({Highlights: {init: true, rows: [invalidSite, validSpotlightSite]}});
+      const result = setup({Highlights: {init: true, rows: [invalidSite, validSpotlightSite]}});
       assert.lengthOf(result.rows, 2 + firstRunData.Highlights.length);
       assert.equal(result.rows[0].url, validSpotlightSite.url);
       assert.equal(result.rows[1].url, invalidSite.url);
     }
-
-    it("should have the same properties as Highlights", () => {
-      assert.deepEqual(Object.keys(state), Object.keys(fakeState.Highlights));
+    it("should have the same properties as Highlights plus recommendationShown", () => {
+      Object.keys(fakeState.Highlights).forEach(prop => assert.property(state, prop));
+      assert.property(state, "recommendationShown");
+    });
+    it("should set recommendationShown based on prefs.recommendations", () => {
+      setup({Prefs: {prefs: {recommendations: true}}});
+      assert.isTrue(state.recommendationShown);
     });
     it("should add a bestImage for each item", () => {
       state.rows.forEach(site => {
@@ -76,7 +87,7 @@ describe("selectors", () => {
         url: "https://foo.com",
         favicon_colors: [{color: [11, 11, 11]}]
       };
-      const results = selectSpotlight({Highlights: {rows: [site]}});
+      const results = setup({Highlights: {rows: [site]}});
       assert.deepEqual(results.rows[0].backgroundColor, "rgba(11, 11, 11, 0.4)");
     });
     it("should use site.background_color for items that dont have an image if it exists", () => {
@@ -85,22 +96,22 @@ describe("selectors", () => {
         background_color: "#111111",
         favicon_colors: [{color: [11, 11, 11]}]
       };
-      const results = selectSpotlight({Highlights: {init: true, rows: [site]}});
+      const results = setup({Highlights: {rows: [site]}});
       assert.equal(results.rows[0].backgroundColor, "#111111");
     });
     it("should use a fallback bg color if no favicon_colors are available", () => {
       const site = {url: "https://foo.com"};
-      const results = selectSpotlight({Highlights: {init: true, rows: [site]}});
+      const results = setup({Highlights: {rows: [site]}});
       assert.ok(results.rows[0].backgroundColor, "should have a bg color");
     });
     it("should include first run items if init is true and Highlights is empty", () => {
-      const results = selectSpotlight({Highlights: {init: true, rows: []}});
+      const results = setup({Highlights: {init: true, rows: []}});
       firstRunData.Highlights.forEach((item, i) => {
         assert.equal(results.rows[i].url, item.url);
       });
     });
     it("should not include first run items if init is false", () => {
-      const results = selectSpotlight({Highlights: {init: false, rows: []}});
+      const results = setup({Highlights: {init: false, rows: []}});
       assert.lengthOf(results.rows, 0);
     });
     it("should sort sites that do not have a title to the end", () => {
@@ -173,15 +184,15 @@ describe("selectors", () => {
       state = selectNewTabSites(Object.assign({}, fakeState, experimentsData));
       assert.isTrue(state.showRecommendationOption);
     });
-    it("should render the correct Spotlight items", () => {
+    it("should render the correct Spotlight items for weightedHighlights", () => {
       let weightedHighlights = {
-        WeightedHighlights: {
-          rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}],
-          weightedHighlights: true
-        }
+        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}]},
+        Prefs: {prefs: {weightedHighlights: true}}
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
+      assert.property(state.Spotlight, "weightedHighlights");
+      assert.isTrue(state.Spotlight.weightedHighlights);
       assert.equal(state.Spotlight.rows.length, weightedHighlights.WeightedHighlights.rows.length);
       state.Spotlight.rows.forEach((row, i) => {
         assert.equal(row.url, weightedHighlights.WeightedHighlights.rows[i].url);

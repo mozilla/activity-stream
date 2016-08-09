@@ -40,5 +40,9 @@ module.exports = {
   "Experiments": {
     "values": {},
     "error": false
+  },
+  "Prefs": {
+    "prefs": {},
+    "error": false
   }
 };
