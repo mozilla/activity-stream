@@ -220,6 +220,7 @@
     "quote-props": [2, "consistent"],
     "quotes": [2, "double", "avoid-escape"],
     "radix": [2, "always"],
+    "require-jsdoc": 0,
     "require-yield": 2,
     "rest-spread-spacing": [2, "never"],
     "semi": [2, "always"],
