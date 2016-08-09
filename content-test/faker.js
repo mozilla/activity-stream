@@ -128,7 +128,7 @@ function createSpotlightItem(options = {}) {
     options.images = 1;
   }
   const site = createSite(options);
-  return selectSpotlight({Highlights: {rows: [site]}}).rows[0];
+  return selectSpotlight({Highlights: {rows: [site]}, Prefs: {prefs: {}}}).rows[0];
 }
 
 function range(min, max, increment = 1) {

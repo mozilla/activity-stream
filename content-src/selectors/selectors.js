@@ -17,7 +17,8 @@ function isValidSpotlightSite(site) {
 
 const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
-    state => state.Highlights
+    state => state.Highlights,
+    state => state.Prefs.prefs.recommendations
   ],
   Highlights => {
     // Only concat first run data if init is true
@@ -55,12 +56,13 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
 module.exports.selectNewTabSites = createSelector(
   [
     state => state.WeightedHighlights,
+    state => state.Prefs.prefs.weightedHighlights
     selectTopSites,
     state => state.History,
     selectSpotlight,
     state => state.Experiments
   ],
-  (WeightedHighlights, TopSites, History, Spotlight, Experiments) => {
+  (WeightedHighlights, weightedHighlightsEnnabled, TopSites, History, Spotlight, Experiments) => {
     let weightedHighlightsRows = assignImageAndBackgroundColor(WeightedHighlights.rows);
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
@@ -86,7 +88,7 @@ module.exports.selectNewTabSites = createSelector(
 
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
-      Spotlight: Object.assign({}, Spotlight, {rows: topHighlights}),
+      Spotlight: Object.assign({}, Spotlight, {rows: topHighlights, weightedHighlights: weightedHighlightsEnabled}),
       TopActivity: Object.assign({}, History, {rows: historyRows}),
       isReady: TopSites.init && History.init && Spotlight.init && Experiments.init && WeightedHighlights.init,
       showRecommendationOption: Experiments.values.recommendedHighlight
