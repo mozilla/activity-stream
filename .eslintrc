@@ -92,7 +92,7 @@
     "max-depth": [2, 4],
     "max-len": 0,
     "max-nested-callbacks": [2, 4],
-    "max-params": 0,
+    "max-params": [2, 6],
     "new-parens": 2,
     "newline-after-var": 0,
     "no-array-constructor": 2,
