@@ -4,9 +4,7 @@ const {Link} = require("react-router");
 
 const LoadMore = React.createClass({
   getDefaultProps() {
-    return {
-      label: "See more"
-    };
+    return {label: "See more"};
   },
   render() {
     const link = this.props.to ?

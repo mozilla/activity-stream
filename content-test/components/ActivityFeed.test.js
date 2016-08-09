@@ -161,10 +161,12 @@ describe("GroupedActivityFeed", function() {
 
   describe("maxPreviews", () => {
     const sites = ["lDv68xYHFXM", "xDv68xYHFXM", "1Dv68xYHFXM", "0Dv68xYHFXM"].map(url => {
-      return faker.createSite({override: {
-        url: `https://www.youtube.com/watch?v=${url}`,
-        media: {type: "video"}
-      }});
+      return faker.createSite({
+        override: {
+          url: `https://www.youtube.com/watch?v=${url}`,
+          media: {type: "video"}
+        }
+      });
     });
     it("should create previews for all items by default", () => {
       const feed = renderWithProvider(<GroupedActivityFeed sites={sites} />);

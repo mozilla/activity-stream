@@ -33,8 +33,6 @@ module.exports = template;
 
 if (require.main === module) {
   // called from command line
-  const args = require("minimist")(process.argv.slice(2), {
-    alias: {baseUrl: "b", title: "t"}
-  });
+  const args = require("minimist")(process.argv.slice(2), {alias: {baseUrl: "b", title: "t"}});
   process.stdout.write(template(args));
 }

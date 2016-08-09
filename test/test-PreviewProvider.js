@@ -196,17 +196,13 @@ exports.test_throw_out_non_requested_responses = function*(assert) {
   const fakeData = [fakeSite1, fakeSite2, fakeSite4];
 
   // receive site 1, 2, 3
-  const fakeResponse = {"urls": {
-    "http://example1.com/": {
-      "embedlyMetaData": "some good embedly metadata for fake site 1"
-    },
-    "http://example2.com/": {
-      "embedlyMetaData": "some good embedly metadata for fake site 2"
-    },
-    "http://example3.com/": {
-      "embedlyMetaData": "oh no I didn't request this!"
+  const fakeResponse = {
+    "urls": {
+      "http://example1.com/": {"embedlyMetaData": "some good embedly metadata for fake site 1"},
+      "http://example2.com/": {"embedlyMetaData": "some good embedly metadata for fake site 2"},
+      "http://example3.com/": {"embedlyMetaData": "oh no I didn't request this!"}
     }
-  }};
+  };
 
   assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
   let srv = httpd.startServerAsync(gPort);
@@ -247,11 +243,7 @@ exports.test_mock_embedly_request = function*(assert) {
     "cache_key": "example.com/"
   };
   const fakeRequest = [fakeSite];
-  const fakeResponse = {"urls": {
-    "http://example.com/": {
-      "embedlyMetaData": "some embedly metadata"
-    }
-  }};
+  const fakeResponse = {"urls": {"http://example.com/": {"embedlyMetaData": "some embedly metadata"}}};
 
   const embedlyVersionQuery = "addon_version=";
   assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");

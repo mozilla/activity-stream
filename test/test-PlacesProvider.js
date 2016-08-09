@@ -114,9 +114,7 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
 
 exports.test_Links_getHighlightsLinks = function*(assert) {
   let provider = PlacesProvider.links;
-  let {
-    TRANSITION_TYPED
-  } = PlacesUtils.history;
+  let {TRANSITION_TYPED} = PlacesUtils.history;
 
   let timeToday = timeDaysAgo(0);
   let timeEarlier = timeDaysAgo(2);
@@ -691,9 +689,7 @@ exports.test_Links_getHistorySize = function*(assert) {
 
 exports.test_blocked_urls = function*(assert) {
   let provider = PlacesProvider.links;
-  let {
-    TRANSITION_TYPED
-  } = PlacesUtils.history;
+  let {TRANSITION_TYPED} = PlacesUtils.history;
 
   let timeToday = timeDaysAgo(0);
   let timeEarlier = timeDaysAgo(2);

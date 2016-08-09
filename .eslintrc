@@ -215,6 +215,7 @@
     "no-warning-comments": 0, // TODO: Change to `1`?
     "no-whitespace-before-property": 2,
     "no-with": 2,
+    "object-curly-newline": [2, {"multiline": true}],
     "object-curly-spacing": [2, "never"],
     "object-property-newline": [2, {"allowMultiplePropertiesPerLine": true}],
     "object-shorthand": [2, "always"],
