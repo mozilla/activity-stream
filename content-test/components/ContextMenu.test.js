@@ -52,9 +52,7 @@ describe("ContextMenu", () => {
     assert.ok(instance.refs.foo);
   });
   it("should call the onClick function when an option button is clicked", done => {
-    setup({options: [{label: "Foo", onClick() {
-      done();
-    }}]});
+    setup({options: [{label: "Foo", onClick() {done();}}]});
     TestUtils.Simulate.click(links[0]);
   });
   it("should call the onUserEvent function when an option button is clicked and has a userEvent", done => {
