@@ -20,7 +20,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
     state => state.Highlights,
     state => state.Prefs.prefs.recommendations
   ],
-  Highlights => {
+  (Highlights, recommendationShown) => {
     // Only concat first run data if init is true
     const highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
     const rows = assignImageAndBackgroundColor(highlightRows)
@@ -38,7 +38,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
         }
         return -1;
       });
-    return Object.assign({}, Highlights, {rows});
+    return Object.assign({}, Highlights, {rows, recommendationShown});
   }
 );
 
@@ -56,13 +56,13 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
 module.exports.selectNewTabSites = createSelector(
   [
     state => state.WeightedHighlights,
-    state => state.Prefs.prefs.weightedHighlights
+    state => state.Prefs.prefs.weightedHighlights,
     selectTopSites,
     state => state.History,
     selectSpotlight,
     state => state.Experiments
   ],
-  (WeightedHighlights, weightedHighlightsEnnabled, TopSites, History, Spotlight, Experiments) => {
+  (WeightedHighlights, weightedHighlightsEnabled, TopSites, History, Spotlight, Experiments) => {
     let weightedHighlightsRows = assignImageAndBackgroundColor(WeightedHighlights.rows);
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
@@ -82,7 +82,7 @@ module.exports.selectNewTabSites = createSelector(
       History.rows])[2];
 
     let topHighlights = spotlightRows;
-    if (WeightedHighlights.weightedHighlights && weightedHighlightsRows.length) {
+    if (weightedHighlightsEnabled && weightedHighlightsRows.length) {
       topHighlights = weightedHighlightsRows;
     }
 

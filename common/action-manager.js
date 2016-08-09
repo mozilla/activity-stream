@@ -47,7 +47,8 @@ const am = new ActionManager([
   "RECEIVE_RECOMMENDATION_TOGGLE",
   "PREFS_REQUEST",
   "PREFS_RESPONSE",
-  "NOTIFY_UPDATE_PREF"
+  "NOTIFY_UPDATE_PREF",
+  "PREF_CHANGED_RESPONSE"
 ]);
 
 // This is a a set of actions that have sites in them,
