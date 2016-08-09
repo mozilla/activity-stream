@@ -24,9 +24,7 @@ const CALENDAR_HEADINGS = {
 
 const ActivityFeedItem = React.createClass({
   getInitialState() {
-    return {
-      showContextMenu: false
-    };
+    return {showContextMenu: false};
   },
   getDefaultProps() {
     return {
@@ -104,9 +102,7 @@ ActivityFeedItem.propTypes = {
   type: React.PropTypes.string,
   dateDisplay: React.PropTypes.number,
   provider_display: React.PropTypes.string,
-  parsedUrl: React.PropTypes.shape({
-    hostname: React.PropTypes.string
-  })
+  parsedUrl: React.PropTypes.shape({hostname: React.PropTypes.string})
 };
 
 function groupSitesByDate(sites) {

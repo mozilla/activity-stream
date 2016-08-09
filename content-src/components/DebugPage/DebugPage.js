@@ -72,9 +72,7 @@ const DebugPage = React.createClass({
           <div>
             {this.state.component === "Spotlight" &&
               <div className="spotlight">
-                {selectSpotlight({
-                  Highlights: this.props.raw[this.state.dataSource]
-                }).rows.map((item, i) => {
+                {selectSpotlight({Highlights: this.props.raw[this.state.dataSource]}).rows.map((item, i) => {
                   return (<SpotlightItem key={i} {...item} />);
                 })}
               </div>

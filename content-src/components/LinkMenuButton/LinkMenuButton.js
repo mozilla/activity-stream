@@ -8,8 +8,6 @@ const LinkMenuButton = React.createClass({
   }
 });
 
-LinkMenuButton.propTypes = {
-  onClick: React.PropTypes.func.isRequired
-};
+LinkMenuButton.propTypes = {onClick: React.PropTypes.func.isRequired};
 
 module.exports = LinkMenuButton;

@@ -15,8 +15,10 @@ describe("LinkMenuButton", () => {
       assert.isTrue(preventDefaultCalled, "preventDefault was called");
       done();
     }} />);
-    TestUtils.Simulate.click(ReactDOM.findDOMNode(instance), {preventDefault: () => {
-      preventDefaultCalled = true;
-    }});
+    TestUtils.Simulate.click(ReactDOM.findDOMNode(instance), {
+      preventDefault: () => {
+        preventDefaultCalled = true;
+      }
+    });
   });
 });

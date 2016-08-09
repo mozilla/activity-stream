@@ -10,13 +10,15 @@ const gPort = 8079;
 
 let gRecommendationProvider;
 let gPrefPocket = simplePrefs.prefs["pocket.endpoint"];
-let fakeResponse = {"urls": [
+let fakeResponse = {
+  "urls": [
   {url: "http://example.com/1"},
   {url: "http://example.com/2"},
   {url: "http://example.com/3"},
   {url: "http://example.com/4"},
   {url: "http://example.com/5"}
-]};
+  ]
+};
 
 exports.test_get_recommended_content = function*(assert) {
   assert.ok(gRecommendationProvider._pocketEndpoint, "The pocket endpoint is set");

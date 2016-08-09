@@ -18,9 +18,7 @@ const {INFINITE_SCROLL_THRESHOLD, SCROLL_TOP_OFFSET} = require("common/constants
 
 describe("Timeline", () => {
   describe("TimelinePage", () => {
-    const fakeProps = {
-      location: {pathname: "/timeline"}
-    };
+    const fakeProps = {location: {pathname: "/timeline"}};
     let instance;
     beforeEach(() => {
       instance = renderWithProvider(<TimelinePage {...fakeProps}>
@@ -99,9 +97,7 @@ describe("Timeline", () => {
         assert.ok(loader);
       });
       it("should show Loader if History.isLoading is true", () => {
-        setup({
-          Feed: Object.assign({}, fakeProps.Feed, {isLoading: true})
-        });
+        setup({Feed: Object.assign({}, fakeProps.Feed, {isLoading: true})});
         assert.equal(loaderEl.hidden, false);
       });
     });
@@ -151,9 +147,11 @@ describe("Timeline", () => {
         assert.equal(instance.windowHeight, window.innerHeight);
       });
       it("should not call loadMore if the scrollTop is before the threshold", () => {
-        setup({loadMoreAction: () => {
-          throw new Error("Should not call loadMore");
-        }});
+        setup({
+          loadMoreAction: () => {
+            throw new Error("Should not call loadMore");
+          }
+        });
         instance.windowHeight = 200;
         instance.maybeLoadMoreData({scrollTop: 0, scrollHeight: 400});
       });

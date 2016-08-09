@@ -52,14 +52,10 @@ exports["test ExperimentProvider.experimentId"] = assert => {
 exports["test ExperimentProvider.data"] = assert => {
   setup("baz");
   assert.equal(experimentProvider.data, experimentProvider._data, ".data should return return this._data");
-  assert.deepEqual(experimentProvider.data, {
-    foo: 42
-  }, "clientID 'baz' should result in control being picked");
+  assert.deepEqual(experimentProvider.data, {foo: 42}, "clientID 'baz' should result in control being picked");
 
   setup("012j");
-  assert.deepEqual(experimentProvider.data, {
-    foo: 84
-  }, "clientID '012j' should result in variant being picked");
+  assert.deepEqual(experimentProvider.data, {foo: 84}, "clientID '012j' should result in variant being picked");
 };
 
 exports["test ExperimentProvider only selects one experiment"] = assert => {
@@ -86,9 +82,7 @@ exports["test ExperimentProvider skips experiments with active = false"] = asser
     foo: {
       active: false,
       name: "foo",
-      control: {
-        value: "bloo"
-      },
+      control: {value: "bloo"},
       variant: {
         id: "asdasd",
         threshold: 0.3,

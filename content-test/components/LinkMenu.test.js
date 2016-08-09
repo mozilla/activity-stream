@@ -8,9 +8,7 @@ const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const DEFAULT_PROPS = {
   onUpdate: () => {},
-  site: {
-    url: "https://foo.com"
-  },
+  site: {url: "https://foo.com"},
   page: "NEW_TAB",
   source: "ACTIVITY_FEED",
   index: 3
@@ -83,22 +81,24 @@ describe("LinkMenu", () => {
     function checkOption(options) {
       it(`should ${options.ref}`, done => {
         let count = 0;
-        setup(options.props || {}, {dispatch(action) {
-          if (action.type === options.event) {
-            assert.deepEqual(action.data, options.eventData, "event data");
-            count++;
+        setup(options.props || {}, {
+          dispatch(action) {
+            if (action.type === options.event) {
+              assert.deepEqual(action.data, options.eventData, "event data");
+              count++;
+            }
+            if (action.type === "NOTIFY_USER_EVENT") {
+              assert.equal(action.data.event, options.userEvent);
+              assert.equal(action.data.page, DEFAULT_PROPS.page);
+              assert.equal(action.data.source, DEFAULT_PROPS.source);
+              assert.equal(action.data.action_position, DEFAULT_PROPS.index);
+              count++;
+            }
+            if (count === 2) {
+              done();
+            }
           }
-          if (action.type === "NOTIFY_USER_EVENT") {
-            assert.equal(action.data.event, options.userEvent);
-            assert.equal(action.data.page, DEFAULT_PROPS.page);
-            assert.equal(action.data.source, DEFAULT_PROPS.source);
-            assert.equal(action.data.action_position, DEFAULT_PROPS.index);
-            count++;
-          }
-          if (count === 2) {
-            done();
-          }
-        }});
+        });
         TestUtils.Simulate.click(contextMenu.refs[options.ref]);
       });
     }
@@ -145,24 +145,26 @@ describe("LinkMenu", () => {
     function checkBlockRecommendation(options) {
       it(`should ${options.ref} recommendation`, done => {
         let count = 0;
-        setup({site: {url: "https://foo.com", recommender_type: "pocket-trending", recommended: true}}, {dispatch(action) {
-          if (action.type === options.event) {
-            assert.deepEqual(action.data, options.eventData, "event data");
-            count++;
+        setup({site: {url: "https://foo.com", recommender_type: "pocket-trending", recommended: true}}, {
+          dispatch(action) {
+            if (action.type === options.event) {
+              assert.deepEqual(action.data, options.eventData, "event data");
+              count++;
+            }
+            if (action.type === "NOTIFY_USER_EVENT") {
+              assert.equal(action.data.event, options.userEvent);
+              assert.equal(action.data.page, DEFAULT_PROPS.page);
+              assert.equal(action.data.source, DEFAULT_PROPS.source);
+              assert.equal(action.data.action_position, DEFAULT_PROPS.index);
+              assert.equal(action.data.url, "https://foo.com");
+              assert.equal(action.data.recommender_type, "pocket-trending");
+              count++;
+            }
+            if (count === 2) {
+              done();
+            }
           }
-          if (action.type === "NOTIFY_USER_EVENT") {
-            assert.equal(action.data.event, options.userEvent);
-            assert.equal(action.data.page, DEFAULT_PROPS.page);
-            assert.equal(action.data.source, DEFAULT_PROPS.source);
-            assert.equal(action.data.action_position, DEFAULT_PROPS.index);
-            assert.equal(action.data.url, "https://foo.com");
-            assert.equal(action.data.recommender_type, "pocket-trending");
-            count++;
-          }
-          if (count === 2) {
-            done();
-          }
-        }});
+        });
         TestUtils.Simulate.click(contextMenu.refs[options.ref]);
       });
     }

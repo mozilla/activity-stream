@@ -84,6 +84,4 @@ class Channel {
 
 Channel.DEFAULT_OPTIONS = DEFAULT_OPTIONS;
 
-module.exports = {
-  Channel
-};
+module.exports = {Channel};

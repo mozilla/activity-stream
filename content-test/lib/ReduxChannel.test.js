@@ -6,9 +6,7 @@ const {assert} = require("chai");
 describe("Channel", () => {
   let fakeTarget;
   beforeEach(() => {
-    fakeTarget = {
-      addEventListener: () => {}
-    };
+    fakeTarget = {addEventListener: () => {}};
   });
 
   describe("instance", () => {

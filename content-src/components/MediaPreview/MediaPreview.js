@@ -3,15 +3,11 @@ const classNames = require("classnames");
 
 const MediaPreview = React.createClass({
   getInitialState() {
-    return {
-      showPlayer: false
-    };
+    return {showPlayer: false};
   },
 
   getDefaultProps() {
-    return {
-      previewInfo: {}
-    };
+    return {previewInfo: {}};
   },
 
   onPreviewClick(evt) {

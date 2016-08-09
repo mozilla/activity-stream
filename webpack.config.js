@@ -30,9 +30,7 @@ if (env === "production") {
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({
       test: /vendor/,
-      compress: {
-        warnings: false
-      }
+      compress: {warnings: false}
     }),
     new webpack.optimize.DedupePlugin()
   ]);

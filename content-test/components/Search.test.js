@@ -89,9 +89,7 @@ describe("Search", () => {
   });
 
   it("should show the drop down when the input field has a string and it is focused", () => {
-    const props = {
-      searchString: "hello"
-    };
+    const props = {searchString: "hello"};
     setup(props);
     // in order to see the drop down, there must be a search string and focus
     // must be true
@@ -101,9 +99,7 @@ describe("Search", () => {
   });
 
   it("should show form history if there is any", () => {
-    const props = {
-      formHistory: ["hello", "hi"]
-    };
+    const props = {formHistory: ["hello", "hi"]};
     setup(props);
     // add some form history and see that it gets added to the drop down's
     // list of suggestions
@@ -114,9 +110,7 @@ describe("Search", () => {
   });
 
   it("should show suggestions if there are any", () => {
-    const props = {
-      suggestions: ["hello", "hi"]
-    };
+    const props = {suggestions: ["hello", "hi"]};
     setup(props);
     // add some suggestions and see that it gets added to the drop down's
     // list of suggestions

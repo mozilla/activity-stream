@@ -60,9 +60,7 @@ describe("selectors", () => {
     // match the conditions for spotlight to use them
     function assertInvalidSite(site) {
       const invalidSite = Object.assign({}, validSpotlightSite, site);
-      const result = selectSpotlight({
-        Highlights: {init: true, rows: [invalidSite, validSpotlightSite]}
-      });
+      const result = selectSpotlight({Highlights: {init: true, rows: [invalidSite, validSpotlightSite]}});
       assert.lengthOf(result.rows, 2 + firstRunData.Highlights.length);
       assert.equal(result.rows[0].url, validSpotlightSite.url);
       assert.equal(result.rows[1].url, invalidSite.url);
@@ -83,9 +81,7 @@ describe("selectors", () => {
         url: "https://foo.com",
         favicon_colors: [{color: [11, 11, 11]}]
       };
-      const results = selectSpotlight({
-        Highlights: {rows: [site]}
-      });
+      const results = selectSpotlight({Highlights: {rows: [site]}});
       assert.deepEqual(results.rows[0].backgroundColor, "rgba(11, 11, 11, 0.4)");
     });
     it("should use site.background_color for items that dont have an image if it exists", () => {
@@ -94,41 +90,29 @@ describe("selectors", () => {
         background_color: "#111111",
         favicon_colors: [{color: [11, 11, 11]}]
       };
-      const results = selectSpotlight({
-        Highlights: {init: true, rows: [site]}
-      });
+      const results = selectSpotlight({Highlights: {init: true, rows: [site]}});
       assert.equal(results.rows[0].backgroundColor, "#111111");
     });
     it("should use a fallback bg color if no favicon_colors are available", () => {
       const site = {url: "https://foo.com"};
-      const results = selectSpotlight({
-        Highlights: {init: true, rows: [site]}
-      });
+      const results = selectSpotlight({Highlights: {init: true, rows: [site]}});
       assert.ok(results.rows[0].backgroundColor, "should have a bg color");
     });
     it("should include first run items if init is true and Highlights is empty", () => {
-      const results = selectSpotlight({
-        Highlights: {init: true, rows: []}
-      });
+      const results = selectSpotlight({Highlights: {init: true, rows: []}});
       firstRunData.Highlights.forEach((item, i) => {
         assert.equal(results.rows[i].url, item.url);
       });
     });
     it("should not include first run items if init is false", () => {
-      const results = selectSpotlight({
-        Highlights: {init: false, rows: []}
-      });
+      const results = selectSpotlight({Highlights: {init: false, rows: []}});
       assert.lengthOf(results.rows, 0);
     });
     it("should sort sites that do not have a title to the end", () => {
-      assertInvalidSite({
-        title: null
-      });
+      assertInvalidSite({title: null});
     });
     it("should sort sites that do not have a description to the end", () => {
-      assertInvalidSite({
-        description: null
-      });
+      assertInvalidSite({description: null});
     });
     it("should sort sites for which the title equals the description to the end", () => {
       assertInvalidSite({
@@ -137,44 +121,30 @@ describe("selectors", () => {
       });
     });
     it("should sort sites that do not have an images prop or an empty array to the end", () => {
-      assertInvalidSite({
-        images: null
-      });
-      assertInvalidSite({
-        images: []
-      });
+      assertInvalidSite({images: null});
+      assertInvalidSite({images: []});
     });
     it("should append History sites to the end", () => {
-      assertInvalidSite({
-        images: null
-      });
-      assertInvalidSite({
-        images: []
-      });
+      assertInvalidSite({images: null});
+      assertInvalidSite({images: []});
     });
   });
   describe("selectTopSites", () => {
     it("should add default sites if init is true", () => {
       const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
-      const result = selectTopSites({
-        TopSites: {init: true, rows}
-      });
+      const result = selectTopSites({TopSites: {init: true, rows}});
       assert.isTrue(result.init);
       assert.deepEqual(result.rows, rows.concat(firstRunData.TopSites));
     });
     it("should not add default sites if init is false", () => {
       const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
-      const result = selectTopSites({
-        TopSites: {init: false, rows}
-      });
+      const result = selectTopSites({TopSites: {init: false, rows}});
       assert.isFalse(result.init);
       assert.deepEqual(result.rows, rows);
     });
     it("should dedupe by url", () => {
       const rows = [{url: "http://foo.com"}, {url: "http://www.foo.com"}];
-      const result = selectTopSites({
-        TopSites: {init: false, rows}
-      });
+      const result = selectTopSites({TopSites: {init: false, rows}});
       assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
     });
   });
@@ -276,9 +246,7 @@ describe("selectors", () => {
     const siteWithMedia = {
       url: "https://www.youtube.com/watch?v=lDv68xYHFXM",
       images: [{url: "foo.jpg", height: IMG_HEIGHT, width: IMG_WIDTH}],
-      media: {
-        type: "video"
-      }
+      media: {type: "video"}
     };
     const embedPreviewURL = "https://www.youtube.com/embed/lDv68xYHFXM?autoplay=1";
     let state;
