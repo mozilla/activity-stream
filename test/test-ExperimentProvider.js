@@ -74,7 +74,7 @@ exports["test ExperimentProvider only selects one experiment"] = assert => {
       name: "dachshund",
       control: {value: false},
       variant: {id: "dachshund_01", threshold: 0.2, value: true}
-    },
+    }
   }, randomNumber);
   assert.equal(experimentProvider.data.dachshund, true, "dachshund should be selected");
   assert.equal(experimentProvider.data.kitty, false, "kitty should not be selected");

@@ -88,7 +88,7 @@ exports.test_filter_urls = function(assert) {
         {"url": "http://0.0.0.0", "title": "blah"},
         {"url": null, "title": "blah"}
       ];
-    },
+    }
   };
 
   // all valid urls should be allowed through the filter and should be returned

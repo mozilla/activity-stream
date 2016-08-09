@@ -15,7 +15,7 @@ let fakeResponse = {"urls": [
   {url: "http://example.com/2"},
   {url: "http://example.com/3"},
   {url: "http://example.com/4"},
-  {url: "http://example.com/5"},
+  {url: "http://example.com/5"}
 ]};
 
 exports.test_get_recommended_content = function*(assert) {

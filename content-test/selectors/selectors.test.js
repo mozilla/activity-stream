@@ -278,7 +278,7 @@ describe("selectors", () => {
       images: [{url: "foo.jpg", height: IMG_HEIGHT, width: IMG_WIDTH}],
       media: {
         type: "video"
-      },
+      }
     };
     const embedPreviewURL = "https://www.youtube.com/embed/lDv68xYHFXM?autoplay=1";
     let state;

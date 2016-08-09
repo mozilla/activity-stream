@@ -59,7 +59,7 @@ function getTestActivityStream(options = {}) {
     asyncReset() {return Promise.resolve();},
     asyncClose() {return Promise.resolve();},
     asyncInsert() {return Promise.resolve();},
-    asyncGetMetadataByCacheKey() {return Promise.resolve([]);},
+    asyncGetMetadataByCacheKey() {return Promise.resolve([]);}
   };
   let mockApp = new ActivityStreams(mockMetadataStore, options);
   return mockApp;

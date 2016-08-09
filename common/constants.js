@@ -8,7 +8,7 @@ module.exports = {
   // Thresholds for highlights query
   HIGHLIGHTS_THRESHOLDS: {
     created: "-3 day",
-    visited: "-30 minutes",
+    visited: "-30 minutes"
   },
 
   // This is how many pixels before the bottom that

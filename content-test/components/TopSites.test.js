@@ -16,7 +16,7 @@ const fakeProps = {
       favicon_url: "http://foo.com/favicon.ico"
     },
     {
-      url: "http://bar.com",
+      url: "http://bar.com"
     }
   ]
 };

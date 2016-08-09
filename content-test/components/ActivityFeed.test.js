@@ -102,7 +102,7 @@ describe("GroupedActivityFeed", function() {
     sites = [
       faker.createSite({moment: faker.moment()}),
       faker.createSite({moment: faker.moment().subtract(2, "days")}),
-      faker.createSite({moment: faker.moment().subtract(4, "days")}),
+      faker.createSite({moment: faker.moment().subtract(4, "days")})
     ];
     instance = renderWithProvider(<GroupedActivityFeed sites={sites} />);
     el = ReactDOM.findDOMNode(instance);
@@ -207,7 +207,7 @@ describe("groupSitesBySession", () => {
     {url: "foo1.com", dateDisplay: testDate},
     {url: "foo2.com", dateDisplay: testDate - 3 * minute},
     {url: "foo3.com", dateDisplay: testDate - 14 * minute},
-    {url: "foo4.com", dateDisplay: testDate - 15 * minute},
+    {url: "foo4.com", dateDisplay: testDate - 15 * minute}
   ];
   const result = groupSitesBySession(testSites);
   it("should create an array of arrays", () => {

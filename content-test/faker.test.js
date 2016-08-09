@@ -39,7 +39,7 @@ describe("randomWeighter", () => {
   it("should build the correct array of items based on weight", () => {
     const result = createWeightedArray([
       {weight: 1, value: "yes"},
-      {weight: 3, value: "no"},
+      {weight: 3, value: "no"}
     ]);
     assert.deepEqual(result, [
       {weight: 1, value: "yes"},

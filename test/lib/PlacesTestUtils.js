@@ -180,7 +180,7 @@ const PlacesTestUtils = Object.freeze({
   insertAndBookmarkVisit: Task.async(function*(url) {
     yield this.addVisits({uri: NetUtil.newURI(url), visitDate: Date.now(), transition: PlacesUtils.history.TRANSITION_LINK});
     yield Bookmarks.insert({url, parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});
-  }),
+  })
 });
 
 exports.PlacesTestUtils = PlacesTestUtils;
