@@ -42,9 +42,8 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
             const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
             const frecency = typeof action.data.frecency !== "undefined" ? action.data.frecency : site.frecency;
             return Object.assign({}, site, {bookmarkGuid, bookmarkTitle, frecency, bookmarkDateCreated: lastModified});
-          } else {
-            return site;
           }
+          return site;
         });
         break;
       case requestType === am.type("RECENT_BOOKMARKS_REQUEST") && am.type("RECEIVE_BOOKMARK_REMOVED"):
@@ -59,9 +58,8 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
             delete newSite.bookmarkTitle;
             delete newSite.bookmarkDateCreated;
             return newSite;
-          } else {
-            return site;
           }
+          return site;
         });
         break;
       case am.type("PREFS_RESPONSE"):

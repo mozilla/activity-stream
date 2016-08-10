@@ -20,9 +20,8 @@ function Viewer(props) {
       <h2>Deduped new tab state</h2>
       <JSONTree search={false} data={props.newTab} />
     </div>);
-  } else {
-    return <span />;
   }
+  return <span />;
 }
 
 const DebugPage = React.createClass({
