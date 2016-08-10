@@ -17,7 +17,7 @@ faker.internet.rgbColor = () => {
 };
 
 function arrayOf(mapFn, size) {
-  return Array.apply(null, Array(size)).map(mapFn);
+  return Array(...Array(size)).map(mapFn);
 }
 
 function createColor(color) {
@@ -158,7 +158,7 @@ function randomWeighter(weights) {
     return faker.random.arrayElement(pick.values);
   }
   if (pick.range) {
-    return faker.random.arrayElement(range.apply(null, pick.range));
+    return faker.random.arrayElement(range(...pick.range));
   }
 }
 
