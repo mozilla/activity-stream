@@ -34,7 +34,7 @@ const ContextMenu = React.createClass({
                 this.props.onUserEvent(option.userEvent);
               }
             }}>
-            {option.icon && <span className={"icon icon-spacer icon-" + option.icon} />}
+            {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
             {option.label}
           </a></li>);
         })}

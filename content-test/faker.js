@@ -32,7 +32,7 @@ function createColor(color) {
 function createImage() {
   return {
     "caption": null,
-    "url": faker.image.imageUrl() + "?r=" + faker.random.uuid(),
+    "url": `${faker.image.imageUrl()}?r=${faker.random.uuid()}`,
     "height": 640,
     "width": 480,
     "colors": [createColor()],
@@ -107,7 +107,7 @@ function createSite(options = {}) {
 
   if (options.hasBookmark || site.type === "bookmark") {
     site.bookmarkDateCreated = date.add(1, "seconds").valueOf();
-    site.bookmarkGuid = "" + faker.random.number();
+    site.bookmarkGuid = `${faker.random.number()}`;
   }
 
   if (site.type === "bookmark") {
