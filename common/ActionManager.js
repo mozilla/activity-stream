@@ -23,7 +23,7 @@ function compose([...funcs], context = this) {
     const last = funcs[funcs.length - 1];
     const rest = funcs.slice(0, -1);
 
-    return rest.reduceRight((composed, f) => f.bind(context)(composed), last.apply(null, arguments));
+    return rest.reduceRight((composed, f) => f.bind(context)(composed), last(...arguments));
   };
 }
 
@@ -50,7 +50,7 @@ class ActionManager {
         return compose([
           ...this.validators,
           definition
-        ], this).apply(null, arguments);
+        ], this)(...arguments);
       }.bind(this);
       composed.definition = definition;
       this.actions[name] = composed;
