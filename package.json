@@ -157,6 +157,13 @@
       "type": "integer",
       "value": 20971520,
       "hidden": true
+    },
+    {
+      "name": "metadata-store.query.cache",
+      "title": "Enable metadata store query cache",
+      "type": "bool",
+      "value": true,
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-stream",
