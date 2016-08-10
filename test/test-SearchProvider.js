@@ -16,7 +16,7 @@ Services.search.defaultEngine = Services.search.getEngineByName("TestSearch1");
 
 function hasProp(assert, obj) {
   return function(aProp) {
-    assert.ok(obj.hasOwnProperty(aProp), `expect to have property ${aProp}`);
+    assert.ok({}.hasOwnProperty.call(obj, aProp), `expect to have property ${aProp}`);
   };
 }
 
