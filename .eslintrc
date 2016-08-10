@@ -100,6 +100,7 @@
     "max-lines": 0,
     "max-nested-callbacks": [2, 4],
     "max-params": [2, 6],
+    "max-statements": [2, 50],
     "max-statements-per-line": [2, {"max": 2}],
     "multiline-ternary": 0,
     "new-cap": [2, {"newIsCap": true, "capIsNew": false}],
