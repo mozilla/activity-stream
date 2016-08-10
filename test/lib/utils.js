@@ -4,11 +4,9 @@ const {Cc, Ci, Cu, components} = require("chrome");
 const {ActivityStreams} = require("lib/ActivityStreams");
 const {stack: Cs} = components;
 
-function doThrow(error, stack) {
-  // If we didn't get passed a stack, maybe the error has one
-  // otherwise get it from our call context
-  stack = stack || error.stack || Cs.caller;
-
+// If we didn't get passed a stack, maybe the error has one otherwise get it
+// from our call context
+function doThrow(error, stack = error.stack || Cs.caller) {
   let filename = "";
   if (stack instanceof Ci.nsIStackFrame) {
     filename = stack.filename;

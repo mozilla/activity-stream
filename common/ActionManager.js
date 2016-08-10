@@ -14,8 +14,7 @@ function BaseAction(action) {
 }
 
 // This is based on redux compose
-function compose([...funcs], context) {
-  context = context || this;
+function compose([...funcs], context = this) {
   return function() {
     if (funcs.length === 0) {
       return arguments[0];
