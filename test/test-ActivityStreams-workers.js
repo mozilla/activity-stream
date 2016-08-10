@@ -75,7 +75,7 @@ exports["test workers for page reload"] = function(assert, done) {
   tabs.open({url});
 };
 
-before(exports, function() {
+before(exports, () => {
   srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
   openTabs = [];
 
@@ -85,7 +85,7 @@ before(exports, function() {
   tabs.on("open", onOpen);
 });
 
-after(exports, function(name, assert, done) {
+after(exports, (name, assert, done) => {
   app.unload();
   Promise.all([
     ...openTabs.map(tab => new Promise(resolve => tab.close(resolve))),

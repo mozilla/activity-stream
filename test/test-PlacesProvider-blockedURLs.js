@@ -56,7 +56,7 @@ exports["test blocklist basic functions"] = function(assert) {
   assert.equal(simplePrefs.prefs["test.blocklist"], "[]", "cleared pref is found");
 };
 
-before(exports, function() {
+before(exports, () => {
   simplePrefs.prefs["test.blocklist"] = JSON.stringify([]);
 });
 

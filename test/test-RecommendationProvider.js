@@ -150,7 +150,7 @@ exports.test_random_recommendation = function(assert) {
   assert.equal(recommendation, null, "there are no allowed recommendations so we don't have a recommendation to show");
 };
 
-before(exports, function() {
+before(exports, () => {
   simplePrefs.prefs["pocket.endpoint"] = `http://localhost:${gPort}/pocketRecommendations`;
   // PreviewProvider needs to attach some metadata to these recommendations
   const mockPreviewProvider = {
@@ -164,7 +164,7 @@ before(exports, function() {
   gRecommendationProvider = new RecommendationProvider(mockPreviewProvider, mockTabTracker);
 });
 
-after(exports, function() {
+after(exports, () => {
   simplePrefs.prefs["pocket.endpoint"] = gPrefPocket;
   gRecommendationProvider.uninit();
 });

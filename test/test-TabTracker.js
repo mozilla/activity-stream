@@ -72,7 +72,7 @@ function waitForPageLoadAndSessionComplete() {
   function onShow(tab) {
     function onPageLoaded(subject, topic, data) {
       Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
-      setTimeout(function() {
+      setTimeout(() => {
         tab.close(() => {
           tabs.removeListener("pageshow", onShow);
         });
@@ -85,7 +85,7 @@ function waitForPageLoadAndSessionComplete() {
 
 function waitForPageShowAndSessionComplete() {
   function onShow(tab) {
-    setTimeout(function() {
+    setTimeout(() => {
       tab.close(() => {
         tabs.removeListener("pageshow", onShow);
       });
@@ -317,7 +317,7 @@ exports.test_TabTracker_close_window_with_multitabs = function*(assert) {
 
   tabs.open(ACTIVITY_STREAMS_URL);
   // open another tab a bit later so that the first one could completely load
-  setTimeout(function() {
+  setTimeout(() => {
     tabs.open(ACTIVITY_STREAMS_URL);
   }, 1000);
 
@@ -633,7 +633,7 @@ exports.test_TabTracker_session_reports = function*(assert) {
       if (tab.url === "http://www.example.com/") {
         // second page load - simply close the tab
         tabs.removeListener("ready", onOpen);
-        setTimeout(function() {
+        setTimeout(() => {
           tab.close(resolve);
         }, 10);
       } else {
@@ -694,7 +694,7 @@ before(exports, function*() {
   ACTIVITY_STREAMS_URL = app.appURLs[1];
 });
 
-after(exports, function() {
+after(exports, () => {
   app.unload();
 });
 

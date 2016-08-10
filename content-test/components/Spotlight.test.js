@@ -15,7 +15,7 @@ const fakeSiteWithImage = faker.createSite();
 
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 
-describe("Spotlight", function() {
+describe("Spotlight", () => {
   let instance;
   let el;
   beforeEach(() => {
@@ -72,7 +72,7 @@ describe("Spotlight", function() {
   });
 });
 
-describe("SpotlightItem", function() {
+describe("SpotlightItem", () => {
   const fakeSite = fakeSiteWithImage;
   let instance;
   let el;

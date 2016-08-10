@@ -140,7 +140,7 @@ describe("Timeline", () => {
       });
     });
 
-    describe("#maybeLoadMoreData", function() {
+    describe("#maybeLoadMoreData", () => {
       it("should set this.windowHeight if it is falsey", () => {
         instance.windowHeight = null;
         instance.maybeLoadMoreData({scrollTop: 0, scrollHeight: 5000});

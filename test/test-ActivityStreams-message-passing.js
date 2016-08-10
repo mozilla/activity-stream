@@ -84,7 +84,7 @@ exports["test app.broadcast message"] = function*(assert) {
   yield broadcastPromise;
 };
 
-before(exports, function() {
+before(exports, () => {
   srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
   app = getTestActivityStream({pageURL: url});
   openTabs = [];

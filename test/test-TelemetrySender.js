@@ -62,14 +62,14 @@ exports.test_TelemetrySender_prefs = function(assert) {
   assert.equal(app._telemetrySender._pingEndpoint, testEndpoint, "expected ping endpoint received");
 };
 
-before(exports, function() {
+before(exports, () => {
   simplePrefs.prefs.telemetry = true;
   simplePrefs.prefs["performance.log"] = false;
   simplePrefs.prefs["telemetry.ping.endpoint"] = `http://localhost:${port}/activity-streams`;
   app = getTestActivityStream();
 });
 
-after(exports, function() {
+after(exports, () => {
   app.unload();
 });
 

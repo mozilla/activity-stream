@@ -245,7 +245,7 @@ before(exports, function*() {
   yield placesCachePromise;
 });
 
-after(exports, function() {
+after(exports, () => {
   gApp.unload();
   PlacesProvider.links.uninit();
   simplePrefs.prefs["query.cache"] = gInitialCachePref || false;

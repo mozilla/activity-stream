@@ -224,6 +224,7 @@
     "operator-assignment": [2, "always"],
     "operator-linebreak": [2, "after"],
     "padded-blocks": [2, "never"],
+    "prefer-arrow-callback": ["error", {"allowNamedFunctions": true}],
     "prefer-const": 0, // TODO: Change to `1`?
     "prefer-reflect": 0,
     "quote-props": [2, "consistent"],
