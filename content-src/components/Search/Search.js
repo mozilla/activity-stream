@@ -74,7 +74,7 @@ const Search = React.createClass({
   cycleCurrentEngine(index) {
     this.props.dispatch(actions.NotifyCycleEngine(this.props.engines[index].name));
   },
-  handleKeyPress(e) { // eslint-disable-line complexity
+  handleKeyPress(e) { // eslint-disable-line complexity,max-statements
     // Handle the keyboard navigation of the widget.
 
     // If the dropdown isn't visible, we don't handle the event.
