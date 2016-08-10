@@ -58,7 +58,7 @@ exports.test_update_recommendations = function*(assert) {
 
   // start the timer to update the data and wait for it to trigger
   gRecommendationProvider._asyncUpdateRecommendations(100);
-  yield waitUntil(() => {return true;}, 1000);
+  yield waitUntil(() => true, 1000);
 
   // check that the recommendations got updated
   assert.equal(gRecommendationProvider._recommendedContent.length, 4, "updated the recommended content to 4 recommendations");

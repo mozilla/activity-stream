@@ -9,9 +9,7 @@ let gMemoizer;
 
 exports.test_memoizer = function*(assert) {
   let count = 0;
-  let testFunc = () => {
-    return ++count;
-  };
+  let testFunc = () => ++count;
   let func = gMemoizer.memoize("testKey", testFunc);
   let result;
 
@@ -31,9 +29,7 @@ exports.test_memoizer = function*(assert) {
 
 exports.test_memoizer_replace_opt = function*(assert) {
   let count = 0;
-  let testFunc = () => {
-    return ++count;
-  };
+  let testFunc = () => ++count;
   let func = gMemoizer.memoize("testKey", testFunc);
   let result;
 
@@ -52,9 +48,7 @@ exports.test_memoizer_replace_opt = function*(assert) {
 
 exports.test_memoizer_replace_opt_sub_key = function*(assert) {
   let count = 0;
-  let testFunc = () => {
-    return ++count;
-  };
+  let testFunc = () => ++count;
   let func = gMemoizer.memoize("testKey", testFunc);
   let result;
 
@@ -74,9 +68,7 @@ exports.test_memoizer_replace_opt_sub_key = function*(assert) {
 exports.test_memoizer_prefs = function*(assert) {
   simplePrefs.prefs["query.cache"] = false;
   let count = 0;
-  let testFunc = () => {
-    return ++count;
-  };
+  let testFunc = () => ++count;
   let func = gMemoizer.memoize("testKey", testFunc);
   let result;
 
