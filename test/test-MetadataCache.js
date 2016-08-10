@@ -13,7 +13,7 @@ const fixtures = [
 
 const gMetadataCache = new MetadataCache();
 
-exports.test_cache_get = function*(assert) {
+exports.test_cache_get = function(assert) {
   for (let fixture of fixtures) {
     gMetadataCache.add(fixture.key, fixture.value);
     let val = gMetadataCache.get(fixture.getKey);
@@ -22,7 +22,7 @@ exports.test_cache_get = function*(assert) {
   assert.equal(gMetadataCache.length, 2);
 };
 
-exports.test_cache_remove = function*(assert) {
+exports.test_cache_remove = function(assert) {
   for (let fixture of fixtures) {
     gMetadataCache.add(fixture.key, fixture.value);
   }
@@ -33,7 +33,7 @@ exports.test_cache_remove = function*(assert) {
   assert.ok(!gMetadataCache.get("foo"), "It should have removed the given key");
 };
 
-exports.test_cache_removeoldest = function*(assert) {
+exports.test_cache_removeoldest = function(assert) {
   gMetadataCache.removeOldest();
   assert.ok(!gMetadataCache.length, 0, "It should not remove anything if the cache is empty");
 
@@ -44,7 +44,7 @@ exports.test_cache_removeoldest = function*(assert) {
   assert.ok(!gMetadataCache.get("bar"), "It should removed this key as the oldest one");
 };
 
-exports.test_pref_change = function*(assert) {
+exports.test_pref_change = function(assert) {
   simplePrefs.prefs["metadata-store.query.cache"] = false;
   for (let fixture of fixtures) {
     gMetadataCache.add(fixture.key, fixture.value);
