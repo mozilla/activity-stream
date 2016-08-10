@@ -175,7 +175,7 @@ function NotifyBookmarkDelete(bookmarkGuid) {
 }
 
 function NotifyHistoryDelete(data) {
-  if (confirm("Are you sure you want to delete this from your entire history? This action cannot be undone.")) {
+  if (confirm("Are you sure you want to delete this from your entire history? This action cannot be undone.")) { // eslint-disable-line no-alert
     return Notify("NOTIFY_HISTORY_DELETE", data);
   }
   return {type: "NOTIFY_HISTORY_DELETE_CANCELLED"};

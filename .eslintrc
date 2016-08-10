@@ -106,6 +106,7 @@
     "newline-after-var": 0,
     "newline-before-return": 0,
     "newline-per-chained-call": [2, {"ignoreChainWithDepth": 3}],
+    "no-alert": 2,
     "no-array-constructor": 2,
     "no-bitwise": 0,
     "no-caller": 2,
