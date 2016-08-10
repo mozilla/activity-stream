@@ -13,6 +13,14 @@ const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
 
 module.exports.justDispatch = (() => ({}));
 
+function selectSiteProperties(site) {
+  const metadataFavicon = site.favicons && site.favicons[0] && site.favicons[0].url;
+  const favicon = site.favicon_url || metadataFavicon || site.favicon;
+  const parsedUrl = site.parsedUrl || urlParse(site.url || "");
+  const label = prettyUrl(parsedUrl.hostname);
+  return {favicon, parsedUrl, label};
+}
+
 function getBackgroundRGB(site) {
   // This is from firefox
   if (site.favicon_color) {
@@ -124,14 +132,6 @@ module.exports.selectNewTabSites = createSelector(
     };
   }
 );
-
-function selectSiteProperties(site) {
-  const metadataFavicon = site.favicons && site.favicons[0] && site.favicons[0].url;
-  const favicon = site.favicon_url || metadataFavicon || site.favicon;
-  const parsedUrl = site.parsedUrl || urlParse(site.url || "");
-  const label = prettyUrl(parsedUrl.hostname);
-  return {favicon, parsedUrl, label};
-}
 
 const selectSiteIcon = createSelector(
   site => site,

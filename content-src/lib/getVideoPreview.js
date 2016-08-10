@@ -1,14 +1,5 @@
 const getYouTubeID = require("get-youtube-id");
 
-module.exports = function getVideoPreview(url) {
-  if (!url) {
-    return null;
-  }
-  return getVideoURL.youtube(url) ||
-         getVideoURL.vimeo(url) ||
-         null;
-};
-
 const getVideoURL = {
   youtube(url) {
     let videoId = getYouTubeID(url, {fuzzy: false});
@@ -29,4 +20,13 @@ const getVideoURL = {
 
     return `https://player.vimeo.com/video/${videoId}?autoplay=1`;
   }
+};
+
+module.exports = function getVideoPreview(url) {
+  if (!url) {
+    return null;
+  }
+  return getVideoURL.youtube(url) ||
+         getVideoURL.vimeo(url) ||
+         null;
 };
