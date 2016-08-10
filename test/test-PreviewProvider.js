@@ -58,9 +58,9 @@ exports.test_only_request_links_once = function*(assert) {
   gPreviewProvider._asyncSaveLinks(msg1);
   yield gPreviewProvider._asyncSaveLinks(msg2);
 
-  Object.values(urlsRequested).forEach(count => {
+  Object.keys(urlsRequested).forEach(url => {
     // each url should have a count of just one
-    assert.equal(count, 1, "URL was requested only once");
+    assert.equal(urlsRequested[url], 1, "URL was requested only once");
   });
 
   yield new Promise(resolve => {
