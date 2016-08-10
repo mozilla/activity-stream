@@ -37,8 +37,7 @@ function createPingSentPromise(pingData, expectedPingCount) {
 function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedUnloadReasons, hasLoadLatency) {
   let numActivations = expectedLoadReasons.length;
   assert.equal(pingData.length, numActivations, `The activity streams page was activated ${numActivations} times`);
-  for (let i in pingData) {
-    let ping = pingData[i];
+  pingData.forEach((ping, i) => {
     assert.equal(ping.load_reason, expectedLoadReasons[i], "Loaded for the expected reason");
     assert.equal(ping.unload_reason, expectedUnloadReasons[i], "Unloaded for the expected reason");
     // setup expected keys list and modify ping based on hasLoadLatency flag
@@ -65,7 +64,7 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
     if (ping.load_reason !== "none") {
       assert.notEqual(ping.session_duration, 0, "session_duration is not 0");
     }
-  }
+  });
 }
 
 function waitSessionComplete(onShow) {
@@ -161,14 +160,14 @@ exports.test_TabTracker_unfocus_unloaded_tab = function*(assert) {
 
   // Close both tabs.
   let tabClosedPromise = new Promise(resolve => {
-    for (let i in openTabs) {
-      openTabs[i].close(() => {
-        if (Number(i) === openTabs.length - 1) {
+    openTabs.forEach((tab, i) => {
+      tab.close(() => {
+        if (i === openTabs.length - 1) {
           // We've closed the last tab
           resolve();
         }
       });
-    }
+    });
   });
 
   yield tabClosedPromise;
@@ -278,14 +277,14 @@ exports.test_TabTracker_reactivating = function*(assert) {
 
   // Close both tabs.
   let tabClosedPromise = new Promise(resolve => {
-    for (let i in openTabs) {
-      openTabs[i].close(() => {
-        if (Number(i) === openTabs.length - 1) {
+    openTabs.forEach((tab, i) => {
+      tab.close(() => {
+        if (i === openTabs.length - 1) {
           // We've closed the last tab
           resolve();
         }
       });
-    }
+    });
   });
 
   yield tabClosedPromise;
@@ -325,14 +324,14 @@ exports.test_TabTracker_close_window_with_multitabs = function*(assert) {
 
   // close both tabs
   let tabClosedPromise = new Promise(resolve => {
-    for (let i in openTabs) {
-      openTabs[i].close(() => {
-        if (Number(i) === openTabs.length - 1) {
+    openTabs.forEach((tab, i) => {
+      tab.close(() => {
+        if (i === openTabs.length - 1) {
           // We've closed the last tab
           resolve();
         }
       });
-    }
+    });
   });
 
   yield tabClosedPromise;
