@@ -90,6 +90,7 @@
     "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
     "keyword-spacing": 2,
     "linebreak-style": [2, "unix"],
+    "lines-around-comment": [2, {"beforeBlockComment": true, "allowObjectStart": true}],
     "max-depth": [2, 4],
     "max-len": 0,
     "max-lines": 0,
