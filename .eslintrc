@@ -80,6 +80,7 @@
     "func-style": 0,
     "generator-star-spacing": [2, {"before": false, "after": false}],
     "global-require": 0,
+    "guard-for-in": 2,
     "handle-callback-err": 2,
     "id-blacklist": 0,
     "id-length": 0,
