@@ -20,12 +20,15 @@ let openTabs;
 // otherwise, we won't be able to close it at the end of the test.
 function asyncOpenTab(urlPath) {
   return new Promise(resolve => {
-    tabs.open({url: urlPath, onReady: tab => {
-      openTabs.push(tab);
-      app.once(CONTENT_TO_ADDON, function handler(eventName, {worker}) {
-        resolve(worker);
-      });
-    }});
+    tabs.open({
+      url: urlPath,
+      onReady: tab => {
+        openTabs.push(tab);
+        app.once(CONTENT_TO_ADDON, function handler(eventName, {worker}) {
+          resolve(worker);
+        });
+      }
+    });
   });
 }
 
@@ -81,7 +84,7 @@ exports["test app.broadcast message"] = function*(assert) {
   yield broadcastPromise;
 };
 
-before(exports, function() {
+before(exports, () => {
   srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
   app = getTestActivityStream({pageURL: url});
   openTabs = [];

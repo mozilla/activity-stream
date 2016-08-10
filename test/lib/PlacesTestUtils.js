@@ -69,7 +69,7 @@ const PlacesTestUtils = Object.freeze({
       let now = Date.now();
       for (let place of places) {
         if (typeof place.title !== "string") {
-          place.title = "test visit for " + place.uri.spec;
+          place.title = `test visit for ${place.uri.spec}`;
         }
         place.visits = [{
           transitionType: place.transition === undefined ? Ci.nsINavHistoryService.TRANSITION_LINK : place.transition,
@@ -97,7 +97,7 @@ const PlacesTestUtils = Object.freeze({
 
     let urlSet = new Set(urlList);
     // poll every 10ms until history items appear on disk
-    yield waitUntil(function() {
+    yield waitUntil(() => {
       // function needs to be synchronous!
       let rows = getPlacesRows();
       if ((rows.length - initialNumRows) !== urlList.length) {
@@ -134,7 +134,7 @@ const PlacesTestUtils = Object.freeze({
           try {
             PlacesUtils.favicons.setAndFetchFaviconForPage(
               uri, faviconURI, false,
-              PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, function() {
+              PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, () => {
                 resolve();
               },
               Services.scriptSecurityManager.getSystemPrincipal());
@@ -180,7 +180,7 @@ const PlacesTestUtils = Object.freeze({
   insertAndBookmarkVisit: Task.async(function*(url) {
     yield this.addVisits({uri: NetUtil.newURI(url), visitDate: Date.now(), transition: PlacesUtils.history.TRANSITION_LINK});
     yield Bookmarks.insert({url, parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});
-  }),
+  })
 });
 
 exports.PlacesTestUtils = PlacesTestUtils;

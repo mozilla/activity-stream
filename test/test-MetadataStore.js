@@ -45,7 +45,7 @@ function waitForAsyncReset() {
         !nImages[0].count &&
         !nMetadataImages[0].count;
     } catch (e) {
-      /* ignore whatever error that makes the query above fail */
+      // ignore whatever error that makes the query above fail
       return false;
     }
   }, 10);
@@ -169,7 +169,7 @@ exports.test_async_get_by_cache_key = function*(assert) {
     assert.equal(metaObject.images.length, fixture.images.length, "It should fetch one favicon");
   }
 
-  let cacheKeys = metadataFixture.map(fixture => {return fixture.cache_key;});
+  let cacheKeys = metadataFixture.map(fixture => fixture.cache_key);
   let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey(cacheKeys);
   assert.equal(metaObjects.length, metadataFixture.length, "It should fetch all metadata records");
 };
@@ -177,7 +177,7 @@ exports.test_async_get_by_cache_key = function*(assert) {
 exports.test_async_get_by_cache_key_in_special_cases = function*(assert) {
   yield gMetadataStore.asyncInsert(metadataFixture);
 
-  let cacheKeys = metadataFixture.map(fixture => {return fixture.cache_key;});
+  let cacheKeys = metadataFixture.map(fixture => fixture.cache_key);
   let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey(
     cacheKeys.concat("missing-key1", "missing-key2"));
   assert.equal(metaObjects.length, metadataFixture.length,
@@ -213,7 +213,7 @@ exports.test_on_an_invalid_connection = function*(assert) {
   }
   assert.ok(error, "It should raise exception if the connection is closed or not established");
 
-  let cacheKeys = metadataFixture.map(fixture => {return fixture.cache_key;});
+  let cacheKeys = metadataFixture.map(fixture => fixture.cache_key);
   let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey(cacheKeys);
   assert.equal(metaObjects.length, 0, "It should return an empty array if the connection is closed or not established");
 };

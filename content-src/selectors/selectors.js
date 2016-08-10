@@ -13,6 +13,14 @@ const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
 
 module.exports.justDispatch = (() => ({}));
 
+function selectSiteProperties(site) {
+  const metadataFavicon = site.favicons && site.favicons[0] && site.favicons[0].url;
+  const favicon = site.favicon_url || metadataFavicon || site.favicon;
+  const parsedUrl = site.parsedUrl || urlParse(site.url || "");
+  const label = prettyUrl(parsedUrl.hostname);
+  return {favicon, parsedUrl, label};
+}
+
 function getBackgroundRGB(site) {
   // This is from firefox
   if (site.favicon_color) {
@@ -71,9 +79,8 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
           return 0;
         } else if (site2Valid) {
           return 1;
-        } else {
-          return -1;
         }
+        return -1;
       });
     return Object.assign({}, Highlights, {rows});
   }
@@ -83,13 +90,11 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
   [
     state => state.TopSites
   ],
-  TopSites => {
-    return Object.assign({}, TopSites, {
-      rows: dedupe.one(TopSites.rows
-        // Add first run stuff to the end if init has already happened
-        .concat(TopSites.init ? firstRunData.TopSites : []))
-    });
-  }
+  TopSites => Object.assign({}, TopSites, {
+    rows: dedupe.one(TopSites.rows
+      // Add first run stuff to the end if init has already happened
+      .concat(TopSites.init ? firstRunData.TopSites : []))
+  })
 );
 
 module.exports.selectNewTabSites = createSelector(
@@ -126,14 +131,6 @@ module.exports.selectNewTabSites = createSelector(
     };
   }
 );
-
-function selectSiteProperties(site) {
-  const metadataFavicon = site.favicons && site.favicons[0] && site.favicons[0].url;
-  const favicon = site.favicon_url || metadataFavicon || site.favicon;
-  const parsedUrl = site.parsedUrl || urlParse(site.url || "");
-  const label = prettyUrl(parsedUrl.hostname);
-  return {favicon, parsedUrl, label};
-}
 
 const selectSiteIcon = createSelector(
   site => site,
@@ -181,12 +178,10 @@ module.exports.selectHistory = createSelector(
     selectSpotlight,
     state => state.History
   ],
-  (Spotlight, History) => {
-    return {
-      Spotlight: Object.assign({}, Spotlight, {rows: dedupe.one(Spotlight.rows)}),
-      History
-    };
-  }
+  (Spotlight, History) => ({
+    Spotlight: Object.assign({}, Spotlight, {rows: dedupe.one(Spotlight.rows)}),
+    History
+  })
 );
 
 // Timeline Bookmarks

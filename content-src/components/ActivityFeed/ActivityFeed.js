@@ -24,9 +24,7 @@ const CALENDAR_HEADINGS = {
 
 const ActivityFeedItem = React.createClass({
   getInitialState() {
-    return {
-      showContextMenu: false
-    };
+    return {showContextMenu: false};
   },
   getDefaultProps() {
     return {
@@ -104,10 +102,21 @@ ActivityFeedItem.propTypes = {
   type: React.PropTypes.string,
   dateDisplay: React.PropTypes.number,
   provider_display: React.PropTypes.string,
-  parsedUrl: React.PropTypes.shape({
-    hostname: React.PropTypes.string
-  })
+  parsedUrl: React.PropTypes.shape({hostname: React.PropTypes.string})
 };
+
+function groupSitesBySession(sites) {
+  const sessions = [[]];
+  sites.forEach((site, i) => {
+    const currentSession = sessions[sessions.length - 1];
+    const nextSite = sites[i + 1];
+    currentSession.push(site);
+    if (nextSite && Math.abs(site.dateDisplay - nextSite.dateDisplay) > SESSION_DIFF) {
+      sessions.push([]);
+    }
+  });
+  return sessions;
+}
 
 function groupSitesByDate(sites) {
   let groupedSites = new Map();
@@ -130,19 +139,6 @@ function groupSitesByDate(sites) {
   return groupedSites;
 }
 
-function groupSitesBySession(sites) {
-  const sessions = [[]];
-  sites.forEach((site, i) => {
-    const currentSession = sessions[sessions.length - 1];
-    const nextSite = sites[i + 1];
-    currentSession.push(site);
-    if (nextSite && Math.abs(site.dateDisplay - nextSite.dateDisplay) > SESSION_DIFF) {
-      sessions.push([]);
-    }
-  });
-  return sessions;
-}
-
 const GroupedActivityFeed = React.createClass({
   getDefaultProps() {
     return {
@@ -162,7 +158,7 @@ const GroupedActivityFeed = React.createClass({
   },
   onShareFactory(index) {
     return url => {
-      alert("Sorry. We are still working on this feature.");
+      alert("Sorry. We are still working on this feature."); // eslint-disable-line no-alert
       this.props.dispatch(actions.NotifyEvent({
         event: "SHARE",
         page: this.props.page,
@@ -175,19 +171,17 @@ const GroupedActivityFeed = React.createClass({
     let maxPreviews = this.props.maxPreviews;
     const sites = this.props.sites
       .slice(0, this.props.length)
-      .map(site => {
-        return Object.assign({}, site, {dateDisplay: site[this.props.dateKey]});
-      });
+      .map(site => Object.assign({}, site, {dateDisplay: site[this.props.dateKey]}));
     const groupedSites = groupSitesByDate(sites);
     let globalCount = -1;
     return (<div className="grouped-activity-feed">
-      {Array.from(groupedSites.keys()).map((date, dateIndex) => {
-        return (<div className="group" key={date}>
+      {Array.from(groupedSites.keys()).map((date, dateIndex) =>
+        (<div className="group" key={date}>
           {this.props.showDateHeadings &&
             <h3 className="section-title">{moment(date).startOf("day").calendar(null, CALENDAR_HEADINGS)}</h3>
           }
-          {groupedSites.get(date).map((sites, outerIndex) => {
-            return (<ul key={date + "-" + outerIndex} className="activity-feed">
+          {groupedSites.get(date).map((sites, outerIndex) =>
+            (<ul key={`${date}-${outerIndex}`} className="activity-feed">
               {sites.map((site, i) => {
                 globalCount++;
                 let preview = null;
@@ -214,10 +208,10 @@ const GroupedActivityFeed = React.createClass({
                     preview={preview}
                     {...site} />);
               })}
-            </ul>);
-          })}
-        </div>);
-      })}
+            </ul>)
+          )}
+        </div>)
+      )}
     </div>);
   }
 });

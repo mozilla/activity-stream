@@ -29,32 +29,30 @@ let gApp;
 let gAppURL;
 let gInitialCachePref = simplePrefs.prefs["query.cache"];
 
-let makeNotifsPromise = cacheStatus => {
-  return new Promise(resolve => {
-    let notifSet = new Set([
-      "getTopFrecentSites-cache",
-      "getRecentBookmarks-cache",
-      "getRecentLinks-cache",
-      "getHighlightsLinks-cache",
-    ]);
-    let notifCount = 0;
-    let observer = function(subject, topic, data) {
-      if (notifSet.has(topic) && data === cacheStatus) {
-        notifCount++;
-      }
-      if (notifCount === notifSet.size) {
-        for (let notif of notifSet) {
-          Services.obs.removeObserver(observer, notif);
-        }
-        resolve(notifCount);
-      }
-    };
-
-    for (let notif of notifSet) {
-      Services.obs.addObserver(observer, notif, false);
+let makeNotifsPromise = cacheStatus => new Promise(resolve => {
+  let notifSet = new Set([
+    "getTopFrecentSites-cache",
+    "getRecentBookmarks-cache",
+    "getRecentLinks-cache",
+    "getHighlightsLinks-cache"
+  ]);
+  let notifCount = 0;
+  let observer = function(subject, topic, data) {
+    if (notifSet.has(topic) && data === cacheStatus) {
+      notifCount++;
     }
-  });
-};
+    if (notifCount === notifSet.size) {
+      for (let notif of notifSet) {
+        Services.obs.removeObserver(observer, notif);
+      }
+      resolve(notifCount);
+    }
+  };
+
+  for (let notif of notifSet) {
+    Services.obs.addObserver(observer, notif, false);
+  }
+});
 
 exports["test caching follows prefs"] = function*(assert) {
   let tabList = [];
@@ -96,7 +94,7 @@ exports["test cache invalidation on history change"] = function*(assert) {
 
   placesCachePromise = makeCachePromise("places");
   let visits = [
-    {uri: NetUtil.newURI("https://example.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED}
   ];
 
   yield PlacesTestUtils.addVisits(visits);
@@ -117,7 +115,7 @@ exports["test cache invalidation on blocklist change"] = function*(assert) {
   placesCachePromise = makeCachePromise("places");
   let visits = [
     {uri: NetUtil.newURI("https://example1.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://example2.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example2.com/"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED}
   ];
 
   yield PlacesTestUtils.addVisits(visits);
@@ -213,7 +211,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
     {uri: NetUtil.newURI("https://example.com/1"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example.com/2"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example.com/3"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://example.com/4"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example.com/4"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED}
   ];
   yield PlacesTestUtils.addVisits(visits);
 
@@ -245,7 +243,7 @@ before(exports, function*() {
   yield placesCachePromise;
 });
 
-after(exports, function() {
+after(exports, () => {
   gApp.unload();
   PlacesProvider.links.uninit();
   simplePrefs.prefs["query.cache"] = gInitialCachePref || false;

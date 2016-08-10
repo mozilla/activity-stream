@@ -3,15 +3,11 @@ const classNames = require("classnames");
 
 const MediaPreview = React.createClass({
   getInitialState() {
-    return {
-      showPlayer: false
-    };
+    return {showPlayer: false};
   },
 
   getDefaultProps() {
-    return {
-      previewInfo: {},
-    };
+    return {previewInfo: {}};
   },
 
   onPreviewClick(evt) {
@@ -46,7 +42,7 @@ MediaPreview.propTypes = {
   previewInfo: React.PropTypes.shape({
     previewURL: React.PropTypes.string,
     thumbnail: React.PropTypes.object,
-    type: React.PropTypes.string,
+    type: React.PropTypes.string
   })
 };
 

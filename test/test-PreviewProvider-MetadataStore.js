@@ -28,11 +28,7 @@ exports.test_metadatastore_saves_new_links = function*(assert) {
     {cache_key: "https://www.mozilla.org/", places_url: "https://www.mozilla.org/"},
     {cache_key: "https://www.mozilla.org/en-US/firefox/new/", places_url: "https://www.mozilla.org/en-US/firefox/new"},
     {cache_key: "https://notinDB.com/", places_url: "https://www.notinDB.com/", sanitized_url: "https://www.notinDB.com/"}];
-  const fakeResponse = {"urls": {
-    "https://www.notinDB.com/": {
-      "embedlyMetaData": "some embedly metadata"
-    }
-  }};
+  const fakeResponse = {"urls": {"https://www.notinDB.com/": {"embedlyMetaData": "some embedly metadata"}}};
 
   let srv = httpd.startServerAsync(gPort);
   srv.registerPathHandler("/previewProviderMetadataStore", function handle(request, response) {
@@ -116,7 +112,7 @@ function waitForAsyncReset() {
         !nImages[0].count &&
         !nMetadataImages[0].count;
     } catch (e) {
-      /* ignore whatever error that makes the query above fail */
+      // ignore whatever error that makes the query above fail
       return false;
     }
   }, 10);

@@ -17,11 +17,10 @@ module.exports = function Experiments(prevState = defaultState, action) {
       error: action.data,
       values: prevState.values
     };
-  } else {
-    return {
-      init: true,
-      error: false,
-      values: action.data
-    };
   }
+  return {
+    init: true,
+    error: false,
+    values: action.data
+  };
 };

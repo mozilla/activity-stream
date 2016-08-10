@@ -58,10 +58,10 @@ exports.test_only_request_links_once = function*(assert) {
   gPreviewProvider._asyncSaveLinks(msg1);
   yield gPreviewProvider._asyncSaveLinks(msg2);
 
-  for (let url in urlsRequested) {
+  Object.keys(urlsRequested).forEach(url => {
     // each url should have a count of just one
     assert.equal(urlsRequested[url], 1, "URL was requested only once");
-  }
+  });
 
   yield new Promise(resolve => {
     srv.stop(resolve);
@@ -88,7 +88,7 @@ exports.test_filter_urls = function(assert) {
         {"url": "http://0.0.0.0", "title": "blah"},
         {"url": null, "title": "blah"}
       ];
-    },
+    }
   };
 
   // all valid urls should be allowed through the filter and should be returned
@@ -196,17 +196,13 @@ exports.test_throw_out_non_requested_responses = function*(assert) {
   const fakeData = [fakeSite1, fakeSite2, fakeSite4];
 
   // receive site 1, 2, 3
-  const fakeResponse = {"urls": {
-    "http://example1.com/": {
-      "embedlyMetaData": "some good embedly metadata for fake site 1"
-    },
-    "http://example2.com/": {
-      "embedlyMetaData": "some good embedly metadata for fake site 2"
-    },
-    "http://example3.com/": {
-      "embedlyMetaData": "oh no I didn't request this!"
+  const fakeResponse = {
+    "urls": {
+      "http://example1.com/": {"embedlyMetaData": "some good embedly metadata for fake site 1"},
+      "http://example2.com/": {"embedlyMetaData": "some good embedly metadata for fake site 2"},
+      "http://example3.com/": {"embedlyMetaData": "oh no I didn't request this!"}
     }
-  }};
+  };
 
   assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
   let srv = httpd.startServerAsync(gPort);
@@ -247,11 +243,7 @@ exports.test_mock_embedly_request = function*(assert) {
     "cache_key": "example.com/"
   };
   const fakeRequest = [fakeSite];
-  const fakeResponse = {"urls": {
-    "http://example.com/": {
-      "embedlyMetaData": "some embedly metadata"
-    }
-  }};
+  const fakeResponse = {"urls": {"http://example.com/": {"embedlyMetaData": "some embedly metadata"}}};
 
   const embedlyVersionQuery = "addon_version=";
   assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
@@ -302,7 +294,7 @@ exports.test_get_enhanced_previews_only = function*(assert) {
   assert.equal(links.length, 1, "when previewOnly is set, return only links with previews");
 };
 
-before(exports, function() {
+before(exports, () => {
   simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/embedlyLinkData`;
   simplePrefs.prefs["previews.enabled"] = true;
   let mockMetadataStore = {
@@ -324,7 +316,7 @@ before(exports, function() {
   gPreviewProvider = new PreviewProvider(mockTabTracker, mockMetadataStore, {initFresh: true});
 });
 
-after(exports, function() {
+after(exports, () => {
   simplePrefs.prefs["embedly.endpoint"] = gPrefEmbedly;
   simplePrefs.prefs["previews.enabled"] = gPrefEnabled;
   gMetadataStore = [];

@@ -15,9 +15,7 @@ const TimelineBookmarks = React.createClass({
   }
 });
 
-TimelineBookmarks.propTypes = {
-  Bookmarks: React.PropTypes.object.isRequired
-};
+TimelineBookmarks.propTypes = {Bookmarks: React.PropTypes.object.isRequired};
 
 module.exports = connect(selectBookmarks)(TimelineBookmarks);
 

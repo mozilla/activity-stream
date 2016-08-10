@@ -5,9 +5,7 @@ const {selectSpotlight} = require("selectors/selectors");
 
 const BASE_TIP_TOP_FAVICON_URL = "favicons/images/";
 
-faker.timestamp = () => {
-  return moment().unix();
-};
+faker.timestamp = () => moment().unix();
 
 faker.internet.rgbColor = () => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(faker.internet.color());
@@ -19,7 +17,7 @@ faker.internet.rgbColor = () => {
 };
 
 function arrayOf(mapFn, size) {
-  return Array.apply(null, Array(size)).map(mapFn);
+  return Array(...Array(size)).map(mapFn);
 }
 
 function createColor(color) {
@@ -32,7 +30,7 @@ function createColor(color) {
 function createImage() {
   return {
     "caption": null,
-    "url": faker.image.imageUrl() + "?r=" + faker.random.uuid(),
+    "url": `${faker.image.imageUrl()}?r=${faker.random.uuid()}`,
     "height": 640,
     "width": 480,
     "colors": [createColor()],
@@ -54,8 +52,8 @@ const CREATE_SITE_DEFAULTS = {
 // hasBookmark
 // isRecommended
 // override
-function createSite(options = {}) {
-  options = Object.assign({}, CREATE_SITE_DEFAULTS, options);
+function createSite(optional = {}) {
+  let options = Object.assign({}, CREATE_SITE_DEFAULTS, optional);
 
   const date = options.moment || moment().subtract(10, "seconds");
 
@@ -107,7 +105,7 @@ function createSite(options = {}) {
 
   if (options.hasBookmark || site.type === "bookmark") {
     site.bookmarkDateCreated = date.add(1, "seconds").valueOf();
-    site.bookmarkGuid = "" + faker.random.number();
+    site.bookmarkGuid = `${faker.random.number()}`;
   }
 
   if (site.type === "bookmark") {
@@ -160,8 +158,9 @@ function randomWeighter(weights) {
     return faker.random.arrayElement(pick.values);
   }
   if (pick.range) {
-    return faker.random.arrayElement(range.apply(null, pick.range));
+    return faker.random.arrayElement(range(...pick.range));
   }
+  return undefined;
 }
 
 function createRows({

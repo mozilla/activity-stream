@@ -19,7 +19,7 @@ const NewTabPage = React.createClass({
     return {
       showSettingsMenu: false,
       renderedOnce: false,
-      showRecommendations: true,
+      showRecommendations: true
     };
   },
   toggleRecommendation() {

@@ -15,7 +15,7 @@ const fakeSiteWithImage = faker.createSite();
 
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 
-describe("Spotlight", function() {
+describe("Spotlight", () => {
   let instance;
   let el;
   beforeEach(() => {
@@ -51,6 +51,7 @@ describe("Spotlight", function() {
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
     });
     it("should fire a click event an item is clicked with url and recommender type when site is a recommendation", done => {
+      let fakeRecommendation = {url: "http://example.com", recommender_type: "pocket-trending", recommended: true};
       function dispatch(a) {
         if (a.type === "NOTIFY_USER_EVENT") {
           assert.equal(a.data.event, "CLICK");
@@ -64,7 +65,6 @@ describe("Spotlight", function() {
         }
       }
       let fakeSitesWithRecommendation = fakeSpotlightItems;
-      let fakeRecommendation = {url: "http://example.com", recommender_type: "pocket-trending", recommended: true};
       fakeSitesWithRecommendation[0] = Object.assign({}, fakeSitesWithRecommendation[0], fakeRecommendation);
       instance = renderWithProvider(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSitesWithRecommendation} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
@@ -72,7 +72,7 @@ describe("Spotlight", function() {
   });
 });
 
-describe("SpotlightItem", function() {
+describe("SpotlightItem", () => {
   const fakeSite = fakeSiteWithImage;
   let instance;
   let el;

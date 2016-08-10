@@ -1,7 +1,7 @@
 module.exports = {
-  log() {
+  log(...args) {
     if (__CONFIG__.LOGGING) {
-      console.log.apply(console, arguments); // eslint-disable-line no-console
+      console.log(...args); // eslint-disable-line no-console
     }
   }
 };

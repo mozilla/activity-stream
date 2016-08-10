@@ -53,7 +53,7 @@ am.ACTIONS_WITH_SITES = new Set([
   "TOP_FRECENT_SITES_RESPONSE",
   "RECENT_BOOKMARKS_RESPONSE",
   "RECENT_LINKS_RESPONSE",
-  "HIGHLIGHTS_LINKS_RESPONSE",
+  "HIGHLIGHTS_LINKS_RESPONSE"
 ].map(type => am.type(type)));
 
 function Notify(type, data) {
@@ -175,11 +175,10 @@ function NotifyBookmarkDelete(bookmarkGuid) {
 }
 
 function NotifyHistoryDelete(data) {
-  if (confirm("Are you sure you want to delete this from your entire history? This action cannot be undone.")) {
+  if (confirm("Are you sure you want to delete this from your entire history? This action cannot be undone.")) { // eslint-disable-line no-alert
     return Notify("NOTIFY_HISTORY_DELETE", data);
-  } else {
-    return {type: "NOTIFY_HISTORY_DELETE_CANCELLED"};
   }
+  return {type: "NOTIFY_HISTORY_DELETE_CANCELLED"};
 }
 
 function NotifyBlockURL(url) {

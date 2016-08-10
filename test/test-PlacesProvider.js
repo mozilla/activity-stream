@@ -43,7 +43,7 @@ exports.test_LinkChecker_securityCheck = function(assert) {
     {url: "about:newtab", expected: true},
     {url: "https://example.com", expected: true},
     {url: "ftp://example.com", expected: true},
-    {url: "place:sort=foo", expected: false},
+    {url: "place:sort=foo", expected: false}
   ];
   for (let {url, expected} of urls) {
     let observed = PlacesProvider.LinkChecker.checkLoadURI(url);
@@ -84,7 +84,7 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
     // sort by last visit date, frecency 200
     {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeLater, transition: TRANSITION_TYPED},
     // sort by frecency, frecency 10
-    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeLater, transition: TRANSITION_LINK},
+    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeLater, transition: TRANSITION_LINK}
   ];
 
   let links = yield provider.getTopFrecentSites();
@@ -114,9 +114,7 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
 
 exports.test_Links_getHighlightsLinks = function*(assert) {
   let provider = PlacesProvider.links;
-  let {
-    TRANSITION_TYPED,
-  } = PlacesUtils.history;
+  let {TRANSITION_TYPED} = PlacesUtils.history;
 
   let timeToday = timeDaysAgo(0);
   let timeEarlier = timeDaysAgo(2);
@@ -125,7 +123,7 @@ exports.test_Links_getHighlightsLinks = function*(assert) {
     {uri: NetUtil.newURI("https://example1.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example2.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example3.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://mail.google.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://mail.google.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED}
   ];
 
   let links = yield provider.getHighlightsLinks();
@@ -155,7 +153,7 @@ exports.test_Links_getRecentLinks = function*(assert) {
     // sort by last visit date, frecency 200
     {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeDaysAgo(2), transition: TRANSITION_TYPED},
     // sort by frecency, frecency 10
-    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeDaysAgo(2), transition: TRANSITION_LINK},
+    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeDaysAgo(2), transition: TRANSITION_LINK}
   ];
 
   let links = yield provider.getRecentLinks();
@@ -219,7 +217,7 @@ exports.test_Links_getFrecentLinks = function*(assert) {
     // sort by last visit date, frecency 200
     {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeDaysAgo(4), transition: TRANSITION_TYPED},
     // sort by frecency, frecency 10
-    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeDaysAgo(0), transition: TRANSITION_LINK},
+    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeDaysAgo(0), transition: TRANSITION_LINK}
   ];
 
   let bookmarkItem = {url: "https://mozilla5.com/4", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK};
@@ -266,7 +264,7 @@ exports.test_Links_asyncDeleteBookmark = function*(assert) {
 
   let bookmarks = [
     {url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
-    {url: "https://mozilla1.com/1", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
+    {url: "https://mozilla1.com/1", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK}
   ];
 
   let links = yield provider.getRecentBookmarks();
@@ -304,7 +302,7 @@ exports.test_Links_deleteHistoryLink = function*(assert) {
     // frecency 200
     {uri: NetUtil.newURI("https://mozilla1.com/0"), visitDate: timeDaysAgo(1), transition: TRANSITION_TYPED},
     // sort by url, frecency 200
-    {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeDaysAgo(0), transition: TRANSITION_LINK},
+    {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeDaysAgo(0), transition: TRANSITION_LINK}
   ];
 
   let links = yield provider.getRecentLinks();
@@ -336,6 +334,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   provider.init();
 
   /** start setup **/
+
   let timeEarlier = timeDaysAgo(0);
   let timeLater = timeDaysAgo(2);
 
@@ -347,13 +346,13 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
     // sort by last visit date, frecency 200
     {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeLater, transition: TRANSITION_TYPED},
     // sort by frecency, frecency 10
-    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeLater, transition: TRANSITION_LINK},
+    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeLater, transition: TRANSITION_LINK}
   ];
 
   let bookmarks = [
     {url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
     {url: "https://mozilla1.com/1", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
-    {url: "https://mozilla1.com/2", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
+    {url: "https://mozilla1.com/2", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK}
   ];
 
   let bookmarkURLSet = new Set(bookmarks.map(bm => bm.url));
@@ -369,10 +368,11 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   let faviconData = {
     "https://mozilla1.com/0": null,
     "https://mozilla2.com/1": null,
-    "https://mozilla3.com/2": base64URL,
+    "https://mozilla3.com/2": base64URL
   };
   yield PlacesTestUtils.addVisits(visits);
   yield PlacesTestUtils.addFavicons(faviconData);
+
   /** end setup **/
 
   let bookmarkNotificationPromise = new Promise((resolve, reject) => {
@@ -463,6 +463,7 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   provider.init();
 
   /** start setup **/
+
   let timeEarlier = timeDaysAgo(0);
   let timeLater = timeDaysAgo(2);
 
@@ -474,13 +475,13 @@ exports.test_Links_bookmark_notifications = function*(assert) {
     // sort by last visit date, frecency 200
     {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeLater, transition: TRANSITION_TYPED},
     // sort by frecency, frecency 10
-    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeLater, transition: TRANSITION_LINK},
+    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeLater, transition: TRANSITION_LINK}
   ];
 
   let bookmarks = [
     {url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
     {url: "https://mozilla1.com/1", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
-    {url: "https://mozilla1.com/2", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
+    {url: "https://mozilla1.com/2", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK}
   ];
 
   let links = yield provider.getRecentBookmarks();
@@ -492,10 +493,11 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   let faviconData = {
     "https://mozilla1.com/0": null,
     "https://mozilla2.com/1": null,
-    "https://mozilla3.com/2": base64URL,
+    "https://mozilla3.com/2": base64URL
   };
   yield PlacesTestUtils.addVisits(visits);
   yield PlacesTestUtils.addFavicons(faviconData);
+
   /** end setup **/
 
   let bookmarkNotificationPromise;
@@ -561,11 +563,10 @@ exports.test_Links_onLinkChanged = function*(assert) {
 
   let linkChangedPromise = new Promise(resolve => {
     let handler = (_, link) => {
-      /* There are 3 linkChanged events:
-       * 1. visit insertion (-1 frecency by default)
-       * 2. frecency score update (after transition type calculation etc)
-       * 3. title change
-       */
+      // There are 3 linkChanged events:
+      // 1. visit insertion (-1 frecency by default)
+      // 2. frecency score update (after transition type calculation etc)
+      // 3. title change
       if (link.url === url) {
         assert.equal(link.url, url, "expected url on linkChanged event");
         linkChangedMsgCount += 1;
@@ -691,9 +692,7 @@ exports.test_Links_getHistorySize = function*(assert) {
 
 exports.test_blocked_urls = function*(assert) {
   let provider = PlacesProvider.links;
-  let {
-    TRANSITION_TYPED,
-  } = PlacesUtils.history;
+  let {TRANSITION_TYPED} = PlacesUtils.history;
 
   let timeToday = timeDaysAgo(0);
   let timeEarlier = timeDaysAgo(2);
@@ -702,7 +701,7 @@ exports.test_blocked_urls = function*(assert) {
     {uri: NetUtil.newURI("https://example1.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example2.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
     {uri: NetUtil.newURI("https://example3.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://example4.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example4.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED}
   ];
   yield PlacesTestUtils.addVisits(visits);
   yield Bookmarks.insert({url: "https://example5.com/", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});

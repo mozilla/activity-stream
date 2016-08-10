@@ -3,8 +3,7 @@ const {getColor} = require("lib/ColorAnalyzerProvider");
 const {colors} = require("./resources/colors");
 
 exports["test getColor"] = function*(assert) {
-  for (let i in colors) {
-    const color = colors[i];
+  for (let color of colors) {
     const result = yield getColor(color.uri);
     assert.deepEqual(result, color.rgb, `color should be ${color.rgb.join(", ")}`);
   }

@@ -39,12 +39,8 @@ module.exports = function(config) {
       "content-test/index.js",
       {pattern: "data/content/favicons/**/*", watched: false, included: false, served: true}
     ],
-    proxies: {
-      "/favicons/": "/base/data/content/favicons/"
-    },
-    preprocessors: {
-      "content-test/**/*.js": ["webpack", "sourcemap"]
-    },
+    proxies: {"/favicons/": "/base/data/content/favicons/"},
+    preprocessors: {"content-test/**/*.js": ["webpack", "sourcemap"]},
     webpack: {
       devtool: "inline-source-map",
       resolve: webpack.resolve,
@@ -59,8 +55,6 @@ module.exports = function(config) {
       },
       plugins: webpack.plugins
     },
-    webpackMiddleware: {
-      noInfo: true
-    }
+    webpackMiddleware: {noInfo: true}
   });
 };

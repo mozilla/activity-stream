@@ -10,13 +10,15 @@ const gPort = 8079;
 
 let gRecommendationProvider;
 let gPrefPocket = simplePrefs.prefs["pocket.endpoint"];
-let fakeResponse = {"urls": [
+let fakeResponse = {
+  "urls": [
   {url: "http://example.com/1"},
   {url: "http://example.com/2"},
   {url: "http://example.com/3"},
   {url: "http://example.com/4"},
-  {url: "http://example.com/5"},
-]};
+  {url: "http://example.com/5"}
+  ]
+};
 
 exports.test_get_recommended_content = function*(assert) {
   assert.ok(gRecommendationProvider._pocketEndpoint, "The pocket endpoint is set");
@@ -56,7 +58,7 @@ exports.test_update_recommendations = function*(assert) {
 
   // start the timer to update the data and wait for it to trigger
   gRecommendationProvider._asyncUpdateRecommendations(100);
-  yield waitUntil(() => {return true;}, 1000);
+  yield waitUntil(() => true, 1000);
 
   // check that the recommendations got updated
   assert.equal(gRecommendationProvider._recommendedContent.length, 4, "updated the recommended content to 4 recommendations");
@@ -148,7 +150,7 @@ exports.test_random_recommendation = function(assert) {
   assert.equal(recommendation, null, "there are no allowed recommendations so we don't have a recommendation to show");
 };
 
-before(exports, function() {
+before(exports, () => {
   simplePrefs.prefs["pocket.endpoint"] = `http://localhost:${gPort}/pocketRecommendations`;
   // PreviewProvider needs to attach some metadata to these recommendations
   const mockPreviewProvider = {
@@ -162,7 +164,7 @@ before(exports, function() {
   gRecommendationProvider = new RecommendationProvider(mockPreviewProvider, mockTabTracker);
 });
 
-after(exports, function() {
+after(exports, () => {
   simplePrefs.prefs["pocket.endpoint"] = gPrefPocket;
   gRecommendationProvider.uninit();
 });

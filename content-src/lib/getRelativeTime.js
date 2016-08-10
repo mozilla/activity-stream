@@ -20,6 +20,4 @@ moment.updateLocale("en", {
   }
 });
 
-module.exports = unixTimestamp => {
-  return moment(unixTimestamp).fromNow();
-};
+module.exports = unixTimestamp => moment(unixTimestamp).fromNow();

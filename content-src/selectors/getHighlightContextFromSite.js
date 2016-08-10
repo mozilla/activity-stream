@@ -21,7 +21,7 @@ module.exports = function getHighlightContextFromSite(site) {
   // will be added in the future
   } else if (site.syncedFrom) {
     result.type = "synced";
-    result.label = "Synced from " + site.syncedFrom;
+    result.label = `Synced from ${site.syncedFrom}`;
     result.date = site.lastVisitDate;
   } else if (site.isOpen) {
     result.type = "open";

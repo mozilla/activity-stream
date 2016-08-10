@@ -26,14 +26,14 @@ const TimelinePage = React.createClass({
       <main className="timeline">
         <nav className="sidebar" onScroll={this.onScroll}>
           <ul>
-            {navItems.map(item => {
-              return (<li key={item.to}>
+            {navItems.map(item =>
+              (<li key={item.to}>
                 <Link to={item.to} className={classNames({active: item.to === pathname})}>
                   <span className={`icon icon-${item.icon}`} />
                   <span className="link-title">{item.title}</span>
                 </Link>
-              </li>);
-            })}
+              </li>)
+            )}
           </ul>
         </nav>
         {this.props.children}

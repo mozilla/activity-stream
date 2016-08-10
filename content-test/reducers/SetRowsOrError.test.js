@@ -105,13 +105,16 @@ describe("setRowsOrError", () => {
   });
 
   it("should set bookmark status of history items on RECEIVE_BOOKMARK_ADDED", () => {
-    const action = {type: "RECEIVE_BOOKMARK_ADDED", data: {
-      bookmarkGuid: "bookmark123",
-      lastModified: 1234124,
-      frecency: 200,
-      bookmarkTitle: "foo",
-      url: "https://foo.com"
-    }};
+    const action = {
+      type: "RECEIVE_BOOKMARK_ADDED",
+      data: {
+        bookmarkGuid: "bookmark123",
+        lastModified: 1234124,
+        frecency: 200,
+        bookmarkTitle: "foo",
+        url: "https://foo.com"
+      }
+    };
     const prevRows = [
       {type: "history", url: "blah.com"},
       {type: "history", url: "https://foo.com", frecency: 1}
@@ -125,10 +128,13 @@ describe("setRowsOrError", () => {
   });
 
   it("should remove bookmark status of history items on RECEIVE_BOOKMARK_REMOVED", () => {
-    const action = {type: "RECEIVE_BOOKMARK_REMOVED", data: {
-      url: "https://foo.com",
-      bookmarkId: 123
-    }};
+    const action = {
+      type: "RECEIVE_BOOKMARK_REMOVED",
+      data: {
+        url: "https://foo.com",
+        bookmarkId: 123
+      }
+    };
     const prevRows = [
       {type: "history", url: "blah.com"},
       {

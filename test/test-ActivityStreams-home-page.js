@@ -11,11 +11,11 @@ exports["test activity stream loads on home page when appropriate"] = function(a
   let app = getTestActivityStream({pageURL: url});
 
   // By default, the home page should be set to ActivityStream.
-  assert.equal(url + "#/", prefService.get("browser.startup.homepage"));
+  assert.equal(`${url}#/`, prefService.get("browser.startup.homepage"));
 
   // Unload ActivityStream and the home page should still be ours.
   app.unload();
-  assert.equal(url + "#/", prefService.get("browser.startup.homepage"));
+  assert.equal(`${url}#/`, prefService.get("browser.startup.homepage"));
 
   // Unload ActivityStream with reason="disable" and it should be unset.
   app.unload("disable");

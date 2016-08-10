@@ -37,8 +37,7 @@ function createPingSentPromise(pingData, expectedPingCount) {
 function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedUnloadReasons, hasLoadLatency) {
   let numActivations = expectedLoadReasons.length;
   assert.equal(pingData.length, numActivations, `The activity streams page was activated ${numActivations} times`);
-  for (let i in pingData) {
-    let ping = pingData[i];
+  pingData.forEach((ping, i) => {
     assert.equal(ping.load_reason, expectedLoadReasons[i], "Loaded for the expected reason");
     assert.equal(ping.unload_reason, expectedUnloadReasons[i], "Unloaded for the expected reason");
     // setup expected keys list and modify ping based on hasLoadLatency flag
@@ -65,33 +64,7 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
     if (ping.load_reason !== "none") {
       assert.notEqual(ping.session_duration, 0, "session_duration is not 0");
     }
-  }
-}
-
-function waitForPageLoadAndSessionComplete() {
-  function onShow(tab) {
-    function onPageLoaded(subject, topic, data) {
-      Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
-      setTimeout(function() {
-        tab.close(() => {
-          tabs.removeListener("pageshow", onShow);
-        });
-      }, 10);
-    }
-    Services.obs.addObserver(onPageLoaded, "performance-log-complete", false);
-  }
-  return waitSessionComplete(onShow);
-}
-
-function waitForPageShowAndSessionComplete() {
-  function onShow(tab) {
-    setTimeout(function() {
-      tab.close(() => {
-        tabs.removeListener("pageshow", onShow);
-      });
-    }, 10);
-  }
-  return waitSessionComplete(onShow);
+  });
 }
 
 function waitSessionComplete(onShow) {
@@ -107,6 +80,32 @@ function waitSessionComplete(onShow) {
 
     Services.obs.addObserver(onSessionComplete, "tab-session-complete", false);
   });
+}
+
+function waitForPageLoadAndSessionComplete() {
+  function onShow(tab) {
+    function onPageLoaded(subject, topic, data) {
+      Services.obs.removeObserver(onPageLoaded, "performance-log-complete");
+      setTimeout(() => {
+        tab.close(() => {
+          tabs.removeListener("pageshow", onShow);
+        });
+      }, 10);
+    }
+    Services.obs.addObserver(onPageLoaded, "performance-log-complete", false);
+  }
+  return waitSessionComplete(onShow);
+}
+
+function waitForPageShowAndSessionComplete() {
+  function onShow(tab) {
+    setTimeout(() => {
+      tab.close(() => {
+        tabs.removeListener("pageshow", onShow);
+      });
+    }, 10);
+  }
+  return waitSessionComplete(onShow);
 }
 
 exports.test_TabTracker_init = function(assert) {
@@ -161,14 +160,14 @@ exports.test_TabTracker_unfocus_unloaded_tab = function*(assert) {
 
   // Close both tabs.
   let tabClosedPromise = new Promise(resolve => {
-    for (let i in openTabs) {
-      openTabs[i].close(() => {
-        if (Number(i) === openTabs.length - 1) {
+    openTabs.forEach((tab, i) => {
+      tab.close(() => {
+        if (i === openTabs.length - 1) {
           // We've closed the last tab
           resolve();
         }
       });
-    }
+    });
   });
 
   yield tabClosedPromise;
@@ -278,14 +277,14 @@ exports.test_TabTracker_reactivating = function*(assert) {
 
   // Close both tabs.
   let tabClosedPromise = new Promise(resolve => {
-    for (let i in openTabs) {
-      openTabs[i].close(() => {
-        if (Number(i) === openTabs.length - 1) {
+    openTabs.forEach((tab, i) => {
+      tab.close(() => {
+        if (i === openTabs.length - 1) {
           // We've closed the last tab
           resolve();
         }
       });
-    }
+    });
   });
 
   yield tabClosedPromise;
@@ -317,7 +316,7 @@ exports.test_TabTracker_close_window_with_multitabs = function*(assert) {
 
   tabs.open(ACTIVITY_STREAMS_URL);
   // open another tab a bit later so that the first one could completely load
-  setTimeout(function() {
+  setTimeout(() => {
     tabs.open(ACTIVITY_STREAMS_URL);
   }, 1000);
 
@@ -325,14 +324,14 @@ exports.test_TabTracker_close_window_with_multitabs = function*(assert) {
 
   // close both tabs
   let tabClosedPromise = new Promise(resolve => {
-    for (let i in openTabs) {
-      openTabs[i].close(() => {
-        if (Number(i) === openTabs.length - 1) {
+    openTabs.forEach((tab, i) => {
+      tab.close(() => {
+        if (i === openTabs.length - 1) {
           // We've closed the last tab
           resolve();
         }
       });
-    }
+    });
   });
 
   yield tabClosedPromise;
@@ -633,7 +632,7 @@ exports.test_TabTracker_session_reports = function*(assert) {
       if (tab.url === "http://www.example.com/") {
         // second page load - simply close the tab
         tabs.removeListener("ready", onOpen);
-        setTimeout(function() {
+        setTimeout(() => {
           tab.close(resolve);
         }, 10);
       } else {
@@ -694,7 +693,7 @@ before(exports, function*() {
   ACTIVITY_STREAMS_URL = app.appURLs[1];
 });
 
-after(exports, function() {
+after(exports, () => {
   app.unload();
 });
 

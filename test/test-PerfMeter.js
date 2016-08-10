@@ -73,7 +73,7 @@ function verifyPerfEvents(eventsArray, assert) {
     "HIGHLIGHTS_LINKS_REQUEST",
     "HIGHLIGHTS_LINKS_RESPONSE",
     "SEARCH_STATE_RESPONSE",
-    "NOTIFY_PERFORMANCE",
+    "NOTIFY_PERFORMANCE"
   ]);
 
   let expectedData = new Set([
@@ -83,7 +83,7 @@ function verifyPerfEvents(eventsArray, assert) {
 
   let seenEvents = new Set();
   for (let event of eventsArray) {
-    assert.ok(exectedEvents.has(event.tag), "Received expected event " + event.tag);
+    assert.ok(exectedEvents.has(event.tag), `Received expected event ${event.tag}`);
     assert.ok(!seenEvents.has(event.tag + event.data), "Event tag and data pair is unique");
     if (event.tag === "NOTIFY_PERFORMANCE") {
       assert.ok(expectedData.has(event.data) || event.data.startsWith("DOC_READY_STATE"),
@@ -119,7 +119,7 @@ exports.test_PerfMeter_events = function*(assert) {
   function toString(item) {return item.start + item.tag + item.data;}
   let eventsSet = new Set(events.map(item => toString(item)));
   notifyData.events.forEach(item => {
-    assert.ok(eventsSet.has(toString(item)), "Matched item " + item.tag);
+    assert.ok(eventsSet.has(toString(item)), `Matched item ${item.tag}`);
   });
 
   // test reload
@@ -307,12 +307,12 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
   Services.prefs.clearUserPref("browser.sessionstore.debug");
 };
 
-before(exports, function() {
+before(exports, () => {
   simplePrefs.prefs["performance.log"] = true;
   app = getTestActivityStream();
 });
 
-after(exports, function() {
+after(exports, () => {
   app.unload();
 });
 
