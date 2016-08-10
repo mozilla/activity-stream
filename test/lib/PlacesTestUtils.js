@@ -97,7 +97,7 @@ const PlacesTestUtils = Object.freeze({
 
     let urlSet = new Set(urlList);
     // poll every 10ms until history items appear on disk
-    yield waitUntil(function() {
+    yield waitUntil(() => {
       // function needs to be synchronous!
       let rows = getPlacesRows();
       if ((rows.length - initialNumRows) !== urlList.length) {
@@ -134,7 +134,7 @@ const PlacesTestUtils = Object.freeze({
           try {
             PlacesUtils.favicons.setAndFetchFaviconForPage(
               uri, faviconURI, false,
-              PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, function() {
+              PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE, () => {
                 resolve();
               },
               Services.scriptSecurityManager.getSystemPrincipal());

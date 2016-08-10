@@ -9,7 +9,7 @@ function dispatch(action) {
 }
 
 module.exports = function() {
-  window.addEventListener(CONTENT_TO_ADDON, function(event) {
+  window.addEventListener(CONTENT_TO_ADDON, event => {
     const action = JSON.parse(event.detail);
     switch (action.type) {
       case "TOP_FRECENT_SITES_REQUEST":

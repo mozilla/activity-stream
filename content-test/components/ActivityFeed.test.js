@@ -33,7 +33,7 @@ const fakeSiteWithBookmark = Object.assign({}, fakeSite, {
   "bookmarkGuid": "G6LXclyo_WAj"
 });
 
-describe("ActivityFeedItem", function() {
+describe("ActivityFeedItem", () => {
   let instance;
   let el;
   beforeEach(() => {
@@ -94,7 +94,7 @@ describe("ActivityFeedItem", function() {
   });
 });
 
-describe("GroupedActivityFeed", function() {
+describe("GroupedActivityFeed", () => {
   let instance;
   let el;
   let sites;

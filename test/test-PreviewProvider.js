@@ -294,7 +294,7 @@ exports.test_get_enhanced_previews_only = function*(assert) {
   assert.equal(links.length, 1, "when previewOnly is set, return only links with previews");
 };
 
-before(exports, function() {
+before(exports, () => {
   simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/embedlyLinkData`;
   simplePrefs.prefs["previews.enabled"] = true;
   let mockMetadataStore = {
@@ -316,7 +316,7 @@ before(exports, function() {
   gPreviewProvider = new PreviewProvider(mockTabTracker, mockMetadataStore, {initFresh: true});
 });
 
-after(exports, function() {
+after(exports, () => {
   simplePrefs.prefs["embedly.endpoint"] = gPrefEmbedly;
   simplePrefs.prefs["previews.enabled"] = gPrefEnabled;
   gMetadataStore = [];

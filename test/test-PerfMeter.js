@@ -307,12 +307,12 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
   Services.prefs.clearUserPref("browser.sessionstore.debug");
 };
 
-before(exports, function() {
+before(exports, () => {
   simplePrefs.prefs["performance.log"] = true;
   app = getTestActivityStream();
 });
 
-after(exports, function() {
+after(exports, () => {
   app.unload();
 });
 
