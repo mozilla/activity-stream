@@ -83,13 +83,11 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
   [
     state => state.TopSites
   ],
-  TopSites => {
-    return Object.assign({}, TopSites, {
-      rows: dedupe.one(TopSites.rows
-        // Add first run stuff to the end if init has already happened
-        .concat(TopSites.init ? firstRunData.TopSites : []))
-    });
-  }
+  TopSites => Object.assign({}, TopSites, {
+    rows: dedupe.one(TopSites.rows
+      // Add first run stuff to the end if init has already happened
+      .concat(TopSites.init ? firstRunData.TopSites : []))
+  })
 );
 
 module.exports.selectNewTabSites = createSelector(
@@ -181,12 +179,10 @@ module.exports.selectHistory = createSelector(
     selectSpotlight,
     state => state.History
   ],
-  (Spotlight, History) => {
-    return {
-      Spotlight: Object.assign({}, Spotlight, {rows: dedupe.one(Spotlight.rows)}),
-      History
-    };
-  }
+  (Spotlight, History) => ({
+    Spotlight: Object.assign({}, Spotlight, {rows: dedupe.one(Spotlight.rows)}),
+    History
+  })
 );
 
 // Timeline Bookmarks

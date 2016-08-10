@@ -5,9 +5,7 @@ const {selectSpotlight} = require("selectors/selectors");
 
 const BASE_TIP_TOP_FAVICON_URL = "favicons/images/";
 
-faker.timestamp = () => {
-  return moment().unix();
-};
+faker.timestamp = () => moment().unix();
 
 faker.internet.rgbColor = () => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(faker.internet.color());

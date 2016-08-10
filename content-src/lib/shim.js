@@ -15,15 +15,13 @@ module.exports = function() {
       case "TOP_FRECENT_SITES_REQUEST":
         dispatch({
           type: "TOP_FRECENT_SITES_RESPONSE",
-          data: fakeData.TopSites.rows.map(site => {
-            return Object.assign({}, site, { // eslint-disable-line object-curly-newline
+          data: fakeData.TopSites.rows.map(site => Object.assign({}, site, { // eslint-disable-line object-curly-newline
             // images: [],
             // favicon: null,
             // favicon_url: null,
             // favicon_colors: null,
             // description: null
-            }); // eslint-disable-line object-curly-newline
-          })
+          })) // eslint-disable-line object-curly-newline
         });
         break;
       case "RECENT_BOOKMARKS_REQUEST":

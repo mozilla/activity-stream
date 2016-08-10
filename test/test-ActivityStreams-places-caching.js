@@ -29,32 +29,30 @@ let gApp;
 let gAppURL;
 let gInitialCachePref = simplePrefs.prefs["query.cache"];
 
-let makeNotifsPromise = cacheStatus => {
-  return new Promise(resolve => {
-    let notifSet = new Set([
-      "getTopFrecentSites-cache",
-      "getRecentBookmarks-cache",
-      "getRecentLinks-cache",
-      "getHighlightsLinks-cache"
-    ]);
-    let notifCount = 0;
-    let observer = function(subject, topic, data) {
-      if (notifSet.has(topic) && data === cacheStatus) {
-        notifCount++;
-      }
-      if (notifCount === notifSet.size) {
-        for (let notif of notifSet) {
-          Services.obs.removeObserver(observer, notif);
-        }
-        resolve(notifCount);
-      }
-    };
-
-    for (let notif of notifSet) {
-      Services.obs.addObserver(observer, notif, false);
+let makeNotifsPromise = cacheStatus => new Promise(resolve => {
+  let notifSet = new Set([
+    "getTopFrecentSites-cache",
+    "getRecentBookmarks-cache",
+    "getRecentLinks-cache",
+    "getHighlightsLinks-cache"
+  ]);
+  let notifCount = 0;
+  let observer = function(subject, topic, data) {
+    if (notifSet.has(topic) && data === cacheStatus) {
+      notifCount++;
     }
-  });
-};
+    if (notifCount === notifSet.size) {
+      for (let notif of notifSet) {
+        Services.obs.removeObserver(observer, notif);
+      }
+      resolve(notifCount);
+    }
+  };
+
+  for (let notif of notifSet) {
+    Services.obs.addObserver(observer, notif, false);
+  }
+});
 
 exports["test caching follows prefs"] = function*(assert) {
   let tabList = [];
