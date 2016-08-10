@@ -139,6 +139,7 @@ exports.test_random_recommendation = function(assert) {
   assert.equal(recommendation.url, fakeRecommendedContent[0].url, "we picked the correct url");
   assert.ok(recommendation.recommended, "it's been stamped as a recommended url");
   assert.ok(recommendation.recommender_type, "it's been stamped with a recommender type");
+  assert.equal(recommendation.type, "recommended", "it's been stamped with a type");
 
   // getting a random recommendation should return null if there are no recommendations to show
   fakeRecommendedContent = [];
