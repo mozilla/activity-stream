@@ -334,6 +334,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   provider.init();
 
   /** start setup **/
+
   let timeEarlier = timeDaysAgo(0);
   let timeLater = timeDaysAgo(2);
 
@@ -371,6 +372,7 @@ exports.test_Links_getRecentBookmarks_Order = function*(assert) {
   };
   yield PlacesTestUtils.addVisits(visits);
   yield PlacesTestUtils.addFavicons(faviconData);
+
   /** end setup **/
 
   let bookmarkNotificationPromise = new Promise((resolve, reject) => {
@@ -461,6 +463,7 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   provider.init();
 
   /** start setup **/
+
   let timeEarlier = timeDaysAgo(0);
   let timeLater = timeDaysAgo(2);
 
@@ -494,6 +497,7 @@ exports.test_Links_bookmark_notifications = function*(assert) {
   };
   yield PlacesTestUtils.addVisits(visits);
   yield PlacesTestUtils.addFavicons(faviconData);
+
   /** end setup **/
 
   let bookmarkNotificationPromise;
@@ -559,11 +563,10 @@ exports.test_Links_onLinkChanged = function*(assert) {
 
   let linkChangedPromise = new Promise(resolve => {
     let handler = (_, link) => {
-      /* There are 3 linkChanged events:
-       * 1. visit insertion (-1 frecency by default)
-       * 2. frecency score update (after transition type calculation etc)
-       * 3. title change
-       */
+      // There are 3 linkChanged events:
+      // 1. visit insertion (-1 frecency by default)
+      // 2. frecency score update (after transition type calculation etc)
+      // 3. title change
       if (link.url === url) {
         assert.equal(link.url, url, "expected url on linkChanged event");
         linkChangedMsgCount += 1;

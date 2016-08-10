@@ -112,7 +112,7 @@ function waitForAsyncReset() {
         !nImages[0].count &&
         !nMetadataImages[0].count;
     } catch (e) {
-      /* ignore whatever error that makes the query above fail */
+      // ignore whatever error that makes the query above fail
       return false;
     }
   }, 10);
