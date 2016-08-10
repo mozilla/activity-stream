@@ -59,7 +59,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights
   ],
-  (Highlights) => {
+  Highlights => {
     // Only concat first run data if init is true
     const highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
     const rows = assignImageAndBackgroundColor(highlightRows)

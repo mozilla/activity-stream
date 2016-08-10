@@ -79,7 +79,7 @@ const ActivityFeedItem = React.createClass({
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{title}</h4>
             {this._renderItemMeta()}
-            <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)}/>
+            <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)} />
             {this.props.preview && <MediaPreview previewInfo={this.props.preview} />}
           </div>
           <div className="feed-stats">
