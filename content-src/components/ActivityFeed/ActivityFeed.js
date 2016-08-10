@@ -158,7 +158,7 @@ const GroupedActivityFeed = React.createClass({
   },
   onShareFactory(index) {
     return url => {
-      alert("Sorry. We are still working on this feature.");
+      alert("Sorry. We are still working on this feature."); // eslint-disable-line no-alert
       this.props.dispatch(actions.NotifyEvent({
         event: "SHARE",
         page: this.props.page,
