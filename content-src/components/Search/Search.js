@@ -47,7 +47,7 @@ const Search = React.createClass({
     if (index < numSuggestions) {
       return `${index < this.props.formHistory.length ? "history-" : ""}search-suggestions-${index}`;
     } else if (index < numSuggestions + numEngines) {
-      return "search-partners-" + (index - numSuggestions);
+      return `search-partners-${(index - numSuggestions)}`;
     } else if (index === numSuggestions + numEngines) {
       return "search-settings-button";
     }
@@ -279,7 +279,7 @@ const Search = React.createClass({
             const activeEngine = this.getActiveEngine();
             const suggestionIndex = suggestionsIdIndex++;
             return (<li key={suggestion} role="option">
-                  <a id={"history-search-suggestions-" + suggestionIndex}
+                  <a id={`history-search-suggestions-${suggestionIndex}`}
                      onMouseMove={() => this.onMouseMove(suggestionIndex)}
                      className={active ? "active" : ""} role="option"
                      aria-selected={active} onClick={() => this.performSearch({engineName: activeEngine, searchString: suggestion})}>
@@ -295,7 +295,7 @@ const Search = React.createClass({
             const activeEngine = this.getActiveEngine();
             const suggestionIndex = suggestionsIdIndex++;
             return (<li key={suggestion} role="option">
-            <a ref={suggestion} id={"search-suggestions-" + suggestionIndex}
+            <a ref={suggestion} id={`search-suggestions-${suggestionIndex}`}
               onMouseMove={() => this.onMouseMove(suggestionIndex)}
               className={active ? "active" : ""} role="option"
               aria-selected={active}
@@ -313,7 +313,7 @@ const Search = React.createClass({
               const icon = option.icon;
               const active = (this.state.activeEngineIndex === enginesIdIndex);
               return (<li key={option.name} className={active ? "active" : ""}>
-                <a ref={option.name} id={"search-partners-" + enginesIdIndex++} aria-selected={active}
+                <a ref={option.name} id={`search-partners-${enginesIdIndex++}`} aria-selected={active}
                       onClick={() => this.performSearch({engineName: option.name, searchString: this.getActiveSuggestion() || searchString})}>
                 <img src={icon} alt={option.name} width="16" height="16" /></a>
               </li>);

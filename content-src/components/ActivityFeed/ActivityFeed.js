@@ -183,7 +183,7 @@ const GroupedActivityFeed = React.createClass({
             <h3 className="section-title">{moment(date).startOf("day").calendar(null, CALENDAR_HEADINGS)}</h3>
           }
           {groupedSites.get(date).map((sites, outerIndex) => {
-            return (<ul key={date + "-" + outerIndex} className="activity-feed">
+            return (<ul key={`${date}-${outerIndex}`} className="activity-feed">
               {sites.map((site, i) => {
                 globalCount++;
                 let preview = null;

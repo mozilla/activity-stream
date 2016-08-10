@@ -22,7 +22,7 @@ describe("HighlightContext", () => {
 
   it("should render the right icon given a type", () => {
     setup({type: "bookmark"});
-    assert.include(instance.refs.icon.className, "icon-" + types.bookmark.icon);
+    assert.include(instance.refs.icon.className, `icon-${types.bookmark.icon}`);
   });
 
   it("should render props.icon if specified", () => {

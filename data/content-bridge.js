@@ -18,7 +18,7 @@ window.addEventListener("pagehide", () => {
 }, false);
 
 document.onreadystatechange = function() {
-  self.port.emit("content-to-addon", {type: "NOTIFY_PERFORMANCE", data: "DOC_READY_STATE=" + document.readyState});
+  self.port.emit("content-to-addon", {type: "NOTIFY_PERFORMANCE", data: `DOC_READY_STATE=${document.readyState}`});
 };
 
 unsafeWindow.navigator.activity_streams_addon = true;

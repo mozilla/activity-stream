@@ -4,5 +4,5 @@ module.exports = function setFavicon(filePath) {
   if (!iconEl) {
     return;
   }
-  iconEl.href = iconEl.href.replace(/img\/.+$/, "img/" + filePath);
+  iconEl.href = iconEl.href.replace(/img\/.+$/, `img/${filePath}`);
 };

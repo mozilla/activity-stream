@@ -69,7 +69,7 @@ const PlacesTestUtils = Object.freeze({
       let now = Date.now();
       for (let place of places) {
         if (typeof place.title !== "string") {
-          place.title = "test visit for " + place.uri.spec;
+          place.title = `test visit for ${place.uri.spec}`;
         }
         place.visits = [{
           transitionType: place.transition === undefined ? Ci.nsINavHistoryService.TRANSITION_LINK : place.transition,
