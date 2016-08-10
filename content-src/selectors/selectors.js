@@ -79,9 +79,8 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
           return 0;
         } else if (site2Valid) {
           return 1;
-        } else {
-          return -1;
         }
+        return -1;
       });
     return Object.assign({}, Highlights, {rows});
   }

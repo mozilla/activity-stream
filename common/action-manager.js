@@ -177,9 +177,8 @@ function NotifyBookmarkDelete(bookmarkGuid) {
 function NotifyHistoryDelete(data) {
   if (confirm("Are you sure you want to delete this from your entire history? This action cannot be undone.")) {
     return Notify("NOTIFY_HISTORY_DELETE", data);
-  } else {
-    return {type: "NOTIFY_HISTORY_DELETE_CANCELLED"};
   }
+  return {type: "NOTIFY_HISTORY_DELETE_CANCELLED"};
 }
 
 function NotifyBlockURL(url) {
