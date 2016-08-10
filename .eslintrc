@@ -68,6 +68,7 @@
     "comma-spacing": 2,
     "comma-style": 2,
     "computed-property-spacing": [2, "never"],
+    "consistent-return": 2,
     "consistent-this": [2, "use-bind"],
     "constructor-super": 2,
     "curly": [2, "all"],
