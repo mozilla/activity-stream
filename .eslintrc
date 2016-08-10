@@ -92,6 +92,7 @@
     "linebreak-style": [2, "unix"],
     "max-depth": [2, 4],
     "max-len": 0,
+    "max-lines": 0,
     "max-nested-callbacks": [2, 4],
     "max-params": [2, 6],
     "max-statements-per-line": [2, {"max": 2}],
