@@ -185,6 +185,7 @@
     "no-process-env": 0,
     "no-process-exit": 2,
     "no-proto": 2,
+    "no-prototype-builtins": 2,
     "no-redeclare": 2,
     "no-regex-spaces": 2,
     "no-restricted-globals": 2,
