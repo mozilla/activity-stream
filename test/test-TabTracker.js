@@ -68,6 +68,21 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
   }
 }
 
+function waitSessionComplete(onShow) {
+  return new Promise(resolve => {
+    tabs.on("pageshow", onShow);
+
+    function onSessionComplete(subject, topic, data) {
+      if (topic === "tab-session-complete") {
+        Services.obs.removeObserver(onSessionComplete, "tab-session-complete");
+        resolve(JSON.parse(data));
+      }
+    }
+
+    Services.obs.addObserver(onSessionComplete, "tab-session-complete", false);
+  });
+}
+
 function waitForPageLoadAndSessionComplete() {
   function onShow(tab) {
     function onPageLoaded(subject, topic, data) {
@@ -92,21 +107,6 @@ function waitForPageShowAndSessionComplete() {
     }, 10);
   }
   return waitSessionComplete(onShow);
-}
-
-function waitSessionComplete(onShow) {
-  return new Promise(resolve => {
-    tabs.on("pageshow", onShow);
-
-    function onSessionComplete(subject, topic, data) {
-      if (topic === "tab-session-complete") {
-        Services.obs.removeObserver(onSessionComplete, "tab-session-complete");
-        resolve(JSON.parse(data));
-      }
-    }
-
-    Services.obs.addObserver(onSessionComplete, "tab-session-complete", false);
-  });
 }
 
 exports.test_TabTracker_init = function(assert) {

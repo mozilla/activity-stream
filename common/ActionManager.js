@@ -6,6 +6,28 @@ const VALID_KEYS = new Set([
 ]);
 const VALID_KEYS_STRING = Array.from(VALID_KEYS).join(", ");
 
+// This is an extremely bare-bones action types
+// that can be used if you just want a plain action,
+// but you want the validations applied to it
+function BaseAction(action) {
+  return action;
+}
+
+// This is based on redux compose
+function compose([...funcs], context) {
+  context = context || this;
+  return function() {
+    if (funcs.length === 0) {
+      return arguments[0];
+    }
+
+    const last = funcs[funcs.length - 1];
+    const rest = funcs.slice(0, -1);
+
+    return rest.reduceRight((composed, f) => f.bind(context)(composed), last.apply(null, arguments));
+  };
+}
+
 class ActionManager {
   constructor(types) {
     if (!types || typeof types.length === "undefined") {
@@ -58,28 +80,6 @@ class ActionManager {
     }
     return action;
   }
-}
-
-// This is an extremely bare-bones action types
-// that can be used if you just want a plain action,
-// but you want the validations applied to it
-function BaseAction(action) {
-  return action;
-}
-
-// This is based on redux compose
-function compose([...funcs], context) {
-  context = context || this;
-  return function() {
-    if (funcs.length === 0) {
-      return arguments[0];
-    }
-
-    const last = funcs[funcs.length - 1];
-    const rest = funcs.slice(0, -1);
-
-    return rest.reduceRight((composed, f) => f.bind(context)(composed), last.apply(null, arguments));
-  };
 }
 
 module.exports = ActionManager;

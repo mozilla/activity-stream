@@ -105,6 +105,19 @@ ActivityFeedItem.propTypes = {
   parsedUrl: React.PropTypes.shape({hostname: React.PropTypes.string})
 };
 
+function groupSitesBySession(sites) {
+  const sessions = [[]];
+  sites.forEach((site, i) => {
+    const currentSession = sessions[sessions.length - 1];
+    const nextSite = sites[i + 1];
+    currentSession.push(site);
+    if (nextSite && Math.abs(site.dateDisplay - nextSite.dateDisplay) > SESSION_DIFF) {
+      sessions.push([]);
+    }
+  });
+  return sessions;
+}
+
 function groupSitesByDate(sites) {
   let groupedSites = new Map();
   for (let site of sites) {
@@ -124,19 +137,6 @@ function groupSitesByDate(sites) {
     groupedSites.set(key, sessions);
   });
   return groupedSites;
-}
-
-function groupSitesBySession(sites) {
-  const sessions = [[]];
-  sites.forEach((site, i) => {
-    const currentSession = sessions[sessions.length - 1];
-    const nextSite = sites[i + 1];
-    currentSession.push(site);
-    if (nextSite && Math.abs(site.dateDisplay - nextSite.dateDisplay) > SESSION_DIFF) {
-      sessions.push([]);
-    }
-  });
-  return sessions;
 }
 
 const GroupedActivityFeed = React.createClass({

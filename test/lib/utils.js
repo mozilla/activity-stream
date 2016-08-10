@@ -4,6 +4,21 @@ const {Cc, Ci, Cu, components} = require("chrome");
 const {ActivityStreams} = require("lib/ActivityStreams");
 const {stack: Cs} = components;
 
+function doThrow(error, stack) {
+  // If we didn't get passed a stack, maybe the error has one
+  // otherwise get it from our call context
+  stack = stack || error.stack || Cs.caller;
+
+  let filename = "";
+  if (stack instanceof Ci.nsIStackFrame) {
+    filename = stack.filename;
+  } else if (error.fileName) {
+    filename = error.fileName;
+  }
+
+  throw (new Error(`Error at ${filename}`));
+}
+
 function doGetFile(path, allowNonexistent) {
   try {
     let lf = Cc["@mozilla.org/file/directory_service;1"]
@@ -32,21 +47,6 @@ function doGetFile(path, allowNonexistent) {
   }
 
   return null;
-}
-
-function doThrow(error, stack) {
-  // If we didn't get passed a stack, maybe the error has one
-  // otherwise get it from our call context
-  stack = stack || error.stack || Cs.caller;
-
-  let filename = "";
-  if (stack instanceof Ci.nsIStackFrame) {
-    filename = stack.filename;
-  } else if (error.fileName) {
-    filename = error.fileName;
-  }
-
-  throw (new Error(`Error at ${filename}`));
 }
 
 function doDump(object, trailer) {

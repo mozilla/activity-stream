@@ -208,6 +208,7 @@
     "no-unsafe-finally": 2,
     "no-unused-labels": 2,
     "no-unused-vars": [2, {"vars": "all", "args": "none"}],
+    "no-use-before-define": 2,
     "no-useless-call": 2,
     "no-useless-computed-key": 2,
     "no-useless-concat": 2,
