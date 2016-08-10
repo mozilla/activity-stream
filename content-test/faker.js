@@ -52,8 +52,8 @@ const CREATE_SITE_DEFAULTS = {
 // hasBookmark
 // isRecommended
 // override
-function createSite(options = {}) {
-  options = Object.assign({}, CREATE_SITE_DEFAULTS, options);
+function createSite(optional = {}) {
+  let options = Object.assign({}, CREATE_SITE_DEFAULTS, optional);
 
   const date = options.moment || moment().subtract(10, "seconds");
 
