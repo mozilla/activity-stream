@@ -236,6 +236,7 @@
     "prefer-arrow-callback": ["error", {"allowNamedFunctions": true}],
     "prefer-const": 0, // TODO: Change to `1`?
     "prefer-reflect": 0,
+    "prefer-rest-params": 2,
     "prefer-spread": 2,
     "prefer-template": 2,
     "quote-props": [2, "consistent"],

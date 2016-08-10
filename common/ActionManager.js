@@ -17,13 +17,14 @@ function BaseAction(action) {
 function compose([...funcs], context = this) {
   return function() {
     if (funcs.length === 0) {
-      return arguments[0];
+      return arguments[0]; // eslint-disable-line prefer-rest-params
     }
 
     const last = funcs[funcs.length - 1];
     const rest = funcs.slice(0, -1);
 
-    return rest.reduceRight((composed, f) => f.bind(context)(composed), last(...arguments));
+    return rest.reduceRight((composed, f) => f.bind(context)(composed),
+      last(...arguments)); // eslint-disable-line prefer-rest-params
   };
 }
 
@@ -46,12 +47,11 @@ class ActionManager {
   defineActions(definitions) {
     Object.keys(definitions).forEach(name => {
       const definition = definitions[name];
-      const composed = function() {
-        return compose([
+      const composed = (...args) =>
+        compose([
           ...this.validators,
           definition
-        ], this)(...arguments);
-      }.bind(this);
+        ], this)(...args);
       composed.definition = definition;
       this.actions[name] = composed;
     });
