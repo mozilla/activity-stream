@@ -160,6 +160,7 @@ function randomWeighter(weights) {
   if (pick.range) {
     return faker.random.arrayElement(range(...pick.range));
   }
+  return undefined;
 }
 
 function createRows({
