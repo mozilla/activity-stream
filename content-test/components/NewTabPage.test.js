@@ -55,11 +55,7 @@ describe("NewTabPage", () => {
 
   describe("weightedHighlights pref false", () => {
     beforeEach(() => {
-      let pref = {
-        WeightedHighlights: {
-          weightedHighlights: false
-        }
-      };
+      let pref = {WeightedHighlights: {weightedHighlights: false}};
       let prefOff = Object.assign({}, fakeProps, pref);
       instance = renderWithProvider(<NewTabPage {...prefOff} dispatch={() => {}} />);
     });
@@ -94,7 +90,7 @@ describe("NewTabPage", () => {
       const spotlight = TestUtils.findRenderedComponentWithType(instance, Spotlight);
 
       assert.equal(spotlight.props.sites.length, highlights.length);
-      spotlight.props.sites.forEach(function(entry, idx) {
+      spotlight.props.sites.forEach((entry, idx) => {
         assert.equal(entry, highlights[idx]);
       });
     });
@@ -103,7 +99,7 @@ describe("NewTabPage", () => {
       const activityFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
 
       assert.equal(activityFeed.props.sites.length, moreHighlights.length);
-      activityFeed.props.sites.forEach(function(entry, idx) {
+      activityFeed.props.sites.forEach((entry, idx) => {
         assert.equal(entry, moreHighlights[idx]);
       });
     });

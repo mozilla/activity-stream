@@ -9,9 +9,7 @@ const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");
 const classNames = require("classnames");
 
-const {
-    SPOTLIGHT_DEFAULT_LENGTH
-} = require("common/constants");
+const {SPOTLIGHT_DEFAULT_LENGTH} = require("common/constants");
 
 const SpotlightItem = React.createClass({
   getInitialState() {

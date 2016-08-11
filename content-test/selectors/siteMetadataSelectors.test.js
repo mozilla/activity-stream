@@ -5,7 +5,6 @@ const {
   selectSitePreview
 } = require("selectors/siteMetadataSelectors");
 
-const BACKGROUND_FADE = 0.5;
 const {IMG_WIDTH, IMG_HEIGHT} = require("lib/getBestImage");
 
 const validSpotlightSite = {
@@ -21,9 +20,7 @@ const validSpotlightSite = {
     "size": 14757
   }]
 };
-const fakeFavicon = {
-  favicon_url: "fakeFavIcon"
-};
+const fakeFavicon = {favicon_url: "fakeFavIcon"};
 const validSpotlightWithFavicon = Object.assign({}, validSpotlightSite, fakeFavicon);
 
 describe("siteMetadataSelectors", () => {

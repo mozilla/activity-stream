@@ -183,8 +183,8 @@ const GroupedActivityFeed = React.createClass({
       return (<div className="grouped-activity-feed">
         <div className="group">
           <ul className="activity-feed">
-            {this.props.sites.map((site, index) => {
-              return (<ActivityFeedItem
+            {this.props.sites.map((site, index) =>
+              (<ActivityFeedItem
                 displayMoreHighlights={this.props.displayMoreHighlights}
                 key={site.guid || index}
                 onClick={this.onClickFactory(index)}
@@ -194,8 +194,8 @@ const GroupedActivityFeed = React.createClass({
                 page={this.props.page}
                 source="ACTIVITY_FEED"
                 showDate={false}
-                {...site} />);
-            })}
+                {...site} />)
+            )}
           </ul>
         </div>
       </div>);
