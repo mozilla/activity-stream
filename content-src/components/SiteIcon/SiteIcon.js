@@ -1,6 +1,6 @@
 const React = require("react");
 const classNames = require("classnames");
-const {selectSiteIcon} = require("selectors/selectors");
+const {selectSiteIcon} = require("selectors/colorSelectors");
 
 const SiteIcon = React.createClass({
   getDefaultProps() {

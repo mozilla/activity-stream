@@ -15,15 +15,15 @@ class Baseline {
   }
 
   scoreEntry(entry) {
-    let urlObj = URL(entry.url);
-    let host = URL(entry.url).host;
-    let tf = Math.max(entry.visitCount, 1);
-    let idf = Math.log(this.domainCounts.size / Math.max(1, this.domainCounts.get(host)));
-    let imageCount = entry.images ? entry.images.length : 0;
-    let isBookmarked = entry.bookmarkId > 0 ? 1 : 0;
-    let hasDescription = entry.title !== entry.description ? 1 : 0;
+    const urlObj = URL(entry.url);
+    const host = URL(entry.url).host;
+    const tf = Math.max(entry.visitCount, 1);
+    const idf = Math.log(this.domainCounts.size / Math.max(1, this.domainCounts.get(host)));
+    const imageCount = entry.images ? entry.images.length : 0;
+    const isBookmarked = entry.bookmarkId > 0 ? 1 : 0;
+    const hasDescription = entry.title !== entry.description ? 1 : 0;
 
-    let score = this.decay(tf * idf, // Score
+    const score = this.decay(tf * idf, // Score
       // Features: Age in hours, number of visits to url, url query length, number of images, is a bookmark,
       //           has description.
       [this.normalizeTimestamp(entry.lastVisitDate), entry.visitCount, urlObj.query.length,
@@ -42,10 +42,10 @@ class Baseline {
    * @returns {Array.<URLs>} sorted and with the associated score value.
    */
   score(entries) {
-    return entries.map(e => this.scoreEntry(e))
+    return entries.map(entry => this.scoreEntry(entry))
       .filter(e => e.score > 0)
       .sort(this.sortDescByScore)
-      .filter(this.dedupHosts)
+      .filter(this.dedupeHosts)
       .slice(0, INFINITE_SCROLL_THRESHOLD);
   }
 
@@ -94,7 +94,7 @@ class Baseline {
     return b.score - a.score;
   }
 
-  dedupHosts(e, idx, arr) {
+  dedupeHosts(e, idx, arr) {
     if (idx > 0 && arr[idx - 1].host === e.host) { // same host
       return 0;
     }
