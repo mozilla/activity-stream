@@ -57,7 +57,11 @@ class Baseline {
    * @returns {Map.<string, number>}
    */
   countDomainOccurrences(result, entry) {
-    let host = entry.reversedHost.split("").reverse().join("").slice(1); // moc.buhtig. => github.com
+    let host = entry.reversedHost
+                    .split("")
+                    .reverse()
+                    .join("")
+                    .slice(1); // moc.buhtig. => github.com
     result.set(host, entry.visitCount);
 
     return result;
@@ -83,9 +87,7 @@ class Baseline {
    * @returns {Number}
    */
   decay(value, e, c) {
-    let exp = e.reduce(function(acc, v, i) {
-      return acc + v * c[i];
-    }, 0);
+    let exp = e.reduce((acc, v, i) => acc + v * c[i], 0);
 
     return value * Math.pow(Math.E, -exp);
   }
