@@ -148,7 +148,8 @@
       "name": "weightedHighlights",
       "title": "New recommendations method based on weights",
       "type": "bool",
-      "value": false
+      "value": false,
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-stream",

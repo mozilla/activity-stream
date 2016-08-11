@@ -43,30 +43,11 @@ const NewTabPage = React.createClass({
       this.setState({renderedOnce: true});
     }
   },
-  _hasWeightedHighligts() {
-    return this.props.WeightedHighlights.weightedHighlights && this.props.WeightedHighlights.rows.length;
-  },
-  _renderGroupedSectionTitle() {
-    let title = "Recent Activity";
-
-    if (this._hasWeightedHighligts()) {
-      title = "More Highlights";
-    }
-
-    return <h3 ref="title" className="section-title">{title}</h3>;
-  },
   render() {
     const props = this.props;
     const recommendationLabel = "Show Trending Highlights";
     const recommendationIcon = props.Spotlight.recommendationShown ? "check" : "   ";
     const showRecommendationOption = props.showRecommendationOption;
-    let spotlightSource = props.Spotlight.rows;
-    let groupedFeedSource = props.TopActivity.rows;
-
-    if (this._hasWeightedHighligts()) {
-      spotlightSource = props.WeightedHighlights.rows.slice(0, SPOTLIGHT_DEFAULT_LENGTH);
-      groupedFeedSource = props.WeightedHighlights.rows.slice(SPOTLIGHT_DEFAULT_LENGTH);
-    }
 
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
@@ -86,13 +67,13 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <Spotlight page={PAGE_NAME} sites={spotlightSource} />
+            <Spotlight page={PAGE_NAME} sites={props.Spotlight.rows} />
           </section>
 
           <section>
-            {this._renderGroupedSectionTitle()}
-            <GroupedActivityFeed sites={groupedFeedSource} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME}
-                                 maxPreviews={1} displayMoreHighlights={props.WeightedHighlights.weightedHighlights} />
+            <h3 ref="title" className="section-title">Recent Activity</h3>
+            <GroupedActivityFeed sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME}
+                                 maxPreviews={1} />
           </section>
 
           <section className="bottom-links-container">

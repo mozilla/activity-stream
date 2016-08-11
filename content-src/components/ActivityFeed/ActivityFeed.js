@@ -34,15 +34,6 @@ const ActivityFeedItem = React.createClass({
       showDate: false
     };
   },
-  _renderItemMeta() {
-    if (this.props.displayMoreHighlights) {
-      return (<div>
-        <p ref="description">{this.props.description}</p>
-      </div>);
-    }
-
-    return null;
-  },
   render() {
     const site = this.props;
     const title = site.title || site.provider_display || (site.parsedUrl && site.parsedUrl.hostname);
@@ -77,7 +68,6 @@ const ActivityFeedItem = React.createClass({
         <div className="feed-details">
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{title}</h4>
-            {this._renderItemMeta()}
             <span className="feed-url" ref="url" data-feed-url={prettyUrl(site.url)} />
             {this.props.preview && <MediaPreview previewInfo={this.props.preview} />}
           </div>
@@ -179,28 +169,6 @@ const GroupedActivityFeed = React.createClass({
     };
   },
   render() {
-    if (this.props.displayMoreHighlights) {
-      return (<div className="grouped-activity-feed">
-        <div className="group">
-          <ul className="activity-feed">
-            {this.props.sites.map((site, index) =>
-              (<ActivityFeedItem
-                displayMoreHighlights={this.props.displayMoreHighlights}
-                key={site.guid || index}
-                onClick={this.onClickFactory(index)}
-                onShare={this.onShareFactory(index)}
-                showImage={true}
-                index={index}
-                page={this.props.page}
-                source="ACTIVITY_FEED"
-                showDate={false}
-                {...site} />)
-            )}
-          </ul>
-        </div>
-      </div>);
-    }
-
     let maxPreviews = this.props.maxPreviews;
     const sites = this.props.sites
       .slice(0, this.props.length)
@@ -230,7 +198,6 @@ const GroupedActivityFeed = React.createClass({
                   }
                 }
                 return (<ActivityFeedItem
-                    displayMoreHighlights={this.props.displayMoreHighlights}
                     key={site.guid || i}
                     onClick={this.onClickFactory(globalCount)}
                     onShare={this.onShareFactory(globalCount)}

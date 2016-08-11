@@ -82,10 +82,6 @@ describe("NewTabPage", () => {
       instance = renderWithProvider(<NewTabPage {...prefOn} dispatch={() => {}} />);
     });
 
-    it("should render `More Highlights` title", () => {
-      assert.equal(instance.refs.title.textContent, "More Highlights");
-    });
-
     it("should render Spotlight with correct data", () => {
       const spotlight = TestUtils.findRenderedComponentWithType(instance, Spotlight);
 

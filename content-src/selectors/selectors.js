@@ -79,12 +79,16 @@ module.exports.selectNewTabSites = createSelector(
       spotlightRows,
       History.rows])[2];
 
+    let topHighlights = spotlightRows;
+    if (WeightedHighlights.weightedHighlights && weightedHighlightsRows.length) {
+      topHighlights = weightedHighlightsRows;
+    }
+
     return {
-      WeightedHighlights: Object.assign({}, WeightedHighlights, {rows: weightedHighlightsRows}),
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
-      Spotlight: Object.assign({}, Spotlight, {rows: spotlightRows}),
+      Spotlight: Object.assign({}, Spotlight, {rows: topHighlights}),
       TopActivity: Object.assign({}, History, {rows: historyRows}),
-      isReady: TopSites.init && History.init && Spotlight.init && Experiments.init,
+      isReady: TopSites.init && History.init && Spotlight.init && Experiments.init && WeightedHighlights.init,
       showRecommendationOption: Experiments.values.recommendedHighlight
     };
   }
