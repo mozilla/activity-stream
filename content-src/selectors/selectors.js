@@ -5,6 +5,7 @@ const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
 
 const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
+const RECOMMENDATION_INDEX = 2;
 
 module.exports.justDispatch = (() => ({}));
 
@@ -70,10 +71,11 @@ module.exports.selectNewTabSites = createSelector(
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
 
     // Find the index of the recommendation. If we have an index, find that recommmendation and put it
-    // in the third highlights spot
+    // in the third highlights spot. Change it's url to be the shortened pocket url
     let recommendation = spotlightRows.findIndex(element => element.recommended);
     if (recommendation >= 0) {
-      spotlightRows.splice(2, 0, spotlightRows.splice(recommendation, 1)[0]);
+      spotlightRows.splice(RECOMMENDATION_INDEX, 0, spotlightRows.splice(recommendation, 1)[0]);
+      spotlightRows[RECOMMENDATION_INDEX].url = spotlightRows[RECOMMENDATION_INDEX].pocket_url;
     }
     spotlightRows = spotlightRows.slice(0, SPOTLIGHT_LENGTH);
     const historyRows = dedupe.group([
