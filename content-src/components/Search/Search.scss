@@ -64,7 +64,7 @@
 
           &:hover > #historyIcon,
           &.active > #historyIcon {
-            background-image: url('img/glyph-search-history.svg#search-history-active');
+            background-image: url('#{$image-path}glyph-search-history.svg#search-history-active');
           }
         }
       }
@@ -76,7 +76,7 @@
       display: inline-block;
       margin-right: 10px;
       margin-bottom: -3px;
-      background-image: url('img/glyph-search-history.svg#search-history');
+      background-image: url('#{$image-path}glyph-search-history.svg#search-history');
     }
 
     .search-partners {
@@ -150,13 +150,13 @@
       transition: box-shadow 150ms;
       box-shadow: 0 0 0 0.5px $search-shadow;
       background-color: $search-blue;
-      background-image: url('img/glyph-forward-16-white.svg');
+      background-image: url('#{$image-path}glyph-forward-16-white.svg');
       color: $white;
     }
   }
 
   .search-label {
-    background: url('img/glyph-search-16.svg') no-repeat center center;
+    background: url('#{$image-path}glyph-search-16.svg') no-repeat center center;
     background-size: 20px;
     position: absolute;
     top: 0;
@@ -177,7 +177,7 @@
     padding: 0;
     transition: box-shadow 150ms;
     box-shadow: none;
-    background: $search-button-grey url('img/glyph-forward-16.svg') no-repeat center center;
+    background: $search-button-grey url('#${image-path}glyph-forward-16.svg') no-repeat center center;
     background-size: 16px 16px;
 
     &:hover {
@@ -186,7 +186,7 @@
       transition: box-shadow 150ms;
       box-shadow: 0 0 0 0.5px $search-shadow;
       background-color: $search-blue;
-      background-image: url('img/glyph-forward-16-white.svg');
+      background-image: url('#{$image-path}glyph-forward-16-white.svg');
       color: $white;
     }
   }

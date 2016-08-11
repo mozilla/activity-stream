@@ -12,86 +12,86 @@
   }
 
   &.icon-activity-stream {
-    background-image: url('img/glyph-activityStream-16.svg');
+    background-image: url('#{$image-path}glyph-activityStream-16.svg');
   }
 
   &.icon-arrow {
-    background-image: url('img/glyph-showmore-16.svg');
+    background-image: url('#{$image-path}glyph-showmore-16.svg');
   }
 
   &.icon-bookmark {
-    background-image: url('img/glyph-bookmark-16.svg');
+    background-image: url('#{$image-path}glyph-bookmark-16.svg');
   }
 
   &.icon-bookmark-white {
-    background-image: url('img/glyph-bookmark-16-white.svg');
+    background-image: url('#{$image-path}glyph-bookmark-16-white.svg');
   }
 
   &.icon-bookmark-remove {
-    background-image: url('img/glyph-bookmark-remove-16.svg');
+    background-image: url('#{$image-path}glyph-bookmark-remove-16.svg');
   }
 
   &.icon-delete {
-    background-image: url('img/glyph-delete-16.svg');
+    background-image: url('#{$image-path}glyph-delete-16.svg');
   }
 
   &.icon-dismiss {
-    background-image: url('img/glyph-dismiss-16.svg');
+    background-image: url('#{$image-path}glyph-dismiss-16.svg');
   }
 
   &.icon-firefox-white {
-    background-image: url('img/glyph-firefox-white-16.svg');
+    background-image: url('#{$image-path}glyph-firefox-white-16.svg');
   }
 
   &.icon-new-window {
-    background-image: url('img/glyph-newWindow-16.svg');
+    background-image: url('#{$image-path}glyph-newWindow-16.svg');
   }
 
   &.icon-new-window-private {
-    background-image: url('img/glyph-newWindow-private-16.svg');
+    background-image: url('#{$image-path}glyph-newWindow-private-16.svg');
   }
 
   &.icon-forward {
-    background-image: url('img/glyph-forward-16.svg');
+    background-image: url('#{$image-path}glyph-forward-16.svg');
   }
 
   &.icon-search {
-    background-image: url('img/glyph-search-16.svg');
+    background-image: url('#{$image-path}glyph-search-16.svg');
   }
 
   &.icon-settings {
-    background-image: url('img/glyph-settings-16.svg');
+    background-image: url('#{$image-path}glyph-settings-16.svg');
   }
 
   &.icon-showMore {
-    background-image: url('img/glyph-showmore-16.svg');
+    background-image: url('#{$image-path}glyph-showmore-16.svg');
   }
 
   &.icon-timeline {
-    background-image: url('img/list-icon.svg');
+    background-image: url('#{$image-path}list-icon.svg');
   }
 
   &.icon-check {
-    background-image: url('img/glyph-check-16.svg');
+    background-image: url('#{$image-path}glyph-check-16.svg');
   }
 
   &.icon-pocket {
-    background-image: url('img/glyph-pocket-16.svg');
+    background-image: url('#{$image-path}glyph-pocket-16.svg');
   }
 
   &.icon-historyItem {
-    background-image: url('img/glyph-historyItem-16.svg');
+    background-image: url('#{$image-path}glyph-historyItem-16.svg');
   }
 
   &.icon-sync {
-    background-image: url('img/glyph-sync-16.svg');
+    background-image: url('#{$image-path}glyph-sync-16.svg');
   }
 
   &.icon-tab {
-    background-image: url('img/glyph-tab-16.svg');
+    background-image: url('#{$image-path}glyph-tab-16.svg');
   }
 
   &.icon-topic {
-    background-image: url('img/glyph-topic-16.svg');
+    background-image: url('#{$image-path}glyph-topic-16.svg');
   }
 }

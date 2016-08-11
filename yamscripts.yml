@@ -44,7 +44,7 @@ scripts:
   test:
     pre: =>bundle && =>copyTestImages && =>copyTopSitesJson
     # test:lint: Run eslint
-    lint: eslint --ext=.js,.jsx,.json . && sass-lint -v -q
+    lint: eslint --ext=.js,.jsx,.json . .storybook && sass-lint -v -q
     checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests
     jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./test-prefs.json -v
@@ -64,3 +64,6 @@ scripts:
   # This is just to make sure we don't make commits with failing tests
   # or uncompiled yamscripts.yml. Run automatically with husky.
   prepush: =>test:lint && =>yamscripts
+
+# storybook: build a local react-storybook containing local stories for dev
+  storybook: start-storybook -p 9001 -s ./data/content

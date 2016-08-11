@@ -26,6 +26,7 @@
     "url-parse": "1.1.1"
   },
   "devDependencies": {
+    "@kadira/storybook": "2.2.1",
     "babel": "6.5.2",
     "babel-core": "6.13.2",
     "babel-loader": "6.2.4",
@@ -170,7 +171,7 @@
     "firefox": "npm run bundle:webpackAddon && jpm run -b nightly --prefs ./dev-prefs.json",
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle && npm run copyTestImages && npm run copyTopSitesJson",
-    "test:lint": "eslint --ext=.js,.jsx,.json . && sass-lint -v -q",
+    "test:lint": "eslint --ext=.js,.jsx,.json . .storybook && sass-lint -v -q",
     "test:checkbinary": "echo \"JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}\"",
     "test:jpm": "jpm test -b ${JPM_FIREFOX_BINARY:-\"nightly\"} --prefs ./test-prefs.json -v",
     "test:karma": "NODE_ENV=test karma start",
@@ -179,6 +180,7 @@
     "package": "npm run bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi",
     "travis": "npm run test",
     "prepush": "npm run test:lint && npm run yamscripts",
+    "storybook": "start-storybook -p 9001 -s ./data/content",
     "help": "yamscripts help",
     "yamscripts": "yamscripts compile",
     "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"

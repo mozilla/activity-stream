@@ -14,7 +14,7 @@
     width: $loader-size;
     height: $loader-size;
     display: inline-block;
-    background-image: url('img/loading@2x.png');
+    background-image: url('#{$image-path}loading@2x.png');
     background-size: $loader-size $loader-size;
   }
 }
