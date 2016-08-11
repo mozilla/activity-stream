@@ -11,7 +11,7 @@ const fixtures = [
   {desc: "It should overwrite", key: "foo", getKey: "foo", value: 100}
 ];
 
-const gMetadataCache = new MetadataCache();
+const gMetadataCache = MetadataCache.cache;
 
 exports.test_cache_get = assert => {
   for (let fixture of fixtures) {
