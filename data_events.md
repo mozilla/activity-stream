@@ -103,7 +103,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 }
 ```
 
-#### Sharing a site
+#### Sharing a site (from content)
 
 ```js
 {
@@ -111,6 +111,21 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "page": ["NEW_TAB" | "TIMELINE_ALL" | "TIMELINE_BOOKMARKS"],
   "source": "ACTIVITY_FEED",
   "action_position": 0,
+  "action": "activity_stream_event",
+  "tab_id": "-3-16",
+  "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```
+
+#### Sharing a site from toolbar
+
+```js
+{
+  "event": "SHARE_FROM_TOOLBAR",
+  "page": "NEW_TAB",
+  "provider": "https://facebook.com",
   "action": "activity_stream_event",
   "tab_id": "-3-16",
   "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
