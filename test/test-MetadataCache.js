@@ -44,6 +44,24 @@ exports.test_cache_removeoldest = assert => {
   assert.ok(!gMetadataCache.get("bar"), "It should removed this key as the oldest one");
 };
 
+exports.test_cache_stats = assert => {
+  for (let fixture of fixtures) {
+    gMetadataCache.add(fixture.key, fixture.value);
+    let val = gMetadataCache.get(fixture.getKey);
+    assert.equal(fixture.value, val, fixture.desc);
+  }
+  let stats = gMetadataCache.stats();
+  assert.equal(stats.hits, 2);
+  assert.equal(stats.misses, 1);
+  assert.equal(stats.size, 2);
+
+  gMetadataCache.reset();
+  stats = gMetadataCache.stats();
+  assert.equal(stats.hits, 0);
+  assert.equal(stats.misses, 0);
+  assert.equal(stats.size, 0);
+};
+
 exports.test_pref_change = assert => {
   simplePrefs.prefs["metadata-store.query.cache"] = false;
   for (let fixture of fixtures) {
