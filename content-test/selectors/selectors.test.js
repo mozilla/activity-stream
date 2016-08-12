@@ -144,7 +144,10 @@ describe("selectors", () => {
     });
   });
   describe("selectNewTabSites", () => {
-    let state = selectNewTabSites(fakeState);
+    let state;
+    beforeEach(() => {
+      state = selectNewTabSites(fakeState);
+    });
     it("should return the right properties", () => {
       [
         "Spotlight",
@@ -169,6 +172,20 @@ describe("selectors", () => {
       const experimentsData = {Experiments: {values: {recommendedHighlight: true}}};
       state = selectNewTabSites(Object.assign({}, fakeState, experimentsData));
       assert.isTrue(state.showRecommendationOption);
+    });
+    it("should render the correct Spotlight items", () => {
+      let weightedHighlights = {
+        WeightedHighlights: {
+          rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}],
+          weightedHighlights: true
+        }
+      };
+
+      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
+      assert.equal(state.Spotlight.rows.length, weightedHighlights.WeightedHighlights.rows.length);
+      state.Spotlight.rows.forEach((row, i) => {
+        assert.equal(row.url, weightedHighlights.WeightedHighlights.rows[i].url);
+      });
     });
   });
 });

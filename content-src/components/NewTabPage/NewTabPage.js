@@ -104,7 +104,6 @@ const NewTabPage = React.createClass({
 });
 
 NewTabPage.propTypes = {
-  WeightedHighlights: React.PropTypes.object.isRequired,
   TopSites: React.PropTypes.object.isRequired,
   Spotlight: React.PropTypes.object.isRequired,
   TopActivity: React.PropTypes.object.isRequired,

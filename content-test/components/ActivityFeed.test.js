@@ -93,30 +93,6 @@ describe("ActivityFeedItem", () => {
       assert.equal(lastVisitEl, moment(fakeSite.dateDisplay).calendar());
     });
   });
-
-  describe("weighted highlights set to true", () => {
-    beforeEach(() => {
-      let props = Object.assign({}, fakeSite, {displayMoreHighlights: true});
-      instance = renderWithProvider(<ActivityFeedItem {...props} />);
-      el = ReactDOM.findDOMNode(instance);
-    });
-    it("should render site description when `displayMoreHighlights` prop is true", () => {
-      assert.isNotNull(instance.refs.description);
-      assert.equal(instance.refs.description.textContent, fakeSite.description);
-    });
-  });
-
-  describe("weighted highlights set to false", () => {
-    beforeEach(() => {
-      let props = Object.assign({}, fakeSite, {displayMoreHighlights: false});
-      instance = renderWithProvider(<ActivityFeedItem {...props} />);
-      el = ReactDOM.findDOMNode(instance);
-    });
-
-    it("should not render site description when `displayMoreHighlights` prop is false", () => {
-      assert.equal(instance.refs.description, undefined);
-    });
-  });
 });
 
 describe("GroupedActivityFeed", () => {
