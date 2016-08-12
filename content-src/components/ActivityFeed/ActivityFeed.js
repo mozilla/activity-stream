@@ -1,6 +1,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {justDispatch, selectSitePreview} = require("selectors/selectors");
+const {justDispatch} = require("selectors/selectors");
+const {selectSitePreview} = require("selectors/siteMetadataSelectors");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");

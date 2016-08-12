@@ -138,6 +138,28 @@ exports.test_Links_getHighlightsLinks = function*(assert) {
   assert.equal(links.length, 1, "getHighlightsLinks filters links by date and hostname");
 };
 
+exports.test_Links_getAllHistoryItems = function*(assert) {
+  let provider = PlacesProvider.links;
+  let {TRANSITION_TYPED} = PlacesUtils.history;
+
+  let timeToday = timeDaysAgo(0);
+  let timeEarlier = timeDaysAgo(2);
+
+  let visits = [
+    {uri: NetUtil.newURI("https://example1.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example2.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example3.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://mail.google.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED}
+  ];
+
+  yield PlacesTestUtils.addVisits(visits);
+
+  let links = yield provider.getAllHistoryItems();
+  assert.equal(links.length > 0, true, "it should retrieve some links");
+  assert.equal(links[0].visitCount, 1, "query should retrieve number of visits");
+  assert.equal(links[0].reversedHost, "moc.1elpmaxe.", "query should retrieve host");
+};
+
 exports.test_Links_getRecentLinks = function*(assert) {
   let provider = PlacesProvider.links;
   let {
