@@ -56,6 +56,9 @@ exports.test_pref_change = assert => {
     gMetadataCache.add(fixture.key, fixture.value);
   }
   assert.equal(gMetadataCache.length, 2, "It should cache results if the cache pref is on");
+
+  simplePrefs.prefs["metadata-store.query.cache"] = false;
+  assert.equal(gMetadataCache.length, 0, "It should reset the cache if the cache is disabled");
 };
 
 after(exports, () => {
