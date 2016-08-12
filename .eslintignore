@@ -4,3 +4,5 @@ firefox/
 lib/vendor.bundle.js
 activity-streams-env/
 !.*
+lib/SimpleStorage.js
+test/test-SimpleStorage.js
