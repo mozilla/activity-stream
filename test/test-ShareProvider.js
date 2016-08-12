@@ -84,8 +84,8 @@ exports["test share menu dropdown has default providers"] = function*(assert) {
       assert.ok(panel.childNodes[6].attributes.label.value, "LinkedIn");
       assert.ok(panel.childNodes[7].attributes.label.value, "Yahoo Mail");
       assert.ok(panel.childNodes[8].attributes.label.value, "Gmail");
-      assert.ok(panel.childNodes[9].attributes.label.value, "Add");
-      assert.ok(panel.childNodes[10].attributes.label.value, "Manage Services");
+      assert.ok(panel.childNodes[10].attributes.label.value, "Add Service");
+      assert.ok(panel.childNodes[11].attributes.label.value, "Remove Service");
 
       window.close(resolve);
     }
