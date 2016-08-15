@@ -94,4 +94,10 @@
   &.icon-topic {
     background-image: url('#{$image-path}glyph-topic-16.svg');
   }
+
+  &.icon-rating-default {
+    background-image: url('#{$image-path}glyph-rating-default.svg');
+    background-size: $icon-size + 2;
+  }
+
 }

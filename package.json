@@ -184,6 +184,20 @@
       "type": "string",
       "value": "[0.4, 0.7, 0.1, -0.4, -0.2, -0.1]",
       "hidden": true
+    },
+    {
+      "name": "metadataRatingSystem",
+      "title": "Rate this metadata",
+      "type": "bool",
+      "value": false,
+      "hidden": true
+    },
+    {
+      "name": "metadataSource",
+      "title": "How are we getting metadata?",
+      "type": "string",
+      "value": "Embedly",
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-stream",
