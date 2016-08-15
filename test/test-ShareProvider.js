@@ -1,11 +1,13 @@
 /* globals XPCOMUtils, Services */
 "use strict";
 
-const {Cu} = require("chrome");
+const {Cc, Ci, Cu} = require("chrome");
 const test = require("sdk/test");
 const windows = require("sdk/windows").browserWindows;
 const {viewFor} = require("sdk/view/core");
 const {ShareProvider} = require("lib/ShareProvider");
+const DEFAULT_MANIFEST_PREFS = require("lib/ShareManifests");
+const SocialService = Cu.import("resource://gre/modules/SocialService.jsm", {}).SocialService;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Services",
@@ -107,6 +109,43 @@ exports["test that social api prefs are set and unset properly"] = function*(ass
 
   // verify we clean up on uninstall
   assert.ok(!Services.prefs.prefHasUserValue("social.activeProviders"));
+};
+
+exports["test that social api prefs are not changed if user already has enabled providers"] = function*(assert) {
+  // initially, there should be no active providers
+  assert.ok(!Services.prefs.prefHasUserValue("social.activeProviders"));
+
+  let key = Object.keys(DEFAULT_MANIFEST_PREFS)[0];
+  let manifest = DEFAULT_MANIFEST_PREFS[key];
+  let string = Cc["@mozilla.org/supports-string;1"].createInstance(Ci.nsISupportsString);
+  string.data = JSON.stringify(manifest);
+  Services.prefs.setComplexValue(key, Ci.nsISupportsString, string);
+  yield new Promise(resolve => {
+    SocialService.enableProvider(manifest.origin, resolve);
+  });
+
+  // now there is an active provider
+  assert.ok(Services.prefs.prefHasUserValue("social.activeProviders"));
+  let activeProviders = Services.prefs.getCharPref("social.activeProviders");
+
+  let provider = new ShareProvider();
+  yield provider.init();
+
+  // the active providers shouldn't have changed during init
+  assert.equal(activeProviders, Services.prefs.getCharPref("social.activeProviders"));
+
+  yield provider.uninit("uninstall");
+
+  // the active providers shouldn't have changed during uninstall
+  assert.equal(activeProviders, Services.prefs.getCharPref("social.activeProviders"));
+
+  yield new Promise(resolve => {
+    SocialService.uninstallProvider(manifest.origin, () => {
+      Services.prefs.clearUserPref(key);
+      resolve();
+    });
+  });
+  Services.prefs.clearUserPref("social.activeProviders");
 };
 
 test.run(exports);
