@@ -81,6 +81,13 @@ describe("SpotlightItem", () => {
     el = ReactDOM.findDOMNode(instance);
   });
 
+  describe("rating system", () => {
+    it("should create a rating component", () => {
+      const rating = ReactDOM.findDOMNode(instance.refs.rating);
+      assert.ok(rating);
+    });
+  });
+
   describe("valid sites", () => {
     it("should create the element", () => {
       assert.ok(el);

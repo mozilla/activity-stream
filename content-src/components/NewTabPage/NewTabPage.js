@@ -67,7 +67,7 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <Spotlight page={PAGE_NAME} sites={props.Spotlight.rows} />
+            <Spotlight page={PAGE_NAME} showRating={props.Spotlight.metadataRating} sites={props.Spotlight.rows} />
           </section>
 
           <section>

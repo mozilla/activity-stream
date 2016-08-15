@@ -18,9 +18,10 @@ function isValidSpotlightSite(site) {
 const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights,
-    state => state.Prefs.prefs.recommendations
+    state => state.Prefs.prefs.recommendations,
+    state => state.Prefs.prefs.metadataRatingSystem
   ],
-  (Highlights, recommendationShown) => {
+  (Highlights, recommendationShown, metadataRating) => {
     // Only concat first run data if init is true
     const highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
     const rows = assignImageAndBackgroundColor(highlightRows)
@@ -38,7 +39,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
         }
         return -1;
       });
-    return Object.assign({}, Highlights, {rows, recommendationShown});
+    return Object.assign({}, Highlights, {rows, recommendationShown, metadataRating});
   }
 );
 
