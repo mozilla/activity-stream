@@ -47,7 +47,8 @@ const am = new ActionManager([
   "PREFS_REQUEST",
   "PREFS_RESPONSE",
   "NOTIFY_UPDATE_PREF",
-  "PREF_CHANGED_RESPONSE"
+  "PREF_CHANGED_RESPONSE",
+  "NOTIFY_RATE_METADATA"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -220,6 +221,10 @@ function NotifyPerf(data) {
   return Notify("NOTIFY_PERFORMANCE", data);
 }
 
+function NotifyRateMetadata(data) {
+  return Notify("NOTIFY_RATE_METADATA", data);
+}
+
 function NotifyEvent(data) {
   if (!eventConstants.pages.has(data.page)) {
     throw new Error(`${data.page} is not a valid page`);
@@ -274,7 +279,8 @@ am.defineActions({
   NotifyCycleEngine,
   NotifyBlockRecommendation,
   NotifyToggleRecommendations,
-  NotifyUpdatePref
+  NotifyUpdatePref,
+  NotifyRateMetadata
 });
 
 module.exports = am;

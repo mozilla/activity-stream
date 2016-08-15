@@ -7,6 +7,7 @@ const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");
+const Rating = require("components/Rating/Rating");
 const classNames = require("classnames");
 
 const {SPOTLIGHT_DEFAULT_LENGTH} = require("common/constants");
@@ -48,8 +49,7 @@ const SpotlightItem = React.createClass({
     } else {
       style.backgroundColor = site.backgroundColor;
     }
-
-    return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
+    return (<div><li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image">
           <SiteIcon className="spotlight-icon" height={40} width={40} site={site} ref="icon" showBackground={true} border={false} faviconSize={32} />
@@ -73,7 +73,8 @@ const SpotlightItem = React.createClass({
         page={this.props.page}
         index={this.props.index}
         source={this.props.source} />
-    </li>);
+    </li>
+    <Rating site={site} showRating={this.props.showRating} /></div>);
   }
 });
 
@@ -86,7 +87,8 @@ SpotlightItem.propTypes = {
   favicon_url: React.PropTypes.string,
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string,
-  onClick: React.PropTypes.func
+  onClick: React.PropTypes.func,
+  showRating: React.PropTypes.bool
 };
 
 const Spotlight = React.createClass({
@@ -128,6 +130,7 @@ const Spotlight = React.createClass({
           index={i}
           key={site.guid || site.cache_key || i}
           page={this.props.page}
+          showRating={this.props.showRating}
           source="FEATURED"
           onClick={this.onClickFactory(i, site)}
           {...site} />)}
@@ -140,7 +143,8 @@ const Spotlight = React.createClass({
 Spotlight.propTypes = {
   page: React.PropTypes.string.isRequired,
   sites: React.PropTypes.array.isRequired,
-  length: React.PropTypes.number
+  length: React.PropTypes.number,
+  showRating: React.PropTypes.bool
 };
 
 module.exports = connect(justDispatch)(Spotlight);

@@ -5,6 +5,7 @@ const getHighlightContextFromSite = require("selectors/getHighlightContextFromSi
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");
+const Rating = require("components/Rating/Rating");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
@@ -79,6 +80,13 @@ describe("SpotlightItem", () => {
   beforeEach(() => {
     instance = renderWithProvider(<SpotlightItem {...fakeSite} />);
     el = ReactDOM.findDOMNode(instance);
+  });
+
+  describe("rating system", () => {
+    it("should create a rating component", () => {
+      const rating = TestUtils.findRenderedComponentWithType(instance, Rating);
+      assert.ok(rating);
+    });
   });
 
   describe("valid sites", () => {

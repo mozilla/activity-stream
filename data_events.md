@@ -138,6 +138,24 @@ It doesn't capture success or failure to share after.
   "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
   "addon_version": "1.0.12",
   "locale": "en-US"
+```
+
+## Rating the metadata of a Highlight
+The user has the option to toggle on the feature which allows them to rate from 1 (being the lowest) to 5 (being the highest) the quality of the metadata that is being displayed in the associated Highlight. With multiple sources computing similar metadata it's important to know how it is performing. Ratings are affected by rich image quality, title quality, description relevancy, favicon quality etc.
+
+```js
+{
+  "page": ["NEW_TAB" | "TIMELINE_ALL"],
+  "source": "ACTIVITY_FEED",
+  "action_position": 0,
+  "action": "activity_stream_metadata_rating",
+  "tab_id": "-3-16",
+  "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "rating": 4,
+  "rating_url": "https://www.example.com",
+  "metadataSource": ["Embedly" | "Fathom"]
 }
 ```
 
