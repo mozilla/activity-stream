@@ -32,7 +32,13 @@ class Baseline {
       //                   Negative values increase score proportional to a factor of feature * weight.
       [0.4, 0.7, 0.1, -0.4, -0.2, -0.1]);
 
+    console.log("scored", this.highlightsCoefficients);
     return Object.assign({}, entry, {score}, {host});
+  }
+
+  updateOptions(options = {}) {
+    this.highlightsCoefficients = options.highlightsCoefficients || COEFFICIENTS;
+    console.log("options updated", this.highlightsCoefficients);
   }
 
   /**
