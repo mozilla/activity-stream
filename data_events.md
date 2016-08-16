@@ -13,7 +13,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   // This indicates the type of interaction
-  "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH]",
+  "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH | SHARE_FROM_TOOLBAR]",
 
   // This is where the interaction occurred
   "page": "[NEW_TAB | TIMELINE_ALL | TIMELINE_BOOKMARKS]",
@@ -107,7 +107,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 }
 ```
 
-#### Sharing a site
+#### Sharing a site (from content)
 
 ```js
 {
@@ -115,6 +115,24 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "page": ["NEW_TAB" | "TIMELINE_ALL" | "TIMELINE_BOOKMARKS"],
   "source": "ACTIVITY_FEED",
   "action_position": 0,
+  "action": "activity_stream_event",
+  "tab_id": "-3-16",
+  "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```
+
+#### Sharing a site from toolbar
+
+Note that this event fires when user clicks in the menu with an intent to share.
+It doesn't capture success or failure to share after.
+
+```js
+{
+  "event": "SHARE_FROM_TOOLBAR",
+  "page": "NEW_TAB",
+  "provider": "https://facebook.com",
   "action": "activity_stream_event",
   "tab_id": "-3-16",
   "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",

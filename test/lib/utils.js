@@ -59,6 +59,13 @@ function getTestActivityStream(options = {}) {
     asyncInsert() {return Promise.resolve();},
     asyncGetMetadataByCacheKey() {return Promise.resolve([]);}
   };
+  const mockShareProvider = {
+    init() {},
+    uninit() {}
+  };
+  if (!options.mockShareProvider) {
+    options.shareProvider = mockShareProvider;
+  }
   let mockApp = new ActivityStreams(mockMetadataStore, options);
   return mockApp;
 }
