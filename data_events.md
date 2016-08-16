@@ -64,8 +64,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "url": "https://www.example.com" | null,
-  "recommender_type": "pocket-trending" | null
+  // Optional field, only sent if a recommendation site gets clicked
+  "url": "https://www.example.com",
+  // Optional field, only sent if a recommendation site gets clicked
+  "recommender_type": "pocket-trending"
 }
 ```
 
@@ -98,8 +100,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "url": "https://www.example.com" | null,
-  "recommender_type": "pocket-trending" | null
+  // optional field, only sent if a recommendation site gets clicked
+  "url": "https://www.example.com",
+  // optional field, only sent if a recommendation site gets clicked
+  "recommender_type": "pocket-trending"
 }
 ```
 
