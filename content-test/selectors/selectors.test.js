@@ -58,7 +58,7 @@ describe("selectors", () => {
 
     beforeEach(() => setup());
 
-    // Tests that provided sites don't get selected, because they don't
+    // Tests that provided sites are sorted to the bottom, because they don't
     // match the conditions for spotlight to use them
     function assertInvalidSite(site) {
       const invalidSite = Object.assign({}, validSpotlightSite, site);
@@ -184,13 +184,15 @@ describe("selectors", () => {
       state = selectNewTabSites(Object.assign({}, fakeState, experimentsData));
       assert.isTrue(state.showRecommendationOption);
     });
-    it("should render the correct Spotlight items", () => {
+    it("should render the correct Spotlight items for weightedHighlights", () => {
       let weightedHighlights = {
         WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}]},
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
+      assert.property(state.Spotlight, "weightedHighlights");
+      assert.isTrue(state.Spotlight.weightedHighlights);
       assert.equal(state.Spotlight.rows.length, weightedHighlights.WeightedHighlights.rows.length);
       state.Spotlight.rows.forEach((row, i) => {
         assert.equal(row.url, weightedHighlights.WeightedHighlights.rows[i].url);
