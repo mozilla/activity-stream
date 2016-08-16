@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const ConnectedSpotlight = require("components/Spotlight/Spotlight");
 const {Spotlight, SpotlightItem} = ConnectedSpotlight;
 const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");

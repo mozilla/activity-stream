@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const urlParse = require("url-parse");
 
 const dedupe = require("lib/dedupe");

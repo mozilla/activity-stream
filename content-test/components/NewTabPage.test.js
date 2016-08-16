@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const React = require("react");
 const TestUtils = require("react-addons-test-utils");
 const ConnectedNewTabPage = require("components/NewTabPage/NewTabPage");

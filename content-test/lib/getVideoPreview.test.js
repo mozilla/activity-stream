@@ -1,5 +1,3 @@
-const {assert} = require("chai");
-
 const getVideoPreview = require("lib/getVideoPreview");
 
 describe("getVideoPreview", () => {

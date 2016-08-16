@@ -1,7 +1,6 @@
 /* globals describe, beforeEach, it */
 
 const {Channel} = require("lib/ReduxChannel");
-const {assert} = require("chai");
 
 describe("Channel", () => {
   let fakeTarget;

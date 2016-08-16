@@ -1,7 +1,6 @@
 /* globals describe, it, beforeEach */
 
 const {Baseline} = require("common/recommender/Baseline");
-const {assert} = require("chai");
 
 const fakeHistory = [
   {

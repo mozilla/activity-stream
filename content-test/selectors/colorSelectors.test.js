@@ -1,5 +1,3 @@
-const {assert} = require("chai");
-
 const {
   selectSiteIcon,
   getBackgroundRGB,

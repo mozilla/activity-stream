@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const Loader = require("components/Loader/Loader");
 const React = require("react");
 const ReactDOM = require("react-dom");

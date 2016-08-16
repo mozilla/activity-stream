@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const getRelativeTime = require("lib/getRelativeTime");
 const moment = require("moment");
 

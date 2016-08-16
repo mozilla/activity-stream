@@ -15,7 +15,9 @@
     "StopIteration": true,
     "__CONFIG__": true,
     "platform_exports": true,
-    "platform_require": true
+    "platform_require": true,
+    "assert": true,
+    "sinon": true
   },
   "plugins": [
     "json",

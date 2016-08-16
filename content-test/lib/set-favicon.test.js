@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const setFavicon = require("lib/set-favicon");
 
 describe("setFavicon", () => {
