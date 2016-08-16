@@ -62,11 +62,6 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
           return site;
         });
         break;
-      case am.type("PREFS_RESPONSE"):
-      case am.type("RECEIVE_RECOMMENDATION_TOGGLE"):
-        state.recommendationShown = action.data.recommendationStatus;
-        state.weightedHighlights = action.data.weightedHighlights;
-        break;
       case am.type("NOTIFY_BLOCK_URL"):
       case am.type("NOTIFY_HISTORY_DELETE"):
         state.rows = prevState.rows.filter(val => val.url !== action.data);

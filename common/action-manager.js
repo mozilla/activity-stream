@@ -44,9 +44,10 @@ const am = new ActionManager([
   "NOTIFY_UPDATE_SEARCH_STRING",
   "NOTIFY_BLOCK_RECOMMENDATION",
   "NOTIFY_TOGGLE_RECOMMENDATIONS",
-  "RECEIVE_RECOMMENDATION_TOGGLE",
   "PREFS_REQUEST",
-  "PREFS_RESPONSE"
+  "PREFS_RESPONSE",
+  "NOTIFY_UPDATE_PREF",
+  "PREF_CHANGED_RESPONSE"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -236,6 +237,10 @@ function NotifyOpenWindow(data) {
   return Notify("NOTIFY_OPEN_WINDOW", data);
 }
 
+function NotifyUpdatePref(name, value) {
+  return Notify("NOTIFY_UPDATE_PREF", {name, value});
+}
+
 am.defineActions({
   Notify,
   Response,
@@ -268,7 +273,8 @@ am.defineActions({
   NotifyRemoveFormHistory,
   NotifyCycleEngine,
   NotifyBlockRecommendation,
-  NotifyToggleRecommendations
+  NotifyToggleRecommendations,
+  NotifyUpdatePref
 });
 
 module.exports = am;
