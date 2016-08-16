@@ -176,6 +176,14 @@
       "type": "bool",
       "value": true,
       "hidden": true
+    },
+    {
+      "name": "weightedHighlightsCoefficients",
+      "title": "recommender weights",
+      "description": "weightedHighlightsCoefficients",
+      "type": "string",
+      "value": "[0.4, 0.7, 0.1, -0.4, -0.2, -0.1]",
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-stream",

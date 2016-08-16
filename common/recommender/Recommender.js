@@ -2,12 +2,20 @@
 
 const {Baseline} = require("./Baseline");
 
-function Recommender(entries, history) {
-  // XXX Based on currently running experiments this could include
-  // a mechanism of choosing different recommendation systems.
-  let recommender = new Baseline(history);
+class Recommender {
+  constructor(history, options = {}) {
+    // XXX Based on currently running experiments this could include
+    // a mechanism of choosing different recommendation systems.
+    this.recommender = new Baseline(history, options);
+  }
 
-  return recommender.score(entries);
+  scoreEntries(entries) {
+    return this.recommender.score(entries);
+  }
+
+  updateOptions(options) {
+    this.recommender.updateOptions(options);
+  }
 }
 
 exports.Recommender = Recommender;

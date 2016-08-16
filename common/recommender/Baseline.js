@@ -2,16 +2,19 @@
 
 const URL = require("../../lib/vendor.bundle.js").urlParse;
 const {INFINITE_SCROLL_THRESHOLD} = require("../constants");
+const COEFFICIENTS = [0.4, 0.7, 0.1, -0.4, -0.2, -0.1];
 
 /**
  * Score function for URLs.
  * See tests and `scoreEntry` comments for more insight into how the score is computed.
  *
  * @param {Array.<URLs>} history - User history used to assign higher score to popular domains.
+ * @param {Object} options - settings for the scoring function.
  */
 class Baseline {
-  constructor(history) {
+  constructor(history, options = {}) {
     this.domainCounts = history.reduce(this.countDomainOccurrences, new Map());
+    this.options = options;
   }
 
   scoreEntry(entry) {
@@ -30,9 +33,13 @@ class Baseline {
        imageCount, isBookmarked, hasDescription],
       // Features weights: Positive values decrease the score proportional to a factor of feature * weight.
       //                   Negative values increase score proportional to a factor of feature * weight.
-      [0.4, 0.7, 0.1, -0.4, -0.2, -0.1]);
+      this.options.highlightsCoefficients || COEFFICIENTS);
 
     return Object.assign({}, entry, {score}, {host});
+  }
+
+  updateOptions(options) {
+    this.options = options;
   }
 
   /**
