@@ -126,4 +126,20 @@ describe("Baseline", () => {
     let items = baseline.score(fakeUrls);
     assert.equal(items[items.length - 1].title, "Very visited");
   });
+
+  describe("options", () => {
+    const options = {highlightsCoefficients: [1, 2, 3]};
+    it("should instantiate the recommender with empty object by default", () => {
+      baseline = new Baseline(fakeHistory);
+      assert.deepEqual(baseline.options, {});
+    });
+    it("should instantiate the recommender with the correct settings", () => {
+      baseline = new Baseline(fakeHistory, options);
+      assert.deepEqual(baseline.options, options);
+    });
+    it("should update the correct settings", () => {
+      baseline.updateOptions(options);
+      assert.deepEqual(baseline.options, options);
+    });
+  });
 });

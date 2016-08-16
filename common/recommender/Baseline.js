@@ -12,6 +12,7 @@ const {INFINITE_SCROLL_THRESHOLD} = require("../constants");
 class Baseline {
   constructor(history) {
     this.domainCounts = history.reduce(this.countDomainOccurrences, new Map());
+    this.options = options;
   }
 
   scoreEntry(entry) {
@@ -30,15 +31,13 @@ class Baseline {
        imageCount, isBookmarked, hasDescription],
       // Features weights: Positive values decrease the score proportional to a factor of feature * weight.
       //                   Negative values increase score proportional to a factor of feature * weight.
-      [0.4, 0.7, 0.1, -0.4, -0.2, -0.1]);
+      this.options.highlightsCoefficients || COEFFICIENTS);
 
-    console.log("scored", this.highlightsCoefficients);
     return Object.assign({}, entry, {score}, {host});
   }
 
   updateOptions(options = {}) {
-    this.highlightsCoefficients = options.highlightsCoefficients || COEFFICIENTS;
-    console.log("options updated", this.highlightsCoefficients);
+    this.options = options;
   }
 
   /**
