@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Services */
+/* globals XPCOMUtils, Services, Social */
 "use strict";
 
 const {Cc, Ci, Cu} = require("chrome");
@@ -12,6 +12,8 @@ const SocialService = Cu.import("resource://gre/modules/SocialService.jsm", {}).
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Services",
                                   "resource://gre/modules/Services.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "Social",
+                                  "resource:///modules/Social.jsm");
 
 const BUTTON_ID = "activity-stream-share-button";
 const PANEL_ID = "PanelUI-shareMenuView";
@@ -146,6 +148,39 @@ exports["test that social api prefs are not changed if user already has enabled 
     });
   });
   Services.prefs.clearUserPref("social.activeProviders");
+};
+
+exports["test that we handle user disabling and removing providers"] = function*(assert) {
+  let provider = new ShareProvider();
+  yield provider.init();
+
+  function checkNumberOfMenuItems(expected) {
+    return new Promise(resolve => windows.open({
+      url: "http://example.com",
+      onOpen: window => {
+        let chromeWindow = viewFor(window);
+        let panel = chromeWindow.document.getElementById(PANEL_ID);
+        assert.equal(panel.childNodes.length, expected);
+        window.close(resolve);
+      }
+    }));
+  }
+
+  yield checkNumberOfMenuItems(12);
+
+  // uninstall a provider and verify we now have 1 less item than before
+  yield new Promise(resolve => {
+    SocialService.uninstallProvider(Social.providers[0].origin, () => {
+      resolve();
+    });
+  });
+  yield checkNumberOfMenuItems(11);
+
+  // disable a provider and verify we now have 1 less item than before
+  Social.providers[0].enabled = false;
+  yield checkNumberOfMenuItems(10);
+
+  yield provider.uninit("uninstall");
 };
 
 test.run(exports);
