@@ -177,7 +177,7 @@
     padding: 0;
     transition: box-shadow 150ms;
     box-shadow: none;
-    background: $search-button-grey url('#${image-path}glyph-forward-16.svg') no-repeat center center;
+    background: $search-button-grey url('#{$image-path}glyph-forward-16.svg') no-repeat center center;
     background-size: 16px 16px;
 
     &:hover {
