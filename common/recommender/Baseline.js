@@ -2,6 +2,7 @@
 
 const URL = require("../../lib/vendor.bundle.js").urlParse;
 const {INFINITE_SCROLL_THRESHOLD} = require("../constants");
+const COEFFICIENTS = [0.4, 0.7, 0.1, -0.4, -0.2, -0.1];
 
 /**
  * Score function for URLs.
@@ -10,7 +11,7 @@ const {INFINITE_SCROLL_THRESHOLD} = require("../constants");
  * @param {Array.<URLs>} history - User history used to assign higher score to popular domains.
  */
 class Baseline {
-  constructor(history) {
+  constructor(history, options = {}) {
     this.domainCounts = history.reduce(this.countDomainOccurrences, new Map());
     this.options = options;
   }
