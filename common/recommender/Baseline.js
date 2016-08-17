@@ -9,6 +9,8 @@ const COEFFICIENTS = [0.4, 0.7, 0.1, -0.4, -0.2, -0.1];
  * See tests and `scoreEntry` comments for more insight into how the score is computed.
  *
  * @param {Array.<URLs>} history - User history used to assign higher score to popular domains.
+ * @param {Object} options
+ * @param {Array.<Number>} options.highlightsCoefficients - weights used by the scoring function.
  */
 class Baseline {
   constructor(history, options = {}) {
