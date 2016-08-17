@@ -177,7 +177,11 @@ exports["test that we handle user disabling and removing providers"] = function*
   yield checkNumberOfMenuItems(11);
 
   // disable a provider and verify we now have 1 less item than before
-  Social.providers[0].enabled = false;
+  yield new Promise(resolve => {
+    SocialService.disableProvider(Social.providers[0].origin, () => {
+      resolve();
+    });
+  });
   yield checkNumberOfMenuItems(10);
 
   yield provider.uninit("uninstall");
