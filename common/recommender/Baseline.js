@@ -37,7 +37,7 @@ class Baseline {
     return Object.assign({}, entry, {score}, {host});
   }
 
-  updateOptions(options = {}) {
+  updateOptions(options) {
     this.options = options;
   }
 
