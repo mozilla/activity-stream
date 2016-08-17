@@ -7,8 +7,8 @@ const simplePrefs = require("sdk/simple-prefs");
 const {Loader} = require("sdk/test/loader");
 const loader = Loader(module);
 const httpd = loader.require("./lib/httpd");
-const {PreviewProvider} = require("lib/PreviewProvider");
-const {MetadataStore} = require("lib/MetadataStore");
+const {PreviewProvider} = require("addon/PreviewProvider");
+const {MetadataStore} = require("addon/MetadataStore");
 const {metadataFixture} = require("./lib/MetastoreFixture.js");
 
 const gMetadataStore = new MetadataStore();

@@ -1,7 +1,7 @@
 "use strict";
 
 const {before} = require("sdk/test/utils");
-const {PlacesProvider} = require("lib/PlacesProvider");
+const {PlacesProvider} = require("addon/PlacesProvider");
 const simplePrefs = require("sdk/simple-prefs");
 
 exports["test blocklist init"] = function(assert) {

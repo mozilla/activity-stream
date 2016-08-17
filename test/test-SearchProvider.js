@@ -1,7 +1,7 @@
 /* globals Services */
 "use strict";
 
-const {SearchProvider} = require("lib/SearchProvider");
+const {SearchProvider} = require("addon/SearchProvider");
 const {Cu} = require("chrome");
 
 Cu.import("resource://gre/modules/Services.jsm");

@@ -9,7 +9,7 @@ const simplePrefs = require("sdk/simple-prefs");
 const httpd = require("./lib/httpd");
 const {doGetFile, getTestActivityStream} = require("./lib/utils");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
-const {PlacesProvider} = require("lib/PlacesProvider");
+const {PlacesProvider} = require("addon/PlacesProvider");
 const {makeCachePromise} = require("./lib/cachePromises");
 const {CONTENT_TO_ADDON} = require("common/event-constants");
 

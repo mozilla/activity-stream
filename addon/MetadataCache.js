@@ -1,8 +1,8 @@
 "use strict";
 
 const simplePrefs = require("sdk/simple-prefs");
-const ss = require("lib/SimpleStorage.js");
-const List = require("lib/vendor.bundle").DoublyLinkedList;
+const ss = require("addon/SimpleStorage.js");
+const List = require("addon/vendor.bundle").DoublyLinkedList;
 
 const PREF_STRING = "metadata-store.query.cache";
 

@@ -76,7 +76,7 @@ module.exports = connect(function(state) {
 })(MyForm);
 ```
 
-If your code is on the Firefox side (everything in `/lib`), you should look for a property on the `ActivityStream` instance called `_experimentProvider`. Here is an example:
+If your code is on the Firefox side (everything in `/addon`), you should look for a property on the `ActivityStream` instance called `_experimentProvider`. Here is an example:
 
 ```js
 // ActivityStreams.js

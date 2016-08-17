@@ -2,7 +2,7 @@
 
 const {before, after} = require("sdk/test/utils");
 const simplePrefs = require("sdk/simple-prefs");
-const {Memoizer} = require("lib/Memoizer");
+const {Memoizer} = require("addon/Memoizer");
 
 let gInitialCachePref = simplePrefs.prefs["query.cache"];
 let gMemoizer;

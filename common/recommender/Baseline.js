@@ -1,6 +1,6 @@
 "use strict";
 
-const URL = require("../../lib/vendor.bundle.js").urlParse;
+const URL = require("../../addon/vendor.bundle.js").urlParse;
 const {INFINITE_SCROLL_THRESHOLD} = require("../constants");
 const COEFFICIENTS = [0.4, 0.7, 0.1, -0.4, -0.2, -0.1];
 
