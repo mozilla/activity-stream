@@ -160,6 +160,34 @@ exports.test_Links_getAllHistoryItems = function*(assert) {
   assert.equal(links[0].reversedHost, "moc.1elpmaxe.", "query should retrieve host");
 };
 
+exports.test_Links_getRecentlyVisited = function*(assert) {
+  let provider = PlacesProvider.links;
+  let {TRANSITION_TYPED} = PlacesUtils.history;
+
+  let timeToday = timeDaysAgo(1);
+  let timeOlder = timeDaysAgo(5);
+
+  let visits = [
+    {uri: NetUtil.newURI("https://example1.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example2.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://example3.com/"), visitDate: timeOlder, transition: TRANSITION_TYPED},
+    {uri: NetUtil.newURI("https://mail.google.com/"), visitDate: timeOlder, transition: TRANSITION_TYPED}
+  ];
+  for (let i = 4; i < 24; i++) {
+    visits.push({
+      uri: NetUtil.newURI("https://example" + i + ".com/"),
+      visitDate: timeToday,
+      transition: TRANSITION_TYPED
+    });
+  }
+
+  yield PlacesTestUtils.addVisits(visits);
+
+  let links = yield provider.getRecentlyVisited();
+  assert.equal(links.length > 0, true, "it should retrieve some links");
+  assert.equal(links.length, 22, "query should retrieve links older than 30 minutes but not older than 4 days");
+};
+
 exports.test_Links_getRecentLinks = function*(assert) {
   let provider = PlacesProvider.links;
   let {

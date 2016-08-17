@@ -48,7 +48,6 @@ const NewTabPage = React.createClass({
     const recommendationLabel = "Show Trending Highlights";
     const recommendationIcon = props.Spotlight.recommendationShown ? "check" : "   ";
     const showRecommendationOption = props.showRecommendationOption;
-    console.log("xxx newtabpage", props.Spotlight.rows);
 
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
