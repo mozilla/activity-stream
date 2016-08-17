@@ -1,15 +1,19 @@
-/* globals Services, XPCOMUtils, windowMediator, SessionStore */
+/* globals Services, XPCOMUtils, windowMediator, SessionStore, Task */
 
 "use strict";
 const simplePrefs = require("sdk/simple-prefs");
 
 const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");
+const {activateTab} = require("sdk/tabs/utils");
 const {PerfMeter} = require("lib/PerfMeter");
 const {getTestActivityStream} = require("./lib/utils");
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetter(this, "Task",
+                                  "resource://gre/modules/Task.jsm");
 
 XPCOMUtils.defineLazyServiceGetter(this, "windowMediator",
                                    "@mozilla.org/appshell/window-mediator;1",
@@ -20,30 +24,36 @@ XPCOMUtils.defineLazyModuleGetter(this, "SessionStore",
 
 let app;
 
-function openTestTab(openUrl, notifyEvent) {
-  return new Promise(resolve => {
-    let tabData = {};
-    function onShow(tab) {
-      tabData.tab = tab;
-      if (!notifyEvent) {
-        resolve(tabData);
+const openTestTab = Task.async(function*(openUrl, notifyEvent) {
+  let tabData = {};
+  let promiseOnLogComplete;
+
+  const promiseOnTabShow = new Promise(resolve => {
+    tabs.open({
+      url: openUrl,
+      onPageShow: tab => {
+        tabData.tab = tab;
+        resolve();
       }
-    }
-
-    function onNotify(subject, topic, data) {
-      Services.obs.removeObserver(onNotify, notifyEvent);
-      tabData.notifyData = JSON.parse(data);
-      resolve(tabData);
-    }
-
-    if (notifyEvent) {
-      Services.obs.addObserver(onNotify, notifyEvent, false);
-    }
-
-    // open the page in timeout, to make it fire after we return
-    tabs.open({url: openUrl, onPageShow: onShow});
+    });
   });
-}
+
+  if (notifyEvent) {
+    promiseOnLogComplete = new Promise(resolve => {
+      function onNotify(subject, topic, data) {
+        Services.obs.removeObserver(onNotify, notifyEvent);
+        tabData.notifyData = JSON.parse(data);
+        resolve();
+      }
+      Services.obs.addObserver(onNotify, notifyEvent, false);
+    });
+  } else {
+    promiseOnLogComplete = Promise.resolve();
+  }
+
+  yield Promise.all([promiseOnTabShow, promiseOnLogComplete]);
+  return tabData;
+});
 
 function prefSetter(value) {
   return new Promise(resolve => {
@@ -271,6 +281,9 @@ exports.test_PerfMeter_tab_restore = function*(assert) {
     Services.obs.addObserver(onNotify, "performance-log-complete", false);
     tab = gBrowser.addTab(appUrl);
   });
+  // Explicitely activate the tab. gBrowser.addTab() + activateTab() is essentially
+  // equivalent as a tabs.open()
+  activateTab(tab);
 
   // Go to a new URL.
   yield promiseLoadURI(tab, "about:about");
