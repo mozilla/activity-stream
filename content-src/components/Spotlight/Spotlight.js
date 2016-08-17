@@ -35,14 +35,6 @@ const SpotlightItem = React.createClass({
       this.setState({hover: false});
     }
   },
-  normalizeTimestamp(value) {
-    if (!value) {
-      return 0;
-    }
-
-    let r = (Date.now() - value) / (1e3 * 3600 * 24);
-    return parseFloat(r.toFixed(4));
-  },
   render() {
     const site = this.props;
     const image = site.bestImage;
