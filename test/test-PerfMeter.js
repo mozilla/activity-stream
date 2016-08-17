@@ -6,7 +6,7 @@ const simplePrefs = require("sdk/simple-prefs");
 const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");
 const {activateTab} = require("sdk/tabs/utils");
-const {PerfMeter} = require("lib/PerfMeter");
+const {PerfMeter} = require("addon/PerfMeter");
 const {getTestActivityStream} = require("./lib/utils");
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/Services.jsm");

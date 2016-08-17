@@ -2,7 +2,7 @@
 "use strict";
 
 const {before} = require("sdk/test/utils");
-const {PlacesProvider} = require("lib/PlacesProvider");
+const {PlacesProvider} = require("addon/PlacesProvider");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Ci, Cu} = require("chrome");
 const systemEvents = require("sdk/system/events");

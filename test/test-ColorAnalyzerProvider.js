@@ -1,5 +1,5 @@
 const test = require("sdk/test");
-const {getColor} = require("lib/ColorAnalyzerProvider");
+const {getColor} = require("addon/ColorAnalyzerProvider");
 const {colors} = require("./resources/colors");
 
 exports["test getColor"] = function*(assert) {

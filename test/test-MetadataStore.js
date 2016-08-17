@@ -2,7 +2,7 @@
 "use strict";
 
 const {before, after, waitUntil} = require("sdk/test/utils");
-const {MetadataStore} = require("lib/MetadataStore.js");
+const {MetadataStore} = require("addon/MetadataStore.js");
 const {metadataFixture} = require("./lib/MetastoreFixture.js");
 const fileIO = require("sdk/io/file");
 

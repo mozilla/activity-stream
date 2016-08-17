@@ -1,7 +1,7 @@
 "use strict";
 
 const {Cc, Ci, Cu, components} = require("chrome");
-const {ActivityStreams} = require("lib/ActivityStreams");
+const {ActivityStreams} = require("addon/ActivityStreams");
 const {stack: Cs} = components;
 
 // If we didn't get passed a stack, maybe the error has one otherwise get it

@@ -1,7 +1,7 @@
 "use strict";
 
 const test = require("sdk/test");
-const {ExperimentProvider} = require("lib/ExperimentProvider");
+const {ExperimentProvider} = require("addon/ExperimentProvider");
 const {getTestActivityStream} = require("./lib/utils");
 
 const DEFAULT_CLIENT_ID = "foo";

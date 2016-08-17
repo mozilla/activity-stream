@@ -90,7 +90,7 @@
     "activity-stream"
   ],
   "license": "MPL-2.0",
-  "main": "lib/main.js",
+  "main": "addon/main.js",
   "preferences": [
     {
       "name": "performance.log",

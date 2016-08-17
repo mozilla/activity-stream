@@ -5,8 +5,8 @@ const {Cc, Ci, Cu} = require("chrome");
 const test = require("sdk/test");
 const windows = require("sdk/windows").browserWindows;
 const {viewFor} = require("sdk/view/core");
-const {ShareProvider} = require("lib/ShareProvider");
-const DEFAULT_MANIFEST_PREFS = require("lib/ShareManifests");
+const {ShareProvider} = require("addon/ShareProvider");
+const DEFAULT_MANIFEST_PREFS = require("addon/ShareManifests");
 const SocialService = Cu.import("resource://gre/modules/SocialService.jsm", {}).SocialService;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");

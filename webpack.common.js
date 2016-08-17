@@ -49,7 +49,8 @@ module.exports = {
       "selectors": absolute("./content-src/selectors"),
       "lib": absolute("./content-src/lib"),
       "strings": absolute("./strings"),
-      "test": absolute("./content-test")
+      "test": absolute("./content-test"),
+      "addon": absolute("./addon")
     }
   },
   plugins

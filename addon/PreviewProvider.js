@@ -4,9 +4,9 @@
 const {Cu} = require("chrome");
 const simplePrefs = require("sdk/simple-prefs");
 const self = require("sdk/self");
-const {TippyTopProvider} = require("lib/TippyTopProvider");
-const {getColor} = require("lib/ColorAnalyzerProvider");
-const {MetadataCache} = require("lib/MetadataCache");
+const {TippyTopProvider} = require("addon/TippyTopProvider");
+const {getColor} = require("addon/ColorAnalyzerProvider");
+const {MetadataCache} = require("addon/MetadataCache");
 
 const EMBEDLY_PREF = "embedly.endpoint";
 const EMBEDLY_VERSION_QUERY = "?addon_version=";
