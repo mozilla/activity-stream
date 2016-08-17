@@ -28,8 +28,11 @@ exports["test activity stream doesn't load in private windows"] = function*(asse
       window.tabs.open({
         url: appURL,
         onReady: tab => {
-          assert.equal(tab.url, "about:privatebrowsing");
-          tab.close(resolve);
+          // onReady may fire more than once. The important thing is that we end up
+          // on about:privatebrowsing at the end.
+          if (tab.url === "about:privatebrowsing") {
+            tab.close(resolve);
+          }
         }
       });
     });
