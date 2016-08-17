@@ -83,7 +83,7 @@ module.exports.selectNewTabSites = createSelector(
       History.rows])[2];
 
     let topHighlights = spotlightRows;
-    if (weightedHighlightsEnabled && weightedHighlightsRows.length) {
+    if (weightedHighlightsEnabled) {
       topHighlights = weightedHighlightsRows;
     }
 
@@ -101,12 +101,24 @@ module.exports.selectNewTabSites = createSelector(
 module.exports.selectHistory = createSelector(
   [
     selectSpotlight,
-    state => state.History
+    state => state.History,
+    state => state.WeightedHighlights,
+    state => state.Prefs.prefs.weightedHighlights,
   ],
-  (Spotlight, History) => ({
-    Spotlight: Object.assign({}, Spotlight, {rows: dedupe.one(Spotlight.rows)}),
-    History
-  })
+  (Spotlight, History, WeightedHighlights, weightedHighlightsEnabled) => {
+    let rows;
+
+    if (weightedHighlightsEnabled) {
+      rows = assignImageAndBackgroundColor(WeightedHighlights.rows);
+    } else {
+      rows = dedupe.one(Spotlight.rows);
+    }
+
+    return {
+      Spotlight: Object.assign({}, Spotlight, {rows}),
+      History
+    };
+  }
 );
 
 // Timeline Bookmarks
