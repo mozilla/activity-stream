@@ -8,6 +8,7 @@ const {
   selectSpotlight,
   selectTopSites,
   selectNewTabSites,
+  selectHistory,
   SPOTLIGHT_LENGTH
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
@@ -153,6 +154,39 @@ describe("selectors", () => {
       assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
     });
   });
+  describe("selectHistory weightedHighlights pref is false", () => {
+    let state;
+    let fakeStateNoWeights;
+    beforeEach(() => {
+      fakeStateNoWeights = Object.assign({}, fakeState, {
+        Prefs: {
+          prefs: {
+            weightedHighlights: false,
+            recommendations: true
+          }
+        }
+      });
+      state = selectHistory(fakeStateNoWeights);
+    });
+    it("should select Highlights rows when weightedHighlights pref is false", () => {
+      // Because of the sorting cannot check links. If `selectSpotlight` is called then recommendations is read
+      // and that can only happen if Spotlight links were selected.
+      assert.ok(state.Spotlight.recommendationShown);
+    });
+  });
+  describe("selectHistory weightedHighlights pref is true", () => {
+    let state;
+    let fakeStateWithWeights = Object.assign({}, fakeState, {Prefs: {prefs: {weightedHighlights: true}}});
+    beforeEach(() => {
+      state = selectHistory(fakeStateWithWeights);
+    });
+    it("should select WeightedHighlights when weightedHighlights pref is true", () => {
+      // Because of the call to assignImageAndBackgroundColor the two `rows` prop are not identical.
+      state.Spotlight.rows.forEach((row, i) => {
+        assert.equal(row.url, fakeStateWithWeights.WeightedHighlights.rows[i].url);
+      });
+    });
+  });
   describe("selectNewTabSites", () => {
     let state;
     beforeEach(() => {
@@ -201,6 +235,15 @@ describe("selectors", () => {
       state.Spotlight.rows.forEach((row, i) => {
         assert.equal(row.url, weightedHighlights.WeightedHighlights.rows[i].url);
       });
+    });
+    it("should render first run highlights of fresh profiles", () => {
+      let weightedHighlights = {
+        WeightedHighlights: {rows: [], init: true},
+        Prefs: {prefs: {weightedHighlights: true}}
+      };
+
+      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
+      assert.equal(state.Spotlight.rows.length, firstRunData.Highlights.length);
     });
   });
 });

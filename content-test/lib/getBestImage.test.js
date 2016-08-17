@@ -1,4 +1,4 @@
-const getBestImage = require("lib/getBestImage");
+const getBestImage = require("common/getBestImage");
 const {IMG_WIDTH, IMG_HEIGHT} = getBestImage;
 
 describe("getBestImage", () => {
