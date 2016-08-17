@@ -224,7 +224,7 @@ ActivityStreams.prototype = {
           break;
         }
 
-        provider.getHighlightsLinks(msg.data).then(highlightsLinks => {
+        provider.getRecentlyVisited(msg.data).then(highlightsLinks => {
           // Decorate links with meta information.
           let cachedLinks = this._processLinks(highlightsLinks, "WEIGHTED_HIGHLIGHTS_RESPONSE", msg.meta);
           cachedLinks.then(highlightsWithMeta => {
@@ -497,7 +497,7 @@ ActivityStreams.prototype = {
       getAllHistoryItems: cache.memoize("getAllHistoryItems", PlacesProvider.links.getAllHistoryItems.bind(linksObj)),
       getRecentBookmarks: cache.memoize("getRecentBookmarks", PlacesProvider.links.getRecentBookmarks.bind(linksObj)),
       getRecentLinks: cache.memoize("getRecentLinks", PlacesProvider.links.getRecentLinks.bind(linksObj)),
-      getREcentlyVisited: cache.memoize("getRecentlyVisited", PlacesProvider.links.getRecentlyVisited.bind(linksObj)),
+      getRecentlyVisited: cache.memoize("getRecentlyVisited", PlacesProvider.links.getRecentlyVisited.bind(linksObj)),
       getHighlightsLinks: cache.memoize("getHighlightsLinks", PlacesProvider.links.getHighlightsLinks.bind(linksObj)),
       getHistorySize: cache.memoize("getHistorySize", PlacesProvider.links.getHistorySize.bind(linksObj)),
       getBookmarksSize: cache.memoize("getBookmarksSize", PlacesProvider.links.getBookmarksSize.bind(linksObj))

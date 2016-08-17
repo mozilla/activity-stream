@@ -107,7 +107,6 @@ module.exports.selectHistory = createSelector(
   ],
   (Spotlight, History, WeightedHighlights, weightedHighlightsEnabled) => {
     let rows;
-
     if (weightedHighlightsEnabled) {
       rows = assignImageAndBackgroundColor(WeightedHighlights.rows);
     } else {

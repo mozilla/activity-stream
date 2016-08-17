@@ -8,6 +8,7 @@ const {
   selectSpotlight,
   selectTopSites,
   selectNewTabSites,
+  selectHistory,
   SPOTLIGHT_LENGTH
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
@@ -151,6 +152,34 @@ describe("selectors", () => {
       const rows = [{url: "http://foo.com"}, {url: "http://www.foo.com"}];
       const result = selectTopSites({TopSites: {init: false, rows}});
       assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
+    });
+  });
+  describe("selectHistory", () => {
+    let state;
+    let fakeStateNoWeights;
+    beforeEach(() => {
+      fakeStateNoWeights = Object.assign({}, fakeState, {Prefs: {prefs: {
+        weightedHighlights: false,
+        recommendations: true
+      }}});
+      state = selectHistory(fakeStateNoWeights);
+    });
+    it("should select Highlights rows when weightedHighlights pref is false", () => {
+      // Because of the sorting cannot check links. If `selectSpotlight` is called then recommendations is read
+      // and that can only happen if Spotlight links were selected.
+      assert.ok(state.Spotlight.recommendationShown);
+    });
+    describe("weightedHighlights pref is true", () => {
+      let fakeStateWithWeights = Object.assign({}, fakeState, {Prefs: {prefs: {weightedHighlights: true}}});
+      beforeEach(() => {
+        state = selectHistory(fakeStateWithWeights);
+      });
+      it("should select WeightedHighlights when weightedHighlights pref is true", () => {
+        // Because of the call to assignImageAndBackgroundColor the two `rows` prop are not identical.
+        state.Spotlight.rows.forEach((row, i) => {
+          assert.equal(row.url, fakeStateWithWeights.WeightedHighlights.rows[i].url);
+        });
+      });
     });
   });
   describe("selectNewTabSites", () => {
