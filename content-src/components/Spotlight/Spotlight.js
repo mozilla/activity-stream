@@ -35,6 +35,14 @@ const SpotlightItem = React.createClass({
       this.setState({hover: false});
     }
   },
+  normalizeTimestamp(value) {
+    if (!value) {
+      return 0;
+    }
+
+    let r = (Date.now() - value) / (1e3 * 3600 * 24);
+    return parseFloat(r.toFixed(4));
+  },
   render() {
     const site = this.props;
     const image = site.bestImage;
@@ -57,6 +65,8 @@ const SpotlightItem = React.createClass({
         <div className="spotlight-details">
           <div className="spotlight-info">
             <div className="spotlight-text">
+              <p>score: {site.score}</p>
+              <p>timestamp: {this.normalizeTimestamp(site.lastVisitDate)}</p>
               <h4 ref="title" className="spotlight-title">{site.title}</h4>
               <p className="spotlight-description" ref="description">{description}</p>
             </div>

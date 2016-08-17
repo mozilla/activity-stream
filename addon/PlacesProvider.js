@@ -591,8 +591,7 @@ Links.prototype = {
     }
 
     let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
-
-    let params = {limitBookmarks: 1, limitHistory: (limit - 1)};
+    let params = {limit};
 
     let sqlQuery = `SELECT DISTINCT * FROM (
                       SELECT * FROM (
@@ -604,22 +603,23 @@ Links.prototype = {
                                p.frecency as frecency,
                                p.visit_count as visitCount,
                                p.last_visit_date / 1000 as lastVisitDate,
-                               "bookmark" as type,
+                               "history" as type,
                                b.id as bookmarkId,
                                b.guid as bookmarkGuid,
                                b.title as bookmarkTitle,
                                b.lastModified / 1000 as lastModified,
                                b.dateAdded / 1000 as bookmarkDateCreated
                         FROM moz_places p
-                        INNER JOIN moz_bookmarks b
+                        LEFT JOIN moz_bookmarks b
                           ON b.fk = p.id
                         LEFT JOIN moz_favicons f
                           ON p.favicon_id = f.id
-                        WHERE date(b.dateAdded / 1000 / 1000, 'unixepoch') > date('now', '${HIGHLIGHTS_THRESHOLDS.created}')
+                        WHERE datetime(p.last_visit_date / 1000 / 1000, 'unixepoch') < datetime('now', '${HIGHLIGHTS_THRESHOLDS.visited}')
                         AND p.url NOT IN (${blockedURLs})
-                        AND p.visit_count <= 3
-                        ORDER BY b.dateAdded DESC
-                        LIMIT :limitBookmarks
+                        AND p.title NOT NULL
+                        AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})
+                        GROUP BY p.rev_host
+                        LIMIT :limit
                       )
 
                       UNION ALL
@@ -644,14 +644,13 @@ Links.prototype = {
                           ON b.fk = p.id
                         LEFT JOIN moz_favicons f
                           ON p.favicon_id = f.id
-                        WHERE datetime(p.last_visit_date / 1000 / 1000, 'unixepoch') < datetime('now', '${HIGHLIGHTS_THRESHOLDS.visited}')
+                        WHERE datetime(p.last_visit_date / 1000 / 1000, 'unixepoch')
+                          BETWEEN datetime('now', '${HIGHLIGHTS_THRESHOLDS.ageLimit}')
+                          AND datetime('now', '${HIGHLIGHTS_THRESHOLDS.visited}')
                         AND p.url NOT IN (${blockedURLs})
-                        AND p.visit_count <= 3
                         AND p.title NOT NULL
                         AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})
                         GROUP BY p.rev_host
-                        ORDER BY p.last_visit_date DESC
-                        LIMIT :limitHistory
                       )
                     )`;
 
