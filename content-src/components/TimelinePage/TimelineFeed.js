@@ -75,6 +75,7 @@ const TimelineFeed = React.createClass({
   },
   render() {
     const props = this.props;
+    console.log("xxx timelinefeed", props.Spotlight ? props.Spotlight.rows : 42);
     return (<section className="content" ref="scrollElement" onScroll={!props.Feed.isLoading && props.Feed.canLoadMore && this.loadMoreDataIfNeeded}>
       <div ref="wrapper" className={classNames("wrapper", "show-on-init", {on: props.Feed.init})}>
         {props.Spotlight ? <Spotlight page={this.props.pageName} sites={props.Spotlight.rows} /> : null}
