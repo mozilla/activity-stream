@@ -1,5 +1,5 @@
 const {createSelector} = require("reselect");
-const getBestImage = require("lib/getBestImage");
+const getBestImage = require("common/getBestImage");
 const {selectSiteProperties} = require("selectors/siteMetadataSelectors");
 const {prettyUrl, getBlackOrWhite, toRGBString, getRandomColor} = require("lib/utils");
 

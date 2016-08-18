@@ -32,6 +32,7 @@ const fakeHistory = [
 const fakeUrls = [
   {
     url: "http://google.com/calendar",
+    host: "google.com",
     visitCount: 2,
     title: "Activity Stream",
     description: "",
@@ -40,6 +41,7 @@ const fakeUrls = [
   },
   {
     url: "http://github.com/mozilla/activity-stream",
+    host: "github.com",
     visitCount: 1,
     title: "Activity Stream",
     description: "",
@@ -48,6 +50,7 @@ const fakeUrls = [
   },
   {
     url: "http://github.com/mozilla/activity-stream",
+    host: "github.com",
     visitCount: 1,
     title: "Activity Stream",
     description: "",
@@ -56,6 +59,7 @@ const fakeUrls = [
   },
   {
     url: "http://foo.com/test",
+    host: "foo.com",
     visitCount: 1,
     title: "Activity Stream",
     description: "",
@@ -64,6 +68,7 @@ const fakeUrls = [
   },
   {
     url: "http://bar.com/test",
+    host: "bar.com",
     visitCount: 1,
     title: "Activity Stream",
     bookmarkId: 1,
@@ -73,6 +78,7 @@ const fakeUrls = [
   },
   {
     url: "http://bar1.com/test",
+    host: "bar1.com",
     visitCount: 1,
     title: "Old link",
     description: "",
@@ -81,6 +87,7 @@ const fakeUrls = [
   },
   {
     url: "http://bar2.com/test",
+    host: "bar2.com",
     visitCount: 30,
     title: "Very visited",
     description: "",
@@ -101,14 +108,45 @@ describe("Baseline", () => {
     assert.isNumber(items[0].score);
   });
 
+  it("should return 0 for when no images are present", () => {
+    assert.equal(baseline.extractLargestImage({}), 0);
+  });
+
+  it("should return 0 when image array is empty", () => {
+    assert.equal(baseline.extractLargestImage({images: []}), 0);
+  });
+
+  it("should return 0 for when images don't have size", () => {
+    assert.equal(baseline.extractLargestImage({images: [{}]}), 0);
+  });
+
+  it("should extract max image size", () => {
+    const images = [{size: 100}, {size: 1}, {size: undefined}];
+    assert.equal(baseline.extractLargestImage({images}), 100);
+  });
+
   it("should sort items", () => {
     let items = baseline.score(fakeUrls);
     assert.isTrue(items[0].score > items[1].score);
   });
 
-  it("should remove consecutive items from the same domain", () => {
-    let items = baseline.score(fakeUrls);
-    assert.equal(items.length, 6);
+  it("should decrease score for consecutive items from the same domain", () => {
+    let fakeUrlsWithScore = fakeUrls.map(url => {
+      return Object.assign({}, url, {score: 1});
+    })
+    let items = baseline.dedupe(fakeUrlsWithScore);
+    assert.ok(items[1].score > items[2].score);
+  });
+
+  it("should decrease by the right amount", () => {
+    let fakeUrlsWithScore = fakeUrls.map(url => {
+      return Object.assign({}, url, {score: 1});
+    })
+    let items = baseline.dedupe(fakeUrlsWithScore);
+    // Items 1 and 2 are both github links so second one gets a lower score.
+    assert.equal(items[1].score, 1);
+    assert.equal(items[2].score, 0.8);
+    assert.equal(items[3].score, 1);
   });
 
   it("should rank bookmarks higher than regular sites", () => {

@@ -176,7 +176,7 @@ exports.test_Links_getRecentlyVisited = function*(assert) {
 
   for (let i = 4; i < 24; i++) {
     visits.push({
-      uri: NetUtil.newURI("https://example" + i + ".com/"),
+      uri: NetUtil.newURI(`https://example${i}.com/`),
       visitDate: timeToday,
       transition: TRANSITION_TYPED
     });

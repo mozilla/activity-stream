@@ -154,14 +154,18 @@ describe("selectors", () => {
       assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
     });
   });
-  describe("selectHistory", () => {
+  describe("selectHistory weightedHighlights pref is false", () => {
     let state;
     let fakeStateNoWeights;
     beforeEach(() => {
-      fakeStateNoWeights = Object.assign({}, fakeState, {Prefs: {prefs: {
-        weightedHighlights: false,
-        recommendations: true
-      }}});
+      fakeStateNoWeights = Object.assign({}, fakeState, {
+        Prefs: {
+          prefs: {
+            weightedHighlights: false,
+            recommendations: true
+          }
+        }
+      });
       state = selectHistory(fakeStateNoWeights);
     });
     it("should select Highlights rows when weightedHighlights pref is false", () => {
@@ -169,16 +173,17 @@ describe("selectors", () => {
       // and that can only happen if Spotlight links were selected.
       assert.ok(state.Spotlight.recommendationShown);
     });
-    describe("weightedHighlights pref is true", () => {
-      let fakeStateWithWeights = Object.assign({}, fakeState, {Prefs: {prefs: {weightedHighlights: true}}});
-      beforeEach(() => {
-        state = selectHistory(fakeStateWithWeights);
-      });
-      it("should select WeightedHighlights when weightedHighlights pref is true", () => {
-        // Because of the call to assignImageAndBackgroundColor the two `rows` prop are not identical.
-        state.Spotlight.rows.forEach((row, i) => {
-          assert.equal(row.url, fakeStateWithWeights.WeightedHighlights.rows[i].url);
-        });
+  });
+  describe("selectHistory weightedHighlights pref is true", () => {
+    let state;
+    let fakeStateWithWeights = Object.assign({}, fakeState, {Prefs: {prefs: {weightedHighlights: true}}});
+    beforeEach(() => {
+      state = selectHistory(fakeStateWithWeights);
+    });
+    it("should select WeightedHighlights when weightedHighlights pref is true", () => {
+      // Because of the call to assignImageAndBackgroundColor the two `rows` prop are not identical.
+      state.Spotlight.rows.forEach((row, i) => {
+        assert.equal(row.url, fakeStateWithWeights.WeightedHighlights.rows[i].url);
       });
     });
   });
