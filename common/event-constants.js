@@ -26,7 +26,7 @@ const constants = {
     "UNBLOCK_ALL",
     "TOGGLE_RECOMMENDATION",
     "NEW_RECOMMENDATION",
-    "SHARE_FROM_TOOLBAR"
+    "SHARE_TOOLBAR"
   ]),
   sources: new Set([
     "TOP_SITES",

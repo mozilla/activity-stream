@@ -13,7 +13,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   // This indicates the type of interaction
-  "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH | SHARE_FROM_TOOLBAR]",
+  "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH | SHARE_TOOLBAR]",
 
   // This is where the interaction occurred
   "page": "[NEW_TAB | TIMELINE_ALL | TIMELINE_BOOKMARKS]",
@@ -130,7 +130,7 @@ It doesn't capture success or failure to share after.
 
 ```js
 {
-  "event": "SHARE_FROM_TOOLBAR",
+  "event": "SHARE_TOOLBAR",
   "page": "NEW_TAB",
   "provider": "https://facebook.com",
   "action": "activity_stream_event",
