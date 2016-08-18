@@ -19,27 +19,35 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights,
     state => state.Prefs.prefs.recommendations,
-    state => state.Prefs.prefs.metadataRatingSystem
+    state => state.Prefs.prefs.metadataRatingSystem,
+    state => state.WeightedHighlights,
+    state => state.Prefs.prefs.weightedHighlights
   ],
-  (Highlights, recommendationShown, metadataRating) => {
-    // Only concat first run data if init is true
-    const highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
-    const rows = assignImageAndBackgroundColor(highlightRows)
-      .sort((site1, site2) => {
-        const site1Valid = isValidSpotlightSite(site1);
-        const site2Valid = isValidSpotlightSite(site2);
-        if (site2.type === firstRunData.FIRST_RUN_TYPE) {
+  (Highlights, recommendationShown, metadataRating, WeightedHighlights, prefWeightedHighlights) => {
+    let rows;
+    if (prefWeightedHighlights) {
+      rows = assignImageAndBackgroundColor(WeightedHighlights.rows);
+    } else {
+      // Only concat first run data if init is true
+      const highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
+      rows = assignImageAndBackgroundColor(highlightRows)
+        .sort((site1, site2) => {
+          const site1Valid = isValidSpotlightSite(site1);
+          const site2Valid = isValidSpotlightSite(site2);
+          if (site2.type === firstRunData.FIRST_RUN_TYPE) {
+            return -1;
+          } else if (site1.type === firstRunData.FIRST_RUN_TYPE) {
+            return 1;
+          } else if (site1Valid && site2Valid) {
+            return 0;
+          } else if (site2Valid) {
+            return 1;
+          }
           return -1;
-        } else if (site1.type === firstRunData.FIRST_RUN_TYPE) {
-          return 1;
-        } else if (site1Valid && site2Valid) {
-          return 0;
-        } else if (site2Valid) {
-          return 1;
-        }
-        return -1;
-      });
-    return Object.assign({}, Highlights, {rows, recommendationShown, metadataRating});
+        });
+    }
+
+    return Object.assign({}, Highlights, {rows, recommendationShown, metadataRating, prefWeightedHighlights});
   }
 );
 
@@ -63,7 +71,7 @@ module.exports.selectNewTabSites = createSelector(
     selectSpotlight,
     state => state.Experiments
   ],
-  (WeightedHighlights, weightedHighlightsEnabled, TopSites, History, Spotlight, Experiments) => {
+  (WeightedHighlights, prefWeightedHighlights, TopSites, History, Spotlight, Experiments) => {
     let weightedHighlightsRows = assignImageAndBackgroundColor(WeightedHighlights.rows);
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
@@ -83,13 +91,13 @@ module.exports.selectNewTabSites = createSelector(
       History.rows])[2];
 
     let topHighlights = spotlightRows;
-    if (weightedHighlightsEnabled) {
+    if (prefWeightedHighlights) {
       topHighlights = weightedHighlightsRows;
     }
 
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
-      Spotlight: Object.assign({}, Spotlight, {rows: topHighlights, weightedHighlights: weightedHighlightsEnabled}),
+      Spotlight: Object.assign({}, Spotlight, {rows: topHighlights, weightedHighlights: prefWeightedHighlights}),
       TopActivity: Object.assign({}, History, {rows: historyRows}),
       isReady: TopSites.init && History.init && Spotlight.init && Experiments.init && WeightedHighlights.init,
       showRecommendationOption: Experiments.values.recommendedHighlight
@@ -103,11 +111,11 @@ module.exports.selectHistory = createSelector(
     selectSpotlight,
     state => state.History,
     state => state.WeightedHighlights,
-    state => state.Prefs.prefs.weightedHighlights,
+    state => state.Prefs.prefs.weightedHighlights
   ],
-  (Spotlight, History, WeightedHighlights, weightedHighlightsEnabled) => {
+  (Spotlight, History, WeightedHighlights, prefWeightedHighlights) => {
     let rows;
-    if (weightedHighlightsEnabled) {
+    if (prefWeightedHighlights) {
       rows = assignImageAndBackgroundColor(WeightedHighlights.rows);
     } else {
       rows = dedupe.one(Spotlight.rows);

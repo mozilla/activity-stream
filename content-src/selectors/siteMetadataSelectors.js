@@ -1,6 +1,6 @@
 const urlParse = require("url-parse");
 const {createSelector} = require("reselect");
-const getBestImage = require("lib/getBestImage");
+const getBestImage = require("common/getBestImage");
 const getVideoPreview = require("lib/getVideoPreview");
 const {prettyUrl} = require("lib/utils");
 

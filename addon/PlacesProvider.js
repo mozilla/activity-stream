@@ -707,7 +707,6 @@ Links.prototype = {
                         AND p.url NOT IN (${blockedURLs})
                         AND p.title NOT NULL
                         AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})
-                        GROUP BY p.rev_host
                         ORDER BY p.last_visit_date DESC
                         LIMIT :limit
                       )
@@ -738,9 +737,8 @@ Links.prototype = {
                         AND p.url NOT IN (${blockedURLs})
                         AND p.title NOT NULL
                         AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})
-                        GROUP BY p.rev_host
                       )
-                    )`;
+                    ) LIMIT 100`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
       columns: ["bookmarkId", "bookmarkTitle", "bookmarkGuid", "bookmarkDateCreated", "url", "guid", "title",
