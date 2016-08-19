@@ -20,6 +20,7 @@ scripts:
   bundle:
     pre: =>clean && =>copyTestImages && =>copyTopSitesJson
     static: cpx "content-src/static/**/*" data/content
+    svgo: svgo -q -f data/content/img/
     webpack: NODE_ENV=production webpack
     webpackAddon: webpack --config webpack.addon.config.js
     css: node-sass content-src/main.scss -o data/content
