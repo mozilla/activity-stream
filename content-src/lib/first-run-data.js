@@ -15,7 +15,7 @@ module.exports = {
       "title": "YouTube",
       "url": "https://www.youtube.com/",
       "favicon_url": "youtube-com.png",
-      "background_color": "#fff"
+      "background_color": "#db4338"
     },
     {
       "title": "Amazon",
