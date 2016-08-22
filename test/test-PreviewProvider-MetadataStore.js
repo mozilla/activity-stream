@@ -62,7 +62,7 @@ exports.test_find_correct_links = function*(assert) {
     {cache_key: "https://www.notinDB.com/", places_url: "https://www.notinDB.com/"}];
 
   // find the items in the database, based on their cache keys
-  const dbLinks = yield gPreviewProvider._asyncFindItemsInDB(links);
+  const dbLinks = yield gPreviewProvider.asyncFindItemsInDB(links);
   assert.equal(dbLinks.length, 2, "returned two items out of the three based on their cache_key");
   assert.equal(dbLinks[0].cache_key, links[0].cache_key, "correctly returned the first link");
   assert.equal(dbLinks[1].cache_key, links[1].cache_key, "correctly returned the second link");

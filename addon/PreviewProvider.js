@@ -151,7 +151,7 @@ PreviewProvider.prototype = {
     * Process the raw links that come in,
     * adds a sanitizeURL and cacheKey
     */
-  _processLinks(links) {
+  processLinks(links) {
     return links
       .filter(this._URLFilter(URL_FILTERS))
       .map(link => {
@@ -183,7 +183,8 @@ PreviewProvider.prototype = {
     * Collects all the metadata about the set of links that are requested
     */
   getLinkMetadata(links, event = {}, skipPreviewRequest = false, previewsOnly = false) {
-    let processedLinks = this._processLinks(links);
+    let processedLinks = this.processLinks(links);
+
     if (!skipPreviewRequest) {
       this._asyncSaveLinks(processedLinks, event);
     }
@@ -204,7 +205,7 @@ PreviewProvider.prototype = {
     }
     // Collect all items in the DB that we requested and create a mapping between that
     // object's metadata and it's cache key
-    let dbLinks = yield this._asyncFindItemsInDB(processedLinks);
+    let dbLinks = yield this.asyncFindItemsInDB(processedLinks);
     let existingLinks = new Map();
     dbLinks.forEach(item => existingLinks.set(item.cache_key, item));
     let results = processedLinks.map(site => {
@@ -231,7 +232,7 @@ PreviewProvider.prototype = {
    * Find the metadata for each link in the database. Note that it'll try to fetch items
    * from the cache before querying the metadata store
    */
-  _asyncFindItemsInDB: Task.async(function*(links) {
+  asyncFindItemsInDB: Task.async(function*(links) {
     let cacheMissedKeys = [];
     let linksMetadata = [];
 
@@ -258,7 +259,7 @@ PreviewProvider.prototype = {
    * Request links from embedly, optionally filtering out known links
    */
   _asyncSaveLinks: Task.async(function*(processedLinks, event) {
-    let dbLinks = yield this._asyncFindItemsInDB(processedLinks);
+    let dbLinks = yield this.asyncFindItemsInDB(processedLinks);
     let existingLinks = new Set();
     dbLinks.forEach(item => existingLinks.add(item.cache_key));
     let linksList = this._uniqueLinks(processedLinks)

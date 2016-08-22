@@ -2,7 +2,7 @@ class Chrome {
   constructor() {
     this.Cc = {};
     this.Cu = {import: sinon.spy()};
-    this.Ci = {};
+    this.Ci = {nsIDOMParser: sinon.spy()};
   }
 }
 module.exports = new Chrome();

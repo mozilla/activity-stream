@@ -155,7 +155,7 @@ exports.test_process_links = function(assert) {
   ];
 
   // process the links
-  const processedLinks = gPreviewProvider._processLinks(fakeData);
+  const processedLinks = gPreviewProvider.processLinks(fakeData);
 
   assert.equal(fakeData.length, processedLinks.length, "should not deduplicate or remove any links");
 

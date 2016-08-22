@@ -24,7 +24,7 @@ describe("ActivtyStreams", () => {
     window.confirm = originalConfirm;
   });
 
-  files.forEach(file => req(file));
+  //files.forEach(file => req(file));
   // In order to target specific files, comment out the above line and uncomment/edit the following:
-  // require("./addon/PrefsProvider.test.js");
+   require("./addon/PageScraper.test.js");
 });

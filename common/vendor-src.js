@@ -6,7 +6,9 @@
 const vendorModules = {
   "seedrandom": require("seedrandom"),
   "url-parse": require("url-parse"),
-  "DoublyLinkedList": require("DoublyLinkedList/doubly-linked-list").DoublyLinkedList
+  "DoublyLinkedList": require("DoublyLinkedList/doubly-linked-list").DoublyLinkedList,
+  "PageMetadataParser": require("page-metadata-parser"),
+  "url": require("url")
 };
 
 module.exports = function vendor(moduleName) {

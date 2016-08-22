@@ -14,6 +14,7 @@
     "history": "2.1.2",
     "lodash.debounce": "4.0.8",
     "moment": "2.14.1",
+    "page-metadata-parser": "^0.3.0",
     "react": "15.3.1",
     "react-dom": "15.3.1",
     "react-json-inspector": "7.0.0",
@@ -217,6 +218,12 @@
       "type": "string",
       "value": "",
       "hidden": true
+    },
+    {
+      "name": "pageScraper",
+      "title": "Turn on page metadata scraper",
+      "type": "bool",
+      "value": true
     }
   ],
   "repository": "mozilla/activity-stream",
