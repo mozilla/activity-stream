@@ -11,5 +11,7 @@ try {
 platform_exports = Object.assign(platform_exports, {
   SeedRandom: require("seedrandom"),
   urlParse: require("url-parse"),
-  DoublyLinkedList: require("DoublyLinkedList/doubly-linked-list").DoublyLinkedList
+  DoublyLinkedList: require("DoublyLinkedList/doubly-linked-list").DoublyLinkedList,
+  PageMetadataParser: require("page-metadata-parser"),
+  url: require("url")
 });

@@ -27,5 +27,19 @@
       "threshold": 0.3,
       "description": "Show a recommendation in the third highlights spot"
     }
+  },
+  "localMetadata": {
+    "name": "Local Page Scraper",
+    "description": "Locally compute metadata for pages",
+    "control": {
+      "value": false,
+      "description": "Do not compute metadata locally"
+    },
+    "variant": {
+      "id": "exp-003-local-metadata",
+      "value": true,
+      "threshold": 0.5,
+      "description": "Locally compute metadata"
+    }
   }
 }

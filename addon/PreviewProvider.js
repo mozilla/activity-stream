@@ -133,7 +133,7 @@ PreviewProvider.prototype = {
     * Process the raw links that come in,
     * adds a sanitizeURL and cacheKey
     */
-  _processLinks(links) {
+  processLinks(links) {
     return links
       .filter(this._URLFilter(URL_FILTERS))
       .map(link => {
@@ -164,9 +164,12 @@ PreviewProvider.prototype = {
   /**
     * Collects all the metadata about the set of links that are requested
     */
-  getLinkMetadata(links, event = {}, skipPreviewRequest = false, previewsOnly = false) {
-    let processedLinks = this._processLinks(links);
-    if (!skipPreviewRequest) {
+  getLinkMetadata(links, event = {}, skipPreviewRequest = false, previewsOnly = false, inExperiment = false) {
+    let processedLinks = this.processLinks(links);
+
+    // if we are in the experiment where metadata is computed locally, never go to embedly
+    // just always retrieve from the database
+    if (!skipPreviewRequest && !inExperiment) {
       this._asyncSaveLinks(processedLinks, event);
     }
 

@@ -28,6 +28,7 @@ const {CONTENT_TO_ADDON, ADDON_TO_CONTENT} = require("common/event-constants");
 const {ExperimentProvider} = require("addon/ExperimentProvider");
 const {Recommender} = require("common/recommender/Recommender");
 const {PrefsProvider} = require("addon/PrefsProvider");
+const {PageScraper} = require("addon/PageScraper");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource:///modules/NewTabURL.jsm");
@@ -96,7 +97,13 @@ function ActivityStreams(metadataStore, options = {}) {
     this._experimentProvider.experimentId
   );
 
-  this._previewProvider = new PreviewProvider(this._tabTracker, metadataStore);
+  this._metadataStore = metadataStore;
+  this._previewProvider = new PreviewProvider(this._tabTracker, this._metadataStore);
+
+  this._pageScraper = null;
+  if (simplePrefs.prefs.pageScraper && this._experimentProvider.data.localMetadata) {
+    this._pageScraper = new PageScraper(this._previewProvider, this._metadataStore);
+  }
 
   this._populatingCache = {places: false};
 
@@ -298,12 +305,12 @@ ActivityStreams.prototype = {
   _processLinks(placesLinks, responseType, options) {
     let {previewsOnly, skipPreviewRequest} = options || {};
     const event = this._tabTracker.generateEvent({source: responseType});
-    let inExperiment = this._experimentProvider.data.recommendedHighlight;
+    let experimentData = this._experimentProvider.data;
     let isAHighlight = responseType === "HIGHLIGHTS_LINKS_RESPONSE";
-    let shouldGetRecommendation = isAHighlight && simplePrefs.prefs.recommendations && inExperiment;
+    let shouldGetRecommendation = isAHighlight && simplePrefs.prefs.recommendations && experimentData.recommendedHighlight;
     let recommendation = shouldGetRecommendation ? this._recommendationProvider.getRecommendation() : null;
     let linksToProcess = placesLinks.concat([recommendation]).filter(link => link);
-    return this._previewProvider.getLinkMetadata(linksToProcess, event, skipPreviewRequest, previewsOnly);
+    return this._previewProvider.getLinkMetadata(linksToProcess, event, skipPreviewRequest, previewsOnly, experimentData.localMetadata);
   },
 
   /**
@@ -457,7 +464,26 @@ ActivityStreams.prototype = {
     this.on(CONTENT_TO_ADDON, this._contentToAddonHandlers);
 
     this._weightedHiglightsListeners = this._weightedHiglightsListeners.bind(this);
+    this._pageScraperListener = this._pageScraperListener.bind(this);
     simplePrefs.on("", this._weightedHiglightsListeners);
+    simplePrefs.on("pageScraper", this._pageScraperListener);
+  },
+
+  /**
+   * Listen for changes to the page scraper pref if we are in the experiment
+   *
+   * @private
+   */
+  _pageScraperListener() {
+    if (this._experimentProvider.data.localMetadata) {
+      let newEnabledValue = simplePrefs.prefs.pageScraper;
+      if (newEnabledValue && !this._pageScraper) {
+        this._pageScraper = new PageScraper(this._previewProvider, this._metadataStore);
+      } else if (!newEnabledValue && this._pageScraper) {
+        this._pageScraper.uninit();
+        this._pageScraper = null;
+      }
+    }
   },
 
   /**
@@ -485,6 +511,7 @@ ActivityStreams.prototype = {
     SearchProvider.search.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
     simplePrefs.off("", this._weightedHiglightsListeners);
+    simplePrefs.off("pageScraper", this._pageScraperListener);
   },
 
   /**
@@ -689,6 +716,9 @@ ActivityStreams.prototype = {
       this._previewProvider.uninit();
       if (this._recommendationProvider) {
         this._recommendationProvider.uninit();
+      }
+      if (this._pageScraper) {
+        this._pageScraper.uninit();
       }
       NewTabURL.reset();
       Services.prefs.clearUserPref("places.favicons.optimizeToDimension");
