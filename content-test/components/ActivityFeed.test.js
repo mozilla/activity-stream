@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const ConnectedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const {ActivityFeedItem, GroupedActivityFeed, groupSitesBySession} = ConnectedActivityFeed;
 const LinkMenu = require("components/LinkMenu/LinkMenu");

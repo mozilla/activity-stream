@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");
 const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 

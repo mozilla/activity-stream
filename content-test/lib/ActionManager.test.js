@@ -1,7 +1,6 @@
 /* globals describe, it, beforeEach */
 
 const ActionManager = require("common/ActionManager");
-const {assert} = require("chai");
 
 describe("ActionManager", () => {
   describe("instance", () => {

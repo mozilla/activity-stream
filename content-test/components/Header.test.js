@@ -1,6 +1,4 @@
 /* globals describe, beforeEach, afterEach, it */
-
-const assert = require("chai").assert;
 const Header = require("components/Header/Header");
 const React = require("react");
 const ReactDOM = require("react-dom");

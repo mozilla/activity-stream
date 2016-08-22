@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const {connect} = require("react-redux");
 const React = require("react");
 const TestUtils = require("react-addons-test-utils");

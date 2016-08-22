@@ -1,5 +1,4 @@
 const {PrefsProvider} = require("../../lib/PrefsProvider");
-const {assert} = require("chai");
 const EventEmitter = require("eventemitter2");
 
 class SimplePrefsMock extends EventEmitter {

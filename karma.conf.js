@@ -10,7 +10,7 @@ module.exports = function(config) {
   config.set({
     singleRun: true,
     browsers: ["Firefox"],
-    frameworks: ["mocha"],
+    frameworks: ["mocha", "sinon", "chai"],
     reporters,
     coverageReporter: {
       dir: "logs/reports/coverage",

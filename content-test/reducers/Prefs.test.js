@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const Prefs = require("reducers/Prefs");
 
 function prevState(custom = {}) {

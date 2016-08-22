@@ -1,5 +1,3 @@
-const {assert} = require("chai");
-
 const getBestImage = require("lib/getBestImage");
 const {IMG_WIDTH, IMG_HEIGHT} = getBestImage;
 

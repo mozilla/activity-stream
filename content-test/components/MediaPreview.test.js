@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const TestUtils = require("react-addons-test-utils");
 const React = require("react");
 const ReactDOM = require("react-dom");

@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const Experiments = require("reducers/Experiments");
 const definitions = require("../../experiments.json");
 

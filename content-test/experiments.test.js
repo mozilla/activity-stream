@@ -1,4 +1,3 @@
-const {assert} = require("chai");
 const definitions = require("../experiments.json");
 // This is the minimum size of the control group, expressed as a decimal
 const MIN_CONTROL = 0.2;
