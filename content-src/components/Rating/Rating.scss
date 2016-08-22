@@ -1,0 +1,17 @@
+.rating-container {
+  padding-top: $base-gutter / 2;
+  transform: scaleX(-1);
+
+  .icon-rating-default {
+    position: absolute;
+    margin-left: 122px;
+  }
+
+  .icon-rating-default:hover,
+  .icon-rating-default:hover ~ .icon-rating-default,
+  .active {
+    background: url('#{$image-path}glyph-rating-yellow.svg') no-repeat center center;
+    background-size: 18px;
+    cursor: pointer;
+  }
+}
