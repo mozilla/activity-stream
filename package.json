@@ -18,7 +18,7 @@
     "react-dom": "15.3.1",
     "react-json-inspector": "7.0.0",
     "react-redux": "4.4.5",
-    "react-router": "2.6.1",
+    "react-router": "2.7.0",
     "redux": "3.5.2",
     "redux-logger": "2.6.1",
     "redux-thunk": "2.1.0",
