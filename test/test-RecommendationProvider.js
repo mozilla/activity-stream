@@ -130,7 +130,7 @@ exports.test_set_blocked_recommendation = function(assert) {
 
 exports.test_random_recommendation = function(assert) {
   // create a fake recommendation and a fake blocked recommendation
-  let fakeRecommendedContent = [{url: "http://pickme.com"}];
+  let fakeRecommendedContent = [{url: "http://pickme.com", pocket_url: "https://pocket.co/3Fsc4Y"}];
   const fakeBlockedRecommendedContent = new Set();
   fakeBlockedRecommendedContent.add("http://blockme.com");
   gRecommendationProvider._recommendedContent = fakeRecommendedContent;
@@ -139,6 +139,7 @@ exports.test_random_recommendation = function(assert) {
 
   // we should filter out the blocked one and set the current recommendation to the fake recommended content
   assert.equal(recommendation.url, fakeRecommendedContent[0].url, "we picked the correct url");
+  assert.equal(recommendation.pocket_url, fakeRecommendedContent[0].pocket_url, "it's been stamped with the correct pocket url");
   assert.ok(recommendation.recommended, "it's been stamped as a recommended url");
   assert.ok(recommendation.recommender_type, "it's been stamped with a recommender type");
   assert.equal(recommendation.type, "recommended", "it's been stamped with a type");
