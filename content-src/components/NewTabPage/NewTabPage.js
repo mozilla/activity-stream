@@ -4,6 +4,7 @@ const {selectNewTabSites} = require("selectors/selectors");
 const TopSites = require("components/TopSites/TopSites");
 const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const Spotlight = require("components/Spotlight/Spotlight");
+const SpotlightFeed = require("components/Spotlight/SpotlightFeed");
 const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
 const ContextMenu = require("components/ContextMenu/ContextMenu");
@@ -43,6 +44,18 @@ const NewTabPage = React.createClass({
       this.setState({renderedOnce: true});
     }
   },
+  _renderGroupedFeed: function() {
+    if (this.props.Spotlight.weightedHighlights) {
+      return <section>
+        <SpotlightFeed sites={this.props.Spotlight.rows} dispatch={this.props.dispatch} />
+      </section>;
+    }
+    return <section>
+      <h3 ref="title" className="section-title">Recent Activity</h3>
+      <GroupedActivityFeed sites={this.props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME}
+        maxPreviews={1} />
+    </section>;
+  },
   render() {
     const props = this.props;
     const recommendationLabel = "Show Trending Highlights";
@@ -70,11 +83,7 @@ const NewTabPage = React.createClass({
             <Spotlight page={PAGE_NAME} showRating={props.Spotlight.metadataRating} sites={props.Spotlight.rows} />
           </section>
 
-          <section>
-            <h3 ref="title" className="section-title">Recent Activity</h3>
-            <GroupedActivityFeed sites={props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME}
-                                 maxPreviews={1} />
-          </section>
+          {this._renderGroupedFeed()}
 
           <section className="bottom-links-container">
             <Link className="bottom-link" to="/timeline"><span className="icon icon-spacer icon-activity-stream" /> See all activity</Link>
