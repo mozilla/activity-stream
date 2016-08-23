@@ -41,7 +41,7 @@
     }
   }
 
-  .feed-item a {
+  .feed-item > a {
     padding: 0;
   }
 
@@ -102,14 +102,10 @@
     flex: 0 1 auto;
   }
 
-  .feed-source.bookmark {
-    display: none;
-  }
-
   .feed-source.bookmark .star {
     position: absolute;
-    top: 19px;
-    left: $feed-gutter-h - 2;
+    top: 15px;
+    right: 25px;
     width: 18px;
     height: 18px;
     border: 0;
