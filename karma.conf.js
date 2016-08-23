@@ -1,5 +1,6 @@
 const webpack = require("./webpack.config");
 const path = require("path");
+
 const reporters = ["mocha", "coverage"];
 if (process.env.TRAVIS) {
   reporters.push("coveralls");
@@ -40,7 +41,6 @@ module.exports = function(config) {
     ],
     proxies: {"/favicons/": "/base/data/content/favicons/"},
     preprocessors: {"content-test/**/*.js": ["webpack", "sourcemap"]},
-    client: {chair: {includeStack: true}},
     webpack: {
       devtool: "inline-source-map",
       resolve: {
@@ -59,11 +59,7 @@ module.exports = function(config) {
         postLoaders: [{
           test: /\.js$/,
           loader: "istanbul-instrumenter",
-          include: [
-            path.join(__dirname, "/content-src"),
-            path.join(__dirname, "/common")
-            // Note: this does not include addon code
-          ],
+          include: [path.join(__dirname, "/content-src")],
           exclude: [/DebugPage/, /\.test\.js$/]
         }]
       },
