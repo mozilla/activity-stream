@@ -23,9 +23,15 @@ Cu.importGlobalProperties(["URL"]);
 Cu.import("resource://gre/modules/NetUtil.jsm");
 
 const gPort = 8089;
+const gEndpointPrefix = `http://localhost:${gPort}`;
+const gEmbedlyEndpoint = "/embedlyLinkData";
+const gMetadataServiceEndpoint = "/metadataServiceLinkData";
 let gPreviewProvider;
 let gMetadataStore = [];
-let gPrefEmbedly = simplePrefs.prefs["embedly.endpoint"];
+let gCurrentEndpoint = simplePrefs.prefs.currentEndpoint;
+let gMetdataSource = simplePrefs.prefs.metadataSource;
+let gEmbedlyPref = simplePrefs.prefs["embedly.endpoint"];
+let gMetadataPref = simplePrefs.prefs["metadata.endpoint"];
 let gPrefEnabled = simplePrefs.prefs["previews.enabled"];
 
 exports.test_only_request_links_once = function*(assert) {
@@ -37,11 +43,11 @@ exports.test_only_request_links_once = function*(assert) {
                 {"url": "c.com", "sanitized_url": "c.com", "cache_key": "c.com"},
                 {"url": "d.com", "sanitized_url": "d.com", "cache_key": "d.com"}];
 
-  assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
+  assert.ok(gPreviewProvider._currentEndpoint, "The embedly endpoint is set");
   let srv = httpd.startServerAsync(gPort);
 
   let urlsRequested = {};
-  srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
+  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
     let data = JSON.parse(
         NetUtil.readInputStreamToString(
           request.bodyInputStream,
@@ -204,10 +210,10 @@ exports.test_throw_out_non_requested_responses = function*(assert) {
     }
   };
 
-  assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
+  assert.ok(gPreviewProvider._currentEndpoint, "The embedly endpoint is set");
   let srv = httpd.startServerAsync(gPort);
 
-  srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
+  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
     response.setHeader("Content-Type", "application/json", false);
     response.write(JSON.stringify(fakeResponse));
   });
@@ -246,10 +252,10 @@ exports.test_mock_embedly_request = function*(assert) {
   const fakeResponse = {"urls": {"http://example.com/": {"embedlyMetaData": "some embedly metadata"}}};
 
   const embedlyVersionQuery = "addon_version=";
-  assert.ok(gPreviewProvider._embedlyEndpoint, "The embedly endpoint is set");
+  assert.ok(gPreviewProvider._currentEndpoint, "The embedly endpoint is set");
 
   let srv = httpd.startServerAsync(gPort);
-  srv.registerPathHandler("/embedlyLinkData", function handle(request, response) {
+  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
     // first, check that the version included in the query string
     assert.deepEqual(`${request.queryString}`, `${embedlyVersionQuery}${self.version}`, "we're hitting the correct endpoint");
     response.setHeader("Content-Type", "application/json", false);
@@ -262,6 +268,7 @@ exports.test_mock_embedly_request = function*(assert) {
   // we should have saved the fake site into the database
   assert.deepEqual(gMetadataStore[0][0].embedlyMetaData, "some embedly metadata", "inserted and saved the embedly data");
   assert.ok(gMetadataStore[0][0].expired_at, "an expiry time was added");
+  assert.equal(gMetadataStore[0][0].metadata_source, "Embedly", "a metadata source was added from Embedly");
 
   // retrieve the contents of the database - don't go to embedly
   let cachedLinks = yield gPreviewProvider._asyncGetEnhancedLinks(fakeRequest);
@@ -294,8 +301,51 @@ exports.test_get_enhanced_previews_only = function*(assert) {
   assert.equal(links.length, 1, "when previewOnly is set, return only links with previews");
 };
 
+exports.test_change_metadata_endpoint = function*(assert) {
+  const fakeSite = {
+    "url": "http://foo.com/",
+    "title": null,
+    "lastVisitDate": 1459537019061,
+    "frecency": 2000,
+    "favicon": null,
+    "bookmarkDateCreated": 1459537019061,
+    "type": "history",
+    "sanitized_url": "http://foo.com/",
+    "cache_key": "foo.com/"
+  };
+  const fakeRequest = [fakeSite];
+  const fakeResponse = {"urls": {"http://foo.com/": {"metaData": "some metadata found by MetadataService"}}};
+  const metadataVersionQuery = `?addon_version=${self.version}`;
+
+  // change the endpoint to point to metadata service
+  simplePrefs.prefs.metadataSource = "MetadataService";
+  assert.equal(gPreviewProvider._currentEndpoint, `${gEndpointPrefix}${gMetadataServiceEndpoint}${metadataVersionQuery}`, "The new endpoint is set");
+  assert.equal(gPreviewProvider._currentSourceName, "MetadataService", "We updated the source name");
+
+  let srv = httpd.startServerAsync(gPort);
+  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
+    assert.deepEqual(`${request._path}`, gMetadataServiceEndpoint, "we're hitting the correct endpoint");
+    response.setHeader("Content-Type", "application/json", false);
+    response.write(JSON.stringify(fakeResponse));
+  });
+
+  // make a request to MetadataService with 'fakeSite'
+  yield gPreviewProvider._asyncSaveLinks(fakeRequest);
+
+  // we should have saved the fake site into the database with MetadataService data
+  assert.deepEqual(gMetadataStore[0][0].metaData, "some metadata found by MetadataService", "inserted and saved the metadata");
+  assert.equal(gMetadataStore[0][0].metadata_source, "MetadataService", "the metadata source came from our service");
+
+  yield new Promise(resolve => {
+    srv.stop(resolve);
+  });
+};
+
 before(exports, () => {
-  simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/embedlyLinkData`;
+  simplePrefs.prefs.currentEndpoint = `${gEndpointPrefix}${gEmbedlyEndpoint}`;
+  simplePrefs.prefs.metadataSource = "Embedly";
+  simplePrefs.prefs["embedly.endpoint"] = `${gEndpointPrefix}${gEmbedlyEndpoint}`;
+  simplePrefs.prefs["metadata.endpoint"] = `${gEndpointPrefix}${gMetadataServiceEndpoint}`;
   simplePrefs.prefs["previews.enabled"] = true;
   let mockMetadataStore = {
     asyncInsert(data) {
@@ -317,7 +367,10 @@ before(exports, () => {
 });
 
 after(exports, () => {
-  simplePrefs.prefs["embedly.endpoint"] = gPrefEmbedly;
+  simplePrefs.prefs.currentEndpoint = gCurrentEndpoint;
+  simplePrefs.prefs.metadataSource = gMetdataSource;
+  simplePrefs.prefs["embedly.endpoint"] = gEmbedlyPref;
+  simplePrefs.prefs["metadata.endpoint"] = gMetadataPref;
   simplePrefs.prefs["previews.enabled"] = gPrefEnabled;
   gMetadataStore = [];
   gPreviewProvider.uninit();
