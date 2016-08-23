@@ -15,6 +15,11 @@ const ICON_SIZE = 20;
 const TOP_LEFT_ICON_SIZE = 32;
 
 class SpotlightFeedItem extends React.Component {
+  constructor() {
+    super();
+    this.state ={showContextMenu: false};
+  }
+
   _updateWeights(index) {
     return () => {
       this.props.dispatch(actions.NotifyUpdateWeights(index));
@@ -47,24 +52,34 @@ class SpotlightFeedItem extends React.Component {
       icon = (<SiteIcon {...iconProps} />);
     }
 
-    return <li className="feed-item">
-      <a onClick={this._updateWeights(this.props.index)} href={props.url}>
+    return <li className={classNames("feed-item", {active: this.state.showContextMenu})}>
+      <a onClick={this._updateWeights(props.index)} href={props.url}>
         {icon}
         <div className="feed-details">
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{props.title || props.url}</h4>
             <div className="feed-summary">
               <span className="feed-url" ref="url" data-feed-url={prettyUrl(props.provider_display)} />
-              <span className="feed-summary-text">{props.description}</span>
+              {props.description && <span className="feed-summary-text">{props.description}</span>}
             </div>
-            {this.props.preview && <MediaPreview previewInfo={this.props.preview} />}
           </div>
           <div className="feed-stats">
-            <div className="feed-source"></div>
+            <div className={classNames("feed-source", {bookmark: props.bookmarkGuid})}>
+              <span className="star" hidden={!props.bookmarkGuid} />
+            </div>
             <div ref="lastVisit" className="last-visit" data-last-visit={dateLabel} />
           </div>
         </div>
       </a>
+      <LinkMenuButton onClick={() => this.setState({showContextMenu: true})} />
+      <LinkMenu
+        visible={this.state.showContextMenu}
+        onUpdate={val => this.setState({showContextMenu: val})}
+        allowBlock={props.page === "NEW_TAB"}
+        site={props}
+        page={props.page}
+        source={props.source}
+        index={props.index} />
     </li>;
   }
 }
