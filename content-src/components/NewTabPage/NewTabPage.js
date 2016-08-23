@@ -47,9 +47,10 @@ const NewTabPage = React.createClass({
   _renderGroupedFeed: function() {
     if (this.props.Spotlight.weightedHighlights) {
       return <section>
-        <SpotlightFeed sites={this.props.Spotlight.rows} dispatch={this.props.dispatch} />
+        <SpotlightFeed sites={this.props.Spotlight.rows} page={PAGE_NAME} />
       </section>;
     }
+
     return <section>
       <h3 ref="title" className="section-title">Recent Activity</h3>
       <GroupedActivityFeed sites={this.props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME}
