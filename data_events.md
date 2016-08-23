@@ -150,7 +150,7 @@ The user has the option to toggle on the feature which allows them to rate from 
   "rating": 4,
   "rated_index": 2,
   "rated_type": "bookmark",
-  "metadataSource": ["Embedly" | "Fathom"]
+  "metadataSource": ["Embedly" | "MetadataService" | "Local"]
 }
 ```
 
