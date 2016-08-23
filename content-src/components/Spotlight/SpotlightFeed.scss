@@ -102,6 +102,10 @@
     flex: 0 1 auto;
   }
 
+  .feed-source.bookmark {
+    border: none;
+  }
+
   .feed-source.bookmark .star {
     position: absolute;
     top: 15px;

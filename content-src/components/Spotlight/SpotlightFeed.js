@@ -34,7 +34,7 @@ class SpotlightFeedItem extends React.Component {
   }
 
   render() {
-    const props = this.props.site;
+    const props = this.props;
     const dateLabel = moment(props.lastVisitDate).fromNow() + " ago";
     let icon;
     const iconProps = {
@@ -85,18 +85,35 @@ class SpotlightFeedItem extends React.Component {
 }
 
 class SpotlightFeed extends React.Component {
+  onClickFactory(index) {
+    return () => {
+      this.props.dispatch(actions.NotifyEvent({
+        event: "CLICK",
+        page: this.props.page,
+        source: "ACTIVITY_FEED",
+        action_position: index
+      }));
+    };
+  }
+
   _renderItem(site, i, dispatch) {
-    return <SpotlightFeedItem site={site} key={i} index={i} dispatch={dispatch} />
+    return <SpotlightFeedItem key={site.guid || i} page={this.props.page}
+                              onClick={this.onClickFactory(i)}
+                              index={i}
+                              source="ACTIVITY_FEED_MORE_HIGHLIGHTS"
+                              {...site} />;
   }
 
   render() {
     return <div className="grouped-highlight-feed">
       <ul className="activity-feed">
-        {this.props.sites.map((site, i) => this._renderItem(site, i, this.props.dispatch))}
+        {this.props.sites.map((site, i) => this._renderItem(site, i))}
       </ul>
     </div>;
   }
 }
 
 module.exports = connect(justDispatch)(SpotlightFeed);
+module.exports.SpotlightFeed = SpotlightFeed;
+module.exports.SpotlightFeedItem = SpotlightFeedItem;
 
