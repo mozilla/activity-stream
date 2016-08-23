@@ -8,10 +8,11 @@ const {TippyTopProvider} = require("addon/TippyTopProvider");
 const {getColor} = require("addon/ColorAnalyzerProvider");
 const {MetadataCache} = require("addon/MetadataCache");
 
-const EMBEDLY_PREF = "embedly.endpoint";
-const EMBEDLY_VERSION_QUERY = "?addon_version=";
 const ENABLED_PREF = "previews.enabled";
-const ALLOWED_PREFS = new Set([EMBEDLY_PREF, ENABLED_PREF]);
+const CURRENT_ENDPOINT_PREF = "currentEndpoint";
+const ENDPOINT_VERSION_QUERY = "?addon_version=";
+const METADATA_SOURCE_PREF = "metadataSource";
+const ALLOWED_PREFS = new Set([METADATA_SOURCE_PREF, ENABLED_PREF]);
 
 const ALLOWED_QUERY_PARAMS = new Set(["id", "p", "q", "query", "s", "search", "sitesearch", "v"]);
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
@@ -47,9 +48,20 @@ PreviewProvider.prototype = {
   _onPrefChange(prefName) {
     if (ALLOWED_PREFS.has(prefName)) {
       switch (prefName) {
-        case EMBEDLY_PREF:
-          this._embedlyEndpoint = simplePrefs.prefs[EMBEDLY_PREF];
+        case METADATA_SOURCE_PREF: {
+          let source = simplePrefs.prefs[METADATA_SOURCE_PREF];
+          let versionSuffix = ENDPOINT_VERSION_QUERY + self.version;
+          if (this._metadataEndpoints.has(source)) {
+            this._currentEndpoint = this._metadataEndpoints.get(source) + versionSuffix;
+            this._currentSourceName = source;
+          } else {
+            // set it to a default if the current endpoint was poorly set by the user
+            // defensive programming ftw
+            this._currentEndpoint = this._metadataEndpoints.get("Embedly") + versionSuffix;
+            this._currentSourceName = "Embedly";
+          }
           break;
+        }
         case ENABLED_PREF:
           this.enabled = simplePrefs.prefs[ENABLED_PREF];
           break;
@@ -269,7 +281,7 @@ PreviewProvider.prototype = {
    */
   _asyncGetLinkData: Task.async(function*(newLinks) {
     try {
-      let response = yield fetch(this._embedlyEndpoint, {
+      let response = yield fetch(this._currentEndpoint, {
         method: "POST",
         body: JSON.stringify({urls: newLinks}),
         headers: {"Content-Type": "application/json"}
@@ -305,7 +317,10 @@ PreviewProvider.prototype = {
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestReceivedCount", responseJson.urls.length);
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestSucess", 1);
         let linksToInsert = newLinks.filter(link => responseJson.urls[link.sanitized_url])
-          .map(link => Object.assign({}, link, responseJson.urls[link.sanitized_url], {expired_at: (this.options.metadataTTL) + Date.now()}));
+          .map(link => Object.assign({}, link, responseJson.urls[link.sanitized_url], {
+            expired_at: (this.options.metadataTTL) + Date.now(),
+            metadata_source: this._currentSourceName
+          }));
         this._metadataStore.asyncInsert(linksToInsert);
         linksToInsert.forEach(link => {
           MetadataCache.cache.add(link.cache_key, link);
@@ -327,8 +342,12 @@ PreviewProvider.prototype = {
    */
   init() {
     this._alreadyRequested = new Set();
-    this._embedlyEndpoint = simplePrefs.prefs[EMBEDLY_PREF] + EMBEDLY_VERSION_QUERY + self.version;
+    this._metadataEndpoints = new Map();
     this.enabled = simplePrefs.prefs[ENABLED_PREF];
+    this._currentEndpoint = simplePrefs.prefs[CURRENT_ENDPOINT_PREF] + ENDPOINT_VERSION_QUERY + self.version;
+    this._currentSourceName = simplePrefs.prefs[METADATA_SOURCE_PREF];
+    this._metadataEndpoints.set("MetadataService", simplePrefs.prefs["metadata.endpoint"]);
+    this._metadataEndpoints.set("Embedly", simplePrefs.prefs["embedly.endpoint"]);
     simplePrefs.on("", this._onPrefChange);
   },
 
@@ -338,6 +357,9 @@ PreviewProvider.prototype = {
   uninit() {
     simplePrefs.off("", this._onPrefChange);
     this._alreadyRequested = new Set();
+    this._metadataEndpoints = new Map();
+    this._currentEndpoint = null;
+    this._currentSourceName = null;
   }
 };
 

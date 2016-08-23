@@ -140,6 +140,13 @@
       "hidden": true
     },
     {
+      "name": "metadata.endpoint",
+      "title": "Local Metadata Endpoint",
+      "type": "string",
+      "value": "https://metadata.dev.mozaws.net/v1/metadata",
+      "hidden": true
+    },
+    {
       "name": "pocket.endpoint",
       "title": "Pocket Endpoint",
       "type": "string",
@@ -195,6 +202,13 @@
       "title": "Rate this metadata",
       "type": "bool",
       "value": false,
+      "hidden": true
+    },
+    {
+      "name": "currentEndpoint",
+      "title": "Current metadata endpoint",
+      "type": "string",
+      "value": "https://embedly-proxy.services.mozilla.com/v2/extract",
       "hidden": true
     },
     {
