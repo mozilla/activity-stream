@@ -1,4 +1,4 @@
-const req = require.context("./meta", true, /\.test.js$/);
+const req = require.context(".", true, /\.test.js$/);
 const files = req.keys();
 const {overrideConsoleError} = require("test/test-utils");
 
