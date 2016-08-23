@@ -1,10 +1,7 @@
 const {assert} = require("chai");
 const ConnectedSpotlight = require("components/Spotlight/SpotlightFeed");
 const {SpotlightFeed, SpotlightFeedItem} = ConnectedSpotlight;
-const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
-const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
-const HighlightContext = require("components/HighlightContext/HighlightContext");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");

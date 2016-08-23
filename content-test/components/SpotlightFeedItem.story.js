@@ -53,4 +53,3 @@ storiesOf("MoreHighlightItem", module)
     site.description = null;
     return (<Container><SpotlightFeedItem {...site} /></Container>);
   });
-
