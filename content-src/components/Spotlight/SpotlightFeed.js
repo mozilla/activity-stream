@@ -15,19 +15,6 @@ const ICON_SIZE = 20;
 const TOP_LEFT_ICON_SIZE = 32;
 
 class SpotlightFeedItem extends React.Component {
-  static propTypes = {
-    images: React.PropTypes.array,
-    lastVisitDate: React.PropTypes.number,
-    index: React.PropTypes.number.isRequired,
-    onClick: React.PropTypes.func,
-    provider_display: React.PropTypes.string,
-    description: React.PropTypes.string,
-    title: React.PropTypes.string,
-    url: React.PropTypes.string.isRequired,
-    page: React.PropTypes.string.isRequired,
-    source: React.PropTypes.string.isRequired
-  }
-
   constructor() {
     super();
     this.state ={showContextMenu: false};
@@ -60,7 +47,7 @@ class SpotlightFeedItem extends React.Component {
             <h4 className="feed-title" ref="title">{props.title || props.url}</h4>
             <div className="feed-summary">
               <span className="feed-url" ref="url" data-feed-url={prettyUrl(props.provider_display)} />
-              {props.description && <span className="feed-summary-text">{props.description}</span>}
+              {props.description && <span className="feed-summary-text" ref="description">{props.description}</span>}
             </div>
           </div>
           <div className="feed-stats">
@@ -84,13 +71,20 @@ class SpotlightFeedItem extends React.Component {
   }
 }
 
-class SpotlightFeed extends React.Component {
-  static propTypes = {
-    sites: React.PropTypes.array.isRequired,
-    dispatch: React.PropTypes.func.isRequired,
-    page: React.PropTypes.string.isRequired
-  }
+SpotlightFeedItem.propTypes = {
+  images: React.PropTypes.array,
+  lastVisitDate: React.PropTypes.number,
+  index: React.PropTypes.number.isRequired,
+  onClick: React.PropTypes.func,
+  provider_display: React.PropTypes.string,
+  description: React.PropTypes.string,
+  title: React.PropTypes.string,
+  url: React.PropTypes.string.isRequired,
+  page: React.PropTypes.string.isRequired,
+  source: React.PropTypes.string.isRequired
+}
 
+class SpotlightFeed extends React.Component {
   onClickFactory(index) {
     return () => {
       this.props.dispatch(actions.NotifyEvent({
@@ -118,6 +112,12 @@ class SpotlightFeed extends React.Component {
     </div>;
   }
 }
+
+SpotlightFeed.propTypes = {
+  sites: React.PropTypes.array.isRequired,
+  dispatch: React.PropTypes.func.isRequired,
+  page: React.PropTypes.string.isRequired
+};
 
 module.exports = connect(justDispatch)(SpotlightFeed);
 module.exports.SpotlightFeed = SpotlightFeed;
