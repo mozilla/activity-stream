@@ -12,7 +12,7 @@ var {Cc,Ci} = require("chrome");
 const { Loader } = require("sdk/test/loader");
 const { id } = require("sdk/self");
 
-const REQUIRE_SS_PATH = "lib/SimpleStorage.js";
+const REQUIRE_SS_PATH = "addon/SimpleStorage.js";
 
 var storeFile = Cc["@mozilla.org/file/directory_service;1"].
                 getService(Ci.nsIProperties).

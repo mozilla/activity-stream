@@ -1,7 +1,7 @@
 "use strict";
 
 const {before, after, waitUntil} = require("sdk/test/utils");
-const {RecommendationProvider} = require("lib/RecommendationProvider");
+const {RecommendationProvider} = require("addon/RecommendationProvider");
 const simplePrefs = require("sdk/simple-prefs");
 const {Loader} = require("sdk/test/loader");
 const loader = Loader(module);

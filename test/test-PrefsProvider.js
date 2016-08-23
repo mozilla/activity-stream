@@ -1,5 +1,5 @@
 const test = require("sdk/test");
-const {PrefsProvider} = require("lib/PrefsProvider");
+const {PrefsProvider} = require("addon/PrefsProvider");
 const {getTestActivityStream} = require("./lib/utils");
 const simplePrefs = require("sdk/simple-prefs");
 

@@ -3,9 +3,9 @@ const webpack = require("webpack");
 const absolute = relPath => require("path").join(__dirname, relPath);
 
 module.exports = {
-  entry: {"vendor": absolute("lib/vendor-src.js")},
+  entry: {"vendor": absolute("addon/vendor-src.js")},
   output: {
-    path: absolute("lib"),
+    path: absolute("addon"),
     filename: "vendor.bundle.js"
   },
   module: {loaders: [{test: /\.json$/, loader: "json"}]},

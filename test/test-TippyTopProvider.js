@@ -1,6 +1,6 @@
 "use strict";
 
-const {TippyTopProvider} = require("lib/TippyTopProvider");
+const {TippyTopProvider} = require("addon/TippyTopProvider");
 
 exports["test TippyTopProvider init"] = function(assert) {
   // Test the default init

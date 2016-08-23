@@ -3,7 +3,7 @@
 const {after} = require("sdk/test/utils");
 const simplePrefs = require("sdk/simple-prefs");
 
-const {MetadataCache} = require("lib/MetadataCache.js");
+const {MetadataCache} = require("addon/MetadataCache.js");
 
 const fixtures = [
   {desc: "It shuold hit", key: "foo", getKey: "foo", value: 123},

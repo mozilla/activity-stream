@@ -1,10 +1,10 @@
 /* globals Task, ClientID */
 
-const {PlacesProvider} = require("lib/PlacesProvider");
-const {SearchProvider} = require("lib/SearchProvider");
-const {MetadataStore, METASTORE_NAME} = require("lib/MetadataStore");
-const {MetadataCache} = require("lib/MetadataCache");
-const {ActivityStreams} = require("lib/ActivityStreams");
+const {PlacesProvider} = require("addon/PlacesProvider");
+const {SearchProvider} = require("addon/SearchProvider");
+const {MetadataStore, METASTORE_NAME} = require("addon/MetadataStore");
+const {MetadataCache} = require("addon/MetadataCache");
+const {ActivityStreams} = require("addon/ActivityStreams");
 const {setTimeout, clearTimeout} = require("sdk/timers");
 const {Cu} = require("chrome");
 

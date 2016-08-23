@@ -2,7 +2,7 @@
 
 const {Cc, Ci, Cu} = require("chrome");
 const {data} = require("sdk/self");
-const DEFAULT_MANIFEST_PREFS = require("lib/ShareManifests");
+const DEFAULT_MANIFEST_PREFS = require("addon/ShareManifests");
 
 const clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
 const SocialService = Cu.import("resource://gre/modules/SocialService.jsm", {}).SocialService;

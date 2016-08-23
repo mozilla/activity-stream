@@ -6,7 +6,7 @@ const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
 
-const ss = require("lib/SimpleStorage.js");
+const ss = require("addon/SimpleStorage.js");
 
 const concat = String.prototype.concat;
 
