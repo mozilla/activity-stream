@@ -8,6 +8,8 @@ Cu.import("resource://gre/modules/Sqlite.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/Timer.jsm");
 
+const {MIGRATIONS} = require("addon/MetadataStoreMigration.js");
+
 XPCOMUtils.defineLazyModuleGetter(this, "Task",
                                   "resource://gre/modules/Task.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
@@ -44,15 +46,14 @@ const SQL_DDLS = [
     FOREIGN KEY(image_id) REFERENCES page_images(id) ON DELETE CASCADE
   )`,
   "CREATE UNIQUE INDEX IF NOT EXISTS page_metadata_cache_key_uniqueindex ON page_metadata (cache_key)",
-  "CREATE UNIQUE INDEX IF NOT EXISTS page_images_url_uniqueindex ON page_images (url)"
+  "CREATE UNIQUE INDEX IF NOT EXISTS page_images_url_uniqueindex ON page_images (url)",
+  `CREATE TABLE IF NOT EXISTS migrations (
+    id INTEGER PRIMARY KEY,
+    version VARCHAR(32)
+  )`
 ];
 
 const SQL_LAST_INSERT_ROWID = "SELECT last_insert_rowid() AS lastInsertRowID";
-
-/**
- * A place holder for the database migrations in the future
- */
-const SQL_MIGRATIONS = [];
 
 const SQL_INSERT_METADATA = `INSERT INTO page_metadata
   (cache_key, places_url, title, type, description, media_url, expired_at)
@@ -84,8 +85,9 @@ const IMAGE_TYPES = {
   "preview": 3
 };
 
-function MetadataStore(path) {
+function MetadataStore(path, migrations = null) {
   this._path = path || OS.Path.join(OS.Constants.Path.profileDir, METASTORE_NAME);
+  this._migrations = migrations || MIGRATIONS;
   this._conn = null;
   this._dataExpiryJob = null;
 }
@@ -101,14 +103,41 @@ MetadataStore.prototype = {
         for (let ddl of SQL_DDLS) {
           yield this._conn.execute(ddl);
         }
-        for (let migration of SQL_MIGRATIONS) {
-          yield this._conn.execute(migration);
+
+        // Handle the migrations
+        const currentVersion = yield this._asyncGetCurrentVersion();
+        let lastVersion = currentVersion.version;
+        for (let i = currentVersion.index + 1; i < this._migrations.length; i++) {
+          const migration = this._migrations[i];
+          lastVersion = migration.version;
+          for (let statement of migration.statements) {
+            yield this._conn.execute(statement);
+          }
+        }
+        if (lastVersion !== currentVersion.version) {
+          this._conn.execute("INSERT OR REPLACE INTO migrations (id, version) VALUES (1, ?)", [lastVersion]);
         }
       }.bind(this));
     } catch (e) {
       Cu.reportError("MetadataStore failed to create tables.");
       throw e;
     }
+  }),
+
+  _asyncGetCurrentVersion: Task.async(function*() {
+    const result = yield this._conn.execute("SELECT version FROM migrations");
+    let currentVersion;
+    try {
+      currentVersion = result[0].getResultByName("version");
+    } catch (e) {
+      currentVersion = "1.0.0"; // for the first run
+    }
+    for (let i = this._migrations.length - 1; i >= 0; i--) {
+      if (this._migrations[i].version === currentVersion) {
+        return {version: currentVersion, index: i};
+      }
+    }
+    throw new Error(`Can't find version ${currentVersion} in the migration history`);
   }),
 
   get transactionInProgress() {
