@@ -1,3 +1,5 @@
+$feed-item-border-color: #EEE;
+
 .grouped-highlight-feed {
   ul {
     line-height: 1.2;
@@ -5,7 +7,7 @@
 
   .feed-item {
     margin: 1rem 0;
-    border: 1px solid #eee;
+    border: 1px solid $feed-item-border-color;
   }
 
   .feed-item::before {
@@ -103,7 +105,7 @@
   }
 
   .feed-source.bookmark {
-    border: none;
+    border: 0;
   }
 
   .feed-source.bookmark .star {

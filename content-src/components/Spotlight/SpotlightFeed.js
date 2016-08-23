@@ -1,14 +1,12 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("selectors/selectors");
-const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
-const HighlightContext = require("components/HighlightContext/HighlightContext");
 const classNames = require("classnames");
-const {prettyUrl, getRandomFromTimestamp} = require("lib/utils");
+const {prettyUrl} = require("lib/utils");
 const moment = require("moment");
 
 const ICON_SIZE = 20;
@@ -17,18 +15,18 @@ const TOP_LEFT_ICON_SIZE = 32;
 class SpotlightFeedItem extends React.Component {
   constructor() {
     super();
-    this.state ={showContextMenu: false};
+    this.state = {showContextMenu: false};
   }
 
   render() {
     const props = this.props;
-    const dateLabel = moment(props.lastVisitDate).fromNow() + " ago";
+    const dateLabel = moment(props.lastVisitDate).fromNow();
     let icon;
     const iconProps = {
       ref: "icon",
       className: "feed-icon",
       site: props,
-      faviconSize: ICON_SIZE,
+      faviconSize: ICON_SIZE
     };
 
     if (props.images && props.images[0]) {
@@ -39,7 +37,7 @@ class SpotlightFeedItem extends React.Component {
       icon = (<SiteIcon {...iconProps} />);
     }
 
-    return <li className={classNames("feed-item", {active: this.state.showContextMenu})}>
+    return (<li className={classNames("feed-item", {active: this.state.showContextMenu})}>
       <a onClick={props.onClick} href={props.url}>
         {icon}
         <div className="feed-details">
@@ -67,7 +65,7 @@ class SpotlightFeedItem extends React.Component {
         page={props.page}
         source={props.source}
         index={props.index} />
-    </li>;
+    </li>);
   }
 }
 
@@ -82,7 +80,7 @@ SpotlightFeedItem.propTypes = {
   url: React.PropTypes.string.isRequired,
   page: React.PropTypes.string.isRequired,
   source: React.PropTypes.string.isRequired
-}
+};
 
 class SpotlightFeed extends React.Component {
   onClickFactory(index) {
@@ -97,19 +95,19 @@ class SpotlightFeed extends React.Component {
   }
 
   _renderItem(site, i, dispatch) {
-    return <SpotlightFeedItem key={site.guid || i} page={this.props.page}
+    return (<SpotlightFeedItem key={site.guid || i} page={this.props.page}
                               onClick={this.onClickFactory(i)}
                               index={i}
                               source="ACTIVITY_FEED"
-                              {...site} />;
+                              {...site} />);
   }
 
   render() {
-    return <div className="grouped-highlight-feed">
+    return (<div className="grouped-highlight-feed">
       <ul className="activity-feed">
         {this.props.sites.map((site, i) => this._renderItem(site, i))}
       </ul>
-    </div>;
+    </div>);
   }
 }
 
@@ -122,4 +120,3 @@ SpotlightFeed.propTypes = {
 module.exports = connect(justDispatch)(SpotlightFeed);
 module.exports.SpotlightFeed = SpotlightFeed;
 module.exports.SpotlightFeedItem = SpotlightFeedItem;
-

@@ -44,18 +44,18 @@ const NewTabPage = React.createClass({
       this.setState({renderedOnce: true});
     }
   },
-  _renderGroupedFeed: function() {
+  _renderGroupedFeed() {
     if (this.props.Spotlight.weightedHighlights) {
-      return <section>
+      return (<section>
         <SpotlightFeed sites={this.props.Spotlight.rows} page={PAGE_NAME} />
-      </section>;
+      </section>);
     }
 
-    return <section>
+    return (<section>
       <h3 ref="title" className="section-title">Recent Activity</h3>
       <GroupedActivityFeed sites={this.props.TopActivity.rows} length={MAX_TOP_ACTIVITY_ITEMS} page={PAGE_NAME}
         maxPreviews={1} />
-    </section>;
+    </section>);
   },
   render() {
     const props = this.props;
