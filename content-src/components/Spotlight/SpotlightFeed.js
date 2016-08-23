@@ -15,22 +15,22 @@ const ICON_SIZE = 20;
 const TOP_LEFT_ICON_SIZE = 32;
 
 class SpotlightFeedItem extends React.Component {
+  static propTypes = {
+    images: React.PropTypes.array,
+    lastVisitDate: React.PropTypes.number,
+    index: React.PropTypes.number.isRequired,
+    onClick: React.PropTypes.func,
+    provider_display: React.PropTypes.string,
+    description: React.PropTypes.string,
+    title: React.PropTypes.string,
+    url: React.PropTypes.string.isRequired,
+    page: React.PropTypes.string.isRequired,
+    source: React.PropTypes.string.isRequired
+  }
+
   constructor() {
     super();
     this.state ={showContextMenu: false};
-  }
-
-  _updateWeights(index) {
-    return () => {
-      this.props.dispatch(actions.NotifyUpdateWeights(index));
-
-      this.props.dispatch(actions.NotifyEvent({
-        event: "CLICK",
-        page: "NEW_TAB",
-        source: "ACTIVITY_FEED",
-        action_position: index
-      }));
-    }
   }
 
   render() {
@@ -53,7 +53,7 @@ class SpotlightFeedItem extends React.Component {
     }
 
     return <li className={classNames("feed-item", {active: this.state.showContextMenu})}>
-      <a onClick={this._updateWeights(props.index)} href={props.url}>
+      <a onClick={props.onClick} href={props.url}>
         {icon}
         <div className="feed-details">
           <div className="feed-description">
@@ -85,6 +85,12 @@ class SpotlightFeedItem extends React.Component {
 }
 
 class SpotlightFeed extends React.Component {
+  static propTypes = {
+    sites: React.PropTypes.array.isRequired,
+    dispatch: React.PropTypes.func.isRequired,
+    page: React.PropTypes.string.isRequired
+  }
+
   onClickFactory(index) {
     return () => {
       this.props.dispatch(actions.NotifyEvent({
@@ -100,7 +106,7 @@ class SpotlightFeed extends React.Component {
     return <SpotlightFeedItem key={site.guid || i} page={this.props.page}
                               onClick={this.onClickFactory(i)}
                               index={i}
-                              source="ACTIVITY_FEED_MORE_HIGHLIGHTS"
+                              source="ACTIVITY_FEED"
                               {...site} />;
   }
 
