@@ -21,7 +21,8 @@
         border-bottom: 1px solid $context-menu-border-color;
       }
 
-      > a {
+      > a,
+      div.submenu {
         cursor: pointer;
         color: inherit;
         white-space: nowrap;
@@ -33,8 +34,33 @@
         &:hover {
           background: $star-blue;
           color: $white;
+
+          a {
+            color: $dark-grey;
+          }
+
+          a:hover {
+            color: $white;
+          }
         }
       }
+    }
+  }
+}
+
+.submenu {
+  position: relative;
+
+  .context-menu {
+    display: none;
+    left: auto;
+    right: 95%;
+    top: -($link-menu-button-size / 4);
+  }
+
+  &:hover {
+    .context-menu {
+      display: block;
     }
   }
 }

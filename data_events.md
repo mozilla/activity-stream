@@ -114,6 +114,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "SHARE",
   "page": ["NEW_TAB" | "TIMELINE_ALL" | "TIMELINE_BOOKMARKS"],
   "source": "ACTIVITY_FEED",
+  "provider": "https://facebook.com",
   "action_position": 0,
   "action": "activity_stream_event",
   "tab_id": "-3-16",

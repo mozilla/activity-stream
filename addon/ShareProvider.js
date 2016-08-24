@@ -25,104 +25,20 @@ try {
   SocialService = Cu.import("resource:///modules/SocialService.jsm", {}).SocialService;
 }
 
-// based on SocialShare.sharePage in browser-social.js
-// target would be item clicked on for a context menu, but not handled in this case
-function windowProperty(window, eventTracker) {
+function windowProperty(window, shareProvider) {
   return {
     configurable: true,
     enumerable: true,
     writable: true,
     value: {
       copyLink: url => {
-        clipboard.copyString(url);
-        eventTracker.handleUserEvent({
-          event: "SHARE_TOOLBAR",
-          provider: "copy-link"
-        });
+        shareProvider.copyLink(url, "SHARE_TOOLBAR");
       },
-      emailLink: (browser, url) => {
-        window.MailIntegration.sendLinkForBrowser(browser);
-        eventTracker.handleUserEvent({
-          event: "SHARE_TOOLBAR",
-          provider: "email-link"
-        });
+      emailLink: (url, title) => {
+        shareProvider.emailLink(url, title, window, "SHARE_TOOLBAR");
       },
       sharePage: (providerOrigin, graphData, target) => {
-        const {
-          SocialUI,
-          Social,
-          messageManager,
-          gBrowser,
-          OpenGraphBuilder,
-          ShareUtils
-        } = window;
-
-        // graphData is an optional param that either defines the full set of data
-        // to be shared, or partial data about the current page. It is set by a call
-        // in mozSocial API, or via nsContentMenu calls. If it is present, it MUST
-        // define at least url. If it is undefined, we're sharing the current url in
-        // the browser tab.
-        let pageData = graphData ? graphData : null;
-        let sharedURI = pageData ? Services.io.newURI(pageData.url, null, null) :
-                                    gBrowser.currentURI;
-        if (SocialUI.canShareOrMarkPage ? // canShareOrMarkPage was changed to canSharePage in FF 51
-            !SocialUI.canShareOrMarkPage(sharedURI) :
-            !SocialUI.canSharePage(sharedURI)) {
-          return;
-        }
-
-        // the point of this action type is that we can use existing share
-        // endpoints (e.g. oexchange) that do not support additional
-        // socialapi functionality.  One tweak is that we shoot an event
-        // containing the open graph data.
-        let _dataFn;
-        if (!pageData || sharedURI === gBrowser.currentURI) {
-          messageManager.addMessageListener("PageMetadata:PageDataResult", _dataFn = msg => {
-            messageManager.removeMessageListener("PageMetadata:PageDataResult", _dataFn);
-            let pageData = msg.json;
-            if (graphData) {
-              // overwrite data retreived from page with data given to us as a param
-              for (let p of Object.keys(graphData)) {
-                pageData[p] = graphData[p];
-              }
-            }
-            ShareUtils.sharePage(providerOrigin, pageData, target);
-          });
-          gBrowser.selectedBrowser.messageManager.sendAsyncMessage("PageMetadata:GetPageData", null, {target});
-          return;
-        }
-        // if this is a share of a selected item, get any microformats
-        if (!pageData.microformats && target) {
-          messageManager.addMessageListener("PageMetadata:MicroformatsResult", _dataFn = msg => {
-            messageManager.removeMessageListener("PageMetadata:MicroformatsResult", _dataFn);
-            pageData.microformats = msg.data;
-            ShareUtils.sharePage(providerOrigin, pageData, target);
-          });
-          gBrowser.selectedBrowser.messageManager.sendAsyncMessage("PageMetadata:GetMicroformats", null, {target});
-          return;
-        }
-
-        let provider = Social._getProviderFromOrigin(providerOrigin);
-        if (!provider || !provider.shareURL) {
-          return;
-        }
-
-        let shareEndpoint = OpenGraphBuilder.generateEndpointURL(provider.shareURL, pageData);
-        let features = "chrome,resizable,scrollbars=yes";
-
-        let size = provider.getPageSize("share");
-        if (size && size.width) {
-          features = `${features},innerWidth=${size.width}`;
-        }
-        if (size && size.height) {
-          features = `${features},innerHeight=${size.height}`;
-        }
-        window.open(shareEndpoint, `share-dialog-${provider.name}`, features).focus();
-
-        eventTracker.handleUserEvent({
-          event: "SHARE_TOOLBAR",
-          provider: provider.origin
-        });
+        shareProvider.shareLink(providerOrigin, graphData, target, window, "SHARE_TOOLBAR");
       }
     }
   };
@@ -131,9 +47,9 @@ function windowProperty(window, eventTracker) {
 // This is to register a ShareUtils object in the browser chrome window and
 // to hide the existing social share (paper airplane) button.
 const Overlay = {
-  init: eventTracker => {
+  init: shareProvider => {
     for (let win of CustomizableUI.windows) {
-      Overlay.setWindowScripts(win, eventTracker);
+      Overlay.setWindowScripts(win, shareProvider);
     }
     Services.obs.addObserver(Overlay, "browser-delayed-startup-finished", false);
   },
@@ -153,8 +69,8 @@ const Overlay = {
   observe: window => {
     Overlay.setWindowScripts(window);
   },
-  setWindowScripts: (window, eventTracker) => {
-    Object.defineProperty(window, "ShareUtils", windowProperty(window, eventTracker));
+  setWindowScripts: (window, shareProvider) => {
+    Object.defineProperty(window, "ShareUtils", windowProperty(window, shareProvider));
 
     if (window.SocialShare.shareButton) {
       window.SocialShare.shareButton.setAttribute("hidden", "true");
@@ -210,8 +126,138 @@ ShareProvider.prototype = {
   init: Task.async(function*() {
     yield this._setupProviders();
     this._createButton();
-    Overlay.init(this.eventTracker);
+    Overlay.init(this);
   }),
+
+  /**
+   * Return the installed social share providers.
+   */
+  get socialProviders() {
+    const defaultSort = ["Facebook", "Twitter", "Tumblr", "LinkedIn", "Yahoo Mail", "Gmail"];
+    let providers = Social.providers.filter(p => p.shareURL);
+    for (let provider of providers) {
+      let index = defaultSort.indexOf(provider.name);
+      if (index < 0) {
+        index = 99;
+      }
+      provider.sortIndex = index;
+    }
+    providers.sort((a, b) => a.sortIndex - b.sortIndex);
+    return providers.map(p => ({
+      "name": p.name,
+      "origin": p.origin,
+      "iconURL": p.iconURL
+    }));
+  },
+
+  /**
+   * Copy the given url to the clipboard.
+   */
+  copyLink(url, userEvent = "SHARE") {
+    clipboard.copyString(url);
+    this.eventTracker.handleUserEvent({
+      event: userEvent,
+      provider: "copy-link"
+    });
+  },
+
+  /**
+   * Share the given url and title to the user's default mail client.
+   */
+  emailLink(url, title, window, userEvent = "SHARE") {
+    window.MailIntegration.sendMessage(url, title);
+    this.eventTracker.handleUserEvent({
+      event: userEvent,
+      provider: "email-link"
+    });
+  },
+
+  /**
+   * Share the given url to the given social provider.
+   */
+  shareLink(providerOrigin, graphData, target, window, userEvent = "SHARE") {
+    // based on SocialShare.sharePage in browser-social.js
+    // target would be item clicked on for a context menu, but not handled in this case
+    const {
+      SocialUI,
+      Social,
+      messageManager,
+      gBrowser,
+      OpenGraphBuilder,
+      ShareUtils
+    } = window;
+
+    // graphData is an optional param that either defines the full set of data
+    // to be shared, or partial data about the current page. It is set by a call
+    // in mozSocial API, or via nsContentMenu calls. If it is present, it MUST
+    // define at least url. If it is undefined, we're sharing the current url in
+    // the browser tab.
+    let pageData = graphData ? graphData : null;
+    let sharedURI;
+    if (pageData) {
+      sharedURI = Services.io.newURI(pageData.url, null, null);
+    } else {
+      sharedURI = gBrowser.currentURI;
+    }
+    if (SocialUI.canShareOrMarkPage ? // canShareOrMarkPage was changed to canSharePage in FF 51
+        !SocialUI.canShareOrMarkPage(sharedURI) :
+        !SocialUI.canSharePage(sharedURI)) {
+      return;
+    }
+
+    // the point of this action type is that we can use existing share
+    // endpoints (e.g. oexchange) that do not support additional
+    // socialapi functionality.  One tweak is that we shoot an event
+    // containing the open graph data.
+    let _dataFn;
+    if (!pageData || sharedURI === gBrowser.currentURI) {
+      messageManager.addMessageListener("PageMetadata:PageDataResult", _dataFn = msg => {
+        messageManager.removeMessageListener("PageMetadata:PageDataResult", _dataFn);
+        let pageData = msg.json;
+        if (graphData) {
+          // overwrite data retreived from page with data given to us as a param
+          for (let p of Object.keys(graphData)) {
+            pageData[p] = graphData[p];
+          }
+        }
+        ShareUtils.sharePage(providerOrigin, pageData, target);
+      });
+      gBrowser.selectedBrowser.messageManager.sendAsyncMessage("PageMetadata:GetPageData", null, {target});
+      return;
+    }
+    // if this is a share of a selected item, get any microformats
+    if (!pageData.microformats && target) {
+      messageManager.addMessageListener("PageMetadata:MicroformatsResult", _dataFn = msg => {
+        messageManager.removeMessageListener("PageMetadata:MicroformatsResult", _dataFn);
+        pageData.microformats = msg.data;
+        ShareUtils.sharePage(providerOrigin, pageData, target);
+      });
+      gBrowser.selectedBrowser.messageManager.sendAsyncMessage("PageMetadata:GetMicroformats", null, {target});
+      return;
+    }
+
+    let provider = Social._getProviderFromOrigin(providerOrigin);
+    if (!provider || !provider.shareURL) {
+      return;
+    }
+
+    let shareEndpoint = OpenGraphBuilder.generateEndpointURL(provider.shareURL, pageData);
+    let features = "chrome,resizable,scrollbars=yes";
+
+    let size = provider.getPageSize("share");
+    if (size && size.width) {
+      features = `${features},innerWidth=${size.width}`;
+    }
+    if (size && size.height) {
+      features = `${features},innerHeight=${size.height}`;
+    }
+    window.open(shareEndpoint, `share-dialog-${provider.name}`, features).focus();
+
+    this.eventTracker.handleUserEvent({
+      event: userEvent,
+      provider: provider.origin
+    });
+  },
 
   /**
    * Set up the prefs and enable a default set of social providers if the user
@@ -312,23 +358,13 @@ ShareProvider.prototype = {
           "class": "subviewbutton",
           "label": "Email Link...",
           "image": data.url("content/img/glyph-email-16.svg"),
-          "oncommand": "ShareUtils.emailLink(gBrowser.selectedBrowser, gBrowser.currentURI.spec);"
+          "oncommand": "ShareUtils.emailLink(gBrowser.currentURI.spec, gBrowser.selectedBrowser.contentTitle);"
         });
         view.appendChild(item);
         item = createElementWithAttrs(doc, "menuseparator", {"id": "menu_shareMenuSeparator"});
         view.appendChild(item);
 
-        const defaultSort = ["Facebook", "Twitter", "Tumblr", "LinkedIn", "Yahoo Mail", "Gmail"];
-        let providers = Social.providers.filter(p => p.shareURL);
-        for (let provider of providers) {
-          let index = defaultSort.indexOf(provider.name);
-          if (index < 0) {
-            index = 99;
-          }
-          provider.sortIndex = index;
-        }
-        providers.sort((a, b) => a.sortIndex - b.sortIndex);
-
+        let providers = this.socialProviders;
         for (let provider of providers) {
           let item = createElementWithAttrs(doc, "toolbarbutton", {
             "class": "subviewbutton",

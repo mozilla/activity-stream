@@ -111,3 +111,6 @@ module.exports.selectHistory = createSelector(
 
 // Timeline Bookmarks
 module.exports.selectBookmarks = state => ({Bookmarks: state.Bookmarks});
+
+// Share Providers
+module.exports.selectShareProviders = state => ({ShareProviders: state.ShareProviders});

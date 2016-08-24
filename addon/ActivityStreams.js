@@ -358,6 +358,27 @@ ActivityStreams.prototype = {
     }
   },
 
+  /**
+   * Responds to share requests
+   */
+  _respondToShareRequests({msg, worker}) {
+    const win = windowMediator.getMostRecentWindow("navigator:browser");
+    switch (msg.type) {
+      case am.type("SHARE_PROVIDERS_REQUEST"):
+        this.send(am.actions.Response("SHARE_PROVIDERS_RESPONSE", this._shareProvider.socialProviders), worker);
+        break;
+      case am.type("NOTIFY_SHARE_URL"):
+        this._shareProvider.shareLink(msg.data.provider, {url: msg.data.url, title: msg.data.title}, null, win);
+        break;
+      case am.type("NOTIFY_COPY_URL"):
+        this._shareProvider.copyLink(msg.data.url);
+        break;
+      case am.type("NOTIFY_EMAIL_URL"):
+        this._shareProvider.emailLink(msg.data.url, msg.data.title, win);
+        break;
+    }
+  },
+
   _respondToExperimentsRequest({worker}) {
     this.send(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data), worker);
   },
@@ -451,6 +472,7 @@ ActivityStreams.prototype = {
       this._respondToUIChanges(args);
       this._respondToPlacesRequests(args);
       this._respondToSearchRequests(args);
+      this._respondToShareRequests(args);
       this._respondOpenWindow(args);
       this._prefsProvider.actionHandler(args);
     };

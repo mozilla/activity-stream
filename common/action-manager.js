@@ -48,7 +48,12 @@ const am = new ActionManager([
   "PREFS_RESPONSE",
   "NOTIFY_UPDATE_PREF",
   "PREF_CHANGED_RESPONSE",
-  "NOTIFY_RATE_METADATA"
+  "NOTIFY_RATE_METADATA",
+  "SHARE_PROVIDERS_REQUEST",
+  "SHARE_PROVIDERS_RESPONSE",
+  "NOTIFY_SHARE_URL",
+  "NOTIFY_COPY_URL",
+  "NOTIFY_EMAIL_URL"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -246,6 +251,22 @@ function NotifyUpdatePref(name, value) {
   return Notify("NOTIFY_UPDATE_PREF", {name, value});
 }
 
+function RequestShareProviders() {
+  return RequestExpect("SHARE_PROVIDERS_REQUEST", "SHARE_PROVIDERS_RESPONSE");
+}
+
+function NotifyCopyUrl(url) {
+  return Notify("NOTIFY_COPY_URL", {url});
+}
+
+function NotifyEmailUrl(url, title) {
+  return Notify("NOTIFY_EMAIL_URL", {url, title});
+}
+
+function NotifyShareUrl(url, title, provider) {
+  return Notify("NOTIFY_SHARE_URL", {url, title, provider});
+}
+
 am.defineActions({
   Notify,
   Response,
@@ -280,7 +301,11 @@ am.defineActions({
   NotifyBlockRecommendation,
   NotifyToggleRecommendations,
   NotifyUpdatePref,
-  NotifyRateMetadata
+  NotifyRateMetadata,
+  RequestShareProviders,
+  NotifyCopyUrl,
+  NotifyEmailUrl,
+  NotifyShareUrl
 });
 
 module.exports = am;

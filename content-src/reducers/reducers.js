@@ -4,6 +4,7 @@ const setRowsOrError = require("reducers/SetRowsOrError");
 const setSearchContent = require("reducers/setSearchContent");
 const Experiments = require("reducers/Experiments");
 const Prefs = require("reducers/Prefs");
+const ShareProviders = require("reducers/ShareProviders");
 
 module.exports = {
   TopSites: setRowsOrError("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE"),
@@ -13,5 +14,6 @@ module.exports = {
   WeightedHighlights: setRowsOrError("WEIGHTED_HIGHLIGHTS_REQUEST", "WEIGHTED_HIGHLIGHTS_RESPONSE"),
   Search: setSearchContent("SEARCH_STATE_RESPONSE", "SEARCH_UISTRINGS_RESPONSE", "SEARCH_SUGGESTIONS_RESPONSE", "SEARCH_CYCLE_CURRENT_ENGINE_RESPONSE"),
   Experiments,
-  Prefs
+  Prefs,
+  ShareProviders
 };
