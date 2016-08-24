@@ -23,6 +23,8 @@ const Base = React.createClass({
 
     this.props.dispatch(actions.RequestExperiments());
 
+    this.props.dispatch(actions.RequestShareProviders());
+
     this.props.dispatch(actions.NotifyPerf("BASE_MOUNTED"));
   },
   render() {

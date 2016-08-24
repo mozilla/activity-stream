@@ -24,6 +24,21 @@ const ContextMenu = React.createClass({
           if (option.type === "separator") {
             return (<li key={i} className="separator" />);
           }
+          if (option.type === "submenu") {
+            return (<li key={i}><div
+              className="submenu"
+              ref={option.ref}
+              onClick={() => {}}>
+              {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
+              {option.label}
+              <span className={"icon icon-spacer icon-menu-arrow"} />
+              <ContextMenu
+                visible={this.props.visible}
+                onUpdate={this.props.onUpdate}
+                onUserEvent={this.userEvent}
+                options={option.options} />
+            </div></li>);
+          }
           return (<li key={i}><a
             className="context-menu-link"
             ref={option.ref}
@@ -35,6 +50,7 @@ const ContextMenu = React.createClass({
               }
             }}>
             {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
+            {option.iconURL && <span className={"icon icon-spacer"} style={{backgroundImage: `url(${option.iconURL})`}} />}
             {option.label}
           </a></li>);
         })}
@@ -51,6 +67,7 @@ ContextMenu.propTypes = {
     type: React.PropTypes.string,
     label: React.PropTypes.string,
     icon: React.PropTypes.string,
+    iconURL: React.PropTypes.string,
     onClick: React.PropTypes.func,
     userEvent: React.PropTypes.string,
     ref: React.PropTypes.string

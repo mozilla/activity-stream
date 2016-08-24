@@ -45,5 +45,13 @@ module.exports = {
   "Prefs": {
     "prefs": {},
     "error": false
+  },
+  "ShareProviders": {
+    "providers": [
+      {
+        "name": "MySpace",
+        "origin": "https://myspace.com"
+      }
+    ]
   }
 };
