@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks */
+/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs */
 
 "use strict";
 
@@ -8,6 +8,7 @@ const simplePrefs = require("sdk/simple-prefs");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://services-sync/SyncedTabs.jsm");
 
 XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
@@ -662,6 +663,84 @@ Links.prototype = {
 
     links = this._faviconBytesToDataURI(links);
     return links.filter(link => LinkChecker.checkLoadURI(link.url));
+  }),
+
+  /**
+   * Gets the remote tabs links.
+   *
+   * @param {Integer} options
+   *
+   *
+   * @returns {Promise} Returns a promise with the array of links as payload.
+   */
+  getRemoteTabsLinks: Task.async(function*(options = {}) {
+    let {limit} = options;
+    if (!limit || limit.options > LINKS_QUERY_LIMIT) {
+      limit = LINKS_QUERY_LIMIT;
+    }
+
+    // We first get the URLs open on other devices from SyncedTabs.
+    let clients = yield SyncedTabs.getTabClients();
+
+    if (clients.length === 0) {
+      // No reason to waste cycles doing anything else.
+      return Promise.resolve([]);
+    }
+
+    // get the URLs with the data we need from all the clients
+    let urls = {};
+    for (let client of clients) {
+      for (let tab of client.tabs) {
+        urls[tab.url] = {
+          deviceName: client.name,
+          deviceIsMobile: client.isMobile,
+          lastUsed: tab.lastUsed
+        };
+      }
+    }
+
+    // Now we add the data required from the places DB.
+    // setup binding parameters
+    let params = {limit};
+
+    let blockedURLs = this.blockedURLs.items().map(item => `"${item}"`);
+
+    let urlsToSelect = Object.keys(urls).map(item => `"${item}"`); //
+
+    // construct sql query
+    let sqlQuery = `SELECT moz_places.url as url,
+                            moz_places.guid as guid,
+                            moz_favicons.data as favicon,
+                            moz_favicons.mime_type as mimeType,
+                            moz_places.title,
+                            moz_places.frecency,
+                            moz_places.last_visit_date / 1000 as lastVisitDate,
+                            "synced"  as type,
+                            moz_bookmarks.guid as bookmarkGuid,
+                            moz_bookmarks.dateAdded / 1000 as bookmarkDateCreated
+                     FROM moz_places
+                     LEFT JOIN moz_favicons
+                     ON moz_places.favicon_id = moz_favicons.id
+                     LEFT JOIN moz_bookmarks
+                     ON moz_places.id = moz_bookmarks.fk
+                     WHERE hidden = 0 AND last_visit_date NOTNULL
+                     AND moz_places.url IN (${urlsToSelect}) AND moz_places.url NOT IN (${blockedURLs})
+                     ORDER BY lastVisitDate DESC, frecency DESC, url
+                     LIMIT :limit`;
+
+    let links = yield this.executePlacesQuery(sqlQuery, {
+      columns: ["url", "guid", "favicon", "mimeType", "title", "lastVisitDate",
+                "frecency", "type", "bookmarkGuid", "bookmarkDateCreated"],
+      params
+    });
+
+    links = this._faviconBytesToDataURI(links);
+    links = links.filter(link => LinkChecker.checkLoadURI(link.url));
+
+    // Add the sync data to each link.
+    links = links.map(link => Object.assign(link, urls[link.url]));
+
+    return links;
   }),
 
   /**
