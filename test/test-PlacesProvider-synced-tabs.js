@@ -29,7 +29,7 @@ MockTabsEngine.prototype = {
 
   getOpenURLs() {
     return new Set();
-  },
+  }
 };
 
 // A clients engine that doesn't need to be a constructor.
@@ -51,7 +51,7 @@ let MockClientsEngine = {
     }
     let engine = Weave.Service.engineManager.get("tabs");
     return engine.clients[id].clientName;
-  },
+  }
 };
 
 function configureClients(clients, clientSettings = {}) {
@@ -74,19 +74,19 @@ exports.test_Links_getRemoteTabsLinks = function*(assert) {
     guid_iphone_mobile: {
       clientName: "My iPhone",
       tabs: [
-      {
-        urlHistory: ["http://foo.com/"],
-        icon: "http://foo.com/favicon",
-      }],
+        {
+          urlHistory: ["http://foo.com/"],
+          icon: "http://foo.com/favicon"
+        }]
     },
     guid_android_mobile: {
       clientName: "My Android",
       tabs: [
-      {
-        urlHistory: ["http://example.com/"],
-        icon: "http://example.com/favicon",
-      }],
-    },
+        {
+          urlHistory: ["http://example.com/"],
+          icon: "http://example.com/favicon"
+        }]
+    }
   });
 
   // add visits to the places DB
@@ -108,7 +108,7 @@ exports.test_Links_getRemoteTabsLinks = function*(assert) {
   }
 };
 
-before(exports, function*() {
+before(exports, () => {
   // Configure Sync with our mock tabs engine and force it to become initialized.
   Services.prefs.setCharPref("services.sync.username", "someone@somewhere.com");
 

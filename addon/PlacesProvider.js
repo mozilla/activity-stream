@@ -673,7 +673,7 @@ Links.prototype = {
    *
    * @returns {Promise} Returns a promise with the array of links as payload.
    */
-  getRemoteTabsLinks:  Task.async(function*(options = {}) {
+  getRemoteTabsLinks: Task.async(function*(options = {}) {
     let {limit} = options;
     if (!limit || limit.options > LINKS_QUERY_LIMIT) {
       limit = LINKS_QUERY_LIMIT;
@@ -684,7 +684,7 @@ Links.prototype = {
 
     if (clients.length === 0) {
       // No reason to waste cycles doing anything else.
-      return;
+      return Promise.resolve([]);
     }
 
     // get the URLs with the data we need from all the clients
@@ -701,16 +701,14 @@ Links.prototype = {
 
     // Now we add the data required from the places DB.
     // setup binding parameters
-    let params = {
-      limit: limit
-    };
+    let params = {limit};
 
     let blockedURLs = this.blockedURLs.items().map(item => `"${item}"`);
 
     let urlsToSelect = Object.keys(urls).map(item => `"${item}"`); //
 
     // construct sql query
-    let sqlQuery =  `SELECT moz_places.url as url,
+    let sqlQuery = `SELECT moz_places.url as url,
                             moz_places.guid as guid,
                             moz_favicons.data as favicon,
                             moz_favicons.mime_type as mimeType,
@@ -731,18 +729,16 @@ Links.prototype = {
                      LIMIT :limit`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
-                  columns: ["url", "guid", "favicon", "mimeType", "title", "lastVisitDate",
-                            "frecency", "type", "bookmarkGuid", "bookmarkDateCreated"],
-                  params: params
-                });
+      columns: ["url", "guid", "favicon", "mimeType", "title", "lastVisitDate",
+                "frecency", "type", "bookmarkGuid", "bookmarkDateCreated"],
+      params
+    });
 
     links = this._faviconBytesToDataURI(links);
     links = links.filter(link => LinkChecker.checkLoadURI(link.url));
 
     // Add the sync data to each link.
-    links = links.map(link => {
-      return Object.assign(link, urls[link.url]);
-    });
+    links = links.map(link => Object.assign(link, urls[link.url]));
 
     return links;
   }),
