@@ -137,6 +137,7 @@ const gMetadataFixture = [
     title: "We're building a better Internet",
     media: {type: "video", url: "https://www.mozilla.org/media/video/mozilla.mp4"},
     expired_at: 1475280000000, // "2016-10-01 00:00:00",
+    metadata_source: "Embedly",
     type: "html",
     favicon_colors,
     images
@@ -149,6 +150,7 @@ const gMetadataFixture = [
     title: "Browse Freely",
     media: {type: "video", url: "https://www.mozilla.org/media/video/firefox.mp4"},
     expired_at: 1475280000000, // "2016-10-01 00:00:00",
+    metadata_source: "Embedly",
     type: "html",
     favicon_colors: favicon_colors_firefox,
     images: images_firefox
@@ -161,6 +163,7 @@ const gMetadataFixture = [
     title: "Browse Freely",
     media: {type: "video", url: "https://www.mozilla.org/media/video/firefox.mp4"},
     expired_at: 1475280000000, // "2016-10-01 00:00:00",
+    metadata_source: "Embedly",
     type: "html",
     favicon_colors: favicon_colors_firefox,
     images: images_firefox
