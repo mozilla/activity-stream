@@ -1,8 +1,8 @@
 /* globals Services, XPCOMUtils, NetUtil, Weave */
 "use strict";
 
-const {before} = require("sdk/test/utils");
-const {PlacesProvider} = require("lib/PlacesProvider");
+const {before, after} = require("sdk/test/utils");
+const {PlacesProvider} = require("addon/PlacesProvider");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Cc, Ci, Cu} = require("chrome");
 
@@ -121,6 +121,18 @@ before(exports, () => {
                           .getService(Ci.nsISupports)
                           .wrappedJSObject;
   weaveXPCService.ready = true;
+});
+
+after(exports, () => {
+  // Configure Sync with our mock tabs engine and force it to become initialized.
+  Services.prefs.clearUserPref("services.sync.username");
+
+  Weave.Service.engineManager.unregister("tabs");
+
+  let weaveXPCService = Cc["@mozilla.org/weave/service;1"]
+                          .getService(Ci.nsISupports)
+                          .wrappedJSObject;
+  weaveXPCService.ready = false;
 });
 
 require("sdk/test").run(exports);
