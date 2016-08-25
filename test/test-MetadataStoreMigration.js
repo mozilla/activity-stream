@@ -40,4 +40,18 @@ exports.test_migration = function*(assert) {
   yield metaStore.asyncTearDown();
 };
 
+exports.test_migration_1_0_1 = function*(assert) {
+  let metaStore = new MetadataStore();
+  yield metaStore.asyncConnect();
+
+  // Check the version gets tracked correctly
+  let result = yield metaStore.asyncExecuteQuery("SELECT version FROM migrations", {columns: ["version"]});
+  assert.equal(result[0].version, "1.0.1", "It should return the current version");
+
+  // Check the new column
+  let columns = yield metaStore.asyncExecuteQuery("PRAGMA table_info(page_metadata)");
+  let newColumn = columns[columns.length - 1];  // The last column should be the one in the migration
+  assert.equal(newColumn[1], "metadata_source", "It should add metadata_source column");
+  yield metaStore.asyncTearDown();
+};
 require("sdk/test").run(exports);

@@ -56,9 +56,9 @@ const SQL_DDLS = [
 const SQL_LAST_INSERT_ROWID = "SELECT last_insert_rowid() AS lastInsertRowID";
 
 const SQL_INSERT_METADATA = `INSERT INTO page_metadata
-  (cache_key, places_url, title, type, description, media_url, expired_at)
+  (cache_key, places_url, title, type, description, media_url, expired_at, metadata_source)
   VALUES
-  (:cache_key, :places_url, :title, :type, :description, :media_url, :expired_at)`;
+  (:cache_key, :places_url, :title, :type, :description, :media_url, :expired_at, :metadata_source)`;
 
 const SQL_INSERT_IMAGES = `INSERT INTO page_images
   (url, type, height, width, color)
@@ -186,7 +186,8 @@ MetadataStore.prototype = {
       type: aRow.type,
       description: aRow.description,
       media_url: aRow.media && aRow.media.url,
-      expired_at: aRow.expired_at
+      expired_at: aRow.expired_at,
+      metadata_source: aRow.metadata_source
     };
   },
 

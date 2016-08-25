@@ -264,9 +264,7 @@ before(exports, function*() {
 });
 
 after(exports, function*() {
-  yield gMetadataStore.asyncReset();
-  yield waitForAsyncReset();
-  yield gMetadataStore.asyncClose();
+  yield gMetadataStore.asyncTearDown();
 });
 
 require("sdk/test").run(exports);
