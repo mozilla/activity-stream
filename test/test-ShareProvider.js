@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Services, Social */
+/* globals XPCOMUtils, Services, Social, SocialService */
 "use strict";
 
 const {Cc, Ci, Cu} = require("chrome");
@@ -7,13 +7,20 @@ const windows = require("sdk/windows").browserWindows;
 const {viewFor} = require("sdk/view/core");
 const {ShareProvider} = require("addon/ShareProvider");
 const DEFAULT_MANIFEST_PREFS = require("addon/ShareManifests");
-const SocialService = Cu.import("resource://gre/modules/SocialService.jsm", {}).SocialService;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Services",
                                   "resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Social",
                                   "resource:///modules/Social.jsm");
+
+let SocialService;
+try {
+  SocialService = Cu.import("resource://gre/modules/SocialService.jsm", {}).SocialService;
+} catch (e) {
+  // For Firefox 51+
+  SocialService = Cu.import("resource:///modules/SocialService.jsm", {}).SocialService;
+}
 
 const BUTTON_ID = "activity-stream-share-button";
 const PANEL_ID = "PanelUI-shareMenuView";

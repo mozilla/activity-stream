@@ -1,11 +1,10 @@
-/* globals require, exports, XPCOMUtils, CustomizableUI, Services, Social, Task */
+/* globals require, exports, XPCOMUtils, CustomizableUI, Services, Social, SocialService, Task */
 
 const {Cc, Ci, Cu} = require("chrome");
 const {data} = require("sdk/self");
 const DEFAULT_MANIFEST_PREFS = require("addon/ShareManifests");
 
 const clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
-const SocialService = Cu.import("resource://gre/modules/SocialService.jsm", {}).SocialService;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://services-common/utils.js");
@@ -17,6 +16,14 @@ XPCOMUtils.defineLazyModuleGetter(this, "CustomizableUI",
                                   "resource:///modules/CustomizableUI.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Social",
                                   "resource:///modules/Social.jsm");
+
+let SocialService;
+try {
+  SocialService = Cu.import("resource://gre/modules/SocialService.jsm", {}).SocialService;
+} catch (e) {
+  // For Firefox 51+
+  SocialService = Cu.import("resource:///modules/SocialService.jsm", {}).SocialService;
+}
 
 // based on SocialShare.sharePage in browser-social.js
 // target would be item clicked on for a context menu, but not handled in this case
