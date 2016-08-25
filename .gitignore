@@ -1,6 +1,7 @@
 node_modules
 npm-debug.log
 .DS_Store
+.static-storybook
 *.sw[po]
 *.xpi
 *.pyc
