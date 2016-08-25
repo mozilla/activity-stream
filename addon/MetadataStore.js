@@ -73,7 +73,8 @@ const SQL_SELECT_IMAGE_ID = "SELECT id FROM page_images WHERE url = ?";
 const SQL_DROPS = [
   "DROP TABLE IF EXISTS page_metadata_images",
   "DROP TABLE IF EXISTS page_metadata",
-  "DROP TABLE IF EXISTS page_images"
+  "DROP TABLE IF EXISTS page_images",
+  "DROP TABLE IF EXISTS migrations"
 ];
 
 const SQL_DELETE_EXPIRED = "DELETE FROM page_metadata WHERE expired_at <= (CAST(strftime('%s', 'now') AS LONG)*1000)";
