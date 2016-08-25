@@ -71,7 +71,7 @@
     "requirejs": "2.2.0",
     "rimraf": "2.5.4",
     "sass-lint": "1.9.1",
-    "svgo": "0.6.6",
+    "svgo": "0.7.0",
     "sinon": "1.17.5",
     "tippy-top-sites": "0.2.0",
     "webpack": "1.13.2",
