@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Services, Social, SocialService */
+/* globals XPCOMUtils, Services, Social */
 "use strict";
 
 const {Cc, Ci, Cu} = require("chrome");

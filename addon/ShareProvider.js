@@ -1,4 +1,4 @@
-/* globals require, exports, XPCOMUtils, CustomizableUI, Services, Social, SocialService, Task */
+/* globals require, exports, XPCOMUtils, CustomizableUI, Services, Social, Task */
 
 const {Cc, Ci, Cu} = require("chrome");
 const {data} = require("sdk/self");
@@ -65,7 +65,9 @@ function windowProperty(window, eventTracker) {
         let pageData = graphData ? graphData : null;
         let sharedURI = pageData ? Services.io.newURI(pageData.url, null, null) :
                                     gBrowser.currentURI;
-        if (!SocialUI.canShareOrMarkPage(sharedURI)) {
+        if (SocialUI.canShareOrMarkPage ? // canShareOrMarkPage was changed to canSharePage in FF 51
+            !SocialUI.canShareOrMarkPage(sharedURI) :
+            !SocialUI.canSharePage(sharedURI)) {
           return;
         }
 
@@ -363,7 +365,13 @@ ShareProvider.prototype = {
           return;
         }
         node.setAttribute("image", data.url("content/img/glyph-share-16.svg"));
-        node.setAttribute("observes", "Social:PageShareOrMark");
+
+        // The Social API changed in FF 51
+        if (Services.vc.compare(Services.appinfo.version, "51.0a1") >= 0) {
+          node.setAttribute("observes", "Social:PageShareable");
+        } else {
+          node.setAttribute("observes", "Social:PageShareOrMark");
+        }
 
         CustomizableUI.addListener(shareButton);
         Services.obs.addObserver(shareButton, "social:providers-changed", false);
@@ -374,7 +382,9 @@ ShareProvider.prototype = {
       },
       onCustomizeEnd: window => {
         let url = window.gBrowser.currentURI;
-        if (window.SocialUI.canShareOrMarkPage(url)) {
+        if (window.SocialUI.canShareOrMarkPage ? // canShareOrMarkPage was changed to canSharePage in FF 51
+            window.SocialUI.canShareOrMarkPage(url) :
+            window.SocialUI.canSharePage(url)) {
           widget.disabled = false;
         }
       },
