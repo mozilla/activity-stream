@@ -219,6 +219,9 @@ PreviewProvider.prototype = {
       if (existingLinks.has(link.cache_key)) {
         return Object.assign({}, existingLinks.get(link.cache_key), link);
       }
+      if (!link.metadata_source) {
+        link.metadata_source = "TippyTopProvider";
+      }
       return previewsOnly ? null : link;
     }).filter(link => link);
 

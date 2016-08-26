@@ -285,6 +285,31 @@ exports.test_mock_embedly_request = function*(assert) {
   });
 };
 
+exports.test_no_metadata_source = function*(assert) {
+  const fakeSite = {
+    "url": "http://www.amazon.com/",
+    "title": null,
+    "sanitized_url": "http://www.amazon.com/",
+    "cache_key": "amazon.com/"
+  };
+  const fakeResponse = {"urls": {"http://www.amazon.com/": {"embedlyMetaData": "some embedly metadata"}}};
+
+  let cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
+  assert.equal(cachedLink[0].metadata_source, "TippyTopProvider", "metadata came from TippyTopProvider");
+
+  let srv = httpd.startServerAsync(gPort);
+  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
+    response.setHeader("Content-Type", "application/json", false);
+    response.write(JSON.stringify(fakeResponse));
+  });
+  yield gPreviewProvider._asyncSaveLinks([fakeSite]);
+  assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "metadata source was now computed by Embedly");
+
+  yield new Promise(resolve => {
+    srv.stop(resolve);
+  });
+};
+
 exports.test_get_enhanced_disabled = function*(assert) {
   const fakeData = [
     {url: "http://foo.com/", lastVisitDate: 1459537019061}

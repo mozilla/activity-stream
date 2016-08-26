@@ -7,7 +7,7 @@ const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const DEFAULT_PROPS = {
   onUpdate: () => {},
-  site: {url: "https://foo.com"},
+  site: {url: "https://foo.com", metadata_source: "EmbedlyTest"},
   page: "NEW_TAB",
   source: "ACTIVITY_FEED",
   index: 3
@@ -91,6 +91,9 @@ describe("LinkMenu", () => {
               assert.equal(action.data.page, DEFAULT_PROPS.page);
               assert.equal(action.data.source, DEFAULT_PROPS.source);
               assert.equal(action.data.action_position, DEFAULT_PROPS.index);
+              if (action.data.event === "BLOCK" || action.data.event === "DELETE") {
+                assert.equal(action.data.metadata_source, DEFAULT_PROPS.site.metadata_source);
+              }
               count++;
             }
             if (count === 2) {

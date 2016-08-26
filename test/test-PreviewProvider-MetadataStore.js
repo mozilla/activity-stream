@@ -79,7 +79,9 @@ exports.test_get_links_from_metadatastore = function*(assert) {
   // is not yet in the database
   let cachedLinks = yield gPreviewProvider._asyncGetEnhancedLinks(links);
   assert.equal(cachedLinks.length, 3, "returned all 3 links");
-  assert.deepEqual(cachedLinks[2], links[2], "the third link was untouched");
+  assert.equal(cachedLinks[2].cache_key, links[2].cache_key, "the third link's cache_key was untouched");
+  assert.equal(cachedLinks[2].places_url, links[2].places_url, "the third link's places_url was untouched");
+  assert.equal(cachedLinks[2].metadata_source, "TippyTopProvider", "we did however, add a metadata_source");
 
   // get enhanced links after third link has been inserted in db - the third
   // link should now have more properties i.e title, description etc...
