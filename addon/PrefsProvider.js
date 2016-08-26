@@ -1,4 +1,5 @@
 const am = require("common/action-manager");
+const simplePrefs = require("sdk/simple-prefs");
 
 /**
  * PrefsProvider
@@ -11,14 +12,12 @@ exports.PrefsProvider = class PrefsProvider {
    * constructor
    *
    * @param  {obj} options
-   *         {obj} options.simplePrefs   This should be sdk/simple-prefs, or an equivalent interface.
    *         {func} options.broadcast    This is a method that takes an action created with am.actions (action-manager.js)
    *         {func} options.send         This is a method that takes an action created with am.actions, and a worker.
    *                                     Note: broadcast and send are defined on the ActivityStreams.js instance.
    */
   constructor(options) {
-    const {simplePrefs, broadcast, send} = options;
-    this.simplePrefs = simplePrefs;
+    const {broadcast, send} = options;
     this.broadcast = broadcast;
     this.send = send;
   }
@@ -30,16 +29,16 @@ exports.PrefsProvider = class PrefsProvider {
   init() {
     this.onPrefChange = name => this.broadcast(am.actions.Response("PREF_CHANGED_RESPONSE", {
       name,
-      value: this.simplePrefs.prefs[name]
+      value: simplePrefs.prefs[name]
     }));
-    this.simplePrefs.on("", this.onPrefChange);
+    simplePrefs.on("", this.onPrefChange);
   }
 
   /**
    * destroy - Removes the event listener on prefs
    */
   destroy() {
-    this.simplePrefs.off("", this.onPrefChange);
+    simplePrefs.off("", this.onPrefChange);
     this.onPrefChange = null;
   }
 
@@ -54,10 +53,10 @@ exports.PrefsProvider = class PrefsProvider {
     const {msg: action, worker} = options;
     switch (action.type) {
       case "PREFS_REQUEST":
-        this.send(am.actions.Response("PREFS_RESPONSE", this.simplePrefs.prefs), worker);
+        this.send(am.actions.Response("PREFS_RESPONSE", simplePrefs.prefs), worker);
         break;
       case "NOTIFY_UPDATE_PREF":
-        this.simplePrefs.prefs[action.data.name] = action.data.value;
+        simplePrefs.prefs[action.data.name] = action.data.value;
         break;
     }
   }

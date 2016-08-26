@@ -43,14 +43,24 @@ module.exports = function(config) {
     preprocessors: {"content-test/**/*.js": ["webpack", "sourcemap"]},
     webpack: {
       devtool: "inline-source-map",
-      resolve: webpack.resolve,
+      resolve: {
+        extensions: webpack.resolve.extensions,
+        alias: Object.assign({}, webpack.resolve.alias, {
+          "shims": path.join(__dirname, "shims"),
+          // This is necessary in order to be able to import
+          // files from the addon side.
+          "chrome": "shims/chrome.js",
+          "sdk": "shims/sdk"
+        })
+      },
+      resolveLoader: {alias: {inject: path.join(__dirname, "loaders/inject-loader")}},
       module: {
         loaders: webpack.module.loaders,
         postLoaders: [{
           test: /\.js$/,
           loader: "istanbul-instrumenter",
           include: [path.join(__dirname, "/content-src")],
-          exclude: [/DebugPage/]
+          exclude: [/DebugPage/, /\.test\.js$/]
         }]
       },
       plugins: webpack.plugins
