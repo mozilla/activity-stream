@@ -31,7 +31,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "action": "activity_stream_event"
+  "action": "activity_stream_event",
+  "metadata_source": "Embedly"
 }
 ```
 
@@ -64,6 +65,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
   "locale": "en-US",
+  "metadata_source": ["Embedly" | "MetadataService" | "Local" | "TippyTopProvider"],
   // Optional field, only sent if a recommendation site gets clicked
   "url": "https://www.example.com",
   // Optional field, only sent if a recommendation site gets clicked
@@ -83,7 +85,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
     "tab_id": "-3-13",
     "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
     "addon_version": "1.0.12",
-    "locale": "en-US"
+    "locale": "en-US",
+    "metadata_source": ["Embedly" | "MetadataService" | "Local" | "TippyTopProvider"]
   }
 ```
 
@@ -100,6 +103,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
   "locale": "en-US",
+  "metadata_source": ["Embedly" | "MetadataService" | "Local" | "TippyTopProvider"],
   // optional field, only sent if a recommendation site gets clicked
   "url": "https://www.example.com",
   // optional field, only sent if a recommendation site gets clicked

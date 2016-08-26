@@ -46,7 +46,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
-    background_color: "#fff"
+    background_color: "#fff",
+    metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
 
   // Test with a site with domain match but different protocol
@@ -54,7 +55,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/github-com.png",
-    background_color: "#eee"
+    background_color: "#eee",
+    metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
 
   // Test with a site with known url but 'www.' prepended
@@ -62,7 +64,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/github-com.png",
-    background_color: "#eee"
+    background_color: "#eee",
+    metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
 
   // Test with a site with known url but without the 'www.'
@@ -70,7 +73,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/example-com.png",
-    background_color: "#ddd"
+    background_color: "#ddd",
+    metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
 
   // Test with a known site but adding an arbitrary path
@@ -78,7 +82,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
-    background_color: "#fff"
+    background_color: "#fff",
+    metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
 
   // Test with a known site but adding an arbitrary query string
@@ -86,7 +91,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
-    background_color: "#fff"
+    background_color: "#fff",
+    metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
 
   // Test with a known site but prepend a non www subdomain. It shouldnt match.

@@ -419,6 +419,7 @@ exports.test_TabTracker_action_pings = function*(assert) {
       data: {
         source: "topsites",
         action_position: 3,
+        metadata_source: "Embedly",
         event: "CLICK"
       }
     }
@@ -434,6 +435,7 @@ exports.test_TabTracker_action_pings = function*(assert) {
   assert.deepEqual(eventData.msg.data.source, pingData.source, "the ping has the correct source");
   assert.deepEqual(eventData.msg.data.event, pingData.event, "the ping has the correct event");
   assert.deepEqual(eventData.msg.data.action_position, pingData.action_position, "the ping has the correct action_position");
+  assert.deepEqual(eventData.msg.data.metadata_source, pingData.metadata_source, "the ping has the correct metadata_source");
 };
 
 exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
@@ -479,6 +481,7 @@ exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
         data: {
           source: "topsites",
           action_position: 3,
+          metadata_source: "Embedly",
           event
         }
       }

@@ -47,7 +47,8 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
   "tab_id": "1-3",
   "ua": "python-requests/2.9.1",  
   "url": "https://www.example.com",
-  "recommender_type": "pocket-trending"
+  "recommender_type": "pocket-trending",
+  "metadata_source": "Embedly or MetadataService or Local or TippyTopProvider"
 }
 ```
 
@@ -113,7 +114,7 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
 | `rating` | The rating (out of 5) that the user has given the metadata for a given highlight. | :one:
 | `rated_index` | The associated index of the spotlight item that the user has rated. | :one:
 | `rated_type` | The associated type of the spotlight item that the user has rated. | :one:
-| `metadataSource` | The source of which we computed metadata. Either (`Embedly` or `MetadataService` or `Local`). | :one:
+| `metadata_source` | The source of which we computed metadata. Either (`Embedly` or `MetadataService` or `Local` or `TippyTopProvider`). | :one:
 
 **Where:**
 

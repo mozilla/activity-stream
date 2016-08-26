@@ -105,6 +105,7 @@ describe("NewTabPage", () => {
           assert.equal(a.data.page, "NEW_TAB");
           assert.equal(a.data.source, "TOP_SITES");
           assert.equal(a.data.action_position, 0);
+          assert.equal(a.data.metadata_source, "EmbedlyTest");
           done();
         }
       });
@@ -118,6 +119,7 @@ describe("NewTabPage", () => {
           assert.equal(a.data.page, "NEW_TAB");
           assert.equal(a.data.source, "FEATURED");
           assert.equal(a.data.action_position, 0);
+          assert.equal(a.data.metadata_source, "EmbedlyTest");
           done();
         }
       });
@@ -131,6 +133,7 @@ describe("NewTabPage", () => {
           assert.equal(a.data.page, "NEW_TAB");
           assert.equal(a.data.source, "ACTIVITY_FEED");
           assert.equal(a.data.action_position, 0);
+          assert.equal(a.data.metadata_source, "EmbedlyTest");
           done();
         }
       });
