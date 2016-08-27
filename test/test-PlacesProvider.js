@@ -186,7 +186,7 @@ exports.test_Links_getRecentlyVisited = function*(assert) {
 
   let links = yield provider.getRecentlyVisited();
   assert.equal(links.length > 0, true, "it should retrieve some links");
-  assert.equal(links.length, 22, "query should retrieve links older than 30 minutes but not older than 4 days");
+  assert.equal(links.length, 22, "query should not retrieve links older than 4 days");
 };
 
 exports.test_Links_getRecentLinks = function*(assert) {
