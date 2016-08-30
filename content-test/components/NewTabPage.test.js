@@ -3,6 +3,7 @@ const TestUtils = require("react-addons-test-utils");
 const ConnectedNewTabPage = require("components/NewTabPage/NewTabPage");
 const {NewTabPage} = ConnectedNewTabPage;
 const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
+const SpotlightFeed = require("components/Spotlight/SpotlightFeed");
 const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
 const {mockData, renderWithProvider} = require("test/test-utils");
@@ -51,6 +52,23 @@ describe("NewTabPage", () => {
     const inner = TestUtils.findRenderedComponentWithType(container, NewTabPage);
     Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
   });
+
+  describe("weightedHighlights set to true", () => {
+    let weightedSpotlight;
+    beforeEach(() => {
+      weightedSpotlight = Object.assign({}, fakeProps.Spotlight);
+      weightedSpotlight.weightedHighlights = true;
+      const newProps = Object.assign({}, fakeProps, {Spotlight: weightedSpotlight});
+
+      instance = renderWithProvider(<NewTabPage {...newProps} dispatch={() => {}} />);
+    });
+
+    it("should render SpotlightFeed with correct data", () => {
+      const spotlightFeed = TestUtils.findRenderedComponentWithType(instance, SpotlightFeed);
+      assert.equal(spotlightFeed.props.sites, weightedSpotlight.rows);
+    });
+  });
+
   describe("settings", () => {
     it("should hide the settings menu by default", () => {
       assert.equal(instance.refs.settingsMenu.props.visible, false);
