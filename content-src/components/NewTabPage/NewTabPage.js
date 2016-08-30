@@ -47,7 +47,7 @@ const NewTabPage = React.createClass({
       renderedOnce = true;
     }
   },
-  _renderGroupedFeed() {
+  _renderRecentActivity() {
     if (this.props.Spotlight.weightedHighlights) {
       return (<section>
         <SpotlightFeed sites={this.props.Spotlight.rows} page={PAGE_NAME} />
@@ -87,7 +87,7 @@ const NewTabPage = React.createClass({
             <Spotlight page={PAGE_NAME} showRating={props.Spotlight.metadataRating} sites={props.Spotlight.rows} />
           </section>
 
-          {this._renderGroupedFeed()}
+          {this._renderRecentActivity()}
 
           <section className="bottom-links-container">
             <Link className="bottom-link" to="/timeline"><span className="icon icon-spacer icon-activity-stream" /> See all activity</Link>

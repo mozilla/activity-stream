@@ -12,7 +12,7 @@ const fakeSiteWithImage = faker.createSite();
 
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 
-describe("Spotlight", () => {
+describe("SpotlightFeed", () => {
   let instance;
   let el;
   let fakeDispatch = () => {};
