@@ -16,11 +16,17 @@ describe("Spotlight", () => {
   let instance;
   let el;
   let fakeDispatch = () => {};
+  let sandbox;
   beforeEach(() => {
+    sandbox = sinon.sandbox.create();
     instance = renderWithProvider(<SpotlightFeed sites={fakeSpotlightItems}
                                                  dispatch={fakeDispatch}
                                                  page="TEST_PAGE" />);
     el = ReactDOM.findDOMNode(instance);
+  });
+
+  afterEach(() => {
+    sandbox.restore();
   });
 
   describe("valid sites", () => {
@@ -33,6 +39,27 @@ describe("Spotlight", () => {
     });
   });
 
+  describe("higlight no images", () => {
+    let siteNoImages;
+    beforeEach(() => {
+      siteNoImages = Object.assign({}, fakeSiteWithImage, {
+        background_color: "#000",
+        images: []
+      });
+
+      instance = renderWithProvider(<SpotlightFeedItem index={0}
+                                                       page="TEST_PAGE"
+                                                       source="TEST_PAGE"
+                                                       {...siteNoImages} />);
+      el = ReactDOM.findDOMNode(instance);
+    });
+
+    it("should set correct background color", () => {
+      const bgColor = el.querySelector(".feed-icon-image").style.backgroundColor;
+      assert.ok(bgColor);
+    });
+  });
+
   describe("valid highlight", () => {
     beforeEach(() => {
       instance = renderWithProvider(<SpotlightFeedItem index={0}
@@ -40,6 +67,12 @@ describe("Spotlight", () => {
                                                        source="TEST_PAGE"
                                                        {...fakeSiteWithImage} />);
       el = ReactDOM.findDOMNode(instance);
+    });
+
+    it("should set correct background image", () => {
+      const bgImage = el.querySelector(".feed-icon-image").style.backgroundImage;
+      const position = bgImage.indexOf(fakeSiteWithImage.images[0].url);
+      assert.ok(position >= 0);
     });
 
     it("should have correct title", () => {

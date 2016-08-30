@@ -1,5 +1,3 @@
-$feed-item-border-color: #EEE;
-
 .grouped-highlight-feed {
   ul {
     line-height: 1.2;
@@ -8,37 +6,31 @@ $feed-item-border-color: #EEE;
   .feed-item {
     margin: 1rem 0;
     border: 1px solid $feed-item-border-color;
-  }
 
-  .feed-item::before {
-    display: none;
-  }
-
-  .feed-item::after {
-    display: none;
+    // Hide the timeline view of recent activity.
+    &::before,
+    &::after {
+      display: none;
+    }
   }
 
   .site-icon.feed-icon,
   .feed-icon-image {
-    width: 96px;
-    height: 64px;
+    width: $highlight-feed-icon-width;
+    height: $highlight-feed-icon-height;
   }
 
   .feed-icon-image {
-    position: relative;
-    border: 1px solid $faintest-black;
+    border: 0;
+    margin: 0;
     border-radius: $border-radius;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    background-position: center;
-    background-size: cover;
-
-    flex-shrink: 0;
 
     .site-icon.feed-icon {
       position: absolute;
       top: 50%;
-      left: 10px;
+      left: 12px;
       margin-top: -16px;
     }
   }
@@ -48,18 +40,16 @@ $feed-item-border-color: #EEE;
   }
 
   .feed-description {
-    margin-left: 24px;
+    padding: 12px $base-gutter;
   }
 
   .feed-description > .feed-title {
-    padding-top: 13px;
     font-weight: bold;
     font-size: 16px;
   }
 
   .feed-description > .feed-summary {
     margin: 0;
-    padding-bottom: 12px;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 14px;
@@ -79,8 +69,10 @@ $feed-item-border-color: #EEE;
 
   .feed-details .feed-url {
     display: inline-block;
+    color: $highlight-feed-url-color;
   }
 
+  // Bullet between url and description.
   .feed-summary-text::before {
     margin: 0 5px;
     content: '\2022';
@@ -89,7 +81,6 @@ $feed-item-border-color: #EEE;
   .feed-source {
     display: block;
     margin: 5px;
-    margin-right: 12px;
     width: $feed-circle-size;
     height: $feed-circle-size;
     border: 2px solid $feed-circle-color;
@@ -111,7 +102,7 @@ $feed-item-border-color: #EEE;
   .feed-source.bookmark .star {
     position: absolute;
     top: 15px;
-    right: 25px;
+    right: 12px;
     width: 18px;
     height: 18px;
     border: 0;
@@ -122,7 +113,7 @@ $feed-item-border-color: #EEE;
   .feed-stats {
     display: flex;
     flex-direction: column;
-    margin-right: 12px;
+    padding-right: 12px;
     align-items: center;
     justify-content: flex-start;
   }
