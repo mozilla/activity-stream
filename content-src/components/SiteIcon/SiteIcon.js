@@ -1,6 +1,5 @@
 const React = require("react");
 const classNames = require("classnames");
-const {selectSiteIcon} = require("selectors/colorSelectors");
 
 const SiteIcon = React.createClass({
   getDefaultProps() {
@@ -24,7 +23,7 @@ const SiteIcon = React.createClass({
     }
   },
   render() {
-    const site = selectSiteIcon(this.props.site);
+    const site = this.props.site;
     const {width, height, faviconSize, showTitle} = this.props;
     const showFallback = this.state.showFallback || !site.favicon;
     const showBackground = this.props.showBackground || showFallback;

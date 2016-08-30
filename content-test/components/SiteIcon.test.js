@@ -2,6 +2,7 @@ const TestUtils = require("react-addons-test-utils");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
+const {selectSiteIcon} = require("selectors/colorSelectors");
 
 const fakeProps = {
   site: {
@@ -18,7 +19,7 @@ describe("SiteIcon", () => {
   let el;
 
   function setup(customProps = {}, customSiteProps = {}) {
-    const site = Object.assign({}, fakeProps.site, customSiteProps);
+    const site = selectSiteIcon(Object.assign({}, fakeProps.site, customSiteProps));
     const props = Object.assign({}, fakeProps, customProps, {site});
     instance = TestUtils.renderIntoDocument(<SiteIcon {...props} />);
     el = ReactDOM.findDOMNode(instance);

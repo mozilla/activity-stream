@@ -7,6 +7,7 @@ const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const classNames = require("classnames");
 const {prettyUrl} = require("lib/utils");
+const {selectSiteIcon} = require("selectors/colorSelectors");
 const moment = require("moment");
 
 const ICON_SIZE = 20;
@@ -21,21 +22,24 @@ class SpotlightFeedItem extends React.Component {
   render() {
     const props = this.props;
     const dateLabel = moment(props.lastVisitDate).fromNow();
-    let icon;
+    const siteColorProps = selectSiteIcon(props);
     const iconProps = {
       ref: "icon",
       className: "feed-icon",
-      site: props,
+      site: siteColorProps,
       faviconSize: ICON_SIZE
     };
+    let feedImageStyle;
 
-    if (props.images && props.images[0]) {
-      icon = (<div className="feed-icon-image" style={{backgroundImage: `url(${props.images[0].url})`}}>
-        <SiteIcon {...iconProps} width={TOP_LEFT_ICON_SIZE} height={TOP_LEFT_ICON_SIZE} />
-      </div>);
+    if (props.images && props.images.length) {
+      feedImageStyle = {backgroundImage: `url(${props.images[0].url})`};
     } else {
-      icon = (<SiteIcon {...iconProps} />);
+      feedImageStyle = {background: siteColorProps.backgroundColor};
     }
+
+    let icon = (<div className="feed-icon-image" style={feedImageStyle}>
+      <SiteIcon {...iconProps} width={TOP_LEFT_ICON_SIZE} height={TOP_LEFT_ICON_SIZE} />
+    </div>);
 
     return (<li className={classNames("feed-item", {active: this.state.showContextMenu})}>
       <a onClick={props.onClick} href={props.url}>
