@@ -17,13 +17,16 @@ class Baseline {
     // Features that are extracted from URLs and need normalization.
     // Key 0 holds the min, key 1 holds max, using arrays for brevity.
     this.normalizeFeatures = {
-      idf: [1, 0],
-      imageCount: [1, 0],
-      description: [1, 0],
-      pathLength: [1, 0],
-      largestImage: [1, 0],
-      queryLength: [1, 0]
+      idf: {min: 1, max: 0},
+      imageCount: {min: 1, max: 0},
+      description: {min: 1, max: 0},
+      pathLength: {min: 1, max: 0},
+      largestImage: {min: 1, max: 0},
+      queryLength: {min: 1, max: 0}
     };
+
+    // These are features used for adjusting the final score.
+    this.adjustmentFeatures = ["isBookmarked"];
 
     if (!this.options.highlightsCoefficients) {
       throw new Error("Coefficients not specified");
@@ -51,20 +54,20 @@ class Baseline {
     return Object.assign({}, entry, {features, host});
   }
 
+  // Adjust all values in [0, 1].
   normalize(features) {
-    let delta;
-    const normalizeKeys = Object.keys(this.normalizeFeatures);
-
-    normalizeKeys.forEach(key => {
-      if (this.normalizeFeatures[key][1] !== this.normalizeFeatures[key][0]) { // No division by 0.
-        delta = this.normalizeFeatures[key][1] - this.normalizeFeatures[key][0];
-        features[key] = (features[key] - this.normalizeFeatures[key][0]) / delta;
+    return Object.keys(this.normalizeFeatures).reduce((acc, key) => {
+      const {min, max} = this.normalizeFeatures[key];
+      if (max !== min) { // No division by 0.
+        let delta = max - min;
+        acc[key] = (features[key] - min) / delta;
+        return acc;
       }
-    });
+    }, {});
   }
 
   scoreEntry(entry) {
-    this.normalize(entry.features);
+    entry.features = this.normalize(entry.features);
 
     const {tf, idf} = entry.features;
     let score = this.decay(tf * idf, // Score
@@ -120,10 +123,9 @@ class Baseline {
    * @param {Object} newFeatures - features and associated values.
    */
   updateFeatureMinMax(newFeatures) {
-    const keys = Object.keys(this.normalizeFeatures);
-    keys.forEach(key => {
-      this.normalizeFeatures[key][0] = this.selectMinValue(this.normalizeFeatures[key][0], newFeatures[key]);
-      this.normalizeFeatures[key][1] = this.selectMaxValue(this.normalizeFeatures[key][1], newFeatures[key]);
+    Object.keys(this.normalizeFeatures).forEach(key => {
+      this.normalizeFeatures[key].min = this.selectMinValue(this.normalizeFeatures[key].min, newFeatures[key]);
+      this.normalizeFeatures[key].max = this.selectMaxValue(this.normalizeFeatures[key].max, newFeatures[key]);
     });
   }
 
@@ -160,12 +162,13 @@ class Baseline {
    */
   score(entries) {
     let results = entries.map(entry => this.extractFeatures(entry))
-      .map(entry => this.scoreEntry(entry))
-      .sort(this.sortDescByScore);
+                         .map(entry => this.scoreEntry(entry))
+                         .sort(this.sortDescByScore);
 
     // Decreases score for consecutive items from the same host.
     results = this.dedupe(results);
 
+    // Sort again after adjusting score.
     return results.sort(this.sortDescByScore);
   }
 
@@ -220,8 +223,18 @@ class Baseline {
    * @returns {Number}
    */
   decay(value, features, coef) {
-    const featNames = Object.keys(features).sort();
-    let exp = featNames.reduce((acc, name, i) => acc + (features[name] || 0) * coef[i], 0);
+    // Get all available features, filter out the ones we don't use in
+    // computing initial score.
+    const featNames = Object.keys(features)
+                        .filter(f => this.adjustmentFeatures.indexOf(f) === -1)
+                        .sort();
+    // Multiply feature value by weight and sum up all results.
+    let exp = featNames.reduce((acc, name, i) => acc + features[name] * coef[i], 0);
+
+    // Throw error instead of trying to fallback becase results will be wrong.
+    if (Number.isNaN(exp)) {
+      throw new Error("Could not compute feature score");
+    }
 
     return value * Math.pow(Math.E, -exp);
   }
@@ -240,15 +253,15 @@ class Baseline {
   dedupe(entries) {
     let penalty = 0.8;
 
-    return entries.map((e, i, arr) => {
-      if (i > 0 && arr[i - 1].host === e.host) {
-        let score = e.score * penalty;
+    return entries.map((entry, i, arr) => {
+      if (i > 0 && arr[i - 1].host === entry.host) {
+        let score = entry.score * penalty;
         penalty -= 0.2;
-        return Object.assign({}, e, {score});
+        return Object.assign({}, entry, {score});
       }
 
       penalty = 0.8;
-      return e;
+      return entry;
     });
   }
 }
