@@ -2,7 +2,6 @@
 
 const URL = require("../../addon/vendor.bundle.js").urlParse;
 const getBestImage = require("../getBestImage");
-const COEFFICIENTS = [0.1, 0.5, -0.2, 0.1, -0.2, -0.3, -0.6, -0.7];
 
 /**
  * Score function for URLs.
@@ -25,6 +24,10 @@ class Baseline {
       largestImage: [1, 0],
       queryLength: [1, 0]
     };
+
+    if (!this.options.highlightsCoefficients) {
+      throw new Error("Coefficients not specified");
+    }
   }
 
   extractFeatures(entry) {
@@ -63,14 +66,14 @@ class Baseline {
   scoreEntry(entry) {
     this.normalize(entry.features);
 
-    const {age, tf, idf, queryLength, imageCount, pathLength, description, largestImage} = entry.features;
+    const {tf, idf} = entry.features;
     let score = this.decay(tf * idf, // Score
       // Features: Age in hours, number of visits to url, how often you go to the domain, number of images,
       //           length of path, length of description, size of biggest image.
-      [age, tf, idf, queryLength, imageCount, pathLength, description, largestImage],
+      entry.features,
       // Features weights: Positive values decrease the score proportional to a factor of feature * weight.
       //                   Negative values increase score proportional to a factor of feature * weight.
-      this.options.highlightsCoefficients || COEFFICIENTS);
+      this.options.highlightsCoefficients);
 
     score = this.adjustScore(score, entry.features);
 
@@ -216,8 +219,9 @@ class Baseline {
    * @param {Array.<Number>} c
    * @returns {Number}
    */
-  decay(value, e, c) {
-    let exp = e.reduce((acc, v, i) => acc + (v || 0) * c[i], 0);
+  decay(value, features, coef) {
+    const featNames = Object.keys(features).sort();
+    let exp = featNames.reduce((acc, name, i) => acc + (features[name] || 0) * coef[i], 0);
 
     return value * Math.pow(Math.E, -exp);
   }
