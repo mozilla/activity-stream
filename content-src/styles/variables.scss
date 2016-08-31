@@ -1,3 +1,5 @@
+$image-path: 'img/';
+
 $bg-color: #FFF;
 $bg-grey: #FBFBFB;
 $very-light-grey: #EBEBEB;
@@ -31,6 +33,7 @@ $section-title-bottom-margin: 13px;
 $header-box-shadow: 0 4px 2px -3px rgba($black, 0.05);
 $header-nav-width: 250px;
 $header-border: solid 1px $header-border-color;
+$header-section-spacing: 20px;
 
 $tile-gutter: $base-gutter;
 $tile-width: 96px;
@@ -86,6 +89,8 @@ $search-shadow: rgba(96, 181, 255, 0.75);
 $search-button-grey: #FBFBFB;
 $search-button-border-color: #D4D4D4;
 $search-button-width: 64px;
+$search-glyph-image: url('#{$image-path}glyph-search-16.svg');
+$search-glyph-size: 20px;
 $search-text: #666;
 $search-section-background: #F7F7F7;
 $search-border-color: #EAEAEA;
@@ -106,8 +111,6 @@ $context-menu-outer-padding: 5px;
 $context-menu-item-padding: 3px 12px;
 
 $icon-size: 16px;
-
-$image-path: 'img/';
 
 $tooltip-height: 50px;
 $tooltip-background-color: #FFF3CE;
@@ -154,5 +157,22 @@ $tooltip-anchor-margin: -42px 0 0 -24px;
   &.active {
     background: $search-blue;
     color: $bg-color;
+  }
+}
+
+@mixin search-input {
+  border: 1px solid $search-input-border-color;
+  border-radius: $search-border-radius;
+  box-shadow: none;
+  flex-grow: 1;
+  margin: 0;
+  outline: none;
+  padding: 6px 12px 8px $search-input-left-label-width;
+
+  &:focus {
+    border-color: $search-blue;
+    box-shadow: 0 0 0 0.5px $search-shadow;
+    transition: box-shadow 150ms;
+    z-index: 1;
   }
 }
