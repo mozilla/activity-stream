@@ -6,7 +6,6 @@ const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const classNames = require("classnames");
-const {prettyUrl} = require("lib/utils");
 const {selectSiteIcon} = require("selectors/colorSelectors");
 const moment = require("moment");
 
@@ -23,6 +22,7 @@ class SpotlightFeedItem extends React.Component {
     const props = this.props;
     const dateLabel = moment(props.lastVisitDate).fromNow();
     const siteColorProps = selectSiteIcon(props);
+    const feedName = props.provider_name.toLowerCase() || props.provider_display;
     const iconProps = {
       ref: "icon",
       className: "feed-icon",
@@ -48,7 +48,7 @@ class SpotlightFeedItem extends React.Component {
           <div className="feed-description">
             <h4 className="feed-title" ref="title">{props.title || props.url}</h4>
             <div className="feed-summary">
-              <span className="feed-url" ref="url" data-feed-url={prettyUrl(props.provider_display)} />
+              <span className="feed-url" ref="url">{feedName}</span>
               {props.description && <span className="feed-summary-text" ref="description">{props.description}</span>}
             </div>
           </div>

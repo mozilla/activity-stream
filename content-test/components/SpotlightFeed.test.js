@@ -16,17 +16,11 @@ describe("SpotlightFeed", () => {
   let instance;
   let el;
   let fakeDispatch = () => {};
-  let sandbox;
   beforeEach(() => {
-    sandbox = sinon.sandbox.create();
     instance = renderWithProvider(<SpotlightFeed sites={fakeSpotlightItems}
                                                  dispatch={fakeDispatch}
                                                  page="TEST_PAGE" />);
     el = ReactDOM.findDOMNode(instance);
-  });
-
-  afterEach(() => {
-    sandbox.restore();
   });
 
   describe("valid sites", () => {
@@ -36,6 +30,32 @@ describe("SpotlightFeed", () => {
     it("should render a SpotlightFeedItem for each item", () => {
       const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightFeedItem);
       assert.equal(children.length, 3);
+    });
+    it("should display the provider_name in lowercase", () => {
+      const names = el.querySelectorAll(".feed-url");
+
+      fakeSpotlightItems.forEach((site, i) => {
+        assert.equal(site.provider_name.toLowerCase(), names[i].textContent);
+      });
+    });
+  });
+
+  describe("feed with no provider_name", () => {
+    const spotlightNoProvider = fakeSpotlightItems.map(item => Object.assign({}, item, {provider_name: ""}));
+    let instance;
+    let el;
+    beforeEach(() => {
+      instance = renderWithProvider(<SpotlightFeed sites={spotlightNoProvider}
+                                                   dispatch={fakeDispatch}
+                                                   page="TEST_PAGE" />);
+      el = ReactDOM.findDOMNode(instance);
+    });
+    it("should default to provider_display if no provider_name available", () => {
+      const names = el.querySelectorAll(".feed-url");
+
+      spotlightNoProvider.forEach((site, i) => {
+        assert.equal(site.provider_display, names[i].textContent);
+      });
     });
   });
 
