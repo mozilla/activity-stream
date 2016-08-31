@@ -204,8 +204,8 @@ PreviewProvider.prototype = {
       return previewsOnly ? null : link;
     }).filter(link => link);
 
-    this._tabTracker.handlePerformanceEvent(event, "previewCacheHits", results.length);
-    this._tabTracker.handlePerformanceEvent(event, "previewCacheMisses", processedLinks.length - results.length);
+    this._tabTracker.handlePerformanceEvent(event, "previewCacheHits", existingLinks.size);
+    this._tabTracker.handlePerformanceEvent(event, "previewCacheMisses", processedLinks.length - existingLinks.size);
     return results;
   }),
 
