@@ -101,13 +101,21 @@ module.exports.selectNewTabSites = createSelector(
 module.exports.selectHistory = createSelector(
   [
     selectSpotlight,
+    state => state.Filter,
     state => state.History
   ],
-  (Spotlight, History) => ({
+  (Spotlight, Filter, History) => ({
     Spotlight: Object.assign({}, Spotlight, {rows: dedupe.one(Spotlight.rows)}),
+    Filter,
     History
   })
 );
 
 // Timeline Bookmarks
-module.exports.selectBookmarks = state => ({Bookmarks: state.Bookmarks});
+module.exports.selectBookmarks = createSelector(
+  [
+    state => state.Filter,
+    state => state.Bookmarks
+  ],
+  (Filter, Bookmarks) => ({Filter, Bookmarks})
+);
