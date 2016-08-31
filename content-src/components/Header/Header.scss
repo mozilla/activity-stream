@@ -44,6 +44,11 @@
       flex-grow: 1;
     }
 
+    &.filter input {
+      @include search-input;
+      background: $search-glyph-image no-repeat 8px center / $search-glyph-size;
+    }
+
     &.user-info {
       font-size: 14px;
       padding-right: 20px;

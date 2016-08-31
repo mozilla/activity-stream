@@ -57,6 +57,7 @@ describe("Timeline", () => {
         canLoadMore: true,
         rows: mockData.History.rows
       },
+      Filter: {query: "hello"},
       dateKey: "lastVisitDate",
       pageName: "TIMELINE_ALL",
       loadMoreAction: () => {}
@@ -81,12 +82,20 @@ describe("Timeline", () => {
         const activityFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
         assert.equal(activityFeed.props.sites, fakeProps.Feed.rows);
         assert.equal(activityFeed.props.dateKey, fakeProps.dateKey);
+        assert.equal(activityFeed.props.filter, fakeProps.Filter.query);
       });
       it("should not render a Spotlight if Spotlight data is missing", () => {
         assert.lengthOf(TestUtils.scryRenderedComponentsWithType(instance, Spotlight), 0);
       });
-      it("should render a Spotlight if Spotlight data is provided", () => {
+      it("should not render a Spotlight if filtered", () => {
         setup({Spotlight: mockData.Highlights});
+        assert.lengthOf(TestUtils.scryRenderedComponentsWithType(instance, Spotlight), 0);
+      });
+      it("should render a Spotlight if Spotlight data is provided and no filter", () => {
+        setup({
+          Filter: {query: ""},
+          Spotlight: mockData.Highlights
+        });
         assert.ok(TestUtils.findRenderedComponentWithType(instance, Spotlight));
       });
     });
