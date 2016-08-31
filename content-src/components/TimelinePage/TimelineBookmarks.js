@@ -11,11 +11,15 @@ const TimelineBookmarks = React.createClass({
       loadMoreAction={RequestMoreBookmarks}
       dateKey={"bookmarkDateCreated"}
       pageName={"TIMELINE_BOOKMARKS"}
-      Feed={props.Bookmarks} />);
+      Feed={props.Bookmarks}
+      Filter={props.Filter} />);
   }
 });
 
-TimelineBookmarks.propTypes = {Bookmarks: React.PropTypes.object.isRequired};
+TimelineBookmarks.propTypes = {
+  Filter: React.PropTypes.object.isRequired,
+  Bookmarks: React.PropTypes.object.isRequired
+};
 
 module.exports = connect(selectBookmarks)(TimelineBookmarks);
 

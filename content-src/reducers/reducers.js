@@ -3,6 +3,7 @@
 const setRowsOrError = require("reducers/SetRowsOrError");
 const setSearchContent = require("reducers/setSearchContent");
 const Experiments = require("reducers/Experiments");
+const Filter = require("reducers/Filter");
 const Prefs = require("reducers/Prefs");
 
 module.exports = {
@@ -13,5 +14,6 @@ module.exports = {
   WeightedHighlights: setRowsOrError("WEIGHTED_HIGHLIGHTS_REQUEST", "WEIGHTED_HIGHLIGHTS_RESPONSE"),
   Search: setSearchContent("SEARCH_STATE_RESPONSE", "SEARCH_UISTRINGS_RESPONSE", "SEARCH_SUGGESTIONS_RESPONSE", "SEARCH_CYCLE_CURRENT_ENGINE_RESPONSE"),
   Experiments,
+  Filter,
   Prefs
 };

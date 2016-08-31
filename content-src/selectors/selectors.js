@@ -109,11 +109,12 @@ module.exports.selectNewTabSites = createSelector(
 module.exports.selectHistory = createSelector(
   [
     selectSpotlight,
+    state => state.Filter,
     state => state.History,
     state => state.WeightedHighlights,
     state => state.Prefs.prefs.weightedHighlights
   ],
-  (Spotlight, History, WeightedHighlights, prefWeightedHighlights) => {
+  (Spotlight, Filter, History, WeightedHighlights, prefWeightedHighlights) => {
     let rows;
     if (prefWeightedHighlights) {
       rows = assignImageAndBackgroundColor(WeightedHighlights.rows);
@@ -123,10 +124,17 @@ module.exports.selectHistory = createSelector(
 
     return {
       Spotlight: Object.assign({}, Spotlight, {rows}),
+      Filter,
       History
     };
   }
 );
 
 // Timeline Bookmarks
-module.exports.selectBookmarks = state => ({Bookmarks: state.Bookmarks});
+module.exports.selectBookmarks = createSelector(
+  [
+    state => state.Filter,
+    state => state.Bookmarks
+  ],
+  (Filter, Bookmarks) => ({Filter, Bookmarks})
+);

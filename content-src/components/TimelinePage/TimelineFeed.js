@@ -75,10 +75,13 @@ const TimelineFeed = React.createClass({
   },
   render() {
     const props = this.props;
+    const query = (props.Filter && props.Filter.query) || "";
+    const showSpotlight = props.Spotlight && query === "";
     return (<section className="content" ref="scrollElement" onScroll={!props.Feed.isLoading && props.Feed.canLoadMore && this.loadMoreDataIfNeeded}>
       <div ref="wrapper" className={classNames("wrapper", "show-on-init", {on: props.Feed.init})}>
-        {props.Spotlight ? <Spotlight page={this.props.pageName} sites={props.Spotlight.rows} /> : null}
+        {showSpotlight ? <Spotlight page={this.props.pageName} sites={props.Spotlight.rows} /> : null}
         <GroupedActivityFeed
+          filter={query}
           sites={props.Feed.rows}
           page={props.pageName}
           dateKey={props.dateKey}
