@@ -99,9 +99,16 @@ const fakeUrls = [
 
 describe("Baseline", () => {
   let baseline;
+  let sandbox;
 
   beforeEach(() => {
-    baseline = new Baseline(fakeHistory);
+    sandbox = sinon.sandbox.create();
+    baseline = new Baseline(fakeHistory,
+                            {highlightsCoefficients: [0.1, -0.2, -0.2, -0.1, -0.8, -0.2, 0.1, 0.2]});
+  });
+
+  afterEach(() => {
+    sandbox.restore();
   });
 
   it("should return a score for the urls", () => {
@@ -130,9 +137,20 @@ describe("Baseline", () => {
     assert.equal(baseline.extractLargestImage(images), 42);
   });
 
+  it("should return the same number of items after sort", () => {
+    let items = baseline.score(fakeUrls);
+    assert.equal(items.length, fakeUrls.length);
+  });
+
   it("should sort items", () => {
     let items = baseline.score(fakeUrls);
-    assert.isTrue(items[0].score > items[1].score);
+    let descending = true;
+
+    for (let i = 1; i < items.length; i++) {
+      descending &= items[i - 1].score > items[i].score;
+    }
+
+    assert.isOk(descending);
   });
 
   it("should decrease score for consecutive items from the same domain", () => {
@@ -164,6 +182,18 @@ describe("Baseline", () => {
     let entry;
     beforeEach(() => {
       entry = createSite({images: 2});
+    });
+    describe("assert correct calls", () => {
+      let updateFeatureStub;
+      beforeEach(() => {
+        updateFeatureStub = sandbox.stub(baseline, "updateFeatureMinMax");
+      });
+
+      it("should update min max values", () => {
+        const result = baseline.extractFeatures(entry);
+
+        sinon.assert.calledOnce(updateFeatureStub);
+      });
     });
     it("should extract the correct number of images", () => {
       const result = baseline.extractFeatures(entry);
@@ -253,10 +283,41 @@ describe("Baseline", () => {
         }
       };
     });
-    it("should create a new entry with a score based on features", () => {
-      const result = baseline.scoreEntry(entry);
 
-      assert.ok(result.score);
+    describe("scoreEntry", () => {
+      let normalizeStub;
+      let decayStub;
+      let adjustScoreStub;
+      beforeEach(() => {
+        normalizeStub = sandbox.stub(baseline, "normalize").returns(entry.features);
+        decayStub = sandbox.stub(baseline, "decay").returns(42);
+        adjustScoreStub = sandbox.stub(baseline, "adjustScore").returns(42);
+      });
+      it("should call normalize", () => {
+        const result = baseline.scoreEntry(entry);
+
+        sinon.assert.calledOnce(normalizeStub);
+        sinon.assert.calledWith(normalizeStub, entry.features);
+      });
+      it("should call decay", () => {
+        const result = baseline.scoreEntry(entry);
+        const score = entry.features.tf * entry.features.idf;
+
+        sinon.assert.calledOnce(decayStub);
+        sinon.assert.calledWith(decayStub, score, entry.features, baseline.options.highlightsCoefficients);
+      });
+      it("should call adjust", () => {
+        const result = baseline.scoreEntry(entry);
+
+        sinon.assert.calledOnce(adjustScoreStub);
+        sinon.assert.calledWith(adjustScoreStub, 42, entry.features);
+      });
+      it("should return a score", () => {
+        const result = baseline.scoreEntry(entry);
+
+        assert.ok(result.score);
+        assert.isNumber(result.score);
+      });
     });
 
     it("should rank bookmarks higher", () => {
@@ -264,27 +325,29 @@ describe("Baseline", () => {
       const bookmarkScore = baseline.adjustScore(10, features);
       const regularScore = baseline.adjustScore(10, entry.features);
 
+      assert.isNumber(bookmarkScore);
+      assert.isNumber(regularScore);
       assert.ok(bookmarkScore > regularScore);
     });
 
     it("should store min value of features that need normalization", () => {
       baseline.updateFeatureMinMax(entry.features);
 
-      assert.equal(baseline.normalizeFeatures.queryLength[0], entry.features.queryLength);
+      assert.equal(baseline.normalizeFeatures.queryLength.min, entry.features.queryLength);
     });
 
     it("should store max value of features that need normalization", () => {
       baseline.updateFeatureMinMax(entry.features);
 
-      assert.equal(baseline.normalizeFeatures.idf[1], entry.features.idf);
+      assert.equal(baseline.normalizeFeatures.idf.max, entry.features.idf);
     });
 
     it("should keep old value if an entry is undefined by accident", () => {
       const features = Object.assign({}, entry.features, {largestImage: undefined});
       baseline.updateFeatureMinMax(features);
 
-      assert.equal(baseline.normalizeFeatures.largestImage[0], 1);
-      assert.equal(baseline.normalizeFeatures.largestImage[1], 0);
+      assert.equal(baseline.normalizeFeatures.largestImage.min, 1);
+      assert.equal(baseline.normalizeFeatures.largestImage.max, 0);
     });
 
     it("should not divide by 0", () => {
@@ -295,18 +358,18 @@ describe("Baseline", () => {
     });
 
     it("should normalize features", () => {
-      baseline.normalizeFeatures.idf = [1, 11];
-      baseline.normalize(entry.features);
+      baseline.normalizeFeatures.idf = {min: 1, max: 11};
+      entry.features = baseline.normalize(entry.features);
 
+      assert.isNumber(entry.features.idf);
       assert.ok(entry.features.idf <= 1 && entry.features.idf >= 0);
     });
   });
 
   describe("options", () => {
     const options = {highlightsCoefficients: [1, 2, 3]};
-    it("should instantiate the recommender with empty object by default", () => {
-      baseline = new Baseline(fakeHistory);
-      assert.deepEqual(baseline.options, {});
+    it("should throw an error if highlightsCoefficients not provided", () => {
+      assert.throws(() => new Baseline(fakeHistory));
     });
     it("should instantiate the recommender with the correct settings", () => {
       baseline = new Baseline(fakeHistory, options);

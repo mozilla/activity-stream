@@ -61,9 +61,10 @@ class Baseline {
       if (max !== min) { // No division by 0.
         let delta = max - min;
         acc[key] = (features[key] - min) / delta;
-        return acc;
       }
-    }, {});
+
+      return acc;
+    }, Object.assign({}, features));
   }
 
   scoreEntry(entry) {
@@ -162,8 +163,8 @@ class Baseline {
    */
   score(entries) {
     let results = entries.map(entry => this.extractFeatures(entry))
-                         .map(entry => this.scoreEntry(entry))
-                         .sort(this.sortDescByScore);
+                    .map(entry => this.scoreEntry(entry))
+                    .sort(this.sortDescByScore);
 
     // Decreases score for consecutive items from the same host.
     results = this.dedupe(results);
