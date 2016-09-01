@@ -1,3 +1,45 @@
+<a name="1.1.3"></a>
+## 1.1.3 (2016-09-01)
+
+* 1.1.2 changelog ([6843c0a](https://github.com/mozilla/activity-stream/commit/6843c0a))
+* 1.1.3 ([4bae009](https://github.com/mozilla/activity-stream/commit/4bae009))
+* Add 'Embedly' as default metadata_source ([0cd6314](https://github.com/mozilla/activity-stream/commit/0cd6314))
+* fix (addon): #1173 fix SocialService import ([8334b81](https://github.com/mozilla/activity-stream/commit/8334b81)), closes [#1173](https://github.com/mozilla/activity-stream/issues/1173)
+* fix (addon): fix for Social API changes in nightly ([18869ec](https://github.com/mozilla/activity-stream/commit/18869ec))
+* fix(test) #1043 fix test failures in TabTracker ([feb941b](https://github.com/mozilla/activity-stream/commit/feb941b))
+* chore(dir): #1082 Rename content-test/recommender/ to common/ ([a432a4b](https://github.com/mozilla/activity-stream/commit/a432a4b))
+* chore(dir): #1082 rename lib/ to addon/ ([698c5eb](https://github.com/mozilla/activity-stream/commit/698c5eb))
+* chore(docs): #1082 docs for test strategy ([7459577](https://github.com/mozilla/activity-stream/commit/7459577))
+* chore(package): update babel-core to version 6.14.0 ([610ce26](https://github.com/mozilla/activity-stream/commit/610ce26))
+* chore(package): update eslint to version 3.4.0 ([51ec0e2](https://github.com/mozilla/activity-stream/commit/51ec0e2))
+* chore(package): update npm-run-all to version 3.1.0 (#1202) ([59ec9c3](https://github.com/mozilla/activity-stream/commit/59ec9c3))
+* chore(package): update react to version 15.3.1 ([a0e881e](https://github.com/mozilla/activity-stream/commit/a0e881e))
+* chore(package): update react-addons-test-utils to version 15.3.1 ([8fed6be](https://github.com/mozilla/activity-stream/commit/8fed6be))
+* chore(package): update react-dom to version 15.3.1 ([badfa46](https://github.com/mozilla/activity-stream/commit/badfa46))
+* chore(package): update react-router to version 2.7.0 ([5bae980](https://github.com/mozilla/activity-stream/commit/5bae980))
+* chore(package): update sass-lint to version 1.9.1 ([f6e3e89](https://github.com/mozilla/activity-stream/commit/f6e3e89))
+* chore(package): update svgo to version 0.7.0 ([416f72e](https://github.com/mozilla/activity-stream/commit/416f72e))
+* chore(package): update webpack to version 1.13.2 ([8c58f02](https://github.com/mozilla/activity-stream/commit/8c58f02))
+* chore(package): update webpack-notifier to version 1.4.0 ([aab234f](https://github.com/mozilla/activity-stream/commit/aab234f))
+* chore(package): update webpack-notifier to version 1.4.1 ([16cc751](https://github.com/mozilla/activity-stream/commit/16cc751))
+* chore(package): Use svgo to optimise and minimise svg files during packaging. ([35dc7ff](https://github.com/mozilla/activity-stream/commit/35dc7ff))
+* chore(tests): #1082 Add karma-sinon and karma-chai ([7a0d52d](https://github.com/mozilla/activity-stream/commit/7a0d52d))
+* chore(tests): #1082 Add shims ([4485937](https://github.com/mozilla/activity-stream/commit/4485937))
+* chore(tests): #1082 Add sinon.assert, notes to test index ([2582990](https://github.com/mozilla/activity-stream/commit/2582990))
+* chore(tests): #1082 Remove require chai statements ([7028d7e](https://github.com/mozilla/activity-stream/commit/7028d7e))
+* chore(tests): #1082 Update PrefsProvider tests ([fcea5bd](https://github.com/mozilla/activity-stream/commit/fcea5bd))
+* feat(addon): #411 get synced/remote tabs (addon side only) ([a355d2c](https://github.com/mozilla/activity-stream/commit/a355d2c))
+* feat(content): Closes #1074 Add rating system for metadata ([5852d61](https://github.com/mozilla/activity-stream/commit/5852d61)), closes [#1074](https://github.com/mozilla/activity-stream/issues/1074)
+* feat(metadata): #1159 add migration support for metadata store ([9086d83](https://github.com/mozilla/activity-stream/commit/9086d83))
+* feat(metadata): Closes #1143 Dynamically set metadata source ([a7d31e9](https://github.com/mozilla/activity-stream/commit/a7d31e9)), closes [#1143](https://github.com/mozilla/activity-stream/issues/1143)
+* feat(metadata): Closes #1156 Add metadata_source field to MetadataStore ([31e9614](https://github.com/mozilla/activity-stream/commit/31e9614)), closes [#1156](https://github.com/mozilla/activity-stream/issues/1156)
+* fix(addon): #1139 Add error handling for colorAnalyzer ([37aaa57](https://github.com/mozilla/activity-stream/commit/37aaa57))
+* fix(metadata-store): #1165 - Drop the migrations table in reset ([7fa6b25](https://github.com/mozilla/activity-stream/commit/7fa6b25))
+* fix(metrics): Fixes #983 Fix cacheMiss performance metric ([583187a](https://github.com/mozilla/activity-stream/commit/583187a)), closes [#983](https://github.com/mozilla/activity-stream/issues/983)
+* fix(topsites): Fix YouTube background color in Top Sites (#1151) ([84c1515](https://github.com/mozilla/activity-stream/commit/84c1515)), closes [#1151](https://github.com/mozilla/activity-stream/issues/1151)
+
+
+
 <a name="1.1.2"></a>
 ## 1.1.2 (2016-08-18)
 
@@ -123,6 +165,7 @@
 * fix(metadata-store): #1002 Handle exceptions in MetadataStore if it failed to connect ([e13e0b9](https://github.com/mozilla/activity-stream/commit/e13e0b9))
 * fix(metadata-store): #1012 Fix the intermittent timeout failure ([0a2c19a](https://github.com/mozilla/activity-stream/commit/0a2c19a))
 * fix(startup-race): #1053 fix content request and provider race condition ([5824a9a](https://github.com/mozilla/activity-stream/commit/5824a9a))
+* fix(test): #1046 Intermittent failures in PerfMeter ([0ff6ae6](https://github.com/mozilla/activity-stream/commit/0ff6ae6))
 * tests(content): #965 Tests for HighlightContext, Tooltip ([bc6a5b1](https://github.com/mozilla/activity-stream/commit/bc6a5b1))
 
 
