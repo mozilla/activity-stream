@@ -140,6 +140,13 @@
       "hidden": true
     },
     {
+      "name": "metadata.endpoint",
+      "title": "Local Metadata Endpoint",
+      "type": "string",
+      "value": "https://page-metadata-service.stage.mozaws.net/v1/metadata",
+      "hidden": true
+    },
+    {
       "name": "pocket.endpoint",
       "title": "Pocket Endpoint",
       "type": "string",
