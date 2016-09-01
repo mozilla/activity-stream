@@ -26,7 +26,7 @@ class SpotlightFeedItem extends React.Component {
     const iconProps = {
       ref: "icon",
       className: "feed-icon",
-      site: siteColorProps,
+      site: props,
       faviconSize: ICON_SIZE
     };
     let feedImageStyle;
