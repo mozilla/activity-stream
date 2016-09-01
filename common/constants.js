@@ -14,7 +14,7 @@ module.exports = {
   // Thresholds for highlights query
   HIGHLIGHTS_THRESHOLDS: {
     created: "-3 day",
-    visited: "-1 minutes",
+    visited: "-30 minutes",
     ageLimit: "-4 day"
   },
 

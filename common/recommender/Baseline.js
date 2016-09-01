@@ -2,6 +2,7 @@
 
 const URL = require("../../addon/vendor.bundle.js").urlParse;
 const getBestImage = require("../getBestImage");
+const {INFINITE_SCROLL_THRESHOLD} = require("../constants");
 
 /**
  * Score function for URLs.
@@ -17,16 +18,14 @@ class Baseline {
     // Features that are extracted from URLs and need normalization.
     // Key 0 holds the min, key 1 holds max, using arrays for brevity.
     this.normalizeFeatures = {
-      idf: {min: 1, max: 0},
-      imageCount: {min: 1, max: 0},
       description: {min: 1, max: 0},
       pathLength: {min: 1, max: 0},
-      largestImage: {min: 1, max: 0},
-      queryLength: {min: 1, max: 0}
+      largestImage: {min: 1, max: 0}
     };
 
     // These are features used for adjusting the final score.
-    this.adjustmentFeatures = ["isBookmarked"];
+    // Used by decay function to filter out features.
+    this.adjustmentFeatures = ["isBookmarked", "imageCount", "age", "idf"];
 
     if (!this.options.highlightsCoefficients) {
       throw new Error("Coefficients not specified");
@@ -36,11 +35,11 @@ class Baseline {
   extractFeatures(entry) {
     const urlObj = URL(entry.url);
     const host = urlObj.host;
-    const occurences = this.domainCounts.get(host) || 1;
+    const occurrences = this.domainCounts.get(host) || 1;
 
     const age = this.normalizeTimestamp(entry.lastVisitDate);
     const tf = Math.max(entry.visitCount, 1);
-    const idf = Math.log(this.domainCounts.size / occurences);
+    const idf = Math.log(this.domainCounts.size / occurrences);
     const imageCount = entry.images ? entry.images.length : 0;
     const isBookmarked = entry.bookmarkId || 0;
     const description = this.extractDescriptionLength(entry);
@@ -54,7 +53,7 @@ class Baseline {
     return Object.assign({}, entry, {features, host});
   }
 
-  // Adjust all values in [0, 1].
+  // Adjust all values in the range [0, 1].
   normalize(features) {
     return Object.keys(this.normalizeFeatures).reduce((acc, key) => {
       const {min, max} = this.normalizeFeatures[key];
@@ -91,21 +90,23 @@ class Baseline {
    * @param {Object} features - associated features and their values.
    */
   adjustScore(score, features) {
-    let newscore = score;
+    let newScore = score;
+
+    newScore /= Math.pow(1 + features.age, 2);
 
     if (!features.imageCount || !features.largestImage) {
-      newscore *= 0.5;
+      newScore *= 0.2;
     }
 
-    if (!features.description) {
-      newscore *= 0.5;
+    if (!features.description || !features.pathLength) {
+      newScore *= 0.2;
     }
 
     if (features.isBookmarked) {
-      newscore *= 1.8;
+      newScore *= 1.8;
     }
 
-    return newscore;
+    return newScore;
   }
 
   extractDescriptionLength(entry) {
@@ -162,7 +163,8 @@ class Baseline {
    * @returns {Array.<URLs>} sorted and with the associated score value.
    */
   score(entries) {
-    let results = entries.map(entry => this.extractFeatures(entry))
+    let results = this.filterOutRecentUrls(entries)
+                    .map(entry => this.extractFeatures(entry))
                     .map(entry => this.scoreEntry(entry))
                     .sort(this.sortDescByScore);
 
@@ -170,7 +172,23 @@ class Baseline {
     results = this.dedupe(results);
 
     // Sort again after adjusting score.
-    return results.sort(this.sortDescByScore).slice(0, 40);
+    return results.sort(this.sortDescByScore).slice(0, INFINITE_SCROLL_THRESHOLD);
+  }
+
+  /**
+   * It checks to see how many articles are older than 30 minutes.
+   * If we have more than 20 to show remove the recent ones.
+   * @param {Array} entries
+   * @returns {Array}
+   */
+  filterOutRecentUrls(entries) {
+    let olderEntries = entries.filter(entry => Date.now() - entry.lastVisitDate > 1e3 * 1800);
+
+    if (olderEntries.length > INFINITE_SCROLL_THRESHOLD) {
+      return olderEntries;
+    }
+
+    return entries;
   }
 
   /**
@@ -194,9 +212,12 @@ class Baseline {
   /**
    * Return the size of the largest image.
    * Assumes `getBestImage` returns largest image.
+   * @param {Array} images
+   * @returns {Number}
    */
   extractLargestImage(images) {
     const image = getBestImage(images);
+
     if (!image) {
       return 0;
     }
@@ -218,9 +239,9 @@ class Baseline {
   }
 
   /**
-   * @param {Number} value
-   * @param {Array.<Number>} e
-   * @param {Array.<Number>} c
+   * @param {Number} value - initial score based on frequency.
+   * @param {Object} features - object of features and associated values for a URL.
+   * @param {Array.<Number>} coef - weights
    * @returns {Number}
    */
   decay(value, features, coef) {
@@ -229,10 +250,15 @@ class Baseline {
     const featNames = Object.keys(features)
                         .filter(f => this.adjustmentFeatures.indexOf(f) === -1)
                         .sort();
+
+    if (featNames.length !== coef.length) {
+      throw new Error("Different number of features and weights");
+    }
+
     // Multiply feature value by weight and sum up all results.
     let exp = featNames.reduce((acc, name, i) => acc + features[name] * coef[i], 0);
 
-    // Throw error instead of trying to fallback becase results will be wrong.
+    // Throw error instead of trying to fallback because results will be wrong.
     if (Number.isNaN(exp)) {
       throw new Error("Could not compute feature score");
     }

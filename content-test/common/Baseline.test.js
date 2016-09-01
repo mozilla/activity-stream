@@ -104,7 +104,7 @@ describe("Baseline", () => {
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     baseline = new Baseline(fakeHistory,
-                            {highlightsCoefficients: [0.1, -0.2, -0.2, -0.1, -0.8, -0.2, 0.1, 0.2]});
+                            {highlightsCoefficients: [-0.1, -0.1, -0.1, 0.4, 0.2]});
   });
 
   afterEach(() => {
@@ -190,7 +190,7 @@ describe("Baseline", () => {
       });
 
       it("should update min max values", () => {
-        const result = baseline.extractFeatures(entry);
+        baseline.extractFeatures(entry);
 
         sinon.assert.calledOnce(updateFeatureStub);
       });
@@ -252,7 +252,7 @@ describe("Baseline", () => {
       const result = baseline.extractFeatures({url: "http://www.neverbeforevisited.com"});
 
       // If the URL was visited for the first time this session then
-      // occurences in history is 0. Division by zero would result in Infinity.
+      // occurrences in history is 0. Division by zero would result in Infinity.
       // This is a sanity check.
       assert.ok(result.features.idf < 10 && result.features.idf > 0);
     });
@@ -272,13 +272,14 @@ describe("Baseline", () => {
     beforeEach(() => {
       entry = {
         features: {
+          age: 1,
           tf: 10,
           idf: 10,
           queryLength: 0,
           imageCount: 1,
           pathLength: 1,
           isBookmarked: 0,
-          description: 1,
+          description: 10,
           largestImage: 1
         }
       };
@@ -294,20 +295,20 @@ describe("Baseline", () => {
         adjustScoreStub = sandbox.stub(baseline, "adjustScore").returns(42);
       });
       it("should call normalize", () => {
-        const result = baseline.scoreEntry(entry);
+        baseline.scoreEntry(entry);
 
         sinon.assert.calledOnce(normalizeStub);
         sinon.assert.calledWith(normalizeStub, entry.features);
       });
       it("should call decay", () => {
-        const result = baseline.scoreEntry(entry);
+        baseline.scoreEntry(entry);
         const score = entry.features.tf * entry.features.idf;
 
         sinon.assert.calledOnce(decayStub);
         sinon.assert.calledWith(decayStub, score, entry.features, baseline.options.highlightsCoefficients);
       });
       it("should call adjust", () => {
-        const result = baseline.scoreEntry(entry);
+        baseline.scoreEntry(entry);
 
         sinon.assert.calledOnce(adjustScoreStub);
         sinon.assert.calledWith(adjustScoreStub, 42, entry.features);
@@ -317,6 +318,20 @@ describe("Baseline", () => {
 
         assert.ok(result.score);
         assert.isNumber(result.score);
+      });
+    });
+
+    describe("decay", () => {
+      it("should throw an error for undefined values", () => {
+        assert.throws(() => baseline.decay(10, {foo: 1, bar: undefined}, [2, 3]));
+      });
+      it("should call filter on the features", () => {
+        const result = baseline.decay(10, {foo: 1, isBookmarked: 2}, [1]);
+
+        assert.isNumber(result);
+      });
+      it("should throw when different number of features and weights", () => {
+        assert.throws(() => baseline.decay(10, {foo: 1}, [1, 2]));
       });
     });
 
@@ -333,13 +348,13 @@ describe("Baseline", () => {
     it("should store min value of features that need normalization", () => {
       baseline.updateFeatureMinMax(entry.features);
 
-      assert.equal(baseline.normalizeFeatures.queryLength.min, entry.features.queryLength);
+      assert.equal(baseline.normalizeFeatures.pathLength.min, entry.features.pathLength);
     });
 
     it("should store max value of features that need normalization", () => {
       baseline.updateFeatureMinMax(entry.features);
 
-      assert.equal(baseline.normalizeFeatures.idf.max, entry.features.idf);
+      assert.equal(baseline.normalizeFeatures.description.max, entry.features.description);
     });
 
     it("should keep old value if an entry is undefined by accident", () => {
