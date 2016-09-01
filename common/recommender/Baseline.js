@@ -170,7 +170,7 @@ class Baseline {
     results = this.dedupe(results);
 
     // Sort again after adjusting score.
-    return results.sort(this.sortDescByScore);
+    return results.sort(this.sortDescByScore).slice(0, 40);
   }
 
   /**
@@ -201,7 +201,7 @@ class Baseline {
       return 0;
     }
 
-    return image.size;
+    return Math.min(image.size, 1e5);
   }
 
   /**

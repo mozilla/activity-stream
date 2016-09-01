@@ -352,17 +352,24 @@ describe("Baseline", () => {
 
     it("should not divide by 0", () => {
       baseline.normalizeFeatures.tf = [0, 0];
-      baseline.normalize(entry);
+      const result = baseline.normalize(entry.features);
 
-      assert.equal(entry.features.tf, 10);
+      assert.equal(result.tf, 10);
     });
 
     it("should normalize features", () => {
       baseline.normalizeFeatures.idf = {min: 1, max: 11};
-      entry.features = baseline.normalize(entry.features);
+      const result = baseline.normalize(entry.features);
 
-      assert.isNumber(entry.features.idf);
-      assert.ok(entry.features.idf <= 1 && entry.features.idf >= 0);
+      assert.isNumber(result.idf);
+      assert.ok(result.idf <= 1 && result.idf >= 0);
+    });
+
+    it("should simply return features that shouldn't be normalized", () => {
+      const features = {foo: 42};
+      const result = baseline.normalize(features);
+
+      assert.equal(result.foo, features.foo);
     });
   });
 
