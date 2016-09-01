@@ -61,9 +61,10 @@ class Baseline {
       if (max !== min) { // No division by 0.
         let delta = max - min;
         acc[key] = (features[key] - min) / delta;
-        return acc;
       }
-    }, {});
+
+      return acc;
+    }, Object.assign({}, features));
   }
 
   scoreEntry(entry) {
@@ -162,14 +163,14 @@ class Baseline {
    */
   score(entries) {
     let results = entries.map(entry => this.extractFeatures(entry))
-                         .map(entry => this.scoreEntry(entry))
-                         .sort(this.sortDescByScore);
+                    .map(entry => this.scoreEntry(entry))
+                    .sort(this.sortDescByScore);
 
     // Decreases score for consecutive items from the same host.
     results = this.dedupe(results);
 
     // Sort again after adjusting score.
-    return results.sort(this.sortDescByScore);
+    return results.sort(this.sortDescByScore).slice(0, 40);
   }
 
   /**
@@ -200,7 +201,7 @@ class Baseline {
       return 0;
     }
 
-    return image.size;
+    return Math.min(image.size, 1e5);
   }
 
   /**

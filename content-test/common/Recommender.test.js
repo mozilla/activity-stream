@@ -7,7 +7,7 @@ const {assert} = require("chai");
 describe("recommender", () => {
   let recommender;
   beforeEach(() => {
-    recommender = new Recommender([]);
+    recommender = new Recommender([], {highlightsCoefficients: [0.1, -0.2, -0.2, -0.1, -0.8, -0.2, 0.1, 0.2]});
   });
   it("should instantiate the recommender with the baseline weight function", () => {
     assert.property(recommender, "recommender");
