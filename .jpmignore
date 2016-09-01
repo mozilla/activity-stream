@@ -10,7 +10,9 @@ logs/
 node_modules/
 test/
 addon-src/
+.storybook/
 
+.storybook
 .amo_config.json
 .babelrc
 .DS_Store
