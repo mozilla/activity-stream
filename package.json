@@ -143,7 +143,7 @@
       "name": "metadata.endpoint",
       "title": "Local Metadata Endpoint",
       "type": "string",
-      "value": "https://page-metadata-service.stage.mozaws.net/v1/metadata",
+      "value": "https://page-metadata.services.mozilla.com/v1/metadata",
       "hidden": true
     },
     {
