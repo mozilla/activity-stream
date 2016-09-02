@@ -44,7 +44,7 @@
     "eslint-plugin-react": "6.2.0",
     "eventemitter2": "2.1.0",
     "faker": "3.1.0",
-    "husky": "0.11.6",
+    "husky": "0.11.7",
     "istanbul-instrumenter-loader": "0.2.0",
     "jpm": "1.1.4",
     "json-loader": "0.5.4",
