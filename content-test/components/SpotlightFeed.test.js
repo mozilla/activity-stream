@@ -16,11 +16,17 @@ describe("SpotlightFeed", () => {
   let instance;
   let el;
   let fakeDispatch = () => {};
+  let sandbox;
   beforeEach(() => {
+    sandbox = sinon.sandbox.create();
     instance = renderWithProvider(<SpotlightFeed sites={fakeSpotlightItems}
                                                  dispatch={fakeDispatch}
                                                  page="TEST_PAGE" />);
     el = ReactDOM.findDOMNode(instance);
+  });
+
+  afterEach(() => {
+    sandbox.restore();
   });
 
   describe("valid sites", () => {
@@ -59,7 +65,33 @@ describe("SpotlightFeed", () => {
     });
   });
 
-  describe("higlight no images", () => {
+  describe("bookmarks", () => {
+    it("should render bookmark star when prop is true", () => {
+      const bookmarkItems = fakeSpotlightItems.map(item => Object.assign({}, item, {bookmarkGuid: "42"}));
+      const instance = renderWithProvider(<SpotlightFeed sites={bookmarkItems}
+                                                   dispatch={fakeDispatch}
+                                                   page="TEST_PAGE" />);
+      const el = ReactDOM.findDOMNode(instance);
+      const result = el.querySelectorAll(".star");
+
+      assert.equal(result.length, bookmarkItems.length);
+    });
+
+    it("should not render bookmark star when prop is false", () => {
+      const noBookmarkItems = fakeSpotlightItems.map(item => Object.assign({}, item, {bookmarkGuid: null}));
+      const instance = renderWithProvider(<SpotlightFeed sites={noBookmarkItems}
+                                                   dispatch={fakeDispatch}
+                                                   page="TEST_PAGE" />);
+      const el = ReactDOM.findDOMNode(instance);
+      const result = el.querySelectorAll(".star");
+
+      for (let i = 0; i < result.length; i++) {
+        assert.isTrue(result[i].hidden);
+      }
+    });
+  });
+
+  describe("highlight no images", () => {
     let siteNoImages;
     beforeEach(() => {
       siteNoImages = Object.assign({}, fakeSiteWithImage, {
@@ -81,12 +113,23 @@ describe("SpotlightFeed", () => {
   });
 
   describe("valid highlight", () => {
+    let clickStub;
     beforeEach(() => {
+      clickStub = sandbox.stub();
       instance = renderWithProvider(<SpotlightFeedItem index={0}
                                                        page="TEST_PAGE"
                                                        source="TEST_PAGE"
+                                                       onClick={clickStub}
                                                        {...fakeSiteWithImage} />);
       el = ReactDOM.findDOMNode(instance);
+    });
+
+    it("should provide correct click action", () => {
+      const aTag = el.querySelector("a");
+
+      TestUtils.Simulate.click(aTag);
+
+      sinon.assert.calledOnce(clickStub);
     });
 
     it("should set correct background image", () => {

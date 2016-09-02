@@ -98,7 +98,7 @@ class SpotlightFeed extends React.Component {
     };
   }
 
-  _renderItem(site, i, dispatch) {
+  _renderItem(site, i) {
     return (<SpotlightFeedItem key={site.guid || i} page={this.props.page}
                               onClick={this.onClickFactory(i)}
                               index={i}
