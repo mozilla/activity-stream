@@ -3,7 +3,7 @@ const {
   selectSitePreview
 } = require("selectors/siteMetadataSelectors");
 
-const {IMG_WIDTH, IMG_HEIGHT} = require("lib/getBestImage");
+const {IMG_WIDTH, IMG_HEIGHT} = require("common/getBestImage");
 
 const validSpotlightSite = {
   "title": "man throws alligator in wendys wptv dnt cnn",
