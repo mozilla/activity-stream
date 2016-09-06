@@ -1,13 +1,14 @@
-/* globals XPCOMUtils, Task */
+/* globals XPCOMUtils, Services, Task */
 "use strict";
 
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-const Microseconds = require("addon/vendor.bundle").Microseconds;
+Cu.import("resource://gre/modules/Services.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, "Task",
                                   "resource://gre/modules/Task.jsm");
+// For the performance.now()
+const performance = Services.appShell.hiddenDOMWindow.performance;
 
 /*
  * A simple benchmark framework that runs on top of jpm test
@@ -67,7 +68,7 @@ Benchmark.prototype = {
    */
   startTimer() {
     if (!this._timerOn) {
-      this._start = Microseconds.now();
+      this._start = performance.now() * 1e3;
       this._timerOn = true;
     }
   },
@@ -78,7 +79,7 @@ Benchmark.prototype = {
    */
   resetTimer() {
     if (this._timerOn) {
-      this._start = Microseconds.now();
+      this._start = performance.now() * 1e3;
     }
     this._duration = 0;
   },
@@ -89,7 +90,7 @@ Benchmark.prototype = {
    */
   stopTimer() {
     if (this._timerOn) {
-      this._duration += (Microseconds.now() - this._start);
+      this._duration += (performance.now() * 1e3 - this._start);
       this._timerOn = false;
     }
   },
@@ -102,7 +103,7 @@ Benchmark.prototype = {
   },
 
   /*
-   * Rounds the given integer up to a a number of the form [1eX, 2eX, 3eX, 5eX, 1e(X+1)]
+   * Rounds the given integer up to a number of the form [1eX, 2eX, 3eX, 5eX, 1e(X+1)]
    */
   _roundsUp(n) {
     let nn = n;

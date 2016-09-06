@@ -53,7 +53,7 @@ function fib(n) {
 exports.test_benchmark_fib = function*(assert) {
   let bench = new Benchmark(b => {
     for (let i = 0; i < b.N; i++) {
-      fib(10);
+      fib(20);
     }
   });
   const result = yield bench.launch();
