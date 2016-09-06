@@ -248,7 +248,7 @@ describe("Baseline", () => {
       assert.equal(result, 3);
     });
 
-    it("should not extract 0 occurences", () => {
+    it("should not extract 0 occurrences", () => {
       const result = baseline.extractFeatures({url: "http://www.neverbeforevisited.com"});
 
       // If the URL was visited for the first time this session then
@@ -264,6 +264,20 @@ describe("Baseline", () => {
       });
 
       assert.equal(result.features.tf, 1);
+    });
+  });
+
+  describe("decay", () => {
+    it("should throw an error for undefined values", () => {
+      assert.throws(() => baseline.decay(10, {foo: 1, bar: undefined}, [2, 3]));
+    });
+    it("should call filter on the features", () => {
+      const result = baseline.decay(10, {foo: 1, isBookmarked: 2}, [1]);
+
+      assert.isNumber(result);
+    });
+    it("should throw when different number of features and weights", () => {
+      assert.throws(() => baseline.decay(10, {foo: 1}, [1, 2]));
     });
   });
 
@@ -318,20 +332,6 @@ describe("Baseline", () => {
 
         assert.ok(result.score);
         assert.isNumber(result.score);
-      });
-    });
-
-    describe("decay", () => {
-      it("should throw an error for undefined values", () => {
-        assert.throws(() => baseline.decay(10, {foo: 1, bar: undefined}, [2, 3]));
-      });
-      it("should call filter on the features", () => {
-        const result = baseline.decay(10, {foo: 1, isBookmarked: 2}, [1]);
-
-        assert.isNumber(result);
-      });
-      it("should throw when different number of features and weights", () => {
-        assert.throws(() => baseline.decay(10, {foo: 1}, [1, 2]));
       });
     });
 
