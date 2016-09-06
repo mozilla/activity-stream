@@ -88,6 +88,7 @@ function ActivityStreams(metadataStore, options = {}) {
     options.experiments,
     options.rng
   );
+  this._experimentProvider.init();
 
   this._tabTracker = new TabTracker(
     this.appURLs,
@@ -704,6 +705,7 @@ ActivityStreams.prototype = {
       this._populatingCache = {places: false};
       this._prefsProvider.destroy();
       this._shareProvider.uninit(reason);
+      this._experimentProvider.destroy();
     };
 
     switch (reason) {
