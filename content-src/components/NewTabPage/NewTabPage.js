@@ -48,9 +48,8 @@ const NewTabPage = React.createClass({
     }
   },
   _renderRecentActivity() {
-    // The first 3 items go to the Top Highlights position, the rest get
-    // rendered in the SpotlightFeed.
-    if (this.props.Spotlight.weightedHighlights && this.props.Spotlight.rows.length > 3) {
+    // The first 3 items go to the Top Highlights position, the rest get rendered in the SpotlightFeed.
+    if (this.props.Spotlight.weightedHighlights) {
       return (<section>
         <SpotlightFeed sites={this.props.Spotlight.rows.slice(3)} page={PAGE_NAME} />
       </section>);

@@ -22,7 +22,7 @@ class SpotlightFeedItem extends React.Component {
     const props = this.props;
     const dateLabel = moment(props.lastVisitDate).fromNow();
     const siteColorProps = selectSiteIcon(props);
-    const feedName = props.provider_name.toLowerCase() || props.provider_display;
+    const feedName = props.provider_name ? props.provider_name.toLowerCase() : props.provider_display;
     const iconProps = {
       ref: "icon",
       className: "feed-icon",

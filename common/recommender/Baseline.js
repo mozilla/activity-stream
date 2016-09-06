@@ -282,7 +282,7 @@ class Baseline {
    *  @param {Array} entries - scored and sorted highlight items.
    */
   dedupe(entries) {
-    let penalty = 0.8;
+    let penalty = 0.6;
 
     return entries.map((entry, i, arr) => {
       if (i > 0 && arr[i - 1].host === entry.host) {

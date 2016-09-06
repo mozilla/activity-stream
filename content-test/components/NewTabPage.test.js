@@ -71,22 +71,6 @@ describe("NewTabPage", () => {
     });
   });
 
-  describe("weightedHighlights set to true but no highlights", () => {
-    let weightedSpotlight;
-    beforeEach(() => {
-      weightedSpotlight = Object.assign({}, fakeProps.Spotlight);
-      weightedSpotlight.weightedHighlights = true;
-      const newProps = Object.assign({}, fakeProps, {Spotlight: weightedSpotlight, rows: []});
-
-      instance = renderWithProvider(<NewTabPage {...newProps} dispatch={() => {}} />);
-    });
-
-    it("should render SpotlightFeed with correct data", () => {
-      const spotlightFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
-      assert.ok(spotlightFeed);
-    });
-  });
-
   describe("settings", () => {
     it("should hide the settings menu by default", () => {
       assert.equal(instance.refs.settingsMenu.props.visible, false);

@@ -45,14 +45,14 @@
 
   .feed-description > .feed-title {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .feed-description > .feed-summary {
     margin: 0;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .feed-summary-text {
@@ -76,6 +76,7 @@
   .feed-summary-text::before {
     margin: 0 5px;
     content: '\2022';
+    color: $feed-circle-color;
   }
 
   .feed-source {
