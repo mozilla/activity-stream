@@ -19,27 +19,37 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights,
     state => state.Prefs.prefs.recommendations,
-    state => state.Prefs.prefs.metadataRatingSystem
+    state => state.Prefs.prefs.metadataRatingSystem,
+    state => state.WeightedHighlights,
+    state => state.Prefs.prefs.weightedHighlights
   ],
-  (Highlights, recommendationShown, metadataRating) => {
-    // Only concat first run data if init is true
-    const highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
-    const rows = assignImageAndBackgroundColor(highlightRows)
-      .sort((site1, site2) => {
-        const site1Valid = isValidSpotlightSite(site1);
-        const site2Valid = isValidSpotlightSite(site2);
-        if (site2.type === firstRunData.FIRST_RUN_TYPE) {
+  (Highlights, recommendationShown, metadataRating, WeightedHighlights, weightedHighlights) => {
+    let rows;
+    let highlightRows;
+    if (weightedHighlights) {
+      highlightRows = WeightedHighlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
+      rows = assignImageAndBackgroundColor(highlightRows);
+    } else {
+      // Only concat first run data if init is true
+      highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
+      rows = assignImageAndBackgroundColor(highlightRows)
+        .sort((site1, site2) => {
+          const site1Valid = isValidSpotlightSite(site1);
+          const site2Valid = isValidSpotlightSite(site2);
+          if (site2.type === firstRunData.FIRST_RUN_TYPE) {
+            return -1;
+          } else if (site1.type === firstRunData.FIRST_RUN_TYPE) {
+            return 1;
+          } else if (site1Valid && site2Valid) {
+            return 0;
+          } else if (site2Valid) {
+            return 1;
+          }
           return -1;
-        } else if (site1.type === firstRunData.FIRST_RUN_TYPE) {
-          return 1;
-        } else if (site1Valid && site2Valid) {
-          return 0;
-        } else if (site2Valid) {
-          return 1;
-        }
-        return -1;
-      });
-    return Object.assign({}, Highlights, {rows, recommendationShown, metadataRating});
+        });
+    }
+
+    return Object.assign({}, Highlights, {rows, recommendationShown, metadataRating, weightedHighlights});
   }
 );
 
