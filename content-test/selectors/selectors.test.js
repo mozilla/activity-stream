@@ -236,5 +236,14 @@ describe("selectors", () => {
         assert.equal(row.url, weightedHighlights.WeightedHighlights.rows[i].url);
       });
     });
+    it("should render first run highlights of fresh profiles", () => {
+      let weightedHighlights = {
+        WeightedHighlights: {rows: [], init: true},
+        Prefs: {prefs: {weightedHighlights: true}}
+      };
+
+      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
+      assert.equal(state.Spotlight.rows.length, firstRunData.Highlights.length);
+    });
   });
 });

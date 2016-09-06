@@ -72,7 +72,6 @@ module.exports.selectNewTabSites = createSelector(
     state => state.Experiments
   ],
   (WeightedHighlights, prefWeightedHighlights, TopSites, History, Spotlight, Experiments) => {
-    let weightedHighlightsRows = assignImageAndBackgroundColor(WeightedHighlights.rows);
     // Remove duplicates
     // Note that we have to limit the length of topsites, spotlight so we
     // don't dedupe against stuff that isn't shown
@@ -92,7 +91,8 @@ module.exports.selectNewTabSites = createSelector(
 
     let topHighlights = spotlightRows;
     if (prefWeightedHighlights) {
-      topHighlights = weightedHighlightsRows;
+      const weightedRows = WeightedHighlights.rows.concat(WeightedHighlights.init ? firstRunData.Highlights : []);
+      topHighlights = assignImageAndBackgroundColor(weightedRows);
     }
 
     return {
