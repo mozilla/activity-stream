@@ -210,6 +210,13 @@
       "type": "string",
       "value": "Embedly",
       "hidden": true
+    },
+    {
+      "name": "experimentOverrides",
+      "title": "Sets which experiment(s) are turned on, if defined (use comma separated values)",
+      "type": "string",
+      "value": "",
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-stream",
