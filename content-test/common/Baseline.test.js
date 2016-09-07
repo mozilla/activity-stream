@@ -265,6 +265,22 @@ describe("Baseline", () => {
 
       assert.equal(result.features.tf, 1);
     });
+    it("should not fail with feature value Infinity (on new profiles) for new websites", () => {
+      const result = baseline.extractFeatures({
+        url: "http://www.neverbeforevisited.com"
+      });
+
+      assert.isNumber(result.features.idf);
+      assert.isTrue(Number.isFinite(result.features.idf));
+    });
+    it("should not fail with feature value Infinity (on new profiles) for no history", () => {
+      baseline = new Baseline([], {highlightsCoefficients: [-0.1, -0.1, -0.1, 0.4, 0.2]});
+      const result = baseline.extractFeatures({
+        url: "http://www.neverbeforevisited.com"
+      });
+
+      assert.equal(result.features.idf, 1);
+    });
   });
 
   describe("decay", () => {
