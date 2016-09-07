@@ -1,4 +1,4 @@
-const seedrandom = require("addon/vendor.bundle").SeedRandom;
+const seedrandom = require("common/vendor")("seedrandom");
 
 exports.ExperimentProvider = class ExperimentProvider {
   constructor(clientID, experiments = require("experiments.json"), rng) {

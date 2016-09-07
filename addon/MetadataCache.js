@@ -2,7 +2,7 @@
 
 const simplePrefs = require("sdk/simple-prefs");
 const ss = require("addon/SimpleStorage.js");
-const List = require("addon/vendor.bundle").DoublyLinkedList;
+const List = require("common/vendor")("DoublyLinkedList");
 
 const PREF_STRING = "metadata-store.query.cache";
 

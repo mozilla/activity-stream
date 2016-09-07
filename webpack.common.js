@@ -14,7 +14,9 @@ let plugins = [
     filePattern: "config.{env}.yml",
     loadLocalOverride: env === "development" ? "config.yml" : null,
     reactEnv: true
-  })
+  }),
+  // Allows us to use requrie("common/vendor") as a way to import depdendencies in both addon/content code
+  new webpack.NormalModuleReplacementPlugin(/common\/vendor/, absolute("./common/vendor-src.js"))
 ];
 
 if (env === "production") {

@@ -17,7 +17,7 @@ The module-loader for add-on code is provided by the add-on sdk.
 - relative modules are supported (e.g. `require("./foo.js")` will resolve to `foo.js` in the same directory as the file that calls it)
 - absolute paths are resolved relative to the root directory (e.g. `require("foo.js")` will resolve to `activity-stream/foo.js`)
 - some modules can be loaded from Firefox by name, such as `chrome` and `sdk` (e.g. `require("sdk/tabs")`)
-- modules **cannot** be loaded directly from npm. external dependencies need to be added to `addon/vendor-src.js` and imported with `require("addon/vendor.bundle.js")`
+- modules **cannot** be loaded directly from npm. external dependencies need to be added to `common/vendor-src.js` and imported with `require("common/vendor")`
 
 ### Module loading in content code
 
