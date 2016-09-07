@@ -9,12 +9,12 @@ const DEFAULT_OPTIONS = {
       name: "Foo Test",
       description: "A test about foo",
       control: {
-        value: 42,
+        value: false,
         description: "Foo is 42 by default"
       },
       variant: {
         id: "foo_01",
-        value: 84,
+        value: true,
         threshold: 0.5,
         description: "Twice the foo"
       }
@@ -37,6 +37,7 @@ describe("ExperimentProvider", () => {
   afterEach(() => {
     experimentProvider.destroy();
     experimentProvider = null;
+    simplePrefs = null;
   });
 
   it("should have the right properties", () => {
@@ -60,11 +61,31 @@ describe("ExperimentProvider", () => {
   it("should set .data ", () => {
     setup({clientID: "baz"});
     assert.equal(experimentProvider.data, experimentProvider._data, ".data should return return this._data");
-    assert.deepEqual(experimentProvider.data, {foo: 42}, "clientID 'baz' should result in control being picked");
+    assert.deepEqual(experimentProvider.data, {foo: DEFAULT_OPTIONS.experiments.foo.control.value}, "clientID 'baz' should result in control being picked");
   });
   it("should set .data", () => {
     setup({clientID: "012j"});
-    assert.deepEqual(experimentProvider.data, {foo: 84}, "clientID '012j' should result in variant being picked");
+    assert.deepEqual(experimentProvider.data, {foo: DEFAULT_OPTIONS.experiments.foo.variant.value}, "clientID '012j' should result in variant being picked");
+  });
+  it("should throw if experiment cohorts add to > 1", () => {
+    assert.throws(() => {
+      setup({
+        experiments: {
+          foo: {
+            name: "foo",
+            description: "foo",
+            control: {value: false, description: "foo"},
+            variant: {id: "foo_01", value: true, threshold: 0.5, description: "foo"}
+          },
+          bar: {
+            name: "bar",
+            description: "bar",
+            control: {value: false, description: "bar"},
+            variant: {id: "bar_01", value: true, threshold: 0.6, description: "bar"}
+          }
+        }
+      });
+    });
   });
   it("should only select one experiment", () => {
     const randomNumber = 0.2;
@@ -108,12 +129,18 @@ describe("ExperimentProvider", () => {
   });
 
   describe("overrides", () => {
-    it("should override experiments if they are defined without setting experimentId", () => {
+    it("should override experiments and not set an experimentId", () => {
       const prefs = {};
       prefs[OVERRIDE_PREF] = "foo";
       setup(undefined, prefs);
       assert.equal(experimentProvider.data.foo, DEFAULT_OPTIONS.experiments.foo.variant.value);
       assert.equal(experimentProvider.experimentId, null);
+    });
+    it("should turn on an experiment even if it is active: false", () => {
+      const prefs = {};
+      prefs[OVERRIDE_PREF] = "foo";
+      setup(undefined, prefs);
+      assert.equal(experimentProvider.data.foo, DEFAULT_OPTIONS.experiments.foo.variant.value);
     });
     it("should override multiple experiments", () => {
       const prefs = {};
@@ -148,6 +175,22 @@ describe("ExperimentProvider", () => {
       assert.calledWith(simplePrefs.off, OVERRIDE_PREF);
       assert.isNull(experimentProvider.experimentId);
       assert.deepEqual(experimentProvider.data, {});
+    });
+    it("should reset experiments on a pref change", () => {
+      setup({
+        experiments: {
+          foo: {
+            name: "foo",
+            description: "foo",
+            control: {value: false, description: "foo"},
+            variant: {id: "foo_01", value: true, threshold: 0.2, description: "foo"}
+          }
+        }
+      });
+      assert.isFalse(experimentProvider.data.foo);
+      simplePrefs.prefs[OVERRIDE_PREF] = "foo";
+      experimentProvider._onPrefChange();
+      assert.isTrue(experimentProvider.data.foo);
     });
   });
 });
