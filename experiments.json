@@ -16,6 +16,7 @@
   },
   "recommendedHighlight": {
     "name": "Recommended Highlights",
+    "active": false,
     "description": "Show a recommendation from Pocket to the user",
     "control": {
       "value": false,
