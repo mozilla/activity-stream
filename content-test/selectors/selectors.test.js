@@ -222,9 +222,12 @@ describe("selectors", () => {
       state = selectNewTabSites(Object.assign({}, fakeState, rate));
       assert.isTrue(state.Spotlight.metadataRating);
     });
-    it("should render the correct Spotlight items for weightedHighlights", () => {
+    it("should render the correct Spotlight items for weightedHighlights, and correct number of items", () => {
       let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}]},
+        WeightedHighlights: {rows: [
+          {url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
+          {url: "http://foo4.com"}, {url: "http://www.foo5.com"}, {url: "http://www.foo6.com"}
+          ]},
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
@@ -244,6 +247,19 @@ describe("selectors", () => {
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
       assert.equal(state.Spotlight.rows.length, firstRunData.Highlights.length);
+      state.Spotlight.rows.forEach((row, i) => {
+        assert.equal(row.url, firstRunData.Highlights[i].url);
+      });
+    });
+    it("should append First Run data if less < 6 highlights", () => {
+      let weightedHighlights = {
+        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}]},
+        Prefs: {prefs: {weightedHighlights: true}}
+      };
+
+      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
+      assert.equal(state.Spotlight.rows.length, 5);
+      assert.equal(state.Spotlight.rows[2].url, firstRunData.Highlights[0].url);
     });
     it("should dedupe weighted highlights results", () => {
       let weightedHighlights = {

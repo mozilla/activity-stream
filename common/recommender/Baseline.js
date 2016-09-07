@@ -35,11 +35,13 @@ class Baseline {
   extractFeatures(entry) {
     const urlObj = URL(entry.url);
     const host = urlObj.host;
+    // For empty profiles.
     const occurrences = this.domainCounts.get(host) || 1;
+    const domainCountsSize = this.domainCounts.size || 1;
+    const tf = entry.visitCount || 1;
+    const idf = Math.log(domainCountsSize / occurrences) || 1;
 
     const age = this.normalizeTimestamp(entry.lastVisitDate);
-    const tf = Math.max(entry.visitCount, 1);
-    const idf = Math.log(this.domainCounts.size / occurrences);
     const imageCount = entry.images ? entry.images.length : 0;
     const isBookmarked = entry.bookmarkId || 0;
     const description = this.extractDescriptionLength(entry);
@@ -69,6 +71,7 @@ class Baseline {
   scoreEntry(entry) {
     entry.features = this.normalize(entry.features);
 
+    // Initial score based on visits and number of occurrences of the domain.
     const {tf, idf} = entry.features;
     let score = this.decay(tf * idf, // Score
       // Features: Age in hours, number of visits to url, how often you go to the domain, number of images,
