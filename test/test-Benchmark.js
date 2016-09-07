@@ -105,6 +105,7 @@ exports.test_benchmark_open_activity_stream = function*(assert) {
 before(exports, function*() {
   // initialize the app now
   let clientID = yield ClientID.getClientID();
+  // make sure enable the telemetry
   simplePrefs.prefs.telemetry = true;
 
   app = getTestActivityStream({
