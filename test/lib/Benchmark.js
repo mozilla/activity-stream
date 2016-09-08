@@ -18,10 +18,15 @@ const performance = Services.appShell.hiddenDOMWindow.performance;
 const MAX_ITERATION = 1e6;
 
 /*
- * Get the DOMHighResTimeStamp in microsecond
- * See more detail at https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+ * Get the DOMHighResTimeStamp in microseconds
+ *
+ * Note that the actual resolution is subject to the implementation and platforms
+ *
+ * See more detail at
+ *   https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
+ *   https://www.w3.org/TR/2013/WD-hr-time-2-20131203/#sec-DOMHighResTimeStamp
  */
-function _performanceNow() {
+function _performanceNowInUs() {
   return performance.now() * 1e3;
 }
 
@@ -35,16 +40,21 @@ function _performanceNow() {
  *   http://ejohn.org/blog/javascript-benchmark-quality/
  *
  * Suitable use cases:
- *   * measure the load latency of Activity Stream with different profiles and browsering history
- *   * measure the time-consuming functions or code paths found by the profiler. In particular,
- *     the performance difference after the improvement or optimization
- *   * other functions or features (i.e. CPU intensive or IO bound) that are worth monitoring early
- *     in order to get the peace of mind
+ *   * functions without or with little side effect, i.e. IO/file system/database dependency
  *
  * Unsuitable use cases:
  *   * benchmark functions running at the nanoseconds level, it doesn't support nanosecond resolution
  *   * measure the functions or code paths with side effects. Although, you may mitigate that by
  *     leveraging the timer functions. But the results could be incorrect and hard to interpret
+ *
+ * Benchmarking Activity Stream requires extra effort in following cases,
+ *   * measure the load latency of Activity Stream with different profiles and browsering history
+ *   * measure the time-consuming functions or code paths found by the profiler. In particular,
+ *     the performance difference after the improvement or optimization
+ * Since Activity Stream is IO intensive, and makes extensive use of cache, the benchmark could be
+ * biased by those confounding variables. It's highly recommended to take proper actions inside benchmark
+ * function. For instance, cleaning up cache to benchmark the cold start. The benchmark timer functions
+ * can be used to prevent benchmark from timing those unrelated operations
  *
  * Example:
 
@@ -80,7 +90,7 @@ function _performanceNow() {
 
  * Where the argument b is the current benchmark instance. A couple of timer functions
  * are availale to get the finer-grained control of benchmark timing. For instance,
- * avoid timing the expensive irrlevant functions, like setup of benchmark fixture.
+ * avoid timing the expensive irrelevant functions, like setup of benchmark fixture.
  * See more detail in startTimer(), resetTimer(), and stopTimer()
  *
  * It's intentional to have a for loop inside the benchmark function, otherwise the framework
@@ -111,7 +121,7 @@ Benchmark.prototype = {
    */
   startTimer() {
     if (!this._timerOn) {
-      this._start = _performanceNow();
+      this._start = _performanceNowInUs();
       this._timerOn = true;
     }
   },
@@ -121,7 +131,7 @@ Benchmark.prototype = {
    */
   resetTimer() {
     if (this._timerOn) {
-      this._start = _performanceNow();
+      this._start = _performanceNowInUs();
     }
     this._duration = 0;
   },
@@ -131,13 +141,13 @@ Benchmark.prototype = {
    */
   stopTimer() {
     if (this._timerOn) {
-      this._duration += (_performanceNow() - this._start);
+      this._duration += (_performanceNowInUs() - this._start);
       this._timerOn = false;
     }
   },
 
   /*
-   * Calculates the duration per operation in microsecond
+   * Calculates the duration per operation in microseconds
    */
   _usPerOp() {
     if (!this.N) {
@@ -208,6 +218,29 @@ Benchmark.prototype = {
   }),
 
   /*
+   * Choose a good iteration number for the benchmark
+   *
+   * {Params} hz is the current benchmark frequency
+   * {Params} last is the last iteration number
+   *
+   * It returns a integer that is considered as a good iteration number
+   * by the following rules:
+   *   1. it runs more (1.2x) than the estimated frequency
+   *   2. it shouldn't grow too fast in case of the incorrect previous timing,
+   *      so it'll be capped by 100x of last iteration
+   *   3. it should at least run one more than the last iteration
+   *   4. it rounds up the estimate to make it easy to read
+   */
+  _chooseN(hz, last) {
+    let n = hz;
+
+    n = Math.min(Math.round(n * 1.2), 100 * last);
+    n = Math.max(n, last + 1);
+    n = this._roundsUp(n);
+    return n;
+  },
+
+  /*
    * Launches and times the benchmark
    *
    * To begin with, it executes the benchmark function once to figure out its
@@ -217,7 +250,7 @@ Benchmark.prototype = {
    * benchmark duration reaches the expected duration
    *
    * This function returns an object with the benchmark status, the iteration number,
-   * the actual duration, and the duration per operation in microsecond. The status
+   * the actual duration, and the duration per operation in microseconds. The status
    * will be set as failed if any exception is thrown during the benchmark, and the
    * benchmark will abort immediately
    */
@@ -234,12 +267,8 @@ Benchmark.prototype = {
       } else {
         n = Math.round(this._benchTime / this._usPerOp());
       }
-      // Run more (1.2x) than we predict, don't grow too fast in case of
-      // the incorrect previous timing. At least run 1 more than last time
-      n = Math.max(Math.min(Math.round(n + n / 5), 100 * last), last + 1);
 
-      // Adjust n to make it easy to read, then run the benchmark function with it
-      n = this._roundsUp(n);
+      n = this._chooseN(n, last);
       try {
         yield this._asyncRunN(n);
       } catch (e) {

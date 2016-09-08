@@ -61,7 +61,11 @@ exports.test_benchmark_fib = function*(assert) {
   assert.equal(bench._usPerOp(), result.usPerOp);
 };
 
-const openActivityStream = Task.async(function*(openUrl) {
+/*
+ * Note that this function merely acts as a demo to illustrate how to involve
+ * the Activity Stream within the benchmark. Do not use it for the real benchmark
+ */
+const openAndCloseActivityStreamTab = Task.async(function*(openUrl) {
   let tabData = {};
 
   const promiseOnTabShow = new Promise(resolve => {
@@ -94,7 +98,7 @@ const openActivityStream = Task.async(function*(openUrl) {
 exports.test_benchmark_open_activity_stream = function*(assert) {
   let bench = new Benchmark(function*(b) {
     for (let i = 0; i < b.N; i++) {
-      yield openActivityStream(ACTIVITY_STREAMS_URL);
+      yield openAndCloseActivityStreamTab(ACTIVITY_STREAMS_URL);
     }
   });
   const result = yield bench.launch();
