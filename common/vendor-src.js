@@ -4,6 +4,8 @@
 // require("common/vendor")("my-dependency");
 
 const vendorModules = {
+  "redux": require("redux"),
+  "redux-thunk": require("redux-thunk"),
   "seedrandom": require("seedrandom"),
   "url-parse": require("url-parse"),
   "DoublyLinkedList": require("DoublyLinkedList/doubly-linked-list").DoublyLinkedList

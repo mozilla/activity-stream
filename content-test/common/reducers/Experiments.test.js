@@ -1,5 +1,5 @@
-const Experiments = require("reducers/Experiments");
-const definitions = require("../../experiments.json");
+const Experiments = require("common/reducers/Experiments");
+const definitions = require("../../../experiments.json");
 
 describe("Experiments reducer", () => {
   it("should have data, error by default", () => {
