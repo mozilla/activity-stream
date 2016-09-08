@@ -1,6 +1,6 @@
 "use strict";
 
-const URL = require("../../addon/vendor.bundle.js").urlParse;
+const URL = require("common/vendor")("url-parse");
 const getBestImage = require("../getBestImage");
 const {INFINITE_SCROLL_THRESHOLD} = require("../constants");
 

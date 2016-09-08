@@ -11,4 +11,4 @@ activity-streams-env/
 firefox/
 config.yml
 .amo_config.json
-addon/vendor.bundle.js
+common/vendor.js
