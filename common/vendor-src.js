@@ -12,5 +12,8 @@ const vendorModules = {
 };
 
 module.exports = function vendor(moduleName) {
+  if (!vendorModules[moduleName]) {
+    throw new Error(`Tried to import '${moduleName}' but it was not defined in common/vendor-src.js. Maybe you need to add it?`);
+  }
   return vendorModules[moduleName];
 };
