@@ -1,4 +1,4 @@
-const Prefs = require("reducers/Prefs");
+const Prefs = require("common/reducers/Prefs");
 
 function prevState(custom = {}) {
   return Object.assign({}, Prefs.INITIAL_STATE, custom);

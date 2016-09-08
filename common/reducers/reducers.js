@@ -1,9 +1,9 @@
 /* global require, module */
 "use strict";
-const setRowsOrError = require("reducers/SetRowsOrError");
-const setSearchContent = require("reducers/setSearchContent");
-const Experiments = require("reducers/Experiments");
-const Prefs = require("reducers/Prefs");
+const setRowsOrError = require("./SetRowsOrError");
+const setSearchContent = require("./setSearchContent");
+const Experiments = require("./Experiments");
+const Prefs = require("./Prefs");
 
 module.exports = {
   TopSites: setRowsOrError("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE"),

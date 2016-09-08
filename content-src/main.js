@@ -3,7 +3,14 @@ const ReactDOM = require("react-dom");
 const {Provider} = require("react-redux");
 
 const Routes = require("components/Routes/Routes");
-const store = require("./store");
+const createStore = require("common/create-store");
+const {ADDON_TO_CONTENT, CONTENT_TO_ADDON} = require("common/event-constants");
+
+const store = createStore({
+  incoming: ADDON_TO_CONTENT,
+  outgoing: CONTENT_TO_ADDON,
+  logger: __CONFIG__.LOGGING
+});
 
 if (__CONFIG__.USE_SHIM) {
   require("lib/shim")();
