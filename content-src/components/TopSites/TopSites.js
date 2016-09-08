@@ -27,7 +27,8 @@ const TopSites = React.createClass({
       event: "CLICK",
       page: this.props.page,
       source: "TOP_SITES",
-      action_position: index
+      action_position: index,
+      metadata_source: this.props.sites[index].metadata_source
     }));
   },
   render() {

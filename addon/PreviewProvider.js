@@ -208,18 +208,18 @@ PreviewProvider.prototype = {
     let existingLinks = new Map();
     dbLinks.forEach(item => existingLinks.set(item.cache_key, item));
     let results = processedLinks.map(site => {
-      if (!site) {
-        return site;
-      }
+      let enhancedLink = null;
 
-      // Add tippy top data, if available
-      let link = this._tippyTopProvider.processSite(site);
-
-      // Find the item in the map and return it if it exists
-      if (existingLinks.has(link.cache_key)) {
-        return Object.assign({}, existingLinks.get(link.cache_key), link);
+      if (site) {
+        // Find the item in the map and return it if it exists
+        if (existingLinks.has(site.cache_key)) {
+          enhancedLink = Object.assign({}, existingLinks.get(site.cache_key), site);
+        } else if (!previewsOnly) {
+          // Add tippy top data, if available
+          enhancedLink = this._tippyTopProvider.processSite(site);
+        }
       }
-      return previewsOnly ? null : link;
+      return enhancedLink;
     }).filter(link => link);
 
     this._tabTracker.handlePerformanceEvent(event, "previewCacheHits", existingLinks.size);

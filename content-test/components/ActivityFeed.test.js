@@ -191,6 +191,7 @@ describe("GroupedActivityFeed", () => {
           assert.equal(a.data.event, "CLICK");
           assert.equal(a.data.page, "NEW_TAB");
           assert.equal(a.data.action_position, 0);
+          assert.equal(a.data.metadata_source, "EmbedlyTest");
           done();
         }
       }

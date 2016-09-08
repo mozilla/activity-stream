@@ -153,7 +153,8 @@ const GroupedActivityFeed = React.createClass({
         event: "CLICK",
         page: this.props.page,
         source: "ACTIVITY_FEED",
-        action_position: index
+        action_position: index,
+        metadata_source: this.props.sites[index].metadata_source
       }));
     };
   },

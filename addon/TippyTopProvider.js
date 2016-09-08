@@ -46,6 +46,9 @@ TippyTopProvider.prototype = {
       let tippyTopSite = this._sitesByDomain[key];
       enhancedSite.favicon_url = data.url(`content/favicons/images/${tippyTopSite.image_url}`);
       enhancedSite.background_color = tippyTopSite.background_color;
+      if (!enhancedSite.metadata_source) {
+        enhancedSite.metadata_source = "TippyTopProvider";
+      }
     }
     return enhancedSite;
   },
