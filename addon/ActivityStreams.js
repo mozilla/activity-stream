@@ -28,6 +28,7 @@ const {CONTENT_TO_ADDON, ADDON_TO_CONTENT} = require("common/event-constants");
 const {ExperimentProvider} = require("addon/ExperimentProvider");
 const {Recommender} = require("common/recommender/Recommender");
 const {PrefsProvider} = require("addon/PrefsProvider");
+const createStore = require("common/create-store");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource:///modules/NewTabURL.jsm");
@@ -69,6 +70,8 @@ const HOME_PAGE_PREF = "browser.startup.homepage";
 function ActivityStreams(metadataStore, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   EventEmitter.decorate(this);
+
+  this._store = createStore();
 
   this._newTabURL = `${this.options.pageURL}#/`;
 
