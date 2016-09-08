@@ -29,6 +29,7 @@ const {ExperimentProvider} = require("addon/ExperimentProvider");
 const {Recommender} = require("common/recommender/Recommender");
 const {PrefsProvider} = require("addon/PrefsProvider");
 const createStore = require("common/create-store");
+const PageWorker = require("addon/PageWorker");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource:///modules/NewTabURL.jsm");
@@ -139,6 +140,10 @@ function ActivityStreams(metadataStore, options = {}) {
   if (simplePrefs.prefs.weightedHighlights) {
     this._loadRecommender();
   }
+
+  this._pageWorker = new PageWorker({store: this._store});
+  this._pageWorker.connect();
+  this._refreshAppState();
 }
 
 ActivityStreams.prototype = {
@@ -153,6 +158,7 @@ ActivityStreams.prototype = {
   send(action, worker) {
     // if the function is async, the worker might not be there yet, or might have already disappeared
     try {
+      this._store.dispatch(action);
       worker.port.emit(ADDON_TO_CONTENT, action);
       this._perfMeter.log(worker.tab, action.type);
     } catch (err) {
@@ -168,6 +174,57 @@ ActivityStreams.prototype = {
     for (let worker of this.workers) {
       this.send(action, worker);
     }
+  },
+
+  _processAndDispatchLinks(links, type) {
+    this._processLinks(links, type)
+      .then(result => {
+        const action = am.actions.Response(type, result);
+        this._store.dispatch(action);
+      });
+  },
+
+  _refreshAppState() {
+    console.log("Refresh app state");
+    const provider = this._memoized;
+
+    if (this._baselineRecommender === null) {
+      this._store.dispatch(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", []));
+    } else {
+      provider.getHighlightsLinks().then(highlightsLinks => {
+        let cachedLinks = this._processLinks(highlightsLinks, "WEIGHTED_HIGHLIGHTS_RESPONSE");
+        cachedLinks.then(highlightsWithMeta => {
+          this._store.dispatch(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", this._baselineRecommender.scoreEntries(highlightsWithMeta)));
+        });
+      });
+    }
+
+    provider.getTopFrecentSites().then(links => {
+      this._processAndDispatchLinks(links, "TOP_FRECENT_SITES_RESPONSE");
+    });
+    provider.getRecentLinks().then(links => {
+      this._processAndDispatchLinks(links, "RECENT_LINKS_RESPONSE");
+    });
+    provider.getHighlightsLinks().then(links => {
+      this._processAndDispatchLinks(links, "HIGHLIGHTS_LINKS_RESPONSE");
+    });
+
+    provider.getRecentBookmarks().then(links => {
+      this._processAndDispatchLinks(links, "RECENT_BOOKMARKS_RESPONSE");
+    });
+
+    SearchProvider.search.asyncGetCurrentState().then(state => {
+      let currentEngine = JSON.stringify(state.currentEngine);
+      state.currentEngine = currentEngine;
+      this._store.dispatch(am.actions.Response("SEARCH_STATE_RESPONSE", state));
+    });
+
+    const strings = SearchProvider.search.searchSuggestionUIStrings;
+    this._store.dispatch(am.actions.Response("SEARCH_UISTRINGS_RESPONSE", strings));
+
+    this._store.dispatch(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
+
+    this._store.dispatch(am.actions.Response("PREFS_RESPONSE", simplePrefs.prefs));
   },
 
   _respondOpenWindow({msg}) {
@@ -215,11 +272,6 @@ ActivityStreams.prototype = {
    * Responds to places requests
    */
   _respondToPlacesRequests({msg, worker}) {
-    let provider = this._memoized;
-    if (msg.data && (msg.data.afterDate || msg.data.beforeDate)) {
-      // Only use the Memoizer cache for the default first page of data.
-      provider = PlacesProvider.links;
-    }
     switch (msg.type) {
       case am.type("WEIGHTED_HIGHLIGHTS_REQUEST"):
         // Empty response in case the recommender is not instantiated, no need for the extra requests.
@@ -571,6 +623,8 @@ ActivityStreams.prototype = {
       contentScriptWhen: "start",
       attachTo: ["existing", "top"],
       onAttach: worker => {
+        this._refreshAppState();
+
         // Don't attach when in private browsing. Send user to about:privatebrowsing
         if (privateBrowsing.isPrivate(worker)) {
           worker.tab.url = "about:privatebrowsing";
