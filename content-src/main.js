@@ -9,7 +9,8 @@ const {ADDON_TO_CONTENT, CONTENT_TO_ADDON} = require("common/event-constants");
 const store = createStore({
   incoming: ADDON_TO_CONTENT,
   outgoing: CONTENT_TO_ADDON,
-  logger: __CONFIG__.LOGGING
+  logger: __CONFIG__.LOGGING,
+  rehydrate: true
 });
 
 if (__CONFIG__.USE_SHIM) {
