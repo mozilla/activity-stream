@@ -38,7 +38,7 @@
     "chai": "3.5.0",
     "conventional-changelog-cli": "1.2.0",
     "cpx": "1.5.0",
-    "eslint": "3.4.0",
+    "eslint": "3.5.0",
     "eslint-plugin-json": "1.2.0",
     "eslint-plugin-mozilla": "0.0.3",
     "eslint-plugin-react": "6.2.0",
