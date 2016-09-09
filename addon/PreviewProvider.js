@@ -182,13 +182,13 @@ PreviewProvider.prototype = {
   /**
     * Collects all the metadata about the set of links that are requested
     */
-  getLinkMetadata(links, event = {}, skipPreviewRequest = false, previewsOnly = false) {
+  getLinkMetadata(links, event = {}, skipPreviewRequest = false) {
     let processedLinks = this._processLinks(links);
     if (!skipPreviewRequest) {
       this._asyncSaveLinks(processedLinks, event);
     }
 
-    return this._asyncGetEnhancedLinks(processedLinks, previewsOnly, event).then(
+    return this._asyncGetEnhancedLinks(processedLinks, event).then(
       cachedLinks => this._getFaviconColors(cachedLinks));
   },
 
@@ -197,7 +197,7 @@ PreviewProvider.prototype = {
     * Also, collect some metrics on how many links were returned by PlacesProvider vs how
     * how many were returned by the cache
     */
-  _asyncGetEnhancedLinks: Task.async(function*(processedLinks, previewsOnly, event) {
+  _asyncGetEnhancedLinks: Task.async(function*(processedLinks, event) {
     this._tabTracker.handlePerformanceEvent(event, "previewCacheRequest", processedLinks.length);
     if (!this.enabled) {
       return processedLinks;
@@ -214,7 +214,7 @@ PreviewProvider.prototype = {
         // Find the item in the map and return it if it exists
         if (existingLinks.has(site.cache_key)) {
           enhancedLink = Object.assign({}, existingLinks.get(site.cache_key), site);
-        } else if (!previewsOnly) {
+        } else {
           // Add tippy top data, if available
           enhancedLink = this._tippyTopProvider.processSite(site);
         }

@@ -319,17 +319,6 @@ exports.test_get_enhanced_disabled = function*(assert) {
   assert.deepEqual(cachedLinks, fakeData, "if disabled, should return links as is");
 };
 
-exports.test_get_enhanced_previews_only = function*(assert) {
-  gMetadataStore[0] = {sanitized_url: "http://example.com/", cache_key: "example.com/", url: "http://example.com/"};
-  let links;
-
-  links = yield gPreviewProvider._asyncGetEnhancedLinks([{cache_key: "example.com/"}, {cache_key: "foo.com"}]);
-  assert.equal(links.length, 2, "by default getEnhancedLinks returns links with and without previews");
-
-  links = yield gPreviewProvider._asyncGetEnhancedLinks([{cache_key: "example.com/"}, {cache_key: "foo.com"}], true);
-  assert.equal(links.length, 1, "when previewOnly is set, return only links with previews");
-};
-
 exports.test_change_metadata_endpoint = function*(assert) {
   const fakeSite = {
     "url": "http://foo.com/",

@@ -297,14 +297,14 @@ ActivityStreams.prototype = {
    * @private
    */
   _processLinks(placesLinks, responseType, options) {
-    let {previewsOnly, skipPreviewRequest} = options || {};
+    let {skipPreviewRequest} = options || {};
     const event = this._tabTracker.generateEvent({source: responseType});
     let inExperiment = this._experimentProvider.data.recommendedHighlight;
     let isAHighlight = responseType === "HIGHLIGHTS_LINKS_RESPONSE";
     let shouldGetRecommendation = isAHighlight && simplePrefs.prefs.recommendations && inExperiment;
     let recommendation = shouldGetRecommendation ? this._recommendationProvider.getRecommendation() : null;
     let linksToProcess = placesLinks.concat([recommendation]).filter(link => link);
-    return this._previewProvider.getLinkMetadata(linksToProcess, event, skipPreviewRequest, previewsOnly);
+    return this._previewProvider.getLinkMetadata(linksToProcess, event, skipPreviewRequest);
   },
 
   /**
