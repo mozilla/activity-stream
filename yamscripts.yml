@@ -37,15 +37,20 @@ scripts:
     css: =>bundle:css && =>bundle:css -- -w
     html: =>bundle:html -- --baseUrl http://localhost:1963/ --csp off
     server: live-server data/content --port=1963 --no-browser
+    eslint: =>lint:eslint -- -w
 
 # firefox: Launch addon with jpm run
   firefox: =>bundle:webpackAddon && jpm run -b nightly --prefs ./dev-prefs.json
 
+# lint: Run eslint and sass-lint
+  lint:
+    eslint: esw --ext=.js,.jsx,.json . .storybook
+    sasslint: sass-lint -v -q
+
 # test: Run all tests once
   test:
     pre: =>bundle && =>copyTestImages && =>copyTopSitesJson
-    # test:lint: Run eslint
-    lint: eslint --ext=.js,.jsx,.json . .storybook && sass-lint -v -q
+    lint: =>lint
     checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests
     jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./test-prefs.json -v
