@@ -224,7 +224,7 @@ describe("selectors", () => {
     });
     it("should render the correct Spotlight items for weightedHighlights", () => {
       let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}]},
+        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}]},
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
@@ -244,6 +244,15 @@ describe("selectors", () => {
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
       assert.equal(state.Spotlight.rows.length, firstRunData.Highlights.length);
+    });
+    it("should dedupe weighted highlights results", () => {
+      let weightedHighlights = {
+        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}]},
+        Prefs: {prefs: {weightedHighlights: true}}
+      };
+
+      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
+      assert.equal(state.Spotlight.rows.length, 1);
     });
   });
 });
