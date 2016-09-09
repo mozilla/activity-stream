@@ -35,11 +35,10 @@ const Header = React.createClass({
           {props.links.map(link => <li key={link.to}><Link to={link.to}>{link.title}</Link></li>)}
         </ul>
       </section>
-      <section className="spacer" />
       <section className="filter">
         <input
           onChange={e => props.dispatch(actions.NotifyFilterQuery(e.target.value))}
-          placeholder="Filter your activity stream"
+          placeholder="Search your Activity Stream"
           ref="filter"
           type="search" />
       </section>

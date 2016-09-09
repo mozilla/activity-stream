@@ -25,7 +25,7 @@
       border-right: 1px solid darken($bg-grey, 5%);
       cursor: pointer;
       height: 100%;
-      padding-left: 20px;
+      padding-left: $header-section-spacing;
       position: relative;
       width: $header-nav-width;
 
@@ -40,18 +40,21 @@
       }
     }
 
-    &.spacer {
+    &.filter {
       flex-grow: 1;
-    }
+      padding-left: $header-section-spacing;
 
-    &.filter input {
-      @include search-input;
-      background: $search-glyph-image no-repeat 8px center / $search-glyph-size;
+      input {
+        @include search-input;
+        background: $search-glyph-image no-repeat 8px center / $search-glyph-size;
+        margin-left: $header-section-spacing;
+        max-width: $timeline-max-width;
+      }
     }
 
     &.user-info {
       font-size: 14px;
-      padding-right: 20px;
+      padding-right: $header-section-spacing;
 
       span {
         padding: 0 10px;
