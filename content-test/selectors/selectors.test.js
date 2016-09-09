@@ -9,6 +9,7 @@ const {
   selectTopSites,
   selectNewTabSites,
   selectHistory,
+  selectWeightedHighlights,
   SPOTLIGHT_LENGTH
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
@@ -224,7 +225,9 @@ describe("selectors", () => {
     });
     it("should render the correct Spotlight items for weightedHighlights", () => {
       let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}]},
+        WeightedHighlights: {rows: [
+          {url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
+          {url: "http://www.foo4.com"}, {url: "http://www.foo5.com"}, {url: "http://www.foo6.com"}]},
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
@@ -246,4 +249,21 @@ describe("selectors", () => {
       assert.equal(state.Spotlight.rows.length, firstRunData.Highlights.length);
     });
   });
+  describe("selectWeightedHighlights", () => {
+    it("should call assignImageAndBackgroundColor", () => {
+      const state = selectWeightedHighlights({WeightedHighlights: {rows: [{background_color: "#fff"}]}});
+
+      assert.equal(state.rows[0].backgroundColor, "#fff");
+    });
+    it("should append first run data when less than five results", () => {
+      const state = selectWeightedHighlights({WeightedHighlights: {rows: []}});
+
+      assert.equal(state.rows.length, firstRunData.Highlights.length);
+    });
+    it("should only change the rows property and copy others over", () => {
+      const state = selectWeightedHighlights({WeightedHighlights: {init: true, rows: []}});
+
+      assert.equal(state.init, true);
+    });
+  })
 });

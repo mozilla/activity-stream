@@ -15,18 +15,28 @@ function isValidSpotlightSite(site) {
     site.title !== site.description);
 }
 
+const selectWeightedHighlights = module.exports.selectWeightedHighlights = createSelector(
+  [
+    state => state.WeightedHighlights
+  ],
+  (WeightedHighlights) => {
+    const rows = WeightedHighlights.rows.length > 5 ? WeightedHighlights.rows : WeightedHighlights.rows.concat(firstRunData.Highlights);
+    return Object.assign({}, WeightedHighlights, {rows: assignImageAndBackgroundColor(rows)});
+  }
+);
+
 const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights,
     state => state.Prefs.prefs.recommendations,
     state => state.Prefs.prefs.metadataRatingSystem,
-    state => state.WeightedHighlights,
+    selectWeightedHighlights,
     state => state.Prefs.prefs.weightedHighlights
   ],
   (Highlights, recommendationShown, metadataRating, WeightedHighlights, prefWeightedHighlights) => {
     let rows;
     if (prefWeightedHighlights) {
-      rows = assignImageAndBackgroundColor(WeightedHighlights.rows);
+      rows = WeightedHighlights.rows;
     } else {
       // Only concat first run data if init is true
       const highlightRows = Highlights.rows.concat(Highlights.init ? firstRunData.Highlights : []);
@@ -64,7 +74,7 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
 
 module.exports.selectNewTabSites = createSelector(
   [
-    state => state.WeightedHighlights,
+    selectWeightedHighlights,
     state => state.Prefs.prefs.weightedHighlights,
     selectTopSites,
     state => state.History,
@@ -77,7 +87,7 @@ module.exports.selectNewTabSites = createSelector(
     // don't dedupe against stuff that isn't shown
     let [topSitesRows, spotlightRows] = dedupe.group([TopSites.rows.slice(0, TOP_SITES_LENGTH), Spotlight.rows]);
 
-    // Find the index of the recommendation. If we have an index, find that recommmendation and put it
+    // Find the index of the recommendation. If we have an index, find that recommendation and put it
     // in the third highlights spot
     let recommendation = spotlightRows.findIndex(element => element.recommended);
     if (recommendation >= 0) {
@@ -91,8 +101,7 @@ module.exports.selectNewTabSites = createSelector(
 
     let topHighlights = spotlightRows;
     if (prefWeightedHighlights) {
-      const weightedRows = WeightedHighlights.rows.concat(WeightedHighlights.init ? firstRunData.Highlights : []);
-      topHighlights = assignImageAndBackgroundColor(weightedRows);
+      topHighlights = WeightedHighlights.rows;
     }
 
     return {
@@ -111,13 +120,13 @@ module.exports.selectHistory = createSelector(
     selectSpotlight,
     state => state.Filter,
     state => state.History,
-    state => state.WeightedHighlights,
+    selectWeightedHighlights,
     state => state.Prefs.prefs.weightedHighlights
   ],
   (Spotlight, Filter, History, WeightedHighlights, prefWeightedHighlights) => {
     let rows;
     if (prefWeightedHighlights) {
-      rows = assignImageAndBackgroundColor(WeightedHighlights.rows);
+      rows = WeightedHighlights.rows;
     } else {
       rows = dedupe.one(Spotlight.rows);
     }
