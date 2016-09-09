@@ -185,9 +185,9 @@ ActivityStreams.prototype = {
   },
 
   _refreshAppState() {
-    console.log("Refresh app state");
     const provider = this._memoized;
 
+    // WeightedHighlights
     if (this._baselineRecommender === null) {
       this._store.dispatch(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", []));
     } else {
@@ -199,20 +199,27 @@ ActivityStreams.prototype = {
       });
     }
 
+    // Top Sites
     provider.getTopFrecentSites().then(links => {
       this._processAndDispatchLinks(links, "TOP_FRECENT_SITES_RESPONSE");
     });
+
+    // Recent History
     provider.getRecentLinks().then(links => {
       this._processAndDispatchLinks(links, "RECENT_LINKS_RESPONSE");
     });
+
+    // Highlights
     provider.getHighlightsLinks().then(links => {
       this._processAndDispatchLinks(links, "HIGHLIGHTS_LINKS_RESPONSE");
     });
 
+    // Bookmarks
     provider.getRecentBookmarks().then(links => {
       this._processAndDispatchLinks(links, "RECENT_BOOKMARKS_RESPONSE");
     });
 
+    // Search
     SearchProvider.search.asyncGetCurrentState().then(state => {
       let currentEngine = JSON.stringify(state.currentEngine);
       state.currentEngine = currentEngine;
@@ -273,43 +280,6 @@ ActivityStreams.prototype = {
    */
   _respondToPlacesRequests({msg, worker}) {
     switch (msg.type) {
-      case am.type("WEIGHTED_HIGHLIGHTS_REQUEST"):
-        // Empty response in case the recommender is not instantiated, no need for the extra requests.
-        if (this._baselineRecommender === null) {
-          this.send(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", [], {append: msg.meta.append}), worker);
-          break;
-        }
-
-        provider.getRecentlyVisited(msg.data).then(highlightsLinks => {
-          // Decorate links with meta information.
-          let cachedLinks = this._processLinks(highlightsLinks, "WEIGHTED_HIGHLIGHTS_RESPONSE", msg.meta);
-          cachedLinks.then(highlightsWithMeta => {
-            this.send(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE",
-                                          this._baselineRecommender.scoreEntries(highlightsWithMeta),
-                                          {append: msg.meta.append}), worker);
-          });
-        });
-        break;
-      case am.type("TOP_FRECENT_SITES_REQUEST"):
-        provider.getTopFrecentSites(msg.data).then(links => {
-          this._processAndSendLinks(links, "TOP_FRECENT_SITES_RESPONSE", worker, msg.meta);
-        });
-        break;
-      case am.type("RECENT_BOOKMARKS_REQUEST"):
-        provider.getRecentBookmarks(msg.data).then(links => {
-          this._processAndSendLinks(links, "RECENT_BOOKMARKS_RESPONSE", worker, msg.meta);
-        });
-        break;
-      case am.type("RECENT_LINKS_REQUEST"):
-        provider.getRecentLinks(msg.data).then(links => {
-          this._processAndSendLinks(links, "RECENT_LINKS_RESPONSE", worker, msg.meta);
-        });
-        break;
-      case am.type("HIGHLIGHTS_LINKS_REQUEST"):
-        provider.getHighlightsLinks(msg.data).then(links => {
-          this._processAndSendLinks(links, "HIGHLIGHTS_LINKS_RESPONSE", worker, msg.meta);
-        });
-        break;
       case am.type("NOTIFY_BOOKMARK_ADD"):
         PlacesProvider.links.asyncAddBookmark(msg.data);
         break;
@@ -332,18 +302,6 @@ ActivityStreams.prototype = {
         this._recommendationProvider.setBlockedRecommendation(msg.data);
         break;
     }
-  },
-
-  /**
-   * Get from cache and response to content.
-   *
-   * @private
-   */
-  _processAndSendLinks(placesLinks, responseType, worker, options) {
-    let {append} = options || {};
-    let cachedLinks = this._processLinks(placesLinks, responseType, options);
-
-    cachedLinks.then(linksToSend => this.send(am.actions.Response(responseType, linksToSend, {append}), worker));
   },
 
   /**
