@@ -12,12 +12,14 @@ const TimelineHistory = React.createClass({
       dateKey={"lastVisitDate"}
       pageName={"TIMELINE_ALL"}
       Feed={props.History}
+      Filter={props.Filter}
       Spotlight={props.Spotlight} />);
   }
 });
 
 TimelineHistory.propTypes = {
   Spotlight: React.PropTypes.object.isRequired,
+  Filter: React.PropTypes.object.isRequired,
   History: React.PropTypes.object.isRequired
 };
 module.exports = connect(selectHistory)(TimelineHistory);

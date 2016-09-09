@@ -129,20 +129,9 @@
   }
 
   input {
-    border-radius: $search-border-radius 0 0 $search-border-radius;
-    flex-grow: 1;
-    margin: 0;
-    padding: 6px 12px 8px $search-input-left-label-width;
-    border: 1px solid $search-input-border-color;
-    outline: none;
-    box-shadow: none;
-
-    &:focus {
-      z-index: 1;
-      border-color: $search-blue;
-      transition: box-shadow 150ms;
-      box-shadow: 0 0 0 0.5px $search-shadow;
-    }
+    @include search-input;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 
     &:focus + button {
       z-index: 1;
@@ -156,8 +145,7 @@
   }
 
   .search-label {
-    background: url('#{$image-path}glyph-search-16.svg') no-repeat center center;
-    background-size: 20px;
+    background: $search-glyph-image no-repeat center center / $search-glyph-size;
     position: absolute;
     top: 0;
     left: 0;

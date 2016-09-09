@@ -1,4 +1,7 @@
 const React = require("react");
+const {connect} = require("react-redux");
+const {actions} = require("common/action-manager");
+const {justDispatch} = require("selectors/selectors");
 const {Link} = require("react-router");
 const classNames = require("classnames");
 
@@ -32,7 +35,13 @@ const Header = React.createClass({
           {props.links.map(link => <li key={link.to}><Link to={link.to}>{link.title}</Link></li>)}
         </ul>
       </section>
-      <section className="spacer" />
+      <section className="filter">
+        <input
+          onChange={e => props.dispatch(actions.NotifyFilterQuery(e.target.value))}
+          placeholder="Search your Activity Stream"
+          ref="filter"
+          type="search" />
+      </section>
       <section className="user-info">
         {props.userName && <span>
           {props.userName}
@@ -54,4 +63,5 @@ Header.propTypes = {
   disabled: React.PropTypes.bool
 };
 
-module.exports = Header;
+module.exports = connect(justDispatch)(Header);
+module.exports.Header = Header;

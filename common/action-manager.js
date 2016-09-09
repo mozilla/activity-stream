@@ -40,6 +40,7 @@ const am = new ActionManager([
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_PERFORMANCE",
   "NOTIFY_USER_EVENT",
+  "NOTIFY_FILTER_QUERY",
   "NOTIFY_OPEN_WINDOW",
   "NOTIFY_UPDATE_SEARCH_STRING",
   "NOTIFY_BLOCK_RECOMMENDATION",
@@ -238,6 +239,10 @@ function NotifyEvent(data) {
   return Notify("NOTIFY_USER_EVENT", data);
 }
 
+function NotifyFilterQuery(data) {
+  return Notify("NOTIFY_FILTER_QUERY", data);
+}
+
 function NotifyOpenWindow(data) {
   return Notify("NOTIFY_OPEN_WINDOW", data);
 }
@@ -272,6 +277,7 @@ am.defineActions({
   NotifyRouteChange,
   NotifyPerf,
   NotifyEvent,
+  NotifyFilterQuery,
   NotifyOpenWindow,
   NotifyUpdateSearchString,
   NotifyManageEngines,
