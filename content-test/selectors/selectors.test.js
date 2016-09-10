@@ -225,9 +225,10 @@ describe("selectors", () => {
     });
     it("should render the correct Spotlight items for weightedHighlights", () => {
       let weightedHighlights = {
-        WeightedHighlights: {rows: [
-          {url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
-          {url: "http://www.foo4.com"}, {url: "http://www.foo5.com"}, {url: "http://www.foo6.com"}]},
+        WeightedHighlights: {
+          rows: [{url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
+          {url: "http://www.foo4.com"}, {url: "http://www.foo5.com"}, {url: "http://www.foo6.com"}]
+        },
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
@@ -265,5 +266,5 @@ describe("selectors", () => {
 
       assert.equal(state.init, true);
     });
-  })
+  });
 });

@@ -19,7 +19,7 @@ const selectWeightedHighlights = module.exports.selectWeightedHighlights = creat
   [
     state => state.WeightedHighlights
   ],
-  (WeightedHighlights) => {
+  WeightedHighlights => {
     const rows = WeightedHighlights.rows.length > 5 ? WeightedHighlights.rows : WeightedHighlights.rows.concat(firstRunData.Highlights);
     return Object.assign({}, WeightedHighlights, {rows: assignImageAndBackgroundColor(rows)});
   }
