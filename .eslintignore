@@ -1,8 +1,7 @@
-data/content/
-logs/
-firefox/
-common/vendor.js
 activity-streams-env/
-!.*
 addon/SimpleStorage.js
+common/vendor.js
+data/content/
+firefox/
+logs/
 test/test-SimpleStorage.js
