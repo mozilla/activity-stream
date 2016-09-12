@@ -39,7 +39,7 @@ class Baseline {
     const occurrences = this.domainCounts.get(host) || 1;
     const domainCountsSize = this.domainCounts.size || 1;
     const tf = entry.visitCount || 1;
-    const idf = Math.log(domainCountsSize / occurrences) || 1;
+    const idf = Math.log(1 + domainCountsSize / occurrences);
 
     const age = this.normalizeTimestamp(entry.lastVisitDate);
     const imageCount = entry.images ? entry.images.length : 0;
