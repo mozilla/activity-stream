@@ -5,6 +5,7 @@ const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
 
 const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
+const MIN_HIGHLIGHTS_LENGTH = module.exports.MIN_HIGHLIGHTS_LENGTH = 5;
 
 module.exports.justDispatch = (() => ({}));
 
@@ -91,10 +92,12 @@ module.exports.selectNewTabSites = createSelector(
 
     let topHighlights = spotlightRows;
     if (prefWeightedHighlights) {
-      const weightedRows = WeightedHighlights.rows.concat(WeightedHighlights.init ? firstRunData.Highlights : []);
+      // If we have `MIN_HIGHLIGHTS_LENGTH` there is no need to show first time use links.
+      let weightedRows = WeightedHighlights.rows.length > MIN_HIGHLIGHTS_LENGTH ? WeightedHighlights.rows
+                                                                                : WeightedHighlights.rows.concat(firstRunData.Highlights);
       topHighlights = dedupe.group([
-        topSitesRows,
-        assignImageAndBackgroundColor(weightedRows)])[1];
+                        topSitesRows,
+                        assignImageAndBackgroundColor(weightedRows)])[1];
     }
 
     return {
