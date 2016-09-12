@@ -1,4 +1,4 @@
-const setRowsOrError = require("reducers/SetRowsOrError");
+const setRowsOrError = require("common/reducers/SetRowsOrError");
 const REQUEST_TYPE = "RECENT_LINKS_REQUEST";
 const RESPONSE_TYPE = "RECENT_LINKS_RESPONSE";
 
