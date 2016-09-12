@@ -92,7 +92,9 @@ module.exports.selectNewTabSites = createSelector(
     let topHighlights = spotlightRows;
     if (prefWeightedHighlights) {
       const weightedRows = WeightedHighlights.rows.concat(WeightedHighlights.init ? firstRunData.Highlights : []);
-      topHighlights = assignImageAndBackgroundColor(weightedRows);
+      topHighlights = dedupe.group([
+        topSitesRows,
+        assignImageAndBackgroundColor(weightedRows)])[1];
     }
 
     return {
