@@ -251,7 +251,7 @@ describe("selectors", () => {
         assert.equal(row.url, firstRunData.Highlights[i].url);
       });
     });
-    it("should append First Run data if less < 6 highlights", () => {
+    it("should append First Run data if less or equal to MIN_HIGHLIGHTS_LENGTH", () => {
       let weightedHighlights = {
         WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}]},
         Prefs: {prefs: {weightedHighlights: true}}
