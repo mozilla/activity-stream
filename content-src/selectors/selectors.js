@@ -93,11 +93,11 @@ module.exports.selectNewTabSites = createSelector(
     let topHighlights = spotlightRows;
     if (prefWeightedHighlights) {
       // If we have `MIN_HIGHLIGHTS_LENGTH` there is no need to show first time use links.
-      let weightedRows = WeightedHighlights.rows.length > MIN_HIGHLIGHTS_LENGTH ? WeightedHighlights.rows
-                                                                                : WeightedHighlights.rows.concat(firstRunData.Highlights);
+      let weightedRows = WeightedHighlights.rows.length > MIN_HIGHLIGHTS_LENGTH ? WeightedHighlights.rows :
+                                                                                  WeightedHighlights.rows.concat(firstRunData.Highlights);
       topHighlights = dedupe.group([
-                        topSitesRows,
-                        assignImageAndBackgroundColor(weightedRows)])[1];
+        topSitesRows,
+        assignImageAndBackgroundColor(weightedRows)])[1];
     }
 
     return {
