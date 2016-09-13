@@ -59,7 +59,10 @@ module.exports = function(config) {
         postLoaders: [{
           test: /\.js$/,
           loader: "istanbul-instrumenter",
-          include: [path.join(__dirname, "/content-src")],
+          include: [
+            path.join(__dirname, "content-src"),
+            path.join(__dirname, "addon/PerfMeter.js")
+          ],
           exclude: [/DebugPage/, /\.test\.js$/]
         }]
       },

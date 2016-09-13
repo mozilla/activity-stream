@@ -51,7 +51,7 @@ PerfMeter.prototype = {
   },
 
   _isLoadCompleteEvent(item) {
-    return (item.data && item.data === "NEWTAB_RENDER");
+    return !!(item.data && item.data === "NEWTAB_RENDER");
   },
 
   _twoDigitsRound(number) {
@@ -61,7 +61,7 @@ PerfMeter.prototype = {
   _computeStats() {
     let total = this._stats.samples.length;
     // deal with median first
-    let sorted = this._stats.samples.sort();
+    let sorted = this._stats.samples.sort((a, b) => a - b);
     let median;
     let index = Math.floor(total / 2);
     // if there's odd number of samples, take a middle one
@@ -100,11 +100,10 @@ PerfMeter.prototype = {
 
   onPrefChange() {
     this._active = simplePrefs.prefs["performance.log"];
-    Services.obs.notifyObservers(null, "performance-pref-changed", null);
   },
 
   isActivityStreamsURL(URL) {
-    return this._trackableURLs.indexOf(URL) !== -1;
+    return this._trackableURLs.includes(URL);
   },
 
   onReady(tab) {
@@ -118,6 +117,8 @@ PerfMeter.prototype = {
   },
 
   onClose(tab) {
+    // Removes the listener for ready, just in case "ready" never fired.
+    tab.removeListener("ready", this.onReady);
     delete this._tabs[tab.id];
   },
 
