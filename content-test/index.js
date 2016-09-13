@@ -9,6 +9,7 @@ describe("ActivtyStreams", () => {
   let restore;
   let originalAlert;
   let originalConfirm;
+  let originalServices;
   before(() => {
     originalAlert = window.alert;
     window.alert = () => {};
@@ -17,11 +18,14 @@ describe("ActivtyStreams", () => {
     });
     originalConfirm = window.confirm;
     window.confirm = () => true;
+    originalServices = global.Services;
+    global.Services = {obs: {notifyObservers: sinon.spy()}};
   });
   after(() => {
     restore();
     window.alert = originalAlert;
     window.confirm = originalConfirm;
+    global.Services = originalServices;
   });
 
   files.forEach(file => req(file));
