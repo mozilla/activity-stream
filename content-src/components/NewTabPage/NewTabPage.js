@@ -13,8 +13,6 @@ const setFavicon = require("lib/set-favicon");
 const classNames = require("classnames");
 const PAGE_NAME = "NEW_TAB";
 
-let renderedOnce = false;
-
 const {MAX_TOP_ACTIVITY_ITEMS} = require("common/constants");
 
 const NewTabPage = React.createClass({
@@ -37,14 +35,10 @@ const NewTabPage = React.createClass({
   componentDidMount() {
     document.title = "New Tab";
     setFavicon("newtab-icon.svg");
-  },
-  componentDidUpdate() {
-    // Note that isReady is set in the newTabPage selector (check the selectors/ folder)
-    // and it is possible it never fires, if responses are not received.
-    if (!renderedOnce && this.props.isReady) {
-      this.props.dispatch(actions.NotifyPerf("NEWTAB_RENDER"));
-      renderedOnce = true;
-    }
+
+    // Note that data may or may not be complete, depending on
+    // the state of the master store
+    this.props.dispatch(actions.NotifyPerf("NEWTAB_RENDER"));
   },
   render() {
     const props = this.props;
