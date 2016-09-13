@@ -268,7 +268,7 @@ describe("selectors", () => {
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.equal(state.Spotlight.rows.length, 1);
+      assert.equal(state.Spotlight.rows.length, 1 + firstRunData.Highlights.length);
     });
   });
 });
