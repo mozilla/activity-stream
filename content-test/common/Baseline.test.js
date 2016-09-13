@@ -117,24 +117,20 @@ describe("Baseline", () => {
   });
 
   it("should return 0 for when no images are present", () => {
-    assert.equal(baseline.extractLargestImage({}), 0);
+    assert.equal(baseline.extractImage({}), 0);
   });
 
   it("should return 0 when image array is empty", () => {
-    assert.equal(baseline.extractLargestImage({images: []}), 0);
+    assert.equal(baseline.extractImage({images: []}), 0);
   });
 
   it("should return 0 for when images don't have size", () => {
-    assert.equal(baseline.extractLargestImage({images: [{}]}), 0);
+    assert.equal(baseline.extractImage({images: [{}]}), 0);
   });
 
-  it("should extract max image size", () => {
-    const images = [
-      {size: 100, url: "foo"},
-      {size: 42, width: 300, height: 300, url: "bar"},
-      {size: undefined}
-    ];
-    assert.equal(baseline.extractLargestImage(images), 42);
+  it("should extract image size", () => {
+    const images = [{size: 42, width: 300, height: 300, url: "bar"}];
+    assert.equal(baseline.extractImage(images), 42);
   });
 
   it("should return the same number of items after sort", () => {
@@ -307,7 +303,7 @@ describe("Baseline", () => {
           pathLength: 1,
           isBookmarked: 0,
           description: 10,
-          largestImage: 1
+          image: 1
         }
       };
     });
@@ -371,11 +367,11 @@ describe("Baseline", () => {
     });
 
     it("should keep old value if an entry is undefined by accident", () => {
-      const features = Object.assign({}, entry.features, {largestImage: undefined});
+      const features = Object.assign({}, entry.features, {image: undefined});
       baseline.updateFeatureMinMax(features);
 
-      assert.equal(baseline.normalizeFeatures.largestImage.min, 1);
-      assert.equal(baseline.normalizeFeatures.largestImage.max, 0);
+      assert.equal(baseline.normalizeFeatures.image.min, 1);
+      assert.equal(baseline.normalizeFeatures.image.max, 0);
     });
 
     it("should not divide by 0", () => {

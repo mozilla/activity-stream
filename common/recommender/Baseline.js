@@ -20,7 +20,7 @@ class Baseline {
     this.normalizeFeatures = {
       description: {min: 1, max: 0},
       pathLength: {min: 1, max: 0},
-      largestImage: {min: 1, max: 0}
+      image: {min: 1, max: 0}
     };
 
     // These are features used for adjusting the final score.
@@ -46,10 +46,10 @@ class Baseline {
     const isBookmarked = entry.bookmarkId || 0;
     const description = this.extractDescriptionLength(entry);
     const pathLength = urlObj.pathname.split("/").filter(e => e.length).length;
-    const largestImage = this.extractLargestImage(entry.images);
+    const image = this.extractImage(entry.images);
     const queryLength = urlObj.query.length;
 
-    const features = {age, tf, idf, imageCount, isBookmarked, description, pathLength, queryLength, largestImage};
+    const features = {age, tf, idf, imageCount, isBookmarked, description, pathLength, queryLength, image};
     this.updateFeatureMinMax(features);
 
     return Object.assign({}, entry, {features, host});
@@ -97,7 +97,7 @@ class Baseline {
 
     newScore /= Math.pow(1 + features.age, 2);
 
-    if (!features.imageCount || !features.largestImage) {
+    if (!features.imageCount || !features.image) {
       newScore *= 0.2;
     }
 
@@ -213,12 +213,12 @@ class Baseline {
   }
 
   /**
-   * Return the size of the largest image.
-   * Assumes `getBestImage` returns largest image.
+   * Return the size of the image.
+   * Assumes `getBestImage` returns the best image it has.
    * @param {Array} images
    * @returns {Number}
    */
-  extractLargestImage(images) {
+  extractImage(images) {
     const image = getBestImage(images);
 
     if (!image) {
