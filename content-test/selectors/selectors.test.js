@@ -9,6 +9,7 @@ const {
   selectTopSites,
   selectNewTabSites,
   selectHistory,
+  selectWeightedHighlights,
   SPOTLIGHT_LENGTH
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
@@ -253,7 +254,7 @@ describe("selectors", () => {
     });
     it("should append First Run data if less or equal to MIN_HIGHLIGHTS_LENGTH", () => {
       let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}]},
+        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}], init: true},
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
@@ -263,12 +264,34 @@ describe("selectors", () => {
     });
     it("should dedupe weighted highlights results", () => {
       let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}]},
+        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}], init: true},
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
       assert.equal(state.Spotlight.rows.length, 1 + firstRunData.Highlights.length);
+    });
+  });
+  describe("selectWeightedHighlights", () => {
+    it("should call assignImageAndBackgroundColor", () => {
+      const state = selectWeightedHighlights({WeightedHighlights: {rows: [{background_color: "#fff"}]}});
+
+      assert.equal(state.rows[0].backgroundColor, "#fff");
+    });
+    it("should append first run data when init is true", () => {
+      const state = selectWeightedHighlights({WeightedHighlights: {rows: [], init: true}});
+
+      assert.equal(state.rows.length, firstRunData.Highlights.length);
+    });
+    it("should not append first run data when init is false", () => {
+      const state = selectWeightedHighlights({WeightedHighlights: {rows: []}});
+
+      assert.equal(state.rows.length, 0);
+    });
+    it("should only change the rows property and copy others over", () => {
+      const state = selectWeightedHighlights({WeightedHighlights: {init: true, rows: []}});
+
+      assert.equal(state.init, true);
     });
   });
 });

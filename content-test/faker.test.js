@@ -2,7 +2,8 @@ const {
   createSite,
   createRows,
   randomWeighter,
-  createWeightedArray
+  createWeightedArray,
+  createSpotlightItem
 } = require("test/faker");
 
 describe("createSite", () => {
@@ -65,6 +66,14 @@ describe("randomWeighter", () => {
       {weight: 1, range: [1, 10]}
     ]);
     assert.include([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], result);
+  });
+});
+
+describe("createSpotlightItem", () => {
+  it("should provide correct state to selector (Highlights & WeightedHighlights)", () => {
+    const result = createSpotlightItem();
+
+    assert.ok(result);
   });
 });
 
