@@ -159,6 +159,16 @@ describe("Baseline", () => {
     assert.ok(items[1].score > items[2].score);
   });
 
+  it("should decrease score for consecutive items with same image", () => {
+    let fakeUrlsWithScore = [
+      {url: "foo.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.sameimage.jpg"}], score: 1},
+      {url: "bar.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.sameimage.jpg"}], score: 1}
+    ];
+    let items = baseline.dedupe(fakeUrlsWithScore);
+    assert.ok(items[0].score > items[1].score);
+    assert.equal(items[1].score, 0.8);
+  });
+
   it("should decrease by the right amount", () => {
     let fakeUrlsWithScore = fakeUrls.map(url => Object.assign({}, url, {score: 1}));
     let items = baseline.dedupe(fakeUrlsWithScore);
