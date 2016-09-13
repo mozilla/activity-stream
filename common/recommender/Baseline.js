@@ -275,6 +275,28 @@ class Baseline {
   }
 
   /**
+   * Determine if two entries are similar. Used to lower the score for similar consecutive items.
+   *
+   * @param {Object} a
+   * @param {Object} b
+   * @returns {boolean}
+   * @private
+   */
+  _similarItems(a, b) {
+    if (a.host === b.host) {
+      return true;
+    }
+
+    const imageA = getBestImage(a.images);
+    const imageB = getBestImage(b.images);
+    if (imageA && imageB) {
+      return imageA.url === imageB.url;
+    }
+
+    return false;
+  }
+
+  /**
    *  Decrease the score for consecutive items from the same domain.
    *  Combined with sorting by score the result is we don't see consecutive
    *  items from the same domain.
@@ -285,7 +307,7 @@ class Baseline {
     let penalty = 0.6;
 
     return entries.map((entry, i, arr) => {
-      if (i > 0 && arr[i - 1].host === entry.host) {
+      if (i > 0 && this._similarItems(arr[i - 1], entry)) {
         let score = entry.score * penalty;
         penalty -= 0.2;
         return Object.assign({}, entry, {score});
