@@ -254,7 +254,7 @@ describe("selectors", () => {
     });
     it("should append First Run data if less or equal to MIN_HIGHLIGHTS_LENGTH", () => {
       let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}]},
+        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}], init: true},
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
@@ -264,7 +264,7 @@ describe("selectors", () => {
     });
     it("should dedupe weighted highlights results", () => {
       let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}]},
+        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}], init: true},
         Prefs: {prefs: {weightedHighlights: true}}
       };
 
