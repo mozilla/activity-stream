@@ -445,15 +445,17 @@ Links.prototype = {
     // In general the groupby behavior in the absence of aggregates is not
     // defined in SQL, hence we are relying on sqlite implementation that may
     // change in the future.
-    let sqlQuery = `SELECT url, title, frecency, guid,
+    let sqlQuery = `SELECT url, title, frecency, guid, bookmarkGuid,
                           last_visit_date / 1000 as lastVisitDate, favicon, mimeType,
                           "history" as type
                     FROM
                     (
-                      SELECT rev_host, moz_places.url, moz_favicons.data as favicon, mime_type as mimeType, title, frecency, last_visit_date, moz_places.guid as guid
+                      SELECT rev_host, moz_places.url, moz_favicons.data as favicon, mime_type as mimeType, moz_places.title, frecency, last_visit_date, moz_places.guid as guid, moz_bookmarks.guid as bookmarkGuid
                       FROM moz_places
                       LEFT JOIN moz_favicons
                       ON favicon_id = moz_favicons.id
+                      LEFT JOIN moz_bookmarks
+                      on moz_places.id = moz_bookmarks.fk
                       WHERE hidden = 0 AND last_visit_date NOTNULL
                       AND moz_places.url NOT IN (${blockedURLs})
                       ORDER BY rev_host, frecency, last_visit_date, moz_places.url DESC
@@ -463,7 +465,7 @@ Links.prototype = {
                     LIMIT :limit`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["url", "guid", "title", "lastVisitDate", "frecency", "favicon", "mimeType", "type"],
+      columns: ["url", "guid", "bookmarkGuid", "title", "lastVisitDate", "frecency", "favicon", "mimeType", "type"],
       params: {limit}
     });
 
