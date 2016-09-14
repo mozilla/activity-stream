@@ -303,7 +303,55 @@ exports.test_no_metadata_source = function*(assert) {
     response.write(JSON.stringify(fakeResponse));
   });
   yield gPreviewProvider._asyncSaveLinks([fakeSite]);
-  assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "metadata source was now computed by Embedly");
+  cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
+
+  assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "correct metadata_source in database");
+  assert.equal(cachedLink[0].metadata_source, gEmbedlyServiceSource, "correct metadata_source returned for this link");
+
+  yield new Promise(resolve => {
+    srv.stop(resolve);
+  });
+};
+
+exports.test_prefer_tippytop_favicons = function*(assert) {
+  // we're using youtube here because it's known that the favicon that Embedly
+  // returns is worse than the tippytop favicon - so we want to use the tippytop one
+  const fakeSite = {
+    "url": "http://www.youtube.com/",
+    "title": null,
+    "sanitized_url": "http://www.youtube.com/",
+    "cache_key": "youtube.com/"
+  };
+  const fakeResponse = {
+    "urls": {
+      "http://www.youtube.com/": {
+        "embedlyMetaData": "some embedly metadata",
+        "favicon_url": "https://badicon.com",
+        "background_color": "#BADCOLR"
+      }
+    }
+  };
+
+  // get the tippytop favicon_url and background_color and compare with
+  // what we get from the cached link
+  let tippyTopLink = gPreviewProvider._tippyTopProvider.processSite(fakeSite);
+  let cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
+
+  assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "TippyTopProvider added a favicon_url");
+  assert.equal(tippyTopLink.background_color, cachedLink[0].background_color, "TippyTopProvider added a background_color");
+
+  let srv = httpd.startServerAsync(gPort);
+  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
+    response.setHeader("Content-Type", "application/json", false);
+    response.write(JSON.stringify(fakeResponse));
+  });
+  // insert a link with some less nice icons in it and get them back
+  yield gPreviewProvider._asyncSaveLinks([fakeSite]);
+  cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
+
+  assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "we still took the better tippyTop favicon_url");
+  assert.equal(tippyTopLink.background_color, cachedLink[0].background_color, "we still took the better tippyTop background_color");
+  assert.equal(fakeResponse.urls["http://www.youtube.com/"].embedlyMetaData, cachedLink[0].embedlyMetaData, "but we still have other metadata");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
@@ -383,15 +431,16 @@ before(exports, () => {
   let mockMetadataStore = {
     asyncInsert(data) {
       gMetadataStore.push(data);
-      return gMetadataStore;
     },
     asyncGetMetadataByCacheKey(cacheKeys) {
       let items = [];
-      gMetadataStore.forEach(item => {
-        if (cacheKeys.includes(item.cache_key)) {
-          items.push(Object.assign({}, {cache_key: item.cache_key}, {title: `Title for ${item.cache_key}`}));
-        }
-      });
+      if (gMetadataStore[0]) {
+        gMetadataStore[0].forEach(item => {
+          if (cacheKeys.includes(item.cache_key)) {
+            items.push(item);
+          }
+        });
+      }
       return items;
     }
   };
