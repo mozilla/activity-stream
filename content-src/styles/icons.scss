@@ -100,4 +100,20 @@
     background-size: $icon-size + 2;
   }
 
+  &.icon-copy-address {
+    background-image: url('#{$image-path}glyph-copy-16.svg');
+  }
+
+  &.icon-email-link {
+    background-image: url('#{$image-path}glyph-email-16.svg');
+  }
+
+  &.icon-share {
+    background-image: url('#{$image-path}glyph-share-16.svg');
+  }
+
+  &.icon-menu-arrow {
+    margin-left: auto;
+    -moz-appearance: menuarrow;
+  }
 }

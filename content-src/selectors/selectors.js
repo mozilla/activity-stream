@@ -154,3 +154,6 @@ module.exports.selectBookmarks = createSelector(
   ],
   (Filter, Bookmarks) => ({Filter, Bookmarks})
 );
+
+// Share Providers
+module.exports.selectShareProviders = state => ({ShareProviders: state.ShareProviders});

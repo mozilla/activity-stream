@@ -16,17 +16,22 @@ const DEFAULT_PROPS = {
 describe("LinkMenu", () => {
   let instance;
   let contextMenu;
+  let shareMenu;
 
   function setup(custom = {}, customProvider = {}) {
     const props = Object.assign({}, DEFAULT_PROPS, custom);
     instance = renderWithProvider(<LinkMenu {...props} />, customProvider);
-    contextMenu = TestUtils.findRenderedComponentWithType(instance, ContextMenu);
+    [contextMenu, shareMenu] = TestUtils.scryRenderedComponentsWithType(instance, ContextMenu);
   }
 
   beforeEach(setup);
 
   it("should render a ContextMenu", () => {
     assert.ok(contextMenu);
+  });
+
+  it("should render a share submenu", () => {
+    assert.ok(shareMenu);
   });
 
   it("should pass visible, onUpdate props to ContextMenu", () => {
@@ -51,14 +56,14 @@ describe("LinkMenu", () => {
     setup({site: {url: "https://foo.com", type: FIRST_RUN_TYPE}});
     assert.isUndefined(contextMenu.refs.dismiss, "hide dismiss");
     assert.isUndefined(contextMenu.refs.delete, "hide delete");
-    assert.lengthOf(contextMenu.props.options, 4);
+    assert.lengthOf(contextMenu.props.options, 5);
   });
 
   it("should hide delete options for bookmarks page", () => {
     setup({site: {url: "https://foo.com"}, page: "TIMELINE_BOOKMARKS"});
     assert.isUndefined(contextMenu.refs.dismiss, "hide dismiss");
     assert.isUndefined(contextMenu.refs.delete, "hide delete");
-    assert.lengthOf(contextMenu.props.options, 4);
+    assert.lengthOf(contextMenu.props.options, 5);
   });
 
   it("should hide delete from history option for recommendation", () => {
@@ -140,6 +145,44 @@ describe("LinkMenu", () => {
       event: "NOTIFY_HISTORY_DELETE",
       eventData: DEFAULT_PROPS.site.url,
       userEvent: "DELETE"
+    });
+  });
+
+  describe("share submenu options", () => {
+    // Checks to make sure each action
+    // 1. Fires a custom action (options.event)
+    // 2. Has the right event data (options.eventData)
+    // When options.ref is clicked
+    function checkOption(options) {
+      it(`should ${options.ref}`, done => {
+        setup(options.props || {}, {
+          dispatch(action) {
+            if (action.type === options.event) {
+              assert.deepEqual(action.data, options.eventData, "event data");
+              done();
+            }
+          }
+        });
+        TestUtils.Simulate.click(shareMenu.refs[options.ref]);
+      });
+    }
+    checkOption({
+      ref: "copyAddress",
+      props: {site: {url: "https://foo.com", title: "foo123"}},
+      event: "NOTIFY_COPY_URL",
+      eventData: {url: "https://foo.com"}
+    });
+    checkOption({
+      ref: "emailLink",
+      props: {site: {url: "https://foo.com", title: "foo123"}},
+      event: "NOTIFY_EMAIL_URL",
+      eventData: {url: "https://foo.com", title: "foo123"}
+    });
+    checkOption({
+      ref: "shareMySpace",
+      props: {site: {url: "https://foo.com", title: "foo123"}},
+      event: "NOTIFY_SHARE_URL",
+      eventData: {url: "https://foo.com", title: "foo123", provider: "https://myspace.com"}
     });
   });
 
