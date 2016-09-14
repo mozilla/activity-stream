@@ -5,7 +5,8 @@ const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
 
 const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
-const HIGHLIGHTS_LENGTH = module.exports.HIGHLIGHTS_LENGTH = 12;
+const TOP_HIGHLIGHTS_LENGTH = SPOTLIGHT_LENGTH;
+const BOTTOM_HIGHLIGHTS_LENGTH = module.exports.BOTTOM_HIGHLIGHTS_LENGTH = 12;
 
 module.exports.justDispatch = (() => ({}));
 
@@ -21,7 +22,7 @@ function isValidSpotlightSite(site) {
  *
  * @param {Array} options.sites - sites to process.
  * @param {Array} options.dedupe - sites to dedupe against.
- * @param {Array} options.max - required number of items.
+ * @param {Number} options.max - required number of items.
  * @param {Array} options.defaults - default values to use.
  * @returns {Array}
  */
@@ -123,7 +124,7 @@ module.exports.selectNewTabSites = createSelector(
       topHighlights = selectAndDedupe({
         dedupe: topSitesRows,
         sites: WeightedHighlights.rows,
-        max: HIGHLIGHTS_LENGTH + SPOTLIGHT_LENGTH,
+        max: BOTTOM_HIGHLIGHTS_LENGTH + TOP_HIGHLIGHTS_LENGTH,
         defaults: firstRunData.Highlights
       });
     }

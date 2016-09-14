@@ -294,14 +294,16 @@ describe("selectors", () => {
 
       assert.equal(result.length, 0);
     });
-    it("should slice the results based on `max` argument", () => {
+    it("should slice the results based on `max` argument (defaults should not be added)", () => {
+      const max = 1;
       const result = selectAndDedupe({
         sites: ["http://www.mozilla.org", "http://www.firefox.com"],
         dedupe: [],
-        max: 1
+        max,
+        defaults: firstRunData.Highlights
       });
 
-      assert.equal(result.length, 1);
+      assert.equal(result.length, max);
     });
     it("should append defaults if result length is under the specified limit", () => {
       const result = selectAndDedupe({
@@ -312,6 +314,17 @@ describe("selectors", () => {
       });
 
       assert.equal(result.length, 1 + firstRunData.Highlights.length);
+    });
+    it("should slice the results based on `max` argument (combined with defaults)", () => {
+      const max = 3;
+      const result = selectAndDedupe({
+        sites: ["http://www.mozilla.org", "http://www.firefox.com"],
+        dedupe: [],
+        max,
+        defaults: firstRunData.Highlights
+      });
+
+      assert.equal(result.length, max);
     });
   });
 });
