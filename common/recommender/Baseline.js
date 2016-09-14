@@ -59,7 +59,7 @@ class Baseline {
   normalize(features) {
     return Object.keys(this.normalizeFeatures).reduce((acc, key) => {
       const {min, max} = this.normalizeFeatures[key];
-      if (max !== min) { // No division by 0.
+      if (max > min) { // No division by 0.
         let delta = max - min;
         acc[key] = (features[key] - min) / delta;
       }
