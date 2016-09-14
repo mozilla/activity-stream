@@ -5,7 +5,7 @@ const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
 
 const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
-const MIN_HIGHLIGHTS_LENGTH = module.exports.MIN_HIGHLIGHTS_LENGTH = 5;
+const HIGHLIGHTS_LENGTH = module.exports.HIGHLIGHTS_LENGTH = 12;
 
 module.exports.justDispatch = (() => ({}));
 
@@ -16,18 +16,32 @@ function isValidSpotlightSite(site) {
     site.title !== site.description);
 }
 
+/**
+ * Dedupe items and appends defaults if result length is smaller than required.
+ *
+ * @param {Array} options.sites - sites to process.
+ * @param {Array} options.dedupe - sites to dedupe against.
+ * @param {Array} options.max - required number of items.
+ * @param {Array} options.defaults - default values to use.
+ * @returns {Array}
+ */
+const selectAndDedupe = module.exports.selectAndDedupe = options => {
+  let rows = dedupe.group([
+    options.dedupe,
+    options.sites])[1];
+
+  if (rows.length < options.max && options.defaults) {
+    rows = rows.concat(options.defaults);
+  }
+
+  return rows.slice(0, options.max);
+};
+
 const selectWeightedHighlights = module.exports.selectWeightedHighlights = createSelector(
   [
     state => state.WeightedHighlights
   ],
-  WeightedHighlights => {
-    let rows = WeightedHighlights.rows;
-    // If we have `MIN_HIGHLIGHTS_LENGTH` there is no need to show first time use links.
-    if (WeightedHighlights.rows.length < MIN_HIGHLIGHTS_LENGTH) {
-      rows = rows.concat(WeightedHighlights.init ? firstRunData.Highlights : []);
-    }
-    return Object.assign({}, WeightedHighlights, {rows: assignImageAndBackgroundColor(rows)});
-  }
+  WeightedHighlights => Object.assign({}, WeightedHighlights, {rows: assignImageAndBackgroundColor(WeightedHighlights.rows)})
 );
 
 const selectSpotlight = module.exports.selectSpotlight = createSelector(
@@ -106,9 +120,12 @@ module.exports.selectNewTabSites = createSelector(
 
     let topHighlights = spotlightRows;
     if (prefWeightedHighlights) {
-      topHighlights = dedupe.group([
-        topSitesRows,
-        WeightedHighlights.rows])[1];
+      topHighlights = selectAndDedupe({
+        dedupe: topSitesRows,
+        sites: WeightedHighlights.rows,
+        max: HIGHLIGHTS_LENGTH + SPOTLIGHT_LENGTH,
+        defaults: firstRunData.Highlights
+      });
     }
 
     return {
