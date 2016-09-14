@@ -195,9 +195,16 @@ describe("Baseline", () => {
         sinon.assert.calledOnce(updateFeatureStub);
       });
     });
+    it("should extract the correct path length", () => {
+      entry.url = "https://www.mozilla.org/projects/firefox/51.0a1/whatsnew/?oldversion=50.0a2";
+      const result = baseline.extractFeatures(entry);
+
+      assert.equal(result.features.pathLength, 4);
+    });
     it("should extract the correct number of images", () => {
       const result = baseline.extractFeatures(entry);
 
+      assert.isNumber(result.features.imageCount);
       assert.equal(result.features.imageCount, entry.images.length);
     });
     it("should extract the description", () => {
@@ -228,6 +235,21 @@ describe("Baseline", () => {
     it("should not fail if argument is undefined or NaN", () => {
       assert.equal(baseline.selectMinValue(2, undefined), 2);
       assert.equal(baseline.selectMinValue(2, NaN), 2);
+    });
+
+    it("should return 0 if no description", () => {
+      const result = baseline.extractDescriptionLength({title: "http://www.firefox.com"});
+
+      assert.equal(result, 0);
+    });
+
+    it("should return 0 if description === url", () => {
+      const result = baseline.extractDescriptionLength({
+        description: "http://www.firefox.com",
+        title: "http://www.firefox.com"
+      });
+
+      assert.equal(result, 0);
     });
 
     it("should return 0 if description === title", () => {
@@ -312,6 +334,19 @@ describe("Baseline", () => {
       };
     });
 
+    describe("normalizeTimestamp", () => {
+      it("should return a number if entry has undefined timestamp", () => {
+        const result = baseline.normalizeTimestamp();
+
+        assert.isNumber(result);
+      });
+      it("should return a number if entry has timestamp", () => {
+        const result = baseline.normalizeTimestamp(Date.now() - 1e2);
+
+        assert.isNumber(result);
+      });
+    });
+
     describe("scoreEntry", () => {
       let normalizeStub;
       let decayStub;
@@ -357,47 +392,79 @@ describe("Baseline", () => {
       assert.isNumber(regularScore);
       assert.ok(bookmarkScore > regularScore);
     });
+  });
 
+  describe("updateFeatureMinMax", () => {
+    let features;
+    beforeEach(() => {
+      baseline = new Baseline(fakeHistory, {highlightsCoefficients: [-0.1, -0.1, -0.1, 0.4, 0.2]});
+      const entry = createSite({images: 2});
+      features = baseline.extractFeatures(entry);
+    });
+    it("should call `selectMinValue`", () => {
+      const stub = sandbox.stub(baseline, "selectMinValue");
+      const callCount = Object.keys(baseline.normalizeFeatures).length;
+      baseline.updateFeatureMinMax(features);
+
+      sinon.assert.callCount(stub, callCount);
+    });
     it("should store min value of features that need normalization", () => {
-      baseline.updateFeatureMinMax(entry.features);
+      features.pathLength = 0;
+      baseline.updateFeatureMinMax(features);
 
-      assert.equal(baseline.normalizeFeatures.pathLength.min, entry.features.pathLength);
+      assert.equal(baseline.normalizeFeatures.pathLength.min, features.pathLength);
     });
 
     it("should store max value of features that need normalization", () => {
-      baseline.updateFeatureMinMax(entry.features);
-
-      assert.equal(baseline.normalizeFeatures.description.max, entry.features.description);
+      assert.equal(baseline.normalizeFeatures.description.max, features.description.length);
     });
 
     it("should keep old value if an entry is undefined by accident", () => {
-      const features = Object.assign({}, entry.features, {image: undefined});
-      baseline.updateFeatureMinMax(features);
+      const noImageFeatures = Object.assign({}, features, {image: undefined});
+      baseline = new Baseline(fakeHistory, {highlightsCoefficients: [-0.1, -0.1, -0.1, 0.4, 0.2]});
+      const {min, max} = baseline.normalizeFeatures.image;
 
-      assert.equal(baseline.normalizeFeatures.image.min, 1);
-      assert.equal(baseline.normalizeFeatures.image.max, 0);
+      baseline.updateFeatureMinMax(noImageFeatures);
+
+      assert.equal(baseline.normalizeFeatures.image.min, min);
+      assert.equal(baseline.normalizeFeatures.image.max, max);
     });
+  });
 
-    it("should not divide by 0", () => {
-      baseline.normalizeFeatures.tf = [0, 0];
-      const result = baseline.normalize(entry.features);
-
-      assert.equal(result.tf, 10);
+  describe("normalize", () => {
+    let features;
+    beforeEach(() => {
+      baseline = new Baseline(fakeHistory, {highlightsCoefficients: [-0.1, -0.1, -0.1, 0.4, 0.2]});
+      const entry = createSite({images: 2});
+      features = baseline.extractFeatures(entry).features;
     });
-
-    it("should normalize features", () => {
-      baseline.normalizeFeatures.idf = {min: 1, max: 11};
-      const result = baseline.normalize(entry.features);
-
-      assert.isNumber(result.idf);
-      assert.ok(result.idf <= 1 && result.idf >= 0);
-    });
-
-    it("should simply return features that shouldn't be normalized", () => {
-      const features = {foo: 42};
+    it("should not normalize if min > max", () => {
+      baseline.normalizeFeatures.tf = {min: 10, max: 1};
+      features.tf = 5;
       const result = baseline.normalize(features);
 
-      assert.equal(result.foo, features.foo);
+      assert.isNumber(result.tf);
+      assert.equal(result.tf, features.tf);
+    });
+    it("should not divide by 0", () => {
+      baseline.normalizeFeatures.description = {min: 0, max: 0};
+      const result = baseline.normalize(features);
+
+      assert.equal(result.description, features.description);
+    });
+    it("should normalize features", () => {
+      baseline.normalizeFeatures.idf = {min: 1, max: 11};
+      features.idf = 5;
+      const result = baseline.normalize(features);
+
+      assert.isNumber(result.idf);
+      assert.ok(result.idf < 1 && result.idf > 0);
+    });
+    it("should simply return features that shouldn't be normalized", () => {
+      const result = baseline.normalize(features);
+
+      assert.isNumber(result.imageCount);
+      assert.equal(result.imageCount, features.imageCount);
     });
   });
 
