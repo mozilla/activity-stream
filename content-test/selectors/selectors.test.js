@@ -10,6 +10,7 @@ const {
   selectNewTabSites,
   selectHistory,
   selectWeightedHighlights,
+  selectAndDedupe,
   SPOTLIGHT_LENGTH
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
@@ -235,10 +236,10 @@ describe("selectors", () => {
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
       assert.property(state.Spotlight, "weightedHighlights");
       assert.isTrue(state.Spotlight.weightedHighlights);
-      assert.equal(state.Spotlight.rows.length, weightedHighlights.WeightedHighlights.rows.length);
-      state.Spotlight.rows.forEach((row, i) => {
-        assert.equal(row.url, weightedHighlights.WeightedHighlights.rows[i].url);
-      });
+      assert.equal(state.Spotlight.rows.length, weightedHighlights.WeightedHighlights.rows.length + firstRunData.Highlights.length);
+      for (let i = 0; i < weightedHighlights.WeightedHighlights.rows.length; i++) {
+        assert.equal(state.Spotlight.rows[i].url, weightedHighlights.WeightedHighlights.rows[i].url);
+      }
     });
     it("should render first run highlights of fresh profiles", () => {
       let weightedHighlights = {
@@ -278,20 +279,52 @@ describe("selectors", () => {
 
       assert.equal(state.rows[0].backgroundColor, "#fff");
     });
-    it("should append first run data when init is true", () => {
-      const state = selectWeightedHighlights({WeightedHighlights: {rows: [], init: true}});
-
-      assert.equal(state.rows.length, firstRunData.Highlights.length);
-    });
-    it("should not append first run data when init is false", () => {
-      const state = selectWeightedHighlights({WeightedHighlights: {rows: []}});
-
-      assert.equal(state.rows.length, 0);
-    });
     it("should only change the rows property and copy others over", () => {
       const state = selectWeightedHighlights({WeightedHighlights: {init: true, rows: []}});
 
       assert.equal(state.init, true);
+    });
+  });
+  describe("selectAndDedupe", () => {
+    it("should dedupe items", () => {
+      const result = selectAndDedupe({
+        dedupe: ["http://www.mozilla.org"],
+        sites: ["http://www.mozilla.org"]
+      });
+
+      assert.equal(result.length, 0);
+    });
+    it("should slice the results based on `max` argument (defaults should not be added)", () => {
+      const max = 1;
+      const result = selectAndDedupe({
+        sites: ["http://www.mozilla.org", "http://www.firefox.com"],
+        dedupe: [],
+        max,
+        defaults: firstRunData.Highlights
+      });
+
+      assert.equal(result.length, max);
+    });
+    it("should append defaults if result length is under the specified limit", () => {
+      const result = selectAndDedupe({
+        sites: ["http://www.mozilla.org"],
+        dedupe: [],
+        max: 5,
+        defaults: firstRunData.Highlights
+      });
+
+      assert.equal(result.length, 1 + firstRunData.Highlights.length);
+    });
+    it("should slice the results based on `max` argument (combined with defaults)", () => {
+      const max = 3;
+      const result = selectAndDedupe({
+        sites: ["http://www.mozilla.org", "http://www.firefox.com"],
+        dedupe: [],
+        max,
+        defaults: firstRunData.Highlights
+      });
+
+      assert.equal(result.length, max);
     });
   });
 });
