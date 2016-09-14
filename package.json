@@ -63,7 +63,7 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-webpack": "1.8.0",
     "live-server": "1.1.0",
-    "loader-utils": "0.2.15",
+    "loader-utils": "0.2.16",
     "minimist": "1.2.0",
     "mkdirp": "0.5.1",
     "mocha": "3.0.2",
