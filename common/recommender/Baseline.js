@@ -221,11 +221,11 @@ class Baseline {
   extractImage(images) {
     const image = getBestImage(images);
 
-    if (!image) {
+    if (!image || !image.width || !image.height) {
       return 0;
     }
 
-    return Math.min(image.size, 1e5);
+    return Math.min(image.width * image.height, 1e5);
   }
 
   /**

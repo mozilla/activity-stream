@@ -128,9 +128,13 @@ describe("Baseline", () => {
     assert.equal(baseline.extractImage({images: [{}]}), 0);
   });
 
+  it("should return 0 for when images don't have width or height", () => {
+    assert.equal(baseline.extractImage({images: [{url: "foo"}]}), 0);
+  });
+
   it("should extract image size", () => {
-    const images = [{size: 42, width: 300, height: 300, url: "bar"}];
-    assert.equal(baseline.extractImage(images), 42);
+    const images = [{width: 300, height: 300, url: "bar"}];
+    assert.equal(baseline.extractImage(images), 300 * 300);
   });
 
   it("should return the same number of items after sort", () => {
