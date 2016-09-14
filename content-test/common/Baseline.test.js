@@ -212,11 +212,26 @@ describe("Baseline", () => {
 
       assert.equal(result.features.description, entry.description.length);
     });
-    it("should set description to 0 if it's the same as the url", () => {
-      entry.description = entry.url;
-      const result = baseline.extractFeatures(entry);
 
-      assert.equal(result.features.description, 0);
+    it("should call `normalizeTimestamp`", () => {
+      const stub = sandbox.stub(baseline, "normalizeTimestamp");
+      baseline.extractFeatures(entry);
+
+      sinon.assert.calledOnce(stub);
+    });
+
+    it("should call `extractDescriptionLength`", () => {
+      const stub = sandbox.stub(baseline, "extractDescriptionLength");
+      baseline.extractFeatures(entry);
+
+      sinon.assert.calledOnce(stub);
+    });
+
+    it("should call `extractImage`", () => {
+      const stub = sandbox.stub(baseline, "extractImage");
+      baseline.extractFeatures(entry);
+
+      sinon.assert.calledOnce(stub);
     });
 
     it("should select min", () => {
@@ -299,6 +314,12 @@ describe("Baseline", () => {
 
       assert.isNumber(result.features.idf);
       assert.isTrue(Number.isFinite(result.features.idf));
+    });
+    it("should call `extractDescriptionLength`", () => {
+      const stub = sandbox.stub(baseline, "extractDescriptionLength");
+      baseline.extractFeatures(entry);
+
+      sinon.assert.calledWithExactly(stub, entry);
     });
   });
 
