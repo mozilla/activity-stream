@@ -69,6 +69,38 @@ describe("Header", () => {
     TestUtils.Simulate.change(el);
   });
 
+  it("should update state on filter change", () => {
+    assert.equal(header.state.filterQuery, "");
+
+    let el = header.refs.filter;
+    el.value = "hello";
+    TestUtils.Simulate.change(el);
+
+    assert.equal(header.state.filterQuery, "hello");
+  });
+
+  it("should not have a filter dismiss by default", () => {
+    assert.isUndefined(header.refs.filterDismiss);
+  });
+
+  it("should have a filter dismiss on filter change", () => {
+    let el = header.refs.filter;
+    el.value = "hello";
+    TestUtils.Simulate.change(el);
+
+    assert.ok(header.refs.filterDismiss);
+  });
+
+  it("should clear search on dismiss", () => {
+    let el = header.refs.filter;
+    el.value = "hello";
+    TestUtils.Simulate.change(el);
+    TestUtils.Simulate.click(header.refs.filterDismiss);
+
+    assert.isUndefined(header.refs.filterDismiss);
+    assert.equal(header.state.filterQuery, "");
+  });
+
   describe("userImage", () => {
     it("should not have an img element if no user image is provided", () => {
       assert.isNull(el.querySelector(".user-info img"));

@@ -50,6 +50,19 @@
         margin-left: $header-section-spacing;
         max-width: $timeline-max-width;
       }
+
+      .icon-dismiss {
+        border: 1px solid $icon-color;
+        border-radius: $icon-size;
+        cursor: pointer;
+        margin-left: -24px;
+        opacity: 0.5;
+        z-index: 1;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
     }
 
     &.user-info {
