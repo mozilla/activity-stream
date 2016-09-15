@@ -93,35 +93,4 @@ exports["test awesomebar remains empty on route changes"] = function*(assert) {
   });
 };
 
-exports["test awesomebar doesn't clear out what user typed"] = function*(assert) {
-  let path = "/dummy-activitystreams.html";
-  let url = `http://localhost:${PORT}${path}`;
-  let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
-  let app = getTestActivityStream({pageURL: url});
-
-  yield new Promise(resolve => tabs.open({
-    url: app.appURLs[0],
-    onReady: tab => {
-      let browserWindow = windowMediator.getMostRecentWindow("navigator:browser");
-
-      // The url bar should be empty.
-      assert.equal(browserWindow.gURLBar.value, "");
-
-      // Simulate some typing.
-      browserWindow.gURLBar.value = "qwerty";
-
-      // Call maybe hide URL and verify the text typed is still there.
-      app._appURLHider.maybeHideURL(tab);
-      assert.equal(browserWindow.gURLBar.value, "qwerty");
-
-      tab.close(resolve);
-    }
-  }));
-
-  app.unload();
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
-
 test.run(exports);

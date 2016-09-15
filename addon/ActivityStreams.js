@@ -434,7 +434,6 @@ ActivityStreams.prototype = {
     if (msg) {
       this._tabTracker.handleRouteChange(tabs.activeTab, msg.data);
     }
-    this._appURLHider.maybeHideURL(tabs.activeTab);
   },
 
   _respondToUIChanges(args) {
