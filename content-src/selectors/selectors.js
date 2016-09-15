@@ -125,7 +125,7 @@ module.exports.selectNewTabSites = createSelector(
         dedupe: topSitesRows,
         sites: WeightedHighlights.rows,
         max: BOTTOM_HIGHLIGHTS_LENGTH + TOP_HIGHLIGHTS_LENGTH,
-        defaults: firstRunData.Highlights
+        defaults: assignImageAndBackgroundColor(firstRunData.Highlights)
       });
     }
 
@@ -151,7 +151,12 @@ module.exports.selectHistory = createSelector(
   (Spotlight, Filter, History, WeightedHighlights, prefWeightedHighlights) => {
     let rows;
     if (prefWeightedHighlights) {
-      rows = WeightedHighlights.rows;
+      rows = selectAndDedupe({
+        sites: WeightedHighlights.rows,
+        dedupe: [],
+        max: TOP_HIGHLIGHTS_LENGTH,
+        defaults: assignImageAndBackgroundColor(firstRunData.Highlights)
+      });
     } else {
       rows = dedupe.one(Spotlight.rows);
     }
