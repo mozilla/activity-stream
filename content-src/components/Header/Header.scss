@@ -49,6 +49,9 @@
         background: $search-glyph-image no-repeat 8px center / $search-glyph-size;
         margin-left: $header-section-spacing;
         max-width: $timeline-max-width;
+
+        // GH#1305: Temporarily disable for current release
+        display: none;
       }
 
       .icon-dismiss {
