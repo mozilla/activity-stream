@@ -1,10 +1,9 @@
 const React = require("react");
-const {Router, Route, IndexRoute, useRouterHistory} = require("react-router");
-const {createHashHistory} = require("history");
+const {Router, Route, IndexRoute, createMemoryHistory} = require("react-router");
 const {connect} = require("react-redux");
 const {actions} = require("common/action-manager");
 
-const history = useRouterHistory(createHashHistory)({queryKey: false});
+const history = createMemoryHistory(document.location.hash.slice(1) || "/");
 let isFirstLoad = true;
 
 const Routes = React.createClass({
