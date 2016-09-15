@@ -28,7 +28,9 @@ const ContextMenu = React.createClass({
             return (<li key={i}><div
               className="submenu"
               ref={option.ref}
-              onClick={() => {}}>
+              onClick={ev => {
+                ev.stopPropagation();
+              }}>
               {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
               {option.label}
               <span className={"icon icon-spacer icon-menu-arrow"} />
