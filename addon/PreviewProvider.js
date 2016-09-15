@@ -11,6 +11,8 @@ const {absPerf} = require("common/AbsPerf");
 
 const ENABLED_PREF = "previews.enabled";
 const METADATA_SOURCE_PREF = "metadataSource";
+const EMBEDLY_SOURCE_NAME = "Embedly";
+const METADATA_SERVICE_SOURCE_NAME = "MetadataService";
 const VERSION_SUFFIX = `?addon_version=${self.version}`;
 const ALLOWED_PREFS = new Set([ENABLED_PREF]);
 
@@ -34,12 +36,13 @@ const DEFAULT_OPTIONS = {
   initFresh: false
 };
 
-function PreviewProvider(tabTracker, metadataStore, options = {}) {
+function PreviewProvider(tabTracker, metadataStore, experimentProvider, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   this._onPrefChange = this._onPrefChange.bind(this);
   this._tippyTopProvider = new TippyTopProvider();
   this._tabTracker = tabTracker;
   this._metadataStore = metadataStore;
+  this._experimentProvider = experimentProvider;
   this.init();
 }
 
@@ -57,14 +60,14 @@ PreviewProvider.prototype = {
 
   /**
     * Gets the current metadata source name based on the
-    * pref, and falls back to Embedly if it doesn't exist
+    * pref or the experiment, and falls back to Embedly if it doesn't exist
     */
   _getMetadataSourceName() {
     let source = simplePrefs.prefs[METADATA_SOURCE_PREF];
     if (!this._metadataEndpoints.has(source)) {
       // set it to a default if the current endpoint was poorly set by the user
       // defensive programming ftw
-      return "Embedly";
+      source = EMBEDLY_SOURCE_NAME;
     }
     return source;
   },
@@ -351,10 +354,15 @@ PreviewProvider.prototype = {
   init() {
     this._alreadyRequested = new Set();
     this._metadataEndpoints = new Map();
-    this._metadataEndpoints.set("MetadataService", simplePrefs.prefs["metadata.endpoint"]);
-    this._metadataEndpoints.set("Embedly", simplePrefs.prefs["embedly.endpoint"]);
+    this._metadataEndpoints.set(METADATA_SERVICE_SOURCE_NAME, simplePrefs.prefs["metadata.endpoint"]);
+    this._metadataEndpoints.set(EMBEDLY_SOURCE_NAME, simplePrefs.prefs["embedly.endpoint"]);
     this.enabled = simplePrefs.prefs[ENABLED_PREF];
     simplePrefs.on("", this._onPrefChange);
+
+    // if we are in the experiment change the metadata source
+    if (this._experimentProvider.data.metadataService) {
+      simplePrefs.prefs[METADATA_SOURCE_PREF] = METADATA_SERVICE_SOURCE_NAME;
+    }
   },
 
   /**

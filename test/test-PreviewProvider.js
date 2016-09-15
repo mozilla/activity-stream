@@ -35,6 +35,25 @@ let gEmbedlyPref = simplePrefs.prefs["embedly.endpoint"];
 let gMetadataPref = simplePrefs.prefs["metadata.endpoint"];
 let gPrefEnabled = simplePrefs.prefs["previews.enabled"];
 
+// mocks for metadataStore & tabTracker
+const gMockMetadataStore = {
+  asyncInsert(data) {
+    gMetadataStore.push(data);
+  },
+  asyncGetMetadataByCacheKey(cacheKeys) {
+    let items = [];
+    if (gMetadataStore[0]) {
+      gMetadataStore[0].forEach(item => {
+        if (cacheKeys.includes(item.cache_key)) {
+          items.push(item);
+        }
+      });
+    }
+    return items;
+  }
+};
+const gMockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
+
 exports.test_only_request_links_once = function*(assert) {
   const msg1 = [{"url": "a.com", "sanitized_url": "a.com", "cache_key": "a.com"},
                 {"url": "b.com", "sanitized_url": "b.com", "cache_key": "b.com"},
@@ -417,10 +436,25 @@ exports.test_faulty_metadata_endpoint = function(assert) {
   assert.equal(gPreviewProvider._getMetadataSourceName(), gEmbedlyServiceSource, "fallback to Embedly as source");
 
   // change it back to make sure it overrides
-  simplePrefs.prefs.metadataSource = "MetadataService";
+  simplePrefs.prefs.metadataSource = gMetadataServiceSource;
   endpoint = gPreviewProvider._getMetadataEndpoint();
   assert.equal(endpoint, `${gEndpointPrefix}${gMetadataServiceEndpoint}${metadataVersionQuery}`, "properly set the endpoint");
   assert.equal(gPreviewProvider._getMetadataSourceName(), gMetadataServiceSource, "properly set the source");
+};
+
+exports.test_metadata_service_experiment = function(assert) {
+  // before we decide if we are in the experiment we always have a default of Embedly
+  const oldPrefValue = simplePrefs.prefs.metadataSource;
+  assert.equal(oldPrefValue, gEmbedlyServiceSource, "sanity check that our default is Embedly");
+
+  // force us into the metadataService experiment
+  let mockExperimentProvider = {data: {metadataService: true}};
+  gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
+
+  // should update the pref and the source
+  const newPrefValue = simplePrefs.prefs.metadataSource;
+  assert.equal(gPreviewProvider._getMetadataSourceName(), gMetadataServiceSource, "properly set the source if we are in the experiment");
+  assert.equal(newPrefValue, gMetadataServiceSource, "properly set the actual pref itself");
 };
 
 before(exports, () => {
@@ -428,24 +462,8 @@ before(exports, () => {
   simplePrefs.prefs["embedly.endpoint"] = `${gEndpointPrefix}${gEmbedlyEndpoint}`;
   simplePrefs.prefs["metadata.endpoint"] = `${gEndpointPrefix}${gMetadataServiceEndpoint}`;
   simplePrefs.prefs["previews.enabled"] = true;
-  let mockMetadataStore = {
-    asyncInsert(data) {
-      gMetadataStore.push(data);
-    },
-    asyncGetMetadataByCacheKey(cacheKeys) {
-      let items = [];
-      if (gMetadataStore[0]) {
-        gMetadataStore[0].forEach(item => {
-          if (cacheKeys.includes(item.cache_key)) {
-            items.push(item);
-          }
-        });
-      }
-      return items;
-    }
-  };
-  let mockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
-  gPreviewProvider = new PreviewProvider(mockTabTracker, mockMetadataStore, {initFresh: true});
+  let mockExperimentProvider = {data: {metadataService: false}};
+  gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
 });
 
 after(exports, () => {
