@@ -221,6 +221,7 @@ class Baseline {
   extractImage(images) {
     const image = getBestImage(images);
 
+    // Sanity check: validate that an image exists and we have dimensions before trying to compute size.
     if (!image || !image.width || !image.height) {
       return 0;
     }
