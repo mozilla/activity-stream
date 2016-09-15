@@ -215,7 +215,7 @@
       "name": "experimentOverrides",
       "title": "Sets which experiment(s) are turned on, if defined (use comma separated values)",
       "type": "string",
-      "value": "",
+      "value": "weightedHighlights",
       "hidden": true
     }
   ],
