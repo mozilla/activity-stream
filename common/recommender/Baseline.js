@@ -59,7 +59,7 @@ class Baseline {
   normalize(features) {
     return Object.keys(this.normalizeFeatures).reduce((acc, key) => {
       const {min, max} = this.normalizeFeatures[key];
-      if (max !== min) { // No division by 0.
+      if (max > min) { // No division by 0.
         let delta = max - min;
         acc[key] = (features[key] - min) / delta;
       }
@@ -221,11 +221,12 @@ class Baseline {
   extractImage(images) {
     const image = getBestImage(images);
 
-    if (!image) {
+    // Sanity check: validate that an image exists and we have dimensions before trying to compute size.
+    if (!image || !image.width || !image.height) {
       return 0;
     }
 
-    return Math.min(image.size, 1e5);
+    return Math.min(image.width * image.height, 1e5);
   }
 
   /**
