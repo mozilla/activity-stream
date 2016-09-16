@@ -2,6 +2,7 @@
 "use strict";
 const {Cu} = require("chrome");
 const {setTimeout, clearTimeout} = require("sdk/timers");
+const {absPerf} = require("common/AbsPerf");
 const simplePrefs = require("sdk/simple-prefs");
 
 const POCKET_API_URL = "pocket.endpoint";
@@ -82,9 +83,9 @@ RecommendationProvider.prototype = {
   asyncSetRecommendedContent: Task.async(function*() {
     try {
       let event = this._tabTracker.generateEvent();
-      let startNetworkCall = Date.now();
+      let startNetworkCall = absPerf.now();
       let response = yield this._asyncGetRecommendationsFromPocket();
-      let endNetworkCall = Date.now();
+      let endNetworkCall = absPerf.now();
       this._tabTracker.handlePerformanceEvent(event, "pocketProxyRequestTime", endNetworkCall - startNetworkCall);
       if (response.ok) {
         let responseJson = yield response.json();
