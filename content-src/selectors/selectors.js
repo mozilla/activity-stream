@@ -51,7 +51,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
     state => state.Prefs.prefs.recommendations,
     state => state.Prefs.prefs.metadataRatingSystem,
     selectWeightedHighlights,
-    state => state.Prefs.prefs.weightedHighlights
+    state => state.Experiments.values.weightedHighlights
   ],
   (Highlights, recommendationShown, metadataRating, WeightedHighlights, prefWeightedHighlights) => {
     let rows;
@@ -95,7 +95,7 @@ const selectTopSites = module.exports.selectTopSites = createSelector(
 module.exports.selectNewTabSites = createSelector(
   [
     selectWeightedHighlights,
-    state => state.Prefs.prefs.weightedHighlights,
+    state => state.Experiments.values.weightedHighlights,
     selectTopSites,
     state => state.History,
     selectSpotlight,
@@ -146,7 +146,7 @@ module.exports.selectHistory = createSelector(
     state => state.Filter,
     state => state.History,
     selectWeightedHighlights,
-    state => state.Prefs.prefs.weightedHighlights
+    state => state.Experiments.values.weightedHighlights
   ],
   (Spotlight, Filter, History, WeightedHighlights, prefWeightedHighlights) => {
     let rows;
