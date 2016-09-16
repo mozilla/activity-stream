@@ -269,6 +269,7 @@ TabTracker.prototype = {
 
   onOpen(tab) {
     this._openTabs[tab.id] = {tab, url: tab.url, active: true};
+    this._tabData.tab_id = tab.id;
 
     this.logReady = this.logReady.bind(this);
     this.logPageShow = this.logPageShow.bind(this);
