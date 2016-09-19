@@ -290,25 +290,27 @@ class Baseline {
   }
 
   /**
-   *  Decrease the score for consecutive items from the same domain.
-   *  Combined with sorting by score the result is we don't see consecutive
-   *  items from the same domain.
+   *  Decrease the score for consecutive items which are similar (see `_similarItems`).
+   *  Combined with sorting by score the result is we don't see similar consecutive
+   *  items.
    *
    *  @param {Array} entries - scored and sorted highlight items.
    */
   dedupe(entries) {
     let penalty = 0.6;
 
-    return entries.map((entry, i, arr) => {
-      if (i > 0 && this._similarItems(arr[i - 1], entry)) {
-        let score = entry.score * penalty;
+    entries.reduce((prev, curr) => {
+      if (this._similarItems(prev, curr)) {
+        curr.score *= penalty;
         penalty -= 0.2;
-        return Object.assign({}, entry, {score});
+      } else {
+        penalty = 0.8;
       }
 
-      penalty = 0.8;
-      return entry;
+      return curr;
     });
+
+    return entries;
   }
 }
 
