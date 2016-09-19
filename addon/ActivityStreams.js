@@ -155,10 +155,12 @@ ActivityStreams.prototype = {
   /**
    * Send a message to a worker
    */
-  send(action, worker) {
+  send(action, worker, skipMasterStore) {
     // if the function is async, the worker might not be there yet, or might have already disappeared
     try {
-      this._store.dispatch(action);
+      if (!skipMasterStore) {
+        this._store.dispatch(action);
+      }
       worker.port.emit(ADDON_TO_CONTENT, action);
       this._perfMeter.log(worker.tab, action.type);
     } catch (err) {
@@ -176,12 +178,36 @@ ActivityStreams.prototype = {
     }
   },
 
+  /**
+   * Get from cache and dispatch to store
+   *
+   * @private
+   */
   _processAndDispatchLinks(links, type) {
     this._processLinks(links, type)
       .then(result => {
         const action = am.actions.Response(type, result);
         this._store.dispatch(action);
       });
+  },
+
+  /**
+   * Get from cache and response to content.
+   *
+   * @private
+   */
+  _processAndSendLinks(placesLinks, responseType, worker, options) {
+    const {append} = options || {};
+    // If the type is append, that is, the user is scrolling through pages,
+    // do not add these to the master store
+    const skipMasterStore = append;
+
+    const cachedLinks = this._processLinks(placesLinks, responseType, options);
+
+    cachedLinks.then(linksToSend => {
+      const action = am.actions.Response(responseType, linksToSend, {append});
+      this.send(action, worker, skipMasterStore);
+    });
   },
 
   /**
@@ -289,6 +315,16 @@ ActivityStreams.prototype = {
    */
   _respondToPlacesRequests({msg, worker}) {
     switch (msg.type) {
+      case am.type("RECENT_BOOKMARKS_REQUEST"):
+        PlacesProvider.links.getRecentBookmarks(msg.data).then(links => {
+          this._processAndSendLinks(links, "RECENT_BOOKMARKS_RESPONSE", worker, msg.meta);
+        });
+        break;
+      case am.type("RECENT_LINKS_REQUEST"):
+        PlacesProvider.links.getRecentLinks(msg.data).then(links => {
+          this._processAndSendLinks(links, "RECENT_LINKS_RESPONSE", worker, msg.meta);
+        });
+        break;
       case am.type("NOTIFY_BOOKMARK_ADD"):
         PlacesProvider.links.asyncAddBookmark(msg.data);
         break;
