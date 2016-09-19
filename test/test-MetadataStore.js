@@ -235,21 +235,29 @@ exports.test_color_conversions = function(assert) {
 exports.test_data_expiry = function*(assert) {
   let item = Object.assign({}, metadataFixture[0]);
   let expected = 2;
+  let isDeleted = false;
   let ticked = 0;
 
   gMetadataStore.enableDataExpiryJob(100);
   item.expired_at = Date.now();
   yield gMetadataStore.asyncInsert([].concat(item, metadataFixture.slice(1, 3)));
-  // it waits until the expired item gets deleted or the waitUntil hits the timeout
-  yield waitUntil(function*() {
-    let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
-    if (items.length === expected || ticked++ > 10) {
+  // It waits until the expired item gets deleted or the waitUntil hits the timeout
+  // Note that waitUntil only takes a function, and won't work for generators as
+  // the predicate function
+  yield waitUntil(() => {
+    if (isDeleted || ticked++ > 10) {
       return true;
     }
+    gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata")
+    .then(items => {
+      if (items.length === expected) {
+        isDeleted = true;
+      }
+    });
     return false;
-  }, 1000);
-  let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
-  assert.equal(items.length, expected, "It should have deleted the expired page");
+  }, 500);
+
+  assert.ok(isDeleted, "It should have deleted the expired page");
   gMetadataStore.disableDataExpiryJob();
 };
 
