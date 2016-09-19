@@ -43,5 +43,20 @@
       "threshold": 0.3,
       "description": "Use MetadataService"
     }
+  },
+  "weightedHighlights": {
+    "name": "Weighted Highlights",
+    "active": true,
+    "description": "Use weighted highlights instead of the query based ones.",
+    "control": {
+      "value": false,
+      "description": "Use the query based system."
+    },
+    "variant": {
+      "id": "exp-003-weighted-highlights",
+      "value": true,
+      "threshold": 0.4,
+      "description": "Use the score based highlights."
+    }
   }
 }
