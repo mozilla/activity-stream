@@ -222,7 +222,7 @@ ActivityStreams.prototype = {
     if (this._baselineRecommender === null) {
       this._store.dispatch(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", []));
     } else {
-      provider.getHighlightsLinks().then(highlightsLinks => {
+      provider.getRecentlyVisited().then(highlightsLinks => {
         let cachedLinks = this._processLinks(highlightsLinks, "WEIGHTED_HIGHLIGHTS_RESPONSE");
         cachedLinks.then(highlightsWithMeta => {
           this._store.dispatch(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", this._baselineRecommender.scoreEntries(highlightsWithMeta)));
