@@ -335,7 +335,7 @@ Links.prototype = {
    * @returns {Promise} Returns a promise with the array of links as payload.
    */
   _getHistoryLinks: Task.async(function*(options = {}) {
-    let {limit, afterDate, beforeDate, order, ignoreBlocked} = options;
+    let {limit, afterDate, beforeDate, filter, order, ignoreBlocked} = options;
     if (!limit || limit.options > LINKS_QUERY_LIMIT) {
       limit = LINKS_QUERY_LIMIT;
     }
@@ -357,6 +357,22 @@ Links.prototype = {
     if (beforeDate) {
       beforeDateClause = "AND moz_places.last_visit_date < :beforeDate * 1000";
       params.beforeDate = beforeDate;
+    }
+
+    // setup filter binding and sql clause
+    let filterClause = "";
+    if (filter) {
+      // Match each token in either the title or url
+      let tokens = filter.trim().toLowerCase().split(/\s+/);
+      tokens.forEach((token, i) => {
+        filterClause = `${filterClause} AND (
+                          moz_places.title LIKE :filter${i} OR
+                          moz_places.url LIKE :filter${i})`;
+        params[`filter${i}`] = `%${token}%`;
+      });
+    }
+    else {
+      filter = "";
     }
 
     // setup order by clause
@@ -384,6 +400,7 @@ Links.prototype = {
                      AND moz_places.url NOT IN (${blockedURLs})
                      ${afterDateClause}
                      ${beforeDateClause}
+                     ${filterClause}
                      ${orderbyClause}
                      LIMIT :limit`;
 
@@ -392,6 +409,9 @@ Links.prototype = {
                 "frecency", "type", "bookmarkGuid", "bookmarkDateCreated"],
       params
     });
+
+    // Remember how these results were filtered
+    links = links.map(link => Object.assign(link, {filter}));
 
     links = this._faviconBytesToDataURI(links);
     return links.filter(link => LinkChecker.checkLoadURI(link.url));

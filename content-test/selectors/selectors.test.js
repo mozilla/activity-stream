@@ -189,6 +189,31 @@ describe("selectors", () => {
       });
     });
   });
+  describe("selectHistory keep less filtered rows", () => {
+    const rows = [
+      {filter: ""},
+      {filter: "a"},
+      {filter: "ab"}
+    ];
+    function doSelect(query) {
+      return selectHistory(Object.assign({}, fakeState, {
+        Filter: {query},
+        History: {rows}
+      }));
+    }
+    it("should keep only unfiltered for empty", () => {
+      let state = doSelect("");
+      assert.lengthOf(state.History.rows, 1);
+    });
+    it("should keep only unfiltered and partially filtered for partial filter", () => {
+      let state = doSelect("a");
+      assert.lengthOf(state.History.rows, 2);
+    });
+    it("should keep all filtered for full filter", () => {
+      let state = doSelect("ab");
+      assert.lengthOf(state.History.rows, 3);
+    });
+  });
   describe("selectNewTabSites", () => {
     let state;
     beforeEach(() => {

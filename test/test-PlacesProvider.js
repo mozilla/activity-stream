@@ -244,11 +244,25 @@ exports.test_Links_getRecentLinks = function*(assert) {
   assert.equal(links[0].url, "https://mozilla3.com/2", "Expected 1-st link");
   assert.equal(links[1].url, "https://mozilla4.com/3", "Expected 2-nd link");
 
-  // test beforeDate functionality
+  // test afterDate functionality
   links = yield provider.getRecentLinks({afterDate: theDate});
   assert.equal(links.length, 2, "should only see two links inserted after the date");
   assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
   assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-nd link");
+
+  // test filter functionality
+  links = yield provider.getRecentLinks({filter: ""});
+  assert.equal(links.length, 4, "should match all links");
+  assert.equal(links[0].filter, "", "should include filter");
+  links = yield provider.getRecentLinks({filter: "a"});
+  assert.equal(links.length, 4, "should match all links");
+  assert.equal(links[0].filter, "a", "should include filter");
+  links = yield provider.getRecentLinks({filter: "a1"});
+  assert.equal(links.length, 1, "should match just mozilla1");
+  assert.equal(links[0].filter, "a1", "should include filter");
+  links = yield provider.getRecentLinks({filter: "a 1"});
+  assert.equal(links.length, 2, "should match mozilla1 and /1");
+  assert.equal(links[0].filter, "a 1", "should include filter");
 };
 
 exports.test_Links_getFrecentLinks = function*(assert) {
