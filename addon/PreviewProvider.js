@@ -7,6 +7,7 @@ const self = require("sdk/self");
 const {TippyTopProvider} = require("addon/TippyTopProvider");
 const {getColor} = require("addon/ColorAnalyzerProvider");
 const {MetadataCache} = require("addon/MetadataCache");
+const {absPerf} = require("common/AbsPerf");
 
 const ENABLED_PREF = "previews.enabled";
 const METADATA_SOURCE_PREF = "metadataSource";
@@ -314,9 +315,9 @@ PreviewProvider.prototype = {
     this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestSentCount", newLinks.length);
     try {
       // Make network call when enabled and record how long the network call took
-      const startNetworkCall = Date.now();
+      const startNetworkCall = absPerf.now();
       let response = yield this._asyncGetLinkData(linkURLs);
-      const endNetworkCall = Date.now();
+      const endNetworkCall = absPerf.now();
       this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestTime", endNetworkCall - startNetworkCall);
 
       if (response.ok) {

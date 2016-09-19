@@ -5,6 +5,8 @@ Cu.import("resource://gre/modules/Services.jsm");
 const tabs = require("sdk/tabs");
 const simplePrefs = require("sdk/simple-prefs");
 
+const {absPerf} = require("common/AbsPerf");
+
 const VALID_TELEMETRY_TAGS = new Set([
   "TAB_READY",
   "WORKER_ATTACHED",
@@ -116,7 +118,7 @@ PerfMeter.prototype = {
     let item = {tag: "TAB_OPEN", start: 0};
     this._tabs[tab.id] = {
       tab,
-      openAt: Date.now(),
+      openAt: absPerf.now(),
       events: [item],
       requests: new Map(),
       workerWasAttached: false
@@ -147,14 +149,14 @@ PerfMeter.prototype = {
             {tag: "TAB_READY", start: 0}
           ];
           tabData.requests = new Map();
-          tabData.openAt = Date.now();
+          tabData.openAt = absPerf.now();
         }
         tabData.workerWasAttached = true;
       }
 
       let item = {
         tag,
-        start: Date.now() - tabData.openAt,
+        start: absPerf.now() - tabData.openAt,
         data
       };
 

@@ -6,6 +6,7 @@ const self = require("sdk/self");
 const {uuid} = require("sdk/util/uuid");
 const simplePrefs = require("sdk/simple-prefs");
 const eventConstants = require("../common/event-constants");
+const {absPerf} = require("common/AbsPerf");
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Locale.jsm");
@@ -177,7 +178,7 @@ TabTracker.prototype = {
       return;
     }
     if (this._tabData.start_time) {
-      this._tabData.session_duration = (Date.now() - this._tabData.start_time);
+      this._tabData.session_duration = (absPerf.now() - this._tabData.start_time);
       delete this._tabData.start_time;
     }
     delete this._tabData.active;
@@ -231,7 +232,7 @@ TabTracker.prototype = {
       // we need to restore tab_id and url, because they could have been errased
       // by a call navigateAwayFromPage() caused by another tab
       this._initTabSession(tab, this._tabData.load_reason || "focus");
-      this._tabData.start_time = Date.now();
+      this._tabData.start_time = absPerf.now();
 
       // URL stored in this._openTabs object keeps the previous URL after the tab.url
       // is replaced with a different page URL, as in click action of page reload
