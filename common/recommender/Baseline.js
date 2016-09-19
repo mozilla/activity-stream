@@ -277,23 +277,16 @@ class Baseline {
   /**
    * Determine if two entries are similar. Used to lower the score for similar consecutive items.
    *
-   * @param {Object} a
-   * @param {Object} b
+   * @param {Object} prev
+   * @param {Object} curr
    * @returns {boolean}
    * @private
    */
-  _similarItems(a, b) {
-    if (a.host === b.host) {
-      return true;
-    }
-
-    const imageA = getBestImage(a.images);
-    const imageB = getBestImage(b.images);
-    if (imageA && imageB) {
-      return imageA.url === imageB.url;
-    }
-
-    return false;
+  _similarItems(prev, curr) {
+    const imgPrev = getBestImage(prev.images);
+    const imgCurr = getBestImage(curr.images);
+    const hasImage = imgPrev && imgCurr;
+    return prev.host === curr.host || (hasImage && imgPrev.url === imgCurr.url);
   }
 
   /**
