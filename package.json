@@ -26,7 +26,7 @@
     "url-parse": "1.1.3"
   },
   "devDependencies": {
-    "@kadira/storybook": "2.13.0",
+    "@kadira/storybook": "2.15.0",
     "babel": "6.5.2",
     "babel-core": "6.14.0",
     "babel-loader": "6.2.5",
