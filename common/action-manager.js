@@ -66,13 +66,25 @@ am.ACTIONS_WITH_SITES = new Set([
   "HIGHLIGHTS_LINKS_RESPONSE"
 ].map(type => am.type(type)));
 
-function Notify(type, data) {
+/**
+ * Notify - Notify add-on action
+ *
+ * @param  {string} type  name of the action
+ * @param  {obj} data    (optional) data associated with the action
+ * @param  {obj} meta    (optional) options to be included in the meta part of the action.
+ *               meta.skipMasterStore - Does not dispatch to the master store
+ * @return {obj} action   The final action as a plain object
+ */
+function Notify(type, data, meta) {
   const action = {
     type,
     meta: {broadcast: eventConstants.CONTENT_TO_ADDON}
   };
   if (data) {
     action.data = data;
+  }
+  if (meta) {
+    action.meta = Object.assign(action.meta, meta);
   }
   return action;
 }
@@ -169,7 +181,7 @@ function NotifyManageEngines() {
 }
 
 function NotifyUpdateSearchString(searchString) {
-  return Notify("NOTIFY_UPDATE_SEARCH_STRING", {searchString});
+  return Notify("NOTIFY_UPDATE_SEARCH_STRING", {searchString}, {skipMasterStore: true});
 }
 
 function RequestExperiments() {

@@ -373,27 +373,15 @@ ActivityStreams.prototype = {
     const gBrowser = win.getBrowser();
     const browser = gBrowser.selectedBrowser;
     switch (msg.type) {
-      case am.type("SEARCH_STATE_REQUEST"):
-        SearchProvider.search.asyncGetCurrentState().then(state => {
-          let currentEngine = JSON.stringify(state.currentEngine);
-          state.currentEngine = currentEngine;
-          this.send(am.actions.Response("SEARCH_STATE_RESPONSE", state), worker);
-        });
-        break;
       case am.type("NOTIFY_PERFORM_SEARCH"):
         SearchProvider.search.asyncPerformSearch(browser, msg.data);
         break;
-      case am.type("SEARCH_UISTRINGS_REQUEST"): {
-        const strings = SearchProvider.search.searchSuggestionUIStrings;
-        this.send(am.actions.Response("SEARCH_UISTRINGS_RESPONSE", strings), worker);
-        break;
-      }
       case am.type("SEARCH_SUGGESTIONS_REQUEST"):
         Task.spawn(function*() {
           try {
             const suggestions = yield SearchProvider.search.asyncGetSuggestions(browser, msg.data);
             if (suggestions) {
-              this.send(am.actions.Response("SEARCH_SUGGESTIONS_RESPONSE", suggestions), worker);
+              this.send(am.actions.Response("SEARCH_SUGGESTIONS_RESPONSE", suggestions), worker, true);
             }
           } catch (e) {
             Cu.reportError(e);
@@ -526,7 +514,9 @@ ActivityStreams.prototype = {
       this._logPerfMeter(args);
 
       // Dispatch to store, to synchronize it
-      this._store.dispatch(args.msg);
+      if (!args.msg.meta || !args.msg.meta.skipMasterStore) {
+        this._store.dispatch(args.msg);
+      }
 
       // Other handlers
       this._respondToUIChanges(args);
