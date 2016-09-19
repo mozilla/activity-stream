@@ -72,7 +72,8 @@ const DebugPage = React.createClass({
                 {selectSpotlight({
                   Highlights: this.props.raw[this.state.dataSource],
                   WeightedHighlights: this.props.raw[this.state.dataSource],
-                  Prefs: this.props.raw.Prefs
+                  Prefs: this.props.raw.Prefs,
+                  Experiments: this.props.raw.Experiments
                 }).rows.map((item, i) =>
                   (<SpotlightItem key={i} {...item} />))
                 }
