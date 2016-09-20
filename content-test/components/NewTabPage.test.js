@@ -3,6 +3,7 @@ const TestUtils = require("react-addons-test-utils");
 const ConnectedNewTabPage = require("components/NewTabPage/NewTabPage");
 const {NewTabPage} = ConnectedNewTabPage;
 const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
+const SpotlightFeed = require("components/Spotlight/SpotlightFeed");
 const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
 const {mockData, renderWithProvider} = require("test/test-utils");
@@ -50,6 +51,24 @@ describe("NewTabPage", () => {
     const container = renderWithProvider(<ConnectedNewTabPage />);
     const inner = TestUtils.findRenderedComponentWithType(container, NewTabPage);
     Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
+  });
+
+  describe("weightedHighlights set to true", () => {
+    let weightedSpotlight;
+    beforeEach(() => {
+      weightedSpotlight = Object.assign({}, fakeProps.WeightedHighlights);
+      weightedSpotlight.weightedHighlights = true;
+      const newProps = Object.assign({}, fakeProps, {Spotlight: weightedSpotlight});
+
+      instance = renderWithProvider(<NewTabPage {...newProps} dispatch={() => {}} />);
+    });
+
+    it("should render SpotlightFeed with correct data", () => {
+      const spotlightFeed = TestUtils.findRenderedComponentWithType(instance, SpotlightFeed);
+      const feedSites = weightedSpotlight.rows.slice(3);
+
+      spotlightFeed.props.sites.forEach((site, i) => assert.equal(site, feedSites[i]));
+    });
   });
 
   describe("settings", () => {
