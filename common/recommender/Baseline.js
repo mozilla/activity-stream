@@ -297,7 +297,7 @@ class Baseline {
    *  @param {Array} entries - scored and sorted highlight items.
    */
   dedupe(entries) {
-    let penalty = 0.6;
+    let penalty = 0.8;
 
     if (entries.length < 2) {
       return entries;
