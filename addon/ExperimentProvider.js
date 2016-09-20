@@ -10,6 +10,8 @@ exports.ExperimentProvider = class ExperimentProvider {
     this._rng = rng || seedrandom(clientID);
     this._data = {};
     this._experimentId = null;
+
+    this.init();
   }
 
   init() {
