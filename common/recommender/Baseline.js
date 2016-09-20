@@ -299,6 +299,10 @@ class Baseline {
   dedupe(entries) {
     let penalty = 0.6;
 
+    if (entries.length < 2) {
+      return entries;
+    }
+
     entries.reduce((prev, curr) => {
       if (this._similarItems(prev, curr)) {
         curr.score *= penalty;
