@@ -68,7 +68,7 @@
     "mocha": "3.0.2",
     "node-sass": "3.9.3",
     "npm-run-all": "3.1.0",
-    "react-addons-test-utils": "15.3.1",
+    "react-addons-test-utils": "15.3.2",
     "requirejs": "2.3.2",
     "rimraf": "2.5.4",
     "sass-lint": "1.9.1",
