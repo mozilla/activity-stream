@@ -159,6 +159,44 @@ describe("Baseline", () => {
     assert.ok(items[1].score > items[2].score);
   });
 
+  it("should decrease score for consecutive items with same image", () => {
+    let fakeUrlsWithScore = [
+      {host: "foo.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.sameimage.jpg"}], score: 1},
+      {host: "bar.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.sameimage.jpg"}], score: 1},
+      {host: "bar.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.sameimage.jpg"}], score: 1},
+      {host: "diff.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.diffimage.jpg"}], score: 1}
+    ];
+    let items = baseline.dedupe(fakeUrlsWithScore);
+    assert.ok(items[0].score > items[1].score);
+    assert.ok(items[1].score > items[2].score);
+    assert.equal(items[1].score, 0.8);
+    assert.equal(items[3].score, 1);
+  });
+
+  it("should decrease score for consecutive items with same image (1 entry)", () => {
+    let fakeUrlsWithScore = [
+      {host: "foo.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.sameimage.jpg"}], score: 1}
+    ];
+    let items = baseline.dedupe(fakeUrlsWithScore);
+    assert.equal(items[0].score, 1);
+  });
+
+  it("should decrease score for consecutive items with same image (no entries)", () => {
+    let items = baseline.dedupe([]);
+    assert.equal(items.length, 0);
+  });
+
+  it("should reset penalty coefficient after 2 consecutive & different items in the list", () => {
+    let fakeUrlsWithScore = [
+      {host: "foo.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.sameimage.jpg"}], score: 1},
+      {host: "bar.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.sameimage.jpg"}], score: 1},
+      {host: "diff.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.diffimage.jpg"}], score: 1},
+      {host: "diff.com", images: [{size: 1000, width: 300, height: 300, url: "http://www.diffimage.jpg"}], score: 1}
+    ];
+    let items = baseline.dedupe(fakeUrlsWithScore);
+    assert.equal(items[3].score, 0.8);
+  });
+
   it("should decrease by the right amount", () => {
     let fakeUrlsWithScore = fakeUrls.map(url => Object.assign({}, url, {score: 1}));
     let items = baseline.dedupe(fakeUrlsWithScore);

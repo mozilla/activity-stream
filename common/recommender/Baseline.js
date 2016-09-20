@@ -275,25 +275,46 @@ class Baseline {
   }
 
   /**
-   *  Decrease the score for consecutive items from the same domain.
-   *  Combined with sorting by score the result is we don't see consecutive
-   *  items from the same domain.
+   * Determine if two entries are similar. Used to lower the score for similar consecutive items.
+   *
+   * @param {Object} prev
+   * @param {Object} curr
+   * @returns {boolean}
+   * @private
+   */
+  _similarItems(prev, curr) {
+    const imgPrev = getBestImage(prev.images);
+    const imgCurr = getBestImage(curr.images);
+    const hasImage = imgPrev && imgCurr;
+    return prev.host === curr.host || (hasImage && imgPrev.url === imgCurr.url);
+  }
+
+  /**
+   *  Decrease the score for consecutive items which are similar (see `_similarItems`).
+   *  Combined with sorting by score the result is we don't see similar consecutive
+   *  items.
    *
    *  @param {Array} entries - scored and sorted highlight items.
    */
   dedupe(entries) {
-    let penalty = 0.6;
+    let penalty = 0.8;
 
-    return entries.map((entry, i, arr) => {
-      if (i > 0 && arr[i - 1].host === entry.host) {
-        let score = entry.score * penalty;
+    if (entries.length < 2) {
+      return entries;
+    }
+
+    entries.reduce((prev, curr) => {
+      if (this._similarItems(prev, curr)) {
+        curr.score *= penalty;
         penalty -= 0.2;
-        return Object.assign({}, entry, {score});
+      } else {
+        penalty = 0.8;
       }
 
-      penalty = 0.8;
-      return entry;
+      return curr;
     });
+
+    return entries;
   }
 }
 
