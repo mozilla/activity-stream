@@ -53,10 +53,14 @@ scripts:
     lint: =>lint
     checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests
-    jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./test-prefs.json -v
+    jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./test-prefs.json -v -f "^(?!.*benchmark)"
     # test:karma: Run content tests only
     karma: NODE_ENV=test karma start
     post: cat logs/reports/coverage/text-summary.txt
+
+  benchmark-with: =>bundle && JSGC_DISABLE_POISONING=1 jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./benchmark-prefs.json
+# benchmark: Run all benchmarks
+  benchmark: =>benchmark-with -- -f ".*benchmark.js"
 
 # tdd: Run content tests continuously
   tdd: =>test:karma -- --no-single-run --browsers Chrome
