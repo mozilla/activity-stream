@@ -106,16 +106,60 @@ ActivityFeedItem.propTypes = {
   parsedUrl: React.PropTypes.shape({hostname: React.PropTypes.string})
 };
 
+/**
+ * Find sites that match the filter query by checking for word-boundary matches
+ * of every search token. Word boundaries include CamelCasing and any non-ASCII
+ * letter (to match non-English words). The matching is normally handled case-
+ * insensitively until an upper-case character is used.
+ */
 function filterSites(filter, sites) {
   if (!filter) {
     return sites;
   }
 
-  // Do a case-insensitive matching of all search terms finding tokens somewhere
-  // in the title or url.
-  const tokens = filter.trim().toLowerCase().split(/\s+/);
-  return sites.filter(site => tokens.every(token =>
-    `${site.title || site.provider_display || ""} ${site.url}`.toLowerCase().search(token) !== -1));
+  // Do a case-sensitive match if the query has upper case
+  const lowerFilter = filter.toLowerCase();
+  const matchCase = filter !== lowerFilter;
+
+  // Find sites that match all the search terms somewhere in the title or url
+  const tokens = filter.trim().split(/\s+/);
+  return sites.filter(site => {
+    // Combine the title and url as one large text string
+    const text = `${site.title || site.provider_display || ""} ${site.url}`.trim();
+
+    // Save the lengths of various strings being compared
+    const textLen = text.length;
+    return tokens.every(token => {
+      const tokenLen = token.length;
+
+      // Track the position of the text as we skip past interior of words
+      let i = 0;
+
+      // Each iteration of this loop positions `i` at a word boundary
+      do {
+        // Check if the starting characters from the current position match the
+        // current token -- case-sensitively if desired
+        let prefix = text.slice(i, i + tokenLen);
+        if (prefix[matchCase ? "toString" : "toLowerCase"]() === token) {
+          return true;
+        }
+
+        // Move to the next character and potentially past more if within a word
+        if (text[i++].match(/[a-z]/i)) {
+          while (i < textLen && text[i].match(/[a-z]/)) {
+            i++;
+          }
+        }
+
+        // Skip past any whitespace
+        while (i < textLen && text[i].match(/\s/)) {
+          i++;
+        }
+      } while (i < textLen);
+
+      return false;
+    });
+  });
 }
 
 function groupSitesBySession(sites) {
