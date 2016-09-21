@@ -22,6 +22,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
 // use time at the start of the tests, chnaging it inside timeDaysAgo()
 // may cause tiny time differences, which break expected sql ordering
 const TIME_NOW = (new Date()).getTime();
+const {LINKS_QUERY_LIMIT} = require("../common/constants");
 
 // utility function to compute past timestamp in microseconds
 function timeDaysAgo(numDays) {
@@ -186,7 +187,27 @@ exports.test_Links_getRecentlyVisited = function*(assert) {
 
   let links = yield provider.getRecentlyVisited();
   assert.equal(links.length > 0, true, "it should retrieve some links");
-  assert.equal(links.length, 22, "query should not retrieve links older than 4 days");
+  assert.equal(links.length, LINKS_QUERY_LIMIT + 2, "query should not retrieve links older than 4 days");
+};
+
+exports.test_Links_getRecentlyVisited_old_links = function*(assert) {
+  let provider = PlacesProvider.links;
+  let {TRANSITION_TYPED} = PlacesUtils.history;
+  const visits = [];
+
+  for (let i = 0; i < 24; i++) {
+    visits.push({
+      uri: NetUtil.newURI(`https://example${i}.com/`),
+      visitDate: timeDaysAgo(5),
+      transition: TRANSITION_TYPED
+    });
+  }
+
+  yield PlacesTestUtils.addVisits(visits);
+
+  let links = yield provider.getRecentlyVisited();
+  assert.equal(links.length > 0, true, "it should retrieve some links");
+  assert.equal(links.length, LINKS_QUERY_LIMIT, "query should retrieve the old links if nothing recent is available");
 };
 
 exports.test_Links_getRecentLinks = function*(assert) {
