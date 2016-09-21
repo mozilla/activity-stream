@@ -2,6 +2,8 @@
 "use strict";
 
 const {Ci, Cu} = require("chrome");
+const prefs = require("sdk/preferences/service");
+const self = require("sdk/self");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
@@ -299,4 +301,15 @@ Benchmark.prototype = {
   })
 };
 
+const PREF_LOG_LEVEL = `extensions.${self.id}.sdk.console.logLevel`;
+
+// forceLog allows the user to use the console.log() regardless the current log level
+function forceLog() {
+  let logLevel = prefs.get(PREF_LOG_LEVEL, "error");
+  prefs.set(PREF_LOG_LEVEL, "info");
+  console.log.call(console, ...arguments); // eslint-disable-line
+  prefs.set(PREF_LOG_LEVEL, logLevel);
+}
+
 exports.Benchmark = Benchmark;
+exports.forceLog = forceLog;
