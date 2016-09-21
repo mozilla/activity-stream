@@ -1,7 +1,9 @@
 activity-streams-env/
 addon/SimpleStorage.js
+addon/ColorAnalyzer.js
 common/vendor.js
 data/content/
 firefox/
 logs/
 test/test-SimpleStorage.js
+test/test-ColorAnalyzer.js
