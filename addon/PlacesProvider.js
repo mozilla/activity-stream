@@ -667,11 +667,10 @@ Links.prototype = {
 
   /**
    * Obtain a set of links to rank.
-   * Get MAX(all links visited in the past 4 days, last 20 links).
+   * Get all links visited in the past 4 days or default to last 20 links.
    * Last 20 links is used as fallback in case there is no recent history.
    *
    * @param {Object} options
-   *        {Integer} limit: Maximum number of results to return. Max 20
    *
    * @returns {Promise} Returns a promise with the array of links as payload.
    */
