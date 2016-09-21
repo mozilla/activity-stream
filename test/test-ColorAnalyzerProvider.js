@@ -1,6 +1,6 @@
 const test = require("sdk/test");
 const {getColor} = require("addon/ColorAnalyzerProvider");
-const {colors} = require("./resources/colors");
+const {colors, fails} = require("./resources/colors");
 
 exports["test getColor"] = function*(assert) {
   for (let color of colors) {
@@ -10,10 +10,12 @@ exports["test getColor"] = function*(assert) {
 };
 
 exports["test getColor errors"] = function*(assert) {
-  try {
-    yield getColor("badURIhahaha");
-  } catch (e) {
-    assert.equal(e.message, "There was an error processing this image", "should throw the right error");
+  for (let i = 0; i < fails.length; i++) {
+    try {
+      yield getColor(fails[i]);
+    } catch (e) {
+      assert.ok(e, `image ${i} should throw the right error`);
+    }
   }
 };
 

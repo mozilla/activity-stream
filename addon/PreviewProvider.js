@@ -172,7 +172,7 @@ PreviewProvider.prototype = {
           resolve(link);
           return;
         }
-        getColor(link.favicon).then(color => {
+        getColor(link.favicon, link.url).then(color => {
           resolve(Object.assign({}, link, {favicon_color: color}));
         }, () => resolve(link));
       })
