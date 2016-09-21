@@ -81,6 +81,17 @@ from each other for a free and awesome web!
 
 ## Unit Tests ##
 
+We have a [detailed write-up](https://github.com/mozilla/activity-stream/blob/master/content-test/addon-tests-how-to.md) on
+Activity Stream unit testing.  This is an important read, as there are **significant** JavaScript differences when
+writing Firefox add-on code that must be taken into consideration.
+
+Our build process will run unit tests and code coverage tools automatically.  Make sure to put your tests in
+`content-test` directory, that all tests pass, and that you are
+not responsible for unduly decreasing the overall code coverage percentage.
+
+To run tests from the command line:
+
+`npm run test`
 
 
 ## Triage ##
