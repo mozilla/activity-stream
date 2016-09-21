@@ -1,4 +1,4 @@
-# Contributing to the Activity Stream  Firefox addon
+# Contributing to the Activity Stream  Firefox add-on
 
 Activity Stream is an experiment to enhance the functionality of Firefox's about:newtab page.  We welcome new 'streamers' to contribute to the project!
 
@@ -7,9 +7,9 @@ Activity Stream is an experiment to enhance the functionality of Firefox's about
 
 ## Architecture ##
 
-Activity stream is a Firefox addon.  It uses the Firefox [Addon SDK](https://developer.mozilla.org/en-US/Add-ons/SDK) and
-is written in Javascript.  One of the cool things about Activity Stream is that the 
-[content side of the addon](https://developer.mozilla.org/en-US/Add-ons/SDK/Guides/Content_Scripts)
+Activity Stream is a Firefox add-on.  It uses the Firefox [Add-on SDK](https://developer.mozilla.org/en-US/Add-ons/SDK) and
+is written in JavaScript.  One of the cool things about Activity Stream is that the 
+[content side of the add-on](https://developer.mozilla.org/en-US/Add-ons/SDK/Guides/Content_Scripts)
 is written using [ReactJS](https://facebook.github.io/react/).  This makes it an awesome project for React hackers to contribute to!
 
 ## Finding Bugs, Filing Tickets, Earning Karma ##
@@ -19,7 +19,6 @@ a bug, or have a feature idea that you you'd like to see in Activity Stream, fol
 - Pick a thoughtful and terse title for the issue (ie. *not* Thing Doesn't Work!)
 - Make sure to mention your Firefox version, OS and basic system parameters (eg. Firefox 49.0, Windows XP, 512KB RAM)
 - If you can reproduce the bug, give a step-by-step recipe
-- You probably don't want to tag the bug, but if you must, pick either `Bug` or `Feature`
 - Include [stack traces from the console(s)](https://developer.mozilla.org/en-US/docs/Mozilla/Debugging/Debugging_JavaScript) where appropriate
 - Screenshots welcome!
 - When in doubt, take a look at some [existing issues](https://github.com/mozilla/activity-stream/issues) and emulate 
@@ -43,10 +42,13 @@ All tickets that have been [triaged](#triage) will have a priority tag of either
 priorities of tickets in Activity Stream.  We love ticket tags and you might also see `Blocked`, `Critical` or `Chemspill` tags, which
 indicate our level of anxiety about that particular ticket.  
 
-If you are new to the repo, you might want to pay close attention to `Good first bug`, `Bug`, `Chore` and `Polish` tags, as these are
+If you are new to the repo, you might want to pay close attention to [`Good first bug`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+first+bug%22),
+ [`Bug`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen%20is%3Aissue%20label%3ABug%20), 
+ [`Chore`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen+is%3Aissue+label%3AChore) and 
+ [`Polish`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen+is%3Aissue+label%3APolish) tags, as these are
 typically a great way to get started.  You might see a bug that is not yet assigned to anyone, or start a conversation with
 an engineer in the ticket itself, expressing your interest in taking the bug.  If you take the bug, someone will set
-the ticket to `Assigned to Contributor`, which is a way we can be pro-active about helping you succeed in fixing the bug.
+the ticket to [`Assigned to Contributor`](https://github.com/mozilla/activity-stream/issues?utf8=%E2%9C%93&q=is%3Aopen%20is%3Aissue%20label%3A%22Assigned%20to%20contributor%22%20), which is a way we can be pro-active about helping you succeed in fixing the bug.
 
 ## Pull Requests ##
 
