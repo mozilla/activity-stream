@@ -101,7 +101,7 @@ function ActivityStreams(metadataStore, options = {}) {
     this._experimentProvider.experimentId
   );
 
-  this._previewProvider = new PreviewProvider(this._tabTracker, metadataStore);
+  this._previewProvider = new PreviewProvider(this._tabTracker, metadataStore, this._experimentProvider);
 
   this._populatingCache = {places: false};
 

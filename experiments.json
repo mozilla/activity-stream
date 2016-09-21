@@ -28,5 +28,20 @@
       "threshold": 0.3,
       "description": "Show a recommendation in the third highlights spot"
     }
+  },
+  "metadataService": {
+    "name": "Use Mozilla MetadataService",
+    "active": false,
+    "description": "Compute metadata using MetadataService",
+    "control": {
+      "value": false,
+      "description": "Use Embedly"
+    },
+    "variant": {
+      "id": "exp-003-metadata-service",
+      "value": true,
+      "threshold": 0.3,
+      "description": "Use MetadataService"
+    }
   }
 }

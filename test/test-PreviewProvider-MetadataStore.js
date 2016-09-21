@@ -13,6 +13,7 @@ const {metadataFixture} = require("./lib/MetastoreFixture.js");
 
 const gMetadataStore = new MetadataStore();
 const gPort = 8079;
+const gEmbedly = "Embedly";
 let gPreviewProvider;
 let gPrefEmbedly = simplePrefs.prefs["embedly.endpoint"];
 let gPrefEnabled = simplePrefs.prefs["previews.enabled"];
@@ -119,11 +120,12 @@ function waitForAsyncReset() {
 }
 
 before(exports, function*() {
+  simplePrefs.prefs.metadataSource = gEmbedly;
   simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/previewProviderMetadataStore`;
   simplePrefs.prefs["previews.enabled"] = true;
   yield gMetadataStore.asyncConnect();
   let mockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
-  gPreviewProvider = new PreviewProvider(mockTabTracker, gMetadataStore, {initFresh: true});
+  gPreviewProvider = new PreviewProvider(mockTabTracker, gMetadataStore, {data: {metadataService: false}}, {initFresh: true});
 });
 
 after(exports, function*() {
