@@ -55,7 +55,8 @@ const DEFAULT_OPTIONS = {
   placesCacheTimeout: 1800000, // every 30 minutes, rebuild/repopulate the cache
   recommendationTTL: 3600000, // every hour, get a new recommendation
   shareProvider: null,
-  pageScraper: null
+  pageScraper: null,
+  searchProvider: null
 };
 
 const PLACES_CHANGES_EVENTS = [
@@ -73,6 +74,13 @@ const HOME_PAGE_PREF = "browser.startup.homepage";
 function ActivityStreams(metadataStore, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   EventEmitter.decorate(this);
+
+  if (!this.options.searchProvider) {
+    this._searchProvider = new SearchProvider();
+  } else {
+    this._searchProvider = this.options.searchProvider;
+  }
+  this._searchProvider.init();
 
   this._store = createStore();
 
@@ -164,6 +172,7 @@ ActivityStreams.prototype = {
   _pagemod: null,
   _button: null,
   _newRecommendationTimeoutID: null,
+  _isUnloaded: false,
 
   /**
    * Send a message to a worker
@@ -264,13 +273,12 @@ ActivityStreams.prototype = {
     });
 
     // Search
-    SearchProvider.search.asyncGetCurrentState().then(state => {
-      let currentEngine = JSON.stringify(state.currentEngine);
-      state.currentEngine = currentEngine;
-      this._store.dispatch(am.actions.Response("SEARCH_STATE_RESPONSE", state));
-    });
+    let state = this._searchProvider.currentState;
+    let currentEngine = JSON.stringify(state.currentEngine);
+    state.currentEngine = currentEngine;
+    this._store.dispatch(am.actions.Response("SEARCH_STATE_RESPONSE", state));
 
-    const strings = SearchProvider.search.searchSuggestionUIStrings;
+    const strings = this._searchProvider.searchSuggestionUIStrings;
     this._store.dispatch(am.actions.Response("SEARCH_UISTRINGS_RESPONSE", strings));
 
     this._store.dispatch(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
@@ -387,12 +395,12 @@ ActivityStreams.prototype = {
     const browser = gBrowser.selectedBrowser;
     switch (msg.type) {
       case am.type("NOTIFY_PERFORM_SEARCH"):
-        SearchProvider.search.asyncPerformSearch(browser, msg.data);
+        this._searchProvider.asyncPerformSearch(browser, msg.data);
         break;
       case am.type("SEARCH_SUGGESTIONS_REQUEST"):
         Task.spawn(function*() {
           try {
-            const suggestions = yield SearchProvider.search.asyncGetSuggestions(browser, msg.data);
+            const suggestions = yield this._searchProvider.asyncGetSuggestions(browser, msg.data);
             if (suggestions) {
               this.send(am.actions.Response("SEARCH_SUGGESTIONS_RESPONSE", suggestions), worker, true);
             }
@@ -403,15 +411,15 @@ ActivityStreams.prototype = {
         break;
       case am.type("NOTIFY_REMOVE_FORM_HISTORY_ENTRY"): {
         let entry = msg.data;
-        SearchProvider.search.removeFormHistoryEntry(browser, entry);
+        this._searchProvider.removeFormHistoryEntry(browser, entry);
         break;
       }
       case am.type("NOTIFY_MANAGE_ENGINES"):
-        SearchProvider.search.manageEngines(browser);
+        this._searchProvider.manageEngines(browser);
         break;
       case am.type("SEARCH_CYCLE_CURRENT_ENGINE_REQUEST"): {
-        SearchProvider.search.cycleCurrentEngine(msg.data);
-        let engine = SearchProvider.search.currentEngine;
+        this._searchProvider.cycleCurrentEngine(msg.data);
+        let engine = this._searchProvider.currentEngine;
         this.send(am.actions.Response("SEARCH_CYCLE_CURRENT_ENGINE_RESPONSE", {currentEngine: engine}), worker);
         break;
       }
@@ -518,7 +526,7 @@ ActivityStreams.prototype = {
     PLACES_CHANGES_EVENTS.forEach(event => PlacesProvider.links.on(event, this._handlePlacesChanges));
 
     this._handleCurrentEngineChanges = this._handleCurrentEngineChanges.bind(this);
-    SearchProvider.search.on("browser-search-engine-modified", this._handleCurrentEngineChanges);
+    this._searchProvider.on("browser-search-engine-modified", this._handleCurrentEngineChanges);
 
     // This is a collection of handlers that receive messages from content
     this._contentToAddonHandlers = (msgName, args) => {
@@ -583,7 +591,7 @@ ActivityStreams.prototype = {
    */
   _removeListeners() {
     PLACES_CHANGES_EVENTS.forEach(event => PlacesProvider.links.off(event, this._handlePlacesChanges));
-    SearchProvider.search.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
+    this._searchProvider.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
     simplePrefs.off("", this._weightedHiglightsListeners);
     simplePrefs.off("pageScraper", this._pageScraperListener);
@@ -793,6 +801,7 @@ ActivityStreams.prototype = {
         clearTimeout(this._newRecommendationTimeoutID);
       }
       this._previewProvider.uninit();
+      this._searchProvider.uninit();
       if (this._recommendationProvider) {
         this._recommendationProvider.uninit();
       }
@@ -827,6 +836,7 @@ ActivityStreams.prototype = {
       default:
         defaultUnload();
     }
+    this._isUnloaded = true;
   }
 };
 

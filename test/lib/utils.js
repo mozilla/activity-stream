@@ -51,6 +51,36 @@ function doDump(object, trailer) {
   dump(JSON.stringify(object, null, 1) + trailer); // eslint-disable-line no-undef
 }
 
+function getTestSearchProvider() {
+  return {
+    init() {},
+    uninit() {},
+    on() {},
+    off() {},
+    get currentState() {
+      return {
+        engines: [],
+        currentEngine: this.currentEngine
+      };
+    },
+    get searchSuggestionUIStrings() {
+      return {
+        "searchHeader": "%S Search",
+        "searchForSomethingWith": "Search for",
+        "searchSettings": "Change Search Settings",
+        "searchPlaceholder": "Search the Web"
+      };
+    },
+    get currentEngine() {
+      return {
+        name: "",
+        iconBuffer: []
+      };
+    },
+    QueryInterface: {}
+  };
+}
+
 function getTestActivityStream(options = {}) {
   const mockMetadataStore = {
     asyncConnect() {return Promise.resolve();},
@@ -70,7 +100,9 @@ function getTestActivityStream(options = {}) {
     init() {},
     uninit() {}
   };
+
   options.pageScraper = mockPageScraper;
+  options.searchProvider = getTestSearchProvider();
   let mockApp = new ActivityStreams(mockMetadataStore, options);
   return mockApp;
 }

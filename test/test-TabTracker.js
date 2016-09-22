@@ -729,7 +729,9 @@ before(exports, function*() {
 });
 
 after(exports, () => {
-  app.unload();
+  if (!app._isUnloaded) {
+    app.unload();
+  }
 });
 
 require("sdk/test").run(exports);

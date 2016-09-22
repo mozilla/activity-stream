@@ -1,28 +1,22 @@
 /* globals Services */
 "use strict";
 
+const {before, after} = require("sdk/test/utils");
 const {SearchProvider} = require("addon/SearchProvider");
 const {Cu} = require("chrome");
 
 Cu.import("resource://gre/modules/Services.jsm");
-
-// create dummy test engines for testing
-Services.search.addEngineWithDetails("TestSearch1", "", "", "", "GET",
-  "http://example.com/?q={searchTerms}");
-Services.search.addEngineWithDetails("TestSearch2", "", "", "", "GET",
-  "http://example.com/?q={searchTerms}");
-// set one of the dummy test engines to the default engine
-Services.search.defaultEngine = Services.search.getEngineByName("TestSearch1");
 
 function hasProp(assert, obj) {
   return function(aProp) {
     assert.ok({}.hasOwnProperty.call(obj, aProp), `expect to have property ${aProp}`);
   };
 }
+let gSearchProvider;
 
-exports.test_SearchProvider_state = function*(assert) {
+exports.test_SearchProvider_state = function(assert) {
   // get inital state of search and check that it has the corret properties
-  let state = yield SearchProvider.search.asyncGetCurrentState();
+  let state = gSearchProvider.currentState;
   let stateProps = hasProp(assert, state);
   ["engines", "currentEngine"].forEach(stateProps);
 
@@ -42,13 +36,14 @@ exports.test_SearchProvider_state = function*(assert) {
 exports.test_SearchProvider_observe = function*(assert) {
   // test that the event emitter is working by setting a new current engine "TestSearch2"
   let engineName = "TestSearch2";
-  SearchProvider.search.init();
-
+  gSearchProvider.init();
   // event emitter will fire when current engine is changed
   let promise = new Promise(resolve => {
-    SearchProvider.search.once("browser-search-engine-modified", (name, data) => { // jshint ignore:line
+    let handler = (name, data) => {
+      gSearchProvider.off("browser-search-engine-modified", handler);
       resolve([name, data.name]);
-    });
+    };
+    gSearchProvider.on("browser-search-engine-modified", handler);
   });
 
   // set a new current engine
@@ -59,7 +54,26 @@ exports.test_SearchProvider_observe = function*(assert) {
   let [eventName, actualEngineName] = yield promise;
   assert.equal(eventName, "browser-search-engine-modified", `emitter sent the correct event ${eventName}`);
   assert.equal(expectedEngineName, actualEngineName, `emitter set the correct engine ${expectedEngineName}`);
-  SearchProvider.search.uninit();
+  gSearchProvider.uninit();
 };
 
+before(exports, function*() {
+  yield new Promise(resolve => {
+    Services.search.init(resolve);
+  });
+  gSearchProvider = new SearchProvider();
+  // create dummy test engines for testing
+  Services.search.addEngineWithDetails("TestSearch1", "", "", "", "GET",
+    "http://example.com/?q={searchTerms}");
+  Services.search.addEngineWithDetails("TestSearch2", "", "", "", "GET",
+    "http://example.com/?q={searchTerms}");
+  // set one of the dummy test engines to the default engine
+  Services.search.defaultEngine = Services.search.getEngineByName("TestSearch1");
+});
+
+after(exports, () => {
+  Services.search.getEngines().forEach(engine => {
+    Services.search.removeEngine(engine);
+  });
+});
 require("sdk/test").run(exports);

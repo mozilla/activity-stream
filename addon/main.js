@@ -1,7 +1,6 @@
 /* globals Task, ClientID */
 
 const {PlacesProvider} = require("addon/PlacesProvider");
-const {SearchProvider} = require("addon/SearchProvider");
 const {MetadataStore, METASTORE_NAME} = require("addon/MetadataStore");
 const {MetadataCache} = require("addon/MetadataCache");
 const {ActivityStreams} = require("addon/ActivityStreams");
@@ -25,7 +24,6 @@ Object.assign(exports, {
   main(options) {
     // options.loadReason can be install/enable/startup/upgrade/downgrade
     PlacesProvider.links.init();
-    SearchProvider.search.init();
     options.telemetry = false;
 
     Task.spawn(function*() {
@@ -97,6 +95,5 @@ Object.assign(exports, {
 
     MetadataCache.cache.uninit();
     PlacesProvider.links.uninit();
-    SearchProvider.search.uninit();
   }
 });

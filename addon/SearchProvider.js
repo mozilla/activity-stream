@@ -26,15 +26,19 @@ XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   return EventEmitter;
 });
 
-let NewTabSearchProvider = function NewTabSearchProvider() {
+function SearchProvider() {
   EventEmitter.decorate(this);
-};
+}
 
-NewTabSearchProvider.prototype = {
+SearchProvider.prototype = {
 
   // This is used to handle search suggestions.  It maps xul:browsers to objects
   // { controller, previousFormHistoryResult }.
   _suggestionMap: new WeakMap(),
+  QueryInterface: XPCOMUtils.generateQI([
+    Ci.nsIObserver,
+    Ci.nsISupportsWeakReference
+  ]),
 
   /**
    *  Observe current engine changes to notify all other newtab pages.
@@ -43,12 +47,6 @@ NewTabSearchProvider.prototype = {
     if (topic === CURRENT_ENGINE && data === "engine-current") {
       let engine = this.currentEngine;
       this.emit(CURRENT_ENGINE, engine);
-    } else if (data === "engine-default") {
-      // engine-default is always sent with engine-current and isn't
-      // relevant to content searches.
-      return;
-    } else {
-      Cu.reportError(new Error("NewTabSearchProvider observing unknown topic"));
     }
   },
 
@@ -58,10 +56,6 @@ NewTabSearchProvider.prototype = {
   init() {
     Services.obs.addObserver(this, CURRENT_ENGINE, true);
   },
-
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver,
-    Ci.nsISupportsWeakReference
-  ]),
 
   /**
    *  Unintialize the Search Provider.
@@ -132,7 +126,7 @@ NewTabSearchProvider.prototype = {
   /**
    *  Gets the state - a combination of the current engine and all the visible engines.
    */
-  asyncGetCurrentState: Task.async(function() {
+  get currentState() {
     let state = {
       engines: [],
       currentEngine: this.currentEngine
@@ -148,7 +142,7 @@ NewTabSearchProvider.prototype = {
       });
     }
     return state;
-  }),
+  },
 
   /**
    *  Gets the suggestion based on the search string and the current engine.
@@ -267,4 +261,4 @@ NewTabSearchProvider.prototype = {
   }
 };
 
-exports.SearchProvider = {search: new NewTabSearchProvider()};
+exports.SearchProvider = SearchProvider;
