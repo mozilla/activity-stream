@@ -1,7 +1,7 @@
 /* globals XPCOMUtils, Services, Task */
 "use strict";
 
-const {Cu} = require("chrome");
+const {Ci, Cu} = require("chrome");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
@@ -207,9 +207,20 @@ Benchmark.prototype = {
   /*
    * Runs the benchmark for a given times with timer
    *
+   * It will try to get a fair environment for each run by forcing the garbage collection
+   * Note that the Cu.forceGC won't trigger the cycle collector, so it makes use of
+   * nsIDOMWindowUtils.garbageCollect for a thorough GC
+   *
+   * Reference:
+   *   https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Language_Bindings/Components.utils.forceGC
+   *
    * It will not handle any exceptions thrown from the benchmark function
    */
   _asyncRunN: Task.async(function*(n) {
+    Services.appShell.hiddenDOMWindow
+            .QueryInterface(Ci.nsIInterfaceRequestor)
+            .getInterface(Ci.nsIDOMWindowUtils)
+            .garbageCollect();
     this.N = n;
     this.resetTimer();
     this.startTimer();
