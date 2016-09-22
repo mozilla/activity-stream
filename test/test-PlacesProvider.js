@@ -64,6 +64,7 @@ exports.test_Links_getTopFrecentSites = function*(assert) {
   links = yield provider.getTopFrecentSites();
   assert.equal(links.length, 1, "adding a visit yields a link");
   assert.equal(links[0].url, testURI.spec, "added visit corresponds to added url");
+  assert.equal(links[0].eTLD, "com", "added visit mozilla.com has 'com' eTLD");
 };
 
 exports.test_Links_getTopFrecentSites_Order = function*(assert) {

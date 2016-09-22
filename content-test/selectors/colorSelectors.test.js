@@ -49,6 +49,7 @@ describe("colorSelectors", () => {
 
   describe("selectSiteIcon", () => {
     const siteWithFavicon = {
+      eTLD: "com",
       url: "http://foo.com",
       favicon_url: "http://foo.com/favicon.ico",
       favicon: "http://foo.com/favicon-16.ico",
@@ -108,8 +109,8 @@ describe("colorSelectors", () => {
       const lightColor = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_colors: [{color: [200, 200, 200]}]}));
       assert.equal(lightColor.fontColor, "black");
     });
-    it("should add a label (hostname)", () => {
-      assert.equal(state.label, "foo.com");
+    it("should add a label (hostname without eTLD)", () => {
+      assert.equal(state.label, "foo");
     });
   });
 

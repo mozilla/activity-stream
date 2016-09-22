@@ -470,6 +470,14 @@ Links.prototype = {
     });
 
     links = this._faviconBytesToDataURI(links);
+    links = links.map(link => {
+      try {
+        link.eTLD = Services.eTLD.getPublicSuffix(Services.io.newURI(link.url, null, null));
+      } catch (e) {
+        link.eTLD = "";
+      }
+      return link;
+    });
     return links.filter(link => LinkChecker.checkLoadURI(link.url));
   }),
 
