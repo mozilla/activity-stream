@@ -36,11 +36,26 @@ function overrideConsoleError(onError = () => {}) {
   };
 }
 
+function overrideGlobals(globalShims) {
+  const originalGlobals = {};
+  const keys = Object.keys(globalShims);
+  keys.forEach(key => {
+    originalGlobals[key] = global[key];
+    global[key] = globalShims[key];
+  });
+  return function resetGlobals() {
+    keys.forEach(key => {
+      originalGlobals[key] = global[key];
+    });
+  };
+}
+
 module.exports = {
   rawMockData: mockData,
   mockData: Object.assign({}, mockData, selectNewTabSites(mockData)),
   createMockProvider,
   renderWithProvider,
   faker: require("test/faker"),
-  overrideConsoleError
+  overrideConsoleError,
+  overrideGlobals
 };

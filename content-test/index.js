@@ -1,31 +1,21 @@
 const req = require.context(".", true, /\.test.js$/);
 const files = req.keys();
-const {overrideConsoleError} = require("test/test-utils");
+const globals = require("shims/_utils/globals");
+const {overrideGlobals, overrideConsoleError} = require("test/test-utils");
 
 // This exposes sinon assertions to chai.assert
 sinon.assert.expose(assert, {prefix: ""});
 
 describe("ActivtyStreams", () => {
-  let restore;
-  let originalAlert;
-  let originalConfirm;
-  let originalServices;
+  let restores;
   before(() => {
-    originalAlert = window.alert;
-    window.alert = () => {};
-    restore = overrideConsoleError(message => {
-      throw new Error(message);
-    });
-    originalConfirm = window.confirm;
-    window.confirm = () => true;
-    originalServices = global.Services;
-    global.Services = {obs: {notifyObservers: sinon.spy()}};
+    restores = [
+      overrideConsoleError(message => {throw new Error(message);}),
+      overrideGlobals(globals)
+    ];
   });
   after(() => {
-    restore();
-    window.alert = originalAlert;
-    window.confirm = originalConfirm;
-    global.Services = originalServices;
+    restores.forEach(fn => fn());
   });
 
   files.forEach(file => req(file));
