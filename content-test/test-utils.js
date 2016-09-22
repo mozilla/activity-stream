@@ -4,6 +4,7 @@ const {Provider} = require("react-redux");
 const mockData = require("lib/fake-data");
 const {selectNewTabSites} = require("selectors/selectors");
 const TestUtils = require("react-addons-test-utils");
+const globalShims = require("shims/_utils/globals");
 
 const DEFAULT_STORE = {
   getState: () => mockData,
@@ -36,11 +37,26 @@ function overrideConsoleError(onError = () => {}) {
   };
 }
 
+function overrideGlobals () {
+  const originalGlobals = {};
+  const keys = Object.keys(globalShims);
+  keys.forEach(key => {
+    originalGlobals[key] = global[key];
+    global[key] = globalShims[key];
+  });
+  return function resetGlobals() {
+    Object.keys(globalShims).forEach(key => {
+      originalGlobals[key] = global[key];
+    });
+  };
+}
+
 module.exports = {
   rawMockData: mockData,
   mockData: Object.assign({}, mockData, selectNewTabSites(mockData)),
   createMockProvider,
   renderWithProvider,
   faker: require("test/faker"),
-  overrideConsoleError
+  overrideConsoleError,
+  overrideGlobals
 };
