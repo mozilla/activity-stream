@@ -1,17 +1,17 @@
 const req = require.context(".", true, /\.test.js$/);
 const files = req.keys();
+const globals = require("shims/_utils/globals");
 const {overrideGlobals, overrideConsoleError} = require("test/test-utils");
 
 // This exposes sinon assertions to chai.assert
 sinon.assert.expose(assert, {prefix: ""});
-
 
 describe("ActivtyStreams", () => {
   let restores;
   before(() => {
     restores = [
       overrideConsoleError(message => {throw new Error(message);}),
-      overrideGlobals()
+      overrideGlobals(globals)
     ];
   });
   after(() => {

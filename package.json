@@ -35,6 +35,7 @@
     "babel-plugin-transform-strict-mode": "6.11.3",
     "babel-preset-react": "6.11.1",
     "chai": "3.5.0",
+    "co-task": "1.0.0",
     "conventional-changelog-cli": "1.2.0",
     "cpx": "1.5.0",
     "eslint": "3.5.0",
