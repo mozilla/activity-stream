@@ -178,7 +178,7 @@ describe("selectors", () => {
   });
   describe("selectHistory weightedHighlights pref is true", () => {
     let state;
-    let fakeStateWithWeights = Object.assign({}, fakeState, {Prefs: {prefs: {weightedHighlights: true}}});
+    let fakeStateWithWeights = Object.assign({}, fakeState, {Experiments: {values: {weightedHighlights: true}}});
     beforeEach(() => {
       state = selectHistory(fakeStateWithWeights);
     });
@@ -230,7 +230,7 @@ describe("selectors", () => {
           rows: [{url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
             {url: "http://foo4.com"}, {url: "http://www.foo5.com"}, {url: "http://www.foo6.com"}]
         },
-        Prefs: {prefs: {weightedHighlights: true}}
+        Experiments: {values: {weightedHighlights: true}}
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
@@ -244,7 +244,7 @@ describe("selectors", () => {
     it("should render first run highlights of fresh profiles", () => {
       let weightedHighlights = {
         WeightedHighlights: {rows: [], init: true},
-        Prefs: {prefs: {weightedHighlights: true}}
+        Experiments: {values: {weightedHighlights: true}}
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
@@ -256,7 +256,7 @@ describe("selectors", () => {
     it("should append First Run data if less or equal to MIN_HIGHLIGHTS_LENGTH", () => {
       let weightedHighlights = {
         WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}], init: true},
-        Prefs: {prefs: {weightedHighlights: true}}
+        Experiments: {values: {weightedHighlights: true}}
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
@@ -266,7 +266,7 @@ describe("selectors", () => {
     it("should dedupe weighted highlights results", () => {
       let weightedHighlights = {
         WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}], init: true},
-        Prefs: {prefs: {weightedHighlights: true}}
+        Experiments: {values: {weightedHighlights: true}}
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));

@@ -133,6 +133,7 @@ function createSpotlightItem(options = {}) {
   return selectSpotlight({
     Highlights: {rows: [site]},
     WeightedHighlights: {rows: [site]},
+    Experiments: {values: {}},
     Prefs: {prefs: {}}
   }).rows[0];
 }

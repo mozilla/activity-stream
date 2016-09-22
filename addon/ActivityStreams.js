@@ -137,7 +137,7 @@ function ActivityStreams(metadataStore, options = {}) {
   this._prefsProvider.init();
   // This is instantiated with a recommender based on weights if pref is true. Used to score highlights.
   this._baselineRecommender = null;
-  if (simplePrefs.prefs.weightedHighlights) {
+  if (this._experimentProvider.data.weightedHighlights) {
     this._loadRecommender();
   }
 
