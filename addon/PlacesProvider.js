@@ -439,7 +439,7 @@ Links.prototype = {
 
     let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
 
-    // this query does "GROUP BY rev_host" to remove urls from same domain.
+    // this query does "GROUP BY rev_nowww" (rev_host without www) to remove urls from same domain.
     // Note that unlike mysql, sqlite picks the last raw from groupby bucket.
     // Which is why subselect orders frecency and last_visit_date backwards.
     // In general the groupby behavior in the absence of aggregates is not
@@ -450,7 +450,19 @@ Links.prototype = {
                           "history" as type
                     FROM
                     (
-                      SELECT rev_host, moz_places.url, moz_favicons.data as favicon, mime_type as mimeType, moz_places.title, frecency, last_visit_date, moz_places.guid as guid, moz_bookmarks.guid as bookmarkGuid
+                      SELECT
+                        CASE SUBSTR(rev_host, -5)
+                          WHEN ".www." THEN SUBSTR(rev_host, -4, -999)
+                          ELSE rev_host
+                        END AS rev_nowww,
+                        moz_places.url,
+                        moz_favicons.data AS favicon,
+                        mime_type AS mimeType,
+                        moz_places.title,
+                        frecency,
+                        last_visit_date,
+                        moz_places.guid AS guid,
+                        moz_bookmarks.guid AS bookmarkGuid
                       FROM moz_places
                       LEFT JOIN moz_favicons
                       ON favicon_id = moz_favicons.id
@@ -460,7 +472,7 @@ Links.prototype = {
                       AND moz_places.url NOT IN (${blockedURLs})
                       ORDER BY rev_host, frecency, last_visit_date, moz_places.url DESC
                     )
-                    GROUP BY rev_host
+                    GROUP BY rev_nowww
                     ORDER BY frecency DESC, lastVisitDate DESC, url
                     LIMIT :limit`;
 

@@ -67,6 +67,24 @@ exports.test_Links_getTopFrecentSites = function*(assert) {
   assert.equal(links[0].eTLD, "com", "added visit mozilla.com has 'com' eTLD");
 };
 
+exports.test_Links_getTopFrecentSites_dedupeWWW = function*(assert) {
+  let provider = PlacesProvider.links;
+
+  let links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 0, "empty history yields empty links");
+
+  // add a visit without www
+  let testURI = NetUtil.newURI("http://mozilla.com");
+  yield PlacesTestUtils.addVisits(testURI);
+
+  // add a visit with www
+  testURI = NetUtil.newURI("http://www.mozilla.com");
+  yield PlacesTestUtils.addVisits(testURI);
+
+  links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
+};
+
 exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   let provider = PlacesProvider.links;
   let {
