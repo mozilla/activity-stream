@@ -1,0 +1,9 @@
+{
+  "userBlacklist": [
+    "mzhilyaev",
+    "oyiptong"
+  ],
+  "userBlacklistForPR": [
+    "greenkeeperio-bot"
+  ]
+}
