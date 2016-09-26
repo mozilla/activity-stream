@@ -72,7 +72,6 @@ function createSite(optional = {}) {
     "favicon": "data:image/png;base64,iVBORw0KGgoAA",
     "title": tiptopSite.title || `${name} - ${faker.company.catchPhrase()}`,
     "url": tiptopSite.url || faker.internet.url(),
-    "provider_display": `${name}.com`,
     "lastVisitDate": date.valueOf(),
     "frecency": faker.random.number({min: 10, max: 2000}),
     "type": options.type,

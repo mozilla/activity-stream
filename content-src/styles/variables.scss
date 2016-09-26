@@ -123,11 +123,6 @@ $tooltip-anchor-width: 8px;
 $tooltip-anchor-height: 8px;
 $tooltip-anchor-margin: -42px 0 0 -24px;
 
-$feed-item-border-color: #EEE;
-$highlight-feed-icon-width: 96px;
-$highlight-feed-icon-height: 65px;
-$highlight-feed-url-color: #888;
-
 @mixin item-shadow {
   box-shadow: $item-shadow;
 

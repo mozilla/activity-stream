@@ -2,7 +2,7 @@ const faker = require("test/faker");
 
 module.exports = {
   "WeightedHighlights": {
-    "rows": faker.createRows({images: 6}),
+    "rows": faker.createRows({images: 3}),
     "error": false,
     "weightedHighlights": false
   },
