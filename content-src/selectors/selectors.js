@@ -2,11 +2,12 @@ const dedupe = require("lib/dedupe");
 const {createSelector} = require("reselect");
 const firstRunData = require("lib/first-run-data");
 const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
+const {
+  SPOTLIGHT_DEFAULT_LENGTH,
+  WEIGHTED_HIGHLIGHTS_LENGTH
+} = require("common/constants");
 
-const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
-const TOP_HIGHLIGHTS_LENGTH = module.exports.TOP_HIGHLIGHTS_LENGTH = SPOTLIGHT_LENGTH;
-const BOTTOM_HIGHLIGHTS_LENGTH = module.exports.BOTTOM_HIGHLIGHTS_LENGTH = 12;
 
 module.exports.justDispatch = (() => ({}));
 
@@ -113,25 +114,26 @@ module.exports.selectNewTabSites = createSelector(
     if (recommendation >= 0) {
       spotlightRows.splice(2, 0, spotlightRows.splice(recommendation, 1)[0]);
     }
-    spotlightRows = spotlightRows.slice(0, SPOTLIGHT_LENGTH);
+    spotlightRows = spotlightRows.slice(0,
+      prefWeightedHighlights ? WEIGHTED_HIGHLIGHTS_LENGTH :
+      SPOTLIGHT_DEFAULT_LENGTH);
     const historyRows = dedupe.group([
       topSitesRows,
       spotlightRows,
       History.rows])[2];
 
-    let topHighlights = spotlightRows;
     if (prefWeightedHighlights) {
-      topHighlights = selectAndDedupe({
+      spotlightRows = selectAndDedupe({
         dedupe: topSitesRows,
         sites: WeightedHighlights.rows,
-        max: BOTTOM_HIGHLIGHTS_LENGTH + TOP_HIGHLIGHTS_LENGTH,
+        max: WEIGHTED_HIGHLIGHTS_LENGTH,
         defaults: assignImageAndBackgroundColor(firstRunData.Highlights)
       });
     }
 
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
-      Spotlight: Object.assign({}, Spotlight, {rows: topHighlights, weightedHighlights: prefWeightedHighlights}),
+      Spotlight: Object.assign({}, Spotlight, {rows: spotlightRows, weightedHighlights: prefWeightedHighlights}),
       TopActivity: Object.assign({}, History, {rows: historyRows}),
       isReady: TopSites.init && History.init && Spotlight.init && Experiments.init && WeightedHighlights.init,
       showRecommendationOption: Experiments.values.recommendedHighlight
@@ -154,7 +156,7 @@ module.exports.selectHistory = createSelector(
       rows = selectAndDedupe({
         sites: WeightedHighlights.rows,
         dedupe: [],
-        max: TOP_HIGHLIGHTS_LENGTH,
+        max: WEIGHTED_HIGHLIGHTS_LENGTH,
         defaults: assignImageAndBackgroundColor(firstRunData.Highlights)
       });
     } else {

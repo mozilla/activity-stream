@@ -1,9 +1,18 @@
 .spotlight {
   margin-right: -$base-gutter;
 
+  .section-title {
+    // Compensate for margin on spotlight-items.  Once spotlight-list can be a
+    // a CSS grid (firefox 51); we should be able to ditch this.
+    //
+    // XXX figure out if similar hack is needed for bottom of spotlight-list
+    margin: 0 0 7px;
+  }
+
   ul.spotlight-list {
     align-items: flex-start;
     display: flex;
+    flex-wrap: wrap; // avoid horizontal overflow of items
     list-style: none;
     margin: 0;
     padding: 0;
@@ -13,6 +22,7 @@
 .spotlight-item {
   @include item-shadow;
   @include link-menu-button;
+  color: $black;
   font-size: 14px;
   background: $white;
   display: inline-block;
@@ -21,6 +31,12 @@
   border-radius: $border-radius;
   height: $spotlight-item-height;
   position: relative;
+
+  // Space the items inside .spotlight-list out properly, until firefox 51,
+  // when we can make .spotlight-list be a CSS grid
+  margin-top: 12px;
+  margin-bottom: 12px;
+
   @media (min-width: $break-point) {
     flex-shrink: 0;
   }
@@ -55,10 +71,16 @@
     top: $spotlight-icon-gutter;
   }
 
+  .spotlight-feedname {
+    color: $mid-light-grey;
+    line-height: 1.8;
+    font-size: 10px;
+  }
+
   .spotlight-title {
     margin: 0 0 $spotlight-title-margin-bottom;
     font-size: inherit;
-    line-height: inherit;
+    line-height: 1.3;
     word-wrap: break-word;
   }
 

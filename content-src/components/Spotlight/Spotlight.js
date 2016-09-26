@@ -7,7 +7,6 @@ const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");
-const Rating = require("components/Rating/Rating");
 const classNames = require("classnames");
 
 const {SPOTLIGHT_DEFAULT_LENGTH} = require("common/constants");
@@ -35,6 +34,20 @@ const SpotlightItem = React.createClass({
       this.setState({hover: false});
     }
   },
+  renderRating() {
+    // XXX we should get rid of the rating system entirely, as well as the
+    // now unnecessary <div> being returned by the render() method itself
+    // This commented code is being temporarily kept here so that noone forgets
+    // that when the rating system goes, this.props.showRating needs to go too.
+    // https://github.com/mozilla/activity-stream/issues/1475 is tracking the
+    // rating removal work.
+    //
+    // return (
+    //   <Rating ref="rating" site={site} numStars={5} showRating={this.props.showRating} />
+    // );
+    //
+    return null;
+  },
   render() {
     const site = this.props;
     const image = site.bestImage;
@@ -42,6 +55,12 @@ const SpotlightItem = React.createClass({
     const description = site.description || site.url;
     const isPortrait = image.height > image.width;
 
+    // XXX The precedence here is the same as SpotlightFeedItem (now gone) was.
+    // We may want to reconsider this as part of
+    // https://github.com/mozilla/activity-stream/issues/1473
+    const feedName = site.provider_name ?
+      site.provider_name.toLowerCase() :
+      site.provider_display;
     const style = {};
 
     if (imageUrl) {
@@ -57,6 +76,9 @@ const SpotlightItem = React.createClass({
         <div className="spotlight-details">
           <div className="spotlight-info">
             <div className="spotlight-text">
+              <div className="spotlight-feedname">
+                {feedName}
+              </div>
               <h4 ref="title" className="spotlight-title">{site.title}</h4>
               <p className="spotlight-description" ref="description">{description}</p>
             </div>
@@ -74,7 +96,8 @@ const SpotlightItem = React.createClass({
         index={this.props.index}
         source={this.props.source} />
     </li>
-    <Rating ref="rating" site={site} numStars={5} showRating={this.props.showRating} /></div>);
+    {this.renderRating()}
+    </div>);
   }
 });
 
@@ -121,9 +144,13 @@ const Spotlight = React.createClass({
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
     const blankSites = [];
-    for (let i = 0; i < (this.props.length - sites.length); i++) {
-      blankSites.push(<li className="spotlight-item spotlight-placeholder" key={`blank-${i}`} />);
-    }
+    // XXX I've disabled blankSites for now, because it looks odd when (e.g.)
+    // someone only has enough history for 8 sites.  But really, I think
+    // think it looks odd in all cases.  Comments invited.
+    //
+    // for (let i = 0; i < (this.props.length - sites.length); i++) {
+    //   blankSites.push(<li className="spotlight-item spotlight-placeholder" key={`blank-${i}`} />);
+    // }
     return (<section className="spotlight">
       <h3 className="section-title">Highlights</h3>
       <ul className="spotlight-list">

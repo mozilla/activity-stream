@@ -2,8 +2,13 @@ module.exports = {
   // How many items per query?
   LINKS_QUERY_LIMIT: 20,
 
-  // Number of large Highlight tiles.
+  // Number of large Highlight tiles, pre-weighted hightlights.  Should go away
+  // when unweighted highlights go away.
   SPOTLIGHT_DEFAULT_LENGTH: 3,
+
+  // Number of large Highlight titles in the new Highlights world, including
+  // all rows.
+  WEIGHTED_HIGHLIGHTS_LENGTH: 9,
 
   // Max number of Recent Activity/More Highlights section.
   MAX_TOP_ACTIVITY_ITEMS: 10,

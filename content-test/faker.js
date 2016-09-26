@@ -83,6 +83,7 @@ function createSite(optional = {}) {
                    faker.image.imageUrl(),
     "media": {},
     "provider_name": name,
+    "provider_display": `${name}.com`,
     "metadata_source": "EmbedlyTest"
   };
 

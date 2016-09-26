@@ -10,10 +10,13 @@ const {
   selectNewTabSites,
   selectHistory,
   selectWeightedHighlights,
-  selectAndDedupe,
-  SPOTLIGHT_LENGTH,
-  TOP_HIGHLIGHTS_LENGTH
+  selectAndDedupe
 } = require("selectors/selectors");
+const {
+  SPOTLIGHT_DEFAULT_LENGTH,
+  WEIGHTED_HIGHLIGHTS_LENGTH
+} = require("common/constants.js");
+
 const {rawMockData, createMockProvider} = require("test/test-utils");
 
 const validSpotlightSite = {
@@ -185,7 +188,7 @@ describe("selectors", () => {
       state = selectHistory(fakeStateWithWeights);
     });
     it("should select the correct number of items", () => {
-      assert.equal(state.Spotlight.rows.length, TOP_HIGHLIGHTS_LENGTH);
+      assert.equal(state.Spotlight.rows.length, WEIGHTED_HIGHLIGHTS_LENGTH);
     });
     it("should select WeightedHighlights when weightedHighlights pref is true", () => {
       // Because of the call to assignImageAndBackgroundColor the two `rows` prop are not identical.
@@ -235,7 +238,7 @@ describe("selectors", () => {
       });
     });
     it("should use first 3 items of selectSpotlight for Spotlight", () => {
-      assert.lengthOf(state.Spotlight.rows, SPOTLIGHT_LENGTH);
+      assert.lengthOf(state.Spotlight.rows, SPOTLIGHT_DEFAULT_LENGTH);
     });
     it("should dedupe TopSites, Spotlight, and TopActivity", () => {
       const groups = [state.TopSites.rows, state.Spotlight.rows, state.TopActivity.rows];
