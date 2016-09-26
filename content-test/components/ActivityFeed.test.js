@@ -207,7 +207,7 @@ describe("GroupedActivityFeed filtered", () => {
     const sites = [faker.createSite({
       moment: faker.moment(),
       override: {
-        title: "the title goes here",
+        title: "The Title GoesHere",
         url: "https://www.domain.com/path"
       }
     })];
@@ -230,8 +230,29 @@ describe("GroupedActivityFeed filtered", () => {
   it("should filter out partial matches", () => {
     assert.lengthOf(doFilter("title nothere"), 0);
   });
-  it("should filter case insensitively", () => {
-    assert.lengthOf(doFilter("TITLE"), 1);
+  it("should filter on with a cased search", () => {
+    assert.lengthOf(doFilter("Title"), 1);
+  });
+  it("should filter out with a cased search", () => {
+    assert.lengthOf(doFilter("TITLE"), 0);
+  });
+  it("should filter out with any cased search", () => {
+    assert.lengthOf(doFilter("the Title"), 0);
+  });
+  it("should filter out mid-word matches in title", () => {
+    assert.lengthOf(doFilter("itle"), 0);
+  });
+  it("should filter out mid-word matches in url", () => {
+    assert.lengthOf(doFilter("omain"), 0);
+  });
+  it("should filter on CamelCase mid-word matches", () => {
+    assert.lengthOf(doFilter("here"), 1);
+  });
+  it("should filter on mid-url matches", () => {
+    assert.lengthOf(doFilter("path"), 1);
+  });
+  it("should filter on words with boundaries", () => {
+    assert.lengthOf(doFilter("domain.com/path"), 1);
   });
 });
 
