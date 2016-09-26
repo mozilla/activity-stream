@@ -5,7 +5,7 @@ const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
 
 const SPOTLIGHT_LENGTH = module.exports.SPOTLIGHT_LENGTH = 3;
 const TOP_SITES_LENGTH = module.exports.TOP_SITES_LENGTH = 6;
-const TOP_HIGHLIGHTS_LENGTH = SPOTLIGHT_LENGTH;
+const TOP_HIGHLIGHTS_LENGTH = module.exports.TOP_HIGHLIGHTS_LENGTH = SPOTLIGHT_LENGTH;
 const BOTTOM_HIGHLIGHTS_LENGTH = module.exports.BOTTOM_HIGHLIGHTS_LENGTH = 12;
 
 module.exports.justDispatch = (() => ({}));

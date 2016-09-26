@@ -11,7 +11,8 @@ const {
   selectHistory,
   selectWeightedHighlights,
   selectAndDedupe,
-  SPOTLIGHT_LENGTH
+  SPOTLIGHT_LENGTH,
+  TOP_HIGHLIGHTS_LENGTH
 } = require("selectors/selectors");
 const {rawMockData, createMockProvider} = require("test/test-utils");
 
@@ -177,10 +178,14 @@ describe("selectors", () => {
     });
   });
   describe("selectHistory weightedHighlights pref is true", () => {
+    let fakeStateWithWeights;
     let state;
-    let fakeStateWithWeights = Object.assign({}, fakeState, {Experiments: {values: {weightedHighlights: true}}});
     beforeEach(() => {
+      fakeStateWithWeights = Object.assign({}, fakeState, {Experiments: {values: {weightedHighlights: true}}});
       state = selectHistory(fakeStateWithWeights);
+    });
+    it("should select the correct number of items", () => {
+      assert.equal(state.Spotlight.rows.length, TOP_HIGHLIGHTS_LENGTH);
     });
     it("should select WeightedHighlights when weightedHighlights pref is true", () => {
       // Because of the call to assignImageAndBackgroundColor the two `rows` prop are not identical.
