@@ -74,7 +74,7 @@
     "rimraf": "2.5.4",
     "sass-lint": "1.9.1",
     "sinon": "1.17.6",
-    "svgo": "0.7.0",
+    "svgo": "0.7.1",
     "tippy-top-sites": "0.2.0",
     "webpack": "1.13.2",
     "webpack-env-loader-plugin": "0.1.4",
