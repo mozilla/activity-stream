@@ -8,7 +8,8 @@ const vendorModules = {
   "redux-thunk": require("redux-thunk"),
   "seedrandom": require("seedrandom"),
   "url-parse": require("url-parse"),
-  "DoublyLinkedList": require("DoublyLinkedList/doubly-linked-list").DoublyLinkedList
+  "DoublyLinkedList": require("DoublyLinkedList/doubly-linked-list").DoublyLinkedList,
+  "PageMetadataParser": require("page-metadata-parser")
 };
 
 module.exports = function vendor(moduleName) {

@@ -17,6 +17,12 @@ describe("Chrome", () => {
       assert.isTrue(instance.Cu.import.isSinonProxy);
     });
   });
+  describe("#Ci", () => {
+    it("should have a .nsIDOMParser spy", () => {
+      assert.property(instance.Ci, "nsIDOMParser");
+      assert.isTrue(instance.Ci.nsIDOMParser.isSinonProxy);
+    });
+  });
   describe("chrome", () => {
     it("should be an instance of Chrome", () => {
       assert.instanceOf(chrome, Chrome);
