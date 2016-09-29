@@ -10,7 +10,7 @@ module.exports = function Filter(prevState = INITIAL_STATE, action) {
   const state = Object.assign({}, prevState);
   switch (action.type) {
     case am.type("NOTIFY_FILTER_QUERY"):
-      state.query = action.data;
+      state.query = action.data || "";
       break;
   }
   return state;

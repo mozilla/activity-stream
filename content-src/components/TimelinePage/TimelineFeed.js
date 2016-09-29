@@ -10,13 +10,16 @@ const {INFINITE_SCROLL_THRESHOLD, SCROLL_TOP_OFFSET} = require("common/constants
 const debounce = require("lodash.debounce");
 
 const TimelineFeed = React.createClass({
+  getFilterQuery() {
+    return (this.props.Filter || {}).query || "";
+  },
   loadMore() {
     const items = this.props.Feed.rows;
     if (!items.length) {
       return;
     }
     const beforeDate = items[items.length - 1][this.props.dateKey];
-    this.props.dispatch(this.props.loadMoreAction(beforeDate));
+    this.props.dispatch(this.props.loadMoreAction(beforeDate, this.getFilterQuery()));
     this.props.dispatch(NotifyEvent({
       event: "LOAD_MORE_SCROLL",
       page: this.props.pageName,
@@ -75,7 +78,7 @@ const TimelineFeed = React.createClass({
   },
   render() {
     const props = this.props;
-    const query = (props.Filter && props.Filter.query) || "";
+    const query = this.getFilterQuery();
     const showSpotlight = props.Spotlight && query === "";
     return (<section className="content" ref="scrollElement" onScroll={!props.Feed.isLoading && props.Feed.canLoadMore && this.loadMoreDataIfNeeded}>
       <div ref="wrapper" className={classNames("wrapper", "show-on-init", {on: props.Feed.init})}>

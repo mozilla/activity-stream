@@ -140,9 +140,9 @@ function RequestRecentLinks(options) {
   return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", options);
 }
 
-function RequestMoreRecentLinks(beforeDate) {
+function RequestMoreRecentLinks(beforeDate, filter = "") {
   return RequestRecentLinks({
-    data: {beforeDate},
+    data: {beforeDate, filter},
     append: true,
     meta: {skipPreviewRequest: true}
   });

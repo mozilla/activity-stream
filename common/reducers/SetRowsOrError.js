@@ -66,6 +66,10 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
       case am.type("NOTIFY_HISTORY_DELETE"):
         state.rows = prevState.rows.filter(val => val.url !== action.data);
         break;
+      case requestType === "RECENT_LINKS_REQUEST" && am.type("NOTIFY_FILTER_QUERY"):
+        // Allow loading more even if we hit the end as the filter has changed
+        state.canLoadMore = true;
+        break;
       default:
         return prevState;
     }

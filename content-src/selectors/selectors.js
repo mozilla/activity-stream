@@ -164,7 +164,10 @@ module.exports.selectHistory = createSelector(
     return {
       Spotlight: Object.assign({}, Spotlight, {rows}),
       Filter,
-      History
+      History: Object.assign({}, History, {
+        // Only include rows that are less filtered than the current filter
+        rows: History.rows.filter(val => Filter.query.indexOf(val.filter) === 0)
+      })
     };
   }
 );
