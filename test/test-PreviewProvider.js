@@ -187,6 +187,22 @@ exports.test_process_links = function(assert) {
   });
 };
 
+exports.test_process_and_insert_links = function(assert) {
+  const fakeData = [
+    {"url": "http://example.com/1", "title": "blah"},
+    {"url": "http://example.com/2", "title": "blah"}
+  ];
+
+  // process and insert the links
+  gPreviewProvider.processAndInsertMetadata(fakeData);
+
+  assert.equal(gMetadataStore[0].length, 2, "saved two items");
+  assert.equal(gMetadataStore[0][0].url, fakeData[0].url, "first site was saved as expected");
+  assert.equal(gMetadataStore[0][0].cache_key, "example.com/1", "we added a cache_key for the first site");
+  assert.equal(gMetadataStore[0][1].url, fakeData[1].url, "second site was saved as expected");
+  assert.equal(gMetadataStore[0][1].cache_key, "example.com/2", "we added a cache_key for the second site");
+};
+
 exports.test_dedupe_urls = function(assert) {
   const fakeData = [
     {"url": "http://foo.com/", "title": "blah"},
