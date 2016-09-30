@@ -2,7 +2,7 @@
 
 When you add a new feature or want to test the performance of a change, you may want to benchmark the feature or the add-on as a whole. You can do that using our simple benchmarking framework.
 
-This framework is particularly suitable for benchmarking functions without or with little side-effects (e.g. I/O). Otherwise, extra effort is required in order to achieve the reasonable result. Read more detail [here](https://github.com/mozilla/activity-stream/blob/master/test/lib/Benchmark.js#L42).
+This framework is particularly suitable for benchmarking functions without or with little side-effects (e.g. I/O). Otherwise, extra effort is required in order to achieve the reasonable result. Read more detais [here](https://github.com/mozilla/activity-stream/blob/master/test/lib/Benchmark.js#L42).
 
 ## Some useful notes
 
@@ -10,7 +10,7 @@ This framework is particularly suitable for benchmarking functions without or wi
 * Name the benchmark file as "test-****-benchmark.js", e.g. "test-Feature-abc-benchmark.js". This is _very_ important as we use the "benchmark" suffix to differentiate the benchmark files from the regular test ones. Note the leading "test" is also mandatory as jpm only recognizes test/benchmark files with it
 * A new prefs file "benchmark-prefs.json" is being used for the benchmarking to mimic the regular use scenario.
   - It sets the log level to "error" to avoid the verbose jpm test outputs. See examples below to see how to log in the benchmark
-  - It disables "Async Stacks" to yield more stable results. See more detail [here](https://developer.mozilla.org/en-US/docs/Mozilla/Benchmarking)
+  - It disables "Async Stacks" to yield more stable results. See more details [here](https://developer.mozilla.org/en-US/docs/Mozilla/Benchmarking)
   - It enables the auto crash report to make the broswer do less work
 * Use command `npm run benchmark` to run all the benchmarks, or run individual one by `npm run benchmark-with -- -f test/test-your-benchmark.js`
 
@@ -104,7 +104,7 @@ Now that the target benchmark function has been defined, we can write the benchm
 ```
 where the for loop is required so that the framework can execute the benchmark function sufficiently in order to attain a reasonable result. The framework is responsible for choosing the good iteration number `b.N` based on the actual running time of the benchmark function and the predefined benchmarking time. We can overwrite the default benchmarking time (1 second) by specifying the second argument of the `Benchmark` constructor. In this case, we're using 2 second (i.e. 2e6 us).
 
-Finally, we can launch the benchmark driver, let it finish, and log the result. Reference the [Benchmark](test/lib/Benchmark.js) for more detail.
+Finally, we can launch the benchmark driver, let it finish, and log the result. Reference the [Benchmark](test/lib/Benchmark.js) for more details.
 
 ## Step 2: run this benchmark
 
@@ -114,7 +114,7 @@ You can run this benchmark by
 
 which is equivalent to the following command
 
-`jpm test -b Nightly --prefs ./benchmark-prefs.json -f test/test-demo1-benchmark.js`.
+`jpm test -b Nightly --prefs ./benchmark-prefs.json -f test/test-your-benchmark.js`.
 
 Alternatively, you can run all the benchmarks by
 
