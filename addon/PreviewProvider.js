@@ -359,13 +359,32 @@ PreviewProvider.prototype = {
   },
 
   /**
-   * Do some pre-processing on the links before inserting them into the metadata
+   * Do some pre-processing on the link before inserting it into the metadata
    * DB and adding them to the metadata cache
    */
-  processAndInsertMetadata(links) {
-    const processedLinks = this._processLinks(links);
-    this.insertMetadata(processedLinks);
+  processAndInsertMetadata(link, metadataSource) {
+    const processedLink = this._processLinks(link);
+    this.insertMetadata(processedLink, metadataSource);
   },
+
+  /**
+   * Check if a single link exists in the metadata DB
+   */
+  asyncDoesSingleLinkExist: Task.async(function*(url) {
+    let link = this._processLinks([{url}])[0];
+    if (!link) {
+      return false;
+    }
+    // Hit the cache first
+    const key = link.cache_key;
+    const metadataFromCache = MetadataCache.cache.get(key);
+
+    if (!metadataFromCache) {
+      const linksMetadata = yield this._metadataStore.asyncExecuteQuery(`SELECT * FROM page_metadata WHERE cache_key = '${key}'`);
+      return linksMetadata.length;
+    }
+    return true;
+  }),
 
   /**
    * Initialize Preview Provider

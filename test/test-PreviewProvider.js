@@ -50,6 +50,19 @@ const gMockMetadataStore = {
       });
     }
     return items;
+  },
+  asyncExecuteQuery(query) {
+    // extract key from the query
+    let key = query.split("=")[1].trim().replace(/'/g, "");
+    let items = [];
+    if (gMetadataStore[0]) {
+      gMetadataStore[0].forEach(item => {
+        if (key === item.cache_key) {
+          items.push(item);
+        }
+      });
+    }
+    return items;
   }
 };
 const gMockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
@@ -189,18 +202,42 @@ exports.test_process_links = function(assert) {
 
 exports.test_process_and_insert_links = function(assert) {
   const fakeData = [
-    {"url": "http://example.com/1", "title": "blah"},
-    {"url": "http://example.com/2", "title": "blah"}
+    {"url": "http://example.com/1", "title": "Title for example.com/1"},
+    {"url": "http://example.com/2", "title": "Title for example.com/2"}
   ];
 
   // process and insert the links
-  gPreviewProvider.processAndInsertMetadata(fakeData);
-
+  gPreviewProvider.processAndInsertMetadata(fakeData, "metadata_source");
   assert.equal(gMetadataStore[0].length, 2, "saved two items");
+
+  // check the first site inserted in the metadata DB
   assert.equal(gMetadataStore[0][0].url, fakeData[0].url, "first site was saved as expected");
   assert.equal(gMetadataStore[0][0].cache_key, "example.com/1", "we added a cache_key for the first site");
+  assert.equal(gMetadataStore[0][0].metadata_source, "metadata_source", "we added a metadata_source for the first site");
+  assert.equal(gMetadataStore[0][0].title, fakeData[0].title, "we added the title from the metadata for the first site");
+
+  // check the second site inserted in the metadata DB
   assert.equal(gMetadataStore[0][1].url, fakeData[1].url, "second site was saved as expected");
   assert.equal(gMetadataStore[0][1].cache_key, "example.com/2", "we added a cache_key for the second site");
+  assert.equal(gMetadataStore[0][1].metadata_source, "metadata_source", "we added a metadata_source for the second site");
+  assert.equal(gMetadataStore[0][1].title, fakeData[1].title, "we added the title from the metadata for the second site");
+};
+
+exports.test_look_for_link_in_DB = function*(assert) {
+  // the first time we check the link will not be in the DB
+  const urlObject = {url: "https://www.dontexist.com", cache_key: "foo.com"};
+  let doesLinkExist = yield gPreviewProvider.asyncDoesSingleLinkExist(urlObject.url);
+  assert.equal(doesLinkExist, false, "link doesn't exist at first");
+
+  // insert the link and check again, this time it will be in the DB
+  gPreviewProvider.processAndInsertMetadata([urlObject]);
+  doesLinkExist = yield gPreviewProvider.asyncDoesSingleLinkExist(urlObject.url);
+  assert.equal(doesLinkExist, true, "link does exist this time around");
+};
+
+exports.test_no_link_provided = function*(assert) {
+  let doesLinkExist = yield gPreviewProvider.asyncDoesSingleLinkExist("");
+  assert.equal(doesLinkExist, false, "link does not exist, do not check the DB");
 };
 
 exports.test_dedupe_urls = function(assert) {
