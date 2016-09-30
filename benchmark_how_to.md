@@ -108,6 +108,16 @@ Finally, we can launch the benchmark driver, let it finish, and log the result. 
 
 ## Step 2: run this benchmark
 
-You can run this benchmark by `jpm test -b Nightly --prefs ./benchmark-prefs.json -f test/test-demo1-benchmark.js`. Alternatively, you can run all the benchmarks by `npm run benchmark`.
+You can run this benchmark by
+
+`npm run benchmark-with -- -f test/test-your-benchmark.js`,
+
+which is equivalent to the following command
+
+`jpm test -b Nightly --prefs ./benchmark-prefs.json -f test/test-demo1-benchmark.js`.
+
+Alternatively, you can run all the benchmarks by
+
+`npm run benchmark`.
 
 By default, the framework will set the log level as "error" in order to create a "quiet" work environment. If you do want to do some logging, the benchmark framework provides a "forceLog" function, which acts exactly the same as the `console.log` regardless of the current log level.
