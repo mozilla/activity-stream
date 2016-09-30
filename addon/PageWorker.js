@@ -2,6 +2,7 @@ const {Page} = require("sdk/page-worker");
 const {data} = require("sdk/self");
 const {LOCAL_STORAGE_KEY} = require("common/constants");
 const {ADDON_TO_CONTENT} = require("common/event-constants");
+const diff = require("common/vendor")("deep-diff");
 
 class PageWorker {
   constructor({store} = {}) {
@@ -12,12 +13,18 @@ class PageWorker {
     this._onDispatch = this._onDispatch.bind(this);
     this._unsubscribe = null;
     this._store = store;
+    this._currentState = {};
   }
   _onDispatch() {
-    this._page.port.emit(ADDON_TO_CONTENT, {
-      type: LOCAL_STORAGE_KEY,
-      data: this._store.getState()
-    });
+    const prevState = this._currentState;
+    this._currentState = this._store.getState();
+    const hasChanges = diff(prevState, this._currentState);
+    if (hasChanges) {
+      this._page.port.emit(ADDON_TO_CONTENT, {
+        type: LOCAL_STORAGE_KEY,
+        data: this._currentState
+      });
+    }
   }
   connect() {
     this._page = Page({
