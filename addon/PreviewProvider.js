@@ -328,14 +328,9 @@ PreviewProvider.prototype = {
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestReceivedCount", responseJson.urls.length);
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestSucess", 1);
         let linksToInsert = newLinks.filter(link => responseJson.urls[link.sanitized_url])
-          .map(link => Object.assign({}, link, responseJson.urls[link.sanitized_url], {
-            expired_at: (this.options.metadataTTL) + Date.now(),
-            metadata_source: this._getMetadataSourceName()
-          }));
-        this._metadataStore.asyncInsert(linksToInsert);
-        linksToInsert.forEach(link => {
-          MetadataCache.cache.add(link.cache_key, link);
-        });
+          .map(link => Object.assign({}, link, responseJson.urls[link.sanitized_url]));
+
+        this.insertMetadata(linksToInsert, this._getMetadataSourceName());
       } else {
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyFailure", 1);
       }
@@ -347,6 +342,30 @@ PreviewProvider.prototype = {
     // must still remove the in-flight links from the list
     newLinks.forEach(link => this._alreadyRequested.delete(link.cache_key));
   }),
+
+  /**
+   * Do some post-processing on the links before inserting them into the metadata
+   * DB and adding them to the metadata cache
+   */
+  insertMetadata(links, metadataSource) {
+    const linksToInsert = links.map(link => Object.assign({}, link, {
+      expired_at: (this.options.metadataTTL) + Date.now(),
+      metadata_source: metadataSource
+    }));
+    this._metadataStore.asyncInsert(linksToInsert);
+    linksToInsert.forEach(link => {
+      MetadataCache.cache.add(link.cache_key, link);
+    });
+  },
+
+  /**
+   * Do some pre-processing on the links before inserting them into the metadata
+   * DB and adding them to the metadata cache
+   */
+  processAndInsertMetadata(links) {
+    const processedLinks = this._processLinks(links);
+    this.insertMetadata(processedLinks);
+  },
 
   /**
    * Initialize Preview Provider
