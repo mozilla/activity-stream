@@ -34,7 +34,7 @@
     "babel-plugin-transform-es2015-destructuring": "6.16.0",
     "babel-plugin-transform-es2015-parameters": "6.16.0",
     "babel-plugin-transform-strict-mode": "6.11.3",
-    "babel-preset-react": "6.11.1",
+    "babel-preset-react": "6.16.0",
     "chai": "3.5.0",
     "co-task": "1.0.0",
     "conventional-changelog-cli": "1.2.0",
