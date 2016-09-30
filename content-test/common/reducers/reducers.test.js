@@ -2,8 +2,11 @@ const createStore = require("common/create-store");
 const {actions} = require("common/action-manager");
 const {createRows} = require("test/faker");
 
-describe("Reducer equality", () => {
+// These tests ensure that all our reducers
+// do not unintentionally create new objects
+describe("Reducers", () => {
   let store;
+  // Dispatch a fake action that contains an array of links
   function dispatchRows(type, length = 10) {
     store.dispatch(actions.Response(type, createRows({length})));
   }
@@ -11,9 +14,9 @@ describe("Reducer equality", () => {
     store = createStore({logger: false});
   });
   it("should return a reference", () => {
-    assert.equal(store.getState(), store.getState());
+    assert.strictEqual(store.getState(), store.getState());
   });
-  it("should dispatch rows", () => {
+  it("should cause a state change for a related reducer", () => {
     dispatchRows("TOP_FRECENT_SITES_RESPONSE", 6);
     const newState = store.getState();
     assert.equal(newState.TopSites.rows.length, 6);
@@ -22,7 +25,7 @@ describe("Reducer equality", () => {
     const oldState = store.getState();
     dispatchRows("TOP_FRECENT_SITES_RESPONSE", 6);
     const newState = store.getState();
-    assert.equal(newState.Highlights, oldState.Highlights);
+    assert.strictEqual(newState.Highlights, oldState.Highlights);
   });
   it("should not modify any state for unused actions", () => {
     const oldState = store.getState();
