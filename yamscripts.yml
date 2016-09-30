@@ -77,3 +77,7 @@ scripts:
 
 # storybook: build a local react-storybook containing local stories for dev
   storybook: start-storybook -p 9001 -s ./data/content
+
+# build-storybook: used by storybooks.io service to build a static copy for
+# automatic storybook building in github PRs
+  build-storybook: =>bundle && STORYBOOK_STATIC=true build-storybook -s ./data/content -o ./.static-storybook

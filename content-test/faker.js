@@ -7,6 +7,8 @@ const BASE_TIP_TOP_FAVICON_URL = "favicons/images/";
 
 faker.timestamp = () => moment().unix();
 
+let base_tip_top_favicon_prefix = "";
+
 faker.internet.rgbColor = () => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(faker.internet.color());
   return [
@@ -78,7 +80,8 @@ function createSite(optional = {}) {
 
     // This is embedly
     "description": faker.lorem.sentences(),
-    "favicon_url": BASE_TIP_TOP_FAVICON_URL + tiptopSite.image_url || faker.image.imageUrl(),
+    "favicon_url": base_tip_top_favicon_prefix + BASE_TIP_TOP_FAVICON_URL + tiptopSite.image_url ||
+                   faker.image.imageUrl(),
     "media": {},
     "provider_name": name,
     "metadata_source": "EmbedlyTest"
@@ -205,3 +208,18 @@ module.exports = {
   range,
   moment
 };
+
+/**
+ * String to be prepended to BASE_TIP_TOP_FAVICON_URL;
+ * useful for testing.
+ *
+ * @param  {String}  string to prepend
+ */
+Object.defineProperty(module.exports, "base_tip_top_favicon_prefix", {
+  get() {
+    return base_tip_top_favicon_prefix;
+  },
+  set(newValue) {
+    base_tip_top_favicon_prefix = newValue;
+  }
+});

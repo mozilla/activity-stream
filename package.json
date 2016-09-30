@@ -264,6 +264,7 @@
     "travis": "npm run test",
     "prepush": "npm run test:lint && npm run yamscripts",
     "storybook": "start-storybook -p 9001 -s ./data/content",
+    "build-storybook": "npm run bundle && STORYBOOK_STATIC=true build-storybook -s ./data/content -o ./.static-storybook",
     "help": "yamscripts help",
     "yamscripts": "yamscripts compile",
     "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
