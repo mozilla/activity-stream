@@ -359,13 +359,32 @@ PreviewProvider.prototype = {
   },
 
   /**
-   * Do some pre-processing on the links before inserting them into the metadata
+   * Do some pre-processing on the link before inserting it into the metadata
    * DB and adding them to the metadata cache
    */
-  processAndInsertMetadata(links) {
-    const processedLinks = this._processLinks(links);
-    this.insertMetadata(processedLinks);
+  processAndInsertMetadata(link, metadataSource) {
+    const processedLink = this._processLinks([link]);
+    this.insertMetadata(processedLink, metadataSource);
   },
+
+  /**
+   * Check if a single link exists in the metadata DB
+   */
+  asyncLinkExist: Task.async(function*(url) {
+    let key = this._createCacheKey(url);
+    if (!key) {
+      return false;
+    }
+
+    // Hit the cache first and return true immediately if we have a hit
+    const metadataFromCache = MetadataCache.cache.get(key);
+    if (metadataFromCache) {
+      return true;
+    }
+
+    const linkExists = yield this._metadataStore.asyncCacheKeyExists(key);
+    return linkExists;
+  }),
 
   /**
    * Initialize Preview Provider

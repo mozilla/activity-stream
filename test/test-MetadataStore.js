@@ -174,6 +174,15 @@ exports.test_async_get_by_cache_key = function*(assert) {
   assert.equal(metaObjects.length, metadataFixture.length, "It should fetch all metadata records");
 };
 
+exports.test_async_get_single_link_by_cache_key = function*(assert) {
+  yield gMetadataStore.asyncInsert(metadataFixture);
+  let fixture = metadataFixture[0];
+  let linkExists = yield gMetadataStore.asyncCacheKeyExists(fixture.cache_key);
+  assert.equal(linkExists, true, "It should fetch one metadata record");
+  linkExists = yield gMetadataStore.asyncCacheKeyExists("idontexist.com/");
+  assert.equal(linkExists, false, "It should return an empty array since it doesn't exist");
+};
+
 exports.test_async_get_by_cache_key_in_special_cases = function*(assert) {
   yield gMetadataStore.asyncInsert(metadataFixture);
 

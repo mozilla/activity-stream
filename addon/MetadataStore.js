@@ -492,6 +492,22 @@ MetadataStore.prototype = {
   }),
 
   /**
+   * Check if the link exists in the database by checking if it's cache key exists
+   *
+   * @param {String} key a cache key
+   *
+   * Returns a promise with the array of the retrieved metadata record
+   */
+  asyncCacheKeyExists: Task.async(function*(key) {
+    try {
+      let metadataLink = yield this.asyncExecuteQuery(`SELECT 1 FROM page_metadata WHERE cache_key = '${key}'`);
+      return metadataLink.length > 0;
+    } catch (e) {
+      return false;
+    }
+  }),
+
+  /**
   * Enables the data expiry job. The database connection needs to
   * be established prior to calling this function. Once it's triggered,
   * any following calls will be ignored unless the user disables
