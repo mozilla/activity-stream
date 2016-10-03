@@ -4,6 +4,8 @@ const {Cc, Ci, Cu, components} = require("chrome");
 const {ActivityStreams} = require("addon/ActivityStreams");
 const {stack: Cs} = components;
 
+const {TextDecoder, OS} = Cu.import("resource://gre/modules/osfile.jsm", {});
+
 // If we didn't get passed a stack, maybe the error has one otherwise get it
 // from our call context
 function doThrow(error, stack = error.stack || Cs.caller) {
@@ -70,7 +72,23 @@ function getTestActivityStream(options = {}) {
   return mockApp;
 }
 
+function cleanUpFolder(path) {
+  const dirPath = OS.Path.join(OS.Constants.Path.profileDir, path);
+  return OS.File.removeDir(dirPath, {ignoreAbsent: true});
+}
+
+function getFileContent(path) {
+  return new Promise(resolve => {
+    OS.File.read(path).then(encodedText => {
+      const decoder = new TextDecoder();
+      resolve(decoder.decode(encodedText));
+    });
+  });
+}
+
 exports.doGetFile = doGetFile;
 exports.doThrow = doThrow;
 exports.doDump = doDump;
 exports.getTestActivityStream = getTestActivityStream;
+exports.cleanUpFolder = cleanUpFolder;
+exports.getFileContent = getFileContent;
