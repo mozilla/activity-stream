@@ -11,7 +11,8 @@ module.exports = function Filter(prevState = INITIAL_STATE, action) {
   switch (action.type) {
     case am.type("NOTIFY_FILTER_QUERY"):
       state.query = action.data || "";
-      break;
+      return state;
+    default:
+      return prevState;
   }
-  return state;
 };
