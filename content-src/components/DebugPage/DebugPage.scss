@@ -3,6 +3,13 @@
     clear: both;
   }
 
+  .btn {
+    color: $dark-grey;
+    border: 1px solid $dark-grey;
+    padding: 5px 10px;
+    border-radius: 8px;
+  }
+
   label {
     display: block;
   }
