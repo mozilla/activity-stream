@@ -3,8 +3,6 @@ const React = require("react");
 const LinkMenuButton = React.createClass({
   render() {
     return (<button className="link-menu-button" onClick={e => {
-      e.preventDefault();
-      e.stopPropagation();
       this.props.onClick(e);
     }}>
       <span className="sr-only">Open context menu</span>
