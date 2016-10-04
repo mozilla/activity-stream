@@ -66,6 +66,11 @@ function getTestActivityStream(options = {}) {
   if (!options.mockShareProvider) {
     options.shareProvider = mockShareProvider;
   }
+  const mockPageScraper = {
+    init() {},
+    uninit() {}
+  };
+  options.pageScraper = mockPageScraper;
   let mockApp = new ActivityStreams(mockMetadataStore, options);
   return mockApp;
 }
