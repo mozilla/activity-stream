@@ -4,7 +4,6 @@
 // require("common/vendor")("my-dependency");
 
 const vendorModules = {
-  "deep-diff": require("deep-diff"),
   "redux": require("redux"),
   "redux-thunk": require("redux-thunk"),
   "seedrandom": require("seedrandom"),
