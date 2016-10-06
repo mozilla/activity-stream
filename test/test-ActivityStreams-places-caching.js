@@ -164,6 +164,15 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
     });
   });
 
+  // the tab open below will trigger a "places_change" event, which in turn will
+  // trigger an "activity-streams-places-cache-complete". We want to wait
+  // for that event before setting up another event handler (i.e. "countNotif" defined
+  // below) for "activity-streams-places-cache-complete". Note that it's important to do
+  // so, otherwise, it'll introduce a tricky race condition. See more details here:
+  //
+  // https://github.com/mozilla/activity-stream/issues/1407
+
+  placesCachePromise = makeCachePromise("places");
   let openTab;
   tabs.open({
     url,
@@ -172,6 +181,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
     }
   });
   yield pageReadyPromise;
+  yield placesCachePromise;
 
   // app messaging setup
   let msgCountPromise = new Promise(resolve => {
@@ -202,10 +212,10 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
   // phase 1: add history visit and count
   placesCachePromise = makeCachePromise("places");
   yield PlacesTestUtils.addVisits({uri: NetUtil.newURI("https://example.com/0"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED});
-  yield placesCachePromise;
+  yield placesCachePromise; // make sure the "activity-streams-places-cache-complete" gets triggered
 
   // phase 2: add history visit and don't count
-  gApp._populatingCache.places = true;
+  gApp._populatingCache.places = true; // lock the cache rebuilding
 
   let visits = [
     {uri: NetUtil.newURI("https://example.com/1"), visitDate: (new Date()).getTime() * 1000, transition: PlacesUtils.TRANSITION_TYPED},
@@ -225,7 +235,7 @@ exports["test rebuilds don't clobber each other"] = function*(assert) {
       resolve();
     });
   });
-  gApp._populatingCache.places = false;
+  gApp._populatingCache.places = false; // unlock the cache rebuilding
   Services.obs.removeObserver(countNotif, notif);
   yield new Promise(resolve => {
     srv.stop(() => {
