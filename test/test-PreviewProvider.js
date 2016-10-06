@@ -39,6 +39,7 @@ let gPrefEnabled = simplePrefs.prefs["previews.enabled"];
 const gMockMetadataStore = {
   asyncInsert(data) {
     gMetadataStore.push(data);
+    return Promise.resolve();
   },
   asyncGetMetadataByCacheKey(cacheKeys) {
     let items = [];
@@ -49,7 +50,7 @@ const gMockMetadataStore = {
         }
       });
     }
-    return items;
+    return Promise.resolve(items);
   },
   asyncCacheKeyExists(key) {
     let exists = false;
@@ -60,7 +61,7 @@ const gMockMetadataStore = {
         }
       });
     }
-    return exists;
+    return Promise.resolve(exists);
   }
 };
 const gMockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};

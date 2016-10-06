@@ -352,9 +352,14 @@ PreviewProvider.prototype = {
       expired_at: (this.options.metadataTTL) + Date.now(),
       metadata_source: metadataSource
     }));
-    this._metadataStore.asyncInsert(linksToInsert);
-    linksToInsert.forEach(link => {
-      MetadataCache.cache.add(link.cache_key, link);
+    this._metadataStore.asyncInsert(linksToInsert).then(() => {
+      linksToInsert.forEach(link => {
+        MetadataCache.cache.add(link.cache_key, link);
+      });
+    })
+    .catch(err => {
+      // TODO: add more exception handling code, e.g. sending exception report
+      Cu.reportError(err);
     });
   },
 
