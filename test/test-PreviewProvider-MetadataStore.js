@@ -123,8 +123,9 @@ before(exports, function*() {
   simplePrefs.prefs.metadataSource = gEmbedly;
   simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/previewProviderMetadataStore`;
   simplePrefs.prefs["previews.enabled"] = true;
-  yield gMetadataStore.asyncConnect();
   let mockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
+  gMetadataStore._tabTracker = mockTabTracker;
+  yield gMetadataStore.asyncConnect();
   gPreviewProvider = new PreviewProvider(mockTabTracker, gMetadataStore, {data: {metadataService: false}}, {initFresh: true});
 });
 

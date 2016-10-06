@@ -277,6 +277,7 @@ exports.test_delete = function*(assert) {
 };
 
 before(exports, function*() {
+  gMetadataStore._tabTracker = {generateEvent() {}, handlePerformanceEvent() {}};
   yield gMetadataStore.asyncConnect();
 });
 

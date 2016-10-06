@@ -249,6 +249,10 @@ MetadataStore.prototype = {
    * Returns a promise that is resolved upon success, or rejected if an exception occurs
    */
   asyncInsert: Task.async(function*(metaObjects) {
+    const event = this._tabTracker.generateEvent();
+    const startTime = Date.now();
+    this._tabTracker.handlePerformanceEvent(event, "metadataStoreInsertStart", startTime);
+
     if (!this._conn) {
       throw new Error("MetadataStore is not yet connected");
     }
@@ -281,6 +285,7 @@ MetadataStore.prototype = {
           yield this._conn.executeCached(SQL_INSERT_METADATA, metadataBindings);
           metadata_id = yield this._asyncGetLastInsertRowID();
         } catch (e) {
+          this._tabTracker.handlePerformanceEvent(event, "metadataStoreFailToInsertMetadata", Date.now() - startTime);
           Cu.reportError(`MetadataStore failed to insert metadata: ${e.message}`);
           throw e;
         }
@@ -296,6 +301,7 @@ MetadataStore.prototype = {
             try {
               image_ids.push(yield this._asyncGetImageIDByURL(faviconBindings.url));
             } catch (ex) {
+              this._tabTracker.handlePerformanceEvent(event, "metadataStoreFailToInsertFavicon", Date.now() - startTime);
               Cu.reportError(`MetadataStore failed to insert favicon: ${ex.message}`);
               throw ex; /* force this transaction to rollback */
             }
@@ -313,6 +319,7 @@ MetadataStore.prototype = {
               try {
                 image_ids.push(yield this._asyncGetImageIDByURL(imageBindings.url));
               } catch (ex) {
+                this._tabTracker.handlePerformanceEvent(event, "metadataStoreFailToFetchImage", Date.now() - startTime);
                 Cu.reportError(`MetadataStore failed to fetch the id of image: ${ex.message}`);
                 throw ex; /* force this transaction to rollback */
               }
@@ -326,6 +333,7 @@ MetadataStore.prototype = {
         }
       }.bind(this));
     }
+    this._tabTracker.handlePerformanceEvent(event, "metadataStoreInsertEnd", Date.now() - startTime);
   }),
 
   /**

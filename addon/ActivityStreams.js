@@ -103,7 +103,9 @@ function ActivityStreams(metadataStore, options = {}) {
     this._experimentProvider.experimentId
   );
 
-  this._previewProvider = new PreviewProvider(this._tabTracker, metadataStore, this._experimentProvider);
+  this._metadataStore = metadataStore;
+  this._metadataStore._tabTracker = this._tabTracker;
+  this._previewProvider = new PreviewProvider(this._tabTracker, this._metadataStore, this._experimentProvider);
 
   this._pageScraper = null;
 
