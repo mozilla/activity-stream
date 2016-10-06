@@ -15,9 +15,10 @@ const DEFAULT_OPTIONS = {
   blacklist: ["about:", "localhost:", "resource://"]
 };
 
-function PageScraper(previewProvider, options = {}) {
+function PageScraper(previewProvider, tabTracker, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   this._previewProvider = previewProvider;
+  this._tabTracker = tabTracker;
   this._metadataParser = new MetadataParser();
 }
 
@@ -33,6 +34,10 @@ PageScraper.prototype = {
    * HTML and insert it in the metadata database
    */
   _asyncParseAndSave: Task.async(function*(rawHTML, url) {
+    let event = this._tabTracker.generateEvent();
+    this._tabTracker.handlePerformanceEvent(event, "metadataReceivedRawHTML");
+    let startTime = Date.now();
+
     let link = yield this._previewProvider.asyncLinkExist(url);
     if (!link) {
       let metadata;
@@ -40,10 +45,18 @@ PageScraper.prototype = {
         metadata = yield this._metadataParser.parseHTMLText(rawHTML, url);
       } catch (e) {
         Cu.reportError(`MetadataParser failed to parse ${url}`);
+        this._tabTracker.handlePerformanceEvent(event, "metadataParseFail", Date.now() - startTime);
+        return;
       }
+
       if (this._shouldSaveMetadata(metadata)) {
         this._insertMetadata(metadata);
+        this._tabTracker.handlePerformanceEvent(event, "metadataParseSuccess", Date.now() - startTime);
+      } else {
+        this._tabTracker.handlePerformanceEvent(event, "metadataInvalidReceived", Date.now() - startTime);
       }
+    } else {
+      this._tabTracker.handlePerformanceEvent(event, "metadataExists", Date.now() - startTime);
     }
   }),
 

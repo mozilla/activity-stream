@@ -109,7 +109,7 @@ function ActivityStreams(metadataStore, options = {}) {
 
   if (simplePrefs.prefs.pageScraper) {
     if (!this.options.pageScraper) {
-      this._pageScraper = new PageScraper(this._previewProvider);
+      this._pageScraper = new PageScraper(this._previewProvider, this._tabTracker);
     } else {
       this._pageScraper = this.options.pageScraper;
     }
@@ -553,7 +553,7 @@ ActivityStreams.prototype = {
   _pageScraperListener() {
     let newEnabledValue = simplePrefs.prefs.pageScraper;
     if (newEnabledValue && !this._pageScraper) {
-      this._pageScraper = new PageScraper(this._previewProvider);
+      this._pageScraper = new PageScraper(this._previewProvider, this._tabTracker);
       this._pageScraper.init();
     } else if (!newEnabledValue && this._pageScraper) {
       this._pageScraper.uninit();
