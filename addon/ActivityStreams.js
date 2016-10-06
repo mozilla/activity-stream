@@ -115,7 +115,8 @@ function ActivityStreams(metadataStore, options = {}) {
 
   this._pageScraper = null;
 
-  if (simplePrefs.prefs.pageScraper) {
+  if (this._experimentProvider.data.localMetadata) {
+    simplePrefs.prefs.pageScraper = true;
     if (!this.options.pageScraper) {
       this._pageScraper = new PageScraper(this._previewProvider, this._tabTracker);
     } else {
