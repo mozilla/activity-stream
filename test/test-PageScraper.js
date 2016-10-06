@@ -38,6 +38,7 @@ const mockPreviewProvider = {
     gMetadataStore.push(linkToInsert);
   }
 };
+const mockTabTracker = {generateEvent() {}, handlePerformanceEvent() {}};
 
 exports.test_parse_and_save_HTML_only_once = function*(assert) {
   let metadataObj = {
@@ -110,7 +111,7 @@ exports.test_blacklist = function(assert) {
 
 before(exports, () => {
   parseCallCount = 0;
-  gPageScraper = new PageScraper(mockPreviewProvider, {framescriptPath: ""});
+  gPageScraper = new PageScraper(mockPreviewProvider, mockTabTracker, {framescriptPath: ""});
   gPageScraper.init();
   gPageScraper._metadataParser = {
     parseHTMLText(raw, url) {
