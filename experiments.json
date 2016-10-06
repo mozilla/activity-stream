@@ -58,5 +58,19 @@
       "threshold": 0.4,
       "description": "Use the score based highlights."
     }
+  },
+  "localMetadata": {
+    "name": "Local Page Scraper",
+    "description": "Locally compute metadata for pages",
+    "control": {
+      "value": true,
+      "description": "Do not compute metadata locally"
+    },
+    "variant": {
+      "id": "exp-003-local-metadata",
+      "value": true,
+      "threshold": 0.5,
+      "description": "Locally compute metadata"
+    }
   }
 }
