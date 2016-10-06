@@ -4,11 +4,11 @@ const {ADDON_TO_CONTENT} = require("common/event-constants");
 const redux = require("redux");
 
 // Test reducer that adds action.data to a total
-function reducer(state = 0, action) {
-  return action.type === "add" ? (state + action.number) : state;
+function reducer(state = {number: 0}, action) {
+  return action.type === "add" ? ({number: state.number + action.number}) : state;
 }
 function createStore() {
-  return redux.createStore(reducer, 0);
+  return redux.createStore(reducer, {number: 0});
 }
 
 describe("PageWorker", () => {
@@ -39,19 +39,23 @@ describe("PageWorker", () => {
       sinon.spy(pageWorker, "_onDispatch");
       pageWorker.connect();
       store.dispatch({type: "add", number: 42});
-      assert.equal(store.getState(), 42);
+      assert.deepEqual(store.getState(), {number: 42});
       assert.called(pageWorker._onDispatch);
     });
   });
   describe("_onDispatch", () => {
     it("should emit a message to Page instance when store dispatches an action", () => {
-      store.dispatch({type: "add", number: 3});
-      assert(store.getState(), 3);
       pageWorker.connect();
-      pageWorker._onDispatch();
+      store.dispatch({type: "add", number: 3});
 
-      const expectedMessage = {type: LOCAL_STORAGE_KEY, data: 3};
-      pageWorker._page.port.emit.calledWith(ADDON_TO_CONTENT, expectedMessage);
+      const expectedMessage = {type: LOCAL_STORAGE_KEY, data: {number: 3}};
+      assert.calledWith(pageWorker._page.port.emit, ADDON_TO_CONTENT, expectedMessage);
+      assert.deepEqual(pageWorker._store.getState(), {number: 3});
+    });
+    it("should not emit a message if the state did not change", () => {
+      pageWorker.connect();
+      store.dispatch({type: "other"});
+      assert.notCalled(pageWorker._page.port.emit);
     });
   });
   describe("#destroy", () => {
@@ -76,7 +80,7 @@ describe("PageWorker", () => {
       pageWorker.destroy();
       store.dispatch({type: "add", number: 8});
 
-      assert.equal(store.getState(), 10);
+      assert.deepEqual(store.getState(), {number: 10});
       assert.isNull(pageWorker._unsubscribe);
       // Should only have called once, for the dispatch before pageWorker was destroyed
       assert.calledOnce(pageWorker._onDispatch);
