@@ -18,6 +18,7 @@ exports["test activity stream loads on home page when appropriate"] = function(a
   assert.equal(`${url}#/`, prefService.get("browser.startup.homepage"));
 
   // Unload ActivityStream with reason="disable" and it should be unset.
+  app = getTestActivityStream({pageURL: url});
   app.unload("disable");
   assert.ok(!prefService.isSet("browser.startup.homepage"));
 
