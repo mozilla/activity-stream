@@ -45,6 +45,11 @@ Object.assign(exports, {
         this.reconnectMetadataStore();
       }
       app = new ActivityStreams(metadataStore, tabTracker, telemetrySender, options);
+      try {
+        app.init();
+      } catch (e) {
+        Cu.reportError(e);
+      }
     }.bind(this));
   },
 
