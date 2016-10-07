@@ -51,6 +51,16 @@ function doDump(object, trailer) {
   dump(JSON.stringify(object, null, 1) + trailer); // eslint-disable-line no-undef
 }
 
+function getTestRecommendationProvider() {
+  return {
+    init() {},
+    asyncSetRecommendedContent() {},
+    setBlockedRecommendation() {},
+    getRecommendation() {},
+    uninit() {}
+  };
+}
+
 function getTestSearchProvider() {
   return {
     init() {},
@@ -105,6 +115,7 @@ function getTestActivityStream(options = {}) {
 
   options.pageScraper = mockPageScraper;
   options.searchProvider = getTestSearchProvider();
+  options.recommendationProvider = getTestRecommendationProvider();
   let mockApp = new ActivityStreams(mockMetadataStore, options);
   return mockApp;
 }

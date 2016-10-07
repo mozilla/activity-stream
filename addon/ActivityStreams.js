@@ -56,7 +56,8 @@ const DEFAULT_OPTIONS = {
   recommendationTTL: 3600000, // every hour, get a new recommendation
   shareProvider: null,
   pageScraper: null,
-  searchProvider: null
+  searchProvider: null,
+  recommendationProvider: null
 };
 
 const PLACES_CHANGES_EVENTS = [
@@ -129,14 +130,7 @@ function ActivityStreams(metadataStore, options = {}) {
 
   this._asyncBuildPlacesCache();
 
-  // Only create RecommendationProvider if they are in the experiment
-  if (this._experimentProvider.data.recommendedHighlight) {
-    this._recommendationProvider = new RecommendationProvider(this._previewProvider, this._tabTracker);
-    if (simplePrefs.prefs.recommendations) {
-      this._recommendationProvider.asyncSetRecommendedContent();
-    }
-    this._refreshRecommendations(this.options.recommendationTTL);
-  }
+  this._initializeRecommendationProvider();
 
   if (this.options.shareProvider) {
     this._shareProvider = this.options.shareProvider;
@@ -297,6 +291,22 @@ ActivityStreams.prototype = {
         url: msg.data.url,
         isPrivate: msg.data.isPrivate
       });
+    }
+  },
+
+  _initializeRecommendationProvider() {
+    // Only create RecommendationProvider if they are in the experiment
+    if (this._experimentProvider.data.recommendedHighlight) {
+      if (!this.options.recommendationProvider) {
+        this._recommendationProvider = new RecommendationProvider(this._previewProvider, this._tabTracker);
+      } else {
+        this._recommendationProvider = this.options.recommendationProvider;
+      }
+      this._recommendationProvider.init();
+      if (simplePrefs.prefs.recommendations) {
+        this._recommendationProvider.asyncSetRecommendedContent();
+      }
+      this._refreshRecommendations(this.options.recommendationTTL);
     }
   },
 
