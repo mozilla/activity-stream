@@ -143,14 +143,7 @@ const Spotlight = React.createClass({
   },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
-    const blankSites = [];
-    // XXX I've disabled blankSites for now, because it looks odd when (e.g.)
-    // someone only has enough history for 8 sites.  But really, I think
-    // think it looks odd in all cases.  Comments invited.
-    //
-    // for (let i = 0; i < (this.props.length - sites.length); i++) {
-    //   blankSites.push(<li className="spotlight-item spotlight-placeholder" key={`blank-${i}`} />);
-    // }
+
     return (<section className="spotlight">
       <h3 className="section-title">Highlights</h3>
       <ul className="spotlight-list">
@@ -162,7 +155,6 @@ const Spotlight = React.createClass({
           source="FEATURED"
           onClick={this.onClickFactory(i, site)}
           {...site} />)}
-        {blankSites}
       </ul>
     </section>);
   }

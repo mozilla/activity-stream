@@ -101,11 +101,4 @@
     font-size: $spotlight-font-size;
     margin: 0;
   }
-
-  &.spotlight-placeholder {
-    background: $placeholder-background;
-    border: $placeholder-border;
-    box-shadow: none;
-    height: $spotlight-item-height;
-  }
 }

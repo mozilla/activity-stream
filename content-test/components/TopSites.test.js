@@ -48,7 +48,7 @@ describe("TopSites", () => {
     });
 
     it("should have the right links", () => {
-      const linkEls = el.querySelectorAll(".tile:not(.tile-placeholder)");
+      const linkEls = el.querySelectorAll(".tile");
       assert.equal(linkEls.length, fakeProps.sites.length);
       assert.include(linkEls[0].href, fakeProps.sites[0].url);
       assert.include(linkEls[1].href, fakeProps.sites[1].url);
