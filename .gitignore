@@ -13,3 +13,4 @@ firefox/
 config.yml
 .amo_config.json
 common/vendor.js
+*.update.rdf
