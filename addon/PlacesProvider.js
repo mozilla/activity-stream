@@ -707,11 +707,10 @@ Links.prototype = {
 
   /**
    * Obtain a set of links to rank.
-   * Get MAX(all links visited in the past 4 days, last 20 links).
+   * Get all links visited in the past 4 days or default to last 20 links.
    * Last 20 links is used as fallback in case there is no recent history.
    *
    * @param {Object} options
-   *        {Integer} limit: Maximum number of results to return. Max 20
    *
    * @returns {Promise} Returns a promise with the array of links as payload.
    */
@@ -720,6 +719,22 @@ Links.prototype = {
 
     let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
 
+    const columns = [
+      "bookmarkDateCreated",
+      "bookmarkGuid",
+      "bookmarkId",
+      "bookmarkTitle",
+      "favicon",
+      "frecency",
+      "guid",
+      "lastModified",
+      "lastVisitDate",
+      "mimeType",
+      "title",
+      "type",
+      "url",
+      "visitCount"
+    ];
     let sqlQuery = `SELECT p.url as url,
                            p.guid as guid,
                            f.data as favicon,
@@ -739,15 +754,27 @@ Links.prototype = {
                       ON b.fk = p.id
                     LEFT JOIN moz_favicons f
                       ON p.favicon_id = f.id
-                    WHERE datetime(p.last_visit_date / 1000 / 1000, 'unixepoch') > datetime('now', '${HIGHLIGHTS_THRESHOLDS.ageLimit}')
-                    AND p.url NOT IN (${blockedURLs})
+                    WHERE p.url NOT IN (${blockedURLs})
                     AND p.title NOT NULL
                     AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})`;
+    const recentClause = `AND datetime(p.last_visit_date / 1000 / 1000, 'unixepoch') >
+                              datetime('now', '${HIGHLIGHTS_THRESHOLDS.ageLimit}')`;
 
-    let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["bookmarkId", "bookmarkTitle", "bookmarkGuid", "bookmarkDateCreated", "url", "guid", "title",
-        "lastVisitDate", "frecency", "visitCount", "type", "lastModified", "favicon", "mimeType"]
-    });
+    // Get the recent links first
+    let links = yield this.executePlacesQuery(`${sqlQuery} ${recentClause}`, {columns});
+    const offset = links.length;
+
+    // Add more links if the recent links didn't get enough
+    if (offset < LINKS_QUERY_LIMIT) {
+      const limitClause = `ORDER BY p.last_visit_date DESC
+        LIMIT :limit OFFSET :offset`;
+      const params = {
+        limit: LINKS_QUERY_LIMIT - offset,
+        offset
+      };
+      let moreLinks = yield this.executePlacesQuery(`${sqlQuery} ${limitClause}`, {columns, params});
+      links = links.concat(moreLinks);
+    }
 
     links = this._faviconBytesToDataURI(links);
     return links.filter(link => LinkChecker.checkLoadURI(link.url));
