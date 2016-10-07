@@ -16,13 +16,8 @@ Cu.importGlobalProperties(["fetch"]);
 
 function RecommendationProvider(previewProvider, tabTracker, options = {}) {
   this.options = Object.assign({}, DEFAULT_TIMEOUTS, options);
-  this._recommendedContent = [];
-  this._blockedRecommendedContent = new Set();
-  this._currentRecommendation = null;
-  this._pocketEndpoint = simplePrefs.prefs[POCKET_API_URL];
   this._previewProvider = previewProvider;
   this._tabTracker = tabTracker;
-  this._asyncUpdateRecommendations(this.options.pocketTimeout);
 }
 
 RecommendationProvider.prototype = {
@@ -132,6 +127,16 @@ RecommendationProvider.prototype = {
         this.asyncSetRecommendedContent();
         this._asyncUpdateRecommendations(pocketTimeout);
       }, pocketTimeout);
+    }
+  },
+
+  init() {
+    this._recommendedContent = [];
+    this._blockedRecommendedContent = new Set();
+    this._currentRecommendation = null;
+    this._pocketEndpoint = simplePrefs.prefs[POCKET_API_URL];
+    if (this.options.pocketTimeout) {
+      this._asyncUpdateRecommendations(this.options.pocketTimeout);
     }
   },
 

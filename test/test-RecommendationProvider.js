@@ -161,7 +161,8 @@ before(exports, () => {
     }
   };
   const mockTabTracker = {handleUserEvent() {}, generateEvent() {}, handlePerformanceEvent() {}};
-  gRecommendationProvider = new RecommendationProvider(mockPreviewProvider, mockTabTracker);
+  gRecommendationProvider = new RecommendationProvider(mockPreviewProvider, mockTabTracker, {pocketTimeout: null});
+  gRecommendationProvider.init();
 });
 
 after(exports, () => {
