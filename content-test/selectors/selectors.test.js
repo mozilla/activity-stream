@@ -8,14 +8,10 @@ const {
   selectSpotlight,
   selectTopSites,
   selectNewTabSites,
-  selectHistory,
   selectWeightedHighlights,
   selectAndDedupe
 } = require("selectors/selectors");
-const {
-  SPOTLIGHT_DEFAULT_LENGTH,
-  WEIGHTED_HIGHLIGHTS_LENGTH
-} = require("common/constants.js");
+const {SPOTLIGHT_DEFAULT_LENGTH} = require("common/constants.js");
 
 const {rawMockData, createMockProvider} = require("test/test-utils");
 
@@ -158,68 +154,6 @@ describe("selectors", () => {
       const rows = [{url: "http://foo.com"}, {url: "http://www.foo.com"}];
       const result = selectTopSites({TopSites: {init: false, rows}});
       assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
-    });
-  });
-  describe("selectHistory weightedHighlights pref is false", () => {
-    let state;
-    let fakeStateNoWeights;
-    beforeEach(() => {
-      fakeStateNoWeights = Object.assign({}, fakeState, {
-        Prefs: {
-          prefs: {
-            weightedHighlights: false,
-            recommendations: true
-          }
-        }
-      });
-      state = selectHistory(fakeStateNoWeights);
-    });
-    it("should select Highlights rows when weightedHighlights pref is false", () => {
-      // Because of the sorting cannot check links. If `selectSpotlight` is called then recommendations is read
-      // and that can only happen if Spotlight links were selected.
-      assert.ok(state.Spotlight.recommendationShown);
-    });
-  });
-  describe("selectHistory weightedHighlights pref is true", () => {
-    let fakeStateWithWeights;
-    let state;
-    beforeEach(() => {
-      fakeStateWithWeights = Object.assign({}, fakeState, {Experiments: {values: {weightedHighlights: true}}});
-      state = selectHistory(fakeStateWithWeights);
-    });
-    it("should select the correct number of items", () => {
-      assert.equal(state.Spotlight.rows.length, WEIGHTED_HIGHLIGHTS_LENGTH);
-    });
-    it("should select WeightedHighlights when weightedHighlights pref is true", () => {
-      // Because of the call to assignImageAndBackgroundColor the two `rows` prop are not identical.
-      state.Spotlight.rows.forEach((row, i) => {
-        assert.equal(row.url, fakeStateWithWeights.WeightedHighlights.rows[i].url);
-      });
-    });
-  });
-  describe("selectHistory keep less filtered rows", () => {
-    const rows = [
-      {filter: ""},
-      {filter: "a"},
-      {filter: "ab"}
-    ];
-    function doSelect(query) {
-      return selectHistory(Object.assign({}, fakeState, {
-        Filter: {query},
-        History: {rows}
-      }));
-    }
-    it("should keep only unfiltered for empty", () => {
-      let state = doSelect("");
-      assert.lengthOf(state.History.rows, 1);
-    });
-    it("should keep only unfiltered and partially filtered for partial filter", () => {
-      let state = doSelect("a");
-      assert.lengthOf(state.History.rows, 2);
-    });
-    it("should keep all filtered for full filter", () => {
-      let state = doSelect("ab");
-      assert.lengthOf(state.History.rows, 3);
     });
   });
   describe("selectNewTabSites", () => {
