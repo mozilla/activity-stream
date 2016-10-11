@@ -1,6 +1,7 @@
 "use strict";
 
 const {Cc, Ci, Cu, components} = require("chrome");
+const {TabTracker} = require("addon/TabTracker");
 const {ActivityStreams} = require("addon/ActivityStreams");
 const {stack: Cs} = components;
 
@@ -117,7 +118,8 @@ function getTestActivityStream(options = {}) {
   options.pageScraper = mockPageScraper;
   options.searchProvider = getTestSearchProvider();
   options.recommendationProvider = getTestRecommendationProvider();
-  let mockApp = new ActivityStreams(mockMetadataStore, options);
+  const testTabTracker = new TabTracker(options.clientID);
+  let mockApp = new ActivityStreams(mockMetadataStore, testTabTracker, options);
   return mockApp;
 }
 

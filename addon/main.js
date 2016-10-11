@@ -1,8 +1,10 @@
 /* globals Task, ClientID */
+"use strict";
 
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {MetadataStore, METASTORE_NAME} = require("addon/MetadataStore");
 const {MetadataCache} = require("addon/MetadataCache");
+const {TabTracker} = require("addon/TabTracker");
 const {ActivityStreams} = require("addon/ActivityStreams");
 const {setTimeout, clearTimeout} = require("sdk/timers");
 const {Cu} = require("chrome");
@@ -27,7 +29,10 @@ Object.assign(exports, {
     options.telemetry = false;
 
     Task.spawn(function*() {
-      options.clientID = yield ClientID.getClientID();
+      const clientID = yield ClientID.getClientID();
+      options.clientID = clientID;
+      const tabTracker = new TabTracker(clientID);
+
       if (options.loadReason === "upgrade") {
         yield this.migrateMetadataStore();
       }
@@ -37,7 +42,7 @@ Object.assign(exports, {
       } catch (e) {
         this.reconnectMetadataStore();
       }
-      app = new ActivityStreams(metadataStore, options);
+      app = new ActivityStreams(metadataStore, tabTracker, options);
     }.bind(this));
   },
 
