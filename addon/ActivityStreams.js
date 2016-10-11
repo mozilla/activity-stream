@@ -490,12 +490,6 @@ ActivityStreams.prototype = {
     this._tabTracker.handleUserEvent(msg.data);
   },
 
-  _handleRatingEvent({msg}) {
-    let metadataSource = simplePrefs.prefs.metadataSource;
-    let data = Object.assign({}, msg.data, {metadataSource});
-    this._tabTracker.handleRatingEvent(data);
-  },
-
   _respondToRecommendationToggle() {
     simplePrefs.prefs.recommendations = !simplePrefs.prefs.recommendations;
   },
@@ -513,8 +507,6 @@ ActivityStreams.prototype = {
         return this._onRouteChange(args);
       case am.type("NOTIFY_USER_EVENT"):
         return this._handleUserEvent(args);
-      case am.type("NOTIFY_RATE_METADATA"):
-        return this._handleRatingEvent(args);
       case am.type("EXPERIMENTS_REQUEST"):
         return this._respondToExperimentsRequest(args);
       case am.type("NOTIFY_TOGGLE_RECOMMENDATIONS"):

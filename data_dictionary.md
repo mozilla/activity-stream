@@ -72,19 +72,6 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
 }
 ```
 
-# Example Activity Stream `rating` Log
-
-```json
-{
-  "action": "activity_stream_metadata_rating",
-  "addon_version": "1.0.0",
-  "rating": 3,
-  "rated_index": 4,
-  "rated_type": "bookmark",
-  "metadataSource": "Embedly"
-}
-```
-
 | KEY | DESCRIPTION | &nbsp; |
 |-----|-------------|:-----:|
 | `action_position` | The index of the element in the `source` that was clicked. | :one:
@@ -111,9 +98,6 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
 | `ver` | The version of the Onyx API the ping was sent to. | :one:
 | `url` | The URL of the recommendation shown in one of the highlights spots, if any. | :one:
 | `recommender_type` | The type of recommendation that is being shown, if any. | :one:
-| `rating` | The rating (out of 5) that the user has given the metadata for a given highlight. | :one:
-| `rated_index` | The associated index of the spotlight item that the user has rated. | :one:
-| `rated_type` | The associated type of the spotlight item that the user has rated. | :one:
 | `metadata_source` | The source of which we computed metadata. Either (`Embedly` or `MetadataService` or `Local` or `TippyTopProvider`). | :one:
 
 **Where:**
