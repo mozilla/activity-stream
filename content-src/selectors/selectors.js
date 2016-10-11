@@ -141,47 +141,5 @@ module.exports.selectNewTabSites = createSelector(
   }
 );
 
-// Timeline History view
-module.exports.selectHistory = createSelector(
-  [
-    selectSpotlight,
-    state => state.Filter,
-    state => state.History,
-    selectWeightedHighlights,
-    state => state.Experiments.values.weightedHighlights
-  ],
-  (Spotlight, Filter, History, WeightedHighlights, prefWeightedHighlights) => {
-    let rows;
-    if (prefWeightedHighlights) {
-      rows = selectAndDedupe({
-        sites: WeightedHighlights.rows,
-        dedupe: [],
-        max: WEIGHTED_HIGHLIGHTS_LENGTH,
-        defaults: assignImageAndBackgroundColor(firstRunData.Highlights)
-      });
-    } else {
-      rows = dedupe.one(Spotlight.rows);
-    }
-
-    return {
-      Spotlight: Object.assign({}, Spotlight, {rows}),
-      Filter,
-      History: Object.assign({}, History, {
-        // Only include rows that are less filtered than the current filter
-        rows: History.rows.filter(val => Filter.query.indexOf(val.filter) === 0)
-      })
-    };
-  }
-);
-
-// Timeline Bookmarks
-module.exports.selectBookmarks = createSelector(
-  [
-    state => state.Filter,
-    state => state.Bookmarks
-  ],
-  (Filter, Bookmarks) => ({Filter, Bookmarks})
-);
-
 // Share Providers
 module.exports.selectShareProviders = state => ({ShareProviders: state.ShareProviders});
