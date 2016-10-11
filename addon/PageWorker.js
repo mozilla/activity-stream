@@ -36,7 +36,11 @@ class PageWorker {
   }
   destroy() {
     if (this._page) {
-      this._page.destroy();
+      try {
+        this._page.destroy();
+      } catch (e) {
+        // The page probably wasn't set up yet
+      }
       this._page = null;
     }
     if (this._unsubscribe) {
