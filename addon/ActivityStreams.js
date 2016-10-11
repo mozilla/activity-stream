@@ -92,6 +92,8 @@ ActivityStreams.prototype = {
   _isUnloaded: false,
 
   init() {
+    let initializePromises = [];
+
     this._store = createStore();
     this._initializePerfMeter();
     this._initializeAppURLHider();
@@ -104,7 +106,7 @@ ActivityStreams.prototype = {
     this._initializePageScraper(this._experimentProvider, this._previewProvider, this._tabTracker);
     this._initializeRecommendationProvider(this._experimentProvider, this._previewProvider, this._tabTracker);
     this._initializeShareProvider(this._tabTracker);
-    this._initializeBaselineRecommender(this._experimentProvider);
+    initializePromises.push(this._initializeBaselineRecommender(this._experimentProvider));
     this._initializePrefProvider();
 
     this._setupPageMod();
@@ -112,7 +114,9 @@ ActivityStreams.prototype = {
     NewTabURL.override(this._newTabURL);
     this._setHomePage();
     this._setUpPageWorker(this._store);
-    this._initializeAppData();
+
+    // Wait for any asynchronous initializers to finish before loading app data
+    Promise.all(initializePromises).then(() => this._initializeAppData());
   },
 
   /**
@@ -200,8 +204,9 @@ ActivityStreams.prototype = {
     // This is instantiated with a recommender based on weights if pref is true. Used to score highlights.
     this._baselineRecommender = null;
     if (experimentProvider.data.weightedHighlights) {
-      this._loadRecommender();
+      return this._loadRecommender();
     }
+    return Promise.resolve();
   },
 
   _initializePreviewProvier(experimentProvider, metadataStore, tabTracker) {
@@ -334,10 +339,10 @@ ActivityStreams.prototype = {
   _loadRecommender() {
     // Only need to load history items once per session.
     if (this._baselineRecommender !== null) {
-      return;
+      return Promise.resolve();
     }
 
-    this._memoized.getAllHistoryItems().then(historyItems => {
+    return this._memoized.getAllHistoryItems().then(historyItems => {
       let highlightsCoefficients = this._loadWeightedHighlightsCoefficients();
       this._baselineRecommender = new Recommender(historyItems, {highlightsCoefficients});
     });
