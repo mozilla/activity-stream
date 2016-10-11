@@ -87,7 +87,6 @@ const NewTabPage = React.createClass({
           { props.Spotlight.weightedHighlights ? null : this.renderRecentActivity() }
 
           <section className="bottom-links-container">
-            <Link className="bottom-link" to="/timeline"><span className="icon icon-spacer icon-activity-stream" /> See all activity</Link>
             <span className="link-wrapper-right">
               <a
                 ref="settingsLink"
