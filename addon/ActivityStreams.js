@@ -772,9 +772,7 @@ ActivityStreams.prototype = {
       let baseUrl = this.options.pageURL;
       this._appURLs = [
         baseUrl,
-        `${baseUrl}#/`,
-        `${baseUrl}#/timeline`,
-        `${baseUrl}#/timeline/bookmarks`
+        `${baseUrl}#/`
       ];
     }
     return this._appURLs;

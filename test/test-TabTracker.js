@@ -70,36 +70,6 @@ function checkLoadUnloadReasons(assert, pingData, expectedLoadReasons, expectedU
   });
 }
 
-const openTestTabShow = Task.async(function*(openUrl) {
-  let tabData = {};
-
-  const promiseOnTabShow = new Promise(resolve => {
-    tabs.open({
-      url: openUrl,
-      onPageShow: tab => {
-        tabData.tab = tab;
-        resolve();
-      }
-    });
-  });
-
-  const promiseSessionLogComplete = new Promise(resolve => {
-    function onNotify(subject, topic, data) {
-      Services.obs.removeObserver(onNotify, "tab-session-complete");
-      tabData.notifyData = JSON.parse(data);
-      resolve();
-    }
-    Services.obs.addObserver(onNotify, "tab-session-complete", false);
-  });
-
-  yield promiseOnTabShow;
-  yield new Promise(resolve => {
-    tabData.tab.close(resolve);
-  });
-  yield promiseSessionLogComplete;
-  return tabData.notifyData;
-});
-
 const openTestTab = Task.async(function*(openUrl) {
   let tabData = {};
 
@@ -619,9 +589,6 @@ exports.test_TabTracker_pageType = function*(assert) {
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
   let pingData = yield openTestTab(ACTIVITY_STREAMS_URL);
   assert.equal(pingData.page, "NEW_TAB", "page type is newtab");
-  // open timeline page
-  pingData = yield openTestTabShow(app.appURLs[2]);
-  assert.equal(pingData.page, "TIMELINE_ALL", "page type is timeline");
 };
 
 const openTestTabExample = Task.async(function*(openUrl) {
