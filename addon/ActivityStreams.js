@@ -6,7 +6,6 @@ const {Cu} = require("chrome");
 const {data} = require("sdk/self");
 const {PageMod} = require("sdk/page-mod");
 const {setTimeout, clearTimeout} = require("sdk/timers");
-const {ActionButton} = require("sdk/ui/button/action");
 const tabs = require("sdk/tabs");
 const simplePrefs = require("sdk/simple-prefs");
 const privateBrowsing = require("sdk/private-browsing");
@@ -141,7 +140,6 @@ function ActivityStreams(metadataStore, options = {}) {
 
   this._setupPageMod();
   this._setupListeners();
-  this._setupButton();
   NewTabURL.override(this._newTabURL);
   this._setHomePage();
   this._prefsProvider = new PrefsProvider({
@@ -165,7 +163,6 @@ function ActivityStreams(metadataStore, options = {}) {
 ActivityStreams.prototype = {
 
   _pagemod: null,
-  _button: null,
   _newRecommendationTimeoutID: null,
   _isUnloaded: false,
 
@@ -742,15 +739,6 @@ ActivityStreams.prototype = {
     }
   },
 
-  _setupButton() {
-    this._button = ActionButton({
-      id: "activity-streams-link",
-      label: "Activity Stream",
-      icon: data.url("content/img/list-icon.svg"),
-      onClick: () => tabs.open(`${this.options.pageURL}#/timeline`)
-    });
-  },
-
   /*
    * Replace the home page with the ActivityStream new tab page.
    */
@@ -784,9 +772,7 @@ ActivityStreams.prototype = {
       let baseUrl = this.options.pageURL;
       this._appURLs = [
         baseUrl,
-        `${baseUrl}#/`,
-        `${baseUrl}#/timeline`,
-        `${baseUrl}#/timeline/bookmarks`
+        `${baseUrl}#/`
       ];
     }
     return this._appURLs;
@@ -822,7 +808,6 @@ ActivityStreams.prototype = {
       this.workers.clear();
       this._removeListeners();
       this._pagemod.destroy();
-      this._button.destroy();
       this._tabTracker.uninit();
       this._telemetrySender.uninit();
       this._appURLHider.uninit();
