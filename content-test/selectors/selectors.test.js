@@ -163,7 +163,7 @@ describe("selectors", () => {
     });
     it("should return the right properties", () => {
       [
-        "Spotlight",
+        "Highlights",
         "TopActivity",
         "TopSites",
         "showRecommendationOption"
@@ -171,11 +171,11 @@ describe("selectors", () => {
         assert.property(state, prop);
       });
     });
-    it("should use first 3 items of selectSpotlight for Spotlight", () => {
-      assert.lengthOf(state.Spotlight.rows, SPOTLIGHT_DEFAULT_LENGTH);
+    it("should use first 3 items of selectSpotlight for Highlights", () => {
+      assert.lengthOf(state.Highlights.rows, SPOTLIGHT_DEFAULT_LENGTH);
     });
-    it("should dedupe TopSites, Spotlight, and TopActivity", () => {
-      const groups = [state.TopSites.rows, state.Spotlight.rows, state.TopActivity.rows];
+    it("should dedupe TopSites, Highlights, and TopActivity", () => {
+      const groups = [state.TopSites.rows, state.Highlights.rows, state.TopActivity.rows];
       assert.deepEqual(groups, dedupe.group(groups));
     });
     it("should not give showRecommendationOption if we are not in the experiment", () => {
@@ -196,11 +196,11 @@ describe("selectors", () => {
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.property(state.Spotlight, "weightedHighlights");
-      assert.isTrue(state.Spotlight.weightedHighlights);
-      assert.equal(state.Spotlight.rows.length, weightedHighlights.WeightedHighlights.rows.length + firstRunData.Highlights.length);
+      assert.property(state.Highlights, "weightedHighlights");
+      assert.isTrue(state.Highlights.weightedHighlights);
+      assert.equal(state.Highlights.rows.length, weightedHighlights.WeightedHighlights.rows.length + firstRunData.Highlights.length);
       for (let i = 0; i < weightedHighlights.WeightedHighlights.rows.length; i++) {
-        assert.equal(state.Spotlight.rows[i].url, weightedHighlights.WeightedHighlights.rows[i].url);
+        assert.equal(state.Highlights.rows[i].url, weightedHighlights.WeightedHighlights.rows[i].url);
       }
     });
     it("should render first run highlights of fresh profiles", () => {
@@ -210,8 +210,8 @@ describe("selectors", () => {
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.equal(state.Spotlight.rows.length, firstRunData.Highlights.length);
-      state.Spotlight.rows.forEach((row, i) => {
+      assert.equal(state.Highlights.rows.length, firstRunData.Highlights.length);
+      state.Highlights.rows.forEach((row, i) => {
         assert.equal(row.url, firstRunData.Highlights[i].url);
       });
     });
@@ -222,8 +222,8 @@ describe("selectors", () => {
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.equal(state.Spotlight.rows.length, 5);
-      assert.equal(state.Spotlight.rows[2].url, firstRunData.Highlights[0].url);
+      assert.equal(state.Highlights.rows.length, 5);
+      assert.equal(state.Highlights.rows[2].url, firstRunData.Highlights[0].url);
     });
     it("should dedupe weighted highlights results", () => {
       let weightedHighlights = {
@@ -232,7 +232,7 @@ describe("selectors", () => {
       };
 
       state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.equal(state.Spotlight.rows.length, 1 + firstRunData.Highlights.length);
+      assert.equal(state.Highlights.rows.length, 1 + firstRunData.Highlights.length);
     });
   });
   describe("selectWeightedHighlights", () => {
