@@ -17,9 +17,9 @@ let stylesheetLink = document.getElementById("main-stylesheet");
 stylesheetLink.setAttribute("href", `${staticPrefix}main.css`);
 
 function loadStories() {
+  require("../content-test/components/Spotlight-unweighted.story");
   require("../content-test/components/Spotlight.story");
   require("../content-test/components/ContextMenu.story");
-  require("../content-test/components/SpotlightFeedItem.story.js");
   // require as many stories as you need.
 }
 

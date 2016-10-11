@@ -45,11 +45,5 @@
       align-items: center;
       justify-content: center;
     }
-
-    &.tile-placeholder {
-      background: $placeholder-background;
-      border: $placeholder-border;
-      box-shadow: none;
-    }
   }
 }

@@ -1,8 +1,9 @@
 const React = require("react");
-const {SpotlightItem} = require("components/Spotlight/Spotlight");
+const {Spotlight, SpotlightItem} = require("components/Spotlight/Spotlight");
 const {storiesOf, action} = require("@kadira/storybook");
-const {createMockProvider} = require("../test-utils");
-const faker = require("../faker");
+const {selectNewTabSites} = require("selectors/selectors");
+const {createMockProvider, rawMockData, faker} = require("test/test-utils");
+const {WEIGHTED_HIGHLIGHTS_LENGTH} = require("common/constants");
 const createSite = faker.createSite;
 const Provider = createMockProvider({dispatch: action("dispatched a redux action")});
 
@@ -22,9 +23,12 @@ if (process.env.STORYBOOK_STATIC) {
 
 // XXX should get rid of container here.  See comment in ContextMenu.story
 // for details.
+
+// 698px = $wrapper-max-width + 2 (presumably for the border)
+const style = {width: "698px"};
 const Container = props => (
   <Provider>
-    <div style={{padding: "20px"}}>
+    <div style={style}>
       {props.children}
     </div>
   </Provider>
@@ -35,7 +39,38 @@ const Container = props => (
 // unclear reasons.  Presumably something to do with faker, tippy-top-sites,
 // lorempixel (used by faker for the images), or Spotlight (aka Highlight)
 // itself.
-storiesOf("Highlight", module)
+
+// Compute the weighted fake spotlight rows.
+// XXX should we be assigning to rawMockData?
+
+// After the code stops checking Experiments.values.weightedHighlights,
+// this next line can go away:
+rawMockData.Experiments.values.weightedHighlights = true;
+
+// If/when weightedHighlights become the default, we can update fake-data.js
+// and remove this line too.
+rawMockData.WeightedHighlights.weightedHighlights = true;
+let mockData = Object.assign({}, rawMockData, selectNewTabSites(rawMockData));
+let fakeSpotlightItems = mockData.Spotlight.rows;
+
+storiesOf("Highlight List (weighted)", module)
+  .add("All valid properties", () =>
+    <Container>
+      <Spotlight length={WEIGHTED_HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems} />
+    </Container>
+  )
+  .add("Missing a row (eg because user has insufficient history)", () =>
+    <Container>
+      <Spotlight length={WEIGHTED_HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems.slice(3)} />
+    </Container>
+  )
+  .add("Missing an item (eg because user has insufficient history)", () =>
+    <Container>
+      <Spotlight length={WEIGHTED_HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems.slice(1)} />
+    </Container>
+  );
+
+storiesOf("Highlight Item", module)
   .add("All valid properties", () => {
     const site = createSite({images: 1});
     site.bestImage = site.images[0];

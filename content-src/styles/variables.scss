@@ -4,6 +4,7 @@ $bg-color: #FFF;
 $bg-grey: #FBFBFB;
 $very-light-grey: #EBEBEB;
 $light-grey: #A0A0A0;
+$mid-light-grey: #858585;
 $mid-grey: #56565A;
 $dark-grey: #383E49;
 $link-blue: #00AFF7;
@@ -66,7 +67,7 @@ $spotlight-item-height: 270px;
 $spotlight-item-width: ($wrapper-max-width - $base-gutter * 2) / 3;
 $spotlight-img-height: 130px;
 $spotlight-text-height: 86px;
-$spotlight-font-size: 13px;
+$spotlight-font-size: 12px;
 $spotlight-icon-height: 35px;
 $spotlight-icon-width: 35px;
 $spotlight-icon-gutter: $base-gutter / 2;
@@ -95,9 +96,6 @@ $search-text: #666;
 $search-section-background: #F7F7F7;
 $search-border-color: #EAEAEA;
 
-$placeholder-background: transparent;
-$placeholder-border: 1px solid $faintest-black;
-
 $item-shadow: 0 1px 0 0 $faintest-black;
 $item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
 
@@ -122,11 +120,6 @@ $tooltip-padding: 10px 30px;
 $tooltip-anchor-width: 8px;
 $tooltip-anchor-height: 8px;
 $tooltip-anchor-margin: -42px 0 0 -24px;
-
-$feed-item-border-color: #EEE;
-$highlight-feed-icon-width: 96px;
-$highlight-feed-icon-height: 65px;
-$highlight-feed-url-color: #888;
 
 @mixin item-shadow {
   box-shadow: $item-shadow;

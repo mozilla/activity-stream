@@ -1,8 +1,10 @@
+const {SPOTLIGHT_DEFAULT_LENGTH, WEIGHTED_HIGHLIGHTS_LENGTH} =
+  require("common/constants");
 const faker = require("test/faker");
 
 module.exports = {
   "WeightedHighlights": {
-    "rows": faker.createRows({images: 6}),
+    "rows": faker.createRows({images: WEIGHTED_HIGHLIGHTS_LENGTH}),
     "error": false,
     "weightedHighlights": false
   },
@@ -15,7 +17,7 @@ module.exports = {
     "error": false
   },
   "Highlights": {
-    "rows": faker.createRows({images: 3}),
+    "rows": faker.createRows({images: SPOTLIGHT_DEFAULT_LENGTH}),
     "error": false
   },
   "Bookmarks": {

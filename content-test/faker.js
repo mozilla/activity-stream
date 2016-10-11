@@ -72,7 +72,6 @@ function createSite(optional = {}) {
     "favicon": "data:image/png;base64,iVBORw0KGgoAA",
     "title": tiptopSite.title || `${name} - ${faker.company.catchPhrase()}`,
     "url": tiptopSite.url || faker.internet.url(),
-    "provider_display": `${name}.com`,
     "lastVisitDate": date.valueOf(),
     "frecency": faker.random.number({min: 10, max: 2000}),
     "type": options.type,
@@ -84,6 +83,7 @@ function createSite(optional = {}) {
                    faker.image.imageUrl(),
     "media": {},
     "provider_name": name,
+    "provider_display": `${name}.com`,
     "metadata_source": "EmbedlyTest"
   };
 
