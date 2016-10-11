@@ -1,5 +1,6 @@
 "use strict";
 const absolute = relPath => require("path").join(__dirname, relPath);
+const webpack = require("webpack");
 
 module.exports = {
   entry: {"vendor": absolute("common/vendor-src.js")},
@@ -8,5 +9,8 @@ module.exports = {
     filename: "vendor.js",
     libraryTarget: "commonjs2"
   },
-  module: {loaders: [{test: /\.json$/, loader: "json"}]}
+  module: {loaders: [{test: /\.json$/, loader: "json"}]},
+  plugins: [
+    new webpack.BannerPlugin("let platform_require = require;\n", {raw: true})
+  ]
 };
