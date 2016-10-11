@@ -7,9 +7,11 @@ const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");
+const Hint = require("components/Hint/Hint");
 const classNames = require("classnames");
 
 const {SPOTLIGHT_DEFAULT_LENGTH} = require("common/constants");
+const HIGHLIGHTS_HINT_TEXT = "Find your way back to the great articles, videos, and other pages you’ve discovered on the web.";
 
 const SpotlightItem = React.createClass({
   getInitialState() {
@@ -128,7 +130,7 @@ const Spotlight = React.createClass({
     const sites = this.props.sites.slice(0, this.props.length);
 
     return (<section className="spotlight">
-      <h3 className="section-title">Highlights</h3>
+      <h3 className="section-title">Highlights <Hint id="highlights_hint" title="Highlights" body={HIGHLIGHTS_HINT_TEXT} /></h3>
       <ul className="spotlight-list">
         {sites.map((site, i) => <SpotlightItem
           index={i}

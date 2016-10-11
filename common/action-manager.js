@@ -50,7 +50,9 @@ const am = new ActionManager([
   "SHARE_PROVIDERS_RESPONSE",
   "NOTIFY_SHARE_URL",
   "NOTIFY_COPY_URL",
-  "NOTIFY_EMAIL_URL"
+  "NOTIFY_EMAIL_URL",
+  "ENABLE_ALL_HINTS",
+  "DISABLE_HINT"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -259,6 +261,14 @@ function NotifyShareUrl(url, title, provider) {
   return Notify("NOTIFY_SHARE_URL", {url, title, provider});
 }
 
+function DisableHint(id) {
+  return Notify("DISABLE_HINT", id);
+}
+
+function ShowAllHints() {
+  return Notify("ENABLE_ALL_HINTS");
+}
+
 am.defineActions({
   Notify,
   Response,
@@ -294,7 +304,9 @@ am.defineActions({
   RequestShareProviders,
   NotifyCopyUrl,
   NotifyEmailUrl,
-  NotifyShareUrl
+  NotifyShareUrl,
+  ShowAllHints,
+  DisableHint
 });
 
 module.exports = am;
