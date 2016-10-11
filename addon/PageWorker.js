@@ -1,11 +1,13 @@
+const vendor = require("common/vendor");
 const {Page} = require("sdk/page-worker");
 const {data} = require("sdk/self");
 const {LOCAL_STORAGE_KEY} = require("common/constants");
 const {ADDON_TO_CONTENT} = require("common/event-constants");
-const watch = require("common/vendor")("redux-watch");
+const watch = vendor("redux-watch");
+const debounce = vendor("lodash.debounce");
 
 class PageWorker {
-  constructor({store} = {}) {
+  constructor({store, wait} = {}) {
     if (!store) {
       throw new Error("options.store is required");
     }
@@ -13,6 +15,7 @@ class PageWorker {
     this._onDispatch = this._onDispatch.bind(this);
     this._unsubscribe = null;
     this._store = store;
+    this._wait = wait || 1000;
   }
   _onDispatch() {
     this._page.port.emit(ADDON_TO_CONTENT, {
@@ -32,7 +35,7 @@ class PageWorker {
     const w = watch(this._store.getState);
     // Note: According to the redux docs, calling .subscribe on a store
     // returns a function which will unsubscribe
-    this._unsubscribe = this._store.subscribe(w(this._onDispatch));
+    this._unsubscribe = this._store.subscribe(debounce(w(this._onDispatch), this._wait));
   }
   destroy() {
     if (this._page) {

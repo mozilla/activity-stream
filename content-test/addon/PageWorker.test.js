@@ -14,15 +14,25 @@ function createStore() {
 describe("PageWorker", () => {
   let pageWorker;
   let store;
+  let clock;
   beforeEach(() => {
     store = createStore();
     pageWorker = new PageWorker({store});
+    clock = sinon.useFakeTimers();
   });
-  afterEach(() => pageWorker.destroy());
+  afterEach(() => {
+    pageWorker.destroy();
+    clock.restore();
+  });
   it("should create a PageWorker with a store", () => {
     assert.equal(pageWorker._store, store);
     assert.isNull(pageWorker._page);
     assert.isNull(pageWorker._unsubscribe);
+    assert.equal(pageWorker._wait, 1000);
+  });
+  it("should allow overriding ._wait", () => {
+    const pw = new PageWorker({store, wait: 300});
+    assert.equal(pw._wait, 300);
   });
   it("should throw if you try to create a PageWorker without a store", () => {
     assert.throws(() => {
@@ -39,15 +49,26 @@ describe("PageWorker", () => {
       sinon.spy(pageWorker, "_onDispatch");
       pageWorker.connect();
       store.dispatch({type: "add", number: 42});
+      clock.tick(pageWorker._wait);
       assert.deepEqual(store.getState(), {number: 42});
       assert.called(pageWorker._onDispatch);
     });
   });
   describe("_onDispatch", () => {
+    it("should debounce according to the ._wait value", () => {
+      sinon.spy(pageWorker, "_onDispatch");
+      pageWorker.connect();
+      store.dispatch({type: "add", number: 10});
+      store.dispatch({type: "add", number: 2});
+      store.dispatch({type: "add", number: 8});
+      clock.tick(pageWorker._wait);
+      assert.deepEqual(store.getState(), {number: 20});
+      assert.calledOnce(pageWorker._onDispatch);
+    });
     it("should emit a message to Page instance when store dispatches an action", () => {
       pageWorker.connect();
       store.dispatch({type: "add", number: 3});
-
+      clock.tick(pageWorker._wait);
       const expectedMessage = {type: LOCAL_STORAGE_KEY, data: {number: 3}};
       assert.calledWith(pageWorker._page.port.emit, ADDON_TO_CONTENT, expectedMessage);
       assert.deepEqual(pageWorker._store.getState(), {number: 3});
@@ -58,6 +79,7 @@ describe("PageWorker", () => {
       assert.notCalled(pageWorker._page.port.emit);
     });
   });
+
   describe("#destroy", () => {
     it("should not throw if called twice or without connect", () => {
       pageWorker.destroy();
@@ -87,8 +109,10 @@ describe("PageWorker", () => {
       sinon.spy(pageWorker, "_onDispatch");
       pageWorker.connect();
       store.dispatch({type: "add", number: 2});
+      clock.tick(pageWorker._wait);
       pageWorker.destroy();
       store.dispatch({type: "add", number: 8});
+      clock.tick(pageWorker._wait);
 
       assert.deepEqual(store.getState(), {number: 10});
       assert.isNull(pageWorker._unsubscribe);
