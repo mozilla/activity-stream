@@ -20,7 +20,7 @@ DOMFetcher.prototype = {
   _addWindowListeners(event) {
     let window = event.target.defaultView;
     if (window === this.cfmm.content) {
-      window.addEventListener("load", this._sendContentMessage, false);
+      this._sendContentMessage();
     }
   },
 
