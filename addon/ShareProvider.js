@@ -54,6 +54,7 @@ const Overlay = {
       Overlay.setWindowScripts(win, shareProvider);
     }
     Services.obs.addObserver(Overlay, "browser-delayed-startup-finished", false);
+    Overlay.shareProvider = shareProvider;
   },
   uninit: () => {
     Services.obs.removeObserver(Overlay, "browser-delayed-startup-finished");
@@ -67,9 +68,10 @@ const Overlay = {
       win.SocialActivationListener.receiveMessage = win.SocialActivationListener.originalReceiveMessage;
       delete win.SocialActivationListener.originalReceiveMessage;
     }
+    delete Overlay.shareProvider;
   },
   observe: window => {
-    Overlay.setWindowScripts(window);
+    Overlay.setWindowScripts(window, Overlay.shareProvider);
   },
   setWindowScripts: (window, shareProvider) => {
     Object.defineProperty(window, "ShareUtils", windowProperty(window, shareProvider));
