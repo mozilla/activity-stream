@@ -101,7 +101,8 @@ function getTestActivityStream(options = {}) {
   };
   const mockShareProvider = {
     init() {},
-    uninit() {}
+    uninit() {},
+    socialProviders: []
   };
   if (!options.mockShareProvider) {
     options.shareProvider = mockShareProvider;

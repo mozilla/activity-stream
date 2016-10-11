@@ -280,9 +280,7 @@ ActivityStreams.prototype = {
 
     this._store.dispatch(am.actions.Response("PREFS_RESPONSE", simplePrefs.prefs));
 
-    // Share
-    // Note: there is a race condition here, which should be resolved in https://github.com/mozilla/activity-stream/issues/1314
-    this._store.dispatch(am.actions.Response("SHARE_PROVIDERS_RESPONSE", this._shareProvider.socialProviders || []));
+    this._store.dispatch(am.actions.Response("SHARE_PROVIDERS_RESPONSE", this._shareProvider.socialProviders));
   },
 
   _respondOpenWindow({msg}) {
