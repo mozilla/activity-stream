@@ -832,6 +832,7 @@ ActivityStreams.prototype = {
       this._prefsProvider.destroy();
       this._shareProvider.uninit(reason);
       this._experimentProvider.destroy();
+      this._pageWorker.destroy();
     };
 
     switch (reason) {

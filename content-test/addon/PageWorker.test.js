@@ -63,6 +63,16 @@ describe("PageWorker", () => {
       pageWorker.destroy();
       pageWorker.destroy();
     });
+    it("should catch errors in _page.destroy", () => {
+      pageWorker.connect();
+      pageWorker._page.destroy = () => {
+        throw new Error();
+      };
+      assert.doesNotThrow(() => {
+        pageWorker.destroy();
+        assert.isNull(pageWorker._page);
+      });
+    });
     it("should set ._onDispatch to null", () => {
       pageWorker._onDispatch = null;
     });
