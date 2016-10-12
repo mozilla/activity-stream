@@ -202,13 +202,6 @@
       "hidden": true
     },
     {
-      "name": "metadataRatingSystem",
-      "title": "Rate this metadata",
-      "type": "bool",
-      "value": false,
-      "hidden": true
-    },
-    {
       "name": "metadataSource",
       "title": "How are we getting metadata?",
       "type": "string",

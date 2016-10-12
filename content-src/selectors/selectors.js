@@ -50,11 +50,10 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights,
     state => state.Prefs.prefs.recommendations,
-    state => state.Prefs.prefs.metadataRatingSystem,
     selectWeightedHighlights,
     state => state.Experiments.values.weightedHighlights
   ],
-  (Highlights, recommendationShown, metadataRating, WeightedHighlights, prefWeightedHighlights) => {
+  (Highlights, recommendationShown, WeightedHighlights, prefWeightedHighlights) => {
     let rows;
     if (prefWeightedHighlights) {
       rows = WeightedHighlights.rows;
@@ -78,7 +77,7 @@ const selectSpotlight = module.exports.selectSpotlight = createSelector(
         });
     }
 
-    return Object.assign({}, Highlights, {rows, recommendationShown, metadataRating, prefWeightedHighlights});
+    return Object.assign({}, Highlights, {rows, recommendationShown, prefWeightedHighlights});
   }
 );
 

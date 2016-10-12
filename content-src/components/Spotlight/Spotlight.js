@@ -34,20 +34,6 @@ const SpotlightItem = React.createClass({
       this.setState({hover: false});
     }
   },
-  renderRating() {
-    // XXX we should get rid of the rating system entirely, as well as the
-    // now unnecessary <div> being returned by the render() method itself
-    // This commented code is being temporarily kept here so that noone forgets
-    // that when the rating system goes, this.props.showRating needs to go too.
-    // https://github.com/mozilla/activity-stream/issues/1475 is tracking the
-    // rating removal work.
-    //
-    // return (
-    //   <Rating ref="rating" site={site} numStars={5} showRating={this.props.showRating} />
-    // );
-    //
-    return null;
-  },
   render() {
     const site = this.props;
     const image = site.bestImage;
@@ -68,7 +54,7 @@ const SpotlightItem = React.createClass({
     } else {
       style.backgroundColor = site.backgroundColor;
     }
-    return (<div><li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
+    return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image">
           <SiteIcon className="spotlight-icon" height={40} width={40} site={site} ref="icon" showBackground={true} border={false} faviconSize={32} />
@@ -95,9 +81,7 @@ const SpotlightItem = React.createClass({
         page={this.props.page}
         index={this.props.index}
         source={this.props.source} />
-    </li>
-    {this.renderRating()}
-    </div>);
+    </li>);
   }
 });
 
@@ -110,8 +94,7 @@ SpotlightItem.propTypes = {
   favicon_url: React.PropTypes.string,
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string,
-  onClick: React.PropTypes.func,
-  showRating: React.PropTypes.bool
+  onClick: React.PropTypes.func
 };
 
 const Spotlight = React.createClass({
@@ -151,7 +134,6 @@ const Spotlight = React.createClass({
           index={i}
           key={site.guid || site.cache_key || i}
           page={this.props.page}
-          showRating={this.props.showRating}
           source="FEATURED"
           onClick={this.onClickFactory(i, site)}
           {...site} />)}
@@ -163,8 +145,7 @@ const Spotlight = React.createClass({
 Spotlight.propTypes = {
   page: React.PropTypes.string.isRequired,
   sites: React.PropTypes.array.isRequired,
-  length: React.PropTypes.number,
-  showRating: React.PropTypes.bool
+  length: React.PropTypes.number
 };
 
 module.exports = connect(justDispatch)(Spotlight);

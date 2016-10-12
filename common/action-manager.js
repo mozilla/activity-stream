@@ -49,7 +49,6 @@ const am = new ActionManager([
   "PREFS_RESPONSE",
   "NOTIFY_UPDATE_PREF",
   "PREF_CHANGED_RESPONSE",
-  "NOTIFY_RATE_METADATA",
   "SHARE_PROVIDERS_REQUEST",
   "SHARE_PROVIDERS_RESPONSE",
   "NOTIFY_SHARE_URL",
@@ -239,10 +238,6 @@ function NotifyPerf(data) {
   return Notify("NOTIFY_PERFORMANCE", data);
 }
 
-function NotifyRateMetadata(data) {
-  return Notify("NOTIFY_RATE_METADATA", data);
-}
-
 function NotifyEvent(data) {
   if (!eventConstants.pages.has(data.page)) {
     throw new Error(`${data.page} is not a valid page`);
@@ -319,7 +314,6 @@ am.defineActions({
   NotifyBlockRecommendation,
   NotifyToggleRecommendations,
   NotifyUpdatePref,
-  NotifyRateMetadata,
   RequestShareProviders,
   NotifyCopyUrl,
   NotifyEmailUrl,

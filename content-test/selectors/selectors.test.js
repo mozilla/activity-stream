@@ -186,11 +186,6 @@ describe("selectors", () => {
       state = selectNewTabSites(Object.assign({}, fakeState, experimentsData));
       assert.isTrue(state.showRecommendationOption);
     });
-    it("should show a rating system if the pref is on", () => {
-      let rate = {Prefs: {prefs: {metadataRatingSystem: true}}};
-      state = selectNewTabSites(Object.assign({}, fakeState, rate));
-      assert.isTrue(state.Spotlight.metadataRating);
-    });
     it("should render the correct Spotlight items for weightedHighlights, and correct number of items", () => {
       let weightedHighlights = {
         WeightedHighlights: {
