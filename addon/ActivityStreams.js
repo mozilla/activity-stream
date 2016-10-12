@@ -18,7 +18,6 @@ const {SearchProvider} = require("addon/SearchProvider");
 const {ShareProvider} = require("addon/ShareProvider");
 const {PreviewProvider} = require("addon/PreviewProvider");
 const {RecommendationProvider} = require("addon/RecommendationProvider");
-const {TelemetrySender} = require("addon/TelemetrySender");
 const {PerfMeter} = require("addon/PerfMeter");
 const {AppURLHider} = require("addon/AppURLHider");
 const am = require("common/action-manager");
@@ -70,7 +69,7 @@ const PLACES_CHANGES_EVENTS = [
 
 const HOME_PAGE_PREF = "browser.startup.homepage";
 
-function ActivityStreams(metadataStore, tabTracker, options = {}) {
+function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   EventEmitter.decorate(this);
 
@@ -94,7 +93,7 @@ function ActivityStreams(metadataStore, tabTracker, options = {}) {
   this._memoizer = new Memoizer();
   this._memoized = this._get_memoized(this._memoizer);
 
-  this._telemetrySender = new TelemetrySender();
+  this._telemetrySender = telemetrySender;
 
   this._experimentProvider = new ExperimentProvider(
     options.clientID,

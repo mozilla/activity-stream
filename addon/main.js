@@ -4,6 +4,7 @@
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {MetadataStore, METASTORE_NAME} = require("addon/MetadataStore");
 const {MetadataCache} = require("addon/MetadataCache");
+const {TelemetrySender} = require("addon/TelemetrySender");
 const {TabTracker} = require("addon/TabTracker");
 const {ActivityStreams} = require("addon/ActivityStreams");
 const {setTimeout, clearTimeout} = require("sdk/timers");
@@ -32,6 +33,7 @@ Object.assign(exports, {
       const clientID = yield ClientID.getClientID();
       options.clientID = clientID;
       const tabTracker = new TabTracker(clientID);
+      const telemetrySender = new TelemetrySender();
 
       if (options.loadReason === "upgrade") {
         yield this.migrateMetadataStore();
@@ -42,7 +44,7 @@ Object.assign(exports, {
       } catch (e) {
         this.reconnectMetadataStore();
       }
-      app = new ActivityStreams(metadataStore, tabTracker, options);
+      app = new ActivityStreams(metadataStore, tabTracker, telemetrySender, options);
     }.bind(this));
   },
 

@@ -1,6 +1,7 @@
 "use strict";
 
 const {Cc, Ci, Cu, components} = require("chrome");
+const {TelemetrySender} = require("addon/TelemetrySender");
 const {TabTracker} = require("addon/TabTracker");
 const {ActivityStreams} = require("addon/ActivityStreams");
 const {stack: Cs} = components;
@@ -119,7 +120,8 @@ function getTestActivityStream(options = {}) {
   options.searchProvider = getTestSearchProvider();
   options.recommendationProvider = getTestRecommendationProvider();
   const testTabTracker = new TabTracker(options.clientID);
-  let mockApp = new ActivityStreams(mockMetadataStore, testTabTracker, options);
+  const testTelemetrySender = new TelemetrySender();
+  let mockApp = new ActivityStreams(mockMetadataStore, testTabTracker, testTelemetrySender, options);
   return mockApp;
 }
 
