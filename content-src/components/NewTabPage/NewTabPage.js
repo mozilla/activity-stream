@@ -8,7 +8,6 @@ const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
 const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
-const {Link} = require("react-router");
 const setFavicon = require("lib/set-favicon");
 const classNames = require("classnames");
 const PAGE_NAME = "NEW_TAB";
@@ -105,8 +104,6 @@ const NewTabPage = React.createClass({
           </section>
         </div>
       </div>
-
-      <Link className="debug-link" to="/debug">debug</Link>
     </main>);
   }
 });
