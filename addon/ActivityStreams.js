@@ -16,7 +16,6 @@ const {Memoizer} = require("addon/Memoizer");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {SearchProvider} = require("addon/SearchProvider");
 const {ShareProvider} = require("addon/ShareProvider");
-const {TabTracker} = require("addon/TabTracker");
 const {PreviewProvider} = require("addon/PreviewProvider");
 const {RecommendationProvider} = require("addon/RecommendationProvider");
 const {TelemetrySender} = require("addon/TelemetrySender");
@@ -71,7 +70,7 @@ const PLACES_CHANGES_EVENTS = [
 
 const HOME_PAGE_PREF = "browser.startup.homepage";
 
-function ActivityStreams(metadataStore, options = {}) {
+function ActivityStreams(metadataStore, tabTracker, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   EventEmitter.decorate(this);
 
@@ -104,12 +103,8 @@ function ActivityStreams(metadataStore, options = {}) {
   );
   this._experimentProvider.init();
 
-  this._tabTracker = new TabTracker(
-    this.appURLs,
-    options.clientID,
-    this._memoized,
-    this._experimentProvider.experimentId
-  );
+  this._tabTracker = tabTracker;
+  this._tabTracker.init(this.appURLs, this._memoized, this._experimentProvider.experimentId);
 
   this._previewProvider = new PreviewProvider(this._tabTracker, metadataStore, this._experimentProvider);
 

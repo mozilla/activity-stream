@@ -1,4 +1,5 @@
 /* globals Services, Locale, XPCOMUtils */
+"use strict";
 
 const tabs = require("sdk/tabs");
 const {Ci, Cu} = require("chrome");
@@ -19,13 +20,9 @@ const PERFORMANCE_NOTIF = "performance-event";
 const RATING_NOTIF = "metadata-rating-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 
-function TabTracker(trackableURLs, clientID, placesQueries, experimentId) {
+function TabTracker(clientID) {
   this._tabData = {};
-
   this._clientID = clientID;
-  this._experimentID = experimentId;
-  this._trackableURLs = trackableURLs;
-  this._placesQueries = placesQueries;
   this.onOpen = this.onOpen.bind(this);
 
   this._onPrefChange = this._onPrefChange.bind(this);
@@ -41,6 +38,12 @@ TabTracker.prototype = {
 
   get tabData() {
     return this._tabData;
+  },
+
+  init(trackableURLs, placesQueries, experimentId) {
+    this._trackableURLs = trackableURLs;
+    this._placesQueries = placesQueries;
+    this._experimentID = experimentId;
   },
 
   _addListeners() {
