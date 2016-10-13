@@ -253,11 +253,6 @@ ActivityStreams.prototype = {
       this._processAndDispatchLinks(links, "HIGHLIGHTS_LINKS_RESPONSE");
     });
 
-    // Bookmarks
-    provider.getRecentBookmarks().then(links => {
-      this._processAndDispatchLinks(links, "RECENT_BOOKMARKS_RESPONSE");
-    });
-
     // Search
     let state = this._searchProvider.currentState;
     let currentEngine = JSON.stringify(state.currentEngine);
@@ -336,11 +331,6 @@ ActivityStreams.prototype = {
    */
   _respondToPlacesRequests({msg, worker}) {
     switch (msg.type) {
-      case am.type("RECENT_BOOKMARKS_REQUEST"):
-        PlacesProvider.links.getRecentBookmarks(msg.data).then(links => {
-          this._processAndSendLinks(links, "RECENT_BOOKMARKS_RESPONSE", worker, msg.meta);
-        });
-        break;
       case am.type("RECENT_LINKS_REQUEST"):
         PlacesProvider.links.getRecentLinks(msg.data).then(links => {
           this._processAndSendLinks(links, "RECENT_LINKS_RESPONSE", worker, msg.meta);
@@ -597,7 +587,6 @@ ActivityStreams.prototype = {
     return {
       getTopFrecentSites: cache.memoize("getTopFrecentSites", PlacesProvider.links.getTopFrecentSites.bind(linksObj)),
       getAllHistoryItems: cache.memoize("getAllHistoryItems", PlacesProvider.links.getAllHistoryItems.bind(linksObj)),
-      getRecentBookmarks: cache.memoize("getRecentBookmarks", PlacesProvider.links.getRecentBookmarks.bind(linksObj)),
       getRecentLinks: cache.memoize("getRecentLinks", PlacesProvider.links.getRecentLinks.bind(linksObj)),
       getRecentlyVisited: cache.memoize("getRecentlyVisited", PlacesProvider.links.getRecentlyVisited.bind(linksObj)),
       getHighlightsLinks: cache.memoize("getHighlightsLinks", PlacesProvider.links.getHighlightsLinks.bind(linksObj)),
@@ -618,7 +607,6 @@ ActivityStreams.prototype = {
         let opt = {replace: true};
         yield Promise.all([
           this._memoized.getTopFrecentSites(opt),
-          this._memoized.getRecentBookmarks(opt),
           this._memoized.getAllHistoryItems(opt),
           this._memoized.getRecentLinks(opt),
           this._memoized.getRecentlyVisited(opt),

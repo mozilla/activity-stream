@@ -66,14 +66,14 @@ const LinkMenu = React.createClass({
       .concat(this.getSocialShareOptions(site, providers, dispatch));
   },
   getOptions() {
-    const {site, allowBlock, reverseMenuOptions, dispatch, page, ShareProviders} = this.props;
+    const {site, allowBlock, reverseMenuOptions, dispatch, ShareProviders} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
     let deleteOptions;
 
     // Don't add delete options for default links
     // that show up if your history is empty
-    if (isNotDefault && page !== "TIMELINE_BOOKMARKS") {
+    if (isNotDefault) {
       deleteOptions = [
         allowBlock && {
           ref: "dismiss",

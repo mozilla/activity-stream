@@ -46,9 +46,6 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
           return site;
         });
         break;
-      case requestType === am.type("RECENT_BOOKMARKS_REQUEST") && am.type("RECEIVE_BOOKMARK_REMOVED"):
-        state.rows = prevState.rows.filter(val => val.url !== action.data.url);
-        break;
       case am.type("RECEIVE_BOOKMARK_REMOVED"):
         state.rows = prevState.rows.map(site => {
           if (site.url === action.data.url) {

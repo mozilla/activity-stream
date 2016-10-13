@@ -161,12 +161,4 @@ describe("setRowsOrError", () => {
       assert.deepEqual(state.rows, [{url: "http://bar.com"}]);
     });
   })("NOTIFY_HISTORY_DELETE", "NOTIFY_BLOCK_URL");
-
-  it("should remove a bookmark for \"RECEIVE_BOOKMARK_REMOVED\" if request type is \"RECENT_BOOKMARKS_REQUEST\"", () => {
-    reducer = setRowsOrError("RECENT_BOOKMARKS_REQUEST", "RECENT_LINKS_RESPONSE");
-    const action = {type: "RECEIVE_BOOKMARK_REMOVED", data: {url: "http://foo.com", id: 123}};
-    const prevRows = [{url: "http://foo.com", bookmarkGuid: "boorkmarkFOO"}, {url: "http://bar.com", bookmarkGuid: "boorkmarkBAR"}];
-    const state = reducer(Object.assign({}, setRowsOrError.DEFAULTS, {rows: prevRows}), action);
-    assert.deepEqual(state.rows, [{url: "http://bar.com", bookmarkGuid: "boorkmarkBAR"}]);
-  });
 });

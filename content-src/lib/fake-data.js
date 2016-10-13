@@ -20,10 +20,6 @@ module.exports = {
     "rows": faker.createRows({images: SPOTLIGHT_DEFAULT_LENGTH}),
     "error": false
   },
-  "Bookmarks": {
-    "rows": faker.createRows({images: 3, type: "bookmark"}),
-    "error": false
-  },
   "Search": {
     "error": false,
     "searchString": "he",
