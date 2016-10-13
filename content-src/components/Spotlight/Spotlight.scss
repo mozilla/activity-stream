@@ -48,6 +48,7 @@
   > a {
     display: block;
     color: inherit;
+    height: 100%;
   }
 
   .spotlight-image {
@@ -87,7 +88,7 @@
   }
 
   .spotlight-info {
-    padding: $spotlight-padding;
+    padding: $spotlight-info-top-padding $spotlight-info-default-padding;
   }
 
   .spotlight-text {

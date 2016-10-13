@@ -62,8 +62,14 @@ $feed-hover-color: rgba($black, 0.06);
 $feed-line-color: rgba($black, 0.05);
 $feed-circle-color: #CECECE;
 
-$spotlight-padding: $base-gutter / 2;
-$spotlight-item-height: 270px;
+$spotlight-info-default-padding: ($base-gutter / 2);
+
+// The top-padding needs to be less because a smaller font is used
+// immediately under it, so the default padding makes it visually appear to
+// have too much whitespace above.
+$spotlight-info-top-padding: ($base-gutter / 2) - 4;
+
+$spotlight-item-height: 262px;
 $spotlight-item-width: ($wrapper-max-width - $base-gutter * 2) / 3;
 $spotlight-img-height: 130px;
 $spotlight-text-height: 90px;
