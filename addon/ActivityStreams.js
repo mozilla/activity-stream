@@ -72,86 +72,17 @@ const HOME_PAGE_PREF = "browser.startup.homepage";
 function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   EventEmitter.decorate(this);
-
-  if (!this.options.searchProvider) {
-    this._searchProvider = new SearchProvider();
-  } else {
-    this._searchProvider = this.options.searchProvider;
-  }
-  this._searchProvider.init();
-
-  this._store = createStore();
-
-  this._newTabURL = `${this.options.pageURL}#/`;
-
-  this._perfMeter = new PerfMeter(this.appURLs);
-
-  Services.prefs.setIntPref("places.favicons.optimizeToDimension", 64);
-
-  this._appURLHider = new AppURLHider(this.appURLs);
-
-  this._memoizer = new Memoizer();
-  this._memoized = this._get_memoized(this._memoizer);
-
+  this._metadataStore = metadataStore;
+  this._tabTracker = tabTracker;
   this._telemetrySender = telemetrySender;
-
+  this._populatingCache = {places: false};
+  this._newTabURL = `${this.options.pageURL}#/`;
+  Services.prefs.setIntPref("places.favicons.optimizeToDimension", 64);
   this._experimentProvider = new ExperimentProvider(
     options.clientID,
     options.experiments,
     options.rng
   );
-  this._experimentProvider.init();
-
-  this._tabTracker = tabTracker;
-  this._tabTracker.init(this.appURLs, this._memoized, this._experimentProvider.experimentId);
-
-  this._previewProvider = new PreviewProvider(this._tabTracker, metadataStore, this._experimentProvider);
-
-  this._pageScraper = null;
-
-  if (this._experimentProvider.data.localMetadata) {
-    simplePrefs.prefs.pageScraper = true;
-    if (!this.options.pageScraper) {
-      this._pageScraper = new PageScraper(this._previewProvider, this._tabTracker);
-    } else {
-      this._pageScraper = this.options.pageScraper;
-    }
-    this._pageScraper.init();
-  }
-
-  this._populatingCache = {places: false};
-
-  this._asyncBuildPlacesCache();
-
-  this._initializeRecommendationProvider();
-
-  if (this.options.shareProvider) {
-    this._shareProvider = this.options.shareProvider;
-  } else {
-    this._shareProvider = new ShareProvider({eventTracker: this._tabTracker});
-  }
-  this._shareProvider.init();
-
-  this._setupPageMod();
-  this._setupListeners();
-  NewTabURL.override(this._newTabURL);
-  this._setHomePage();
-  this._prefsProvider = new PrefsProvider({
-    simplePrefs,
-    broadcast: this.broadcast.bind(this),
-    send: this.send.bind(this)
-  });
-
-  this._prefsProvider.init();
-  // This is instantiated with a recommender based on weights if pref is true. Used to score highlights.
-  this._baselineRecommender = null;
-  if (this._experimentProvider.data.weightedHighlights) {
-    this._loadRecommender();
-  }
-
-  this._pageWorker = new PageWorker({store: this._store});
-  this._pageWorker.connect();
-  this._refreshAppState();
 }
 
 ActivityStreams.prototype = {
@@ -159,6 +90,30 @@ ActivityStreams.prototype = {
   _pagemod: null,
   _newRecommendationTimeoutID: null,
   _isUnloaded: false,
+
+  init() {
+    this._store = createStore();
+    this._initializePerfMeter();
+    this._initializeAppURLHider();
+    this._initializeMemoizer();
+
+    this._experimentProvider.init();
+    this._tabTracker.init(this.appURLs, this._memoized, this._experimentProvider.experimentId);
+    this._initializeSearchProvider();
+    this._initializePreviewProvier(this._experimentProvider, this._metadataStore, this._tabTracker);
+    this._initializePageScraper(this._experimentProvider, this._previewProvider, this._tabTracker);
+    this._initializeRecommendationProvider(this._experimentProvider, this._previewProvider, this._tabTracker);
+    this._initializeShareProvider(this._tabTracker);
+    this._initializeBaselineRecommender(this._experimentProvider);
+    this._initializePrefProvider();
+
+    this._setupPageMod();
+    this._setupListeners();
+    NewTabURL.override(this._newTabURL);
+    this._setHomePage();
+    this._setUpPageWorker(this._store);
+    this._initializeAppData();
+  },
 
   /**
    * Send a message to a worker
@@ -216,6 +171,99 @@ ActivityStreams.prototype = {
       const action = am.actions.Response(responseType, linksToSend, {append});
       this.send(action, worker, skipMasterStore);
     });
+  },
+
+  _initializeAppData() {
+    this._asyncBuildPlacesCache();
+    this._refreshAppState();
+  },
+
+  _setUpPageWorker(store) {
+    this._pageWorker = new PageWorker({store});
+    this._pageWorker.connect();
+  },
+
+  _initializePerfMeter() {
+    this._perfMeter = new PerfMeter(this.appURLs);
+  },
+
+  _initializeAppURLHider() {
+    this._appURLHider = new AppURLHider(this.appURLs);
+  },
+
+  _initializeMemoizer() {
+    this._memoizer = new Memoizer();
+    this._memoized = this._get_memoized(this._memoizer);
+  },
+
+  _initializeBaselineRecommender(experimentProvider) {
+    // This is instantiated with a recommender based on weights if pref is true. Used to score highlights.
+    this._baselineRecommender = null;
+    if (experimentProvider.data.weightedHighlights) {
+      this._loadRecommender();
+    }
+  },
+
+  _initializePreviewProvier(experimentProvider, metadataStore, tabTracker) {
+    this._previewProvider = new PreviewProvider(tabTracker, metadataStore, experimentProvider);
+  },
+
+  _initializePrefProvider() {
+    this._prefsProvider = new PrefsProvider({
+      simplePrefs,
+      broadcast: this.broadcast.bind(this),
+      send: this.send.bind(this)
+    });
+    this._prefsProvider.init();
+  },
+
+  _initializeShareProvider(tabTracker) {
+    if (this.options.shareProvider) {
+      this._shareProvider = this.options.shareProvider;
+    } else {
+      this._shareProvider = new ShareProvider({eventTracker: tabTracker});
+    }
+    this._shareProvider.init();
+  },
+
+  _initializeRecommendationProvider(experimentProvider, previewProvider, tabTracker) {
+    // Only create RecommendationProvider if they are in the experiment
+    this._recommendationProvider = null;
+    if (experimentProvider.data.recommendedHighlight) {
+      if (!this.options.recommendationProvider) {
+        this._recommendationProvider = new RecommendationProvider(previewProvider, tabTracker);
+      } else {
+        this._recommendationProvider = this.options.recommendationProvider;
+      }
+      this._recommendationProvider.init();
+      if (simplePrefs.prefs.recommendations) {
+        this._recommendationProvider.asyncSetRecommendedContent();
+      }
+      this._refreshRecommendations(this.options.recommendationTTL);
+    }
+  },
+
+  _initializeSearchProvider() {
+    if (!this.options.searchProvider) {
+      this._searchProvider = new SearchProvider();
+    } else {
+      this._searchProvider = this.options.searchProvider;
+    }
+    this._searchProvider.init();
+  },
+
+  _initializePageScraper(experimentProvider, previewProvider, tabTracker) {
+    this._pageScraper = null;
+
+    if (experimentProvider.data.localMetadata) {
+      simplePrefs.prefs.pageScraper = true;
+      if (!this.options.pageScraper) {
+        this._pageScraper = new PageScraper(previewProvider, tabTracker);
+      } else {
+        this._pageScraper = this.options.pageScraper;
+      }
+      this._pageScraper.init();
+    }
   },
 
   /**
@@ -280,22 +328,6 @@ ActivityStreams.prototype = {
         url: msg.data.url,
         isPrivate: msg.data.isPrivate
       });
-    }
-  },
-
-  _initializeRecommendationProvider() {
-    // Only create RecommendationProvider if they are in the experiment
-    if (this._experimentProvider.data.recommendedHighlight) {
-      if (!this.options.recommendationProvider) {
-        this._recommendationProvider = new RecommendationProvider(this._previewProvider, this._tabTracker);
-      } else {
-        this._recommendationProvider = this.options.recommendationProvider;
-      }
-      this._recommendationProvider.init();
-      if (simplePrefs.prefs.recommendations) {
-        this._recommendationProvider.asyncSetRecommendedContent();
-      }
-      this._refreshRecommendations(this.options.recommendationTTL);
     }
   },
 

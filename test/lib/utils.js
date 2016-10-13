@@ -122,6 +122,7 @@ function getTestActivityStream(options = {}) {
   const testTabTracker = new TabTracker(options.clientID);
   const testTelemetrySender = new TelemetrySender();
   let mockApp = new ActivityStreams(mockMetadataStore, testTabTracker, testTelemetrySender, options);
+  mockApp.init();
   return mockApp;
 }
 
