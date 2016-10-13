@@ -2,7 +2,7 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const {Provider} = require("react-redux");
 
-const Routes = require("components/Routes/Routes");
+const Base = require("components/Base/Base");
 const createStore = require("common/create-store");
 const {ADDON_TO_CONTENT, CONTENT_TO_ADDON} = require("common/event-constants");
 
@@ -20,7 +20,7 @@ if (__CONFIG__.USE_SHIM) {
 const Root = React.createClass({
   render() {
     return (<Provider store={store}>
-      <Routes />
+      <Base />
     </Provider>);
   }
 });
