@@ -8,8 +8,6 @@ const am = new ActionManager([
   "TOP_FRECENT_SITES_REQUEST",
   "TOP_FRECENT_SITES_RESPONSE",
   "RECEIVE_CURRENT_ENGINE",
-  "RECENT_BOOKMARKS_REQUEST",
-  "RECENT_BOOKMARKS_RESPONSE",
   "RECEIVE_BOOKMARK_ADDED",
   "RECEIVE_BOOKMARK_REMOVED",
   "RECEIVE_PLACES_CHANGES",
@@ -60,7 +58,6 @@ const am = new ActionManager([
 // so we can do stuff like filter them, add embedly data, etc.
 am.ACTIONS_WITH_SITES = new Set([
   "TOP_FRECENT_SITES_RESPONSE",
-  "RECENT_BOOKMARKS_RESPONSE",
   "RECENT_LINKS_RESPONSE",
   "HIGHLIGHTS_LINKS_RESPONSE"
 ].map(type => am.type(type)));
@@ -121,18 +118,6 @@ function RequestExpect(type, expect, options = {}) {
 
 function RequestTopFrecent() {
   return RequestExpect("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE");
-}
-
-function RequestBookmarks(options) {
-  return RequestExpect("RECENT_BOOKMARKS_REQUEST", "RECENT_BOOKMARKS_RESPONSE", options);
-}
-
-function RequestMoreBookmarks(beforeDate) {
-  return RequestBookmarks({
-    data: {beforeDate},
-    append: true,
-    meta: {skipPreviewRequest: true}
-  });
 }
 
 function RequestRecentLinks(options) {
@@ -284,8 +269,6 @@ am.defineActions({
   Response,
   RequestExpect,
   RequestTopFrecent,
-  RequestBookmarks,
-  RequestMoreBookmarks,
   RequestRecentLinks,
   RequestMoreRecentLinks,
   RequestHighlightsLinks,

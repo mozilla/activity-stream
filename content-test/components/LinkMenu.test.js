@@ -59,13 +59,6 @@ describe("LinkMenu", () => {
     assert.lengthOf(contextMenu.props.options, 5);
   });
 
-  it("should hide delete options for bookmarks page", () => {
-    setup({site: {url: "https://foo.com"}, page: "TIMELINE_BOOKMARKS"});
-    assert.isUndefined(contextMenu.refs.dismiss, "hide dismiss");
-    assert.isUndefined(contextMenu.refs.delete, "hide delete");
-    assert.lengthOf(contextMenu.props.options, 5);
-  });
-
   it("should hide delete from history option for recommendation", () => {
     setup({site: {url: "https://foo.com", recommended: true}});
     assert.isUndefined(contextMenu.refs.delete, "hide delete");

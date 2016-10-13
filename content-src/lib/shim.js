@@ -24,17 +24,6 @@ module.exports = function() {
           })) // eslint-disable-line object-curly-newline
         });
         break;
-      case "RECENT_BOOKMARKS_REQUEST":
-        if (action.meta && action.meta.append) {
-          dispatch({
-            type: "RECENT_BOOKMARKS_RESPONSE",
-            data: faker.createRows({beforeDate: action.data.beforeDate, type: "bookmark"}),
-            meta: {append: true}
-          });
-        } else {
-          dispatch({type: "RECENT_BOOKMARKS_RESPONSE", data: fakeData.Bookmarks.rows});
-        }
-        break;
       case "RECENT_LINKS_REQUEST":
         if (action.meta && action.meta.append) {
           dispatch({
