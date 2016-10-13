@@ -21,6 +21,7 @@ rules:
   no-ids: 0
   no-important: 0
   no-qualifying-elements: 0
+  no-vendor-prefixes: 0
   no-warn: 1
   placeholder-in-extend: 2
   property-sort-order: 0
