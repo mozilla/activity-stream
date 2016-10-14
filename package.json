@@ -145,7 +145,7 @@
       "name": "metadata.endpoint",
       "title": "Local Metadata Endpoint",
       "type": "string",
-      "value": "https://page-metadata.services.mozilla.com/v1/metadata",
+      "value": "https://embedly-proxy.services.mozilla.com/v2/metadata",
       "hidden": true
     },
     {
