@@ -8,7 +8,7 @@ scripts:
 # once: Build/serve the assets and run the add-on
   once: =>bundle && =>firefox
 
-  clean: rimraf data/content/* && rimraf data/locales/* && mkdirp data/content && rimraf dist/*
+  clean: rimraf data/content/* && rimraf data/locales/* && mkdirp data/content && rimraf dist/* && rimraf addon/shield-utils/
 
   changelog: conventional-changelog -i CHANGELOG.md -s
 
@@ -16,9 +16,11 @@ scripts:
 
   preparePocketJson: node ./bin/pocket-config.js
 
+  copyShieldUtils: cpx "node_modules/shield-studies-addon-utils/lib/{event-target.js,index.js}" addon/shield-utils/
+
 # bundle: Bundle assets for production
   bundle:
-    pre: =>clean && =>copyTestImages && =>preparePocketJson
+    pre: =>clean && =>copyTestImages && =>preparePocketJson && =>copyShieldUtils
     static: cpx "content-src/static/**/*" data/content
   # TODO: make the number of locales configurable. pontoon-to-json has an option for this
     locales: pontoon-to-json --src locales --dest data/locales
@@ -85,7 +87,7 @@ scripts:
 # start: Start watching/compiling assets,
   start:
     _parallel: true
-    pre: =>clean && =>copyTestImages && =>preparePocketJson
+    pre: =>clean && =>copyTestImages && =>preparePocketJson && =>copyShieldUtils
     static: =>bundle:static -- -w
     locales: =>bundle:locales -- -w
     webpack: webpack -w
@@ -131,7 +133,7 @@ scripts:
 # package: Build add-on
 # Add a SUPPORTED_LOCALES variable to your environment as a comma separated list to include certain locales.
 # e.g. SUPPORTED_LOCALES=en-US,fr
-  package: =>bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
+  package: =>bundle && jpm xpi && mv activity-stream-shield-study.xpi dist/activity-stream-shield-study-$npm_package_version.xpi
 
   # This is for ci
   travis: =>test

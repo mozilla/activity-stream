@@ -10,6 +10,7 @@ dist/
 data/content/
 data/locales/
 activity-streams-env/
+addon/shield-utils/
 firefox/
 config.yml
 .amo_config.json
