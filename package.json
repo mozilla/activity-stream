@@ -1,7 +1,7 @@
 {
   "name": "activity-streams",
   "description": "A rich visual history feed and a reimagined home page make it easier than ever to find exactly what you're looking for in Firefox.\n\nLearn more about this Test Pilot experiment at https://testpilot.firefox.com/.",
-  "version": "1.1.6",
+  "version": "0.0.0",
   "author": "Mozilla (https://mozilla.org/)",
   "bugs": {
     "url": "https://github.com/mozilla/activity-stream/issues"
@@ -23,6 +23,8 @@
     "redux-thunk": "2.1.0",
     "redux-watch": "1.1.1",
     "reselect": "2.5.4",
+    "shield-studies-addon-utils": "^2.0.0",
+    "shield-study-cli": "^1.2.4",
     "url-parse": "1.1.7"
   },
   "devDependencies": {
@@ -95,7 +97,7 @@
     "activity-stream"
   ],
   "license": "MPL-2.0",
-  "main": "addon/main.js",
+  "main": "addon/index.js",
   "preferences": [
     {
       "name": "performance.log",
@@ -211,12 +213,13 @@
   "repository": "mozilla/activity-stream",
   "scripts": {
     "once": "npm run bundle && npm run firefox",
-    "clean": "rimraf data/content/* && mkdirp data/content",
+    "clean": "rimraf data/content/* && mkdirp data/content && rimraf addon/shield-utils/",
     "changelog": "conventional-changelog -i CHANGELOG.md -s",
     "copyTestImages": "cpx \"node_modules/tippy-top-sites/images/**/*\" data/content/favicons/images",
     "copyTopSitesJson": "cpx \"node_modules/tippy-top-sites/top_sites.json\" data/content/favicons",
+    "copyShieldUtils": "cpx \"node_modules/shield-studies-addon-utils/lib/{event-target.js,index.js}\" addon/shield-utils/",
     "bundle": "npm-run-all bundle:*",
-    "prebundle": "npm run clean && npm run copyTestImages && npm run copyTopSitesJson",
+    "prebundle": "npm run clean && npm run copyTestImages && npm run copyTopSitesJson && npm run copyShieldUtils",
     "bundle:static": "cpx \"content-src/static/**/*\" data/content",
     "bundle:svgo": "svgo -q -f data/content/img/",
     "bundle:webpack": "NODE_ENV=production webpack",
@@ -225,7 +228,7 @@
     "bundle:html": "node ./bin/generate-html.js > data/content/activity-streams.html",
     "postbundle": "du -hs ./data/content/*",
     "start": "npm-run-all --parallel start:*",
-    "prestart": "npm run clean && npm run copyTestImages && npm run copyTopSitesJson",
+    "prestart": "npm run clean && npm run copyTestImages && npm run copyTopSitesJson && npm run copyShieldUtils",
     "start:static": "npm run bundle:static -- -w",
     "start:webpack": "webpack -w",
     "start:webpackAddon": "npm run bundle:webpackAddon -- -w",
@@ -257,8 +260,8 @@
     "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
   },
   "title": "Activity Stream",
-  "updateLink": "https://testpilot.firefox.com/files/activitystream/latest",
-  "updateURL": "https://testpilot.firefox.com/files/activitystream/updates.json",
+  "updateLink": "https://addons.mozilla.org/firefox/downloads/latest/activity-stream-shield-study",
+  "updateURL": "https://addons.mozilla.org/firefox/downloads/latest/activity-stream-shield-study",
   "permissions": {
     "multiprocess": true,
     "private-browsing": true

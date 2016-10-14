@@ -6,5 +6,6 @@ data/content/
 firefox/
 logs/
 stats.json
+addon/shield-utils/
 test/test-ColorAnalyzer.js
 test/test-SimpleStorage.js

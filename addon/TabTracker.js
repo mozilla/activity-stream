@@ -30,6 +30,10 @@ function TabTracker(options) {
     this._addListeners();
   }
   simplePrefs.on(TELEMETRY_PREF, this._onPrefChange);
+
+  // shield fields
+  this._shieldVariant = options.shield_variant;
+  this._testPilotVersion = options.tp_version;
 }
 
 TabTracker.prototype = {
@@ -83,6 +87,14 @@ TabTracker.prototype = {
     payload.session_id = this._tabData.session_id;
     if (this._experimentID) {
       payload.experiment_id = this._experimentID;
+    }
+
+    // shield fields
+    if (this._shieldVariant) {
+      payload.shield_variant = this._shieldVariant;
+    }
+    if (this._testPilotVersion) {
+      payload.tp_version = this._testPilotVersion;
     }
   },
 
