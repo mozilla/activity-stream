@@ -1,46 +1,21 @@
 const {connect} = require("react-redux");
 const React = require("react");
 const TestUtils = require("react-addons-test-utils");
-const dedupe = require("lib/dedupe");
 const firstRunData = require("lib/first-run-data");
-const {
-  justDispatch,
-  selectSpotlight,
-  selectTopSites,
-  selectNewTabSites,
-  selectWeightedHighlights,
-  selectAndDedupe
-} = require("selectors/selectors");
-const {SPOTLIGHT_DEFAULT_LENGTH} = require("common/constants.js");
-
+const {justDispatch, selectNewTabSites} = require("selectors/selectors");
+const {SPOTLIGHT_DEFAULT_LENGTH, WEIGHTED_HIGHLIGHTS_LENGTH, TOP_SITES_LENGTH} = require("common/constants.js");
 const {rawMockData, createMockProvider} = require("test/test-utils");
-
-const validSpotlightSite = {
-  "title": "man throws alligator in wendys wptv dnt cnn",
-  "url": "http://www.cnn.com/videos/tv/2016/02/09/man-throws-alligator-in-wendys-wptv-dnt.cnn",
-  "description": "A Florida man faces multiple charges for throwing an alligator through a Wendy's drive-thru window. CNN's affiliate WPTV reports.",
-  "lastVisitDate": 1456426160465,
-  "images": [{
-    "url": "http://i2.cdn.turner.com/cnnnext/dam/assets/160209053130-man-throws-alligator-in-wendys-wptv-dnt-00004611-large-169.jpg",
-    "height": 259,
-    "width": 460,
-    "entropy": 3.98714569089,
-    "size": 14757
-  }]
-};
-
 const fakeState = rawMockData;
-const EmptyComponent = React.createClass({render: () => (<div />)});
-
-function connectSelectorToComponent(selector, InnerComponent = EmptyComponent) {
-  const Provider = createMockProvider();
-  const Connected = connect(justDispatch)(InnerComponent);
-  const instance = TestUtils.renderIntoDocument(<Provider><Connected /></Provider>);
-  return TestUtils.findRenderedComponentWithType(instance, InnerComponent);
-}
 
 describe("selectors", () => {
   describe("justDispatch", () => {
+    const EmptyComponent = React.createClass({render: () => (<div />)});
+    function connectSelectorToComponent(selector, InnerComponent = EmptyComponent) {
+      const Provider = createMockProvider();
+      const Connected = connect(justDispatch)(InnerComponent);
+      const instance = TestUtils.renderIntoDocument(<Provider><Connected /></Provider>);
+      return TestUtils.findRenderedComponentWithType(instance, InnerComponent);
+    }
     it("should return an empty state object", () => {
       assert.deepEqual(justDispatch(fakeState), {});
     });
@@ -50,243 +25,128 @@ describe("selectors", () => {
       assert.isFunction(instance.props.dispatch);
     });
   });
-  describe("selectSpotlight", () => {
-    let state = selectSpotlight(fakeState);
-
-    function setup(custom) {
-      state = selectSpotlight(Object.assign({}, fakeState, custom));
-      return state;
+  describe("selectNewTabSites", () => {
+    let state;
+    let raw;
+    function setup(customRows = {}, weightedHighlights = true, recommendedHighlight = false) {
+      const custom = {};
+      Object.keys(customRows).forEach(key => {
+        custom[key] = Object.assign({}, fakeState[key], {rows: customRows[key]});
+      });
+      const Experiments = {values: {weightedHighlights, recommendedHighlight}, error: false, init: true};
+      raw = Object.assign({}, fakeState, {Experiments}, custom);
+      state = selectNewTabSites(raw);
     }
 
     beforeEach(() => setup());
 
-    // Tests that provided sites are sorted to the bottom, because they don't
-    // match the conditions for spotlight to use them
-    function assertInvalidSite(site) {
-      const invalidSite = Object.assign({}, validSpotlightSite, site);
-      const result = setup({Highlights: {init: true, rows: [invalidSite, validSpotlightSite]}});
-      assert.lengthOf(result.rows, 2 + firstRunData.Highlights.length);
-      assert.equal(result.rows[0].url, validSpotlightSite.url);
-      assert.equal(result.rows[1].url, invalidSite.url);
-    }
-    it("should have the same properties as Highlights plus recommendationShown", () => {
-      Object.keys(fakeState.Highlights).forEach(prop => assert.property(state, prop));
-      assert.property(state, "recommendationShown");
-    });
-    it("should set recommendationShown based on prefs.recommendations", () => {
-      setup({Prefs: {prefs: {recommendations: true}}});
-      assert.isTrue(state.recommendationShown);
-    });
-    it("should add a bestImage for each item", () => {
-      state.rows.forEach(site => {
-        assert.property(site, "bestImage");
-        assert.isObject(site.bestImage);
-        assert.property(site.bestImage, "url");
-      });
-    });
-    it("should add a backgroundColor for items that dont have an image", () => {
-      const site = {
-        url: "https://foo.com",
-        favicon_colors: [{color: [11, 11, 11]}]
-      };
-      const results = setup({Highlights: {rows: [site]}});
-      assert.deepEqual(results.rows[0].backgroundColor, "rgba(11, 11, 11, 0.4)");
-    });
-    it("should use site.background_color for items that dont have an image if it exists", () => {
-      const site = {
-        url: "https://foo.com",
-        background_color: "#111111",
-        favicon_colors: [{color: [11, 11, 11]}]
-      };
-      const results = setup({Highlights: {rows: [site]}});
-      assert.equal(results.rows[0].backgroundColor, "#111111");
-    });
-    it("should use a fallback bg color if no favicon_colors are available", () => {
-      const site = {url: "https://foo.com"};
-      const results = setup({Highlights: {rows: [site]}});
-      assert.ok(results.rows[0].backgroundColor, "should have a bg color");
-    });
-    it("should include first run items if init is true and Highlights is empty", () => {
-      const results = setup({Highlights: {init: true, rows: []}});
-      firstRunData.Highlights.forEach((item, i) => {
-        assert.equal(results.rows[i].url, item.url);
-      });
-    });
-    it("should not include first run items if init is false", () => {
-      const results = setup({Highlights: {init: false, rows: []}});
-      assert.lengthOf(results.rows, 0);
-    });
-    it("should sort sites that do not have a title to the end", () => {
-      assertInvalidSite({title: null});
-    });
-    it("should sort sites that do not have a description to the end", () => {
-      assertInvalidSite({description: null});
-    });
-    it("should sort sites for which the title equals the description to the end", () => {
-      assertInvalidSite({
-        title: "foo",
-        description: "foo"
-      });
-    });
-    it("should sort sites that do not have an images prop or an empty array to the end", () => {
-      assertInvalidSite({images: null});
-      assertInvalidSite({images: []});
-    });
-    it("should append History sites to the end", () => {
-      assertInvalidSite({images: null});
-      assertInvalidSite({images: []});
-    });
-  });
-  describe("selectTopSites", () => {
-    it("should add default sites if init is true", () => {
-      const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
-      const result = selectTopSites({TopSites: {init: true, rows}});
-      assert.isTrue(result.init);
-      assert.deepEqual(result.rows, rows.concat(firstRunData.TopSites));
-    });
-    it("should not add default sites if init is false", () => {
-      const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
-      const result = selectTopSites({TopSites: {init: false, rows}});
-      assert.isFalse(result.init);
-      assert.deepEqual(result.rows, rows);
-    });
-    it("should dedupe by url", () => {
-      const rows = [{url: "http://foo.com"}, {url: "http://www.foo.com"}];
-      const result = selectTopSites({TopSites: {init: false, rows}});
-      assert.deepEqual(result.rows, [{url: "http://foo.com"}]);
-    });
-  });
-  describe("selectNewTabSites", () => {
-    let state;
-    beforeEach(() => {
-      state = selectNewTabSites(fakeState);
-    });
     it("should return the right properties", () => {
-      [
-        "Highlights",
-        "TopActivity",
-        "TopSites",
-        "showRecommendationOption"
-      ].forEach(prop => {
-        assert.property(state, prop);
+      ["Highlights", "TopActivity", "TopSites", "showRecommendationOption"].forEach(prop => assert.property(state, prop));
+    });
+
+    describe("TopSites", () => {
+      it("should internally dedupe", () => {
+        setup({TopSites: [{url: "https://foo.com"}, {url: "http://www.foo.com"}]});
+        const urls = state.TopSites.rows.map(site => site.url);
+        assert.equal(urls[0], "https://foo.com");
+        assert.notInclude(urls, "http://www.foo.com");
+      });
+      it("should limit to TOP_SITES_LENGTH items", () => {
+        const rows = Array(TOP_SITES_LENGTH + 2).fill("https://foo.com").map((url, i) => ({url: url.replace("foo", `foo${i}`)}));
+        setup({TopSites: rows});
+        assert.lengthOf(state.TopSites.rows, TOP_SITES_LENGTH);
+        assert.deepEqual(state.TopSites.rows.map(site => site.url), rows.slice(0, TOP_SITES_LENGTH).map(site => site.url));
+      });
+      it("should add default sites to fill empty spaces", () => {
+        const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
+        setup({TopSites: rows});
+        assert.deepEqual(state.TopSites.rows, rows.concat(firstRunData.TopSites).slice(0, TOP_SITES_LENGTH));
       });
     });
-    it("should use first 3 items of selectSpotlight for Highlights", () => {
-      assert.lengthOf(state.Highlights.rows, SPOTLIGHT_DEFAULT_LENGTH);
-    });
-    it("should dedupe TopSites, Highlights, and TopActivity", () => {
-      const groups = [state.TopSites.rows, state.Highlights.rows, state.TopActivity.rows];
-      assert.deepEqual(groups, dedupe.group(groups));
-    });
-    it("should not give showRecommendationOption if we are not in the experiment", () => {
-      assert.deepEqual(state.showRecommendationOption, undefined);
-    });
-    it("should give a showRecommendationOption if we are in the experiment", () => {
-      const experimentsData = {Experiments: {values: {recommendedHighlight: true}}};
-      state = selectNewTabSites(Object.assign({}, fakeState, experimentsData));
-      assert.isTrue(state.showRecommendationOption);
-    });
-    it("should render the correct Spotlight items for weightedHighlights, and correct number of items", () => {
-      let weightedHighlights = {
-        WeightedHighlights: {
-          rows: [{url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
-            {url: "http://foo4.com"}, {url: "http://www.foo5.com"}, {url: "http://www.foo6.com"}]
-        },
-        Experiments: {values: {weightedHighlights: true}}
-      };
 
-      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.property(state.Highlights, "weightedHighlights");
-      assert.isTrue(state.Highlights.weightedHighlights);
-      assert.equal(state.Highlights.rows.length, weightedHighlights.WeightedHighlights.rows.length + firstRunData.Highlights.length);
-      for (let i = 0; i < weightedHighlights.WeightedHighlights.rows.length; i++) {
-        assert.equal(state.Highlights.rows[i].url, weightedHighlights.WeightedHighlights.rows[i].url);
-      }
-    });
-    it("should render first run highlights of fresh profiles", () => {
-      let weightedHighlights = {
-        WeightedHighlights: {rows: [], init: true},
-        Experiments: {values: {weightedHighlights: true}}
-      };
-
-      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.equal(state.Highlights.rows.length, firstRunData.Highlights.length);
-      state.Highlights.rows.forEach((row, i) => {
-        assert.equal(row.url, firstRunData.Highlights[i].url);
+    // Note that this is for Weighted Highlights turned ON (see setup function)
+    describe("Highlights", () => {
+      it("should have a length of WEIGHTED_HIGHLIGHTS_LENGTH", () => {
+        assert.lengthOf(state.Highlights.rows, WEIGHTED_HIGHLIGHTS_LENGTH);
+      });
+      it("should set .weightedHighlights to true", () => {
+        assert.property(state.Highlights, "weightedHighlights");
+      });
+      it("should render the right sites in the right order", () => {
+        const highlights = [{url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
+              {url: "http://foo4.com"}, {url: "http://www.foo5.com"}, {url: "http://www.foo6.com"}];
+        setup({WeightedHighlights: highlights});
+        assert.lengthOf(state.Highlights.rows, highlights.length + firstRunData.Highlights.length);
+        highlights.forEach((item, i) => {
+          assert.equal(state.Highlights.rows[i].url, item.url);
+        });
+      });
+      it("should render first run highlights if WeightedHighlights is empty", () => {
+        setup({WeightedHighlights: []});
+        assert.lengthOf(state.Highlights.rows, firstRunData.Highlights.length);
+        firstRunData.Highlights.forEach((row, i) => assert.equal(row.url, firstRunData.Highlights[i].url));
+      });
+      it("should run assignImageAndBackgroundColor on firstRunData", () => {
+        setup({WeightedHighlights: []});
+        assert.property(state.Highlights.rows[0], "backgroundColor");
+      });
+      it("should append First Run data if less or equal to MIN_HIGHLIGHTS_LENGTH", () => {
+        setup({WeightedHighlights: [{url: "http://foo.com"}, {url: "http://www.bar.com"}]});
+        assert.lengthOf(state.Highlights.rows, 5);
+        assert.equal(state.Highlights.rows[2].url, firstRunData.Highlights[0].url);
+      });
+      it("should internally dedupe", () => {
+        setup({WeightedHighlights: [{url: "https://foo.com"}, {url: "http://www.foo.com"}]});
+        assert.lengthOf(state.Highlights.rows, 1 + firstRunData.Highlights.length);
+        assert.equal(state.Highlights.rows[0].url, "https://foo.com");
+      });
+      it("should dedupe against TopSites", () => {
+        setup({
+          TopSites: [{url: "https://foo.com"}],
+          WeightedHighlights: [{url: "https://foo.com"}, {url: "https://bar.com"}]
+        });
+        assert.lengthOf(state.Highlights.rows, 1 + firstRunData.Highlights.length);
+        assert.equal(state.Highlights.rows[0].url, "https://bar.com");
+      });
+      it("should be processed by assignImageAndBackgroundColor", () => {
+        setup({WeightedHighlights: [{url: "http://asdad23asd.com", background_color: "#fff"}]});
+        assert.equal(state.Highlights.rows[0].backgroundColor, "#fff");
       });
     });
-    it("should append First Run data if less or equal to MIN_HIGHLIGHTS_LENGTH", () => {
-      let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.bar.com"}], init: true},
-        Experiments: {values: {weightedHighlights: true}}
-      };
 
-      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.equal(state.Highlights.rows.length, 5);
-      assert.equal(state.Highlights.rows[2].url, firstRunData.Highlights[0].url);
-    });
-    it("should dedupe weighted highlights results", () => {
-      let weightedHighlights = {
-        WeightedHighlights: {rows: [{url: "http://foo.com"}, {url: "http://www.foo.com"}], init: true},
-        Experiments: {values: {weightedHighlights: true}}
-      };
-
-      state = selectNewTabSites(Object.assign({}, fakeState, weightedHighlights));
-      assert.equal(state.Highlights.rows.length, 1 + firstRunData.Highlights.length);
-    });
-  });
-  describe("selectWeightedHighlights", () => {
-    it("should call assignImageAndBackgroundColor", () => {
-      const state = selectWeightedHighlights({WeightedHighlights: {rows: [{background_color: "#fff"}]}});
-
-      assert.equal(state.rows[0].backgroundColor, "#fff");
-    });
-    it("should only change the rows property and copy others over", () => {
-      const state = selectWeightedHighlights({WeightedHighlights: {init: true, rows: []}});
-
-      assert.equal(state.init, true);
-    });
-  });
-  describe("selectAndDedupe", () => {
-    it("should dedupe items", () => {
-      const result = selectAndDedupe({
-        dedupe: ["http://www.mozilla.org"],
-        sites: ["http://www.mozilla.org"]
+    describe("TopActivity", () => {
+      it("should be empty (when weightedHighlights is on)", () => {
+        setup({History: [{url: "https://asdsad.com"}, {url: "https://g123asaw.com"}]});
+        assert.deepEqual(state.TopActivity.rows, []);
       });
-
-      assert.equal(result.length, 0);
     });
-    it("should slice the results based on `max` argument (defaults should not be added)", () => {
-      const max = 1;
-      const result = selectAndDedupe({
-        sites: ["http://www.mozilla.org", "http://www.firefox.com"],
-        dedupe: [],
-        max,
-        defaults: firstRunData.Highlights
-      });
 
-      assert.equal(result.length, max);
+    describe("showRecommendationOption", () => {
+      it("should be false if the experiment value is false", () => {
+        assert.isFalse(raw.Experiments.values.recommendedHighlight);
+        assert.isFalse(state.showRecommendationOption);
+      });
+      it("should be true if the experiment value is true", () => {
+        setup(undefined, undefined, true);
+        assert.isTrue(raw.Experiments.values.recommendedHighlight);
+        assert.isTrue(state.showRecommendationOption);
+      });
     });
-    it("should append defaults if result length is under the specified limit", () => {
-      const result = selectAndDedupe({
-        sites: ["http://www.mozilla.org"],
-        dedupe: [],
-        max: 5,
-        defaults: firstRunData.Highlights
-      });
 
-      assert.equal(result.length, 1 + firstRunData.Highlights.length);
-    });
-    it("should slice the results based on `max` argument (combined with defaults)", () => {
-      const max = 3;
-      const result = selectAndDedupe({
-        sites: ["http://www.mozilla.org", "http://www.firefox.com"],
-        dedupe: [],
-        max,
-        defaults: firstRunData.Highlights
+    describe("old Highlights", () => {
+      it("should have highlights of SPOTLIGHT_DEFAULT_LENGTH", () => {
+        setup(undefined, false);
+        assert.lengthOf(state.Highlights.rows, SPOTLIGHT_DEFAULT_LENGTH);
       });
-
-      assert.equal(result.length, max);
+      it("should include History in TopActivity and Dedupe against TopSites, Highlights", () => {
+        // note: the second param of setup sets weightedHighlights to false
+        setup({
+          TopSites: [{url: "http://foo.com"}],
+          Highlights: [{url: "http://blah.com"}],
+          History: [{url: "http://foo.com"}, {url: "http://blah.com"}, {url: "http://hello.com"}]
+        }, false);
+        assert.lengthOf(state.TopActivity.rows, 1);
+      });
     });
   });
 });
