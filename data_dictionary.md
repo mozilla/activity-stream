@@ -104,6 +104,8 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `url` | [Optional] The URL of the recommendation shown in one of the highlights spots, if any. | :one:
 | `value` | [Required] An integer that represents the measured performance value. Can store counts, times in milliseconds, and should always be a positive integer.| :one:
 | `ver` | [Auto populated by Onyx] The version of the Onyx API the ping was sent to. | :one:
+| `shield_variant` | [Optional] The current variant a user is in for the SHIELD study | :one:
+| `tp_version` | [Optional] The current version of the test pilot Activity Stream that shield users are running at time of study release. | :one:
 
 **Where:**
 

@@ -8,15 +8,17 @@ scripts:
 # once: Build/serve the assets and run the add-on
   once: =>bundle && =>firefox
 
-  clean: rimraf data/content/* && mkdirp data/content
+  clean: rimraf data/content/* && mkdirp data/content && rimraf addon/shield-utils/
 
   changelog: conventional-changelog -i CHANGELOG.md -s
 
   copyTestImages: cpx "node_modules/tippy-top-sites/images/**/*" data/content/favicons/images
 
+  copyShieldUtils: cpx "node_modules/shield-studies-addon-utils/lib/{event-target.js,index.js}" addon/shield-utils/
+
 # bundle: Bundle assets for production
   bundle:
-    pre: =>clean && =>copyTestImages
+    pre: =>clean && =>copyTestImages && =>copyShieldUtils
     static: cpx "content-src/static/**/*" data/content
     svgo: svgo -q -f data/content/img/
     webpack: NODE_ENV=production webpack
@@ -31,7 +33,7 @@ scripts:
 # start: Start watching/compiling assets,
   start:
     _parallel: true
-    pre: =>clean && =>copyTestImages
+    pre: =>clean && =>copyTestImages && =>copyShieldUtils
     static: =>bundle:static -- -w
     webpack: webpack -w
     webpackAddon: =>bundle:webpackAddon -- -w
@@ -67,7 +69,7 @@ scripts:
   tdd: =>test:karma -- --no-single-run --browsers Chrome
 
 # package: Build add-on
-  package: =>bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
+  package: =>bundle && jpm xpi && mv activity-stream-shield-study.xpi dist/activity-stream-shield-study-$npm_package_version.xpi
 
   # This is for ci
   travis: =>test

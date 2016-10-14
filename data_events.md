@@ -48,7 +48,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "tab_id": "-5-2",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  // Optional fields, only set if they are in a shield study
+  "shield_variant": ["shield-study-01-ActivityStream" | "shield-study-01-Tiles"],
+  "tp_version": "1.1.6"
 }
 ```
 
@@ -69,7 +72,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   // Optional field, only sent if a recommendation site gets clicked
   "url": "https://www.example.com",
   // Optional field, only sent if a recommendation site gets clicked
-  "recommender_type": "pocket-trending"
+  "recommender_type": "pocket-trending",
+  // Optional fields, only set if they are in a shield study
+  "shield_variant": ["shield-study-01-ActivityStream" | "shield-study-01-Tiles"],
+  "tp_version": "1.1.6"
 }
 ```
 
@@ -107,7 +113,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   // optional field, only sent if a recommendation site gets clicked
   "url": "https://www.example.com",
   // optional field, only sent if a recommendation site gets clicked
-  "recommender_type": "pocket-trending"
+  "recommender_type": "pocket-trending",
+  // Optional fields, only set if they are in a shield study
+  "shield_variant": ["shield-study-01-ActivityStream" | "shield-study-01-Tiles"],
+  "tp_version": "1.1.6"
 }
 ```
 
@@ -170,7 +179,10 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "locale": "en-US",
   "page": ["NEW_TAB" | "HOME"],
   "action": "activity_stream_session",
-  "session_duration": 4199
+  "session_duration": 4199,
+  // Optional fields, only set if they are in a shield study
+  "shield_variant": ["shield-study-01-ActivityStream" | "shield-study-01-Tiles"],
+  "tp_version": "1.1.6"
 }
 ```
 

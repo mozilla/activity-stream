@@ -12,6 +12,7 @@ from pathlib import Path
 env.bucket_name = "moz-activity-streams"
 env.bucket_name_dev = "moz-activity-streams-dev"
 env.bucket_name_prerelease = "moz-activity-streams-prerelease"
+env.bucket_name_shield = "moz-activity-streams-shield-study"
 env.amo_addon_name = "activity_streams_experiment"
 S3 = boto.connect_s3()
 
@@ -22,6 +23,10 @@ DEV_UPDATE_URL = "{}/dist/update.rdf".format(DEV_BUCKET_URL)
 PRERELEASE_BUCKET_URL = "https://moz-activity-streams-prerelease.s3.amazonaws.com"
 PRERELEASE_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(PRERELEASE_BUCKET_URL)
 PRERELEASE_UPDATE_URL = "{}/dist/update.rdf".format(PRERELEASE_BUCKET_URL)
+
+SHIELD_BUCKET_URL = "https://moz-activity-streams-shield-study.s3.amazonaws.com"
+SHIELD_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(SHIELD_BUCKET_URL)
+SHIELD_UPDATE_URL = "{}/dist/update.rdf".format(SHIELD_BUCKET_URL)
 
 
 def _get_dev_version(version):
@@ -59,6 +64,24 @@ def make_prerelease_manifest(fresh_manifest=True, commit_hash=""):
         manifest["updateURL"] = PRERELEASE_UPDATE_URL
         manifest["version"] = "{}-pre-release-{}".format(
             _get_dev_version(manifest["version"]), commit_hash)
+        f.seek(0)
+        f.truncate(0)
+        json.dump(manifest, f,
+                  sort_keys=True, indent=2, separators=(',', ': '))
+
+
+def make_shield_manifest(fresh_manifest=True):
+    if to_bool(fresh_manifest):
+        restore_manifest()
+
+    with open("./package.json", "r+") as f:
+        current_time = int(time.time())
+        manifest = json.load(f)
+        manifest["title"] = "{} Shield Study".format(manifest["title"])
+        manifest["updateLink"] = SHIELD_UPDATE_LINK
+        manifest["updateURL"] = SHIELD_UPDATE_URL
+        manifest["version"] = "{}-shield-study-{}".format(
+            _get_dev_version(manifest["version"]), current_time)
         f.seek(0)
         f.truncate(0)
         json.dump(manifest, f,
@@ -209,15 +232,17 @@ def deploy(run_package=True, destination=None,
 
     bucket_name = env.bucket_name
     if destination:
-        assert destination in ["dev", "prerelease"], "destination should be in ['dev', 'prerelease']"
-        commit_hash = get_head_commit_hash()
+        assert destination in ["dev", "prerelease", "shield"], "destination should be in ['dev', 'prerelease', 'shield']"
         print "Making {} deploy".format(destination)
         if destination == "dev":
             bucket_name = env.bucket_name_dev
             make_dev_manifest(commit_hash=commit_hash)
         elif destination == "prerelease":
             bucket_name = env.bucket_name_prerelease
-            make_prerelease_manifest(commit_hash=commit_hash)
+            make_prerelease_manifest()
+        elif destination == "shield":
+            bucket_name = env.bucket_name_shield
+            make_shield_manifest()
 
     run_package = to_bool(run_package)
     end_signing = None

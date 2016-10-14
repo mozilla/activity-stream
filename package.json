@@ -1,7 +1,7 @@
 {
-  "name": "activity-streams",
+  "name": "activity-stream-shield-study",
   "description": "A rich visual history feed and a reimagined home page make it easier than ever to find exactly what you're looking for in Firefox.\n\nLearn more about this Test Pilot experiment at https://testpilot.firefox.com/.",
-  "version": "1.1.8",
+  "version": "1.1.3",
   "author": "Mozilla (https://mozilla.org/)",
   "bugs": {
     "url": "https://github.com/mozilla/activity-stream/issues"
@@ -23,6 +23,8 @@
     "redux-watch": "1.1.1",
     "reselect": "2.5.4",
     "tippy-top-sites": "1.0.1",
+    "shield-studies-addon-utils": "^2.0.0",
+    "shield-study-cli": "^1.2.4",
     "url-parse": "1.1.7"
   },
   "devDependencies": {
@@ -88,14 +90,14 @@
     "firefox": ">=45.0 <=*"
   },
   "homepage": "https://github.com/mozilla/activity-stream",
-  "icon": "resource://activity-streams/data/content/img/ActivityStream-32.svg",
+  "icon": "resource://activity-stream-shield-study/data/content/img/ActivityStream-32.svg",
   "keywords": [
     "mozilla",
     "firefox",
     "activity-stream"
   ],
   "license": "MPL-2.0",
-  "main": "addon/main.js",
+  "main": "addon/index.js",
   "preferences": [
     {
       "name": "performance.log",
@@ -182,11 +184,12 @@
   "repository": "mozilla/activity-stream",
   "scripts": {
     "once": "npm run bundle && npm run firefox",
-    "clean": "rimraf data/content/* && mkdirp data/content",
+    "clean": "rimraf data/content/* && mkdirp data/content && rimraf addon/shield-utils/",
     "changelog": "conventional-changelog -i CHANGELOG.md -s",
     "copyTestImages": "cpx \"node_modules/tippy-top-sites/images/**/*\" data/content/favicons/images",
     "bundle": "npm-run-all bundle:*",
-    "prebundle": "npm run clean && npm run copyTestImages",
+    "prebundle": "npm run clean && npm run copyTestImages && npm run copyShieldUtils",
+    "copyShieldUtils": "cpx \"node_modules/shield-studies-addon-utils/lib/{event-target.js,index.js}\" addon/shield-utils/",
     "bundle:static": "cpx \"content-src/static/**/*\" data/content",
     "bundle:svgo": "svgo -q -f data/content/img/",
     "bundle:webpack": "NODE_ENV=production webpack",
@@ -196,7 +199,7 @@
     "postbundle": "du -hs ./data/content/*",
     "bundlestats": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
     "start": "npm-run-all --parallel start:*",
-    "prestart": "npm run clean && npm run copyTestImages",
+    "prestart": "npm run clean && npm run copyTestImages && npm run copyShieldUtils",
     "start:static": "npm run bundle:static -- -w",
     "start:webpack": "webpack -w",
     "start:webpackAddon": "npm run bundle:webpackAddon -- -w",
@@ -218,7 +221,7 @@
     "benchmark-with": "npm run bundle && JSGC_DISABLE_POISONING=1 jpm test -b ${JPM_FIREFOX_BINARY:-\"nightly\"} --prefs ./benchmark-prefs.json",
     "benchmark": "npm run benchmark-with -- -f \".*benchmark.js\"",
     "tdd": "npm run test:karma -- --no-single-run --browsers Chrome",
-    "package": "npm run bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi",
+    "package": "npm run bundle && jpm xpi && mv activity-stream-shield-study.xpi dist/activity-stream-shield-study-$npm_package_version.xpi",
     "travis": "npm run test",
     "prepush": "npm run test:lint && npm run yamscripts",
     "storybook": "start-storybook -p 9001 -s ./data/content",
@@ -227,9 +230,7 @@
     "yamscripts": "yamscripts compile",
     "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
   },
-  "title": "Activity Stream",
-  "updateLink": "https://testpilot.firefox.com/files/activitystream/latest",
-  "updateURL": "https://testpilot.firefox.com/files/activitystream/updates.json",
+  "title": "Activity Stream Shield Study",
   "permissions": {
     "multiprocess": true,
     "private-browsing": true
