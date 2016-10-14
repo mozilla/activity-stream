@@ -9,6 +9,7 @@ logs/
 dist/
 data/content/
 activity-streams-env/
+addon/shield-utils/
 firefox/
 config.yml
 .amo_config.json

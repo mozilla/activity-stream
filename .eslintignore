@@ -5,5 +5,6 @@ common/vendor.js
 data/content/
 firefox/
 logs/
+addon/shield-utils/
 test/test-SimpleStorage.js
 test/test-ColorAnalyzer.js

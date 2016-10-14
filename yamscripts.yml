@@ -8,7 +8,7 @@ scripts:
 # once: Build/serve the assets and run the add-on
   once: =>bundle && =>firefox
 
-  clean: rimraf data/content/* && mkdirp data/content
+  clean: rimraf data/content/* && mkdirp data/content && rimraf addon/shield-utils/
 
   changelog: conventional-changelog -i CHANGELOG.md -s
 
@@ -16,9 +16,11 @@ scripts:
 
   copyTopSitesJson: cpx "node_modules/tippy-top-sites/top_sites.json" data/content/favicons
 
+  copyShieldUtils: cpx "node_modules/shield-studies-addon-utils/lib/{event-target.js,index.js}" addon/shield-utils/
+
 # bundle: Bundle assets for production
   bundle:
-    pre: =>clean && =>copyTestImages && =>copyTopSitesJson
+    pre: =>clean && =>copyTestImages && =>copyTopSitesJson && =>copyShieldUtils
     static: cpx "content-src/static/**/*" data/content
     svgo: svgo -q -f data/content/img/
     webpack: NODE_ENV=production webpack
@@ -30,7 +32,7 @@ scripts:
 # start: Start watching/compiling assets,
   start:
     _parallel: true
-    pre: =>clean && =>copyTestImages && =>copyTopSitesJson
+    pre: =>clean && =>copyTestImages && =>copyTopSitesJson && =>copyShieldUtils
     static: =>bundle:static -- -w
     webpack: webpack -w
     webpackAddon: =>bundle:webpackAddon -- -w
