@@ -3,7 +3,6 @@
 
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {MetadataStore, METASTORE_NAME} = require("addon/MetadataStore");
-const {MetadataCache} = require("addon/MetadataCache");
 const {TelemetrySender} = require("addon/TelemetrySender");
 const {TabTracker} = require("addon/TabTracker");
 const {ActivityStreams} = require("addon/ActivityStreams");
@@ -105,7 +104,6 @@ Object.assign(exports, {
       }
     }
 
-    MetadataCache.cache.uninit();
     PlacesProvider.links.uninit();
   }
 });

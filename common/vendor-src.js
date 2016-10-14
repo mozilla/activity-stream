@@ -14,7 +14,6 @@ const vendorModules = {
   "redux-thunk": require("redux-thunk"),
   "seedrandom": require("seedrandom"),
   "url-parse": require("url-parse"),
-  "DoublyLinkedList": require("DoublyLinkedList/doubly-linked-list").DoublyLinkedList,
   "PageMetadataParser": require("page-metadata-parser"),
   "redux-watch": require("redux-watch"),
   "lodash.debounce": require("lodash.debounce")
