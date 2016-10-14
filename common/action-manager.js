@@ -52,7 +52,8 @@ const am = new ActionManager([
   "NOTIFY_COPY_URL",
   "NOTIFY_EMAIL_URL",
   "ENABLE_ALL_HINTS",
-  "DISABLE_HINT"
+  "DISABLE_HINT",
+  "APP_INIT"
 ]);
 
 // This is a a set of actions that have sites in them,
