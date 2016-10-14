@@ -34,7 +34,7 @@ PageScraper.prototype = {
    * HTML and insert it in the metadata database
    */
   _asyncParseAndSave: Task.async(function*(rawHTML, url) {
-    let event = this._tabTracker.generateEvent();
+    let event = this._tabTracker.generateEvent({source: "PAGE_SCRAPER"});
     this._tabTracker.handlePerformanceEvent(event, "metadataReceivedRawHTML");
     let startTime = Date.now();
 
