@@ -75,21 +75,11 @@ TabTracker.prototype = {
     };
   },
 
-  _resolvePageType(tabUrl) {
-    let page = eventConstants.defaultPage;
-    eventConstants.urlPatternToPageMap.forEach((value, pattern) => {
-      if (pattern.test(tabUrl)) {
-        page = value;
-      }
-    });
-    return page;
-  },
-
   _setCommonProperties(payload, url) {
     payload.client_id = this._clientID;
     payload.addon_version = self.version;
     payload.locale = Locale.getLocale();
-    payload.page = this._resolvePageType(url);
+    payload.page = eventConstants.defaultPage;
     payload.session_id = this._tabData.session_id;
     if (this._experimentID) {
       payload.experiment_id = this._experimentID;
