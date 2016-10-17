@@ -21,6 +21,7 @@ const kMaxConnectRetry = 120;
 let app = null;
 let metadataStore = null;
 let connectRetried = 0;
+let reconnectTimeoutID = null;
 
 Object.assign(exports, {
   main(options) {
@@ -76,7 +77,7 @@ Object.assign(exports, {
       throw new Error("Metadata store reconnecting has reached the maximum limit");
     }
 
-    this.reconnectTimeoutID = setTimeout(() => {
+    reconnectTimeoutID = setTimeout(() => {
       metadataStore.asyncConnect().then(() => {connectRetried = 0;})
         .catch(error => {
           // increment the connect counter to avoid the endless retry
@@ -92,8 +93,9 @@ Object.assign(exports, {
       app = null;
     }
 
-    if (this.reconnectTimeoutID) {
-      clearTimeout(this.reconnectTimeoutID);
+    if (reconnectTimeoutID) {
+      clearTimeout(reconnectTimeoutID);
+      reconnectTimeoutID = null;
     }
 
     if (metadataStore) {
