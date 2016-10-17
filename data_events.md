@@ -16,7 +16,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH | SHARE_TOOLBAR]",
 
   // This is where the interaction occurred
-  "page": "[NEW_TAB | TIMELINE_ALL | TIMELINE_BOOKMARKS]",
+  "page": "NEW_TAB",
 
   // Optional field indicating the UI component type
   "source": ["TOP_SITES" | "FEATURED" | "ACTIVITY_FEED"],
@@ -57,7 +57,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   "event": "CLICK",
-  "page": ["NEW_TAB" | "TIMELINE_ALL" | "TIMELINE_BOOKMARKS"],
+  "page": "NEW_TAB",
   "source": ["TOP_SITES" | "FEATURED" | "ACTIVITY_FEED"],
   "action_position": 2,
   "action": "activity_stream_event",
@@ -78,7 +78,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
   {
     "event": "DELETE",
-    "page": ["NEW_TAB" | "TIMELINE_ALL" | "TIMELINE_BOOKMARKS"],
+    "page": "NEW_TAB",
     "source": ["TOP_SITES" | "FEATURED" | "ACTIVITY_FEED"],
     "action_position": 0,
     "action": "activity_stream_event",
@@ -95,7 +95,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   "event": "BLOCK",
-  "page": ["NEW_TAB" | "TIMELINE_ALL" | "TIMELINE_BOOKMARKS"],
+  "page": "NEW_TAB",
   "source": ["TOP_SITES" | "FEATURED" | "ACTIVITY_FEED"],
   "action_position": 4,
   "action": "activity_stream_event",
@@ -116,7 +116,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   "event": "SHARE",
-  "page": ["NEW_TAB" | "TIMELINE_ALL" | "TIMELINE_BOOKMARKS"],
+  "page": "NEW_TAB"
   "source": "ACTIVITY_FEED",
   "provider": "https://facebook.com",
   "action_position": 0,
@@ -157,7 +157,7 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
 ```js
 {
   // These are all variable. See below for what causes different unload_reasons
-  "url": "resource://activity-streams/data/content/activity-streams.html#/[timeline][/bookmarks]",
+  "url": "resource://activity-streams/data/content/activity-streams.html",
   "load_reason": "[newtab | focus]",
   "unload_reason": "[navigation | unfocus | refresh]",
 

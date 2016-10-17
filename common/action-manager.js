@@ -224,7 +224,7 @@ function NotifyPerf(data) {
 }
 
 function NotifyEvent(data) {
-  if (!eventConstants.pages.has(data.page)) {
+  if (!eventConstants.defaultPage === data.page) {
     throw new Error(`${data.page} is not a valid page`);
   }
   if (!eventConstants.events.has(data.event)) {
