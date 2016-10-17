@@ -138,6 +138,7 @@ const gMetadataFixture = [
     media: {type: "video", url: "https://www.mozilla.org/media/video/mozilla.mp4"},
     expired_at: 2550891600000, // "2050-01-01 00:00:00",
     metadata_source: "Embedly",
+    provider_name: "Mozilla",
     type: "html",
     favicon_colors,
     images
@@ -151,6 +152,7 @@ const gMetadataFixture = [
     media: {type: "video", url: "https://www.mozilla.org/media/video/firefox.mp4"},
     expired_at: 2550891600000, // "2050-01-01 00:00:00",
     metadata_source: "Embedly",
+    provider_name: "Mozilla",
     type: "html",
     favicon_colors: favicon_colors_firefox,
     images: images_firefox
@@ -164,6 +166,7 @@ const gMetadataFixture = [
     media: {type: "video", url: "https://www.mozilla.org/media/video/firefox.mp4"},
     expired_at: 2550891600000, // "2050-01-01 00:00:00",
     metadata_source: "Embedly",
+    provider_name: "Mozilla",
     type: "html",
     favicon_colors: favicon_colors_firefox,
     images: images_firefox
