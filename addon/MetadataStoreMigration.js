@@ -39,5 +39,10 @@ exports.MIGRATIONS = [
     version: "1.0.1",
     description: "Add a metadata_source field to MetadataStore",
     statements: ["ALTER TABLE page_metadata ADD COLUMN metadata_source VARCHAR(32) DEFAULT 'Embedly'"]
+  },
+  {
+    version: "1.0.2",
+    description: "Add a provider_name field to MetadataStore",
+    statements: ["ALTER TABLE page_metadata ADD COLUMN provider_name VARCHAR(32)"]
   }
 ];

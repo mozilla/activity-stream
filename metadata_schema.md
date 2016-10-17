@@ -15,6 +15,7 @@ media_url | String | The URL for an embedded media item (audio/video)
 created_at | datetime | The date and time that this metadata row was inserted/created
 expired_at | Long | The date and time this metadata row will expire
 metadata_source | String | The source in which the metadata was computed
+provider_name | String | The provider name for a given page
 
 # Images Table
 A row in this table represents a single image which appears on a page visited by a user, including favicons and rich icons.  Each row in the metadata table will have multiple corresponding images in this table.  A single row in this table may belong to multiple metadata page rows, ie a favicon which is identical for multiple pages.
