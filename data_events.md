@@ -1,6 +1,6 @@
 # Metrics we collect
 
-This is an overview of the different kinds of data we collect in Activity Stream experiment.
+This is an overview of the different kinds of data we collect in Activity Stream experiment. See [data_dictionary.md](data_dictionary.md) for more details for each field.
 
 ## User event pings
 
