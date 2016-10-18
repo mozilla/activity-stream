@@ -1,5 +1,4 @@
 const fakeData = require("lib/fake-data");
-const faker = require("test/faker");
 const {ADDON_TO_CONTENT, CONTENT_TO_ADDON} = require("common/event-constants");
 
 function dispatch(action) {
@@ -23,17 +22,6 @@ module.exports = function() {
             // description: null
           })) // eslint-disable-line object-curly-newline
         });
-        break;
-      case "RECENT_LINKS_REQUEST":
-        if (action.meta && action.meta.append) {
-          dispatch({
-            type: "RECENT_LINKS_RESPONSE",
-            data: faker.createRows({beforeDate: action.data.beforeDate}),
-            meta: {append: true}
-          });
-        } else {
-          dispatch({type: "RECENT_LINKS_RESPONSE", data: fakeData.History.rows});
-        }
         break;
       case "HIGHLIGHTS_LINKS_REQUEST":
         dispatch({type: "HIGHLIGHTS_LINKS_RESPONSE", data: fakeData.Highlights.rows});

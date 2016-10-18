@@ -119,18 +119,6 @@ function RequestTopFrecent() {
   return RequestExpect("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE");
 }
 
-function RequestRecentLinks(options) {
-  return RequestExpect("RECENT_LINKS_REQUEST", "RECENT_LINKS_RESPONSE", options);
-}
-
-function RequestMoreRecentLinks(beforeDate, filter = "") {
-  return RequestRecentLinks({
-    data: {beforeDate, filter},
-    append: true,
-    meta: {skipPreviewRequest: true}
-  });
-}
-
 function RequestHighlightsLinks() {
   return RequestExpect("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE");
 }
@@ -264,8 +252,6 @@ am.defineActions({
   Response,
   RequestExpect,
   RequestTopFrecent,
-  RequestRecentLinks,
-  RequestMoreRecentLinks,
   RequestHighlightsLinks,
   RequestInitialPrefs,
   RequestSearchState,

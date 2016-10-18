@@ -369,11 +369,6 @@ ActivityStreams.prototype = {
    */
   _respondToPlacesRequests({msg, worker}) {
     switch (msg.type) {
-      case am.type("RECENT_LINKS_REQUEST"):
-        PlacesProvider.links.getRecentLinks(msg.data).then(links => {
-          this._processAndSendLinks(links, "RECENT_LINKS_RESPONSE", worker, msg.meta);
-        });
-        break;
       case am.type("NOTIFY_BOOKMARK_ADD"):
         PlacesProvider.links.asyncAddBookmark(msg.data);
         break;
