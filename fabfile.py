@@ -19,6 +19,13 @@ DEV_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(DEV_BUCKET_URL)
 DEV_UPDATE_URL = "{}/dist/update.rdf".format(DEV_BUCKET_URL)
 
 
+def _get_dev_version(version):
+    """ Get dev version from package.json. It always increments the patch version by 1
+    """
+    major, minor, patch = version.split('.', 2)
+    return ".".join([major, minor, str(int(patch) + 1)])
+
+
 def make_dev_manifest(fresh_manifest=True):
     if to_bool(fresh_manifest):
         restore_manifest()
@@ -30,7 +37,7 @@ def make_dev_manifest(fresh_manifest=True):
         manifest["updateLink"] = DEV_UPDATE_LINK
         manifest["updateURL"] = DEV_UPDATE_URL
         manifest["version"] = "{}-dev-{}".format(
-            manifest["version"], current_time)
+            _get_dev_version(manifest["version"]), current_time)
         f.seek(0)
         f.truncate(0)
         json.dump(manifest, f,
