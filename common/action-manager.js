@@ -19,7 +19,6 @@ const am = new ActionManager([
   "EXPERIMENTS_RESPONSE",
   "NOTIFY_BLOCK_URL",
   "NOTIFY_UNBLOCK_URL",
-  "NOTIFY_UNBLOCK_ALL",
   "NOTIFY_BOOKMARK_ADD",
   "NOTIFY_BOOKMARK_DELETE",
   "NOTIFY_HISTORY_DELETE",
@@ -199,10 +198,6 @@ function NotifyUnblockURL(url) {
   return Notify("NOTIFY_UNBLOCK_URL", url);
 }
 
-function NotifyUnblockAll() {
-  return Notify("NOTIFY_UNBLOCK_ALL");
-}
-
 function NotifyBlockRecommendation(url) {
   return Notify("NOTIFY_BLOCK_RECOMMENDATION", url);
 }
@@ -280,7 +275,6 @@ am.defineActions({
   RequestWeightedHighlights,
   NotifyBlockURL,
   NotifyUnblockURL,
-  NotifyUnblockAll,
   NotifyBookmarkAdd,
   NotifyBookmarkDelete,
   NotifyHistoryDelete,
