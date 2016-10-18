@@ -75,7 +75,14 @@ $spotlight-description-height: 34px;
 $spotlight-title-max-height: 36px;
 $spotlight-title-margin-bottom: 2px;
 
-$timeline-max-width: 3 * $spotlight-item-width + 20px * 2;
+// Nasty hack to patch changes from the new highlight view
+// https://github.com/mozilla/activity-stream/issues/1190
+// that regressed the timeline layout.  This keeps the timeline box big enough
+// to prevent the spotlight items from wrapping now that the .spotlight-list
+// box has flex-wrap set to "wrap".
+$timeline-updated-highlights-fudge-factor: 8px;
+
+$timeline-max-width: 3 * $spotlight-item-width + 20px * 2 + $timeline-updated-highlights-fudge-factor;
 
 $site-icon-border-radius: 3px;
 
