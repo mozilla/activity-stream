@@ -115,10 +115,6 @@ function RequestExpect(type, expect, options = {}) {
   return action;
 }
 
-function RequestTopFrecent() {
-  return RequestExpect("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE");
-}
-
 function RequestHighlightsLinks() {
   return RequestExpect("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE");
 }
@@ -251,7 +247,6 @@ am.defineActions({
   Notify,
   Response,
   RequestExpect,
-  RequestTopFrecent,
   RequestHighlightsLinks,
   RequestInitialPrefs,
   RequestSearchState,
