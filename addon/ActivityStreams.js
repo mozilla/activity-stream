@@ -159,25 +159,6 @@ ActivityStreams.prototype = {
       });
   },
 
-  /**
-   * Get from cache and response to content.
-   *
-   * @private
-   */
-  _processAndSendLinks(placesLinks, responseType, worker, options) {
-    const {append} = options || {};
-    // If the type is append, that is, the user is scrolling through pages,
-    // do not add these to the master store
-    const skipMasterStore = append;
-
-    const cachedLinks = this._processLinks(placesLinks, responseType, options);
-
-    cachedLinks.then(linksToSend => {
-      const action = am.actions.Response(responseType, linksToSend, {append});
-      this.send(action, worker, skipMasterStore);
-    });
-  },
-
   _initializeAppData() {
     this._asyncBuildPlacesCache();
     this._refreshAppState();
