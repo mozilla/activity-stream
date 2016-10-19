@@ -51,6 +51,7 @@ const DEFAULT_OPTIONS = {
   onRemoveWorker: null,
   placesCacheTimeout: 1800000, // every 30 minutes, rebuild/repopulate the cache
   recommendationTTL: 3600000, // every hour, get a new recommendation
+  shield_variant: "N/A",
   shareProvider: null,
   pageScraper: null,
   searchProvider: null,
@@ -502,7 +503,7 @@ ActivityStreams.prototype = {
   },
 
   _handleUserEvent({msg}) {
-    this._tabTracker.handleUserEvent(msg.data);
+    this._tabTracker.handleUserEvent(Object.assign(msg.data, {"shield_variant": this.options.shield_variant}));
   },
 
   _respondToRecommendationToggle() {
