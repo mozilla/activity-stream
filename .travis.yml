@@ -35,12 +35,12 @@ script:
   - npm run travis
 
 deploy:
-  - provider: script-dev
+  - provider: script
     skip_cleanup: true
     script: bin/continuous-integration.sh dev
     on:
       branch: master
-  - provider: script-prerelease
+  - provider: script
     skip_cleanup: true
     script: bin/continuous-integration.sh prerelease
     on:
