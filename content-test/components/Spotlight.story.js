@@ -89,11 +89,10 @@ storiesOf("Highlight Item", module)
     site.description = "The quick brown fox jumps over the laziest dog";
     return (<Container><SpotlightItem {...site} /></Container>);
   })
-  .add("Missing provider_{name,display} metadata", () => {
+  .add("Missing provider_name metadata", () => {
     const site = createSite({images: 1});
     site.bestImage = site.images[0];
     delete site.provider_name;
-    delete site.provider_display;
     return (<Container><SpotlightItem {...site} /></Container>);
   })
   .add("Missing an image", () => {
