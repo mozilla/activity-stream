@@ -11,12 +11,17 @@ from pathlib import Path
 
 env.bucket_name = "moz-activity-streams"
 env.bucket_name_dev = "moz-activity-streams-dev"
+env.bucket_name_prerelease = "moz-activity-streams-prerelease"
 env.amo_addon_name = "activity_streams_experiment"
 S3 = boto.connect_s3()
 
 DEV_BUCKET_URL = "https://moz-activity-streams-dev.s3.amazonaws.com"
 DEV_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(DEV_BUCKET_URL)
 DEV_UPDATE_URL = "{}/dist/update.rdf".format(DEV_BUCKET_URL)
+
+PRERELEASE_BUCKET_URL = "https://moz-activity-streams-prerelease.s3.amazonaws.com"
+PRERELEASE_UPDATE_LINK = "{}/dist/activity-streams-latest.xpi".format(PRERELEASE_BUCKET_URL)
+PRERELEASE_UPDATE_URL = "{}/dist/update.rdf".format(PRERELEASE_BUCKET_URL)
 
 
 def _get_dev_version(version):
@@ -37,6 +42,24 @@ def make_dev_manifest(fresh_manifest=True):
         manifest["updateLink"] = DEV_UPDATE_LINK
         manifest["updateURL"] = DEV_UPDATE_URL
         manifest["version"] = "{}-dev-{}".format(
+            _get_dev_version(manifest["version"]), current_time)
+        f.seek(0)
+        f.truncate(0)
+        json.dump(manifest, f,
+                  sort_keys=True, indent=2, separators=(',', ': '))
+
+
+def make_prerelease_manifest(fresh_manifest=True):
+    if to_bool(fresh_manifest):
+        restore_manifest()
+
+    with open("./package.json", "r+") as f:
+        current_time = int(time.time())
+        manifest = json.load(f)
+        manifest["title"] = "{} Pre-release".format(manifest["title"])
+        manifest["updateLink"] = PRERELEASE_UPDATE_LINK
+        manifest["updateURL"] = PRERELEASE_UPDATE_URL
+        manifest["version"] = "{}-pre-release-{}".format(
             _get_dev_version(manifest["version"]), current_time)
         f.seek(0)
         f.truncate(0)
@@ -166,7 +189,7 @@ def upload_html_to_s3(bucket_name, file_path=None):
             upload_text()
 
 
-def deploy(run_package=True, dev_deploy=False,
+def deploy(run_package=True, destination=None,
            signing_key=None, signing_password=None):
     if not (signing_key is not None and signing_password is not None):
         config_path = os.environ.get("AMO_CONFIG_FILE", ".amo_config.json")
@@ -182,10 +205,15 @@ def deploy(run_package=True, dev_deploy=False,
     start = time.time()
 
     bucket_name = env.bucket_name
-    if dev_deploy:
-        print "Making Dev deploy"
-        bucket_name = env.bucket_name_dev
-        make_dev_manifest()
+    if destination:
+        assert destination in ["dev", "prerelease"], "destination should be in ['dev', 'prerelease']"
+        print "Making {} deploy".format(destination)
+        if destination == "dev":
+            bucket_name = env.bucket_name_dev
+            make_dev_manifest()
+        elif destination == "prerelease":
+            bucket_name = env.bucket_name_prerelease
+            make_prerelease_manifest()
 
     run_package = to_bool(run_package)
     end_signing = None
@@ -193,7 +221,7 @@ def deploy(run_package=True, dev_deploy=False,
         package(signing_key, signing_password)
         end_signing = time.time()
 
-    if dev_deploy:
+    if destination:
         restore_manifest()
 
     latest = get_latest_package_path()
