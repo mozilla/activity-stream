@@ -25,6 +25,7 @@ MetadataParser.prototype = {
     const formattedData = {
       url,
       images,
+      provider_name: data.provider,
       original_url: data.original_url,
       title: data.title,
       description: data.description,

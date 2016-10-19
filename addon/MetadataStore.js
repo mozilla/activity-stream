@@ -438,7 +438,7 @@ MetadataStore.prototype = {
     try {
       metaObjects = yield this.asyncExecuteQuery(
         `SELECT * FROM page_metadata WHERE cache_key IN (${quoted})`,
-        {columns: ["id", "cache_key", "places_url", "title", "type", "description", "media_url"]}
+        {columns: ["id", "cache_key", "places_url", "title", "type", "description", "media_url", "provider_name"]}
       );
     }
     catch (e) {
