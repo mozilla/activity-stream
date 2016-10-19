@@ -37,11 +37,13 @@ describe("MetadataParser", () => {
       "icon_url": "//www.foo.com/icon.png",
       "image_url": "//www.foo.com/image.png",
       "title": "Some title",
-      "url": "https:///"
+      "url": "https:///",
+      "provider": "foo"
     };
     const expectedFormattedData = {
       "url": originalUrl,
       "images": [{"url": incomingData.image_url, "height": 500, "width": 500}],
+      "provider_name": "foo",
       "title": incomingData.title,
       "description": incomingData.description,
       "favicon_url": incomingData.icon_url
@@ -51,6 +53,7 @@ describe("MetadataParser", () => {
 
     assert.equal(formattedData.url, expectedFormattedData.url);
     assert.deepEqual(formattedData.images, expectedFormattedData.images);
+    assert.equal(formattedData.provider_name, expectedFormattedData.provider_name);
     assert.equal(formattedData.title, expectedFormattedData.title);
     assert.equal(formattedData.description, expectedFormattedData.description);
     assert.equal(formattedData.favicon_url, expectedFormattedData.favicon_url);
@@ -61,6 +64,7 @@ describe("MetadataParser", () => {
     const expectedResult = {
       url,
       "images": [{"url": TEST_IMAGE, "height": 500, "width": 500}],
+      "provider_name": "foo",
       "title": TEST_TITLE,
       "favicon_url": TEST_ICON,
       "description": TEST_DESCRIPTION
@@ -68,6 +72,7 @@ describe("MetadataParser", () => {
     return metadataParser.parseHTMLText(TEST_HTML, url).then(result => {
       assert.ok(result);
       assert.equal(result.url, expectedResult.url);
+      assert.equal(result.provider_name, expectedResult.provider_name);
       assert.equal(result.title, expectedResult.title);
       assert.equal(result.description, expectedResult.description);
       assert.deepEqual(result.images, expectedResult.images);
