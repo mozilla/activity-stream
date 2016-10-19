@@ -23,7 +23,6 @@
     "redux-thunk": "2.1.0",
     "redux-watch": "1.1.1",
     "reselect": "2.5.4",
-    "seedrandom": "2.4.2",
     "url-parse": "1.1.6"
   },
   "devDependencies": {
@@ -162,13 +161,6 @@
       "value": true
     },
     {
-      "name": "weightedHighlights",
-      "title": "New recommendations method based on weights",
-      "type": "bool",
-      "value": false,
-      "hidden": true
-    },
-    {
       "name": "as-simple-storage.writePeriod",
       "title": "as-simple-storage write period",
       "description": "Write period for activity stream's persistent in-memory storage",
@@ -204,13 +196,6 @@
       "title": "How are we getting metadata?",
       "type": "string",
       "value": "Embedly",
-      "hidden": true
-    },
-    {
-      "name": "experimentOverrides",
-      "title": "Sets which experiment(s) are turned on, if defined (use comma separated values)",
-      "type": "string",
-      "value": "",
       "hidden": true
     },
     {

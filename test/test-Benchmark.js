@@ -127,7 +127,7 @@ before(exports, function*() {
 });
 
 after(exports, () => {
-  app.unload();
+  app.unload("uninstall");
 });
 
 require("sdk/test").run(exports);

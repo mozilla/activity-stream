@@ -5,10 +5,9 @@ const {ExperimentProvider} = require("addon/ExperimentProvider");
 const {getTestActivityStream} = require("./lib/utils");
 
 exports["test ActivityStreams has experimentProvider instance"] = assert => {
-  const as = getTestActivityStream({clientID: "k88"});
+  const as = getTestActivityStream();
   assert.ok(as._experimentProvider instanceof ExperimentProvider, "should have _experimentProvider");
-  assert.equal(as._experimentProvider._clientID, "k88", "should use clientID");
-  as.unload();
+  as.unload("uninstall");
 };
 
 exports["test ActivityStreams doesn't init experimentProvider"] = assert => {

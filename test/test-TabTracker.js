@@ -685,6 +685,7 @@ before(exports, function*() {
     experiments: {
       test: {
         name: "foo",
+        active: true,
         control: {value: false},
         variant: {id: "foo_01", value: true, threshold: 0.5}
       }
