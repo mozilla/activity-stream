@@ -14,7 +14,7 @@
     display: inline-block;
     margin: 0 $tile-gutter 0 0;
     @media (min-width: $break-point) {
-      display: block;
+      display: flex;
     }
   }
 
