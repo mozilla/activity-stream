@@ -36,10 +36,14 @@ script:
 
 deploy:
   skip_cleanup: true
-  provider: script
-  script: bin/continuous-integration.sh
-  on:
-      branch: master
+  - provider: script-dev
+    script: bin/continuous-integration.sh dev
+    on:
+        branch: master
+  - provider: script-prerelease
+    script: bin/continuous-integration.sh prerelease
+    on:
+        branch: release
 
 notifications:
   email: false

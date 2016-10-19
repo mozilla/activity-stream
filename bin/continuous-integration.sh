@@ -11,4 +11,4 @@ then
     export CFLAGS='-std=c99'
 fi
 
-fab deploy:dev_deploy=True || exit 1
+fab deploy:destination=$1 || exit 1
