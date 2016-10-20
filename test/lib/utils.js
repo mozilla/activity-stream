@@ -119,7 +119,7 @@ function getTestActivityStream(options = {}) {
   options.pageScraper = mockPageScraper;
   options.searchProvider = getTestSearchProvider();
   options.recommendationProvider = getTestRecommendationProvider();
-  const testTabTracker = new TabTracker(options.clientID);
+  const testTabTracker = new TabTracker(options);
   const testTelemetrySender = new TelemetrySender();
   let mockApp = new ActivityStreams(mockMetadataStore, testTabTracker, testTelemetrySender, options);
   mockApp.init();

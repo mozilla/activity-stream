@@ -32,7 +32,7 @@ Object.assign(exports, {
     Task.spawn(function*() {
       const clientID = yield ClientID.getClientID();
       options.clientID = clientID;
-      const tabTracker = new TabTracker(clientID);
+      const tabTracker = new TabTracker(options);
       const telemetrySender = new TelemetrySender();
 
       if (options.loadReason === "upgrade") {
