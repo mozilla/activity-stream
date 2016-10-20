@@ -397,7 +397,7 @@ exports.test_TabTracker_action_pings = function*(assert) {
   app._handleUserEvent(eventData);
 
   let pingData = yield userEventPromise;
-  let additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page", "shield_variant"];
+  let additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page"];
   for (let key of additionalKeys) {
     assert.ok(pingData[key], `The ping has the additional key ${key}`);
   }
@@ -459,7 +459,7 @@ exports.test_TabTracker_unload_reason_with_user_action = function*(assert) {
     app._handleUserEvent(eventData);
 
     const eventPingData = yield userEventPromise;
-    const additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page", "shield_variant"];
+    const additionalKeys = ["client_id", "addon_version", "locale", "action", "tab_id", "page"];
     for (let key of additionalKeys) {
       assert.ok(eventPingData[key], `The ping has the additional key ${key}`);
     }
