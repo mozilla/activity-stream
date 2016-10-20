@@ -634,7 +634,7 @@ Links.prototype = {
 
     let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
 
-    let params = {limitBookmarks: 1, limitHistory: (limit - 1)};
+    let params = {limitBookmarks: limit, limitHistory: limit};
 
     let sqlQuery = `SELECT DISTINCT * FROM (
                       SELECT * FROM (
