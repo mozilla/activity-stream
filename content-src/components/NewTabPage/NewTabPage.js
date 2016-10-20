@@ -74,7 +74,7 @@ const NewTabPage = React.createClass({
 
         <div className={classNames("show-on-init", {on: this.props.isReady})}>
           <section>
-            <TopSites page={PAGE_NAME} sites={props.TopSites.rows} />
+            <TopSites page={PAGE_NAME} sites={props.TopSites.rows} showHint={props.TopSites.showHint} />
           </section>
 
           <section>

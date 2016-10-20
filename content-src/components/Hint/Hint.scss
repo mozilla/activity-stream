@@ -1,0 +1,92 @@
+.hint-container {
+  display: inline-block;
+  position: relative;
+  // This is needed to push the child component(i.e. the explanation above other stuff in the container)
+  z-index: $hint-z-index;
+
+  // This is the link that if clicked, opens the explanation
+  .prompt {
+    color: inherit;
+    opacity: 0.8;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // This is the box that shows up when you click the prompt
+  .explanation {
+    font-size: $hint-font-size;
+    box-shadow: 0 5px 10px $faintest-black;
+    line-height: $hint-line-height;
+    border: 1px solid $hint-border-color;
+    width: $hint-box-width;
+    border-radius: $hint-border-radius;
+    padding: $hint-padding;
+    background: $white;
+    position: absolute;
+    left: 100%;
+    margin-left: $hint-offset-left;
+    top: -$hint-offset-top;
+
+    // This is the little triangle on the tooltip
+    &::before {
+      content: '';
+      position: absolute;
+      top: $hint-offset-top - 1;
+      left: -($hint-offset-left / 2);
+      width: $hint-offset-left;
+      height: $hint-offset-left;
+      background-color: $white;
+      display: block;
+      transform: rotate(45deg);
+      border: 1px solid $hint-border-color;
+      border-right-style: none;
+      border-top-style: none;
+    }
+
+    h3 {
+      color: $hint-title-color;
+      font-size: $hint-title-font-size;
+      line-height: 1.1;
+      font-weight: 500;
+      margin: 0 0 10px;
+    }
+
+    p {
+      color: $hint-body-color;
+      margin: 0 0 15px;
+    }
+
+    .close-button {
+      display: block;
+      width: 100%;
+      padding: $hint-button-padding;
+      border: 0;
+      text-align: center;
+      background-color: $hint-button-color;
+      border-radius: $hint-border-radius;
+      cursor: pointer;
+
+      &:hover {
+        background-color: lighten($hint-button-color, 10%);
+      }
+
+      h4,
+      p {
+        font-weight: normal;
+        margin: 0;
+        color: $white;
+      }
+
+      h4 {
+        font-size: $hint-button-font-size;
+        margin-bottom: 3px;
+      }
+
+      p {
+        opacity: 0.6;
+      }
+    }
+  }
+}

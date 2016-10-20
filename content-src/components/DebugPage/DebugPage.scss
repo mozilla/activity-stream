@@ -4,10 +4,17 @@
   }
 
   .btn {
-    color: $dark-grey;
-    border: 1px solid $dark-grey;
+    color: $white;
+    border: 0;
+    background-color: $link-blue;
     padding: 5px 10px;
     border-radius: 8px;
+    cursor: pointer;
+
+    &:hover,
+    &:active {
+      background-color: lighten($link-blue, 20%);
+    }
   }
 
   label {
