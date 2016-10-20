@@ -158,25 +158,6 @@ ActivityStreams.prototype = {
       });
   },
 
-  /**
-   * Get from cache and response to content.
-   *
-   * @private
-   */
-  _processAndSendLinks(placesLinks, responseType, worker, options) {
-    const {append} = options || {};
-    // If the type is append, that is, the user is scrolling through pages,
-    // do not add these to the master store
-    const skipMasterStore = append;
-
-    const cachedLinks = this._processLinks(placesLinks, responseType, options);
-
-    cachedLinks.then(linksToSend => {
-      const action = am.actions.Response(responseType, linksToSend, {append});
-      this.send(action, worker, skipMasterStore);
-    });
-  },
-
   _initializeAppData() {
     this._asyncBuildPlacesCache();
     this._refreshAppState();
@@ -368,11 +349,6 @@ ActivityStreams.prototype = {
    */
   _respondToPlacesRequests({msg, worker}) {
     switch (msg.type) {
-      case am.type("RECENT_LINKS_REQUEST"):
-        PlacesProvider.links.getRecentLinks(msg.data).then(links => {
-          this._processAndSendLinks(links, "RECENT_LINKS_RESPONSE", worker, msg.meta);
-        });
-        break;
       case am.type("NOTIFY_BOOKMARK_ADD"):
         PlacesProvider.links.asyncAddBookmark(msg.data);
         break;
