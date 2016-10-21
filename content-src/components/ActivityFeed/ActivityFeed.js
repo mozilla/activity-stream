@@ -36,7 +36,7 @@ const ActivityFeedItem = React.createClass({
   },
   render() {
     const site = this.props;
-    const title = site.title || site.provider_display || (site.parsedUrl && site.parsedUrl.hostname);
+    const title = site.title || site.provider_name || (site.parsedUrl && site.parsedUrl.hostname);
     const date = site.dateDisplay;
 
     let icon;
@@ -102,7 +102,7 @@ ActivityFeedItem.propTypes = {
   bookmarkTitle: React.PropTypes.string,
   type: React.PropTypes.string,
   dateDisplay: React.PropTypes.number,
-  provider_display: React.PropTypes.string,
+  provider_name: React.PropTypes.string,
   parsedUrl: React.PropTypes.shape({hostname: React.PropTypes.string})
 };
 
@@ -125,7 +125,7 @@ function filterSites(filter, sites) {
   const tokens = filter.trim().split(/\s+/);
   return sites.filter(site => {
     // Combine the title and url as one large text string
-    const text = `${site.title || site.provider_display || ""} ${site.url}`.trim();
+    const text = `${site.title || site.provider_name || ""} ${site.url}`.trim();
 
     // Save the lengths of various strings being compared
     const textLen = text.length;
