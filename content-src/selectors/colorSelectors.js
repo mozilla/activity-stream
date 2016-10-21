@@ -6,6 +6,14 @@ const {prettyUrl, getBlackOrWhite, toRGBString, getRandomColor} = require("lib/u
 const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
 const BACKGROUND_FADE = 0.5;
 
+/**
+ * getBackgroundRGB - Selects the best background colour as RGB based on metadata.
+ *                    If none can be determined, returns a random color based on the label,
+ *                    or as a last resort, a default color.
+ *
+ * @param  {obj} site  A site object (with metadata)
+ * @return {array}     An RGB colour as an array of numbers. E.g. [150, 150, 150]
+ */
 function getBackgroundRGB(site) {
   // This is from firefox
   if (site.favicon_color) {
@@ -24,6 +32,14 @@ function getBackgroundRGB(site) {
   return favicon ? DEFAULT_FAVICON_BG_COLOR : getRandomColor(label);
 }
 
+/**
+ * assignImageAndBackgroundColor - Calculates the best image and background color for each site in an array of sites
+ *
+ * @param  {arr} rows  An array of sites
+ * @return {arr}       An array of sites, where each site has two additional properties:
+ *                    .bestImage         an image object (e.g. {url: "http://foo.com/image.jpg"})
+ *                    .backgroundColor  an array representing an RGB background color (e.g. [150, 150, 150])
+ */
 function assignImageAndBackgroundColor(rows) {
   return rows.map(site => {
     const newProps = {};
@@ -39,6 +55,16 @@ function assignImageAndBackgroundColor(rows) {
   });
 }
 
+/**
+ * selectSiteIcon
+ *
+ * @return {obj} An object of props for the SiteIcon component
+ *    .url {str} The url of the site
+ *    .favicon {str} The url of the favicon image for the site
+ *    .backgroundColor {arr} an array representing an RGB background color (e.g. [150, 150, 150])
+ *    .fontColor {arr} an array representing an RGB font color, either black ([0, 0, 0]) or white ([255, 255, 255])
+ *    .label {str} A pretty url based on the hostname of the site
+ */
 const selectSiteIcon = createSelector(
   site => site,
   site => {

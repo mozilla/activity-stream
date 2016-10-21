@@ -1,5 +1,15 @@
 const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
+/**
+ * getHighlightContextFromSite - Returns an object with details about the origin of the Highlight
+ *                               and what to display in the "context" message (on the Highlight component)
+ *
+ * @param  {obj} site A site (with metadata)
+ * @return {obj}
+ *     .label {str} The message to be displayed at the bottom of the Highlight component
+ *     .type {str} An indicator of the origin/type of the highlight. One of:
+ *                 recommended, firstRun, bookmark, synced, open, or history
+ */
 module.exports = function getHighlightContextFromSite(site) {
   const result = {};
 

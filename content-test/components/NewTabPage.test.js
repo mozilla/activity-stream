@@ -38,7 +38,7 @@ describe("NewTabPage", () => {
 
   it("should render Spotlight components with correct data", () => {
     const spotlightSites = TestUtils.findRenderedComponentWithType(instance, Spotlight);
-    assert.equal(spotlightSites.props.sites, fakeProps.Spotlight.rows);
+    assert.equal(spotlightSites.props.sites, fakeProps.Highlights.rows);
   });
 
   it("should render GroupedActivityFeed with correct data", () => {

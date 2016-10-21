@@ -2,6 +2,9 @@ module.exports = {
   // How many items per query?
   LINKS_QUERY_LIMIT: 20,
 
+  // Number of top sites
+  TOP_SITES_LENGTH: 6,
+
   // Number of large Highlight tiles, pre-weighted hightlights.  Should go away
   // when unweighted highlights go away.
   SPOTLIGHT_DEFAULT_LENGTH: 3,

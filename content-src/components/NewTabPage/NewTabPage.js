@@ -54,11 +54,11 @@ const NewTabPage = React.createClass({
   render() {
     const props = this.props;
     const recommendationLabel = "Show Trending Highlights";
-    const recommendationIcon = props.Spotlight.recommendationShown ? "check" : "   ";
+    const recommendationIcon = props.Highlights.recommendationShown ? "check" : "   ";
     const showRecommendationOption = props.showRecommendationOption;
 
     const spotlightLength =
-      this.props.Spotlight.weightedHighlights ? WEIGHTED_HIGHLIGHTS_LENGTH :
+      this.props.Highlights.weightedHighlights ? WEIGHTED_HIGHLIGHTS_LENGTH :
       SPOTLIGHT_DEFAULT_LENGTH;
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
@@ -79,10 +79,10 @@ const NewTabPage = React.createClass({
 
           <section>
             <Spotlight page={PAGE_NAME} length={spotlightLength}
-              sites={props.Spotlight.rows} />
+              sites={props.Highlights.rows} />
           </section>
 
-          { props.Spotlight.weightedHighlights ? null : this.renderRecentActivity() }
+          { props.Highlights.weightedHighlights ? null : this.renderRecentActivity() }
 
           <section className="bottom-links-container">
             <span className="link-wrapper-right">
@@ -110,7 +110,7 @@ const NewTabPage = React.createClass({
 
 NewTabPage.propTypes = {
   TopSites: React.PropTypes.object.isRequired,
-  Spotlight: React.PropTypes.object.isRequired,
+  Highlights: React.PropTypes.object.isRequired,
   TopActivity: React.PropTypes.object.isRequired,
   dispatch: React.PropTypes.func.isRequired
 };
