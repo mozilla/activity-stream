@@ -99,7 +99,9 @@ ActivityStreams.prototype = {
     this._initializeAppURLHider();
     this._initializeMemoizer();
 
-    this._experimentProvider.init();
+    if (!this.options.shield_variant) {
+      this._experimentProvider.init();
+    }
     this._tabTracker.init(this.appURLs, this._memoized, this._experimentProvider.experimentId);
     this._initializeSearchProvider();
     this._initializePreviewProvier(this._experimentProvider, this._metadataStore, this._tabTracker);
