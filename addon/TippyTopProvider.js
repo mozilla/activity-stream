@@ -2,7 +2,7 @@
 "use strict";
 
 const data = require("sdk/self").data;
-const URL = require("sdk/url").URL;
+const urlParse = require("common/vendor")("url-parse");
 
 const DEFAULT_OPTIONS = {sites: null};
 
@@ -57,7 +57,7 @@ TippyTopProvider.prototype = {
     * Create a key using the domain (minus the www.).
     */
   _getKey(url) {
-    let domain = URL(url).host;
+    let domain = urlParse(url, false).host;
     if (domain && domain.startsWith("www.")) {
       domain = domain.slice(4);
     }
