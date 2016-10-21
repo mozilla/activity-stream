@@ -76,6 +76,25 @@ storiesOf("Highlight Item", module)
     site.bestImage = site.images[0];
     return (<Container><SpotlightItem {...site} /></Container>);
   })
+  .add("Title overflows text area", () => {
+    const site = createSite({images: 1});
+    site.bestImage = site.images[0];
+    site.title = "The Most Awesome Aggregator Site You're Ever Going To See On The Entire English-Speaking Part World Wide Web";
+    return (<Container><SpotlightItem {...site} /></Container>);
+  })
+  .add("Title + desc overflows text area", () => {
+    const site = createSite({images: 1});
+    site.bestImage = site.images[0];
+    site.title = "The Most Awesome Aggregator Site You're Ever Going To See";
+    site.description = "The quick brown fox jumps over the laziest dog";
+    return (<Container><SpotlightItem {...site} /></Container>);
+  })
+  .add("Missing provider_name metadata", () => {
+    const site = createSite({images: 1});
+    site.bestImage = site.images[0];
+    delete site.provider_name;
+    return (<Container><SpotlightItem {...site} /></Container>);
+  })
   .add("Missing an image", () => {
     const site = createSite({images: 0});
     return (<Container><SpotlightItem {...site} /></Container>);

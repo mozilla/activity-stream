@@ -48,6 +48,7 @@
   > a {
     display: block;
     color: inherit;
+    height: 100%;
   }
 
   .spotlight-image {
@@ -71,16 +72,14 @@
     top: $spotlight-icon-gutter;
   }
 
-  .spotlight-feedname {
+  .spotlight-provider-name {
     color: $mid-light-grey;
-    line-height: 1.8;
     font-size: 10px;
   }
 
   .spotlight-title {
     margin: 0 0 $spotlight-title-margin-bottom;
     font-size: inherit;
-    line-height: 1.3;
     word-wrap: break-word;
   }
 
@@ -89,12 +88,16 @@
   }
 
   .spotlight-info {
-    padding: $spotlight-padding;
+    padding: $spotlight-info-top-padding $spotlight-info-default-padding;
   }
 
   .spotlight-text {
     max-height: $spotlight-text-height;
     overflow: hidden;
+
+    // absolute units because this is inherited to lines with smaller font
+    // heights that are still visually compatible with this
+    line-height: 18px;
   }
 
   .spotlight-description {

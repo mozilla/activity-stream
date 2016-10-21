@@ -43,12 +43,9 @@ const SpotlightItem = React.createClass({
     const description = site.description || site.url;
     const isPortrait = image.height > image.width;
 
-    // XXX The precedence here is the same as SpotlightFeedItem (now gone) was.
     // We may want to reconsider this as part of
     // https://github.com/mozilla/activity-stream/issues/1473
-    const feedName = site.provider_name ?
-      site.provider_name.toLowerCase() :
-      site.provider_display;
+    const providerName = site.provider_name ? site.provider_name.toLowerCase() : "";
     const style = {};
 
     if (imageUrl) {
@@ -64,8 +61,8 @@ const SpotlightItem = React.createClass({
         <div className="spotlight-details">
           <div className="spotlight-info">
             <div className="spotlight-text">
-              <div className="spotlight-feedname">
-                {feedName}
+              <div className="spotlight-provider-name">
+                {providerName}
               </div>
               <h4 ref="title" className="spotlight-title">{site.title}</h4>
               <p className="spotlight-description" ref="description">{description}</p>
