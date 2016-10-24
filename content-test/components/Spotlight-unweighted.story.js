@@ -39,7 +39,7 @@ const Container = props => (
 // itself.
 
 // the normal, unweighted data
-const fakeSpotlightItems = mockData.Spotlight.rows;
+const fakeSpotlightItems = mockData.Highlights.rows;
 
 storiesOf("Highlight List (unweighted)", module)
   .add("All valid properties", () =>

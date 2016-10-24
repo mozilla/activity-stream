@@ -51,7 +51,7 @@ rawMockData.Experiments.values.weightedHighlights = true;
 // and remove this line too.
 rawMockData.WeightedHighlights.weightedHighlights = true;
 let mockData = Object.assign({}, rawMockData, selectNewTabSites(rawMockData));
-let fakeSpotlightItems = mockData.Spotlight.rows;
+let fakeSpotlightItems = mockData.Highlights.rows;
 
 storiesOf("Highlight List (weighted)", module)
   .add("All valid properties", () =>
