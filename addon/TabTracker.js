@@ -18,10 +18,7 @@ const COMPLETE_NOTIF = "tab-session-complete";
 const ACTION_NOTIF = "user-action-event";
 const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
-const DEFAULT_PLACES_QUERIES = {
-  getBookmarksSize() {return Promise.resolve(0);},
-  getHistorySize() {return Promise.resolve(0);}
-};
+
 function TabTracker(options) {
   this._tabData = {};
   this._clientID = options.clientID;
@@ -45,7 +42,7 @@ TabTracker.prototype = {
 
   init(trackableURLs, placesQueries, experimentId) {
     this._trackableURLs = trackableURLs;
-    this._placesQueries = Object.assign({}, DEFAULT_PLACES_QUERIES, placesQueries);
+    this._placesQueries = placesQueries;
     this._experimentID = experimentId;
   },
 
