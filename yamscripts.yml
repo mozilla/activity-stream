@@ -75,7 +75,9 @@ scripts:
   # or uncompiled yamscripts.yml. Run automatically with husky.
   prepush: =>test:lint && =>yamscripts
 
-# storybook: build a local react-storybook containing local stories for dev
+# Build a local react-storybook containing local stories for
+# development.  Expects "npm run start" to be running in another
+# window to get CSS changes noticed.
   storybook: start-storybook -p 9001 -s ./data/content
 
 # build-storybook: used by storybooks.io service to build a static copy for
