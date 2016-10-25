@@ -35,8 +35,8 @@ PageScraper.prototype = {
    */
   _asyncParseAndSave: Task.async(function*(rawHTML, url) {
     let event = this._tabTracker.generateEvent({source: "PAGE_SCRAPER"});
-    this._tabTracker.handlePerformanceEvent(event, "metadataReceivedRawHTML");
     let startTime = Date.now();
+    this._tabTracker.handlePerformanceEvent(event, "metadataReceivedRawHTML", startTime);
 
     let link = yield this._previewProvider.asyncLinkExist(url);
     if (!link) {
