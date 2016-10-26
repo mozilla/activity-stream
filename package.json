@@ -79,7 +79,7 @@
     "style-loader": "0.13.1",
     "svgo": "0.7.1",
     "tippy-top-sites": "0.2.0",
-    "webpack": "1.13.2",
+    "webpack": "1.13.3",
     "webpack-env-loader-plugin": "0.1.4",
     "webpack-notifier": "1.4.1",
     "yamscripts": "0.0.3"
