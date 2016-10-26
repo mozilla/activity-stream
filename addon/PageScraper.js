@@ -50,6 +50,7 @@ PageScraper.prototype = {
       }
 
       if (this._shouldSaveMetadata(metadata)) {
+        metadata.images = yield this._computeImageSize(metadata);
         this._insertMetadata(metadata);
         this._tabTracker.handlePerformanceEvent(event, "metadataParseSuccess", Date.now() - startTime);
       } else {
@@ -59,6 +60,29 @@ PageScraper.prototype = {
       this._tabTracker.handlePerformanceEvent(event, "metadataExists", Date.now() - startTime);
     }
   }),
+
+  /**
+   * Locally compute the size of the preview image
+   */
+  _computeImageSize(metadata) {
+    return new Promise(resolve => {
+      if (metadata.images.length) {
+        const metadataImage = metadata.images[0];
+        let image = new Services.appShell.hiddenDOMWindow.Image();
+        image.src = metadataImage.url;
+        image.addEventListener("load", () => {
+          let imageWithSize = {
+            url: image.src,
+            width: image.width || 500,
+            height: image.height || 500
+          };
+          resolve([imageWithSize]);
+        });
+      } else {
+        resolve([]);
+      }
+    });
+  },
 
   /**
    * Insert the metadata in the metadata database, along with it's source.

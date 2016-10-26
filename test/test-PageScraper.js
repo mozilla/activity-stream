@@ -109,6 +109,23 @@ exports.test_blacklist = function(assert) {
   assert.equal(isAccepted, false, `${url} exists in the blacklist`);
 };
 
+exports.test_compute_image_sizes = function*(assert) {
+  let metadataObj = {
+    url: "https://www.hasAnImage.com",
+    images: [{url: "data:image;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAA"}] // a 1x1 pixel image
+  };
+  // compute the image sizes of the metadata
+  let newImage = yield gPageScraper._computeImageSize(metadataObj);
+  assert.equal(newImage[0].url, metadataObj.images[0].url, "the url was intact");
+  assert.equal(newImage[0].width, 1, "computed the correct image width");
+  assert.equal(newImage[0].height, 1, "computed the correct image height");
+
+  // when the metadata has no images, don't compute any sizes for it
+  metadataObj.images = [];
+  newImage = yield gPageScraper._computeImageSize(metadataObj);
+  assert.deepEqual(newImage, [], "we did not compute image size when given no image");
+};
+
 before(exports, () => {
   parseCallCount = 0;
   gPageScraper = new PageScraper(mockPreviewProvider, mockTabTracker, {framescriptPath: ""});
@@ -116,7 +133,7 @@ before(exports, () => {
   gPageScraper._metadataParser = {
     parseHTMLText(raw, url) {
       parseCallCount++;
-      return Promise.resolve({title: raw.title, favicon_url: raw.favicon_url, url, metadata: raw.metadata, cache_key: url});
+      return Promise.resolve({images: [], title: raw.title, favicon_url: raw.favicon_url, url, metadata: raw.metadata, cache_key: url});
     }
   };
 });

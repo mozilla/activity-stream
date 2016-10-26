@@ -42,7 +42,7 @@ describe("MetadataParser", () => {
     };
     const expectedFormattedData = {
       "url": originalUrl,
-      "images": [{"url": incomingData.image_url, "height": 500, "width": 500}],
+      "images": [{"url": incomingData.image_url}],
       "provider_name": "foo",
       "title": incomingData.title,
       "description": incomingData.description,
@@ -63,7 +63,7 @@ describe("MetadataParser", () => {
     const url = "https://foo.com";
     const expectedResult = {
       url,
-      "images": [{"url": TEST_IMAGE, "height": 500, "width": 500}],
+      "images": [{"url": TEST_IMAGE}],
       "provider_name": "foo",
       "title": TEST_TITLE,
       "favicon_url": TEST_ICON,
