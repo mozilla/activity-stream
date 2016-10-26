@@ -98,7 +98,7 @@ class Baseline {
     newScore /= Math.pow(1 + features.age, 2);
 
     if (!features.imageCount || !features.image) {
-      newScore *= 0.2;
+      newScore = 0;
     }
 
     if (!features.description || !features.pathLength) {
@@ -169,7 +169,8 @@ class Baseline {
     let results = this.filterOutRecentUrls(entries)
                     .map(entry => this.extractFeatures(entry))
                     .map(entry => this.scoreEntry(entry))
-                    .sort(this.sortDescByScore);
+                    .sort(this.sortDescByScore)
+                    .filter(entry => entry.score > 0);
 
     // Decreases score for consecutive items from the same host.
     results = this.dedupe(results);
