@@ -37,7 +37,8 @@ const fakeUrls = [
     visitCount: 2,
     title: "Activity Stream",
     description: "",
-    images: [],
+    images: [{"url": "google.com", "width": 100, "height": 100}],
+    imageCount: 1,
     lastVisitDate: Date.now() - 1e2
   },
   {
@@ -46,7 +47,8 @@ const fakeUrls = [
     visitCount: 1,
     title: "Activity Stream",
     description: "",
-    images: [],
+    images: [{"url": "github.com", "width": 100, "height": 100}],
+    imageCount: 1,
     lastVisitDate: Date.now() - 1e2
   },
   {
@@ -55,7 +57,8 @@ const fakeUrls = [
     visitCount: 1,
     title: "Activity Stream",
     description: "",
-    images: [],
+    images: [{"url": "github.com", "width": 100, "height": 100}],
+    imageCount: 1,
     lastVisitDate: Date.now() - 1e2
   },
   {
@@ -64,7 +67,8 @@ const fakeUrls = [
     visitCount: 1,
     title: "Activity Stream",
     description: "",
-    images: [],
+    images: [{"url": "foo.com", "width": 100, "height": 100}],
+    imageCount: 1,
     lastVisitDate: Date.now() - 1e2
   },
   {
@@ -74,7 +78,8 @@ const fakeUrls = [
     title: "Activity Stream",
     bookmarkId: 1,
     description: "",
-    images: [],
+    images: [{"url": "bar.com", "width": 100, "height": 100}],
+    imageCount: 1,
     lastVisitDate: Date.now() - 1e2
   },
   {
@@ -83,7 +88,8 @@ const fakeUrls = [
     visitCount: 1,
     title: "Old link",
     description: "",
-    images: [],
+    images: [{"url": "bar1.com", "width": 100, "height": 100}],
+    imageCount: 1,
     lastVisitDate: Date.now() - 1e6
   },
   {
@@ -92,7 +98,8 @@ const fakeUrls = [
     visitCount: 30,
     title: "Very visited",
     description: "",
-    images: [],
+    images: [{"url": "bar2.com", "width": 100, "height": 100}],
+    imageCount: 1,
     lastVisitDate: Date.now() - 1e2
   }
 ];
@@ -151,6 +158,12 @@ describe("Baseline", () => {
     }
 
     assert.isOk(descending);
+  });
+
+  it("should remove items with no images", () => {
+    let fakeUrlsWithNoImages = fakeUrls.map(item => Object.assign({}, item, {images: []}));
+    let items = baseline.score(fakeUrlsWithNoImages);
+    assert.equal(items.length, 0);
   });
 
   it("should decrease score for consecutive items from the same domain", () => {
