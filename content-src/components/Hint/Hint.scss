@@ -1,8 +1,6 @@
 .hint-container {
   display: inline-block;
   position: relative;
-  // This is needed to push the child component(i.e. the explanation above other stuff in the container)
-  z-index: $hint-z-index;
 
   // This is the link that if clicked, opens the explanation
   .prompt {
@@ -28,6 +26,7 @@
     left: 100%;
     margin-left: $hint-offset-left;
     top: -$hint-offset-top;
+    z-index: $hint-z-index;
 
     // This is the little triangle on the tooltip
     &::before {
