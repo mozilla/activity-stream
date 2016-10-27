@@ -21,7 +21,7 @@ MetadataParser.prototype = {
    * Format the data so the metadata DB receives it
    */
   _formatData(data, url) {
-    const images = data.image_url ? [{url: data.image_url, height: 500, width: 500}] : [];
+    const images = data.image_url ? [{url: data.image_url}] : [];
     const formattedData = {
       url,
       images,

@@ -113,7 +113,7 @@ before(exports, () => {
     parseHTMLText(raw, url) {
       parseCallCount++;
       const doc = parser.parseFromString(raw, "text/html");
-      return {title: doc.title, favicon_url: "favicon.ico", url};
+      return {images: [], title: doc.title, favicon_url: "favicon.ico", url};
     }
   };
   srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
