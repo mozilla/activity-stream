@@ -19,7 +19,7 @@ At the end of each milestone, we will start a new release process that consists 
 
   Over the course of this stage, QA tests the pre-release build and files bugs with the label "release/block". Meanwhile, PM and UI/UX verifies the add-on and gives feedback. Engineers, in turn, respond to those inputs and make bugfixes or changes accordingly.
 
-- Release deploy. As the final stage of the release process, the release engineer ensures all requirements are met on the checklist, then proceeds to deploy the release as described below in detail.
+- Release deploy. The release engineer ensures all requirements are met on the checklist, then proceeds to deploy the release as described below in detail.
 
 Note that the first three tasks are mostly driven by the automated "pre-release" channel, people from different release party could cooperate directly on GitHub or via IRC/Slack.
 
@@ -99,7 +99,7 @@ We use `fabric` in a Python virtual environment to do the job,
 
 - deploy
 
-  We will deploy within the `release-X.Y.Z` branch,
+  You will deploy within the `release-X.Y.Z` branch,
 
   ```
   git checkout release-X.Y.Z
@@ -120,6 +120,10 @@ We use `fabric` in a Python virtual environment to do the job,
   ```
   fab deploy
   ```
+
+- inform Test Pilot
+
+  Lastly, you send the add-on to Test Pilot, which takes care of everything needed to serve Activity Stream for the add-on users. See [#1509](https://github.com/mozilla/activity-stream/issues/1509) for more details. Currently, you have to send it via email to the T-P maintainers, however, there is a plan of automating the add-on update process on their end.
 
 # Post-deploy
 
