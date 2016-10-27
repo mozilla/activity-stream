@@ -256,8 +256,8 @@
     "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
   },
   "title": "Activity Stream",
-  "updateLink": "https://moz-activity-streams.s3.amazonaws.com/dist/activity-streams-latest.xpi",
-  "updateURL": "https://moz-activity-streams.s3.amazonaws.com/dist/update.rdf",
+  "updateLink": "https://testpilot.firefox.com/files/activitystream/latest",
+  "updateURL": "https://testpilot.firefox.com/files/activitystream/updates.json",
   "permissions": {
     "multiprocess": true,
     "private-browsing": true
