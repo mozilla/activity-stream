@@ -9,10 +9,10 @@ module.exports = class HistoryFeed extends Feed {
   }
   getData() {
     return PlacesProvider.links.getRecentLinks()
-      .then(links => this.getMetadata(links, "RECENT_LINKS_RESPONSE"))
+      .then(links => this.options.getMetadata(links, "RECENT_LINKS_RESPONSE"))
       .then(links => ({type: "RECENT_LINKS_RESPONSE", data: links}));
   }
-  reducer(state, action) {
+  onAction(state, action) {
     if (this.inHighlightsExperiment) {
       if (action.type === "APP_INIT") {
         this.store.dispatch({type: "RECENT_LINKS_RESPONSE", data: []});
@@ -23,7 +23,7 @@ module.exports = class HistoryFeed extends Feed {
           this.refresh();
           break;
         case "RECEIVE_PLACES_CHANGES":
-          if (Date.now() - this.lastUpdated >= UPDATE_TIME) {
+          if (Date.now() - this.state.lastUpdated >= UPDATE_TIME) {
             this.refresh();
           }
           break;

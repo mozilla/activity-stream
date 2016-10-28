@@ -1,9 +1,11 @@
 module.exports = class Feed {
   constructor(options = {}) {
-    this.lastUpdated = null;
-    this.inProgress = false;
-    this.getMetadata = options.getMetadata;
-    this.store = null; // added in Feeds.connectStore
+    this.options = options;
+    this.state = {
+      lastUpdated: null,
+      inProgress: false
+    };
+    this.store = null; // added in .connectStore
   }
   connectStore(store) {
     this.store = store;
@@ -21,23 +23,23 @@ module.exports = class Feed {
         reject(new Error("No store was connected"));
         return;
       }
-      if (this.inProgress) {
+      if (this.state.inProgress) {
         resolve();
         return;
       }
 
-      this.inProgress = true;
+      this.state.inProgress = true;
       this.log(`Refreshing data for ${this.constructor.name}` + (reason ? ` because ${reason}` : "")); // eslint-disable-line prefer-template
 
       this.getData()
         .then(action => {
           this.store.dispatch(action);
-          this.inProgress = false;
-          this.lastUpdated = new Date().getTime();
+          this.state.inProgress = false;
+          this.state.lastUpdated = new Date().getTime();
           resolve();
         })
         .catch(err => {
-          this.inProgress = false;
+          this.state.inProgress = false;
           reject(err);
         });
     });

@@ -7,10 +7,10 @@ const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 module.exports = class TopSitesFeed extends Feed {
   getData() {
     return PlacesProvider.links.getTopFrecentSites()
-      .then(links => this.getMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
+      .then(links => this.options.getMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
       .then(links => ({type: "TOP_FRECENT_SITES_RESPONSE", data: links}));
   }
-  reducer(state, action) {
+  onAction(state, action) {
     switch (action.type) {
       case "APP_INIT":
         this.refresh("app was initializing");
@@ -19,7 +19,7 @@ module.exports = class TopSitesFeed extends Feed {
         if (state.TopSites.rows.length < TOP_SITES_LENGTH) {
           this.refresh("there were not enough sites");
         }
-        else if (Date.now() - this.lastUpdated >= UPDATE_TIME) {
+        else if (Date.now() - this.state.lastUpdated >= UPDATE_TIME) {
           this.refresh("the sites were too old");
         }
         break;

@@ -72,7 +72,7 @@ module.exports = class HighlightsFeed extends Feed {
       return Promise.resolve([]);
     }
     return PlacesProvider.links.getRecentlyVisited()
-      .then(links => this.getMetadata(links, "WEIGHTED_HIGHLIGHTS_RESPONSE"))
+      .then(links => this.options.getMetadata(links, "WEIGHTED_HIGHLIGHTS_RESPONSE"))
       .then(links => this.baselineRecommender.scoreEntries(links))
       // .then(links => {
       //   console.log(links.length + " weighted highlights returned from query");
@@ -88,7 +88,7 @@ module.exports = class HighlightsFeed extends Feed {
    */
   getOldHighlights() {
     return PlacesProvider.links.getHighlightsLinks()
-      .then(links => this.getMetadata(links, "HIGHLIGHTS_LINKS_RESPONSE"))
+      .then(links => this.options.getMetadata(links, "HIGHLIGHTS_LINKS_RESPONSE"))
       .then(links => ({type: "HIGHLIGHTS_LINKS_RESPONSE", data: links}));
   }
 
@@ -97,7 +97,7 @@ module.exports = class HighlightsFeed extends Feed {
     return this.inExperiment ? this.getWeightedHighlights() : this.getOldHighlights();
   }
 
-  reducer(state, action) {
+  onAction(state, action) {
     switch (action.type) {
       case "APP_INIT":
         if (this.inExperiment) {
@@ -110,7 +110,7 @@ module.exports = class HighlightsFeed extends Feed {
         if (!this.hasEnoughSites) {
           this.refresh("there were not enough sites");
         }
-        else if (Date.now() - this.lastUpdated >= UPDATE_TIME) {
+        else if (Date.now() - this.state.lastUpdated >= UPDATE_TIME) {
           this.refresh("data was too old");
         }
         break;
