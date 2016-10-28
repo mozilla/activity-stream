@@ -215,9 +215,20 @@ PreviewProvider.prototype = {
         return null;
       }
       let enhancedLink = Object.assign({}, site);
-      // Find the item in the map and return it if it exists
+
+      // Find the item in the map and return it if it exists, then unpack that
+      // object onto our new link
       if (existingLinks.has(site.cache_key)) {
-        Object.assign(enhancedLink, existingLinks.get(site.cache_key));
+        const cachedMetadataLink = existingLinks.get(site.cache_key);
+        enhancedLink.title = cachedMetadataLink.title;
+        enhancedLink.description = cachedMetadataLink.description;
+        enhancedLink.provider_name = cachedMetadataLink.provider_name;
+        enhancedLink.images = cachedMetadataLink.images;
+        enhancedLink.favicons = cachedMetadataLink.favicons;
+        enhancedLink.metadata_source = cachedMetadataLink.metadata_source;
+        if (cachedMetadataLink.favicons && cachedMetadataLink.favicons.length) {
+          enhancedLink.favicon_url = cachedMetadataLink.favicons[0].url;
+        }
       }
 
       // Add tippy top data, if available
