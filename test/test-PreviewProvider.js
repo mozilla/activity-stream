@@ -263,9 +263,9 @@ exports.test_throw_out_non_requested_responses = function*(assert) {
   // receive site 1, 2, 3
   const fakeResponse = {
     "urls": {
-      "http://example1.com/": {"embedlyMetaData": "some good embedly metadata for fake site 1"},
-      "http://example2.com/": {"embedlyMetaData": "some good embedly metadata for fake site 2"},
-      "http://example3.com/": {"embedlyMetaData": "oh no I didn't request this!"}
+      "http://example1.com/": {"description": "some good embedly metadata for fake site 1"},
+      "http://example2.com/": {"description": "some good embedly metadata for fake site 2"},
+      "http://example3.com/": {"description": "oh no I didn't request this!"}
     }
   };
 
@@ -309,7 +309,7 @@ exports.test_mock_embedly_request = function*(assert) {
     "cache_key": "example.com/"
   };
   const fakeRequest = [fakeSite];
-  const fakeResponse = {"urls": {"http://example.com/": {"embedlyMetaData": "some embedly metadata"}}};
+  const fakeResponse = {"urls": {"http://example.com/": {"description": "some embedly metadata"}}};
 
   const embedlyVersionQuery = "addon_version=";
   const endpoint = gPreviewProvider._getMetadataEndpoint();
@@ -327,7 +327,7 @@ exports.test_mock_embedly_request = function*(assert) {
   yield gPreviewProvider._asyncSaveLinks(fakeRequest);
 
   // we should have saved the fake site into the database
-  assert.deepEqual(gMetadataStore[0][0].embedlyMetaData, "some embedly metadata", "inserted and saved the embedly data");
+  assert.deepEqual(gMetadataStore[0][0].description, "some embedly metadata", "inserted and saved the embedly data");
   assert.ok(gMetadataStore[0][0].expired_at, "an expiry time was added");
   assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "a metadata source was added from Embedly");
 
@@ -349,7 +349,7 @@ exports.test_no_metadata_source = function*(assert) {
     "sanitized_url": "http://www.amazon.com/",
     "cache_key": "amazon.com/"
   };
-  const fakeResponse = {"urls": {"http://www.amazon.com/": {"embedlyMetaData": "some embedly metadata"}}};
+  const fakeResponse = {"urls": {"http://www.amazon.com/": {"description": "some embedly metadata"}}};
 
   let cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
   assert.equal(cachedLink[0].metadata_source, "TippyTopProvider", "metadata came from TippyTopProvider");
@@ -382,7 +382,7 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
   const fakeResponse = {
     "urls": {
       "http://www.youtube.com/": {
-        "embedlyMetaData": "some embedly metadata",
+        "description": "some embedly generated description",
         "favicon_url": "https://badicon.com",
         "background_color": "#BADCOLR"
       }
@@ -408,7 +408,7 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
 
   assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "we still took the better tippyTop favicon_url");
   assert.equal(tippyTopLink.background_color, cachedLink[0].background_color, "we still took the better tippyTop background_color");
-  assert.equal(fakeResponse.urls["http://www.youtube.com/"].embedlyMetaData, cachedLink[0].embedlyMetaData, "but we still have other metadata");
+  assert.equal(fakeResponse.urls["http://www.youtube.com/"].description, cachedLink[0].description, "but we still have other metadata");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
