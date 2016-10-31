@@ -16,13 +16,19 @@
 
 ## Installation
 
-Just clone the repo and install the dependencies.
+* install from pre-builts
+  - [dev](https://s3.amazonaws.com/moz-activity-streams-dev/dist/latest.html)
+  - [pre-release](https://s3.amazonaws.com/moz-activity-streams-prerelease/dist/latest.html)
+  - [release](https://moz-activity-streams.s3.amazonaws.com/dist/latest.html)
 
-```sh
-git clone https://github.com/mozilla/activity-stream.git
-cd activity-stream
-npm install
-```
+* install from source
+
+  ```sh
+  git clone https://github.com/mozilla/activity-stream.git
+  cd activity-stream
+  npm install
+  npm run package
+  ```
 
 ## Configuration
 
