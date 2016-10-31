@@ -183,6 +183,45 @@ exports.test_async_get_single_link_by_cache_key = function*(assert) {
   assert.equal(linkExists, false, "It should return an empty array since it doesn't exist");
 };
 
+function _makeFunkyMetadataFixture() {
+  // Deep copy the metadata fixture
+  let funkyFixture = metadataFixture.map(fixture => Object.assign({}, fixture));
+  let fixture = funkyFixture[0];
+  fixture.cache_key = "I'm funky";
+  fixture = funkyFixture[1];
+  fixture.cache_key = "I'm >*funkier*<";
+  fixture = funkyFixture[2];
+  fixture.cache_key = "I'm the >*funkiest*<); DROP TABLE page_metadata;";
+  return funkyFixture;
+}
+
+exports.test_async_get_single_link_by_cache_key_with_special_characters = function*(assert) {
+  let funkyFixture = _makeFunkyMetadataFixture();
+  yield gMetadataStore.asyncInsert(funkyFixture);
+
+  for (let fixture of funkyFixture) {
+    let linkExists = yield gMetadataStore.asyncCacheKeyExists(fixture.cache_key);
+    assert.equal(linkExists, true, "It should be present in the store");
+  }
+};
+
+exports.test_async_get_link_by_cache_key_with_special_characters = function*(assert) {
+  let funkyFixture = _makeFunkyMetadataFixture();
+  yield gMetadataStore.asyncInsert(funkyFixture);
+
+  for (let fixture of funkyFixture) {
+    let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey([fixture.cache_key]);
+    assert.equal(metaObjects.length, 1, "It should fetch one metadata record");
+    let metaObject = metaObjects[0];
+    assert.equal(metaObject.favicons.length, 1, "It should fetch one favicon");
+    assert.equal(metaObject.images.length, fixture.images.length, "It should fetch one favicon");
+  }
+
+  let cacheKeys = funkyFixture.map(fixture => fixture.cache_key);
+  let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey(cacheKeys);
+  assert.equal(metaObjects.length, funkyFixture.length, "It should fetch all metadata records");
+};
+
 exports.test_async_get_by_cache_key_in_special_cases = function*(assert) {
   yield gMetadataStore.asyncInsert(metadataFixture);
 
@@ -223,8 +262,13 @@ exports.test_on_an_invalid_connection = function*(assert) {
   assert.ok(error, "It should raise exception if the connection is closed or not established");
 
   let cacheKeys = metadataFixture.map(fixture => fixture.cache_key);
-  let metaObjects = yield gMetadataStore.asyncGetMetadataByCacheKey(cacheKeys);
-  assert.equal(metaObjects.length, 0, "It should return an empty array if the connection is closed or not established");
+  error = false;
+  try {
+    yield gMetadataStore.asyncGetMetadataByCacheKey(cacheKeys);
+  } catch (e) {
+    error = true;
+  }
+  assert.ok(error, "It should raise exception if the connection is closed or not established");
 };
 
 exports.test_color_conversions = function(assert) {

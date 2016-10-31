@@ -425,25 +425,28 @@ MetadataStore.prototype = {
   /**
    * Get page metadata (including images) for the given cache_keys.
    * For the missing cache_keys, it simply ignores them and will not
-   * raise any exception. Note that if this function gets called on
-   * a closed or unestablished connection, it returns an empty array
+   * raise any exception. Note that this function throws an exception
+   * if it is called with a closed or unestablished connection
    *
    * @param {Array} cacheKeys an cache key array
    *
    * Returns a promise with the array of retrieved metadata records
    */
   asyncGetMetadataByCacheKey: Task.async(function*(cacheKeys) {
-    const quoted = cacheKeys.map(key => `'${key}'`).join(",");
+    const quoted = cacheKeys.map(key => "?").join(",");
     let metaObjects;
     try {
       metaObjects = yield this.asyncExecuteQuery(
         `SELECT * FROM page_metadata WHERE cache_key IN (${quoted})`,
-        {columns: ["id", "cache_key", "places_url", "title", "type", "description", "media_url", "provider_name"]}
+        {
+          params: cacheKeys,
+          columns: ["id", "cache_key", "places_url", "title", "type", "description", "media_url", "provider_name"]
+        }
       );
     }
     catch (e) {
-      // return immediately if there is any exception gets thrown
-      return [];
+      Cu.reportError("Failed to fetch metadata by cacheKey: ${e.message}");
+      throw e;
     }
 
     // fetch the favicons and images for each metadata object
@@ -462,9 +465,8 @@ MetadataStore.prototype = {
            {columns: ["url", "type", "height", "width", "color"]}
         );
       } catch (e) {
-        // return immediately if there is any exception gets thrown, we do not
-        // want to return the partially fetched metadata entries
-        return [];
+        Cu.reportError("Failed to fetch metadata by cacheKey: ${e.message}");
+        throw e;
       }
       for (let image of images) {
         switch (image.type) {
@@ -501,7 +503,10 @@ MetadataStore.prototype = {
    */
   asyncCacheKeyExists: Task.async(function*(key) {
     try {
-      let metadataLink = yield this.asyncExecuteQuery(`SELECT 1 FROM page_metadata WHERE cache_key = '${key}'`);
+      let metadataLink = yield this.asyncExecuteQuery(
+        "SELECT 1 FROM page_metadata WHERE cache_key = :key",
+        {params: {key}}
+      );
       return metadataLink.length > 0;
     } catch (e) {
       return false;

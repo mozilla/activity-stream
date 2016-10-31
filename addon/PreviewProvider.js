@@ -243,8 +243,7 @@ PreviewProvider.prototype = {
   }),
 
   /**
-   * Find the metadata for each link in the database. Note that it'll try to fetch items
-   * from the cache before querying the metadata store
+   * Find the metadata for each link in the database
    */
   _asyncFindItemsInDB: Task.async(function*(links) {
     let cacheKeys = [];
@@ -256,7 +255,13 @@ PreviewProvider.prototype = {
     });
 
     // Hit the database for the missing keys
-    const linksMetadata = yield this._metadataStore.asyncGetMetadataByCacheKey(cacheKeys);
+    let linksMetadata;
+    try {
+      linksMetadata = yield this._metadataStore.asyncGetMetadataByCacheKey(cacheKeys);
+    } catch (e) {
+      Cu.reportError(`Failed to fetch metadata: ${e.message}`);
+      return [];
+    }
     return linksMetadata;
   }),
 
