@@ -215,7 +215,7 @@ Links.prototype = {
     },
 
     QueryInterface: XPCOMUtils.generateQI([Ci.nsINavHistoryObserver,
-                                           Ci.nsISupportsWeakReference])
+      Ci.nsISupportsWeakReference])
   },
 
   /**
@@ -246,7 +246,7 @@ Links.prototype = {
     },
 
     QueryInterface: XPCOMUtils.generateQI([Ci.nsINavBookmarkObserver,
-                                           Ci.nsISupportsWeakReference])
+      Ci.nsISupportsWeakReference])
   },
 
   /**
@@ -405,8 +405,18 @@ Links.prototype = {
                      LIMIT :limit`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["url", "guid", "favicon", "mimeType", "title", "lastVisitDate",
-                "frecency", "type", "bookmarkGuid", "bookmarkDateCreated"],
+      columns: [
+        "bookmarkDateCreated",
+        "bookmarkGuid",
+        "favicon",
+        "frecency",
+        "guid",
+        "lastVisitDate",
+        "mimeType",
+        "title",
+        "type",
+        "url"
+      ],
       params
     });
 
@@ -497,7 +507,17 @@ Links.prototype = {
                     LIMIT :limit`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["url", "guid", "bookmarkGuid", "title", "lastVisitDate", "frecency", "favicon", "mimeType", "type"],
+      columns: [
+        "bookmarkGuid",
+        "favicon",
+        "frecency",
+        "guid",
+        "lastVisitDate",
+        "mimeType",
+        "title",
+        "type",
+        "url"
+      ],
       params: {limit}
     });
 
@@ -569,8 +589,21 @@ Links.prototype = {
                     LIMIT :limit`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["bookmarkId", "bookmarkTitle", "bookmarkGuid", "bookmarkDateCreated", "url", "guid",
-                "title", "lastVisitDate", "frecency", "type", "lastModified", "favicon", "mimeType"],
+      columns: [
+        "bookmarkDateCreated",
+        "bookmarkGuid",
+        "bookmarkId",
+        "bookmarkTitle",
+        "favicon",
+        "frecency",
+        "guid",
+        "lastModified",
+        "lastVisitDate",
+        "mimeType",
+        "title",
+        "type",
+        "url"
+      ],
       params
     });
 
@@ -606,7 +639,20 @@ Links.prototype = {
                     ORDER BY b.lastModified, lastVisitDate DESC, b.id`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["bookmarkId", "bookmarkTitle", "bookmarkGuid", "url", "guid", "title", "lastVisitDate", "frecency", "type", "lastModified", "favicon", "mimeType"],
+      columns: [
+        "bookmarkGuid",
+        "bookmarkId",
+        "bookmarkTitle",
+        "favicon",
+        "frecency",
+        "guid",
+        "lastModified",
+        "lastVisitDate",
+        "mimeType",
+        "title",
+        "type",
+        "url"
+      ],
       params: {id, type: Bookmarks.TYPE_BOOKMARK}
     });
 
@@ -696,8 +742,22 @@ Links.prototype = {
                     )`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["bookmarkId", "bookmarkTitle", "bookmarkGuid", "bookmarkDateCreated", "url", "guid", "title",
-                "lastVisitDate", "frecency", "visitCount", "type", "lastModified", "favicon", "mimeType"],
+      columns: [
+        "bookmarkDateCreated",
+        "bookmarkGuid",
+        "bookmarkId",
+        "bookmarkTitle",
+        "favicon",
+        "frecency",
+        "guid",
+        "lastModified",
+        "lastVisitDate",
+        "mimeType",
+        "title",
+        "type",
+        "url",
+        "visitCount"
+      ],
       params
     });
 
@@ -844,8 +904,18 @@ Links.prototype = {
                      LIMIT :limit`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["url", "guid", "favicon", "mimeType", "title", "lastVisitDate",
-                "frecency", "type", "bookmarkGuid", "bookmarkDateCreated"],
+      columns: [
+        "bookmarkDateCreated",
+        "bookmarkGuid",
+        "favicon",
+        "frecency",
+        "guid",
+        "lastVisitDate",
+        "mimeType",
+        "title",
+        "type",
+        "url"
+      ],
       params
     });
 
@@ -926,7 +996,12 @@ Links.prototype = {
                     AND datetime(last_visit_date / 1000 / 1000, 'unixepoch') > datetime('now', '-90 days')
                     GROUP BY rev_host`;
 
-    return yield this.executePlacesQuery(sqlQuery, {columns: ["reversedHost", "visitCount"]});
+    return yield this.executePlacesQuery(sqlQuery, {
+      columns: [
+        "reversedHost",
+        "visitCount"
+      ]
+    });
   }),
 
   /**
