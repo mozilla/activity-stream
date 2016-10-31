@@ -275,8 +275,12 @@ TabTracker.prototype = {
     tab.on("close", this.logClose);
 
     // update history and bookmark sizes
-    this._placesQueries.getHistorySize().then(size => {this._tabData.total_history_size = size;});
-    this._placesQueries.getBookmarksSize().then(size => {this._tabData.total_bookmarks = size;});
+    this._placesQueries.getHistorySize()
+      .then(size => {this._tabData.total_history_size = size;})
+      .catch(err => Cu.reportError(err));
+    this._placesQueries.getBookmarksSize()
+      .then(size => {this._tabData.total_bookmarks = size;})
+      .catch(err => Cu.reportError(err));
 
     // Some performance pings are sent before a tab is loaded. Let's make sure we have
     // session id available in advance for those pings.

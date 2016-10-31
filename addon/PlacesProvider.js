@@ -227,7 +227,7 @@ Links.prototype = {
       if (type === Bookmarks.TYPE_BOOKMARK) {
         gLinks.getBookmark({id}).then(bookmark => {
           gLinks.emit("bookmarkAdded", bookmark);
-        });
+        }).catch(err => Cu.reportError(err));
       }
     },
 
@@ -241,7 +241,7 @@ Links.prototype = {
       if (type === Bookmarks.TYPE_BOOKMARK) {
         gLinks.getBookmark({id}).then(bookmark => {
           gLinks.emit("bookmarkChanged", bookmark);
-        });
+        }).catch(err => Cu.reportError(err));
       }
     },
 

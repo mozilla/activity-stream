@@ -238,7 +238,7 @@ SearchProvider.prototype = {
         handleError: () => reject()
       };
       FormHistory.update(ops, callbacks);
-    });
+    }).catch(err => Cu.reportError(err));
     return result;
   }),
 

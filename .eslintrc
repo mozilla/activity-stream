@@ -22,6 +22,7 @@
   "plugins": [
     "json",
     "mozilla",
+    "promise",
     "react"
   ],
   "extends": [
@@ -31,6 +32,9 @@
     "mozilla/components-imports": 1,
     "mozilla/import-globals-from": 1,
     "mozilla/this-top-level-scope": 1,
+
+    "promise/param-names": 2,
+    "promise/catch-or-return": 2,
 
     "react/jsx-boolean-value": [2, "always"],
     "react/jsx-closing-bracket-location": [2, "after-props"],

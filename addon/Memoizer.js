@@ -51,7 +51,7 @@ Memoizer.prototype = {
 
       if (this._cacheEnabled && !replace && this.hasRepr(key, repr)) {
         Services.obs.notifyObservers(null, `${key}-cache`, "hit");
-        return new Promise(resolve => resolve(this.getData(key, repr)));
+        return new Promise(resolve => resolve(this.getData(key, repr))).catch(err => Cu.reportError(err));
       }
       Services.obs.notifyObservers(null, `${key}-cache`, "miss");
       return Task.spawn(function*() {

@@ -176,10 +176,10 @@ PreviewProvider.prototype = {
         }
         getColor(link.favicon, link.url).then(color => {
           resolve(Object.assign({}, link, {favicon_color: color}));
-        }, () => resolve(link));
+        }, () => resolve(link)).catch(err => Cu.reportError(err));
       })
       )
-    );
+    ).catch(err => Cu.reportError(err));
   },
 
   /**
@@ -290,7 +290,7 @@ PreviewProvider.prototype = {
     requestQueue.forEach(requestBundle => {
       promises.push(this._asyncFetchAndStore(requestBundle, event));
     });
-    yield Promise.all(promises);
+    yield Promise.all(promises).catch(err => Cu.reportError(err));
   }),
 
   /**

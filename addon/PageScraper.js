@@ -50,7 +50,11 @@ PageScraper.prototype = {
       }
 
       if (this._shouldSaveMetadata(metadata)) {
-        metadata.images = yield this._computeImageSize(metadata);
+        try {
+          metadata.images = yield this._computeImageSize(metadata);
+        } catch (e) {
+          Cu.reportError(`PageScraper failed to compute image size for ${url}`);
+        }
         this._insertMetadata(metadata);
         this._tabTracker.handlePerformanceEvent(event, "metadataParseSuccess", Date.now() - startTime);
       } else {
