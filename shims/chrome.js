@@ -1,7 +1,7 @@
 class Chrome {
   constructor() {
     this.Cc = {};
-    this.Cu = {import: sinon.spy(), importGlobalProperties: sinon.spy()};
+    this.Cu = {import: sinon.spy(), importGlobalProperties: sinon.spy(), reportError: sinon.spy()};
     this.Ci = {nsIDOMParser: sinon.spy()};
   }
 }

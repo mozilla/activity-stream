@@ -185,11 +185,9 @@ PreviewProvider.prototype = {
   /**
     * Collects all the metadata about the set of links that are requested
     */
-  getLinkMetadata(links, event = {}, skipPreviewRequest = false) {
+  getLinkMetadata(links, event = {}) {
     let processedLinks = this._processLinks(links);
-    if (!skipPreviewRequest) {
-      this._asyncSaveLinks(processedLinks, event);
-    }
+    this._asyncSaveLinks(processedLinks, event);
 
     return this._asyncGetEnhancedLinks(processedLinks, event).then(
       cachedLinks => this._getFaviconColors(cachedLinks));
