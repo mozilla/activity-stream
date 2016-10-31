@@ -53,6 +53,7 @@ const DEFAULT_OPTIONS = {
   recommendationTTL: 3600000, // every hour, get a new recommendation
   shareProvider: null,
   pageScraper: null,
+  pageWorker: null,
   searchProvider: null,
   recommendationProvider: null
 };
@@ -165,8 +166,13 @@ ActivityStreams.prototype = {
   },
 
   _setUpPageWorker(store) {
-    this._pageWorker = new PageWorker({store});
-    this._pageWorker.connect();
+    this._pageWorker = null;
+    if (!this.options.pageWorker) {
+      this._pageWorker = new PageWorker({store});
+      this._pageWorker.connect();
+    } else {
+      this._pageWorker = this.options.pageWorker;
+    }
   },
 
   _initializePerfMeter() {
