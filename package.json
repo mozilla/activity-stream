@@ -23,7 +23,7 @@
     "redux-thunk": "2.1.0",
     "redux-watch": "1.1.1",
     "reselect": "2.5.4",
-    "url-parse": "1.1.6"
+    "url-parse": "1.1.7"
   },
   "devDependencies": {
     "@kadira/storybook": "2.25.1",
