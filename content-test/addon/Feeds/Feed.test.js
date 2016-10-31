@@ -10,7 +10,7 @@ describe("Feed", () => {
   it("should add .getMetadata from options", () => {
     const options = {getMetadata: () => {}};
     const instance = new Feed(options);
-    assert.equal(instance.getMetadata, options.getMetadata);
+    assert.equal(instance.options.getMetadata, options.getMetadata);
   });
   describe("#connectStore", () => {
     it("should set .store", () => {

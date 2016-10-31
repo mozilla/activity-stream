@@ -5,6 +5,7 @@ const {TOP_SITES_LENGTH} = require("common/constants");
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 
 module.exports = class TopSitesFeed extends Feed {
+  // Used by this.refresh
   getData() {
     return PlacesProvider.links.getTopFrecentSites()
       .then(links => this.options.getMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))

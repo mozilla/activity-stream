@@ -1,4 +1,4 @@
-const req = require.context(".", true, /\.test\.js$/);
+const req = require.context(".", true, /HighlightsFeed\.test\.js$/);
 
 const files = req.keys();
 const globals = require("shims/_utils/globals");

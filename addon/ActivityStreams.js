@@ -28,10 +28,8 @@ const createStore = require("common/create-store");
 const PageWorker = require("addon/PageWorker");
 const {PageScraper} = require("addon/PageScraper");
 
-const Feeds = require("addon/Feeds/Feeds.js");
-const TopSitesFeed = require("addon/Feeds/TopSitesFeed");
-const HighlightsFeed = require("addon/Feeds/HighlightsFeed");
-const HistoryFeed = require("addon/Feeds/HistoryFeed");
+const FeedController = require("addon/Feeds/FeedController.js");
+const feeds = require("addon/Feeds/feeds.js");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource:///modules/NewTabURL.jsm");
@@ -87,8 +85,8 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
     options.rng
   );
 
-  this._feeds = new Feeds({
-    feeds: [TopSitesFeed, HighlightsFeed, HistoryFeed],
+  this._feeds = new FeedController({
+    feeds,
     // TODO: move this into Feeds. Requires previewProvider/tabTracker to be independent
     getMetadata: (links, type) => {
       const event = this._tabTracker.generateEvent({source: type});

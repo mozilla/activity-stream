@@ -1,5 +1,5 @@
-const Feeds = require("addon/Feeds/Feeds");
-const Feed = require("addon/Feeds/Feed");
+const FeedController = require("addon/FeedController/FeedController");
+const Feed = require("addon/FeedController/Feed");
 const {createStore, applyMiddleware} = require("redux");
 
 // This is just for creating a fake store
@@ -12,17 +12,17 @@ class TestFeed extends Feed {
   }
 }
 
-describe("Feeds", () => {
+describe("FeedController", () => {
   it("should create instances of options.feeds with getMetadata", () => {
     const getMetadata = sinon.spy();
-    const feeds = new Feeds({feeds: [Feed], getMetadata});
+    const feeds = new FeedController({feeds: [Feed], getMetadata});
     const firstFeed = feeds.feeds[0];
     assert.instanceOf(firstFeed, Feed);
     assert.equal(firstFeed.getMetadata, getMetadata);
   });
   describe("#connectStore", () => {
     it("should set the .store on each feed", () => {
-      const feeds = new Feeds({feeds: [Feed, Feed], getMetadata() {}});
+      const feeds = new FeedController({feeds: [Feed, Feed], getMetadata() {}});
       const store = {};
       feeds.connectStore(store);
       feeds.feeds.forEach(f => assert.equal(f.store, store));
@@ -33,7 +33,7 @@ describe("Feeds", () => {
     let firstFeed;
     let store;
     beforeEach(() => {
-      feeds = new Feeds({feeds: [TestFeed], getMetadata() {}});
+      feeds = new FeedController({feeds: [TestFeed], getMetadata() {}});
       firstFeed = feeds.feeds[0];
       store = createStore(placeholderReducer, applyMiddleware(feeds.reduxMiddleware));
     });
@@ -61,7 +61,7 @@ describe("Feeds", () => {
           });
         }
       }
-      feeds = new Feeds({feeds: [ErrorFeed, TestFeed], getMetadata() {}});
+      feeds = new FeedController({feeds: [ErrorFeed, TestFeed], getMetadata() {}});
       store = createStore(placeholderReducer, applyMiddleware(feeds.reduxMiddleware));
 
       // Make sure the error does not throw

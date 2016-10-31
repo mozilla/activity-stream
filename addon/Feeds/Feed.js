@@ -15,8 +15,8 @@ module.exports = class Feed {
   }
   refresh(reason) {
     return new Promise((resolve, reject) => {
-      if (!this.getData) {
-        reject(new Error("Looks like no getData method was defined"));
+      if (!this.getData || typeof this.getData !== "function") {
+        reject(new Error("You need to declare a .getData function on your feed in order to use .refresh"));
         return;
       }
       if (!this.store) {

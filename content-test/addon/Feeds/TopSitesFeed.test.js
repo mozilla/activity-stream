@@ -11,7 +11,7 @@ describe("TopSitesFeed", () => {
   beforeEach(() => {
     PlacesProvider.links.getTopFrecentSites.reset();
     instance = new TopSitesFeed({getMetadata});
-    sinon.spy(instance, "getMetadata");
+    sinon.spy(instance.options, "getMetadata");
   });
   it("should create a TopSitesFeed", () => {
     assert.instanceOf(instance, TopSitesFeed);
@@ -27,7 +27,7 @@ describe("TopSitesFeed", () => {
     });
     it("should call getMetadata", () =>
       instance.getData().then(() =>
-        assert.calledWith(instance.getMetadata, testLinks, "TOP_FRECENT_SITES_RESPONSE")
+        assert.calledWith(instance.options.getMetadata, testLinks, "TOP_FRECENT_SITES_RESPONSE")
       )
     );
     it("should resolve with an action", () => instance.getData().then(action => {
@@ -37,7 +37,7 @@ describe("TopSitesFeed", () => {
     }));
   });
 
-  describe("#reducer", () => {
+  describe("#onAction", () => {
     let clock;
     beforeEach(() => {
       instance.refresh = sinon.spy();
@@ -47,26 +47,26 @@ describe("TopSitesFeed", () => {
       clock.restore();
     });
     it("should call refresh on APP_INIT", () => {
-      instance.reducer({}, {type: "APP_INIT"});
+      instance.onAction({}, {type: "APP_INIT"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "app was initializing");
     });
     it("should call refresh on RECEIVE_PLACES_CHANGES if there are not enough sites", () => {
       const state = {TopSites: {rows: Array(TOP_SITES_LENGTH - 1).fill("site")}};
-      instance.reducer(state, {type: "RECEIVE_PLACES_CHANGES"});
+      instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "there were not enough sites");
     });
     it("should not call refresh on RECEIVE_PLACES_CHANGES if there are enough sites", () => {
       const state = {TopSites: {rows: Array(TOP_SITES_LENGTH).fill("site")}};
-      instance.reducer(state, {type: "RECEIVE_PLACES_CHANGES"});
+      instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.notCalled(instance.refresh);
     });
     it("should call refresh on RECEIVE_PLACES_CHANGES if .lastUpdated is too old", () => {
       const state = {TopSites: {rows: Array(TOP_SITES_LENGTH).fill("site")}};
       instance.lastUpdated = 0;
       clock.tick(TopSitesFeed.UPDATE_TIME);
-      instance.reducer(state, {type: "RECEIVE_PLACES_CHANGES"});
+      instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "the sites were too old");
     });
@@ -74,7 +74,7 @@ describe("TopSitesFeed", () => {
       const state = {TopSites: {rows: Array(TOP_SITES_LENGTH).fill("site")}};
       instance.lastUpdated = 0;
       clock.tick(TopSitesFeed.UPDATE_TIME - 1);
-      instance.reducer(state, {type: "RECEIVE_PLACES_CHANGES"});
+      instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.notCalled(instance.refresh);
     });
   });

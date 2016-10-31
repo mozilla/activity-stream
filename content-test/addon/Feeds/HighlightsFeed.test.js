@@ -29,7 +29,7 @@ describe("HighlightsFeed", () => {
     });
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
     instance = new HighlightsFeed({getMetadata});
-    sinon.spy(instance, "getMetadata");
+    sinon.spy(instance.options, "getMetadata");
   });
   it("should create a HighlightsFeed", () => {
     assert.instanceOf(instance, HighlightsFeed);
@@ -114,7 +114,13 @@ describe("HighlightsFeed", () => {
     });
   });
   describe("#getWeightedHighlights", () => {
-
+    it("should reject if baselineRecommender is undefined", () => {
+      return instance.getWeightedHighlights()
+        .catch(e => {
+          assert.instanceOf(e, Error);
+          assert.equal(e.message, "Tried to get weighted highlights but there was no baselineRecommender");
+        })
+    });
   });
   describe("#getOldHighlights", () => {
 
@@ -122,7 +128,7 @@ describe("HighlightsFeed", () => {
   describe("#getData", () => {
 
   });
-  describe("#reducer", () => {
+  describe("#onAction", () => {
 
   });
 });

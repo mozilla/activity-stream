@@ -4,6 +4,7 @@ const Feed = require("./Feed");
 const UPDATE_TIME = 1000;
 
 module.exports = class HistoryFeed extends Feed {
+  // Used by this.refresh
   get inHighlightsExperiment() {
     return this.store.getState().Experiments.values.weightedHighlights;
   }
