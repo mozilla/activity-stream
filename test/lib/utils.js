@@ -116,7 +116,13 @@ function getTestActivityStream(options = {}) {
     _asyncParseAndSave() {}
   };
 
+  const mockPageWorker = {
+    connect() {},
+    destroy() {}
+  };
+
   options.pageScraper = mockPageScraper;
+  options.pageWorker = mockPageWorker;
   options.searchProvider = getTestSearchProvider();
   options.recommendationProvider = getTestRecommendationProvider();
   const testTabTracker = new TabTracker(options);
