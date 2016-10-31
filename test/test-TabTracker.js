@@ -520,7 +520,7 @@ exports.test_TabTracker_performance_action_pings = function*(assert) {
   for (let key of additionalKeys) {
     assert.ok(pingData[key], `The ping has the additional key ${key}`);
   }
-  assert.ok(/{[0-9a-f\-]+}/.test(eventData1.msg.data.event_id), "ping has a UUID as an event ID");
+  assert.ok(/{[0-9a-f-]+}/.test(eventData1.msg.data.event_id), "ping has a UUID as an event ID");
   assert.deepEqual(eventData1.msg.data.source, pingData.source, "the ping has the correct source");
   assert.deepEqual(eventData1.msg.data.event, pingData.event, "the ping has the correct event");
   assert.deepEqual(eventData1.msg.data.value, pingData.value, "the ping has the correct value");
