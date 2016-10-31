@@ -172,11 +172,12 @@ class Baseline {
                     .sort(this.sortDescByScore)
                     .filter(entry => entry.score > 0);
 
-    // Decreases score for consecutive items from the same host.
-    results = this.dedupe(results);
+    // Decreases score for similar consecutive items and remove duplicates
+    results = this._adjustConsecutiveEntries(results);
+    let dedupedEntries = this._dedupeSites(results);
 
     // Sort again after adjusting score.
-    return results.sort(this.sortDescByScore).slice(0, INFINITE_SCROLL_THRESHOLD);
+    return dedupedEntries.sort(this.sortDescByScore).slice(0, INFINITE_SCROLL_THRESHOLD);
   }
 
   /**
@@ -297,7 +298,7 @@ class Baseline {
    *
    *  @param {Array} entries - scored and sorted highlight items.
    */
-  dedupe(entries) {
+  _adjustConsecutiveEntries(entries) {
     let penalty = 0.8;
 
     if (entries.length < 2) {
@@ -316,6 +317,24 @@ class Baseline {
     });
 
     return entries;
+  }
+
+  _dedupeSites(entries) {
+    let dedupedEntries = new Map();
+    entries.forEach(item => {
+      let key = this._createDedupeKey(item);
+      if (!dedupedEntries.get(key)) {
+        dedupedEntries.set(key, [item]);
+      }
+    });
+
+    let results = [];
+    dedupedEntries.forEach(item => results.push(item[0]));
+    return results;
+  }
+
+  _createDedupeKey(entry) {
+    return entry.host;
   }
 }
 
