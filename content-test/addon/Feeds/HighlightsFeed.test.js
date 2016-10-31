@@ -114,13 +114,12 @@ describe("HighlightsFeed", () => {
     });
   });
   describe("#getWeightedHighlights", () => {
-    it("should reject if baselineRecommender is undefined", () => {
-      return instance.getWeightedHighlights()
+    it("should reject if baselineRecommender is undefined", () => instance.getWeightedHighlights()
         .catch(e => {
           assert.instanceOf(e, Error);
           assert.equal(e.message, "Tried to get weighted highlights but there was no baselineRecommender");
         })
-    });
+    );
   });
   describe("#getOldHighlights", () => {
 

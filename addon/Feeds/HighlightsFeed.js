@@ -68,7 +68,7 @@ module.exports = class HighlightsFeed extends Feed {
    */
   getWeightedHighlights() {
     if (!this.baselineRecommender) {
-      return Promise.reject(new Error("Tried to get weighted highlights but there was no baselineRecommender"))
+      return Promise.reject(new Error("Tried to get weighted highlights but there was no baselineRecommender"));
     }
     return PlacesProvider.links.getRecentlyVisited()
       .then(links => this.options.getMetadata(links, "WEIGHTED_HIGHLIGHTS_RESPONSE"))
