@@ -41,6 +41,27 @@ const NewTabPage = React.createClass({
     // Note that data may or may not be complete, depending on
     // the state of the master store
     this.props.dispatch(actions.NotifyPerf("NEWTAB_RENDER"));
+
+    // Check for stabilization of state changes if things aren't ready
+    if (this.props.isReady === false) {
+      let lastSize = 0;
+      let lastUpdate = Date.now();
+      setInterval(() => {
+        // Reload the page if things appear to have stabilized
+        let now = Date.now();
+        let newSize = (localStorage.ACTIVITY_STREAM_STATE || "").length;
+        if (newSize === lastSize) {
+          if (now - lastUpdate > 3000) {
+            location.reload();
+          }
+        }
+        // Remember the time of the last state change
+        else {
+          lastSize = newSize;
+          lastUpdate = now;
+        }
+      }, 100);
+    }
   },
   renderRecentActivity() {
     return (
