@@ -15,9 +15,22 @@ Cu.import("resource://gre/modules/ClientID.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Task",
                                   "resource://gre/modules/Task.jsm");
 
-const EXPECTED_KEYS = ["url", "tab_id", "session_duration", "client_id", "unload_reason", "addon_version",
-                       "page", "load_reason", "locale", "total_history_size", "total_bookmarks", "action",
-                       "experiment_id", "session_id"];
+const EXPECTED_KEYS = [
+  "action",
+  "addon_version",
+  "client_id",
+  "experiment_id",
+  "load_reason",
+  "locale",
+  "page",
+  "session_duration",
+  "session_id",
+  "tab_id",
+  "total_bookmarks",
+  "total_history_size",
+  "unload_reason",
+  "url"
+];
 
 let ACTIVITY_STREAMS_URL;
 let app;
@@ -507,7 +520,7 @@ exports.test_TabTracker_performance_action_pings = function*(assert) {
   for (let key of additionalKeys) {
     assert.ok(pingData[key], `The ping has the additional key ${key}`);
   }
-  assert.ok(/{[0-9a-f\-]+}/.test(eventData1.msg.data.event_id), "ping has a UUID as an event ID");
+  assert.ok(/{[0-9a-f-]+}/.test(eventData1.msg.data.event_id), "ping has a UUID as an event ID");
   assert.deepEqual(eventData1.msg.data.source, pingData.source, "the ping has the correct source");
   assert.deepEqual(eventData1.msg.data.event, pingData.event, "the ping has the correct event");
   assert.deepEqual(eventData1.msg.data.value, pingData.value, "the ping has the correct value");

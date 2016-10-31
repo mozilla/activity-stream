@@ -11,7 +11,7 @@ const getVideoURL = {
   },
 
   vimeo(url) {
-    const vimeoRegex = /(http|https)?:\/\/(www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|)(\d+)(?:|\/\?)/;
+    const vimeoRegex = /(http|https)?:\/\/(www\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^/]*)\/videos\/|)(\d+)(?:|\/\?)/;
     let idMatches = url.match(vimeoRegex);
     if (!idMatches) {
       return null;
