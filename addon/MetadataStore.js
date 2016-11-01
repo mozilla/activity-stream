@@ -461,8 +461,11 @@ MetadataStore.prototype = {
            FROM page_metadata AS pm
               JOIN page_metadata_images AS pmi ON pm.id = pmi.metadata_id
               JOIN page_images AS pi ON pi.id = pmi.image_id
-           WHERE pm.id = ${metaObject.id}`,
-           {columns: ["url", "type", "height", "width", "color"]}
+           WHERE pm.id = :metaobject_id`,
+           {
+             params: {metaobject_id: metaObject.id},
+             columns: ["url", "type", "height", "width", "color"]
+           }
         );
       } catch (e) {
         Cu.reportError("Failed to fetch metadata by cacheKey: ${e.message}");
