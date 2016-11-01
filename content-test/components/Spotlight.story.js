@@ -39,21 +39,10 @@ const Container = props => (
 // unclear reasons.  Presumably something to do with faker, tippy-top-sites,
 // lorempixel (used by faker for the images), or Spotlight (aka Highlight)
 // itself.
-
-// Compute the weighted fake spotlight rows.
-// XXX should we be assigning to rawMockData?
-
-// After the code stops checking Experiments.values.weightedHighlights,
-// this next line can go away:
-rawMockData.Experiments.values.weightedHighlights = true;
-
-// If/when weightedHighlights become the default, we can update fake-data.js
-// and remove this line too.
-rawMockData.WeightedHighlights.weightedHighlights = true;
 let mockData = Object.assign({}, rawMockData, selectNewTabSites(rawMockData));
 let fakeSpotlightItems = mockData.Highlights.rows;
 
-storiesOf("Highlight List (weighted)", module)
+storiesOf("Highlight List", module)
   .add("All valid properties", () =>
     <Container>
       <Spotlight length={WEIGHTED_HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems} />

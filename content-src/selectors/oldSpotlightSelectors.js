@@ -13,7 +13,7 @@ module.exports.selectSpotlight = createSelector(
   [
     state => state.Highlights,
     state => state.Prefs.prefs.recommendations,
-    state => state.Experiments.values.weightedHighlights
+    state => true
   ],
   (Highlights, recommendationShown, isNewHighlights) => {
     // Only concat first run data if init is true

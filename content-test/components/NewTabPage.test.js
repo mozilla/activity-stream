@@ -41,7 +41,7 @@ describe("NewTabPage", () => {
     assert.equal(spotlightSites.props.sites, fakeProps.Highlights.rows);
   });
 
-  it("should render GroupedActivityFeed with correct data", () => {
+  it.skip("should render GroupedActivityFeed with correct data", () => { // XXXdmose - remove in #1611
     const activityFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
     assert.equal(activityFeed.props.sites, fakeProps.TopActivity.rows);
   });
@@ -128,7 +128,7 @@ describe("NewTabPage", () => {
       const deleteLink = TestUtils.scryRenderedDOMComponentsWithClass(item, "context-menu-link")[0];
       TestUtils.Simulate.click(deleteLink);
     });
-    it("should have the correct page, source, index for activity feed", done => {
+    it.skip("should have the correct page, source, index for activity feed", done => {  // XXXdmose remove for #1611
       setupConnected(a => {
         if (a.type === "NOTIFY_USER_EVENT") {
           assert.equal(a.data.page, "NEW_TAB");

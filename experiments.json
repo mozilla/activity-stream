@@ -31,7 +31,7 @@
   },
   "weightedHighlights": {
     "name": "Weighted Highlights",
-    "active": true,
+    "active": false,
     "description": "Use weighted highlights instead of the query based ones.",
     "control": {
       "value": false,

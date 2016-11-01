@@ -133,7 +133,7 @@ describe("selectors", () => {
       });
     });
 
-    describe("old Highlights", () => {
+    describe.skip("old Highlights", () => { // XXXdmose remove in #1611
       it("should have highlights of SPOTLIGHT_DEFAULT_LENGTH", () => {
         setup(undefined, false);
         assert.lengthOf(state.Highlights.rows, SPOTLIGHT_DEFAULT_LENGTH);
