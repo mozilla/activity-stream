@@ -33,7 +33,7 @@ function rehydrateFromLocalStorage() {
  * @return {obj}                      Redux store
  */
 module.exports = function createActivityStreamStore(options) {
-  const {incoming, outgoing, logger, rehydrate} = options || {};
+  const {incoming, outgoing, logger, rehydrate, middleware} = options || {};
 
   // Add a channel if incoming and outgoing events were specified
   let channel;
@@ -41,24 +41,28 @@ module.exports = function createActivityStreamStore(options) {
     channel = new Channel({incoming, outgoing});
   }
 
-  const middleware = [
+  const mw = [
     thunk,
     parseUrlMiddleware
   ];
 
   if (channel) {
-    middleware.push(channel.middleware);
+    mw.push(channel.middleware);
+  }
+
+  if (middleware) {
+    mw.push(middleware);
   }
 
   // Logger should be last in the middleware array
   if (logger) {
-    middleware.push(loggerMiddleware);
+    mw.push(loggerMiddleware);
   }
 
   const store = createStore(
     combineReducers(reducers),
     rehydrate ? rehydrateFromLocalStorage() : {},
-    applyMiddleware(...middleware)
+    applyMiddleware(...mw)
   );
 
   if (channel) {
