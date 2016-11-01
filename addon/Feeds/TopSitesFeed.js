@@ -1,7 +1,7 @@
 const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
 const {TOP_SITES_LENGTH} = require("common/constants");
-
+const am = require("common/action-manager");
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 
 module.exports = class TopSitesFeed extends Feed {
@@ -9,15 +9,15 @@ module.exports = class TopSitesFeed extends Feed {
   getData() {
     return PlacesProvider.links.getTopFrecentSites()
       .then(links => this.options.getMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
-      .then(links => ({type: "TOP_FRECENT_SITES_RESPONSE", data: links}));
+      .then(links => (am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links)));
   }
   onAction(state, action) {
     switch (action.type) {
-      case "APP_INIT":
+      case am.type("APP_INIT"):
         // When the app first starts up, refresh the data.
         this.refresh("app was initializing");
         break;
-      case "RECEIVE_PLACES_CHANGES":
+      case am.type("RECEIVE_PLACES_CHANGES"):
         // When a user visits a site, if we don't have enough top sites yet, refresh the data.
         if (state.TopSites.rows.length < TOP_SITES_LENGTH) {
           this.refresh("there were not enough sites");
