@@ -45,7 +45,7 @@ module.exports.selectNewTabSites = createSelector(
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Highlights: Object.assign({}, Highlights, {rows: highlightsRows, weightedHighlights: isNewHighlights}),
       TopActivity: Object.assign({}, History, {rows: historyRows}),
-      isReady: TopSites.init && Highlights.init && History.init && Experiments.init,
+      isReady: TopSites.init && Highlights.init && Experiments.init,
       showRecommendationOption: Experiments.values.recommendedHighlight
     };
   }
