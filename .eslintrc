@@ -28,9 +28,7 @@
     "eslint:recommended"
   ],
   "rules": {
-    "mozilla/components-imports": 1,
-    "mozilla/import-globals-from": 1,
-    "mozilla/this-top-level-scope": 1,
+    "mozilla/import-globals": 1,
 
     "react/jsx-boolean-value": [2, "always"],
     "react/jsx-closing-bracket-location": [2, "after-props"],
