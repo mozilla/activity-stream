@@ -105,7 +105,15 @@ $search-border-color: #EAEAEA;
 $item-shadow: 0 1px 0 0 $faintest-black;
 $item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
 
-$loader-size: 16px;
+$loader-spinner-size: 16px;
+$loader-popup-background-color: #2B2B2B;
+$loader-border-color: #E0E0E0;
+$loader-border-radius: 4px;
+$loader-z-index: 10000;
+$loader-title-color: #3D3D3D;
+$loader-title-font-size: 18px;
+$loader-body-color: #2B2B2B;
+$loader-status-text-color: #6A6A6A;
 
 $context-menu-border-color: rgba(0, 0, 0, 0.2);
 $context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px $context-menu-border-color;

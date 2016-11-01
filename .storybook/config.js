@@ -5,9 +5,11 @@ const {configure} = require("@kadira/storybook");
 require("../data/content/main.css");
 
 function loadStories() {
+  require("../content-test/components/NewTabPage.story");
   require("../content-test/components/Spotlight.story");
   require("../content-test/components/ContextMenu.story");
   require("../content-test/components/Hint.story");
+  require("../content-test/components/Loader.story");
   // require as many stories as you need.
 }
 
