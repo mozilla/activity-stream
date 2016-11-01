@@ -276,7 +276,7 @@ ShareProvider.prototype = {
         }));
       }
       Services.prefs.setBoolPref("social.enabledByActivityStream", true);
-      yield Promise.all(promises);
+      yield Promise.all(promises).catch(err => Cu.reportError(err));
     }
   }),
 
@@ -304,7 +304,7 @@ ShareProvider.prototype = {
           });
         }));
       }
-      yield Promise.all(promises);
+      yield Promise.all(promises).catch(err => Cu.reportError(err));
       Services.prefs.clearUserPref("social.activeProviders");
       Services.prefs.clearUserPref("social.enabledByActivityStream");
     }

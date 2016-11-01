@@ -90,7 +90,7 @@ after(exports, (name, assert, done) => {
   Promise.all([
     ...openTabs.map(tab => new Promise(resolve => tab.close(resolve))),
     new Promise(resolve => srv.stop(resolve))
-  ]).then(done);
+  ]).then(done).catch(err => {throw new Error(err);});
 });
 
 test.run(exports);

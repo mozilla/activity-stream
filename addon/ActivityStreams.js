@@ -118,7 +118,7 @@ ActivityStreams.prototype = {
     this._setUpPageWorker(this._store);
 
     // Wait for any asynchronous initializers to finish before loading app data
-    Promise.all(initializePromises).then(() => this._initializeAppData());
+    Promise.all(initializePromises).then(() => this._initializeAppData()).catch(err => Cu.reportError(err));
   },
 
   /**
@@ -157,7 +157,8 @@ ActivityStreams.prototype = {
       .then(result => {
         const action = am.actions.Response(type, result);
         this._store.dispatch(action);
-      });
+      })
+      .catch(err => Cu.reportError(err));
   },
 
   _initializeAppData() {
@@ -272,27 +273,26 @@ ActivityStreams.prototype = {
       this._store.dispatch(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", []));
     } else {
       provider.getRecentlyVisited().then(highlightsLinks => {
-        let cachedLinks = this._processLinks(highlightsLinks, "WEIGHTED_HIGHLIGHTS_RESPONSE");
-        cachedLinks.then(highlightsWithMeta => {
+        this._processLinks(highlightsLinks, "WEIGHTED_HIGHLIGHTS_RESPONSE").then(highlightsWithMeta => {
           this._store.dispatch(am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", this._baselineRecommender.scoreEntries(highlightsWithMeta)));
-        });
-      });
+        }).catch(err => Cu.reportError(err));
+      }).catch(err => Cu.reportError(err));
     }
 
     // Top Sites
     provider.getTopFrecentSites().then(links => {
       this._processAndDispatchLinks(links, "TOP_FRECENT_SITES_RESPONSE");
-    });
+    }).catch(err => Cu.reportError(err));
 
     // Recent History
     provider.getRecentLinks().then(links => {
       this._processAndDispatchLinks(links, "RECENT_LINKS_RESPONSE");
-    });
+    }).catch(err => Cu.reportError(err));
 
     // Highlights
     provider.getHighlightsLinks().then(links => {
       this._processAndDispatchLinks(links, "HIGHLIGHTS_LINKS_RESPONSE");
-    });
+    }).catch(err => Cu.reportError(err));
 
     // Search
     let state = this._searchProvider.currentState;
@@ -333,7 +333,7 @@ ActivityStreams.prototype = {
     return this._memoized.getAllHistoryItems().then(historyItems => {
       let highlightsCoefficients = this._loadWeightedHighlightsCoefficients();
       this._baselineRecommender = new Recommender(historyItems, {highlightsCoefficients});
-    });
+    }).catch(err => Cu.reportError(err));
   },
 
   _loadWeightedHighlightsCoefficients() {
@@ -390,7 +390,7 @@ ActivityStreams.prototype = {
     let shouldGetRecommendation = isAHighlight && simplePrefs.prefs.recommendations && inExperiment;
     let recommendation = shouldGetRecommendation ? this._recommendationProvider.getRecommendation() : null;
     let linksToProcess = placesLinks.concat([recommendation]).filter(link => link);
-    return this._previewProvider.getLinkMetadata(linksToProcess, event, skipPreviewRequest);
+    return this._previewProvider.getLinkMetadata(linksToProcess, event, skipPreviewRequest).catch(err => Cu.reportError(err));
   },
 
   /**
@@ -630,7 +630,7 @@ ActivityStreams.prototype = {
           this._memoized.getHighlightsLinks(opt),
           this._memoized.getHistorySize(opt),
           this._memoized.getBookmarksSize(opt)
-        ]);
+        ]).catch(err => Cu.reportError(err));
         this._populatingCache.places = false;
         Services.obs.notifyObservers(null, "activity-streams-places-cache-complete", null);
       }
