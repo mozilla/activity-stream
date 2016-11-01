@@ -64,7 +64,7 @@ describe("TopSitesFeed", () => {
     });
     it("should call refresh on RECEIVE_PLACES_CHANGES if .lastUpdated is too old", () => {
       const state = {TopSites: {rows: Array(TOP_SITES_LENGTH).fill("site")}};
-      instance.lastUpdated = 0;
+      instance.state.lastUpdated = 0;
       clock.tick(TopSitesFeed.UPDATE_TIME);
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.calledOnce(instance.refresh);
@@ -72,7 +72,7 @@ describe("TopSitesFeed", () => {
     });
     it("should not call refresh on RECEIVE_PLACES_CHANGES if .lastUpdated is less than update time", () => {
       const state = {TopSites: {rows: Array(TOP_SITES_LENGTH).fill("site")}};
-      instance.lastUpdated = 0;
+      instance.state.lastUpdated = 0;
       clock.tick(TopSitesFeed.UPDATE_TIME - 1);
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.notCalled(instance.refresh);

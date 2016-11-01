@@ -571,24 +571,13 @@ exports.test_TabTracker_latency = function*(assert) {
 
 exports.test_TabTracker_History_And_Bookmark_Reporting = function*(assert) {
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
+  app._store.dispatch({type: "PLACES_STATS_UPDATED", data: {historySize: 0, bookmarksSize: 0}});
   let pingData = yield openTestTab(ACTIVITY_STREAMS_URL);
   checkLoadUnloadReasons(assert, [pingData], ["newtab"], ["close"], true);
   assert.equal(pingData.total_history_size, 0, "Nothing in history");
   assert.equal(pingData.total_bookmarks, 0, "Nothing in bookmarks");
 
-  // add visits and bookmark them
-  yield PlacesTestUtils.insertAndBookmarkVisit("https://mozilla1.com/0");
-  yield PlacesTestUtils.insertAndBookmarkVisit("https://mozilla2.com/1");
-
-  // trigger query re-caching and wait for its completion
-  yield new Promise(resolve => {
-    function onCacheComplete() {
-      Services.obs.removeObserver(onCacheComplete, "activity-streams-places-cache-complete");
-      resolve();
-    }
-    Services.obs.addObserver(onCacheComplete, "activity-streams-places-cache-complete", false);
-    app._handlePlacesChanges("bookmark");
-  });
+  app._store.dispatch({type: "PLACES_STATS_UPDATED", data: {historySize: 2, bookmarksSize: 2}});
 
   pingData = yield openTestTab(ACTIVITY_STREAMS_URL);
   assert.equal(pingData.total_history_size, 2, "2 new visits history");
@@ -707,6 +696,7 @@ before(exports, function*() {
   });
   app._memoizer.reset();
   ACTIVITY_STREAMS_URL = app.appURLs[1];
+  app._store.dispatch({type: "PLACES_STATS_UPDATED", data: {historySize: 0, bookmarksSize: 0}});
 });
 
 after(exports, () => {
