@@ -108,7 +108,7 @@ ActivityStreams.prototype = {
     this._initializePageScraper(this._experimentProvider, this._previewProvider, this._tabTracker);
     this._initializeRecommendationProvider(this._experimentProvider, this._previewProvider, this._tabTracker);
     this._initializeShareProvider(this._tabTracker);
-    initializePromises.push(this._initializeBaselineRecommender(this._experimentProvider));
+    initializePromises.push(this._initializeBaselineRecommender());
     this._initializePrefProvider();
 
     this._setupPageMod();
@@ -189,13 +189,11 @@ ActivityStreams.prototype = {
     this._memoized = this._get_memoized(this._memoizer);
   },
 
-  _initializeBaselineRecommender(experimentProvider) {
-    // This is instantiated with a recommender based on weights if pref is true. Used to score highlights.
+  _initializeBaselineRecommender() {
+    // This is instantiated with a recommender based on weights which
+    // is used to score highlights.
     this._baselineRecommender = null;
-    if (experimentProvider.data.weightedHighlights) {
-      return this._loadRecommender();
-    }
-    return Promise.resolve();
+    return this._loadRecommender();
   },
 
   _initializePreviewProvier(experimentProvider, metadataStore, tabTracker) {
@@ -321,7 +319,6 @@ ActivityStreams.prototype = {
 
   /**
    * Instantiate the recommender that scores the highlights items.
-   * Called when weightedHighlights prefs is toggled to true.
    * @private
    */
   _loadRecommender() {
@@ -569,20 +566,18 @@ ActivityStreams.prototype = {
   },
 
   /**
-   * Listen for changes to weighted highlights pref or associated options.
+   * Listen for changes to weighted highlights prefs.
    *
    * @param {String} prefName - name of the pref that changed.
    * @private
    */
   _weightedHiglightsListeners(prefName) {
-    // Update the feature weights only if we are doing weighted highlights.
-    if (prefName === "weightedHighlightsCoefficients" && simplePrefs.prefs.weightedHighlights) {
+    // Update the feature weights
+    if (prefName === "weightedHighlightsCoefficients") {
       let highlightsCoefficients = this._loadWeightedHighlightsCoefficients();
       this._baselineRecommender.updateOptions({highlightsCoefficients});
     }
-    if (prefName === "weightedHighlights") {
-      this._loadRecommender();
-    }
+    this._loadRecommender();
   },
 
   /**
