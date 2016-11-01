@@ -5,7 +5,6 @@ const {configure} = require("@kadira/storybook");
 require("../data/content/main.css");
 
 function loadStories() {
-  require("../content-test/components/Spotlight-unweighted.story");
   require("../content-test/components/Spotlight.story");
   require("../content-test/components/ContextMenu.story");
   require("../content-test/components/Hint.story");

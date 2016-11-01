@@ -2,7 +2,6 @@ const {createSelector} = require("reselect");
 const firstRunData = require("lib/first-run-data");
 const selectAndDedupe = require("selectors/selectAndDedupe");
 const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
-const {selectSpotlight} = require("selectors/oldSpotlightSelectors");
 const {SPOTLIGHT_DEFAULT_LENGTH, WEIGHTED_HIGHLIGHTS_LENGTH, TOP_SITES_LENGTH} = require("common/constants");
 
 /**
@@ -22,10 +21,10 @@ module.exports.justDispatch = (() => ({}));
  */
 module.exports.selectNewTabSites = createSelector(
   [
-    state => state.Experiments.values.weightedHighlights,
-    state => (state.Experiments.values.weightedHighlights ? state.WeightedHighlights : selectSpotlight(state)),
+    state => true,
+    state => state.WeightedHighlights, // XXXdmose remove selectSpotlight code itself for #1611
     state => state.TopSites,
-    state => (state.Experiments.values.weightedHighlights ? Object.assign({}, state.History, {rows: []}) : state.History),
+    state => Object.assign({}, state.History, {rows: []}), // XXXdmose remove state.History and whatever code implemented that #1611
     state => state.Experiments
   ],
   (isNewHighlights, Highlights, TopSites, History, Experiments) => {
