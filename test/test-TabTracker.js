@@ -694,7 +694,6 @@ before(exports, function*() {
     },
     rng: () => 0.1
   });
-  app._memoizer.reset();
   ACTIVITY_STREAMS_URL = app.appURLs[1];
   app._store.dispatch({type: "PLACES_STATS_UPDATED", data: {historySize: 0, bookmarksSize: 0}});
 });
