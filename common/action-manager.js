@@ -7,7 +7,7 @@ const am = new ActionManager([
   "HIGHLIGHTS_RESPONSE",
   "TOP_FRECENT_SITES_REQUEST",
   "TOP_FRECENT_SITES_RESPONSE",
-  "RECEIVE_CURRENT_ENGINE",
+  "SEARCH_CURRENT_ENGINE_UPDATED",
   "RECEIVE_BOOKMARK_ADDED",
   "RECEIVE_BOOKMARK_REMOVED",
   "RECEIVE_PLACES_CHANGES",
@@ -24,9 +24,7 @@ const am = new ActionManager([
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_HISTORY_DELETE_CANCELLED",
   "NOTIFY_PERFORM_SEARCH",
-  "SEARCH_STATE_REQUEST",
-  "SEARCH_STATE_RESPONSE",
-  "SEARCH_UISTRINGS_REQUEST",
+  "SEARCH_STATE_UPDATED",
   "SEARCH_UISTRINGS_RESPONSE",
   "SEARCH_SUGGESTIONS_REQUEST",
   "SEARCH_SUGGESTIONS_RESPONSE",
@@ -54,7 +52,8 @@ const am = new ActionManager([
   "ENABLE_ALL_HINTS",
   "DISABLE_HINT",
   "APP_INIT",
-  "PLACES_STATS_UPDATED"
+  "PLACES_STATS_UPDATED",
+  "OPEN_NEW_TAB"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -125,14 +124,6 @@ function RequestHighlightsLinks() {
 
 function RequestInitialPrefs() {
   return RequestExpect("PREFS_REQUEST", "PREFS_RESPONSE");
-}
-
-function RequestSearchState() {
-  return RequestExpect("SEARCH_STATE_REQUEST", "SEARCH_STATE_RESPONSE");
-}
-
-function RequestSearchStrings() {
-  return RequestExpect("SEARCH_UISTRINGS_REQUEST", "SEARCH_UISTRINGS_RESPONSE");
 }
 
 function RequestSearchSuggestions(data) {
@@ -268,8 +259,6 @@ am.defineActions({
   RequestExpect,
   RequestHighlightsLinks,
   RequestInitialPrefs,
-  RequestSearchState,
-  RequestSearchStrings,
   RequestSearchSuggestions,
   RequestExperiments,
   NotifyBlockURL,
