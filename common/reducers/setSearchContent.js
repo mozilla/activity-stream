@@ -26,7 +26,7 @@ module.exports = function Search(type) {
       return Object.assign({}, prevState, state);
     }
     switch (action.type) {
-      case am.type("SEARCH_STATE_RESPONSE"):
+      case am.type("SEARCH_STATE_UPDATED"):
         state.currentEngine = JSON.parse(action.data.currentEngine);
         state.engines = action.data.engines.map(engine => ({
           name: engine.name,

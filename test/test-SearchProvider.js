@@ -33,27 +33,51 @@ exports.test_SearchProvider_state = function(assert) {
   ["name", "iconBuffer"].forEach(engineProps);
 };
 
-exports.test_SearchProvider_observe = function*(assert) {
+exports.test_SearchProvider_observe_current = function*(assert) {
   // test that the event emitter is working by setting a new current engine "TestSearch2"
   let engineName = "TestSearch2";
   gSearchProvider.init();
   // event emitter will fire when current engine is changed
   let promise = new Promise(resolve => {
     let handler = (name, data) => {
-      gSearchProvider.off("browser-search-engine-modified", handler);
-      resolve([name, data.name]);
+      if (data === "engine-current") {
+        gSearchProvider.off("browser-search-engine-modified", handler);
+        resolve([name, data]);
+      }
     };
     gSearchProvider.on("browser-search-engine-modified", handler);
   });
 
   // set a new current engine
   Services.search.currentEngine = Services.search.getEngineByName(engineName);
-  let expectedEngineName = Services.search.currentEngine.name;
+  let expectedEventData = "engine-current";
 
   // emitter should fire and return the new engine
-  let [eventName, actualEngineName] = yield promise;
+  let [eventName, actualEventData] = yield promise;
   assert.equal(eventName, "browser-search-engine-modified", `emitter sent the correct event ${eventName}`);
-  assert.equal(expectedEngineName, actualEngineName, `emitter set the correct engine ${expectedEngineName}`);
+  assert.equal(expectedEventData, actualEventData, `emitter set the correct engine ${expectedEventData}`);
+  gSearchProvider.uninit();
+};
+
+exports.test_SearchProvider_observe_change = function*(assert) {
+  gSearchProvider.init();
+  let promise = new Promise(resolve => {
+    let handler = (name, data) => {
+      if (data === "engine-changed") {
+        gSearchProvider.off("browser-search-engine-modified", handler);
+        resolve([name, data]);
+      }
+    };
+    gSearchProvider.on("browser-search-engine-modified", handler);
+  });
+  // change the hidden status of the current engine
+  Services.search.currentEngine.hidden = true;
+  let expectedEventData = "engine-changed";
+
+  // emitter should fire and return the new engine
+  let [eventName, actualEventData] = yield promise;
+  assert.equal(eventName, "browser-search-engine-modified", `emitter sent the correct event ${eventName}`);
+  assert.equal(expectedEventData, actualEventData, `emitter set the correct engine ${expectedEventData}`);
   gSearchProvider.uninit();
 };
 
