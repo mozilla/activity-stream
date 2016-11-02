@@ -23,6 +23,7 @@ function TabTracker(options) {
   this._tabData = {};
   this._clientID = options.clientID;
   this._shieldVariant = options.shield_variant;
+  this._testPilotVersion = options.tp_version;
   this.onOpen = this.onOpen.bind(this);
 
   this._onPrefChange = this._onPrefChange.bind(this);
@@ -87,6 +88,9 @@ TabTracker.prototype = {
     }
     if (this._shieldVariant) {
       payload.shield_variant = this._shieldVariant;
+    }
+    if (this._testPilotVersion) {
+      payload.tp_version = this._testPilotVersion;
     }
   },
 
