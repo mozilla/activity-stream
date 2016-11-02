@@ -22,7 +22,6 @@ const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 function TabTracker(options) {
   this._tabData = {};
   this._clientID = options.clientID;
-  this._shieldVariant = options.shield_variant;
   this.onOpen = this.onOpen.bind(this);
 
   this._onPrefChange = this._onPrefChange.bind(this);
@@ -84,9 +83,6 @@ TabTracker.prototype = {
     payload.session_id = this._tabData.session_id;
     if (this._experimentID) {
       payload.experiment_id = this._experimentID;
-    }
-    if (this._shieldVariant) {
-      payload.shield_variant = this._shieldVariant;
     }
   },
 
