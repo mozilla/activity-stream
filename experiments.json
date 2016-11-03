@@ -40,7 +40,7 @@
     "variant": {
       "id": "exp-003-weighted-highlights",
       "value": true,
-      "threshold": 0.4,
+      "threshold": 0.3,
       "description": "Use the score based highlights."
     }
   },
