@@ -1,7 +1,6 @@
 const faker = require("faker");
 const moment = require("moment");
 const tiptop = require("tippy-top-sites");
-const {selectSpotlight} = require("selectors/oldSpotlightSelectors");
 
 const BASE_TIP_TOP_FAVICON_URL = "favicons/images/";
 
@@ -131,13 +130,7 @@ function createSpotlightItem(options = {}) {
   if (!options.images) {
     options.images = 1;
   }
-  const site = createSite(options);
-  return selectSpotlight({
-    Highlights: {rows: [site]},
-    WeightedHighlights: {rows: [site]},
-    Experiments: {values: {}},
-    Prefs: {prefs: {}}
-  }).rows[0];
+  return createSite(options);
 }
 
 function range(min, max, increment = 1) {

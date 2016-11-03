@@ -1,9 +1,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {selectNewTabSites} = require("selectors/selectors");
-const {selectSpotlight} = require("selectors/oldSpotlightSelectors");
 const {SpotlightItem} = require("components/Spotlight/Spotlight");
-const GroupedActivityFeed = require("components/ActivityFeed/ActivityFeed");
 const TopSites = require("components/TopSites/TopSites");
 const faker = require("test/faker");
 const sizeof = require("object-sizeof");
@@ -30,7 +28,7 @@ function Viewer(props) {
 const DebugPage = React.createClass({
   getInitialState() {
     return {
-      component: "Spotlight",
+      component: "TopSites",
       dataSource: "Highlights",
       highlightData: [
         faker.createSpotlightItem(),
@@ -66,9 +64,7 @@ const DebugPage = React.createClass({
             <div className="form-group">
               <label>UI Component</label>
               <select value={this.state.component} onChange={e => this.setState({component: e.target.value})}>
-                <option value={"Spotlight"}>Spotlight</option>
                 <option value={"TopSites"}>Top Sites</option>
-                <option value={"ActivityFeed"}>Activity Feed</option>
               </select>
             </div>
             <div className="form-group">
@@ -79,25 +75,8 @@ const DebugPage = React.createClass({
             </div>
           </div>
           <div>
-            {this.state.component === "Spotlight" &&
-              <div className="spotlight">
-                {selectSpotlight({
-                  Highlights: this.props.raw[this.state.dataSource],
-                  WeightedHighlights: this.props.raw[this.state.dataSource],
-                  Prefs: this.props.raw.Prefs,
-                  Experiments: this.props.raw.Experiments
-                }).rows.map((item, i) =>
-                  (<SpotlightItem key={i} {...item} />))
-                }
-              </div>
-            }
             {this.state.component === "TopSites" &&
               <TopSites
-                sites={this.props.raw[this.state.dataSource].rows}
-                length={this.props.raw[this.state.dataSource].rows.length} />
-            }
-            {this.state.component === "ActivityFeed" &&
-              <GroupedActivityFeed
                 sites={this.props.raw[this.state.dataSource].rows}
                 length={this.props.raw[this.state.dataSource].rows.length} />
             }

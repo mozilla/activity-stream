@@ -5,19 +5,9 @@ module.exports = {
   // Number of top sites
   TOP_SITES_LENGTH: 6,
 
-  // Number of large Highlight tiles, pre-weighted hightlights.  Should go away
-  // when unweighted highlights go away.
-  SPOTLIGHT_DEFAULT_LENGTH: 3,
-
   // Number of large Highlight titles in the new Highlights world, including
   // all rows.
   WEIGHTED_HIGHLIGHTS_LENGTH: 9,
-
-  // Max number of Recent Activity/More Highlights section.
-  MAX_TOP_ACTIVITY_ITEMS: 10,
-
-  // Time interval for for frecent links query in milliseconds (72 hours).
-  FRECENT_RESULTS_TIME_LIMIT: 72 * 60 * 60 * 1000,
 
   // Thresholds for highlights query
   HIGHLIGHTS_THRESHOLDS: {

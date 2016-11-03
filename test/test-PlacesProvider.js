@@ -150,9 +150,6 @@ exports.test_Links_getHighlightsLinks = function*(assert) {
   assert.equal(links.length, 0, "empty history yields empty links");
   yield PlacesTestUtils.addVisits(visits);
 
-  let recentLinks = yield provider.getRecentLinks();
-  assert.equal(recentLinks.length, visits.length, "number of links added is the same as obtain by getRecentLinks");
-
   // note: this is a sanity test because the query may change
   links = yield provider.getHighlightsLinks();
   assert.equal(links.length, 1, "getHighlightsLinks filters links by date and hostname");
@@ -229,118 +226,6 @@ exports.test_Links_getRecentlyVisited_old_links = function*(assert) {
   assert.equal(links.length, LINKS_QUERY_LIMIT, "query should retrieve the old links if nothing recent is available");
 };
 
-exports.test_Links_getRecentLinks = function*(assert) {
-  let provider = PlacesProvider.links;
-  let {
-    TRANSITION_TYPED,
-    TRANSITION_LINK
-  } = PlacesUtils.history;
-
-  let visits = [
-    // frecency 200
-    {uri: NetUtil.newURI("https://mozilla1.com/0"), visitDate: timeDaysAgo(1), transition: TRANSITION_TYPED},
-    // sort by url, frecency 200
-    {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeDaysAgo(0), transition: TRANSITION_TYPED},
-    // sort by last visit date, frecency 200
-    {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeDaysAgo(2), transition: TRANSITION_TYPED},
-    // sort by frecency, frecency 10
-    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeDaysAgo(2), transition: TRANSITION_LINK}
-  ];
-
-  let links = yield provider.getRecentLinks();
-  assert.equal(links.length, 0, "empty history yields empty links");
-
-  let base64URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAA" +
-    "AAAA6fptVAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==";
-
-  let faviconData = {
-    "https://mozilla1.com/0": null,
-    "https://mozilla2.com/1": null,
-    "https://mozilla3.com/2": base64URL,
-    "https://mozilla4.com/3": null
-  };
-  yield PlacesTestUtils.addVisits(visits, faviconData);
-  yield PlacesTestUtils.addFavicons(faviconData);
-
-  // insert a bookmark
-  let bookmark = yield Bookmarks.insert({url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});
-
-  links = yield provider.getRecentLinks();
-  assert.equal(links.length, visits.length, "number of links added is the same as obtain by getRecentLinks");
-  assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
-  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-nd link");
-  assert.equal(links[2].url, "https://mozilla3.com/2", "Expected 3-rd link");
-  assert.equal(links[3].url, "https://mozilla4.com/3", "Expected 4-th link");
-  assert.equal(faviconData[links[2].url], links[2].favicon, "favicon data is stored as expected");
-  assert.equal(links[1].bookmarkGuid, bookmark.guid, "expected bookmark guid for second link");
-  assert.equal(links[1].bookmarkDateCreated, new Date(bookmark.dateAdded).getTime(), "expected bookmark date for second link");
-  assert.ok(isVisitDateOK(links[1].lastVisitDate), "visit date within expected range");
-  assert.ok(!(links[0].bookmark || links[2].bookmark || links[3].bookmark), "other bookmarks are empty");
-
-  // test beforeDate functionality
-  let theDate = timeDaysAgo(1) / 1000 - 1000;
-  links = yield provider.getRecentLinks({beforeDate: theDate});
-  assert.equal(links.length, 2, "should only see two links inserted 2 days ago");
-  assert.equal(links[0].url, "https://mozilla3.com/2", "Expected 1-st link");
-  assert.equal(links[1].url, "https://mozilla4.com/3", "Expected 2-nd link");
-
-  // test afterDate functionality
-  links = yield provider.getRecentLinks({afterDate: theDate});
-  assert.equal(links.length, 2, "should only see two links inserted after the date");
-  assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
-  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-nd link");
-
-  // test filter functionality
-  links = yield provider.getRecentLinks({filter: ""});
-  assert.equal(links.length, 4, "should match all links");
-  assert.equal(links[0].filter, "", "should include filter");
-  links = yield provider.getRecentLinks({filter: "a"});
-  assert.equal(links.length, 4, "should match all links");
-  assert.equal(links[0].filter, "a", "should include filter");
-  links = yield provider.getRecentLinks({filter: "a1"});
-  assert.equal(links.length, 1, "should match just mozilla1");
-  assert.equal(links[0].filter, "a1", "should include filter");
-  links = yield provider.getRecentLinks({filter: "a 1"});
-  assert.equal(links.length, 2, "should match mozilla1 and /1");
-  assert.equal(links[0].filter, "a 1", "should include filter");
-};
-
-exports.test_Links_getFrecentLinks = function*(assert) {
-  let provider = PlacesProvider.links;
-  let {
-    TRANSITION_TYPED,
-    TRANSITION_LINK
-  } = PlacesUtils.history;
-
-  let visits = [
-    // has bookmark
-    {uri: NetUtil.newURI("https://mozilla5.com/4"), visitDate: timeDaysAgo(2), transition: TRANSITION_LINK},
-    // frecency 200
-    {uri: NetUtil.newURI("https://mozilla1.com/0"), visitDate: timeDaysAgo(1), transition: TRANSITION_TYPED},
-    // sort by url, frecency 200
-    {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeDaysAgo(0), transition: TRANSITION_TYPED},
-    // sort by last visit date, frecency 200
-    {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeDaysAgo(4), transition: TRANSITION_TYPED},
-    // sort by frecency, frecency 10
-    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeDaysAgo(0), transition: TRANSITION_LINK}
-  ];
-
-  let bookmarkItem = {url: "https://mozilla5.com/4", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK};
-
-  let links = yield provider.getRecentLinks();
-  assert.equal(links.length, 0, "empty history yields empty links");
-
-  yield PlacesTestUtils.addVisits(visits);
-  yield Bookmarks.insert(bookmarkItem);
-
-  links = yield provider.getFrecentLinks();
-  assert.equal(links.length, 4, "exepect to find 4 links");
-  assert.equal(links[0].url, "https://mozilla5.com/4", "Expected 1st link");
-  assert.equal(links[1].url, "https://mozilla2.com/1", "Expected 2nd link");
-  assert.equal(links[2].url, "https://mozilla1.com/0", "Expected 3rd link");
-  assert.equal(links[3].url, "https://mozilla4.com/3", "Expected 4th link");
-};
-
 exports.test_Links_asyncAddBookmark = function*(assert) {
   let provider = PlacesProvider.links;
 
@@ -349,8 +234,6 @@ exports.test_Links_asyncAddBookmark = function*(assert) {
     "https://mozilla1.com/1"
   ];
 
-  let links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 0, "empty bookmarks yields empty links");
   let bookmarksSize = yield provider.getBookmarksSize();
   assert.equal(bookmarksSize, 0, "empty bookmarks yields 0 size");
 
@@ -358,8 +241,6 @@ exports.test_Links_asyncAddBookmark = function*(assert) {
     yield provider.asyncAddBookmark(url);
   }
 
-  links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 2, "2 bookmarks on bookmark list");
   bookmarksSize = yield provider.getBookmarksSize();
   assert.equal(bookmarksSize, 2, "size 2 for 2 bookmarks added");
 };
@@ -372,8 +253,6 @@ exports.test_Links_asyncDeleteBookmark = function*(assert) {
     {url: "https://mozilla1.com/1", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK}
   ];
 
-  let links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 0, "empty bookmarks yields empty links");
   let bookmarksSize = yield provider.getBookmarksSize();
   assert.equal(bookmarksSize, 0, "empty bookmarks yields 0 size");
 
@@ -381,17 +260,14 @@ exports.test_Links_asyncDeleteBookmark = function*(assert) {
     yield Bookmarks.insert(placeInfo);
   }
 
-  links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 2, "2 bookmarks on bookmark list");
   bookmarksSize = yield provider.getBookmarksSize();
   assert.equal(bookmarksSize, 2, "size 2 for 2 bookmarks added");
 
-  let bookmarkGuid = links[0].bookmarkGuid;
+  let bookmarkGuid = yield new Promise(resolve => Bookmarks.fetch(
+    {url: bookmarks[0].url}, bookmark => resolve(bookmark.guid)));
   let deleted = yield provider.asyncDeleteBookmark(bookmarkGuid);
   assert.equal(deleted.guid, bookmarkGuid, "the correct bookmark was deleted");
 
-  links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 1, "1 bookmark after deleting");
   bookmarksSize = yield provider.getBookmarksSize();
   assert.equal(bookmarksSize, 1, "size 1 after deleting");
 };
@@ -410,153 +286,20 @@ exports.test_Links_deleteHistoryLink = function*(assert) {
     {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeDaysAgo(0), transition: TRANSITION_LINK}
   ];
 
-  let links = yield provider.getRecentLinks();
-  assert.equal(links.length, 0, "empty history yields empty links");
+  let size = yield provider.getHistorySize();
+  assert.equal(size, 0, "empty history has 0 size");
 
   yield PlacesTestUtils.addVisits(visits);
-  links = yield provider.getRecentLinks();
 
-  assert.equal(links.length, visits.length, "number of links added is the same as obtain by getRecentLinks");
-  assert.equal(links[0].url, "https://mozilla2.com/1", "Expected 1-st link");
-  assert.equal(links[1].url, "https://mozilla1.com/0", "Expected 2-nd link");
+  size = yield provider.getHistorySize();
+  assert.equal(size, 2, "expected history size");
 
   // delete a link
   let deleted = yield provider.deleteHistoryLink("https://mozilla2.com/1");
   assert.equal(deleted, true, "link is deleted");
   // ensure that there's only one link left
-  links = yield provider.getRecentLinks();
-  assert.equal(links.length, 1, "only one link is left in history");
-  assert.equal(links[0].url, "https://mozilla1.com/0", "Expected 2-nd link");
-  assert.ok(isVisitDateOK(links[0].lastVisitDate), "visit date within expected range");
-};
-
-exports.test_Links_getRecentBookmarks_Order = function*(assert) {
-  let provider = PlacesProvider.links;
-  let {
-    TRANSITION_TYPED,
-    TRANSITION_LINK
-  } = PlacesUtils.history;
-  provider.init();
-
-  /** start setup **/
-
-  let timeEarlier = timeDaysAgo(0);
-  let timeLater = timeDaysAgo(2);
-
-  let visits = [
-    // frecency 200
-    {uri: NetUtil.newURI("https://mozilla1.com/0"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
-    // sort by url, frecency 200
-    {uri: NetUtil.newURI("https://mozilla2.com/1"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
-    // sort by last visit date, frecency 200
-    {uri: NetUtil.newURI("https://mozilla3.com/2"), visitDate: timeLater, transition: TRANSITION_TYPED},
-    // sort by frecency, frecency 10
-    {uri: NetUtil.newURI("https://mozilla4.com/3"), visitDate: timeLater, transition: TRANSITION_LINK}
-  ];
-
-  let bookmarks = [
-    {url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
-    {url: "https://mozilla1.com/1", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK},
-    {url: "https://mozilla1.com/2", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK}
-  ];
-
-  let bookmarkURLSet = new Set(bookmarks.map(bm => bm.url));
-
-  let links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 0, "empty bookmarks yields empty links");
-  let bookmarksSize = yield provider.getBookmarksSize();
-  assert.equal(bookmarksSize, 0, "empty bookmarks yields 0 size");
-
-  let base64URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAA" +
-    "AAAA6fptVAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==";
-
-  let faviconData = {
-    "https://mozilla1.com/0": null,
-    "https://mozilla2.com/1": null,
-    "https://mozilla3.com/2": base64URL
-  };
-  yield PlacesTestUtils.addVisits(visits);
-  yield PlacesTestUtils.addFavicons(faviconData);
-
-  /** end setup **/
-
-  let bookmarkNotificationPromise = new Promise((resolve, reject) => {
-    let addCount = 0;
-    let newBookmarks = [];
-    function handleEvent(eventName, data) {
-      if (!bookmarkURLSet.has(data.url)) {
-        reject();
-      }
-      addCount++;
-      newBookmarks.push(data);
-      if (bookmarks.length === addCount) {
-        provider.off("bookmarkAdded", handleEvent);
-        // Note: bookmarks are sorted by bookmarkDateCreated which depends on the order of calls made to Bookmarks.insert().
-        // Thus, newBookmarks reversed represents the correct sorted order of generated bookmarks.
-        resolve(newBookmarks.reverse());
-      }
-    }
-    provider.on("bookmarkAdded", handleEvent);
-  });
-
-  let folderInfo = {parentGuid: "root________", title: "A FOLDER", type: Bookmarks.TYPE_FOLDER};
-  let folder = yield Bookmarks.insert(folderInfo);
-
-  for (let placeInfo of bookmarks) {
-    yield Bookmarks.insert(placeInfo);
-  }
-  let createdBookmarks = yield bookmarkNotificationPromise;
-
-  /**
-   * modify lastModified for bookmarks to ensure order
-   * is from most recent to least recent.
-   * Synchronous!
-   */
-  let modifiedTime = timeDaysAgo(0);
-  let conn = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
-  for (let bm of createdBookmarks) {
-    // we change the modified date based on creation dates, because due to asynchronicity, we don't know what got created first
-    let stmt = conn.createStatement(`UPDATE moz_bookmarks SET lastModified = ${modifiedTime} WHERE guid = "${bm.bookmarkGuid}"`);
-    stmt.executeStep();
-    // decrement modifiedTime by daily microseconds
-    modifiedTime -= (24 * 60 * 60 * 1000 * 1000);
-  }
-
-  links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, createdBookmarks.length, "number of bookmarks added is the same as obtain by getRecentBookmarks");
-
-  for (let i = 0; i < links.length; i++) {
-    assert.equal(links[i].url, createdBookmarks[i].url, "links are obtained in the expected order");
-    assert.equal(faviconData[links[i].url], links[i].favicon, "favicon data is stored as expected");
-    assert.ok(!links[i].lastVisitDate || isVisitDateOK(links[i].lastVisitDate), "set visit date is within expected range");
-    assert.ok(isVisitDateOK(links[i].lastModified), "lastModified date is within expected range");
-    assert.ok(isVisitDateOK(links[i].bookmarkDateCreated), "bookmarkDateCreated date is within expected range");
-  }
-
-  // test beforeDate and afterDate functionality
-  // set yesterday timestamp in milliseconds
-  let yesterday = timeDaysAgo(1) / 1000 - 1000;
-
-  // this should select bookmarks modified after yesterday
-  links = yield provider.getRecentBookmarks({afterDate: yesterday});
-  assert.equal(links.length, 2, "Two bookmarks were modifed since yesterday");
-  for (let i = 0; i < links.length; i++) {
-    assert.ok(links[i].lastModified > yesterday, "bookmark lastModifed date is after yesterday");
-  }
-
-  // this should select bookmarks modified before yesterday
-  links = yield provider.getRecentBookmarks({beforeDate: yesterday});
-  assert.equal(links.length, 1, "One bookmark was modifed before yesterday");
-  for (let i = 0; i < links.length; i++) {
-    assert.ok(links[i].lastModified < yesterday, "bookmark lastModifed date is before yesterday");
-  }
-
-  bookmarksSize = yield provider.getBookmarksSize();
-  assert.equal(bookmarksSize, createdBookmarks.length, "expected count of bookmarks");
-
-  // cleanup
-  yield Bookmarks.remove({guid: folder.guid});
-  provider.uninit();
+  size = yield provider.getHistorySize();
+  assert.equal(size, 1, "expected history size");
 };
 
 exports.test_Links_bookmark_notifications = function*(assert) {
@@ -589,8 +332,8 @@ exports.test_Links_bookmark_notifications = function*(assert) {
     {url: "https://mozilla1.com/2", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK}
   ];
 
-  let links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 0, "empty bookmarks yields empty links");
+  let bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, 0, "empty bookmarks yields 0 size");
 
   let base64URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAA" +
     "AAAA6fptVAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==";
@@ -811,51 +554,17 @@ exports.test_blocked_urls = function*(assert) {
   yield PlacesTestUtils.addVisits(visits);
   yield Bookmarks.insert({url: "https://example5.com/", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK});
 
-  let links;
   let sizeQueryResult;
-
-  // history
-  links = yield provider.getRecentLinks();
-  assert.equal(links.length, visits.length, "added links and fetched links are the same");
-
-  provider.blockURL("https://example3.com/");
-  provider.blockURL("https://example4.com/");
-
-  links = yield provider.getRecentLinks();
-  assert.equal(links.length, visits.length - 2, "fetched links have two less link");
-
-  sizeQueryResult = yield provider.getHistorySize();
-  assert.equal(sizeQueryResult, visits.length - 2, "history size honors blocklist");
-
-  links = yield provider.getRecentLinks({ignoreBlocked: true});
-  assert.equal(links.length, visits.length, "ignore blocked returns all links");
-  sizeQueryResult = yield provider.getHistorySize({ignoreBlocked: true});
-  assert.equal(sizeQueryResult, visits.length, "history honors ignoreBlocked");
-
-  provider.unblockURL("https://example4.com/");
-
-  links = yield provider.getRecentLinks();
-  assert.equal(links.length, visits.length - 1, "fetched links have one less link");
-
-  provider.unblockAll();
-  links = yield provider.getRecentLinks();
-  assert.equal(links.length, visits.length, "fetched links have the expected number of links");
 
   // bookmarks
   provider.blockURL("https://example5.com/");
-  links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 0, "bookmarks are blocked as well");
   sizeQueryResult = yield provider.getBookmarksSize();
-  assert.equal(links.length, 0, "bookmark size is zero");
+  assert.equal(sizeQueryResult, 0, "bookmark size is zero");
 
-  links = yield provider.getRecentBookmarks({ignoreBlocked: true});
-  assert.equal(links.length, 1, "ignore blocked returns all links");
   sizeQueryResult = yield provider.getBookmarksSize({ignoreBlocked: true});
   assert.equal(sizeQueryResult, 1, "bookmarkSize honors ignoreBlocked");
 
   provider.unblockURL("https://example5.com/");
-  links = yield provider.getRecentBookmarks();
-  assert.equal(links.length, 1, "expected number of bookmarks");
   sizeQueryResult = yield provider.getBookmarksSize();
   assert.equal(sizeQueryResult, 1, "bookmark size is one");
 };
