@@ -329,7 +329,7 @@ PreviewProvider.prototype = {
 
       if (response.ok) {
         let responseJson = yield response.json();
-        this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestReceivedCount", responseJson.urls.length);
+        this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestReceivedCount", Object.keys(responseJson.urls).length);
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestSucess", 1);
         let linksToInsert = newLinks.filter(link => responseJson.urls[link.sanitized_url])
           .map(link => Object.assign({}, link, responseJson.urls[link.sanitized_url]));
