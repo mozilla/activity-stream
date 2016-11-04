@@ -10,7 +10,6 @@ const HighlightContext = require("components/HighlightContext/HighlightContext")
 const Hint = require("components/Hint/Hint");
 const classNames = require("classnames");
 
-const {SPOTLIGHT_DEFAULT_LENGTH} = require("common/constants");
 const HIGHLIGHTS_HINT_TEXT = "Find your way back to the great articles, videos, and other pages you’ve discovered on the web.";
 
 const SpotlightItem = React.createClass({
@@ -99,7 +98,7 @@ SpotlightItem.propTypes = {
 const Spotlight = React.createClass({
   getDefaultProps() {
     return {
-      length: SPOTLIGHT_DEFAULT_LENGTH,
+      length: 3,
       page: "NEW_TAB"
     };
   },

@@ -3,7 +3,7 @@ const React = require("react");
 const TestUtils = require("react-addons-test-utils");
 const firstRunData = require("lib/first-run-data");
 const {justDispatch, selectNewTabSites} = require("selectors/selectors");
-const {SPOTLIGHT_DEFAULT_LENGTH, WEIGHTED_HIGHLIGHTS_LENGTH, TOP_SITES_LENGTH} = require("common/constants.js");
+const {TOP_SITES_LENGTH, WEIGHTED_HIGHLIGHTS_LENGTH} = require("common/constants.js");
 const {rawMockData, createMockProvider} = require("test/test-utils");
 const fakeState = rawMockData;
 
@@ -28,12 +28,12 @@ describe("selectors", () => {
   describe("selectNewTabSites", () => {
     let state;
     let raw;
-    function setup(customRows = {}, weightedHighlights = true, recommendedHighlight = false) {
+    function setup(customRows = {}, recommendedHighlight = false) {
       const custom = {};
       Object.keys(customRows).forEach(key => {
         custom[key] = Object.assign({}, fakeState[key], {rows: customRows[key]});
       });
-      const Experiments = {values: {weightedHighlights, recommendedHighlight}, error: false, init: true};
+      const Experiments = {values: {recommendedHighlight}, error: false, init: true};
       raw = Object.assign({}, fakeState, {Experiments}, custom);
       state = selectNewTabSites(raw);
     }
@@ -41,7 +41,7 @@ describe("selectors", () => {
     beforeEach(() => setup());
 
     it("should return the right properties", () => {
-      ["Highlights", "TopActivity", "TopSites", "showRecommendationOption"].forEach(prop => assert.property(state, prop));
+      ["Highlights", "TopSites", "showRecommendationOption"].forEach(prop => assert.property(state, prop));
     });
 
     describe("TopSites", () => {
@@ -68,9 +68,6 @@ describe("selectors", () => {
     describe("Highlights", () => {
       it("should have a length of WEIGHTED_HIGHLIGHTS_LENGTH", () => {
         assert.lengthOf(state.Highlights.rows, WEIGHTED_HIGHLIGHTS_LENGTH);
-      });
-      it("should set .weightedHighlights to true", () => {
-        assert.property(state.Highlights, "weightedHighlights");
       });
       it("should render the right sites in the right order", () => {
         const highlights = [{url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
@@ -114,38 +111,15 @@ describe("selectors", () => {
       });
     });
 
-    describe("TopActivity", () => {
-      it("should be empty (when weightedHighlights is on)", () => {
-        setup({History: [{url: "https://asdsad.com"}, {url: "https://g123asaw.com"}]});
-        assert.deepEqual(state.TopActivity.rows, []);
-      });
-    });
-
     describe("showRecommendationOption", () => {
       it("should be false if the experiment value is false", () => {
         assert.isFalse(raw.Experiments.values.recommendedHighlight);
         assert.isFalse(state.showRecommendationOption);
       });
       it("should be true if the experiment value is true", () => {
-        setup(undefined, undefined, true);
+        setup(undefined, true);
         assert.isTrue(raw.Experiments.values.recommendedHighlight);
         assert.isTrue(state.showRecommendationOption);
-      });
-    });
-
-    describe.skip("old Highlights", () => { // XXXdmose remove in #1611
-      it("should have highlights of SPOTLIGHT_DEFAULT_LENGTH", () => {
-        setup(undefined, false);
-        assert.lengthOf(state.Highlights.rows, SPOTLIGHT_DEFAULT_LENGTH);
-      });
-      it("should include History in TopActivity and Dedupe against TopSites, Highlights", () => {
-        // note: the second param of setup sets weightedHighlights to false
-        setup({
-          TopSites: [{url: "http://foo.com"}],
-          Highlights: [{url: "http://blah.com"}],
-          History: [{url: "http://foo.com"}, {url: "http://blah.com"}, {url: "http://hello.com"}]
-        }, false);
-        assert.lengthOf(state.TopActivity.rows, 1);
       });
     });
   });

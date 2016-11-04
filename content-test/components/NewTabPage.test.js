@@ -2,7 +2,6 @@ const React = require("react");
 const TestUtils = require("react-addons-test-utils");
 const ConnectedNewTabPage = require("components/NewTabPage/NewTabPage");
 const {NewTabPage} = ConnectedNewTabPage;
-const {GroupedActivityFeed} = require("components/ActivityFeed/ActivityFeed");
 const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
 const {mockData, renderWithProvider} = require("test/test-utils");
@@ -39,11 +38,6 @@ describe("NewTabPage", () => {
   it("should render Spotlight components with correct data", () => {
     const spotlightSites = TestUtils.findRenderedComponentWithType(instance, Spotlight);
     assert.equal(spotlightSites.props.sites, fakeProps.Highlights.rows);
-  });
-
-  it.skip("should render GroupedActivityFeed with correct data", () => { // XXXdmose - remove in #1611
-    const activityFeed = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
-    assert.equal(activityFeed.props.sites, fakeProps.TopActivity.rows);
   });
 
   it("should render connected component with correct props", () => {
@@ -125,20 +119,6 @@ describe("NewTabPage", () => {
         }
       });
       const item = TestUtils.findRenderedComponentWithType(instance, Spotlight);
-      const deleteLink = TestUtils.scryRenderedDOMComponentsWithClass(item, "context-menu-link")[0];
-      TestUtils.Simulate.click(deleteLink);
-    });
-    it.skip("should have the correct page, source, index for activity feed", done => {  // XXXdmose remove for #1611
-      setupConnected(a => {
-        if (a.type === "NOTIFY_USER_EVENT") {
-          assert.equal(a.data.page, "NEW_TAB");
-          assert.equal(a.data.source, "ACTIVITY_FEED");
-          assert.equal(a.data.action_position, 0);
-          assert.equal(a.data.metadata_source, "EmbedlyTest");
-          done();
-        }
-      });
-      const item = TestUtils.findRenderedComponentWithType(instance, GroupedActivityFeed);
       const deleteLink = TestUtils.scryRenderedDOMComponentsWithClass(item, "context-menu-link")[0];
       TestUtils.Simulate.click(deleteLink);
     });
