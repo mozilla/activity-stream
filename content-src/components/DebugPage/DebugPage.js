@@ -6,6 +6,7 @@ const TopSites = require("components/TopSites/TopSites");
 const faker = require("test/faker");
 const sizeof = require("object-sizeof");
 const {ShowAllHints} = require("common/action-manager").actions;
+const experimentDefinitions = require("../../../experiments.json");
 
 // Only include this in DEVELOPMENT builds
 let JSONTree;
@@ -45,6 +46,33 @@ const DebugPage = React.createClass({
 
     return (<main className="debug-page">
       <div className="new-tab-wrapper">
+
+        <section className="experiments">
+          <h2>Experiments</h2>
+          <p>
+            To override these experiments, check <code>about:config</code> for <code>extensions.@activity-streams.experiments.prefName</code>, where <code>prefName</code> is the name of the pref in this table.
+          </p>
+          <table className="experiment-table">
+            <tr>
+              <th>Experiment</th>
+              <th>Pref name</th>
+              <th>Description</th>
+              <th>Value</th>
+            </tr>
+            {Object.keys(experimentDefinitions)
+              .filter(id => experimentDefinitions[id].active)
+              .map(id => {
+                const valueAsString = JSON.stringify(this.props.raw.Experiments.values[id]);
+                return (<tr key={id}>
+                  <td>{experimentDefinitions[id].name}</td>
+                  <td><code>{id}</code></td>
+                  <td>{experimentDefinitions[id].description}</td>
+                  <td>{valueAsString}</td>
+                </tr>);
+              })}
+          </table>
+        </section>
+
         <section>
           <h2>State as plain text</h2>
           <p>Apx. current size: {Math.round(sizeof(this.props.raw) / 1024)}kb</p>

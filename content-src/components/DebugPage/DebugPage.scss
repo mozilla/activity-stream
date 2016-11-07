@@ -57,6 +57,29 @@
   }
 }
 
+.experiments {
+  .experiment-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid $very-light-grey;
+    }
+  }
+
+  code {
+    font-family: $code-font;
+    background: $code-background;
+    color: $code-color;
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-size: 0.8em;
+  }
+}
+
 .json-inspector,
 .json-inspector__selection {
   font: 14px/1.4 Consolas, monospace;

@@ -143,6 +143,10 @@ $hint-button-color: #2083F2;
 $hint-button-padding: 8px;
 $hint-button-font-size: 15px;
 
+$code-font: Menlo, Monaco, Consolas, monospace;
+$code-background: #FCF2F4;
+$code-color: #E8005C;
+
 @mixin item-shadow {
   box-shadow: $item-shadow;
 
