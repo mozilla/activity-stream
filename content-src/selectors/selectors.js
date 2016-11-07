@@ -2,7 +2,7 @@ const {createSelector} = require("reselect");
 const firstRunData = require("lib/first-run-data");
 const selectAndDedupe = require("selectors/selectAndDedupe");
 const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
-const {TOP_SITES_LENGTH, WEIGHTED_HIGHLIGHTS_LENGTH} = require("common/constants");
+const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 
 /**
  * justDispatch - This can be used just to add the dispatch function to the props of a component
@@ -20,7 +20,7 @@ module.exports.justDispatch = (() => ({}));
  */
 module.exports.selectNewTabSites = createSelector(
   [
-    state => state.WeightedHighlights,
+    state => state.Highlights,
     state => state.TopSites,
     state => state.Experiments
   ],
@@ -33,7 +33,7 @@ module.exports.selectNewTabSites = createSelector(
       },
       {
         sites: assignImageAndBackgroundColor(Highlights.rows),
-        max: WEIGHTED_HIGHLIGHTS_LENGTH,
+        max: HIGHLIGHTS_LENGTH,
         defaults: assignImageAndBackgroundColor(firstRunData.Highlights)
       }
     ]);

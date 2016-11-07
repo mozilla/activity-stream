@@ -70,7 +70,7 @@ describe("randomWeighter", () => {
 });
 
 describe("createSpotlightItem", () => {
-  it("should provide correct state to selector (Highlights & WeightedHighlights)", () => {
+  it("should provide correct state to selector (Highlights)", () => {
     const result = createSpotlightItem();
 
     assert.ok(result);
