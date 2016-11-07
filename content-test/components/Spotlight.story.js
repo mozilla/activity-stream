@@ -3,7 +3,7 @@ const {Spotlight, SpotlightItem} = require("components/Spotlight/Spotlight");
 const {storiesOf, action} = require("@kadira/storybook");
 const {selectNewTabSites} = require("selectors/selectors");
 const {createMockProvider, rawMockData, faker} = require("test/test-utils");
-const {WEIGHTED_HIGHLIGHTS_LENGTH} = require("common/constants");
+const {HIGHLIGHTS_LENGTH} = require("common/constants");
 const createSite = faker.createSite;
 const Provider = createMockProvider({dispatch: action("dispatched a redux action")});
 
@@ -45,17 +45,17 @@ let fakeSpotlightItems = mockData.Highlights.rows;
 storiesOf("Highlight List", module)
   .add("All valid properties", () =>
     <Container>
-      <Spotlight length={WEIGHTED_HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems} />
+      <Spotlight length={HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems} />
     </Container>
   )
   .add("Missing a row (eg because user has insufficient history)", () =>
     <Container>
-      <Spotlight length={WEIGHTED_HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems.slice(3)} />
+      <Spotlight length={HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems.slice(3)} />
     </Container>
   )
   .add("Missing an item (eg because user has insufficient history)", () =>
     <Container>
-      <Spotlight length={WEIGHTED_HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems.slice(1)} />
+      <Spotlight length={HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems.slice(1)} />
     </Container>
   );
 

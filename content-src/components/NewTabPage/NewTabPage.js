@@ -10,7 +10,7 @@ const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const classNames = require("classnames");
 const PAGE_NAME = "NEW_TAB";
-const {WEIGHTED_HIGHLIGHTS_LENGTH} = require("common/constants");
+const {HIGHLIGHTS_LENGTH} = require("common/constants");
 
 const NewTabPage = React.createClass({
   getInitialState() {
@@ -82,7 +82,7 @@ const NewTabPage = React.createClass({
           </section>
 
           <section>
-            <Spotlight page={PAGE_NAME} length={WEIGHTED_HIGHLIGHTS_LENGTH}
+            <Spotlight page={PAGE_NAME} length={HIGHLIGHTS_LENGTH}
               sites={props.Highlights.rows} />
           </section>
 

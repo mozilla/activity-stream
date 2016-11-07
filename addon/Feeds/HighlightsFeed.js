@@ -3,7 +3,7 @@ const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {Recommender} = require("common/recommender/Recommender");
 const Feed = require("addon/lib/Feed");
-const {TOP_SITES_LENGTH, WEIGHTED_HIGHLIGHTS_LENGTH} = require("common/constants");
+const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
 
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
@@ -51,16 +51,16 @@ module.exports = class HighlightsFeed extends Feed {
   /**
    * getData
    *
-   * @return Promise  A promise that resolves with the "WEIGHTED_HIGHLIGHTS_RESPONSE" action
+   * @return Promise  A promise that resolves with the "HIGHLIGHTS_RESPONSE" action
    */
   getData() {
     if (!this.baselineRecommender) {
       return Promise.reject(new Error("Tried to get weighted highlights but there was no baselineRecommender"));
     }
     return PlacesProvider.links.getRecentlyVisited()
-      .then(links => this.options.getMetadata(links, "WEIGHTED_HIGHLIGHTS_RESPONSE"))
+      .then(links => this.options.getMetadata(links, "HIGHLIGHTS_RESPONSE"))
       .then(links => this.baselineRecommender.scoreEntries(links))
-      .then(links => (am.actions.Response("WEIGHTED_HIGHLIGHTS_RESPONSE", links)));
+      .then(links => (am.actions.Response("HIGHLIGHTS_RESPONSE", links)));
   }
 
   onAction(state, action) {
@@ -75,7 +75,7 @@ module.exports = class HighlightsFeed extends Feed {
         break;
       case am.type("RECEIVE_PLACES_CHANGES"):
         // If the user visits a site and we don't have enough weighted highlights yet, refresh the data.
-        if (state.WeightedHighlights.rows.length < (WEIGHTED_HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH)) {
+        if (state.Highlights.rows.length < (HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH)) {
           this.refresh("there were not enough sites");
         }
         // If the user visits a site & the last time we refreshed the data was older than 15 minutes, refresh the data.

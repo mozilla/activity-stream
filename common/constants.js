@@ -7,7 +7,7 @@ module.exports = {
 
   // Number of large Highlight titles in the new Highlights world, including
   // all rows.
-  WEIGHTED_HIGHLIGHTS_LENGTH: 9,
+  HIGHLIGHTS_LENGTH: 9,
 
   // Thresholds for highlights query
   HIGHLIGHTS_THRESHOLDS: {
