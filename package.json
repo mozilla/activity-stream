@@ -73,7 +73,7 @@
     "react-addons-test-utils": "15.3.2",
     "requirejs": "2.3.2",
     "rimraf": "2.5.4",
-    "sass-lint": "1.9.1",
+    "sass-lint": "1.10.1",
     "sinon": "1.17.6",
     "style-loader": "0.13.1",
     "svgo": "0.7.1",
