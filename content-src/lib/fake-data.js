@@ -10,10 +10,6 @@ module.exports = {
     "rows": faker.createRows({images: 3}),
     "error": false
   },
-  "History": {
-    "rows": faker.createRows({images: 3}),
-    "error": false
-  },
   "Highlights": {
     "rows": faker.createRows({images: WEIGHTED_HIGHLIGHTS_LENGTH}),
     "error": false
