@@ -4,16 +4,17 @@ const ContextMenu = React.createClass({
   componentWillMount() {
     this.hideContext = () => {
       this.props.onUpdate(false);
+      window.removeEventListener("click", this.hideContext);
     };
+  },
+  componentWillUnmount() {
+    window.removeEventListener("click", this.hideContext);
   },
   componentDidUpdate(prevProps) {
     if (this.props.visible && !prevProps.visible) {
       setTimeout(() => {
         window.addEventListener("click", this.hideContext, false);
       }, 0);
-    }
-    if (!this.props.visible && prevProps.visible) {
-      window.removeEventListener("click", this.hideContext);
     }
   },
   render() {
