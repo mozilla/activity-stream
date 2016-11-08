@@ -68,19 +68,3 @@ describe("getRandomColor", () => {
     assert.equal(utils.RANDOM_COLORS[8], color);
   });
 });
-
-describe("getRandomFromTimestamp", () => {
-  it("should return true or false", () => {
-    assert.isBoolean(utils.getRandomFromTimestamp(0.5, {lastVisitDate: 1023123}));
-  });
-  it("should return the same value for the same timestamp", () => {
-    const getValue = () => utils.getRandomFromTimestamp(0.5, {lastVisitDate: 1023123});
-    const value = getValue();
-    assert.equal(getValue(), value);
-    assert.equal(getValue(), value);
-    assert.equal(getValue(), value);
-    assert.equal(getValue(), value);
-    assert.equal(getValue(), value);
-    assert.equal(getValue(), value);
-  });
-});

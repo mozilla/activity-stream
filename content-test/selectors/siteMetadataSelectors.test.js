@@ -1,9 +1,4 @@
-const {
-  selectSiteProperties,
-  selectSitePreview
-} = require("selectors/siteMetadataSelectors");
-
-const {IMG_WIDTH, IMG_HEIGHT} = require("common/getBestImage");
+const {selectSiteProperties} = require("selectors/siteMetadataSelectors");
 
 const validSpotlightSite = {
   "title": "man throws alligator in wendys wptv dnt cnn",
@@ -22,55 +17,6 @@ const fakeFavicon = {favicon_url: "fakeFavIcon"};
 const validSpotlightWithFavicon = Object.assign({}, validSpotlightSite, fakeFavicon);
 
 describe("siteMetadataSelectors", () => {
-  describe("selectSitePreview", () => {
-    const siteWithMedia = {
-      url: "https://www.youtube.com/watch?v=lDv68xYHFXM",
-      images: [{url: "foo.jpg", height: IMG_HEIGHT, width: IMG_WIDTH}],
-      media: {type: "video"}
-    };
-    const embedPreviewURL = "https://www.youtube.com/embed/lDv68xYHFXM?autoplay=1";
-    let state;
-    beforeEach(() => {
-      state = selectSitePreview(siteWithMedia);
-    });
-
-    it("should not throw", () => {
-      assert.doesNotThrow(() => {
-        selectSitePreview({});
-      });
-    });
-
-    it("should have a preview url", () => {
-      assert.equal(state.previewURL, embedPreviewURL);
-    });
-    it("should have a thumbnail", () => {
-      assert.property(state, "thumbnail");
-      assert.isObject(state.thumbnail);
-      assert.property(state.thumbnail, "url");
-      assert.equal(state.thumbnail.url, siteWithMedia.images[0].url);
-    });
-    it("should have a type", () => {
-      assert.equal(state.type, siteWithMedia.media.type);
-    });
-    it("should return null thumbnail if no images exists", () => {
-      state = selectSitePreview(Object.assign({}, siteWithMedia, {images: []}));
-      assert.isNull(state.thumbnail);
-    });
-    it("should return null preview url if no valid embed was found", () => {
-      state = selectSitePreview(Object.assign({}, siteWithMedia, {url: "http://foo.com"}));
-      assert.isNull(state.previewURL);
-    });
-    it("no video preview if type is not video", () => {
-      state = selectSitePreview(Object.assign({}, siteWithMedia, {media: {type: "image"}}));
-      assert.isNull(state.previewURL);
-    });
-    it("no video preview or thumbnail if no media type is set", () => {
-      state = selectSitePreview(Object.assign({}, siteWithMedia, {media: null}));
-      assert.isNull(state.thumbnail);
-      assert.isNull(state.previewURL);
-    });
-  });
-
   describe("selectSiteProperties", () => {
     it("should set favicon prop", () => {
       let result = selectSiteProperties(validSpotlightWithFavicon);
