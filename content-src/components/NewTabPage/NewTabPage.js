@@ -69,13 +69,12 @@ const NewTabPage = React.createClass({
         <section>
           <Search />
         </section>
-
         <Loader
           className="loading-notice"
           show={!this.props.isReady}
-          label="Hang on tight! We are analyzing your history to personalize your experience"
-          centered={true} />
-
+          title="Welcome to new tab"
+          body="Firefox will use this space to show your most relevant bookmarks, articles, videos, and pages you've recently visited, so you can get back to them easily."
+          label="Identifying your Highlights" />
         <div className={classNames("show-on-init", {on: this.props.isReady})}>
           <section>
             <TopSites page={PAGE_NAME} sites={props.TopSites.rows} showHint={props.TopSites.showHint} />

@@ -23,16 +23,20 @@ describe("Loader", () => {
     setup({show: true});
     assert.isFalse(el.hidden);
   });
+  it("should render props.title as a title", () => {
+    setup({id: "foo", title: "Everglade"});
+    assert.equal(instance.refs.title.innerHTML, "Everglade");
+  });
+  it("should render props.body content", () => {
+    setup({id: "foo", body: "Everglade"});
+    assert.equal(instance.refs.body.innerHTML, "Everglade");
+  });
   it("should render a custom label", () => {
     setup({label: "Hello world"});
-    assert.equal(el.textContent, " Hello world");
+    assert.equal(instance.refs.statusBox.textContent, "Hello world");
   });
   it("should add className to the default className", () => {
     setup({className: "foo"});
     assert.equal(el.className, "loader foo");
-  });
-  it("should add 'centered' class for centered prop", () => {
-    setup({centered: true});
-    assert.equal(el.className, "loader centered");
   });
 });

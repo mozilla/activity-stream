@@ -1,20 +1,67 @@
+// XXX this shares a fair bit of code with Hint.scss.  We should refactor
+// both code and SCSS so that there's a single popup component that we can use
+// for both hints and the loader box.
 .loader {
-  color: $light-grey;
-  display: flex;
-  align-items: center;
-  font-size: 13px;
+  margin: auto;
+  left: 0;
+  right: 0;
 
-  &.centered {
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  color: $loader-popup-background-color;
+
+  min-height: 200px; // don't crop the foxfinder graphic
+  min-width: 420px;
+  width: 420px;
+  font-size: 12px;
+  line-height: 1.7;
+
+  border: 1px solid $loader-border-color;
+  border-radius: $loader-border-radius;
+  box-shadow: 0 5px 10px $faintest-black;
+
+  position: absolute;
+  z-index: $loader-z-index;
+
+  background-image: url('#{$image-path}foxfinder@2x.png');
+  background-position: right;
+  background-size: 35%; // XXX resize the original?
+  background-repeat: no-repeat;
+
+  h3 {
+    color: $loader-title-color;
+    font-size: $loader-title-font-size;
+    line-height: 1.4;
+    font-weight: 500;
+    margin: 0 0 5px;
+    max-width: 322px; // text shouldn't overwrite top of the finderfox graphic
   }
 
-  .spinner {
-    flex-shrink: 0;
-    margin-right: 10px;
-    width: $loader-size;
-    height: $loader-size;
-    display: inline-block;
-    background-image: url('#{$image-path}loading@2x.png');
-    background-size: $loader-size $loader-size;
+  p {
+    // Since this is the only flexible child of loader, it will get all
+    // the free space after the text (which pushes the status-box to the bottom)
+    flex: 1 1 auto; // since this is
+    margin: 0 100px 15px 0;
+    max-width: 247px; // test shouldn't overwrite side of finderfox graphic
+
+    color: $loader-body-color;
+  }
+
+  .status-box {
+    display: flex;
+    align-items: center;
+    color: $loader-status-text-color;
+    line-height: 1.8;
+
+    .spinner {
+      flex-shrink: 0;
+      margin-right: 10px;
+      width: $loader-spinner-size;
+      height: $loader-spinner-size;
+      display: inline-block;
+      background-image: url('#{$image-path}loading@2x.png');
+      background-size: $loader-spinner-size $loader-spinner-size;
+    }
   }
 }
