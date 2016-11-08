@@ -29,9 +29,7 @@
     "eslint:recommended"
   ],
   "rules": {
-    "mozilla/components-imports": 1,
-    "mozilla/import-globals-from": 1,
-    "mozilla/this-top-level-scope": 1,
+    "mozilla/import-globals": 1,
 
     "promise/param-names": 2,
     "promise/catch-or-return": 2,
