@@ -50,18 +50,6 @@ $link-menu-button-size: 27px;
 $link-menu-button-border: 1px solid rgba($black, 0.2);
 $link-menu-button-boxshadow: 0 2px 0 rgba($black, 0.1);
 
-$feed-font-size: 12px;
-$feed-date-font-color: #BFBFBF;
-$feed-date-lighter-font-color: lighten($feed-date-font-color, 10%);
-$feed-gutter-h: 14px;
-$feed-gutter-v: 11px;
-$feed-circle-size: 8px;
-$feed-circle-offset: 16px;
-$feed-icon-size: 40px;
-$feed-hover-color: rgba($black, 0.06);
-$feed-line-color: rgba($black, 0.05);
-$feed-circle-color: #CECECE;
-
 $spotlight-info-default-padding: ($base-gutter / 2);
 
 // The top-padding needs to be less because a smaller font is used

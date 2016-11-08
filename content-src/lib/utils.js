@@ -38,10 +38,5 @@ module.exports = {
       return "";
     }
     return url.replace(/^((https?:)?\/\/)?(www\.)?/i, "").toLowerCase();
-  },
-
-  getRandomFromTimestamp(percent, site) {
-    const n = (site.lastVisitDate || site.bookmarkDateCreated || Math.round(Math.random() * 100)) % 100;
-    return n <= percent * 100;
   }
 };
