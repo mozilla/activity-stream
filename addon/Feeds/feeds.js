@@ -1,7 +1,9 @@
-const TopSitesFeed = require("addon/Feeds/TopSitesFeed");
-const HighlightsFeed = require("addon/Feeds/HighlightsFeed");
+const TopSitesFeed = require("./TopSitesFeed");
+const HighlightsFeed = require("./HighlightsFeed");
+const PlacesStatsFeed = require("./PlacesStatsFeed");
 
 module.exports = [
   TopSitesFeed,
-  HighlightsFeed
+  HighlightsFeed,
+  PlacesStatsFeed
 ];

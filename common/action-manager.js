@@ -53,7 +53,8 @@ const am = new ActionManager([
   "NOTIFY_EMAIL_URL",
   "ENABLE_ALL_HINTS",
   "DISABLE_HINT",
-  "APP_INIT"
+  "APP_INIT",
+  "PLACES_STATS_UPDATED"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -250,6 +251,17 @@ function ShowAllHints() {
   return Notify("ENABLE_ALL_HINTS");
 }
 
+function PlacesStatsUpdate(historySize, bookmarksSize) {
+  const data = {};
+  if (typeof historySize !== "undefined") {
+    data.historySize = historySize;
+  }
+  if (typeof bookmarksSize !== "undefined") {
+    data.bookmarksSize = bookmarksSize;
+  }
+  return {type: "PLACES_STATS_UPDATED", data};
+}
+
 am.defineActions({
   Notify,
   Response,
@@ -283,7 +295,8 @@ am.defineActions({
   NotifyEmailUrl,
   NotifyShareUrl,
   ShowAllHints,
-  DisableHint
+  DisableHint,
+  PlacesStatsUpdate
 });
 
 module.exports = am;

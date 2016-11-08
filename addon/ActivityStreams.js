@@ -12,7 +12,6 @@ const privateBrowsing = require("sdk/private-browsing");
 const windows = require("sdk/windows").browserWindows;
 const prefService = require("sdk/preferences/service");
 const ss = require("sdk/simple-storage");
-const {Memoizer} = require("addon/Memoizer");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {SearchProvider} = require("addon/SearchProvider");
 const {ShareProvider} = require("addon/ShareProvider");
@@ -51,7 +50,6 @@ const DEFAULT_OPTIONS = {
   pageURL: data.url("content/activity-streams.html"),
   onAddWorker: null,
   onRemoveWorker: null,
-  placesCacheTimeout: 1800000, // every 30 minutes, rebuild/repopulate the cache
   recommendationTTL: 3600000, // every hour, get a new recommendation
   shareProvider: null,
   pageScraper: null,
@@ -78,7 +76,6 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
   this._metadataStore = metadataStore;
   this._tabTracker = tabTracker;
   this._telemetrySender = telemetrySender;
-  this._populatingCache = {places: false};
   this._newTabURL = `${this.options.pageURL}#/`;
   Services.prefs.setIntPref("places.favicons.optimizeToDimension", 64);
   this._experimentProvider = new ExperimentProvider(
@@ -107,12 +104,11 @@ ActivityStreams.prototype = {
   init() {
     this._initializePerfMeter();
     this._initializeAppURLHider();
-    this._initializeMemoizer();
 
     if (!this.options.shield_variant) {
       this._experimentProvider.init();
     }
-    this._tabTracker.init(this.appURLs, this._memoized, this._experimentProvider.experimentId);
+    this._tabTracker.init(this.appURLs, this._experimentProvider.experimentId, this._store);
     this._initializeSearchProvider();
     this._initializePreviewProvier(this._experimentProvider, this._metadataStore, this._tabTracker);
     this._initializePageScraper(this._experimentProvider, this._previewProvider, this._tabTracker);
@@ -158,7 +154,6 @@ ActivityStreams.prototype = {
   },
 
   _initializeAppData() {
-    this._asyncBuildPlacesCache();
     this._refreshAppState();
   },
 
@@ -178,11 +173,6 @@ ActivityStreams.prototype = {
 
   _initializeAppURLHider() {
     this._appURLHider = new AppURLHider(this.appURLs);
-  },
-
-  _initializeMemoizer() {
-    this._memoizer = new Memoizer();
-    this._memoized = this._get_memoized(this._memoizer);
   },
 
   _initializePreviewProvier(experimentProvider, metadataStore, tabTracker) {
@@ -370,12 +360,6 @@ ActivityStreams.prototype = {
    * Handles changes to places
    */
   _handlePlacesChanges(eventName, data) {
-    // note: this will execute for each of the 3 notifications that occur when
-    // adding a visit: frecency:-1, frecency: real frecency, title
-    if (this._populatingCache && !this._populatingCache.places) {
-      this._asyncBuildPlacesCache();
-    }
-
     switch (eventName) {
       case "bookmarkAdded":
         this.broadcast(am.actions.Response("RECEIVE_BOOKMARK_ADDED", data));
@@ -485,47 +469,6 @@ ActivityStreams.prototype = {
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
     simplePrefs.off("pageScraper", this._pageScraperListener);
   },
-
-  /**
-   * Returns an object of functions with results cached
-   */
-  _get_memoized(cache) {
-    let linksObj = PlacesProvider.links;
-    return {
-      getHistorySize: cache.memoize("getHistorySize", PlacesProvider.links.getHistorySize.bind(linksObj)),
-      getBookmarksSize: cache.memoize("getBookmarksSize", PlacesProvider.links.getBookmarksSize.bind(linksObj))
-    };
-  },
-
-  /**
-   * Builds a places pageload cache
-   *
-   * Requires this._memoized to have been initialized.
-   */
-  _asyncBuildPlacesCache: Task.async(function*() {
-    if (simplePrefs.prefs["query.cache"]) {
-      if (this._populatingCache && !this._populatingCache.places) {
-        this._populatingCache.places = true;
-        let opt = {replace: true};
-        yield Promise.all([
-          this._memoized.getHistorySize(opt),
-          this._memoized.getBookmarksSize(opt)
-        ]).catch(err => Cu.reportError(err));
-        this._populatingCache.places = false;
-        Services.obs.notifyObservers(null, "activity-streams-places-cache-complete", null);
-      }
-
-      // Call myself when cache expires to repopulate.
-      // This is needed because some of the queries are time dependent (for example,
-      // highlights excludes links from the past 30 minutes).
-      if (this._placesCacheTimeoutID) {
-        clearTimeout(this._placesCacheTimeoutID);
-      }
-      this._placesCacheTimeoutID = setTimeout(() => {
-        this._asyncBuildPlacesCache();
-      }, this.options.placesCacheTimeout);
-    }
-  }),
 
   /**
     * Start a timer to fetch a new recommendation every hour. This will only
@@ -662,7 +605,6 @@ ActivityStreams.prototype = {
    */
   unload(reason) { // eslint-disable-line no-unused-vars
     let defaultUnload = () => {
-      clearTimeout(this._placesCacheTimeoutID);
       if (this._newRecommendationTimeoutID) {
         clearTimeout(this._newRecommendationTimeoutID);
       }
@@ -683,8 +625,6 @@ ActivityStreams.prototype = {
       this._telemetrySender.uninit();
       this._appURLHider.uninit();
       this._perfMeter.uninit();
-      this._memoizer.uninit();
-      this._populatingCache = {places: false};
       this._prefsProvider.destroy();
       this._shareProvider.uninit(reason);
       this._experimentProvider.destroy();

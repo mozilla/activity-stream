@@ -39,10 +39,10 @@ TabTracker.prototype = {
     return this._tabData;
   },
 
-  init(trackableURLs, placesQueries, experimentId) {
+  init(trackableURLs, experimentId, store) {
     this._trackableURLs = trackableURLs;
-    this._placesQueries = placesQueries;
     this._experimentID = experimentId;
+    this._store = store;
   },
 
   _addListeners() {
@@ -270,13 +270,12 @@ TabTracker.prototype = {
     tab.on("deactivate", this.logDeactivate);
     tab.on("close", this.logClose);
 
-    // update history and bookmark sizes
-    this._placesQueries.getHistorySize()
-      .then(size => {this._tabData.total_history_size = size;})
-      .catch(err => Cu.reportError(err));
-    this._placesQueries.getBookmarksSize()
-      .then(size => {this._tabData.total_bookmarks = size;})
-      .catch(err => Cu.reportError(err));
+    if (this._store) {
+      // These values are added in PlacesStatsFeed
+      const currentState = this._store.getState();
+      this._tabData.total_history_size = currentState.PlacesStats.historySize;
+      this._tabData.total_bookmarks = currentState.PlacesStats.bookmarksSize;
+    }
 
     // Some performance pings are sent before a tab is loaded. Let's make sure we have
     // session id available in advance for those pings.
