@@ -445,7 +445,7 @@ MetadataStore.prototype = {
       );
     }
     catch (e) {
-      Cu.reportError("Failed to fetch metadata by cacheKey: ${e.message}");
+      Cu.reportError(`Failed to fetch metadata by cacheKey: ${e.message}`);
       throw e;
     }
 
@@ -468,7 +468,7 @@ MetadataStore.prototype = {
           }
         );
       } catch (e) {
-        Cu.reportError("Failed to fetch metadata by cacheKey: ${e.message}");
+        Cu.reportError(`Failed to fetch metadata by cacheKey: ${e.message}`);
         throw e;
       }
       for (let image of images) {
@@ -489,7 +489,7 @@ MetadataStore.prototype = {
             });
             break;
           default:
-            throw new Error("Fetched unknown image types: {image.type}");
+            throw new Error(`Fetched unknown image types: ${image.type}`);
         }
       }
     }
