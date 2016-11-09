@@ -6,6 +6,20 @@ const {Channel} = require("common/ReduxChannel");
 const parseUrlMiddleware = require("common/parse-url-middleware");
 const loggerMiddleware = require("common/redux-logger");
 const {LOCAL_STORAGE_KEY} = require("common/constants");
+let store;
+
+/**
+ * Returns whether or not the selectors have finished initializing.
+ *
+ * XXX copy-pasted from selectors.js; it should really be exposed and unit
+ * tested there (#1798)
+ *
+ * @param  {Object} state  The state object.
+ * @return {Boolean}
+ */
+function areSelectorsReady(state) {
+  return state.TopSites.init && state.Highlights.init && state.Experiments.init;
+}
 
 /**
  * rehydrateFromLocalStorage - Fetches initial state from local storage
@@ -23,6 +37,66 @@ function rehydrateFromLocalStorage() {
 }
 
 /**
+ * How frequently do we poll the store?
+ *
+ * @type {Number} milliseconds between polls
+ */
+const _rehydrationInterval = 3 * 1000; // try every three seconds
+let _rehydrationIntervalTimer = null;
+
+/**
+ * Polls the storeState for completion, and if found, dispatches MERGE_STORE.
+ * Once that completes, test to see if we're ready, in which case we clear
+ * the timer to stop polling
+ *
+ * @param  {Object} storeToRehydrate  the redux store to be rehydrated
+ *                                    (defaults to store variable in this module)
+ */
+function _rehydrationIntervalCallback(storeToRehydrate = store) {
+  if (!areSelectorsReady(storeToRehydrate.getState())) {
+    storeToRehydrate.dispatch({type: "MERGE_STORE", data: rehydrateFromLocalStorage()});
+
+    if (areSelectorsReady(storeToRehydrate.getState())) {
+      clearInterval(_rehydrationIntervalTimer);
+      store = null; // allow the reference to be GCed
+    }
+  }
+}
+
+/**
+ * If we're going to need to rehydrate, start polling...
+ */
+function _startRehydrationPolling() {
+  _rehydrationIntervalTimer = setInterval(_rehydrationIntervalCallback, _rehydrationInterval);
+}
+
+/**
+ * A higher-order function which returns a reducer that, on MERGE_STORE action,
+ * will return the action.data object merged into the previous state.
+ *
+ * For all other actions, it merely calls mainReducer.
+ *
+ * Because we want this to merge the entire state object, it's written as a
+ * higher order function which takes the main reducer (itself often a call to
+ * combineReducers) as a parameter.
+ *
+ * @param  {function} mainReducer reducer to call if action != "MERGE_STORE"
+ * @return {function}             a reducer that, on "MERGE_STORE" action,
+ *                                will return the action.data object merged
+ *                                into the previous state, and the result
+ *                                of calling mainReducer otherwise.
+ */
+function _mergeStateReducer(mainReducer) {
+  return (prevState, action) => {
+    if (action.type === "MERGE_STORE") {
+      return Object.assign({}, prevState, action.data);
+    }
+
+    return mainReducer(prevState, action);
+  };
+}
+
+/**
  * createActivityStreamStore - Creates a redux store for A.S.
  *
  * @param  {obj} options              Options for creating the store
@@ -31,6 +105,12 @@ function rehydrateFromLocalStorage() {
  * @param  {type} options.logger      Use logging middleware?
  * @param  {type} options.rehydrate   Rehydrate state from locastorage on startup?
  * @return {obj}                      Redux store
+ *
+ * @note Because this module tracks the store for rehydration purposes,
+ * it's currently only possible to have a single activity stream store per
+ * content-space instance of the app.  It shouldn't be too much work to
+ * refactor this to support multiple stores, however, should we ever want to do
+ * that.
  */
 module.exports = function createActivityStreamStore(options) {
   const {incoming, outgoing, logger, rehydrate, middleware} = options || {};
@@ -59,11 +139,20 @@ module.exports = function createActivityStreamStore(options) {
     mw.push(loggerMiddleware);
   }
 
-  const store = createStore(
-    combineReducers(reducers),
-    rehydrate ? rehydrateFromLocalStorage() : {},
+  let initialStore = rehydrate ? rehydrateFromLocalStorage() : {};
+
+  store = createStore(
+    _mergeStateReducer(combineReducers(reducers)),
+    initialStore,
     applyMiddleware(...mw)
   );
+
+  // we only want to rehydrate stores that are rehydratable, i.e. the content
+  // stores.
+  //
+  if (rehydrate && !areSelectorsReady(store.getState())) {
+    _startRehydrationPolling();
+  }
 
   if (channel) {
     channel.connectStore(store);
@@ -73,3 +162,6 @@ module.exports = function createActivityStreamStore(options) {
 };
 
 module.exports.rehydrateFromLocalStorage = rehydrateFromLocalStorage;
+module.exports._mergeStateReducer = _mergeStateReducer;
+module.exports._startRehydrationPolling = _startRehydrationPolling;
+module.exports._rehydrationIntervalCallback = _rehydrationIntervalCallback;

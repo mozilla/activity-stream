@@ -35,3 +35,62 @@ describe("createStore", () => {
     assert.equal(store.getState().Prefs, "foo");
   });
 });
+
+describe("_mergeStateReducer", () => {
+  describe("should return a reducer that...", () => {
+    it("should return the result of calling the first arg if action.type !== MERGE_STORE", () => {
+      const action = {type: "FOO"};
+      const mainReducerStub = sinon.stub().returnsArg(0);
+      const fakeState = {monkey: "orangutan"};
+
+      const mergeStateReducer = createStore._mergeStateReducer(mainReducerStub);
+      const state = mergeStateReducer(fakeState, action);
+
+      assert.calledWith(mainReducerStub, fakeState, action);
+      assert.deepEqual(state, fakeState);
+    });
+
+    it("should return action.data merged into the previous state if action === MERGE_STORE", () => {
+      const fakePrevState = {sheep: 1, dog: 2, monkey: 3};
+      const fakeState = {monkey: 4};
+      const action = {type: "MERGE_STORE", data: fakeState};
+
+      const mergeStateReducer = createStore._mergeStateReducer(sinon.stub());
+      const state = mergeStateReducer(fakePrevState, action);
+
+      assert.deepEqual(state, {sheep: 1, dog: 2, monkey: 4});
+    });
+  });
+});
+
+describe("_rehydrationIntervalCallback", () => {
+  it("should dispatch MERGE_STORE if selectors aren't ready", () => {
+    const fakeStoreState = {TopSites: {init: null}};
+    const fakeStore = {
+      dispatch: sinon.stub(),
+      getState: () => fakeStoreState
+    };
+
+    createStore._rehydrationIntervalCallback(fakeStore);
+
+    assert.calledWith(fakeStore.dispatch, {type: "MERGE_STORE", data: {}});
+  });
+});
+
+describe("_startRehydrationPolling", () => {
+  let sandbox;
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should set a timer to call rehydrationIntervalCallback", () => {
+    const setIntervalStub = sandbox.stub(window, "setInterval");
+
+    createStore._startRehydrationPolling();
+
+    assert.calledOnce(setIntervalStub);
+  });
+});

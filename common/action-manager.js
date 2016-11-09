@@ -52,7 +52,8 @@ const am = new ActionManager([
   "ENABLE_ALL_HINTS",
   "DISABLE_HINT",
   "APP_INIT",
-  "PLACES_STATS_UPDATED"
+  "PLACES_STATS_UPDATED",
+  "MERGE_STORE"
 ]);
 
 // This is a a set of actions that have sites in them,
