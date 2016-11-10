@@ -82,9 +82,10 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
     options.experiments,
     options.rng
   );
-
+  this._searchProvider = this.options.searchProvider || new SearchProvider();
   this._feeds = new FeedController({
     feeds,
+    searchProvider: this._searchProvider,
     // TODO: move this into Feeds. Requires previewProvider/tabTracker to be independent
     getMetadata: (links, type) => {
       const event = this._tabTracker.generateEvent({source: type});
@@ -109,7 +110,7 @@ ActivityStreams.prototype = {
       this._experimentProvider.init();
     }
     this._tabTracker.init(this.appURLs, this._experimentProvider.experimentId, this._store);
-    this._initializeSearchProvider();
+    this._searchProvider.init();
     this._initializePreviewProvier(this._experimentProvider, this._metadataStore, this._tabTracker);
     this._initializePageScraper(this._experimentProvider, this._previewProvider, this._tabTracker);
     this._initializeRecommendationProvider(this._experimentProvider, this._previewProvider, this._tabTracker);
@@ -214,15 +215,6 @@ ActivityStreams.prototype = {
     }
   },
 
-  _initializeSearchProvider() {
-    if (!this.options.searchProvider) {
-      this._searchProvider = new SearchProvider();
-    } else {
-      this._searchProvider = this.options.searchProvider;
-    }
-    this._searchProvider.init();
-  },
-
   _initializePageScraper(experimentProvider, previewProvider, tabTracker) {
     this._pageScraper = null;
 
@@ -243,15 +235,6 @@ ActivityStreams.prototype = {
    *                    TODO: Refactor this in to a different functions that handle refreshing data separately
    */
   _refreshAppState() {
-    // Search
-    let state = this._searchProvider.currentState;
-    let currentEngine = JSON.stringify(state.currentEngine);
-    state.currentEngine = currentEngine;
-    this._store.dispatch(am.actions.Response("SEARCH_STATE_RESPONSE", state));
-
-    const strings = this._searchProvider.searchSuggestionUIStrings;
-    this._store.dispatch(am.actions.Response("SEARCH_UISTRINGS_RESPONSE", strings));
-
     this._store.dispatch(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
 
     this._store.dispatch(am.actions.Response("PREFS_RESPONSE", simplePrefs.prefs));
@@ -376,7 +359,7 @@ ActivityStreams.prototype = {
    * Broadcast current engine has changed to all open newtab pages
    */
   _handleCurrentEngineChanges(eventName, data) {
-    this.broadcast(am.actions.Response("RECEIVE_CURRENT_ENGINE"), data);
+    this.broadcast(am.actions.Response("SEARCH_CURRENT_ENGINE_UPDATED"), data);
   },
 
   _handleUserEvent({msg}) {
@@ -497,6 +480,7 @@ ActivityStreams.prototype = {
       contentScriptWhen: "start",
       attachTo: ["existing", "top"],
       onAttach: worker => {
+        this._store.dispatch("OPEN_NEW_TAB");
         this._refreshAppState();
 
         // Don't attach when in private browsing. Send user to about:privatebrowsing
