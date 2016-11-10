@@ -86,6 +86,9 @@ const IMAGE_TYPES = {
   "preview": 3
 };
 
+/* Maxium number of allowed parameters in a single SQL statement (defined here: https://www.sqlite.org/limits.html) */
+const SQL_PARAMETER_LIMIT = 999;
+
 function MetadataStore(path, migrations = null) {
   this._path = path || OS.Path.join(OS.Constants.Path.profileDir, METASTORE_NAME);
   this._migrations = migrations || MIGRATIONS;
@@ -433,13 +436,17 @@ MetadataStore.prototype = {
    * Returns a promise with the array of retrieved metadata records
    */
   asyncGetMetadataByCacheKey: Task.async(function*(cacheKeys) {
-    const quoted = cacheKeys.map(key => "?").join(",");
+    let limitedCacheKeys = cacheKeys;
+    if (limitedCacheKeys.length > SQL_PARAMETER_LIMIT) {
+      limitedCacheKeys = cacheKeys.slice(0, SQL_PARAMETER_LIMIT);
+    }
+    const quoted = limitedCacheKeys.map(key => "?").join(",");
     let metaObjects;
     try {
       metaObjects = yield this.asyncExecuteQuery(
         `SELECT * FROM page_metadata WHERE cache_key IN (${quoted})`,
         {
-          params: cacheKeys,
+          params: limitedCacheKeys,
           columns: ["id", "cache_key", "places_url", "title", "type", "description", "media_url", "provider_name"]
         }
       );
