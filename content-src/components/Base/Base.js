@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {justDispatch} = require("selectors/selectors");
+const {justDispatch} = require("common/selectors/selectors");
 const {actions} = require("common/action-manager");
 
 const NewTabPage = require("components/NewTabPage/NewTabPage");

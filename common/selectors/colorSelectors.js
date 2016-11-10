@@ -1,6 +1,6 @@
 const {createSelector} = require("reselect");
 const getBestImage = require("common/getBestImage");
-const {selectSiteProperties} = require("selectors/siteMetadataSelectors");
+const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const {prettyUrl, getBlackOrWhite, toRGBString, getRandomColor} = require("lib/utils");
 
 const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];

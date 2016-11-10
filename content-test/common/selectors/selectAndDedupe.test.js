@@ -1,4 +1,4 @@
-const selectAndDedupe = require("selectors/selectAndDedupe");
+const selectAndDedupe = require("common/selectors/selectAndDedupe");
 
 const urlToSite = url => ({url});
 

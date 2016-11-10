@@ -1,7 +1,7 @@
-const {createSelector} = require("reselect");
+const {createSelector} = require("common/vendor")("reselect");
 const firstRunData = require("lib/first-run-data");
-const selectAndDedupe = require("selectors/selectAndDedupe");
-const {assignImageAndBackgroundColor} = require("selectors/colorSelectors");
+const selectAndDedupe = require("./selectAndDedupe");
+const {assignImageAndBackgroundColor} = require("./colorSelectors");
 const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 
 /**

@@ -1,4 +1,4 @@
-const {selectSiteProperties} = require("selectors/siteMetadataSelectors");
+const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 
 const validSpotlightSite = {
   "title": "man throws alligator in wendys wptv dnt cnn",
