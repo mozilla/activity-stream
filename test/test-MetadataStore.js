@@ -121,17 +121,40 @@ exports.test_insert_required_fields = function*(assert) {
 
 exports.test_insert_twice = function*(assert) {
   const metadata = metadataFixture[0];
-  yield gMetadataStore.asyncInsert([metadata]);
+  yield gMetadataStore.asyncInsert([metadata], true);
 
   let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
   assert.equal(items.length, 1, "Page is inserted");
-  let error = false;
+  yield gMetadataStore.asyncInsert([metadata], true);
+  assert.equal(items.length, 1, "Page was not re-inserted");
+};
+
+exports.test_throw_correct_errors_for_insert_failures = function*(assert) {
+  const metadata = metadataFixture[0];
+  let failureMessage = "Failed to insert for some reason";
+  // force the insertion to fail for a certain reason
+  gMetadataStore._asyncGetLastInsertRowID = () => {
+    throw new Error(failureMessage);
+  };
+
+  // test that if the failure message is unrelated to unique constraints, we should throw that error
+  let error;
   try {
     yield gMetadataStore.asyncInsert([metadata]);
   } catch (e) {
-    error = true;
+    error = e;
   }
-  assert.ok(error, "Re-insert the same page should be rejected!");
+  assert.equal(error.message, failureMessage, "Throw an error for insert failures not related to unique constraints");
+
+  // test that if the failure is due to a unique constraint failure, we do not throw that error
+  failureMessage = "UNIQUE constraint failed";
+  let errorFired = false;
+  try {
+    yield gMetadataStore.asyncInsert([metadata], true);
+  } catch (e) {
+    errorFired = true;
+  }
+  assert.equal(errorFired, false, "Do not throw for unique constaint failures");
 };
 
 /**

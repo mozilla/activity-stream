@@ -356,7 +356,7 @@ PreviewProvider.prototype = {
       expired_at: (this.options.metadataTTL) + Date.now(),
       metadata_source: metadataSource
     }));
-    this._metadataStore.asyncInsert(linksToInsert).catch(err => {
+    this._metadataStore.asyncInsert(linksToInsert, true).catch(err => {
       // TODO: add more exception handling code, e.g. sending exception report
       Cu.reportError(err);
     });
