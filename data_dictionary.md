@@ -1,6 +1,6 @@
 # Activity Stream Pings
 
-The Activity Stream addon sends two distinct types of pings to the backend (HTTPS POST) [Onyx server](https://github.com/mozilla/onyx) :
+The Activity Stream addon sends various types of pings to the backend (HTTPS POST) [Onyx server](https://github.com/mozilla/onyx) :
 - a `session` ping that describes the ending of an Activity Stream session (lose focus event on Activity Stream), and
 - an `event` ping that records specific data about individual user interactions while interacting with Activity Stream
 - a `performance` ping that records specific performance related events
@@ -26,7 +26,7 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
   "total_bookmarks": 19,
   "total_history_size": 9,
   "ua": "python-requests/2.9.1",
-  "unload_reason": "close",
+  "unload_reason": "close"
 }
 ```
 
@@ -89,7 +89,7 @@ The Activity Stream addon sends two distinct types of pings to the backend (HTTP
 | `locale` | [Auto populated by Onyx] The browser chrome's language (eg. en-US). | :two:
 | `max_scroll_depth` | [Optional] The maximum number of pixels the scroll bar was dragged in this session. | :one:
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`Embedly` or `MetadataService` or `Local` or `TippyTopProvider`). | :one:
-| `page` | [Required] | "NEW_TAB". | :one:
+| `page` | [Required] "NEW_TAB". | :one:
 | `provider` | [Optional] The name of share provider. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:
 | `session_duration` | [Required] Defined to be the time in milliseconds between the newtab gaining and losing focus. | :one:
