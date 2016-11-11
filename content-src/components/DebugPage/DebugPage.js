@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {selectNewTabSites} = require("selectors/selectors");
+const {selectNewTabSites} = require("common/selectors/selectors");
 const {SpotlightItem} = require("components/Spotlight/Spotlight");
 const TopSites = require("components/TopSites/TopSites");
 const faker = require("test/faker");

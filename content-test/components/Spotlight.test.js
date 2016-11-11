@@ -1,6 +1,6 @@
 const ConnectedSpotlight = require("components/Spotlight/Spotlight");
 const {Spotlight, SpotlightItem} = ConnectedSpotlight;
-const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");
+const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");

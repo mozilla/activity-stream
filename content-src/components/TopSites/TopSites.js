@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {justDispatch} = require("selectors/selectors");
+const {justDispatch} = require("common/selectors/selectors");
 const {actions} = require("common/action-manager");
 const classNames = require("classnames");
 const LinkMenu = require("components/LinkMenu/LinkMenu");

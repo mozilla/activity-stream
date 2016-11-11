@@ -2,7 +2,7 @@ const {
   selectSiteIcon,
   getBackgroundRGB,
   assignImageAndBackgroundColor
-} = require("selectors/colorSelectors");
+} = require("common/selectors/colorSelectors");
 
 const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
 const BACKGROUND_FADE = 0.5;

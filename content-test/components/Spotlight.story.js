@@ -1,7 +1,7 @@
 const React = require("react");
 const {Spotlight, SpotlightItem} = require("components/Spotlight/Spotlight");
 const {storiesOf, action} = require("@kadira/storybook");
-const {selectNewTabSites} = require("selectors/selectors");
+const {selectNewTabSites} = require("common/selectors/selectors");
 const {createMockProvider, rawMockData, faker} = require("test/test-utils");
 const {HIGHLIGHTS_LENGTH} = require("common/constants");
 const createSite = faker.createSite;

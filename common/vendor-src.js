@@ -12,6 +12,7 @@ if (typeof platform_require !== "undefined") {
 const vendorModules = {
   "redux": require("redux"),
   "redux-thunk": require("redux-thunk"),
+  "reselect": require("reselect"),
   "url-parse": require("url-parse"),
   "PageMetadataParser": require("page-metadata-parser"),
   "redux-watch": require("redux-watch"),

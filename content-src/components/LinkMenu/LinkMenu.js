@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {selectShareProviders} = require("selectors/selectors");
+const {selectShareProviders} = require("common/selectors/selectors");
 const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
 const {FIRST_RUN_TYPE} = require("lib/first-run-data");

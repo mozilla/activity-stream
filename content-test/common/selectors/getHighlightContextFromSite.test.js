@@ -1,4 +1,4 @@
-const getHighlightContextFromSite = require("selectors/getHighlightContextFromSite");
+const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 describe("getHighlightContextFromSite", () => {
