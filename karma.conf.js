@@ -61,9 +61,29 @@ module.exports = function(config) {
           loader: "istanbul-instrumenter",
           include: [
             path.join(__dirname, "content-src"),
-            path.join(__dirname, "addon/PerfMeter.js")
+            path.join(__dirname, "common"),
+            path.join(__dirname, "addon")
           ],
-          exclude: [/DebugPage/, /\.test\.js$/]
+          exclude: [
+            /DebugPage/,
+            /\.test\.js$/,
+            path.join(__dirname, "addon/ActivityStreams.js"),
+            path.join(__dirname, "addon/AppURLHider.js"),
+            path.join(__dirname, "addon/ColorAnalyzer.js"),
+            path.join(__dirname, "addon/ColorAnalyzerProvider.js"),
+            path.join(__dirname, "addon/main.js"),
+            path.join(__dirname, "addon/MetadataStore.js"),
+            path.join(__dirname, "addon/MetadataStoreMigration.js"),
+            path.join(__dirname, "addon/PlacesProvider.js"),
+            path.join(__dirname, "addon/PreviewProvider.js"),
+            path.join(__dirname, "addon/RecommendationProvider.js"),
+            path.join(__dirname, "addon/SearchProvider.js"),
+            path.join(__dirname, "addon/ShareManifests.js"),
+            path.join(__dirname, "addon/ShareProvider.js"),
+            path.join(__dirname, "addon/TabTracker.js"),
+            path.join(__dirname, "addon/TelemetrySender.js"),
+            path.join(__dirname, "addon/TippyTopProvider.js")
+          ]
         }]
       },
       plugins: webpack.plugins
