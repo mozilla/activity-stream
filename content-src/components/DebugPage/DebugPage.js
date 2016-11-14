@@ -1,12 +1,14 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {selectNewTabSites} = require("common/selectors/selectors");
-const {SpotlightItem} = require("components/Spotlight/Spotlight");
+const {assignImageAndBackgroundColor} = require("common/selectors/colorSelectors");
+const {Spotlight, SpotlightItem} = require("components/Spotlight/Spotlight");
 const TopSites = require("components/TopSites/TopSites");
 const faker = require("test/faker");
 const sizeof = require("object-sizeof");
 const {ShowAllHints} = require("common/action-manager").actions;
 const experimentDefinitions = require("../../../experiments.json");
+const UI_COMPONENTS = ["TopSites", "Highlights"];
 
 // Only include this in DEVELOPMENT builds
 let JSONTree;
@@ -30,7 +32,7 @@ const DebugPage = React.createClass({
   getInitialState() {
     return {
       component: "TopSites",
-      dataSource: "Highlights",
+      dataSource: "TopSites",
       highlightData: [
         faker.createSpotlightItem(),
         faker.createSpotlightItem({type: "bookmark"}),
@@ -92,7 +94,7 @@ const DebugPage = React.createClass({
             <div className="form-group">
               <label>UI Component</label>
               <select value={this.state.component} onChange={e => this.setState({component: e.target.value})}>
-                <option value={"TopSites"}>Top Sites</option>
+                {UI_COMPONENTS.map(component => <option key={component} value={component}>{component}</option>)}
               </select>
             </div>
             <div className="form-group">
@@ -106,6 +108,11 @@ const DebugPage = React.createClass({
             {this.state.component === "TopSites" &&
               <TopSites
                 sites={this.props.raw[this.state.dataSource].rows}
+                length={this.props.raw[this.state.dataSource].rows.length} />
+            }
+            {this.state.component === "Highlights" &&
+              <Spotlight
+                sites={assignImageAndBackgroundColor(this.props.raw[this.state.dataSource].rows)}
                 length={this.props.raw[this.state.dataSource].rows.length} />
             }
           </div>
