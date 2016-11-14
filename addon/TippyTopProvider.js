@@ -2,7 +2,7 @@
 "use strict";
 
 const data = require("sdk/self").data;
-const urlParse = require("common/vendor")("url-parse");
+const getSiteData = require("common/vendor")("tippy-top-sites").getSiteData;
 
 const DEFAULT_OPTIONS = {sites: null};
 
@@ -13,22 +13,12 @@ function TippyTopProvider(options = {}) {
 
 TippyTopProvider.prototype = {
   /**
-   * Initialize the sites object
+   * Initialize provider.
    */
   init() {
-    // If the sites were passed into the constructor (for testability), use those.
-    // Else, read them from top_sites.json.
-    let sites;
-    if (this.options.sites) {
-      sites = this.options.sites;
-    } else {
-      sites = JSON.parse(data.load("content/favicons/top_sites.json"));
-    }
-
-    this._sitesByDomain = {};
-    sites.forEach(site => {
-      this._sitesByDomain[this._getKey(site.url)] = site;
-    });
+    // If a getSiteData function is passed into the constructor (for testability), use it.
+    // Else, use the one provided by tippy-top-sites.
+    this._getTippyTopData = this.options.getSiteData || getSiteData;
   },
 
   /**
@@ -36,32 +26,20 @@ TippyTopProvider.prototype = {
     */
   processSite(site) {
     let enhancedSite = Object.assign({}, site);
-    let key;
-    try {
-      key = this._getKey(site.url);
-    } catch (e) {
-      key = null;
-    }
-    if (key && key in this._sitesByDomain) {
-      let tippyTopSite = this._sitesByDomain[key];
+    let tippyTopSite = this._getTippyTopData(site.url);
+    let usedTippyTopData = false;
+    if ("image_url" in tippyTopSite) {
       enhancedSite.favicon_url = data.url(`content/favicons/images/${tippyTopSite.image_url}`);
+      usedTippyTopData = true;
+    }
+    if ("background_color" in tippyTopSite) {
       enhancedSite.background_color = tippyTopSite.background_color;
-      if (!enhancedSite.metadata_source) {
-        enhancedSite.metadata_source = "TippyTopProvider";
-      }
+      usedTippyTopData = true;
+    }
+    if (!enhancedSite.metadata_source && usedTippyTopData) {
+      enhancedSite.metadata_source = "TippyTopProvider";
     }
     return enhancedSite;
-  },
-
-  /**
-    * Create a key using the domain (minus the www.).
-    */
-  _getKey(url) {
-    let domain = urlParse(url, false).host;
-    if (domain && domain.startsWith("www.")) {
-      domain = domain.slice(4);
-    }
-    return domain;
   }
 };
 

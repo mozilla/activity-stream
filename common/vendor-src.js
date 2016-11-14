@@ -16,7 +16,8 @@ const vendorModules = {
   "url-parse": require("url-parse"),
   "PageMetadataParser": require("page-metadata-parser"),
   "redux-watch": require("redux-watch"),
-  "lodash.debounce": require("lodash.debounce")
+  "lodash.debounce": require("lodash.debounce"),
+  "tippy-top-sites": require("tippy-top-sites")
 };
 
 module.exports = function vendor(moduleName) {
