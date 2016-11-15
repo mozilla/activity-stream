@@ -34,29 +34,10 @@ const NewTabPage = React.createClass({
     setFavicon("newtab-icon.svg");
 
     // Note that data may or may not be complete, depending on
-    // the state of the master store
+    // the state of the master store, as well as if all the selectors
+    // have finished (in which case the "Welcome" dialog maybe be being shown
+    // without any actual images).
     this.props.dispatch(actions.NotifyPerf("NEWTAB_RENDER"));
-
-    // Check for stabilization of state changes if things aren't ready
-    if (this.props.isReady === false) {
-      let lastSize = 0;
-      let lastUpdate = Date.now();
-      setInterval(() => {
-        // Reload the page if things appear to have stabilized
-        let now = Date.now();
-        let newSize = (localStorage.ACTIVITY_STREAM_STATE || "").length;
-        if (newSize === lastSize) {
-          if (now - lastUpdate > 3000) {
-            location.reload();
-          }
-        }
-        // Remember the time of the last state change
-        else {
-          lastSize = newSize;
-          lastUpdate = now;
-        }
-      }, 100);
-    }
   },
   render() {
     const props = this.props;
