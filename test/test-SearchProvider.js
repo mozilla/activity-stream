@@ -2,8 +2,9 @@
 "use strict";
 
 const {before, after} = require("sdk/test/utils");
-const {SearchProvider} = require("addon/SearchProvider");
+const {SearchProvider, HIDDEN_ENGINES_PREF} = require("addon/SearchProvider");
 const {Cu} = require("chrome");
+const prefService = require("sdk/preferences/service");
 
 Cu.import("resource://gre/modules/Services.jsm");
 
@@ -31,6 +32,19 @@ exports.test_SearchProvider_state = function(assert) {
   assert.equal(currentEngine.name, Services.search.currentEngine.name, "Current engine has been correctly set");
   let engineProps = hasProp(assert, currentEngine);
   ["name", "iconBuffer"].forEach(engineProps);
+};
+
+exports.test_SearchProvider_prefChange = function*(assert) {
+  gSearchProvider.init();
+  let promise = new Promise(resolve => {
+    gSearchProvider.on("browser-search-engine-modified", (name, data) => {
+      resolve([name, data]);
+    });
+  });
+  prefService.set(HIDDEN_ENGINES_PREF, "Yahoo,Bing");
+  const [name, data] = yield promise;
+  assert.equal(name, "browser-search-engine-modified", "pref triggered the right event");
+  assert.equal(data, "hiddenOneOffs", "event has the right data");
 };
 
 exports.test_SearchProvider_observe_current = function*(assert) {
