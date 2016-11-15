@@ -6,20 +6,9 @@ const {Channel} = require("common/ReduxChannel");
 const parseUrlMiddleware = require("common/parse-url-middleware");
 const loggerMiddleware = require("common/redux-logger");
 const {LOCAL_STORAGE_KEY} = require("common/constants");
-let store;
+const {areSelectorsReady} = require("common/selectors/selectorUtils.js");
 
-/**
- * Returns whether or not the selectors have finished initializing.
- *
- * XXX copy-pasted from selectors.js; it should really be exposed and unit
- * tested there (#1798)
- *
- * @param  {Object} state  The state object.
- * @return {Boolean}
- */
-function areSelectorsReady(state) {
-  return state.TopSites.init && state.Highlights.init && state.Experiments.init;
-}
+let store;
 
 /**
  * rehydrateFromLocalStorage - Fetches initial state from local storage
