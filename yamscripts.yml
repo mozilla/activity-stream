@@ -14,11 +14,9 @@ scripts:
 
   copyTestImages: cpx "node_modules/tippy-top-sites/images/**/*" data/content/favicons/images
 
-  copyTopSitesJson: cpx "node_modules/tippy-top-sites/top_sites.json" data/content/favicons
-
 # bundle: Bundle assets for production
   bundle:
-    pre: =>clean && =>copyTestImages && =>copyTopSitesJson
+    pre: =>clean && =>copyTestImages
     static: cpx "content-src/static/**/*" data/content
     svgo: svgo -q -f data/content/img/
     webpack: NODE_ENV=production webpack
@@ -30,7 +28,7 @@ scripts:
 # start: Start watching/compiling assets,
   start:
     _parallel: true
-    pre: =>clean && =>copyTestImages && =>copyTopSitesJson
+    pre: =>clean && =>copyTestImages
     static: =>bundle:static -- -w
     webpack: webpack -w
     webpackAddon: =>bundle:webpackAddon -- -w
@@ -49,7 +47,7 @@ scripts:
 
 # test: Run all tests once
   test:
-    pre: =>bundle && =>copyTestImages && =>copyTopSitesJson
+    pre: =>bundle && =>copyTestImages
     lint: =>lint
     checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests

@@ -1,6 +1,6 @@
 const faker = require("faker");
 const moment = require("moment");
-const tiptop = require("tippy-top-sites");
+const tiptop = require("tippy-top-sites").sites;
 
 const BASE_TIP_TOP_FAVICON_URL = "favicons/images/";
 

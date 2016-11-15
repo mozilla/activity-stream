@@ -1,6 +1,7 @@
 "use strict";
 
 const {TippyTopProvider} = require("addon/TippyTopProvider");
+const urlParse = require("common/vendor")("url-parse");
 
 exports["test TippyTopProvider init"] = function(assert) {
   // Test the default init
@@ -22,19 +23,38 @@ exports["test TippyTopProvider init"] = function(assert) {
 exports["test TippyTopProvider processSite"] = function(assert) {
   // Test init with options
   let tippyTopProvider = new TippyTopProvider({
-    sites: [{
-      url: "https://mozilla.org",
-      image_url: "mozilla-org.png",
-      background_color: "#fff"
-    }, {
-      url: "http://github.com",
-      image_url: "github-com.png",
-      background_color: "#eee"
-    }, {
-      url: "https://www.example.com",
-      image_url: "example-com.png",
-      background_color: "#ddd"
-    }]
+    getSiteData: url => {
+      let sites = {
+        "mozilla.org": {
+          url: "https://mozilla.org",
+          image_url: "mozilla-org.png",
+          background_color: "#fff"
+        },
+        "github.com": {
+          url: "http://github.com",
+          image_url: "github-com.png",
+          background_color: "#eee"
+        },
+        "example.com": {
+          url: "https://www.example.com",
+          image_url: "example-com.png",
+          background_color: "#ddd"
+        }
+      };
+      function getDomain(url) {
+        let domain = urlParse(url, false).host;
+        if (domain && domain.startsWith("www.")) {
+          domain = domain.slice(4);
+        }
+        return domain;
+      }
+
+      let domain = getDomain(url);
+      if (domain in sites) {
+        return sites[domain];
+      }
+      return {};
+    }
   });
 
   // Test with an unknown site
