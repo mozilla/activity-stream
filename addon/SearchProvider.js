@@ -3,8 +3,9 @@ SearchSuggestionController, PrivateBrowsingUtils, exports, require */
 
 "use strict";
 const {Ci, Cu} = require("chrome");
+const {PrefsTarget} = require("sdk/preferences/event-target");
 const SEARCH_ENGINE_TOPIC = "browser-search-engine-modified";
-const HIDDEN_ENGINES = "browser.search.hiddenOneOffs";
+const HIDDEN_ENGINES_PREF = "browser.search.hiddenOneOffs";
 const ENGINE_ICON_SIZE = 16;
 const MAX_LOCAL_SUGGESTIONS = 3;
 const MAX_SUGGESTIONS = 6;
@@ -28,6 +29,8 @@ XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
 
 function SearchProvider() {
   EventEmitter.decorate(this);
+  this._target = PrefsTarget();
+  this._onPrefChange = this._onPrefChange.bind(this);
 }
 
 SearchProvider.prototype = {
@@ -39,6 +42,13 @@ SearchProvider.prototype = {
     Ci.nsIObserver,
     Ci.nsISupportsWeakReference
   ]),
+
+  /**
+   * Event listener for the HIDDEN_ENGINES_PREF pref change
+   */
+  _onPrefChange(e) {
+    this.emit(SEARCH_ENGINE_TOPIC, "hiddenOneOffs");
+  },
 
   /**
    *  Observe current engine changes to notify all other newtab pages.
@@ -60,6 +70,7 @@ SearchProvider.prototype = {
    *  Initialize the Search Provider.
    */
   init() {
+    this._target.on(HIDDEN_ENGINES_PREF, this._onPrefChange);
     Services.obs.addObserver(this, SEARCH_ENGINE_TOPIC, true);
   },
 
@@ -67,6 +78,7 @@ SearchProvider.prototype = {
    *  Unintialize the Search Provider.
    */
   uninit() {
+    this._target.removeListener(HIDDEN_ENGINES_PREF, this._onPrefChange);
     Services.obs.removeObserver(this, SEARCH_ENGINE_TOPIC, true);
   },
 
@@ -137,7 +149,7 @@ SearchProvider.prototype = {
       engines: [],
       currentEngine: this.currentEngine
     };
-    const pref = Services.prefs.getCharPref(HIDDEN_ENGINES);
+    const pref = Services.prefs.getCharPref(HIDDEN_ENGINES_PREF);
     const hiddenEngines = pref ? pref.split(",") : [];
     let result = Services.search.getVisibleEngines().filter(engine => !hiddenEngines.includes(engine.name));
     for (let engine of result) {
@@ -268,3 +280,4 @@ SearchProvider.prototype = {
 };
 
 exports.SearchProvider = SearchProvider;
+exports.HIDDEN_ENGINES_PREF = HIDDEN_ENGINES_PREF;
