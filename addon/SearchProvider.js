@@ -3,7 +3,7 @@ SearchSuggestionController, PrivateBrowsingUtils, exports, require */
 
 "use strict";
 const {Ci, Cu} = require("chrome");
-const CURRENT_ENGINE = "browser-search-engine-modified";
+const SEARCH_ENGINE_TOPIC = "browser-search-engine-modified";
 const HIDDEN_ENGINES = "browser.search.hiddenOneOffs";
 const ENGINE_ICON_SIZE = 16;
 const MAX_LOCAL_SUGGESTIONS = 3;
@@ -44,9 +44,15 @@ SearchProvider.prototype = {
    *  Observe current engine changes to notify all other newtab pages.
    */
   observe(subject, topic, data) {
-    if (topic === CURRENT_ENGINE && data === "engine-current") {
-      let engine = this.currentEngine;
-      this.emit(CURRENT_ENGINE, engine);
+    if (topic !== SEARCH_ENGINE_TOPIC) {
+      return;
+    }
+    switch (data) {
+      case "engine-current":
+      case "engine-changed":
+      case "engine-added":
+      case "engine-removed":
+        this.emit(SEARCH_ENGINE_TOPIC, data);
     }
   },
 
@@ -54,14 +60,14 @@ SearchProvider.prototype = {
    *  Initialize the Search Provider.
    */
   init() {
-    Services.obs.addObserver(this, CURRENT_ENGINE, true);
+    Services.obs.addObserver(this, SEARCH_ENGINE_TOPIC, true);
   },
 
   /**
    *  Unintialize the Search Provider.
    */
   uninit() {
-    Services.obs.removeObserver(this, CURRENT_ENGINE, true);
+    Services.obs.removeObserver(this, SEARCH_ENGINE_TOPIC, true);
   },
 
   /**
