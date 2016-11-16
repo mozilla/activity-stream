@@ -19,7 +19,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
   "load_reason": "restore",
   "locale": "en-US",
   "max_scroll_depth": 145,
-  "page": "NEW_TAB",
+  "page": "NEW_TAB or HOME",
   "receive_at": 1457396660000,
   "session_duration": 1635,
   "tab_id": "1-3",
@@ -42,7 +42,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
   "event": "click or scroll or search or delete",
   "ip": "10.192.171.13",
   "locale": "en-US",
-  "page": "NEW_TAB",
+  "page": "NEW_TAB or HOME",
   "receive_at": 1457396660000,
   "source": "top sites, or bookmarks, or...",
   "tab_id": "1-3",
@@ -89,7 +89,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `locale` | [Auto populated by Onyx] The browser chrome's language (eg. en-US). | :two:
 | `max_scroll_depth` | [Optional] The maximum number of pixels the scroll bar was dragged in this session. | :one:
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`Embedly` or `MetadataService` or `Local` or `TippyTopProvider`). | :one:
-| `page` | [Required] "NEW_TAB". | :one:
+| `page` | [Required] Either ["NEW_TAB", "HOME"]. | :one:
 | `provider` | [Optional] The name of share provider. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:
 | `session_duration` | [Required] Defined to be the time in milliseconds between the newtab gaining and losing focus. | :one:

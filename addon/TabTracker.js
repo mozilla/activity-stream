@@ -79,7 +79,7 @@ TabTracker.prototype = {
     payload.client_id = this._clientID;
     payload.addon_version = self.version;
     payload.locale = Locale.getLocale();
-    payload.page = eventConstants.defaultPage;
+    payload.page = url.split("#/")[1] || eventConstants.defaultPage;
     payload.session_id = this._tabData.session_id;
     if (this._experimentID) {
       payload.experiment_id = this._experimentID;

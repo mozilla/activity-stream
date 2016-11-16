@@ -591,6 +591,9 @@ exports.test_TabTracker_pageType = function*(assert) {
   assert.deepEqual(app.tabData, {}, "tabData starts out empty");
   let pingData = yield openTestTab(ACTIVITY_STREAMS_URL);
   assert.equal(pingData.page, "NEW_TAB", "page type is newtab");
+
+  pingData = yield openTestTab(`${ACTIVITY_STREAMS_URL}HOME`);
+  assert.equal(pingData.page, "HOME", "page type is home");
 };
 
 const openTestTabExample = Task.async(function*(openUrl) {
