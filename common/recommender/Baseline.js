@@ -2,7 +2,6 @@
 
 const URL = require("common/vendor")("url-parse");
 const getBestImage = require("../getBestImage");
-const {INFINITE_SCROLL_THRESHOLD} = require("../constants");
 
 /**
  * Score function for URLs.
@@ -166,8 +165,7 @@ class Baseline {
    * @returns {Array.<URLs>} sorted and with the associated score value.
    */
   score(entries) {
-    let results = this.filterOutRecentUrls(entries)
-                    .map(entry => this.extractFeatures(entry))
+    let results = entries.map(entry => this.extractFeatures(entry))
                     .map(entry => this.scoreEntry(entry))
                     .sort(this.sortDescByScore)
                     .filter(entry => entry.score > 0);
@@ -177,23 +175,7 @@ class Baseline {
     let dedupedEntries = this._dedupeSites(results);
 
     // Sort again after adjusting score.
-    return dedupedEntries.sort(this.sortDescByScore).slice(0, INFINITE_SCROLL_THRESHOLD);
-  }
-
-  /**
-   * It checks to see how many articles are older than 30 minutes.
-   * If we have more than 20 to show remove the recent ones.
-   * @param {Array} entries
-   * @returns {Array}
-   */
-  filterOutRecentUrls(entries) {
-    let olderEntries = entries.filter(entry => Date.now() - entry.lastVisitDate > 1e3 * 1800);
-
-    if (olderEntries.length > INFINITE_SCROLL_THRESHOLD) {
-      return olderEntries;
-    }
-
-    return entries;
+    return dedupedEntries.sort(this.sortDescByScore);
   }
 
   /**
