@@ -23,13 +23,7 @@ function TabTracker(options) {
   this._tabData = {};
   this._clientID = options.clientID;
   this.onOpen = this.onOpen.bind(this);
-
   this._onPrefChange = this._onPrefChange.bind(this);
-  this.enabled = simplePrefs.prefs[TELEMETRY_PREF];
-  if (this.enabled) {
-    this._addListeners();
-  }
-  simplePrefs.on(TELEMETRY_PREF, this._onPrefChange);
 }
 
 TabTracker.prototype = {
@@ -43,6 +37,12 @@ TabTracker.prototype = {
     this._trackableURLs = trackableURLs;
     this._experimentID = experimentId;
     this._store = store;
+
+    this.enabled = simplePrefs.prefs[TELEMETRY_PREF];
+    if (this.enabled) {
+      this._addListeners();
+    }
+    simplePrefs.on(TELEMETRY_PREF, this._onPrefChange);
   },
 
   _addListeners() {
