@@ -546,12 +546,12 @@ ActivityStreams.prototype = {
     if (!ss.storage.homepageOverriden &&
         (!prefService.isSet(HOME_PAGE_PREF) ||
          ["about:home", "about:blank"].includes(prefService.get(HOME_PAGE_PREF)))) {
-      prefService.set(HOME_PAGE_PREF, this._newTabURL);
+      prefService.set(HOME_PAGE_PREF, `${this._newTabURL}HOME`);
     }
   },
 
   _unsetHomePage() {
-    if (prefService.get(HOME_PAGE_PREF) === this._newTabURL) {
+    if (prefService.get(HOME_PAGE_PREF) === `${this._newTabURL}HOME`) {
       // Reset home page back if user didn't change it.
       prefService.reset(HOME_PAGE_PREF);
     } else {
@@ -569,7 +569,8 @@ ActivityStreams.prototype = {
       let baseUrl = this.options.pageURL;
       this._appURLs = [
         baseUrl,
-        `${baseUrl}#/`
+        `${baseUrl}#/`,
+        `${baseUrl}#/HOME`
       ];
     }
     return this._appURLs;
