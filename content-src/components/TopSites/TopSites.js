@@ -67,14 +67,7 @@ const TopSites = React.createClass({
         action_position: index,
         metadata_source: site.metadata_source
       };
-      if (site.recommended) {
-        payload.url = site.url;
-        payload.recommender_type = site.recommender_type;
-      }
       this.props.dispatch(actions.NotifyEvent(payload));
-      if (site.recommended) {
-        this.props.dispatch(actions.NotifyBlockRecommendation(site.url));
-      }
     };
   },
   render() {
