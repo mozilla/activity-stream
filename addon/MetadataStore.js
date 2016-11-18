@@ -223,18 +223,6 @@ MetadataStore.prototype = {
     return rgb ? `#${((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1).toUpperCase()}` : null;
   },
 
-  /**
-  * Convert a hex color string to the RGB form, e.g. #0A0102 => [10, 1, 2]
-  */
-  _hexToRgb(hex) {
-    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? [
-      parseInt(result[1], 16),
-      parseInt(result[2], 16),
-      parseInt(result[3], 16)
-    ] : null;
-  },
-
   _asyncGetLastInsertRowID: Task.async(function*() {
     let result = yield this._conn.execute(SQL_LAST_INSERT_ROWID);
     return result[0].getResultByName("lastInsertRowID");
@@ -497,13 +485,13 @@ MetadataStore.prototype = {
           case IMAGE_TYPES.favicon_rich:
             metaObject.favicons.push({
               url: image.url,
-              color: this._hexToRgb(image.color)
+              color: image.color
             });
             break;
           case IMAGE_TYPES.preview:
             metaObject.images.push({
               url: image.url,
-              color: this._hexToRgb(image.color),
+              color: image.color,
               height: image.height,
               width: image.width
             });

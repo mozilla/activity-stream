@@ -92,9 +92,7 @@ storiesOf("Highlight Item", module)
     const site = createSite({images: 1});
     site.bestImage = site.images[0];
     site.favicon_url = null;
-    site.favicon = null;
-    site.favicon_color = null;
-    site.favicon_colors = null;
+    site.background_color = null;
     return (<Container><SpotlightItem {...site} /></Container>);
   })
   .add("Missing a description", () => {

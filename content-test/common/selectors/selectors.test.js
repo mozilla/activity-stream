@@ -106,8 +106,8 @@ describe("selectors", () => {
         assert.equal(state.Highlights.rows[0].url, "https://bar.com");
       });
       it("should be processed by assignImageAndBackgroundColor", () => {
-        setup({Highlights: [{url: "http://asdad23asd.com", background_color: "#fff"}]});
-        assert.equal(state.Highlights.rows[0].backgroundColor, "#fff");
+        setup({Highlights: [{url: "http://asdad23asd.com", background_color: [0, 0, 0]}]});
+        assert.equal(state.Highlights.rows[0].backgroundColor, "rgb(0, 0, 0)");
       });
     });
 

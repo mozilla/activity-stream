@@ -74,13 +74,13 @@ exports.test_get_links_from_metadatastore = function*(assert) {
   const links = [
     {cache_key: "https://www.mozilla.org/", places_url: "https://www.mozilla.org/"},
     {cache_key: "https://www.mozilla.org/en-US/firefox/new/", places_url: "https://www.mozilla.org/en-US/firefox/new"},
-    {cache_key: "https://www.notinDB.com/", places_url: "https://www.notinDB.com/"}];
+    {cache_key: "https://www.notinDB.com/", places_url: "https://www.notinDB.com/", favicon_url: "https://www.someImage.com/image.jpg"}];
 
   // get enhanced links - the third link should be returned as is since it
   // is not yet in the database
   let cachedLinks = yield gPreviewProvider._asyncGetEnhancedLinks(links);
   assert.equal(cachedLinks.length, 3, "returned all 3 links");
-  assert.deepEqual(cachedLinks[2], links[2], "the third link's cache_key was untouched");
+  assert.deepEqual(cachedLinks[2].cache_key, links[2].cache_key, "the third link's cache_key was untouched");
 
   // get enhanced links after third link has been inserted in db - the third
   // link should now have more properties i.e title, description etc...
@@ -88,9 +88,9 @@ exports.test_get_links_from_metadatastore = function*(assert) {
   cachedLinks = yield gPreviewProvider._asyncGetEnhancedLinks(links);
   assert.equal(cachedLinks.length, 3, "returned all 3 links");
   assert.equal(cachedLinks[2].title, null, "the third link has a title field");
-  assert.equal(cachedLinks[2].description, null, "the third links has a description field");
-  assert.deepEqual(cachedLinks[2].images, [], "the third links has images field");
-  assert.deepEqual(cachedLinks[2].favicons, [], "the third links has favicons field");
+  assert.equal(cachedLinks[2].description, null, "the third link has a description field");
+  assert.deepEqual(cachedLinks[2].images, [], "the third link has images field");
+  assert.equal(cachedLinks[2].favicon_url, links[2].favicon_url, "the third link has favicon_url field");
 };
 
 function waitForAsyncReset() {
@@ -126,6 +126,9 @@ before(exports, function*() {
   yield gMetadataStore.asyncConnect();
   let mockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
   gPreviewProvider = new PreviewProvider(mockTabTracker, gMetadataStore, {data: {metadataService: false}}, {initFresh: true});
+  gPreviewProvider._getFaviconColors = function() {
+    return Promise.resolve(null);
+  };
 });
 
 after(exports, function*() {

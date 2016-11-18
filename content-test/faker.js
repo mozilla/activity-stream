@@ -68,7 +68,6 @@ function createSite(optional = {}) {
     // This is stuff from Firefox
     "bookmarkDateCreated": null,
     "bookmarkGuid": null,
-    "favicon": "data:image/png;base64,iVBORw0KGgoAA",
     "title": tiptopSite.title || `${name} - ${faker.company.catchPhrase()}`,
     "url": tiptopSite.url || faker.internet.url(),
     "lastVisitDate": date.valueOf(),
@@ -98,12 +97,12 @@ function createSite(optional = {}) {
     site.images = arrayOf(createImage, options.images);
   }
 
-  // Only create favicon_colors if there is a favicon_url
+  // Only create background_color if there is a favicon_url
   if (site.favicon_url && tiptopSite.background_color_rgb) {
-    site.favicon_colors = [createColor(tiptopSite.background_color_rgb)];
+    site.background_color = [createColor(tiptopSite.background_color_rgb)];
   }
-  if (site.favicon_url && options.favicon_colors) {
-    site.favicon_colors = arrayOf(createColor, options.favicon_colors);
+  if (site.favicon_url && options.background_color) {
+    site.background_color = arrayOf(createColor, options.background_color);
   }
 
   if (options.hasBookmark || site.type === "bookmark") {

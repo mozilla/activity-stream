@@ -63,8 +63,7 @@ SiteIcon.propTypes = {
   site: React.PropTypes.shape({
     title: React.PropTypes.string,
     provider_name: React.PropTypes.string,
-    icons: React.PropTypes.array,
-    favicon_colors: React.PropTypes.array
+    icons: React.PropTypes.array
   }).isRequired
 };
 

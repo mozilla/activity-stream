@@ -1,11 +1,10 @@
 const {
   selectSiteIcon,
-  getBackgroundRGB,
+  getFallbackColor,
   assignImageAndBackgroundColor
 } = require("common/selectors/colorSelectors");
 
 const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
-const BACKGROUND_FADE = 0.5;
 
 const validSpotlightSite = {
   "title": "man throws alligator in wendys wptv dnt cnn",
@@ -22,26 +21,14 @@ const validSpotlightSite = {
 };
 
 describe("colorSelectors", () => {
-  describe("getBackgroundRGB", () => {
-    it("should use favicon_colors if available", () => {
-      assert.deepEqual(
-        getBackgroundRGB({url: "http://foo.com", favicon_colors: [{color: [11, 11, 11]}]}),
-        [11, 11, 11]
-      );
-    });
-    it("should use favicons[0].color if available", () => {
-      assert.deepEqual(
-        getBackgroundRGB({url: "http://foo.com", favicons: [{color: [11, 11, 11]}]}),
-        [11, 11, 11]
-      );
-    });
+  describe("getFallbackColor", () => {
     it("should use a default bg if a favicon is supplied", () => {
-      const result = getBackgroundRGB({url: "http://foo.com", favicon_url: "adsd.ico"});
+      const result = getFallbackColor({url: "http://foo.com", favicon_url: "adsd.ico"});
       assert.ok(result);
       assert.deepEqual(result, DEFAULT_FAVICON_BG_COLOR);
     });
-    it("should use a random color if no favicon_colors or favicon or favicons[0].color", () => {
-      const result = getBackgroundRGB({url: "http://foo.com"});
+    it("should use a random color if no background_color", () => {
+      const result = getFallbackColor({url: "http://foo.com"});
       assert.ok(result);
       assert.notDeepEqual(result, DEFAULT_FAVICON_BG_COLOR);
     });
@@ -52,12 +39,7 @@ describe("colorSelectors", () => {
       eTLD: "com",
       url: "http://foo.com",
       favicon_url: "http://foo.com/favicon.ico",
-      favicon: "http://foo.com/favicon-16.ico",
-      favicons: [{
-        colors: [11, 11, 11],
-        url: "http://foo.com/metadatafavicon.ico"
-      }],
-      favicon_colors: [{color: [11, 11, 11]}]
+      background_color: [11, 11, 11]
     };
     let state;
     beforeEach(() => {
@@ -76,37 +58,30 @@ describe("colorSelectors", () => {
     it("should select favicon_url", () => {
       assert.equal(state.favicon, siteWithFavicon.favicon_url);
     });
-    it("should fall back to favicon", () => {
-      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_url: null, favicons: null}));
-      assert.equal(state.favicon, siteWithFavicon.favicon);
-    });
-    it("should use favicons[0].url if exists", () => {
-      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_url: null}));
-      assert.equal(state.favicon, siteWithFavicon.favicons[0].url);
-    });
     it("should select the first letter of the hostname", () => {
       state = selectSiteIcon(Object.assign({}, siteWithFavicon, {url: "http://kate.com"}));
       assert.equal(state.firstLetter, "k");
     });
     it("should use site.background_color if it exists", () => {
-      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {background_color: "#111111"}));
-      assert.equal(state.backgroundColor, "#111111");
+      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {background_color: [0, 0, 0]}));
+      assert.equal(state.backgroundColor, "rgb(0, 0, 0)");
     });
     it("should create a background color", () => {
-      assert.equal(state.backgroundColor, `rgba(11, 11, 11, ${BACKGROUND_FADE})`);
+      assert.equal(state.backgroundColor, "rgb(11, 11, 11)");
     });
     it("should create an opaque background color if there is no favicon", () => {
-      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_url: null, favicon: null, favicons: null}));
-      assert.equal(state.backgroundColor, "rgba(11, 11, 11, 1)");
+      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_url: null, background_color: null}));
+      const regex = /rgba\([1-9]+,\s{1}[1-9]+,\s{1}[1-9]+,\s{1}1\)/;
+      assert.ok(regex.test(state.backgroundColor));
     });
     it("should create a random background color if no favicon color exists", () => {
-      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_colors: null}));
+      state = selectSiteIcon(Object.assign({}, siteWithFavicon, {background_color: null}));
       assert.ok(state.backgroundColor);
     });
     it("should create a contrasting font color", () => {
-      const darkColor = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_colors: [{color: [1, 1, 1]}]}));
+      const darkColor = selectSiteIcon(Object.assign({}, siteWithFavicon, {background_color: [1, 1, 1]}));
       assert.equal(darkColor.fontColor, "white");
-      const lightColor = selectSiteIcon(Object.assign({}, siteWithFavicon, {favicon_colors: [{color: [200, 200, 200]}]}));
+      const lightColor = selectSiteIcon(Object.assign({}, siteWithFavicon, {background_color: [200, 200, 200]}));
       assert.equal(lightColor.fontColor, "black");
     });
     it("should add a label (hostname without eTLD)", () => {

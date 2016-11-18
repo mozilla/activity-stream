@@ -17,5 +17,8 @@ module.exports = {
   },
 
   // This is where we cache redux state so it can be shared between pages
-  LOCAL_STORAGE_KEY: "ACTIVITY_STREAM_STATE"
+  LOCAL_STORAGE_KEY: "ACTIVITY_STREAM_STATE",
+
+  // The opacity value of favicon background colors
+  BACKGROUND_FADE: 0.5
 };
