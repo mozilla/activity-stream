@@ -13,10 +13,6 @@ const store = createStore({
   rehydrate: true
 });
 
-if (__CONFIG__.USE_SHIM) {
-  require("lib/shim")();
-}
-
 const Root = React.createClass({
   render() {
     return (<Provider store={store}>
