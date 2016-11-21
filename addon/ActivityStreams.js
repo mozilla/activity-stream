@@ -112,7 +112,7 @@ ActivityStreams.prototype = {
     this._tabTracker.init(this.appURLs, this._experimentProvider.experimentId, this._store);
     this._searchProvider.init();
     this._initializePreviewProvier(this._experimentProvider, this._metadataStore, this._tabTracker);
-    this._initializePageScraper(this._experimentProvider, this._previewProvider, this._tabTracker);
+    this._initializePageScraper(this._previewProvider, this._tabTracker);
     this._initializeRecommendationProvider(this._experimentProvider, this._previewProvider, this._tabTracker);
     this._initializeShareProvider(this._tabTracker);
     this._initializePrefProvider();
@@ -215,18 +215,15 @@ ActivityStreams.prototype = {
     }
   },
 
-  _initializePageScraper(experimentProvider, previewProvider, tabTracker) {
+  _initializePageScraper(previewProvider, tabTracker) {
     this._pageScraper = null;
 
-    if (experimentProvider.data.localMetadata) {
-      simplePrefs.prefs.pageScraper = true;
-      if (!this.options.pageScraper) {
-        this._pageScraper = new PageScraper(previewProvider, tabTracker);
-      } else {
-        this._pageScraper = this.options.pageScraper;
-      }
-      this._pageScraper.init();
+    if (!this.options.pageScraper) {
+      this._pageScraper = new PageScraper(previewProvider, tabTracker);
+    } else {
+      this._pageScraper = this.options.pageScraper;
     }
+    this._pageScraper.init();
   },
 
   /**
@@ -425,22 +422,6 @@ ActivityStreams.prototype = {
       this._prefsProvider.actionHandler(args);
     };
     this.on(CONTENT_TO_ADDON, this._contentToAddonHandlers);
-    this._pageScraperListener = this._pageScraperListener.bind(this);
-    simplePrefs.on("pageScraper", this._pageScraperListener);
-  },
-
-  /**
-   * Listen for changes to the page scraper pref
-   */
-  _pageScraperListener() {
-    let newEnabledValue = simplePrefs.prefs.pageScraper;
-    if (newEnabledValue && !this._pageScraper) {
-      this._pageScraper = new PageScraper(this._previewProvider, this._tabTracker);
-      this._pageScraper.init();
-    } else if (!newEnabledValue && this._pageScraper) {
-      this._pageScraper.uninit();
-      this._pageScraper = null;
-    }
   },
 
   /**
@@ -450,7 +431,6 @@ ActivityStreams.prototype = {
     PLACES_CHANGES_EVENTS.forEach(event => PlacesProvider.links.off(event, this._handlePlacesChanges));
     this._searchProvider.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
-    simplePrefs.off("pageScraper", this._pageScraperListener);
   },
 
   /**
@@ -594,11 +574,9 @@ ActivityStreams.prototype = {
       }
       this._previewProvider.uninit();
       this._searchProvider.uninit();
+      this._pageScraper.uninit();
       if (this._recommendationProvider) {
         this._recommendationProvider.uninit();
-      }
-      if (this._pageScraper) {
-        this._pageScraper.uninit();
       }
       NewTabURL.reset();
       Services.prefs.clearUserPref("places.favicons.optimizeToDimension");

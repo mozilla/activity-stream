@@ -176,12 +176,6 @@
       "type": "string",
       "value": "Embedly",
       "hidden": true
-    },
-    {
-      "name": "pageScraper",
-      "title": "Turn on page metadata scraper",
-      "type": "bool",
-      "value": false
     }
   ],
   "repository": "mozilla/activity-stream",
