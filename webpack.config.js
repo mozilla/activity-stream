@@ -21,7 +21,10 @@ module.exports = {
     vendor: [
       "react",
       "react-dom",
-      "moment"
+      "moment",
+      "wu",
+      "buffer",
+      "url"
     ]
   },
   output: {

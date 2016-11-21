@@ -8,12 +8,15 @@ const EnvLoaderPlugin = require("webpack-env-loader-plugin");
 let env = process.env.NODE_ENV || "development";
 
 let plugins = [
+  // This is needed to prevent all the locales from being included
+  new webpack.ContextReplacementPlugin(/moment[\\/]locale$/, /^\.\/(en)$/),
   new WebpackNotifierPlugin(),
   new EnvLoaderPlugin({
     env,
     filePattern: "config.{env}.yml",
     loadLocalOverride: env === "development" ? "config.yml" : null,
-    reactEnv: true
+    reactEnv: true,
+    log: false
   }),
   // Allows us to use requrie("common/vendor") as a way to import depdendencies in both addon/content code
   new webpack.NormalModuleReplacementPlugin(/common\/vendor/, absolute("./common/vendor-src.js"))
