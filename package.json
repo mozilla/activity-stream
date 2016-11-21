@@ -80,6 +80,7 @@
     "svgo": "0.7.1",
     "tippy-top-sites": "0.3.0",
     "webpack": "1.13.3",
+    "webpack-bundle-size-analyzer": "^2.2.0",
     "webpack-env-loader-plugin": "0.1.4",
     "webpack-notifier": "1.4.1",
     "yamscripts": "0.0.3"
@@ -224,6 +225,7 @@
     "bundle:css": "node-sass content-src/main.scss -o data/content",
     "bundle:html": "node ./bin/generate-html.js > data/content/activity-streams.html",
     "postbundle": "du -hs ./data/content/*",
+    "bundlestats": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
     "start": "npm-run-all --parallel start:*",
     "prestart": "npm run clean && npm run copyTestImages && npm run copyTopSitesJson",
     "start:static": "npm run bundle:static -- -w",

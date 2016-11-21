@@ -27,6 +27,9 @@ scripts:
     html: node ./bin/generate-html.js > data/content/activity-streams.html
     post: du -hs ./data/content/*
 
+# bundlestats: Display bundle stats
+  bundlestats: NODE_ENV=production webpack --json | webpack-bundle-size-analyzer
+
 # start: Start watching/compiling assets,
   start:
     _parallel: true
