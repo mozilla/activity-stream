@@ -31,7 +31,7 @@ def _get_dev_version(version):
     return ".".join([major, minor, str(int(patch) + 1)])
 
 
-def make_dev_manifest(fresh_manifest=True):
+def make_dev_manifest(fresh_manifest=True, commit_hash=""):
     if to_bool(fresh_manifest):
         restore_manifest()
 
@@ -41,15 +41,15 @@ def make_dev_manifest(fresh_manifest=True):
         manifest["title"] = "{} Dev".format(manifest["title"])
         manifest["updateLink"] = DEV_UPDATE_LINK
         manifest["updateURL"] = DEV_UPDATE_URL
-        manifest["version"] = "{}-dev-{}".format(
-            _get_dev_version(manifest["version"]), current_time)
+        manifest["version"] = "{}-dev-{} ({})".format(
+            _get_dev_version(manifest["version"]), current_time, commit_hash)
         f.seek(0)
         f.truncate(0)
         json.dump(manifest, f,
                   sort_keys=True, indent=2, separators=(',', ': '))
 
 
-def make_prerelease_manifest(fresh_manifest=True):
+def make_prerelease_manifest(fresh_manifest=True, commit_hash=""):
     if to_bool(fresh_manifest):
         restore_manifest()
 
@@ -59,8 +59,8 @@ def make_prerelease_manifest(fresh_manifest=True):
         manifest["title"] = "{} Pre-release".format(manifest["title"])
         manifest["updateLink"] = PRERELEASE_UPDATE_LINK
         manifest["updateURL"] = PRERELEASE_UPDATE_URL
-        manifest["version"] = "{}-pre-release-{}".format(
-            _get_dev_version(manifest["version"]), current_time)
+        manifest["version"] = "{}-pre-release-{} ({})".format(
+            _get_dev_version(manifest["version"]), current_time, commit_hash)
         f.seek(0)
         f.truncate(0)
         json.dump(manifest, f,
@@ -69,6 +69,11 @@ def make_prerelease_manifest(fresh_manifest=True):
 
 def restore_manifest():
     local("git checkout -- ./package.json")
+
+
+def get_head_commit_hash():
+    output = local("git rev-parse --short HEAD", capture=True)
+    return "%s" % output
 
 
 def to_bool(value):
@@ -207,13 +212,14 @@ def deploy(run_package=True, destination=None,
     bucket_name = env.bucket_name
     if destination:
         assert destination in ["dev", "prerelease"], "destination should be in ['dev', 'prerelease']"
+        commit_hash = get_head_commit_hash()
         print "Making {} deploy".format(destination)
         if destination == "dev":
             bucket_name = env.bucket_name_dev
-            make_dev_manifest()
+            make_dev_manifest(commit_hash=commit_hash)
         elif destination == "prerelease":
             bucket_name = env.bucket_name_prerelease
-            make_prerelease_manifest()
+            make_prerelease_manifest(commit_hash=commit_hash)
 
     run_package = to_bool(run_package)
     end_signing = None
