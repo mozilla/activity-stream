@@ -15,7 +15,6 @@ const am = new ActionManager([
   "RECENT_LINKS_RESPONSE",
   "HIGHLIGHTS_LINKS_REQUEST",
   "HIGHLIGHTS_LINKS_RESPONSE",
-  "EXPERIMENTS_REQUEST",
   "EXPERIMENTS_RESPONSE",
   "NOTIFY_BLOCK_URL",
   "NOTIFY_UNBLOCK_URL",
@@ -146,10 +145,6 @@ function NotifyUpdateSearchString(searchString) {
   return Notify("NOTIFY_UPDATE_SEARCH_STRING", {searchString}, {skipMasterStore: true});
 }
 
-function RequestExperiments() {
-  return RequestExpect("EXPERIMENTS_REQUEST", "EXPERIMENTS_RESPONSE");
-}
-
 function NotifyBookmarkAdd(url) {
   return Notify("NOTIFY_BOOKMARK_ADD", url);
 }
@@ -260,7 +255,6 @@ am.defineActions({
   RequestHighlightsLinks,
   RequestInitialPrefs,
   RequestSearchSuggestions,
-  RequestExperiments,
   NotifyBlockURL,
   NotifyUnblockURL,
   NotifyBookmarkAdd,

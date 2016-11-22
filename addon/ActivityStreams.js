@@ -332,10 +332,6 @@ ActivityStreams.prototype = {
     }
   },
 
-  _respondToExperimentsRequest({worker}) {
-    this.send(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data), worker);
-  },
-
   /**
    * Handles changes to places
    */
@@ -363,6 +359,10 @@ ActivityStreams.prototype = {
     this._tabTracker.handleUserEvent(msg.data);
   },
 
+  _handleExperimentChange(prefName) {
+    this.broadcast(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
+  },
+
   _respondToRecommendationToggle() {
     simplePrefs.prefs.recommendations = !simplePrefs.prefs.recommendations;
   },
@@ -380,8 +380,6 @@ ActivityStreams.prototype = {
         return this._onRouteChange(args);
       case am.type("NOTIFY_USER_EVENT"):
         return this._handleUserEvent(args);
-      case am.type("EXPERIMENTS_REQUEST"):
-        return this._respondToExperimentsRequest(args);
       case am.type("NOTIFY_TOGGLE_RECOMMENDATIONS"):
         return this._respondToRecommendationToggle();
     }
@@ -401,6 +399,9 @@ ActivityStreams.prototype = {
 
     this._handleCurrentEngineChanges = this._handleCurrentEngineChanges.bind(this);
     this._searchProvider.on("browser-search-engine-modified", this._handleCurrentEngineChanges);
+
+    this._handleExperimentChange = this._handleExperimentChange.bind(this);
+    this._experimentProvider.on("change", this._handleExperimentChange);
 
     // This is a collection of handlers that receive messages from content
     this._contentToAddonHandlers = (msgName, args) => {
@@ -430,6 +431,7 @@ ActivityStreams.prototype = {
   _removeListeners() {
     PLACES_CHANGES_EVENTS.forEach(event => PlacesProvider.links.off(event, this._handlePlacesChanges));
     this._searchProvider.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
+    this._experimentProvider.off("change", this._handleExperimentChange);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
   },
 
