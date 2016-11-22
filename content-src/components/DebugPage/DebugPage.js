@@ -4,7 +4,6 @@ const {selectNewTabSites} = require("common/selectors/selectors");
 const {assignImageAndBackgroundColor} = require("common/selectors/colorSelectors");
 const {Spotlight, SpotlightItem} = require("components/Spotlight/Spotlight");
 const TopSites = require("components/TopSites/TopSites");
-const faker = require("test/faker");
 const sizeof = require("object-sizeof");
 const {ShowAllHints} = require("common/action-manager").actions;
 const experimentDefinitions = require("../../../experiments.json");
@@ -12,8 +11,10 @@ const UI_COMPONENTS = ["TopSites", "Highlights"];
 
 // Only include this in DEVELOPMENT builds
 let JSONTree;
+let faker;
 if (__CONFIG__.DEVELOPMENT) {
   JSONTree = require("react-json-inspector");
+  faker = require("test/faker");
 }
 
 function Viewer(props) {
@@ -28,18 +29,22 @@ function Viewer(props) {
   return <span />;
 }
 
+function createHighlightData() {
+  return faker ? [
+    faker.createSpotlightItem(),
+    faker.createSpotlightItem({type: "bookmark"}),
+    faker.createSpotlightItem({isRecommended: true}),
+    faker.createSpotlightItem({override: {syncedFrom: "Nick's iPhone"}}),
+    faker.createSpotlightItem({override: {isOpen: true}})
+  ] : [];
+}
+
 const DebugPage = React.createClass({
   getInitialState() {
     return {
       component: "TopSites",
       dataSource: "TopSites",
-      highlightData: [
-        faker.createSpotlightItem(),
-        faker.createSpotlightItem({type: "bookmark"}),
-        faker.createSpotlightItem({isRecommended: true}),
-        faker.createSpotlightItem({override: {syncedFrom: "Nick's iPhone"}}),
-        faker.createSpotlightItem({override: {isOpen: true}})
-      ]
+      highlightData: createHighlightData()
     };
   },
   render() {
