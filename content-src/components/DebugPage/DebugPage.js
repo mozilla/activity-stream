@@ -54,6 +54,11 @@ const DebugPage = React.createClass({
     return (<main className="debug-page">
       <div className="new-tab-wrapper">
 
+        <section>
+          <h2>Version</h2>
+          <p>{this.props.raw.Prefs.prefs["sdk.version"]}</p>
+        </section>
+
         <section className="experiments">
           <h2>Experiments</h2>
           <p>
