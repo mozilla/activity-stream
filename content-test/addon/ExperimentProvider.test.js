@@ -40,7 +40,17 @@ describe("ExperimentProvider", () => {
     experimentProvider.init();
   }
 
+  beforeEach(() => {
+    global.EventEmitter = {
+      decorate(ctx) {
+        ctx.emit = sinon.spy();
+        ctx.on = sinon.spy();
+      }
+    };
+  });
+
   afterEach(() => {
+    delete global.EventEmitter;
     experimentProvider.destroy();
     experimentProvider.clearPrefs();
     experimentProvider = null;
@@ -363,6 +373,14 @@ describe("ExperimentProvider", () => {
 
       assert.isTrue(experimentProvider.data.foo);
       assert.isTrue(ss.storage.overrideExperimentProvider);
+    });
+  });
+
+  describe("listeners", () => {
+    it("should emit a change event on a pref change", () => {
+      setup();
+      experimentProvider._onPrefChange("foo");
+      assert.calledWith(experimentProvider.emit, "change", "foo");
     });
   });
 });

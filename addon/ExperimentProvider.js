@@ -1,8 +1,18 @@
+/* global XPCOMUtils, EventEmitter */
+
+const {Cu} = require("chrome");
 const prefService = require("sdk/preferences/service");
 const {PrefsTarget} = require("sdk/preferences/event-target");
 const ss = require("sdk/simple-storage");
 const {preferencesBranch} = require("sdk/self");
 const PREF_PREFIX = `extensions.${preferencesBranch}.experiments.`;
+
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
+  const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
+  return EventEmitter;
+});
 
 exports.ExperimentProvider = class ExperimentProvider {
   constructor(experiments = require("../experiments.json"), rng) {
@@ -11,12 +21,13 @@ exports.ExperimentProvider = class ExperimentProvider {
     this._data = {};
     this._experimentId = null;
     this._target = PrefsTarget();
+    EventEmitter.decorate(this);
+
+    this._onPrefChange = this._onPrefChange.bind(this);
   }
 
   init() {
     this.setValues();
-    this._onPrefChange = prefName => this.overrideExperimentPrefs(prefName);
-
     Object.keys(this._experiments).forEach(experimentName => {
       this._target.on(PREF_PREFIX + experimentName, this._onPrefChange);
       Object.defineProperty(this._data, experimentName, {
@@ -26,6 +37,11 @@ exports.ExperimentProvider = class ExperimentProvider {
         enumerable: true
       });
     });
+  }
+
+  _onPrefChange(prefName) {
+    this.overrideExperimentPrefs(prefName);
+    this.emit("change", prefName);
   }
 
   /**
