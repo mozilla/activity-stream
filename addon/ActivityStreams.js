@@ -332,10 +332,6 @@ ActivityStreams.prototype = {
     }
   },
 
-  _respondToExperimentsRequest({worker}) {
-    this.send(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data), worker);
-  },
-
   /**
    * Handles changes to places
    */
@@ -384,8 +380,6 @@ ActivityStreams.prototype = {
         return this._onRouteChange(args);
       case am.type("NOTIFY_USER_EVENT"):
         return this._handleUserEvent(args);
-      case am.type("EXPERIMENTS_REQUEST"):
-        return this._respondToExperimentsRequest(args);
       case am.type("NOTIFY_TOGGLE_RECOMMENDATIONS"):
         return this._respondToRecommendationToggle();
     }
