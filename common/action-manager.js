@@ -15,7 +15,6 @@ const am = new ActionManager([
   "RECENT_LINKS_RESPONSE",
   "HIGHLIGHTS_LINKS_REQUEST",
   "HIGHLIGHTS_LINKS_RESPONSE",
-  "EXPERIMENTS_REQUEST",
   "EXPERIMENTS_RESPONSE",
   "NOTIFY_BLOCK_URL",
   "NOTIFY_UNBLOCK_URL",
@@ -53,8 +52,7 @@ const am = new ActionManager([
   "DISABLE_HINT",
   "APP_INIT",
   "PLACES_STATS_UPDATED",
-  "MERGE_STORE",
-  "EXPERIMENT_OVERRIDE"
+  "MERGE_STORE"
 ]);
 
 // This is a a set of actions that have sites in them,
@@ -145,10 +143,6 @@ function NotifyManageEngines() {
 
 function NotifyUpdateSearchString(searchString) {
   return Notify("NOTIFY_UPDATE_SEARCH_STRING", {searchString}, {skipMasterStore: true});
-}
-
-function RequestExperiments() {
-  return RequestExpect("EXPERIMENTS_REQUEST", "EXPERIMENTS_RESPONSE");
 }
 
 function NotifyBookmarkAdd(url) {
@@ -261,7 +255,6 @@ am.defineActions({
   RequestHighlightsLinks,
   RequestInitialPrefs,
   RequestSearchSuggestions,
-  RequestExperiments,
   NotifyBlockURL,
   NotifyUnblockURL,
   NotifyBookmarkAdd,
