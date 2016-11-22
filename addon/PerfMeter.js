@@ -6,11 +6,12 @@ const tabs = require("sdk/tabs");
 const simplePrefs = require("sdk/simple-prefs");
 
 const {absPerf} = require("common/AbsPerf");
+const {WORKER_ATTACHED_EVENT} = require("common/constants");
 
 const VALID_TELEMETRY_TAGS = new Set([
   "TAB_READY",
-  "WORKER_ATTACHED",
-  "NOTIFY_PERFORMANCE"
+  "NOTIFY_PERFORMANCE",
+  WORKER_ATTACHED_EVENT
 ]);
 
 function PerfMeter(trackableURLs) {
@@ -140,7 +141,7 @@ PerfMeter.prototype = {
 
       // when tab is reloaded, the worker will be re-attached to the tab and another
       // WORKER_ATTACHED event will be sent. In which case we re-initialize tabData
-      if (tag === "WORKER_ATTACHED") {
+      if (tag === WORKER_ATTACHED_EVENT) {
         if (tabData.workerWasAttached) {
           // tab is reloaded - re-initialize it. Since reload does not generate TAB_OPEN
           // and TAB_READY events, we introduce articficial ones starting at 0

@@ -1,6 +1,7 @@
 const injector = require("inject!addon/PerfMeter");
 const {SimplePrefs} = require("shims/sdk/simple-prefs");
 const {Tabs, Tab} = require("shims/sdk/tabs");
+const {WORKER_ATTACHED_EVENT} = require("common/constants");
 
 // This is the event that indicates a tab has completely loaded
 // it should actually be store as a constant somwhere else...
@@ -244,7 +245,7 @@ describe("PerfMeter", () => {
     });
     it("should set .workerWasAttached if tag is WORKER_ATTACHED", () => {
       const tab = new Tab({url: TEST_URL});
-      perfMeter.log(tab, "WORKER_ATTACHED");
+      perfMeter.log(tab, WORKER_ATTACHED_EVENT);
       assert.isTrue(perfMeter._tabs[tab.id].workerWasAttached);
     });
     it("should replace tabData if tag is WORKER_ATTACHED and workerWasAttached is true", () => {
@@ -253,7 +254,7 @@ describe("PerfMeter", () => {
       const tabData = perfMeter._tabs[tab.id];
       const {openAt} = tabData;
       tabData.workerWasAttached = true;
-      perfMeter.log(tab, "WORKER_ATTACHED");
+      perfMeter.log(tab, WORKER_ATTACHED_EVENT);
 
       assert.include(tabData.events.map(e => e.tag), "TAB_RELOAD");
       assert.include(tabData.events.map(e => e.tag), "TAB_READY");
