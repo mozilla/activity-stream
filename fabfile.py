@@ -41,7 +41,7 @@ def make_dev_manifest(fresh_manifest=True, commit_hash=""):
         manifest["title"] = "{} Dev".format(manifest["title"])
         manifest["updateLink"] = DEV_UPDATE_LINK
         manifest["updateURL"] = DEV_UPDATE_URL
-        manifest["version"] = "{}-dev-{} ({})".format(
+        manifest["version"] = "{}-dev-{}-{}".format(
             _get_dev_version(manifest["version"]), current_time, commit_hash)
         f.seek(0)
         f.truncate(0)
@@ -59,7 +59,7 @@ def make_prerelease_manifest(fresh_manifest=True, commit_hash=""):
         manifest["title"] = "{} Pre-release".format(manifest["title"])
         manifest["updateLink"] = PRERELEASE_UPDATE_LINK
         manifest["updateURL"] = PRERELEASE_UPDATE_URL
-        manifest["version"] = "{}-pre-release-{} ({})".format(
+        manifest["version"] = "{}-pre-release-{}-{}".format(
             _get_dev_version(manifest["version"]), current_time, commit_hash)
         f.seek(0)
         f.truncate(0)
