@@ -363,6 +363,10 @@ ActivityStreams.prototype = {
     this._tabTracker.handleUserEvent(msg.data);
   },
 
+  _handleExperimentChange(prefName) {
+    this.broadcast(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
+  },
+
   _respondToRecommendationToggle() {
     simplePrefs.prefs.recommendations = !simplePrefs.prefs.recommendations;
   },
@@ -402,6 +406,9 @@ ActivityStreams.prototype = {
     this._handleCurrentEngineChanges = this._handleCurrentEngineChanges.bind(this);
     this._searchProvider.on("browser-search-engine-modified", this._handleCurrentEngineChanges);
 
+    this._handleExperimentChange = this._handleExperimentChange.bind(this);
+    this._experimentProvider.on("change", this._handleExperimentChange);
+
     // This is a collection of handlers that receive messages from content
     this._contentToAddonHandlers = (msgName, args) => {
       // Log requests first so that the requests are logged before responses
@@ -430,6 +437,7 @@ ActivityStreams.prototype = {
   _removeListeners() {
     PLACES_CHANGES_EVENTS.forEach(event => PlacesProvider.links.off(event, this._handlePlacesChanges));
     this._searchProvider.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
+    this._experimentProvider.off("change", this._handleExperimentChange);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
   },
 

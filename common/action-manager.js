@@ -53,7 +53,8 @@ const am = new ActionManager([
   "DISABLE_HINT",
   "APP_INIT",
   "PLACES_STATS_UPDATED",
-  "MERGE_STORE"
+  "MERGE_STORE",
+  "EXPERIMENT_OVERRIDE"
 ]);
 
 // This is a a set of actions that have sites in them,
