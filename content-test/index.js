@@ -18,7 +18,9 @@ describe("ActivtyStreams", () => {
     restores.forEach(fn => fn());
   });
 
-  files.forEach(file => req(file));
-  // In order to target specific files, comment out the above line and uncomment/edit the following:
-  // require("./addon/PrefsProvider.test.js");
+  it("should run the tests", () => {
+    files.forEach(file => req(file));
+    // In order to target specific files, comment out the above line and uncomment/edit the following:
+    // require("./addon/PrefsProvider.test.js");
+  });
 });
