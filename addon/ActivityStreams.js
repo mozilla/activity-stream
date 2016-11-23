@@ -1,4 +1,4 @@
-/* globals NewTabURL, EventEmitter, XPCOMUtils, windowMediator, Task, Services */
+/* globals NewTabURL, EventEmitter, XPCOMUtils, windowMediator, Services */
 
 "use strict";
 
@@ -36,9 +36,6 @@ Cu.import("resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyServiceGetter(this, "windowMediator",
                                    "@mozilla.org/appshell/window-mediator;1",
                                    "nsIWindowMediator");
-
-XPCOMUtils.defineLazyModuleGetter(this, "Task",
-                                  "resource://gre/modules/Task.jsm");
 
 XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
@@ -286,46 +283,6 @@ ActivityStreams.prototype = {
   },
 
   /**
-   * Responds to search requests
-   */
-  _respondToSearchRequests({msg, worker}) {
-    const win = windowMediator.getMostRecentWindow("navigator:browser");
-    const gBrowser = win.getBrowser();
-    const browser = gBrowser.selectedBrowser;
-    switch (msg.type) {
-      case am.type("NOTIFY_PERFORM_SEARCH"):
-        this._searchProvider.asyncPerformSearch(browser, msg.data);
-        break;
-      case am.type("SEARCH_SUGGESTIONS_REQUEST"):
-        Task.spawn(function*() {
-          try {
-            const suggestions = yield this._searchProvider.asyncGetSuggestions(browser, msg.data);
-            if (suggestions) {
-              this.send(am.actions.Response("SEARCH_SUGGESTIONS_RESPONSE", suggestions), worker, true);
-            }
-          } catch (e) {
-            Cu.reportError(e);
-          }
-        }.bind(this));
-        break;
-      case am.type("NOTIFY_REMOVE_FORM_HISTORY_ENTRY"): {
-        let entry = msg.data;
-        this._searchProvider.removeFormHistoryEntry(browser, entry);
-        break;
-      }
-      case am.type("NOTIFY_MANAGE_ENGINES"):
-        this._searchProvider.manageEngines(browser);
-        break;
-      case am.type("SEARCH_CYCLE_CURRENT_ENGINE_REQUEST"): {
-        this._searchProvider.cycleCurrentEngine(msg.data);
-        let engine = this._searchProvider.currentEngine;
-        this.send(am.actions.Response("SEARCH_CYCLE_CURRENT_ENGINE_RESPONSE", {currentEngine: engine}), worker);
-        break;
-      }
-    }
-  },
-
-  /**
    * Responds to share requests
    */
   _respondToShareRequests({msg, worker}) {
@@ -429,7 +386,6 @@ ActivityStreams.prototype = {
       // Other handlers
       this._respondToUIChanges(args);
       this._respondToPlacesRequests(args);
-      this._respondToSearchRequests(args);
       this._respondToShareRequests(args);
       this._respondOpenWindow(args);
       this._prefsProvider.actionHandler(args);
