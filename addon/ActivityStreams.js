@@ -360,6 +360,7 @@ ActivityStreams.prototype = {
   },
 
   _handleExperimentChange(prefName) {
+    this._tabTracker.experimentId = this._experimentProvider.exprimentID;
     this.broadcast(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
   },
 
