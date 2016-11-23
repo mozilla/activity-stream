@@ -94,6 +94,10 @@ TabTracker.prototype = {
     }
   },
 
+  set experimentId(experimentId) {
+    this._experimentID = experimentId || null;
+  },
+
   isActivityStreamsURL(URL) {
     return this._trackableURLs.indexOf(URL) !== -1;
   },
