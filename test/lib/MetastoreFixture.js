@@ -130,7 +130,7 @@ const images_firefox = [
 
 const gMetadataFixture = [
   {
-    cache_key: "https://www.mozilla.org/",
+    cache_key: "mozilla.org/",
     places_url: "https://www.mozilla.org/",
     favicon_url: "https://www.mozilla.org/media/img/favicon.52506929be4c.ico",
     description: "Did you know? Mozilla - the maker of Firefox - fights to keep the Internet a global public resource open and accessible to all.",
@@ -144,7 +144,7 @@ const gMetadataFixture = [
     images
   },
   {
-    cache_key: "https://www.mozilla.org/en-US/firefox/new/",
+    cache_key: "mozilla.org/en-US/firefox/new",
     places_url: "https://www.mozilla.org/en-US/firefox/new",
     favicon_url: "https://www.mozilla.org/media/img/firefox/favicon.dc6635050bf5.ico",
     description: "Download Mozilla Firefox, a free Web browser. Firefox is created by a global non-profit dedicated to putting individuals in control online. Get Firefox for Windows, Mac OS X, Linux, Android and iOS today!",
@@ -158,7 +158,7 @@ const gMetadataFixture = [
     images: images_firefox
   },
   {
-    cache_key: "https://www.mozilla.org/en-GB/firefox/new/",
+    cache_key: "mozilla.org/en-GB/firefox/new",
     places_url: "https://www.mozilla.org/en-GB/firefox/new",
     favicon_url: "https://www.mozilla.org/media/img/firefox/favicon.dc6635050bf5.ico",
     description: "Download Mozilla Firefox, a free Web browser. Firefox is created by a global non-profit dedicated to putting individuals in control online. Get Firefox for Windows, Mac OS X, Linux, Android and iOS today!",

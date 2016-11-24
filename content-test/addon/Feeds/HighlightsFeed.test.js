@@ -1,6 +1,6 @@
 const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
 const oldTestLinks = [{url: "boo.com"}, {url: "far.com"}];
-const getMetadata = sites => sites.map(site => site.url.toUpperCase());
+const getCachedMetadata = sites => sites.map(site => site.url.toUpperCase());
 const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const moment = require("moment");
 const {SimplePrefs} = require("sdk/simple-prefs");
@@ -35,9 +35,9 @@ describe("HighlightsFeed", () => {
       "common/recommender/Recommender": {Recommender}
     });
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
-    instance = new HighlightsFeed({getMetadata});
+    instance = new HighlightsFeed({getCachedMetadata});
     instance.refresh = sinon.spy();
-    sinon.spy(instance.options, "getMetadata");
+    sinon.spy(instance.options, "getCachedMetadata");
   });
   it("should create a HighlightsFeed", () => {
     assert.instanceOf(instance, HighlightsFeed);
@@ -99,19 +99,19 @@ describe("HighlightsFeed", () => {
           assert.lengthOf(action.data, 2);
         });
     });
-    it("should run sites through getMetadata", () => {
+    it("should run sites through getCachedMetadata", () => {
       instance.baselineRecommender = {scoreEntries: links => links};
       return instance.getData()
         .then(action => {
-          assert.calledOnce(instance.options.getMetadata);
-          assert.deepEqual(action.data, getMetadata(testLinks));
+          assert.calledOnce(instance.options.getCachedMetadata);
+          assert.deepEqual(action.data, getCachedMetadata(testLinks));
         });
     });
-    it("should run sites through scoreEntries AFTER getMetadata", () => {
+    it("should run sites through scoreEntries AFTER getCachedMetadata", () => {
       instance.baselineRecommender = {scoreEntries: sinon.spy()};
       return instance.getData()
         .then(action => (
-          assert.calledWithExactly(instance.baselineRecommender.scoreEntries, getMetadata(testLinks))
+          assert.calledWithExactly(instance.baselineRecommender.scoreEntries, getCachedMetadata(testLinks))
         ));
     });
   });
@@ -137,30 +137,30 @@ describe("HighlightsFeed", () => {
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "a bookmark was added");
     });
-    it("should call refresh on RECEIVE_PLACES_CHANGES if there are not enough sites", () => {
+    it("should call refresh on METADATA_FEED_UPDATED if there are not enough sites", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH - 1).fill("site")};
-      instance.onAction(store.getState(), {type: "RECEIVE_PLACES_CHANGES"});
+      instance.onAction(store.getState(), {type: "METADATA_FEED_UPDATED"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "there were not enough sites");
     });
-    it("should not call refresh on RECEIVE_PLACES_CHANGES if there are enough sites", () => {
+    it("should not call refresh on METADATA_FEED_UPDATED if there are enough sites", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
-      instance.onAction(store.getState(), {type: "RECEIVE_PLACES_CHANGES"});
+      instance.onAction(store.getState(), {type: "METADATA_FEED_UPDATED"});
       assert.notCalled(instance.refresh);
     });
-    it("should call refresh on RECEIVE_PLACES_CHANGES if .lastUpdated is too old", () => {
+    it("should call refresh on METADATA_FEED_UPDATED if .lastUpdated is too old", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
       instance.lastUpdated = 0;
       clock.tick(HighlightsFeed.UPDATE_TIME);
-      instance.onAction(store.getState(), {type: "RECEIVE_PLACES_CHANGES"});
+      instance.onAction(store.getState(), {type: "METADATA_FEED_UPDATED"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "the sites were too old");
     });
-    it("should not call refresh on RECEIVE_PLACES_CHANGES if .lastUpdated is less than update time", () => {
+    it("should not call refresh on METADATA_FEED_UPDATED if .lastUpdated is less than update time", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
       instance.lastUpdated = 0;
       clock.tick(HighlightsFeed.UPDATE_TIME - 1);
-      instance.onAction(store.getState(), {type: "RECEIVE_PLACES_CHANGES"});
+      instance.onAction(store.getState(), {type: "METADATA_FEED_UPDATED"});
       assert.notCalled(instance.refresh);
     });
     it("should update the coefficients if the weightedHighlightsCoefficients pref is changed", () => {

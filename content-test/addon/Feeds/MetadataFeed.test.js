@@ -1,0 +1,94 @@
+/* globals sinon, require, assert */
+"use strict";
+
+const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
+const fetchNewMetadata = () => (Promise.resolve());
+
+const PlacesProvider = {links: {getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks))}};
+
+describe("MetadataFeed", () => {
+  let MetadataFeed;
+  let instance;
+  beforeEach(() => {
+    MetadataFeed = require("inject!addon/Feeds/MetadataFeed")({"addon/PlacesProvider": {PlacesProvider}});
+    Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
+    instance = new MetadataFeed({fetchNewMetadata});
+    instance.refresh = sinon.spy();
+    sinon.spy(instance.options, "fetchNewMetadata");
+  });
+  it("should create a MetadataFeed", () => {
+    assert.instanceOf(instance, MetadataFeed);
+  });
+  it("should have a MAX_NUM_LINKS of 5", () => {
+    assert.equal(MetadataFeed.MAX_NUM_LINKS, 5);
+  });
+  it("should create an empty map to start for links to fetch", () => {
+    assert.equal(instance.linksToFetch.size, 0);
+  });
+  describe("#getData", () => {
+    it("should run sites through fetchNewMetadata", () => (
+      instance.getData().then(() => assert.calledOnce(instance.options.fetchNewMetadata))
+    ));
+    it("should resolve with an action, but no data", () => (
+      instance.getData().then(action => {
+        assert.isObject(action);
+        assert.equal(action.type, "METADATA_FEED_UPDATED");
+        assert.isUndefined(action.data);
+      })
+    ));
+    it("should empty the map when we've exceeded the max number of links", () => {
+      const links = [
+        {url: "example.com/1"},
+        {url: "example.com/2"},
+        {url: "example.com/3"},
+        {url: "example.com/4"},
+        {url: "example.com/5"},
+        {url: "example.com/6"}];
+      links.forEach(item => instance.linksToFetch.set(item.url, Date.now()));
+      assert.equal(instance.linksToFetch.size, 6);
+      return instance.getData().then(() => assert.equal(instance.linksToFetch.size, 0));
+    });
+  });
+  describe("#onAction", () => {
+    beforeEach(() => {
+      instance.refresh = sinon.spy();
+    });
+    it("should call getInitialMetadata for any existing sites on APP_INIT", () => {
+      instance.getInitialMetadata = sinon.spy();
+      instance.onAction({}, {type: "APP_INIT"});
+      assert.calledWith(instance.getInitialMetadata, "app was initializing");
+    });
+    it("should add existing sites to linksToFetch on APP_INIT", () => {
+      let p = new Promise(resolve => {
+        instance.onAction({}, {type: "APP_INIT"});
+        resolve();
+      }).then(() => assert.equal(instance.linksToFetch.size, 2));
+      return p;
+    });
+    it("should not call refresh on RECEIVE_PLACES_CHANGES if we don't need metadata for sites", () => {
+      testLinks.forEach(item => instance.linksToFetch.set(item.url, Date.now()));
+      assert.equal(instance.linksToFetch.size, 2);
+      instance.onAction({}, {type: "RECEIVE_PLACES_CHANGES", data: {url: "baz.com"}});
+      assert.notCalled(instance.refresh);
+    });
+    it("should collect the url on RECEIVE_PLACES_CHANGES", () => {
+      const linkToAdd = {url: "newURL.com"};
+      return new Promise(resolve => {
+        assert.equal(instance.linksToFetch.size, 0);
+        instance.onAction({}, {type: "RECEIVE_PLACES_CHANGES", data: linkToAdd});
+        resolve();
+      }).then(() => {
+        assert.equal(instance.linksToFetch.size, 1);
+        assert.ok(instance.linksToFetch.get(linkToAdd.url));
+      });
+    });
+    it("should call refresh on RECEIVE_PLACES_CHANGES if we need metadata for sites", () => {
+      const links = [{url: "example.com/1"}, {url: "example.com/2"}, {url: "example.com/3"}, {url: "example.com/4"}, {url: "example.com/5"}];
+      links.forEach(item => instance.linksToFetch.set(item.url, Date.now()));
+      assert.equal(instance.linksToFetch.size, 5);
+      instance.onAction({}, {type: "RECEIVE_PLACES_CHANGES", data: {url: "example.com/6"}});
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "metadata was needed for these links");
+    });
+  });
+});

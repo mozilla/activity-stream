@@ -8,7 +8,7 @@ module.exports = class TopSitesFeed extends Feed {
   // Used by this.refresh
   getData() {
     return PlacesProvider.links.getTopFrecentSites()
-      .then(links => this.options.getMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
+      .then(links => this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
       .then(links => (am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links)));
   }
   onAction(state, action) {

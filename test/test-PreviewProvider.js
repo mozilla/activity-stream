@@ -69,13 +69,13 @@ const gMockMetadataStore = {
 const gMockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
 
 exports.test_only_request_links_once = function*(assert) {
-  const msg1 = [{"url": "a.com", "sanitized_url": "a.com", "cache_key": "a.com"},
-                {"url": "b.com", "sanitized_url": "b.com", "cache_key": "b.com"},
-                {"url": "c.com", "sanitized_url": "c.com", "cache_key": "c.com"}];
+  const msg1 = [{"url": "http://www.a.com"},
+                {"url": "http://www.b.com"},
+                {"url": "http://www.c.com"}];
 
-  const msg2 = [{"url": "b.com", "sanitized_url": "b.com", "cache_key": "b.com"},
-                {"url": "c.com", "sanitized_url": "c.com", "cache_key": "c.com"},
-                {"url": "d.com", "sanitized_url": "d.com", "cache_key": "d.com"}];
+  const msg2 = [{"url": "http://www.b.com"},
+                {"url": "http://www.c.com"},
+                {"url": "http://www.d.com"}];
 
   const endpoint = gPreviewProvider._getMetadataEndpoint();
   assert.ok(endpoint, "The embedly endpoint is set");
@@ -96,8 +96,8 @@ exports.test_only_request_links_once = function*(assert) {
   });
 
   // request 'b.com' and 'c.com' twice
-  gPreviewProvider._asyncSaveLinks(msg1);
-  yield gPreviewProvider._asyncSaveLinks(msg2);
+  gPreviewProvider.asyncSaveLinks(msg1);
+  yield gPreviewProvider.asyncSaveLinks(msg2);
 
   Object.keys(urlsRequested).forEach(url => {
     // each url should have a count of just one
@@ -217,7 +217,7 @@ exports.test_process_and_insert_links = function(assert) {
 
 exports.test_look_for_link_in_DB = function*(assert) {
   // the first time we check the link will not be in the DB
-  const urlObject = {url: "https://www.dontexist.com", cache_key: "dontexist.com"};
+  const urlObject = {url: "https://www.dontexist.com"};
   let doesLinkExist = yield gPreviewProvider.asyncLinkExist(urlObject.url);
   assert.equal(doesLinkExist, false, "link doesn't exist at first");
 
@@ -255,10 +255,10 @@ exports.test_dedupe_urls = function(assert) {
 };
 
 exports.test_throw_out_non_requested_responses = function*(assert) {
-  const fakeSite1 = {"url": "http://example1.com/", "sanitized_url": "http://example1.com/", "cache_key": "example1.com/"};
-  const fakeSite2 = {"url": "http://example2.com/", "sanitized_url": "http://example2.com/", "cache_key": "example2.com/"};
-  const fakeSite3 = {"url": "http://example3.com/", "sanitized_url": "http://example3.com/", "cache_key": "example3.com/"};
-  const fakeSite4 = {"url": "http://example4.com/", "sanitized_url": "http://example4.com/", "cache_key": "example4.com/"};
+  const fakeSite1 = {"url": "http://example1.com/"};
+  const fakeSite2 = {"url": "http://example2.com/"};
+  const fakeSite3 = {"url": "http://example3.com/"};
+  const fakeSite4 = {"url": "http://example4.com/"};
   // send site 1, 2, 4
   const fakeData = [fakeSite1, fakeSite2, fakeSite4];
 
@@ -280,7 +280,7 @@ exports.test_throw_out_non_requested_responses = function*(assert) {
     response.write(JSON.stringify(fakeResponse));
   });
 
-  yield gPreviewProvider._asyncSaveLinks(fakeData);
+  yield gPreviewProvider.asyncSaveLinks(fakeData);
 
   // database should contain example1.com and example2.com
   assert.equal(gMetadataStore[0].length, 2, "saved two items");
@@ -306,9 +306,7 @@ exports.test_mock_embedly_request = function*(assert) {
     "frecency": 2000,
     "favicons": [{"url": "http://imageForExample.com", "color": "#000000"}],
     "bookmarkDateCreated": 1459537019061,
-    "type": "history",
-    "sanitized_url": "http://example.com/",
-    "cache_key": "example.com/"
+    "type": "history"
   };
   const fakeRequest = [fakeSite];
   const fakeResponse = {"urls": {"http://example.com/": {"description": "some embedly metadata"}}};
@@ -326,7 +324,7 @@ exports.test_mock_embedly_request = function*(assert) {
   });
 
   // make a request to embedly with 'fakeSite'
-  yield gPreviewProvider._asyncSaveLinks(fakeRequest);
+  yield gPreviewProvider.asyncSaveLinks(fakeRequest);
 
   // we should have saved the fake site into the database
   assert.deepEqual(gMetadataStore[0][0].description, "some embedly metadata", "inserted and saved the embedly data");
@@ -334,7 +332,7 @@ exports.test_mock_embedly_request = function*(assert) {
   assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "a metadata source was added from Embedly");
 
   // retrieve the contents of the database - don't go to embedly
-  let cachedLinks = yield gPreviewProvider._asyncGetEnhancedLinks(fakeRequest);
+  let cachedLinks = yield gPreviewProvider.asyncGetEnhancedLinks(fakeRequest);
   assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getEnhancedLinks should prioritize new data");
   assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getEnhancedLinks should prioritize new data");
   assert.deepEqual(gMetadataStore[0][0].cache_key, cachedLinks[0].cache_key, "the cached link is now retrieved next time");
@@ -349,13 +347,11 @@ exports.test_mock_embedly_request = function*(assert) {
 exports.test_no_metadata_source = function*(assert) {
   const fakeSite = {
     "url": "http://www.amazon.com/",
-    "title": null,
-    "sanitized_url": "http://www.amazon.com/",
-    "cache_key": "amazon.com/"
+    "title": null
   };
   const fakeResponse = {"urls": {"http://www.amazon.com/": {"description": "some embedly metadata"}}};
 
-  let cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
+  let cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
   assert.equal(cachedLink[0].metadata_source, "TippyTopProvider", "metadata came from TippyTopProvider");
 
   let srv = httpd.startServerAsync(gPort);
@@ -363,8 +359,8 @@ exports.test_no_metadata_source = function*(assert) {
     response.setHeader("Content-Type", "application/json", false);
     response.write(JSON.stringify(fakeResponse));
   });
-  yield gPreviewProvider._asyncSaveLinks([fakeSite]);
-  cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
+  yield gPreviewProvider.asyncSaveLinks([fakeSite]);
+  cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
 
   assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "correct metadata_source in database");
   assert.equal(cachedLink[0].metadata_source, gEmbedlyServiceSource, "correct metadata_source returned for this link");
@@ -379,9 +375,7 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
   // returns is worse than the tippytop favicon - so we want to use the tippytop one
   const fakeSite = {
     "url": "http://www.youtube.com/",
-    "title": null,
-    "sanitized_url": "http://www.youtube.com/",
-    "cache_key": "youtube.com/"
+    "title": null
   };
   const fakeResponse = {
     "urls": {
@@ -396,7 +390,7 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
   // get the tippytop favicon_url and background_color and compare with
   // what we get from the cached link
   let tippyTopLink = gPreviewProvider._tippyTopProvider.processSite(fakeSite);
-  let cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
+  let cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
 
   assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "TippyTopProvider added a favicon_url");
   assert.deepEqual(hexToRGB(tippyTopLink.background_color), cachedLink[0].background_color, "TippyTopProvider added a background_color");
@@ -407,8 +401,8 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
     response.write(JSON.stringify(fakeResponse));
   });
   // insert a link with some less nice icons in it and get them back
-  yield gPreviewProvider._asyncSaveLinks([fakeSite]);
-  cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
+  yield gPreviewProvider.asyncSaveLinks([fakeSite]);
+  cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
 
   assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "we still took the better tippyTop favicon_url");
   assert.deepEqual(hexToRGB(tippyTopLink.background_color), cachedLink[0].background_color, "we still took the better tippyTop background_color");
@@ -424,7 +418,7 @@ exports.test_get_enhanced_disabled = function*(assert) {
     {url: "http://foo.com/", lastVisitDate: 1459537019061}
   ];
   simplePrefs.prefs["previews.enabled"] = false;
-  let cachedLinks = yield gPreviewProvider._asyncGetEnhancedLinks(fakeData);
+  let cachedLinks = yield gPreviewProvider.asyncGetEnhancedLinks(fakeData);
   assert.deepEqual(cachedLinks, fakeData, "if disabled, should return links as is");
 };
 
@@ -436,9 +430,7 @@ exports.test_change_metadata_endpoint = function*(assert) {
     "frecency": 2000,
     "favicon": null,
     "bookmarkDateCreated": 1459537019061,
-    "type": "history",
-    "sanitized_url": "http://foo.com/",
-    "cache_key": "foo.com/"
+    "type": "history"
   };
   const fakeRequest = [fakeSite];
   const fakeResponse = {"urls": {"http://foo.com/": {"metaData": "some metadata found by MetadataService"}}};
@@ -458,7 +450,7 @@ exports.test_change_metadata_endpoint = function*(assert) {
   });
 
   // make a request to MetadataService with 'fakeSite'
-  yield gPreviewProvider._asyncSaveLinks(fakeRequest);
+  yield gPreviewProvider.asyncSaveLinks(fakeRequest);
 
   // we should have saved the fake site into the database with MetadataService data
   assert.deepEqual(gMetadataStore[0][0].metaData, "some metadata found by MetadataService", "inserted and saved the metadata");
