@@ -14,7 +14,7 @@ const RANDOM_COLORS = [
 module.exports = {
   RANDOM_COLORS,
 
-  toRGBString(...color) {
+  toRGBString(color) {
     const name = color.length === 4 ? "rgba" : "rgb";
     return `${name}(${color.join(", ")})`;
   },

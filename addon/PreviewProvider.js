@@ -7,7 +7,9 @@ const self = require("sdk/self");
 const {TippyTopProvider} = require("addon/TippyTopProvider");
 const {getColor} = require("addon/ColorAnalyzerProvider");
 const {absPerf} = require("common/AbsPerf");
+const {consolidateBackgroundColors, consolidateFavicons} = require("addon/lib/utils");
 
+const {BACKGROUND_FADE} = require("../common/constants");
 const ENABLED_PREF = "previews.enabled";
 const METADATA_SOURCE_PREF = "metadataSource";
 const EMBEDLY_SOURCE_NAME = "Embedly";
@@ -167,19 +169,18 @@ PreviewProvider.prototype = {
   /**
     * Get the main colors from the favicon
     */
-  _getFaviconColors(links) {
-    return Promise.all(
-      links.map(link => new Promise(resolve => {
-        if (!link.favicon) {
-          resolve(link);
-          return;
-        }
-        getColor(link.favicon, link.url).then(color => {
-          resolve(Object.assign({}, link, {favicon_color: color}));
-        }, () => resolve(link)).catch(err => Cu.reportError(err));
-      })
-      )
-    ).catch(err => Cu.reportError(err));
+  _getFaviconColors(link) {
+    return new Promise(resolve => {
+      if (!link.favicon) {
+        resolve(null);
+      }
+      getColor(link.favicon, link.url)
+        .then(color => resolve([...color, BACKGROUND_FADE]))
+        .catch(err => {
+          Cu.reportError(err);
+          resolve(null);
+        });
+    });
   },
 
   /**
@@ -189,8 +190,7 @@ PreviewProvider.prototype = {
     let processedLinks = this._processLinks(links);
     this._asyncSaveLinks(processedLinks, event);
 
-    return this._asyncGetEnhancedLinks(processedLinks, event).then(
-      cachedLinks => this._getFaviconColors(cachedLinks));
+    return this._asyncGetEnhancedLinks(processedLinks, event);
   },
 
   /**
@@ -208,32 +208,46 @@ PreviewProvider.prototype = {
     let dbLinks = yield this._asyncFindItemsInDB(processedLinks);
     let existingLinks = new Map();
     dbLinks.forEach(item => existingLinks.set(item.cache_key, item));
-    let results = processedLinks.map(site => {
-      if (!site) {
-        return null;
+    let results = [];
+    for (let link of processedLinks) {
+      if (!link) {
+        break;
       }
-      let enhancedLink = Object.assign({}, site);
+      // copy over fields we need from the original site object
+      let enhancedLink = {};
+      enhancedLink.title = link.title;
+      enhancedLink.type = link.type;
+      enhancedLink.url = link.url;
+      enhancedLink.cache_key = link.cache_key;
+      enhancedLink.lastVisitDate = link.lastVisitDate;
+      enhancedLink.bookmarkDateCreated = link.bookmarkDateCreated;
+
+      // get favicon and background color from firefox
+      const firefoxBackgroundColor = yield this._getFaviconColors(link);
+      const firefoxFavicon = link.favicon;
+
+      // get favicon and background color from tippytop
+      const {favicon_url: tippyTopFavicon, background_color: tippyTopBackgroundColor, metadata_source} = this._tippyTopProvider.processSite(link);
+      enhancedLink.metadata_source = metadata_source;
 
       // Find the item in the map and return it if it exists, then unpack that
       // object onto our new link
-      if (existingLinks.has(site.cache_key)) {
-        const cachedMetadataLink = existingLinks.get(site.cache_key);
+      let metadataLinkFavicons = null;
+      if (existingLinks.has(link.cache_key)) {
+        const cachedMetadataLink = existingLinks.get(link.cache_key);
+        metadataLinkFavicons = cachedMetadataLink.favicons;
+        enhancedLink.metadata_source = cachedMetadataLink.metadata_source;
         enhancedLink.title = cachedMetadataLink.title;
         enhancedLink.description = cachedMetadataLink.description;
         enhancedLink.provider_name = cachedMetadataLink.provider_name;
         enhancedLink.images = cachedMetadataLink.images;
-        enhancedLink.favicons = cachedMetadataLink.favicons;
-        enhancedLink.metadata_source = cachedMetadataLink.metadata_source;
-        if (cachedMetadataLink.favicons && cachedMetadataLink.favicons.length) {
-          enhancedLink.favicon_url = cachedMetadataLink.favicons[0].url;
-        }
       }
 
-      // Add tippy top data, if available
-      Object.assign(enhancedLink, this._tippyTopProvider.processSite(enhancedLink));
-
-      return enhancedLink;
-    }).filter(link => link);
+      // consolidate favicons, background color and metadata source, then return the final link
+      enhancedLink.favicon_url = consolidateFavicons(tippyTopFavicon, metadataLinkFavicons, firefoxFavicon);
+      enhancedLink.background_color = consolidateBackgroundColors(tippyTopBackgroundColor, metadataLinkFavicons, firefoxBackgroundColor);
+      results.push(enhancedLink);
+    }
 
     this._tabTracker.handlePerformanceEvent(event, "previewCacheHits", existingLinks.size);
     this._tabTracker.handlePerformanceEvent(event, "previewCacheMisses", processedLinks.length - existingLinks.size);

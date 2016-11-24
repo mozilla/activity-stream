@@ -2,10 +2,10 @@ const utils = require("lib/utils");
 
 describe("toRGBString", () => {
   it("should convert R, G, B values to a css string", () => {
-    assert.equal(utils.toRGBString(12, 20, 30), "rgb(12, 20, 30)");
+    assert.equal(utils.toRGBString([12, 20, 30]), "rgb(12, 20, 30)");
   });
   it("should convert R, G, B, A values to a css string", () => {
-    assert.equal(utils.toRGBString(12, 20, 30, 0.2), "rgba(12, 20, 30, 0.2)");
+    assert.equal(utils.toRGBString([12, 20, 30, 0.2]), "rgba(12, 20, 30, 0.2)");
   });
 });
 

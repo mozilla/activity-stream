@@ -295,17 +295,14 @@ exports.test_on_an_invalid_connection = function*(assert) {
 };
 
 exports.test_color_conversions = function(assert) {
-  const white = [0, 0, 0];
-  const black = [255, 255, 255];
+  const black = [0, 0, 0];
+  const white = [255, 255, 255];
   const randomColor = [111, 122, 133];
 
-  assert.deepEqual(white,
-    gMetadataStore._hexToRgb(gMetadataStore._rgbToHex(white)));
-  assert.deepEqual(black,
-    gMetadataStore._hexToRgb(gMetadataStore._rgbToHex(black)));
-  assert.deepEqual(randomColor,
-    gMetadataStore._hexToRgb(gMetadataStore._rgbToHex(randomColor)));
-  assert.equal(gMetadataStore._hexToRgb(gMetadataStore._rgbToHex(null)), null);
+  assert.deepEqual("#FFFFFF", gMetadataStore._rgbToHex(white));
+  assert.deepEqual("#000000", gMetadataStore._rgbToHex(black));
+  assert.deepEqual("#6F7A85", gMetadataStore._rgbToHex(randomColor));
+  assert.equal(gMetadataStore._rgbToHex(null), null);
 };
 
 exports.test_data_expiry = function*(assert) {

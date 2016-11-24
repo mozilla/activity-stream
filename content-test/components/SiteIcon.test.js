@@ -8,7 +8,7 @@ const fakeProps = {
     url: "https://foo.com",
     favicon_url: "http://www.google.com/favicon.ico",
     title: "Foo",
-    favicon_colors: [{color: [11, 11, 11]}]
+    background_color: [11, 11, 11]
   },
   className: "foo"
 };
@@ -83,11 +83,6 @@ describe("SiteIcon", () => {
       assert.equal(instance.refs.favicon.src, fakeProps.site.favicon_url);
     });
 
-    it("should use favicon as a fallback to favicon_url", () => {
-      setup({}, {favicon_url: null, favicon: "https://www.wikipedia.org/static/favicon/wikipedia.ico"});
-      assert.equal(instance.refs.favicon.src, "https://www.wikipedia.org/static/favicon/wikipedia.ico");
-    });
-
     it("should use favicon for 16x16 favicon", done => {
       setup({}, {favicon_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAAAAAA6mKC9AAAAD0lEQVQYV2P4jwYYRrYAAID5%2FwHnXPpAAAAAAElFTkSuQmCC"});
       instance.refs.favicon.addEventListener("load", () => {
@@ -101,8 +96,7 @@ describe("SiteIcon", () => {
     beforeEach(() => {
       setup({}, {
         favicon_url: null,
-        favicon: null,
-        favicon_colors: [{color: [0, 0, 0]}],
+        background_color: [0, 0, 0],
         url: "http://foo.com"
       });
     });

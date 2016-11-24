@@ -22,16 +22,10 @@ describe("createSite", () => {
     assert.isNull(result.title);
     assert.isNull(result.images);
   });
-  it("should add n favicon_colors", () => {
-    const result = createSite({favicon_colors: 5});
+  it("should omit background_color if favicon_url is falsey", () => {
+    const result = createSite({background_color: 5, override: {favicon_url: null}});
     assert.isObject(result);
-    assert.isArray(result.favicon_colors);
-    assert.lengthOf(result.favicon_colors, 5);
-  });
-  it("should omit favicon_colors if favicon_url is falsey", () => {
-    const result = createSite({favicon_colors: 5, override: {favicon_url: null}});
-    assert.isObject(result);
-    assert.notProperty(result, "favicon_colors");
+    assert.notProperty(result, "background_color");
   });
 });
 

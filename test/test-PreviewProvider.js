@@ -10,6 +10,8 @@ const loader = Loader(module);
 const httpd = loader.require("./lib/httpd");
 const {Cu} = require("chrome");
 const {PreviewProvider} = require("addon/PreviewProvider");
+const {hexToRGB} = require("addon/lib/utils");
+
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
 const DISALLOWED_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
 const URL_FILTERS = [
@@ -302,7 +304,7 @@ exports.test_mock_embedly_request = function*(assert) {
     "title": null,
     "lastVisitDate": 1459537019061,
     "frecency": 2000,
-    "favicon": null,
+    "favicons": [{"url": "http://imageForExample.com", "color": "#000000"}],
     "bookmarkDateCreated": 1459537019061,
     "type": "history",
     "sanitized_url": "http://example.com/",
@@ -336,6 +338,8 @@ exports.test_mock_embedly_request = function*(assert) {
   assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getEnhancedLinks should prioritize new data");
   assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getEnhancedLinks should prioritize new data");
   assert.deepEqual(gMetadataStore[0][0].cache_key, cachedLinks[0].cache_key, "the cached link is now retrieved next time");
+  assert.equal(cachedLinks[0].favicon_url, fakeSite.favicons[0].url, "added a favicon_url field");
+  assert.deepEqual(cachedLinks[0].background_color, hexToRGB(fakeSite.favicons[0].color), "added a background_color field");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
@@ -395,7 +399,7 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
   let cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
 
   assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "TippyTopProvider added a favicon_url");
-  assert.equal(tippyTopLink.background_color, cachedLink[0].background_color, "TippyTopProvider added a background_color");
+  assert.deepEqual(hexToRGB(tippyTopLink.background_color), cachedLink[0].background_color, "TippyTopProvider added a background_color");
 
   let srv = httpd.startServerAsync(gPort);
   srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
@@ -407,7 +411,7 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
   cachedLink = yield gPreviewProvider._asyncGetEnhancedLinks([fakeSite]);
 
   assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "we still took the better tippyTop favicon_url");
-  assert.equal(tippyTopLink.background_color, cachedLink[0].background_color, "we still took the better tippyTop background_color");
+  assert.deepEqual(hexToRGB(tippyTopLink.background_color), cachedLink[0].background_color, "we still took the better tippyTop background_color");
   assert.equal(fakeResponse.urls["http://www.youtube.com/"].description, cachedLink[0].description, "but we still have other metadata");
 
   yield new Promise(resolve => {
@@ -502,6 +506,9 @@ before(exports, () => {
   simplePrefs.prefs["previews.enabled"] = true;
   let mockExperimentProvider = {data: {metadataService: false}};
   gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
+  gPreviewProvider._getFaviconColors = function() {
+    return Promise.resolve(null);
+  };
 });
 
 after(exports, () => {
