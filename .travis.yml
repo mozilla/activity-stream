@@ -45,7 +45,7 @@ deploy:
     skip_cleanup: true
     script: bin/continuous-integration.sh prerelease
     on:
-      branch: release
+      branch: release-1.1.8
 
 notifications:
   email: false
