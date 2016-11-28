@@ -26,7 +26,7 @@ const TopSitesItem = React.createClass({
     const index = site.index;
     const isActive = this.state.showContextMenu && this.state.activeTile === index;
     return (<div className={classNames("tile-outer", {active: isActive})} key={site.guid || site.cache_key || index}>
-      <a onClick={() => this.props.onClick(index)} className="tile" href={site.url}>
+      <a onClick={() => this.props.onClick(index)} className="tile" href={site.url} ref="topSiteLink">
         <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle={true} />
         <div className="inner-border" />
       </a>
@@ -103,3 +103,4 @@ TopSites.propTypes = {
 
 module.exports = connect(justDispatch)(TopSites);
 module.exports.TopSites = TopSites;
+module.exports.TopSitesItem = TopSitesItem;
