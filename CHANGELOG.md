@@ -1,3 +1,12 @@
+<a name="1.1.8"></a>
+## 1.1.8 (2016-11-28)
+
+* 1.1.7 changelog ([2b6cf5d](https://github.com/mozilla/activity-stream/commit/2b6cf5d))
+* 1.1.8 ([f9f2c85](https://github.com/mozilla/activity-stream/commit/f9f2c85))
+* fix(reporting): fix #1831 Missing TOP_SITES pings ([aad99b4](https://github.com/mozilla/activity-stream/commit/aad99b4)), closes [#1831](https://github.com/mozilla/activity-stream/issues/1831)
+
+
+
 <a name="1.1.7"></a>
 ## 1.1.7 (2016-11-23)
 
