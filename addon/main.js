@@ -17,6 +17,7 @@ const {OS} = Cu.import("resource://gre/modules/osfile.jsm", {});
 // The addon will try reconnecting to the database in the next minute periodically,
 // if it fails to establish the connection in the addon initialization
 const kMaxConnectRetry = 120;
+const metadataExpiryInterval = 30 * 60 * 1000; // 30 minutes
 
 let app = null;
 let metadataStore = null;
@@ -41,6 +42,7 @@ Object.assign(exports, {
       metadataStore = new MetadataStore();
       try {
         yield metadataStore.asyncConnect();
+        metadataStore.enableDataExpiryJob(metadataExpiryInterval);
       } catch (e) {
         this.reconnectMetadataStore();
       }
@@ -78,12 +80,14 @@ Object.assign(exports, {
     }
 
     reconnectTimeoutID = setTimeout(() => {
-      metadataStore.asyncConnect().then(() => {connectRetried = 0;})
-        .catch(error => {
-          // increment the connect counter to avoid the endless retry
-          connectRetried++;
-          this.reconnectMetadataStore();
-        });
+      metadataStore.asyncConnect().then(() => {
+        metadataStore.enableDataExpiryJob(metadataExpiryInterval);
+        connectRetried = 0;
+      }).catch(error => {
+        // increment the connect counter to avoid the endless retry
+        connectRetried++;
+        this.reconnectMetadataStore();
+      });
     }, 500);
   },
 
@@ -99,6 +103,7 @@ Object.assign(exports, {
     }
 
     if (metadataStore) {
+      metadataStore.disableDataExpiryJob();
       if (reason === "uninstall" || reason === "disable") {
         metadataStore.asyncTearDown();
       } else {
