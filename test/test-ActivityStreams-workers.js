@@ -19,11 +19,11 @@ exports["test load worker"] = function(assert, done) {
   app = getTestActivityStream({pageURL: url});
   function onReady(tab) {
     if (tab.url === url) {
-      assert.equal(app.workers.size, 1, "Worker is loaded");
+      assert.equal(app._pagemod.workers.size, 1, "Worker is loaded");
     }
     done();
   }
-  assert.equal(app.workers.size, 0, "app.workers start at 0");
+  assert.equal(app._pagemod.workers.size, 0, "app.workers start at 0");
   tabs.once("ready", onReady);
   tabs.open({url});
 };
@@ -32,17 +32,17 @@ exports["test removing worker on url change"] = function(assert, done) {
   app = getTestActivityStream({
     pageURL: url,
     onRemoveWorker() {
-      assert.equal(app.workers.size, 0, "app.worker should be removed on a url change");
+      assert.equal(app._pagemod.workers.size, 0, "app.worker should be removed on a url change");
       done();
     }
   });
   function onReady(tab) {
-    assert.equal(app.workers.size, 1, "app.worker should be added");
+    assert.equal(app._pagemod.workers.size, 1, "app.worker should be added");
     tab.url = otherUrl;
   }
   tabs.once("ready", onReady);
 
-  assert.equal(app.workers.size, 0, "app.workers start at 0");
+  assert.equal(app._pagemod.workers.size, 0, "app.workers start at 0");
   tabs.open({url});
 };
 
@@ -52,15 +52,15 @@ exports["test workers for page reload"] = function(assert, done) {
     pageURL: url,
     onAddWorker() {
       if (isFirstLoad) {
-        assert.equal(app.workers.size, 1, "start with one worker");
+        assert.equal(app._pagemod.workers.size, 1, "start with one worker");
       } else {
-        assert.equal(app.workers.size, 1, "new worker should be attached after a reload");
+        assert.equal(app._pagemod.workers.size, 1, "new worker should be attached after a reload");
         done();
       }
     },
     onRemoveWorker() {
       if (isFirstLoad) {
-        assert.equal(app.workers.size, 0, "first worker should get removed on reload");
+        assert.equal(app._pagemod.workers.size, 0, "first worker should get removed on reload");
         isFirstLoad = false;
       }
     }
@@ -70,7 +70,7 @@ exports["test workers for page reload"] = function(assert, done) {
     tab.reload();
   }
 
-  assert.equal(app.workers.size, 0, "app.workers start at 0");
+  assert.equal(app._pagemod.workers.size, 0, "app.workers start at 0");
   tabs.once("ready", onReady);
   tabs.open({url});
 };

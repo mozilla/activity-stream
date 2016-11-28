@@ -4,14 +4,13 @@
 
 const {Cu} = require("chrome");
 const {data} = require("sdk/self");
-const {PageMod} = require("sdk/page-mod");
 const {setTimeout, clearTimeout} = require("sdk/timers");
 const tabs = require("sdk/tabs");
 const simplePrefs = require("sdk/simple-prefs");
-const privateBrowsing = require("sdk/private-browsing");
 const windows = require("sdk/windows").browserWindows;
 const prefService = require("sdk/preferences/service");
 const ss = require("sdk/simple-storage");
+const PageModProvider = require("addon/PageModProvider");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {SearchProvider} = require("addon/SearchProvider");
 const {ShareProvider} = require("addon/ShareProvider");
@@ -73,6 +72,11 @@ const HOME_PAGE_PREF = "browser.startup.homepage";
 function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   EventEmitter.decorate(this);
+  this._pagemod = new PageModProvider({
+    pageURL: this.options.pageURL,
+    onAddWorker: this.options.onAddWorker,
+    onRemoveWorker: this.options.onRemoveWorker
+  });
   this._metadataStore = metadataStore;
   this._tabTracker = tabTracker;
   this._telemetrySender = telemetrySender;
@@ -85,6 +89,8 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
   this._searchProvider = this.options.searchProvider || new SearchProvider();
   this._feeds = new FeedController({
     feeds,
+    broadcast: this.broadcast.bind(this),
+    send: this.sendById.bind(this),
     searchProvider: this._searchProvider,
     // TODO: move this into Feeds. Requires previewProvider/tabTracker to be independent
     getMetadata: (links, type) => {
@@ -139,9 +145,14 @@ ActivityStreams.prototype = {
       worker.port.emit(ADDON_TO_CONTENT, action);
       this._perfMeter.log(worker.tab, action.type);
     } catch (err) {
-      this.workers.delete(worker);
+      this._pagemod.removeWorker(worker);
       Cu.reportError(err);
     }
+  },
+
+  sendById(action, workerId, skipMasterStore) {
+    const worker = this._pagemod.getWorkerById(workerId);
+    this.send(action, worker, skipMasterStore);
   },
 
   /**
@@ -149,9 +160,9 @@ ActivityStreams.prototype = {
    */
   broadcast(action) {
     this._store.dispatch(action);
-    for (let worker of this.workers) {
+    this._pagemod.workers.forEach((id, worker) => {
       this.send(action, worker, true);
-    }
+    });
   },
 
   _initializeAppData() {
@@ -455,68 +466,11 @@ ActivityStreams.prototype = {
    * Sets up communications with the pages and manages the lifecycle of workers
    */
   _setupPageMod() {
-    // `this` here refers to the object instance
-    this.workers = new Set();
-    this._pagemod = new PageMod({
-      include: [`${this.options.pageURL}*`],
-      contentScriptFile: data.url("content-bridge.js"),
-      contentScriptWhen: "start",
-      attachTo: ["existing", "top"],
-      onAttach: worker => {
-        this._refreshAppState();
-
-        // Don't attach when in private browsing. Send user to about:privatebrowsing
-        if (privateBrowsing.isPrivate(worker)) {
-          worker.tab.url = "about:privatebrowsing";
-          return;
-        }
-
-        // This detaches workers on reload or closing the tab
-        worker.on("detach", () => this._removeWorker(worker));
-
-        // add the worker to a set to enable broadcasting
-        if (!this.workers.has(worker)) {
-          this._addWorker(worker);
-        }
-
-        worker.port.on(CONTENT_TO_ADDON, msg => {
-          if (!msg.type) {
-            Cu.reportError("ActivityStreams.dispatch error: unknown message type");
-            return;
-          }
-          // This detaches workers if a new url is launched
-          // it is important to remove the worker from the set, otherwise we will leak memory
-          if (msg.type === "pagehide") {
-            this._removeWorker(worker);
-          }
-          this.emit(CONTENT_TO_ADDON, {msg, worker});
-        });
-      },
-      onError: err => {
-        Cu.reportError(err);
-      }
+    this._pagemod.init({
+      onAttach: this._refreshAppState.bind(this),
+      onMessage: message => this.emit(CONTENT_TO_ADDON, message),
+      logEvent: this._perfMeter.log.bind(this._perfMeter)
     });
-  },
-
-  /**
-   * Adds a worker and calls callback if defined
-   */
-  _addWorker(worker) {
-    this._perfMeter.log(worker.tab, "WORKER_ATTACHED");
-    this.workers.add(worker);
-    if (this.options.onAddWorker) {
-      this.options.onAddWorker();
-    }
-  },
-
-  /**
-   * Removes a worker and calls callback if defined
-   */
-  _removeWorker(worker) {
-    this.workers.delete(worker);
-    if (this.options.onRemoveWorker) {
-      this.options.onRemoveWorker();
-    }
   },
 
   /*
@@ -583,7 +537,6 @@ ActivityStreams.prototype = {
       }
       NewTabURL.reset();
       Services.prefs.clearUserPref("places.favicons.optimizeToDimension");
-      this.workers.clear();
       this._removeListeners();
       this._pagemod.destroy();
       this._tabTracker.uninit();

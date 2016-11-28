@@ -20,5 +20,8 @@ module.exports = {
   LOCAL_STORAGE_KEY: "ACTIVITY_STREAM_STATE",
 
   // The opacity value of favicon background colors
-  BACKGROUND_FADE: 0.5
+  BACKGROUND_FADE: 0.5,
+
+  // This is a perf event
+  WORKER_ATTACHED_EVENT: "WORKER_ATTACHED"
 };
