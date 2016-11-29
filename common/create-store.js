@@ -41,7 +41,7 @@ function rehydrateFromLocalStorage() {
  *
  * @type {Number} milliseconds between polls
  */
-const _rehydrationInterval = 3 * 1000; // try every three seconds
+const _rehydrationInterval = 1 * 1000; // try every second
 let _rehydrationIntervalTimer = null;
 
 /**

@@ -67,4 +67,25 @@ SiteIcon.propTypes = {
   }).isRequired
 };
 
-module.exports = SiteIcon;
+/**
+ * A placeholder version (ie just outlines/shapes), for use before sufficient
+ * data is available to display.
+ *
+ * Unfortunately, this can't be a function component as long as we have the
+ * ref and it is used in testing.
+ */
+const PlaceholderSiteIcon = React.createClass({
+  render() {
+    return (
+      <div ref="icon" className="spotlight-icon">
+        <div className="site-icon-wrapper" />
+        <div className="site-icon-title" />
+      </div>
+    );
+  }
+});
+
+module.exports = {
+  PlaceholderSiteIcon,
+  SiteIcon
+};

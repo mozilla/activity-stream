@@ -5,7 +5,7 @@ const {actions} = require("common/action-manager");
 const classNames = require("classnames");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
-const SiteIcon = require("components/SiteIcon/SiteIcon");
+const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
 const Hint = require("components/Hint/Hint");
 
 const DEFAULT_LENGTH = 6;
@@ -27,7 +27,7 @@ const TopSitesItem = React.createClass({
     const isActive = this.state.showContextMenu && this.state.activeTile === index;
     return (<div className={classNames("tile-outer", {active: isActive})} key={site.guid || site.cache_key || index}>
       <a onClick={() => this.props.onClick(index)} className="tile" href={site.url} ref="topSiteLink">
-        <SiteIcon className="tile-img-container" site={site} faviconSize={32} showTitle={true} />
+        <SiteIcon ref="icon" className="tile-img-container" site={site} faviconSize={32} showTitle={true} />
         <div className="inner-border" />
       </a>
       <LinkMenuButton onClick={() => this.setState({showContextMenu: true, activeTile: index})} />
@@ -49,6 +49,19 @@ TopSitesItem.propTypes = {
   favicon_url: React.PropTypes.string,
   onClick: React.PropTypes.func
 };
+
+const PlaceholderTopSitesItem = React.createClass({
+  render() {
+    return (
+      <div className="tile-outer placeholder">
+        <a className="tile">
+          <PlaceholderSiteIcon />
+        </a>
+        <div className="inner-border" />
+      </div>
+    );
+  }
+});
 
 const TopSites = React.createClass({
   getDefaultProps() {
@@ -75,13 +88,22 @@ const TopSites = React.createClass({
     return (<section className="top-sites">
       <h3 className="section-title">Top Sites <Hint id="top_sites_hint" title="Top Sites" body={TOP_SITES_HINT_TEXT} /></h3>
       <div className="tiles-wrapper">
-        {sites.map((site, i) => <TopSitesItem
+        {sites.map((site, i) => {
+          // if this is a placeholder, we want all the widgets to render empty
+          if (this.props.placeholder) {
+            return (
+              <PlaceholderTopSitesItem key={site.guid || site.cache_key || i} />
+            );
+          }
+
+          return (<TopSitesItem
             index={i}
             key={site.guid || site.cache_key || i}
             page={this.props.page}
             onClick={this.onClickFactory(i, site)}
             {...site} />
-        )}
+          );
+        })}
       </div>
     </section>);
   }
@@ -98,9 +120,16 @@ TopSites.propTypes = {
       provider_name: React.PropTypes.string,
       parsedUrl: React.PropTypes.object
     })
-  ).isRequired
+  ).isRequired,
+
+  /**
+   * Only display a placeholder version (ie just outlines/shapes), for use
+   * before sufficient data is available to display.
+   */
+  placeholder: React.PropTypes.bool
 };
 
 module.exports = connect(justDispatch)(TopSites);
 module.exports.TopSites = TopSites;
 module.exports.TopSitesItem = TopSitesItem;
+module.exports.PlaceholderTopSitesItem = PlaceholderTopSitesItem;

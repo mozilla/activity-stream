@@ -4,10 +4,10 @@ const {justDispatch} = require("common/selectors/selectors");
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const {actions} = require("common/action-manager");
-const SiteIcon = require("components/SiteIcon/SiteIcon");
+const {SiteIcon, PlaceholderSiteIcon} = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
-const HighlightContext = require("components/HighlightContext/HighlightContext");
+const {HighlightContext, PlaceholderHighlightContext} = require("components/HighlightContext/HighlightContext");
 const Hint = require("components/Hint/Hint");
 const classNames = require("classnames");
 
@@ -88,6 +88,22 @@ const SpotlightItem = React.createClass({
   }
 });
 
+const PlaceholderSpotlightItem = React.createClass({
+  render() {
+    return (
+      <li className="spotlight-item placeholder">
+        <a>
+          <div className="spotlight-image portrait" ref="image">
+            <PlaceholderSiteIcon />
+          </div>
+          <div className="inner-border" />
+        </a>
+        <PlaceholderHighlightContext />
+      </li>
+    );
+  }
+});
+
 SpotlightItem.propTypes = {
   page: React.PropTypes.string,
   source: React.PropTypes.string,
@@ -105,7 +121,8 @@ const Spotlight = React.createClass({
   getDefaultProps() {
     return {
       length: 3,
-      page: "NEW_TAB"
+      page: "NEW_TAB",
+      placeholder: false
     };
   },
   onClickFactory(index, site) {
@@ -121,20 +138,38 @@ const Spotlight = React.createClass({
       this.props.dispatch(actions.NotifyEvent(payload));
     };
   },
-  render() {
+  // XXX factor out into a stateless component
+  renderSiteList() {
     const sites = this.props.sites.slice(0, this.props.length);
 
-    return (<section className="spotlight">
-      <h3 className="section-title">Highlights <Hint id="highlights_hint" title="Highlights" body={HIGHLIGHTS_HINT_TEXT} /></h3>
-      <ul className="spotlight-list">
-        {sites.map((site, i) => <SpotlightItem
+    return sites.map((site, i) =>
+        <SpotlightItem
           index={i}
           key={site.guid || site.cache_key || i}
           page={this.props.page}
           source="FEATURED"
           onClick={this.onClickFactory(i, site)}
           dispatch={this.props.dispatch}
-          {...site} />)}
+          {...site} />
+      );
+  },
+  // XXX factor out into a stateless component
+  renderPlaceholderSiteList() {
+    const PLACEHOLDER_SITE_LIST_LENGTH = 3;
+
+    let placeholders = [];
+    for (let i = 0; i < PLACEHOLDER_SITE_LIST_LENGTH; i++) {
+      placeholders.push(<PlaceholderSpotlightItem key={i} />);
+    }
+
+    return placeholders;
+  },
+  render() {
+    return (<section className="spotlight">
+      <h3 className="section-title">Highlights <Hint id="highlights_hint" title="Highlights" body={HIGHLIGHTS_HINT_TEXT} /></h3>
+      <ul className="spotlight-list">
+        {this.props.placeholder ? this.renderPlaceholderSiteList() :
+          this.renderSiteList()}
       </ul>
     </section>);
   }
@@ -149,3 +184,4 @@ Spotlight.propTypes = {
 module.exports = connect(justDispatch)(Spotlight);
 module.exports.Spotlight = Spotlight;
 module.exports.SpotlightItem = SpotlightItem;
+module.exports.PlaceholderSpotlightItem = PlaceholderSpotlightItem;

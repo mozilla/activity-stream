@@ -2,6 +2,7 @@ $image-path: 'img/';
 
 $bg-color: #FFF;
 $bg-grey: #FBFBFB;
+$placeholder-grey: #F7F7F7;
 $very-light-grey: #EBEBEB;
 $light-grey: #A0A0A0;
 $mid-light-grey: #858585;
@@ -93,8 +94,9 @@ $search-border-color: #EAEAEA;
 $item-shadow: 0 1px 0 0 $faintest-black;
 $item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
 
+// override background transparency of image itself
+$loader-popup-background-color: $white;
 $loader-spinner-size: 16px;
-$loader-popup-background-color: #2B2B2B;
 $loader-border-color: #E0E0E0;
 $loader-border-radius: 4px;
 $loader-z-index: 10000;

@@ -1,12 +1,13 @@
 const TestUtils = require("react-addons-test-utils");
 const React = require("react");
 const ReactDOM = require("react-dom");
-const {overrideConsoleError, renderWithProvider} = require("test/test-utils");
+const {faker, overrideConsoleError, renderWithProvider} = require("test/test-utils");
 const ConnectedTopSites = require("components/TopSites/TopSites");
-const {TopSites, TopSitesItem} = ConnectedTopSites;
+const {PlaceholderTopSitesItem, TopSites, TopSitesItem} = ConnectedTopSites;
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
-const SiteIcon = require("components/SiteIcon/SiteIcon");
+const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
+const fakeSiteWithImage = faker.createSite();
 
 const fakeProps = {
   sites: [
@@ -82,5 +83,40 @@ describe("TopSites", () => {
       topSites = renderWithProvider(<TopSites page={"NEW_TAB"} dispatch={dispatch} sites={fakeProps.sites} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(topSites, TopSitesItem)[0].refs.topSiteLink);
     });
+  });
+});
+
+describe("TopSitesItem", () => {
+  const fakeSite = fakeSiteWithImage;
+  let instance;
+
+  describe("valid site", () => {
+    beforeEach(() => {
+      instance = renderWithProvider(<TopSitesItem {...fakeSite} />);
+    });
+
+    it("should render a SiteIcon with appropriate props", () => {
+      assert.instanceOf(instance.refs.icon, SiteIcon);
+      assert.include(instance.refs.icon.props.site, fakeSite);
+    });
+  });
+});
+
+describe("PlaceholderTopSitesItem", () => {
+  let instance;
+  let el;
+
+  beforeEach(() => {
+    instance = renderWithProvider(<PlaceholderTopSitesItem />);
+    el = ReactDOM.findDOMNode(instance);
+  });
+
+  it("should have a .placeholder class", () => {
+    assert(el.classList.contains("placeholder"));
+  });
+
+  it("should render a PlaceholderSiteIcon", () => {
+    let icon = TestUtils.findRenderedComponentWithType(instance, PlaceholderSiteIcon);
+    assert.notEqual(null, icon);
   });
 });

@@ -1,14 +1,14 @@
 const ConnectedSpotlight = require("components/Spotlight/Spotlight");
-const {Spotlight, SpotlightItem} = ConnectedSpotlight;
+const {PlaceholderSpotlightItem, Spotlight, SpotlightItem} = ConnectedSpotlight;
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
-const HighlightContext = require("components/HighlightContext/HighlightContext");
+const {PlaceholderHighlightContext, HighlightContext} = require("components/HighlightContext/HighlightContext");
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
-const SiteIcon = require("components/SiteIcon/SiteIcon");
+const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
 const {mockData, faker, renderWithProvider} = require("test/test-utils");
 const fakeSpotlightItems = mockData.Highlights.rows;
 const fakeSiteWithImage = faker.createSite();
@@ -18,12 +18,13 @@ fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 describe("Spotlight", () => {
   let instance;
   let el;
-  beforeEach(() => {
-    instance = renderWithProvider(<Spotlight sites={fakeSpotlightItems} />);
-    el = ReactDOM.findDOMNode(instance);
-  });
 
   describe("valid sites", () => {
+    beforeEach(() => {
+      instance = renderWithProvider(<Spotlight sites={fakeSpotlightItems} />);
+      el = ReactDOM.findDOMNode(instance);
+    });
+
     it("should create the element", () => {
       assert.ok(el);
     });
@@ -56,12 +57,13 @@ describe("SpotlightItem", () => {
   const fakeSite = fakeSiteWithImage;
   let instance;
   let el;
-  beforeEach(() => {
-    instance = renderWithProvider(<SpotlightItem {...fakeSite} />);
-    el = ReactDOM.findDOMNode(instance);
-  });
 
   describe("valid sites", () => {
+    beforeEach(() => {
+      instance = renderWithProvider(<SpotlightItem {...fakeSite} />);
+      el = ReactDOM.findDOMNode(instance);
+    });
+
     it("should create the element", () => {
       assert.ok(el);
     });
@@ -99,16 +101,27 @@ describe("SpotlightItem", () => {
       assert.equal(hc.props.type, "bookmark");
       assert.deepEqual(hc.props, props);
     });
-    it("should fire user event if there is no image", done => {
-      const fakeSiteWithoutImage = Object.assign({}, fakeSiteWithImage, {bestImage: {url: null}});
-      function dispatch(a) {
-        if (a.type === "NOTIFY_UNDESIRED_EVENT") {
-          assert.equal(a.data.event, "MISSING_IMAGE");
-          assert.equal(a.data.source, "HIGHLIGHTS");
-          done();
-        }
-      }
-      instance = renderWithProvider(<SpotlightItem {...fakeSiteWithoutImage} dispatch={dispatch} page={"NEW_TAB"} />);
-    });
+  });
+});
+
+describe("PlaceholderSpotlightItem", () => {
+  let instance;
+  let el;
+
+  beforeEach(() => {
+    instance = renderWithProvider(<PlaceholderSpotlightItem />);
+    el = ReactDOM.findDOMNode(instance);
+  });
+  it("should have a .placeholder class", () => {
+    assert(el.classList.contains("placeholder"));
+  });
+  it("should render a PlaceholderHighlightContext", () => {
+    const hc = TestUtils.findRenderedComponentWithType(instance, PlaceholderHighlightContext);
+
+    assert.instanceOf(hc, PlaceholderHighlightContext);
+  });
+  it("should render a PlaceholderSiteIcon", () => {
+    const icon = TestUtils.findRenderedComponentWithType(instance, PlaceholderSiteIcon);
+    assert.notEqual(null, icon);
   });
 });
