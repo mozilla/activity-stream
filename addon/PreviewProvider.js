@@ -184,25 +184,17 @@ PreviewProvider.prototype = {
   },
 
   /**
-    * Collects all the metadata about the set of links that are requested
-    */
-  getLinkMetadata(links, event = {}) {
-    let processedLinks = this._processLinks(links);
-    this._asyncSaveLinks(processedLinks, event);
-
-    return this._asyncGetEnhancedLinks(processedLinks, event);
-  },
-
-  /**
     * Returns links with previews if available. Optionally return those with previews only
     * Also, collect some metrics on how many links were returned by PlacesProvider vs how
     * how many were returned by the cache
     */
-  _asyncGetEnhancedLinks: Task.async(function*(processedLinks, event) {
-    this._tabTracker.handlePerformanceEvent(event, "previewCacheRequest", processedLinks.length);
+  asyncGetEnhancedLinks: Task.async(function*(links, event) {
+    this._tabTracker.handlePerformanceEvent(event, "previewCacheRequest", links.length);
     if (!this.enabled) {
-      return processedLinks;
+      return links;
     }
+    let processedLinks = this._processLinks(links);
+
     // Collect all items in the DB that we requested and create a mapping between that
     // object's metadata and it's cache key
     let dbLinks = yield this._asyncFindItemsInDB(processedLinks);
@@ -280,7 +272,8 @@ PreviewProvider.prototype = {
   /**
    * Request links from embedly, optionally filtering out known links
    */
-  _asyncSaveLinks: Task.async(function*(processedLinks, event) {
+  asyncSaveLinks: Task.async(function*(links, event) {
+    let processedLinks = this._processLinks(links);
     let dbLinks = yield this._asyncFindItemsInDB(processedLinks);
     let existingLinks = new Set();
     dbLinks.forEach(item => existingLinks.add(item.cache_key));

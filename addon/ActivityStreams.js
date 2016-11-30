@@ -90,9 +90,13 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
     send: this.sendById.bind(this),
     searchProvider: this._searchProvider,
     // TODO: move this into Feeds. Requires previewProvider/tabTracker to be independent
-    getMetadata: (links, type) => {
+    getCachedMetadata: (links, type) => {
       const event = this._tabTracker.generateEvent({source: type});
-      return this._previewProvider.getLinkMetadata(links, event);
+      return this._previewProvider.asyncGetEnhancedLinks(links, event);
+    },
+    fetchNewMetadata: (links, type) => {
+      const event = this._tabTracker.generateEvent({source: type});
+      return this._previewProvider.asyncSaveLinks(links, event);
     }
   });
   this._store = createStore({middleware: this._feeds.reduxMiddleware});

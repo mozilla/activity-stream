@@ -26,10 +26,10 @@ exports.test_metadatastore_saves_new_links = function*(assert) {
 
   // these are links we are going to request - the first two should get filtered out
   const links = [
-    {cache_key: "https://www.mozilla.org/", places_url: "https://www.mozilla.org/"},
-    {cache_key: "https://www.mozilla.org/en-US/firefox/new/", places_url: "https://www.mozilla.org/en-US/firefox/new"},
-    {cache_key: "https://notinDB.com/", places_url: "https://www.notinDB.com/", sanitized_url: "https://www.notinDB.com/"}];
-  const fakeResponse = {"urls": {"https://www.notinDB.com/": {"description": "some embedly metadata"}}};
+    {url: "https://www.mozilla.org/"},
+    {url: "https://www.mozilla.org/en-US/firefox/new"},
+    {url: "https://www.notindb.com/", cache_key: "notindb.com/"}];
+  const fakeResponse = {"urls": {"https://www.notindb.com/": {"description": "some embedly metadata"}}};
 
   let srv = httpd.startServerAsync(gPort);
   srv.registerPathHandler("/previewProviderMetadataStore", function handle(request, response) {
@@ -39,7 +39,7 @@ exports.test_metadatastore_saves_new_links = function*(assert) {
 
   // only request the items that are not in the database and wait for them to
   // successfully be inserted
-  yield gPreviewProvider._asyncSaveLinks(links);
+  yield gPreviewProvider.asyncSaveLinks(links);
 
   // asyncSaveLinks doesn't yield on inserting in the db so we need to wait
   // until it has successfully finished the transaction before checking
@@ -58,9 +58,9 @@ exports.test_metadatastore_saves_new_links = function*(assert) {
 exports.test_find_correct_links = function*(assert) {
   yield gMetadataStore.asyncInsert(metadataFixture);
   const links = [
-    {cache_key: "https://www.mozilla.org/", places_url: "https://www.mozilla.org/"},
-    {cache_key: "https://www.mozilla.org/en-US/firefox/new/", places_url: "https://www.mozilla.org/en-US/firefox/new"},
-    {cache_key: "https://www.notinDB.com/", places_url: "https://www.notinDB.com/"}];
+    {url: "https://www.mozilla.org/", cache_key: "mozilla.org/"},
+    {url: "https://www.mozilla.org/en-US/firefox/new", cache_key: "mozilla.org/en-US/firefox/new"},
+    {url: "https://www.notinDB.com/", cache_key: "notinDB.com/", places_url: "https://www.notinDB.com/"}];
 
   // find the items in the database, based on their cache keys
   const dbLinks = yield gPreviewProvider._asyncFindItemsInDB(links);
@@ -72,25 +72,25 @@ exports.test_find_correct_links = function*(assert) {
 exports.test_get_links_from_metadatastore = function*(assert) {
   yield gMetadataStore.asyncInsert(metadataFixture);
   const links = [
-    {cache_key: "https://www.mozilla.org/", places_url: "https://www.mozilla.org/"},
-    {cache_key: "https://www.mozilla.org/en-US/firefox/new/", places_url: "https://www.mozilla.org/en-US/firefox/new"},
-    {cache_key: "https://www.notinDB.com/", places_url: "https://www.notinDB.com/", favicon_url: "https://www.someImage.com/image.jpg"}];
+    {url: "https://www.mozilla.org/"},
+    {url: "https://www.mozilla.org/en-US/firefox/new"},
+    {url: "https://www.notindb.com/", cache_key: "notindb.com/", places_url: "https://www.notindb.com/", favicon_url: "https://www.someImage.com/image.jpg"}];
 
   // get enhanced links - the third link should be returned as is since it
   // is not yet in the database
-  let cachedLinks = yield gPreviewProvider._asyncGetEnhancedLinks(links);
+  let cachedLinks = yield gPreviewProvider.asyncGetEnhancedLinks(links);
   assert.equal(cachedLinks.length, 3, "returned all 3 links");
-  assert.deepEqual(cachedLinks[2].cache_key, links[2].cache_key, "the third link's cache_key was untouched");
+  assert.deepEqual(cachedLinks[2].cache_key, links[2].cache_key, "generated a cache_key for the third link");
 
   // get enhanced links after third link has been inserted in db - the third
   // link should now have more properties i.e title, description etc...
   yield gMetadataStore.asyncInsert([links[2]]);
-  cachedLinks = yield gPreviewProvider._asyncGetEnhancedLinks(links);
+  cachedLinks = yield gPreviewProvider.asyncGetEnhancedLinks(links);
   assert.equal(cachedLinks.length, 3, "returned all 3 links");
   assert.equal(cachedLinks[2].title, null, "the third link has a title field");
   assert.equal(cachedLinks[2].description, null, "the third link has a description field");
   assert.deepEqual(cachedLinks[2].images, [], "the third link has images field");
-  assert.equal(cachedLinks[2].favicon_url, links[2].favicon_url, "the third link has favicon_url field");
+  assert.equal(cachedLinks[2].favicon_url, links[2].favicon_url, "the third link has the correct favicon_url");
 };
 
 function waitForAsyncReset() {

@@ -1,5 +1,5 @@
 const testLinks = ["foo.com", "bar.com"];
-const getMetadata = sites => sites.map(site => site.toUpperCase());
+const getCachedMetadata = sites => sites.map(site => site.toUpperCase());
 const PlacesProvider = {links: {getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))}};
 const moment = require("moment");
 const TopSitesFeed = require("inject!addon/Feeds/TopSitesFeed")({"addon/PlacesProvider": {PlacesProvider}});
@@ -10,8 +10,8 @@ describe("TopSitesFeed", () => {
   let instance;
   beforeEach(() => {
     PlacesProvider.links.getTopFrecentSites.reset();
-    instance = new TopSitesFeed({getMetadata});
-    sinon.spy(instance.options, "getMetadata");
+    instance = new TopSitesFeed({getCachedMetadata});
+    sinon.spy(instance.options, "getCachedMetadata");
   });
   it("should create a TopSitesFeed", () => {
     assert.instanceOf(instance, TopSitesFeed);
@@ -25,15 +25,15 @@ describe("TopSitesFeed", () => {
     it("should return a promise", () => {
       assert.instanceOf(instance.getData(), Promise);
     });
-    it("should call getMetadata", () =>
+    it("should call getCachedMetadata", () =>
       instance.getData().then(() =>
-        assert.calledWith(instance.options.getMetadata, testLinks, "TOP_FRECENT_SITES_RESPONSE")
+        assert.calledWith(instance.options.getCachedMetadata, testLinks, "TOP_FRECENT_SITES_RESPONSE")
       )
     );
     it("should resolve with an action", () => instance.getData().then(action => {
       assert.isObject(action);
       assert.equal(action.type, "TOP_FRECENT_SITES_RESPONSE", "type");
-      assert.deepEqual(action.data, getMetadata(testLinks));
+      assert.deepEqual(action.data, getCachedMetadata(testLinks));
     }));
   });
 

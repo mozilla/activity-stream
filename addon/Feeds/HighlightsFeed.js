@@ -58,7 +58,7 @@ module.exports = class HighlightsFeed extends Feed {
       return Promise.reject(new Error("Tried to get weighted highlights but there was no baselineRecommender"));
     }
     return PlacesProvider.links.getRecentlyVisited()
-      .then(links => this.options.getMetadata(links, "HIGHLIGHTS_RESPONSE"))
+      .then(links => this.options.getCachedMetadata(links, "HIGHLIGHTS_RESPONSE"))
       .then(links => this.baselineRecommender.scoreEntries(links))
       .then(links => (am.actions.Response("HIGHLIGHTS_RESPONSE", links)));
   }
@@ -73,7 +73,7 @@ module.exports = class HighlightsFeed extends Feed {
         // We always want new bookmarks
         this.refresh("a bookmark was added");
         break;
-      case am.type("RECEIVE_PLACES_CHANGES"):
+      case am.type("METADATA_FEED_UPDATED"):
         // If the user visits a site and we don't have enough weighted highlights yet, refresh the data.
         if (state.Highlights.rows.length < (HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH)) {
           this.refresh("there were not enough sites");

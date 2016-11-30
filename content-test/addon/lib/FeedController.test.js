@@ -26,7 +26,7 @@ describe("FeedController", () => {
   });
   describe("#connectStore", () => {
     it("should set the .store on each feed", () => {
-      const feeds = new FeedController({feeds: [Feed, Feed], getMetadata() {}});
+      const feeds = new FeedController({feeds: [Feed, Feed], getCachedMetadata() {}, fetchNewMetadata() {}});
       const store = {};
       feeds.connectStore(store);
       feeds.feeds.forEach(f => assert.equal(f.store, store));
@@ -37,7 +37,7 @@ describe("FeedController", () => {
     let firstFeed;
     let store;
     beforeEach(() => {
-      feeds = new FeedController({feeds: [TestFeed], getMetadata() {}});
+      feeds = new FeedController({feeds: [TestFeed], getCachedMetadata() {}, fetchNewMetadata() {}});
       firstFeed = feeds.feeds[0];
       store = createStore(placeholderReducer, applyMiddleware(feeds.reduxMiddleware));
     });
@@ -65,7 +65,7 @@ describe("FeedController", () => {
           });
         }
       }
-      feeds = new FeedController({feeds: [ErrorFeed, TestFeed], getMetadata() {}});
+      feeds = new FeedController({feeds: [ErrorFeed, TestFeed], getCachedMetadata() {}, fetchNewMetadata() {}});
       store = createStore(placeholderReducer, applyMiddleware(feeds.reduxMiddleware));
 
       // Make sure the error does not throw

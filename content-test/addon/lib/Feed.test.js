@@ -8,10 +8,15 @@ describe("Feed", () => {
     assert.property(instance.state, "inProgress");
     assert.property(instance.state, "lastUpdated");
   });
-  it("should add .getMetadata from options", () => {
-    const options = {getMetadata: () => {}};
+  it("should add .getCachedMetadata from options", () => {
+    const options = {getCachedMetadata: () => {}};
     const instance = new Feed(options);
-    assert.equal(instance.options.getMetadata, options.getMetadata);
+    assert.equal(instance.options.getCachedMetadata, options.getCachedMetadata);
+  });
+  it("should add .fetchNewMetadata from options", () => {
+    const options = {fetchNewMetadata: () => {}};
+    const instance = new Feed(options);
+    assert.equal(instance.options.fetchNewMetadata, options.fetchNewMetadata);
   });
   describe("#connectStore", () => {
     it("should set .store", () => {
