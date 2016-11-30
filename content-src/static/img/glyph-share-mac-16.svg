@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 32 32">
+  <style>
+    path {
+      fill: #4d4d4d;
+    }
+  </style>
+	<path id="glyph-share-mac-16" data-name="glyph-share-mac-16" class="cls-1" d="M241,672H217a2,2,0,0,1-2-2V658a2,2,0,0,1,2-2h4a2,2,0,0,1,0,4h-2v8h20v-8h-2a2,2,0,0,1,0-4h4a2,2,0,0,1,2,2v12A2,2,0,0,1,241,672Zm-5.382-20.594L231,646.788V660a2,2,0,0,1-4,0V646.775l-4.6,4.6a2,2,0,0,1-2.829-2.828l8.017-8.017a2,2,0,0,1,2.828,0c0.019,0.019.029,0.043,0.047,0.063l7.984,7.984A2,2,0,0,1,235.618,651.406Z" transform="translate(-213 -640)"/>
+ </svg>
