@@ -3,6 +3,7 @@
 const {Cc, Ci, Cu} = require("chrome");
 const {data} = require("sdk/self");
 const DEFAULT_MANIFEST_PREFS = require("addon/ShareManifests");
+const runtime = require("sdk/system/runtime");
 
 const clipboard = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
 
@@ -403,7 +404,14 @@ ShareProvider.prototype = {
         if (!node || node.id !== id) {
           return;
         }
-        node.setAttribute("image", data.url("content/img/glyph-share-16.svg"));
+
+        let os = "windows";
+        if (runtime.OS === "Darwin") {
+          os = "mac";
+        } else if (runtime.OS === "Linux") {
+          os = "linux";
+        }
+        node.setAttribute("image", data.url(`content/img/glyph-share-${os}-16.svg`));
 
         // The Social API changed in FF 51
         if (Services.vc.compare(Services.appinfo.version, "51.0a1") >= 0) {
