@@ -42,7 +42,7 @@ class Baseline {
 
     const age = this.normalizeTimestamp(entry.lastVisitDate);
     const imageCount = entry.images ? entry.images.length : 0;
-    const isBookmarked = entry.bookmarkId || 0;
+    const isBookmarked = !!entry.bookmarkDateCreated;
     const description = this.extractDescriptionLength(entry);
     const pathLength = urlObj.pathname.split("/").filter(e => e.length).length;
     const image = this.extractImage(entry.images);
@@ -104,8 +104,9 @@ class Baseline {
       newScore *= 0.2;
     }
 
+    // Boost boomarks even if they have low score or no images
     if (features.isBookmarked) {
-      newScore *= 1.8;
+      newScore += 1.8;
     }
 
     return newScore;
