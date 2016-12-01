@@ -1,6 +1,7 @@
 const ConnectedSpotlight = require("components/Spotlight/Spotlight");
 const {Spotlight, SpotlightItem} = ConnectedSpotlight;
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
+const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const HighlightContext = require("components/HighlightContext/HighlightContext");
@@ -99,6 +100,9 @@ describe("SpotlightItem", () => {
     });
     it("should render the title", () => {
       assert.equal(instance.refs.title.textContent, fakeSite.title);
+    });
+    it("should render the label (e.g. foo.com)", () => {
+      assert.equal(instance.refs.label.textContent, selectSiteProperties(fakeSite).label);
     });
     it("should render the description", () => {
       assert.include(instance.refs.description.textContent, fakeSite.description);
