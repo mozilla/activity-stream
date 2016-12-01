@@ -324,6 +324,13 @@ ActivityStreams.prototype = {
     }
   },
 
+  /**
+   * Handles prefs changes to the addon
+   */
+  _onPrefChange(prefName) {
+    this._tabTracker.handleUserEvent({"event": "PREF_CHANGE", "source": prefName});
+  },
+
   /*
    * Broadcast current engine has changed to all open newtab pages
    */
@@ -380,6 +387,9 @@ ActivityStreams.prototype = {
     this._handleExperimentChange = this._handleExperimentChange.bind(this);
     this._experimentProvider.on("change", this._handleExperimentChange);
 
+    this._onPrefChange = this._onPrefChange.bind(this);
+    simplePrefs.on("", this._onPrefChange);
+
     // This is a collection of handlers that receive messages from content
     this._contentToAddonHandlers = (msgName, args) => {
       // Log requests first so that the requests are logged before responses
@@ -409,6 +419,7 @@ ActivityStreams.prototype = {
     this._searchProvider.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
     this._experimentProvider.off("change", this._handleExperimentChange);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
+    simplePrefs.removeListener("", this._onPrefChange);
   },
 
   /**
