@@ -92,6 +92,10 @@ module.exports = class HighlightsFeed extends Feed {
           this.refresh("coefficients were changed");
         }
         break;
+      case am.type("SYNC_COMPLETE"):
+        // We always want new synced tabs.
+        this.refresh("new tabs synced");
+        break;
     }
   }
 };
