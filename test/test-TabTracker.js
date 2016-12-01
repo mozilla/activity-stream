@@ -674,6 +674,39 @@ exports.test_TabTracker_disable_ping = function*(assert) {
   assert.deepEqual("disable", pingData.event, "the ping has the correct event");
 };
 
+exports.test_TabTracker_ping_on_pref_change = function*(assert) {
+  let expected = 4;
+  let fired = 0;
+  let pings = [];
+
+  let userEventPromise = new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic === "user-action-event") {
+        fired++;
+        pings.push(JSON.parse(data));
+        if (fired === expected) {
+          Services.obs.removeObserver(observe, "user-action-event");
+          resolve();
+        }
+      }
+    }
+    Services.obs.addObserver(observe, "user-action-event", false);
+  });
+
+  // change the addon's prefs as follows
+  simplePrefs.prefs.foo = "bar";
+  simplePrefs.prefs.foo1 = true;
+  simplePrefs.prefs.foo = "baz";
+  simplePrefs.prefs.foo1 = false;
+
+  yield userEventPromise;
+  const expectedSources = ["foo", "foo1", "foo", "foo1"];
+  pings.forEach((ping, i) => {
+    assert.equal(ping.event, "PREF_CHANGE", "the ping has the correct event");
+    assert.equal(ping.source, expectedSources[i], "the ping has the correct source");
+  });
+};
+
 before(exports, function*() {
   // we have to clear bookmarks and history before tests
   // to ensure that the app does not pick history or

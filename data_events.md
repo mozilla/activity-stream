@@ -90,6 +90,21 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   }
 ```
 
+#### Changing a pref for this addon
+
+```js
+{
+  "event": "PREF_CHANGE",
+  "page": "NEW_TAB",
+  "source": "Name of the changed pref item",
+  "action": "activity_stream_event",
+  "tab_id": "-5-3",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+}
+```
+
 #### Blocking a site
 
 ```js
