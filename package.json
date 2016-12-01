@@ -104,16 +104,10 @@
       "value": false
     },
     {
-      "name": "query.cache",
-      "title": "Enable query caching mode",
-      "type": "bool",
-      "value": true,
-      "hidden": true
-    },
-    {
       "name": "previews.enabled",
       "title": "Enable rich link previews",
       "type": "bool",
+      "hidden": true,
       "value": true
     },
     {
@@ -149,19 +143,6 @@
       "type": "string",
       "value": "https://embedly-proxy.services.mozilla.com/v2/metadata",
       "hidden": true
-    },
-    {
-      "name": "pocket.endpoint",
-      "title": "Pocket Endpoint",
-      "type": "string",
-      "value": "https://embedly-proxy.services.mozilla.com/v2/recommendations",
-      "hidden": true
-    },
-    {
-      "name": "recommendations",
-      "title": "Show me recommendations",
-      "type": "bool",
-      "value": true
     },
     {
       "name": "weightedHighlightsCoefficients",
