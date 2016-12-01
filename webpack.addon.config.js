@@ -11,6 +11,7 @@ module.exports = {
   },
   module: {loaders: [{test: /\.json$/, loader: "json"}]},
   plugins: [
+    new webpack.DefinePlugin({ADDON: true}),
     new webpack.BannerPlugin("let platform_require = require;\n", {raw: true})
   ]
 };

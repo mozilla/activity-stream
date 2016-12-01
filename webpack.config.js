@@ -21,16 +21,15 @@ module.exports = {
     vendor: [
       "react",
       "react-dom",
-      "moment",
-      "wu",
-      "buffer",
-      "url"
+      "react-redux",
+      "redux"
     ]
   },
   output: {
     path: outputDir,
     filename: outputFilename
   },
+  node: {Buffer: false, url: false},
   target: "web",
   module: webpack_common.module,
   devtool: env === "production" ? null : "eval", // This is for Firefox
