@@ -21,7 +21,8 @@ module.exports = {
     vendor: [
       "react",
       "react-dom",
-      "moment"
+      "react-redux",
+      "redux"
     ]
   },
   output: {
