@@ -2,6 +2,7 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("common/selectors/selectors");
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
+const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const {actions} = require("common/action-manager");
 const SiteIcon = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
@@ -44,7 +45,7 @@ const SpotlightItem = React.createClass({
 
     // We may want to reconsider this as part of
     // https://github.com/mozilla/activity-stream/issues/1473
-    const providerName = site.provider_name ? site.provider_name.toLowerCase() : "";
+    const {label} = selectSiteProperties(site);
     const style = {};
 
     if (imageUrl) {
@@ -60,8 +61,8 @@ const SpotlightItem = React.createClass({
         <div className="spotlight-details">
           <div className="spotlight-info">
             <div className="spotlight-text">
-              <div className="spotlight-provider-name">
-                {providerName}
+              <div ref="label" className="spotlight-label">
+                {label}
               </div>
               <h4 ref="title" className="spotlight-title">{site.title}</h4>
               <p className="spotlight-description" ref="description">{description}</p>
