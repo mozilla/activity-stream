@@ -76,7 +76,7 @@ const fakeUrls = [
     host: "bar.com",
     visitCount: 1,
     title: "Activity Stream",
-    bookmarkId: 1,
+    bookmarkDateCreated: 1,
     description: "",
     images: [{"url": "bar.com", "width": 100, "height": 100}],
     imageCount: 1,
@@ -173,10 +173,10 @@ describe("Baseline", () => {
     assert.isOk(descending);
   });
 
-  it("should remove items with no images", () => {
+  it("should remove items with no images except bookmarks", () => {
     let fakeUrlsWithNoImages = fakeUrls.map(item => Object.assign({}, item, {images: []}));
     let items = baseline.score(fakeUrlsWithNoImages);
-    assert.equal(items.length, 0);
+    assert.equal(items.length, 1);
   });
 
   it("should decrease score for consecutive items from the same domain", () => {
