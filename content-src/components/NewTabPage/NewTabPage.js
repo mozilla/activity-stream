@@ -5,7 +5,7 @@ const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
-const ContextMenu = require("components/ContextMenu/ContextMenu");
+// const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const classNames = require("classnames");
@@ -14,20 +14,7 @@ const {HIGHLIGHTS_LENGTH} = require("common/constants");
 
 const NewTabPage = React.createClass({
   getInitialState() {
-    return {
-      showSettingsMenu: false,
-      showRecommendations: true
-    };
-  },
-  toggleRecommendation() {
-    this.props.dispatch(actions.NotifyEvent({
-      event: "TOGGLE_RECOMMENDATION",
-      page: PAGE_NAME,
-      showRecommendations: !this.state.showRecommendations
-    }));
-    this.props.dispatch(actions.NotifyToggleRecommendations());
-    this.props.dispatch(actions.RequestHighlightsLinks());
-    this.setState({showRecommendations: !this.state.showRecommendations});
+    return {showSettingsMenu: false};
   },
   componentDidMount() {
     document.title = "New Tab";
@@ -41,9 +28,6 @@ const NewTabPage = React.createClass({
   },
   render() {
     const props = this.props;
-    const recommendationLabel = "Show Trending Highlights";
-    const recommendationIcon = props.Highlights.recommendationShown ? "check" : "   ";
-    const showRecommendationOption = props.showRecommendationOption;
 
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
@@ -64,25 +48,6 @@ const NewTabPage = React.createClass({
           <section>
             <Spotlight page={PAGE_NAME} length={HIGHLIGHTS_LENGTH}
               sites={props.Highlights.rows} />
-          </section>
-
-          <section className="bottom-links-container">
-            <span className="link-wrapper-right">
-              <a
-                ref="settingsLink"
-                hidden={!showRecommendationOption}
-                className={classNames("bottom-link expand", {active: this.state.showSettingsMenu})}
-                onClick={() => this.setState({showSettingsMenu: !this.state.showSettingsMenu})} >
-                  <span className="icon icon-spacer icon-settings" /> <span className="text">Settings</span>
-              </a>
-              <ContextMenu
-                ref="settingsMenu"
-                visible={this.state.showSettingsMenu}
-                onUpdate={showSettingsMenu => this.setState({showSettingsMenu})}
-                options={[
-                  {icon: recommendationIcon, label: recommendationLabel, onClick: this.toggleRecommendation}
-                ]} />
-            </span>
           </section>
         </div>
       </div>

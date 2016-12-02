@@ -16,7 +16,6 @@ module.exports.justDispatch = (() => ({}));
  *    .TopSites {obj} State object for Top Sites
  *    .Highlights {obj} State object for Highlights
  *    .isReady {bool} Do we have all the required data to display New Tab?
- *    .showRecommendationOption {bool} Should we show the option to turn recommendations off/on?
  */
 module.exports.selectNewTabSites = createSelector(
   [
@@ -40,8 +39,7 @@ module.exports.selectNewTabSites = createSelector(
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Highlights: Object.assign({}, Highlights, {rows: highlightsRows}),
-      isReady: TopSites.init && Highlights.init && Experiments.init,
-      showRecommendationOption: Experiments.values.recommendedHighlight
+      isReady: TopSites.init && Highlights.init && Experiments.init
     };
   }
 );

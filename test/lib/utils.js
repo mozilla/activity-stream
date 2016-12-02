@@ -53,16 +53,6 @@ function doDump(object, trailer) {
   dump(JSON.stringify(object, null, 1) + trailer); // eslint-disable-line no-undef
 }
 
-function getTestRecommendationProvider() {
-  return {
-    init() {},
-    asyncSetRecommendedContent() {},
-    setBlockedRecommendation() {},
-    getRecommendation() {},
-    uninit() {}
-  };
-}
-
 function getTestSearchProvider() {
   return {
     init() {},
@@ -124,7 +114,6 @@ function getTestActivityStream(options = {}) {
   options.pageScraper = mockPageScraper;
   options.pageWorker = mockPageWorker;
   options.searchProvider = getTestSearchProvider();
-  options.recommendationProvider = getTestRecommendationProvider();
   const testTabTracker = new TabTracker(options);
   const testTelemetrySender = new TelemetrySender();
   let mockApp = new ActivityStreams(mockMetadataStore, testTabTracker, testTelemetrySender, options);

@@ -13,7 +13,6 @@ const am = new ActionManager([
   "HIGHLIGHTS_RESPONSE",
   "MERGE_STORE",
   "METADATA_FEED_UPDATED",
-  "NOTIFY_BLOCK_RECOMMENDATION",
   "NOTIFY_BLOCK_URL",
   "NOTIFY_BOOKMARK_ADD",
   "NOTIFY_BOOKMARK_DELETE",
@@ -29,7 +28,6 @@ const am = new ActionManager([
   "NOTIFY_REMOVE_FORM_HISTORY_ENTRY",
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_SHARE_URL",
-  "NOTIFY_TOGGLE_RECOMMENDATIONS",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UPDATE_PREF",
   "NOTIFY_UPDATE_SEARCH_STRING",
@@ -170,14 +168,6 @@ function NotifyUnblockURL(url) {
   return Notify("NOTIFY_UNBLOCK_URL", url);
 }
 
-function NotifyBlockRecommendation(url) {
-  return Notify("NOTIFY_BLOCK_RECOMMENDATION", url);
-}
-
-function NotifyToggleRecommendations() {
-  return Notify("NOTIFY_TOGGLE_RECOMMENDATIONS");
-}
-
 function NotifyPerformSearch(data) {
   return Notify("NOTIFY_PERFORM_SEARCH", data);
 }
@@ -253,7 +243,6 @@ function PlacesStatsUpdate(historySize, bookmarksSize) {
 am.defineActions({
   DisableHint,
   Notify,
-  NotifyBlockRecommendation,
   NotifyBlockURL,
   NotifyBookmarkAdd,
   NotifyBookmarkDelete,
@@ -270,7 +259,6 @@ am.defineActions({
   NotifyRemoveFormHistory,
   NotifyRouteChange,
   NotifyShareUrl,
-  NotifyToggleRecommendations,
   NotifyUnblockURL,
   NotifyUpdatePref,
   NotifyUpdateSearchString,

@@ -34,7 +34,7 @@ describe("Spotlight", () => {
   });
 
   describe("actions", () => {
-    it("should fire a click event an item is clicked without a url or recommender type if it is not a recommendation", done => {
+    it("should fire a click event an item is clicked", done => {
       function dispatch(a) {
         if (a.type === "NOTIFY_USER_EVENT") {
           assert.equal(a.data.event, "CLICK");
@@ -43,32 +43,10 @@ describe("Spotlight", () => {
           assert.equal(a.data.action_position, 0);
           assert.equal(a.data.metadata_source, "EmbedlyTest");
           assert.equal(a.data.highlight_type, fakeSpotlightItems[0].type);
-          assert.equal(a.data.url, undefined);
-          assert.equal(a.data.recommender_type, undefined);
           done();
         }
       }
       instance = renderWithProvider(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSpotlightItems} />);
-      TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
-    });
-    it("should fire a click event an item is clicked with url and recommender type when site is a recommendation", done => {
-      let fakeRecommendation = {url: "http://example.com", recommender_type: "pocket-trending", recommended: true};
-      function dispatch(a) {
-        if (a.type === "NOTIFY_USER_EVENT") {
-          assert.equal(a.data.event, "CLICK");
-          assert.equal(a.data.page, "NEW_TAB");
-          assert.equal(a.data.source, "FEATURED");
-          assert.equal(a.data.action_position, 0);
-          assert.equal(a.data.highlight_type, fakeSpotlightItems[0].type);
-          assert.equal(a.data.url, fakeRecommendation.url);
-          assert.equal(a.data.metadata_source, "EmbedlyTest");
-          assert.equal(a.data.recommender_type, fakeRecommendation.recommender_type);
-          done();
-        }
-      }
-      let fakeSitesWithRecommendation = fakeSpotlightItems;
-      fakeSitesWithRecommendation[0] = Object.assign({}, fakeSitesWithRecommendation[0], fakeRecommendation);
-      instance = renderWithProvider(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSitesWithRecommendation} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
     });
   });

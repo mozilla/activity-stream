@@ -17,8 +17,6 @@ const constants = {
     "SEARCH",
     "SHARE",
     "UNBLOCK",
-    "TOGGLE_RECOMMENDATION",
-    "NEW_RECOMMENDATION",
     "SHARE_TOOLBAR"
   ]),
   sources: new Set([

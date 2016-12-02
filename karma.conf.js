@@ -76,7 +76,6 @@ module.exports = function(config) {
             path.join(__dirname, "addon/MetadataStoreMigration.js"),
             path.join(__dirname, "addon/PlacesProvider.js"),
             path.join(__dirname, "addon/PreviewProvider.js"),
-            path.join(__dirname, "addon/RecommendationProvider.js"),
             path.join(__dirname, "addon/SearchProvider.js"),
             path.join(__dirname, "addon/ShareManifests.js"),
             path.join(__dirname, "addon/ShareProvider.js"),

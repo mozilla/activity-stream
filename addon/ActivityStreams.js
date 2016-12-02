@@ -4,7 +4,6 @@
 
 const {Cu} = require("chrome");
 const {data} = require("sdk/self");
-const {setTimeout, clearTimeout} = require("sdk/timers");
 const tabs = require("sdk/tabs");
 const simplePrefs = require("sdk/simple-prefs");
 const windows = require("sdk/windows").browserWindows;
@@ -15,7 +14,6 @@ const {PlacesProvider} = require("addon/PlacesProvider");
 const {SearchProvider} = require("addon/SearchProvider");
 const {ShareProvider} = require("addon/ShareProvider");
 const {PreviewProvider} = require("addon/PreviewProvider");
-const {RecommendationProvider} = require("addon/RecommendationProvider");
 const {PerfMeter} = require("addon/PerfMeter");
 const {AppURLHider} = require("addon/AppURLHider");
 const am = require("common/action-manager");
@@ -46,12 +44,10 @@ const DEFAULT_OPTIONS = {
   pageURL: data.url("content/activity-streams.html"),
   onAddWorker: null,
   onRemoveWorker: null,
-  recommendationTTL: 3600000, // every hour, get a new recommendation
   shareProvider: null,
   pageScraper: null,
   pageWorker: null,
-  searchProvider: null,
-  recommendationProvider: null
+  searchProvider: null
 };
 
 const PLACES_CHANGES_EVENTS = [
@@ -108,7 +104,6 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
 ActivityStreams.prototype = {
 
   _pagemod: null,
-  _newRecommendationTimeoutID: null,
   _isUnloaded: false,
 
   init() {
@@ -122,7 +117,6 @@ ActivityStreams.prototype = {
     this._searchProvider.init();
     this._initializePreviewProvier(this._experimentProvider, this._metadataStore, this._tabTracker);
     this._initializePageScraper(this._previewProvider, this._tabTracker);
-    this._initializeRecommendationProvider(this._experimentProvider, this._previewProvider, this._tabTracker);
     this._initializeShareProvider(this._tabTracker);
     this._initializePrefProvider();
 
@@ -214,23 +208,6 @@ ActivityStreams.prototype = {
     this._shareProvider.init();
   },
 
-  _initializeRecommendationProvider(experimentProvider, previewProvider, tabTracker) {
-    // Only create RecommendationProvider if they are in the experiment
-    this._recommendationProvider = null;
-    if (experimentProvider.data.recommendedHighlight) {
-      if (!this.options.recommendationProvider) {
-        this._recommendationProvider = new RecommendationProvider(previewProvider, tabTracker);
-      } else {
-        this._recommendationProvider = this.options.recommendationProvider;
-      }
-      this._recommendationProvider.init();
-      if (simplePrefs.prefs.recommendations) {
-        this._recommendationProvider.asyncSetRecommendedContent();
-      }
-      this._refreshRecommendations(this.options.recommendationTTL);
-    }
-  },
-
   _initializePageScraper(previewProvider, tabTracker) {
     this._pageScraper = null;
 
@@ -283,9 +260,6 @@ ActivityStreams.prototype = {
         break;
       case am.type("NOTIFY_UNBLOCK_URL"):
         PlacesProvider.links.unblockURL(msg.data);
-        break;
-      case am.type("NOTIFY_BLOCK_RECOMMENDATION"):
-        this._recommendationProvider.setBlockedRecommendation(msg.data);
         break;
     }
   },
@@ -347,10 +321,6 @@ ActivityStreams.prototype = {
     this.broadcast(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
   },
 
-  _respondToRecommendationToggle() {
-    simplePrefs.prefs.recommendations = !simplePrefs.prefs.recommendations;
-  },
-
   _onRouteChange({msg} = {}) {
     if (msg) {
       this._tabTracker.handleRouteChange(tabs.activeTab, msg.data);
@@ -364,8 +334,6 @@ ActivityStreams.prototype = {
         return this._onRouteChange(args);
       case am.type("NOTIFY_USER_EVENT"):
         return this._handleUserEvent(args);
-      case am.type("NOTIFY_TOGGLE_RECOMMENDATIONS"):
-        return this._respondToRecommendationToggle();
     }
     return undefined;
   },
@@ -420,21 +388,6 @@ ActivityStreams.prototype = {
     this._experimentProvider.off("change", this._handleExperimentChange);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
     simplePrefs.removeListener("", this._onPrefChange);
-  },
-
-  /**
-    * Start a timer to fetch a new recommendation every hour. This will only
-    * run for those in the experiment
-    */
-  _refreshRecommendations(recommendationTTL) {
-    if (recommendationTTL) {
-      this._newRecommendationTimeoutID = setTimeout(() => {
-        if (simplePrefs.prefs.recommendations) {
-          this._recommendationProvider.getRecommendation(true);
-        }
-        this._refreshRecommendations(recommendationTTL);
-      }, recommendationTTL);
-    }
   },
 
   /**
@@ -511,15 +464,9 @@ ActivityStreams.prototype = {
    */
   unload(reason) { // eslint-disable-line no-unused-vars
     let defaultUnload = () => {
-      if (this._newRecommendationTimeoutID) {
-        clearTimeout(this._newRecommendationTimeoutID);
-      }
       this._previewProvider.uninit();
       this._searchProvider.uninit();
       this._pageScraper.uninit();
-      if (this._recommendationProvider) {
-        this._recommendationProvider.uninit();
-      }
       NewTabURL.reset();
       Services.prefs.clearUserPref("places.favicons.optimizeToDimension");
       this._removeListeners();
