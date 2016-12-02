@@ -41,7 +41,7 @@ describe("selectors", () => {
     beforeEach(() => setup());
 
     it("should return the right properties", () => {
-      ["Highlights", "TopSites", "showRecommendationOption"].forEach(prop => assert.property(state, prop));
+      ["Highlights", "TopSites"].forEach(prop => assert.property(state, prop));
     });
 
     describe("TopSites", () => {
@@ -108,18 +108,6 @@ describe("selectors", () => {
       it("should be processed by assignImageAndBackgroundColor", () => {
         setup({Highlights: [{url: "http://asdad23asd.com", background_color: [0, 0, 0]}]});
         assert.equal(state.Highlights.rows[0].backgroundColor, "rgb(0, 0, 0)");
-      });
-    });
-
-    describe("showRecommendationOption", () => {
-      it("should be false if the experiment value is false", () => {
-        assert.isFalse(raw.Experiments.values.recommendedHighlight);
-        assert.isFalse(state.showRecommendationOption);
-      });
-      it("should be true if the experiment value is true", () => {
-        setup(undefined, true);
-        assert.isTrue(raw.Experiments.values.recommendedHighlight);
-        assert.isTrue(state.showRecommendationOption);
       });
     });
   });

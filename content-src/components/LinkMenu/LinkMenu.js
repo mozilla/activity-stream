@@ -81,12 +81,7 @@ const LinkMenu = React.createClass({
           icon: "dismiss",
           userEvent: "BLOCK",
           onClick: () => {
-            if (site.recommended) {
-              dispatch(actions.NotifyBlockRecommendation(site.url));
-              dispatch(actions.RequestHighlightsLinks());
-            } else {
-              dispatch(actions.NotifyBlockURL(site.url));
-            }
+            dispatch(actions.NotifyBlockURL(site.url));
           }
         },
         !site.recommended && {
