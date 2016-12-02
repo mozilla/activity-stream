@@ -66,6 +66,8 @@ const PLACES_CHANGES_EVENTS = [
 
 const HOME_PAGE_PREF = "browser.startup.homepage";
 
+const TOPIC_SYNC_COMPLETE = "services.sync.tabs.changed";
+
 function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   EventEmitter.decorate(this);
@@ -132,6 +134,8 @@ ActivityStreams.prototype = {
 
     this._initializeAppData();
     this._store.dispatch({type: "APP_INIT"});
+
+    Services.obs.addObserver(this, TOPIC_SYNC_COMPLETE, false);
   },
 
   /**
@@ -481,6 +485,16 @@ ActivityStreams.prototype = {
     return this._perfMeter.events;
   },
 
+  observe(subject, topic, data) {
+    switch (topic) {
+      case TOPIC_SYNC_COMPLETE:
+        this._store.dispatch({type: "SYNC_COMPLETE"});
+        break;
+      default:
+        break;
+    }
+  },
+
   /**
    * Unload the application
    */
@@ -507,6 +521,8 @@ ActivityStreams.prototype = {
       this._shareProvider.uninit(reason);
       this._experimentProvider.destroy();
       this._pageWorker.destroy();
+
+      Services.obs.removeObserver(this, TOPIC_SYNC_COMPLETE);
     };
 
     switch (reason) {

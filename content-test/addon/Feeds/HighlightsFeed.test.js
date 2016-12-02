@@ -170,5 +170,10 @@ describe("HighlightsFeed", () => {
       assert.calledWith(instance.baselineRecommender.updateOptions, {highlightsCoefficients: 123});
       assert.calledWith(instance.refresh, "coefficients were changed");
     });
+    it("should call refresh on SYNC_COMPLETE", () => {
+      instance.onAction({}, {type: "SYNC_COMPLETE"});
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "new tabs synced");
+    });
   });
 });
