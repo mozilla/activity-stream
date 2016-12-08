@@ -24,6 +24,25 @@ const NewTabPage = React.createClass({
     // have finished (in which case the "Welcome" dialog maybe be being shown
     // without any actual images).
     this.props.dispatch(actions.NotifyPerf("NEWTAB_RENDER"));
+
+    if (!this.props.isReady) {
+      this.loaderShownAt = Date.now();
+      this.props.dispatch(actions.NotifyUndesiredEvent({
+        event: "SHOW_LOADER",
+        source: PAGE_NAME,
+        value: this.loaderShownAt
+      }));
+    }
+  },
+  componentDidUpdate(prevProps) {
+    if (this.props.isReady && this.loaderShownAt) {
+      this.props.dispatch(actions.NotifyUndesiredEvent({
+        event: "HIDE_LOADER",
+        source: PAGE_NAME,
+        value: Date.now() - this.loaderShownAt
+      }));
+      delete this.loaderShownAt;
+    }
   },
   render() {
     const props = this.props;

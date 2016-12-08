@@ -29,6 +29,7 @@ const am = new ActionManager([
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_SHARE_URL",
   "NOTIFY_UNBLOCK_URL",
+  "NOTIFY_UNDESIRED_EVENT",
   "NOTIFY_UPDATE_PREF",
   "NOTIFY_UPDATE_SEARCH_STRING",
   "NOTIFY_USER_EVENT",
@@ -193,6 +194,16 @@ function NotifyEvent(data) {
   return Notify("NOTIFY_USER_EVENT", data);
 }
 
+function NotifyUndesiredEvent(data) {
+  if (!eventConstants.defaultPage === data.page) {
+    throw new Error(`${data.page} is not a valid page`);
+  }
+  if (!eventConstants.undesiredEvents.has(data.event)) {
+    throw new Error(`${data.event} is not a valid event type`);
+  }
+  return Notify("NOTIFY_UNDESIRED_EVENT", data);
+}
+
 function NotifyFilterQuery(data) {
   return Notify("NOTIFY_FILTER_QUERY", data);
 }
@@ -260,6 +271,7 @@ am.defineActions({
   NotifyRouteChange,
   NotifyShareUrl,
   NotifyUnblockURL,
+  NotifyUndesiredEvent,
   NotifyUpdatePref,
   NotifyUpdateSearchString,
   PlacesStatsUpdate,

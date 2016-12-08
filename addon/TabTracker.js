@@ -18,6 +18,7 @@ const COMPLETE_NOTIF = "tab-session-complete";
 const ACTION_NOTIF = "user-action-event";
 const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
+const UNDESIRED_NOTIF = "undesired-event";
 
 function TabTracker(options) {
   this._tabData = {};
@@ -110,6 +111,16 @@ TabTracker.prototype = {
     if (payload.event === "SEARCH" || payload.event === "CLICK") {
       this._tabData.unload_reason = payload.event.toLowerCase();
     }
+  },
+
+  handleUndesiredEvent(payload, experimentId) {
+    payload.action = "activity_stream_masga_event";
+    payload.tab_id = tabs.activeTab.id;
+    this._setCommonProperties(payload, tabs.activeTab.url);
+    if (!("value" in payload)) {
+      payload.value = 0;
+    }
+    Services.obs.notifyObservers(null, UNDESIRED_NOTIF, JSON.stringify(payload));
   },
 
   handlePerformanceEvent(eventData, eventName, value) {

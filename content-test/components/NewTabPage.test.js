@@ -76,4 +76,16 @@ describe("NewTabPage", () => {
       TestUtils.Simulate.click(deleteLink);
     });
   });
+
+  describe("loader events", () => {
+    it("should fire an event if data isn't ready and we show the loader", done => {
+      renderWithProvider(<NewTabPage {...fakeProps} isReady={false} dispatch={a => {
+        if (a.type === "NOTIFY_UNDESIRED_EVENT") {
+          assert.equal(a.data.event, "SHOW_LOADER");
+          assert.equal(a.data.source, "NEW_TAB");
+          done();
+        }
+      }} />);
+    });
+  });
 });
