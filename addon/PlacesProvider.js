@@ -29,10 +29,7 @@ XPCOMUtils.defineLazyGetter(this, "gPrincipal", () => {
   return Services.scriptSecurityManager.getNoAppCodebasePrincipal(uri);
 });
 
-const {
-  LINKS_QUERY_LIMIT,
-  HIGHLIGHTS_THRESHOLDS
-} = require("../common/constants");
+const {LINKS_QUERY_LIMIT} = require("../common/constants");
 
 const REV_HOST_BLACKLIST = [
   "moc.elgoog.www.",
@@ -330,13 +327,13 @@ Links.prototype = {
    * Gets the top frecent sites.
    *
    * @param {Object} options
-   *          options.limit: Maximum number of results to return. Max 20.
+   *          options.limit: Maximum number of results to return.
    *
    * @returns {Promise} Returns a promise with the array of links as payload.
    */
   getTopFrecentSites: Task.async(function*(options = {}) {
     let {limit, ignoreBlocked} = options;
-    if (!limit || limit.options > LINKS_QUERY_LIMIT) {
+    if (!limit || limit > LINKS_QUERY_LIMIT) {
       limit = LINKS_QUERY_LIMIT;
     }
 
@@ -460,119 +457,19 @@ Links.prototype = {
   }),
 
   /**
-   * Obtain a set of links for highlights
+   * Obtain a set of most recently visited links to rank.
    *
    * @param {Object} options
-   *        {Integer} limit: Maximum number of results to return. Max 20
-   *
-   * @returns {Promise} Returns a promise with the array of links as payload.
-   */
-  getHighlightsLinks: Task.async(function*(options = {}) {
-    let {limit, ignoreBlocked} = options;
-    if (!limit || limit.options > LINKS_QUERY_LIMIT) {
-      limit = LINKS_QUERY_LIMIT;
-    }
-
-    let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
-
-    let params = {limitBookmarks: limit, limitHistory: limit};
-
-    let sqlQuery = `SELECT DISTINCT * FROM (
-                      SELECT * FROM (
-                        SELECT p.url as url,
-                               p.guid as guid,
-                               f.data as favicon,
-                               f.mime_type as mimeType,
-                               p.title as title,
-                               p.frecency as frecency,
-                               p.visit_count as visitCount,
-                               p.last_visit_date / 1000 as lastVisitDate,
-                               "bookmark" as type,
-                               b.id as bookmarkId,
-                               b.guid as bookmarkGuid,
-                               b.title as bookmarkTitle,
-                               b.lastModified / 1000 as lastModified,
-                               b.dateAdded / 1000 as bookmarkDateCreated
-                        FROM moz_places p
-                        INNER JOIN moz_bookmarks b
-                          ON b.fk = p.id
-                        LEFT JOIN moz_favicons f
-                          ON p.favicon_id = f.id
-                        WHERE date(b.dateAdded / 1000 / 1000, 'unixepoch') > date('now', '${HIGHLIGHTS_THRESHOLDS.created}')
-                        AND p.url NOT IN (${blockedURLs})
-                        AND p.visit_count <= 3
-                        ORDER BY b.dateAdded DESC
-                        LIMIT :limitBookmarks
-                      )
-                      UNION ALL
-                      SELECT * FROM (
-                        SELECT p.url as url,
-                               p.guid as guid,
-                               f.data as favicon,
-                               f.mime_type as mimeType,
-                               p.title as title,
-                               p.frecency as frecency,
-                               p.visit_count as visitCount,
-                               p.last_visit_date / 1000 as lastVisitDate,
-                               "history" as type,
-                               b.id as bookmarkId,
-                               b.guid as bookmarkGuid,
-                               b.title as bookmarkTitle,
-                               b.lastModified / 1000 as lastModified,
-                               b.dateAdded / 1000 as bookmarkDateCreated
-                        FROM moz_places p
-                        LEFT JOIN moz_bookmarks b
-                          ON b.fk = p.id
-                        LEFT JOIN moz_favicons f
-                          ON p.favicon_id = f.id
-                        WHERE datetime(p.last_visit_date / 1000 / 1000, 'unixepoch') < datetime('now', '${HIGHLIGHTS_THRESHOLDS.visited}')
-                        AND p.url NOT IN (${blockedURLs})
-                        AND p.visit_count <= 3
-                        AND p.title NOT NULL
-                        AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})
-                        GROUP BY p.rev_host
-                        ORDER BY p.last_visit_date DESC
-                        LIMIT :limitHistory
-                      )
-                    )`;
-
-    let links = yield this.executePlacesQuery(sqlQuery, {
-      columns: [
-        "bookmarkDateCreated",
-        "bookmarkGuid",
-        "bookmarkId",
-        "bookmarkTitle",
-        "favicon",
-        "frecency",
-        "guid",
-        "lastModified",
-        "lastVisitDate",
-        "mimeType",
-        "title",
-        "type",
-        "url",
-        "visitCount"
-      ],
-      params
-    });
-
-    links = this._faviconBytesToDataURI(links);
-    return links.filter(link => LinkChecker.checkLoadURI(link.url));
-  }),
-
-  /**
-   * Obtain a set of links to rank.
-   * Get all links visited in the past 4 days or default to last 20 links.
-   * Last 20 links is used as fallback in case there is no recent history.
-   *
-   * @param {Object} options
+   *          options.limit: Maximum number of results to return.
    *
    * @returns {Promise} Returns a promise with the array of links as payload.
    */
   getRecentlyVisited: Task.async(function*(options = {}) {
-    let {ignoreBlocked} = options;
-
+    let {ignoreBlocked, limit} = options;
     let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
+    if (!limit || limit > LINKS_QUERY_LIMIT) {
+      limit = LINKS_QUERY_LIMIT;
+    }
 
     const columns = [
       "bookmarkDateCreated",
@@ -611,26 +508,11 @@ Links.prototype = {
                       ON p.favicon_id = f.id
                     WHERE p.url NOT IN (${blockedURLs})
                     AND p.title NOT NULL
-                    AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})`;
-    const recentClause = `AND datetime(p.last_visit_date / 1000 / 1000, 'unixepoch') >
-                              datetime('now', '${HIGHLIGHTS_THRESHOLDS.ageLimit}')`;
+                    AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})
+                    ORDER BY p.last_visit_date DESC
+                    LIMIT :limit`;
 
-    // Get the recent links first
-    let links = yield this.executePlacesQuery(`${sqlQuery} ${recentClause}`, {columns});
-    const offset = links.length;
-
-    // Add more links if the recent links didn't get enough
-    if (offset < LINKS_QUERY_LIMIT) {
-      const limitClause = `ORDER BY p.last_visit_date DESC
-        LIMIT :limit OFFSET :offset`;
-      const params = {
-        limit: LINKS_QUERY_LIMIT - offset,
-        offset
-      };
-      let moreLinks = yield this.executePlacesQuery(`${sqlQuery} ${limitClause}`, {columns, params});
-      links = links.concat(moreLinks);
-    }
-
+    let links = yield this.executePlacesQuery(sqlQuery, {columns, params: {limit}});
     links = this._faviconBytesToDataURI(links);
     return links.filter(link => LinkChecker.checkLoadURI(link.url));
   }),
@@ -645,7 +527,7 @@ Links.prototype = {
    */
   getRemoteTabsLinks: Task.async(function*(options = {}) {
     let {limit} = options;
-    if (!limit || limit.options > LINKS_QUERY_LIMIT) {
+    if (!limit || limit > LINKS_QUERY_LIMIT) {
       limit = LINKS_QUERY_LIMIT;
     }
 

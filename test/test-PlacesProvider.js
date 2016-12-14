@@ -22,7 +22,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
 // use time at the start of the tests, chnaging it inside timeDaysAgo()
 // may cause tiny time differences, which break expected sql ordering
 const TIME_NOW = (new Date()).getTime();
-const {LINKS_QUERY_LIMIT} = require("../common/constants");
 
 // utility function to compute past timestamp in microseconds
 function timeDaysAgo(numDays) {
@@ -87,6 +86,28 @@ exports.test_Links_getTopFrecentSites_dedupeWWW = function*(assert) {
   assert.equal(links[0].frecency, 200, "frecency scores are combined");
 };
 
+exports.test_Links_getTopFrecentSites_limit = function*(assert) {
+  let provider = PlacesProvider.links;
+
+  let links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 0, "empty history yields empty links");
+
+  // add a couple visits
+  let testURI = NetUtil.newURI("http://mozilla.com");
+  yield PlacesTestUtils.addVisits(testURI);
+  testURI = NetUtil.newURI("http://mozilla2.com");
+  yield PlacesTestUtils.addVisits(testURI);
+
+  links = yield provider.getTopFrecentSites({limit: 1});
+  assert.equal(links.length, 1, "query limited to 1 result");
+
+  links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 2, "no limit uses defaults");
+
+  links = yield provider.getTopFrecentSites({limit: 0});
+  assert.equal(links.length, 2, "invalid limit uses defaults");
+};
+
 exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   let provider = PlacesProvider.links;
   let {
@@ -133,29 +154,6 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   }
 };
 
-exports.test_Links_getHighlightsLinks = function*(assert) {
-  let provider = PlacesProvider.links;
-  let {TRANSITION_TYPED} = PlacesUtils.history;
-
-  let timeToday = timeDaysAgo(0);
-  let timeEarlier = timeDaysAgo(2);
-
-  let visits = [
-    {uri: NetUtil.newURI("https://example1.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://example2.com/"), visitDate: timeToday, transition: TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://example3.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
-    {uri: NetUtil.newURI("https://mail.google.com/"), visitDate: timeEarlier, transition: TRANSITION_TYPED}
-  ];
-
-  let links = yield provider.getHighlightsLinks();
-  assert.equal(links.length, 0, "empty history yields empty links");
-  yield PlacesTestUtils.addVisits(visits);
-
-  // note: this is a sanity test because the query may change
-  links = yield provider.getHighlightsLinks();
-  assert.equal(links.length, 1, "getHighlightsLinks filters links by date and hostname");
-};
-
 exports.test_Links_getAllHistoryItems = function*(assert) {
   let provider = PlacesProvider.links;
   let {TRANSITION_TYPED} = PlacesUtils.history;
@@ -192,9 +190,10 @@ exports.test_Links_getRecentlyVisited = function*(assert) {
     {uri: NetUtil.newURI("https://mail.google.com/"), visitDate: timeOlder, transition: TRANSITION_TYPED}
   ];
 
-  for (let i = 4; i < 24; i++) {
+  const limit = 10;
+  for (let i = 0; i < limit; i++) {
     visits.push({
-      uri: NetUtil.newURI(`https://example${i}.com/`),
+      uri: NetUtil.newURI(`https://old.example${i}.com/`),
       visitDate: timeToday,
       transition: TRANSITION_TYPED
     });
@@ -202,17 +201,17 @@ exports.test_Links_getRecentlyVisited = function*(assert) {
 
   yield PlacesTestUtils.addVisits(visits);
 
-  let links = yield provider.getRecentlyVisited();
+  let links = yield provider.getRecentlyVisited({limit});
   assert.equal(links.length > 0, true, "it should retrieve some links");
-  assert.equal(links.length, LINKS_QUERY_LIMIT + 2, "query should not retrieve links older than 4 days");
+  assert.equal(links.length, limit, "query should not retrieve more than the limit even with recent");
 };
 
 exports.test_Links_getRecentlyVisited_old_links = function*(assert) {
   let provider = PlacesProvider.links;
   let {TRANSITION_TYPED} = PlacesUtils.history;
   const visits = [];
-
-  for (let i = 0; i < 24; i++) {
+  const limit = 10;
+  for (let i = 0; i < limit + 1; i++) {
     visits.push({
       uri: NetUtil.newURI(`https://example${i}.com/`),
       visitDate: timeDaysAgo(5),
@@ -222,9 +221,15 @@ exports.test_Links_getRecentlyVisited_old_links = function*(assert) {
 
   yield PlacesTestUtils.addVisits(visits);
 
-  let links = yield provider.getRecentlyVisited();
+  let links = yield provider.getRecentlyVisited({limit});
   assert.equal(links.length > 0, true, "it should retrieve some links");
-  assert.equal(links.length, LINKS_QUERY_LIMIT, "query should retrieve the old links if nothing recent is available");
+  assert.equal(links.length, limit, "query should retrieve at most the limit of old links if nothing recent is available");
+
+  links = yield provider.getRecentlyVisited();
+  assert.equal(links.length, limit + 1, "query with no limit gets all");
+
+  links = yield provider.getRecentlyVisited({limit: 0});
+  assert.equal(links.length, limit + 1, "query with invalid limit gets all");
 };
 
 exports.test_Links_asyncAddBookmark = function*(assert) {
