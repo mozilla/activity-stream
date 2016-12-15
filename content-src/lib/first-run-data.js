@@ -1,4 +1,3 @@
-const IMAGE_PATH = "img/";
 const FIRST_RUN_TYPE = "first-run";
 const FAVICON_PATH = "favicons/images/";
 
@@ -44,47 +43,6 @@ module.exports = {
   ].map(item => {
     item.type = FIRST_RUN_TYPE;
     item.favicon_url = FAVICON_PATH + item.favicon_url;
-    return item;
-  }),
-  Highlights: [
-    {
-      "title": "Firefox Sync",
-      "description": "Take your Web with you",
-      "url": "https://www.mozilla.org/firefox/sync/",
-      "image_url": "firstrun-sync.png",
-      "favicon_url": "firstrun-sync-icon.png",
-      "background_color": [90, 198, 248],
-      "context_message": "Save everywhere"
-    },
-    {
-      "title": "More ways to customize",
-      "description": "Themes and add-ons allow you to customize Firefox",
-      "url": "https://www.mozilla.org/firefox/desktop/customize/",
-      "image_url": "firstrun-customize.png",
-      "favicon_url": "firstrun-customize-icon.png",
-      "background_color": [115, 92, 114],
-      "context_message": "Extend Firefox"
-    },
-    {
-      "title": "Get Firefox on all your devices",
-      "description": "Install Firefox for Android and iOS from your favorite app store",
-      "url": "https://www.mozilla.org/firefox/android/",
-      "image_url": "firstrun-mobile.png",
-      "favicon_url": "firstrun-mobile-icon.png",
-      "background_color": [7, 117, 167],
-      "context_message": "Complete your install"
-    }
-  ].map(item => {
-    item.type = FIRST_RUN_TYPE;
-    item.images = [
-      {
-        url: IMAGE_PATH + item.image_url,
-        width: 450,
-        height: 278
-      }
-    ];
-    delete item.image_url;
-    item.favicon_url = IMAGE_PATH + item.favicon_url;
     return item;
   })
 };
