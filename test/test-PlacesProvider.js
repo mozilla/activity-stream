@@ -84,6 +84,7 @@ exports.test_Links_getTopFrecentSites_dedupeWWW = function*(assert) {
 
   links = yield provider.getTopFrecentSites();
   assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
+  assert.equal(links[0].frecency, 200, "frecency scores are combined");
 };
 
 exports.test_Links_getTopFrecentSites_Order = function*(assert) {

@@ -348,7 +348,7 @@ Links.prototype = {
     // In general the groupby behavior in the absence of aggregates is not
     // defined in SQL, hence we are relying on sqlite implementation that may
     // change in the future.
-    let sqlQuery = `SELECT url, title, frecency, guid, bookmarkGuid,
+    let sqlQuery = `SELECT url, title, SUM(frecency) frecency, guid, bookmarkGuid,
                           last_visit_date / 1000 as lastVisitDate, favicon, mimeType,
                           "history" as type
                     FROM
