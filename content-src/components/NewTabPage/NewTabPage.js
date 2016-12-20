@@ -5,7 +5,6 @@ const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
-// const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const classNames = require("classnames");
