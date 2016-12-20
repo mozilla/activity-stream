@@ -1,5 +1,6 @@
 "use strict";
 
+const {BOOKMARK_AGE_DIVIDEND} = require("common/constants");
 const URL = require("common/vendor")("url-parse");
 const getBestImage = require("../getBestImage");
 
@@ -24,7 +25,7 @@ class Baseline {
 
     // These are features used for adjusting the final score.
     // Used by decay function to filter out features.
-    this.adjustmentFeatures = ["isBookmarked", "imageCount", "age", "idf"];
+    this.adjustmentFeatures = ["bookmarkAge", "imageCount", "age", "idf"];
 
     if (!this.options.highlightsCoefficients) {
       throw new Error("Coefficients not specified");
@@ -42,13 +43,15 @@ class Baseline {
 
     const age = this.normalizeTimestamp(entry.lastVisitDate);
     const imageCount = entry.images ? entry.images.length : 0;
-    const isBookmarked = !!entry.bookmarkDateCreated;
     const description = this.extractDescriptionLength(entry);
     const pathLength = urlObj.pathname.split("/").filter(e => e.length).length;
     const image = this.extractImage(entry.images);
     const queryLength = urlObj.query.length;
 
-    const features = {age, tf, idf, imageCount, isBookmarked, description, pathLength, queryLength, image};
+    // For bookmarks, compute a positive age in milliseconds; otherwise default 0
+    const bookmarkAge = entry.bookmarkDateCreated ? Math.max(1, Date.now() - entry.bookmarkDateCreated) : 0;
+
+    const features = {age, tf, idf, imageCount, bookmarkAge, description, pathLength, queryLength, image};
     this.updateFeatureMinMax(features);
 
     return Object.assign({}, entry, {features, host});
@@ -104,9 +107,10 @@ class Baseline {
       newScore *= 0.2;
     }
 
-    // Boost boomarks even if they have low score or no images
-    if (features.isBookmarked) {
-      newScore += 1.8;
+    // Boost boomarks even if they have low score or no images giving a
+    // just-bookmarked page a near-infinite boost
+    if (features.bookmarkAge) {
+      newScore += BOOKMARK_AGE_DIVIDEND / features.bookmarkAge;
     }
 
     return newScore;

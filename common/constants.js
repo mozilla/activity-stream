@@ -2,6 +2,10 @@ module.exports = {
   // The opacity value of favicon background colors
   BACKGROUND_FADE: 0.5,
 
+  // Age of bookmarks in milliseconds that results in a 1.0 quotient, i.e., an
+  // age smaller/younger than this value results in a larger-than-1.0 fraction
+  BOOKMARK_AGE_DIVIDEND: 3 * 24 * 60 * 60 * 1000,
+
   // Number of large Highlight titles in the new Highlights world, including
   // all rows.
   HIGHLIGHTS_LENGTH: 9,
