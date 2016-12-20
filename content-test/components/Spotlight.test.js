@@ -99,5 +99,16 @@ describe("SpotlightItem", () => {
       assert.equal(hc.props.type, "bookmark");
       assert.deepEqual(hc.props, props);
     });
+    it("should fire user event if there is no image", done => {
+      const fakeSiteWithoutImage = Object.assign({}, fakeSiteWithImage, {bestImage: {url: null}});
+      function dispatch(a) {
+        if (a.type === "NOTIFY_UNDESIRED_EVENT") {
+          assert.equal(a.data.event, "MISSING_IMAGE");
+          assert.equal(a.data.source, "HIGHLIGHTS");
+          done();
+        }
+      }
+      instance = renderWithProvider(<SpotlightItem {...fakeSiteWithoutImage} dispatch={dispatch} page={"NEW_TAB"} />);
+    });
   });
 });

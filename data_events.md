@@ -199,3 +199,55 @@ Here are different scenarios that cause a session end event to be sent and the c
 4. Closing the browser: `"close"`
 5. Refreshing: `"refresh"`
 6. Navigating to a new URL via the url bar: `"navigation"`
+
+## Bad app state pings
+
+In some undesired app states, the app will send a ping about it to our metrics server.
+
+### Types of bad states
+
+#### Highlight without an image
+
+```js
+{
+  "event": "MISSING_IMAGE",
+  "source": "HIGHLIGHTS",
+  "page": "NEW_TAB",
+  "action": "activity_stream_masga_event",
+  "tab_id": "-5-2",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```
+
+#### Show loader
+
+```js
+{
+  "event": "SHOW_LOADER",
+  "source": "NEW_TAB",
+  "page": "NEW_TAB",
+  "action": "activity_stream_masga_event",
+  "tab_id": "-5-2",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```
+
+#### Hide loader
+
+```js
+{
+  "event": "HIDE_LOADER",
+  "source": "NEW_TAB",
+  "page": "NEW_TAB",
+  "value": 485, // amount of time shown in milliseconds
+  "action": "activity_stream_masga_event",
+  "tab_id": "-5-2",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```

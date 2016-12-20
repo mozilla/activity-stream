@@ -52,6 +52,10 @@ const SpotlightItem = React.createClass({
       style.backgroundImage = `url(${imageUrl})`;
     } else {
       style.backgroundColor = site.backgroundColor;
+      this.props.dispatch(actions.NotifyUndesiredEvent({
+        event: "MISSING_IMAGE",
+        source: "HIGHLIGHTS"
+      }));
     }
     return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
       <a onClick={this.props.onClick} href={site.url} ref="link">
@@ -93,7 +97,8 @@ SpotlightItem.propTypes = {
   favicon_url: React.PropTypes.string,
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string,
-  onClick: React.PropTypes.func
+  onClick: React.PropTypes.func,
+  dispatch: React.PropTypes.func.isRequired
 };
 
 const Spotlight = React.createClass({
@@ -128,6 +133,7 @@ const Spotlight = React.createClass({
           page={this.props.page}
           source="FEATURED"
           onClick={this.onClickFactory(i, site)}
+          dispatch={this.props.dispatch}
           {...site} />)}
       </ul>
     </section>);

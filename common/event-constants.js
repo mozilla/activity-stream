@@ -16,8 +16,13 @@ const constants = {
     "OPEN_PRIVATE_WINDOW",
     "SEARCH",
     "SHARE",
-    "UNBLOCK",
-    "SHARE_TOOLBAR"
+    "SHARE_TOOLBAR",
+    "UNBLOCK"
+  ]),
+  undesiredEvents: new Set([
+    "HIDE_LOADER",
+    "MISSING_IMAGE",
+    "SHOW_LOADER"
   ]),
   sources: new Set([
     "TOP_SITES",

@@ -707,6 +707,33 @@ exports.test_TabTracker_ping_on_pref_change = function*(assert) {
   });
 };
 
+exports.test_TabTracker_undesired_event_pings = function*(assert) {
+  let undesiredEventPromise = new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic === "undesired-event") {
+        Services.obs.removeObserver(observe, "undesired-event");
+        resolve(JSON.parse(data));
+      }
+    }
+    Services.obs.addObserver(observe, "undesired-event", false);
+  });
+
+  let eventData = {
+    msg: {
+      type: "NOTIFY_UNDESIRED_EVENT",
+      data: {
+        event: "MISSING_IMAGE",
+        source: "NEW_TAB"
+      }
+    }
+  };
+  app._handleUndesiredEvent(eventData);
+
+  let pingData = yield undesiredEventPromise;
+  assert.deepEqual(eventData.msg.data.event, pingData.event, "the ping has the correct event");
+  assert.deepEqual(eventData.msg.data.action, "activity_stream_masga_event", "the ping has the correct action");
+};
+
 before(exports, function*() {
   // we have to clear bookmarks and history before tests
   // to ensure that the app does not pick history or

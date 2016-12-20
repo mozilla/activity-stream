@@ -73,6 +73,22 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 }
 ```
 
+# Example Activity Stream `undesired event` Log
+
+```json
+{
+  "action": "activity_stream_masga_event",
+  "addon_version": "1.0.12",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "event": "MISSING_IMAGE",
+  "locale": "en-US",
+  "page": "NEW_TAB",
+  "source": "HIGHLIGHTS",
+  "tab_id": "-5-2",
+  "value": 0
+}
+```
+
 | KEY | DESCRIPTION | &nbsp; |
 |-----|-------------|:-----:|
 | `action_position` | [Optional] The index of the element in the `source` that was clicked. | :one:
