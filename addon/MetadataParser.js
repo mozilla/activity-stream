@@ -38,10 +38,8 @@ MetadataParser.prototype = {
    * Parse HTML, get the metadata from it, and format it
    */
   parseHTMLText(raw, url) {
-    return new Promise(resolve => {
-      const doc = this._getDocumentObject(raw);
-      resolve(this._formatData(getMetadata(doc, url), url));
-    });
+    const doc = this._getDocumentObject(raw);
+    return this._formatData(getMetadata(doc, url), url);
   }
 };
 

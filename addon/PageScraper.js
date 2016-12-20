@@ -33,22 +33,13 @@ PageScraper.prototype = {
    * Check if the link is already in the metadata database. If not, parse the
    * HTML and insert it in the metadata database
    */
-  _asyncParseAndSave: Task.async(function*(rawHTML, url) {
-    let event = this._tabTracker.generateEvent({source: "PAGE_SCRAPER"});
+  _asyncParseAndSave: Task.async(function*(rawHTML, url, event) {
     let startTime = Date.now();
     this._tabTracker.handlePerformanceEvent(event, "metadataReceivedRawHTML", startTime);
 
     let link = yield this._previewProvider.asyncLinkExist(url);
     if (!link) {
-      let metadata;
-      try {
-        metadata = yield this._metadataParser.parseHTMLText(rawHTML, url);
-      } catch (e) {
-        Cu.reportError(`MetadataParser failed to parse ${url}`);
-        this._tabTracker.handlePerformanceEvent(event, "metadataParseFail", Date.now() - startTime);
-        return;
-      }
-
+      const metadata = this._metadataParser.parseHTMLText(rawHTML, url);
       if (this._shouldSaveMetadata(metadata)) {
         try {
           metadata.images = yield this._computeImageSize(metadata);
@@ -120,7 +111,11 @@ PageScraper.prototype = {
     Services.mm.addMessageListener("page-scraper-message", message => {
       let {text, url} = message.data.data;
       if (message.data.type === "PAGE_HTML" && this._blacklistFilter(url)) {
-        this._asyncParseAndSave(text, url);
+        const event = this._tabTracker.generateEvent({source: "PAGE_SCRAPER"});
+        this._asyncParseAndSave(text, url, event).catch(err => {
+          Cu.reportError(`MetadataParser failed to parse ${url}. ${err}`);
+          this._tabTracker.handlePerformanceEvent(event, "metadataParseFail", Date.now());
+        });
       }
     });
   },
