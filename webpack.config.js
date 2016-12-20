@@ -29,7 +29,7 @@ module.exports = {
     path: outputDir,
     filename: outputFilename
   },
-  node: {Buffer: false, url: false},
+  node: {Buffer: true, url: false},
   target: "web",
   module: webpack_common.module,
   devtool: env === "production" ? null : "eval", // This is for Firefox
