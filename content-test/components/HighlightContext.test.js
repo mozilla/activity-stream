@@ -49,11 +49,6 @@ describe("HighlightContext", () => {
     assert.equal(instance.refs.timestamp.textContent, "");
   });
 
-  it("should hide props.date if showTimestamp is false in the types def'n", () => {
-    setup({type: "firstRun", date: Date.now()});
-    assert.equal(instance.refs.timestamp.hidden, true);
-  });
-
   it("should not show a tooltip if it is not defined by the type", () => {
     setup({type: "bookmark"});
     assert.isUndefined(instance.refs.tooltip);

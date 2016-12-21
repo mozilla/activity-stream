@@ -1,9 +1,4 @@
 module.exports = {
-  firstRun: {
-    label: "Welcome",
-    icon: "historyItem",
-    showTimestamp: false
-  },
   history: {
     label: "Visited",
     icon: "historyItem"

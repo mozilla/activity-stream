@@ -1,5 +1,4 @@
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
-const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 describe("getHighlightContextFromSite", () => {
   it("should set type:history for history items", () => {
@@ -24,12 +23,6 @@ describe("getHighlightContextFromSite", () => {
     assert.deepEqual(
       getHighlightContextFromSite({type: "open", lastVisitDate: 111, isOpen: true}),
       {type: "open", date: 111}
-    );
-  });
-  it("should set type:firstRun for first run items", () => {
-    assert.deepEqual(
-      getHighlightContextFromSite({type: FIRST_RUN_TYPE, lastVisitDate: 111}),
-      {type: "firstRun"}
     );
   });
   it("should set type:recommended for recommended items", () => {
