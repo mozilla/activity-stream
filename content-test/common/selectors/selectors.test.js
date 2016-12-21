@@ -73,28 +73,18 @@ describe("selectors", () => {
         const highlights = [{url: "http://foo1.com"}, {url: "http://www.foo2.com"}, {url: "http://www.foo3.com"},
               {url: "http://foo4.com"}, {url: "http://www.foo5.com"}, {url: "http://www.foo6.com"}];
         setup({Highlights: highlights});
-        assert.lengthOf(state.Highlights.rows, highlights.length + firstRunData.Highlights.length);
+        assert.lengthOf(state.Highlights.rows, highlights.length);
         highlights.forEach((item, i) => {
           assert.equal(state.Highlights.rows[i].url, item.url);
         });
       });
-      it("should render first run highlights if Highlights is empty", () => {
-        setup({Highlights: []});
-        assert.lengthOf(state.Highlights.rows, firstRunData.Highlights.length);
-        firstRunData.Highlights.forEach((row, i) => assert.equal(row.url, firstRunData.Highlights[i].url));
-      });
-      it("should run assignImageAndBackgroundColor on firstRunData", () => {
-        setup({Highlights: []});
-        assert.property(state.Highlights.rows[0], "backgroundColor");
-      });
-      it("should append First Run data if less or equal to MIN_HIGHLIGHTS_LENGTH", () => {
+      it("should show available data if fewer than MIN_HIGHLIGHTS_LENGTH", () => {
         setup({Highlights: [{url: "http://foo.com"}, {url: "http://www.bar.com"}]});
-        assert.lengthOf(state.Highlights.rows, 5);
-        assert.equal(state.Highlights.rows[2].url, firstRunData.Highlights[0].url);
+        assert.lengthOf(state.Highlights.rows, 2);
       });
       it("should internally dedupe", () => {
         setup({Highlights: [{url: "https://foo.com"}, {url: "http://www.foo.com"}]});
-        assert.lengthOf(state.Highlights.rows, 1 + firstRunData.Highlights.length);
+        assert.lengthOf(state.Highlights.rows, 1);
         assert.equal(state.Highlights.rows[0].url, "https://foo.com");
       });
       it("should dedupe against TopSites", () => {
@@ -102,7 +92,7 @@ describe("selectors", () => {
           TopSites: [{url: "https://foo.com"}],
           Highlights: [{url: "https://foo.com"}, {url: "https://bar.com"}]
         });
-        assert.lengthOf(state.Highlights.rows, 1 + firstRunData.Highlights.length);
+        assert.lengthOf(state.Highlights.rows, 1);
         assert.equal(state.Highlights.rows[0].url, "https://bar.com");
       });
       it("should be processed by assignImageAndBackgroundColor", () => {

@@ -32,8 +32,7 @@ module.exports.selectNewTabSites = createSelector(
       },
       {
         sites: assignImageAndBackgroundColor(Highlights.rows),
-        max: HIGHLIGHTS_LENGTH,
-        defaults: assignImageAndBackgroundColor(firstRunData.Highlights)
+        max: HIGHLIGHTS_LENGTH
       }
     ]);
     return {
