@@ -9,10 +9,18 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
 Cu.importGlobalProperties(["URL"]);
+Cu.importGlobalProperties(["fetch"]);
 
 const DEFAULT_OPTIONS = {
   framescriptPath: new URL("data/page-scraper-content-script.js", options.prefixURI),
   blacklist: ["about:", "localhost:", "resource://"]
+};
+const PERFORMANCE_EVENT_NAMES = {
+  metadata_raw_html: "metadataReceivedRawHTML",
+  metadata_exists: "metadataExists",
+  metadata_invalid: "metadataInvalidReceived",
+  metadata_sucess: "metadataParseSuccess",
+  metadata_fail: "metadataParseFail"
 };
 
 function PageScraper(previewProvider, tabTracker, options = {}) {
@@ -30,30 +38,60 @@ function PageScraper(previewProvider, tabTracker, options = {}) {
 
 PageScraper.prototype = {
   /**
-   * Check if the link is already in the metadata database. If not, parse the
-   * HTML and insert it in the metadata database
+   * Parse the HTML and attempt to insert it in the metadata database
    */
-  _asyncParseAndSave: Task.async(function*(rawHTML, url, event) {
-    let startTime = Date.now();
-    this._tabTracker.handlePerformanceEvent(event, "metadataReceivedRawHTML", startTime);
+  _asyncParseAndSave(rawHTML, url, event) {
+    this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_raw_html, Date.now());
+    const metadata = this._metadataParser.parseHTMLText(rawHTML, url);
+    this._asyncSaveMetadata(metadata, event);
+  },
 
-    let link = yield this._previewProvider.asyncLinkExist(url);
-    if (!link) {
-      const metadata = this._metadataParser.parseHTMLText(rawHTML, url);
-      if (this._shouldSaveMetadata(metadata)) {
-        try {
-          metadata.images = yield this._computeImageSize(metadata);
-        } catch (e) {
-          Cu.reportError(`PageScraper failed to compute image size for ${url}`);
-        }
-        this._insertMetadata(metadata);
-        this._tabTracker.handlePerformanceEvent(event, "metadataParseSuccess", Date.now() - startTime);
-      } else {
-        this._tabTracker.handlePerformanceEvent(event, "metadataInvalidReceived", Date.now() - startTime);
-      }
-    } else {
-      this._tabTracker.handlePerformanceEvent(event, "metadataExists", Date.now() - startTime);
+  /**
+   * Save the metadata in the MetadataStore DB
+   */
+  _asyncSaveMetadata: Task.async(function*(metadata, event) {
+    const startTime = Date.now();
+    let linkExists = yield this._previewProvider.asyncLinkExist(metadata.url);
+    if (linkExists) {
+      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_exists, Date.now());
+      return;
     }
+    if (!this._shouldSaveMetadata(metadata)) {
+      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_invalid, Date.now() - startTime);
+      return;
+    }
+    try {
+      metadata.images = yield this._computeImageSize(metadata);
+    } catch (e) {
+      Cu.reportError(`PageScraper failed to compute image size for ${metadata.url}`);
+    }
+    this._insertMetadata(metadata);
+    this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_sucess, Date.now() - startTime);
+  }),
+
+  /**
+   * Make a network request for links that the MetadataFeed has requested metadata for.
+   * Attempt to parse the html from that page and insert into the DB
+   */
+  asyncFetchLinks: Task.async(function*(links, event) {
+    for (let link of links) {
+      let linkExists = yield this._previewProvider.asyncLinkExist(link.url);
+      if (linkExists) {
+        this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_exists, Date.now());
+        return;
+      }
+      const rawHTML = yield this._fetchContent(link.url);
+      this._asyncParseAndSave(rawHTML, link.url, event);
+    }
+  }),
+
+  /**
+   * Wrapper for requesting the URL and returning it's DOM
+   */
+  _fetchContent: Task.async(function*(url) {
+    let response = yield fetch(url);
+    let rawHTML = yield response.text();
+    return rawHTML;
   }),
 
   /**
@@ -104,27 +142,34 @@ PageScraper.prototype = {
   },
 
   /**
+   * Message handler for the incoming framescript messages
+   */
+  _messageHandler(message) {
+    let {text, url} = message.data.data;
+    if (message.data.type === "PAGE_HTML" && this._blacklistFilter(url)) {
+      const event = this._tabTracker.generateEvent({source: "PAGE_SCRAPER"});
+      try {
+        this._asyncParseAndSave(text, url);
+      } catch (err) {
+        Cu.reportError(`MetadataParser failed to parse ${url}. ${err}`);
+        this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_fail, Date.now());
+      }
+    }
+  },
+
+  /**
    * Initialize the Page Scraper
    */
   init() {
     Services.mm.loadFrameScript(this.options.framescriptPath, true);
-    Services.mm.addMessageListener("page-scraper-message", message => {
-      let {text, url} = message.data.data;
-      if (message.data.type === "PAGE_HTML" && this._blacklistFilter(url)) {
-        const event = this._tabTracker.generateEvent({source: "PAGE_SCRAPER"});
-        this._asyncParseAndSave(text, url, event).catch(err => {
-          Cu.reportError(`MetadataParser failed to parse ${url}. ${err}`);
-          this._tabTracker.handlePerformanceEvent(event, "metadataParseFail", Date.now());
-        });
-      }
-    });
+    Services.mm.addMessageListener("page-scraper-message", this._messageHandler.bind(this));
   },
 
   /**
    * Uninitialize the Page Scraper
    */
   uninit() {
-    Services.mm.removeMessageListener("page-scraper-message", this);
+    Services.mm.removeMessageListener("page-scraper-message", this._messageHandler);
     Services.mm.removeDelayedFrameScript(this.options.framescriptPath);
   }
 };

@@ -103,7 +103,8 @@ function getTestActivityStream(options = {}) {
     options: {framescriptPath: ""},
     init() {},
     uninit() {},
-    _asyncParseAndSave() {}
+    _asyncParseAndSave() {},
+    asyncFetchLinks() {}
   };
 
   const mockPageWorker = {

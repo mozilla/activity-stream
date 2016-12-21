@@ -95,6 +95,10 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
     fetchNewMetadata: (links, type) => {
       const event = this._tabTracker.generateEvent({source: type});
       return this._previewProvider.asyncSaveLinks(links, event);
+    },
+    fetchNewMetadataLocally: (links, type) => {
+      const event = this._tabTracker.generateEvent({source: type});
+      return this._pageScraper.asyncFetchLinks(links, event);
     }
   });
   this._store = createStore({middleware: this._feeds.reduxMiddleware});

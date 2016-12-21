@@ -88,5 +88,20 @@
       "threshold": 0.5,
       "description": "Use combined frecency"
     }
+  },
+  "locallyFetchMetadata": {
+    "name": "Fetch Page Content Locally",
+    "active": false,
+    "description": "Make a network request for content of a URL",
+    "control": {
+      "value": false,
+      "description": "Use remote service for metadata"
+    },
+    "variant": {
+      "id": "exp-007-locally-fetch-metadata",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Fetch page content locally"
+    }
   }
 }
