@@ -2,8 +2,7 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 
-const HighlightContext = require("components/HighlightContext/HighlightContext");
-const {types} = HighlightContext;
+const {types, PlaceholderHighlightContext, HighlightContext} = require("components/HighlightContext/HighlightContext");
 
 describe("HighlightContext", () => {
   let instance;
@@ -68,5 +67,20 @@ describe("HighlightContext", () => {
   it("should have a .tooltip-container class", () => {
     setup();
     assert.include(el.className, "tooltip-container");
+  });
+});
+
+describe("PlaceholderHighlightContext", () => {
+  let instance;
+  let el;
+
+  function setup() {
+    instance = TestUtils.renderIntoDocument(<PlaceholderHighlightContext />);
+    el = ReactDOM.findDOMNode(instance);
+  }
+
+  it("should have a .placeholder class", () => {
+    setup();
+    assert.include(el.className, "placeholder");
   });
 });

@@ -57,6 +57,11 @@ storiesOf("Highlight List", module)
     <Container>
       <Spotlight length={HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems.slice(1)} />
     </Container>
+  )
+  .add("Placeholder view (data still loading)", () =>
+    <Container>
+      <Spotlight placeholder={true} length={HIGHLIGHTS_LENGTH} page="SPOTLIGHT_STORYBOOK" sites={fakeSpotlightItems} />
+    </Container>
   );
 
 storiesOf("Highlight Item", module)

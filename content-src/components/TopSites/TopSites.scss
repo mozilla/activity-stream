@@ -16,6 +16,23 @@
     @media (min-width: $break-point) {
       display: flex;
     }
+
+    // Only display a placeholder version (ie just outlines/shapes), for use
+    // before sufficient data is available to display.
+    &.placeholder {
+      .site-icon-wrapper {
+        width: 32px;
+        height: 74px;
+      }
+
+      .site-icon-title {
+        border-top: 1px solid $faintest-black;
+      }
+
+      .tile {
+        box-shadow: none;
+      }
+    }
   }
 
   .tile {

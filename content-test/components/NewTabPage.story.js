@@ -34,8 +34,19 @@ const Container = props => (
 // itself.
 
 storiesOf("NewTabPage", module)
-  .add("Be on the lookout popup", () =>
-    <Container>
-      <NewTabPage {...mockData} page="SPOTLIGHT_STORYBOOK" dispatch={dispatch} />,
-    </Container>
+  .add("Data Available (this.props.isReady==true)", () => {
+    let dataAvail = Object.assign({}, mockData);
+    dataAvail.isReady = true;
+
+    return (
+      <Container>
+        <NewTabPage {...dataAvail} page="SPOTLIGHT_STORYBOOK"
+          dispatch={dispatch} />,
+      </Container>
+    );
+  })
+  .add("Data Unavailable (this.props.isReady==false)", () =>
+      <Container>
+        <NewTabPage {...mockData} page="SPOTLIGHT_STORYBOOK" dispatch={dispatch} />
+      </Container>
   );

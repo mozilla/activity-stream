@@ -64,6 +64,20 @@
     }
   }
 
+  // Only display a placeholder version (ie just outlines/shapes), for use
+  // before sufficient data is available to display.
+  &.placeholder {
+    .spotlight-image {
+      background-color: $placeholder-grey;
+    }
+
+    .spotlight-icon {
+      width: 40px; // XXX should be derived or done from JS to match other code?
+      height: 40px;
+      background-color: $white;
+    }
+  }
+
   .spotlight-icon {
     border-radius: 3px;
     left: $spotlight-icon-gutter;

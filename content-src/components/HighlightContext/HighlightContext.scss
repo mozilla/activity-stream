@@ -9,6 +9,25 @@
   display: flex;
   align-items: center;
 
+  // Only display a placeholder version (ie just outlines/shapes), for use
+  // before sufficient data is available to display.
+  &.placeholder {
+    .hc-icon {
+      background-color: $placeholder-grey;
+      opacity: 1;
+
+      .icon {
+        background-image: none;
+      }
+    }
+
+    .hc-label {
+      background-color: $placeholder-grey;
+      color: $placeholder-grey;
+      height: 16px;
+    }
+  }
+
   .hc-icon {
     opacity: 0.5;
     font-size: 13px;

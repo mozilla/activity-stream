@@ -7,7 +7,6 @@ const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
 const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
-const classNames = require("classnames");
 const PAGE_NAME = "NEW_TAB";
 const {HIGHLIGHTS_LENGTH} = require("common/constants");
 
@@ -58,14 +57,15 @@ const NewTabPage = React.createClass({
           title="Welcome to new tab"
           body="Firefox will use this space to show your most relevant bookmarks, articles, videos, and pages you've recently visited, so you can get back to them easily."
           label="Identifying your Highlights" />
-        <div className={classNames("show-on-init", {on: this.props.isReady})}>
+        <div className="show-on-init on">
           <section>
-            <TopSites page={PAGE_NAME} sites={props.TopSites.rows} showHint={props.TopSites.showHint} />
+            <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
+              sites={props.TopSites.rows} showHint={props.TopSites.showHint} />
           </section>
 
           <section>
-            <Spotlight page={PAGE_NAME} length={HIGHLIGHTS_LENGTH}
-              sites={props.Highlights.rows} />
+            <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
+              length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows} />
           </section>
         </div>
       </div>
