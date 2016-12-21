@@ -10,15 +10,8 @@ module.exports = {
   // all rows.
   HIGHLIGHTS_LENGTH: 9,
 
-  // Thresholds for highlights query
-  HIGHLIGHTS_THRESHOLDS: {
-    created: "-3 day",
-    visited: "-30 minutes",
-    ageLimit: "-4 day"
-  },
-
   // How many items per query?
-  LINKS_QUERY_LIMIT: 20,
+  LINKS_QUERY_LIMIT: 500,
 
   // This is where we cache redux state so it can be shared between pages
   LOCAL_STORAGE_KEY: "ACTIVITY_STREAM_STATE",
