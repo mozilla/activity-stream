@@ -392,7 +392,7 @@ describe("Baseline", () => {
       assert.throws(() => baseline.decay(10, {foo: 1, bar: undefined}, [2, 3]));
     });
     it("should call filter on the features", () => {
-      const result = baseline.decay(10, {foo: 1, isBookmarked: 2}, [1]);
+      const result = baseline.decay(10, {foo: 1, bookmarkAge: 2}, [1]);
 
       assert.isNumber(result);
     });
@@ -412,7 +412,7 @@ describe("Baseline", () => {
           queryLength: 0,
           imageCount: 1,
           pathLength: 1,
-          isBookmarked: 0,
+          bookmarkAge: 0,
           description: 10,
           image: 1
         }
@@ -469,13 +469,22 @@ describe("Baseline", () => {
     });
 
     it("should rank bookmarks higher", () => {
-      const features = Object.assign({}, entry.features, {isBookmarked: 1});
+      const features = Object.assign({}, entry.features, {bookmarkAge: 1});
       const bookmarkScore = baseline.adjustScore(10, features);
       const regularScore = baseline.adjustScore(10, entry.features);
 
       assert.isNumber(bookmarkScore);
       assert.isNumber(regularScore);
       assert.ok(bookmarkScore > regularScore);
+    });
+
+    it("should rank newer bookmarks higher", () => {
+      const oldFeatures = Object.assign({}, entry.features, {bookmarkAge: 100});
+      const oldScore = baseline.adjustScore(10, oldFeatures);
+      const newFeatures = Object.assign({}, entry.features, {bookmarkAge: 1});
+      const newScore = baseline.adjustScore(10, newFeatures);
+
+      assert.ok(newScore > oldScore);
     });
   });
 
