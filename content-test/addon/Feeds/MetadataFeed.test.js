@@ -1,8 +1,10 @@
 /* globals sinon, require, assert */
 "use strict";
 
+const simplePrefs = require("sdk/simple-prefs");
 const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
 const fetchNewMetadata = () => (Promise.resolve());
+const fetchNewMetadataLocally = () => (Promise.resolve());
 
 const PlacesProvider = {links: {getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks))}};
 
@@ -12,9 +14,10 @@ describe("MetadataFeed", () => {
   beforeEach(() => {
     MetadataFeed = require("inject!addon/Feeds/MetadataFeed")({"addon/PlacesProvider": {PlacesProvider}});
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
-    instance = new MetadataFeed({fetchNewMetadata});
+    instance = new MetadataFeed({fetchNewMetadata, fetchNewMetadataLocally});
     instance.refresh = sinon.spy();
     sinon.spy(instance.options, "fetchNewMetadata");
+    sinon.spy(instance.options, "fetchNewMetadataLocally");
   });
   it("should create a MetadataFeed", () => {
     assert.instanceOf(instance, MetadataFeed);
@@ -26,9 +29,17 @@ describe("MetadataFeed", () => {
     assert.equal(instance.linksToFetch.size, 0);
   });
   describe("#getData", () => {
-    it("should run sites through fetchNewMetadata", () => (
-      instance.getData().then(() => assert.calledOnce(instance.options.fetchNewMetadata))
-    ));
+    it("should run sites through fetchNewMetadata", () => instance.getData().then(() => (
+        assert.calledOnce(instance.options.fetchNewMetadata)))
+    );
+    it("should run sites through fetchNewMetadataLocally if experiment pref is on", () => {
+      simplePrefs.prefs["experiments.locallyFetchMetadata"] = true;
+      return instance.getData().then(() => {
+        assert.notCalled(instance.options.fetchNewMetadata);
+        assert.calledOnce(instance.options.fetchNewMetadataLocally);
+        simplePrefs.prefs["experiments.locallyFetchMetadata"] = false;
+      });
+    });
     it("should resolve with an action, but no data", () => (
       instance.getData().then(action => {
         assert.isObject(action);
