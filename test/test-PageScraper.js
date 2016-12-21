@@ -79,18 +79,20 @@ exports.test_no_metadata_returned = function*(assert) {
   assert.equal(gMetadataStore[0].metadata, DUMMY_PARSED_METADATA.metadata, "we did insert a page with metadata");
 };
 
-exports.test_parse_html_rejects = function*(assert) {
+exports.test_parse_html_rejects = function(assert) {
   // force the metadata parser to throw an execption
   gPageScraper._metadataParser = {
     parseHTMLText() {
-      return Promise.reject();
+      throw new Error();
     }
   };
   // the DB should be empty to start
   assert.equal(gMetadataStore[0], undefined, "sanity check that our store is empty");
 
   // try to insert some empty metadata and make sure that it didn't get inserted
-  yield gPageScraper._asyncParseAndSave({});
+  gPageScraper._asyncParseAndSave({})
+    .then(() => assert.ok(false, "only called if the parse was successful"))
+    .catch(() => assert.ok(true, "the parsing exception was caught"));
   assert.equal(gMetadataStore[0], undefined, "we didn't insert the page with no metadata");
 };
 
@@ -133,7 +135,7 @@ before(exports, () => {
   gPageScraper._metadataParser = {
     parseHTMLText(raw, url) {
       parseCallCount++;
-      return Promise.resolve({images: [], title: raw.title, favicon_url: raw.favicon_url, url, metadata: raw.metadata, cache_key: url});
+      return {images: [], title: raw.title, favicon_url: raw.favicon_url, url, metadata: raw.metadata, cache_key: url};
     }
   };
 });

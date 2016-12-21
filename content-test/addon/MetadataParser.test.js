@@ -69,14 +69,13 @@ describe("MetadataParser", () => {
       "favicon_url": TEST_ICON,
       "description": TEST_DESCRIPTION
     };
-    return metadataParser.parseHTMLText(TEST_HTML, url).then(result => {
-      assert.ok(result);
-      assert.equal(result.url, expectedResult.url);
-      assert.equal(result.provider_name, expectedResult.provider_name);
-      assert.equal(result.title, expectedResult.title);
-      assert.equal(result.description, expectedResult.description);
-      assert.deepEqual(result.images, expectedResult.images);
-      assert.equal(result.favicon_url, TEST_ICON);
-    });
+    let result = metadataParser.parseHTMLText(TEST_HTML, url);
+    assert.ok(result);
+    assert.equal(result.url, expectedResult.url);
+    assert.equal(result.provider_name, expectedResult.provider_name);
+    assert.equal(result.title, expectedResult.title);
+    assert.equal(result.description, expectedResult.description);
+    assert.deepEqual(result.images, expectedResult.images);
+    assert.equal(result.favicon_url, TEST_ICON);
   });
 });

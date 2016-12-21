@@ -25,9 +25,11 @@ DOMFetcher.prototype = {
   },
 
   _sendContentMessage() {
-    const text = content.document.documentElement.outerHTML;
-    const url = content.document.documentURI;
-    sendAsyncMessage("page-scraper-message", {type: "PAGE_HTML", data: {text, url}});
+    if (content.document.documentElement) {
+      const text = content.document.documentElement.outerHTML;
+      const url = content.document.documentURI;
+      sendAsyncMessage("page-scraper-message", {type: "PAGE_HTML", data: {text, url}});
+    }
   }
 };
 
