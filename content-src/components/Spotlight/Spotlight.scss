@@ -57,6 +57,9 @@
     background-position: center;
     background-repeat: no-repeat;
     height: $spotlight-img-height;
+    border-bottom-color: $faintest-black;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
     border-radius: $border-radius $border-radius 0 0;
 
     &.portrait {

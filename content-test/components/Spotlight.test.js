@@ -8,7 +8,7 @@ const {PlaceholderHighlightContext, HighlightContext} = require("components/High
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
-const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
+const {SiteIcon} = require("components/SiteIcon/SiteIcon");
 const {mockData, faker, renderWithProvider} = require("test/test-utils");
 const fakeSpotlightItems = mockData.Highlights.rows;
 const fakeSiteWithImage = faker.createSite();
@@ -120,8 +120,8 @@ describe("PlaceholderSpotlightItem", () => {
 
     assert.instanceOf(hc, PlaceholderHighlightContext);
   });
-  it("should render a PlaceholderSiteIcon", () => {
-    const icon = TestUtils.findRenderedComponentWithType(instance, PlaceholderSiteIcon);
+  it("should render an icon", () => {
+    const icon = instance.refs.icon;
     assert.notEqual(null, icon);
   });
 });

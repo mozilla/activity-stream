@@ -77,7 +77,7 @@ SiteIcon.propTypes = {
 const PlaceholderSiteIcon = React.createClass({
   render() {
     return (
-      <div ref="icon" className="spotlight-icon">
+      <div ref="icon" className="site-icon">
         <div className="site-icon-wrapper" />
         <div className="site-icon-title" />
       </div>

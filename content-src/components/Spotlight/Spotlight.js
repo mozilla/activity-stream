@@ -4,7 +4,7 @@ const {justDispatch} = require("common/selectors/selectors");
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const {actions} = require("common/action-manager");
-const {SiteIcon, PlaceholderSiteIcon} = require("components/SiteIcon/SiteIcon");
+const {SiteIcon} = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {HighlightContext, PlaceholderHighlightContext} = require("components/HighlightContext/HighlightContext");
@@ -94,7 +94,7 @@ const PlaceholderSpotlightItem = React.createClass({
       <li className="spotlight-item placeholder">
         <a>
           <div className="spotlight-image portrait" ref="image">
-            <PlaceholderSiteIcon />
+            <div className="spotlight-icon" ref="icon" />
           </div>
           <div className="inner-border" />
         </a>
