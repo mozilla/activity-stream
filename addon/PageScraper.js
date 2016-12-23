@@ -108,6 +108,7 @@ PageScraper.prototype = {
    */
   init() {
     Services.mm.loadFrameScript(this.options.framescriptPath, true);
+    this._tabTracker.handlePerformanceEvent({source: "PAGE_SCRAPER"}, "metadataFramescriptLoaded", Date.now());
     Services.mm.addMessageListener("page-scraper-message", message => {
       let {text, url} = message.data.data;
       if (message.data.type === "PAGE_HTML" && this._blacklistFilter(url)) {
