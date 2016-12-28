@@ -4,6 +4,7 @@ const {selectNewTabSites} = require("common/selectors/selectors");
 const {assignImageAndBackgroundColor} = require("common/selectors/colorSelectors");
 const {Spotlight, SpotlightItem} = require("components/Spotlight/Spotlight");
 const TopSites = require("components/TopSites/TopSites");
+const Snippet = require("components/Snippet/Snippet");
 const sizeof = require("object-sizeof");
 const {ShowAllHints} = require("common/action-manager").actions;
 const experimentDefinitions = require("../../../experiments.json");
@@ -44,7 +45,8 @@ const DebugPage = React.createClass({
     return {
       component: "TopSites",
       dataSource: "TopSites",
-      highlightData: createHighlightData()
+      highlightData: createHighlightData(),
+      showSnippet: true
     };
   },
   render() {
@@ -87,6 +89,12 @@ const DebugPage = React.createClass({
               })}
             </tbody>
           </table>
+        </section>
+
+        <section>
+          <h2>Example Snippet</h2>
+          <p hidden={!this.state.showSnippet}>Snippet should show up at the bottom of your screen.</p>
+          <p hidden={this.state.showSnippet}><button onClick={() => this.setState({showSnippet: true})}>Show Snippet</button></p>
         </section>
 
         <section>
@@ -139,6 +147,12 @@ const DebugPage = React.createClass({
           ))}
         </section>
       </div>
+      <Snippet
+        visible={this.state.showSnippet}
+        setVisibility={value => this.setState({showSnippet: value})}
+        image="https://support.cdn.mozilla.net/static/sumo/img/firefox-512.png?v=1"
+        description="Your snippet text goes here and should not be any longer than a Tweet, (140 characters). <a href='#'>Links should look like this.</a>"
+        title="Snippet Headline" />
     </main>);
   }
 });
