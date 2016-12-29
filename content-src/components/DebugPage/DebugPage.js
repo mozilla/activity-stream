@@ -65,12 +65,15 @@ const DebugPage = React.createClass({
             To override these experiments, check <code>about:config</code> for <code>extensions.@activity-streams.experiments.prefName</code>, where <code>prefName</code> is the name of the pref in this table.
           </p>
           <table className="experiment-table">
-            <tr>
-              <th>Experiment</th>
-              <th>Pref name</th>
-              <th>Description</th>
-              <th>Value</th>
-            </tr>
+            <thead>
+              <tr>
+                <th>Experiment</th>
+                <th>Pref name</th>
+                <th>Description</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
             {Object.keys(experimentDefinitions)
               .filter(id => experimentDefinitions[id].active)
               .map(id => {
@@ -82,6 +85,7 @@ const DebugPage = React.createClass({
                   <td>{valueAsString}</td>
                 </tr>);
               })}
+            </tbody>
           </table>
         </section>
 
@@ -89,7 +93,7 @@ const DebugPage = React.createClass({
           <h2>State as plain text</h2>
           <p>Apx. current size: {Math.round(sizeof(this.props.raw) / 1024)}kb</p>
           <p><a className="btn" href={downloadState} download="activity-stream-state.json">Download current state to file</a></p>
-          <textarea value={plainText} />
+          <textarea value={plainText} readOnly={true} />
           <Viewer {...this.props} />
         </section>
 
@@ -131,7 +135,7 @@ const DebugPage = React.createClass({
         <section>
           <h2>Highlight Types</h2>
           {this.state.highlightData.map((item, i) => (
-            <SpotlightItem key={i} {...item} />
+            <SpotlightItem key={i} {...item} dispatch={() => {}} />
           ))}
         </section>
       </div>
