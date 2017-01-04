@@ -59,8 +59,13 @@ module.exports = class HighlightsFeed extends Feed {
     }
     return PlacesProvider.links.getRecentlyVisited()
       .then(links => this.options.getCachedMetadata(links, "HIGHLIGHTS_RESPONSE"))
-      .then(links => this.baselineRecommender.scoreEntries(links))
-      .then(links => (am.actions.Response("HIGHLIGHTS_RESPONSE", links)));
+      .then(links => ({metadataLinks: links, weightedLinks: this.baselineRecommender.scoreEntries(links)}))
+      .then(({metadataLinks, weightedLinks}) => {
+        if (metadataLinks.length && !weightedLinks.length) {
+          return am.actions.Response("HIGHLIGHTS_AWAITING_METADATA");
+        }
+        return am.actions.Response("HIGHLIGHTS_RESPONSE", weightedLinks);
+      });
   }
 
   onAction(state, action) {
@@ -72,6 +77,9 @@ module.exports = class HighlightsFeed extends Feed {
       case am.type("RECEIVE_BOOKMARK_ADDED"):
         // We always want new bookmarks
         this.refresh("a bookmark was added");
+        break;
+      case am.type("HIGHLIGHTS_AWAITING_METADATA"):
+        this.refresh("metadata for highlights is being fetched");
         break;
       case am.type("METADATA_FEED_UPDATED"):
         // If the user visits a site and we don't have enough weighted highlights yet, refresh the data.

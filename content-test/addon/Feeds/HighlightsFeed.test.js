@@ -90,13 +90,21 @@ describe("HighlightsFeed", () => {
           assert.equal(e.message, "Tried to get weighted highlights but there was no baselineRecommender");
         })
     );
-    it("should resolve with an action", () => {
+    it("should resolve with a HIGHLIGHTS_RESPONSE action if there are weighted highlights", () => {
       instance.baselineRecommender = {scoreEntries: links => links};
       return instance.getData()
         .then(action => {
           assert.isObject(action);
           assert.equal(action.type, "HIGHLIGHTS_RESPONSE");
           assert.lengthOf(action.data, 2);
+        });
+    });
+    it("should resolve with a HIGHLIGHTS_AWAITING_METADATA action if there are no weighted highlights", () => {
+      instance.baselineRecommender = {scoreEntries: () => []};
+      return instance.getData()
+        .then(action => {
+          assert.isObject(action);
+          assert.equal(action.type, "HIGHLIGHTS_AWAITING_METADATA");
         });
     });
     it("should run sites through getCachedMetadata", () => {
@@ -108,7 +116,7 @@ describe("HighlightsFeed", () => {
         });
     });
     it("should run sites through scoreEntries AFTER getCachedMetadata", () => {
-      instance.baselineRecommender = {scoreEntries: sinon.spy()};
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
       return instance.getData()
         .then(action => (
           assert.calledWithExactly(instance.baselineRecommender.scoreEntries, getCachedMetadata(testLinks))
