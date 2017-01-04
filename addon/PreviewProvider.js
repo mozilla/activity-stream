@@ -176,7 +176,13 @@ PreviewProvider.prototype = {
         return null;
       }
       return getColor(link.favicon, link.url)
-        .then(color => resolve([...color, BACKGROUND_FADE]))
+        .then(color => {
+          if (!color) {
+            resolve(null);
+          } else {
+            resolve([...color, BACKGROUND_FADE]);
+          }
+        })
         .catch(err => {
           Cu.reportError(err);
           resolve(null);
