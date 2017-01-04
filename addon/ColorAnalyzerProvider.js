@@ -10,7 +10,7 @@ exports.getColor = function getColor(dataURI, label) {
           const rgb = [(number >> 16) & 0xFF, (number >> 8) & 0xFF, number & 0xFF];
           resolve(rgb);
         } else {
-          reject(new Error(`There was an error processing ${label}`));
+          resolve(null);
         }
       });
     } catch (e) {
