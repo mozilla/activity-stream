@@ -4,6 +4,7 @@ const TestUtils = require("react-addons-test-utils");
 const ReactDOM = require("react-dom");
 
 const validProps = {
+  enabled: true,
   visible: true,
   title: "Snippet Headline",
   image: "https://support.cdn.mozilla.net/static/sumo/img/firefox-512.png?v=1",
@@ -18,6 +19,14 @@ function createInstance(custom = {}) {
 describe("Snippet", () => {
   it("should render a snippet", () => {
     assert.ok(createInstance());
+  });
+  describe(".enabled", () => {
+    it("should be rendered if enabled is true", () => {
+      assert.ok(ReactDOM.findDOMNode(createInstance()));
+    });
+    it("should not be rendered if enabled is false", () => {
+      assert.isNull(ReactDOM.findDOMNode(createInstance({enabled: false})));
+    });
   });
   describe(".visible", () => {
     it("should not be hidden be default", () => {
@@ -43,7 +52,7 @@ describe("Snippet", () => {
     });
     it("should hide the title element if no title is given", () => {
       const instance = createInstance({title: null});
-      assert.isTrue(instance.refs.title.hidden);
+      assert.isUndefined(instance.refs.title);
     });
   });
   describe(".description", () => {

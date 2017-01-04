@@ -23,7 +23,7 @@
   &.hidden {
     transition: opacity 250ms ease-out, transform 250ms ease-out;
     opacity: 0;
-    transform: translate3d(0, 100%, 0);
+    transform: translateY(100%);
   }
 
   .snippet-container {
