@@ -494,9 +494,9 @@ ActivityStreams.prototype = {
       case "disable":
       case "uninstall":
         this._tabTracker.handleUserEvent({event: reason});
-        this._experimentProvider.clearPrefs();
         this._unsetHomePage();
         defaultUnload();
+        this._experimentProvider.clearPrefs();
         break;
       default:
         defaultUnload();
