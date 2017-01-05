@@ -337,6 +337,12 @@ Links.prototype = {
       limit = LINKS_QUERY_LIMIT;
     }
 
+    // Either grab the plain frecency or combine them based on the experiment
+    let frecencyScore = "";
+    if (simplePrefs.prefs["experiments.dedupedCombinedFrecency"]) {
+      frecencyScore = "SUM(frecency)";
+    }
+
     let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
 
     // this query does "GROUP BY rev_nowww" (rev_host without www) to remove urls from same domain.
@@ -345,7 +351,7 @@ Links.prototype = {
     // In general the groupby behavior in the absence of aggregates is not
     // defined in SQL, hence we are relying on sqlite implementation that may
     // change in the future.
-    let sqlQuery = `SELECT url, title, SUM(frecency) frecency, guid, bookmarkGuid,
+    let sqlQuery = `SELECT url, title, ${frecencyScore} frecency, guid, bookmarkGuid,
                           last_visit_date / 1000 as lastVisitDate, favicon, mimeType,
                           "history" as type
                     FROM
