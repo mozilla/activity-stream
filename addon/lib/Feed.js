@@ -44,9 +44,9 @@ module.exports = class Feed {
 
       this.getData()
         .then(action => {
-          this.store.dispatch(action);
           this.state.inProgress = false;
           this.state.lastUpdated = new Date().getTime();
+          this.store.dispatch(action);
           resolve();
         })
         .catch(err => {
