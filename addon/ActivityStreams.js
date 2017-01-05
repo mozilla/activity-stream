@@ -87,6 +87,8 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
     broadcast: this.broadcast.bind(this),
     send: this.sendById.bind(this),
     searchProvider: this._searchProvider,
+    metadataStore: this._metadataStore,
+    tabTracker: this._tabTracker,
     // TODO: move this into Feeds. Requires previewProvider/tabTracker to be independent
     getCachedMetadata: (links, type) => {
       const event = this._tabTracker.generateEvent({source: type});
