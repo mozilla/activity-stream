@@ -15,12 +15,13 @@ XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
 });
 
 exports.ExperimentProvider = class ExperimentProvider {
-  constructor(experiments = require("../experiments.json"), rng) {
+  constructor(experiments = require("../experiments.json"), rng, prefService) {
     this._experiments = experiments;
     this._rng = rng || Math.random;
     this._data = {};
     this._experimentId = null;
     this._target = PrefsTarget();
+    this._prefService = prefService || Preferences;
     EventEmitter.decorate(this);
 
     this._onPrefChange = this._onPrefChange.bind(this);
@@ -31,9 +32,9 @@ exports.ExperimentProvider = class ExperimentProvider {
     Object.keys(this._experiments).forEach(experimentName => {
       this._target.on(PREF_PREFIX + experimentName, this._onPrefChange);
       Object.defineProperty(this._data, experimentName, {
-        get() {
-          return Preferences.get(PREF_PREFIX + experimentName);
-        },
+        get: function() {
+          return this._prefService.get(PREF_PREFIX + experimentName);
+        }.bind(this),
         enumerable: true
       });
     });
@@ -58,10 +59,10 @@ exports.ExperimentProvider = class ExperimentProvider {
       console.log(`The following experiments were turned on via overrides:\n`); // eslint-disable-line no-console
       Object.keys(this._experiments).forEach(experimentName => {
         const {variant, control} = this._experiments[experimentName];
-        if (Preferences.get(PREF_PREFIX + experimentName) === variant.value) {
+        if (this._prefService.get(PREF_PREFIX + experimentName) === variant.value) {
           console.log(`- ${experimentName} - \n`); // eslint-disable-line no-console
         } else {
-          Preferences.set(PREF_PREFIX + experimentName, control.value);
+          this._prefService.set(PREF_PREFIX + experimentName, control.value);
         }
       });
       return;
@@ -75,14 +76,14 @@ exports.ExperimentProvider = class ExperimentProvider {
       const experiment = this._experiments[key];
       const {variant, control} = experiment;
 
-      if (Preferences.get(PREF_PREFIX + key) === variant.value) {
+      if (this._prefService.get(PREF_PREFIX + key) === variant.value) {
         if (experiment.active) {
           // If the user is already part of an active experiment, set the experiment id.
           this._experimentId = variant.id;
         } else {
           // If the user is part of an inactive experiment,
           // reset that experiment's pref.
-          Preferences.set(PREF_PREFIX + key, control.value);
+          this._prefService.set(PREF_PREFIX + key, control.value);
           this._experimentId = null;
         }
       }
@@ -94,13 +95,13 @@ exports.ExperimentProvider = class ExperimentProvider {
       const ceiling = variant.threshold + floor;
 
       // If the experiment is not new or not active you will not be assigned to it.
-      if (Preferences.has(PREF_PREFIX + key) || !experiment.active) {
+      if (this._prefService.has(PREF_PREFIX + key) || !experiment.active) {
         return;
       }
 
       // If the experiment pref is undefined, it's a new experiment. Start
       // by assuming the user will not be in it.
-      Preferences.set(PREF_PREFIX + key, control.value);
+      this._prefService.set(PREF_PREFIX + key, control.value);
 
       if (ceiling > 1) {
         throw new Error("Your variant cohort sizes should add up to less than 1.");
@@ -116,7 +117,7 @@ exports.ExperimentProvider = class ExperimentProvider {
       inExperiment = randomNumber >= floor && randomNumber < ceiling;
       if (inExperiment) {
         this._experimentId = variant.id;
-        Preferences.set(PREF_PREFIX + key, variant.value);
+        this._prefService.set(PREF_PREFIX + key, variant.value);
       }
       floor = ceiling;
     });
@@ -142,7 +143,7 @@ exports.ExperimentProvider = class ExperimentProvider {
 
   clearPrefs() {
     Object.keys(this._experiments).forEach(experimentName => {
-      Preferences.reset(PREF_PREFIX + experimentName);
+      this._prefService.reset(PREF_PREFIX + experimentName);
     });
     ss.storage.overrideExperimentProvider = false;
   }
