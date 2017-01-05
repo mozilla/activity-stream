@@ -2,6 +2,7 @@
 "use strict";
 
 const {before, after, waitUntil} = require("sdk/test/utils");
+const {setTimeout} = require("sdk/timers");
 const {MetadataStore} = require("addon/MetadataStore.js");
 const {metadataFixture} = require("./lib/MetastoreFixture.js");
 const fileIO = require("sdk/io/file");
@@ -49,6 +50,10 @@ function waitForAsyncReset() {
       return false;
     }
   }, 10);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -179,6 +184,42 @@ exports.test_async_insert_all = function*(assert) {
   assert.deepEqual(items[5], [3, 3]);
   assert.deepEqual(items[6], [3, 4]);
   assert.deepEqual(items[7], [3, 5]);
+};
+
+exports.test_get_oldest_insert = function*(assert) {
+  // insert metadata at 3 different times
+  for (let metadata of metadataFixture) {
+    yield sleep(3000);
+    yield gMetadataStore.asyncInsert([metadata]);
+  }
+  // get all the timestamps, sort them, get oldest one, and check against new function
+  const items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
+  const expectedOldestTimestamp = items.map(item => Date.parse(item[7])).sort((a, b) => a > b)[0];
+  const actualOldestTimestamp = yield gMetadataStore.asyncGetOldestInsert();
+  assert.deepEqual(expectedOldestTimestamp, actualOldestTimestamp, "Got the oldest timestamp");
+};
+
+exports.test_get_oldest_insert_throws = function*(assert) {
+  const metadataStore = new MetadataStore();
+  yield metadataStore.asyncConnect();
+  metadataStore.asyncExecuteQuery = function() {
+    throw new Error("error executing query");
+  };
+
+  const timestamp = yield metadataStore.asyncGetOldestInsert();
+  assert.deepEqual(timestamp, null, "Timestamp returns null if function throws");
+
+  yield metadataStore.asyncTearDown();
+};
+
+exports.test_count_all_items = function*(assert) {
+  let itemsSinceTimestamp = yield gMetadataStore.asyncCountAllItems();
+  assert.equal(itemsSinceTimestamp, 0, "Prior to inserting we return 0 items");
+
+  yield gMetadataStore.asyncInsert(metadataFixture);
+
+  itemsSinceTimestamp = yield gMetadataStore.asyncCountAllItems();
+  assert.equal(itemsSinceTimestamp, 3, "Retrieved all items since the timestamp");
 };
 
 exports.test_async_get_by_cache_key = function*(assert) {

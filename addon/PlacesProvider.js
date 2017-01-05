@@ -643,6 +643,28 @@ Links.prototype = {
   }),
 
   /**
+   * Gets History size since a certain timestamp
+   *
+   * @param {String} timestamp in milliseconds
+   *
+   * @returns {Promise} Returns a promise with the count of moz_places records
+   *                    that have been entered since the timestamp provided
+   */
+  getHistorySizeSince: Task.async(function*(timestamp) {
+    if (!timestamp) {
+      return Promise.resolve(0);
+    }
+    let sqlQuery = `SELECT count(1)
+                    FROM moz_places WHERE id IN
+                    (SELECT DISTINCT place_id FROM moz_historyvisits
+                    WHERE visit_date /1000 >= ${timestamp})
+                    AND hidden = 0 AND last_visit_date NOT NULL`;
+
+    let result = yield this.executePlacesQuery(sqlQuery);
+    return result[0][0];
+  }),
+
+  /**
    * Gets Bookmarks count
    *
    * @returns {Promise} Returns a promise with the count of bookmarks

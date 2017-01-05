@@ -544,6 +544,25 @@ exports.test_Links_getHistorySize = function*(assert) {
   assert.equal(size, 1, "expected history size");
 };
 
+exports.test_Links_getHistorySizeSince = function*(assert) {
+  let provider = PlacesProvider.links;
+
+  let size = yield provider.getHistorySizeSince(null);
+  assert.equal(size, 0, "return 0 if there is no timestamp provided");
+
+  // add a visit
+  let testURI = NetUtil.newURI("http://mozilla.com");
+  yield PlacesTestUtils.addVisits(testURI);
+
+  // check that the history size updated with the visit
+  size = yield provider.getHistorySizeSince(Date.now() - 10 * 60 * 1000 * 1000);
+  assert.equal(size, 1, "expected history size since the timestamp");
+
+  // add 10m and make sure we don't get that entry back
+  size = yield provider.getHistorySizeSince(Date.now() + 10 * 60 * 1000 * 1000);
+  assert.equal(size, 0, "do not return an entry");
+};
+
 exports.test_blocked_urls = function*(assert) {
   let provider = PlacesProvider.links;
   let {TRANSITION_TYPED} = PlacesUtils.history;

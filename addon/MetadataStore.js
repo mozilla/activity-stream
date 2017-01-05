@@ -525,6 +525,39 @@ MetadataStore.prototype = {
   }),
 
   /**
+   * Find the oldest entry in the database
+   *
+   * Returns the timestamp of the oldest entry in the database
+   */
+  asyncGetOldestInsert: Task.async(function*() {
+    let timestamp = null;
+    try {
+      const entry = yield this.asyncExecuteQuery("SELECT created_at FROM page_metadata ORDER BY created_at ASC LIMIT 1");
+      if (entry.length) {
+        timestamp = Date.parse(entry[0][0]);
+      }
+    } catch (e) {
+      Cu.reportError(e);
+    }
+    return timestamp;
+  }),
+
+  /**
+   * Counts all the items in the database
+   *
+   * Returns a promise with the array of the retrieved metadata records
+   */
+  asyncCountAllItems: Task.async(function*() {
+    try {
+      const result = yield this.asyncExecuteQuery("SELECT count(*) FROM page_metadata");
+      return result;
+    } catch (e) {
+      Cu.reportError(e);
+      return null;
+    }
+  }),
+
+  /**
   * Enables the data expiry job. The database connection needs to
   * be established prior to calling this function. Once it's triggered,
   * any following calls will be ignored unless the user disables
