@@ -29,7 +29,8 @@ const EXPECTED_KEYS = [
   "total_bookmarks",
   "total_history_size",
   "unload_reason",
-  "url"
+  "url",
+  "highlights_size"
 ];
 
 let ACTIVITY_STREAMS_URL;
