@@ -181,6 +181,51 @@ exports.test_async_insert_all = function*(assert) {
   assert.deepEqual(items[7], [3, 5]);
 };
 
+exports.test_get_oldest_insert = function*(assert) {
+  // insert metadata at 3 different times
+  for (let metadata of metadataFixture) {
+    yield gMetadataStore.asyncInsert([metadata]);
+  }
+  // get all the timestamps, pick an entry, set that timestamp to be an hour earlier
+  const metadataIdRows = yield gMetadataStore.asyncExecuteQuery("SELECT id FROM page_metadata LIMIT 1");
+  const metadataId = metadataIdRows[0][0];
+  const expectedOldestTimestamp = Math.floor((Date.now() - (60 * 60 * 1000)) / 1000);
+  yield gMetadataStore.asyncExecuteQuery(
+    `UPDATE page_metadata SET created_at=datetime(${expectedOldestTimestamp}, 'unixepoch', 'localtime') WHERE id=${metadataId}`);
+
+  // get the timestamp back out from the database the way it was inserted
+  // compare it directly against the timestamp from the new function
+  const expectedOldestDateRows = yield gMetadataStore.asyncExecuteQuery("SELECT min(created_at) FROM page_metadata");
+  const expectedOldestDate = expectedOldestDateRows[0][0];
+  const actualOldestDate = yield gMetadataStore.asyncGetOldestInsert();
+
+  assert.equal(typeof actualOldestDate, "string", `Expected ${actualOldestDate} to be a string`);
+  assert.deepEqual(expectedOldestDate, actualOldestDate, "Got the oldest timestamp");
+};
+
+exports.test_get_oldest_insert_returns_null = function*(assert) {
+  const metadataStore = new MetadataStore();
+  yield metadataStore.asyncConnect();
+  metadataStore.asyncExecuteQuery = function() {
+    return null;
+  };
+
+  const oldestEntry = yield metadataStore.asyncGetOldestInsert();
+  assert.deepEqual(oldestEntry, null, "Return a null entry if we didn't find any");
+
+  yield metadataStore.asyncTearDown();
+};
+
+exports.test_count_all_items = function*(assert) {
+  let itemsinDB = yield gMetadataStore.asyncCountAllItems();
+  assert.equal(itemsinDB, 0, "Prior to inserting we return 0 items");
+
+  yield gMetadataStore.asyncInsert(metadataFixture);
+
+  itemsinDB = yield gMetadataStore.asyncCountAllItems();
+  assert.equal(itemsinDB, 3, "Retrieved all items in the database");
+};
+
 exports.test_async_get_by_cache_key = function*(assert) {
   yield gMetadataStore.asyncInsert(metadataFixture);
 

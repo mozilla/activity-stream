@@ -34,6 +34,15 @@ function isVisitDateOK(timestampMS) {
   return Math.abs(Date.now() - timestampMS) < range;
 }
 
+// turns a timestamp from ISO format 2015-08-04T19:22:39.000Z into ISO format
+// 2015-08-04 19:22:39 so we can compare timestamps properly
+function formatISODate(timestamp) {
+  return new Date(timestamp).toISOString()
+                            .split("T")
+                            .join(" ")
+                            .split(".")[0];
+}
+
 exports.test_LinkChecker_securityCheck = function(assert) {
   let urls = [
     {url: "file://home/file/image.png", expected: false},
@@ -542,6 +551,27 @@ exports.test_Links_getHistorySize = function*(assert) {
 
   size = yield provider.getHistorySize();
   assert.equal(size, 1, "expected history size");
+};
+
+exports.test_Links_getHistorySizeSince = function*(assert) {
+  let provider = PlacesProvider.links;
+
+  let size = yield provider.getHistorySizeSince(null);
+  assert.equal(size, 0, "return 0 if there is no timestamp provided");
+
+  // add a visit
+  let testURI = NetUtil.newURI("http://mozilla.com");
+  yield PlacesTestUtils.addVisits(testURI);
+
+  // check that the history size updated with the visit
+  let timestamp = formatISODate(Date.now() - 10 * 60 * 1000);
+  size = yield provider.getHistorySizeSince(timestamp);
+  assert.equal(size, 1, "expected history size since the timestamp");
+
+  // add 10m and make sure we don't get that entry back
+  timestamp = formatISODate(Date.now() + 10 * 60 * 1000);
+  size = yield provider.getHistorySizeSince(timestamp);
+  assert.equal(size, 0, "do not return an entry");
 };
 
 exports.test_blocked_urls = function*(assert) {
