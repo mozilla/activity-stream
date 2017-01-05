@@ -167,6 +167,21 @@ TabTracker.prototype = {
     // in order to provide the more sepcific reasons other than "navigation"
     this._tabData.unload_reason = this._tabData.unload_reason || reason;
 
+    // Attach the number of highlights to the payload. Fetching the highlight count
+    // here other than doing so in onOpen to make it cover all the cases, such as
+    // new tab, refresh, back, and re-activate
+    //
+    // Note: the selector "selectAndDedup" on the content side might filter out some
+    // highlight links if they also belong to the Top Sites. The highlight count
+    // would be greater than the actual value in this case. This discrepancy will
+    // eventually go away as we are phasing out the filtering in the selectAndDedup
+    if (this._store) {
+      const currentState = this._store.getState();
+      this._tabData.highlights_size = currentState.Highlights.error ? -1 : currentState.Highlights.rows.length;
+    } else {
+      this._tabData.highlights_size = -1;
+    }
+
     if (!this._tabData.tab_id) {
       // We're navigating away from an activity streams page that
       // didn't even load yet. Let's say it's been active for 0 seconds.
