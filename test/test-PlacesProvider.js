@@ -2,6 +2,7 @@
 "use strict";
 
 const {before} = require("sdk/test/utils");
+const simplePrefs = require("sdk/simple-prefs");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Ci, Cu} = require("chrome");
@@ -81,6 +82,14 @@ exports.test_Links_getTopFrecentSites_dedupeWWW = function*(assert) {
   testURI = NetUtil.newURI("http://www.mozilla.com");
   yield PlacesTestUtils.addVisits(testURI);
 
+  // Test with uncombined score control
+  simplePrefs.prefs["experiments.dedupedCombinedFrecency"] = false;
+  links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
+  assert.equal(links[0].frecency, 100, "frecency scores are not combined");
+
+  // Test with combined score experiment
+  simplePrefs.prefs["experiments.dedupedCombinedFrecency"] = true;
   links = yield provider.getTopFrecentSites();
   assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
   assert.equal(links[0].frecency, 200, "frecency scores are combined");

@@ -73,5 +73,20 @@
       "threshold": 0.2,
       "description": "Use MetadataService"
     }
+  },
+  "dedupedCombinedFrecency": {
+    "name": "Combine score of deduped sites",
+    "active": true,
+    "description": "Add frecencies of deduped top sites for ranking",
+    "control": {
+      "value": false,
+      "description": "Use last frecency"
+    },
+    "variant": {
+      "id": "exp-006-deduped-combined-frecency",
+      "value": true,
+      "threshold": 0.5,
+      "description": "Use combined frecency"
+    }
   }
 }
