@@ -14,6 +14,7 @@
     "object-sizeof": "1.1.1",
     "page-metadata-parser": "0.5.2",
     "react": "15.3.2",
+    "react-addons-pure-render-mixin": "15.3.2",
     "react-dom": "15.3.2",
     "react-json-inspector": "7.0.0",
     "react-redux": "4.4.5",

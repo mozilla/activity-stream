@@ -1,7 +1,15 @@
 const React = require("react");
 const classNames = require("classnames");
 
+/**
+ * This should be a stateless, functional component.  Unfortunately, testing these kinda sucks; see
+ * http://stackoverflow.com/questions/36682241/testing-functional-components-with-renderintodocument)
+ * So for now, we are using PureRenderMixin.
+ */
+const PureRenderMixin = require("react-addons-pure-render-mixin");
+
 const Snippet = React.createClass({
+  mixins: [PureRenderMixin],
   onClose(e) {
     e.preventDefault();
     this.props.setVisibility(false);
