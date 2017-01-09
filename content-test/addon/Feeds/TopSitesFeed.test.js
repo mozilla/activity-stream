@@ -77,5 +77,10 @@ describe("TopSitesFeed", () => {
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.notCalled(instance.refresh);
     });
+    it("should call refresh on CLEAR_HISTORY", () => {
+      instance.onAction({}, {type: "CLEAR_HISTORY"});
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "history was cleared");
+    });
   });
 });

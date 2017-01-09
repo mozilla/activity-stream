@@ -104,6 +104,9 @@ module.exports = class HighlightsFeed extends Feed {
         // We always want new synced tabs.
         this.refresh("new tabs synced");
         break;
+      case am.type("CLEAR_HISTORY"):
+        this.refresh("history was cleared");
+        break;
     }
   }
 };

@@ -4,6 +4,7 @@ const eventConstants = require("./event-constants");
 
 const am = new ActionManager([
   "APP_INIT",
+  "CLEAR_HISTORY",
   "DISABLE_HINT",
   "ENABLE_ALL_HINTS",
   "EXPERIMENTS_RESPONSE",

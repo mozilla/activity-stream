@@ -183,5 +183,10 @@ describe("HighlightsFeed", () => {
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "new tabs synced");
     });
+    it("should call refresh on CLEAR_HISTORY", () => {
+      instance.onAction({}, {type: "CLEAR_HISTORY"});
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "history was cleared");
+    });
   });
 });

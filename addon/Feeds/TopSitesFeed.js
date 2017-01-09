@@ -27,6 +27,9 @@ module.exports = class TopSitesFeed extends Feed {
           this.refresh("the sites were too old");
         }
         break;
+      case am.type("CLEAR_HISTORY"):
+        this.refresh("history was cleared");
+        break;
     }
   }
 };
