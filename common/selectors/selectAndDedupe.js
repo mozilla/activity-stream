@@ -13,14 +13,12 @@ const dedupe = require("lib/dedupe");
 module.exports = function selectAndDedupe(group) {
   return group.reduce((result, options, index, arr) => {
     let current;
+    let sites = options.defaults ? options.sites.concat(options.defaults) : options.sites;
     if (result.length) {
       const previous = result.reduce((prev, current) => prev.concat(current), []);
-      current = dedupe.group([previous, options.sites])[1];
+      current = dedupe.group([previous, sites])[1];
     } else {
-      current = dedupe.one(options.sites);
-    }
-    if (options.defaults) {
-      current = current.concat(options.defaults);
+      current = dedupe.one(sites);
     }
     if (options.max && current.length > options.max) {
       current = current.slice(0, options.max);

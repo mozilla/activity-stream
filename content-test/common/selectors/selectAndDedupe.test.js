@@ -39,6 +39,19 @@ describe("selectAndDedupe", () => {
     ]);
     assert.equal(result[0].length, 4);
   });
+  it("should remove duplicates between the existing items and the defaults", () => {
+    const defaults = ["http://foo.com", "http://bar.com"].map(urlToSite);
+    const result = selectAndDedupe([
+      {
+        sites: ["http://www.mozilla.org", "http://foo.com"].map(urlToSite),
+        max: 5,
+        defaults
+      },
+      {sites: []}
+    ]);
+    assert.equal(result[0].length, 3);
+    assert.deepEqual(result[0], ["http://www.mozilla.org", "http://foo.com", "http://bar.com"].map(urlToSite));
+  });
   it("should slice the results based on `max` argument (combined with defaults)", () => {
     const defaults = ["http://foo.com", "http://bar.com"].map(urlToSite);
     const result = selectAndDedupe([
