@@ -12,6 +12,7 @@ module.exports = class HighlightsFeed extends Feed {
   constructor(options) {
     super(options);
     this.baselineRecommender = null; // Added in initializeRecommender, if the experiment is turned on
+    this.retryHighlightsCount = 0;
   }
 
   /**
@@ -61,7 +62,8 @@ module.exports = class HighlightsFeed extends Feed {
       .then(links => this.options.getCachedMetadata(links, "HIGHLIGHTS_RESPONSE"))
       .then(links => ({metadataLinks: links, weightedLinks: this.baselineRecommender.scoreEntries(links)}))
       .then(({metadataLinks, weightedLinks}) => {
-        if (metadataLinks.length && !weightedLinks.length) {
+        if (metadataLinks.length && !weightedLinks.length && this.retryHighlightsCount <= 5) {
+          this.retryHighlightsCount++;
           return am.actions.Response("HIGHLIGHTS_AWAITING_METADATA");
         }
         return am.actions.Response("HIGHLIGHTS_RESPONSE", weightedLinks);
