@@ -10,6 +10,7 @@ function loadStories() {
   require("../content-test/components/ContextMenu.story");
   require("../content-test/components/Hint.story");
   require("../content-test/components/Loader.story");
+  require("../content-test/components/Snippet.story");
   // require as many stories as you need.
 }
 

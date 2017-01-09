@@ -2,8 +2,10 @@ const React = require("react");
 const highlightTypes = require("./types");
 const Tooltip = require("components/Tooltip/Tooltip");
 const getRelativeTime = require("lib/getRelativeTime");
+const PureRenderMixin = require("react-addons-pure-render-mixin");
 
 const HighlightContext = React.createClass({
+  mixins: [PureRenderMixin],
   render() {
     let timestamp;
     const type = this.props.type;
@@ -39,6 +41,7 @@ HighlightContext.propTypes = {
  * The bottom line: we should start using Enzyme and switch this over.
  */
 const PlaceholderHighlightContext = React.createClass({
+  mixins: [PureRenderMixin],
   render() {
     return (
       <div className="highlight-context placeholder">
