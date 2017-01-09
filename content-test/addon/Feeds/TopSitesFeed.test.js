@@ -77,5 +77,10 @@ describe("TopSitesFeed", () => {
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.notCalled(instance.refresh);
     });
+    it("should call refresh on MANY_LINKS_CHANGED", () => {
+      instance.onAction({}, {type: "MANY_LINKS_CHANGED"});
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "frecency of many links changed");
+    });
   });
 });

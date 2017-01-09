@@ -52,7 +52,6 @@ const DEFAULT_OPTIONS = {
 
 const PLACES_CHANGES_EVENTS = [
   "deleteURI",
-  "clearHistory",
   "linkChanged",
   "manyLinksChanged",
   "bookmarkAdded",
@@ -292,6 +291,9 @@ ActivityStreams.prototype = {
         break;
       case "bookmarkRemoved":
         this.broadcast(am.actions.Response("RECEIVE_BOOKMARK_REMOVED", data));
+        break;
+      case "manyLinksChanged":
+        this.broadcast({type: "MANY_LINKS_CHANGED"});
         break;
       default:
         this.broadcast(am.actions.Response("RECEIVE_PLACES_CHANGES", data));
