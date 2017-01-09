@@ -174,7 +174,6 @@ SearchProvider.prototype = {
     let ok = SearchSuggestionController.engineOffersSuggestions(engine);
     controller.maxLocalResults = ok ? MAX_LOCAL_SUGGESTIONS : MAX_SUGGESTIONS;
     controller.maxRemoteResults = ok ? MAX_SUGGESTIONS : 0;
-    controller.remoteTimeout = data.remoteTimeout || undefined;
     let isPrivate = PrivateBrowsingUtils.isBrowserPrivate(browser);
 
     let suggestions;
