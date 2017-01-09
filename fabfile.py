@@ -45,7 +45,7 @@ def make_dev_manifest(fresh_manifest=True, commit_hash=""):
         manifest["version"] = "{}-dev-{}".format(
             _get_dev_version(manifest["version"]), current_time)
         # Using commit hash in the build string to make it easier to be recognized
-        build_version = "Build: {}-dev-{}".format(
+        build_version = "Build: {}-{}".format(
             _get_dev_version(manifest["version"]), commit_hash)
         manifest["description"] = "{}\n\n{}".format(build_version, manifest["description"])
         f.seek(0)
@@ -68,7 +68,7 @@ def make_prerelease_manifest(fresh_manifest=True, commit_hash=""):
         manifest["version"] = "{}-pre-release-{}".format(
             _get_dev_version(manifest["version"]), current_time)
         # Using commit hash in the build string to make it easier to be recognized
-        build_version = "Build: {}-pre-release-{}".format(
+        build_version = "Build: {}-{}".format(
             _get_dev_version(manifest["version"]), commit_hash)
         manifest["description"] = "{}\n\n{}".format(build_version, manifest["description"])
         f.seek(0)

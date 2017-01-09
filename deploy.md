@@ -48,7 +48,7 @@ In this stage, we prep everything for the release in the git repo.
 - set a new version of the add-on by running npm version
 
   ```
-  npm version patch
+  npm version minor
   ```
 
 - update the changelog
