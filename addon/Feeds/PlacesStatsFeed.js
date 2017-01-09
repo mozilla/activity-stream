@@ -1,4 +1,5 @@
 const {PlacesProvider} = require("addon/PlacesProvider");
+const {Cu} = require("chrome");
 const Feed = require("addon/lib/Feed");
 const am = require("common/action-manager");
 const {PlacesStatsUpdate} = am.actions;
@@ -7,6 +8,7 @@ const UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
 module.exports = class PlacesStatsFeed extends Feed {
   // Used by this.refresh
   getData() {
+    this.sendStatsPing();
     return Promise.all([
       PlacesProvider.links.getHistorySize(),
       PlacesProvider.links.getBookmarksSize()
@@ -14,6 +16,20 @@ module.exports = class PlacesStatsFeed extends Feed {
     .then(([historySize, bookmarksSize]) => (
       PlacesStatsUpdate(historySize, bookmarksSize)
     ));
+  }
+  sendStatsPing() {
+    this.options.metadataStore.asyncGetOldestInsert().then(timestamp => {
+      if (timestamp) {
+        Promise.all([
+          PlacesProvider.links.getHistorySizeSince(timestamp),
+          this.options.metadataStore.asyncCountAllItems()
+        ]).then(([placesCount, metadataCount]) => {
+          let event = this.options.tabTracker.generateEvent({source: "PLACES_STATS_FEED"});
+          this.options.tabTracker.handlePerformanceEvent(event, "countHistoryURLs", placesCount);
+          this.options.tabTracker.handlePerformanceEvent(event, "countMetadataURLs", metadataCount);
+        }).catch(e => Cu.reportError(e));
+      }
+    }).catch(e => Cu.reportError(e));
   }
   onAction(state, action) {
     switch (action.type) {

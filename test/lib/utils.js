@@ -89,7 +89,9 @@ function getTestActivityStream(options = {}) {
     asyncReset() {return Promise.resolve();},
     asyncClose() {return Promise.resolve();},
     asyncInsert() {return Promise.resolve();},
-    asyncGetMetadataByCacheKey() {return Promise.resolve([]);}
+    asyncGetMetadataByCacheKey() {return Promise.resolve([]);},
+    asyncGetOldestInsert() {return Promise.resolve([0]);},
+    asyncCountAllItems() {return Promise.resolve([0]);}
   };
   const mockShareProvider = {
     init() {},
