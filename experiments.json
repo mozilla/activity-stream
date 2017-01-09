@@ -46,7 +46,7 @@
   },
   "localMetadata": {
     "name": "Local Page Scraper",
-    "active": false,
+    "active": true,
     "description": "Locally compute metadata for pages",
     "control": {
       "value": false,
