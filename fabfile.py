@@ -25,10 +25,11 @@ PRERELEASE_UPDATE_URL = "{}/dist/update.rdf".format(PRERELEASE_BUCKET_URL)
 
 
 def _get_dev_version(version):
-    """ Get dev version from package.json. It always increments the minor version by 1
+    """ Get dev version from package.json. It always increments the minor version by 1,
+    and sets the patch version to 0
     """
-    major, minor, patch = version.split('.', 2)
-    return ".".join([major, minor, str(int(patch) + 1)])
+    major, minor, _ = version.split('.', 2)
+    return ".".join([major, str(int(minor) + 1), "0"])
 
 
 def make_dev_manifest(fresh_manifest=True, commit_hash=""):
