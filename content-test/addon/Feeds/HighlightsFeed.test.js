@@ -183,5 +183,10 @@ describe("HighlightsFeed", () => {
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "new tabs synced");
     });
+    it("should call refresh on MANY_LINKS_CHANGED", () => {
+      instance.onAction({}, {type: "MANY_LINKS_CHANGED"});
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "frecency of many links changed");
+    });
   });
 });

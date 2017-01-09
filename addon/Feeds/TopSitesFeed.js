@@ -27,6 +27,11 @@ module.exports = class TopSitesFeed extends Feed {
           this.refresh("the sites were too old");
         }
         break;
+      case am.type("MANY_LINKS_CHANGED"):
+        // manyLinksChanged is an event fired by Places when all history is cleared,
+        // or when frecency of links change due to something like a sync
+        this.refresh("frecency of many links changed");
+        break;
     }
   }
 };
