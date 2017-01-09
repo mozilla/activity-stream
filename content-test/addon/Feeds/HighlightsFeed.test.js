@@ -107,6 +107,22 @@ describe("HighlightsFeed", () => {
           assert.equal(action.type, "HIGHLIGHTS_AWAITING_METADATA");
         });
     });
+    it("should resolve with a HIGHLIGHTS_RESPONSE action if we've tried more than 5 times", () => {
+      instance.retryHighlightsCount = 5;
+      instance.baselineRecommender = {scoreEntries: () => []};
+      return instance.getData()
+        .then(action => {
+          assert.isObject(action);
+          assert.equal(action.type, "HIGHLIGHTS_AWAITING_METADATA");
+          assert.equal(instance.retryHighlightsCount, 6);
+          return instance.getData();
+        })
+        .then(action => {
+          assert.isObject(action);
+          assert.equal(action.type, "HIGHLIGHTS_RESPONSE");
+          assert.equal(instance.retryHighlightsCount, 6);
+        });
+    });
     it("should run sites through getCachedMetadata", () => {
       instance.baselineRecommender = {scoreEntries: links => links};
       return instance.getData()
