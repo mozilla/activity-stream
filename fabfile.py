@@ -25,10 +25,10 @@ PRERELEASE_UPDATE_URL = "{}/dist/update.rdf".format(PRERELEASE_BUCKET_URL)
 
 
 def _get_dev_version(version):
-    """ Get dev version from package.json. It always increments the patch version by 1
+    """ Get dev version from package.json. It always increments the minor version by 1
     """
     major, minor, patch = version.split('.', 2)
-    return ".".join([major, minor, str(int(patch) + 1)])
+    return ".".join([major, str(int(minor) + 1), patch])
 
 
 def make_dev_manifest(fresh_manifest=True, commit_hash=""):
@@ -36,12 +36,18 @@ def make_dev_manifest(fresh_manifest=True, commit_hash=""):
         restore_manifest()
 
     with open("./package.json", "r+") as f:
+        current_time = int(time.time())
         manifest = json.load(f)
         manifest["title"] = "{} Dev".format(manifest["title"])
         manifest["updateLink"] = DEV_UPDATE_LINK
         manifest["updateURL"] = DEV_UPDATE_URL
+        # Using timestamp to allow the addon manager to update the addon automatically
         manifest["version"] = "{}-dev-{}".format(
+            _get_dev_version(manifest["version"]), current_time)
+        # Using commit hash in the build string to make it easier to be recognized
+        build_version = "Build: {}-dev-{}".format(
             _get_dev_version(manifest["version"]), commit_hash)
+        manifest["description"] = "{}\n\n{}".format(build_version, manifest["description"])
         f.seek(0)
         f.truncate(0)
         json.dump(manifest, f,
@@ -53,12 +59,18 @@ def make_prerelease_manifest(fresh_manifest=True, commit_hash=""):
         restore_manifest()
 
     with open("./package.json", "r+") as f:
+        current_time = int(time.time())
         manifest = json.load(f)
         manifest["title"] = "{} Pre-release".format(manifest["title"])
         manifest["updateLink"] = PRERELEASE_UPDATE_LINK
         manifest["updateURL"] = PRERELEASE_UPDATE_URL
+        # Using timestamp to allow the addon manager to update the addon automatically
         manifest["version"] = "{}-pre-release-{}".format(
+            _get_dev_version(manifest["version"]), current_time)
+        # Using commit hash in the build string to make it easier to be recognized
+        build_version = "Build: {}-pre-release-{}".format(
             _get_dev_version(manifest["version"]), commit_hash)
+        manifest["description"] = "{}\n\n{}".format(build_version, manifest["description"])
         f.seek(0)
         f.truncate(0)
         json.dump(manifest, f,
