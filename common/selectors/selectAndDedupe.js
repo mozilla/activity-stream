@@ -5,7 +5,6 @@ const dedupe = require("lib/dedupe");
  *
  * @param {Array} group
  * @param {Array} group.sites - sites to process.
- * @param {Array} group.dedupe - sites to dedupe against.
  * @param {Number} group.max - required number of items.
  * @param {Array} group.defaults - default values to use.
  * @returns {Array}
