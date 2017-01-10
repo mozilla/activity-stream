@@ -29,7 +29,7 @@ XPCOMUtils.defineLazyGetter(this, "gPrincipal", () => {
   return Services.scriptSecurityManager.getNoAppCodebasePrincipal(uri);
 });
 
-const {LINKS_QUERY_LIMIT} = require("../common/constants");
+const {TOP_SITES_LENGTH, LINKS_QUERY_LIMIT} = require("../common/constants");
 
 const REV_HOST_BLACKLIST = [
   "moc.elgoog.www.",
@@ -333,8 +333,11 @@ Links.prototype = {
    */
   getTopFrecentSites: Task.async(function*(options = {}) {
     let {limit, ignoreBlocked} = options;
-    if (!limit || limit > LINKS_QUERY_LIMIT) {
-      limit = LINKS_QUERY_LIMIT;
+
+    // Use double the number to allow for immediate display when blocking sites
+    const QUERY_LIMIT = TOP_SITES_LENGTH * 2;
+    if (!limit || limit > QUERY_LIMIT) {
+      limit = QUERY_LIMIT;
     }
 
     // Either grab the plain frecency or combine them based on the experiment
