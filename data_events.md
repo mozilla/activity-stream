@@ -251,3 +251,18 @@ In some undesired app states, the app will send a ping about it to our metrics s
   "locale": "en-US"
 }
 ```
+
+#### Slow addon detected by Firefox
+
+```js
+{
+  "event": "SLOW_ADDON_DETECTED",
+  "source": "ADDON",
+  "page": "NEW_TAB",
+  "action": "activity_stream_masga_event",
+  "tab_id": "-5-2",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```

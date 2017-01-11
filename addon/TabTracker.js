@@ -20,6 +20,16 @@ const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 const UNDESIRED_NOTIF = "undesired-event";
 
+let TOPIC_SLOW_ADDON_DETECTED;
+try {
+  // This import currently fails on travis which is running Firefox 46.
+  // This workaround is ugly but we are just being paranoid about future changes.
+  const {AddonWatcher} = Cu.import("resource://gre/modules/AddonWatcher.jsm", {});
+  TOPIC_SLOW_ADDON_DETECTED = AddonWatcher.TOPIC_SLOW_ADDON_DETECTED;
+} catch (e) {
+  TOPIC_SLOW_ADDON_DETECTED = "addon-watcher-detected-slow-addon";
+}
+
 function TabTracker(options) {
   this._tabData = {};
   this._clientID = options.clientID;
@@ -49,6 +59,7 @@ TabTracker.prototype = {
   _addListeners() {
     tabs.on("open", this.onOpen);
     Services.obs.addObserver(this, PERF_LOG_COMPLETE_NOTIF, true);
+    Services.obs.addObserver(this, TOPIC_SLOW_ADDON_DETECTED, true);
   },
 
   _removeListeners() {
@@ -64,6 +75,7 @@ TabTracker.prototype = {
 
     if (this.enabled) {
       Services.obs.removeObserver(this, PERF_LOG_COMPLETE_NOTIF);
+      Services.obs.removeObserver(this, TOPIC_SLOW_ADDON_DETECTED);
     }
   },
 
@@ -327,9 +339,24 @@ TabTracker.prototype = {
   },
 
   observe(subject, topic, data) {
-    let eventData = JSON.parse(data);
-    if (eventData.tabId === this._tabData.tab_id) {
-      this._tabData.load_latency = eventData.events[eventData.events.length - 1].start;
+    switch (topic) {
+      case PERF_LOG_COMPLETE_NOTIF: {
+        let eventData = JSON.parse(data);
+        if (eventData.tabId === this._tabData.tab_id) {
+          this._tabData.load_latency = eventData.events[eventData.events.length - 1].start;
+        }
+        break;
+      }
+      case TOPIC_SLOW_ADDON_DETECTED: {
+        // data is the addonId of the slow addon. If it is us, we record it.
+        if (data === self.id) {
+          this.handleUndesiredEvent({
+            event: "SLOW_ADDON_DETECTED",
+            source: "ADDON"
+          });
+        }
+        break;
+      }
     }
   },
 
