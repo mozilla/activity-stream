@@ -44,7 +44,6 @@ module.exports = function(config) {
     webpack: {
       devtool: "inline-source-map",
       externals: { // enzyme currently needs this
-        "cheerio": "window", // XXX does render() work?
         "react/addons": true,
         "react/lib/ExecutionEnvironment": true,
         "react/lib/ReactContext": true
