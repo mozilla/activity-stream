@@ -33,26 +33,17 @@ HighlightContext.propTypes = {
 /**
  * Only display a placeholder version (ie just outlines/shapes), for use
  * before sufficient data is available to display.
- *
- * This should be a stateless, functional component.  Unfortunately, testing
- * these kinda sucks; see
- * http://stackoverflow.com/questions/36682241/testing-functional-components-with-renderintodocument)
- *
- * The bottom line: we should start using Enzyme and switch this over.
  */
-const PlaceholderHighlightContext = React.createClass({
-  mixins: [PureRenderMixin],
-  render() {
-    return (
-      <div className="highlight-context placeholder">
-        <div className="hc-icon">
-          <div className="icon" />
-        </div>
-        <div className="hc-label" />
+const PlaceholderHighlightContext = function() {
+  return (
+    <div className="highlight-context placeholder">
+      <div className="hc-icon">
+        <div className="icon" />
       </div>
-    );
-  }
-});
+      <div className="hc-label" />
+    </div>
+  );
+};
 
 module.exports = {
   HighlightContext,

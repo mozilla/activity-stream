@@ -1,6 +1,7 @@
 const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
+const {shallow} = require("enzyme");
 
 const {types, PlaceholderHighlightContext, HighlightContext} = require("components/HighlightContext/HighlightContext");
 
@@ -71,16 +72,9 @@ describe("HighlightContext", () => {
 });
 
 describe("PlaceholderHighlightContext", () => {
-  let instance;
-  let el;
-
-  function setup() {
-    instance = TestUtils.renderIntoDocument(<PlaceholderHighlightContext />);
-    el = ReactDOM.findDOMNode(instance);
-  }
-
   it("should have a .placeholder class", () => {
-    setup();
-    assert.include(el.className, "placeholder");
+    const wrapper = shallow(<PlaceholderHighlightContext />);
+
+    assert.lengthOf(wrapper.find(".placeholder"), 1);
   });
 });

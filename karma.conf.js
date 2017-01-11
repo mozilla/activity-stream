@@ -43,6 +43,12 @@ module.exports = function(config) {
     preprocessors: {"content-test/**/*.js": ["webpack", "sourcemap"]},
     webpack: {
       devtool: "inline-source-map",
+      externals: { // enzyme currently needs this
+        "cheerio": "window", // XXX does render() work?
+        "react/addons": true,
+        "react/lib/ExecutionEnvironment": true,
+        "react/lib/ReactContext": true
+      },
       resolve: {
         extensions: webpack.resolve.extensions,
         alias: Object.assign({}, webpack.resolve.alias, {
