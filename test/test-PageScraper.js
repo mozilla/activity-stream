@@ -122,6 +122,16 @@ exports.test_compute_image_sizes = function*(assert) {
   assert.equal(newImage[0].width, 1, "computed the correct image width");
   assert.equal(newImage[0].height, 1, "computed the correct image height");
 
+  // force the image to reject by giving it a null src
+  metadataObj.images[0].url = null;
+  let error = false;
+  try {
+    newImage = yield gPageScraper._computeImageSize(metadataObj);
+  } catch (e) {
+    error = true;
+  }
+  assert.deepEqual(error, true, "we rejected the when the image fails to load");
+
   // when the metadata has no images, don't compute any sizes for it
   metadataObj.images = [];
   newImage = yield gPageScraper._computeImageSize(metadataObj);
