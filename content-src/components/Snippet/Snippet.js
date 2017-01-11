@@ -1,49 +1,44 @@
 const React = require("react");
 const classNames = require("classnames");
 
-/**
- * This should be a stateless, functional component.  Unfortunately, testing these kinda sucks; see
- * http://stackoverflow.com/questions/36682241/testing-functional-components-with-renderintodocument)
- * So for now, we are using PureRenderMixin.
- */
-const PureRenderMixin = require("react-addons-pure-render-mixin");
-
-const Snippet = React.createClass({
-  mixins: [PureRenderMixin],
-  onClose(e) {
+const Snippet = function(props) {
+  // If profiling ever shows Snippet render() calls to be taking an interesting
+  // amount of time, we could convert this to an old-style React.createClass
+  // using PureRenderMixin or a new-style React.PureComponent to avoid the
+  // function allocation on each call to render to see if that helps.
+  function onClose(e) {
     e.preventDefault();
-    this.props.setVisibility(false);
-  },
-  render() {
-    const {visible, description, title, image} = this.props;
-    const imageAttributes = {
-      className: classNames("snippet-image", {"placeholder": !image}),
-      style: {backgroundImage: image ? `url(${image})` : "none"}
-    };
-    return (<div className={classNames("snippet", {"hide-with-fade-out": !visible})}>
-      <div className="snippet-container">
-        <div ref="image" {...imageAttributes} />
-        <div className="snippet-text">
-          {title && <h3 ref="title" className="snippet-title">{title}</h3>}
-          {/*
-            NOTE: This could potentially be dangerous if we end up changing
-            the data source to something other than commited strings to the repo.
-            We should consider sanitization/reevaluating this strategy when we
-            change the data source for snippets.
-          */}
-          <p
-            dangerouslySetInnerHTML={{__html: description}} // eslint-disable-line react/no-danger
-            className="snippet-description"
-            ref="description" />
-        </div>
-      </div>
-      <button ref="closeButton" className="snippet-close-button" onClick={this.onClose}>
-        <span className="icon icon-dismiss" />
-        <span className="sr-only">Close snippet</span>
-      </button>
-    </div>);
+    props.setVisibility(false);
   }
-});
+
+  const {visible, description, title, image} = props;
+  const imageAttributes = {
+    className: classNames("snippet-image", {"placeholder": !image}),
+    style: {backgroundImage: image ? `url(${image})` : "none"}
+  };
+
+  return (<div className={classNames("snippet", {"hide-with-fade-out": !visible})}>
+    <div className="snippet-container">
+      <div {...imageAttributes} />
+      <div className="snippet-text">
+        {title && <h3 className="snippet-title">{title}</h3>}
+        {/*
+          NOTE: This could potentially be dangerous if we end up changing
+          the data source to something other than commited strings to the repo.
+          We should consider sanitization/reevaluating this strategy when we
+          change the data source for snippets.
+        */}
+        <p
+          dangerouslySetInnerHTML={{__html: description}} // eslint-disable-line react/no-danger
+          className="snippet-description" />
+      </div>
+    </div>
+    <button className="snippet-close-button" onClick={onClose}>
+      <span className="icon icon-dismiss" />
+      <span className="sr-only">Close snippet</span>
+    </button>
+  </div>);
+};
 
 /**
  * Snippet - A component for the New Tab page snippet
