@@ -142,19 +142,17 @@ let LinkChecker = {
   },
 
   _doCheckLoadURI: function LinkChecker_doCheckLoadURI(aURI) {
-    let result = false;
     // check for 'place:' protocol
     if (aURI.startsWith("place:")) {
       return false;
     }
     try {
       Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(gPrincipal, aURI, this.flags);
-      result = true;
+      return true;
     } catch (e) {
       // We got a weird URI or one that would inherit the caller's principal.
-      Cu.reportError(e);
     }
-    return result;
+    return false;
   }
 };
 
