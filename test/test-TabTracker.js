@@ -3,6 +3,7 @@
 "use strict";
 
 const {before, after} = require("sdk/test/utils");
+const self = require("sdk/self");
 const tabs = require("sdk/tabs");
 const {setTimeout} = require("sdk/timers");
 const {getTestActivityStream} = require("./lib/utils");
@@ -733,6 +734,27 @@ exports.test_TabTracker_undesired_event_pings = function*(assert) {
   let pingData = yield undesiredEventPromise;
   assert.deepEqual(eventData.msg.data.event, pingData.event, "the ping has the correct event");
   assert.deepEqual(eventData.msg.data.action, "activity_stream_masga_event", "the ping has the correct action");
+};
+
+exports.test_TabTracker_slow_addon_detected = function*(assert) {
+  // Listen for undesired event pings
+  let undesiredEventPromise = new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic === "undesired-event") {
+        Services.obs.removeObserver(observe, "undesired-event");
+        resolve(JSON.parse(data));
+      }
+    }
+    Services.obs.addObserver(observe, "undesired-event", false);
+  });
+
+  // Trigger the slow addon detected notification
+  Services.obs.notifyObservers(null, "addon-watcher-detected-slow-addon", self.id);
+
+  // Verify the ping data
+  let pingData = yield undesiredEventPromise;
+  assert.deepEqual(pingData.event, "SLOW_ADDON_DETECTED", "the ping has the correct event");
+  assert.deepEqual(pingData.action, "activity_stream_masga_event", "the ping has the correct action");
 };
 
 before(exports, function*() {
