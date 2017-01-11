@@ -60,7 +60,7 @@ PageScraper.prototype = {
    * Locally compute the size of the preview image
    */
   _computeImageSize(metadata) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       if (metadata.images.length) {
         const metadataImage = metadata.images[0];
         let image = new Services.appShell.hiddenDOMWindow.Image();
@@ -73,6 +73,7 @@ PageScraper.prototype = {
           };
           resolve([imageWithSize]);
         });
+        image.addEventListener("error", () => reject());
       } else {
         resolve([]);
       }
