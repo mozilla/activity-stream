@@ -348,7 +348,8 @@ Links.prototype = {
 
     let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
 
-    // this query does "GROUP BY rev_nowww" (rev_host without www) to remove urls from same domain.
+    // GROUP first by rev_host to get the most-frecent page of an exact host
+    // then GROUP by rev_nowww to dedupe between top two pages of nowww host.
     // Note that unlike mysql, sqlite picks the last raw from groupby bucket.
     // Which is why subselect orders frecency and last_visit_date backwards.
     // In general the groupby behavior in the absence of aggregates is not
@@ -357,9 +358,9 @@ Links.prototype = {
     let sqlQuery = `SELECT url, title, ${frecencyScore} frecency, guid, bookmarkGuid,
                           last_visit_date / 1000 as lastVisitDate, favicon, mimeType,
                           "history" as type
-                    FROM
-                    (
+                    FROM (SELECT * FROM (
                       SELECT
+                        rev_host,
                         CASE SUBSTR(rev_host, -5)
                           WHEN ".www." THEN SUBSTR(rev_host, -4, -999)
                           ELSE rev_host
@@ -379,8 +380,8 @@ Links.prototype = {
                       on moz_places.id = moz_bookmarks.fk
                       WHERE hidden = 0 AND last_visit_date NOTNULL
                       AND moz_places.url NOT IN (${blockedURLs})
-                      ORDER BY rev_host, frecency, last_visit_date, moz_places.url DESC
-                    )
+                      ORDER BY frecency, last_visit_date, moz_places.url DESC
+                    ) GROUP BY rev_host)
                     GROUP BY rev_nowww
                     ORDER BY frecency DESC, lastVisitDate DESC, url
                     LIMIT :limit`;

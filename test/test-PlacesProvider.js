@@ -103,6 +103,15 @@ exports.test_Links_getTopFrecentSites_dedupeWWW = function*(assert) {
   links = yield provider.getTopFrecentSites();
   assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
   assert.equal(links[0].frecency, 200, "frecency scores are combined");
+
+  // add another page visit with www and without www
+  testURI = NetUtil.newURI("http://mozilla.com/page");
+  yield PlacesTestUtils.addVisits(testURI);
+  testURI = NetUtil.newURI("http://www.mozilla.com/page");
+  yield PlacesTestUtils.addVisits(testURI);
+  links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
+  assert.equal(links[0].frecency, 200, "frecency scores are combined ignoring extra pages");
 };
 
 exports.test_Links_getTopFrecentSites_limit = function*(assert) {
