@@ -4,6 +4,7 @@ const {Provider} = require("react-redux");
 const mockData = require("lib/fake-data");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const TestUtils = require("react-addons-test-utils");
+const {mount} = require("enzyme");
 
 const DEFAULT_STORE = {
   getState: () => mockData,
@@ -26,6 +27,19 @@ function renderWithProvider(component, store, node) {
   const render = node ? instance => ReactDOM.render(instance, node) : TestUtils.renderIntoDocument;
   const container = render(<ProviderWrapper>{component}</ProviderWrapper>);
   return TestUtils.findRenderedComponentWithType(container, component.type);
+}
+
+/**
+ * For testing connected components with Enzyme.
+ *
+ * @param {ReactElement} component  The component to render.
+ * @param {Object} store            The (typically fake) store to connect it to.
+ * @return {ReactWrapper}           An Enzyme wrapper object from mount()
+ */
+function mountWithProvider(component, store) {
+  const ProviderWrapper = createMockProvider(store && store);
+  const containerWrapper = mount(<ProviderWrapper>{component}</ProviderWrapper>);
+  return containerWrapper;
 }
 
 function overrideConsoleError(onError = () => {}) {
@@ -54,6 +68,7 @@ module.exports = {
   rawMockData: mockData,
   mockData: Object.assign({}, mockData, selectNewTabSites(mockData)),
   createMockProvider,
+  mountWithProvider,
   renderWithProvider,
   faker: require("test/faker"),
   overrideConsoleError,
