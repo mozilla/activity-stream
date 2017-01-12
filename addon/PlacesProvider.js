@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs */
+/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs, NewTabUtils */
 
 "use strict";
 
@@ -9,6 +9,7 @@ const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-sync/SyncedTabs.jsm");
+Cu.import("resource://gre/modules/NewTabUtils.jsm");
 
 XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
@@ -320,6 +321,24 @@ Links.prototype = {
       this.emit("manyLinksChanged");
     }
   },
+
+  asyncGetTopNewTabSites: Task.async(function*() {
+    const links = NewTabUtils.links.getLinks();
+    let result = links.filter(link => link.type !== "affiliate");
+    for (let link of result) {
+      link.favicon = yield this.getFavicon(link.url);
+    }
+    return result;
+  }),
+
+  getFavicon: Task.async(function*(url) {
+    let sqlQuery = `SELECT moz_favicons.url FROM moz_favicons
+                    INNER JOIN moz_places ON
+                    moz_places.favicon_id = moz_favicons.id
+                    WHERE moz_places.url = :url`;
+    let favicon_url = yield this.executePlacesQuery(sqlQuery, {params: {url}});
+    return this._faviconBytesToDataURI(favicon_url)[0];
+  }),
 
   /**
    * Gets the top frecent sites.
