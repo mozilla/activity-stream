@@ -16,15 +16,6 @@ describe("Prefs reducer", () => {
     const state = Prefs(undefined, {});
     assert.deepEqual(state, Prefs.INITIAL_STATE);
   });
-  describe("PREFS_REQUEST", () => {
-    it("should set isLoading to true", () => {
-      const state = Prefs(undefined, {type: "PREFS_REQUEST"});
-      assert.isTrue(state.isLoading);
-    });
-    it("should return a new object", () => {
-      checkIndependence("PREFS_REQUEST");
-    });
-  });
   describe("PREFS_RESPONSE", () => {
     it("should set isLoading to false", () => {
       const state = Prefs(prevState({isLoading: true}), {type: "PREFS_RESPONSE"});

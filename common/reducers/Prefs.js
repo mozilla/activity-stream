@@ -22,9 +22,6 @@ const INITIAL_STATE = {
 module.exports = function Prefs(prevState = INITIAL_STATE, action) {
   const state = Object.assign({}, prevState);
   switch (action.type) {
-    case am.type("PREFS_REQUEST"):
-      state.isLoading = true;
-      return state;
     case am.type("PREFS_RESPONSE"):
       state.isLoading = false;
       if (action.error) {

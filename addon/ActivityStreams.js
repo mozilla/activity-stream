@@ -119,7 +119,7 @@ ActivityStreams.prototype = {
     this._initializePreviewProvier(this._experimentProvider, this._metadataStore, this._tabTracker);
     this._initializePageScraper(this._previewProvider, this._tabTracker);
     this._initializeShareProvider(this._tabTracker);
-    this._initializePrefProvider();
+    this._initializePrefProvider(this._tabTracker);
 
     this._setupPageMod();
     this._setupListeners();
@@ -191,12 +191,8 @@ ActivityStreams.prototype = {
     this._previewProvider = new PreviewProvider(tabTracker, metadataStore, experimentProvider);
   },
 
-  _initializePrefProvider() {
-    this._prefsProvider = new PrefsProvider({
-      simplePrefs,
-      broadcast: this.broadcast.bind(this),
-      send: this.send.bind(this)
-    });
+  _initializePrefProvider(tabTracker) {
+    this._prefsProvider = new PrefsProvider(tabTracker, {broadcast: this.broadcast.bind(this)});
     this._prefsProvider.init();
   },
 
@@ -302,13 +298,6 @@ ActivityStreams.prototype = {
     }
   },
 
-  /**
-   * Handles prefs changes to the addon
-   */
-  _onPrefChange(prefName) {
-    this._tabTracker.handleUserEvent({"event": "PREF_CHANGE", "source": prefName});
-  },
-
   /*
    * Broadcast current engine has changed to all open newtab pages
    */
@@ -365,9 +354,6 @@ ActivityStreams.prototype = {
     this._handleExperimentChange = this._handleExperimentChange.bind(this);
     this._experimentProvider.on("change", this._handleExperimentChange);
 
-    this._onPrefChange = this._onPrefChange.bind(this);
-    simplePrefs.on("", this._onPrefChange);
-
     // This is a collection of handlers that receive messages from content
     this._contentToAddonHandlers = (msgName, args) => {
       // Log requests first so that the requests are logged before responses
@@ -384,7 +370,6 @@ ActivityStreams.prototype = {
       this._respondToPlacesRequests(args);
       this._respondToShareRequests(args);
       this._respondOpenWindow(args);
-      this._prefsProvider.actionHandler(args);
     };
     this.on(CONTENT_TO_ADDON, this._contentToAddonHandlers);
   },
@@ -397,7 +382,6 @@ ActivityStreams.prototype = {
     this._searchProvider.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
     this._experimentProvider.off("change", this._handleExperimentChange);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
-    simplePrefs.removeListener("", this._onPrefChange);
   },
 
   /**
