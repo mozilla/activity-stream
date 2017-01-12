@@ -19,7 +19,14 @@ const ACTION_NOTIF = "user-action-event";
 const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 const UNDESIRED_NOTIF = "undesired-event";
-const TOPIC_SLOW_ADDON_DETECTED = "addon-watcher-detected-slow-addon";
+
+let TOPIC_SLOW_ADDON_DETECTED;
+try {
+  const {AddonWatcher} = Cu.import("resource://gre/modules/AddonWatcher.jsm", {});
+  TOPIC_SLOW_ADDON_DETECTED = AddonWatcher.TOPIC_SLOW_ADDON_DETECTED;
+} catch (e) {
+  TOPIC_SLOW_ADDON_DETECTED = "addon-watcher-detected-slow-addon";
+}
 
 function TabTracker(options) {
   this._tabData = {};

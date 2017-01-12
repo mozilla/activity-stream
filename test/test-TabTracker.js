@@ -16,6 +16,14 @@ Cu.import("resource://gre/modules/ClientID.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Task",
                                   "resource://gre/modules/Task.jsm");
 
+let TOPIC_SLOW_ADDON_DETECTED;
+try {
+  const {AddonWatcher} = Cu.import("resource://gre/modules/AddonWatcher.jsm", {});
+  TOPIC_SLOW_ADDON_DETECTED = AddonWatcher.TOPIC_SLOW_ADDON_DETECTED;
+} catch (e) {
+  TOPIC_SLOW_ADDON_DETECTED = "addon-watcher-detected-slow-addon";
+}
+
 const EXPECTED_KEYS = [
   "action",
   "addon_version",
@@ -749,7 +757,7 @@ exports.test_TabTracker_slow_addon_detected = function*(assert) {
   });
 
   // Trigger the slow addon detected notification
-  Services.obs.notifyObservers(null, "addon-watcher-detected-slow-addon", self.id);
+  Services.obs.notifyObservers(null, TOPIC_SLOW_ADDON_DETECTED, self.id);
 
   // Verify the ping data
   let pingData = yield undesiredEventPromise;
