@@ -1,5 +1,5 @@
 const React = require("react");
-const {shallow} = require("enzyme");
+const {mount, shallow} = require("enzyme");
 
 const Tooltip = require("components/Tooltip/Tooltip");
 const {types, PlaceholderHighlightContext, HighlightContext} = require("components/HighlightContext/HighlightContext");
@@ -12,8 +12,9 @@ describe("HighlightContext", () => {
   }
 
   it("should render the component", () => {
-    setup();
-    assert.instanceOf(wrapper.instance(), HighlightContext);
+    // finding by component needs a real DOM for functional components
+    wrapper = mount(<HighlightContext type="history" />);
+    assert.equal(wrapper.find(HighlightContext).length, 1);
   });
 
   it("should render the right icon given a type", () => {

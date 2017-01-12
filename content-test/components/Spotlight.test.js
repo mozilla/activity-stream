@@ -10,7 +10,7 @@ const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const {shallow} = require("enzyme");
 const {SiteIcon} = require("components/SiteIcon/SiteIcon");
-const {mockData, faker, renderWithProvider} = require("test/test-utils");
+const {mockData, mountWithProvider, faker, renderWithProvider} = require("test/test-utils");
 const fakeSpotlightItems = mockData.Highlights.rows;
 const fakeSiteWithImage = faker.createSite();
 
@@ -96,11 +96,13 @@ describe("SpotlightItem", () => {
     });
     it("should render a HighlightContext with the right props", () => {
       const site = Object.assign({}, fakeSiteWithImage, {bookmarkDateCreated: Date.now()});
-      instance = renderWithProvider(<SpotlightItem {...site} />);
-      const hc = TestUtils.findRenderedComponentWithType(instance, HighlightContext);
+      let wrapper = mountWithProvider(<SpotlightItem {...site} />);
+
+      const hc = wrapper.find(HighlightContext);
+
       const props = getHighlightContextFromSite(site);
-      assert.equal(hc.props.type, "bookmark");
-      assert.deepEqual(hc.props, props);
+      assert.equal(hc.props().type, "bookmark");
+      assert.deepEqual(hc.props(), props);
     });
   });
 });
