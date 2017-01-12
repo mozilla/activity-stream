@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs */
+/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs, NewTabUtils */
 
 "use strict";
 
@@ -9,6 +9,7 @@ const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-sync/SyncedTabs.jsm");
+Cu.import("resource://gre/modules/NewTabUtils.jsm");
 
 XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
@@ -319,6 +320,12 @@ Links.prototype = {
     if (this.blockedURLs.clear()) {
       this.emit("manyLinksChanged");
     }
+  },
+
+  getTopNewTabSites() {
+    return new Promise(resolve => {
+      resolve(NewTabUtils.links.getLinks());
+    });
   },
 
   /**

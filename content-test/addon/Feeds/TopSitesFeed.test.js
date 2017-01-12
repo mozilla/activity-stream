@@ -1,8 +1,14 @@
 const testLinks = ["foo.com", "bar.com"];
 const getCachedMetadata = sites => sites.map(site => site.toUpperCase());
-const PlacesProvider = {links: {getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))}};
+const PlacesProvider = {
+  links: {
+    getTopNewTabSites: sinon.spy(() => Promise.resolve(testLinks)),
+    getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))
+  }
+};
 const moment = require("moment");
 const TopSitesFeed = require("inject!addon/Feeds/TopSitesFeed")({"addon/PlacesProvider": {PlacesProvider}});
+const simplePrefs = require("sdk/simple-prefs");
 
 const {TOP_SITES_LENGTH} = require("common/constants");
 
@@ -10,6 +16,7 @@ describe("TopSitesFeed", () => {
   let instance;
   beforeEach(() => {
     PlacesProvider.links.getTopFrecentSites.reset();
+    PlacesProvider.links.getTopNewTabSites.reset();
     instance = new TopSitesFeed({getCachedMetadata});
     sinon.spy(instance.options, "getCachedMetadata");
   });
@@ -35,6 +42,15 @@ describe("TopSitesFeed", () => {
       assert.equal(action.type, "TOP_FRECENT_SITES_RESPONSE", "type");
       assert.deepEqual(action.data, getCachedMetadata(testLinks));
     }));
+    it("should use the original tiles when in the experiment", () => {
+      simplePrefs.prefs["experiments.originalNewTabSites"] = true;
+      return instance.getData().then(() => {
+        assert.notCalled(PlacesProvider.links.getTopFrecentSites);
+        assert.calledOnce(PlacesProvider.links.getTopNewTabSites);
+        assert.calledWith(instance.options.getCachedMetadata, testLinks, "TOP_FRECENT_SITES_RESPONSE");
+        simplePrefs.prefs["experiments.originalNewTabSites"] = false;
+      });
+    });
   });
 
   describe("#onAction", () => {

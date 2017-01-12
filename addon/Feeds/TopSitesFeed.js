@@ -2,11 +2,17 @@ const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
 const {TOP_SITES_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
+const simplePrefs = require("sdk/simple-prefs");
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 
 module.exports = class TopSitesFeed extends Feed {
   // Used by this.refresh
   getData() {
+    if (simplePrefs.prefs["experiments.originalNewTabSites"]) {
+      return PlacesProvider.links.getTopNewTabSites()
+        .then(links => this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
+        .then(links => (am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links)));
+    }
     return PlacesProvider.links.getTopFrecentSites()
       .then(links => this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
       .then(links => (am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links)));

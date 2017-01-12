@@ -103,5 +103,20 @@
       "threshold": 0.1,
       "description": "Fetch page content locally"
     }
+  },
+  "originalNewTabSites": {
+    "name": "Original about:newtab top sites",
+    "active": true,
+    "description": "Use the sites from the original about:newtab",
+    "control": {
+      "value": false,
+      "description": "Use sites from tiles"
+    },
+    "variant": {
+      "id": "exp-008-original-newtab-sites",
+      "value": true,
+      "threshold": 0.1,
+      "description": "Use sites from activity stream"
+    }
   }
 }
