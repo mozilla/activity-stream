@@ -1,6 +1,7 @@
 /* globals module, require */
 "use strict";
 const {PlacesProvider} = require("addon/PlacesProvider");
+const simplePrefs = require("sdk/simple-prefs");
 const Feed = require("addon/lib/Feed");
 const am = require("common/action-manager");
 const MAX_NUM_LINKS = 5;
@@ -29,6 +30,11 @@ module.exports = class MetadataFeed extends Feed {
   getData() {
     let links = Array.from(this.linksToFetch.keys(), item => Object.assign({"url": item}));
     this.linksToFetch.clear();
+
+    // if we are in the experiment, make a network request through PageScraper
+    if (simplePrefs.prefs["experiments.locallyFetchMetadata"]) {
+      return this.options.fetchNewMetadataLocally(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_FEED_UPDATED")));
+    }
     return this.options.fetchNewMetadata(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_FEED_UPDATED")));
   }
   onAction(state, action) {

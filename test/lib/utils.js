@@ -105,7 +105,8 @@ function getTestActivityStream(options = {}) {
     options: {framescriptPath: ""},
     init() {},
     uninit() {},
-    _asyncParseAndSave() {}
+    _parseAndSave() {},
+    asyncFetchLinks() {}
   };
 
   const mockPageWorker = {
