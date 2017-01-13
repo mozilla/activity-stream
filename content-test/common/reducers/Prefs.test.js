@@ -17,18 +17,10 @@ describe("Prefs reducer", () => {
     assert.deepEqual(state, Prefs.INITIAL_STATE);
   });
   describe("PREFS_RESPONSE", () => {
-    it("should set isLoading to false", () => {
-      const state = Prefs(prevState({isLoading: true}), {type: "PREFS_RESPONSE"});
-      assert.isFalse(state.isLoading);
-    });
     it("should return a new object", () => {
       checkIndependence("PREFS_RESPONSE");
     });
     describe("non-error", () => {
-      it("should set init to true", () => {
-        const state = Prefs(prevState({isLoading: true}), {type: "PREFS_RESPONSE"});
-        assert.isFalse(state.isLoading);
-      });
       it("should set prefs", () => {
         const prefs = {foo: "bar"};
         const state = Prefs(undefined, {type: "PREFS_RESPONSE", data: prefs});
@@ -41,10 +33,6 @@ describe("Prefs reducer", () => {
       });
     });
     describe("has error", () => {
-      it("should not set init to true", () => {
-        const state = Prefs(undefined, {type: "PREFS_RESPONSE", error: true});
-        assert.isFalse(state.init);
-      });
       it("should set error to action.data", () => {
         const error = new Error("foo");
         const state = Prefs(undefined, {type: "PREFS_RESPONSE", error: true, data: error});

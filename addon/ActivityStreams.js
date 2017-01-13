@@ -192,7 +192,7 @@ ActivityStreams.prototype = {
   },
 
   _initializePrefProvider(tabTracker) {
-    this._prefsProvider = new PrefsProvider(tabTracker, {broadcast: this.broadcast.bind(this)});
+    this._prefsProvider = new PrefsProvider({eventTracker: tabTracker, broadcast: this.broadcast.bind(this)});
     this._prefsProvider.init();
   },
 

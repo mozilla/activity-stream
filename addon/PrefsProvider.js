@@ -1,5 +1,7 @@
+"use strict";
 const am = require("common/action-manager");
 const simplePrefs = require("sdk/simple-prefs");
+const DEFAULT_OPTIONS = {eventTracker: {handleUserEvent() {}}};
 
 /**
  * PrefsProvider
@@ -12,11 +14,11 @@ exports.PrefsProvider = class PrefsProvider {
    * constructor
    *
    * @param  {obj} options
+   *         {obj} options.eventTracker    The TabTracker in order to handler the user event for a pref change (ActivtyStreams.js)
    *         {func} options.broadcast    This is a method that takes an action created with am.actions (action-manager.js)
    */
-  constructor(tabTracker, options) {
-    this.broadcast = options.broadcast;
-    this._tabTracker = tabTracker;
+  constructor(options = {}) {
+    this.options = Object.assign({}, DEFAULT_OPTIONS, options);
     this._onPrefChange = this._onPrefChange.bind(this);
   }
 
@@ -25,11 +27,11 @@ exports.PrefsProvider = class PrefsProvider {
    *  {name: "prefName", value: "newPrefvalue"} and capture that event
    */
   _onPrefChange(name) {
-    this.broadcast(am.actions.Response("PREF_CHANGED_RESPONSE", {
+    this.options.broadcast(am.actions.Response("PREF_CHANGED_RESPONSE", {
       name,
       value: simplePrefs.prefs[name]
     }));
-    this._tabTracker.handleUserEvent({"event": "PREF_CHANGE", "source": name});
+    this.options.eventTracker.handleUserEvent({"event": "PREF_CHANGE", "source": name});
   }
 
   /**

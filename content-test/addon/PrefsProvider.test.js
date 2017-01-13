@@ -12,17 +12,18 @@ describe("PrefsProvider", () => {
     tabTracker.handleUserEvent = sinon.spy();
     simplePrefs = new SimplePrefs(customPrefs);
     const {PrefsProvider} = createPrefsProvider({"sdk/simple-prefs": simplePrefs});
-    prefsProvider = new PrefsProvider(tabTracker, {
-      broadcast: sinon.spy(),
-      send: sinon.spy()
+    prefsProvider = new PrefsProvider({
+      eventTracker: tabTracker,
+      broadcast: sinon.spy()
     });
   }
 
   beforeEach(() => setup());
 
-  it("should set instance properties", () => (
-    assert.property(prefsProvider, "broadcast")
-  ));
+  it("should set instance properties", () => {
+    assert.property(prefsProvider.options, "eventTracker");
+    assert.property(prefsProvider.options, "broadcast");
+  });
 
   describe("#init", () => {
     it("should add a listener for event changes", () => {
@@ -40,9 +41,9 @@ describe("PrefsProvider", () => {
     it("should broadcast an action with the right properties", () => {
       simplePrefs.prefs.foo = false;
       prefsProvider._onPrefChange("foo");
-      assert.calledOnce(prefsProvider.broadcast);
+      assert.calledOnce(prefsProvider.options.broadcast);
 
-      const action = prefsProvider.broadcast.firstCall.args[0];
+      const action = prefsProvider.options.broadcast.firstCall.args[0];
       assert.equal(action.type, "PREF_CHANGED_RESPONSE");
       assert.equal(action.data.name, "foo");
       assert.equal(action.data.value, false);
@@ -50,8 +51,8 @@ describe("PrefsProvider", () => {
     it("should send a user event ping", () => {
       simplePrefs.prefs.foo = false;
       prefsProvider._onPrefChange("foo");
-      assert.calledOnce(prefsProvider._tabTracker.handleUserEvent);
-      const action = prefsProvider._tabTracker.handleUserEvent.firstCall.args[0];
+      assert.calledOnce(prefsProvider.options.eventTracker.handleUserEvent);
+      const action = prefsProvider.options.eventTracker.handleUserEvent.firstCall.args[0];
       assert.equal(action.event, "PREF_CHANGE");
       assert.equal(action.source, "foo");
     });
