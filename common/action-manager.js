@@ -32,12 +32,10 @@ const am = new ActionManager([
   "NOTIFY_SHARE_URL",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UNDESIRED_EVENT",
-  "NOTIFY_UPDATE_PREF",
   "NOTIFY_UPDATE_SEARCH_STRING",
   "NOTIFY_USER_EVENT",
   "PLACES_STATS_UPDATED",
   "PREF_CHANGED_RESPONSE",
-  "PREFS_REQUEST",
   "PREFS_RESPONSE",
   "RECEIVE_BOOKMARK_ADDED",
   "RECEIVE_BOOKMARK_REMOVED",
@@ -122,10 +120,6 @@ function RequestExpect(type, expect, options = {}) {
 
 function RequestHighlightsLinks() {
   return RequestExpect("HIGHLIGHTS_LINKS_REQUEST", "HIGHLIGHTS_LINKS_RESPONSE");
-}
-
-function RequestInitialPrefs() {
-  return RequestExpect("PREFS_REQUEST", "PREFS_RESPONSE");
 }
 
 function RequestSearchSuggestions(data) {
@@ -214,10 +208,6 @@ function NotifyOpenWindow(data) {
   return Notify("NOTIFY_OPEN_WINDOW", data);
 }
 
-function NotifyUpdatePref(name, value) {
-  return Notify("NOTIFY_UPDATE_PREF", {name, value});
-}
-
 function RequestShareProviders() {
   return RequestExpect("SHARE_PROVIDERS_REQUEST", "SHARE_PROVIDERS_RESPONSE");
 }
@@ -274,12 +264,10 @@ am.defineActions({
   NotifyShareUrl,
   NotifyUnblockURL,
   NotifyUndesiredEvent,
-  NotifyUpdatePref,
   NotifyUpdateSearchString,
   PlacesStatsUpdate,
   RequestExpect,
   RequestHighlightsLinks,
-  RequestInitialPrefs,
   RequestSearchSuggestions,
   RequestShareProviders,
   Response,
