@@ -28,7 +28,7 @@ describe("PageWorker", () => {
     assert.equal(pageWorker._store, store);
     assert.isNull(pageWorker._page);
     assert.isNull(pageWorker._unsubscribe);
-    assert.equal(pageWorker._wait, 1000);
+    assert.equal(pageWorker._wait, 100);
   });
   it("should allow overriding ._wait", () => {
     const pw = new PageWorker({store, wait: 300});
