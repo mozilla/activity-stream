@@ -491,6 +491,22 @@ exports.test_metadata_service_experiment = function(assert) {
   assert.equal(newPrefValue, gMetadataServiceSource, "properly set the actual pref itself");
 };
 
+exports.test_copy_over_correct_data_from_firefox = function*(assert) {
+  const expectedKeys = ["title", "type", "url", "cache_key", "lastVisitDate", "bookmarkGuid", "bookmarkDateCreated"];
+  const link = [{
+    title: "a firefox given title",
+    type: "bookmark",
+    url: "http://example.com",
+    cache_key: "example.com/",
+    lastVisitDate: 123456789,
+    bookmarkDateCreated: 123456789,
+    bookmarkGuid: 1234
+  }];
+
+  const cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks(link);
+  expectedKeys.forEach(key => assert.equal(cachedLink[0][key], link[0][key], "even without metadata we kept all the firefox data for the link"));
+};
+
 before(exports, () => {
   simplePrefs.prefs.metadataSource = gEmbedlyServiceSource;
   simplePrefs.prefs["embedly.endpoint"] = `${gEndpointPrefix}${gEmbedlyEndpoint}`;

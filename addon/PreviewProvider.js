@@ -220,6 +220,7 @@ PreviewProvider.prototype = {
       enhancedLink.cache_key = link.cache_key;
       enhancedLink.lastVisitDate = link.lastVisitDate;
       enhancedLink.bookmarkDateCreated = link.bookmarkDateCreated;
+      enhancedLink.bookmarkGuid = link.bookmarkGuid;
 
       // get favicon and background color from firefox
       const firefoxBackgroundColor = yield this._getFaviconColors(link);
