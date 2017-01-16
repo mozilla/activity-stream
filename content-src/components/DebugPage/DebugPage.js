@@ -6,7 +6,6 @@ const {Spotlight, SpotlightItem} = require("components/Spotlight/Spotlight");
 const TopSites = require("components/TopSites/TopSites");
 const Snippet = require("components/Snippet/Snippet");
 const sizeof = require("object-sizeof");
-const {ShowAllHints} = require("common/action-manager").actions;
 const experimentDefinitions = require("../../../experiments.json");
 const UI_COMPONENTS = ["TopSites", "Highlights"];
 
@@ -103,11 +102,6 @@ const DebugPage = React.createClass({
           <p><a className="btn" href={downloadState} download="activity-stream-state.json">Download current state to file</a></p>
           <textarea value={plainText} readOnly={true} />
           <Viewer {...this.props} />
-        </section>
-
-        <section>
-          <h2>Tooltip Hints</h2>
-          <button className="btn" onClick={() => this.props.dispatch(ShowAllHints())}>Show all tooltip hints</button>
         </section>
 
         <section>

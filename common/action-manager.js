@@ -4,8 +4,6 @@ const eventConstants = require("./event-constants");
 
 const am = new ActionManager([
   "APP_INIT",
-  "DISABLE_HINT",
-  "ENABLE_ALL_HINTS",
   "EXPERIMENTS_RESPONSE",
   "HIGHLIGHTS_AWAITING_METADATA",
   "HIGHLIGHTS_LINKS_REQUEST",
@@ -224,14 +222,6 @@ function NotifyShareUrl(url, title, provider) {
   return Notify("NOTIFY_SHARE_URL", {url, title, provider});
 }
 
-function DisableHint(id) {
-  return Notify("DISABLE_HINT", id);
-}
-
-function ShowAllHints() {
-  return Notify("ENABLE_ALL_HINTS");
-}
-
 function PlacesStatsUpdate(historySize, bookmarksSize) {
   const data = {};
   if (typeof historySize !== "undefined") {
@@ -244,7 +234,6 @@ function PlacesStatsUpdate(historySize, bookmarksSize) {
 }
 
 am.defineActions({
-  DisableHint,
   Notify,
   NotifyBlockURL,
   NotifyBookmarkAdd,
@@ -270,8 +259,7 @@ am.defineActions({
   RequestHighlightsLinks,
   RequestSearchSuggestions,
   RequestShareProviders,
-  Response,
-  ShowAllHints
+  Response
 });
 
 module.exports = am;
