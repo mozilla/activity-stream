@@ -56,7 +56,8 @@ const PLACES_CHANGES_EVENTS = [
   "manyLinksChanged",
   "bookmarkAdded",
   "bookmarkRemoved",
-  "bookmarkChanged"
+  "bookmarkChanged",
+  "clearHistory"
 ];
 
 const HOME_PAGE_PREF = "browser.startup.homepage";
@@ -293,6 +294,9 @@ ActivityStreams.prototype = {
         break;
       case "manyLinksChanged":
         this.broadcast({type: "MANY_LINKS_CHANGED"});
+        break;
+      case "clearHistory":
+        this._tabTracker.handleUserEvent({event: "CLEAR_HISTORY"});
         break;
       default:
         this.broadcast(am.actions.Response("RECEIVE_PLACES_CHANGES", data));
