@@ -85,7 +85,7 @@
     "variant": {
       "id": "exp-006-deduped-combined-frecency",
       "value": true,
-      "threshold": 0.5,
+      "threshold": 0.2,
       "description": "Use combined frecency"
     }
   }
