@@ -11,9 +11,7 @@ const {consolidateBackgroundColors, consolidateFavicons, extractMetadataFaviconF
 
 const {BACKGROUND_FADE} = require("../common/constants");
 const ENABLED_PREF = "previews.enabled";
-const METADATA_SOURCE_PREF = "metadataSource";
-const EMBEDLY_SOURCE_NAME = "Embedly";
-const METADATA_SERVICE_SOURCE_NAME = "MetadataService";
+const ENDPOINT = "metadata.endpoint";
 const VERSION_SUFFIX = `?addon_version=${self.version}`;
 const ALLOWED_PREFS = new Set([ENABLED_PREF]);
 
@@ -34,17 +32,16 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 const DEFAULT_OPTIONS = {
   metadataTTL: 3 * 24 * 60 * 60 * 1000, // 3 days for the metadata to live
-  proxyMaxLinks: 25, // number of links embedly proxy accepts per request
+  proxyMaxLinks: 25, // number of links proxy accepts per request
   initFresh: false
 };
 
-function PreviewProvider(tabTracker, metadataStore, experimentProvider, options = {}) {
+function PreviewProvider(tabTracker, metadataStore, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   this._onPrefChange = this._onPrefChange.bind(this);
   this._tippyTopProvider = new TippyTopProvider();
   this._tabTracker = tabTracker;
   this._metadataStore = metadataStore;
-  this._experimentProvider = experimentProvider;
   this.init();
 }
 
@@ -58,27 +55,6 @@ PreviewProvider.prototype = {
           break;
       }
     }
-  },
-
-  /**
-    * Gets the current metadata source name based on the
-    * pref or the experiment, and falls back to Embedly if it doesn't exist
-    */
-  _getMetadataSourceName() {
-    let source = simplePrefs.prefs[METADATA_SOURCE_PREF];
-    if (!this._metadataEndpoints.has(source)) {
-      // set it to a default if the current endpoint was poorly set by the user
-      // defensive programming ftw
-      source = EMBEDLY_SOURCE_NAME;
-    }
-    return source;
-  },
-
-  /**
-    * Builds the current endpoint based on a source
-    */
-  _getMetadataEndpoint() {
-    return (this._metadataEndpoints.get(this._getMetadataSourceName()) + VERSION_SUFFIX);
   },
 
   /**
@@ -295,7 +271,7 @@ PreviewProvider.prototype = {
   }),
 
   /**
-   * Request links from embedly, optionally filtering out known links
+   * Request links from metadata service, optionally filtering out known links
    */
   asyncSaveLinks: Task.async(function*(links, event) {
     let processedLinks = this._processLinks(links);
@@ -313,10 +289,10 @@ PreviewProvider.prototype = {
     let requestQueue = [];
     let promises = [];
     while (linksList.length !== 0) {
-      // we have some new links we need to fetch the embedly data for, put them on the queue
+      // we have some new links we need to fetch the metadata for, put them on the queue
       requestQueue.push(linksList.splice(0, this.options.proxyMaxLinks));
     }
-    // for each bundle of 25 links, create a new request to embedly
+    // for each bundle of 25 links, create a new request to metadata service
     requestQueue.forEach(requestBundle => {
       promises.push(this._asyncFetchAndStore(requestBundle, event));
     });
@@ -324,11 +300,11 @@ PreviewProvider.prototype = {
   }),
 
   /**
-   * Makes the necessary requests to embedly to get data for each link
+   * Makes the necessary requests to metadata service to get data for each link
    */
   _asyncGetLinkData: Task.async(function*(newLinks) {
     try {
-      let response = yield fetch(this._getMetadataEndpoint(), {
+      let response = yield fetch(this._metadataEndpoint, {
         method: "POST",
         body: JSON.stringify({urls: newLinks}),
         headers: {"Content-Type": "application/json"}
@@ -341,7 +317,7 @@ PreviewProvider.prototype = {
   }),
 
   /**
-   * Extracts data from embedly and saves in the MetadataStore
+   * Extracts data from metadata service and saves in the MetadataStore
    * Also, collect metrics on how many requests were made, how much time each
    * request took to complete, and their success or failure status
    */
@@ -349,7 +325,7 @@ PreviewProvider.prototype = {
     if (!this.enabled) {
       return;
     }
-    // extract only the sanitized link urls to send to embedly
+    // extract only the sanitized link urls to send to metadata service
     let linkURLs = newLinks.map(link => link.sanitized_url);
     this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestSentCount", newLinks.length);
     try {
@@ -374,7 +350,8 @@ PreviewProvider.prototype = {
             link.favicon_height = height;
           }
         }
-        this.insertMetadata(linksToInsert, this._getMetadataSourceName());
+
+        this.insertMetadata(linksToInsert, "MetadataService");
       } else {
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyFailure", 1);
       }
@@ -448,16 +425,10 @@ PreviewProvider.prototype = {
    */
   init() {
     this._alreadyRequested = new Set();
-    this._metadataEndpoints = new Map();
-    this._metadataEndpoints.set(METADATA_SERVICE_SOURCE_NAME, simplePrefs.prefs["metadata.endpoint"]);
-    this._metadataEndpoints.set(EMBEDLY_SOURCE_NAME, simplePrefs.prefs["embedly.endpoint"]);
+    const endpoint = simplePrefs.prefs[ENDPOINT];
+    this._metadataEndpoint = `${endpoint}${VERSION_SUFFIX}`;
     this.enabled = simplePrefs.prefs[ENABLED_PREF];
     simplePrefs.on("", this._onPrefChange);
-
-    // if we are in the experiment change the metadata source
-    if (this._experimentProvider.data.metadataService) {
-      simplePrefs.prefs[METADATA_SOURCE_PREF] = METADATA_SERVICE_SOURCE_NAME;
-    }
   },
 
   /**
@@ -466,7 +437,7 @@ PreviewProvider.prototype = {
   uninit() {
     simplePrefs.off("", this._onPrefChange);
     this._alreadyRequested = new Set();
-    this._metadataEndpoints = new Map();
+    this._metadataEndpoint = null;
   }
 };
 

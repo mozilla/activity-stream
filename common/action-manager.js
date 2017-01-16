@@ -57,7 +57,7 @@ const am = new ActionManager([
 ]);
 
 // This is a a set of actions that have sites in them,
-// so we can do stuff like filter them, add embedly data, etc.
+// so we can do stuff like filter them, add metadata, etc.
 am.ACTIONS_WITH_SITES = new Set([
   "HIGHLIGHTS_LINKS_RESPONSE",
   "RECENT_LINKS_RESPONSE",

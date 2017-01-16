@@ -49,7 +49,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
   "ua": "python-requests/2.9.1",  
   "url": "https://www.example.com",
   "recommender_type": "pocket-trending",
-  "metadata_source": "Embedly or MetadataService or Local or TippyTopProvider"
+  "metadata_source": "MetadataService or Local or TippyTopProvider"
 }
 ```
 
@@ -104,7 +104,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `load_reason` | [Required] Either ("newtab", "refocus", "restore") and is the reason the tab was focused. | :one:
 | `locale` | [Auto populated by Onyx] The browser chrome's language (eg. en-US). | :two:
 | `max_scroll_depth` | [Optional] The maximum number of pixels the scroll bar was dragged in this session. | :one:
-| `metadata_source` | [Optional] The source of which we computed metadata. Either (`Embedly` or `MetadataService` or `Local` or `TippyTopProvider`). | :one:
+| `metadata_source` | [Optional] The source of which we computed metadata. Either (`MetadataService` or `Local` or `TippyTopProvider`). | :one:
 | `page` | [Required] Either ["NEW_TAB", "HOME"]. | :one:
 | `provider` | [Optional] The name of share provider. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:

@@ -132,13 +132,6 @@
       "hidden": true
     },
     {
-      "name": "embedly.endpoint",
-      "title": "Embedly Endpoint",
-      "type": "string",
-      "value": "https://embedly-proxy.services.mozilla.com/v2/extract",
-      "hidden": true
-    },
-    {
       "name": "metadata.endpoint",
       "title": "Local Metadata Endpoint",
       "type": "string",
@@ -151,13 +144,6 @@
       "description": "weightedHighlightsCoefficients",
       "type": "string",
       "value": "[-0.1, -0.1, -0.1, 0.4, 0.2]",
-      "hidden": true
-    },
-    {
-      "name": "metadataSource",
-      "title": "How are we getting metadata?",
-      "type": "string",
-      "value": "Embedly",
       "hidden": true
     }
   ],

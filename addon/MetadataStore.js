@@ -191,7 +191,7 @@ MetadataStore.prototype = {
       description: aRow.description,
       media_url: aRow.media && aRow.media.url,
       expired_at: aRow.expired_at,
-      metadata_source: aRow.metadata_source || "Embedly",
+      metadata_source: aRow.metadata_source || "MetadataService",
       provider_name: aRow.provider_name
     };
   },
