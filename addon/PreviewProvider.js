@@ -217,6 +217,7 @@ PreviewProvider.prototype = {
       enhancedLink.title = link.title;
       enhancedLink.type = link.type;
       enhancedLink.url = link.url;
+      enhancedLink.eTLD = link.eTLD;
       enhancedLink.cache_key = link.cache_key;
       enhancedLink.lastVisitDate = link.lastVisitDate;
       enhancedLink.bookmarkDateCreated = link.bookmarkDateCreated;
