@@ -492,7 +492,7 @@ exports.test_metadata_service_experiment = function(assert) {
 };
 
 exports.test_copy_over_correct_data_from_firefox = function*(assert) {
-  const expectedKeys = ["title", "type", "url", "cache_key", "lastVisitDate", "bookmarkGuid", "bookmarkDateCreated"];
+  const expectedKeys = ["title", "type", "url", "eTLD", "cache_key", "lastVisitDate", "bookmarkGuid", "bookmarkDateCreated"];
   const link = [{
     title: "a firefox given title",
     type: "bookmark",
