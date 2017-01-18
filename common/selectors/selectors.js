@@ -23,9 +23,10 @@ module.exports.selectNewTabSites = createSelector(
     state => state.Highlights,
     state => state.TopSites,
     state => state.Experiments,
+    state => state.Prefs,
     state => state
   ],
-  (Highlights, TopSites, Experiments, state) => {
+  (Highlights, TopSites, Experiments, Prefs, state) => {
     const [topSitesRows, highlightsRows] = selectAndDedupe([
       {
         sites: TopSites.rows,
@@ -41,6 +42,7 @@ module.exports.selectNewTabSites = createSelector(
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Highlights: Object.assign({}, Highlights, {rows: highlightsRows}),
       Experiments,
+      Prefs,
       isReady: areSelectorsReady(state)
     };
   }

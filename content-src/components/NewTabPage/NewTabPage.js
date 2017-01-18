@@ -47,14 +47,17 @@ const NewTabPage = React.createClass({
   },
   render() {
     const props = this.props;
+    const {showSearch, showTopSites, showHighlights} = props.Prefs.prefs;
 
     const topSitesExperimentIsOn = props.Experiments.values.screenshots;
 
     return (<main className={classNames("new-tab", {"top-sites-new-style": topSitesExperimentIsOn})}>
       <div className="new-tab-wrapper">
-        <section>
-          <Search />
-        </section>
+        {showSearch &&
+          <section>
+            <Search />
+          </section>
+        }
         <Loader
           className="loading-notice"
           show={!this.props.isReady}
@@ -63,15 +66,18 @@ const NewTabPage = React.createClass({
           label="welcome_label"
           defaultLabel="default_label_loading" />
         <div className="show-on-init on">
-          <section>
-            <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
-              sites={props.TopSites.rows} showNewStyle={topSitesExperimentIsOn} />
-          </section>
-
-          <section>
-            <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
-              length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows} />
-          </section>
+          {showTopSites &&
+            <section>
+              <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
+                sites={props.TopSites.rows} showNewStyle={topSitesExperimentIsOn} />
+            </section>
+          }
+          {showHighlights &&
+            <section>
+              <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
+                length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows} />
+            </section>
+          }
         </div>
       </div>
     </main>);
@@ -82,6 +88,8 @@ NewTabPage.propTypes = {
   TopSites: React.PropTypes.object.isRequired,
   Highlights: React.PropTypes.object.isRequired,
   Experiments: React.PropTypes.object.isRequired,
+  Prefs: React.PropTypes.object.isRequired,
+  isReady: React.PropTypes.bool.isRequired,
   dispatch: React.PropTypes.func.isRequired
 };
 

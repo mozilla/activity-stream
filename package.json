@@ -156,6 +156,27 @@
       "type": "bool",
       "value": true,
       "hidden": true
+    },
+    {
+      "name": "showSearch",
+      "title": "Show the Search bar on the New Tab page",
+      "type": "bool",
+      "hidden": true,
+      "value": true
+    },
+    {
+      "name": "showTopSites",
+      "title": "Show the Top Sites section on the New Tab page",
+      "type": "bool",
+      "hidden": true,
+      "value": true
+    },
+    {
+      "name": "showHighlights",
+      "title": "Show the Highlights section on the New Tab page",
+      "type": "bool",
+      "hidden": true,
+      "value": true
     }
   ],
   "repository": "mozilla/activity-stream",
