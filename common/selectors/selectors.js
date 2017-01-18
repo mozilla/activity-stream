@@ -40,6 +40,7 @@ module.exports.selectNewTabSites = createSelector(
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       Highlights: Object.assign({}, Highlights, {rows: highlightsRows}),
+      Experiments,
       isReady: areSelectorsReady(state)
     };
   }
