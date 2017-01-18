@@ -28,7 +28,12 @@ const SiteIcon = React.createClass({
     const {width, height, faviconSize, showTitle} = this.props;
     const showFallback = this.state.showFallback || !site.favicon;
     const showBackground = this.props.showBackground || showFallback;
-    const showBorder = this.props.border;
+    const topSitesExperimentIsOn = this.props.showNewStyle;
+    let showBorder = this.props.border;
+    if (topSitesExperimentIsOn && !site.backgroundColorIsAlmostWhite) {
+      // In the new style, we only show the border if the background is almost white.
+      showBorder = false;
+    }
 
     const fontSize = faviconSize * 0.9;
     const fontWeight = (fontSize > 20) ? 200 : 400;
@@ -40,7 +45,9 @@ const SiteIcon = React.createClass({
     const style = {width, height, backgroundColor: showBackground && "white"};
     return (<div className={classNames("site-icon", this.props.className)} style={style}>
       <div ref="background" hidden={!showBackground} className="site-icon-background" style={{backgroundColor: site.backgroundColor}} />
-      <div ref="border" hidden={!showBackground || !showBorder} className="inner-border" />
+      {showBackground && showBorder &&
+        <div ref="border" className="inner-border" />
+      }
       <div className="site-icon-wrapper">
         <img ref="favicon"
           width={faviconSize}
@@ -60,11 +67,16 @@ const SiteIcon = React.createClass({
 SiteIcon.propTypes = {
   width: React.PropTypes.number,
   height: React.PropTypes.number,
+  faviconSize: React.PropTypes.number,
+  showFallback: React.PropTypes.bool,
+  showBackground: React.PropTypes.bool,
+  border: React.PropTypes.bool,
   site: React.PropTypes.shape({
     title: React.PropTypes.string,
     provider_name: React.PropTypes.string,
     icons: React.PropTypes.array
-  }).isRequired
+  }).isRequired,
+  showNewStyle: React.PropTypes.bool
 };
 
 /**
@@ -78,6 +90,7 @@ const PlaceholderSiteIcon = React.createClass({
   render() {
     return (
       <div ref="icon" className="site-icon">
+        <div className="inner-border" />
         <div className="site-icon-wrapper" />
         <div className="site-icon-title" />
       </div>

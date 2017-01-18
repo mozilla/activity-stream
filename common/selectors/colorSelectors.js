@@ -60,11 +60,19 @@ const selectSiteIcon = createSelector(
     const backgroundColor = toRGBString(backgroundRGB);
     const fontColor = getBlackOrWhite(...backgroundRGB);
     const firstLetter = prettyUrl(parsedUrl.hostname)[0];
+
+    const almostWhiteThreshold = 230;
+    let backgroundColorIsAlmostWhite = false;
+    if (backgroundRGB[0] > almostWhiteThreshold && backgroundRGB[1] > almostWhiteThreshold && backgroundRGB[2] > almostWhiteThreshold) {
+      backgroundColorIsAlmostWhite = true;
+    }
+
     return {
       url: site.url,
       favicon,
       firstLetter,
       backgroundColor,
+      backgroundColorIsAlmostWhite,
       fontColor,
       label
     };

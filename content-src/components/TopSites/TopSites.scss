@@ -89,3 +89,37 @@
     }
   }
 }
+
+// overrides for Top Sites styling experiment
+.top-sites-new-style {
+  .top-sites {
+
+    .tile {
+      @include item-shadow;
+      box-shadow: none;
+
+      .tile-img-container {
+        overflow: visible;
+      }
+    }
+
+    .site-icon {
+      .site-icon-background {
+        border-radius: 3px;
+      }
+
+      .site-icon-title {
+        background: transparent;
+        border: 0;
+        position: absolute;
+        top: 100%;
+      }
+
+      &:hover {
+        .site-icon-title {
+          background: transparent;
+        }
+      }
+    }
+  }
+}
