@@ -28,10 +28,15 @@ describe("siteMetadataSelectors", () => {
 
       assert.ok(result.parsedUrl);
     });
-    it("should set label prop without eTLD set", () => {
+    it("should set label prop without eTLD set for .com", () => {
       let result = selectSiteProperties(validSpotlightSite);
 
-      assert.equal(result.label, "cnn.com");
+      assert.equal(result.label, "cnn");
+    });
+    it("should set label prop without eTLD set for not .com", () => {
+      let result = selectSiteProperties(Object.assign({}, validSpotlightSite, {url: "https://www.mozilla.org/"}));
+
+      assert.equal(result.label, "mozilla.org");
     });
     it("should set label prop with eTLD set", () => {
       let result = selectSiteProperties(Object.assign({}, validSpotlightSite, {eTLD: "com"}));
