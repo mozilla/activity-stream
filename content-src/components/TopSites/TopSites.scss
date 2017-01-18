@@ -39,6 +39,7 @@
     width: 100%;
     background-size: 250%;
     background-position: top left;
+    border-radius: 3px;
   }
 
   .tile {
@@ -85,6 +86,43 @@
         z-index: 1000;
         top: -6px;
         left: -6px;
+      }
+    }
+  }
+}
+
+// overrides for Top Sites styling experiment
+.top-sites-new-style {
+  .top-sites {
+
+    .tile {
+      @include item-shadow;
+      box-shadow: none;
+
+      .tile-img-container {
+        // This is a hack so the title is visible since we are positioning
+        // it outside of the container for the experiment. If/when the experiment
+        // graduates, we should change the HTML instead.
+        overflow: visible;
+      }
+    }
+
+    .site-icon {
+      .site-icon-background {
+        border-radius: 3px;
+      }
+
+      .site-icon-title {
+        background: transparent;
+        border: 0;
+        position: absolute;
+        top: 100%;
+      }
+
+      &:hover {
+        .site-icon-title {
+          background: transparent;
+        }
       }
     }
   }

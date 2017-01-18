@@ -105,7 +105,7 @@ describe("TopSitesItem", () => {
   describe("screenshot", () => {
     const siteWithScreenshot = Object.assign({}, fakeSiteWithImage, {screenshot: "cool.jpg"});
     beforeEach(() => {
-      instance = renderWithProvider(<TopSitesItem {...siteWithScreenshot} />);
+      instance = renderWithProvider(<TopSitesItem showNewStyle={true} {...siteWithScreenshot} />);
     });
     it("should render a title", () => {
       assert.ok(instance.refs.title);

@@ -42,6 +42,15 @@ function assignImageAndBackgroundColor(rows) {
   });
 }
 
+// TODO: Add testing. Make less hacky, more generic, etc.
+function isAlmostWhite(rgb) {
+  const almostWhiteThreshold = 230;
+  if (rgb[0] > almostWhiteThreshold && rgb[1] > almostWhiteThreshold && rgb[2] > almostWhiteThreshold) {
+    return true;
+  }
+  return false;
+}
+
 /**
  * selectSiteIcon
  *
@@ -60,11 +69,14 @@ const selectSiteIcon = createSelector(
     const backgroundColor = toRGBString(backgroundRGB);
     const fontColor = getBlackOrWhite(...backgroundRGB);
     const firstLetter = prettyUrl(parsedUrl.hostname)[0];
+    const backgroundColorIsAlmostWhite = isAlmostWhite(backgroundRGB);
+
     return {
       url: site.url,
       favicon,
       firstLetter,
       backgroundColor,
+      backgroundColorIsAlmostWhite,
       fontColor,
       label
     };

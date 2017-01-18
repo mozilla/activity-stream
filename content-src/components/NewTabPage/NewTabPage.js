@@ -9,6 +9,7 @@ const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
 const {HIGHLIGHTS_LENGTH} = require("common/constants");
+const classNames = require("classnames");
 
 const NewTabPage = React.createClass({
   getInitialState() {
@@ -46,7 +47,9 @@ const NewTabPage = React.createClass({
   render() {
     const props = this.props;
 
-    return (<main className="new-tab">
+    const topSitesExperimentIsOn = props.Experiments.values.screenshots;
+
+    return (<main className={classNames("new-tab", {"top-sites-new-style": topSitesExperimentIsOn})}>
       <div className="new-tab-wrapper">
         <section>
           <Search />
@@ -60,7 +63,7 @@ const NewTabPage = React.createClass({
         <div className="show-on-init on">
           <section>
             <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
-              sites={props.TopSites.rows} showHint={props.TopSites.showHint} />
+              sites={props.TopSites.rows} showHint={props.TopSites.showHint} showNewStyle={topSitesExperimentIsOn} />
           </section>
 
           <section>
@@ -76,6 +79,7 @@ const NewTabPage = React.createClass({
 NewTabPage.propTypes = {
   TopSites: React.PropTypes.object.isRequired,
   Highlights: React.PropTypes.object.isRequired,
+  Experiments: React.PropTypes.object.isRequired,
   dispatch: React.PropTypes.func.isRequired
 };
 
