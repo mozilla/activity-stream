@@ -324,7 +324,11 @@ Links.prototype = {
 
   asyncGetTopNewTabSites: Task.async(function*() {
     const links = NewTabUtils.links.getLinks();
-    let result = links.filter(link => link.type !== "affiliate");
+    if (!links) {
+      return [];
+    }
+    const QUERY_LIMIT = TOP_SITES_LENGTH * 2;
+    let result = links.filter(link => link && link.type !== "affiliate").slice(0, QUERY_LIMIT);
     for (let link of result) {
       link.favicon = yield this.getFavicon(link.url);
     }
@@ -332,12 +336,20 @@ Links.prototype = {
   }),
 
   getFavicon: Task.async(function*(url) {
-    let sqlQuery = `SELECT moz_favicons.url FROM moz_favicons
+    let sqlQuery = `SELECT moz_favicons.mime_type as mimeType, moz_favicons.data as favicon
+                    FROM moz_favicons
                     INNER JOIN moz_places ON
                     moz_places.favicon_id = moz_favicons.id
                     WHERE moz_places.url = :url`;
-    let favicon_url = yield this.executePlacesQuery(sqlQuery, {params: {url}});
-    return this._faviconBytesToDataURI(favicon_url)[0];
+    let res = yield this.executePlacesQuery(sqlQuery, {
+      columns: ["favicon", "mimeType"],
+      params: {url}
+    });
+    if (res.length) {
+      const {favicon} = this._faviconBytesToDataURI(res)[0];
+      return favicon;
+    }
+    return null;
   }),
 
   /**
