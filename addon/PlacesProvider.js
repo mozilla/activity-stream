@@ -324,13 +324,18 @@ Links.prototype = {
 
   asyncGetTopNewTabSites: Task.async(function*() {
     const links = NewTabUtils.links.getLinks();
-    if (!links) {
-      return [];
-    }
     const QUERY_LIMIT = TOP_SITES_LENGTH * 2;
-    let result = links.filter(link => link && link.type !== "affiliate").slice(0, QUERY_LIMIT);
-    for (let link of result) {
+    let result = [];
+    for (let link of links) {
+      if (!link || link.type === "affiliate" || this.blockedURLs.has(link.url)) {
+        continue;
+      }
+
       link.favicon = yield this.getFavicon(link.url);
+      result.push(link);
+      if (result.length >= QUERY_LIMIT) {
+        break;
+      }
     }
     return result;
   }),
