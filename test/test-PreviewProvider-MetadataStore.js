@@ -74,7 +74,14 @@ exports.test_get_links_from_metadatastore = function*(assert) {
   const links = [
     {url: "https://www.mozilla.org/"},
     {url: "https://www.mozilla.org/en-US/firefox/new"},
-    {url: "https://www.notindb.com/", cache_key: "notindb.com/", places_url: "https://www.notindb.com/", favicon_url: "https://www.someImage.com/image.jpg"}];
+    {
+      url: "https://www.notindb.com/",
+      cache_key: "notindb.com/",
+      places_url: "https://www.notindb.com/",
+      favicon_url: "https://www.someImage.com/image.jpg",
+      favicon_height: 96,
+      favicon_width: 96
+    }];
 
   // get enhanced links - the third link should be returned as is since it
   // is not yet in the database
@@ -91,6 +98,8 @@ exports.test_get_links_from_metadatastore = function*(assert) {
   assert.equal(cachedLinks[2].description, null, "the third link has a description field");
   assert.deepEqual(cachedLinks[2].images, [], "the third link has images field");
   assert.equal(cachedLinks[2].favicon_url, links[2].favicon_url, "the third link has the correct favicon_url");
+  assert.equal(cachedLinks[2].favicon_height, 96, "the third link has the correct favicon_height");
+  assert.equal(cachedLinks[2].favicon_width, 96, "the third link has the correct favicon_width");
 };
 
 function waitForAsyncReset() {
@@ -128,6 +137,9 @@ before(exports, function*() {
   gPreviewProvider = new PreviewProvider(mockTabTracker, gMetadataStore, {data: {metadataService: false}}, {initFresh: true});
   gPreviewProvider._getFaviconColors = function() {
     return Promise.resolve(null);
+  };
+  gPreviewProvider._computeImageSize = function(url) {
+    return Promise.resolve({url, height: 96, width: 96});
   };
 });
 

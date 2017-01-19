@@ -66,6 +66,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
+    favicon_height: 64,
+    favicon_width: 64,
     background_color: "#fff",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -75,6 +77,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/github-com.png",
+    favicon_height: 64,
+    favicon_width: 64,
     background_color: "#eee",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -84,6 +88,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/github-com.png",
+    favicon_height: 64,
+    favicon_width: 64,
     background_color: "#eee",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -93,6 +99,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/example-com.png",
+    favicon_height: 64,
+    favicon_width: 64,
     background_color: "#ddd",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -102,6 +110,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
+    favicon_height: 64,
+    favicon_width: 64,
     background_color: "#fff",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -111,6 +121,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
+    favicon_height: 64,
+    favicon_width: 64,
     background_color: "#fff",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));

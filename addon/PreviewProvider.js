@@ -1,4 +1,4 @@
-/* globals Task, require, exports */
+/* globals Task, Services, require, exports */
 "use strict";
 
 const {Cu} = require("chrome");
@@ -7,7 +7,7 @@ const self = require("sdk/self");
 const {TippyTopProvider} = require("addon/TippyTopProvider");
 const {getColor} = require("addon/ColorAnalyzerProvider");
 const {absPerf} = require("common/AbsPerf");
-const {consolidateBackgroundColors, consolidateFavicons} = require("addon/lib/utils");
+const {consolidateBackgroundColors, consolidateFavicons, extractMetadataFaviconFields} = require("addon/lib/utils");
 
 const {BACKGROUND_FADE} = require("../common/constants");
 const ENABLED_PREF = "previews.enabled";
@@ -30,6 +30,7 @@ const URL_FILTERS = [
 Cu.importGlobalProperties(["fetch"]);
 Cu.importGlobalProperties(["URL"]);
 Cu.import("resource://gre/modules/Task.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 
 const DEFAULT_OPTIONS = {
   metadataTTL: 3 * 24 * 60 * 60 * 1000, // 3 days for the metadata to live
@@ -224,18 +225,31 @@ PreviewProvider.prototype = {
 
       // get favicon and background color from firefox
       const firefoxBackgroundColor = yield this._getFaviconColors(link);
-      const firefoxFavicon = link.favicon;
+      const firefoxFaviconURL = link.favicon;
 
       // get favicon and background color from tippytop
-      const {favicon_url: tippyTopFavicon, background_color: tippyTopBackgroundColor, metadata_source} = this._tippyTopProvider.processSite(link);
+      const {
+        favicon_height: tippyTopFaviconHeight,
+        favicon_width: tippyTopFaviconWidth,
+        favicon_url: tippyTopFaviconURL,
+        background_color: tippyTopBackgroundColor,
+        metadata_source
+      } = this._tippyTopProvider.processSite(link);
       enhancedLink.metadata_source = metadata_source;
 
       // Find the item in the map and return it if it exists, then unpack that
       // object onto our new link
-      let metadataLinkFavicons = null;
+      let metadataLinkFaviconURL = null;
+      let metadataLinkFaviconColor = null;
+      let metadataLinkFaviconHeight = null;
+      let metadataLinkFaviconWidth = null;
       if (existingLinks.has(link.cache_key)) {
         const cachedMetadataLink = existingLinks.get(link.cache_key);
-        metadataLinkFavicons = cachedMetadataLink.favicons;
+        const {url, color, height, width} = extractMetadataFaviconFields(cachedMetadataLink);
+        metadataLinkFaviconURL = url;
+        metadataLinkFaviconColor = color;
+        metadataLinkFaviconHeight = height;
+        metadataLinkFaviconWidth = width;
         enhancedLink.metadata_source = cachedMetadataLink.metadata_source;
         enhancedLink.title = cachedMetadataLink.title;
         enhancedLink.description = cachedMetadataLink.description;
@@ -244,8 +258,10 @@ PreviewProvider.prototype = {
       }
 
       // consolidate favicons, background color and metadata source, then return the final link
-      enhancedLink.favicon_url = consolidateFavicons(tippyTopFavicon, metadataLinkFavicons, firefoxFavicon);
-      enhancedLink.background_color = consolidateBackgroundColors(tippyTopBackgroundColor, metadataLinkFavicons, firefoxBackgroundColor);
+      enhancedLink.favicon_url = consolidateFavicons(tippyTopFaviconURL, metadataLinkFaviconURL, firefoxFaviconURL);
+      enhancedLink.favicon_width = tippyTopFaviconWidth || metadataLinkFaviconWidth;
+      enhancedLink.favicon_height = tippyTopFaviconHeight || metadataLinkFaviconHeight;
+      enhancedLink.background_color = consolidateBackgroundColors(tippyTopBackgroundColor, metadataLinkFaviconColor, firefoxBackgroundColor);
       results.push(enhancedLink);
     }
 
@@ -349,6 +365,14 @@ PreviewProvider.prototype = {
         let linksToInsert = newLinks.filter(link => responseJson.urls[link.sanitized_url])
           .map(link => Object.assign({}, link, responseJson.urls[link.sanitized_url]));
 
+        // add favicon_height and favicon_width to the favicon and store it in db
+        for (let link of linksToInsert) {
+          const {width, height} = yield this._computeImageSize(link.favicon_url);
+          if (height && width) {
+            link.favicon_width = width;
+            link.favicon_height = height;
+          }
+        }
         this.insertMetadata(linksToInsert, this._getMetadataSourceName());
       } else {
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyFailure", 1);
@@ -384,6 +408,25 @@ PreviewProvider.prototype = {
   processAndInsertMetadata(link, metadataSource) {
     const processedLink = this._processLinks([link]);
     this.insertMetadata(processedLink, metadataSource);
+  },
+
+  /**
+   * Locally compute the size of the image
+   */
+  _computeImageSize(url) {
+    return new Promise((resolve, reject) => {
+      let image = new Services.appShell.hiddenDOMWindow.Image();
+      image.src = url;
+      image.addEventListener("load", () => {
+        let imageWithSize = {
+          url: image.src,
+          width: image.width,
+          height: image.height
+        };
+        resolve(imageWithSize);
+      });
+      image.addEventListener("error", () => reject());
+    });
   },
 
   /**

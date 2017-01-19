@@ -330,6 +330,8 @@ exports.test_mock_embedly_request = function*(assert) {
   assert.deepEqual(gMetadataStore[0][0].description, "some embedly metadata", "inserted and saved the embedly data");
   assert.ok(gMetadataStore[0][0].expired_at, "an expiry time was added");
   assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "a metadata source was added from Embedly");
+  assert.ok(gMetadataStore[0][0].favicon_height, "added a favicon_height");
+  assert.ok(gMetadataStore[0][0].favicon_width, "added a favicon_width");
 
   // retrieve the contents of the database - don't go to embedly
   let cachedLinks = yield gPreviewProvider.asyncGetEnhancedLinks(fakeRequest);
@@ -507,6 +509,30 @@ exports.test_copy_over_correct_data_from_firefox = function*(assert) {
   expectedKeys.forEach(key => assert.equal(cachedLink[0][key], link[0][key], "even without metadata we kept all the firefox data for the link"));
 };
 
+exports.test_compute_image_sizes = function*(assert) {
+  let mockExperimentProvider = {data: {metadataService: false}};
+  gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
+  let metadataObj = {
+    url: "https://www.hasAnImage.com",
+    images: [{url: "data:image;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAA"}] // a 1x1 pixel image
+  };
+  // compute the image sizes of the metadata
+  let newImage = yield gPreviewProvider._computeImageSize(metadataObj.images[0].url);
+  assert.equal(newImage.url, metadataObj.images[0].url, "the url was intact");
+  assert.equal(newImage.width, 1, "computed the correct image width");
+  assert.equal(newImage.height, 1, "computed the correct image height");
+
+  // force the image to reject by giving it a null src
+  metadataObj.images[0].url = null;
+  let error = false;
+  try {
+    newImage = yield gPreviewProvider._computeImageSize(metadataObj.images[0].url);
+  } catch (e) {
+    error = true;
+  }
+  assert.deepEqual(error, true, "we rejected the when the image fails to load");
+};
+
 before(exports, () => {
   simplePrefs.prefs.metadataSource = gEmbedlyServiceSource;
   simplePrefs.prefs["embedly.endpoint"] = `${gEndpointPrefix}${gEmbedlyEndpoint}`;
@@ -516,6 +542,9 @@ before(exports, () => {
   gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
   gPreviewProvider._getFaviconColors = function() {
     return Promise.resolve(null);
+  };
+  gPreviewProvider._computeImageSize = function(url) {
+    return Promise.resolve({url, height: 96, width: 96});
   };
 });
 
