@@ -27,8 +27,7 @@ function hexToRGB(hex) {
  * is our number 1 choice, followed by the favicon returned by the metadata service,
  * and finally firefox's data URI as a last resort
  */
-function consolidateFavicons(tippyTopFavicon, metadataFavicons, firefoxFavicon) {
-  const metadataFavicon = metadataFavicons && metadataFavicons[0] && metadataFavicons[0].url;
+function consolidateFavicons(tippyTopFavicon, metadataFavicon, firefoxFavicon) {
   return tippyTopFavicon || metadataFavicon || firefoxFavicon;
 }
 
@@ -37,13 +36,30 @@ function consolidateFavicons(tippyTopFavicon, metadataFavicons, firefoxFavicon) 
  * TippyTop background color and metadata background color both need to be converted
  * from hex to an rgb array, whereas the firefox background color is already rgb
  */
-function consolidateBackgroundColors(tippyTopBackgroundColor, metadataFavicons, firefoxBackgroundColor) {
-  const metadataBackgroundColor = metadataFavicons && metadataFavicons[0] && metadataFavicons[0].color;
+function consolidateBackgroundColors(tippyTopBackgroundColor, metadataBackgroundColor, firefoxBackgroundColor) {
   return hexToRGB(tippyTopBackgroundColor) || hexToRGB(metadataBackgroundColor) || firefoxBackgroundColor;
+}
+
+function extractMetadataFaviconFields(link) {
+  let result = {
+    url: null,
+    height: null,
+    width: null,
+    color: null
+  };
+  if (link && link.favicons && link.favicons.length) {
+    const favicons = link.favicons[0];
+    result.url = favicons.url;
+    result.height = favicons.height;
+    result.width = favicons.width;
+    result.color = favicons.color;
+  }
+  return result;
 }
 
 module.exports = {
   consolidateFavicons,
   consolidateBackgroundColors,
-  hexToRGB
+  hexToRGB,
+  extractMetadataFaviconFields
 };
