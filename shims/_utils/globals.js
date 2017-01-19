@@ -7,5 +7,5 @@ module.exports = {
   // These are Firefox globals that are often used
   Services: {obs: {notifyObservers: sinon.spy()}},
   Task,
-  XPCOMUtils: {defineLazyGetter() {}, defineLazyServiceGetter() {}}
+  XPCOMUtils: {defineLazyGetter() {}, defineLazyServiceGetter() {}, defineLazyModuleGetter() {}}
 };

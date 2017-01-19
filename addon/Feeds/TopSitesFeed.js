@@ -1,21 +1,42 @@
+/* globals Task */
+const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
 const {TOP_SITES_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
-const simplePrefs = require("sdk/simple-prefs");
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
+const getScreenshots = require("addon/lib/getScreenshots");
+
+Cu.import("resource://gre/modules/Task.jsm");
 
 module.exports = class TopSitesFeed extends Feed {
   // Used by this.refresh
   getData() {
-    if (simplePrefs.prefs["experiments.originalNewTabSites"]) {
-      return PlacesProvider.links.asyncGetTopNewTabSites()
-        .then(links => this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
-        .then(links => (am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links)));
-    }
-    return PlacesProvider.links.getTopFrecentSites()
-      .then(links => this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE"))
-      .then(links => (am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links)));
+    return Task.spawn(function*() {
+      const experiments = this.store.getState().Experiments.values;
+
+      // Get links from places
+      let links = yield experiments.originalNewTabSites ? PlacesProvider.links.asyncGetTopNewTabSites() : PlacesProvider.links.getTopFrecentSites();
+
+      // Get metadata from PreviewProvider
+      links = yield this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE");
+
+      // Get screenshots if the favicons are too small
+      if (experiments.screenshots) {
+        try {
+          links = yield getScreenshots(links, site => {
+            if (site.favicon_height >= 64 && site.favicon_width >= 64) {
+              return false;
+            }
+            return true;
+          });
+        } catch (e) {
+          Cu.reportError(e);
+        }
+      }
+      // Create the action
+      return am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links);
+    }.bind(this));
   }
   onAction(state, action) {
     switch (action.type) {

@@ -118,5 +118,20 @@
       "threshold": 0.2,
       "description": "Use sites from activity stream"
     }
+  },
+  "screenshots": {
+    "name": "Screenshots for Top Sites",
+    "active": true,
+    "description": "Add screenshots for some Top Sites",
+    "control": {
+      "value": false,
+      "description": "Do'nt show screenshots"
+    },
+    "variant": {
+      "id": "exp-009-screenshots",
+      "value": true,
+      "threshold": 0,
+      "description": "Show screenshots"
+    }
   }
 }
