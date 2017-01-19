@@ -200,8 +200,8 @@ MetadataStore.prototype = {
     return {
       url: aRow.favicon_url,
       type: IMAGE_TYPES.favicon,
-      height: 0,
-      width: 0,
+      height: aRow.favicon_height,
+      width: aRow.favicon_width,
       color: (aRow.favicon_colors && aRow.favicon_colors[0]) ? this._rgbToHex(aRow.favicon_colors[0].color) : null
     };
   },
@@ -210,8 +210,8 @@ MetadataStore.prototype = {
     return {
       url: aRow.url,
       type: IMAGE_TYPES.preview,
-      height: aRow.height,
-      width: aRow.width,
+      height: aRow.height || 500,
+      width: aRow.width || 500,
       color: (aRow.colors && aRow.colors[0]) ? this._rgbToHex(aRow.colors[0].color) : null
     };
   },
@@ -480,21 +480,19 @@ MetadataStore.prototype = {
         throw e;
       }
       for (let image of images) {
+        const imageData = {
+          url: image.url,
+          color: image.color,
+          height: image.height,
+          width: image.width
+        };
         switch (image.type) {
           case IMAGE_TYPES.favicon:
           case IMAGE_TYPES.favicon_rich:
-            metaObject.favicons.push({
-              url: image.url,
-              color: image.color
-            });
+            metaObject.favicons.push(imageData);
             break;
           case IMAGE_TYPES.preview:
-            metaObject.images.push({
-              url: image.url,
-              color: image.color,
-              height: image.height,
-              width: image.width
-            });
+            metaObject.images.push(imageData);
             break;
           default:
             throw new Error(`Fetched unknown image types: ${image.type}`);

@@ -66,7 +66,19 @@ PageScraper.prototype = {
       return;
     }
     try {
-      metadata.images = yield this._computeImageSize(metadata);
+      if (metadata.images && metadata.images.length) {
+        let {url, height, width} = yield this._previewProvider._computeImageSize(metadata.images[0].url);
+        metadata.images[0].height = height;
+        metadata.images[0].width = width;
+        metadata.images[0].url = url;
+      }
+      if (metadata.favicon_url) {
+        let {height, width} = yield this._previewProvider._computeImageSize(metadata.favicon_url);
+        if (height && width) {
+          metadata.favicon_height = height;
+          metadata.favicon_width = width;
+        }
+      }
     } catch (e) {
       Cu.reportError(`PageScraper failed to compute image size for ${metadata.url}`);
     }
@@ -107,30 +119,6 @@ PageScraper.prototype = {
     const rawHTML = yield response.text();
     return rawHTML;
   }),
-
-  /**
-   * Locally compute the size of the preview image
-   */
-  _computeImageSize(metadata) {
-    return new Promise((resolve, reject) => {
-      if (metadata.images.length) {
-        const metadataImage = metadata.images[0];
-        let image = new Services.appShell.hiddenDOMWindow.Image();
-        image.src = metadataImage.url;
-        image.addEventListener("load", () => {
-          let imageWithSize = {
-            url: image.src,
-            width: image.width || 500,
-            height: image.height || 500
-          };
-          resolve([imageWithSize]);
-        });
-        image.addEventListener("error", () => reject());
-      } else {
-        resolve([]);
-      }
-    });
-  },
 
   /**
    * If metadata has neither a title, nor a favicon_url we do not want to insert

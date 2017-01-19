@@ -7,12 +7,14 @@ const {PageScraper} = require("addon/PageScraper");
 const DUMMY_PARSED_METADATA = {
   metadata: "Some dummy metadata",
   title: "Some dummy title",
-  favicon_url: "Some dummy favicon_url"
+  favicon_url: "favicon_url.ico",
+  images: [{url: "imagePreview.png"}]
 };
 
 let gMetadataStore = [];
 let gPageScraper;
 let parseCallCount;
+let computeImageCount;
 
 const mockPreviewProvider = {
   processLinks(link) {
@@ -36,6 +38,10 @@ const mockPreviewProvider = {
   insertMetadata(metadata, source) {
     const linkToInsert = Object.assign({}, metadata[0], {metadata_source: source});
     gMetadataStore.push(linkToInsert);
+  },
+  _computeImageSize(url) {
+    computeImageCount++;
+    return {url, width: 96, height: 96};
   }
 };
 const mockTabTracker = {generateEvent() {}, handlePerformanceEvent() {}};
@@ -161,40 +167,33 @@ exports.test_blacklist = function(assert) {
 };
 
 exports.test_compute_image_sizes = function*(assert) {
-  let metadataObj = {
-    url: "https://www.hasAnImage.com",
-    images: [{url: "data:image;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAA"}] // a 1x1 pixel image
+  const metadataObj = {
+    url: "https://www.foo.com",
+    metadata: DUMMY_PARSED_METADATA.metadata,
+    metadata_source: "Local"
   };
-  // compute the image sizes of the metadata
-  let newImage = yield gPageScraper._computeImageSize(metadataObj);
-  assert.equal(newImage[0].url, metadataObj.images[0].url, "the url was intact");
-  assert.equal(newImage[0].width, 1, "computed the correct image width");
-  assert.equal(newImage[0].height, 1, "computed the correct image height");
 
-  // force the image to reject by giving it a null src
-  metadataObj.images[0].url = null;
-  let error = false;
-  try {
-    newImage = yield gPageScraper._computeImageSize(metadataObj);
-  } catch (e) {
-    error = true;
-  }
-  assert.deepEqual(error, true, "we rejected the when the image fails to load");
-
-  // when the metadata has no images, don't compute any sizes for it
-  metadataObj.images = [];
-  newImage = yield gPageScraper._computeImageSize(metadataObj);
-  assert.deepEqual(newImage, [], "we did not compute image size when given no image");
+  let metadataToInsert = Object.assign({}, metadataObj, DUMMY_PARSED_METADATA);
+  yield gPageScraper._asyncSaveMetadata(metadataToInsert);
+  let linksInserted = gMetadataStore[0];
+  assert.deepEqual(linksInserted.favicon_url, DUMMY_PARSED_METADATA.favicon_url, "got the correct favicon url");
+  assert.deepEqual(linksInserted.favicon_width, 96, "got the correct favicon width");
+  assert.deepEqual(linksInserted.favicon_height, 96, "got the correct favicon height");
+  assert.deepEqual(linksInserted.images[0].url, DUMMY_PARSED_METADATA.images[0].url, "got the correct image url");
+  assert.deepEqual(linksInserted.images[0].width, 96, "got the correct image width");
+  assert.deepEqual(linksInserted.images[0].height, 96, "got the correct image height");
+  assert.deepEqual(computeImageCount, 2, "we called compute image count twice for the favicon and image size");
 };
 
 before(exports, () => {
   parseCallCount = 0;
+  computeImageCount = 0;
   gPageScraper = new PageScraper(mockPreviewProvider, mockTabTracker, {framescriptPath: ""});
   gPageScraper.init();
   gPageScraper._metadataParser = {
     parseHTMLText(raw, url) {
       parseCallCount++;
-      return {images: [], title: raw.title, favicon_url: raw.favicon_url, url, metadata: raw.metadata, cache_key: url};
+      return {images: raw.images, title: raw.title, favicon_url: raw.favicon_url, url, metadata: raw.metadata, cache_key: url};
     }
   };
   gPageScraper._fetchContent = function() {return DUMMY_PARSED_METADATA;};
@@ -203,6 +202,7 @@ before(exports, () => {
 after(exports, () => {
   gPageScraper.uninit();
   parseCallCount = 0;
+  computeImageCount = 0;
   gMetadataStore = [];
 });
 

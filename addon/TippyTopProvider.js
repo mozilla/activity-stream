@@ -5,6 +5,7 @@ const data = require("sdk/self").data;
 const getSiteData = require("common/vendor")("tippy-top-sites").getSiteData;
 
 const DEFAULT_OPTIONS = {sites: null};
+const FAVICON_DIMENSIONS = {width: 64, height: 64};
 
 function TippyTopProvider(options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
@@ -30,6 +31,8 @@ TippyTopProvider.prototype = {
     let usedTippyTopData = false;
     if ("image_url" in tippyTopSite) {
       enhancedSite.favicon_url = data.url(`content/favicons/images/${tippyTopSite.image_url}`);
+      enhancedSite.favicon_height = FAVICON_DIMENSIONS.height;
+      enhancedSite.favicon_width = FAVICON_DIMENSIONS.width;
       usedTippyTopData = true;
     }
     if ("background_color" in tippyTopSite) {
