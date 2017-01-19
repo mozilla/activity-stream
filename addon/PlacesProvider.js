@@ -436,14 +436,7 @@ Links.prototype = {
     });
 
     links = this._faviconBytesToDataURI(links);
-    links = links.map(link => {
-      try {
-        link.eTLD = Services.eTLD.getPublicSuffix(Services.io.newURI(link.url, null, null));
-      } catch (e) {
-        link.eTLD = "";
-      }
-      return link;
-    });
+    links = this._addETLD(links);
     return links.filter(link => LinkChecker.checkLoadURI(link.url));
   }),
 
@@ -493,6 +486,7 @@ Links.prototype = {
     });
 
     links = this._faviconBytesToDataURI(links);
+    links = this._addETLD(links);
     links.filter(link => LinkChecker.checkLoadURI(link.url));
     if (links.length) {
       return links[0];
@@ -558,6 +552,7 @@ Links.prototype = {
 
     let links = yield this.executePlacesQuery(sqlQuery, {columns, params: {limit}});
     links = this._faviconBytesToDataURI(links);
+    links = this._addETLD(links);
     return links.filter(link => LinkChecker.checkLoadURI(link.url));
   }),
 
@@ -641,6 +636,7 @@ Links.prototype = {
     });
 
     links = this._faviconBytesToDataURI(links);
+    links = this._addETLD(links);
     links = links.filter(link => LinkChecker.checkLoadURI(link.url));
 
     // Add the sync data to each link.
@@ -664,6 +660,25 @@ Links.prototype = {
         link.favicon = `data:${link.mimeType};base64,${encodedData}`;
       }
       delete link.mimeType;
+      return link;
+    });
+  },
+
+  /**
+   * Add the eTLD to each link in the array of links.
+   *
+   * @param {Array} links
+   *            an array containing objects with urls
+   *
+   * @returns {Array} an array of links with eTLDs added
+   */
+  _addETLD(links) {
+    return links.map(link => {
+      try {
+        link.eTLD = Services.eTLD.getPublicSuffix(Services.io.newURI(link.url, null, null));
+      } catch (e) {
+        link.eTLD = "";
+      }
       return link;
     });
   },

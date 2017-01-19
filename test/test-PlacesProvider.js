@@ -247,6 +247,7 @@ exports.test_Links_getRecentlyVisited = function*(assert) {
   let links = yield provider.getRecentlyVisited({limit});
   assert.equal(links.length > 0, true, "it should retrieve some links");
   assert.equal(links.length, limit, "query should not retrieve more than the limit even with recent");
+  assert.equal(links[0].eTLD, "com", "set 'com' as the eTLD");
 };
 
 exports.test_Links_getRecentlyVisited_old_links = function*(assert) {

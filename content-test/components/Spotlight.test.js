@@ -104,6 +104,10 @@ describe("SpotlightItem", () => {
       assert.equal(hc.props().type, "bookmark");
       assert.deepEqual(hc.props(), props);
     });
+    it("should render the label without the eTLD if eTLD is specified", () => {
+      let site = Object.assign({}, fakeSite, {"url": "https://google.ca", "eTLD": "ca"});
+      assert.equal(renderWithProvider(<SpotlightItem {...site} />).refs.label.textContent, "google");
+    });
   });
 });
 
