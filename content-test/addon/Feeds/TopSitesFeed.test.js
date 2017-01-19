@@ -6,18 +6,24 @@ const PlacesProvider = {
     getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))
   }
 };
+const getScreenshots = sinon.spy(() => Promise.resolve(["foo"]));
 const moment = require("moment");
-const TopSitesFeed = require("inject!addon/Feeds/TopSitesFeed")({"addon/PlacesProvider": {PlacesProvider}});
-const simplePrefs = require("sdk/simple-prefs");
+const TopSitesFeed = require("inject!addon/Feeds/TopSitesFeed")({
+  "addon/PlacesProvider": {PlacesProvider},
+  "addon/lib/getScreenshots": getScreenshots
+});
 
 const {TOP_SITES_LENGTH} = require("common/constants");
 
 describe("TopSitesFeed", () => {
   let instance;
+  let reduxState;
   beforeEach(() => {
     PlacesProvider.links.getTopFrecentSites.reset();
     PlacesProvider.links.asyncGetTopNewTabSites.reset();
+    reduxState = {Experiments: {values: {}}};
     instance = new TopSitesFeed({getCachedMetadata});
+    instance.store = {getState() {return reduxState}};
     sinon.spy(instance.options, "getCachedMetadata");
   });
   it("should create a TopSitesFeed", () => {
@@ -43,12 +49,19 @@ describe("TopSitesFeed", () => {
       assert.deepEqual(action.data, getCachedMetadata(testLinks));
     }));
     it("should use the original tiles when in the experiment", () => {
-      simplePrefs.prefs["experiments.originalNewTabSites"] = true;
+      reduxState.Experiments.values.originalNewTabSites = true;
       return instance.getData().then(() => {
         assert.notCalled(PlacesProvider.links.getTopFrecentSites);
         assert.calledOnce(PlacesProvider.links.asyncGetTopNewTabSites);
         assert.calledWith(instance.options.getCachedMetadata, testLinks, "TOP_FRECENT_SITES_RESPONSE");
-        simplePrefs.prefs["experiments.originalNewTabSites"] = false;
+      });
+    });
+    it("should add screenshots when in the experiment", () => {
+      reduxState.Experiments.values.screenshots = true;
+      return instance.getData().then(result => {
+        assert.calledOnce(getScreenshots);
+        // Note: our fake getScreenshots function resolves with ["foo"] 
+        assert.deepEqual(result.data, ["foo"]);
       });
     });
   });
