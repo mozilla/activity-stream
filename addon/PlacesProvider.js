@@ -435,9 +435,7 @@ Links.prototype = {
       params: {limit}
     });
 
-    links = this._faviconBytesToDataURI(links);
-    links = this._addETLD(links);
-    return links.filter(link => LinkChecker.checkLoadURI(link.url));
+    return this._processLinks(links);
   }),
 
   /**
@@ -485,9 +483,7 @@ Links.prototype = {
       params: {id, type: Bookmarks.TYPE_BOOKMARK}
     });
 
-    links = this._faviconBytesToDataURI(links);
-    links = this._addETLD(links);
-    links.filter(link => LinkChecker.checkLoadURI(link.url));
+    links = this._processLinks(links);
     if (links.length) {
       return links[0];
     }
@@ -551,9 +547,7 @@ Links.prototype = {
                     LIMIT :limit`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {columns, params: {limit}});
-    links = this._faviconBytesToDataURI(links);
-    links = this._addETLD(links);
-    return links.filter(link => LinkChecker.checkLoadURI(link.url));
+    return this._processLinks(links);
   }),
 
   /**
@@ -635,9 +629,7 @@ Links.prototype = {
       params
     });
 
-    links = this._faviconBytesToDataURI(links);
-    links = this._addETLD(links);
-    links = links.filter(link => LinkChecker.checkLoadURI(link.url));
+    links = this._processLinks(links);
 
     // Add the sync data to each link.
     links = links.map(link => Object.assign(link, urls[link.url]));
@@ -681,6 +673,20 @@ Links.prototype = {
       }
       return link;
     });
+  },
+
+  /**
+   * Process links after getting them from the database.
+   *
+   * @param {Array} links
+   *            an array containing link objects
+   *
+   * @returns {Array} an array of checked links with favicons and eTLDs added
+   */
+  _processLinks(links) {
+    return this._addETLD(
+      this._faviconBytesToDataURI(links)
+    ).filter(link => LinkChecker.checkLoadURI(link.url));
   },
 
   /**
