@@ -18,24 +18,25 @@ XPCOMUtils.defineLazyModuleGetter(this, "PreviewProvider",
  * @return {Promise}                              description
  */
 module.exports = Task.async(function*getScreenshots(sites, condition) {
-  const result = {};
-  for (let site of sites) {
+  return yield sites.map(Task.async(function*(site) {
     // Don't fetch screenshots if the site doesn't meet the conditions
     if (condition && !condition(site)) {
-      break;
+      return site;
     }
 
+    // Get the image
+    let dataURI;
     try {
-      const dataURI = yield PreviewProvider.getThumbnail(site.url);
-      result[site.url] = dataURI;
+      dataURI = yield PreviewProvider.getThumbnail(site.url);
     } catch (e) {
       Cu.reportError(e);
     }
-  }
-  return sites.map(site => {
-    if (!result[site.url]) {
+
+    // Return the site if no image was found
+    if (!dataURI) {
       return site;
     }
-    return Object.assign({}, site, {screenshot: result[site.url]});
-  });
+
+    return Object.assign({}, site, {screenshot: dataURI});
+  }));
 });
