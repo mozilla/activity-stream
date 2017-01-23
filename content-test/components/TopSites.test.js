@@ -7,6 +7,7 @@ const {PlaceholderTopSitesItem, TopSites, TopSitesItem} = ConnectedTopSites;
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
+const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const fakeSiteWithImage = faker.createSite();
 
 const fakeProps = {
@@ -98,6 +99,24 @@ describe("TopSitesItem", () => {
     it("should render a SiteIcon with appropriate props", () => {
       assert.instanceOf(instance.refs.icon, SiteIcon);
       assert.include(instance.refs.icon.props.site, fakeSite);
+    });
+  });
+
+  describe("screenshot", () => {
+    const siteWithScreenshot = Object.assign({}, fakeSiteWithImage, {screenshot: "cool.jpg"});
+    beforeEach(() => {
+      instance = renderWithProvider(<TopSitesItem {...siteWithScreenshot} />);
+    });
+    it("should render a title", () => {
+      assert.ok(instance.refs.title);
+      assert.equal(instance.refs.title.textContent, selectSiteProperties(siteWithScreenshot).label);
+    });
+    it("should render the screenshot element with the right background image", () => {
+      assert.ok(instance.refs.screenshot);
+      assert.equal(instance.refs.screenshot.style.backgroundImage, "url(\"cool.jpg\")");
+    });
+    it("should add the .top-corner class to SiteIcon", () => {
+      assert.include(instance.refs.icon.props.className, "top-corner");
     });
   });
 });

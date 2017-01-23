@@ -7,6 +7,7 @@ const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
 const Hint = require("components/Hint/Hint");
+const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 
 const DEFAULT_LENGTH = 6;
 const TOP_SITES_HINT_TEXT = "Get right to the sites you visit most: click on a tile to open or hover to share, bookmark or delete.";
@@ -25,10 +26,24 @@ const TopSitesItem = React.createClass({
     const site = this.props;
     const index = site.index;
     const isActive = this.state.showContextMenu && this.state.activeTile === index;
+    const screenshot = site.screenshot;
+
+    // The top-corner class puts the site icon in the top corner, overlayed over the screenshot.
+    const siteIconClasses = classNames("tile-img-container", {"top-corner": screenshot});
+
+    const {label} = selectSiteProperties(site);
+
     return (<div className={classNames("tile-outer", {active: isActive})} key={site.guid || site.cache_key || index}>
       <a onClick={() => this.props.onClick(index)} className="tile" href={site.url} ref="topSiteLink">
-        <SiteIcon ref="icon" className="tile-img-container" site={site} faviconSize={32} showTitle={true} />
         <div className="inner-border" />
+        {screenshot && <div ref="screenshot" className="screenshot" style={{backgroundImage: `url(${screenshot})`}} />}
+        <SiteIcon
+          ref="icon"
+          className={siteIconClasses}
+          site={site} faviconSize={32}
+          showTitle={!screenshot} />
+
+        {screenshot && <div ref="title" className="site-title">{label}</div>}
       </a>
       <LinkMenuButton onClick={() => this.setState({showContextMenu: true, activeTile: index})} />
       <LinkMenu

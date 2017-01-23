@@ -31,6 +31,16 @@
     }
   }
 
+  .screenshot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-size: 250%;
+    background-position: top left;
+  }
+
   .tile {
     @include item-shadow;
     display: inline-flex;
@@ -48,6 +58,16 @@
       margin-bottom: 0;
     }
 
+    .site-title {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      padding-top: 6px;
+      font-size: 11px;
+      text-align: center;
+    }
+
 
     .tile-img-container {
       width: 100%;
@@ -57,6 +77,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
+
+      &.top-corner {
+        position: absolute;
+        height: 40px;
+        width: 40px;
+        z-index: 1000;
+        top: -6px;
+        left: -6px;
+      }
     }
   }
 }
