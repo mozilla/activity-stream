@@ -23,7 +23,7 @@ describe("TopSitesFeed", () => {
     PlacesProvider.links.asyncGetTopNewTabSites.reset();
     reduxState = {Experiments: {values: {}}};
     instance = new TopSitesFeed({getCachedMetadata});
-    instance.store = {getState() {return reduxState}};
+    instance.store = {getState() {return reduxState;}};
     sinon.spy(instance.options, "getCachedMetadata");
   });
   it("should create a TopSitesFeed", () => {
@@ -60,7 +60,7 @@ describe("TopSitesFeed", () => {
       reduxState.Experiments.values.screenshots = true;
       return instance.getData().then(result => {
         assert.calledOnce(getScreenshots);
-        // Note: our fake getScreenshots function resolves with ["foo"] 
+        // Note: our fake getScreenshots function resolves with ["foo"]
         assert.deepEqual(result.data, ["foo"]);
       });
     });
