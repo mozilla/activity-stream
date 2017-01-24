@@ -118,7 +118,7 @@ ActivityStreams.prototype = {
     }
     this._tabTracker.init(this.appURLs, this._experimentProvider.experimentId, this._store);
     this._searchProvider.init();
-    this._initializePreviewProvier(this._experimentProvider, this._metadataStore, this._tabTracker);
+    this._initializePreviewProvider(this._metadataStore, this._tabTracker);
     this._initializePageScraper(this._previewProvider, this._tabTracker);
     this._initializeShareProvider(this._tabTracker);
     this._initializePrefProvider(this._tabTracker);
@@ -189,8 +189,8 @@ ActivityStreams.prototype = {
     this._appURLHider = new AppURLHider(this.appURLs);
   },
 
-  _initializePreviewProvier(experimentProvider, metadataStore, tabTracker) {
-    this._previewProvider = new PreviewProvider(tabTracker, metadataStore, experimentProvider);
+  _initializePreviewProvider(metadataStore, tabTracker) {
+    this._previewProvider = new PreviewProvider(tabTracker, metadataStore);
   },
 
   _initializePrefProvider(tabTracker) {

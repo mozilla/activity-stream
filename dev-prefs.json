@@ -3,6 +3,5 @@
   "xpinstall.signatures.required": false,
   "extensions.@activity-streams.sdk.console.logLevel": "info",
   "extensions.@activity-streams.telemetry.ping.endpoint": "https://onyx_tiles.stage.mozaws.net/v3/links/activity-stream",
-  "extensions.@activity-streams.embedly.endpoint": "https://embedly-proxy.services.mozilla.com/v2/extract",
-  "extensions.@activity-streams.metadataSource": "MetadataService"
+  "extensions.@activity-streams.metadata.endpoint": "https://embedly-proxy.services.mozilla.com/v2/metadata"
 }

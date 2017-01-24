@@ -4,7 +4,3 @@ LOGGING: true
 # This will fire fake events; use this if you want to run the project
 # outside of the add-on
 USE_SHIM: false
-
-# This is the embedly proxy server
-# File issues at https://github.com/mozilla/embedly-proxy/issues
-EMBEDLY_ENDPOINT: "https://embedly-proxy.services.mozilla.com/v2/extract"

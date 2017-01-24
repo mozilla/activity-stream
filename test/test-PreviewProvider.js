@@ -26,14 +26,9 @@ Cu.import("resource://gre/modules/NetUtil.jsm");
 
 const gPort = 8089;
 const gEndpointPrefix = `http://localhost:${gPort}`;
-const gEmbedlyEndpoint = "/embedlyLinkData";
 const gMetadataServiceEndpoint = "/metadataServiceLinkData";
-const gMetadataServiceSource = "MetadataService";
-const gEmbedlyServiceSource = "Embedly";
 let gPreviewProvider;
 let gMetadataStore = [];
-let gMetdataSource = simplePrefs.prefs.metadataSource;
-let gEmbedlyPref = simplePrefs.prefs["embedly.endpoint"];
 let gMetadataPref = simplePrefs.prefs["metadata.endpoint"];
 let gPrefEnabled = simplePrefs.prefs["previews.enabled"];
 
@@ -77,12 +72,12 @@ exports.test_only_request_links_once = function*(assert) {
                 {"url": "http://www.c.com"},
                 {"url": "http://www.d.com"}];
 
-  const endpoint = gPreviewProvider._getMetadataEndpoint();
-  assert.ok(endpoint, "The embedly endpoint is set");
+  const endpoint = gPreviewProvider._metadataEndpoint;
+  assert.ok(endpoint, "The metadata endpoint is set");
   let srv = httpd.startServerAsync(gPort);
 
   let urlsRequested = {};
-  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
+  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
     let data = JSON.parse(
         NetUtil.readInputStreamToString(
           request.bodyInputStream,
@@ -265,17 +260,17 @@ exports.test_throw_out_non_requested_responses = function*(assert) {
   // receive site 1, 2, 3
   const fakeResponse = {
     "urls": {
-      "http://example1.com/": {"description": "some good embedly metadata for fake site 1"},
-      "http://example2.com/": {"description": "some good embedly metadata for fake site 2"},
+      "http://example1.com/": {"description": "some good metadata for fake site 1"},
+      "http://example2.com/": {"description": "some good metadata for fake site 2"},
       "http://example3.com/": {"description": "oh no I didn't request this!"}
     }
   };
 
-  const endpoint = gPreviewProvider._getMetadataEndpoint();
-  assert.ok(endpoint, "The embedly endpoint is set");
+  const endpoint = gPreviewProvider._metadataEndpoint;
+  assert.ok(endpoint, "The metadata endpoint is set");
   let srv = httpd.startServerAsync(gPort);
 
-  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
+  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
     response.setHeader("Content-Type", "application/json", false);
     response.write(JSON.stringify(fakeResponse));
   });
@@ -298,7 +293,7 @@ exports.test_throw_out_non_requested_responses = function*(assert) {
   });
 };
 
-exports.test_mock_embedly_request = function*(assert) {
+exports.test_mock_metadata_request = function*(assert) {
   const fakeSite = {
     "url": "http://example.com/",
     "title": null,
@@ -309,31 +304,31 @@ exports.test_mock_embedly_request = function*(assert) {
     "type": "history"
   };
   const fakeRequest = [fakeSite];
-  const fakeResponse = {"urls": {"http://example.com/": {"description": "some embedly metadata"}}};
+  const fakeResponse = {"urls": {"http://example.com/": {"description": "some metadata"}}};
 
-  const embedlyVersionQuery = "addon_version=";
-  const endpoint = gPreviewProvider._getMetadataEndpoint();
-  assert.ok(endpoint, "The embedly endpoint is set");
+  const versionQuery = "addon_version=";
+  const endpoint = gPreviewProvider._metadataEndpoint;
+  assert.ok(endpoint, "The metadata endpoint is set");
 
   let srv = httpd.startServerAsync(gPort);
-  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
+  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
     // first, check that the version included in the query string
-    assert.deepEqual(`${request.queryString}`, `${embedlyVersionQuery}${self.version}`, "we're hitting the correct endpoint");
+    assert.deepEqual(`${request.queryString}`, `${versionQuery}${self.version}`, "we're hitting the correct endpoint");
     response.setHeader("Content-Type", "application/json", false);
     response.write(JSON.stringify(fakeResponse));
   });
 
-  // make a request to embedly with 'fakeSite'
+  // make a request to metadat service with 'fakeSite'
   yield gPreviewProvider.asyncSaveLinks(fakeRequest);
 
   // we should have saved the fake site into the database
-  assert.deepEqual(gMetadataStore[0][0].description, "some embedly metadata", "inserted and saved the embedly data");
+  assert.deepEqual(gMetadataStore[0][0].description, "some metadata", "inserted and saved the metadadata");
   assert.ok(gMetadataStore[0][0].expired_at, "an expiry time was added");
-  assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "a metadata source was added from Embedly");
   assert.ok(gMetadataStore[0][0].favicon_height, "added a favicon_height");
   assert.ok(gMetadataStore[0][0].favicon_width, "added a favicon_width");
+  assert.equal(gMetadataStore[0][0].metadata_source, "MetadataService", "a metadata source was added");
 
-  // retrieve the contents of the database - don't go to embedly
+  // retrieve the contents of the database - don't go to metadata service
   let cachedLinks = yield gPreviewProvider.asyncGetEnhancedLinks(fakeRequest);
   assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getEnhancedLinks should prioritize new data");
   assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getEnhancedLinks should prioritize new data");
@@ -351,21 +346,21 @@ exports.test_no_metadata_source = function*(assert) {
     "url": "http://www.amazon.com/",
     "title": null
   };
-  const fakeResponse = {"urls": {"http://www.amazon.com/": {"description": "some embedly metadata"}}};
+  const fakeResponse = {"urls": {"http://www.amazon.com/": {"description": "some metadata"}}};
 
   let cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
   assert.equal(cachedLink[0].metadata_source, "TippyTopProvider", "metadata came from TippyTopProvider");
 
   let srv = httpd.startServerAsync(gPort);
-  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
+  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
     response.setHeader("Content-Type", "application/json", false);
     response.write(JSON.stringify(fakeResponse));
   });
   yield gPreviewProvider.asyncSaveLinks([fakeSite]);
   cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
 
-  assert.equal(gMetadataStore[0][0].metadata_source, gEmbedlyServiceSource, "correct metadata_source in database");
-  assert.equal(cachedLink[0].metadata_source, gEmbedlyServiceSource, "correct metadata_source returned for this link");
+  assert.equal(gMetadataStore[0][0].metadata_source, "MetadataService", "correct metadata_source in database");
+  assert.equal(cachedLink[0].metadata_source, "MetadataService", "correct metadata_source returned for this link");
 
   yield new Promise(resolve => {
     srv.stop(resolve);
@@ -373,7 +368,7 @@ exports.test_no_metadata_source = function*(assert) {
 };
 
 exports.test_prefer_tippytop_favicons = function*(assert) {
-  // we're using youtube here because it's known that the favicon that Embedly
+  // we're using youtube here because it's known that the favicon that metadata service
   // returns is worse than the tippytop favicon - so we want to use the tippytop one
   const fakeSite = {
     "url": "http://www.youtube.com/",
@@ -382,7 +377,7 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
   const fakeResponse = {
     "urls": {
       "http://www.youtube.com/": {
-        "description": "some embedly generated description",
+        "description": "some generated description",
         "favicon_url": "https://badicon.com",
         "background_color": "#BADCOLR"
       }
@@ -398,7 +393,7 @@ exports.test_prefer_tippytop_favicons = function*(assert) {
   assert.deepEqual(hexToRGB(tippyTopLink.background_color), cachedLink[0].background_color, "TippyTopProvider added a background_color");
 
   let srv = httpd.startServerAsync(gPort);
-  srv.registerPathHandler(gEmbedlyEndpoint, function handle(request, response) {
+  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
     response.setHeader("Content-Type", "application/json", false);
     response.write(JSON.stringify(fakeResponse));
   });
@@ -422,75 +417,6 @@ exports.test_get_enhanced_disabled = function*(assert) {
   simplePrefs.prefs["previews.enabled"] = false;
   let cachedLinks = yield gPreviewProvider.asyncGetEnhancedLinks(fakeData);
   assert.deepEqual(cachedLinks, fakeData, "if disabled, should return links as is");
-};
-
-exports.test_change_metadata_endpoint = function*(assert) {
-  const fakeSite = {
-    "url": "http://foo.com/",
-    "title": null,
-    "lastVisitDate": 1459537019061,
-    "frecency": 2000,
-    "favicon": null,
-    "bookmarkDateCreated": 1459537019061,
-    "type": "history"
-  };
-  const fakeRequest = [fakeSite];
-  const fakeResponse = {"urls": {"http://foo.com/": {"metaData": "some metadata found by MetadataService"}}};
-  const metadataVersionQuery = `?addon_version=${self.version}`;
-
-  // change the endpoint to point to metadata service
-  simplePrefs.prefs.metadataSource = gMetadataServiceSource;
-  const endpoint = gPreviewProvider._getMetadataEndpoint();
-  assert.equal(endpoint, `${gEndpointPrefix}${gMetadataServiceEndpoint}${metadataVersionQuery}`, "The new endpoint is set");
-  assert.equal(gPreviewProvider._getMetadataSourceName(), gMetadataServiceSource, "We updated the source name");
-
-  let srv = httpd.startServerAsync(gPort);
-  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
-    assert.deepEqual(`${request._path}`, gMetadataServiceEndpoint, "we're hitting the correct endpoint");
-    response.setHeader("Content-Type", "application/json", false);
-    response.write(JSON.stringify(fakeResponse));
-  });
-
-  // make a request to MetadataService with 'fakeSite'
-  yield gPreviewProvider.asyncSaveLinks(fakeRequest);
-
-  // we should have saved the fake site into the database with MetadataService data
-  assert.deepEqual(gMetadataStore[0][0].metaData, "some metadata found by MetadataService", "inserted and saved the metadata");
-  assert.equal(gMetadataStore[0][0].metadata_source, gMetadataServiceSource, "the metadata source came from our service");
-
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
-
-exports.test_faulty_metadata_endpoint = function(assert) {
-  // change the endpoint to some garbage
-  simplePrefs.prefs.metadataSource = "garbagePref";
-  let endpoint = gPreviewProvider._getMetadataEndpoint();
-  const metadataVersionQuery = `?addon_version=${self.version}`;
-  assert.equal(endpoint, `${gEndpointPrefix}${gEmbedlyEndpoint}${metadataVersionQuery}`, "fallback to Embedly if the metadataSource is invalid");
-  assert.equal(gPreviewProvider._getMetadataSourceName(), gEmbedlyServiceSource, "fallback to Embedly as source");
-
-  // change it back to make sure it overrides
-  simplePrefs.prefs.metadataSource = gMetadataServiceSource;
-  endpoint = gPreviewProvider._getMetadataEndpoint();
-  assert.equal(endpoint, `${gEndpointPrefix}${gMetadataServiceEndpoint}${metadataVersionQuery}`, "properly set the endpoint");
-  assert.equal(gPreviewProvider._getMetadataSourceName(), gMetadataServiceSource, "properly set the source");
-};
-
-exports.test_metadata_service_experiment = function(assert) {
-  // before we decide if we are in the experiment we always have a default of Embedly
-  const oldPrefValue = simplePrefs.prefs.metadataSource;
-  assert.equal(oldPrefValue, gEmbedlyServiceSource, "sanity check that our default is Embedly");
-
-  // force us into the metadataService experiment
-  let mockExperimentProvider = {data: {metadataService: true}};
-  gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
-
-  // should update the pref and the source
-  const newPrefValue = simplePrefs.prefs.metadataSource;
-  assert.equal(gPreviewProvider._getMetadataSourceName(), gMetadataServiceSource, "properly set the source if we are in the experiment");
-  assert.equal(newPrefValue, gMetadataServiceSource, "properly set the actual pref itself");
 };
 
 exports.test_copy_over_correct_data_from_firefox = function*(assert) {
@@ -534,12 +460,9 @@ exports.test_compute_image_sizes = function*(assert) {
 };
 
 before(exports, () => {
-  simplePrefs.prefs.metadataSource = gEmbedlyServiceSource;
-  simplePrefs.prefs["embedly.endpoint"] = `${gEndpointPrefix}${gEmbedlyEndpoint}`;
   simplePrefs.prefs["metadata.endpoint"] = `${gEndpointPrefix}${gMetadataServiceEndpoint}`;
   simplePrefs.prefs["previews.enabled"] = true;
-  let mockExperimentProvider = {data: {metadataService: false}};
-  gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
+  gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, {initFresh: true});
   gPreviewProvider._getFaviconColors = function() {
     return Promise.resolve(null);
   };
@@ -549,8 +472,6 @@ before(exports, () => {
 });
 
 after(exports, () => {
-  simplePrefs.prefs.metadataSource = gMetdataSource;
-  simplePrefs.prefs["embedly.endpoint"] = gEmbedlyPref;
   simplePrefs.prefs["metadata.endpoint"] = gMetadataPref;
   simplePrefs.prefs["previews.enabled"] = gPrefEnabled;
   gMetadataStore = [];

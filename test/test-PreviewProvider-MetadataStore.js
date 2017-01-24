@@ -13,9 +13,8 @@ const {metadataFixture} = require("./lib/MetastoreFixture.js");
 
 const gMetadataStore = new MetadataStore();
 const gPort = 8079;
-const gEmbedly = "Embedly";
 let gPreviewProvider;
-let gPrefEmbedly = simplePrefs.prefs["embedly.endpoint"];
+let gEndpoint = simplePrefs.prefs["metadata.endpoint"];
 let gPrefEnabled = simplePrefs.prefs["previews.enabled"];
 
 exports.test_metadatastore_saves_new_links = function*(assert) {
@@ -29,7 +28,7 @@ exports.test_metadatastore_saves_new_links = function*(assert) {
     {url: "https://www.mozilla.org/"},
     {url: "https://www.mozilla.org/en-US/firefox/new"},
     {url: "https://www.notindb.com/", cache_key: "notindb.com/"}];
-  const fakeResponse = {"urls": {"https://www.notindb.com/": {"description": "some embedly metadata"}}};
+  const fakeResponse = {"urls": {"https://www.notindb.com/": {"description": "some metadata"}}};
 
   let srv = httpd.startServerAsync(gPort);
   srv.registerPathHandler("/previewProviderMetadataStore", function handle(request, response) {
@@ -129,12 +128,11 @@ function waitForAsyncReset() {
 }
 
 before(exports, function*() {
-  simplePrefs.prefs.metadataSource = gEmbedly;
-  simplePrefs.prefs["embedly.endpoint"] = `http://localhost:${gPort}/previewProviderMetadataStore`;
+  simplePrefs.prefs["metadata.endpoint"] = `http://localhost:${gPort}/previewProviderMetadataStore`;
   simplePrefs.prefs["previews.enabled"] = true;
   yield gMetadataStore.asyncConnect();
   let mockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
-  gPreviewProvider = new PreviewProvider(mockTabTracker, gMetadataStore, {data: {metadataService: false}}, {initFresh: true});
+  gPreviewProvider = new PreviewProvider(mockTabTracker, gMetadataStore, {initFresh: true});
   gPreviewProvider._getFaviconColors = function() {
     return Promise.resolve(null);
   };
@@ -144,7 +142,7 @@ before(exports, function*() {
 });
 
 after(exports, function*() {
-  simplePrefs.prefs["embedly.endpoint"] = gPrefEmbedly;
+  simplePrefs.prefs["metadata.endpoint"] = gEndpoint;
   simplePrefs.prefs["previews.enabled"] = gPrefEnabled;
   yield gMetadataStore.asyncReset();
   yield waitForAsyncReset();

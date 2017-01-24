@@ -1,4 +1,3 @@
 DEVELOPMENT: false
 LOGGING: false
 USE_SHIM: false
-EMBEDLY_ENDPOINT: "https://embedly-proxy.services.mozilla.com/v2/extract"
