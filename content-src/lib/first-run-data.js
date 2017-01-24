@@ -1,6 +1,7 @@
 const FIRST_RUN_TYPE = "first-run";
 const FAVICON_PATH = "favicons/images/";
 
+// Note: this should probably be moved to the addon side and generated from tippy-top-sites instead
 module.exports = {
   FIRST_RUN_TYPE,
   TopSites: [
@@ -8,7 +9,7 @@ module.exports = {
       "title": "Facebook",
       "url": "https://www.facebook.com/",
       "favicon_url": "facebook-com.png",
-      "background_color": [237, 240, 245]
+      "background_color": [59, 89, 152]
     },
     {
       "title": "YouTube",
