@@ -33,6 +33,12 @@ module.exports = class TopSitesFeed extends Feed {
             }
             return true;
           });
+          links = links.map(link => {
+            if (link.screenshot) {
+              link.metadata_source = `${link.metadata_source}+Screenshot`;
+            }
+            return link;
+          });
         } catch (e) {
           Cu.reportError(e);
         }
