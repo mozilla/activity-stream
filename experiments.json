@@ -61,7 +61,7 @@
   },
   "metadataService": {
     "name": "Use Mozilla MetadataService",
-    "active": true,
+    "active": false,
     "description": "Compute metadata using MetadataService",
     "control": {
       "value": false,
