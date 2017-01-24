@@ -125,12 +125,12 @@
     "description": "Add screenshots for some Top Sites",
     "control": {
       "value": false,
-      "description": "Do'nt show screenshots"
+      "description": "Don't show screenshots"
     },
     "variant": {
       "id": "exp-009-screenshots",
       "value": true,
-      "threshold": 0,
+      "threshold": 0.2,
       "description": "Show screenshots"
     }
   }
