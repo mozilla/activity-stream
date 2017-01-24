@@ -1,6 +1,8 @@
 /* globals module */
 "use strict";
 
+const urlParse = require("common/vendor")("url-parse");
+
 /**
  * Convert a hex color string to the RGB form, e.g. #0A0102 => [10, 1, 2]
  */
@@ -57,9 +59,18 @@ function extractMetadataFaviconFields(link) {
   return result;
 }
 
+/**
+ * Returns true if the path of the passed in url is "/" or ""
+ */
+function isRootDomain(url) {
+  const path = urlParse(url).pathname;
+  return path === "/" || path === "";
+}
+
 module.exports = {
   consolidateFavicons,
   consolidateBackgroundColors,
   hexToRGB,
-  extractMetadataFaviconFields
+  extractMetadataFaviconFields,
+  isRootDomain
 };

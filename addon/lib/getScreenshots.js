@@ -19,10 +19,14 @@ XPCOMUtils.defineLazyModuleGetter(this, "PreviewProvider",
  */
 module.exports = Task.async(function*getScreenshots(sites, condition) {
   const result = {};
+
+  // TODO: FIXME: Rewrite this function so that the screenshotting is done
+  // in parallel. For a start, see
+  // https://github.com/mozilla/activity-stream/pull/2058/commits/f974b48a1974d9fb024ccb239d59ad4fc25b5042
   for (let site of sites) {
     // Don't fetch screenshots if the site doesn't meet the conditions
     if (condition && !condition(site)) {
-      break;
+      continue;
     }
 
     try {
