@@ -22,7 +22,7 @@ module.exports = Task.async(function*getScreenshots(sites, condition) {
   for (let site of sites) {
     // Don't fetch screenshots if the site doesn't meet the conditions
     if (condition && !condition(site)) {
-      break;
+      continue;
     }
 
     try {
