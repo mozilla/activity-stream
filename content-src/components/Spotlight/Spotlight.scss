@@ -122,3 +122,10 @@
     margin: 0;
   }
 }
+
+// overrides for Top Sites styling experiment
+.top-sites-new-style {
+  .site-icon {
+    display: none;
+  }
+}
