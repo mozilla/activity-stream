@@ -10,7 +10,13 @@ module.exports = storybookBaseConfig => {
     module: Object.assign({}, webpack_common.module),
     resolve: webpack_common.resolve,
     devtool: "eval-sourcemap",
-    plugins: storybookBaseConfig.plugins.concat(webpack_common.plugins)
+    plugins: storybookBaseConfig.plugins.concat(webpack_common.plugins),
+    externals: {
+      // enzyme needs these for some reason
+      "react/addons": true,
+      "react/lib/ReactContext": true,
+      "react/lib/ExecutionEnvironment": true
+    }
   });
 
   // As of this writing CSS is not handled by webpack, so to get CSS changes to
