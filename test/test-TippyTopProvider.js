@@ -2,6 +2,7 @@
 
 const {TippyTopProvider} = require("addon/TippyTopProvider");
 const urlParse = require("common/vendor")("url-parse");
+const {IMAGE_SIZE} = require("common/vendor")("tippy-top-sites");
 
 exports["test TippyTopProvider init"] = function(assert) {
   // Test the default init
@@ -66,8 +67,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
-    favicon_height: 64,
-    favicon_width: 64,
+    favicon_height: IMAGE_SIZE,
+    favicon_width: IMAGE_SIZE,
     background_color: "#fff",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -77,8 +78,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/github-com.png",
-    favicon_height: 64,
-    favicon_width: 64,
+    favicon_height: IMAGE_SIZE,
+    favicon_width: IMAGE_SIZE,
     background_color: "#eee",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -88,8 +89,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/github-com.png",
-    favicon_height: 64,
-    favicon_width: 64,
+    favicon_height: IMAGE_SIZE,
+    favicon_width: IMAGE_SIZE,
     background_color: "#eee",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -99,8 +100,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/example-com.png",
-    favicon_height: 64,
-    favicon_width: 64,
+    favicon_height: IMAGE_SIZE,
+    favicon_width: IMAGE_SIZE,
     background_color: "#ddd",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -110,8 +111,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
-    favicon_height: 64,
-    favicon_width: 64,
+    favicon_height: IMAGE_SIZE,
+    favicon_width: IMAGE_SIZE,
     background_color: "#fff",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
@@ -121,8 +122,8 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   assert.deepEqual({
     url: site.url,
     favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
-    favicon_height: 64,
-    favicon_width: 64,
+    favicon_height: IMAGE_SIZE,
+    favicon_width: IMAGE_SIZE,
     background_color: "#fff",
     metadata_source: "TippyTopProvider"
   }, tippyTopProvider.processSite(site));
