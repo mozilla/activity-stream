@@ -26,7 +26,7 @@ module.exports = class TopSitesFeed extends Feed {
       if (experiments.screenshots) {
         try {
           links = yield getScreenshots(links, site => {
-            if (site.favicon_height >= 64 && site.favicon_width >= 64 && urlParse(site.url).pathname === "/") {
+            if (site.favicon_height >= 64 && site.favicon_width >= 64 && ["/", ""].includes(urlParse(site.url).pathname)) {
               // If we are at the "root domain path" and the icon is big enough,
               // we don't show a screenshot.
               return false;
