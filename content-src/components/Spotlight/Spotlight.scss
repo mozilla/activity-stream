@@ -122,3 +122,13 @@
     margin: 0;
   }
 }
+
+// Overrides for Top Sites styling experiment.
+// We just hide site icons to try to better differentiate from top sites.
+// If/when we graduate the experiment, we'll just want to remove the HTML for
+// that completely.
+.top-sites-new-style {
+  .site-icon {
+    display: none;
+  }
+}
