@@ -64,6 +64,30 @@ describe("TopSitesFeed", () => {
         assert.deepEqual(result.data, ["foo"]);
       });
     });
+    it("shouldn't get screenshots for root domain urls with big favicons", () => {
+      reduxState.Experiments.values.screenshots = true;
+      return instance.getData().then(result => {
+        // The function that determines whether a screenshot should be captured
+        // is passed into getScreenshots() as the second argument.
+        const shouldGetScreenshot = getScreenshots.getCall(0).args[1];
+        assert.equal(
+          false,
+          shouldGetScreenshot({favicon_width: 64, favicon_height: 64, url: "https://mozilla.org/"}
+        ));
+        assert.equal(
+          false,
+          shouldGetScreenshot({favicon_width: 64, favicon_height: 64, url: "https://mozilla.org"}
+        ));
+        assert.equal(
+          true,
+          shouldGetScreenshot({favicon_width: 64, favicon_height: 64, url: "https://mozilla.org/foo"}
+        ));
+        assert.equal(
+          true,
+          shouldGetScreenshot({favicon_width: 32, favicon_height: 32, url: "https://mozilla.org"}
+        ));
+      });
+    });
   });
 
   describe("#onAction", () => {
