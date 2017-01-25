@@ -105,6 +105,11 @@
         // graduates, we should change the HTML instead.
         overflow: visible;
       }
+
+      .site-title {
+        height: 22px;
+        overflow: hidden;
+      }
     }
 
     .site-icon {
