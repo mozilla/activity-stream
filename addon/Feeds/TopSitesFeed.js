@@ -6,6 +6,7 @@ const {TOP_SITES_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const getScreenshots = require("addon/lib/getScreenshots");
+const {isRootDomain} = require("addon/lib/utils");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -25,10 +26,18 @@ module.exports = class TopSitesFeed extends Feed {
       if (experiments.screenshots) {
         try {
           links = yield getScreenshots(links, site => {
-            if (site.favicon_height >= 64 && site.favicon_width >= 64) {
+            if (site.favicon_height >= 64 && site.favicon_width >= 64 && isRootDomain(site.url)) {
+              // If we are at the "root domain path" and the icon is big enough,
+              // we don't show a screenshot.
               return false;
             }
             return true;
+          });
+          links = links.map(link => {
+            if (link.screenshot) {
+              link.metadata_source = `${link.metadata_source}+Screenshot`;
+            }
+            return link;
           });
         } catch (e) {
           Cu.reportError(e);
