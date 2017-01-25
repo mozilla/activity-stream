@@ -41,6 +41,5 @@ module.exports = {
         "origin": "https://myspace.com"
       }
     ]
-  },
-  "Hints": {}
+  }
 };

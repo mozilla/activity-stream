@@ -6,7 +6,6 @@ const Experiments = require("./Experiments");
 const Filter = require("./Filter");
 const Prefs = require("./Prefs");
 const ShareProviders = require("./ShareProviders");
-const Hints = require("./Hints");
 const PlacesStats = require("./PlacesStats");
 
 module.exports = {
@@ -17,6 +16,5 @@ module.exports = {
   Filter,
   Prefs,
   ShareProviders,
-  Hints,
   PlacesStats
 };

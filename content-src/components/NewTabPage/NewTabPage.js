@@ -63,7 +63,7 @@ const NewTabPage = React.createClass({
         <div className="show-on-init on">
           <section>
             <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
-              sites={props.TopSites.rows} showHint={props.TopSites.showHint} showNewStyle={topSitesExperimentIsOn} />
+              sites={props.TopSites.rows} showNewStyle={topSitesExperimentIsOn} />
           </section>
 
           <section>

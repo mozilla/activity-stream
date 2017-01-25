@@ -5,8 +5,7 @@ const DEFAULTS = {
   error: false,
   init: false,
   isLoading: false,
-  canLoadMore: true,
-  showHint: true
+  canLoadMore: true
 };
 
 module.exports = function setRowsOrError(requestType, responseType, querySize) {
