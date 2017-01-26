@@ -190,7 +190,8 @@ $code-color: #E8005C;
   flex-grow: 1;
   margin: 0;
   outline: none;
-  padding: 6px 12px 8px $search-input-left-label-width;
+  padding: 0 12px 0 $search-input-left-label-width;
+  height: 100%;
 
   &:focus {
     border-color: $search-blue;
