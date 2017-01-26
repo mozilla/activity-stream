@@ -23,25 +23,14 @@ const TopSitesItem = React.createClass({
   _faviconSize(site, topSitesExperimentIsOn, screenshot) {
     let faviconSize = 32;
     if (topSitesExperimentIsOn && !screenshot) {
-      if (!site.favicon_width) {
-        // default to 32 if not specified
-        faviconSize = 32;
-      } else {
-        faviconSize = site.favicon_width;
-      }
-
       if (site.favicon_url && site.favicon_url.startsWith("resource://")) {
         // If it starts with resource:// then it's a tippy top icon. We want the size
         // set to 64 for those.
         faviconSize = 64;
-      }
-
-      // We want the favicon to be at least 32x32 and at most 96x96 (size of the tile box).
-      // And we don't want them to be smaller than 32, our previous fixed size.
-      if (faviconSize > 96) {
+      } else {
+        // If we have a normal (non tippy top) favicon, we're going to stretch
+        // or shrink it to be wall to wall.
         faviconSize = 96;
-      } else if (faviconSize < 32) {
-        faviconSize = 32;
       }
     }
     return faviconSize;
