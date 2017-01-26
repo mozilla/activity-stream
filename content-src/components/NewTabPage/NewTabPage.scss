@@ -82,7 +82,7 @@
 .debug-link {
   position: fixed;
   bottom: 0;
-  right: 0;
+  offset-inline-end: 0;
   padding: 10px;
   background: $link-blue;
   color: $white;

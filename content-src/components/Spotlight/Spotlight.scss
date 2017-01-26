@@ -1,5 +1,5 @@
 .spotlight {
-  margin-right: -$base-gutter;
+  margin-inline-end: -$base-gutter;
 
   .section-title {
     // Compensate for margin on spotlight-items.  Once spotlight-list can be a
@@ -26,7 +26,7 @@
   font-size: 14px;
   background: $white;
   display: inline-block;
-  margin-right: $base-gutter;
+  margin-inline-end: $base-gutter;
   width: $spotlight-item-width;
   border-radius: $border-radius;
   height: $spotlight-item-height;

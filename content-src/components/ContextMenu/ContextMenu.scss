@@ -4,8 +4,8 @@
   font-size: $context-menu-font-size;
   box-shadow: $context-menu-shadow;
   top: ($link-menu-button-size / 4);
-  left: 100%;
-  margin-left: 5px;
+  offset-inline-start: 100%;
+  margin-inline-start: 5px;
   z-index: 10000;
   background: $bg-grey;
   border-radius: $context-menu-border-radius;
@@ -53,8 +53,8 @@
 
   .context-menu {
     display: none;
-    left: auto;
-    right: 95%;
+    offset-inline-start: auto;
+    offset-inline-end: 95%;
     top: -($link-menu-button-size / 4);
   }
 

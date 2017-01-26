@@ -38,7 +38,7 @@
     width: $snippet-image-size;
     height: $snippet-image-size;
     background-size: cover;
-    margin-right: $snippet-image-margin;
+    margin-inline-end: $snippet-image-margin;
     flex-shrink: 0;
 
     &.placeholder {

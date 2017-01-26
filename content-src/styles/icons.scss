@@ -8,7 +8,7 @@
   vertical-align: middle;
 
   &.icon-spacer {
-    margin-right: 8px;
+    margin-inline-end: 8px;
   }
 
   &.icon-activity-stream {
@@ -108,7 +108,7 @@
   }
 
   &.icon-menu-arrow {
-    margin-left: auto;
+    margin-inline-start: auto;
     -moz-appearance: menuarrow;
   }
 }

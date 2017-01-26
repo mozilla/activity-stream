@@ -2,7 +2,7 @@
   cursor: pointer;
   position: absolute;
   top: -($link-menu-button-size / 2);
-  right: -($link-menu-button-size / 2);
+  offset-inline-end: -($link-menu-button-size / 2);
   width: $link-menu-button-size;
   height: $link-menu-button-size;
   background-color: $white;
