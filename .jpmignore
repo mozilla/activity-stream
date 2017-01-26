@@ -10,6 +10,7 @@ dist/
 firefox/
 loaders/
 logs/
+mozilla-central/
 node_modules/
 shims/
 test/
