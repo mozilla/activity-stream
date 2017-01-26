@@ -38,7 +38,10 @@ scripts:
     # Copy over an explicit list of files for mozilla-central building/testing
     # NB: This will be a superset of files that get packaged with moz.build
     copy: cpx "dist/mozilla-central/{addon/**,bootstrap.js,common/**,data/**,experiments.json,install.rdf.in,moz.build,package.json}" ../mozilla-central/browser/extensions/activity-stream
+    copytests: if [ "$SYMLINK_TESTS" != "true" ]; then cpx "test/functional/mochitest/**" ../mozilla-central/browser/extensions/activity-stream/test/functional/mochitest; fi
+    linktests: if [ "$SYMLINK_TESTS" = "true" ]; then ln -s ../../../../activity-stream/test ../mozilla-central/browser/extensions/activity-stream/test; fi
     patch: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r -; rm -f -) < mozilla-central/moz.build.patch
+    patch2: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r -; rm -f -) < mozilla-central/prefs_general.diff
 
 # start: Start watching/compiling assets,
   start:

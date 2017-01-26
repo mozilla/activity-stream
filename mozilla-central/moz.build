@@ -19,3 +19,8 @@ FINAL_TARGET_FILES.features['@activity-streams'] += [
 FINAL_TARGET_PP_FILES.features['@activity-streams'] += [
   'install.rdf.in'
 ]
+
+BROWSER_CHROME_MANIFESTS += [
+  'test/functional/mochitest/browser.ini'
+]
+
