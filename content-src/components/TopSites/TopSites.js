@@ -23,20 +23,15 @@ const TopSitesItem = React.createClass({
   _faviconSize(site, topSitesExperimentIsOn, screenshot) {
     let faviconSize = 32;
     if (topSitesExperimentIsOn && !screenshot) {
-      if (!site.favicon_width) {
-        // default to 64 if not specified
+      if (site.favicon_url && (site.favicon_url.startsWith("favicons/images") || site.favicon_url.startsWith("resource://"))) {
+        // If it starts with favicons/images or resource:// then it's a tippy top icon.
+        // We want the size set to 64 for those.
+        // FIXME: long term we want the metadata parser to pass along where the image came from.
         faviconSize = 64;
       } else {
-        faviconSize = site.favicon_width;
-      }
-
-      // We want the favicon to be at least 32x32 and at most 64x64 for now because
-      // I noticed a bunch of issues when letting the icons fill the tile (96x96).
-      // And we don't want them to be smaller than 32, our previous fixed size.
-      if (faviconSize > 64) {
-        faviconSize = 64;
-      } else if (faviconSize < 32) {
-        faviconSize = 32;
+        // If we have a normal (non tippy top) favicon, we're going to stretch
+        // or shrink it to be wall to wall.
+        faviconSize = 96;
       }
     }
     return faviconSize;
@@ -49,6 +44,7 @@ const TopSitesItem = React.createClass({
     const topSitesExperimentIsOn = this.props.showNewStyle;
     const screenshot = topSitesExperimentIsOn && site.screenshot;
     const faviconSize = this._faviconSize(site, topSitesExperimentIsOn, screenshot);
+    const showBackground = faviconSize < 96;
 
     // The top-corner class puts the site icon in the top corner, overlayed over the screenshot.
     const siteIconClasses = classNames("tile-img-container", {"top-corner": screenshot});
@@ -64,6 +60,7 @@ const TopSitesItem = React.createClass({
           className={siteIconClasses}
           site={site} faviconSize={faviconSize}
           showTitle={!screenshot}
+          showBackground={showBackground}
           showNewStyle={topSitesExperimentIsOn} />
 
         {screenshot && <div ref="title" className="site-title">{label}</div>}
