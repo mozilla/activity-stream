@@ -16,8 +16,13 @@ module.exports = class TopSitesFeed extends Feed {
     return Task.spawn(function*() {
       const experiments = this.store.getState().Experiments.values;
 
+      let links;
       // Get links from places
-      let links = yield experiments.originalNewTabSites ? PlacesProvider.links.asyncGetTopNewTabSites() : PlacesProvider.links.getTopFrecentSites();
+      if (experiments.originalNewTabSites || experiments.screenshots) {
+        links = yield PlacesProvider.links.asyncGetTopNewTabSites();
+      } else {
+        links = yield PlacesProvider.links.getTopFrecentSites();
+      }
 
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE");
