@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# Forked from https://github.com/devtools-html/debugger.html/blob/master/bin/prepare-mochitests-dev
+#
+# This sets up a mozilla-central build for local mochitest development with an
+# exported activity-stream tree and a symlinked test directory.
+
+ROOT=`dirname $0`
+FIREFOX_PATH="$ROOT/../../mozilla-central"
+MC_MODULE_PATH="$FIREFOX_PATH/browser/extensions/activity-stream"
+AS_ROOT_RELATIVE_TO_MC_AS="../../../../activity-stream"
+
+# This will either download or update the local Firefox repo
+"$ROOT/download-firefox-artifact"
+
+if [ $? -ne 0 ]; then
+  exit -1
+fi
+
+# Clean, package, and copy the activity stream files
+SYMLINK_TESTS=true npm run export
+
+# Be sure that we've built, and that the test glop in the objdir has been
+# created.
+cd "$FIREFOX_PATH"
+./mach build
