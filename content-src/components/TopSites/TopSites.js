@@ -24,17 +24,22 @@ const TopSitesItem = React.createClass({
     let faviconSize = 32;
     if (topSitesExperimentIsOn && !screenshot) {
       if (!site.favicon_width) {
-        // default to 64 if not specified
-        faviconSize = 64;
+        // default to 32 if not specified
+        faviconSize = 32;
       } else {
         faviconSize = site.favicon_width;
       }
 
-      // We want the favicon to be at least 32x32 and at most 64x64 for now because
-      // I noticed a bunch of issues when letting the icons fill the tile (96x96).
-      // And we don't want them to be smaller than 32, our previous fixed size.
-      if (faviconSize > 64) {
+      if (site.favicon_url && site.favicon_url.startsWith("resource://")) {
+        // If it starts with resource:// then it's a tippy top icon. We want the size
+        // set to 64 for those.
         faviconSize = 64;
+      }
+
+      // We want the favicon to be at least 32x32 and at most 96x96 (size of the tile box).
+      // And we don't want them to be smaller than 32, our previous fixed size.
+      if (faviconSize > 96) {
+        faviconSize = 96;
       } else if (faviconSize < 32) {
         faviconSize = 32;
       }
@@ -49,6 +54,7 @@ const TopSitesItem = React.createClass({
     const topSitesExperimentIsOn = this.props.showNewStyle;
     const screenshot = topSitesExperimentIsOn && site.screenshot;
     const faviconSize = this._faviconSize(site, topSitesExperimentIsOn, screenshot);
+    const showBackground = faviconSize < 96;
 
     // The top-corner class puts the site icon in the top corner, overlayed over the screenshot.
     const siteIconClasses = classNames("tile-img-container", {"top-corner": screenshot});
@@ -64,6 +70,7 @@ const TopSitesItem = React.createClass({
           className={siteIconClasses}
           site={site} faviconSize={faviconSize}
           showTitle={!screenshot}
+          showBackground={showBackground}
           showNewStyle={topSitesExperimentIsOn} />
 
         {screenshot && <div ref="title" className="site-title">{label}</div>}
