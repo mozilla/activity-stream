@@ -23,9 +23,10 @@ const TopSitesItem = React.createClass({
   _faviconSize(site, topSitesExperimentIsOn, screenshot) {
     let faviconSize = 32;
     if (topSitesExperimentIsOn && !screenshot) {
-      if (site.favicon_url && site.favicon_url.startsWith("resource://")) {
-        // If it starts with resource:// then it's a tippy top icon. We want the size
-        // set to 64 for those.
+      if (site.favicon_url && (site.favicon_url.startsWith("favicons/images") || site.favicon_url.startsWith("resource://"))) {
+        // If it starts with favicons/images or resource:// then it's a tippy top icon.
+        // We want the size set to 64 for those.
+        // FIXME: long term we want the metadata parser to pass along where the image came from.
         faviconSize = 64;
       } else {
         // If we have a normal (non tippy top) favicon, we're going to stretch
