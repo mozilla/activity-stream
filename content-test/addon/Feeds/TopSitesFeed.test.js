@@ -72,19 +72,19 @@ describe("TopSitesFeed", () => {
         const shouldGetScreenshot = getScreenshots.getCall(0).args[1];
         assert.equal(
           false,
-          shouldGetScreenshot({favicon_width: 64, favicon_height: 64, url: "https://mozilla.org/"}
+          shouldGetScreenshot({favicon_width: 96, favicon_height: 96, url: "https://mozilla.org/"}
         ));
         assert.equal(
           false,
-          shouldGetScreenshot({favicon_width: 64, favicon_height: 64, url: "https://mozilla.org"}
+          shouldGetScreenshot({favicon_width: 96, favicon_height: 96, url: "https://mozilla.org"}
         ));
         assert.equal(
           true,
-          shouldGetScreenshot({favicon_width: 64, favicon_height: 64, url: "https://mozilla.org/foo"}
+          shouldGetScreenshot({favicon_width: 96, favicon_height: 96, url: "https://mozilla.org/foo"}
         ));
         assert.equal(
           true,
-          shouldGetScreenshot({favicon_width: 32, favicon_height: 32, url: "https://mozilla.org"}
+          shouldGetScreenshot({favicon_width: 95, favicon_height: 95, url: "https://mozilla.org"}
         ));
       });
     });
