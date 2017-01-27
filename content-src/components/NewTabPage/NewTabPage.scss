@@ -21,64 +21,6 @@
   animation-fill-mode: both;
 }
 
-.bottom-links-container {
-  text-align: left;
-
-  .link-wrapper-right {
-    float: right;
-    position: relative;
-  }
-
-  .context-menu {
-    top: auto;
-    bottom: 100%;
-    right: 0;
-    left: auto;
-  }
-}
-
-.bottom-link {
-  cursor: pointer;
-  display: inline-block;
-  font-size: 12px;
-  border: 1px solid $faintest-black;
-  border-radius: 3px;
-  padding: 8px 13px;
-  color: $light-grey;
-
-  &.expand {
-    border-color: transparent;
-
-    .text {
-      display: none;
-    }
-
-    &:hover,
-    &.active {
-      border-color: $faintest-black;
-
-      .text {
-        display: inline;
-      }
-    }
-  }
-
-  .icon {
-    float: left;
-    opacity: 0.4;
-  }
-
-  &:hover,
-  &.active {
-    background: $very-light-grey;
-    color: inherit;
-
-    .icon {
-      opacity: 1;
-    }
-  }
-}
-
 .debug-link {
   position: fixed;
   bottom: 0;
