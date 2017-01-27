@@ -169,7 +169,6 @@ $code-color: #E8005C;
 
 @mixin search-input {
   border: 1px solid $search-input-border-color;
-  border-radius: $search-border-radius;
   box-shadow: none;
   flex-grow: 1;
   margin: 0;

@@ -8,7 +8,7 @@
   vertical-align: middle;
 
   &.icon-spacer {
-    margin-right: 8px;
+    margin-inline-end: 8px;
   }
 
   &.icon-activity-stream {
@@ -63,20 +63,8 @@
     background-image: url('#{$image-path}glyph-settings-16.svg');
   }
 
-  &.icon-showMore {
-    background-image: url('#{$image-path}glyph-showmore-16.svg');
-  }
-
   &.icon-timeline {
     background-image: url('#{$image-path}list-icon.svg');
-  }
-
-  &.icon-check {
-    background-image: url('#{$image-path}glyph-check-16.svg');
-  }
-
-  &.icon-pocket {
-    background-image: url('#{$image-path}glyph-pocket-16.svg');
   }
 
   &.icon-historyItem {
@@ -108,7 +96,7 @@
   }
 
   &.icon-menu-arrow {
-    margin-left: auto;
+    margin-inline-start: auto;
     -moz-appearance: menuarrow;
   }
 }

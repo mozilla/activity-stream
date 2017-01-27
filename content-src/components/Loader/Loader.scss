@@ -41,7 +41,8 @@
     // Since this is the only flexible child of loader, it will get all
     // the free space after the text (which pushes the status-box to the bottom)
     flex: 1 1 auto; // since this is
-    margin: 0 100px 15px 0;
+    margin: 0 0 15px;
+    margin-inline-end: 100px;
     max-width: 247px; // test shouldn't overwrite side of finderfox graphic
 
     color: $loader-body-color;
@@ -55,7 +56,7 @@
 
     .spinner {
       flex-shrink: 0;
-      margin-right: 10px;
+      margin-inline-end: 10px;
       width: $loader-spinner-size;
       height: $loader-spinner-size;
       display: inline-block;
@@ -63,4 +64,8 @@
       background-size: $loader-spinner-size $loader-spinner-size;
     }
   }
+}
+
+.loader:dir(rtl) {
+  background-position: left;
 }

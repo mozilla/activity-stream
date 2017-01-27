@@ -12,7 +12,7 @@ function template(rawOptions) {
     "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'self'; img-src http: https: data:; style-src 'self' 'unsafe-inline'; child-src 'self' https://*.youtube.com https://*.vimeo.com\">" :
     "";
   return `<!doctype html>
-<html lang="en-us">
+<html lang="en-us" dir="ltr">
   <head>
     <meta charset="utf-8">
     ${csp}
