@@ -9,7 +9,9 @@
 
   // This is a container for the delete menu
   .tile-outer {
+    @include item-shadow;
     @include link-menu-button;
+    border-radius: $border-radius;
     position: relative;
     display: inline-block;
     margin: 0 $tile-gutter 0 0;
@@ -29,6 +31,10 @@
         box-shadow: none;
       }
     }
+
+    &:hover .site-icon-title {
+      background-color: $tile-title-hover-color;
+    }
   }
 
   .screenshot {
@@ -43,10 +49,8 @@
   }
 
   .tile {
-    @include item-shadow;
     display: inline-flex;
     flex-shrink: 0;
-    border-radius: $border-radius;
     flex-direction: column;
     font-size: $tile-font-size;
     height: $tile-height;
@@ -96,7 +100,6 @@
   .top-sites {
 
     .tile {
-      @include item-shadow;
       box-shadow: none;
 
       .tile-img-container {
