@@ -90,6 +90,22 @@ Run `npm test` to run the tests once. Run `npm run help` for more options.
 
 Run `npm run benchmark` to run the benchmarks once. See more details for benchmarking the add-on [here](benchmark_how_to.md).
 
+### Exporting to mozilla-central
+
+To build the add-on and export the unpacked version to a `mozilla-central` directory that shares the same parent as this current directory, run this command:
+
+```sh
+npm run export
+```
+
+This will first clear out any existing files from `mozilla-central/browser/extensions/activity-stream` before copying over the newly built files and optionally patching `mozilla-central/browser/extensions/moz.build` to get the add-on built with Firefox. These changes to `mozilla-central` are uncommitted and ready for building/testing/committing.
+
+Note: You can create a `symlink` to the `mozilla-central` repository, e.g.,
+
+```sh
+ln -s ~/other-located-or-named-mozilla-central ../mozilla-central
+```
+
 ## Architecture - ActionManager
 When you instantiate an `ActionManager`, you give it a list of types which are valid for the application. If at any time you try to create an action with a type that isn't part of that list, it will throw an error. Yay!
 
