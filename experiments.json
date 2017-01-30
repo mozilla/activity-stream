@@ -121,7 +121,7 @@
   },
   "screenshots": {
     "name": "Screenshots for Top Sites",
-    "active": true,
+    "active": false,
     "description": "Add screenshots for some Top Sites",
     "control": {
       "value": false,
