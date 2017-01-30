@@ -14,10 +14,11 @@
     border-radius: $border-radius;
     position: relative;
     display: inline-block;
-    margin: 0;
+    margin: 0 0 $tile-gutter;
     margin-inline-end: $tile-gutter;
     @media (min-width: $break-point) {
       display: flex;
+      margin-bottom: 0;
     }
 
     // Only display a placeholder version (ie just outlines/shapes), for use
@@ -59,10 +60,6 @@
     text-decoration: none;
     width: $tile-width;
     color: inherit;
-    margin-bottom: $tile-gutter;
-    @media (min-width: $break-point) {
-      margin-bottom: 0;
-    }
 
     .site-title {
       position: absolute;
@@ -102,13 +99,11 @@
 
     .tile-outer {
       box-shadow: none;
-      margin-bottom: 32px;
       vertical-align: top;
     }
 
     .tile {
       box-shadow: none;
-      margin-bottom: 0;
 
       .tile-img-container {
         // This is a hack so the title is visible since we are positioning
