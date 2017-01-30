@@ -1,28 +1,22 @@
 module.exports = {
   history: {
-    label: "Visited",
+    label: "visited",
     icon: "historyItem"
   },
   open: {
-    label: "Open",
+    label: "open",
     icon: "tab"
   },
   synced: {
-    label: "Synced from another device",
+    label: "synced",
     icon: "sync"
   },
   bookmark: {
-    label: "Bookmarked",
+    label: "bookmarked",
     icon: "bookmark"
   },
-  recommended: {
-    label: "Trending",
-    icon: "pocket",
-    showTimestamp: false,
-    tooltip: "This page is trending on Pocket right now."
-  },
   topic: {
-    label: "Topic",
+    label: "topic",
     icon: "topic"
   }
 };

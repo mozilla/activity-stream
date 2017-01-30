@@ -2,6 +2,7 @@ const React = require("react");
 const highlightTypes = require("./types");
 const Tooltip = require("components/Tooltip/Tooltip");
 const getRelativeTime = require("lib/getRelativeTime");
+const {FormattedMessage} = require("react-intl");
 
 const HighlightContext = function(props) {
   let timestamp;
@@ -14,7 +15,7 @@ const HighlightContext = function(props) {
     <span className="hc-icon">
       <span className={`icon icon-${icon}`} /><span className="sr-only">{type}</span>
     </span>
-    <span className="hc-label">{label}</span>
+    <span className="hc-label"><FormattedMessage id={label} defaultMessage={"label"} /></span>
     <span hidden={!timestamp} className="hc-timestamp">{timestamp}</span>
     {tooltip && <Tooltip label={tooltip} />}
   </div>);

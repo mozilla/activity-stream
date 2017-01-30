@@ -4,7 +4,11 @@ const {Provider} = require("react-redux");
 const mockData = require("lib/fake-data");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const TestUtils = require("react-addons-test-utils");
-const {mount} = require("enzyme");
+const {mount, shallow} = require("enzyme");
+const {IntlProvider, intlShape} = require("react-intl");
+const messages = require("../locales/en-US/strings.json");
+const intlProvider = new IntlProvider({locale: "en", messages}, {});
+const {intl} = intlProvider.getChildContext();
 
 const DEFAULT_STORE = {
   getState: () => mockData,
@@ -22,10 +26,15 @@ function createMockProvider(custom) {
   });
 }
 
+function createIntlProvider(component) {
+  const intlWrapper = (<IntlProvider locale="en" messages={messages}>{component}</IntlProvider>);
+  return intlWrapper;
+}
+
 function renderWithProvider(component, store, node) {
   const ProviderWrapper = createMockProvider(store && store);
   const render = node ? instance => ReactDOM.render(instance, node) : TestUtils.renderIntoDocument;
-  const container = render(<ProviderWrapper>{component}</ProviderWrapper>);
+  const container = render(<ProviderWrapper>{createIntlProvider(component)}</ProviderWrapper>);
   return TestUtils.findRenderedComponentWithType(container, component.type);
 }
 
@@ -38,7 +47,7 @@ function renderWithProvider(component, store, node) {
  */
 function mountWithProvider(component, store) {
   const ProviderWrapper = createMockProvider(store && store);
-  const containerWrapper = mount(<ProviderWrapper>{component}</ProviderWrapper>);
+  const containerWrapper = mount(<ProviderWrapper>{createIntlProvider(component)}</ProviderWrapper>);
   return containerWrapper;
 }
 
@@ -64,6 +73,24 @@ function overrideGlobals(globalShims) {
   };
 }
 
+/**
+ * Helper functions to test components that do not need a store with Enzyme
+ */
+function nodeWithIntlProp(node) {
+  return React.cloneElement(node, {intl});
+}
+
+function shallowWithIntl(node, {context}) {
+  return shallow(nodeWithIntlProp(node), {context: Object.assign({}, context, {intl})});
+}
+
+function mountWithIntl(node, {context, childContextTypes}) {
+  return mount(nodeWithIntlProp(node), {
+    context: Object.assign({}, context, {intl}),
+    childContextTypes: Object.assign({}, {intl: intlShape}, childContextTypes)
+  });
+}
+
 module.exports = {
   rawMockData: mockData,
   mockData: Object.assign({}, mockData, selectNewTabSites(mockData)),
@@ -72,5 +99,8 @@ module.exports = {
   renderWithProvider,
   faker: require("test/faker"),
   overrideConsoleError,
-  overrideGlobals
+  overrideGlobals,
+  shallowWithIntl,
+  mountWithIntl,
+  messages
 };

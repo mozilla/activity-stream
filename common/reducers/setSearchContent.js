@@ -33,12 +33,6 @@ module.exports = function Search(type) {
           icon: engine.iconBuffer
         }));
         break;
-      case am.type("SEARCH_UISTRINGS_RESPONSE"):
-        state.searchPlaceholder = action.data.searchPlaceholder;
-        state.searchSettings = action.data.searchSettings;
-        state.searchHeader = action.data.searchHeader;
-        state.searchForSomethingWith = action.data.searchForSomethingWith;
-        break;
       case am.type("NOTIFY_UPDATE_SEARCH_STRING"):
         state.searchString = action.data.searchString;
         break;

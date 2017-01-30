@@ -7,6 +7,7 @@ const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
 const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
+const {FormattedMessage} = require("react-intl");
 
 const DEFAULT_LENGTH = 6;
 
@@ -121,7 +122,7 @@ const TopSites = React.createClass({
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
     return (<section className="top-sites">
-      <h3 className="section-title">Top Sites</h3>
+      <h3 className="section-title"><FormattedMessage id="top_sites" /></h3>
       <div className="tiles-wrapper">
         {sites.map((site, i) => {
           // if this is a placeholder, we want all the widgets to render empty

@@ -1,6 +1,6 @@
 const React = require("react");
-const TestUtils = require("react-addons-test-utils");
 const {createMockProvider} = require("test/test-utils");
+const {mountWithIntl} = require("test/test-utils");
 
 const Base = require("components/Base/Base");
 const NewTabPage = require("components/NewTabPage/NewTabPage");
@@ -9,10 +9,10 @@ const Provider = createMockProvider();
 describe("Base", () => {
   let instance;
   beforeEach(() => {
-    instance = TestUtils.renderIntoDocument(<Provider><Base /></Provider>);
+    instance = mountWithIntl(<Provider><Base /></Provider>, {context: {}, childContextTypes: {}});
   });
 
   it("should render NewTabPage by default", () => {
-    TestUtils.findRenderedComponentWithType(instance, NewTabPage);
+    assert.ok(instance.find(NewTabPage));
   });
 });

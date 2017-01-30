@@ -2,6 +2,7 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {actions} = require("common/action-manager");
 const PAGE_NAME = "NEW_TAB";
+const {injectIntl, FormattedMessage} = require("react-intl");
 
 const Search = React.createClass({
   getInitialState() {
@@ -258,7 +259,7 @@ const Search = React.createClass({
         value={searchString} maxLength="256"
         aria-expanded={this.getDropdownVisible()}
         aria-activedescendant={this.getActiveDescendantId()} autoComplete="off"
-        placeholder={this.props.searchPlaceholder}
+        placeholder={this.props.intl.formatMessage({id: "search_web"})}
         onFocus={() => this.setState({focus: true})}
         onChange={e => this.setValueAndSuggestions(e.target.value)}
         onKeyDown={e => this.handleKeyPress(e)}
@@ -270,7 +271,7 @@ const Search = React.createClass({
       <div className="search-container" role="presentation" hidden={!this.getDropdownVisible()}>
       <section className="search-title" hidden={!formHistory.concat(suggestions).length}>
         <img id="current-engine-icon" src={currentEngine.iconBuffer} alt={currentEngine.name.charAt(0)} width="16px" height="16px" />
-        {this.props.searchHeader.replace("%S", currentEngine.name)}
+        {this.props.intl.formatMessage({id: "search_header"}).replace("%S", currentEngine.name)}
       </section>
       <section className="history-search-suggestions" hidden={!formHistory.length}>
         <ul ref="formHistoryList" role="listbox">
@@ -305,7 +306,7 @@ const Search = React.createClass({
         </ul>
       </section>
       <section className="search-title">
-        <p>{this.props.searchForSomethingWith}<span><b> {searchString} </b></span>with:</p>
+        <p>{this.props.intl.formatMessage({id: "search_for"}).replace("%S", searchString)}</p>
       </section>
       <section className="search-partners" role="group">
             <ul>
@@ -327,7 +328,7 @@ const Search = React.createClass({
             onClick={e => {
               e.preventDefault();
               this.manageEngines();
-            }}>{this.props.searchSettings}
+            }}><FormattedMessage id="search_settings" />
           </button>
         </section>
       </div>
@@ -339,5 +340,5 @@ function select(state) {
   return state.Search;
 }
 
-module.exports = connect(select)(Search);
+module.exports = connect(select)(injectIntl(Search));
 module.exports.Search = Search;

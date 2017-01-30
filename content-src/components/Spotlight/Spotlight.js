@@ -9,6 +9,7 @@ const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {HighlightContext, PlaceholderHighlightContext} = require("components/HighlightContext/HighlightContext");
 const classNames = require("classnames");
+const {FormattedMessage} = require("react-intl");
 
 const SpotlightItem = React.createClass({
   getInitialState() {
@@ -163,7 +164,7 @@ const Spotlight = React.createClass({
   },
   render() {
     return (<section className="spotlight">
-      <h3 className="section-title">Highlights</h3>
+      <h3 className="section-title"><FormattedMessage id="highlights" /></h3>
       <ul className="spotlight-list">
         {this.props.placeholder ? this.renderPlaceholderSiteList() :
           this.renderSiteList()}

@@ -1,42 +1,46 @@
 const Loader = require("components/Loader/Loader");
 const React = require("react");
-const ReactDOM = require("react-dom");
-const TestUtils = require("react-addons-test-utils");
+const {mountWithIntl, messages} = require("test/test-utils");
+const DEFAULT_PROPS = {
+  title: messages.welcome_title,
+  body: messages.welcome_body,
+  label: messages.welcome_label
+};
 
 describe("Loader", () => {
-  let instance;
-  let el;
+  let wrapper;
   function setup(props = {}) {
-    instance = TestUtils.renderIntoDocument(<Loader {...props} />);
-    el = ReactDOM.findDOMNode(instance);
+    const customProps = Object.assign({}, DEFAULT_PROPS, props);
+    wrapper = mountWithIntl(<Loader {...customProps} />, {context: {}, childContextTypes: {}});
   }
 
   beforeEach(() => setup());
 
   it("should render the component", () => {
-    TestUtils.isCompositeComponentWithType(instance, Loader);
+    assert.ok(wrapper.find(Loader));
   });
   it("should be hidden by default", () => {
-    assert.isTrue(el.hidden);
+    assert.isTrue(wrapper.ref("loader").prop("hidden"));
   });
   it("should be visible if props.show is true", () => {
     setup({show: true});
-    assert.isFalse(el.hidden);
+    assert.isFalse(wrapper.ref("loader").prop("hidden"));
   });
   it("should render props.title as a title", () => {
     setup({id: "foo", title: "Everglade"});
-    assert.equal(instance.refs.title.innerHTML, "Everglade");
+    assert.equal(wrapper.ref("title").text(), "Everglade");
   });
   it("should render props.body content", () => {
     setup({id: "foo", body: "Everglade"});
-    assert.equal(instance.refs.body.innerHTML, "Everglade");
+    assert.equal(wrapper.ref("body").text(), "Everglade");
   });
   it("should render a custom label", () => {
     setup({label: "Hello world"});
-    assert.equal(instance.refs.statusBox.textContent, "Hello world");
+    assert.equal(wrapper.ref("statusBox").text(), "Hello world");
   });
   it("should add className to the default className", () => {
     setup({className: "foo"});
-    assert.equal(el.className, "loader foo");
+    assert.ok(wrapper.ref("loader").hasClass("loader"));
+    assert.ok(wrapper.ref("loader").hasClass("foo"));
   });
 });
