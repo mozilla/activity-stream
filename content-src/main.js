@@ -4,6 +4,8 @@ const {Provider} = require("react-redux");
 const Base = require("components/Base/Base");
 const createStore = require("common/create-store");
 const {ADDON_TO_CONTENT, CONTENT_TO_ADDON} = require("common/event-constants");
+const {IntlProvider} = require("react-intl");
+const strings = require("../locales/en-US/strings.json");
 
 const store = createStore({
   incoming: ADDON_TO_CONTENT,
@@ -15,7 +17,9 @@ const store = createStore({
 const Root = React.createClass({
   render() {
     return (<Provider store={store}>
-      <Base />
+      <IntlProvider locale="en-US" messages={strings}>
+        <Base />
+      </IntlProvider>
     </Provider>);
   }
 });

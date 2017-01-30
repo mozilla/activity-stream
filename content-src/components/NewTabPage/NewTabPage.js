@@ -10,13 +10,14 @@ const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
 const {HIGHLIGHTS_LENGTH} = require("common/constants");
 const classNames = require("classnames");
+const {injectIntl} = require("react-intl");
 
 const NewTabPage = React.createClass({
   getInitialState() {
     return {showSettingsMenu: false};
   },
   componentDidMount() {
-    document.title = "New Tab";
+    document.title = this.props.intl.formatMessage({id: "newtab"});
     setFavicon("newtab-icon.svg");
 
     // Note that data may or may not be complete, depending on
@@ -57,9 +58,9 @@ const NewTabPage = React.createClass({
         <Loader
           className="loading-notice"
           show={!this.props.isReady}
-          title="Welcome to new tab"
-          body="Firefox will use this space to show your most relevant bookmarks, articles, videos, and pages you've recently visited, so you can get back to them easily."
-          label="Identifying your Highlights" />
+          title="welcome_title"
+          body="welcome_body"
+          label="welcome_label" />
         <div className="show-on-init on">
           <section>
             <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
@@ -83,5 +84,5 @@ NewTabPage.propTypes = {
   dispatch: React.PropTypes.func.isRequired
 };
 
-module.exports = connect(selectNewTabSites)(NewTabPage);
+module.exports = connect(selectNewTabSites)(injectIntl(NewTabPage));
 module.exports.NewTabPage = NewTabPage;

@@ -83,18 +83,6 @@ SearchProvider.prototype = {
   },
 
   /**
-   *  Sets the UI strings.
-   */
-  get searchSuggestionUIStrings() {
-    return {
-      "searchHeader": "%S Search",
-      "searchForSomethingWith": "Search for",
-      "searchSettings": "Change Search Settings",
-      "searchPlaceholder": "Search the Web"
-    };
-  },
-
-  /**
    *  Gets the current engine - a combination of the engine name and the icon URI.
    */
   get currentEngine() {

@@ -33,7 +33,6 @@ function createHighlightData() {
   return faker ? [
     faker.createSpotlightItem(),
     faker.createSpotlightItem({type: "bookmark"}),
-    faker.createSpotlightItem({isRecommended: true}),
     faker.createSpotlightItem({override: {syncedFrom: "Nick's iPhone"}}),
     faker.createSpotlightItem({override: {isOpen: true}})
   ] : [];

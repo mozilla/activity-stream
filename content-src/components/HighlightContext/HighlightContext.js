@@ -2,11 +2,12 @@ const React = require("react");
 const highlightTypes = require("./types");
 const Tooltip = require("components/Tooltip/Tooltip");
 const getRelativeTime = require("lib/getRelativeTime");
+const {FormattedMessage} = require("react-intl");
 
 const HighlightContext = function(props) {
   let timestamp;
   const type = props.type;
-  const {icon, label, showTimestamp, tooltip} = Object.assign({}, highlightTypes[type], props);
+  const {icon, intlID, showTimestamp, tooltip} = Object.assign({}, highlightTypes[type], props);
   if (props.date && showTimestamp !== false) {
     timestamp = getRelativeTime(props.date);
   }
@@ -14,7 +15,7 @@ const HighlightContext = function(props) {
     <span className="hc-icon">
       <span className={`icon icon-${icon}`} /><span className="sr-only">{type}</span>
     </span>
-    <span className="hc-label">{label}</span>
+    <span className="hc-label"><FormattedMessage id={intlID} defaultMessage="Visited" /></span>
     <span hidden={!timestamp} className="hc-timestamp">{timestamp}</span>
     {tooltip && <Tooltip label={tooltip} />}
   </div>);
@@ -22,7 +23,7 @@ const HighlightContext = function(props) {
 
 HighlightContext.propTypes = {
   type: React.PropTypes.oneOf(Object.keys(highlightTypes)),
-  label: React.PropTypes.string,
+  intlID: React.PropTypes.string,
   date: React.PropTypes.number
 };
 

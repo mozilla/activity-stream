@@ -6,7 +6,7 @@
  * @return {obj}
  *     .label {str} The message to be displayed at the bottom of the Highlight component
  *     .type {str} An indicator of the origin/type of the highlight. One of:
- *                 recommended, firstRun, bookmark, synced, open, or history
+ *                 bookmark, synced, open, or history
  */
 module.exports = function getHighlightContextFromSite(site) {
   const result = {};
@@ -15,12 +15,7 @@ module.exports = function getHighlightContextFromSite(site) {
     result.label = site.context_message;
   }
 
-  if (site.recommended) {
-    result.type = "recommended";
-    if (site.published) {
-      result.date = site.published;
-    }
-  } else if (site.bookmarkDateCreated) {
+  if (site.bookmarkDateCreated) {
     result.type = "bookmark";
     result.date = site.bookmarkDateCreated;
   // syncedFrom and isOpen are not currently implemented, but they
