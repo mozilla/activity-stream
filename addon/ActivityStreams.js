@@ -463,6 +463,7 @@ ActivityStreams.prototype = {
    */
   unload(reason) { // eslint-disable-line no-unused-vars
     let defaultUnload = () => {
+      this._store.dispatch({type: "APP_UNLOAD", data: reason});
       this._previewProvider.uninit();
       this._searchProvider.uninit();
       this._pageScraper.uninit();

@@ -7,6 +7,7 @@ const Filter = require("./Filter");
 const Prefs = require("./Prefs");
 const ShareProviders = require("./ShareProviders");
 const PlacesStats = require("./PlacesStats");
+const Intl = require("./Intl");
 
 module.exports = {
   TopSites: setRowsOrError("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE"),
@@ -16,5 +17,6 @@ module.exports = {
   Filter,
   Prefs,
   ShareProviders,
-  PlacesStats
+  PlacesStats,
+  Intl
 };
