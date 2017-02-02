@@ -8,7 +8,7 @@ scripts:
 # once: Build/serve the assets and run the add-on
   once: =>bundle && =>firefox
 
-  clean: rimraf data/content/* && mkdirp data/content && rimraf dist/*
+  clean: rimraf data/content/* && rimraf data/locales/* && mkdirp data/content && rimraf dist/*
 
   changelog: conventional-changelog -i CHANGELOG.md -s
 
@@ -18,6 +18,8 @@ scripts:
   bundle:
     pre: =>clean && =>copyTestImages
     static: cpx "content-src/static/**/*" data/content
+  # TODO: make the number of locales configurable. pontoon-to-json has an option for this
+    locales: cpx "locales/**/*" data/locales
     svgo: svgo -q -f data/content/img/
     webpack: NODE_ENV=production webpack
     webpackAddon: webpack --config webpack.addon.config.js
@@ -43,6 +45,7 @@ scripts:
     _parallel: true
     pre: =>clean && =>copyTestImages
     static: =>bundle:static -- -w
+    locales: =>bundle:locales -- -w
     webpack: webpack -w
     webpackAddon: =>bundle:webpackAddon -- -w
     css: =>bundle:css && =>bundle:css -- -w
