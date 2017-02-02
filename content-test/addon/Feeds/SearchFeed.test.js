@@ -11,7 +11,6 @@ describe("SearchFeed", () => {
     searchProvider = {
       currentEngine: {},
       currentState: {engines: [{name: "foo"}, {name: "bar"}], currentEngine: {name: "foo"}},
-      searchSuggestionUIStrings: {searchString: "Search"},
       cycleCurrentEngine: sinon.spy(),
       asyncPerformSearch: sinon.spy(),
       removeFormHistoryEntry: sinon.spy(),
@@ -22,18 +21,6 @@ describe("SearchFeed", () => {
   });
   it("should create a SearchFeed", () => {
     assert.instanceOf(instance, SearchFeed);
-  });
-
-  describe("#getUIStrings", () => {
-    it("should dispatch a SEARCH_UISTRINGS_RESPONSE action", () => {
-      instance.getUIStrings();
-      assert.calledOnce(store.dispatch);
-      assert.equal(store.dispatch.firstCall.args[0].type, "SEARCH_UISTRINGS_RESPONSE");
-    });
-    it("should dispatch the search suggestion UI strings", () => {
-      instance.getUIStrings();
-      assert.equal(store.dispatch.firstCall.args[0].data, searchProvider.searchSuggestionUIStrings);
-    });
   });
 
   describe("#getEngines", () => {
@@ -106,12 +93,10 @@ describe("SearchFeed", () => {
   });
 
   describe("#onAction", () => {
-    it("should call getEngines + getUIStrings on APP_INIT", () => {
+    it("should call getEngines on APP_INIT", () => {
       instance.getEngines = sinon.spy();
-      instance.getUIStrings = sinon.spy();
       instance.onAction({}, {type: "APP_INIT"});
       assert.calledOnce(instance.getEngines);
-      assert.calledOnce(instance.getUIStrings);
     });
     it("should call getEngines on SEARCH_ENGINES_CHANGED", () => {
       instance.getEngines = sinon.spy();

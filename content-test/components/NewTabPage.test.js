@@ -7,8 +7,9 @@ const Spotlight = require("components/Spotlight/Spotlight");
 const {mockData, renderWithProvider} = require("test/test-utils");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const {connect} = require("react-redux");
+const {injectIntl} = require("react-intl");
 
-const fakeProps = mockData;
+const fakeProps = Object.assign({}, {intl: {formatMessage: () => {}}}, mockData);
 
 describe("NewTabPage", () => {
   let instance;
@@ -39,7 +40,7 @@ describe("NewTabPage", () => {
    */
   function setupConnected(
     dispatch = () => {}, mapStatesToProps = forceIsReadySelectNewTabs) {
-    let ConnectedNewTabPage = connect(mapStatesToProps)(NewTabPage);
+    let ConnectedNewTabPage = connect(mapStatesToProps)(injectIntl(NewTabPage));
 
     instance = TestUtils.findRenderedComponentWithType(
       renderWithProvider(<ConnectedNewTabPage />, {dispatch}),
@@ -52,6 +53,7 @@ describe("NewTabPage", () => {
   });
 
   it("should set the title to New Tab", () => {
+    setupConnected();
     assert.equal(document.title, "New Tab");
   });
 

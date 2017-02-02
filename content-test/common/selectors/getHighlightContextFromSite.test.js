@@ -25,12 +25,6 @@ describe("getHighlightContextFromSite", () => {
       {type: "open", date: 111}
     );
   });
-  it("should set type:recommended for recommended items", () => {
-    assert.deepEqual(
-      getHighlightContextFromSite({type: "history", recommended: true, published: 123}),
-      {type: "recommended", date: 123}
-    );
-  });
   it("should set a label if .context_message is set", () => {
     assert.equal(getHighlightContextFromSite({context_message: "Foo bar"}).label, "Foo bar");
   });

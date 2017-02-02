@@ -1,5 +1,6 @@
 const React = require("react");
 const classNames = require("classnames");
+const {FormattedMessage} = require("react-intl");
 
 const Loader = React.createClass({
   getDefaultProps() {
@@ -11,12 +12,12 @@ const Loader = React.createClass({
   render() {
     // refs are intended as testing hooks
     return (
-      <div className={classNames("loader", this.props.className)} hidden={!this.props.show}>
-        <h3 ref="title">{this.props.title}</h3>
-        <p ref="body">{this.props.body}</p>
+      <div ref="loader" className={classNames("loader", this.props.className)} hidden={!this.props.show}>
+        <h3 ref="title"><FormattedMessage id={this.props.title} defaultMessage={this.props.title} /></h3>
+        <p ref="body"><FormattedMessage id={this.props.body} defaultMessage={this.props.body} /></p>
         <div ref="statusBox" className="status-box">
           <div className="spinner" />
-          {this.props.label}
+          <FormattedMessage id={this.props.label} defaultMessage={this.props.label} />
         </div>
       </div>);
   }

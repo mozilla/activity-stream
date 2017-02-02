@@ -4,6 +4,7 @@ const {selectShareProviders} = require("common/selectors/selectors");
 const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
 const {FIRST_RUN_TYPE} = require("lib/first-run-data");
+const {injectIntl} = require("react-intl");
 
 const LinkMenu = React.createClass({
   getDefaultProps() {
@@ -23,10 +24,6 @@ const LinkMenu = React.createClass({
         action_position: index,
         metadata_source: site.metadata_source
       };
-      if (site.recommended) {
-        payload.url = site.url;
-        payload.recommender_type = site.recommender_type;
-      }
       dispatch(actions.NotifyEvent(payload));
     }
   },
@@ -53,13 +50,13 @@ const LinkMenu = React.createClass({
     return [
       {
         ref: "copyAddress",
-        label: "Copy Address",
+        label: this.props.intl.formatMessage({id: "copy_address"}),
         icon: "copy-address",
         onClick: () => dispatch(actions.NotifyCopyUrl(site.url))
       },
       {
         ref: "emailLink",
-        label: "Email Link...",
+        label: this.props.intl.formatMessage({id: "email_link"}),
         icon: "email-link",
         onClick: () => dispatch(actions.NotifyEmailUrl(site.url, site.title))
       }]
@@ -77,16 +74,16 @@ const LinkMenu = React.createClass({
       deleteOptions = [
         allowBlock && {
           ref: "dismiss",
-          label: "Dismiss",
+          label: this.props.intl.formatMessage({id: "dismiss"}),
           icon: "dismiss",
           userEvent: "BLOCK",
           onClick: () => {
             dispatch(actions.NotifyBlockURL(site.url));
           }
         },
-        !site.recommended && {
+        {
           ref: "delete",
-          label: "Delete from History",
+          label: this.props.intl.formatMessage({id: "delete"}),
           icon: "delete",
           userEvent: "DELETE",
           onClick: () => dispatch(actions.NotifyHistoryDelete(site.url))
@@ -103,13 +100,13 @@ const LinkMenu = React.createClass({
     return [
       (site.bookmarkGuid ? {
         ref: "removeBookmark",
-        label: "Remove Bookmark",
+        label: this.props.intl.formatMessage({id: "remove_bookmark"}),
         icon: "bookmark-remove",
         userEvent: "BOOKMARK_DELETE",
         onClick: () => dispatch(actions.NotifyBookmarkDelete(site.bookmarkGuid))
       } : {
         ref: "addBookmark",
-        label: "Bookmark",
+        label: this.props.intl.formatMessage({id: "bookmark"}),
         icon: "bookmark",
         userEvent: "BOOKMARK_ADD",
         onClick: () => dispatch(actions.NotifyBookmarkAdd(site.url))
@@ -117,21 +114,21 @@ const LinkMenu = React.createClass({
       {
         type: "submenu",
         ref: "share",
-        label: "Share",
+        label: this.props.intl.formatMessage({id: "share"}),
         icon: "share",
         options: this.getShareOptions(site, ShareProviders ? ShareProviders.providers : [], dispatch)
       },
       {type: "separator"},
       {
         ref: "openWindow",
-        label: "Open in a New Window",
+        label: this.props.intl.formatMessage({id: "open_new_window"}),
         icon: "new-window",
         userEvent: "OPEN_NEW_WINDOW",
         onClick: () => dispatch(actions.NotifyOpenWindow({url: site.url}))
       },
       {
         ref: "openPrivate",
-        label: "Open in a Private Window",
+        label: this.props.intl.formatMessage({id: "open_private_window"}),
         icon: "new-window-private",
         userEvent: "OPEN_PRIVATE_WINDOW",
         onClick: () => dispatch(actions.NotifyOpenWindow({url: site.url, isPrivate: true}))
@@ -167,4 +164,4 @@ LinkMenu.propTypes = {
   recommender_type: React.PropTypes.string
 };
 
-module.exports = connect(selectShareProviders)(LinkMenu);
+module.exports = connect(selectShareProviders)(injectIntl(LinkMenu));

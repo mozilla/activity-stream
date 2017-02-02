@@ -1,19 +1,18 @@
 const React = require("react");
-const {mount, shallow} = require("enzyme");
-
 const Tooltip = require("components/Tooltip/Tooltip");
 const {types, PlaceholderHighlightContext, HighlightContext} = require("components/HighlightContext/HighlightContext");
+const {mountWithIntl, shallowWithIntl} = require("test/test-utils");
 
 describe("HighlightContext", () => {
   let wrapper;
 
   function setup(props = {type: "history"}) {
-    wrapper = shallow(<HighlightContext {...props} />);
+    wrapper = mountWithIntl(<HighlightContext {...props} />, {context: {}, childContextTypes: {}});
   }
 
   it("should render the component", () => {
     // finding by component needs a real DOM for functional components
-    wrapper = mount(<HighlightContext type="history" />);
+    wrapper = mountWithIntl(<HighlightContext type="history" />, {context: {}, childContextTypes: {}});
     assert.equal(wrapper.find(HighlightContext).length, 1);
   });
 
@@ -29,12 +28,9 @@ describe("HighlightContext", () => {
 
   it("should render the label defined by type if props.label is not specified", () => {
     setup({type: "bookmark"});
-    assert.equal(wrapper.find(".hc-label").text(), types.bookmark.label);
-  });
-
-  it("should render props.label if specified", () => {
-    setup({type: "bookmark", label: "My bookmark"});
-    assert.equal(wrapper.find(".hc-label").text(), "My bookmark");
+    const label = types.bookmark.intlID;
+    const expectedString = `${label.charAt(0).toUpperCase()}${label.slice(1)}`;
+    assert.equal(wrapper.find(".hc-label").text(), expectedString);
   });
 
   it("should render props.date if specified", () => {
@@ -52,19 +48,6 @@ describe("HighlightContext", () => {
     assert.lengthOf(wrapper.find(Tooltip), 0);
   });
 
-  it("should show a tooltip for recommended links", () => {
-    setup({type: "recommended", date: Date.now()});
-    const tooltipWrapper = wrapper.find(Tooltip);
-
-    assert.lengthOf(tooltipWrapper, 1);
-    assert.equal(tooltipWrapper.prop("label"), types.recommended.tooltip);
-  });
-
-  it("should show not show a timestamps for recommended links", () => {
-    setup({type: "recommended", date: Date.now()});
-    assert.equal(wrapper.find(".hc-timestamp").prop("hidden"), true);
-  });
-
   it("should have a .tooltip-container class", () => {
     setup();
     assert.ok(wrapper.hasClass("tooltip-container"));
@@ -73,7 +56,7 @@ describe("HighlightContext", () => {
 
 describe("PlaceholderHighlightContext", () => {
   it("should have a .placeholder class", () => {
-    const wrapper = shallow(<PlaceholderHighlightContext />);
+    const wrapper = shallowWithIntl(<PlaceholderHighlightContext />, {context: {}});
 
     assert.lengthOf(wrapper.find(".placeholder"), 1);
   });
