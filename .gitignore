@@ -8,6 +8,7 @@ npm-debug.log
 logs/
 dist/
 data/content/
+data/locales/
 activity-streams-env/
 firefox/
 config.yml

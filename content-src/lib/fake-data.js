@@ -41,5 +41,9 @@ module.exports = {
         "origin": "https://myspace.com"
       }
     ]
+  },
+  "Intl": {
+    "locale": "en-US",
+    "strings": {}
   }
 };
