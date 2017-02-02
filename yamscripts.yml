@@ -78,8 +78,7 @@ scripts:
 
 # package: Build add-on
   package:
-    xpi: =>bundle && jpm xpi
-    dist: mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
+    dist: =>bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
     mozilla-central:
       unpack: decompress dist/activity-streams-$npm_package_version.xpi -o dist/mozilla-central
       copy: cpx "mozilla-central/**" dist/mozilla-central
