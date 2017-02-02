@@ -5,18 +5,22 @@ const getRelativeTime = require("lib/getRelativeTime");
 const {FormattedMessage} = require("react-intl");
 
 const HighlightContext = function(props) {
-  let timestamp;
+  let timestamp = {};
+  let timestampID;
+  let timestampNumber;
   const type = props.type;
   const {icon, intlID, showTimestamp, tooltip} = Object.assign({}, highlightTypes[type], props);
   if (props.date && showTimestamp !== false) {
     timestamp = getRelativeTime(props.date);
+    timestampID = timestamp.timestampID;
+    timestampNumber = timestamp.timestampNumber;
   }
   return (<div className="highlight-context tooltip-container">
     <span className="hc-icon">
       <span className={`icon icon-${icon}`} /><span className="sr-only">{type}</span>
     </span>
     <span className="hc-label"><FormattedMessage id={intlID} defaultMessage="Visited" /></span>
-    <span hidden={!timestamp} className="hc-timestamp">{timestamp}</span>
+    {timestampID && <span className="hc-timestamp"><FormattedMessage id={timestampID} defaultMessage="0" values={{number: timestampNumber}} /></span>}
     {tooltip && <Tooltip label={tooltip} />}
   </div>);
 };

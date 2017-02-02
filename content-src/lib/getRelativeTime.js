@@ -12,13 +12,13 @@ module.exports = function getRelativeTime(t) {
   const h = Math.floor((diff % TIME.d) / TIME.h);
   const d = Math.floor(diff / TIME.d);
   if (diff < TIME.m) {
-    return "<1m";
+    return {timestampID: "less_than_minute_label"};
   }
   else if (diff < TIME.h) {
-    return `${m}m`;
+    return {timestampID: "minute_label", timestampNumber: m};
   }
   else if (diff < TIME.d) {
-    return `${h}h`;
+    return {timestampID: "hour_label", timestampNumber: h};
   }
-  return `${d}d`;
+  return {timestampID: "day_label", timestampNumber: d};
 };
