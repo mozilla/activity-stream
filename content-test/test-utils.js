@@ -6,7 +6,7 @@ const {selectNewTabSites} = require("common/selectors/selectors");
 const TestUtils = require("react-addons-test-utils");
 const {mount, shallow} = require("enzyme");
 const {IntlProvider, intlShape} = require("react-intl");
-const messages = require("../locales/en-US/strings.json");
+const messages = require("../data/locales/locales.json")["en-US"];
 const intlProvider = new IntlProvider({locale: "en", messages}, {});
 const {intl} = intlProvider.getChildContext();
 

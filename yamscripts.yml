@@ -19,7 +19,7 @@ scripts:
     pre: =>clean && =>copyTestImages
     static: cpx "content-src/static/**/*" data/content
   # TODO: make the number of locales configurable. pontoon-to-json has an option for this
-    locales: cpx "locales/**/*" data/locales
+    locales: pontoon-to-json --src locales --dest data/locales
     svgo: svgo -q -f data/content/img/
     webpack: NODE_ENV=production webpack
     webpackAddon: webpack --config webpack.addon.config.js
@@ -80,6 +80,8 @@ scripts:
   tdd: =>test:karma -- --no-single-run --browsers Chrome
 
 # package: Build add-on
+# Add a SUPPORTED_LOCALES variable to your environment as a comma separated list to include certain locales.
+# e.g. SUPPORTED_LOCALES=en-US,fr
   package:
     dist: =>bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
     mozilla-central:
