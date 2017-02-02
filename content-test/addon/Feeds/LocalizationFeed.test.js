@@ -19,10 +19,12 @@ describe("LocalizationFeed", () => {
         assert.equal(action.type, "LOCALE_UPDATED");
       })
     ));
-    it("should resolve with a valid locale", () => (
-      instance.getData().then(action => (
-        assert.include(LocalizationFeed.AVAILABLE_LOCALES, action.data)
-      ))
+    it("should resolve with a valid locale and strings", () => (
+      instance.getData().then(action => {
+        assert.isObject(action.data);
+        assert.include(LocalizationFeed.AVAILABLE_LOCALES, action.data.locale);
+        assert.isObject(action.data.strings);
+      })
     ));
   });
   describe("#addListeners / #removeListeners", () => {

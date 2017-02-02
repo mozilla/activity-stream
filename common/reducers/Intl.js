@@ -1,9 +1,15 @@
-const INITIAL_STATE = {locale: null};
+const INITIAL_STATE = {locale: null, strings: {}};
 
 function Intl(prevState = INITIAL_STATE, action) {
   switch (action.type) {
     case "LOCALE_UPDATED":
-      return Object.assign({}, prevState, {locale: action.data});
+      if (!action.data) {
+        return prevState;
+      }
+      return Object.assign({}, prevState, {
+        locale: action.data.locale,
+        strings: action.data.strings
+      });
     default:
       return prevState;
   }

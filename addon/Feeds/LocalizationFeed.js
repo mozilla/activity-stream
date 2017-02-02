@@ -1,7 +1,10 @@
-const Feed = require("addon/lib/Feed");
-const am = require("common/action-manager");
+const {readURI} = require("sdk/net/url");
+const {data} = require("sdk/self");
 const {PrefsTarget} = require("sdk/preferences/event-target");
 const {findClosestLocale, getPreferedLocales} = require("sdk/l10n/locale");
+const Feed = require("addon/lib/Feed");
+const am = require("common/action-manager");
+
 const AVAILABLE_LOCALES = ["en-US"];
 
 // These all affect getPreferedLocales
@@ -28,8 +31,9 @@ class LocalizationFeed extends Feed {
   }
   getData() {
     const locale = findClosestLocale(AVAILABLE_LOCALES, getPreferedLocales());
-    const resp = am.actions.Response("LOCALE_UPDATED", locale);
-    return Promise.resolve(resp);
+    return readURI(data.url(`locales/${locale}/strings.json`))
+      .then(strings => JSON.parse(strings))
+      .then(strings => am.actions.Response("LOCALE_UPDATED", {locale, strings}));
   }
   onAction(state, action) {
     switch (action.type) {
