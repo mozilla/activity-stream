@@ -1,22 +1,22 @@
 module.exports = {
   history: {
-    intlID: "visited",
+    intlID: "type_label_visited",
     icon: "historyItem"
   },
   open: {
-    intlID: "open",
+    intlID: "type_label_open",
     icon: "tab"
   },
   synced: {
-    intlID: "synced",
+    intlID: "type_label_synced",
     icon: "sync"
   },
   bookmark: {
-    intlID: "bookmarked",
+    intlID: "type_label_bookmarked",
     icon: "bookmark"
   },
   topic: {
-    intlID: "topic",
+    intlID: "type_label_topic",
     icon: "topic"
   }
 };

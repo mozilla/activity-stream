@@ -17,7 +17,7 @@ const NewTabPage = React.createClass({
     return {showSettingsMenu: false};
   },
   componentDidMount() {
-    document.title = this.props.intl.formatMessage({id: "newtab"});
+    document.title = this.props.intl.formatMessage({id: "newtab_page_title"});
     setFavicon("newtab-icon.svg");
 
     // Note that data may or may not be complete, depending on
@@ -60,7 +60,8 @@ const NewTabPage = React.createClass({
           show={!this.props.isReady}
           title="welcome_title"
           body="welcome_body"
-          label="welcome_label" />
+          label="welcome_label"
+          defaultLabel="default_label_loading" />
         <div className="show-on-init on">
           <section>
             <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
