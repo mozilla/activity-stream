@@ -306,7 +306,7 @@ const Search = React.createClass({
         </ul>
       </section>
       <section className="search-title">
-        <p><FormattedMessage id="search_for" values={{search_term: <b>{searchString}</b>}} /></p>
+        <p><FormattedMessage id="search_for_something_with" values={{search_term: <b>{searchString}</b>}} /></p>
       </section>
       <section className="search-partners" role="group">
             <ul>

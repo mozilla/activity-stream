@@ -154,7 +154,7 @@ const Spotlight = React.createClass({
   },
   render() {
     return (<section className="spotlight">
-      <h3 className="section-title"><FormattedMessage id="highlights" /></h3>
+      <h3 className="section-title"><FormattedMessage id="header_highlights" /></h3>
       <ul className="spotlight-list">
         {this.props.placeholder ? this.renderPlaceholderSiteList() :
           this.renderSiteList()}
