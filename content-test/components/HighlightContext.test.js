@@ -40,7 +40,7 @@ describe("HighlightContext", () => {
 
   it("should not show a date if props.date is not specified", () => {
     setup({type: "bookmark"});
-    assert.lengthOf(wrapper.find(".hc-timestamp").text(), 0);
+    assert.lengthOf(wrapper.find(".hc-timestamp"), 0);
   });
 
   it("should not show a tooltip if it is not defined by the type", () => {
