@@ -1,0 +1,16 @@
+diff --git a/testing/profiles/prefs_general.js b/testing/profiles/prefs_general.js
+--- a/testing/profiles/prefs_general.js
++++ b/testing/profiles/prefs_general.js
+@@ -352,8 +352,12 @@ user_pref("plugin.load_flash_only", fals
+ // cannot easily be upgraded.
+ user_pref("media.libavcodec.allow-obsolete", true);
+ 
+ user_pref("media.openUnsupportedTypeWithExternalApp", false);
+ 
+ // Disable password capture, so that mochitests that include forms aren't
+ // influenced by the presence of the persistent doorhanger notification.
+ user_pref("signon.rememberSignons", false);
++
++// Make sure that activity stream doesn't hit the network.
++user_pref("extensions.@activity-streams.telemetry", false);
++
