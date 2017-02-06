@@ -101,6 +101,48 @@ exports.test_get_links_from_metadatastore = function*(assert) {
   assert.equal(cachedLinks[2].favicon_width, 96, "the third link has the correct favicon_width");
 };
 
+exports.test_metadatastore_saves_new_links_when_computeImageSize_rejects = function*(assert) {
+  // change _computeImageSize to reject() always
+  gPreviewProvider._computeImageSize = function(url) {
+    return Promise.reject("unable to compute image size");
+  };
+
+  // put some links in the database
+  yield gMetadataStore.asyncInsert(metadataFixture);
+  let items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
+  assert.equal(items.length, 3, "sanity check that we only have 3 items in the database to start");
+
+  // these are links we are going to request - the first two should get filtered out
+  const links = [
+    {url: "https://www.mozilla.org/"},
+    {url: "https://www.mozilla.org/en-US/firefox/new"},
+    {url: "https://www.notindb.com/", cache_key: "notindb.com/"}];
+  const fakeResponse = {"urls": {"https://www.notindb.com/": {"description": "some metadata"}}};
+
+  let srv = httpd.startServerAsync(gPort);
+  srv.registerPathHandler("/previewProviderMetadataStore", function handle(request, response) {
+    response.setHeader("Content-Type", "application/json", false);
+    response.write(JSON.stringify(fakeResponse));
+  });
+
+  // only request the items that are not in the database and wait for them to
+  // successfully be inserted
+  yield gPreviewProvider.asyncSaveLinks(links);
+
+  // asyncSaveLinks doesn't yield on inserting in the db so we need to wait
+  // until it has successfully finished the transaction before checking
+  yield waitUntil(() => !gMetadataStore.transactionInProgress);
+
+  // check that it inserted the link that was filtered out
+  items = yield gMetadataStore.asyncExecuteQuery("SELECT * FROM page_metadata");
+  assert.equal(items.length, 4, "it should now have a length of 4");
+  assert.equal(items[3][1], links[2].cache_key, "it newly inserted the one we didn't already have");
+
+  yield new Promise(resolve => {
+    srv.stop(resolve);
+  });
+};
+
 function waitForAsyncReset() {
   return waitUntil(function*() {
     if (gMetadataStore.transactionInProgress) {
