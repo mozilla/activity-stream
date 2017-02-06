@@ -4,10 +4,7 @@ const {FormattedMessage} = require("react-intl");
 
 const Loader = React.createClass({
   getDefaultProps() {
-    return {
-      show: false,
-      label: "Loading..."
-    };
+    return {show: false};
   },
   render() {
     // refs are intended as testing hooks
@@ -17,7 +14,7 @@ const Loader = React.createClass({
         <p ref="body"><FormattedMessage id={this.props.body} defaultMessage={this.props.body} /></p>
         <div ref="statusBox" className="status-box">
           <div className="spinner" />
-          <FormattedMessage id={this.props.label} defaultMessage={this.props.label} />
+          <FormattedMessage id={this.props.label} defaultMessage={this.props.defaultLabel} />
         </div>
       </div>);
   }
@@ -27,6 +24,7 @@ Loader.propTypes = {
   body: React.PropTypes.string,
   show: React.PropTypes.bool,
   label: React.PropTypes.string,
+  defaultLabel: React.PropTypes.string,
   className: React.PropTypes.string,
   title: React.PropTypes.string
 };

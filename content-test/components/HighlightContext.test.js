@@ -28,9 +28,7 @@ describe("HighlightContext", () => {
 
   it("should render the label defined by type if props.label is not specified", () => {
     setup({type: "bookmark"});
-    const label = types.bookmark.intlID;
-    const expectedString = `${label.charAt(0).toUpperCase()}${label.slice(1)}`;
-    assert.equal(wrapper.find(".hc-label").text(), expectedString);
+    assert.equal(wrapper.find(".hc-label").text(), "Bookmarked");
   });
 
   it("should render props.date if specified", () => {

@@ -259,7 +259,7 @@ const Search = React.createClass({
         value={searchString} maxLength="256"
         aria-expanded={this.getDropdownVisible()}
         aria-activedescendant={this.getActiveDescendantId()} autoComplete="off"
-        placeholder={this.props.intl.formatMessage({id: "search_web"})}
+        placeholder={this.props.intl.formatMessage({id: "search_web_placeholder"})}
         onFocus={() => this.setState({focus: true})}
         onChange={e => this.setValueAndSuggestions(e.target.value)}
         onKeyDown={e => this.handleKeyPress(e)}
@@ -306,7 +306,7 @@ const Search = React.createClass({
         </ul>
       </section>
       <section className="search-title">
-        <p><FormattedMessage id="search_for" values={{search_term: <b>{searchString}</b>}} /></p>
+        <p><FormattedMessage id="search_for_something_with" values={{search_term: <b>{searchString}</b>}} /></p>
       </section>
       <section className="search-partners" role="group">
             <ul>

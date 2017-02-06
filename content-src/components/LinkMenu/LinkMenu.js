@@ -50,13 +50,13 @@ const LinkMenu = React.createClass({
     return [
       {
         ref: "copyAddress",
-        label: this.props.intl.formatMessage({id: "copy_address"}),
+        label: this.props.intl.formatMessage({id: "menu_action_copy_address"}),
         icon: "copy-address",
         onClick: () => dispatch(actions.NotifyCopyUrl(site.url))
       },
       {
         ref: "emailLink",
-        label: this.props.intl.formatMessage({id: "email_link"}),
+        label: this.props.intl.formatMessage({id: "menu_action_email_link"}),
         icon: "email-link",
         onClick: () => dispatch(actions.NotifyEmailUrl(site.url, site.title))
       }]
@@ -74,7 +74,7 @@ const LinkMenu = React.createClass({
       deleteOptions = [
         allowBlock && {
           ref: "dismiss",
-          label: this.props.intl.formatMessage({id: "dismiss"}),
+          label: this.props.intl.formatMessage({id: "menu_action_dismiss"}),
           icon: "dismiss",
           userEvent: "BLOCK",
           onClick: () => {
@@ -83,7 +83,7 @@ const LinkMenu = React.createClass({
         },
         {
           ref: "delete",
-          label: this.props.intl.formatMessage({id: "delete"}),
+          label: this.props.intl.formatMessage({id: "menu_action_delete"}),
           icon: "delete",
           userEvent: "DELETE",
           onClick: () => dispatch(actions.NotifyHistoryDelete(site.url))
@@ -100,13 +100,13 @@ const LinkMenu = React.createClass({
     return [
       (site.bookmarkGuid ? {
         ref: "removeBookmark",
-        label: this.props.intl.formatMessage({id: "remove_bookmark"}),
+        label: this.props.intl.formatMessage({id: "menu_action_remove_bookmark"}),
         icon: "bookmark-remove",
         userEvent: "BOOKMARK_DELETE",
         onClick: () => dispatch(actions.NotifyBookmarkDelete(site.bookmarkGuid))
       } : {
         ref: "addBookmark",
-        label: this.props.intl.formatMessage({id: "bookmark"}),
+        label: this.props.intl.formatMessage({id: "menu_action_bookmark"}),
         icon: "bookmark",
         userEvent: "BOOKMARK_ADD",
         onClick: () => dispatch(actions.NotifyBookmarkAdd(site.url))
@@ -114,21 +114,21 @@ const LinkMenu = React.createClass({
       {
         type: "submenu",
         ref: "share",
-        label: this.props.intl.formatMessage({id: "share"}),
+        label: this.props.intl.formatMessage({id: "menu_action_share"}),
         icon: "share",
         options: this.getShareOptions(site, ShareProviders ? ShareProviders.providers : [], dispatch)
       },
       {type: "separator"},
       {
         ref: "openWindow",
-        label: this.props.intl.formatMessage({id: "open_new_window"}),
+        label: this.props.intl.formatMessage({id: "menu_action_open_new_window"}),
         icon: "new-window",
         userEvent: "OPEN_NEW_WINDOW",
         onClick: () => dispatch(actions.NotifyOpenWindow({url: site.url}))
       },
       {
         ref: "openPrivate",
-        label: this.props.intl.formatMessage({id: "open_private_window"}),
+        label: this.props.intl.formatMessage({id: "menu_action_open_private_window"}),
         icon: "new-window-private",
         userEvent: "OPEN_PRIVATE_WINDOW",
         onClick: () => dispatch(actions.NotifyOpenWindow({url: site.url, isPrivate: true}))
