@@ -343,14 +343,7 @@ PreviewProvider.prototype = {
           .map(link => Object.assign({}, link, responseJson.urls[link.sanitized_url]));
 
         // add favicon_height and favicon_width to the favicon and store it in db
-        for (let link of linksToInsert) {
-          const {width, height} = yield this._computeImageSize(link.favicon_url);
-          if (height && width) {
-            link.favicon_width = width;
-            link.favicon_height = height;
-          }
-        }
-
+        yield this._asyncAddFaviconHeightAndWidth(linksToInsert);
         this.insertMetadata(linksToInsert, "MetadataService");
       } else {
         this._tabTracker.handlePerformanceEvent(event, "embedlyProxyFailure", 1);
@@ -389,6 +382,22 @@ PreviewProvider.prototype = {
   },
 
   /**
+   * Computes and sets the favicon dimensions
+   */
+  _asyncAddFaviconHeightAndWidth: Task.async(function*(links) {
+    for (let link of links) {
+      try {
+        const {width, height} = yield this._computeImageSize(link.favicon_url);
+        if (height && width) {
+          link.favicon_width = width;
+          link.favicon_height = height;
+        }
+      }
+      catch (err) {}  // eslint-disable-line no-empty
+    }
+  }),
+
+  /**
    * Locally compute the size of the image
    */
   _computeImageSize(url) {
@@ -403,7 +412,7 @@ PreviewProvider.prototype = {
         };
         resolve(imageWithSize);
       });
-      image.addEventListener("error", () => reject());
+      image.addEventListener("error", () => reject(`Error loading image: ${url}`));
     });
   },
 
