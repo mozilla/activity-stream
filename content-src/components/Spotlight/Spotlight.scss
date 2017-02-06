@@ -128,7 +128,10 @@
 // If/when we graduate the experiment, we'll just want to remove the HTML for
 // that completely.
 .top-sites-new-style {
-  .site-icon {
-    display: none;
+  .spotlight {
+    .site-icon,
+    .spotlight-icon {
+      display: none;
+    }
   }
 }

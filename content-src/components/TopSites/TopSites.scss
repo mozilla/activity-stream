@@ -100,6 +100,12 @@
     .tile-outer {
       box-shadow: none;
       vertical-align: top;
+
+      &.placeholder {
+        .site-icon-wrapper {
+          height: 96px;
+        }
+      }
     }
 
     .tile {
