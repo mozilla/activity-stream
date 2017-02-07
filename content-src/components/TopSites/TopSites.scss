@@ -103,7 +103,7 @@
 
       &.placeholder {
         .site-icon-wrapper {
-          height: 96px;
+          height: $tile-width;
         }
       }
     }
@@ -142,6 +142,11 @@
           background: transparent;
         }
       }
+    }
+
+    .site-icon-fallback {
+      height: $tile-width;
+      line-height: $tile-width;
     }
   }
 }
