@@ -6,7 +6,7 @@ Any time you add human-readable text to the add-on, whether it is plain text, la
 
 ## How update localized strings
 
-If you just are fixing a typo in an existing English string, you can go ahead and make the change in `locales/en-US/strings.properties`. If you are changing the *meaning* of an existing string such that other translations need to be re-done, you should also change the *id* of that string in order to invalidate it in other languages. (see [this gudie](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_content_best_practices#Changing_existing_strings) for more info).
+If you just are fixing a typo in an existing English string, you can go ahead and make the change in `locales/en-US/strings.properties`. If you are changing the *meaning* of an existing string such that other translations need to be re-done, you should also change the *id* of that string in order to invalidate it in other languages. (see [this guide](https://developer.mozilla.org/en-US/docs/Mozilla/Localization/Localization_content_best_practices#Changing_existing_strings) for more info).
 
 ## How to localize strings
 
