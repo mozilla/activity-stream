@@ -13,12 +13,13 @@ require("shelljs/global");
 const git = require("simple-git");
 const localRepo = git();
 
-if (process.argv.length - 2 < 1) {
+const args = process.argv.slice(2);
+if (args.length < 1) {
   throw Error("Please provide the path to the target strings repository");
 }
 
 // Use the first script argument as the target repository of strings
-const [, , stringsPath] = process.argv;
+const stringsPath = args[0];
 const stringsRepo = git(stringsPath);
 
 // Update strings repository to the latest strings
