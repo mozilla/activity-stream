@@ -1,4 +1,5 @@
 const LocalizationFeed = require("addon/Feeds/LocalizationFeed");
+const {getLocalizedStrings} = LocalizationFeed;
 const EventEmitter = require("shims/_utils/EventEmitter");
 
 describe("LocalizationFeed", () => {
@@ -63,6 +64,26 @@ describe("LocalizationFeed", () => {
       sinon.spy(instance, "removeListeners");
       instance.onAction({}, {type: "APP_UNLOAD"});
       assert.calledOnce(instance.removeListeners);
+    });
+  });
+  describe("getLocalizedStrings", () => {
+    it("should get strings for a given locale", () => {
+      const strings = {fr: {greeting: "bonjour"}};
+      strings[LocalizationFeed.DEFAULT_LOCALE] = {greeting: "hello"};
+      const result = getLocalizedStrings("fr", strings);
+      assert.deepEqual(result, strings.fr);
+    });
+    it("should include strings from the default locale for any missing ids", () => {
+      const strings = {fr: {greeting: "bonjour"}};
+      strings[LocalizationFeed.DEFAULT_LOCALE] = {greeting: "hello", confirm: "yes"};
+      const result = getLocalizedStrings("fr", strings);
+      assert.deepEqual(result, {greeting: "bonjour", confirm: "yes"});
+    });
+    it("should just return default locale strings if a locale is missing", () => {
+      const strings = {};
+      strings[LocalizationFeed.DEFAULT_LOCALE] = {greeting: "hello", confirm: "yes"};
+      const result = getLocalizedStrings("fr", strings);
+      assert.deepEqual(result, strings[LocalizationFeed.DEFAULT_LOCALE]);
     });
   });
 });
