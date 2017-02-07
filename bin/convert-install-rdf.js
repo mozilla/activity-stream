@@ -4,7 +4,9 @@
 /* globals cd, cp, sed */
 require("shelljs/global");
 
-cd(process.argv[2]);
+// Use the first script argument as the target unpacked add-on
+const [, , unpackedPath] = process.argv;
+cd(unpackedPath);
 
 // Convert to install.rdf.in with substitutions
 cp("install.rdf", "install.rdf.in");
