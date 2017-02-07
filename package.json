@@ -191,6 +191,7 @@
     "lint": "npm-run-all lint:*",
     "lint:eslint": "esw --ext=.js,.jsx,.json . .storybook",
     "lint:sasslint": "sass-lint -v -q",
+    "strings-export": "node ./bin/strings-export.js ../activity-stream-l10n",
     "strings-import": "node ./bin/strings-import.js ../activity-stream-l10n",
     "test": "npm-run-all test:*",
     "pretest": "npm run bundle && npm run copyTestImages",

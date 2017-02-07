@@ -64,6 +64,9 @@ scripts:
     eslint: esw --ext=.js,.jsx,.json . .storybook
     sasslint: sass-lint -v -q
 
+# strings-export: Copy newest en-US strings to strings repository
+  strings-export: node ./bin/strings-export.js ../activity-stream-l10n
+
 # strings-import: Update strings repository and replace local strings
   strings-import: node ./bin/strings-import.js ../activity-stream-l10n
 
