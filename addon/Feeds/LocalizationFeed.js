@@ -7,6 +7,9 @@ const STRINGS = require("../../data/locales/locales.json");
 const AVAILABLE_LOCALES = Object.keys(STRINGS);
 
 function getLocalizedStrings(locale, allStrings = STRINGS) {
+  if (locale === DEFAULT_LOCALE) {
+    return allStrings[DEFAULT_LOCALE];
+  }
   const strings = allStrings[locale];
   return Object.assign({}, allStrings[DEFAULT_LOCALE], strings || {});
 }
