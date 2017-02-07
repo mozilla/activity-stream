@@ -2,10 +2,18 @@ const {PrefsTarget} = require("sdk/preferences/event-target");
 const {findClosestLocale, getPreferedLocales} = require("sdk/l10n/locale");
 const Feed = require("../lib/Feed");
 const am = require("../../common/action-manager");
-
+const DEFAULT_LOCALE = "en-US";
 const STRINGS = require("../../data/locales/locales.json");
 const AVAILABLE_LOCALES = Object.keys(STRINGS);
-const DEFAULT_LOCALE = "en-US";
+
+function getLocalizedStrings(locale, allStrings = STRINGS) {
+  if (locale === DEFAULT_LOCALE) {
+    return allStrings[DEFAULT_LOCALE];
+  }
+  const strings = allStrings[locale];
+  // This will include the English string for any missing ids
+  return Object.assign({}, allStrings[DEFAULT_LOCALE], strings || {});
+}
 
 // These all affect getPreferedLocales
 const LOCALE_PREFS = [
@@ -32,7 +40,7 @@ class LocalizationFeed extends Feed {
   }
   getData() {
     let locale = findClosestLocale(this.availableLocales, getPreferedLocales());
-    const strings = STRINGS[locale] || STRINGS[DEFAULT_LOCALE];
+    const strings = getLocalizedStrings(locale);
     return Promise.resolve(am.actions.Response("LOCALE_UPDATED", {locale, strings}));
   }
   onAction(state, action) {
@@ -47,7 +55,9 @@ class LocalizationFeed extends Feed {
   }
 }
 
+LocalizationFeed.DEFAULT_LOCALE = DEFAULT_LOCALE;
 LocalizationFeed.AVAILABLE_LOCALES = AVAILABLE_LOCALES;
 LocalizationFeed.LOCALE_PREFS = LOCALE_PREFS;
+LocalizationFeed.getLocalizedStrings = getLocalizedStrings;
 
 module.exports = LocalizationFeed;
