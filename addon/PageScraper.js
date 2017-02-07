@@ -162,8 +162,9 @@ PageScraper.prototype = {
    * Initialize the Page Scraper
    */
   init() {
+    this._messageHandler = this._messageHandler.bind(this);
     Services.mm.loadFrameScript(this.options.framescriptPath, true);
-    Services.mm.addMessageListener("page-scraper-message", this._messageHandler.bind(this));
+    Services.mm.addMessageListener("page-scraper-message", this._messageHandler);
   },
 
   /**
