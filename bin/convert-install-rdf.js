@@ -4,12 +4,13 @@
 /* globals cd, cp, sed */
 require("shelljs/global");
 
-if (process.argv.length - 2 < 1) {
+const args = process.argv.slice(2);
+if (args.length < 1) {
   throw Error("Please provide the path to the unpacked add-on");
 }
 
 // Use the first script argument as the target unpacked add-on
-const [, , unpackedPath] = process.argv;
+const unpackedPath = args[0];
 cd(unpackedPath);
 
 // Convert to install.rdf.in with substitutions

@@ -8,12 +8,13 @@ const DEFAULT_LOCALE = "en-US";
 /* globals cd, cp, ls, mkdir, rm */
 require("shelljs/global");
 
-if (process.argv.length - 2 < 1) {
-  throw Error("Please provide the path to the source strings repository");
+const args = process.argv.slice(2);
+if (args.length < 1) {
+  throw Error("Please provide the path to the target strings repository");
 }
 
 // Use the first script argument as the source of localized strings
-const [, , stringsPath] = process.argv;
+const stringsPath = args[0];
 const stringsRepo = require("simple-git")(stringsPath);
 
 // Update strings repository to the latest version
