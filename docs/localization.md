@@ -33,7 +33,7 @@ const MyComponent = props => (<div>
 const {injectIntl} = require("react-intl");
 
 const MyComponent = props => (<div>
-  <img alt={props.intl.formatMesssage("hello_world")} />
+  <img alt={props.intl.formatMesssage({id: "hello_world"})} />
 </div>);
 
 module.exports = injectIntl(MyComponent);
@@ -50,3 +50,31 @@ SUPPORTED_LOCALES=en-US,de npm run package
 ```
 
 will run a build of the add-on with German and English.
+
+## CSS with Right-To-Left
+
+When developing new features which require some new CSS, keep into consideration how they will look in RTL mode. Use the [CSS Logical Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Logical_Properties) to control the layout. For example, instead of doing:
+
+ ```css
+ .some_class {
+   margin-left: 10px
+ }
+ .some-class:dir(rtl) {
+   margin-left: 0px;
+   margin-right: 10px;
+ }
+```
+
+consider doing:
+
+```css
+.some_class {
+  margin-inline-start: 10px
+}
+```
+
+By using the CSS Logical Properties for things like margin, border, padding, and right/left properties, the task of adjusting the layout based on direction is handled entirely by the browser. In the case where you can't use a CSS Logical Property, make sure to explicitly define the behavior in RTL by using ```:dir(rtl)```.
+
+### Running in Right-To-Left mode
+
+Remember to check some classic gotchas: labels with long text don't overflow, background images are mirrored, and all context menus (including sub-context menus) open in the correct direction. To test that your CSS is properly mapped to RTL, [change the dir on html to 'rtl'](https://github.com/mozilla/activity-stream/blob/master/bin/generate-html.js#L15), and **re-build the add-on** (by re-running  ```npm start```). Note that CSS Logical Properties are only supported in Firefox.
