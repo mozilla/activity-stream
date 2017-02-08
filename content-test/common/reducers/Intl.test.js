@@ -11,9 +11,9 @@ describe("Intl reducer", () => {
       const state = Intl(prevState, {type: "LOCALE_UPDATED"});
       assert.equal(state, prevState);
     });
-    it("should update .locale and .strings", () => {
-      const state = Intl(undefined, {type: "LOCALE_UPDATED", data: {locale: "en-FOO", strings: {foo: "foo"}}});
-      assert.deepEqual(state, Object.assign({}, Intl.INITIAL_STATE, {locale: "en-FOO", strings: {foo: "foo"}}));
+    it("should update .locale, .strings and .direction", () => {
+      const state = Intl(undefined, {type: "LOCALE_UPDATED", data: {locale: "en-FOO", strings: {foo: "foo"}, direction: "ltr"}});
+      assert.deepEqual(state, Object.assign({}, Intl.INITIAL_STATE, {locale: "en-FOO", strings: {foo: "foo"}, direction: "ltr"}));
     });
   });
 });
