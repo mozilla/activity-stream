@@ -1,4 +1,4 @@
-const INITIAL_STATE = {locale: null, strings: {}};
+const INITIAL_STATE = {locale: null, strings: {}, direction: null};
 
 function Intl(prevState = INITIAL_STATE, action) {
   switch (action.type) {
@@ -8,7 +8,8 @@ function Intl(prevState = INITIAL_STATE, action) {
       }
       return Object.assign({}, prevState, {
         locale: action.data.locale,
-        strings: action.data.strings
+        strings: action.data.strings,
+        direction: action.data.direction
       });
     default:
       return prevState;

@@ -13,6 +13,7 @@ const Base = React.createClass({
     // Add the locale data for pluralization and relative-time formatting
     addLocaleData([{locale: this.props.Intl.locale, parentLocale: "en"}]);
     document.documentElement.lang = this.props.Intl.locale;
+    document.documentElement.dir = this.props.Intl.direction;
     this.props.dispatch(actions.NotifyPerf("BASE_MOUNTED"));
   },
   render() {

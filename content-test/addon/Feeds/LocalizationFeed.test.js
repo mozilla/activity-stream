@@ -1,5 +1,5 @@
 const LocalizationFeed = require("addon/Feeds/LocalizationFeed");
-const {getLocalizedStrings, DEFAULT_LOCALE} = LocalizationFeed;
+const {getLocalizedStrings, getDirection, DEFAULT_LOCALE} = LocalizationFeed;
 const EventEmitter = require("shims/_utils/EventEmitter");
 
 describe("LocalizationFeed", () => {
@@ -9,6 +9,20 @@ describe("LocalizationFeed", () => {
   });
   it("should add a .prefsTarget", () => {
     assert.instanceOf(instance.prefsTarget, EventEmitter);
+  });
+  describe("#getDirection", () => {
+    it("should return ltr with default strings", () => {
+      const expectedDir = "ltr";
+      assert.equal(getDirection(DEFAULT_LOCALE), expectedDir);
+    });
+    it("should gracefully handle 3 letter code locales", () => {
+      const expectedDir = "ltr";
+      assert.equal(getDirection("aus-IL"), expectedDir);
+    });
+    it("should return rtl for rtl languages", () => {
+      const expectedDir = "rtl";
+      assert.equal(getDirection("he-IL"), expectedDir);
+    });
   });
   describe("#getData", () => {
     it("should return a promise", () => {
@@ -20,11 +34,12 @@ describe("LocalizationFeed", () => {
         assert.equal(action.type, "LOCALE_UPDATED");
       })
     ));
-    it("should resolve with a valid locale and strings", () => (
+    it("should resolve with a valid locale, strings and direction", () => (
       instance.getData().then(action => {
         assert.isObject(action.data);
         assert.include(LocalizationFeed.AVAILABLE_LOCALES, action.data.locale);
         assert.isObject(action.data.strings);
+        assert.ok(action.data.direction);
       })
     ));
   });
