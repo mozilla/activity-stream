@@ -21,6 +21,56 @@
       margin-bottom: 0;
     }
 
+    &:hover {
+      .site-icon-title {
+        background-color: $tile-title-hover-color;
+      }
+    }
+
+    .tile {
+      @include accessible-link-menu-button;
+      border-radius: $border-radius;
+      outline: 0;
+      display: inline-flex;
+      flex-shrink: 0;
+      flex-direction: column;
+      font-size: $tile-font-size;
+      height: $tile-height;
+      position: relative;
+      text-decoration: none;
+      width: $tile-width;
+      color: inherit;
+
+      .site-title {
+        position: absolute;
+        top: 100%;
+        offset-inline-start: 0;
+        width: 100%;
+        padding-top: 6px;
+        font-size: 11px;
+        text-align: center;
+      }
+
+      .tile-img-container {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.top-corner {
+          position: absolute;
+          height: 40px;
+          width: 40px;
+          z-index: 1000;
+          top: -6px;
+          offset-inline-start: -6px;
+        }
+      }
+    }
+
     // Only display a placeholder version (ie just outlines/shapes), for use
     // before sufficient data is available to display.
     &.placeholder {
@@ -34,61 +84,15 @@
       }
     }
 
-    &:hover .site-icon-title {
-      background-color: $tile-title-hover-color;
-    }
-  }
-
-  .screenshot {
-    position: absolute;
-    top: 0;
-    offset-inline-start: 0;
-    height: 100%;
-    width: 100%;
-    background-size: 250%;
-    background-position: top center;
-    border-radius: 3px;
-  }
-
-  .tile {
-    display: inline-flex;
-    flex-shrink: 0;
-    flex-direction: column;
-    font-size: $tile-font-size;
-    height: $tile-height;
-    position: relative;
-    text-decoration: none;
-    width: $tile-width;
-    color: inherit;
-
-    .site-title {
+    .screenshot {
       position: absolute;
-      top: 100%;
+      top: 0;
       offset-inline-start: 0;
+      height: 100%;
       width: 100%;
-      padding-top: 6px;
-      font-size: 11px;
-      text-align: center;
-    }
-
-
-    .tile-img-container {
-      width: 100%;
-      overflow: hidden;
-      position: relative;
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      &.top-corner {
-        position: absolute;
-        height: 40px;
-        width: 40px;
-        z-index: 1000;
-        top: -6px;
-        offset-inline-start: -6px;
-      }
+      background-size: 250%;
+      background-position: top center;
+      border-radius: 3px;
     }
   }
 }
@@ -106,21 +110,21 @@
           height: $tile-width;
         }
       }
-    }
 
-    .tile {
-      box-shadow: none;
+      .tile {
+        box-shadow: none;
 
-      .tile-img-container {
-        // This is a hack so the title is visible since we are positioning
-        // it outside of the container for the experiment. If/when the experiment
-        // graduates, we should change the HTML instead.
-        overflow: visible;
-      }
+        .tile-img-container {
+          // This is a hack so the title is visible since we are positioning
+          // it outside of the container for the experiment. If/when the experiment
+          // graduates, we should change the HTML instead.
+          overflow: visible;
+        }
 
-      .site-title {
-        height: 22px;
-        overflow: hidden;
+        .site-title {
+          height: 22px;
+          overflow: hidden;
+        }
       }
     }
 
