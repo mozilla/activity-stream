@@ -99,30 +99,6 @@ describe("HighlightsFeed", () => {
           assert.lengthOf(action.data, 2);
         });
     });
-    it("should resolve with a HIGHLIGHTS_AWAITING_METADATA action if there are no weighted highlights", () => {
-      instance.baselineRecommender = {scoreEntries: () => []};
-      return instance.getData()
-        .then(action => {
-          assert.isObject(action);
-          assert.equal(action.type, "HIGHLIGHTS_AWAITING_METADATA");
-        });
-    });
-    it("should resolve with a HIGHLIGHTS_RESPONSE action if we've tried more than 5 times", () => {
-      instance.retryHighlightsCount = 5;
-      instance.baselineRecommender = {scoreEntries: () => []};
-      return instance.getData()
-        .then(action => {
-          assert.isObject(action);
-          assert.equal(action.type, "HIGHLIGHTS_AWAITING_METADATA");
-          assert.equal(instance.retryHighlightsCount, 6);
-          return instance.getData();
-        })
-        .then(action => {
-          assert.isObject(action);
-          assert.equal(action.type, "HIGHLIGHTS_RESPONSE");
-          assert.equal(instance.retryHighlightsCount, 6);
-        });
-    });
     it("should run sites through getCachedMetadata", () => {
       instance.baselineRecommender = {scoreEntries: links => links};
       return instance.getData()
@@ -161,30 +137,30 @@ describe("HighlightsFeed", () => {
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "a bookmark was added");
     });
-    it("should call refresh on METADATA_FEED_UPDATED if there are not enough sites", () => {
+    it("should call refresh on METADATA_UPDATED if there are not enough sites", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH - 1).fill("site")};
-      instance.onAction(store.getState(), {type: "METADATA_FEED_UPDATED"});
+      instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "there were not enough sites");
     });
-    it("should not call refresh on METADATA_FEED_UPDATED if there are enough sites", () => {
+    it("should not call refresh on METADATA_UPDATED if there are enough sites", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
-      instance.onAction(store.getState(), {type: "METADATA_FEED_UPDATED"});
+      instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
       assert.notCalled(instance.refresh);
     });
-    it("should call refresh on METADATA_FEED_UPDATED if .lastUpdated is too old", () => {
+    it("should call refresh on METADATA_UPDATED if .lastUpdated is too old", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
       instance.lastUpdated = 0;
       clock.tick(HighlightsFeed.UPDATE_TIME);
-      instance.onAction(store.getState(), {type: "METADATA_FEED_UPDATED"});
+      instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "the sites were too old");
     });
-    it("should not call refresh on METADATA_FEED_UPDATED if .lastUpdated is less than update time", () => {
+    it("should not call refresh on METADATA_UPDATED if .lastUpdated is less than update time", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
       instance.lastUpdated = 0;
       clock.tick(HighlightsFeed.UPDATE_TIME - 1);
-      instance.onAction(store.getState(), {type: "METADATA_FEED_UPDATED"});
+      instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
       assert.notCalled(instance.refresh);
     });
     it("should update the coefficients if the weightedHighlightsCoefficients pref is changed", () => {

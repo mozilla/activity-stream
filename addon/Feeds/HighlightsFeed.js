@@ -12,7 +12,6 @@ module.exports = class HighlightsFeed extends Feed {
   constructor(options) {
     super(options);
     this.baselineRecommender = null; // Added in initializeRecommender, if the experiment is turned on
-    this.retryHighlightsCount = 0;
   }
 
   /**
@@ -60,14 +59,8 @@ module.exports = class HighlightsFeed extends Feed {
     }
     return PlacesProvider.links.getRecentlyVisited()
       .then(links => this.options.getCachedMetadata(links, "HIGHLIGHTS_RESPONSE"))
-      .then(links => ({metadataLinks: links, weightedLinks: this.baselineRecommender.scoreEntries(links)}))
-      .then(({metadataLinks, weightedLinks}) => {
-        if (metadataLinks.length && !weightedLinks.length && this.retryHighlightsCount <= 5) {
-          this.retryHighlightsCount++;
-          return am.actions.Response("HIGHLIGHTS_AWAITING_METADATA");
-        }
-        return am.actions.Response("HIGHLIGHTS_RESPONSE", weightedLinks);
-      });
+      .then(links => this.baselineRecommender.scoreEntries(links))
+      .then(links => am.actions.Response("HIGHLIGHTS_RESPONSE", links));
   }
 
   onAction(state, action) {
@@ -80,10 +73,7 @@ module.exports = class HighlightsFeed extends Feed {
         // We always want new bookmarks
         this.refresh("a bookmark was added");
         break;
-      case am.type("HIGHLIGHTS_AWAITING_METADATA"):
-        this.refresh("metadata for highlights is being fetched");
-        break;
-      case am.type("METADATA_FEED_UPDATED"):
+      case am.type("METADATA_UPDATED"):
         // If the user visits a site and we don't have enough weighted highlights yet, refresh the data.
         if (state.Highlights.rows.length < (HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH)) {
           this.refresh("there were not enough sites");
