@@ -1,4 +1,5 @@
-const INITIAL_STATE = {locale: null, strings: {}, direction: null};
+const {DEFAULT_LOCALE} = require("common/constants");
+const INITIAL_STATE = {locale: DEFAULT_LOCALE, strings: {}, direction: "ltr"};
 const getLocalizedStrings = require("common/getLocalizedStrings");
 
 function Intl(prevState = INITIAL_STATE, action) {

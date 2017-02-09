@@ -1,4 +1,4 @@
-const DEFAULT_LOCALE = "en-US";
+const {DEFAULT_LOCALE} = require("../common/constants");
 const STRINGS = require("../data/locales/locales.json");
 
 module.exports = function getLocalizedStrings(locale, allStrings = STRINGS) {
