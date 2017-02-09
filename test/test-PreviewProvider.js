@@ -196,11 +196,14 @@ exports.test_process_links = function(assert) {
   });
 };
 
-exports.test_process_and_insert_links = function(assert) {
+exports.test_process_and_insert_links = function*(assert) {
   const fakeData = {"url": "http://example.com/1", "title": "Title for example.com/1"};
 
+  const mockActions = [];
+  gPreviewProvider._store = {dispatch: action => mockActions.push(action)};
+
   // process and insert the links
-  gPreviewProvider.processAndInsertMetadata(fakeData, "metadata_source");
+  yield gPreviewProvider.processAndInsertMetadata(fakeData, "metadata_source");
   assert.equal(gMetadataStore[0].length, 1, "saved one item");
 
   // check the first site inserted in the metadata DB
@@ -208,6 +211,7 @@ exports.test_process_and_insert_links = function(assert) {
   assert.equal(gMetadataStore[0][0].cache_key, "example.com/1", "we added a cache_key for the site");
   assert.equal(gMetadataStore[0][0].metadata_source, "metadata_source", "we added a metadata_source for the site");
   assert.equal(gMetadataStore[0][0].title, fakeData.title, "we added the title from the metadata for the site");
+  assert.equal(mockActions[0].type, "METADATA_UPDATED");
 };
 
 exports.test_look_for_link_in_DB = function*(assert) {
@@ -438,6 +442,7 @@ exports.test_copy_over_correct_data_from_firefox = function*(assert) {
 exports.test_compute_image_sizes = function*(assert) {
   let mockExperimentProvider = {data: {metadataService: false}};
   gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
+  gPreviewProvider._store = {dispatch: () => {}};
   let metadataObj = {
     url: "https://www.hasAnImage.com",
     images: [{url: "data:image;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAA"}] // a 1x1 pixel image
@@ -463,6 +468,7 @@ before(exports, () => {
   simplePrefs.prefs["metadata.endpoint"] = `${gEndpointPrefix}${gMetadataServiceEndpoint}`;
   simplePrefs.prefs["previews.enabled"] = true;
   gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, {initFresh: true});
+  gPreviewProvider._store = {dispatch: () => {}};
   gPreviewProvider._getFaviconColors = function() {
     return Promise.resolve(null);
   };

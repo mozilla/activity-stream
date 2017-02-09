@@ -36,12 +36,13 @@ const DEFAULT_OPTIONS = {
   initFresh: false
 };
 
-function PreviewProvider(tabTracker, metadataStore, options = {}) {
+function PreviewProvider(tabTracker, metadataStore, store, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   this._onPrefChange = this._onPrefChange.bind(this);
   this._tippyTopProvider = new TippyTopProvider();
   this._tabTracker = tabTracker;
   this._metadataStore = metadataStore;
+  this._store = store;
   this.init();
 }
 
@@ -366,7 +367,9 @@ PreviewProvider.prototype = {
       expired_at: (this.options.metadataTTL) + Date.now(),
       metadata_source: metadataSource
     }));
-    this._metadataStore.asyncInsert(linksToInsert, true).catch(err => {
+    return this._metadataStore.asyncInsert(linksToInsert, true).then(() => {
+      this._store.dispatch({type: "METADATA_UPDATED"});
+    }).catch(err => {
       // TODO: add more exception handling code, e.g. sending exception report
       Cu.reportError(err);
     });
@@ -378,7 +381,7 @@ PreviewProvider.prototype = {
    */
   processAndInsertMetadata(link, metadataSource) {
     const processedLink = this._processLinks([link]);
-    this.insertMetadata(processedLink, metadataSource);
+    return this.insertMetadata(processedLink, metadataSource);
   },
 
   /**
