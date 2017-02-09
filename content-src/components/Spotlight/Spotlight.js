@@ -46,7 +46,7 @@ const SpotlightItem = React.createClass({
       }));
     }
     return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
-      <a onClick={this.props.onClick} href={site.url} ref="link">
+      <a onClick={this.props.onClick} className="spotlight-inner" href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image">
           <SiteIcon className="spotlight-icon" height={40} width={40} site={site} ref="icon" showBackground={true} border={false} faviconSize={32} />
         </div>

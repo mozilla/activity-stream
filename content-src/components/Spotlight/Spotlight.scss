@@ -37,6 +37,12 @@
   margin-top: 12px;
   margin-bottom: 12px;
 
+  .spotlight-inner {
+    @include accessible-link-menu-button;
+    border-radius: $border-radius;
+    outline: 0;
+  }
+
   @media (min-width: $break-point) {
     flex-shrink: 0;
   }

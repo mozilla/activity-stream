@@ -18,4 +18,10 @@
   transition-property: transform, opacity;
   transition-duration: 200ms;
   z-index: 399;
+
+  &:focus,
+  &:active {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

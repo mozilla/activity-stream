@@ -132,19 +132,34 @@ $code-color: #E8005C;
 @mixin item-shadow {
   box-shadow: $item-shadow;
 
-  &:hover,
-  &.active {
+  &:hover {
     box-shadow: $item-shadow-hover;
     transition: box-shadow 150ms;
   }
 }
 
 @mixin link-menu-button {
-  &:hover,
-  &.active {
+  &:hover {
     .link-menu-button {
       transform: scale(1);
       opacity: 1;
+    }
+  }
+}
+
+@mixin accessible-link-menu-button {
+  &:active,
+  &:focus {
+    box-shadow: $item-shadow-hover;
+    transition: box-shadow 150ms;
+
+    + .link-menu-button {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .site-icon-title {
+      background-color: $tile-title-hover-color;
     }
   }
 }
