@@ -6,6 +6,9 @@ module.exports = {
   // age smaller/younger than this value results in a larger-than-1.0 fraction
   BOOKMARK_AGE_DIVIDEND: 3 * 24 * 60 * 60 * 1000,
 
+  // What is our default locale for the app?
+  DEFAULT_LOCALE: "en-US",
+
   // Number of large Highlight titles in the new Highlights world, including
   // all rows.
   HIGHLIGHTS_LENGTH: 9,

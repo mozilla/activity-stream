@@ -27,7 +27,7 @@ function createMockProvider(custom) {
 }
 
 function createIntlProvider(component) {
-  const intlWrapper = (<IntlProvider locale="en" messages={messages}>{component}</IntlProvider>);
+  const intlWrapper = (<IntlProvider locale="en-US" messages={messages}>{component}</IntlProvider>);
   return intlWrapper;
 }
 

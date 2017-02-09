@@ -3,7 +3,7 @@
 
 /* eslint-disable no-console */
 
-const DEFAULT_LOCALE = "en-US";
+const DEFAULT_LOCALE = require("../common/constants").DEFAULT_LOCALE;
 
 /* globals cd, cp, ls, mkdir, rm */
 require("shelljs/global");

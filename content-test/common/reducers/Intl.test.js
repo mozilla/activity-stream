@@ -7,13 +7,18 @@ describe("Intl reducer", () => {
   });
   describe("LOCALE_UPDATED", () => {
     it("should not update if action.data is missing", () => {
-      const prevState = {locale: "en-US", strings: {}};
+      const prevState = {locale: "en-US", strings: {}, direction: "ltr"};
       const state = Intl(prevState, {type: "LOCALE_UPDATED"});
       assert.equal(state, prevState);
     });
     it("should update .locale, .strings and .direction", () => {
-      const state = Intl(undefined, {type: "LOCALE_UPDATED", data: {locale: "en-FOO", strings: {foo: "foo"}, direction: "ltr"}});
-      assert.deepEqual(state, Object.assign({}, Intl.INITIAL_STATE, {locale: "en-FOO", strings: {foo: "foo"}, direction: "ltr"}));
+      const state = Intl(undefined, {
+        type: "LOCALE_UPDATED",
+        data: {locale: "en-FOO", direction: "rtl"}
+      });
+      assert.equal(state.locale, "en-FOO", ".locale");
+      assert.isObject(state.strings, ".strings");
+      assert.equal(state.direction, "rtl");
     });
   });
 });
