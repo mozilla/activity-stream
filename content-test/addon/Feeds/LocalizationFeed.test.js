@@ -1,5 +1,6 @@
 const LocalizationFeed = require("addon/Feeds/LocalizationFeed");
-const {getLocalizedStrings, getDirection, DEFAULT_LOCALE} = LocalizationFeed;
+const {getDirection} = LocalizationFeed;
+const {DEFAULT_LOCALE} = require("common/constants");
 const EventEmitter = require("shims/_utils/EventEmitter");
 
 describe("LocalizationFeed", () => {
@@ -34,11 +35,10 @@ describe("LocalizationFeed", () => {
         assert.equal(action.type, "LOCALE_UPDATED");
       })
     ));
-    it("should resolve with a valid locale, strings and direction", () => (
+    it("should resolve with a valid locale and direction", () => (
       instance.getData().then(action => {
         assert.isObject(action.data);
-        assert.include(LocalizationFeed.AVAILABLE_LOCALES, action.data.locale);
-        assert.isObject(action.data.strings);
+        assert.include(instance.availableLocales, action.data.locale);
         assert.ok(action.data.direction);
       })
     ));
@@ -79,32 +79,6 @@ describe("LocalizationFeed", () => {
       sinon.spy(instance, "removeListeners");
       instance.onAction({}, {type: "APP_UNLOAD"});
       assert.calledOnce(instance.removeListeners);
-    });
-  });
-  describe("getLocalizedStrings", () => {
-    it("should return default locale strings without merging if default locale is selected", () => {
-      const strings = {};
-      strings[DEFAULT_LOCALE] = {greeting: "hello", confirm: "yes"};
-      const result = getLocalizedStrings(DEFAULT_LOCALE, strings);
-      assert.equal(result, strings[DEFAULT_LOCALE]);
-    });
-    it("should get strings for a given locale", () => {
-      const strings = {fr: {greeting: "bonjour"}};
-      strings[DEFAULT_LOCALE] = {greeting: "hello"};
-      const result = getLocalizedStrings("fr", strings);
-      assert.deepEqual(result, strings.fr);
-    });
-    it("should include strings from the default locale for any missing ids", () => {
-      const strings = {fr: {greeting: "bonjour"}};
-      strings[DEFAULT_LOCALE] = {greeting: "hello", confirm: "yes"};
-      const result = getLocalizedStrings("fr", strings);
-      assert.deepEqual(result, {greeting: "bonjour", confirm: "yes"});
-    });
-    it("should just return default locale strings if a locale is missing", () => {
-      const strings = {};
-      strings[DEFAULT_LOCALE] = {greeting: "hello", confirm: "yes"};
-      const result = getLocalizedStrings("fr", strings);
-      assert.deepEqual(result, strings[LocalizationFeed.DEFAULT_LOCALE]);
     });
   });
 });

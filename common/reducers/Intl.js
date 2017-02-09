@@ -1,4 +1,5 @@
 const INITIAL_STATE = {locale: null, strings: {}, direction: null};
+const getLocalizedStrings = require("common/getLocalizedStrings");
 
 function Intl(prevState = INITIAL_STATE, action) {
   switch (action.type) {
@@ -8,7 +9,7 @@ function Intl(prevState = INITIAL_STATE, action) {
       }
       return Object.assign({}, prevState, {
         locale: action.data.locale,
-        strings: action.data.strings,
+        strings: getLocalizedStrings(action.data.locale),
         direction: action.data.direction
       });
     default:
