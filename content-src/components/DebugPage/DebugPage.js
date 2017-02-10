@@ -7,7 +7,10 @@ const TopSites = require("components/TopSites/TopSites");
 const Snippet = require("components/Snippet/Snippet");
 const sizeof = require("object-sizeof");
 const experimentDefinitions = require("../../../experiments.json");
+const allLocales = Object.keys(require("../../../data/locales/locales.json"));
 const UI_COMPONENTS = ["TopSites", "Highlights"];
+const {Notify} = require("common/action-manager").actions;
+const {FormattedMessage} = require("react-intl");
 
 // Only include this in DEVELOPMENT builds
 let JSONTree;
@@ -47,6 +50,9 @@ const DebugPage = React.createClass({
       showSnippet: true
     };
   },
+  changeLocale(locale) {
+    this.props.dispatch(Notify("LOCALE_UPDATED", {locale}));
+  },
   render() {
     const plainText = JSON.stringify({raw: this.props.raw, newTab: this.props.newTab}, null, 2);
     const downloadState = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.props.raw))}`;
@@ -54,9 +60,19 @@ const DebugPage = React.createClass({
     return (<main className="debug-page">
       <div className="new-tab-wrapper">
 
+        <h1><FormattedMessage id="newtab_page_title" /></h1>
         <section>
           <h2>Version</h2>
           <p>{this.props.raw.Prefs.prefs["sdk.version"]}</p>
+        </section>
+
+        <section>
+          <h2>Locale</h2>
+          <p>
+            <select onChange={e => this.changeLocale(e.target.value)} value={this.props.raw.Intl.locale}>
+              {allLocales.map(locale => <option key={locale} value={locale}>{locale}</option>)}
+            </select>
+          </p>
         </section>
 
         <section className="experiments">
