@@ -41,3 +41,4 @@ const Base = React.createClass({
 });
 
 module.exports = connect(state => ({Intl: state.Intl}))(Base);
+module.exports.Base = Base;
