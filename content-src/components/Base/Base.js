@@ -9,7 +9,7 @@ const {IntlProvider, addLocaleData} = require("react-intl");
 
 const Base = React.createClass({
   getInitialState() {return {showDebugPage: false};},
-  componentDidMount() {
+  componentWillMount() {
     // Add the locale data for pluralization and relative-time formatting
     addLocaleData([{locale: this.props.Intl.locale, parentLocale: "en"}]);
     document.documentElement.lang = this.props.Intl.locale;
