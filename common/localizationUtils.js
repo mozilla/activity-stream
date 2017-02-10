@@ -1,7 +1,11 @@
-const {DEFAULT_LOCALE} = require("../common/constants");
+const {DEFAULT_LOCALE, RTL_LIST} = require("common/constants");
 const STRINGS = require("../data/locales/locales.json");
 
-module.exports = function getLocalizedStrings(locale, allStrings = STRINGS) {
+module.exports.getDirection = function getDirection(locale) {
+  return (RTL_LIST.indexOf(locale.split("-")[0]) >= 0) ? "rtl" : "ltr";
+};
+
+module.exports.getLocalizedStrings = function getLocalizedStrings(locale, allStrings = STRINGS) {
   if (locale === DEFAULT_LOCALE) {
     return allStrings[DEFAULT_LOCALE];
   }

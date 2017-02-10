@@ -1,5 +1,6 @@
-const {HIGHLIGHTS_LENGTH} = require("common/constants");
+const {HIGHLIGHTS_LENGTH, DEFAULT_LOCALE} = require("common/constants");
 const faker = require("test/faker");
+const STRINGS = require("../../data/locales/locales.json")[DEFAULT_LOCALE];
 
 module.exports = {
   "Highlights": {
@@ -43,7 +44,8 @@ module.exports = {
     ]
   },
   "Intl": {
-    "locale": "en-US",
-    "strings": {}
+    "locale": DEFAULT_LOCALE,
+    "strings": STRINGS,
+    "direction": "ltr"
   }
 };

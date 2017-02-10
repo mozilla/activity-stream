@@ -14,9 +14,9 @@ describe("Intl reducer", () => {
     it("should update .locale, .strings and .direction", () => {
       const state = Intl(undefined, {
         type: "LOCALE_UPDATED",
-        data: {locale: "en-FOO", direction: "rtl"}
+        data: "he-FOO"
       });
-      assert.equal(state.locale, "en-FOO", ".locale");
+      assert.equal(state.locale, "he-FOO", ".locale");
       assert.isObject(state.strings, ".strings");
       assert.equal(state.direction, "rtl");
     });

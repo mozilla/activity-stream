@@ -7,14 +7,25 @@ const DebugPage = require("components/DebugPage/DebugPage");
 
 const {IntlProvider, addLocaleData} = require("react-intl");
 
+// Add the locale data for pluralization and relative-time formatting
+// for now, this just uses english locale data. We can make this more sophisticated if more
+// features are needed.
+function addLocaleDataForReactIntl(Intl) {
+  addLocaleData([{locale: Intl.locale, parentLocale: "en"}]);
+  document.documentElement.lang = Intl.locale;
+  document.documentElement.dir = Intl.direction;
+}
+
 const Base = React.createClass({
   getInitialState() {return {showDebugPage: false};},
   componentWillMount() {
-    // Add the locale data for pluralization and relative-time formatting
-    addLocaleData([{locale: this.props.Intl.locale, parentLocale: "en"}]);
-    document.documentElement.lang = this.props.Intl.locale;
-    document.documentElement.dir = this.props.Intl.direction;
+    addLocaleDataForReactIntl(this.props.Intl);
     this.props.dispatch(actions.NotifyPerf("BASE_MOUNTED"));
+  },
+  componentWillUpdate(nextProps) {
+    if (nextProps.Intl !== this.props.Intl) {
+      addLocaleDataForReactIntl(nextProps.Intl);
+    }
   },
   render() {
     const debugLinkText = this.state.showDebugPage ? "newtab" : "debug";
@@ -30,3 +41,4 @@ const Base = React.createClass({
 });
 
 module.exports = connect(state => ({Intl: state.Intl}))(Base);
+module.exports.Base = Base;
