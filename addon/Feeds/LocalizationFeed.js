@@ -3,11 +3,6 @@ const {findClosestLocale, getPreferedLocales} = require("sdk/l10n/locale");
 const Feed = require("../lib/Feed");
 const am = require("../../common/action-manager");
 const AVAILABLE_LOCALES = Object.keys(require("../../data/locales/locales.json"));
-const RTL_LIST = ["ar", "he", "fa", "ur"];
-
-function getDirection(locale) {
-  return (RTL_LIST.indexOf(locale.split("-")[0]) >= 0) ? "rtl" : "ltr";
-}
 
 // These all affect getPreferedLocales
 const LOCALE_PREFS = [
@@ -34,8 +29,7 @@ class LocalizationFeed extends Feed {
   }
   getData() {
     let locale = findClosestLocale(this.availableLocales, getPreferedLocales());
-    const direction = getDirection(locale);
-    return Promise.resolve(am.actions.Response("LOCALE_UPDATED", {locale, direction}));
+    return Promise.resolve(am.actions.Response("LOCALE_UPDATED", locale));
   }
   onAction(state, action) {
     switch (action.type) {
@@ -50,6 +44,4 @@ class LocalizationFeed extends Feed {
 }
 
 LocalizationFeed.LOCALE_PREFS = LOCALE_PREFS;
-LocalizationFeed.getDirection = getDirection;
-
 module.exports = LocalizationFeed;

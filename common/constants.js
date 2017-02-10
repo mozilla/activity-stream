@@ -9,6 +9,9 @@ module.exports = {
   // What is our default locale for the app?
   DEFAULT_LOCALE: "en-US",
 
+  // Locales that should be displayed RTL
+  RTL_LIST: ["ar", "he", "fa", "ur"],
+
   // Number of large Highlight titles in the new Highlights world, including
   // all rows.
   HIGHLIGHTS_LENGTH: 9,

@@ -51,7 +51,7 @@ const DebugPage = React.createClass({
     };
   },
   changeLocale(locale) {
-    this.props.dispatch(Notify("LOCALE_UPDATED", {locale}));
+    this.props.dispatch(Notify("LOCALE_UPDATED", locale));
   },
   render() {
     const plainText = JSON.stringify({raw: this.props.raw, newTab: this.props.newTab}, null, 2);
