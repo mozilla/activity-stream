@@ -1,10 +1,6 @@
-const {DEFAULT_LOCALE, RTL_LIST} = require("common/constants");
+const {DEFAULT_LOCALE} = require("common/constants");
 const INITIAL_STATE = {locale: DEFAULT_LOCALE, strings: {}, direction: "ltr"};
-const getLocalizedStrings = require("common/getLocalizedStrings");
-
-function getDirection(locale) {
-  return (RTL_LIST.indexOf(locale.split("-")[0]) >= 0) ? "rtl" : "ltr";
-}
+const {getDirection, getLocalizedStrings} = require("common/localizationUtils");
 
 function Intl(prevState = INITIAL_STATE, action) {
   switch (action.type) {
@@ -23,6 +19,5 @@ function Intl(prevState = INITIAL_STATE, action) {
 }
 
 Intl.INITIAL_STATE = INITIAL_STATE;
-Intl.getDirection = getDirection;
 
 module.exports = Intl;
