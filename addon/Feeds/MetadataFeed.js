@@ -32,7 +32,7 @@ module.exports = class MetadataFeed extends Feed {
     this.linksToFetch.clear();
 
     // if we are in the experiment, make a network request through PageScraper
-    if (simplePrefs.prefs["experiments.locallyFetchMetadata"]) {
+    if (simplePrefs.prefs["experiments.locallyFetchMetadata20"]) {
       return this.options.fetchNewMetadataLocally(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_FEED_UPDATED")));
     }
     return this.options.fetchNewMetadata(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_FEED_UPDATED")));
