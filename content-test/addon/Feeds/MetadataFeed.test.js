@@ -33,11 +33,11 @@ describe("MetadataFeed", () => {
         assert.calledOnce(instance.options.fetchNewMetadata)))
     );
     it("should run sites through fetchNewMetadataLocally if experiment pref is on", () => {
-      simplePrefs.prefs["experiments.locallyFetchMetadata"] = true;
+      simplePrefs.prefs["experiments.locallyFetchMetadata20"] = true;
       return instance.getData().then(() => {
         assert.notCalled(instance.options.fetchNewMetadata);
         assert.calledOnce(instance.options.fetchNewMetadataLocally);
-        simplePrefs.prefs["experiments.locallyFetchMetadata"] = false;
+        simplePrefs.prefs["experiments.locallyFetchMetadata20"] = false;
       });
     });
     it("should resolve with an action, but no data", () => (
