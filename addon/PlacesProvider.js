@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs, NewTabUtils */
+/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs */
 
 "use strict";
 
@@ -9,7 +9,6 @@ const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-sync/SyncedTabs.jsm");
-Cu.import("resource://gre/modules/NewTabUtils.jsm");
 
 XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
@@ -321,24 +320,6 @@ Links.prototype = {
       this.emit("manyLinksChanged");
     }
   },
-
-  asyncGetTopNewTabSites: Task.async(function*() {
-    const links = NewTabUtils.links.getLinks();
-    const QUERY_LIMIT = TOP_SITES_LENGTH * 2;
-    let result = [];
-    for (let link of links) {
-      if (!link || link.type === "affiliate" || this.blockedURLs.has(link.url)) {
-        continue;
-      }
-
-      link.favicon = yield this.getFavicon(link.url);
-      result.push(link);
-      if (result.length >= QUERY_LIMIT) {
-        break;
-      }
-    }
-    return result;
-  }),
 
   getFavicon: Task.async(function*(url) {
     let sqlQuery = `SELECT moz_favicons.mime_type as mimeType, moz_favicons.data as favicon

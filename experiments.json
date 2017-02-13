@@ -106,7 +106,7 @@
   },
   "originalNewTabSites": {
     "name": "Original about:newtab top sites",
-    "active": true,
+    "active": false,
     "description": "Use the sites from the original about:newtab",
     "control": {
       "value": false,
