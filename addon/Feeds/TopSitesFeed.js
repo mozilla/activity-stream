@@ -18,7 +18,7 @@ module.exports = class TopSitesFeed extends Feed {
 
       let links;
       // Get links from places
-      if (experiments.originalNewTabSites || experiments.screenshots) {
+      if (experiments.originalNewTabSites) {
         links = yield PlacesProvider.links.asyncGetTopNewTabSites();
       } else {
         links = yield PlacesProvider.links.getTopFrecentSites();
