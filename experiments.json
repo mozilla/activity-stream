@@ -91,7 +91,7 @@
   },
   "locallyFetchMetadata": {
     "name": "Fetch Page Content Locally",
-    "active": true,
+    "active": false,
     "description": "Make a network request for content of a URL",
     "control": {
       "value": false,
@@ -132,6 +132,21 @@
       "value": true,
       "threshold": 0.2,
       "description": "Show screenshots"
+    }
+  },
+  "locallyFetchMetadata20": {
+    "name": "Fetch Page Content Locally",
+    "active": true,
+    "description": "Make a network request for content of a URL",
+    "control": {
+      "value": false,
+      "description": "Use remote service for metadata"
+    },
+    "variant": {
+      "id": "exp-010-locally-fetch-metadata",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Fetch page content locally"
     }
   }
 }
