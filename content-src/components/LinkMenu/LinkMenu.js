@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {selectShareProviders} = require("common/selectors/selectors");
+const {justDispatch} = require("common/selectors/selectors");
 const ContextMenu = require("components/ContextMenu/ContextMenu");
 const {actions} = require("common/action-manager");
 const {FIRST_RUN_TYPE} = require("lib/first-run-data");
@@ -27,43 +27,8 @@ const LinkMenu = React.createClass({
       dispatch(actions.NotifyEvent(payload));
     }
   },
-  getSocialShareOptions(site, providers, dispatch) {
-    if (providers.length === 0) {
-      return [];
-    }
-
-    let options = [{type: "separator"}];
-
-    for (let provider of providers) {
-      let _provider = provider;
-      options.push({
-        ref: `share${provider.name}`,
-        label: provider.name,
-        iconURL: provider.iconURL,
-        onClick: () => dispatch(actions.NotifyShareUrl(site.url, site.title, _provider.origin))
-      });
-    }
-
-    return options;
-  },
-  getShareOptions(site, providers, dispatch) {
-    return [
-      {
-        ref: "copyAddress",
-        label: this.props.intl.formatMessage({id: "menu_action_copy_address"}),
-        icon: "copy-address",
-        onClick: () => dispatch(actions.NotifyCopyUrl(site.url))
-      },
-      {
-        ref: "emailLink",
-        label: this.props.intl.formatMessage({id: "menu_action_email_link"}),
-        icon: "email-link",
-        onClick: () => dispatch(actions.NotifyEmailUrl(site.url, site.title))
-      }]
-      .concat(this.getSocialShareOptions(site, providers, dispatch));
-  },
   getOptions() {
-    const {site, allowBlock, dispatch, ShareProviders} = this.props;
+    const {site, allowBlock, dispatch} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
     let deleteOptions;
@@ -106,13 +71,6 @@ const LinkMenu = React.createClass({
         userEvent: "BOOKMARK_ADD",
         onClick: () => dispatch(actions.NotifyBookmarkAdd(site.url))
       }),
-      {
-        type: "submenu",
-        ref: "share",
-        label: this.props.intl.formatMessage({id: "menu_action_share"}),
-        icon: "share",
-        options: this.getShareOptions(site, ShareProviders ? ShareProviders.providers : [], dispatch)
-      },
       {type: "separator"},
       {
         ref: "openWindow",
@@ -149,8 +107,6 @@ LinkMenu.propTypes = {
     recommended: React.PropTypes.bool
   }).isRequired,
 
-  ShareProviders: React.PropTypes.object,
-
   // This is for events
   page: React.PropTypes.string,
   source: React.PropTypes.string,
@@ -159,4 +115,4 @@ LinkMenu.propTypes = {
   recommender_type: React.PropTypes.string
 };
 
-module.exports = connect(selectShareProviders)(injectIntl(LinkMenu));
+module.exports = connect(justDispatch)(injectIntl(LinkMenu));

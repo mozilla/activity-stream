@@ -45,8 +45,3 @@ module.exports.selectNewTabSites = createSelector(
     };
   }
 );
-
-/**
- * selectShareProviders - for the Share component
- */
-module.exports.selectShareProviders = state => ({ShareProviders: state.ShareProviders});
