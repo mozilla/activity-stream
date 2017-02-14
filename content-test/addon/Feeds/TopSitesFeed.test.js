@@ -1,11 +1,6 @@
 const testLinks = ["foo.com", "bar.com"];
 const getCachedMetadata = sites => sites.map(site => site.toUpperCase());
-const PlacesProvider = {
-  links: {
-    asyncGetTopNewTabSites: sinon.spy(() => Promise.resolve(testLinks)),
-    getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))
-  }
-};
+const PlacesProvider = {links: {getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))}};
 const getScreenshots = sinon.spy(() => Promise.resolve(["foo"]));
 const moment = require("moment");
 const TopSitesFeed = require("inject!addon/Feeds/TopSitesFeed")({
@@ -20,7 +15,6 @@ describe("TopSitesFeed", () => {
   let reduxState;
   beforeEach(() => {
     PlacesProvider.links.getTopFrecentSites.reset();
-    PlacesProvider.links.asyncGetTopNewTabSites.reset();
     reduxState = {Experiments: {values: {}}};
     instance = new TopSitesFeed({getCachedMetadata});
     instance.store = {getState() {return reduxState;}};
@@ -48,14 +42,6 @@ describe("TopSitesFeed", () => {
       assert.equal(action.type, "TOP_FRECENT_SITES_RESPONSE", "type");
       assert.deepEqual(action.data, getCachedMetadata(testLinks));
     }));
-    it("should use the original tiles when in the experiment", () => {
-      reduxState.Experiments.values.originalNewTabSites = true;
-      return instance.getData().then(() => {
-        assert.notCalled(PlacesProvider.links.getTopFrecentSites);
-        assert.calledOnce(PlacesProvider.links.asyncGetTopNewTabSites);
-        assert.calledWith(instance.options.getCachedMetadata, testLinks, "TOP_FRECENT_SITES_RESPONSE");
-      });
-    });
     it("should add screenshots when in the experiment", () => {
       reduxState.Experiments.values.screenshots = true;
       return instance.getData().then(result => {
