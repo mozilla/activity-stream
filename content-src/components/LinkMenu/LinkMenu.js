@@ -63,7 +63,7 @@ const LinkMenu = React.createClass({
       .concat(this.getSocialShareOptions(site, providers, dispatch));
   },
   getOptions() {
-    const {site, allowBlock, reverseMenuOptions, dispatch, ShareProviders} = this.props;
+    const {site, allowBlock, dispatch, ShareProviders} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
     let deleteOptions;
@@ -72,6 +72,7 @@ const LinkMenu = React.createClass({
     // that show up if your history is empty
     if (isNotDefault) {
       deleteOptions = [
+        {type: "separator"},
         allowBlock && {
           ref: "dismiss",
           label: this.props.intl.formatMessage({id: "menu_action_dismiss"}),
@@ -89,12 +90,6 @@ const LinkMenu = React.createClass({
           onClick: () => dispatch(actions.NotifyHistoryDelete(site.url))
         }
       ];
-
-      if (reverseMenuOptions) {
-        deleteOptions.reverse();
-      }
-
-      deleteOptions.unshift({type: "separator"});
     }
 
     return [
