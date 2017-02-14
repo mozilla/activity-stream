@@ -93,14 +93,6 @@ function getTestActivityStream(options = {}) {
     asyncGetOldestInsert() {return Promise.resolve([0]);},
     asyncCountAllItems() {return Promise.resolve([0]);}
   };
-  const mockShareProvider = {
-    init() {},
-    uninit() {},
-    socialProviders: []
-  };
-  if (!options.mockShareProvider) {
-    options.shareProvider = mockShareProvider;
-  }
   const mockPageScraper = {
     options: {framescriptPath: ""},
     init() {},

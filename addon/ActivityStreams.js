@@ -1,4 +1,4 @@
-/* globals NewTabURL, EventEmitter, XPCOMUtils, windowMediator, Services */
+/* globals NewTabURL, EventEmitter, XPCOMUtils, Services */
 
 "use strict";
 
@@ -12,7 +12,6 @@ const ss = require("sdk/simple-storage");
 const PageModProvider = require("addon/PageModProvider");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {SearchProvider} = require("addon/SearchProvider");
-const {ShareProvider} = require("addon/ShareProvider");
 const {PreviewProvider} = require("addon/PreviewProvider");
 const {PerfMeter} = require("addon/PerfMeter");
 const {AppURLHider} = require("addon/AppURLHider");
@@ -31,10 +30,6 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource:///modules/NewTabURL.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
-XPCOMUtils.defineLazyServiceGetter(this, "windowMediator",
-                                   "@mozilla.org/appshell/window-mediator;1",
-                                   "nsIWindowMediator");
-
 XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
@@ -44,7 +39,6 @@ const DEFAULT_OPTIONS = {
   pageURL: data.url("content/activity-streams.html"),
   onAddWorker: null,
   onRemoveWorker: null,
-  shareProvider: null,
   pageScraper: null,
   pageWorker: null,
   searchProvider: null
@@ -120,7 +114,6 @@ ActivityStreams.prototype = {
     this._searchProvider.init();
     this._initializePreviewProvider(this._metadataStore, this._tabTracker);
     this._initializePageScraper(this._previewProvider, this._tabTracker);
-    this._initializeShareProvider(this._tabTracker);
     this._initializePrefProvider(this._tabTracker);
 
     this._setupPageMod();
@@ -198,15 +191,6 @@ ActivityStreams.prototype = {
     this._prefsProvider.init();
   },
 
-  _initializeShareProvider(tabTracker) {
-    if (this.options.shareProvider) {
-      this._shareProvider = this.options.shareProvider;
-    } else {
-      this._shareProvider = new ShareProvider({eventTracker: tabTracker});
-    }
-    this._shareProvider.init();
-  },
-
   _initializePageScraper(previewProvider, tabTracker) {
     this._pageScraper = null;
 
@@ -227,8 +211,6 @@ ActivityStreams.prototype = {
     this._store.dispatch(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
 
     this._store.dispatch(am.actions.Response("PREFS_RESPONSE", simplePrefs.prefs));
-
-    this._store.dispatch(am.actions.Response("SHARE_PROVIDERS_RESPONSE", this._shareProvider.socialProviders));
   },
 
   _respondOpenWindow({msg}) {
@@ -259,24 +241,6 @@ ActivityStreams.prototype = {
         break;
       case am.type("NOTIFY_UNBLOCK_URL"):
         PlacesProvider.links.unblockURL(msg.data);
-        break;
-    }
-  },
-
-  /**
-   * Responds to share requests
-   */
-  _respondToShareRequests({msg, worker}) {
-    const win = windowMediator.getMostRecentWindow("navigator:browser");
-    switch (msg.type) {
-      case am.type("NOTIFY_SHARE_URL"):
-        this._shareProvider.shareLink(msg.data.provider, {url: msg.data.url, title: msg.data.title}, null, win);
-        break;
-      case am.type("NOTIFY_COPY_URL"):
-        this._shareProvider.copyLink(msg.data.url);
-        break;
-      case am.type("NOTIFY_EMAIL_URL"):
-        this._shareProvider.emailLink(msg.data.url, msg.data.title, win);
         break;
     }
   },
@@ -373,7 +337,6 @@ ActivityStreams.prototype = {
       // Other handlers
       this._respondToUIChanges(args);
       this._respondToPlacesRequests(args);
-      this._respondToShareRequests(args);
       this._respondOpenWindow(args);
     };
     this.on(CONTENT_TO_ADDON, this._contentToAddonHandlers);
@@ -476,7 +439,6 @@ ActivityStreams.prototype = {
       this._appURLHider.uninit();
       this._perfMeter.uninit();
       this._prefsProvider.destroy();
-      this._shareProvider.uninit(reason);
       this._experimentProvider.destroy();
       this._pageWorker.destroy();
 

@@ -15,8 +15,6 @@ const constants = {
     "OPEN_NEW_WINDOW",
     "OPEN_PRIVATE_WINDOW",
     "SEARCH",
-    "SHARE",
-    "SHARE_TOOLBAR",
     "UNBLOCK"
   ]),
   undesiredEvents: new Set([

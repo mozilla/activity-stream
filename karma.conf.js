@@ -82,8 +82,6 @@ module.exports = function(config) {
             path.join(__dirname, "addon/PlacesProvider.js"),
             path.join(__dirname, "addon/PreviewProvider.js"),
             path.join(__dirname, "addon/SearchProvider.js"),
-            path.join(__dirname, "addon/ShareManifests.js"),
-            path.join(__dirname, "addon/ShareProvider.js"),
             path.join(__dirname, "addon/TabTracker.js"),
             path.join(__dirname, "addon/TelemetrySender.js"),
             path.join(__dirname, "addon/TippyTopProvider.js")
