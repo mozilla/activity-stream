@@ -1,3 +1,12 @@
+<a name="1.4.1"></a>
+## 1.4.1 (2017-02-14)
+
+* 1.4.0 changelog ([b10ab4a](https://github.com/mozilla/activity-stream/commit/b10ab4a))
+* 1.4.1 ([51e9cb1](https://github.com/mozilla/activity-stream/commit/51e9cb1))
+* Increase localFetch experiment population to 20% fixes #2144 ([0e7caf1](https://github.com/mozilla/activity-stream/commit/0e7caf1)), closes [#2144](https://github.com/mozilla/activity-stream/issues/2144)
+
+
+
 <a name="1.4.0"></a>
 # 1.4.0 (2017-02-06)
 
