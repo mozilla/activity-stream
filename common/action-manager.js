@@ -29,7 +29,6 @@ const am = new ActionManager([
   "NOTIFY_PERFORMANCE",
   "NOTIFY_REMOVE_FORM_HISTORY_ENTRY",
   "NOTIFY_ROUTE_CHANGE",
-  "NOTIFY_SHARE_URL",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UNDESIRED_EVENT",
   "NOTIFY_UPDATE_SEARCH_STRING",
@@ -48,8 +47,6 @@ const am = new ActionManager([
   "SEARCH_STATE_UPDATED",
   "SEARCH_SUGGESTIONS_REQUEST",
   "SEARCH_SUGGESTIONS_RESPONSE",
-  "SHARE_PROVIDERS_REQUEST",
-  "SHARE_PROVIDERS_RESPONSE",
   "SYNC_COMPLETE",
   "TOP_FRECENT_SITES_REQUEST",
   "TOP_FRECENT_SITES_RESPONSE"
@@ -207,20 +204,12 @@ function NotifyOpenWindow(data) {
   return Notify("NOTIFY_OPEN_WINDOW", data);
 }
 
-function RequestShareProviders() {
-  return RequestExpect("SHARE_PROVIDERS_REQUEST", "SHARE_PROVIDERS_RESPONSE");
-}
-
 function NotifyCopyUrl(url) {
   return Notify("NOTIFY_COPY_URL", {url});
 }
 
 function NotifyEmailUrl(url, title) {
   return Notify("NOTIFY_EMAIL_URL", {url, title});
-}
-
-function NotifyShareUrl(url, title, provider) {
-  return Notify("NOTIFY_SHARE_URL", {url, title, provider});
 }
 
 function PlacesStatsUpdate(historySize, bookmarksSize) {
@@ -251,7 +240,6 @@ am.defineActions({
   NotifyPerformSearch,
   NotifyRemoveFormHistory,
   NotifyRouteChange,
-  NotifyShareUrl,
   NotifyUnblockURL,
   NotifyUndesiredEvent,
   NotifyUpdateSearchString,
@@ -259,7 +247,6 @@ am.defineActions({
   RequestExpect,
   RequestHighlightsLinks,
   RequestSearchSuggestions,
-  RequestShareProviders,
   Response
 });
 

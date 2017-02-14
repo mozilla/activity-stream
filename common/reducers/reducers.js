@@ -5,7 +5,6 @@ const setSearchContent = require("./setSearchContent");
 const Experiments = require("./Experiments");
 const Filter = require("./Filter");
 const Prefs = require("./Prefs");
-const ShareProviders = require("./ShareProviders");
 const PlacesStats = require("./PlacesStats");
 const Intl = require("./Intl");
 
@@ -16,7 +15,6 @@ module.exports = {
   Experiments,
   Filter,
   Prefs,
-  ShareProviders,
   PlacesStats,
   Intl
 };

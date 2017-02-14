@@ -35,14 +35,6 @@ module.exports = {
     "prefs": {},
     "error": false
   },
-  "ShareProviders": {
-    "providers": [
-      {
-        "name": "MySpace",
-        "origin": "https://myspace.com"
-      }
-    ]
-  },
   "Intl": {
     "locale": DEFAULT_LOCALE,
     "strings": STRINGS,
