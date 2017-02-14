@@ -1,13 +1,11 @@
 diff --git a/testing/profiles/prefs_general.js b/testing/profiles/prefs_general.js
 --- a/testing/profiles/prefs_general.js
 +++ b/testing/profiles/prefs_general.js
-@@ -266,6 +266,9 @@
- // We don't want browser tests to perform FxA device registration.
- user_pref('identity.fxaccounts.skipDeviceRegistration', true);
+@@ -268,2 +268,7 @@ user_pref('identity.fxaccounts.skipDeviceRegistration', true);
 
 +// Make sure that activity stream doesn't hit the network.
 +user_pref("extensions.@activity-streams.telemetry", false);
++user_pref("extensions.@activity-streams.telemetry.ping.endpoint", "https://localhost/v3/links/activity-stream");
++user_pref("extensions.@activity-streams.metadata.endpoint", "https://localhost/v2/metadata");
 +
  // Increase the APZ content response timeout in tests to 1 minute.
- // This is to accommodate the fact that test environments tends to be slower
- // than production environments (with the b2g emulator being the slowest of them
