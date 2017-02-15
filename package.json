@@ -150,6 +150,13 @@
       "type": "string",
       "value": "[-0.1, -0.1, -0.1, 0.4, 0.2]",
       "hidden": true
+    },
+    {
+      "name": "activateExperiments",
+      "title": "Activate Experiments",
+      "type": "bool",
+      "value": true,
+      "hidden": true
     }
   ],
   "repository": "mozilla/activity-stream",

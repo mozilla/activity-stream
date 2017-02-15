@@ -53,6 +53,20 @@ exports.ExperimentProvider = class ExperimentProvider {
     this._experimentId = null;
   }
 
+  /**
+   * This is used to disable all experiments, i.e set all their
+   * values to their original control value.
+   */
+  disableAllExperiments() {
+    Object.keys(this._experiments).forEach(key => {
+      const experiment = this._experiments[key];
+      const {active, control} = experiment;
+      if (active) {
+        prefService.set(PREF_PREFIX + key, control.value);
+      }
+    });
+  }
+
   setValues() {
     if (ss.storage.overrideExperimentProvider) {
       console.log(`The following experiments were turned on via overrides:\n`); // eslint-disable-line no-console
@@ -64,6 +78,12 @@ exports.ExperimentProvider = class ExperimentProvider {
           prefService.set(PREF_PREFIX + experimentName, control.value);
         }
       });
+      return;
+    }
+
+    // if the global pref to disable experiments is on, disable experiments
+    if (!prefService.get(`extensions.${preferencesBranch}.activateExperiments`)) {
+      this.disableAllExperiments();
       return;
     }
 
