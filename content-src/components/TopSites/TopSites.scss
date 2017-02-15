@@ -105,6 +105,11 @@
       box-shadow: none;
       vertical-align: top;
 
+      &:hover {
+        box-shadow: 0 0 0 5px $faintest-black;
+        transition: box-shadow 150ms;
+      }
+
       &.placeholder {
         .site-icon-wrapper {
           height: $tile-width;
