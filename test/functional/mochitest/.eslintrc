@@ -23,6 +23,7 @@
     "is": false,
     "isnot": false,
     "ok": false,
+    "OpenBrowserWindow": false,
     "Preferences": false,
     "registerCleanupFunction": false,
     "requestLongerTimeout": false,
