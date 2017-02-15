@@ -62,7 +62,7 @@ const TopSitesItem = React.createClass({
           site={site} faviconSize={faviconSize}
           showTitle={!screenshot}
           showBackground={showBackground}
-          border={!topSitesExperimentIsOn} />
+          border={!topSitesExperimentIsOn || !!screenshot} />
 
         {screenshot && <div ref="title" className="site-title">{label}</div>}
       </a>
