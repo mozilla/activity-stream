@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -x
 
 # Forked from https://github.com/devtools-html/debugger.html/blob/master/bin/download-firefox-artifact
 #
@@ -51,6 +51,7 @@ else
     # Make an artifact build so it builds much faster
     echo "
 ac_add_options --enable-artifact-builds
+mk_add_options AUTOCLOBBER=1
 mk_add_options MOZ_OBJDIR=./objdir-frontend
 " > .mozconfig
 fi

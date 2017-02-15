@@ -8,7 +8,6 @@ const EnvLoaderPlugin = require("webpack-env-loader-plugin");
 let env = process.env.NODE_ENV || "development";
 
 let plugins = [
-  new WebpackNotifierPlugin(),
   new EnvLoaderPlugin({
     env,
     filePattern: "config.{env}.yml",
@@ -20,6 +19,11 @@ let plugins = [
   // Allows us to use requrie("common/vendor") as a way to import depdendencies in both addon/content code
   new webpack.NormalModuleReplacementPlugin(/common\/vendor/, absolute("./common/vendor-src.js"))
 ];
+
+// Skip notifying for terminals that can't handle it
+if (!process.env.DISABLE_NOTIFY) {
+  plugins.push(new WebpackNotifierPlugin());
+}
 
 if (env === "production") {
   plugins = plugins.concat([
