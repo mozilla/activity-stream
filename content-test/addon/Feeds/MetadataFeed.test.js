@@ -43,7 +43,7 @@ describe("MetadataFeed", () => {
     it("should resolve with an action, but no data", () => (
       instance.getData().then(action => {
         assert.isObject(action);
-        assert.equal(action.type, "METADATA_FEED_UPDATED");
+        assert.equal(action.type, "METADATA_UPDATED");
         assert.isUndefined(action.data);
       })
     ));
