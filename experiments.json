@@ -76,7 +76,7 @@
   },
   "dedupedCombinedFrecency": {
     "name": "Combine score of deduped sites",
-    "active": true,
+    "active": false,
     "description": "Add frecencies of deduped top sites for ranking",
     "control": {
       "value": false,
