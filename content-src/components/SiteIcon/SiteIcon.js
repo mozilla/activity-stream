@@ -28,12 +28,7 @@ const SiteIcon = React.createClass({
     const {width, height, faviconSize, showTitle} = this.props;
     const showFallback = this.state.showFallback || !site.favicon;
     const showBackground = this.props.showBackground || showFallback;
-    const topSitesExperimentIsOn = this.props.showNewStyle;
-    let showBorder = this.props.border;
-    if (topSitesExperimentIsOn && !site.backgroundColorIsAlmostWhite) {
-      // In the new style, we only show the border if the background is almost white.
-      showBorder = false;
-    }
+    const showBorder = this.props.border;
 
     const fontSize = faviconSize * 0.9;
     const fontWeight = (fontSize > 20) ? 200 : 400;
@@ -75,8 +70,7 @@ SiteIcon.propTypes = {
     title: React.PropTypes.string,
     provider_name: React.PropTypes.string,
     icons: React.PropTypes.array
-  }).isRequired,
-  showNewStyle: React.PropTypes.bool
+  }).isRequired
 };
 
 /**
