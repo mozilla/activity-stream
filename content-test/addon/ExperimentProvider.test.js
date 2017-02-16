@@ -41,6 +41,7 @@ describe("ExperimentProvider", () => {
   }
 
   beforeEach(() => {
+    prefService.set(`extensions.${preferencesBranch}.activateExperiments`, true);
     global.EventEmitter = {
       decorate(ctx) {
         ctx.emit = sinon.spy();
@@ -373,6 +374,29 @@ describe("ExperimentProvider", () => {
 
       assert.isTrue(experimentProvider.data.foo);
       assert.isTrue(ss.storage.overrideExperimentProvider);
+    });
+    it("should disable all active experiments if pref says so", () => {
+      const data = {
+        clientID: "foo",
+        experiments: {
+          activeFoo: {
+            name: "Active Foo Test",
+            active: true,
+            control: {value: "control_val"},
+            variant: {id: "foo_01", value: "variant_val", threshold: 0.5}
+          },
+          notActiveFoo: {
+            name: "Not Active Foo Test",
+            active: false,
+            control: {value: false},
+            variant: {id: "foo_02", value: true, threshold: 0.5}
+          }
+        }
+      };
+      prefService.set(`extensions.${preferencesBranch}.activateExperiments`, false);
+      setup(data);
+      assert.equal(prefService.get(`${PREF_PREFIX}activeFoo`), data.experiments.activeFoo.control.value);
+      assert.equal(prefService.get(`${PREF_PREFIX}notActiveFoo`, undefined));
     });
   });
 
