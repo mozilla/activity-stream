@@ -130,7 +130,7 @@
     "variant": {
       "id": "exp-009-screenshots",
       "value": true,
-      "threshold": 0.2,
+      "threshold": 0.3,
       "description": "Show screenshots"
     }
   },
