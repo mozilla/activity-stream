@@ -246,6 +246,15 @@ ActivityStreams.prototype = {
   },
 
   /**
+   * Responds to a Pref Change request triggered from the UI.
+   */
+  _respondToPrefChange({msg}) {
+    if (msg.type === am.type("NOTIFY_PREF_CHANGE")) {
+      simplePrefs.prefs[msg.data.name] = msg.data.value;
+    }
+  },
+
+  /**
    * Handles changes to places
    */
   _handlePlacesChanges(eventName, data) {
@@ -338,6 +347,7 @@ ActivityStreams.prototype = {
       this._respondToUIChanges(args);
       this._respondToPlacesRequests(args);
       this._respondOpenWindow(args);
+      this._respondToPrefChange(args);
     };
     this.on(CONTENT_TO_ADDON, this._contentToAddonHandlers);
   },

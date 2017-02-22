@@ -5,6 +5,7 @@ const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
+const PreferencesPane = require("components/PreferencesPane/PreferencesPane");
 const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
@@ -80,6 +81,7 @@ const NewTabPage = React.createClass({
           }
         </div>
       </div>
+      <PreferencesPane Prefs={props.Prefs} />
     </main>);
   }
 });

@@ -27,6 +27,7 @@ const am = new ActionManager([
   "NOTIFY_OPEN_WINDOW",
   "NOTIFY_PERFORM_SEARCH",
   "NOTIFY_PERFORMANCE",
+  "NOTIFY_PREF_CHANGE",
   "NOTIFY_REMOVE_FORM_HISTORY_ENTRY",
   "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_UNBLOCK_URL",
@@ -223,6 +224,10 @@ function PlacesStatsUpdate(historySize, bookmarksSize) {
   return {type: "PLACES_STATS_UPDATED", data};
 }
 
+function NotifyPrefChange(name, value) {
+  return Notify("NOTIFY_PREF_CHANGE", {name, value});
+}
+
 am.defineActions({
   Notify,
   NotifyBlockURL,
@@ -238,6 +243,7 @@ am.defineActions({
   NotifyOpenWindow,
   NotifyPerf,
   NotifyPerformSearch,
+  NotifyPrefChange,
   NotifyRemoveFormHistory,
   NotifyRouteChange,
   NotifyUnblockURL,
