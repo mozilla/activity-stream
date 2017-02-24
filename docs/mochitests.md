@@ -62,7 +62,7 @@ That will build the debugger and copy over all the relevant files into `firefox`
 
 ## Adding New Tests
 
-If you add new tests, make sure to list them in the `browser.ini` file. You will see the other tests there. Add a new entry with the same format as the others. You can also add new JS or HTML files by listing in under `support-files`.
+If you add new tests, make sure to list them in the `browser.ini` file. You will see the other tests there. Add a new entry with the same format as the others. You can also add new JS or HTML files by listing in under `support-files`. Make sure to start your test name with "browser_", so that the test suite knows the pick it up. E.g: "browser_as_my_new_test.js".
 
 ## Writing Tests
 
