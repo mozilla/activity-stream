@@ -5,13 +5,22 @@ const webpack = require("webpack");
 module.exports = {
   entry: {"main": absolute("addon/main.src.js")},
   output: {
-    path: absolute("addon"),
+    filename: "main.js",
+    libraryTarget: "commonjs2",
+    path: absolute("addon")
   },
   plugins: [
-    new ExternalsPlugin("commonjs", [
+    new webpack.ExternalsPlugin("commonjs", [
       "chrome",
       /^sdk/,
-      /^\@loader/
+      /^@loader/
     ])
-  ]
+  ],
+  resolve: {
+    alias: {
+      "addon": absolute("./addon"),
+      "common": absolute("./common"),
+      "strings": absolute("./strings")
+    }
+  }
 };

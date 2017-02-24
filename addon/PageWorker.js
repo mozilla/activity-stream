@@ -40,7 +40,6 @@ class PageWorker {
     local storage in order to not overload writing to the state. In order for
     user actions to accurately represent the state of the app when we trigger a
     refresh (or open a new tab) we must set the wait to be low i.e 100ms in this case */
-
     this._unsubscribe = this._store.subscribe(debounce(w(this._onDispatch), this._wait));
   }
   destroy() {

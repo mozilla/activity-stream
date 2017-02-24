@@ -1,6 +1,7 @@
 activity-streams-env/
 addon/ColorAnalyzer.js
 addon/SimpleStorage.js
+addon/main.js
 common/vendor.js
 data/content/
 data/locales/

@@ -10,11 +10,11 @@ Cu.import("resource://gre/modules/Timer.jsm");
 
 const {MIGRATIONS} = require("addon/MetadataStoreMigration.js");
 
-XPCOMUtils.defineLazyModuleGetter(this, "Task",
+XPCOMUtils.defineLazyModuleGetter(global, "Task",
                                   "resource://gre/modules/Task.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
+XPCOMUtils.defineLazyModuleGetter(global, "PlacesUtils",
                                   "resource://gre/modules/PlacesUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "OS",
+XPCOMUtils.defineLazyModuleGetter(global, "OS",
                                   "resource://gre/modules/osfile.jsm");
 
 const METASTORE_NAME = "metadata.sqlite";

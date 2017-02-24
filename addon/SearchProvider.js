@@ -15,14 +15,14 @@ Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.importGlobalProperties(["URL", "Blob", "FileReader", "atob"]);
 
-XPCOMUtils.defineLazyModuleGetter(this, "FormHistory",
+XPCOMUtils.defineLazyModuleGetter(global, "FormHistory",
                                   "resource://gre/modules/FormHistory.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils",
+XPCOMUtils.defineLazyModuleGetter(global, "PrivateBrowsingUtils",
                                   "resource://gre/modules/PrivateBrowsingUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "SearchSuggestionController",
+XPCOMUtils.defineLazyModuleGetter(global, "SearchSuggestionController",
                                   "resource://gre/modules/SearchSuggestionController.jsm");
 
-XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });

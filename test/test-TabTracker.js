@@ -13,7 +13,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "Task",
+XPCOMUtils.defineLazyModuleGetter(global, "Task",
                                   "resource://gre/modules/Task.jsm");
 
 let TOPIC_SLOW_ADDON_DETECTED;

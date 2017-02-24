@@ -10,21 +10,21 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-sync/SyncedTabs.jsm");
 
-XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
 
-XPCOMUtils.defineLazyModuleGetter(this, "Task",
+XPCOMUtils.defineLazyModuleGetter(global, "Task",
                                   "resource://gre/modules/Task.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
+XPCOMUtils.defineLazyModuleGetter(global, "PlacesUtils",
                                   "resource://gre/modules/PlacesUtils.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
+XPCOMUtils.defineLazyModuleGetter(global, "Bookmarks",
                                   "resource://gre/modules/Bookmarks.jsm");
 
-XPCOMUtils.defineLazyGetter(this, "gPrincipal", () => {
+XPCOMUtils.defineLazyGetter(global, "gPrincipal", () => {
   let uri = Services.io.newURI("about:newtab", null, null);
   return Services.scriptSecurityManager.getNoAppCodebasePrincipal(uri);
 });

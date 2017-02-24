@@ -3,7 +3,7 @@ const {Cu} = require("chrome");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-XPCOMUtils.defineLazyServiceGetter(this, "windowMediator",
+XPCOMUtils.defineLazyServiceGetter(global, "windowMediator",
                                    "@mozilla.org/appshell/window-mediator;1",
                                    "nsIWindowMediator");
 

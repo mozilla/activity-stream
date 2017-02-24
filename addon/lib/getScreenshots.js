@@ -5,7 +5,7 @@ const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "PreviewProvider",
+XPCOMUtils.defineLazyModuleGetter(global, "PreviewProvider",
                                   "resource:///modules/PreviewProvider.jsm");
 
 /**

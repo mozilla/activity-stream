@@ -9,7 +9,7 @@ const PREF_PREFIX = `extensions.${preferencesBranch}.experiments.`;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
