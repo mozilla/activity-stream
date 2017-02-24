@@ -8,8 +8,6 @@ const EnvLoaderPlugin = require("webpack-env-loader-plugin");
 let env = process.env.NODE_ENV || "development";
 
 let plugins = [
-  // This is needed to prevent all the locales from being included
-  new webpack.ContextReplacementPlugin(/moment[\\/]locale$/, /^\.\/(en)$/),
   new WebpackNotifierPlugin(),
   new EnvLoaderPlugin({
     env,
