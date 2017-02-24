@@ -1,4 +1,4 @@
-const urlParse = require("common/vendor")("url-parse");
+const urlParse = require("url-parse");
 const am = require("common/action-manager");
 
 module.exports = () => next => action => {

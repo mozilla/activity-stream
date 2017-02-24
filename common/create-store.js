@@ -1,6 +1,5 @@
-const vendor = require("common/vendor");
-const {createStore, applyMiddleware, combineReducers} = vendor("redux");
-const thunk = vendor("redux-thunk").default;
+const {createStore, applyMiddleware, combineReducers} = require("redux");
+const thunk = require("redux-thunk").default;
 const reducers = require("common/reducers/reducers");
 const {Channel} = require("common/ReduxChannel");
 const parseUrlMiddleware = require("common/parse-url-middleware");

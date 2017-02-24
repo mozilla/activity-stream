@@ -2,7 +2,7 @@
 "use strict";
 
 const data = require("sdk/self").data;
-const {IMAGE_SIZE, getSiteData} = require("common/vendor")("tippy-top-sites");
+const {IMAGE_SIZE, getSiteData} = require("tippy-top-sites");
 
 const DEFAULT_OPTIONS = {sites: null};
 

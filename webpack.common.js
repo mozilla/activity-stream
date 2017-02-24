@@ -15,10 +15,7 @@ let plugins = [
     loadLocalOverride: env === "development" ? "config.yml" : null,
     reactEnv: true,
     log: false
-  }),
-  new webpack.DefinePlugin({ADDON: false}),
-  // Allows us to use requrie("common/vendor") as a way to import depdendencies in both addon/content code
-  new webpack.NormalModuleReplacementPlugin(/common\/vendor/, absolute("./common/vendor-src.js"))
+  })
 ];
 
 if (env === "production") {
@@ -40,19 +37,19 @@ module.exports = {
       }
     ]
   },
-  resolve: {
-    extensions: [".js", ".jsx"],
-    alias: {
-      "common": absolute("./common"),
-      "components": absolute("./content-src/components"),
-      "reducers": absolute("./content-src/reducers"),
-      "actions": absolute("./content-src/actions"),
-      "selectors": absolute("./content-src/selectors"),
-      "lib": absolute("./content-src/lib"),
-      "strings": absolute("./strings"),
-      "test": absolute("./content-test"),
-      "addon": absolute("./addon")
-    }
+resolve: {
+  extensions: [".js", ".jsx"],
+  alias: {
+    "common": absolute("./common"),
+    "components": absolute("./content-src/components"),
+    "reducers": absolute("./content-src/reducers"),
+    "actions": absolute("./content-src/actions"),
+    "selectors": absolute("./content-src/selectors"),
+    "lib": absolute("./content-src/lib"),
+    "strings": absolute("./strings"),
+    "test": absolute("./content-test"),
+    "addon": absolute("./addon")
+  }
   },
   plugins
 };

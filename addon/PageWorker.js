@@ -1,10 +1,9 @@
-const vendor = require("common/vendor");
 const {Page} = require("sdk/page-worker");
 const {data} = require("sdk/self");
 const {LOCAL_STORAGE_KEY} = require("common/constants");
 const {ADDON_TO_CONTENT} = require("common/event-constants");
-const watch = vendor("redux-watch");
-const debounce = vendor("lodash.debounce");
+const watch = require("redux-watch");
+const debounce = require("lodash.debounce");
 
 class PageWorker {
   constructor({store, wait} = {}) {
