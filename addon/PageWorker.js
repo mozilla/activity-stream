@@ -33,6 +33,11 @@ class PageWorker {
     // the state object actually changed
     const w = watch(this._store.getState);
 
+    // Shims for dependencies (lodash.debounce)
+    const {setTimeout, clearTimeout} = require("sdk/timers");
+    global.setTimeout = setTimeout;
+    global.clearTimeout = clearTimeout;
+
     /* Notes:
     1. According to the redux docs, calling .subscribe on a store
     returns a function which will unsubscribe

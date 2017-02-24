@@ -12388,7 +12388,7 @@ exports.PageScraper = PageScraper;
 /* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {Page} = __webpack_require__(113);
+/* WEBPACK VAR INJECTION */(function(global) {const {Page} = __webpack_require__(113);
 const {data} = __webpack_require__(5);
 const {LOCAL_STORAGE_KEY} = __webpack_require__(3);
 const {ADDON_TO_CONTENT} = __webpack_require__(8);
@@ -12423,6 +12423,11 @@ class PageWorker {
     // the state object actually changed
     const w = watch(this._store.getState);
 
+    // Shims for dependencies (lodash.debounce)
+    const {setTimeout, clearTimeout} = __webpack_require__(26);
+    global.setTimeout = setTimeout;
+    global.clearTimeout = clearTimeout;
+
     /* Notes:
     1. According to the redux docs, calling .subscribe on a store
     returns a function which will unsubscribe
@@ -12450,6 +12455,7 @@ class PageWorker {
 
 module.exports = PageWorker;
 
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 48 */
