@@ -9,9 +9,8 @@ module.exports = {
     filename: "vendor.js",
     libraryTarget: "commonjs2"
   },
-  module: {loaders: [{test: /\.json$/, loader: "json"}]},
   plugins: [
     new webpack.DefinePlugin({ADDON: true}),
-    new webpack.BannerPlugin("let platform_require = require;\n", {raw: true})
+    new webpack.BannerPlugin({banner: "let platform_require = require;\n", raw: true})
   ]
 };

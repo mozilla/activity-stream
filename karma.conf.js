@@ -60,33 +60,35 @@ module.exports = function(config) {
       },
       resolveLoader: {alias: {inject: path.join(__dirname, "loaders/inject-loader")}},
       module: {
-        loaders: webpack.module.loaders,
-        postLoaders: [{
-          test: /\.js$/,
-          loader: "istanbul-instrumenter",
-          include: [
-            path.join(__dirname, "content-src"),
-            path.join(__dirname, "common"),
-            path.join(__dirname, "addon")
-          ],
-          exclude: [
-            /DebugPage/,
-            /\.test\.js$/,
-            path.join(__dirname, "addon/ActivityStreams.js"),
-            path.join(__dirname, "addon/AppURLHider.js"),
-            path.join(__dirname, "addon/ColorAnalyzer.js"),
-            path.join(__dirname, "addon/ColorAnalyzerProvider.js"),
-            path.join(__dirname, "addon/main.js"),
-            path.join(__dirname, "addon/MetadataStore.js"),
-            path.join(__dirname, "addon/MetadataStoreMigration.js"),
-            path.join(__dirname, "addon/PlacesProvider.js"),
-            path.join(__dirname, "addon/PreviewProvider.js"),
-            path.join(__dirname, "addon/SearchProvider.js"),
-            path.join(__dirname, "addon/TabTracker.js"),
-            path.join(__dirname, "addon/TelemetrySender.js"),
-            path.join(__dirname, "addon/TippyTopProvider.js")
-          ]
-        }]
+        rules: webpack.module.rules.concat([
+          {
+            enforce: "post",
+            test: /\.js$/,
+            loader: "istanbul-instrumenter-loader",
+            include: [
+              path.join(__dirname, "content-src"),
+              path.join(__dirname, "common"),
+              path.join(__dirname, "addon")
+            ],
+            exclude: [
+              /DebugPage/,
+              /\.test\.js$/,
+              path.join(__dirname, "addon/ActivityStreams.js"),
+              path.join(__dirname, "addon/AppURLHider.js"),
+              path.join(__dirname, "addon/ColorAnalyzer.js"),
+              path.join(__dirname, "addon/ColorAnalyzerProvider.js"),
+              path.join(__dirname, "addon/main.js"),
+              path.join(__dirname, "addon/MetadataStore.js"),
+              path.join(__dirname, "addon/MetadataStoreMigration.js"),
+              path.join(__dirname, "addon/PlacesProvider.js"),
+              path.join(__dirname, "addon/PreviewProvider.js"),
+              path.join(__dirname, "addon/SearchProvider.js"),
+              path.join(__dirname, "addon/TabTracker.js"),
+              path.join(__dirname, "addon/TelemetrySender.js"),
+              path.join(__dirname, "addon/TippyTopProvider.js")
+            ]
+          }
+        ])
       },
       plugins: webpack.plugins
     },
