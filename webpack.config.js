@@ -34,7 +34,5 @@ module.exports = {
   module: webpack_common.module,
   devtool: env === "production" ? false : "eval", // This is for Firefox
   plugins: webpack_common.plugins,
-  resolve: {
-    extensions: webpack_common.resolve.extensions
-  }
+  resolve: {extensions: webpack_common.resolve.extensions}
 };

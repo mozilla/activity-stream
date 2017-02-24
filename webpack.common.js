@@ -37,19 +37,19 @@ module.exports = {
       }
     ]
   },
-resolve: {
-  extensions: [".js", ".jsx"],
-  alias: {
-    "common": absolute("./common"),
-    "components": absolute("./content-src/components"),
-    "reducers": absolute("./content-src/reducers"),
-    "actions": absolute("./content-src/actions"),
-    "selectors": absolute("./content-src/selectors"),
-    "lib": absolute("./content-src/lib"),
-    "strings": absolute("./strings"),
-    "test": absolute("./content-test"),
-    "addon": absolute("./addon")
-  }
+  resolve: {
+    extensions: [".js", ".jsx"],
+    alias: {
+      "common": absolute("./common"),
+      "components": absolute("./content-src/components"),
+      "reducers": absolute("./content-src/reducers"),
+      "actions": absolute("./content-src/actions"),
+      "selectors": absolute("./content-src/selectors"),
+      "lib": absolute("./content-src/lib"),
+      "strings": absolute("./strings"),
+      "test": absolute("./content-test"),
+      "addon": absolute("./addon")
+    }
   },
   plugins
 };
