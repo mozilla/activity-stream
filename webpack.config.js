@@ -12,7 +12,7 @@ let env = process.env.NODE_ENV || "development";
 
 if (env !== "test") {
   webpack_common.plugins.push(
-    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"));
+    new webpack.optimize.CommonsChunkPlugin({name: "vendor", filename: "vendor.bundle.js"}));
 }
 
 module.exports = {
@@ -32,7 +32,7 @@ module.exports = {
   node: {Buffer: true, url: false},
   target: "web",
   module: webpack_common.module,
-  devtool: env === "production" ? null : "eval", // This is for Firefox
+  devtool: env === "production" ? false : "eval", // This is for Firefox
   plugins: webpack_common.plugins,
   resolve: {
     extensions: webpack_common.resolve.extensions,

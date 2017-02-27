@@ -8,8 +8,6 @@ const EnvLoaderPlugin = require("webpack-env-loader-plugin");
 let env = process.env.NODE_ENV || "development";
 
 let plugins = [
-  // This is needed to prevent all the locales from being included
-  new webpack.ContextReplacementPlugin(/moment[\\/]locale$/, /^\.\/(en)$/),
   new WebpackNotifierPlugin(),
   new EnvLoaderPlugin({
     env,
@@ -25,28 +23,25 @@ let plugins = [
 
 if (env === "production") {
   plugins = plugins.concat([
-    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.optimize.UglifyJsPlugin({
       test: /vendor/,
       compress: {warnings: false}
-    }),
-    new webpack.optimize.DedupePlugin()
+    })
   ]);
 }
 
 module.exports = {
   module: {
-    loaders: [
-      {test: /\.json$/, loader: "json"},
+    rules: [
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: "babel"
+        loader: "babel-loader"
       }
     ]
   },
   resolve: {
-    extensions: ["", ".js", ".jsx"],
+    extensions: [".js", ".jsx"],
     alias: {
       "common": absolute("./common"),
       "components": absolute("./content-src/components"),
