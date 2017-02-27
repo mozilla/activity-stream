@@ -1,8 +1,8 @@
 "use strict";
 
 const {TippyTopProvider} = require("addon/TippyTopProvider");
-const urlParse = require("common/vendor")("url-parse");
-const {IMAGE_SIZE} = require("common/vendor")("tippy-top-sites");
+const urlParse = require("url-parse");
+const {IMAGE_SIZE} = require("tippy-top-sites");
 
 exports["test TippyTopProvider init"] = function(assert) {
   // Test the default init
