@@ -3,6 +3,7 @@ addon/ColorAnalyzer.js
 addon/SimpleStorage.js
 common/vendor.js
 data/content/
+data/locales/
 dist/
 firefox/
 logs/
