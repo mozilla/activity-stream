@@ -135,7 +135,7 @@
   }
 
   // hover
-  [type='checkbox'] + label:hover:before {
+  [type='checkbox'] + label:hover::before {
     border: 1px solid $checkbox-blue;
   }
 
