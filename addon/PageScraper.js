@@ -5,7 +5,6 @@ const {Cu} = require("chrome");
 const options = require("@loader/options");
 
 const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
-const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 Cu.importGlobalProperties(["URL"]);

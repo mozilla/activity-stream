@@ -10,7 +10,7 @@ const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 const {SyncedTabs} = Cu.import("resource://services-sync/SyncedTabs.jsm", {});
 const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
-XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
@@ -158,7 +158,7 @@ let LinkChecker = {
  * Implements the EventEmitter interface.
  */
 let Links = function Links() {
-  EventEmitter.decorate(this);
+  jsmodules.EventEmitter.decorate(this);
   this.blockedURLs = new BlockedURLs();
 };
 

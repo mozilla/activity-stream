@@ -6,7 +6,7 @@ const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 const {Sqlite} = Cu.import("resource://gre/modules/Sqlite.jsm", {});
 const {NetUtil} = Cu.import("resource://gre/modules/NetUtil.jsm", {});
 const {setInterval} = Cu.import("resource://gre/modules/Timer.jsm", {});
-const {Task} = Cu.import("resource://gre/modules/Task.jsm", {})
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 const {MIGRATIONS} = require("addon/MetadataStoreMigration.js");
 

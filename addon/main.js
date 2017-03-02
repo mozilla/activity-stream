@@ -378,41 +378,14 @@ module.exports = require("sdk/simple-prefs");
 /* 4 */
 /***/ (function(module, exports) {
 
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
 module.exports = require("sdk/self");
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) {
+
 
 const {Ci, Cu} = __webpack_require__(0);
 const base64 = __webpack_require__(109);
@@ -424,7 +397,7 @@ const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 const {SyncedTabs} = Cu.import("resource://services-sync/SyncedTabs.jsm", {});
 const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
-XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
@@ -572,7 +545,7 @@ let LinkChecker = {
  * Implements the EventEmitter interface.
  */
 let Links = function Links() {
-  EventEmitter.decorate(this);
+  jsmodules.EventEmitter.decorate(this);
   this.blockedURLs = new BlockedURLs();
 };
 
@@ -1219,10 +1192,9 @@ exports.PlacesProvider = {
   BlockedURLs
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const {Cu} = __webpack_require__(0);
@@ -1285,6 +1257,33 @@ module.exports = class Feed {
     });
   }
 };
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
 
 
 /***/ }),
@@ -9731,14 +9730,14 @@ module.exports = require("sdk/util/uuid");
 
 
 const {Cu} = __webpack_require__(0);
-const {data} = __webpack_require__(5);
+const {data} = __webpack_require__(4);
 const tabs = __webpack_require__(12);
 const simplePrefs = __webpack_require__(3);
 const windows = __webpack_require__(114).browserWindows;
 const prefService = __webpack_require__(25);
 const ss = __webpack_require__(26);
 const PageModProvider = __webpack_require__(45);
-const {PlacesProvider} = __webpack_require__(6);
+const {PlacesProvider} = __webpack_require__(5);
 const {SearchProvider} = __webpack_require__(51);
 const {PreviewProvider} = __webpack_require__(50);
 const {PerfMeter} = __webpack_require__(48);
@@ -10206,7 +10205,7 @@ const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 const {Sqlite} = Cu.import("resource://gre/modules/Sqlite.jsm", {});
 const {NetUtil} = Cu.import("resource://gre/modules/NetUtil.jsm", {});
 const {setInterval} = Cu.import("resource://gre/modules/Timer.jsm", {});
-const {Task} = Cu.import("resource://gre/modules/Task.jsm", {})
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 const {MIGRATIONS} = __webpack_require__(44);
 
@@ -10798,12 +10797,11 @@ exports.METASTORE_NAME = METASTORE_NAME;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* globals Services, Locale, XPCOMUtils */
 
 
 const tabs = __webpack_require__(12);
 const {Ci, Cu} = __webpack_require__(0);
-const self = __webpack_require__(5);
+const self = __webpack_require__(4);
 const {uuid} = __webpack_require__(27);
 const simplePrefs = __webpack_require__(3);
 const eventConstants = __webpack_require__(8);
@@ -11445,9 +11443,7 @@ module.exports = new ColorAnalyzer();
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {Cu} = __webpack_require__(0);
 const ColorAnalyzer = __webpack_require__(33);
-const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 exports.getColor = function getColor(dataURI, label) {
   return new Promise((resolve, reject) => {
@@ -11475,7 +11471,7 @@ const {Cu} = __webpack_require__(0);
 const prefService = __webpack_require__(25);
 const {PrefsTarget} = __webpack_require__(11);
 const ss = __webpack_require__(26);
-const {preferencesBranch} = __webpack_require__(5);
+const {preferencesBranch} = __webpack_require__(4);
 const PREF_PREFIX = `extensions.${preferencesBranch}.experiments.`;
 
 const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
@@ -11647,9 +11643,9 @@ exports.ExperimentProvider = class ExperimentProvider {
 
 const simplePrefs = __webpack_require__(3);
 const {Cu} = __webpack_require__(0);
-const {PlacesProvider} = __webpack_require__(6);
+const {PlacesProvider} = __webpack_require__(5);
 const {Recommender} = __webpack_require__(63);
-const Feed = __webpack_require__(7);
+const Feed = __webpack_require__(6);
 const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = __webpack_require__(2);
 const am = __webpack_require__(1);
 
@@ -11761,7 +11757,7 @@ module.exports.UPDATE_TIME = UPDATE_TIME;
 
 const {PrefsTarget} = __webpack_require__(11);
 const {findClosestLocale, getPreferedLocales} = __webpack_require__(110);
-const Feed = __webpack_require__(7);
+const Feed = __webpack_require__(6);
 const am = __webpack_require__(1);
 const AVAILABLE_LOCALES = Object.keys(__webpack_require__(15));
 
@@ -11815,9 +11811,9 @@ module.exports = LocalizationFeed;
 "use strict";
 /* globals module, require */
 
-const {PlacesProvider} = __webpack_require__(6);
+const {PlacesProvider} = __webpack_require__(5);
 const simplePrefs = __webpack_require__(3);
-const Feed = __webpack_require__(7);
+const Feed = __webpack_require__(6);
 const am = __webpack_require__(1);
 const MAX_NUM_LINKS = 5;
 
@@ -11873,9 +11869,9 @@ module.exports.MAX_NUM_LINKS = MAX_NUM_LINKS;
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {PlacesProvider} = __webpack_require__(6);
+const {PlacesProvider} = __webpack_require__(5);
 const {Cu} = __webpack_require__(0);
-const Feed = __webpack_require__(7);
+const Feed = __webpack_require__(6);
 const am = __webpack_require__(1);
 const {PlacesStatsUpdate} = am.actions;
 const UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
@@ -11929,7 +11925,7 @@ module.exports.UPDATE_TIME = UPDATE_TIME;
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Feed = __webpack_require__(7);
+const Feed = __webpack_require__(6);
 const am = __webpack_require__(1);
 const getCurrentBrowser = __webpack_require__(54);
 const {Cu} = __webpack_require__(0);
@@ -12013,10 +12009,9 @@ module.exports = class SearchFeed extends Feed {
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* globals Task */
 const {Cu} = __webpack_require__(0);
-const {PlacesProvider} = __webpack_require__(6);
-const Feed = __webpack_require__(7);
+const {PlacesProvider} = __webpack_require__(5);
+const Feed = __webpack_require__(6);
 const {TOP_SITES_LENGTH} = __webpack_require__(2);
 const am = __webpack_require__(1);
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
@@ -12227,7 +12222,7 @@ const generateUUID = __webpack_require__(27);
 const privateBrowsing = __webpack_require__(113);
 const {Cu} = __webpack_require__(0);
 const {PageMod} = __webpack_require__(111);
-const {data} = __webpack_require__(5);
+const {data} = __webpack_require__(4);
 const {CONTENT_TO_ADDON} = __webpack_require__(8);
 const {WORKER_ATTACHED_EVENT} = __webpack_require__(2);
 
@@ -12357,7 +12352,6 @@ const {Cu} = __webpack_require__(0);
 const options = __webpack_require__(108);
 
 const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
-const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 Cu.importGlobalProperties(["URL"]);
@@ -12536,7 +12530,7 @@ exports.PageScraper = PageScraper;
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {const {Page} = __webpack_require__(112);
-const {data} = __webpack_require__(5);
+const {data} = __webpack_require__(4);
 const {LOCAL_STORAGE_KEY} = __webpack_require__(2);
 const {ADDON_TO_CONTENT} = __webpack_require__(8);
 const watch = __webpack_require__(94);
@@ -12602,7 +12596,7 @@ class PageWorker {
 
 module.exports = PageWorker;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
 /* 48 */
@@ -12872,7 +12866,7 @@ exports.PrefsProvider = class PrefsProvider {
 
 const {Cu} = __webpack_require__(0);
 const simplePrefs = __webpack_require__(3);
-const self = __webpack_require__(5);
+const self = __webpack_require__(4);
 const {TippyTopProvider} = __webpack_require__(52);
 const {getColor} = __webpack_require__(34);
 const {absPerf} = __webpack_require__(10);
@@ -13609,7 +13603,7 @@ exports.HIDDEN_ENGINES_PREF = HIDDEN_ENGINES_PREF;
 /* globals require, JSON */
 
 
-const data = __webpack_require__(5).data;
+const data = __webpack_require__(4).data;
 const {IMAGE_SIZE, getSiteData} = __webpack_require__(103);
 
 const DEFAULT_OPTIONS = {sites: null};
@@ -13690,7 +13684,6 @@ module.exports = class FeedController {
 /* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* globals XPCOMUtils, windowMediator */
 const {Cu} = __webpack_require__(0);
 
 const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
@@ -13709,8 +13702,6 @@ module.exports = function getCurrentBrowser() {
 /***/ }),
 /* 55 */
 /***/ (function(module, exports, __webpack_require__) {
-
-/* globals Task, XPCOMUtils, PreviewProvider */
 
 const {Cu} = __webpack_require__(0);
 
@@ -15726,7 +15717,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 /* harmony default export */ __webpack_exports__["a"] = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(7)))
 
 /***/ }),
 /* 79 */
@@ -16282,7 +16273,7 @@ function toNumber(value) {
 
 module.exports = debounce;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
 /* 86 */
@@ -17324,7 +17315,7 @@ module.exports = {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(23)(module), __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(23)(module), __webpack_require__(7)))
 
 /***/ }),
 /* 89 */
@@ -18020,7 +18011,7 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(23)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(23)(module)))
 
 /***/ }),
 /* 102 */
@@ -19554,7 +19545,7 @@ module.exports = function lolcation(loc) {
   return finaldestination;
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
 /* 106 */
@@ -20367,7 +20358,7 @@ module.exports = require("sdk/windows");
 "use strict";
 
 
-const {PlacesProvider} = __webpack_require__(6);
+const {PlacesProvider} = __webpack_require__(5);
 const {MetadataStore, METASTORE_NAME} = __webpack_require__(29);
 const {TelemetrySender} = __webpack_require__(31);
 const {TabTracker} = __webpack_require__(30);

@@ -1,5 +1,3 @@
-/* globals Task, XPCOMUtils, PreviewProvider */
-
 const {Cu} = require("chrome");
 
 const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});

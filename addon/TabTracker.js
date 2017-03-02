@@ -1,4 +1,3 @@
-/* globals Services, Locale, XPCOMUtils */
 "use strict";
 
 const tabs = require("sdk/tabs");
