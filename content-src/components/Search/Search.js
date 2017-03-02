@@ -266,7 +266,7 @@ const Search = React.createClass({
         onBlur={() => setTimeout(() => this.resetState(), 200)} />
       <button ref="performSearchButton"
         onClick={e => {e.preventDefault(); this.performSearch({engineName: currentEngine.name, searchString});}}>
-        <span className="sr-only">Search</span>
+        <span className="sr-only"><FormattedMessage id="search_button" /></span>
       </button>
       <div className="search-container" role="presentation" hidden={!this.getDropdownVisible()}>
       <section className="search-title" hidden={!formHistory.concat(suggestions).length}>
