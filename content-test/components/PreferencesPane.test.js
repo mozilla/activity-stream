@@ -7,7 +7,7 @@ const DEFAULT_PREFS = {
   "showHighlights": true
 };
 
-describe.only("PreferencesPane", () => {
+describe("PreferencesPane", () => {
   let wrapper;
   function setup(prefs = {}) {
     const customProps = {Prefs: {prefs: Object.assign({}, DEFAULT_PREFS, prefs)}};
