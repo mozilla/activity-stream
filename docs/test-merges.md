@@ -1,4 +1,4 @@
-== bin/test-merges.js documentation ==
+## bin/test-merges.js documentation
 
 A script intended to be run from cron regularly.  It notices when a
 new PR has been merged to github, and then exports the code to a copy of mozilla-central and pushes it to pine, so that all the tests can be run.  It annotates the PR with the link to treeherder with the test results.
@@ -19,7 +19,7 @@ Example usage:
 ```bash
 AS_PINE_TOKEN=01234567890 \
 AS_PINE_TEST_DIR=/home/monkey/as-pine-testing \
-node bin/test-merges.md
+node bin/test-merges.js
 ```
 
 AS_PINE_TOKEN is a github token for accessing mozilla/activity-stream.
