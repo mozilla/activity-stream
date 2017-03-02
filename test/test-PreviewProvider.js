@@ -138,7 +138,7 @@ exports.test_filter_urls = function(assert) {
 
 exports.test_sanitize_urls = function(assert) {
   let sanitizedUrl = gPreviewProvider._sanitizeURL(null);
-  assert.equal(sanitizedUrl, "", "if an empty url is passed, return the empty string");
+  assert.equal(sanitizedUrl, null, "if an empty url is passed, return null");
 
   // the URL object throws if it is given a malformed url
   assert.throws(() => URL("foo.com"), "malformed URL");
@@ -146,32 +146,32 @@ exports.test_sanitize_urls = function(assert) {
   // remove any query parameter that is not in the whitelist
   let safeQuery = "http://www.foobar.com/?id=300&p=firefox&search=mozilla&q=query";
   sanitizedUrl = gPreviewProvider._sanitizeURL("http://www.foobar.com/?id=300&p=firefox&user=garbage&pass=trash&search=mozilla&foo=bar&q=query");
-  assert.ok(safeQuery, sanitizedUrl, "removed any bad params and keep allowed params");
+  assert.ok(safeQuery, sanitizedUrl.toString(), "removed any bad params and keep allowed params");
 
   // remove extra slashes and relative paths
   let removeSlashes = "http://www.foobar.com/foo/bar/foobar";
   sanitizedUrl = gPreviewProvider._sanitizeURL("http://www.foobar.com///foo////bar//foobar/");
-  assert.equal(removeSlashes, sanitizedUrl, "removed extra slashes in pathname");
+  assert.equal(removeSlashes, sanitizedUrl.toString(), "removed extra slashes in pathname");
   let normalizePath = "http://www.foobar.com/foo/foobar/quuz.html";
   sanitizedUrl = gPreviewProvider._sanitizeURL("http://www.foobar.com/../foo/bar/../foobar/./quuz.html");
-  assert.equal(normalizePath, sanitizedUrl, "normalized the pathname");
+  assert.equal(normalizePath, sanitizedUrl.toString(), "normalized the pathname");
 
   // remove any sensitive information passed with basic auth
   let sensitiveUrl = "https://localhost.biz/";
   sanitizedUrl = gPreviewProvider._sanitizeURL("https://user:pass@localhost.biz/");
-  assert.equal(sanitizedUrl.username, undefined, "removed username field");
-  assert.equal(sanitizedUrl.password, undefined, "removed password field");
-  assert.equal(sensitiveUrl, sanitizedUrl, "removed sensitive information from url");
+  assert.equal(sanitizedUrl.username, "", "removed username field");
+  assert.equal(sanitizedUrl.password, "", "removed password field");
+  assert.equal(sensitiveUrl, sanitizedUrl.toString(), "removed sensitive information from url");
 
   // remove the hash
   let removeHash = "http://www.foobar.com/";
   sanitizedUrl = gPreviewProvider._sanitizeURL("http://www.foobar.com/#id=20");
-  assert.equal(removeHash, sanitizedUrl, "removed hash field");
+  assert.equal(removeHash, sanitizedUrl.toString(), "removed hash field");
 
   // Test with a %s in the query params
   let expectedUrl = "https://bugzilla.mozilla.org/buglist.cgi";
   sanitizedUrl = gPreviewProvider._sanitizeURL("https://bugzilla.mozilla.org/buglist.cgi?quicksearch=%s");
-  assert.equal(expectedUrl, sanitizedUrl, "%s doesn't cause unhandled exception");
+  assert.equal(expectedUrl, sanitizedUrl.toString(), "%s doesn't cause unhandled exception");
 };
 
 exports.test_process_links = function(assert) {
@@ -424,12 +424,13 @@ exports.test_get_enhanced_disabled = function*(assert) {
 };
 
 exports.test_copy_over_correct_data_from_firefox = function*(assert) {
-  const expectedKeys = ["title", "type", "url", "eTLD", "cache_key", "lastVisitDate", "bookmarkGuid", "bookmarkDateCreated"];
+  const expectedKeys = ["title", "type", "url", "eTLD", "cache_key", "hostname", "lastVisitDate", "bookmarkGuid", "bookmarkDateCreated"];
   const link = [{
     title: "a firefox given title",
     type: "bookmark",
     url: "http://example.com",
     cache_key: "example.com/",
+    hostname: "example.com",
     lastVisitDate: 123456789,
     bookmarkDateCreated: 123456789,
     bookmarkGuid: 1234

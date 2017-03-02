@@ -15,8 +15,7 @@ if (typeof platform_require !== "undefined") {
 const vendorModules = {
   "redux": require("redux"),
   "redux-thunk": require("redux-thunk"),
-  "reselect": require("reselect"),
-  "url-parse": require("url-parse")
+  "reselect": require("reselect")
 };
 
 // Addon-only modules. Also needed for tests

@@ -2,7 +2,7 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("common/selectors/selectors");
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
-const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
+const {prettyUrl} = require("lib/utils");
 const {actions} = require("common/action-manager");
 const {SiteIcon} = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
@@ -33,7 +33,7 @@ const SpotlightItem = React.createClass({
 
     // We may want to reconsider this as part of
     // https://github.com/mozilla/activity-stream/issues/1473
-    const {label} = selectSiteProperties(site);
+    const label = prettyUrl(site);
     const style = {};
 
     if (imageUrl) {

@@ -53,14 +53,6 @@ const am = new ActionManager([
   "TOP_FRECENT_SITES_RESPONSE"
 ]);
 
-// This is a a set of actions that have sites in them,
-// so we can do stuff like filter them, add metadata, etc.
-am.ACTIONS_WITH_SITES = new Set([
-  "HIGHLIGHTS_LINKS_RESPONSE",
-  "RECENT_LINKS_RESPONSE",
-  "TOP_FRECENT_SITES_RESPONSE"
-].map(type => am.type(type)));
-
 /**
  * Notify - Notify add-on action
  *

@@ -7,8 +7,8 @@ const {PlaceholderTopSitesItem, TopSites, TopSitesItem} = ConnectedTopSites;
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
-const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const fakeSiteWithImage = faker.createSite();
+const {prettyUrl} = require("lib/utils");
 
 const fakeProps = {
   sites: [
@@ -109,7 +109,7 @@ describe("TopSitesItem", () => {
     });
     it("should render a title", () => {
       assert.ok(instance.refs.title);
-      assert.equal(instance.refs.title.textContent, selectSiteProperties(siteWithScreenshot).label);
+      assert.equal(instance.refs.title.textContent, prettyUrl(siteWithScreenshot));
     });
     it("should render the screenshot element with the right background image", () => {
       assert.ok(instance.refs.screenshot);
