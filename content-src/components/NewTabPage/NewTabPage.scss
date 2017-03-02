@@ -1,7 +1,7 @@
 .new-tab-wrapper {
   width: 100%;
   max-width: $wrapper-max-width;
-  margin: 0 auto;
+  margin: $search-margin-bottom auto 0;
 }
 
 @keyframes fadeIn {

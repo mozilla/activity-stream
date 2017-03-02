@@ -32,7 +32,11 @@ module.exports = {
   },
   "Filter": {"query": ""},
   "Prefs": {
-    "prefs": {},
+    "prefs": {
+      "showSearch": true,
+      "showTopSites": true,
+      "showHighlights": true
+    },
     "error": false
   },
   "Intl": {

@@ -5,6 +5,7 @@ const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
+const PreferencesPane = require("components/PreferencesPane/PreferencesPane");
 const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
@@ -47,14 +48,17 @@ const NewTabPage = React.createClass({
   },
   render() {
     const props = this.props;
+    const {showSearch, showTopSites, showHighlights} = props.Prefs.prefs;
 
     const topSitesExperimentIsOn = props.Experiments.values.screenshots;
 
     return (<main className={classNames("new-tab", {"top-sites-new-style": topSitesExperimentIsOn})}>
       <div className="new-tab-wrapper">
-        <section>
-          <Search />
-        </section>
+        {showSearch &&
+          <section>
+            <Search />
+          </section>
+        }
         <Loader
           className="loading-notice"
           show={!this.props.isReady}
@@ -63,17 +67,21 @@ const NewTabPage = React.createClass({
           label="welcome_label"
           defaultLabel="default_label_loading" />
         <div className="show-on-init on">
-          <section>
-            <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
-              sites={props.TopSites.rows} showNewStyle={topSitesExperimentIsOn} />
-          </section>
-
-          <section>
-            <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
-              length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows} />
-          </section>
+          {showTopSites &&
+            <section>
+              <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
+                sites={props.TopSites.rows} showNewStyle={topSitesExperimentIsOn} />
+            </section>
+          }
+          {showHighlights &&
+            <section>
+              <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
+                length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows} />
+            </section>
+          }
         </div>
       </div>
+      <PreferencesPane Prefs={props.Prefs} />
     </main>);
   }
 });
@@ -82,6 +90,8 @@ NewTabPage.propTypes = {
   TopSites: React.PropTypes.object.isRequired,
   Highlights: React.PropTypes.object.isRequired,
   Experiments: React.PropTypes.object.isRequired,
+  Prefs: React.PropTypes.object.isRequired,
+  isReady: React.PropTypes.bool.isRequired,
   dispatch: React.PropTypes.func.isRequired
 };
 
