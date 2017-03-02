@@ -1,6 +1,5 @@
-/* globals Services */
 const {Cu} = require("chrome");
-Cu.import("resource://gre/modules/Services.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 const tabs = require("sdk/tabs");
 const simplePrefs = require("sdk/simple-prefs");

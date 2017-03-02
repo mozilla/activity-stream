@@ -1,5 +1,3 @@
-/* global XPCOMUtils, EventEmitter */
-
 const {Cu} = require("chrome");
 const prefService = require("sdk/preferences/service");
 const {PrefsTarget} = require("sdk/preferences/event-target");
@@ -7,9 +5,10 @@ const ss = require("sdk/simple-storage");
 const {preferencesBranch} = require("sdk/self");
 const PREF_PREFIX = `extensions.${preferencesBranch}.experiments.`;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const jsmodules = {};
 
-XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
@@ -21,7 +20,7 @@ exports.ExperimentProvider = class ExperimentProvider {
     this._data = {};
     this._experimentId = null;
     this._target = PrefsTarget();
-    EventEmitter.decorate(this);
+    jsmodules.EventEmitter.decorate(this);
 
     this._onPrefChange = this._onPrefChange.bind(this);
   }

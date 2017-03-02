@@ -1,6 +1,6 @@
 const {Cu} = require("chrome");
 const ColorAnalyzer = require("addon/ColorAnalyzer");
-Cu.import("resource://gre/modules/Services.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 exports.getColor = function getColor(dataURI, label) {
   return new Promise((resolve, reject) => {

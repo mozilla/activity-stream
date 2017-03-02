@@ -2,10 +2,11 @@
 
 const {Cu} = require("chrome");
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
-XPCOMUtils.defineLazyModuleGetter(global, "PreviewProvider",
+const jsmodules = {};
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "PreviewProvider",
                                   "resource:///modules/PreviewProvider.jsm");
 
 /**
@@ -30,7 +31,7 @@ module.exports = Task.async(function*getScreenshots(sites, condition) {
     }
 
     try {
-      const dataURI = yield PreviewProvider.getThumbnail(site.url);
+      const dataURI = yield jsmodules.PreviewProvider.getThumbnail(site.url);
       result[site.url] = dataURI;
     } catch (e) {
       Cu.reportError(e);

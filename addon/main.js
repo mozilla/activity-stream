@@ -78,7 +78,7 @@ module.exports = require("chrome");
 /***/ (function(module, exports, __webpack_require__) {
 
 // This has to be relative so the firefox add-on side can read the path
-const ActionManager = __webpack_require__(55);
+const ActionManager = __webpack_require__(56);
 const eventConstants = __webpack_require__(8);
 
 const am = new ActionManager([
@@ -336,33 +336,6 @@ module.exports = am;
 /* 2 */
 /***/ (function(module, exports) {
 
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
 module.exports = {
   // The opacity value of favicon background colors
   BACKGROUND_FADE: 0.5,
@@ -396,10 +369,37 @@ module.exports = {
 
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports) {
 
 module.exports = require("sdk/simple-prefs");
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
 
 /***/ }),
 /* 5 */
@@ -412,38 +412,35 @@ module.exports = require("sdk/self");
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) {/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs */
-
-
+/* WEBPACK VAR INJECTION */(function(global) {
 
 const {Ci, Cu} = __webpack_require__(0);
-const base64 = __webpack_require__(108);
-const simplePrefs = __webpack_require__(4);
+const base64 = __webpack_require__(109);
+const simplePrefs = __webpack_require__(3);
+const jsmodules = {};
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://services-sync/SyncedTabs.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {SyncedTabs} = Cu.import("resource://services-sync/SyncedTabs.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
 
-XPCOMUtils.defineLazyModuleGetter(global, "Task",
-                                  "resource://gre/modules/Task.jsm");
-
-XPCOMUtils.defineLazyModuleGetter(global, "PlacesUtils",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "PlacesUtils",
                                   "resource://gre/modules/PlacesUtils.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(global, "Bookmarks",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "Bookmarks",
                                   "resource://gre/modules/Bookmarks.jsm");
 
-XPCOMUtils.defineLazyGetter(global, "gPrincipal", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "Principal", () => {
   let uri = Services.io.newURI("about:newtab", null, null);
   return Services.scriptSecurityManager.getNoAppCodebasePrincipal(uri);
 });
 
-const {TOP_SITES_LENGTH, LINKS_QUERY_LIMIT} = __webpack_require__(3);
+const {TOP_SITES_LENGTH, LINKS_QUERY_LIMIT} = __webpack_require__(2);
 
 const REV_HOST_BLACKLIST = [
   "moc.elgoog.www.",
@@ -561,7 +558,7 @@ let LinkChecker = {
       return false;
     }
     try {
-      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(gPrincipal, aURI, this.flags);
+      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(jsmodules.Principal, aURI, this.flags);
       return true;
     } catch (e) {
       // We got a weird URI or one that would inherit the caller's principal.
@@ -634,7 +631,7 @@ Links.prototype = {
    */
   bookmarksObserver: {
     onItemAdded(id, folderId, index, type) {
-      if (type === Bookmarks.TYPE_BOOKMARK) {
+      if (type === jsmodules.Bookmarks.TYPE_BOOKMARK) {
         gLinks.getBookmark({id}).then(bookmark => {
           gLinks.emit("bookmarkAdded", bookmark);
         }).catch(err => Cu.reportError(err));
@@ -642,13 +639,13 @@ Links.prototype = {
     },
 
     onItemRemoved(id, folderId, index, type, uri) {
-      if (type === Bookmarks.TYPE_BOOKMARK) {
+      if (type === jsmodules.Bookmarks.TYPE_BOOKMARK) {
         gLinks.emit("bookmarkRemoved", {bookmarkId: id, url: uri.spec});
       }
     },
 
     onItemChanged(id, property, isAnnotation, value, lastModified, type) {
-      if (type === Bookmarks.TYPE_BOOKMARK) {
+      if (type === jsmodules.Bookmarks.TYPE_BOOKMARK) {
         gLinks.getBookmark({id}).then(bookmark => {
           gLinks.emit("bookmarkChanged", bookmark);
         }).catch(err => Cu.reportError(err));
@@ -666,16 +663,16 @@ Links.prototype = {
    * Makes it easy to disable under pref
    */
   init: function PlacesProvider_init() {
-    PlacesUtils.history.addObserver(this.historyObserver, true);
-    PlacesUtils.bookmarks.addObserver(this.bookmarksObserver, true);
+    jsmodules.PlacesUtils.history.addObserver(this.historyObserver, true);
+    jsmodules.PlacesUtils.bookmarks.addObserver(this.bookmarksObserver, true);
   },
 
   /**
    * Must be called before the provider is unloaded.
    */
   uninit: function PlacesProvider_uninit() {
-    PlacesUtils.history.removeObserver(this.historyObserver);
-    PlacesUtils.bookmarks.removeObserver(this.bookmarksObserver);
+    jsmodules.PlacesUtils.history.removeObserver(this.historyObserver);
+    jsmodules.PlacesUtils.bookmarks.removeObserver(this.bookmarksObserver);
   },
 
   /**
@@ -685,7 +682,7 @@ Links.prototype = {
    * @returns {Promise} Returns a promise set to an object representing the removed bookmark
    */
   asyncDeleteBookmark: function PlacesProvider_asyncDeleteBookmark(bookmarkGuid) {
-    return Bookmarks.remove(bookmarkGuid);
+    return jsmodules.Bookmarks.remove(bookmarkGuid);
   },
 
   /**
@@ -695,7 +692,7 @@ Links.prototype = {
    * @returns {Promise} Returns a promise set to an object representing the bookmark
    */
   asyncAddBookmark: function PlacesProvider_asyncAddBookmark(url) {
-    return Bookmarks.insert({url, type: Bookmarks.TYPE_BOOKMARK, parentGuid: Bookmarks.unfiledGuid});
+    return jsmodules.Bookmarks.insert({url, type: jsmodules.Bookmarks.TYPE_BOOKMARK, parentGuid: jsmodules.Bookmarks.unfiledGuid});
   },
 
   /**
@@ -705,7 +702,7 @@ Links.prototype = {
    * @returns {Promise} Returns a promise set to true if link was removed
    */
   deleteHistoryLink: function PlacesProvider_deleteHistoryLink(url) {
-    return PlacesUtils.history.remove(url);
+    return jsmodules.PlacesUtils.history.remove(url);
   },
 
   /**
@@ -869,7 +866,7 @@ Links.prototype = {
         "type",
         "url"
       ],
-      params: {id, type: Bookmarks.TYPE_BOOKMARK}
+      params: {id, type: jsmodules.Bookmarks.TYPE_BOOKMARK}
     });
 
     links = this._processLinks(links);
@@ -1130,7 +1127,7 @@ Links.prototype = {
                     AND b.fk = p.id
                     AND p.url NOT IN (${blockedURLs})`;
 
-    let result = yield this.executePlacesQuery(sqlQuery, {params: {type: Bookmarks.TYPE_BOOKMARK}});
+    let result = yield this.executePlacesQuery(sqlQuery, {params: {type: jsmodules.Bookmarks.TYPE_BOOKMARK}});
     return result[0][0];
   }),
 
@@ -1173,7 +1170,7 @@ Links.prototype = {
     let items = [];
     let queryError = null;
     return Task.spawn(function*() {
-      let conn = yield PlacesUtils.promiseDBConnection();
+      let conn = yield jsmodules.PlacesUtils.promiseDBConnection();
       yield conn.executeCached(aSql, params, aRow => {
         try {
           // check if caller wants to handle query raws
@@ -1222,7 +1219,7 @@ exports.PlacesProvider = {
   BlockedURLs
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 7 */
@@ -1336,9 +1333,9 @@ module.exports = constants;
 "use strict";
 
 
-var required = __webpack_require__(98)
-  , lolcation = __webpack_require__(104)
-  , qs = __webpack_require__(91)
+var required = __webpack_require__(99)
+  , lolcation = __webpack_require__(105)
+  , qs = __webpack_require__(92)
   , protocolre = /^([a-z][a-z0-9.+-]*:)?(\/\/)?([\S\s]*)/i;
 
 /**
@@ -1754,6 +1751,12 @@ module.exports = require("sdk/tabs");
 
 /***/ }),
 /* 13 */
+/***/ (function(module, exports) {
+
+module.exports = require("sdk/timers");
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1836,7 +1839,7 @@ module.exports = {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -3613,7 +3616,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -3770,11 +3773,11 @@ module.exports = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__root_js__ = __webpack_require__(82);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__root_js__ = __webpack_require__(83);
 
 
 /** Built-in value references. */
@@ -3784,13 +3787,13 @@ var Symbol = __WEBPACK_IMPORTED_MODULE_0__root_js__["a" /* default */].Symbol;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__baseGetTag_js__ = __webpack_require__(76);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getPrototype_js__ = __webpack_require__(78);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__isObjectLike_js__ = __webpack_require__(83);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__baseGetTag_js__ = __webpack_require__(77);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getPrototype_js__ = __webpack_require__(79);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__isObjectLike_js__ = __webpack_require__(84);
 
 
 
@@ -3856,7 +3859,7 @@ function isPlainObject(value) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -4042,7 +4045,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4083,12 +4086,12 @@ function compose() {
 }
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_es_isPlainObject__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable__ = __webpack_require__(99);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_es_isPlainObject__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable__ = __webpack_require__(100);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_symbol_observable__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ActionTypes; });
 /* harmony export (immutable) */ __webpack_exports__["a"] = createStore;
@@ -4342,7 +4345,7 @@ function createStore(reducer, preloadedState, enhancer) {
 }
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4370,7 +4373,7 @@ function warning(message) {
 }
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -4398,7 +4401,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -9703,61 +9706,60 @@ return /******/ (function(modules) { // webpackBootstrap
 ;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("sdk/preferences/service");
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("sdk/simple-storage");
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = require("sdk/util/uuid");
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) {/* globals NewTabURL, EventEmitter, XPCOMUtils, Services */
-
 
 
 const {Cu} = __webpack_require__(0);
 const {data} = __webpack_require__(5);
 const tabs = __webpack_require__(12);
-const simplePrefs = __webpack_require__(4);
+const simplePrefs = __webpack_require__(3);
 const windows = __webpack_require__(114).browserWindows;
-const prefService = __webpack_require__(24);
-const ss = __webpack_require__(25);
-const PageModProvider = __webpack_require__(44);
+const prefService = __webpack_require__(25);
+const ss = __webpack_require__(26);
+const PageModProvider = __webpack_require__(45);
 const {PlacesProvider} = __webpack_require__(6);
-const {SearchProvider} = __webpack_require__(50);
-const {PreviewProvider} = __webpack_require__(49);
-const {PerfMeter} = __webpack_require__(47);
-const {AppURLHider} = __webpack_require__(31);
+const {SearchProvider} = __webpack_require__(51);
+const {PreviewProvider} = __webpack_require__(50);
+const {PerfMeter} = __webpack_require__(48);
+const {AppURLHider} = __webpack_require__(32);
 const am = __webpack_require__(1);
 const {CONTENT_TO_ADDON, ADDON_TO_CONTENT} = __webpack_require__(8);
-const {ExperimentProvider} = __webpack_require__(34);
-const {PrefsProvider} = __webpack_require__(48);
-const createStore = __webpack_require__(57);
-const PageWorker = __webpack_require__(46);
-const {PageScraper} = __webpack_require__(45);
+const {ExperimentProvider} = __webpack_require__(35);
+const {PrefsProvider} = __webpack_require__(49);
+const createStore = __webpack_require__(58);
+const PageWorker = __webpack_require__(47);
+const {PageScraper} = __webpack_require__(46);
 
-const FeedController = __webpack_require__(52);
-const feeds = __webpack_require__(41);
+const FeedController = __webpack_require__(53);
+const feeds = __webpack_require__(42);
+const jsmodules = {};
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource:///modules/NewTabURL.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {NewTabURL} = Cu.import("resource:///modules/NewTabURL.jsm", {});
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
-XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
@@ -9787,7 +9789,7 @@ const TOPIC_SYNC_COMPLETE = "services.sync.tabs.changed";
 
 function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
-  EventEmitter.decorate(this);
+  jsmodules.EventEmitter.decorate(this);
   this._pagemod = new PageModProvider({
     pageURL: this.options.pageURL,
     onAddWorker: this.options.onAddWorker,
@@ -10190,30 +10192,29 @@ ActivityStreams.prototype = {
 
 exports.ActivityStreams = ActivityStreams;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) { /* globals XPCOMUtils, Task, OS, Sqlite, PlacesUtils, NetUtil, Services */
 
 
 const {Cu} = __webpack_require__(0);
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Sqlite.jsm");
-Cu.import("resource://gre/modules/NetUtil.jsm");
-Cu.import("resource://gre/modules/Timer.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Sqlite} = Cu.import("resource://gre/modules/Sqlite.jsm", {});
+const {NetUtil} = Cu.import("resource://gre/modules/NetUtil.jsm", {});
+const {setInterval} = Cu.import("resource://gre/modules/Timer.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {})
 
-const {MIGRATIONS} = __webpack_require__(43);
+const {MIGRATIONS} = __webpack_require__(44);
 
-XPCOMUtils.defineLazyModuleGetter(global, "Task",
-                                  "resource://gre/modules/Task.jsm");
-XPCOMUtils.defineLazyModuleGetter(global, "PlacesUtils",
+const jsmodules = {};
+
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "PlacesUtils",
                                   "resource://gre/modules/PlacesUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(global, "OS",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "OS",
                                   "resource://gre/modules/osfile.jsm");
 
 const METASTORE_NAME = "metadata.sqlite";
@@ -10290,7 +10291,7 @@ const SQL_PARAMETER_LIMIT = 999;
 const UNIQUE_CONSTRAINT_FAILED_EXCEPTION = "UNIQUE constraint failed";
 
 function MetadataStore(path, migrations = null) {
-  this._path = path || OS.Path.join(OS.Constants.Path.profileDir, METASTORE_NAME);
+  this._path = path || jsmodules.OS.Path.join(jsmodules.OS.Constants.Path.profileDir, METASTORE_NAME);
   this._migrations = migrations || MIGRATIONS;
   this._conn = null;
   this._dataExpiryJob = null;
@@ -10457,11 +10458,11 @@ MetadataStore.prototype = {
 
         if (metaObject.favicon_url) {
           // attach favicon to places_url for Places
-          PlacesUtils.favicons.setAndFetchFaviconForPage(
+          jsmodules.PlacesUtils.favicons.setAndFetchFaviconForPage(
             NetUtil.newURI(metaObject.places_url),
             NetUtil.newURI(metaObject.favicon_url),
             false,
-            PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE,
+            jsmodules.PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE,
             null,
             principal
           );
@@ -10560,7 +10561,7 @@ MetadataStore.prototype = {
   asyncTearDown: Task.async(function*() {
     try {
       yield this.asyncClose();
-      yield OS.File.remove(this._path, {ignoreAbsent: true});
+      yield jsmodules.OS.File.remove(this._path, {ignoreAbsent: true});
     } catch (e) {
       Cu.reportError(`MetadataStore failed to tear down the database: ${e.message}`);
     }
@@ -10791,10 +10792,9 @@ MetadataStore.prototype = {
 exports.MetadataStore = MetadataStore;
 exports.METASTORE_NAME = METASTORE_NAME;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10804,14 +10804,14 @@ exports.METASTORE_NAME = METASTORE_NAME;
 const tabs = __webpack_require__(12);
 const {Ci, Cu} = __webpack_require__(0);
 const self = __webpack_require__(5);
-const {uuid} = __webpack_require__(26);
-const simplePrefs = __webpack_require__(4);
+const {uuid} = __webpack_require__(27);
+const simplePrefs = __webpack_require__(3);
 const eventConstants = __webpack_require__(8);
 const {absPerf} = __webpack_require__(10);
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Locale.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {Locale} = Cu.import("resource://gre/modules/Locale.jsm", {});
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 
 const TELEMETRY_PREF = "telemetry";
 const COMPLETE_NOTIF = "tab-session-complete";
@@ -11170,15 +11170,13 @@ exports.TabTracker = TabTracker;
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* globals Services, XPCOMUtils */
-
 const {Ci, Cu} = __webpack_require__(0);
-const simplePrefs = __webpack_require__(4);
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const simplePrefs = __webpack_require__(3);
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 Cu.importGlobalProperties(["fetch"]);
 
 const ENDPOINT_PREF = "telemetry.ping.endpoint";
@@ -11277,16 +11275,14 @@ exports.TelemetrySender = TelemetrySender;
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* globals Services */
 
 
 const {Cu, Ci} = __webpack_require__(0);
-
-Cu.import("resource://gre/modules/Services.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 function AppURLHider(appURLs) {
   this._appURLs = appURLs;
@@ -11351,7 +11347,7 @@ exports.AppURLHider = AppURLHider;
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11363,7 +11359,7 @@ exports.AppURLHider = AppURLHider;
 
 const {Ci, Cc, Cu, ChromeWorker} = __webpack_require__(0);
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 
 const XHTML_NS = "http://www.w3.org/1999/xhtml";
 const MAXIMUM_PIXELS = Math.pow(144, 2);
@@ -11446,12 +11442,12 @@ module.exports = new ColorAnalyzer();
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const {Cu} = __webpack_require__(0);
-const ColorAnalyzer = __webpack_require__(32);
-Cu.import("resource://gre/modules/Services.jsm");
+const ColorAnalyzer = __webpack_require__(33);
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 exports.getColor = function getColor(dataURI, label) {
   return new Promise((resolve, reject) => {
@@ -11472,33 +11468,32 @@ exports.getColor = function getColor(dataURI, label) {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {/* global XPCOMUtils, EventEmitter */
-
 const {Cu} = __webpack_require__(0);
-const prefService = __webpack_require__(24);
+const prefService = __webpack_require__(25);
 const {PrefsTarget} = __webpack_require__(11);
-const ss = __webpack_require__(25);
+const ss = __webpack_require__(26);
 const {preferencesBranch} = __webpack_require__(5);
 const PREF_PREFIX = `extensions.${preferencesBranch}.experiments.`;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const jsmodules = {};
 
-XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
 
 exports.ExperimentProvider = class ExperimentProvider {
-  constructor(experiments = __webpack_require__(15), rng) {
+  constructor(experiments = __webpack_require__(16), rng) {
     this._experiments = experiments;
     this._rng = rng || Math.random;
     this._data = {};
     this._experimentId = null;
     this._target = PrefsTarget();
-    EventEmitter.decorate(this);
+    jsmodules.EventEmitter.decorate(this);
 
     this._onPrefChange = this._onPrefChange.bind(this);
   }
@@ -11645,18 +11640,17 @@ exports.ExperimentProvider = class ExperimentProvider {
   }
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const simplePrefs = __webpack_require__(4);
+const simplePrefs = __webpack_require__(3);
 const {Cu} = __webpack_require__(0);
 const {PlacesProvider} = __webpack_require__(6);
-const {Recommender} = __webpack_require__(62);
+const {Recommender} = __webpack_require__(63);
 const Feed = __webpack_require__(7);
-const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = __webpack_require__(3);
+const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = __webpack_require__(2);
 const am = __webpack_require__(1);
 
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
@@ -11762,14 +11756,14 @@ module.exports.UPDATE_TIME = UPDATE_TIME;
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const {PrefsTarget} = __webpack_require__(11);
-const {findClosestLocale, getPreferedLocales} = __webpack_require__(109);
+const {findClosestLocale, getPreferedLocales} = __webpack_require__(110);
 const Feed = __webpack_require__(7);
 const am = __webpack_require__(1);
-const AVAILABLE_LOCALES = Object.keys(__webpack_require__(14));
+const AVAILABLE_LOCALES = Object.keys(__webpack_require__(15));
 
 // These all affect getPreferedLocales
 const LOCALE_PREFS = [
@@ -11815,14 +11809,14 @@ module.exports = LocalizationFeed;
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* globals module, require */
 
 const {PlacesProvider} = __webpack_require__(6);
-const simplePrefs = __webpack_require__(4);
+const simplePrefs = __webpack_require__(3);
 const Feed = __webpack_require__(7);
 const am = __webpack_require__(1);
 const MAX_NUM_LINKS = 5;
@@ -11876,7 +11870,7 @@ module.exports.MAX_NUM_LINKS = MAX_NUM_LINKS;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const {PlacesProvider} = __webpack_require__(6);
@@ -11932,12 +11926,12 @@ module.exports.UPDATE_TIME = UPDATE_TIME;
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const Feed = __webpack_require__(7);
 const am = __webpack_require__(1);
-const getCurrentBrowser = __webpack_require__(53);
+const getCurrentBrowser = __webpack_require__(54);
 const {Cu} = __webpack_require__(0);
 
 module.exports = class SearchFeed extends Feed {
@@ -12016,20 +12010,20 @@ module.exports = class SearchFeed extends Feed {
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* globals Task */
 const {Cu} = __webpack_require__(0);
 const {PlacesProvider} = __webpack_require__(6);
 const Feed = __webpack_require__(7);
-const {TOP_SITES_LENGTH} = __webpack_require__(3);
+const {TOP_SITES_LENGTH} = __webpack_require__(2);
 const am = __webpack_require__(1);
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
-const getScreenshots = __webpack_require__(54);
-const {isRootDomain} = __webpack_require__(13);
+const getScreenshots = __webpack_require__(55);
+const {isRootDomain} = __webpack_require__(14);
 
-Cu.import("resource://gre/modules/Task.jsm");
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 module.exports = class TopSitesFeed extends Feed {
   // Used by this.refresh
@@ -12098,15 +12092,15 @@ module.exports.UPDATE_TIME = UPDATE_TIME;
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const TopSitesFeed = __webpack_require__(40);
-const HighlightsFeed = __webpack_require__(35);
-const PlacesStatsFeed = __webpack_require__(38);
-const SearchFeed = __webpack_require__(39);
-const MetadataFeed = __webpack_require__(37);
-const LocalizationFeed = __webpack_require__(36);
+const TopSitesFeed = __webpack_require__(41);
+const HighlightsFeed = __webpack_require__(36);
+const PlacesStatsFeed = __webpack_require__(39);
+const SearchFeed = __webpack_require__(40);
+const MetadataFeed = __webpack_require__(38);
+const LocalizationFeed = __webpack_require__(37);
 
 module.exports = [
   TopSitesFeed,
@@ -12119,14 +12113,14 @@ module.exports = [
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* globals require, exports */
 
 
-const {getMetadata} = __webpack_require__(86);
+const {getMetadata} = __webpack_require__(87);
 const {Cc, Ci} = __webpack_require__(0);
 
 function MetadataParser() {
@@ -12172,7 +12166,7 @@ exports.MetadataParser = MetadataParser;
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports) {
 
 /*
@@ -12226,16 +12220,16 @@ exports.MIGRATIONS = [
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const generateUUID = __webpack_require__(26);
-const privateBrowsing = __webpack_require__(112);
+const generateUUID = __webpack_require__(27);
+const privateBrowsing = __webpack_require__(113);
 const {Cu} = __webpack_require__(0);
-const {PageMod} = __webpack_require__(110);
+const {PageMod} = __webpack_require__(111);
 const {data} = __webpack_require__(5);
 const {CONTENT_TO_ADDON} = __webpack_require__(8);
-const {WORKER_ATTACHED_EVENT} = __webpack_require__(3);
+const {WORKER_ATTACHED_EVENT} = __webpack_require__(2);
 
 module.exports = class PageModProvider {
   constructor({pageURL, uuid, onAddWorker, onRemoveWorker} = {}) {
@@ -12352,20 +12346,20 @@ module.exports = class PageModProvider {
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* globals Services, Task */
 
 
-const {MetadataParser} = __webpack_require__(42);
+const {MetadataParser} = __webpack_require__(43);
 const {Cu} = __webpack_require__(0);
-const options = __webpack_require__(107);
+const options = __webpack_require__(108);
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
+
 Cu.importGlobalProperties(["URL"]);
 Cu.importGlobalProperties(["fetch"]);
 
@@ -12538,15 +12532,15 @@ exports.PageScraper = PageScraper;
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {const {Page} = __webpack_require__(111);
+/* WEBPACK VAR INJECTION */(function(global) {const {Page} = __webpack_require__(112);
 const {data} = __webpack_require__(5);
-const {LOCAL_STORAGE_KEY} = __webpack_require__(3);
+const {LOCAL_STORAGE_KEY} = __webpack_require__(2);
 const {ADDON_TO_CONTENT} = __webpack_require__(8);
-const watch = __webpack_require__(93);
-const debounce = __webpack_require__(84);
+const watch = __webpack_require__(94);
+const debounce = __webpack_require__(85);
 
 class PageWorker {
   constructor({store, wait} = {}) {
@@ -12577,7 +12571,7 @@ class PageWorker {
     const w = watch(this._store.getState);
 
     // Shims for dependencies (lodash.debounce)
-    const {setTimeout, clearTimeout} = __webpack_require__(113);
+    const {setTimeout, clearTimeout} = __webpack_require__(13);
     global.setTimeout = setTimeout;
     global.clearTimeout = clearTimeout;
 
@@ -12608,21 +12602,20 @@ class PageWorker {
 
 module.exports = PageWorker;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* globals Services */
 const {Cu} = __webpack_require__(0);
-Cu.import("resource://gre/modules/Services.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 const tabs = __webpack_require__(12);
-const simplePrefs = __webpack_require__(4);
+const simplePrefs = __webpack_require__(3);
 
 const {absPerf} = __webpack_require__(10);
-const {WORKER_ATTACHED_EVENT} = __webpack_require__(3);
+const {WORKER_ATTACHED_EVENT} = __webpack_require__(2);
 
 const VALID_TELEMETRY_TAGS = new Set([
   "TAB_READY",
@@ -12813,13 +12806,13 @@ exports.PerfMeter = PerfMeter;
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 const am = __webpack_require__(1);
-const simplePrefs = __webpack_require__(4);
+const simplePrefs = __webpack_require__(3);
 const DEFAULT_OPTIONS = {eventTracker: {handleUserEvent() {}}};
 
 /**
@@ -12871,22 +12864,21 @@ exports.PrefsProvider = class PrefsProvider {
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* globals Task, Services, require, exports */
 
 
 const {Cu} = __webpack_require__(0);
-const simplePrefs = __webpack_require__(4);
+const simplePrefs = __webpack_require__(3);
 const self = __webpack_require__(5);
-const {TippyTopProvider} = __webpack_require__(51);
-const {getColor} = __webpack_require__(33);
+const {TippyTopProvider} = __webpack_require__(52);
+const {getColor} = __webpack_require__(34);
 const {absPerf} = __webpack_require__(10);
-const {consolidateBackgroundColors, consolidateFavicons, extractMetadataFaviconFields} = __webpack_require__(13);
+const {consolidateBackgroundColors, consolidateFavicons, extractMetadataFaviconFields} = __webpack_require__(14);
 
-const {BACKGROUND_FADE} = __webpack_require__(3);
+const {BACKGROUND_FADE} = __webpack_require__(2);
 const ENABLED_PREF = "previews.enabled";
 const ENDPOINT = "metadata.endpoint";
 const VERSION_SUFFIX = `?addon_version=${self.version}`;
@@ -12904,8 +12896,8 @@ const URL_FILTERS = [
 
 Cu.importGlobalProperties(["fetch"]);
 Cu.importGlobalProperties(["URL"]);
-Cu.import("resource://gre/modules/Task.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 const DEFAULT_OPTIONS = {
   metadataTTL: 3 * 24 * 60 * 60 * 1000, // 3 days for the metadata to live
@@ -13334,13 +13326,10 @@ exports.PreviewProvider = PreviewProvider;
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(global) {/* global XPCOMUtils, Task, Services, EventEmitter, FormHistory,
-SearchSuggestionController, PrivateBrowsingUtils, exports, require */
-
 
 const {Ci, Cu} = __webpack_require__(0);
 const {PrefsTarget} = __webpack_require__(11);
@@ -13350,25 +13339,27 @@ const ENGINE_ICON_SIZE = 16;
 const MAX_LOCAL_SUGGESTIONS = 3;
 const MAX_SUGGESTIONS = 6;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 Cu.importGlobalProperties(["URL", "Blob", "FileReader", "atob"]);
 
-XPCOMUtils.defineLazyModuleGetter(global, "FormHistory",
+const jsmodules = {};
+
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "FormHistory",
                                   "resource://gre/modules/FormHistory.jsm");
-XPCOMUtils.defineLazyModuleGetter(global, "PrivateBrowsingUtils",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "PrivateBrowsingUtils",
                                   "resource://gre/modules/PrivateBrowsingUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(global, "SearchSuggestionController",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "SearchSuggestionController",
                                   "resource://gre/modules/SearchSuggestionController.jsm");
 
-XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
 
 function SearchProvider() {
-  EventEmitter.decorate(this);
+  jsmodules.EventEmitter.decorate(this);
   this._target = PrefsTarget();
   this._onPrefChange = this._onPrefChange.bind(this);
 }
@@ -13499,10 +13490,10 @@ SearchProvider.prototype = {
       throw new Error(`Unknown engine name: ${data.engineName}`);
     }
     let {controller} = this._getSuggestionData(browser);
-    let ok = SearchSuggestionController.engineOffersSuggestions(engine);
+    let ok = jsmodules.SearchSuggestionController.engineOffersSuggestions(engine);
     controller.maxLocalResults = ok ? MAX_LOCAL_SUGGESTIONS : MAX_SUGGESTIONS;
     controller.maxRemoteResults = ok ? MAX_SUGGESTIONS : 0;
-    let isPrivate = PrivateBrowsingUtils.isBrowserPrivate(browser);
+    let isPrivate = jsmodules.PrivateBrowsingUtils.isBrowserPrivate(browser);
 
     let suggestions;
     try {
@@ -13564,7 +13555,7 @@ SearchProvider.prototype = {
     let {controller} = this._getSuggestionData(browser);
     let isPrivate = false;
     try {
-      isPrivate = PrivateBrowsingUtils.isBrowserPrivate(browser);
+      isPrivate = jsmodules.PrivateBrowsingUtils.isBrowserPrivate(browser);
     } catch (e) {
       // The browser might have already been destroyed.
       return false;
@@ -13582,7 +13573,7 @@ SearchProvider.prototype = {
         handleCompletion: () => resolve(true),
         handleError: () => reject()
       };
-      FormHistory.update(ops, callbacks);
+      jsmodules.FormHistory.update(ops, callbacks);
     }).catch(err => Cu.reportError(err));
     return result;
   }),
@@ -13597,7 +13588,7 @@ SearchProvider.prototype = {
       // autocomplete widget, this means that we assume each xul:browser has at
       // most one such widget.
       data = {
-        controller: new SearchSuggestionController(),
+        controller: new jsmodules.SearchSuggestionController(),
         previousFormHistoryResult: undefined
       };
       this._suggestionMap.set(browser, data);
@@ -13609,10 +13600,9 @@ SearchProvider.prototype = {
 exports.SearchProvider = SearchProvider;
 exports.HIDDEN_ENGINES_PREF = HIDDEN_ENGINES_PREF;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13620,7 +13610,7 @@ exports.HIDDEN_ENGINES_PREF = HIDDEN_ENGINES_PREF;
 
 
 const data = __webpack_require__(5).data;
-const {IMAGE_SIZE, getSiteData} = __webpack_require__(102);
+const {IMAGE_SIZE, getSiteData} = __webpack_require__(103);
 
 const DEFAULT_OPTIONS = {sites: null};
 
@@ -13667,7 +13657,7 @@ exports.TippyTopProvider = TippyTopProvider;
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const {Cu} = __webpack_require__(0);
@@ -13697,38 +13687,38 @@ module.exports = class FeedController {
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {/* globals XPCOMUtils, windowMediator */
+/* globals XPCOMUtils, windowMediator */
 const {Cu} = __webpack_require__(0);
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-XPCOMUtils.defineLazyServiceGetter(global, "windowMediator",
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const jsmodules = {};
+XPCOMUtils.defineLazyServiceGetter(jsmodules, "windowMediator",
                                    "@mozilla.org/appshell/window-mediator;1",
                                    "nsIWindowMediator");
 
 module.exports = function getCurrentBrowser() {
-  const win = windowMediator.getMostRecentWindow("navigator:browser");
+  const win = jsmodules.windowMediator.getMostRecentWindow("navigator:browser");
   const gBrowser = win.getBrowser();
   return gBrowser.selectedBrowser;
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {/* globals Task, XPCOMUtils, PreviewProvider */
+/* globals Task, XPCOMUtils, PreviewProvider */
 
 const {Cu} = __webpack_require__(0);
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
-XPCOMUtils.defineLazyModuleGetter(global, "PreviewProvider",
+const jsmodules = {};
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "PreviewProvider",
                                   "resource:///modules/PreviewProvider.jsm");
 
 /**
@@ -13753,7 +13743,7 @@ module.exports = Task.async(function*getScreenshots(sites, condition) {
     }
 
     try {
-      const dataURI = yield PreviewProvider.getThumbnail(site.url);
+      const dataURI = yield jsmodules.PreviewProvider.getThumbnail(site.url);
       result[site.url] = dataURI;
     } catch (e) {
       Cu.reportError(e);
@@ -13767,10 +13757,9 @@ module.exports = Task.async(function*getScreenshots(sites, condition) {
   });
 });
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports) {
 
 const VALID_KEYS = new Set([
@@ -13860,7 +13849,7 @@ module.exports = ActionManager;
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports) {
 
 const DEFAULT_OPTIONS = {
@@ -13953,17 +13942,17 @@ module.exports = {Channel};
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {createStore, applyMiddleware, combineReducers} = __webpack_require__(97);
-const thunk = __webpack_require__(92).default;
-const reducers = __webpack_require__(69);
-const {Channel} = __webpack_require__(56);
-const parseUrlMiddleware = __webpack_require__(60);
-const loggerMiddleware = __webpack_require__(71);
-const {LOCAL_STORAGE_KEY} = __webpack_require__(3);
-const {areSelectorsReady} = __webpack_require__(72);
+const {createStore, applyMiddleware, combineReducers} = __webpack_require__(98);
+const thunk = __webpack_require__(93).default;
+const reducers = __webpack_require__(70);
+const {Channel} = __webpack_require__(57);
+const parseUrlMiddleware = __webpack_require__(61);
+const loggerMiddleware = __webpack_require__(72);
+const {LOCAL_STORAGE_KEY} = __webpack_require__(2);
+const {areSelectorsReady} = __webpack_require__(73);
 
 let store;
 
@@ -14114,7 +14103,7 @@ module.exports._rehydrationIntervalCallback = _rehydrationIntervalCallback;
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports) {
 
 module.exports = function getBestImage(images) {
@@ -14127,11 +14116,11 @@ module.exports = function getBestImage(images) {
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {DEFAULT_LOCALE, RTL_LIST} = __webpack_require__(3);
-const STRINGS = __webpack_require__(14);
+const {DEFAULT_LOCALE, RTL_LIST} = __webpack_require__(2);
+const STRINGS = __webpack_require__(15);
 
 module.exports.getDirection = function getDirection(locale) {
   return (RTL_LIST.indexOf(locale.split("-")[0]) >= 0) ? "rtl" : "ltr";
@@ -14148,7 +14137,7 @@ module.exports.getLocalizedStrings = function getLocalizedStrings(locale, allStr
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const urlParse = __webpack_require__(9);
@@ -14179,15 +14168,15 @@ module.exports = () => next => action => {
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const {BOOKMARK_AGE_DIVIDEND} = __webpack_require__(3);
+const {BOOKMARK_AGE_DIVIDEND} = __webpack_require__(2);
 const URL = __webpack_require__(9);
-const getBestImage = __webpack_require__(58);
+const getBestImage = __webpack_require__(59);
 
 /**
  * Score function for URLs.
@@ -14514,13 +14503,13 @@ exports.Baseline = Baseline;
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const {Baseline} = __webpack_require__(61);
+const {Baseline} = __webpack_require__(62);
 
 class Recommender {
   constructor(history, options = {}) {
@@ -14542,10 +14531,10 @@ exports.Recommender = Recommender;
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const definitions = __webpack_require__(15);
+const definitions = __webpack_require__(16);
 const defaultState = {values: {}, error: false, init: false};
 
 // Start with control values
@@ -14574,7 +14563,7 @@ module.exports = function Experiments(prevState = defaultState, action) {
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const am = __webpack_require__(1);
@@ -14598,12 +14587,12 @@ module.exports = function Filter(prevState = INITIAL_STATE, action) {
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {DEFAULT_LOCALE} = __webpack_require__(3);
+const {DEFAULT_LOCALE} = __webpack_require__(2);
 const INITIAL_STATE = {locale: DEFAULT_LOCALE, strings: {}, direction: "ltr"};
-const {getDirection, getLocalizedStrings} = __webpack_require__(59);
+const {getDirection, getLocalizedStrings} = __webpack_require__(60);
 
 function Intl(prevState = INITIAL_STATE, action) {
   switch (action.type) {
@@ -14627,7 +14616,7 @@ module.exports = Intl;
 
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const am = __webpack_require__(1);
@@ -14648,7 +14637,7 @@ module.exports = (prevState = initialState, action) => {
 
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const am = __webpack_require__(1);
@@ -14686,7 +14675,7 @@ module.exports.INITIAL_STATE = INITIAL_STATE;
 
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const am = __webpack_require__(1);
@@ -14768,19 +14757,19 @@ module.exports.DEFAULTS = DEFAULTS;
 
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* global require, module */
 
-const setRowsOrError = __webpack_require__(68);
-const setSearchContent = __webpack_require__(70);
-const Experiments = __webpack_require__(63);
-const Filter = __webpack_require__(64);
-const Prefs = __webpack_require__(67);
-const PlacesStats = __webpack_require__(66);
-const Intl = __webpack_require__(65);
+const setRowsOrError = __webpack_require__(69);
+const setSearchContent = __webpack_require__(71);
+const Experiments = __webpack_require__(64);
+const Filter = __webpack_require__(65);
+const Prefs = __webpack_require__(68);
+const PlacesStats = __webpack_require__(67);
+const Intl = __webpack_require__(66);
 
 module.exports = {
   TopSites: setRowsOrError("TOP_FRECENT_SITES_REQUEST", "TOP_FRECENT_SITES_RESPONSE"),
@@ -14795,7 +14784,7 @@ module.exports = {
 
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14853,7 +14842,7 @@ module.exports = function Search(type) {
 
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports) {
 
 module.exports = store => next => action => {
@@ -14863,7 +14852,7 @@ module.exports = store => next => action => {
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports) {
 
 /**
@@ -14879,7 +14868,7 @@ module.exports = {areSelectorsReady};
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14889,8 +14878,8 @@ module.exports = {areSelectorsReady};
 
 
 
-const {forEach} = __webpack_require__(23);
-const {max} = __webpack_require__(74);
+const {forEach} = __webpack_require__(24);
+const {max} = __webpack_require__(75);
 
 
 // Get a key of a map, first setting it to a default value if it's missing.
@@ -15190,10 +15179,10 @@ module.exports = {
 
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {flatten, forEach, map} = __webpack_require__(23);
+const {flatten, forEach, map} = __webpack_require__(24);
 
 
 function identity(x) {
@@ -15648,7 +15637,7 @@ module.exports = {
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports) {
 
 module.exports = function hexToRgb (hex) {
@@ -15689,13 +15678,13 @@ function expand (hex) {
 
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Symbol_js__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getRawTag_js__ = __webpack_require__(79);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objectToString_js__ = __webpack_require__(80);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Symbol_js__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getRawTag_js__ = __webpack_require__(80);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objectToString_js__ = __webpack_require__(81);
 
 
 
@@ -15728,7 +15717,7 @@ function baseGetTag(value) {
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15737,14 +15726,14 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 /* harmony default export */ __webpack_exports__["a"] = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(4)))
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__overArg_js__ = __webpack_require__(81);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__overArg_js__ = __webpack_require__(82);
 
 
 /** Built-in value references. */
@@ -15754,11 +15743,11 @@ var getPrototype = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__overArg_js
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Symbol_js__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Symbol_js__ = __webpack_require__(17);
 
 
 /** Used for built-in method references. */
@@ -15808,7 +15797,7 @@ function getRawTag(value) {
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15837,7 +15826,7 @@ function objectToString(value) {
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15859,11 +15848,11 @@ function overArg(func, transform) {
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__ = __webpack_require__(77);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__ = __webpack_require__(78);
 
 
 /** Detect free variable `self`. */
@@ -15876,7 +15865,7 @@ var root = __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__["a" /* default */] || fr
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15912,7 +15901,7 @@ function isObjectLike(value) {
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -16293,10 +16282,10 @@ function toNumber(value) {
 
 module.exports = debounce;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (root, factory){
@@ -16583,11 +16572,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const urlparse = __webpack_require__(105);
-const {dom, rule, ruleset} = __webpack_require__(73);
+const urlparse = __webpack_require__(106);
+const {dom, rule, ruleset} = __webpack_require__(74);
 
 function makeUrlAbsolute(base, relative) {
   const relativeParsed = urlparse.parse(relative);
@@ -16799,7 +16788,7 @@ module.exports = {
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/punycode v1.4.1 by @mathias */
@@ -17335,10 +17324,10 @@ module.exports = {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(22)(module), __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(23)(module), __webpack_require__(4)))
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17429,7 +17418,7 @@ var isArray = Array.isArray || function (xs) {
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17521,18 +17510,18 @@ var objectKeys = Object.keys || function (obj) {
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.decode = exports.parse = __webpack_require__(88);
-exports.encode = exports.stringify = __webpack_require__(89);
+exports.decode = exports.parse = __webpack_require__(89);
+exports.encode = exports.stringify = __webpack_require__(90);
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17600,7 +17589,7 @@ exports.parse = querystring;
 
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17629,12 +17618,12 @@ thunk.withExtraArgument = createThunkMiddleware;
 exports['default'] = thunk;
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var getValue = __webpack_require__(85).get
+var getValue = __webpack_require__(86).get
 
 function defaultCompare (a, b) {
   return a === b
@@ -17659,11 +17648,11 @@ module.exports = watch
 
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__compose__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__compose__ = __webpack_require__(20);
 /* harmony export (immutable) */ __webpack_exports__["a"] = applyMiddleware;
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -17715,7 +17704,7 @@ function applyMiddleware() {
 }
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17769,13 +17758,13 @@ function bindActionCreators(actionCreators, dispatch) {
 }
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_es_isPlainObject__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_warning__ = __webpack_require__(21);
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_es_isPlainObject__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_warning__ = __webpack_require__(22);
 /* harmony export (immutable) */ __webpack_exports__["a"] = combineReducers;
 
 
@@ -17906,20 +17895,20 @@ function combineReducers(reducers) {
     return hasChanged ? nextState : state;
   };
 }
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(18)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(19)))
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(96);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(95);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(94);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__compose__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warning__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(97);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(96);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(95);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__compose__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warning__ = __webpack_require__(22);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return __WEBPACK_IMPORTED_MODULE_0__createStore__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "combineReducers", function() { return __WEBPACK_IMPORTED_MODULE_1__combineReducers__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "bindActionCreators", function() { return __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__["a"]; });
@@ -17943,10 +17932,10 @@ if (process.env.NODE_ENV !== 'production' && typeof isCrushed.name === 'string' 
 }
 
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(18)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(19)))
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17991,14 +17980,14 @@ module.exports = function required(port, protocol) {
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(100);
+module.exports = __webpack_require__(101);
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18008,7 +17997,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _ponyfill = __webpack_require__(101);
+var _ponyfill = __webpack_require__(102);
 
 var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -18031,10 +18020,10 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(22)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(23)(module)))
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18063,7 +18052,7 @@ function symbolObservablePonyfill(root) {
 };
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18072,10 +18061,10 @@ function symbolObservablePonyfill(root) {
 // What is the size of the images, in pixels?
 const IMAGE_SIZE = 128;
 
-const hexToRgb = __webpack_require__(75);
+const hexToRgb = __webpack_require__(76);
 const urlParse = __webpack_require__(9);
 
-const sites = __webpack_require__(103).map(site => {
+const sites = __webpack_require__(104).map(site => {
   return Object.assign({}, site, {background_color_rgb: hexToRgb(site.background_color)});
 });
 
@@ -18123,7 +18112,7 @@ module.exports.IMAGE_SIZE = IMAGE_SIZE;
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports) {
 
 module.exports = [
@@ -19507,7 +19496,7 @@ module.exports = [
 ];
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19565,10 +19554,10 @@ module.exports = function lolcation(loc) {
   return finaldestination;
 };
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19595,8 +19584,8 @@ module.exports = function lolcation(loc) {
 
 
 
-var punycode = __webpack_require__(87);
-var util = __webpack_require__(106);
+var punycode = __webpack_require__(88);
+var util = __webpack_require__(107);
 
 exports.parse = urlParse;
 exports.resolve = urlResolve;
@@ -19671,7 +19660,7 @@ var protocolPattern = /^([a-z0-9.+-]+:)/i,
       'gopher:': true,
       'file:': true
     },
-    querystring = __webpack_require__(90);
+    querystring = __webpack_require__(91);
 
 function urlParse(url, parseQueryString, slashesDenoteHost) {
   if (url && util.isObject(url) && url instanceof Url) return url;
@@ -20307,7 +20296,7 @@ Url.prototype.parseHost = function() {
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20330,46 +20319,40 @@ module.exports = {
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports) {
 
 module.exports = require("@loader/options");
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports) {
 
 module.exports = require("sdk/base64");
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports) {
 
 module.exports = require("sdk/l10n/locale");
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports) {
 
 module.exports = require("sdk/page-mod");
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports) {
 
 module.exports = require("sdk/page-worker");
 
 /***/ }),
-/* 112 */
-/***/ (function(module, exports) {
-
-module.exports = require("sdk/private-browsing");
-
-/***/ }),
 /* 113 */
 /***/ (function(module, exports) {
 
-module.exports = require("sdk/timers");
+module.exports = require("sdk/private-browsing");
 
 /***/ }),
 /* 114 */
@@ -20382,18 +20365,18 @@ module.exports = require("sdk/windows");
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* globals Task, ClientID */
 
 
 const {PlacesProvider} = __webpack_require__(6);
-const {MetadataStore, METASTORE_NAME} = __webpack_require__(28);
-const {TelemetrySender} = __webpack_require__(30);
-const {TabTracker} = __webpack_require__(29);
-const {ActivityStreams} = __webpack_require__(27);
+const {MetadataStore, METASTORE_NAME} = __webpack_require__(29);
+const {TelemetrySender} = __webpack_require__(31);
+const {TabTracker} = __webpack_require__(30);
+const {ActivityStreams} = __webpack_require__(28);
+const {setTimeout, clearTimeout} = __webpack_require__(13);
 const {Cu} = __webpack_require__(0);
 
-Cu.import("resource://gre/modules/ClientID.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
+const {ClientID} = Cu.import("resource://gre/modules/ClientID.jsm");
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 const {OS} = Cu.import("resource://gre/modules/osfile.jsm", {});
 
 // The constant to set the limit of MetadataStore reconnection

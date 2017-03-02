@@ -1,4 +1,3 @@
-/* globals Task, ClientID */
 "use strict";
 
 const {PlacesProvider} = require("addon/PlacesProvider");
@@ -6,10 +5,11 @@ const {MetadataStore, METASTORE_NAME} = require("addon/MetadataStore");
 const {TelemetrySender} = require("addon/TelemetrySender");
 const {TabTracker} = require("addon/TabTracker");
 const {ActivityStreams} = require("addon/ActivityStreams");
+const {setTimeout, clearTimeout} = require("sdk/timers");
 const {Cu} = require("chrome");
 
-Cu.import("resource://gre/modules/ClientID.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
+const {ClientID} = Cu.import("resource://gre/modules/ClientID.jsm");
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 const {OS} = Cu.import("resource://gre/modules/osfile.jsm", {});
 
 // The constant to set the limit of MetadataStore reconnection

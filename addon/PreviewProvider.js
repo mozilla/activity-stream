@@ -1,4 +1,3 @@
-/* globals Task, Services, require, exports */
 "use strict";
 
 const {Cu} = require("chrome");
@@ -27,8 +26,8 @@ const URL_FILTERS = [
 
 Cu.importGlobalProperties(["fetch"]);
 Cu.importGlobalProperties(["URL"]);
-Cu.import("resource://gre/modules/Task.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 const DEFAULT_OPTIONS = {
   metadataTTL: 3 * 24 * 60 * 60 * 1000, // 3 days for the metadata to live

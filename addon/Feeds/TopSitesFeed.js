@@ -8,7 +8,7 @@ const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const getScreenshots = require("addon/lib/getScreenshots");
 const {isRootDomain} = require("addon/lib/utils");
 
-Cu.import("resource://gre/modules/Task.jsm");
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 module.exports = class TopSitesFeed extends Feed {
   // Used by this.refresh

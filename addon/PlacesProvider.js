@@ -1,30 +1,27 @@
-/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs */
-
 "use strict";
 
 const {Ci, Cu} = require("chrome");
 const base64 = require("sdk/base64");
 const simplePrefs = require("sdk/simple-prefs");
+const jsmodules = {};
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://services-sync/SyncedTabs.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {SyncedTabs} = Cu.import("resource://services-sync/SyncedTabs.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 XPCOMUtils.defineLazyGetter(global, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
 
-XPCOMUtils.defineLazyModuleGetter(global, "Task",
-                                  "resource://gre/modules/Task.jsm");
-
-XPCOMUtils.defineLazyModuleGetter(global, "PlacesUtils",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "PlacesUtils",
                                   "resource://gre/modules/PlacesUtils.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(global, "Bookmarks",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "Bookmarks",
                                   "resource://gre/modules/Bookmarks.jsm");
 
-XPCOMUtils.defineLazyGetter(global, "gPrincipal", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "Principal", () => {
   let uri = Services.io.newURI("about:newtab", null, null);
   return Services.scriptSecurityManager.getNoAppCodebasePrincipal(uri);
 });
@@ -147,7 +144,7 @@ let LinkChecker = {
       return false;
     }
     try {
-      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(gPrincipal, aURI, this.flags);
+      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(jsmodules.Principal, aURI, this.flags);
       return true;
     } catch (e) {
       // We got a weird URI or one that would inherit the caller's principal.
@@ -220,7 +217,7 @@ Links.prototype = {
    */
   bookmarksObserver: {
     onItemAdded(id, folderId, index, type) {
-      if (type === Bookmarks.TYPE_BOOKMARK) {
+      if (type === jsmodules.Bookmarks.TYPE_BOOKMARK) {
         gLinks.getBookmark({id}).then(bookmark => {
           gLinks.emit("bookmarkAdded", bookmark);
         }).catch(err => Cu.reportError(err));
@@ -228,13 +225,13 @@ Links.prototype = {
     },
 
     onItemRemoved(id, folderId, index, type, uri) {
-      if (type === Bookmarks.TYPE_BOOKMARK) {
+      if (type === jsmodules.Bookmarks.TYPE_BOOKMARK) {
         gLinks.emit("bookmarkRemoved", {bookmarkId: id, url: uri.spec});
       }
     },
 
     onItemChanged(id, property, isAnnotation, value, lastModified, type) {
-      if (type === Bookmarks.TYPE_BOOKMARK) {
+      if (type === jsmodules.Bookmarks.TYPE_BOOKMARK) {
         gLinks.getBookmark({id}).then(bookmark => {
           gLinks.emit("bookmarkChanged", bookmark);
         }).catch(err => Cu.reportError(err));
@@ -252,16 +249,16 @@ Links.prototype = {
    * Makes it easy to disable under pref
    */
   init: function PlacesProvider_init() {
-    PlacesUtils.history.addObserver(this.historyObserver, true);
-    PlacesUtils.bookmarks.addObserver(this.bookmarksObserver, true);
+    jsmodules.PlacesUtils.history.addObserver(this.historyObserver, true);
+    jsmodules.PlacesUtils.bookmarks.addObserver(this.bookmarksObserver, true);
   },
 
   /**
    * Must be called before the provider is unloaded.
    */
   uninit: function PlacesProvider_uninit() {
-    PlacesUtils.history.removeObserver(this.historyObserver);
-    PlacesUtils.bookmarks.removeObserver(this.bookmarksObserver);
+    jsmodules.PlacesUtils.history.removeObserver(this.historyObserver);
+    jsmodules.PlacesUtils.bookmarks.removeObserver(this.bookmarksObserver);
   },
 
   /**
@@ -271,7 +268,7 @@ Links.prototype = {
    * @returns {Promise} Returns a promise set to an object representing the removed bookmark
    */
   asyncDeleteBookmark: function PlacesProvider_asyncDeleteBookmark(bookmarkGuid) {
-    return Bookmarks.remove(bookmarkGuid);
+    return jsmodules.Bookmarks.remove(bookmarkGuid);
   },
 
   /**
@@ -281,7 +278,7 @@ Links.prototype = {
    * @returns {Promise} Returns a promise set to an object representing the bookmark
    */
   asyncAddBookmark: function PlacesProvider_asyncAddBookmark(url) {
-    return Bookmarks.insert({url, type: Bookmarks.TYPE_BOOKMARK, parentGuid: Bookmarks.unfiledGuid});
+    return jsmodules.Bookmarks.insert({url, type: jsmodules.Bookmarks.TYPE_BOOKMARK, parentGuid: jsmodules.Bookmarks.unfiledGuid});
   },
 
   /**
@@ -291,7 +288,7 @@ Links.prototype = {
    * @returns {Promise} Returns a promise set to true if link was removed
    */
   deleteHistoryLink: function PlacesProvider_deleteHistoryLink(url) {
-    return PlacesUtils.history.remove(url);
+    return jsmodules.PlacesUtils.history.remove(url);
   },
 
   /**
@@ -455,7 +452,7 @@ Links.prototype = {
         "type",
         "url"
       ],
-      params: {id, type: Bookmarks.TYPE_BOOKMARK}
+      params: {id, type: jsmodules.Bookmarks.TYPE_BOOKMARK}
     });
 
     links = this._processLinks(links);
@@ -716,7 +713,7 @@ Links.prototype = {
                     AND b.fk = p.id
                     AND p.url NOT IN (${blockedURLs})`;
 
-    let result = yield this.executePlacesQuery(sqlQuery, {params: {type: Bookmarks.TYPE_BOOKMARK}});
+    let result = yield this.executePlacesQuery(sqlQuery, {params: {type: jsmodules.Bookmarks.TYPE_BOOKMARK}});
     return result[0][0];
   }),
 
@@ -759,7 +756,7 @@ Links.prototype = {
     let items = [];
     let queryError = null;
     return Task.spawn(function*() {
-      let conn = yield PlacesUtils.promiseDBConnection();
+      let conn = yield jsmodules.PlacesUtils.promiseDBConnection();
       yield conn.executeCached(aSql, params, aRow => {
         try {
           // check if caller wants to handle query raws
