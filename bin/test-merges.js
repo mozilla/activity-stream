@@ -21,7 +21,7 @@ github.authenticate({type: "token", token});
 const AS_REPO_OWNER = process.env.AS_REPO_OWNER || "mozilla";
 const AS_REPO_NAME = process.env.AS_REPO_NAME || "activity-stream";
 const AS_REPO = `${AS_REPO_OWNER}/${AS_REPO_NAME}`;
-const OLDEST_PR_DATE = "2017-02-13";
+const OLDEST_PR_DATE = "2017-03-02";
 const HG = "hg"; // mercurial
 const HG_BRANCH_NAME = "pine";
 const ALREADY_PUSHED_LABEL = "pushed-to-pine";
@@ -125,13 +125,16 @@ function checkoutGitCommit(commitId) {
     git.fetch({}, (err, data) => {
       if (err) {
         reject(err);
+        return;
       }
       console.log(`Starting github checkout of ${commitId}...`);
       git.checkout(commitId, (err, data) => {
         if (err) {
           reject(err);
+          return;
         }
         resolve(commitId);
+        return;
       });
     });
   });
@@ -144,11 +147,13 @@ function exportToLocalMC(commitId) {
     // use echo.
     shelljs.exec(`echo yes | SYMLINK_TESTS=false bash -x ${PREPARE_MOCHITESTS_DEV}`,
       {async: true, cwd: TESTING_GIT_AS, silent: false}, (code, stdout, stderr) => {
-        if (!code) {
-          resolve(commitId);
+        if (code) {
+          reject(new Error(`${PREPARE_MOCHITESTS_DEV} failed, exit code: ${code}`));
+          return;
         }
 
-        reject(new Error(`${PREPARE_MOCHITESTS_DEV} failed, exit code: ${code}`));
+        resolve(commitId);
+        return;
       });
   });
 }
@@ -159,11 +164,13 @@ function commitToHg(commitId) {
     shelljs.exec(`${HG} commit --addremove -m 'Export of ${commitId} from ${AS_REPO_OWNER}/${AS_REPO_NAME}' .`,
       {async: true, cwd: TESTING_LOCAL_MC},
       (code, stdout, stderr) => {
-        if (!code) {
-          resolve(code);
+        if (code) {
+          reject(new Error(`${HG} commit failed, output: ${stderr}`));
+          return;
         }
 
-        reject(new Error(`${HG} commit failed, output: ${stderr}`));
+        resolve(code);
+        return;
       }
     );
   });
@@ -179,13 +186,15 @@ function pushToHgProjectBranch() {
   return new Promise((resolve, reject) => {
     shelljs.exec(`${HG} push -f ${HG_BRANCH_NAME}`, {async: true, cwd: TESTING_LOCAL_MC},
       (code, stdout, stderr) => {
-        if (!code) {
-          // Grab the last linked revision from the push output
-          const rev = stdout.split(/(?:\/rev\/|changeset=)/).slice(-1)[0].split("\n")[0];
-          resolve(`[Treeherder: ${rev}](${TREEHERDER_PREFIX}${rev})`);
+        if (code) {
+          reject(new Error(`${HG} failed, exit code: ${code}`));
+          return;
         }
 
-        reject(new Error(`${HG} failed, exit code: ${code}`));
+        // Grab the last linked revision from the push output
+        const rev = stdout.split(/(?:\/rev\/|changeset=)/).slice(-1)[0].split("\n")[0];
+        resolve(`[Treeherder: ${rev}](${TREEHERDER_PREFIX}${rev})`);
+        return;
       }
     );
   });
@@ -200,11 +209,13 @@ function stripTipFromHg() {
     shelljs.exec(`${HG} strip --force --rev -1`,
       {async: true, cwd: TESTING_LOCAL_MC},
       (code, stdout, stderr) => {
-        if (!code) {
-          resolve(code);
+        if (code) {
+          reject(new Error(`${HG} strip failed, output: ${stderr}`));
+          return;
         }
 
-        reject(new Error(`${HG} strip failed, output: ${stderr}`));
+        resolve(code);
+        return;
       }
     );
   });
@@ -250,7 +261,10 @@ function pushPR(pr) {
     .then(commitId => commitToHg(commitId))
 
     // hg push
-    .then(() => pushToHgProjectBranch())
+    .then(() => pushToHgProjectBranch().catch(() => {
+      stripTipFromHg();
+      throw new Error("pushToHgProjectBranch failed; tip stripped from hg");
+    }))
 
     // annotate PR with URL to watch
     .then(annotation => annotateGithubPR(pr.number, annotation))
