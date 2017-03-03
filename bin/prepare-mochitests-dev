@@ -21,7 +21,7 @@ fi
 # who are using the default objdir-frontend
 rm -f ${FIREFOX_PATH}/objdir-frontend/dist/bin/browser/features/@activity-streams/*
 
-# Clean, package, and copy the activity stream files, default SYMLINK_TESTS to 
+# Clean, package, and copy the activity stream files, default SYMLINK_TESTS to
 # true but allowing the environment to override so that calling scripts like
 # test-merges.js can export real files in order to have hg add them correctly
 # during the export phase.

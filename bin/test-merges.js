@@ -27,7 +27,7 @@ const HG_BRANCH_NAME = "pine";
 const ALREADY_PUSHED_LABEL = "pushed-to-pine";
 const TREEHERDER_PREFIX = "https://treeherder.mozilla.org/#/jobs?repo=pine&revision=";
 
-// Path to the directory where the export/commit operations will be
+// Path to the working directory where the export/commit operations will be
 // done.  Highly advisted to be used only for this testing purpose so you don't
 // accidently clobber real work.
 //
@@ -142,7 +142,7 @@ function exportToLocalMC(commitId) {
     console.log("Preparing mochitest dev environment...");
     // Weirdly, /bin/yes causes npm-run-all bundle-static to explode, so we
     // use echo.
-    shelljs.exec(`echo yes | bash -x ${PREPARE_MOCHITESTS_DEV}`,
+    shelljs.exec(`echo yes | SYMLINK_TESTS=false bash -x ${PREPARE_MOCHITESTS_DEV}`,
       {async: true, cwd: TESTING_GIT_AS, silent: false}, (code, stdout, stderr) => {
         if (!code) {
           resolve(commitId);
