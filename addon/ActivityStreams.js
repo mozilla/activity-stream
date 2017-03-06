@@ -1,5 +1,3 @@
-/* globals NewTabURL, EventEmitter, XPCOMUtils, Services */
-
 "use strict";
 
 const {Cu} = require("chrome");
@@ -25,12 +23,13 @@ const {PageScraper} = require("addon/PageScraper");
 
 const FeedController = require("addon/lib/FeedController.js");
 const feeds = require("addon/Feeds/feeds.js");
+const jsmodules = {};
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource:///modules/NewTabURL.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {NewTabURL} = Cu.import("resource:///modules/NewTabURL.jsm", {});
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
-XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
@@ -60,7 +59,7 @@ const TOPIC_SYNC_COMPLETE = "services.sync.tabs.changed";
 
 function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {}) {
   this.options = Object.assign({}, DEFAULT_OPTIONS, options);
-  EventEmitter.decorate(this);
+  jsmodules.EventEmitter.decorate(this);
   this._pagemod = new PageModProvider({
     pageURL: this.options.pageURL,
     onAddWorker: this.options.onAddWorker,

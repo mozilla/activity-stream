@@ -1,7 +1,7 @@
 /* globals require, exports */
 "use strict";
 
-const {getMetadata} = require("common/vendor")("page-metadata-parser");
+const {getMetadata} = require("page-metadata-parser");
 const {Cc, Ci} = require("chrome");
 
 function MetadataParser() {

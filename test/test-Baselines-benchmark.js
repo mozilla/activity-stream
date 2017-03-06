@@ -7,7 +7,7 @@ const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/ClientID.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "Task",
+XPCOMUtils.defineLazyModuleGetter(global, "Task",
                                   "resource://gre/modules/Task.jsm");
 
 const {Benchmark, forceLog} = require("./lib/Benchmark.js");

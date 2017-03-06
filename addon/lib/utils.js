@@ -1,7 +1,7 @@
 /* globals module */
 "use strict";
 
-const urlParse = require("common/vendor")("url-parse");
+const urlParse = require("url-parse");
 
 /**
  * Convert a hex color string to the RGB form, e.g. #0A0102 => [10, 1, 2]

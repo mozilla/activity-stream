@@ -15,3 +15,4 @@ config.yml
 .amo_config.json
 common/vendor.js
 *.update.rdf
+addon/main.js

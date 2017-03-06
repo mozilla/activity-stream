@@ -7,7 +7,7 @@ const self = require("sdk/self");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "Task",
+XPCOMUtils.defineLazyModuleGetter(global, "Task",
                                   "resource://gre/modules/Task.jsm");
 
 // The default benchmark time is 1 second, i.e. 1e6 microseconds

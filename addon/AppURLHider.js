@@ -1,9 +1,7 @@
-/* globals Services */
 "use strict";
 
 const {Cu, Ci} = require("chrome");
-
-Cu.import("resource://gre/modules/Services.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 
 function AppURLHider(appURLs) {
   this._appURLs = appURLs;

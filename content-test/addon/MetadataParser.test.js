@@ -16,7 +16,6 @@ const TEST_HTML = `<html>
 
 describe("MetadataParser", () => {
   const {MetadataParser} = createMetadataParser({
-    "common/vendor.bundle": {url: {resolve(url) {return url;}}},
     "chrome": {
       Cc: {"@mozilla.org/xmlextras/domparser;1": {createInstance: () => new DOMParser()}},
       Ci: {nsIDOMParser: {}}

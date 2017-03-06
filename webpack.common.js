@@ -14,10 +14,7 @@ let plugins = [
     loadLocalOverride: env === "development" ? "config.yml" : null,
     reactEnv: true,
     log: false
-  }),
-  new webpack.DefinePlugin({ADDON: false}),
-  // Allows us to use requrie("common/vendor") as a way to import depdendencies in both addon/content code
-  new webpack.NormalModuleReplacementPlugin(/common\/vendor/, absolute("./common/vendor-src.js"))
+  })
 ];
 
 // Skip notifying for terminals that can't handle it

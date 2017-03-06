@@ -3,14 +3,24 @@ const absolute = relPath => require("path").join(__dirname, relPath);
 const webpack = require("webpack");
 
 module.exports = {
-  entry: {"vendor": absolute("common/vendor-src.js")},
+  entry: {"main": absolute("addon/main.src.js")},
   output: {
-    path: absolute("common"),
-    filename: "vendor.js",
-    libraryTarget: "commonjs2"
+    filename: "main.js",
+    libraryTarget: "commonjs2",
+    path: absolute("addon")
   },
   plugins: [
-    new webpack.DefinePlugin({ADDON: true}),
-    new webpack.BannerPlugin({banner: "let platform_require = require;\n", raw: true})
-  ]
+    new webpack.ExternalsPlugin("commonjs", [
+      "chrome",
+      /^sdk/,
+      /^@loader/
+    ])
+  ],
+  resolve: {
+    alias: {
+      "addon": absolute("./addon"),
+      "common": absolute("./common"),
+      "strings": absolute("./strings")
+    }
+  }
 };

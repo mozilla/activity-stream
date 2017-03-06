@@ -34,12 +34,5 @@ module.exports = {
   module: webpack_common.module,
   devtool: env === "production" ? false : "eval", // This is for Firefox
   plugins: webpack_common.plugins,
-  resolve: {
-    extensions: webpack_common.resolve.extensions,
-    alias: Object.assign({}, webpack_common.resolve.alias, {
-      // this is so we can use external dependencies in common files
-      // without importing the pre-built version
-      "common/vendor": absolute("./common/vendor-src")
-    })
-  }
+  resolve: webpack_common.resolve
 };

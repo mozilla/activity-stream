@@ -1,9 +1,7 @@
-/* globals Services, XPCOMUtils */
-
 const {Ci, Cu} = require("chrome");
 const simplePrefs = require("sdk/simple-prefs");
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 Cu.importGlobalProperties(["fetch"]);
 
 const ENDPOINT_PREF = "telemetry.ping.endpoint";

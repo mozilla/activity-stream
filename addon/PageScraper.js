@@ -1,13 +1,12 @@
-/* globals Services, Task */
 "use strict";
 
 const {MetadataParser} = require("addon/MetadataParser");
 const {Cu} = require("chrome");
 const options = require("@loader/options");
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
+
 Cu.importGlobalProperties(["URL"]);
 Cu.importGlobalProperties(["fetch"]);
 

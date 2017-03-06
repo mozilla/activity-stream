@@ -1,20 +1,20 @@
- /* globals XPCOMUtils, Task, OS, Sqlite, PlacesUtils, NetUtil, Services */
 "use strict";
 
 const {Cu} = require("chrome");
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Sqlite.jsm");
-Cu.import("resource://gre/modules/NetUtil.jsm");
-Cu.import("resource://gre/modules/Timer.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Sqlite} = Cu.import("resource://gre/modules/Sqlite.jsm", {});
+const {NetUtil} = Cu.import("resource://gre/modules/NetUtil.jsm", {});
+const {setInterval} = Cu.import("resource://gre/modules/Timer.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
 
 const {MIGRATIONS} = require("addon/MetadataStoreMigration.js");
 
-XPCOMUtils.defineLazyModuleGetter(this, "Task",
-                                  "resource://gre/modules/Task.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
+const jsmodules = {};
+
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "PlacesUtils",
                                   "resource://gre/modules/PlacesUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "OS",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "OS",
                                   "resource://gre/modules/osfile.jsm");
 
 const METASTORE_NAME = "metadata.sqlite";
@@ -91,7 +91,7 @@ const SQL_PARAMETER_LIMIT = 999;
 const UNIQUE_CONSTRAINT_FAILED_EXCEPTION = "UNIQUE constraint failed";
 
 function MetadataStore(path, migrations = null) {
-  this._path = path || OS.Path.join(OS.Constants.Path.profileDir, METASTORE_NAME);
+  this._path = path || jsmodules.OS.Path.join(jsmodules.OS.Constants.Path.profileDir, METASTORE_NAME);
   this._migrations = migrations || MIGRATIONS;
   this._conn = null;
   this._dataExpiryJob = null;
@@ -258,11 +258,11 @@ MetadataStore.prototype = {
 
         if (metaObject.favicon_url) {
           // attach favicon to places_url for Places
-          PlacesUtils.favicons.setAndFetchFaviconForPage(
+          jsmodules.PlacesUtils.favicons.setAndFetchFaviconForPage(
             NetUtil.newURI(metaObject.places_url),
             NetUtil.newURI(metaObject.favicon_url),
             false,
-            PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE,
+            jsmodules.PlacesUtils.favicons.FAVICON_LOAD_NON_PRIVATE,
             null,
             principal
           );
@@ -361,7 +361,7 @@ MetadataStore.prototype = {
   asyncTearDown: Task.async(function*() {
     try {
       yield this.asyncClose();
-      yield OS.File.remove(this._path, {ignoreAbsent: true});
+      yield jsmodules.OS.File.remove(this._path, {ignoreAbsent: true});
     } catch (e) {
       Cu.reportError(`MetadataStore failed to tear down the database: ${e.message}`);
     }

@@ -8,13 +8,13 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
+XPCOMUtils.defineLazyModuleGetter(global, "PlacesUtils",
   "resource://gre/modules/PlacesUtils.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
+XPCOMUtils.defineLazyModuleGetter(global, "NetUtil",
   "resource://gre/modules/NetUtil.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
+XPCOMUtils.defineLazyModuleGetter(global, "Bookmarks",
   "resource://gre/modules/Bookmarks.jsm");
 
 const PlacesTestUtils = Object.freeze({

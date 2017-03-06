@@ -1,4 +1,4 @@
-const {createSelector} = require("common/vendor")("reselect");
+const {createSelector} = require("reselect");
 const firstRunData = require("lib/first-run-data");
 const selectAndDedupe = require("./selectAndDedupe");
 const {assignImageAndBackgroundColor} = require("./colorSelectors");

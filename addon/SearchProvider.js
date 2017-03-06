@@ -1,6 +1,3 @@
-/* global XPCOMUtils, Task, Services, EventEmitter, FormHistory,
-SearchSuggestionController, PrivateBrowsingUtils, exports, require */
-
 "use strict";
 const {Ci, Cu} = require("chrome");
 const {PrefsTarget} = require("sdk/preferences/event-target");
@@ -10,25 +7,27 @@ const ENGINE_ICON_SIZE = 16;
 const MAX_LOCAL_SUGGESTIONS = 3;
 const MAX_SUGGESTIONS = 6;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
+const {Task} = Cu.import("resource://gre/modules/Task.jsm", {});
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
 Cu.importGlobalProperties(["URL", "Blob", "FileReader", "atob"]);
 
-XPCOMUtils.defineLazyModuleGetter(this, "FormHistory",
+const jsmodules = {};
+
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "FormHistory",
                                   "resource://gre/modules/FormHistory.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "PrivateBrowsingUtils",
                                   "resource://gre/modules/PrivateBrowsingUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "SearchSuggestionController",
+XPCOMUtils.defineLazyModuleGetter(jsmodules, "SearchSuggestionController",
                                   "resource://gre/modules/SearchSuggestionController.jsm");
 
-XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
+XPCOMUtils.defineLazyGetter(jsmodules, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
 
 function SearchProvider() {
-  EventEmitter.decorate(this);
+  jsmodules.EventEmitter.decorate(this);
   this._target = PrefsTarget();
   this._onPrefChange = this._onPrefChange.bind(this);
 }
@@ -159,10 +158,10 @@ SearchProvider.prototype = {
       throw new Error(`Unknown engine name: ${data.engineName}`);
     }
     let {controller} = this._getSuggestionData(browser);
-    let ok = SearchSuggestionController.engineOffersSuggestions(engine);
+    let ok = jsmodules.SearchSuggestionController.engineOffersSuggestions(engine);
     controller.maxLocalResults = ok ? MAX_LOCAL_SUGGESTIONS : MAX_SUGGESTIONS;
     controller.maxRemoteResults = ok ? MAX_SUGGESTIONS : 0;
-    let isPrivate = PrivateBrowsingUtils.isBrowserPrivate(browser);
+    let isPrivate = jsmodules.PrivateBrowsingUtils.isBrowserPrivate(browser);
 
     let suggestions;
     try {
@@ -224,7 +223,7 @@ SearchProvider.prototype = {
     let {controller} = this._getSuggestionData(browser);
     let isPrivate = false;
     try {
-      isPrivate = PrivateBrowsingUtils.isBrowserPrivate(browser);
+      isPrivate = jsmodules.PrivateBrowsingUtils.isBrowserPrivate(browser);
     } catch (e) {
       // The browser might have already been destroyed.
       return false;
@@ -242,7 +241,7 @@ SearchProvider.prototype = {
         handleCompletion: () => resolve(true),
         handleError: () => reject()
       };
-      FormHistory.update(ops, callbacks);
+      jsmodules.FormHistory.update(ops, callbacks);
     }).catch(err => Cu.reportError(err));
     return result;
   }),
@@ -257,7 +256,7 @@ SearchProvider.prototype = {
       // autocomplete widget, this means that we assume each xul:browser has at
       // most one such widget.
       data = {
-        controller: new SearchSuggestionController(),
+        controller: new jsmodules.SearchSuggestionController(),
         previousFormHistoryResult: undefined
       };
       this._suggestionMap.set(browser, data);

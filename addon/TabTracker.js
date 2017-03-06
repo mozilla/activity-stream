@@ -1,4 +1,3 @@
-/* globals Services, Locale, XPCOMUtils */
 "use strict";
 
 const tabs = require("sdk/tabs");
@@ -9,9 +8,9 @@ const simplePrefs = require("sdk/simple-prefs");
 const eventConstants = require("../common/event-constants");
 const {absPerf} = require("common/AbsPerf");
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Locale.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+const {Services} = Cu.import("resource://gre/modules/Services.jsm", {});
+const {Locale} = Cu.import("resource://gre/modules/Locale.jsm", {});
+const {XPCOMUtils} = Cu.import("resource://gre/modules/XPCOMUtils.jsm", {});
 
 const TELEMETRY_PREF = "telemetry";
 const COMPLETE_NOTIF = "tab-session-complete";

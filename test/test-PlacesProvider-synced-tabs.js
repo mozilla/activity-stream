@@ -10,7 +10,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://services-sync/main.js");
 
-XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
+XPCOMUtils.defineLazyModuleGetter(global, "NetUtil",
                                   "resource://gre/modules/NetUtil.jsm");
 
 // A mock "Tabs" engine which the SyncedTabs module will use instead of the real

@@ -1,7 +1,7 @@
 "use strict";
 
 const {BOOKMARK_AGE_DIVIDEND} = require("common/constants");
-const URL = require("common/vendor")("url-parse");
+const URL = require("url-parse");
 const getBestImage = require("../getBestImage");
 
 /**
