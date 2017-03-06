@@ -21,14 +21,17 @@ const TopSitesItem = React.createClass({
   getDefaultProps() {
     return {onClick() {}};
   },
+  _isTippyTop(favicon_url) {
+    // If it starts with favicons/images or resource:// then it's a tippy top icon.
+    return favicon_url && (favicon_url.startsWith("favicons/images") || favicon_url.startsWith("resource://"));
+  },
   _faviconSize(site, topSitesExperimentIsOn, screenshot) {
     let faviconSize = 32;
     if (topSitesExperimentIsOn && !screenshot) {
-      if (site.favicon_url && (site.favicon_url.startsWith("favicons/images") || site.favicon_url.startsWith("resource://"))) {
-        // If it starts with favicons/images or resource:// then it's a tippy top icon.
-        // We want the size set to 64 for those.
+      if (this._isTippyTop(site.favicon_url)) {
+        // We want the size set to 80 for tippy top icons.
         // FIXME: long term we want the metadata parser to pass along where the image came from.
-        faviconSize = 64;
+        faviconSize = 80;
       } else {
         // If we have a normal (non tippy top) favicon, we're going to stretch
         // or shrink it to be wall to wall.
@@ -62,7 +65,7 @@ const TopSitesItem = React.createClass({
           site={site} faviconSize={faviconSize}
           showTitle={!screenshot}
           showBackground={showBackground}
-          border={!topSitesExperimentIsOn || !!screenshot} />
+          border={!topSitesExperimentIsOn || !!screenshot || this._isTippyTop(site.favicon_url)} />
 
         {screenshot && <div ref="title" className="site-title">{label}</div>}
       </a>
