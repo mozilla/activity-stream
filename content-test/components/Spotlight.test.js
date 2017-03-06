@@ -1,7 +1,6 @@
 const ConnectedSpotlight = require("components/Spotlight/Spotlight");
 const {PlaceholderSpotlightItem, Spotlight, SpotlightItem} = ConnectedSpotlight;
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
-const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderHighlightContext, HighlightContext} = require("components/HighlightContext/HighlightContext");
@@ -13,6 +12,7 @@ const {SiteIcon} = require("components/SiteIcon/SiteIcon");
 const {mockData, mountWithProvider, faker, renderWithProvider} = require("test/test-utils");
 const fakeSpotlightItems = mockData.Highlights.rows;
 const fakeSiteWithImage = faker.createSite();
+const {prettyUrl} = require("lib/utils");
 
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 
@@ -83,7 +83,7 @@ describe("SpotlightItem", () => {
       assert.equal(instance.refs.title.textContent, fakeSite.title);
     });
     it("should render the label (e.g. foo.com)", () => {
-      assert.equal(instance.refs.label.textContent, selectSiteProperties(fakeSite).label);
+      assert.equal(instance.refs.label.textContent, prettyUrl(fakeSite));
     });
     it("should render the description", () => {
       assert.include(instance.refs.description.textContent, fakeSite.description);

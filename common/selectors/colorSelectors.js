@@ -1,6 +1,5 @@
 const {createSelector} = require("reselect");
 const getBestImage = require("common/getBestImage");
-const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
 const {prettyUrl, getBlackOrWhite, toRGBString, getRandomColor} = require("lib/utils");
 const {BACKGROUND_FADE} = require("common/constants");
 
@@ -15,8 +14,7 @@ const DEFAULT_FAVICON_BG_COLOR = [150, 150, 150];
  * @return {array}     An RGB colour as an array of numbers. E.g. [150, 150, 150]
  */
 function getFallbackColor(site) {
-  const {favicon, label} = selectSiteProperties(site);
-  return favicon ? DEFAULT_FAVICON_BG_COLOR : getRandomColor(label);
+  return site.favicon_url ? DEFAULT_FAVICON_BG_COLOR : getRandomColor(prettyUrl(site));
 }
 
 /**
@@ -55,11 +53,12 @@ function assignImageAndBackgroundColor(rows) {
 const selectSiteIcon = createSelector(
   site => site,
   site => {
-    const {favicon, parsedUrl, label} = selectSiteProperties(site);
+    const label = prettyUrl(site);
+    const favicon = site.favicon_url;
     const backgroundRGB = site.background_color || [...getFallbackColor(site), favicon ? BACKGROUND_FADE : 1];
     const backgroundColor = toRGBString(backgroundRGB);
     const fontColor = getBlackOrWhite(...backgroundRGB);
-    const firstLetter = prettyUrl(parsedUrl.hostname)[0];
+    const firstLetter = label[0];
 
     return {
       url: site.url,

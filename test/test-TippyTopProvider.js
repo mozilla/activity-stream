@@ -1,7 +1,9 @@
 "use strict";
 
+const {Cu} = require("chrome");
+Cu.importGlobalProperties(["URL"]);
+
 const {TippyTopProvider} = require("addon/TippyTopProvider");
-const urlParse = require("common/vendor")("url-parse");
 const {IMAGE_SIZE} = require("common/vendor")("tippy-top-sites");
 
 exports["test TippyTopProvider init"] = function(assert) {
@@ -43,7 +45,7 @@ exports["test TippyTopProvider processSite"] = function(assert) {
         }
       };
       function getDomain(url) {
-        let domain = urlParse(url, false).host;
+        let domain = new URL(url).host;
         if (domain && domain.startsWith("www.")) {
           domain = domain.slice(4);
         }

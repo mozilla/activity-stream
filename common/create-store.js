@@ -3,7 +3,6 @@ const {createStore, applyMiddleware, combineReducers} = vendor("redux");
 const thunk = vendor("redux-thunk").default;
 const reducers = require("common/reducers/reducers");
 const {Channel} = require("common/ReduxChannel");
-const parseUrlMiddleware = require("common/parse-url-middleware");
 const loggerMiddleware = require("common/redux-logger");
 const {LOCAL_STORAGE_KEY} = require("common/constants");
 const {areSelectorsReady} = require("common/selectors/selectorUtils.js");
@@ -110,10 +109,7 @@ module.exports = function createActivityStreamStore(options) {
     channel = new Channel({incoming, outgoing});
   }
 
-  const mw = [
-    thunk,
-    parseUrlMiddleware
-  ];
+  const mw = [thunk];
 
   if (channel) {
     mw.push(channel.middleware);

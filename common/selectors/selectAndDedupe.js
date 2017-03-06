@@ -1,4 +1,6 @@
-const dedupe = require("lib/dedupe");
+const dedupe = require("fancy-dedupe");
+
+dedupe.defaults.createKey = site => site.cache_key || site.hostname || site.url;
 
 /**
  * Dedupe items and appends defaults if result length is smaller than required.

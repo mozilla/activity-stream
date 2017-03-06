@@ -46,6 +46,13 @@ function PreviewProvider(tabTracker, metadataStore, store, options = {}) {
   this.init();
 }
 
+function createCacheKey(spec) {
+  let url = new URL(spec);
+  let key = url.host.replace(/www\.?/, "");
+  key = key + url.pathname + (url.search || "");
+  return key.toString();
+}
+
 PreviewProvider.prototype = {
 
   _onPrefChange(prefName) {
@@ -72,7 +79,7 @@ PreviewProvider.prototype = {
     */
   _sanitizeURL(url) {
     if (!url) {
-      return "";
+      return null;
     }
 
     let newURL = new URL(url);
@@ -104,17 +111,7 @@ PreviewProvider.prototype = {
     }
 
     newURL.hash = "";
-    return newURL.toString();
-  },
-
-  /**
-    * Create a key based on a URL in order to dedupe sites
-    */
-  _createCacheKey(spec) {
-    let url = new URL(spec);
-    let key = url.host.replace(/www\.?/, "");
-    key = key + url.pathname + (url.search || "");
-    return key.toString();
+    return newURL;
   },
 
   /**
@@ -138,9 +135,16 @@ PreviewProvider.prototype = {
     return links
       .filter(this._URLFilter(URL_FILTERS))
       .map(link => {
-        const sanitizedURL = this._sanitizeURL(link.url);
-        const cacheKey = this._createCacheKey(sanitizedURL);
-        return Object.assign({}, link, {sanitized_url: sanitizedURL, cache_key: cacheKey, places_url: link.url});
+        const sanitizedURLObject = this._sanitizeURL(link.url);
+        const sanitizedURL = sanitizedURLObject ? sanitizedURLObject.toString() : "";
+        const cacheKey = createCacheKey(sanitizedURL);
+        const hostname = sanitizedURLObject && sanitizedURLObject.hostname;
+        return Object.assign({}, link, {
+          sanitized_url: sanitizedURL,
+          cache_key: cacheKey,
+          hostname,
+          places_url: link.url
+        });
       });
   },
 
@@ -195,6 +199,7 @@ PreviewProvider.prototype = {
       enhancedLink.title = link.title;
       enhancedLink.type = link.type;
       enhancedLink.url = link.url;
+      enhancedLink.hostname = link.hostname;
       enhancedLink.eTLD = link.eTLD;
       enhancedLink.cache_key = link.cache_key;
       enhancedLink.lastVisitDate = link.lastVisitDate;
@@ -423,7 +428,7 @@ PreviewProvider.prototype = {
    * Check if a single link exists in the metadata DB
    */
   asyncLinkExist: Task.async(function*(url) {
-    let key = this._createCacheKey(url);
+    let key = createCacheKey(url);
     if (!key) {
       return false;
     }

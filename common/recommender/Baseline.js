@@ -1,8 +1,10 @@
 "use strict";
 
 const {BOOKMARK_AGE_DIVIDEND} = require("common/constants");
-const URL = require("common/vendor")("url-parse");
 const getBestImage = require("../getBestImage");
+
+const {Cu} = require("chrome");
+Cu.importGlobalProperties(["URL"]);
 
 /**
  * Score function for URLs.
@@ -33,7 +35,7 @@ class Baseline {
   }
 
   extractFeatures(entry) {
-    const urlObj = URL(entry.url);
+    const urlObj = new URL(entry.url);
     const host = urlObj.host;
     // For empty profiles.
     const occurrences = this.domainCounts.get(host) || 1;
@@ -46,7 +48,7 @@ class Baseline {
     const description = this.extractDescriptionLength(entry);
     const pathLength = urlObj.pathname.split("/").filter(e => e.length).length;
     const image = this.extractImage(entry.images);
-    const queryLength = urlObj.query.length;
+    const queryLength = urlObj.search.length;
 
     // For bookmarks, compute a positive age in milliseconds; otherwise default 0
     const bookmarkAge = entry.bookmarkDateCreated ? Math.max(1, Date.now() - entry.bookmarkDateCreated) : 0;

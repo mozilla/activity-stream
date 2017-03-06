@@ -6,7 +6,7 @@ const classNames = require("classnames");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
-const {selectSiteProperties} = require("common/selectors/siteMetadataSelectors");
+const {prettyUrl} = require("lib/utils");
 const {FormattedMessage} = require("react-intl");
 
 const DEFAULT_LENGTH = 6;
@@ -50,7 +50,7 @@ const TopSitesItem = React.createClass({
     // The top-corner class puts the site icon in the top corner, overlayed over the screenshot.
     const siteIconClasses = classNames("tile-img-container", {"top-corner": screenshot});
 
-    const {label} = selectSiteProperties(site);
+    const label = prettyUrl(site);
 
     return (<div className="tile-outer" key={site.guid || site.cache_key || index}>
       <a onClick={() => this.props.onClick(index)} className={classNames("tile", {active: isActive})} href={site.url} ref="topSiteLink">
@@ -153,8 +153,7 @@ TopSites.propTypes = {
     React.PropTypes.shape({
       url: React.PropTypes.string.isRequired,
       title: React.PropTypes.string,
-      provider_name: React.PropTypes.string,
-      parsedUrl: React.PropTypes.object
+      provider_name: React.PropTypes.string
     })
   ).isRequired,
 

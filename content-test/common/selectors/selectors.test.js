@@ -46,7 +46,7 @@ describe("selectors", () => {
 
     describe("TopSites", () => {
       it("should internally dedupe", () => {
-        setup({TopSites: [{url: "https://foo.com"}, {url: "http://www.foo.com"}]});
+        setup({TopSites: [{url: "https://foo.com", cache_key: "foo.com/"}, {url: "http://www.foo.com", cache_key: "foo.com/"}]});
         const urls = state.TopSites.rows.map(site => site.url);
         assert.equal(urls[0], "https://foo.com");
         assert.notInclude(urls, "http://www.foo.com");
@@ -83,7 +83,7 @@ describe("selectors", () => {
         assert.lengthOf(state.Highlights.rows, 2);
       });
       it("should internally dedupe", () => {
-        setup({Highlights: [{url: "https://foo.com"}, {url: "http://www.foo.com"}]});
+        setup({Highlights: [{url: "https://foo.com", cache_key: "foo.com/"}, {url: "http://www.foo.com", cache_key: "foo.com/"}]});
         assert.lengthOf(state.Highlights.rows, 1);
         assert.equal(state.Highlights.rows[0].url, "https://foo.com");
       });

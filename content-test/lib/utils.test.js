@@ -19,36 +19,29 @@ describe("getBlackOrWhite", () => {
 });
 
 describe("prettyUrl()", () => {
-  it("should return a blank string if url is falsey", () => {
-    assert.equal(utils.prettyUrl(), "");
-    assert.equal(utils.prettyUrl(null), "");
+  it("should return a blank string if url and hostname is falsey", () => {
+    assert.equal(utils.prettyUrl({url: ""}), "");
+    assert.equal(utils.prettyUrl({hostname: null}), "");
   });
 
-  it("should strip out leading http:// or https://", () => {
-    assert.equal(utils.prettyUrl("http://mozilla.org/"), "mozilla.org/");
-    assert.equal(utils.prettyUrl("https://mozilla.org/"), "mozilla.org/");
+  it("should remove the eTLD, if provided", () => {
+    assert.equal(utils.prettyUrl({hostname: "com.blah.com", eTLD: "com"}), "com.blah");
+  });
+
+  it("should use the hostname, if provided", () => {
+    assert.equal(utils.prettyUrl({hostname: "foo.com", url: "http://bar.com", eTLD: "com"}), "foo");
+  });
+
+  it("should get the hostname from .url if necessary", () => {
+    assert.equal(utils.prettyUrl({url: "http://bar.com", eTLD: "com"}), "bar");
+  });
+
+  it("should not strip out www if not first subdomain", () => {
+    assert.equal(utils.prettyUrl({hostname: "foo.www.com", eTLD: "com"}), "foo.www");
   });
 
   it("should convert to lowercase", () => {
-    assert.equal(utils.prettyUrl("FOO.COM"), "foo.com");
-  });
-
-  it("should strip out leading 'www.' subdomains", () => {
-    assert.equal(utils.prettyUrl("https://www.mozilla.org/"), "mozilla.org/");
-  });
-
-  it("should strip out leading 'www.' for protocol-less URLS as well", () => {
-    assert.equal(utils.prettyUrl("www.foo.com"), "foo.com");
-    assert.equal(utils.prettyUrl("WWW.foo.com"), "foo.com");
-  });
-
-  it("should ignore non http[s] protocols", () => {
-    let url = "gopher://github.com/mozilla/";
-    assert.equal(utils.prettyUrl(url), url);
-  });
-
-  it("should not www if not first subdomain", () => {
-    assert.equal(utils.prettyUrl("foo.www.com"), "foo.www.com");
+    assert.equal(utils.prettyUrl({url: "HTTP://FOO.COM", eTLD: "com"}), "foo");
   });
 });
 

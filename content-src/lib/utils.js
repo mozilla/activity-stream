@@ -33,10 +33,16 @@ module.exports = {
     return RANDOM_COLORS[Math.floor(Math.random() * RANDOM_COLORS.length)];
   },
 
-  prettyUrl(url) {
-    if (!url) {
+  prettyUrl(site) {
+    if (!site.hostname && !site.url) {
       return "";
     }
-    return url.replace(/^((https?:)?\/\/)?(www\.)?/i, "").toLowerCase();
+    const {eTLD} = site;
+    const hostname = (site.hostname || new URL(site.url).hostname).replace(/^www\./i, "");
+
+    // Remove the eTLD (e.g., com, net) and the preceding period from the hostname
+    const eTLDLength = (eTLD || "").length || (hostname.match(/\.com$/) && 3);
+    const eTLDExtra = eTLDLength > 0 ? -(eTLDLength + 1) : Infinity;
+    return hostname.slice(0, eTLDExtra).toLowerCase();
   }
 };
