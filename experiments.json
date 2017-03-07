@@ -148,5 +148,20 @@
       "threshold": 0.2,
       "description": "Fetch page content locally"
     }
+  },
+  "bookmarkScreenshots": {
+    "name": "Screenshots for Highlights",
+    "active": true,
+    "description": "Show a screenshot for highlights that otherwise don't have an image",
+    "control": {
+      "value": false,
+      "description": "Don't show screenshots"
+    },
+    "variant": {
+      "id": "exp-011-bookmark-screenshots",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Show screenshots"
+    }
   }
 }

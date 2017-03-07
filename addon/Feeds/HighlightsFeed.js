@@ -5,6 +5,7 @@ const {Recommender} = require("common/recommender/Recommender");
 const Feed = require("addon/lib/Feed");
 const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
+const getScreenshots = require("addon/lib/getScreenshots");
 
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 
@@ -44,7 +45,10 @@ module.exports = class HighlightsFeed extends Feed {
   initializeRecommender(reason) {
     return PlacesProvider.links.getAllHistoryItems().then(links => {
       let highlightsCoefficients = this.getCoefficientsFromPrefs();
-      this.baselineRecommender = new Recommender(links, {highlightsCoefficients});
+      this.baselineRecommender = new Recommender(links, {
+        experiments: this.store.getState().Experiments.values,
+        highlightsCoefficients
+      });
     }).then(() => this.refresh(reason));
   }
 
@@ -54,13 +58,27 @@ module.exports = class HighlightsFeed extends Feed {
    * @return Promise  A promise that resolves with the "HIGHLIGHTS_RESPONSE" action
    */
   getData() {
+    const experiments = this.store.getState().Experiments.values;
     if (!this.baselineRecommender) {
       return Promise.reject(new Error("Tried to get weighted highlights but there was no baselineRecommender"));
     }
-    return PlacesProvider.links.getRecentlyVisited()
+    let highlights = PlacesProvider.links.getRecentlyVisited()
       .then(links => this.options.getCachedMetadata(links, "HIGHLIGHTS_RESPONSE"))
-      .then(links => this.baselineRecommender.scoreEntries(links))
-      .then(links => am.actions.Response("HIGHLIGHTS_RESPONSE", links));
+      .then(links => this.baselineRecommender.scoreEntries(links));
+
+    if (experiments.bookmarkScreenshots) {
+      highlights = highlights.then(links => {
+        let lessLinks = links.slice(0, 18);
+        return getScreenshots(lessLinks, site => {
+          if (!site.images || site.images.length === 0) {
+            return true;
+          }
+          return false;
+        });
+      });
+    }
+
+    return highlights.then(links => am.actions.Response("HIGHLIGHTS_RESPONSE", links));
   }
 
   onAction(state, action) {
@@ -90,6 +108,14 @@ module.exports = class HighlightsFeed extends Feed {
           let highlightsCoefficients = this.getCoefficientsFromPrefs();
           this.baselineRecommender.updateOptions({highlightsCoefficients});
           this.refresh("coefficients were changed");
+        }
+        if (action.data.name === "experiments.bookmarkScreenshots" && this.baselineRecommender) {
+          let highlightsCoefficients = this.getCoefficientsFromPrefs();
+          this.baselineRecommender.updateOptions({
+            experiments: this.store.getState().Experiments.values,
+            highlightsCoefficients
+          });
+          this.refresh("bookmarkScreenshots experiment changed");
         }
         break;
       case am.type("SYNC_COMPLETE"):

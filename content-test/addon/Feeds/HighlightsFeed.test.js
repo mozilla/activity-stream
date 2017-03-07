@@ -25,18 +25,24 @@ const createStoreWithState = state => ({
   }
 });
 
+const getScreenshots = sinon.spy(() => Promise.resolve(["foo"]));
+
 describe("HighlightsFeed", () => {
   let HighlightsFeed;
   let instance;
+  let reduxState;
   beforeEach(() => {
     HighlightsFeed = require("inject!addon/Feeds/HighlightsFeed")({
       "addon/PlacesProvider": {PlacesProvider},
       "sdk/simple-prefs": simplePrefs,
-      "common/recommender/Recommender": {Recommender}
+      "common/recommender/Recommender": {Recommender},
+      "addon/lib/getScreenshots": getScreenshots
     });
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
     instance = new HighlightsFeed({getCachedMetadata});
     instance.refresh = sinon.spy();
+    reduxState = {Experiments: {values: {}}};
+    instance.store = {getState() {return reduxState;}};
     sinon.spy(instance.options, "getCachedMetadata");
   });
   it("should create a HighlightsFeed", () => {
@@ -73,7 +79,10 @@ describe("HighlightsFeed", () => {
       simplePrefs.prefs.weightedHighlightsCoefficients = "[0, 1, 2]";
       return instance.initializeRecommender().then(() => {
         assert.equal(instance.baselineRecommender.args[0], testLinks);
-        assert.deepEqual(instance.baselineRecommender.args[1], {highlightsCoefficients: [0, 1, 2]});
+        assert.deepEqual(instance.baselineRecommender.args[1], {
+          experiments: reduxState.Experiments.values,
+          highlightsCoefficients: [0, 1, 2]
+        });
       });
     });
     it("should call refresh with the reason", () => {
@@ -113,6 +122,40 @@ describe("HighlightsFeed", () => {
         .then(action => (
           assert.calledWithExactly(instance.baselineRecommender.scoreEntries, getCachedMetadata(testLinks))
         ));
+    });
+    it("should call getScreenshots when in the bookmarkScreenshots experiment", () => {
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
+      reduxState.Experiments.values.bookmarkScreenshots = true;
+      return instance.getData().then(result => {
+        assert.calledOnce(getScreenshots);
+        // Note: our fake getScreenshots function resolves with ["foo"]
+        assert.deepEqual(result.data, ["foo"]);
+      });
+    });
+    it("should add screenshots when no other images are available", () => {
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
+      reduxState.Experiments.values.bookmarkScreenshots = true;
+      return instance.getData().then(result => {
+        // The function that determines whether a screenshot should be captured
+        // is passed into getScreenshots() as the second argument.
+        const shouldGetScreenshot = getScreenshots.getCall(0).args[1];
+        assert.equal(
+          true,
+          shouldGetScreenshot({images: []})
+        );
+        assert.equal(
+          true,
+          shouldGetScreenshot({images: null})
+        );
+        assert.equal(
+          true,
+          shouldGetScreenshot({})
+        );
+        assert.equal(
+          false,
+          shouldGetScreenshot({images: ["foo"]})
+        );
+      });
     });
   });
   describe("#onAction", () => {
