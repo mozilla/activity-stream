@@ -260,9 +260,17 @@ ActivityStreams.prototype = {
   _handlePlacesChanges(eventName, data) {
     switch (eventName) {
       case "bookmarkAdded":
+        // Note: Firefox sometimes fires bookmarkAdded and bookmarkRemoved events
+        // that have no data associated with them
+        if (!data) {
+          return;
+        }
         this.broadcast(am.actions.Response("RECEIVE_BOOKMARK_ADDED", data));
         break;
       case "bookmarkRemoved":
+        if (!data) {
+          return;
+        }
         this.broadcast(am.actions.Response("RECEIVE_BOOKMARK_REMOVED", data));
         break;
       case "manyLinksChanged":
