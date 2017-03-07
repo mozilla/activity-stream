@@ -127,6 +127,12 @@
     font-size: $spotlight-font-size;
     margin: 0;
   }
+
+  &.screenshot {
+    .spotlight-image {
+      background-position: top;
+    }
+  }
 }
 
 // Overrides for Top Sites styling experiment.
