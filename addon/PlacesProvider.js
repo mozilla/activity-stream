@@ -3,12 +3,12 @@
 "use strict";
 
 const {Ci, Cu} = require("chrome");
-const base64 = require("sdk/base64");
 const simplePrefs = require("sdk/simple-prefs");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-sync/SyncedTabs.jsm");
+Cu.importGlobalProperties(["btoa"]);
 
 XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
@@ -623,7 +623,7 @@ Links.prototype = {
   _faviconBytesToDataURI(links) {
     return links.map(link => {
       if (link.favicon) {
-        let encodedData = base64.encode(String.fromCharCode.apply(null, link.favicon));
+        let encodedData = btoa(String.fromCharCode.apply(null, link.favicon));
         link.favicon = `data:${link.mimeType};base64,${encodedData}`;
       }
       delete link.mimeType;
