@@ -10,6 +10,8 @@ const {prettyUrl} = require("lib/utils");
 const {FormattedMessage} = require("react-intl");
 
 const DEFAULT_LENGTH = 6;
+const FULL_WIDTH = 96;
+const TIPPY_TOP_WIDTH = 80;
 
 const TopSitesItem = React.createClass({
   getInitialState() {
@@ -23,19 +25,18 @@ const TopSitesItem = React.createClass({
   },
   _isTippyTop(favicon_url) {
     // If it starts with favicons/images or resource:// then it's a tippy top icon.
+    // FIXME: long term we want the metadata parser to pass along where the image came from.
     return favicon_url && (favicon_url.startsWith("favicons/images") || favicon_url.startsWith("resource://"));
   },
   _faviconSize(site, topSitesExperimentIsOn, screenshot) {
     let faviconSize = 32;
     if (topSitesExperimentIsOn && !screenshot) {
       if (this._isTippyTop(site.favicon_url)) {
-        // We want the size set to 80 for tippy top icons.
-        // FIXME: long term we want the metadata parser to pass along where the image came from.
-        faviconSize = 80;
+        faviconSize = TIPPY_TOP_WIDTH;
       } else {
         // If we have a normal (non tippy top) favicon, we're going to stretch
         // or shrink it to be wall to wall.
-        faviconSize = 96;
+        faviconSize = FULL_WIDTH;
       }
     }
     return faviconSize;
@@ -48,10 +49,13 @@ const TopSitesItem = React.createClass({
     const topSitesExperimentIsOn = this.props.showNewStyle;
     const screenshot = topSitesExperimentIsOn && site.screenshot;
     const faviconSize = this._faviconSize(site, topSitesExperimentIsOn, screenshot);
-    const showBackground = faviconSize < 96;
+    const showBackground = faviconSize < FULL_WIDTH;
 
     // The top-corner class puts the site icon in the top corner, overlayed over the screenshot.
-    const siteIconClasses = classNames("tile-img-container", {"top-corner": screenshot});
+    const siteIconClasses = classNames("tile-img-container", {
+      "top-corner": screenshot,
+      "full-width": !screenshot && faviconSize === FULL_WIDTH
+    });
 
     const label = prettyUrl(site);
 

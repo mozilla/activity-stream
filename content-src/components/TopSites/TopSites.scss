@@ -68,6 +68,12 @@
           top: -6px;
           offset-inline-start: -6px;
         }
+
+        &.full-width {
+          img {
+            border-radius: $border-radius;
+          }
+        }
       }
     }
 
