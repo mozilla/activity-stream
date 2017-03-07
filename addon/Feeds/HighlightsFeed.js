@@ -1,3 +1,4 @@
+/* globals Task */
 const simplePrefs = require("sdk/simple-prefs");
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
@@ -5,6 +6,9 @@ const {Recommender} = require("common/recommender/Recommender");
 const Feed = require("addon/lib/Feed");
 const {TOP_SITES_DEFAULT_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
+const getScreenshot = require("addon/lib/getScreenshot");
+
+Cu.import("resource://gre/modules/Task.jsm");
 
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 
@@ -12,6 +16,8 @@ module.exports = class HighlightsFeed extends Feed {
   constructor(options) {
     super(options);
     this.baselineRecommender = null; // Added in initializeRecommender, if the experiment is turned on
+    this.getScreenshot = getScreenshot;
+    this.missingData = false;
   }
 
   /**
@@ -44,8 +50,25 @@ module.exports = class HighlightsFeed extends Feed {
   initializeRecommender(reason) {
     return PlacesProvider.links.getAllHistoryItems().then(links => {
       let highlightsCoefficients = this.getCoefficientsFromPrefs();
-      this.baselineRecommender = new Recommender(links, {highlightsCoefficients});
+      this.baselineRecommender = new Recommender(links, {
+        experiments: this.store.getState().Experiments.values,
+        highlightsCoefficients
+      });
     }).then(() => this.refresh(reason));
+  }
+
+  /**
+   * shouldGetScreenshot - Returns true if the link/site provided meets the following:
+   * - is a bookmark
+   * - has metadata
+   * - doesn't have any images
+   *
+   * @return bool
+   */
+  shouldGetScreenshot(link) {
+    return link.bookmarkGuid &&
+           link.hasMetadata &&
+           (!link.images || link.images.length === 0);
   }
 
   /**
@@ -54,15 +77,47 @@ module.exports = class HighlightsFeed extends Feed {
    * @return Promise  A promise that resolves with the "HIGHLIGHTS_RESPONSE" action
    */
   getData() {
-    if (!this.baselineRecommender) {
-      return Promise.reject(new Error("Tried to get weighted highlights but there was no baselineRecommender"));
-    }
-    return PlacesProvider.links.getRecentlyVisited()
-      .then(links => this.options.getCachedMetadata(links, "HIGHLIGHTS_RESPONSE"))
-      .then(links => this.baselineRecommender.scoreEntries(links))
-      .then(links => am.actions.Response("HIGHLIGHTS_RESPONSE", links));
-  }
+    return Task.spawn(function*() {
+      const experiments = this.store.getState().Experiments.values;
 
+      if (!this.baselineRecommender) {
+        return Promise.reject(new Error("Tried to get weighted highlights but there was no baselineRecommender"));
+      }
+
+      let links;
+      // Get links from places
+      links = yield PlacesProvider.links.getRecentlyVisited();
+
+      // Get metadata from PreviewProvider
+      links = yield this.options.getCachedMetadata(links, "HIGHLIGHTS_RESPONSE");
+
+      // Score the links
+      links = yield this.baselineRecommender.scoreEntries(links);
+
+      this.missingData = false;
+
+      if (experiments.bookmarkScreenshots) {
+        // Get screenshots if we are missing images
+        links = links.slice(0, 18);
+        for (let link of links) {
+          if (this.shouldGetScreenshot(link)) {
+            const screenshot = this.getScreenshot(link.url, this.store);
+            if (screenshot) {
+              link.screenshot = screenshot;
+              link.metadata_source = `${link.metadata_source}+Screenshot`;
+            } else {
+              this.missingData = true;
+            }
+          }
+          if (!link.hasMetadata) {
+            this.missingData = true;
+          }
+        }
+      }
+
+      return am.actions.Response("HIGHLIGHTS_RESPONSE", links);
+    }.bind(this));
+  }
   onAction(state, action) {
     switch (action.type) {
       case am.type("APP_INIT"):
@@ -73,23 +128,29 @@ module.exports = class HighlightsFeed extends Feed {
         // We always want new bookmarks
         this.refresh("a bookmark was added");
         break;
-      case am.type("METADATA_UPDATED"):
-        // If the user visits a site and we don't have enough weighted highlights yet, refresh the data.
-        if (state.Highlights.rows.length < (HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH)) {
-          this.refresh("there were not enough sites");
+      case am.type("SCREENSHOT_UPDATED"):
+        if (this.missingData) {
+          this.refresh("new screenshot is available and we're missing data");
         }
-        // If the user visits a site & the last time we refreshed the data was older than 15 minutes, refresh the data.
-        if (Date.now() - this.state.lastUpdated >= UPDATE_TIME) {
+        break;
+      case am.type("METADATA_UPDATED"):
+        if (this.missingData) {
+          this.refresh("new metadata is available and we're missing data");
+        } else if (state.Highlights.rows.length < (HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH)) {
+          // If the user visits a site and we don't have enough weighted highlights yet, refresh the data.
+          this.refresh("there were not enough sites");
+        } else if (Date.now() - this.state.lastUpdated >= UPDATE_TIME) {
+          // If the user visits a site & the last time we refreshed the data was older than 15 minutes, refresh the data.
           this.refresh("the sites were too old");
         }
         break;
       case am.type("PREF_CHANGED_RESPONSE"):
-        // If the weightedHighlightsCoefficients pref was changed and we have a recommender, update it with
-        // the new coefficients.
+        // If the weightedHighlightsCoefficients or experiments.bookmarkScreenshots pref was changed
+        // and we have a recommender, we reinitialize it.
         if (action.data.name === "weightedHighlightsCoefficients" && this.baselineRecommender) {
-          let highlightsCoefficients = this.getCoefficientsFromPrefs();
-          this.baselineRecommender.updateOptions({highlightsCoefficients});
-          this.refresh("coefficients were changed");
+          this.initializeRecommender("coefficients were changed");
+        } else if (action.data.name === "experiments.bookmarkScreenshots" && this.baselineRecommender) {
+          this.initializeRecommender("bookmarkScreenshots experiment changed");
         }
         break;
       case am.type("SYNC_COMPLETE"):
