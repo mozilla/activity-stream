@@ -30,8 +30,8 @@ const PreferencesPane = React.createClass({
         </div>
         {this.state.showPane &&
           <div className="prefs-pane">
-            <div className="prefs-background" />
-            <div className="prefs-modal" ref="modal">
+            <div className="modal-overlay" />
+            <div className="modal" ref="modal">
               <div className="prefs-modal-inner-wrapper">
                 <h1><FormattedMessage id="settings_pane_header" /></h1>
                 <p><FormattedMessage id="settings_pane_body" /></p>

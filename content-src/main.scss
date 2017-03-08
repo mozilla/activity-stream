@@ -72,6 +72,50 @@ a {
   }
 }
 
+.modal-overlay {
+  background: $bg-grey;
+  height: 100%;
+  left: 0;
+  opacity: 0.8;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 11001;
+}
+
+.modal {
+  background: $white;
+  border: solid 1px $faintest-black;
+  border-radius: $border-radius;
+  font-size: 14px;
+  z-index: 11002;
+
+  .actions {
+    border-top: solid 1px $faintest-black;
+    margin: 0;
+    padding: 15px 25px;
+    text-align: right;
+
+    &:dir(rtl) {
+      text-align: left;
+    }
+
+    button {
+      background: $blue-botton-bg;
+      border: solid 1px $blue-botton-border;
+      border-radius: 5px;
+      color: $white;
+      cursor: pointer;
+      padding: 10px 30px;
+
+      &:hover {
+        box-shadow: 0 0 0 5px $faintest-black;
+        transition: box-shadow 150ms;
+      }
+    }
+  }
+}
+
 @import './styles/icons';
 
 // Components
