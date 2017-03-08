@@ -46,8 +46,17 @@ scripts:
     # As a result, try to change parts of a file that are less likely to change
     # (eg the middle rather than the end), and keep your diff context low
     # (eg by using "diff -U3" for only 3 lines of context).
-    patch: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r rejected-export.diff; rm -f rejected-export.diff) < mozilla-central/moz.build.patch
-    patch2: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r rejected-export.diff; rm -f rejected-export.diff) < mozilla-central/prefs_general.diff
+    patch: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r rejected-export.diff; rm -f rejected-export.diff) < mozilla-central-patches/moz.build.patch
+    patch2: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r rejected-export.diff; rm -f rejected-export.diff) < mozilla-central-patches/prefs_general.diff
+
+# buildmc: Export the bootstraped add-on to mozilla central
+  buildmc:
+    pre: =>export:clean && => export:patch
+    # Copy over the entire mozilla-central directory
+    copy: cpx "system-addon/**/*" ../mozilla-central/browser/extensions/activity-stream
+
+# startmc: Start developing the bootstrapped add-on
+  startmc: =>prebuildmc && =>buildmc:copy -- -w
 
 # start: Start watching/compiling assets,
   start:
@@ -101,7 +110,7 @@ scripts:
     dist: =>bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
     mozilla-central:
       unpack: decompress dist/activity-streams-$npm_package_version.xpi -o dist/mozilla-central
-      copy: cpx "mozilla-central/**" dist/mozilla-central
+      copy: cpx "moz.build" dist/mozilla-central
       installRdf: node ./bin/convert-install-rdf.js dist/mozilla-central
 
   # This is for ci

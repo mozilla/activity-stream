@@ -23,4 +23,3 @@ FINAL_TARGET_PP_FILES.features['@activity-streams'] += [
 BROWSER_CHROME_MANIFESTS += [
   'test/functional/mochitest/browser.ini'
 ]
-
