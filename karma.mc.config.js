@@ -26,6 +26,9 @@ module.exports = function(config) {
     files: [PATHS.testEntryFile],
     preprocessors,
     webpack: {
+      devtool: "eval",
+      // This loader allows us to override required files in tests
+      resolveLoader: {alias: {inject: path.join(__dirname, "loaders/inject-loader")}},
       // This resolve config allows us to import with paths relative to the system-addon/ directory, e.g. "lib/ActivityStream.jsm"
       resolve: {
         modules: [
@@ -41,7 +44,12 @@ module.exports = function(config) {
             exclude: [/node_modules/],
             use: [{
               loader: "babel-loader",
-              options: {plugins: [["jsm-to-esmodules", {basePath: PATHS.resourcePathRegEx, replace: true}]]}
+              options: {
+                plugins: [
+                  // Converts .jsm files into common-js modules
+                  ["jsm-to-commonjs", {basePath: PATHS.resourcePathRegEx, replace: true}]
+                ]
+              }
             }]
           }
         ]

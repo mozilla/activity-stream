@@ -3,6 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+const {utils: Cu} = Components;
+const {Store} = Cu.import("resource://activity-stream/lib/Store.jsm", {});
+
+// Feeds
+const {NewTabInit} = Cu.import("resource://activity-stream/lib/NewTabInit.jsm", {});
+
 class ActivityStream {
 
   /**
@@ -16,11 +22,16 @@ class ActivityStream {
   constructor(options) {
     this.initialized = false;
     this.options = options;
+    this.store = new Store();
   }
   init() {
     this.initialized = true;
+    this.store.init([
+      new NewTabInit()
+    ]);
   }
   uninit() {
+    this.store.uninit();
     this.initialized = false;
   }
 }
