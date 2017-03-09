@@ -205,6 +205,7 @@
     "prebuildmc": "npm run export:clean && npm run  export:patch",
     "buildmc:copy": "cpx \"system-addon/**/*\" ../mozilla-central/browser/extensions/activity-stream",
     "startmc": "npm run prebuildmc && npm run buildmc:copy -- -w",
+    "importmc": "cpx \"../mozilla-central/browser/extensions/activity-stream/**/*\" system-addon/",
     "start": "npm-run-all --parallel start:*",
     "prestart": "npm run clean && npm run copyTestImages",
     "start:static": "npm run bundle:static -- -w",
