@@ -6,7 +6,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 /**
  * Tests that opening a new tab opens a page with the expected activity stream
- * URL.
+ * content.
  *
  * XXX /browser/components/newtab/tests/browser/browser_newtab_overrides in
  * mozilla-central is where this test was adapted from.  Once we get decide on
@@ -14,8 +14,8 @@ Cu.import("resource://gre/modules/Services.jsm");
  * want to (separately from this test), clone/adapt that entire file for our
  * new setup.
  */
-add_task(function*override_loads_in_browser() {
-  const asURL = "resource://activity-streams/data/content/activity-streams.html#/";
+add_task(function*checkActivityStreamLoads() {
+  const asURL = "resource://activity-stream/data/content/activity-stream.html";
 
   // simulate a newtab open as a user would
   BrowserOpenTab();
@@ -26,8 +26,8 @@ add_task(function*override_loads_in_browser() {
 
   // check what the content task thinks has been loaded.
   yield ContentTask.spawn(browser, {url: asURL}, args => {
-    Assert.equal(content.location.href, args.url.trim(), "Got right URL");
-    Assert.equal(content.document.location.href, args.url.trim(), "Got right URL");
+    Assert.ok(content.document.querySelector("body.activity-stream"),
+      'Got <body class="activity-stream" Element');
   });
 
   // avoid leakage

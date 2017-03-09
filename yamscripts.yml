@@ -46,13 +46,22 @@ scripts:
     # As a result, try to change parts of a file that are less likely to change
     # (eg the middle rather than the end), and keep your diff context low
     # (eg by using "diff -U3" for only 3 lines of context).
-    patch2: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r rejected-export.diff; rm -f rejected-export.diff) < mozilla-central-patches/prefs_general.diff
+    patch: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r rejected-export.diff; rm -f rejected-export.diff) < mozilla-central-patches/moz.build.patch
+
+  # run the activity-stream mochitests
+  mochitest: (cd ../mozilla-central && ./mach mochitest --setpref browser.newtabpage.activity-stream.enabled=true browser/extensions/activity-stream/test/functional/mochitest )
+
+  # Run the activity-stream mochitests with the browser toolbox debugger.
+  # Often handy in combination with adding a "debugger" statement in your
+  # mochitest somewhere.
+  mochitest-debug: (cd ../mozilla-central && ./mach mochitest --jsdebugger --setpref browser.newtabpage.activity-stream.enabled=true browser/extensions/activity-streamtest/functional/mochitest )
 
 # buildmc: Export the bootstraped add-on to mozilla central
   buildmc:
     pre: =>export:clean
     # Copy over the entire mozilla-central directory
     copy: cpx "system-addon/**/*" ../mozilla-central/browser/extensions/activity-stream
+
 
 # startmc: Start developing the bootstrapped add-on
   startmc: =>prebuildmc && =>buildmc:copy -- -w

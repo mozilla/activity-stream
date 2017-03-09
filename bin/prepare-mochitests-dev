@@ -17,15 +17,11 @@ if [ $? -ne 0 ]; then
   exit -1
 fi
 
-# blow away any old bits in order to workaround bug 1335976 for users
-# who are using the default objdir-frontend
-rm -f ${FIREFOX_PATH}/objdir-frontend/dist/bin/browser/features/@activity-streams/*
-
 # Clean, package, and copy the activity stream files, default SYMLINK_TESTS to
 # true but allowing the environment to override so that calling scripts like
 # test-merges.js can export real files in order to have hg add them correctly
 # during the export phase.
-SYMLINK_TESTS=${SYMLINK_TESTS-true} DISABLE_NOTIFY=true npm run export
+npm run buildmc
 
 # If someting goes sideways during export, don't keep going
 if [ $? -ne 0 ]; then

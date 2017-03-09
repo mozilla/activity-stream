@@ -2,7 +2,7 @@ We use [mochitests](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Mo
 
 Mochitests require a local checkout of the Firefox source code. This is because they are used to test a lot of Firefox, and you would usually run them inside Firefox. We are developing activity stream outside of Firefox, but still want to test it as part of Firefox, so we've borrowed the debugger.html infrastructure for using them.
 
-Mochitests live in `test/functional/mochitest`, and as of this writing, they are all the [`browser-chrome`](https://developer.mozilla.org/en-US/docs/Mozilla/Browser_chrome_tests) flavor of mochitests.
+Mochitests live in `system-addon/test/functional/mochitest`, and as of this writing, they are all the [`browser-chrome`](https://developer.mozilla.org/en-US/docs/Mozilla/Browser_chrome_tests) flavor of mochitests.  They currently only run against the bootstrapped version of the add-on in system-addon, not the test pilot version at the top level directory.
 
 ## Getting Started
 
@@ -13,7 +13,7 @@ Mochitests live in `test/functional/mochitest`, and as of this writing, they are
 
 If you haven't set up the mochitest environment yet, just run this:
 
-```
+```bash
 ./bin/prepare-mochitests-dev
 ```
 
@@ -24,20 +24,19 @@ On the first run, if you don't already have a mozilla-central repo as a sibling 
 If you do already have a mozilla-central repo, the script ask you if you're ok with losing any local changes in that repo, and, if so, it will merely update to  the latest bits and then export your current activity-stream repo to that
 mozilla-central.
 
-If you want to change an existing build to a (much faster) artifact build,
-
 Now, you can run the mochitests like this:
 
 ```
-cd ../mozilla-central
-./mach mochitest -f browser browser/extensions/activity-stream/test/functional/mochitest
+npm run buildmc
+npm run mochitest
 ```
 
-This works because we've symlinked the local mochitests into where the debugger lives in Firefox. Any changes to the tests in `src/test/mochitest` will be reflected and you can re-run the tests.
+The reason we use npm to run them is because, as of this writing, both the
+add-on and the tests are turned off in the export to mozilla-central, so special arguments are needed to turn them both on.
 
 Visit the [mochitest](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Mochitest) and [`browser chrome`](https://developer.mozilla.org/en-US/docs/Mozilla/Browser_chrome_tests) MDN pages to learn more about mochitests. A few tips:
 
-* Passing `--jsdebugger` will open a JavaScript debugger and allow you to debug the tests (sometimes can be fickle)
+* Doing ```npm run mochitest-debug``` will open a JavaScript debugger and allow you to debug the tests (sometimes can be fickle)
 
 ### For Windows Developers
 
@@ -55,10 +54,12 @@ In the shell, navigate to the activity-stream project folder, and follow the Get
 The mochitests are running against the compiled activity-stream bundle inside the Firefox checkout. This means that you need to update the bundle whenever you make code changes. `./bin/prepare-mochitests-dev` does this for you initially, but you can manually update it with:
 
 ```
-npm run export
+npm run buildmc
 ```
 
-That will build the debugger and copy over all the relevant files into `firefox`, including mochitests. If you want it to only symlink the mochitests directory, set the SYMLINK_TESTS environment variable to the value "true" (which is what `./bin/prepare-mochitests-dev` does).
+
+or have it automatically be updated whenever it changes if you leave ```npm run startmc``` running in a shell.
+
 
 ## Adding New Tests
 
