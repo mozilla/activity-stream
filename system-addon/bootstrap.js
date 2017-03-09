@@ -1,3 +1,6 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 /* globals Components, XPCOMUtils, Preferences, ActivityStream */
 "use strict";
 
@@ -51,7 +54,7 @@ function uninit(reason) {
 /**
  * onPrefChanged - handler for changes to ACTIVITY_STREAM_ENABLED_PREF
  *
- * @param  {bool} isEnabled Determines whether
+ * @param  {bool} isEnabled Determines whether Activity Stream is enabled
  */
 function onPrefChanged(isEnabled) {
   if (isEnabled) {
