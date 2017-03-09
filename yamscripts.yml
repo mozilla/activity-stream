@@ -58,6 +58,9 @@ scripts:
 # startmc: Start developing the bootstrapped add-on
   startmc: =>prebuildmc && =>buildmc:copy -- -w
 
+  # importmc: Import changes from mc to github repo
+  importmc: cpx "../mozilla-central/browser/extensions/activity-stream/**/*" system-addon/
+
 # start: Start watching/compiling assets,
   start:
     _parallel: true
