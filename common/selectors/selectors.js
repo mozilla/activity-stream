@@ -30,7 +30,7 @@ module.exports.selectNewTabSites = createSelector(
     const [topSitesRows, highlightsRows] = selectAndDedupe([
       {
         sites: TopSites.rows,
-        max: TOP_SITES_LENGTH,
+        max: Prefs.prefs.showMoreTopSites ? TOP_SITES_LENGTH * 2 : TOP_SITES_LENGTH,
         defaults: firstRunData.TopSites
       },
       {

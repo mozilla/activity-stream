@@ -56,7 +56,8 @@ module.exports = class TopSitesFeed extends Feed {
         break;
       case am.type("RECEIVE_PLACES_CHANGES"):
         // When a user visits a site, if we don't have enough top sites yet, refresh the data.
-        if (state.TopSites.rows.length < TOP_SITES_LENGTH) {
+        // We multiply times 2 because we need to be ready to show two rows.
+        if (state.TopSites.rows.length < TOP_SITES_LENGTH * 2) {
           this.refresh("there were not enough sites");
         }
         // When a user visits a site, if the last time we refreshed the data is greater than 15 minutes, refresh the data.

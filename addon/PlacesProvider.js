@@ -349,8 +349,9 @@ Links.prototype = {
   getTopFrecentSites: Task.async(function*(options = {}) {
     let {limit, ignoreBlocked} = options;
 
-    // Use double the number to allow for immediate display when blocking sites
-    const QUERY_LIMIT = TOP_SITES_LENGTH * 2;
+    // Use triple the number to account potential blocked sites and an extra
+    // row of top sites.
+    const QUERY_LIMIT = TOP_SITES_LENGTH * 3;
     if (!limit || limit > QUERY_LIMIT) {
       limit = QUERY_LIMIT;
     }

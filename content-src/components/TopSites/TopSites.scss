@@ -3,7 +3,7 @@
     margin-inline-end: -20px;
 
     @media (min-width: $break-point) {
-      display: flex;
+      width: ($tile-width + $tile-gutter) * 6;
     }
   }
 
@@ -16,10 +16,6 @@
     display: inline-block;
     margin: 0 0 $tile-gutter;
     margin-inline-end: $tile-gutter;
-    @media (min-width: $break-point) {
-      display: flex;
-      margin-bottom: 0;
-    }
 
     &:hover {
       .site-icon-title {
