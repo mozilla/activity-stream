@@ -5,13 +5,24 @@ const Feed = require("addon/lib/Feed");
 const {TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
-const getScreenshots = require("addon/lib/getScreenshots");
+const MIN_ICON_SIZE = 64;
+const getScreenshot = require("addon/lib/getScreenshot");
 const {isRootDomain} = require("addon/lib/utils");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
 module.exports = class TopSitesFeed extends Feed {
-  // Used by this.refresh
+  constructor(...args) {
+    super(...args);
+    this.getScreenshot = getScreenshot;
+    this.missingData = false;
+  }
+  shouldGetScreenshot(link) {
+    const isMissingIcon = !link.favicon_width && !link.favicon_height;
+    const hasSmallIcon = !isMissingIcon && ((link.favicon_width < MIN_ICON_SIZE) || (link.favicon_height < MIN_ICON_SIZE));
+    const badIcon = link.hasMetadata && (isMissingIcon || hasSmallIcon);
+    return !isRootDomain(link.url) || badIcon;
+  }
   getData() {
     return Task.spawn(function*() {
       const experiments = this.store.getState().Experiments.values;
@@ -23,28 +34,25 @@ module.exports = class TopSitesFeed extends Feed {
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE");
 
+      this.missingData = false;
+
       // Get screenshots if the favicons are too small
       if (experiments.screenshots) {
-        try {
-          links = yield getScreenshots(links, site => {
-            if (site.favicon_height >= 96 && site.favicon_width >= 96 && isRootDomain(site.url)) {
-              // If we are at the "root domain path" and the icon is big enough,
-              // we don't show a screenshot.
-              return false;
-            }
-            return true;
-          });
-          links = links.map(link => {
-            if (link.screenshot) {
+        for (let link of links) {
+          if (this.shouldGetScreenshot(link)) {
+            const screenshot = this.getScreenshot(link.url, this.store);
+            if (screenshot) {
+              link.screenshot = screenshot;
               link.metadata_source = `${link.metadata_source}+Screenshot`;
+            } else {
+              this.missingData = true;
             }
-            return link;
-          });
-        } catch (e) {
-          Cu.reportError(e);
+          } else if (!link.hasMetadata) {
+            this.missingData = true;
+          }
         }
       }
-      // Create the action
+
       return am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links);
     }.bind(this));
   }
@@ -53,6 +61,16 @@ module.exports = class TopSitesFeed extends Feed {
       case am.type("APP_INIT"):
         // When the app first starts up, refresh the data.
         this.refresh("app was initializing");
+        break;
+      case am.type("SCREENSHOT_UPDATED"):
+        if (this.missingData) {
+          this.refresh("new screenshot is available and we're missing data");
+        }
+        break;
+      case am.type("METADATA_UPDATED"):
+        if (this.missingData) {
+          this.refresh("new metadata is available and we're missing data");
+        }
         break;
       case am.type("RECEIVE_PLACES_CHANGES"):
         // When a user visits a site, if we don't have enough top sites yet, refresh the data.
@@ -74,3 +92,4 @@ module.exports = class TopSitesFeed extends Feed {
 };
 
 module.exports.UPDATE_TIME = UPDATE_TIME;
+module.exports.MIN_ICON_SIZE = MIN_ICON_SIZE;

@@ -18,9 +18,16 @@ module.exports = class MetadataFeed extends Feed {
    * the state
    */
   getInitialMetadata(reason) {
-    return PlacesProvider.links.getRecentlyVisited().then(links => {
+    // Get initial topsites metadata
+    return PlacesProvider.links.getTopFrecentSites().then(links => {
       links.forEach(item => this.linksToFetch.set(item.url, Date.now()));
-    }).then(() => this.refresh(reason));
+      this.refresh(reason);
+    // Get initial highlights metadata
+    }).then(() => PlacesProvider.links.getRecentlyVisited())
+    .then(links => {
+      links.forEach(item => this.linksToFetch.set(item.url, Date.now()));
+      this.refresh(reason);
+    });
   }
 
   /**

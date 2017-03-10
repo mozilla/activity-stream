@@ -233,6 +233,7 @@ PreviewProvider.prototype = {
         metadataLinkFaviconColor = color;
         metadataLinkFaviconHeight = height;
         metadataLinkFaviconWidth = width;
+        enhancedLink.hasMetadata = true;
         enhancedLink.metadata_source = cachedMetadataLink.metadata_source;
         enhancedLink.title = cachedMetadataLink.title;
         enhancedLink.description = cachedMetadataLink.description;
