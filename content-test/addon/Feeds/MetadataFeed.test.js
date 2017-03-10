@@ -3,10 +3,16 @@
 
 const simplePrefs = require("sdk/simple-prefs");
 const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
+const testTopSites = [{url: "example1.com"}, {url: "example2.com"}];
 const fetchNewMetadata = () => (Promise.resolve());
 const fetchNewMetadataLocally = () => (Promise.resolve());
 
-const PlacesProvider = {links: {getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks))}};
+const PlacesProvider = {
+  links: {
+    getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks)),
+    getTopFrecentSites: sinon.spy(() => Promise.resolve(testTopSites))
+  }
+};
 
 describe("MetadataFeed", () => {
   let MetadataFeed;
@@ -27,6 +33,20 @@ describe("MetadataFeed", () => {
   });
   it("should create an empty map to start for links to fetch", () => {
     assert.equal(instance.linksToFetch.size, 0);
+  });
+  describe("#getInitialMetadata", () => {
+    beforeEach(() => {
+      instance.refresh = sinon.spy();
+    });
+
+    it("should get TopFrecentSites metadata then RecentlyVisited metadata", () =>
+      instance.getInitialMetadata().then(() => {
+        assert.called(PlacesProvider.links.getTopFrecentSites);
+        assert.called(PlacesProvider.links.getRecentlyVisited);
+        assert.calledTwice(instance.refresh);
+        assert.equal(instance.linksToFetch.size, 4);
+      })
+    );
   });
   describe("#getData", () => {
     it("should run sites through fetchNewMetadata", () => instance.getData().then(() => (
@@ -68,13 +88,6 @@ describe("MetadataFeed", () => {
       instance.getInitialMetadata = sinon.spy();
       instance.onAction({}, {type: "APP_INIT"});
       assert.calledWith(instance.getInitialMetadata, "app was initializing");
-    });
-    it("should add existing sites to linksToFetch on APP_INIT", () => {
-      let p = new Promise(resolve => {
-        instance.onAction({}, {type: "APP_INIT"});
-        resolve();
-      }).then(() => assert.equal(instance.linksToFetch.size, 2));
-      return p;
     });
     it("should not call refresh on RECEIVE_PLACES_CHANGES if we don't need metadata for sites", () => {
       testLinks.forEach(item => instance.linksToFetch.set(item.url, Date.now()));

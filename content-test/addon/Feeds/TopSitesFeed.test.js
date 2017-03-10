@@ -1,12 +1,11 @@
-const testLinks = ["foo.com", "bar.com"];
-const getCachedMetadata = sites => sites.map(site => site.toUpperCase());
+const testLinks = [{url: "http://foo.com/"}, {url: "http://bar.com/"}];
+const getCachedMetadata = links => links.map(
+  link => {link.hasMetadata = true; return link;}
+);
 const PlacesProvider = {links: {getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))}};
-const getScreenshots = sinon.spy(() => Promise.resolve(["foo"]));
+const testScreenshot = "screenshot.jpg";
 const moment = require("moment");
-const TopSitesFeed = require("inject!addon/Feeds/TopSitesFeed")({
-  "addon/PlacesProvider": {PlacesProvider},
-  "addon/lib/getScreenshots": getScreenshots
-});
+const TopSitesFeed = require("inject!addon/Feeds/TopSitesFeed")({"addon/PlacesProvider": {PlacesProvider}});
 
 const {TOP_SITES_LENGTH} = require("common/constants");
 
@@ -18,6 +17,7 @@ describe("TopSitesFeed", () => {
     reduxState = {Experiments: {values: {}}};
     instance = new TopSitesFeed({getCachedMetadata});
     instance.store = {getState() {return reduxState;}};
+    instance.getScreenshot = sinon.spy(() => testScreenshot);
     sinon.spy(instance.options, "getCachedMetadata");
   });
   it("should create a TopSitesFeed", () => {
@@ -26,6 +26,42 @@ describe("TopSitesFeed", () => {
   it("should have an UPDATE_TIME of 15 minutes", () => {
     const time = moment.duration(TopSitesFeed.UPDATE_TIME);
     assert.equal(time.minutes(), 15);
+  });
+
+  describe("#shouldGetScreenshot", () => {
+    let testSite;
+
+    beforeEach(() => {
+      testSite = {
+        hasMetadata: true,
+        url: "http://www.example.com/",
+        favicon_width: TopSitesFeed.MIN_ICON_SIZE,
+        favicon_height: TopSitesFeed.MIN_ICON_SIZE
+      };
+    });
+    it("should not get a screenshot for sites missing metadata", () => {
+      testSite.favicon_width = null;
+      testSite.favicon_height = null;
+      testSite.hasMetadata = false;
+      assert.equal(false, instance.shouldGetScreenshot(testSite));
+    });
+    it("should not get a screenshot for sites with metadata and large icons", () => {
+      assert.equal(false, instance.shouldGetScreenshot(testSite));
+    });
+    it("should get a screenshot for sites with metadata and small icons", () => {
+      testSite.favicon_width = TopSitesFeed.MIN_ICON_SIZE - 1;
+      testSite.favicon_height = TopSitesFeed.MIN_ICON_SIZE - 1;
+      assert.equal(true, instance.shouldGetScreenshot(testSite));
+    });
+    it("should get a screenshot for sites with metadata and large icons that are not root domains", () => {
+      testSite.url = "http://www.example.com/non/root/";
+      assert.equal(true, instance.shouldGetScreenshot(testSite));
+    });
+    it("should get a screenshot for sites with metadata and missing icon size", () => {
+      testSite.favicon_width = null;
+      testSite.favicon_height = null;
+      assert.equal(true, instance.shouldGetScreenshot(testSite));
+    });
   });
 
   describe("#getData", () => {
@@ -42,36 +78,55 @@ describe("TopSitesFeed", () => {
       assert.equal(action.type, "TOP_FRECENT_SITES_RESPONSE", "type");
       assert.deepEqual(action.data, getCachedMetadata(testLinks));
     }));
-    it("should add screenshots when in the experiment", () => {
-      reduxState.Experiments.values.screenshots = true;
+    it("should not add screenshots to sites that qualify for a screenshot if the experiment is disabled", () => {
+      reduxState.Experiments.values.screenshots = false;
+      instance.shouldGetScreenshot = site => true;
       return instance.getData().then(result => {
-        assert.calledOnce(getScreenshots);
-        // Note: our fake getScreenshots function resolves with ["foo"]
-        assert.deepEqual(result.data, ["foo"]);
+        assert.notCalled(instance.getScreenshot);
+        for (let link of result.data) {
+          assert.equal(link.screenshot, undefined);
+        }
       });
     });
-    it("shouldn't get screenshots for root domain urls with big favicons", () => {
+    it("should not add screenshots to sites that don't qualify for a screenshot if the experiment is enabled", () => {
       reduxState.Experiments.values.screenshots = true;
+      instance.shouldGetScreenshot = site => false;
       return instance.getData().then(result => {
-        // The function that determines whether a screenshot should be captured
-        // is passed into getScreenshots() as the second argument.
-        const shouldGetScreenshot = getScreenshots.getCall(0).args[1];
-        assert.equal(
-          false,
-          shouldGetScreenshot({favicon_width: 96, favicon_height: 96, url: "https://mozilla.org/"}
-        ));
-        assert.equal(
-          false,
-          shouldGetScreenshot({favicon_width: 96, favicon_height: 96, url: "https://mozilla.org"}
-        ));
-        assert.equal(
-          true,
-          shouldGetScreenshot({favicon_width: 96, favicon_height: 96, url: "https://mozilla.org/foo"}
-        ));
-        assert.equal(
-          true,
-          shouldGetScreenshot({favicon_width: 95, favicon_height: 95, url: "https://mozilla.org"}
-        ));
+        assert.notCalled(instance.getScreenshot);
+        for (let link of result.data) {
+          assert.equal(link.screenshot, undefined);
+        }
+      });
+    });
+    it("should add screenshots to sites that qualify for a screenshot if the experiment is enabled", () => {
+      reduxState.Experiments.values.screenshots = true;
+      instance.shouldGetScreenshot = site => true;
+      return instance.getData().then(result => {
+        assert.calledTwice(instance.getScreenshot);
+        for (let link of result.data) {
+          assert.equal(link.screenshot, testScreenshot);
+          assert.notEqual(link.metadata_source.indexOf("+Screenshot"), -1);
+        }
+      });
+    });
+    it("should set missingData to false if screenshot experiment is disabled", () =>
+      instance.getData().then(result => assert.equal(instance.missingData, false))
+    );
+    it("should set missingData to true if screenshot experiment is enabled and a topsite is missing a required screenshot", () => {
+      reduxState.Experiments.values.screenshots = true;
+      instance.shouldGetScreenshot = site => true;
+      instance.getScreenshot = sinon.spy(site => null);
+      return instance.getData().then(result => {
+        assert.equal(instance.missingData, true);
+      });
+    });
+    it("should set missingData to true if screenshot experiment is enabled and a topsite is missing metadata", () => {
+      reduxState.Experiments.values.screenshots = true;
+      instance.options.getCachedMetadata = links => links.map(
+        link => {link.hasMetadata = false; return link;}
+      );
+      return instance.getData().then(result => {
+        assert.equal(instance.missingData, true);
       });
     });
   });
@@ -80,6 +135,7 @@ describe("TopSitesFeed", () => {
     let clock;
     beforeEach(() => {
       instance.refresh = sinon.spy();
+      instance.missingData = false;
       clock = sinon.useFakeTimers();
     });
     afterEach(() => {
@@ -89,6 +145,12 @@ describe("TopSitesFeed", () => {
       instance.onAction({}, {type: "APP_INIT"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "app was initializing");
+    });
+    it("should call refresh on METADATA_UPDATED if it's missing data", () => {
+      instance.missingData = true;
+      instance.onAction({}, {type: "METADATA_UPDATED"});
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "new metadata is available and we're missing data");
     });
     it("should call refresh on RECEIVE_PLACES_CHANGES if there are not enough sites", () => {
       const state = {TopSites: {rows: Array(TOP_SITES_LENGTH - 1).fill("site")}};
