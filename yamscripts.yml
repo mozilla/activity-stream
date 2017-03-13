@@ -60,6 +60,10 @@ scripts:
   # importmc: Import changes from mc to github repo
   importmc: cpx "../mozilla-central/browser/extensions/activity-stream/**/*" system-addon/
 
+  testmc: karma start karma.mc.config.js
+
+  tddmc: =>testmc -- --no-single-run
+
 # start: Start watching/compiling assets,
   start:
     _parallel: true
@@ -96,6 +100,7 @@ scripts:
     jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./test-prefs.json -v -f "^(?!.*benchmark)"
     # test:karma: Run content tests only
     karma: NODE_ENV=test karma start
+    mc: =>testmc
     post: cat logs/reports/coverage/text-summary.txt
 
   benchmark-with: =>bundle && JSGC_DISABLE_POISONING=1 jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./benchmark-prefs.json
