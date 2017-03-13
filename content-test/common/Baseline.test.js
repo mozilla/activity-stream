@@ -110,8 +110,13 @@ describe("Baseline", () => {
 
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
-    baseline = new Baseline(fakeHistory,
-                            {highlightsCoefficients: [-0.1, -0.1, -0.1, 0.4, 0.2]});
+    baseline = new Baseline(
+      fakeHistory,
+      {
+        experiments: {bookmarkScreenshots: true},
+        highlightsCoefficients: [-0.1, -0.1, -0.1, 0.4, 0.2]
+      }
+    );
   });
 
   afterEach(() => {
