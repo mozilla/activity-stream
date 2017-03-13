@@ -151,7 +151,7 @@
   },
   "newTabPrefs": {
     "name": "Preferences Pane",
-    "active": true,
+    "active": false,
     "description": "Enable the New Tab Prefs feature",
     "control": {
       "value": false,
