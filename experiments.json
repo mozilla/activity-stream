@@ -148,5 +148,20 @@
       "threshold": 0.2,
       "description": "Fetch page content locally"
     }
+  },
+  "newTabPrefs": {
+    "name": "Preferences Pane",
+    "active": true,
+    "description": "Enable the New Tab Prefs feature",
+    "control": {
+      "value": false,
+      "description": "New Tab Prefs is disabled"
+    },
+    "variant": {
+      "id": "exp-011-newtab-prefs",
+      "value": true,
+      "threshold": 0.2,
+      "description": "New Tab Prefs is enabled"
+    }
   }
 }
