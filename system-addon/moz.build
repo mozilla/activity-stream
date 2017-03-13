@@ -17,5 +17,4 @@ FINAL_TARGET_PP_FILES.features['activity-stream@mozilla.org'] += [
 
 JAR_MANIFESTS += ['jar.mn']
 
-# Once we pref on the add-on, we'll want to uncomment this line:
-# BROWSER_CHROME_MANIFESTS += ['test/functional/mochitest/browser.ini']
+BROWSER_CHROME_MANIFESTS += ['test/functional/mochitest/browser.ini']

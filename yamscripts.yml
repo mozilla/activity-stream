@@ -41,27 +41,23 @@ scripts:
     copytests: if [ "$SYMLINK_TESTS" != "true" ]; then cpx "test/functional/mochitest/**" ../mozilla-central/browser/extensions/activity-stream/test/functional/mochitest; fi
     linktests: if [ "$SYMLINK_TESTS" = "true" ]; then ln -s ../../../../activity-stream/test ../mozilla-central/browser/extensions/activity-stream/test; fi
 
-    # XXX Note that patch rejections do not cause the export to abort, to
-    # avoid explosions when attempting to patch already-patched files.
-    # As a result, try to change parts of a file that are less likely to change
-    # (eg the middle rather than the end), and keep your diff context low
-    # (eg by using "diff -U3" for only 3 lines of context).
-    patch: (cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r rejected-export.diff; rm -f rejected-export.diff) < mozilla-central-patches/moz.build.patch
-
-  # run the activity-stream mochitests
-  mochitest: (cd ../mozilla-central && ./mach mochitest --setpref browser.newtabpage.activity-stream.enabled=true browser/extensions/activity-stream/test/functional/mochitest )
+  # Run the activity-stream mochitests.  Right now, a-s is turned off in
+  # m-c, so we have to locally force them on with the --set-pref.  In m-c,
+  # the tests are skipped, and the --extra-mozinfo-json is used to force them
+  # to run locally too.
+  mochitest: (cd ../mozilla-central && ./mach mochitest --setpref browser.newtabpage.activity-stream.enabled=true  --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )
 
   # Run the activity-stream mochitests with the browser toolbox debugger.
   # Often handy in combination with adding a "debugger" statement in your
-  # mochitest somewhere.
-  mochitest-debug: (cd ../mozilla-central && ./mach mochitest --jsdebugger --setpref browser.newtabpage.activity-stream.enabled=true browser/extensions/activity-streamtest/functional/mochitest )
+  # mochitest somewhere.  See the comment for the mochitest target for more
+  # details about how this is implemented.
+  mochitest-debug: (cd ../mozilla-central && ./mach mochitest --jsdebugger --setpref browser.newtabpage.activity-stream.enabled=true --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )
 
 # buildmc: Export the bootstraped add-on to mozilla central
   buildmc:
     pre: =>export:clean
     # Copy over the entire mozilla-central directory
     copy: cpx "system-addon/**/*" ../mozilla-central/browser/extensions/activity-stream
-
 
 # startmc: Start developing the bootstrapped add-on
   startmc: =>prebuildmc && =>buildmc:copy -- -w
