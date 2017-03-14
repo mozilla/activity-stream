@@ -63,34 +63,4 @@ exports["test awesomebar is empty for all app urls in new windows too"] = functi
   });
 };
 
-exports["test awesomebar remains empty on route changes"] = function*(assert) {
-  let path = "/dummy-activitystreams.html";
-  let url = `http://localhost:${PORT}${path}`;
-  let srv = httpd.startServerAsync(PORT, null, doGetFile("test/resources"));
-  let app = getTestActivityStream({pageURL: url});
-
-  yield new Promise(resolve => tabs.open({
-    url: app.appURLs[0],
-    onReady: tab => {
-      let browserWindow = windowMediator.getMostRecentWindow("navigator:browser");
-
-      // The url bar should be empty.
-      assert.equal(browserWindow.gURLBar.value, "");
-
-      // Move to a new app URL, Call route changed handler and verify the
-      // url bar is still empty.
-      tab.url = app.appURLs[1];
-      app._onRouteChange();
-      assert.equal(browserWindow.gURLBar.value, "");
-
-      tab.close(resolve);
-    }
-  }));
-
-  app.unload();
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
-
 test.run(exports);
