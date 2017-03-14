@@ -9,7 +9,7 @@ const PreferencesPane = require("components/PreferencesPane/PreferencesPane");
 const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
-const {HIGHLIGHTS_LENGTH, TOP_SITES_LENGTH} = require("common/constants");
+const {HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
 const classNames = require("classnames");
 const {injectIntl} = require("react-intl");
 
@@ -72,7 +72,7 @@ const NewTabPage = React.createClass({
             <section>
               <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
                 sites={props.TopSites.rows} showNewStyle={topSitesExperimentIsOn}
-                length={showMoreTopSites ? TOP_SITES_LENGTH * 2 : TOP_SITES_LENGTH} />
+                length={showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH} />
             </section>
           }
           {showHighlights &&

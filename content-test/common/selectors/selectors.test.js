@@ -3,7 +3,7 @@ const React = require("react");
 const TestUtils = require("react-addons-test-utils");
 const firstRunData = require("lib/first-run-data");
 const {justDispatch, selectNewTabSites} = require("common/selectors/selectors");
-const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants.js");
+const {TOP_SITES_DEFAULT_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants.js");
 const {rawMockData, createMockProvider} = require("test/test-utils");
 const fakeState = rawMockData;
 
@@ -51,16 +51,16 @@ describe("selectors", () => {
         assert.equal(urls[0], "https://foo.com");
         assert.notInclude(urls, "http://www.foo.com");
       });
-      it("should limit to TOP_SITES_LENGTH items", () => {
-        const rows = Array(TOP_SITES_LENGTH + 2).fill("https://foo.com").map((url, i) => ({url: url.replace("foo", `foo${i}`)}));
+      it("should limit to TOP_SITES_DEFAULT_LENGTH items", () => {
+        const rows = Array(TOP_SITES_DEFAULT_LENGTH + 2).fill("https://foo.com").map((url, i) => ({url: url.replace("foo", `foo${i}`)}));
         setup({TopSites: rows});
-        assert.lengthOf(state.TopSites.rows, TOP_SITES_LENGTH);
-        assert.deepEqual(state.TopSites.rows.map(site => site.url), rows.slice(0, TOP_SITES_LENGTH).map(site => site.url));
+        assert.lengthOf(state.TopSites.rows, TOP_SITES_DEFAULT_LENGTH);
+        assert.deepEqual(state.TopSites.rows.map(site => site.url), rows.slice(0, TOP_SITES_DEFAULT_LENGTH).map(site => site.url));
       });
       it("should add default sites to fill empty spaces", () => {
         const rows = [{url: "http://foo.com"}, {url: "http://bar.com"}];
         setup({TopSites: rows});
-        assert.deepEqual(state.TopSites.rows, rows.concat(firstRunData.TopSites).slice(0, TOP_SITES_LENGTH));
+        assert.deepEqual(state.TopSites.rows, rows.concat(firstRunData.TopSites).slice(0, TOP_SITES_DEFAULT_LENGTH));
       });
     });
 

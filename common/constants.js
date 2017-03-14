@@ -22,8 +22,11 @@ module.exports = {
   // This is where we cache redux state so it can be shared between pages
   LOCAL_STORAGE_KEY: "ACTIVITY_STREAM_STATE",
 
-  // Number of top sites
-  TOP_SITES_LENGTH: 6,
+  // Default number of top sites
+  TOP_SITES_DEFAULT_LENGTH: 6,
+
+  // Number of top sites with show more pref enabled
+  TOP_SITES_SHOWMORE_LENGTH: 12,
 
   // This is a perf event
   WORKER_ATTACHED_EVENT: "WORKER_ATTACHED"

@@ -58,7 +58,7 @@ const PreferencesPane = React.createClass({
                 </section>
               </div>
               <section className="actions">
-                <button ref="done-button" onClick={this.togglePane}>
+                <button ref="done-button" className="done" onClick={this.togglePane}>
                   <FormattedMessage id="settings_pane_done_button" />
                 </button>
               </section>

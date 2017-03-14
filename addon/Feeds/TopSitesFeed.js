@@ -2,7 +2,7 @@
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
-const {TOP_SITES_LENGTH} = require("common/constants");
+const {TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const getScreenshots = require("addon/lib/getScreenshots");
@@ -56,8 +56,7 @@ module.exports = class TopSitesFeed extends Feed {
         break;
       case am.type("RECEIVE_PLACES_CHANGES"):
         // When a user visits a site, if we don't have enough top sites yet, refresh the data.
-        // We multiply times 2 because we need to be ready to show two rows.
-        if (state.TopSites.rows.length < TOP_SITES_LENGTH * 2) {
+        if (state.TopSites.rows.length < TOP_SITES_SHOWMORE_LENGTH) {
           this.refresh("there were not enough sites");
         }
         // When a user visits a site, if the last time we refreshed the data is greater than 15 minutes, refresh the data.

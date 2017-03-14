@@ -1,7 +1,7 @@
 const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
 const oldTestLinks = [{url: "boo.com"}, {url: "far.com"}];
 const getCachedMetadata = sites => sites.map(site => site.url.toUpperCase());
-const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
+const {TOP_SITES_DEFAULT_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const moment = require("moment");
 const {SimplePrefs} = require("sdk/simple-prefs");
 
@@ -138,18 +138,18 @@ describe("HighlightsFeed", () => {
       assert.calledWith(instance.refresh, "a bookmark was added");
     });
     it("should call refresh on METADATA_UPDATED if there are not enough sites", () => {
-      store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH - 1).fill("site")};
+      store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH - 1).fill("site")};
       instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "there were not enough sites");
     });
     it("should not call refresh on METADATA_UPDATED if there are enough sites", () => {
-      store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
+      store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH).fill("site")};
       instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
       assert.notCalled(instance.refresh);
     });
     it("should call refresh on METADATA_UPDATED if .lastUpdated is too old", () => {
-      store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
+      store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH).fill("site")};
       instance.lastUpdated = 0;
       clock.tick(HighlightsFeed.UPDATE_TIME);
       instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
@@ -157,7 +157,7 @@ describe("HighlightsFeed", () => {
       assert.calledWith(instance.refresh, "the sites were too old");
     });
     it("should not call refresh on METADATA_UPDATED if .lastUpdated is less than update time", () => {
-      store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH).fill("site")};
+      store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH).fill("site")};
       instance.lastUpdated = 0;
       clock.tick(HighlightsFeed.UPDATE_TIME - 1);
       instance.onAction(store.getState(), {type: "METADATA_UPDATED"});

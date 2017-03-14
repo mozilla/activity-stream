@@ -6,7 +6,7 @@ const {PlacesProvider} = require("addon/PlacesProvider");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Ci, Cu} = require("chrome");
 const systemEvents = require("sdk/system/events");
-const {TOP_SITES_LENGTH} = require("common/constants");
+const {TOP_SITES_DEFAULT_LENGTH} = require("common/constants");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.importGlobalProperties(["btoa"]);
@@ -140,7 +140,7 @@ exports.test_Links_getTopFrecentSites_maxLimit = function*(assert) {
 
   let links = yield provider.getTopFrecentSites();
   assert.ok(links.length < MANY_LINKS, "query default limited to less than many");
-  assert.ok(links.length > TOP_SITES_LENGTH, "query default to more than visible count");
+  assert.ok(links.length > TOP_SITES_DEFAULT_LENGTH, "query default to more than visible count");
 };
 
 exports.test_Links_getTopFrecentSites_Order = function*(assert) {

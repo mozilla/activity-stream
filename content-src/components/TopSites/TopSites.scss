@@ -1,4 +1,6 @@
 .top-sites {
+  position: relative;
+
   .tiles-wrapper {
     margin-inline-end: -20px;
 
@@ -159,5 +161,34 @@
       height: $tile-width;
       line-height: $tile-width;
     }
+  }
+}
+
+.edit-topsites-wrapper {
+  .edit-topsites-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    button {
+      background: none;
+      border: 0;
+      color: $light-grey;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0;
+    }
+  }
+
+  .modal {
+    left: -31px;
+    position: absolute;
+    top: -16px;
+    width: calc(100% + 60px);
+  }
+
+  .edit-topsites-inner-wrapper {
+    margin: 0;
+    padding: 15px 30px;
   }
 }

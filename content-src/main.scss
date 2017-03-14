@@ -92,25 +92,30 @@ a {
 
   .actions {
     border-top: solid 1px $faintest-black;
+    display: flex;
+    flex-direction: row;
     margin: 0;
     padding: 15px 25px;
-    text-align: right;
-
-    &:dir(rtl) {
-      text-align: left;
-    }
+    justify-content: flex-start;
 
     button {
-      background: $blue-botton-bg;
-      border: solid 1px $blue-botton-border;
+      background: $default-button-bg;
+      border: solid 1px $default-button-border;
       border-radius: 5px;
-      color: $white;
+      color: $mid-light-grey;
       cursor: pointer;
       padding: 10px 30px;
 
       &:hover {
         box-shadow: 0 0 0 5px $faintest-black;
         transition: box-shadow 150ms;
+      }
+
+      &.done {
+        background: $blue-button-bg;
+        border: solid 1px $blue-button-border;
+        color: $white;
+        margin-inline-start: auto;
       }
     }
   }
