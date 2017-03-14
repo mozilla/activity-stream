@@ -185,7 +185,11 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "locale": "en-US",
   "page": ["NEW_TAB" | "HOME"],
   "action": "activity_stream_session",
-  "session_duration": 4199
+  "session_duration": 4199,
+  "highlights_size": 20,
+  "topsites_size": 6,
+  "topsites_screenshot": 1,
+  "topsites_tippytop": 3
 }
 ```
 

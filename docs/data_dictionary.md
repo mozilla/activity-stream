@@ -26,7 +26,11 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
   "total_bookmarks": 19,
   "total_history_size": 9,
   "ua": "python-requests/2.9.1",
-  "unload_reason": "close"
+  "unload_reason": "close",
+  "highlights_size": 20,
+  "topsites_size": 6,
+  "topsites_screenshot": 1,
+  "topsites_tippytop": 3
 }
 ```
 
@@ -120,6 +124,11 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `url` | [Optional] The URL of the recommendation shown in one of the highlights spots, if any. | :one:
 | `value` | [Required] An integer that represents the measured performance value. Can store counts, times in milliseconds, and should always be a positive integer.| :one:
 | `ver` | [Auto populated by Onyx] The version of the Onyx API the ping was sent to. | :one:
+| `highlights_size` | [Optional] The size of the Highlights set. | :one:
+| `topsites_size` | [Optional] The size of the Topsites set. | :one:
+| `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
+| `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
+
 
 **Where:**
 

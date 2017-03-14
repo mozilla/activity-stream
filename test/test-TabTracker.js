@@ -41,7 +41,10 @@ const EXPECTED_KEYS = [
   "total_history_size",
   "unload_reason",
   "url",
-  "highlights_size"
+  "highlights_size",
+  "topsites_size",
+  "topsites_screenshot",
+  "topsites_tippytop"
 ];
 
 let ACTIVITY_STREAMS_URL;
