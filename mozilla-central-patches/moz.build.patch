@@ -1,8 +1,0 @@
-diff --git a/browser/extensions/moz.build b/browser/extensions/moz.build
-index 31968a41d23b..60a725119dd5 100644
---- a/browser/extensions/moz.build
-+++ b/browser/extensions/moz.build
-@@ -7,2 +7,3 @@
- DIRS += [
-+    'activity-stream',
-     'aushelper',
