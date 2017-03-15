@@ -8,7 +8,7 @@ const TopSitesFeed = require("inject!addon/Feeds/TopSitesFeed")({
   "addon/lib/getScreenshots": getScreenshots
 });
 
-const {TOP_SITES_LENGTH} = require("common/constants");
+const {TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
 
 describe("TopSitesFeed", () => {
   let instance;
@@ -91,18 +91,18 @@ describe("TopSitesFeed", () => {
       assert.calledWith(instance.refresh, "app was initializing");
     });
     it("should call refresh on RECEIVE_PLACES_CHANGES if there are not enough sites", () => {
-      const state = {TopSites: {rows: Array(TOP_SITES_LENGTH - 1).fill("site")}};
+      const state = {TopSites: {rows: Array(TOP_SITES_SHOWMORE_LENGTH - 1).fill("site")}};
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "there were not enough sites");
     });
     it("should not call refresh on RECEIVE_PLACES_CHANGES if there are enough sites", () => {
-      const state = {TopSites: {rows: Array(TOP_SITES_LENGTH).fill("site")}};
+      const state = {TopSites: {rows: Array(TOP_SITES_SHOWMORE_LENGTH).fill("site")}};
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.notCalled(instance.refresh);
     });
     it("should call refresh on RECEIVE_PLACES_CHANGES if .lastUpdated is too old", () => {
-      const state = {TopSites: {rows: Array(TOP_SITES_LENGTH).fill("site")}};
+      const state = {TopSites: {rows: Array(TOP_SITES_SHOWMORE_LENGTH).fill("site")}};
       instance.state.lastUpdated = 0;
       clock.tick(TopSitesFeed.UPDATE_TIME);
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
@@ -110,7 +110,7 @@ describe("TopSitesFeed", () => {
       assert.calledWith(instance.refresh, "the sites were too old");
     });
     it("should not call refresh on RECEIVE_PLACES_CHANGES if .lastUpdated is less than update time", () => {
-      const state = {TopSites: {rows: Array(TOP_SITES_LENGTH).fill("site")}};
+      const state = {TopSites: {rows: Array(TOP_SITES_SHOWMORE_LENGTH).fill("site")}};
       instance.state.lastUpdated = 0;
       clock.tick(TopSitesFeed.UPDATE_TIME - 1);
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});

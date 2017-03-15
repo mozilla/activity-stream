@@ -2,7 +2,7 @@ const {createSelector} = require("common/vendor")("reselect");
 const firstRunData = require("lib/first-run-data");
 const selectAndDedupe = require("./selectAndDedupe");
 const {assignImageAndBackgroundColor} = require("./colorSelectors");
-const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
+const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const {areSelectorsReady} = require("./selectorUtils");
 
 /**
@@ -30,7 +30,7 @@ module.exports.selectNewTabSites = createSelector(
     const [topSitesRows, highlightsRows] = selectAndDedupe([
       {
         sites: TopSites.rows,
-        max: TOP_SITES_LENGTH,
+        max: Prefs.prefs.showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH,
         defaults: firstRunData.TopSites
       },
       {

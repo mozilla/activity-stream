@@ -72,6 +72,55 @@ a {
   }
 }
 
+.modal-overlay {
+  background: $bg-grey;
+  height: 100%;
+  left: 0;
+  opacity: 0.8;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 11001;
+}
+
+.modal {
+  background: $white;
+  border: solid 1px $faintest-black;
+  border-radius: $border-radius;
+  font-size: 14px;
+  z-index: 11002;
+
+  .actions {
+    border-top: solid 1px $faintest-black;
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 15px 25px;
+    justify-content: flex-start;
+
+    button {
+      background: $default-button-bg;
+      border: solid 1px $default-button-border;
+      border-radius: 5px;
+      color: $mid-light-grey;
+      cursor: pointer;
+      padding: 10px 30px;
+
+      &:hover {
+        box-shadow: 0 0 0 5px $faintest-black;
+        transition: box-shadow 150ms;
+      }
+
+      &.done {
+        background: $blue-button-bg;
+        border: solid 1px $blue-button-border;
+        color: $white;
+        margin-inline-start: auto;
+      }
+    }
+  }
+}
+
 @import './styles/icons';
 
 // Components

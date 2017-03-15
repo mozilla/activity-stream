@@ -6,27 +6,11 @@
   width: 100%;
   z-index: 11000;
 
-  .prefs-background {
-    background: $bg-grey;
-    height: 100%;
-    left: 0;
-    opacity: 0.8;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 11001;
-  }
-
-  .prefs-modal {
-    background: $white;
-    border: solid 1px $faintest-black;
-    border-radius: $border-radius;
-    font-size: 14px;
+  .modal {
     margin: 70px auto 0;
     max-width: $wrapper-max-width;
     position: relative;
     width: 90%;
-    z-index: 11002;
 
     h1 {
       border-bottom: solid 1px $faintest-black;
@@ -34,6 +18,10 @@
       margin: 0;
       padding: 20px 0;
     }
+  }
+
+  .prefs-modal-inner-wrapper {
+    padding: 20px 125px;
 
     section {
       margin: 20px 0;
@@ -53,36 +41,7 @@
           top: 0;
         }
       }
-
-      &.actions {
-        margin: 0;
-        padding: 15px 25px;
-        text-align: right;
-
-        &:dir(rtl) {
-          text-align: left;
-        }
-
-        button {
-          background: $blue-botton-bg;
-          border: solid 1px $blue-botton-border;
-          border-radius: 5px;
-          color: $white;
-          cursor: pointer;
-          padding: 10px 30px;
-
-          &:hover {
-            box-shadow: 0 0 0 5px $faintest-black;
-            transition: box-shadow 150ms;
-          }
-        }
-      }
     }
-  }
-
-  .prefs-modal-inner-wrapper {
-    border-bottom: solid 1px $faintest-black;
-    padding: 20px 125px;
   }
 
   // CSS styled checkbox

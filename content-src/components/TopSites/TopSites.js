@@ -7,9 +7,9 @@ const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
 const {prettyUrl} = require("lib/utils");
-const {FormattedMessage} = require("react-intl");
+const {injectIntl, FormattedMessage} = require("react-intl");
+const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
 
-const DEFAULT_LENGTH = 6;
 const FULL_WIDTH = 96;
 const TIPPY_TOP_WIDTH = 80;
 
@@ -21,7 +21,10 @@ const TopSitesItem = React.createClass({
     };
   },
   getDefaultProps() {
-    return {onClick() {}};
+    return {
+      onClick() {},
+      includeContextMenu: true
+    };
   },
   _isTippyTop(favicon_url) {
     // If it starts with favicons/images or resource:// then it's a tippy top icon.
@@ -60,7 +63,7 @@ const TopSitesItem = React.createClass({
     const label = prettyUrl(site);
 
     return (<div className="tile-outer" key={site.guid || site.cache_key || index}>
-      <a onClick={() => this.props.onClick(index)} className={classNames("tile", {active: isActive})} href={site.url} ref="topSiteLink">
+      <a onClick={ev => this.props.onClick(index, ev)} className={classNames("tile", {active: isActive})} href={site.url} ref="topSiteLink">
         {screenshot && <div className="inner-border" />}
         {screenshot && <div ref="screenshot" className="screenshot" style={{backgroundImage: `url(${screenshot})`}} />}
         <SiteIcon
@@ -73,14 +76,18 @@ const TopSitesItem = React.createClass({
 
         {screenshot && <div ref="title" className="site-title">{label}</div>}
       </a>
-      <LinkMenuButton onClick={() => this.setState({showContextMenu: true, activeTile: index})} />
-      <LinkMenu
-        visible={isActive}
-        onUpdate={val => this.setState({showContextMenu: val})}
-        site={site}
-        page={this.props.page}
-        source="TOP_SITES"
-        index={index} />
+      {this.props.includeContextMenu &&
+        <LinkMenuButton onClick={() => this.setState({showContextMenu: true, activeTile: index})} />
+      }
+      {this.props.includeContextMenu &&
+        <LinkMenu
+          visible={isActive}
+          onUpdate={val => this.setState({showContextMenu: val})}
+          site={site}
+          page={this.props.page}
+          source="TOP_SITES"
+          index={index} />
+      }
   </div>);
   }
 });
@@ -91,7 +98,8 @@ TopSitesItem.propTypes = {
   url: React.PropTypes.string.isRequired,
   favicon_url: React.PropTypes.string,
   onClick: React.PropTypes.func,
-  showNewStyle: React.PropTypes.bool
+  showNewStyle: React.PropTypes.bool,
+  includeContextMenu: React.PropTypes.bool
 };
 
 const PlaceholderTopSitesItem = React.createClass({
@@ -109,7 +117,7 @@ const PlaceholderTopSitesItem = React.createClass({
 const TopSites = React.createClass({
   getDefaultProps() {
     return {
-      length: DEFAULT_LENGTH,
+      length: TOP_SITES_DEFAULT_LENGTH,
       // This is for event reporting
       page: "NEW_TAB"
     };
@@ -149,6 +157,9 @@ const TopSites = React.createClass({
           );
         })}
       </div>
+      {!this.props.placeholder &&
+        <EditTopSitesIntl {...this.props} />
+      }
     </section>);
   }
 });
@@ -173,7 +184,90 @@ TopSites.propTypes = {
   showNewStyle: React.PropTypes.bool
 };
 
+const EditTopSites = React.createClass({
+  getDefaultProps() {return {dispatch: () => {}};},
+  getInitialState() {return {showEdit: false};},
+  toggleEdit() {
+    this.setState({showEdit: !this.state.showEdit});
+  },
+  toggleShowMorePref() {
+    const prefIsOn = this.props.length === TOP_SITES_SHOWMORE_LENGTH;
+    this.props.dispatch(actions.NotifyPrefChange("showMoreTopSites", !prefIsOn));
+  },
+  render() {
+    const sites = this.props.sites.slice(0, this.props.length);
+    return (
+      <div className="edit-topsites-wrapper">
+        <div className="edit-topsites-button">
+          <button
+            ref="editButton"
+            title={this.props.intl.formatMessage({id: "edit_topsites_button_label"})}
+            onClick={this.toggleEdit}>
+            <FormattedMessage id="edit_topsites_button_text" />
+          </button>
+        </div>
+        {this.state.showEdit &&
+          <div className="edit-topsites">
+            <div className="modal-overlay" />
+            <div className="modal" ref="modal">
+              <section className="edit-topsites-inner-wrapper">
+                <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
+                <div className="tiles-wrapper">
+                  {sites.map((site, i) => (<TopSitesItem
+                      index={i}
+                      key={site.guid || site.cache_key || i}
+                      page={this.props.page}
+                      onClick={(index, ev) => ev.preventDefault()}
+                      showNewStyle={this.props.showNewStyle}
+                      includeContextMenu={false}
+                      {...site} />
+                    )
+                  )}
+                </div>
+              </section>
+              <section className="actions">
+                {this.props.length === TOP_SITES_DEFAULT_LENGTH &&
+                  <button ref="showMoreButton" onClick={this.toggleShowMorePref}>
+                    <FormattedMessage id="edit_topsites_showmore_button" />
+                  </button>
+                }
+                {this.props.length === TOP_SITES_SHOWMORE_LENGTH &&
+                  <button ref="showLessButton" onClick={this.toggleShowMorePref}>
+                    <FormattedMessage id="edit_topsites_showless_button" />
+                  </button>
+                }
+                <button ref="doneButton" className="done" onClick={this.toggleEdit}>
+                  <FormattedMessage id="edit_topsites_done_button" />
+                </button>
+              </section>
+            </div>
+          </div>
+        }
+      </div>
+    );
+  }
+});
+
+EditTopSites.propTypes = {
+  length: React.PropTypes.number.isRequired,
+  page: React.PropTypes.string.isRequired,
+  sites: React.PropTypes.arrayOf(
+    React.PropTypes.shape({
+      url: React.PropTypes.string.isRequired,
+      title: React.PropTypes.string,
+      provider_name: React.PropTypes.string
+    })
+  ).isRequired,
+
+  showNewStyle: React.PropTypes.bool,
+
+  dispatch: React.PropTypes.func
+};
+
+const EditTopSitesIntl = injectIntl(EditTopSites);
+
 module.exports = connect(justDispatch)(TopSites);
 module.exports.TopSites = TopSites;
 module.exports.TopSitesItem = TopSitesItem;
 module.exports.PlaceholderTopSitesItem = PlaceholderTopSitesItem;
+module.exports.EditTopSites = EditTopSites;

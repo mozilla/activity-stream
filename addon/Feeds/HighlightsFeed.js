@@ -3,7 +3,7 @@ const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {Recommender} = require("common/recommender/Recommender");
 const Feed = require("addon/lib/Feed");
-const {TOP_SITES_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
+const {TOP_SITES_DEFAULT_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
 
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
@@ -75,7 +75,7 @@ module.exports = class HighlightsFeed extends Feed {
         break;
       case am.type("METADATA_UPDATED"):
         // If the user visits a site and we don't have enough weighted highlights yet, refresh the data.
-        if (state.Highlights.rows.length < (HIGHLIGHTS_LENGTH + TOP_SITES_LENGTH)) {
+        if (state.Highlights.rows.length < (HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH)) {
           this.refresh("there were not enough sites");
         }
         // If the user visits a site & the last time we refreshed the data was older than 15 minutes, refresh the data.
