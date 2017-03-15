@@ -1,14 +1,25 @@
-#!/usr/bin/env bash -x
+#!/usr/bin/env bash
 #
 # Forked from https://github.com/devtools-html/debugger.html/blob/master/bin/prepare-mochitests-dev
 #
 # This sets up a mozilla-central build for local mochitest development with an
 # exported activity-stream tree and a symlinked test directory.
 
-ROOT=`dirname $0`
-FIREFOX_PATH="$ROOT/../../mozilla-central"
+if [ -z ${AS_PMD_GIT_DIR+x} ]; then
+  ROOT=`dirname $0`
+  AS_PMD_GIT_DIR="../../../../activity-stream"
+else 
+  ROOT=${AS_PMD_GIT_DIR}/bin
+fi
+
+if [ -z ${AS_PINE_TEST_DIR+x} ]; then
+  FIREFOX_PATH="$ROOT/../../mozilla-central"
+else
+  FIREFOX_PATH=${AS_PINE_TEST_DIR}/mozilla-central
+fi
+
 MC_MODULE_PATH="$FIREFOX_PATH/browser/extensions/activity-stream"
-AS_ROOT_RELATIVE_TO_MC_AS="../../../../activity-stream"
+ENABLE_MC_AS=${ENABLE_MC_AS-0}
 
 # This will either download or update the local Firefox repo
 "$ROOT/download-firefox-artifact"
@@ -16,6 +27,10 @@ AS_ROOT_RELATIVE_TO_MC_AS="../../../../activity-stream"
 if [ $? -ne 0 ]; then
   exit -1
 fi
+
+# blow away any old bits in order to workaround bug 1335976 for users
+# who are using the default objdir-frontend
+rm -f ${FIREFOX_PATH}/objdir-frontend/dist/bin/browser/features/@activity-streams/*
 
 # Clean, package, and copy the activity stream files, default SYMLINK_TESTS to
 # true but allowing the environment to override so that calling scripts like
@@ -25,8 +40,22 @@ npm run buildmc
 
 # If someting goes sideways during export, don't keep going
 if [ $? -ne 0 ]; then
-  exit -1
+  exit $?
 fi
+
+# Patch mozilla-central (on top of the export) so that AS is preffed on, and
+# the mochitests are turned on.
+if [ $ENABLE_MC_AS ]; then
+  # XXX Note that patch rejections do not cause the export to abort, to
+  # avoid explosions when attempting to patch already-patched files.
+  # As a result, try to change parts of a file that are less likely to change
+  # (eg the middle rather than the end), and keep your diff context low
+  # (eg by using "diff -U3" for only 3 lines of context).
+  ( cd "$FIREFOX_PATH" && patch -p1 --no-backup-if-mismatch -r \
+      rejected-export.diff; rm -f rejected-export.diff) \
+      < $AS_PMD_GIT_DIR/mozilla-central-patches/enable-mc-as.diff
+fi
+
 
 # Be sure that we've built, and that the test glop in the objdir has been
 # created.
