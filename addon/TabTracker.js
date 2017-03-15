@@ -150,13 +150,6 @@ TabTracker.prototype = {
     Services.obs.notifyObservers(null, PERFORMANCE_NOTIF, JSON.stringify(payload));
   },
 
-  handleRouteChange(tab, route) {
-    if (!route.isFirstLoad) {
-      this.navigateAwayFromPage(tab, "route_change");
-      this.logReady(tab);
-    }
-  },
-
   generateEvent(eventData) {
     return Object.assign({}, eventData, {event_id: String(uuid())});
   },

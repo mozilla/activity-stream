@@ -29,7 +29,6 @@ const am = new ActionManager([
   "NOTIFY_PERFORMANCE",
   "NOTIFY_PREF_CHANGE",
   "NOTIFY_REMOVE_FORM_HISTORY_ENTRY",
-  "NOTIFY_ROUTE_CHANGE",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UNDESIRED_EVENT",
   "NOTIFY_UPDATE_SEARCH_STRING",
@@ -158,10 +157,6 @@ function NotifyPerformSearch(data) {
   return Notify("NOTIFY_PERFORM_SEARCH", data);
 }
 
-function NotifyRouteChange(data) {
-  return Notify("NOTIFY_ROUTE_CHANGE", data);
-}
-
 function NotifyPerf(data) {
   return Notify("NOTIFY_PERFORMANCE", data);
 }
@@ -237,7 +232,6 @@ am.defineActions({
   NotifyPerformSearch,
   NotifyPrefChange,
   NotifyRemoveFormHistory,
-  NotifyRouteChange,
   NotifyUnblockURL,
   NotifyUndesiredEvent,
   NotifyUpdateSearchString,

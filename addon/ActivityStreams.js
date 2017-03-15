@@ -4,7 +4,6 @@
 
 const {Cu} = require("chrome");
 const {data} = require("sdk/self");
-const tabs = require("sdk/tabs");
 const simplePrefs = require("sdk/simple-prefs");
 const windows = require("sdk/windows").browserWindows;
 const prefService = require("sdk/preferences/service");
@@ -304,17 +303,9 @@ ActivityStreams.prototype = {
     this.broadcast(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
   },
 
-  _onRouteChange({msg} = {}) {
-    if (msg) {
-      this._tabTracker.handleRouteChange(tabs.activeTab, msg.data);
-    }
-  },
-
   _respondToUIChanges(args) {
     const {msg} = args;
     switch (msg.type) {
-      case am.type("NOTIFY_ROUTE_CHANGE"):
-        return this._onRouteChange(args);
       case am.type("NOTIFY_USER_EVENT"):
         return this._handleUserEvent(args);
       case am.type("NOTIFY_UNDESIRED_EVENT"):
