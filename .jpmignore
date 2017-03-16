@@ -40,3 +40,4 @@ npm-shrinkwrap.json
 requirements.txt
 webpack.*.js
 yamscripts.yml
+firefox-release-linux64-add-on-devel.tar.bz2
