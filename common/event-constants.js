@@ -10,10 +10,12 @@ const constants = {
     "BOOKMARK_DELETE",
     "CLICK",
     "CLOSE_EDIT_TOPSITES",
+    "CLOSE_NEWTAB_PREFS",
     "DELETE",
     "LOAD_MORE",
     "LOAD_MORE_SCROLL",
     "OPEN_EDIT_TOPSITES",
+    "OPEN_NEWTAB_PREFS",
     "OPEN_NEW_WINDOW",
     "OPEN_PRIVATE_WINDOW",
     "SEARCH",
@@ -28,7 +30,8 @@ const constants = {
   sources: new Set([
     "TOP_SITES",
     "FEATURED",
-    "ACTIVITY_FEED"
+    "ACTIVITY_FEED",
+    "NEW_TAB"
   ])
 };
 

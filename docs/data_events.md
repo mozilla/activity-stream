@@ -13,7 +13,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   // This indicates the type of interaction
-  "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH | SHARE_TOOLBAR | OPEN_EDIT_TOPSITES | CLOSE_EDIT_TOPSITES]",
+  "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH | SHARE_TOOLBAR | OPEN_EDIT_TOPSITES | CLOSE_EDIT_TOPSITES | OPEN_NEWTAB_PREFS | CLOSE_NEWTAB_PREFS]",
 
   // This is where the interaction occurred
   "page": ["NEW_TAB" | "HOME"],
@@ -186,6 +186,36 @@ It doesn't capture success or failure to share after.
   "event": "CLOSE_EDIT_TOPSITES",
   "page": "NEW_TAB",
   "source": "TOP_SITES",
+  "action": "activity_stream_event",
+  "tab_id": "-5-3",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+}
+```
+
+#### Opening the New Tab Preferences
+
+```js
+{
+  "event": "OPEN_NEWTAB_PREFS",
+  "page": "NEW_TAB",
+  "source": "NEW_TAB",
+  "action": "activity_stream_event",
+  "tab_id": "-5-3",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+}
+```
+
+#### Closing the New Tab Preferences
+
+```js
+{
+  "event": "CLOSE_NEWTAB_PREFS",
+  "page": "NEW_TAB",
+  "source": "NEW_TAB",
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",

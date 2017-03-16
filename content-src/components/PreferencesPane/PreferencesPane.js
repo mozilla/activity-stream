@@ -5,16 +5,20 @@ const {justDispatch} = require("common/selectors/selectors");
 const {injectIntl, FormattedMessage} = require("react-intl");
 
 const PreferencesPane = React.createClass({
-  getDefaultProps() {
-    return {};
-  },
+  getDefaultProps() {return {dispatch: () => {}};},
   getInitialState() {return {showPane: false};},
   handleChange(event) {
     const target = event.target;
     this.props.dispatch(actions.NotifyPrefChange(target.name, target.checked));
   },
   togglePane() {
-    this.setState({showPane: !this.state.showPane});
+    const showingPane = this.state.showPane;
+    this.setState({showPane: !showingPane});
+    const event = showingPane ? "CLOSE_NEWTAB_PREFS" : "OPEN_NEWTAB_PREFS";
+    this.props.dispatch(actions.NotifyEvent({
+      source: "NEW_TAB",
+      event
+    }));
   },
   render() {
     const {showSearch, showTopSites, showHighlights} = this.props.Prefs.prefs;
