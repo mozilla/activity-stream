@@ -448,7 +448,7 @@ MetadataStore.prototype = {
         `SELECT * FROM page_metadata WHERE cache_key IN (${quoted})`,
         {
           params: limitedCacheKeys,
-          columns: ["id", "cache_key", "places_url", "title", "type", "description", "media_url", "provider_name"]
+          columns: ["id", "cache_key", "places_url", "title", "type", "description", "media_url", "provider_name", "metadata_source"]
         }
       );
     }
