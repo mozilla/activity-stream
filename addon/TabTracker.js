@@ -93,6 +93,8 @@ TabTracker.prototype = {
     payload.addon_version = self.version;
     payload.locale = Locale.getLocale();
     payload.page = url.split("#/")[1] || eventConstants.defaultPage;
+    // Let's make sure we always have session id available.
+    this._tabData.session_id = this._tabData.session_id || String(uuid());
     payload.session_id = this._tabData.session_id;
     if (this._experimentID) {
       payload.experiment_id = this._experimentID;
@@ -343,7 +345,7 @@ TabTracker.prototype = {
 
     // Some performance pings are sent before a tab is loaded. Let's make sure we have
     // session id available in advance for those pings.
-    this._tabData.session_id = String(uuid());
+    this._tabData.session_id = this._tabData.session_id || String(uuid());
   },
 
   _onPrefChange() {
