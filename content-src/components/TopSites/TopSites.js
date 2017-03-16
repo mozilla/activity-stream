@@ -188,7 +188,13 @@ const EditTopSites = React.createClass({
   getDefaultProps() {return {dispatch: () => {}};},
   getInitialState() {return {showEdit: false};},
   toggleEdit() {
-    this.setState({showEdit: !this.state.showEdit});
+    const showingEdit = this.state.showEdit;
+    this.setState({showEdit: !showingEdit});
+    const event = showingEdit ? "CLOSE_EDIT_TOPSITES" : "OPEN_EDIT_TOPSITES";
+    this.props.dispatch(actions.NotifyEvent({
+      source: "TOP_SITES",
+      event
+    }));
   },
   toggleShowMorePref() {
     const prefIsOn = this.props.length === TOP_SITES_SHOWMORE_LENGTH;
