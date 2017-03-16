@@ -13,7 +13,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   // This indicates the type of interaction
-  "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH | SHARE_TOOLBAR]",
+  "event": "[CLICK | DELETE | BLOCK | SHARE | LOAD_MORE | SEARCH | SHARE_TOOLBAR | OPEN_EDIT_TOPSITES | CLOSE_EDIT_TOPSITES]",
 
   // This is where the interaction occurred
   "page": ["NEW_TAB" | "HOME"],
@@ -161,6 +161,36 @@ It doesn't capture success or failure to share after.
   "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
   "addon_version": "1.0.12",
   "locale": "en-US"
+}
+```
+
+#### Opening the Edit Top Sites modal
+
+```js
+{
+  "event": "OPEN_EDIT_TOPSITES",
+  "page": "NEW_TAB",
+  "source": "TOP_SITES",
+  "action": "activity_stream_event",
+  "tab_id": "-5-3",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+}
+```
+
+#### Closing the Edit Top Sites modal
+
+```js
+{
+  "event": "CLOSE_EDIT_TOPSITES",
+  "page": "NEW_TAB",
+  "source": "TOP_SITES",
+  "action": "activity_stream_event",
+  "tab_id": "-5-3",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
 }
 ```
 
