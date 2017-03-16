@@ -10,9 +10,6 @@ cache:
   directories:
     - node_modules
 
-addons:
-  firefox: "46.0"
-
 before_install:
   # see https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
   - "export DISPLAY=:99.0"
@@ -27,9 +24,9 @@ install:
   - sudo pip install -r requirements.txt
 
 before_script:
-  - export FIREFOX_BIN=`which firefox`
-  - export JPM_FIREFOX_BINARY=`which firefox`
-  - firefox -v
+  - bash bin/download-firefox-travis.sh release-linux64-add-on-devel
+  - export FIREFOX_BIN=./firefox/firefox
+  - export JPM_FIREFOX_BINARY=./firefox/firefox
   - echo $JPM_FIREFOX_BINARY
 
 script:

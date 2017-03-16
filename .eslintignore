@@ -10,3 +10,4 @@ logs/
 stats.json
 test/test-ColorAnalyzer.js
 test/test-SimpleStorage.js
+system-addon/
