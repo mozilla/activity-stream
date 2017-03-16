@@ -29,5 +29,13 @@ module.exports = {
   TOP_SITES_SHOWMORE_LENGTH: 12,
 
   // This is a perf event
-  WORKER_ATTACHED_EVENT: "WORKER_ATTACHED"
+  WORKER_ATTACHED_EVENT: "WORKER_ATTACHED",
+
+  // Newtab preferences encoding
+  NEWTAB_PREFS_ENCODING: {
+    "showSearch": 1 << 0,
+    "showTopSites": 1 << 1,
+    "showHighlights": 1 << 2,
+    "showMoreTopSites": 1 << 3
+  }
 };

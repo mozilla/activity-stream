@@ -30,7 +30,8 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
   "highlights_size": 20,
   "topsites_size": 6,
   "topsites_screenshot": 1,
-  "topsites_tippytop": 3
+  "topsites_tippytop": 3,
+  "user_prefs": 7
 }
 ```
 
@@ -53,7 +54,8 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
   "ua": "python-requests/2.9.1",  
   "url": "https://www.example.com",
   "recommender_type": "pocket-trending",
-  "metadata_source": "MetadataService or Local or TippyTopProvider"
+  "metadata_source": "MetadataService or Local or TippyTopProvider",
+  "user_prefs": 7
 }
 ```
 
@@ -128,6 +130,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `topsites_size` | [Optional] The size of the Topsites set. | :one:
 | `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
+| `user_prefs` | [optional] The encoded integer of user's preferences. | :one: & :four:
 
 
 **Where:**
@@ -135,3 +138,13 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 :one: Firefox data
 :two: HTTP protocol data
 :three: server augmented data
+:four: User preferences encoding table
+
+| Preference | Encoded value |
+| --- | --- |
+| `showSearch` | 1 |
+| `showTopSites` | 2 |
+| `showHighlights` | 4 |
+| `showMoreTopSites` | 8 |
+
+Each item above could be combined with other items through bitwise OR operation

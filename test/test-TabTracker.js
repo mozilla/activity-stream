@@ -8,6 +8,7 @@ const tabs = require("sdk/tabs");
 const {setTimeout} = require("sdk/timers");
 const {getTestActivityStream} = require("./lib/utils");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
+const {NEWTAB_PREFS_ENCODING} = require("common/constants");
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const simplePrefs = require("sdk/simple-prefs");
@@ -44,7 +45,8 @@ const EXPECTED_KEYS = [
   "highlights_size",
   "topsites_size",
   "topsites_screenshot",
-  "topsites_tippytop"
+  "topsites_tippytop",
+  "user_prefs"
 ];
 
 let ACTIVITY_STREAMS_URL;
@@ -539,6 +541,53 @@ exports.test_TabTracker_performance_action_pings = function*(assert) {
   assert.deepEqual(eventData1.msg.data.source, pingData.source, "the ping has the correct source");
   assert.deepEqual(eventData1.msg.data.event, pingData.event, "the ping has the correct event");
   assert.deepEqual(eventData1.msg.data.value, pingData.value, "the ping has the correct value");
+};
+
+exports.test_TabTracker_getUsersPreferences = function(assert) {
+  const ALL_PREFS = Object.keys(NEWTAB_PREFS_ENCODING);
+  let defaultPrefs = new Map();
+
+  // store the default prefs
+  ALL_PREFS.forEach(item => {
+    defaultPrefs.set(item, simplePrefs.prefs[item]);
+  });
+
+  const [p1, p2, p3, p4] = ALL_PREFS;
+  const fixtures = [
+    {
+      prefs: [p1, p2, p3, p4],
+      expected: 1 | (1 << 1) | (1 << 2) | (1 << 3)
+    },
+    {
+      prefs: [p1, p2],
+      expected: NEWTAB_PREFS_ENCODING[p1] | NEWTAB_PREFS_ENCODING[p2]
+    },
+    {
+      prefs: [p1, p2, p3],
+      expected: NEWTAB_PREFS_ENCODING[p1] | NEWTAB_PREFS_ENCODING[p2] | NEWTAB_PREFS_ENCODING[p3]
+    },
+    {
+      prefs: [p4],
+      expected: NEWTAB_PREFS_ENCODING[p4]
+    }
+  ];
+
+  for (let fixture of fixtures) {
+    // reset all prefs
+    ALL_PREFS.forEach(item => {simplePrefs.prefs[item] = false;});
+    // set the prefs based on the fixture
+    fixture.prefs.forEach(item => {simplePrefs.prefs[item] = true;});
+    assert.deepEqual(app._tabTracker._getUserPreferences(), fixture.expected, "get the correct encoded user preferences");
+  }
+
+  // restore the defaults
+  for (let [item, value] of defaultPrefs.entries()) {
+    if (value !== undefined) {
+      simplePrefs.prefs[item] = value;
+    } else {
+      delete simplePrefs.prefs[item];
+    }
+  }
 };
 
 exports.test_TabTracker_prefs = function(assert) {

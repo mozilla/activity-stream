@@ -32,7 +32,9 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "addon_version": "1.0.12",
   "locale": "en-US",
   "action": "activity_stream_event",
-  "metadata_source": "MetadataService"
+  "metadata_source": "MetadataService",
+  // The encoded user preferences, see more details in [data_dictionary.md](data_dictionary.md)
+  "user_prefs": 7
 }
 ```
 
@@ -69,7 +71,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   // Optional field, only sent if a recommendation site gets clicked
   "url": "https://www.example.com",
   // Optional field, only sent if a recommendation site gets clicked
-  "recommender_type": "pocket-trending"
+  "recommender_type": "pocket-trending",
+  "user_prefs": 7
 }
 ```
 
@@ -189,7 +192,8 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "highlights_size": 20,
   "topsites_size": 6,
   "topsites_screenshot": 1,
-  "topsites_tippytop": 3
+  "topsites_tippytop": 3,
+  "user_prefs": 7
 }
 ```
 

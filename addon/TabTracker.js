@@ -8,6 +8,7 @@ const {uuid} = require("sdk/util/uuid");
 const simplePrefs = require("sdk/simple-prefs");
 const eventConstants = require("../common/event-constants");
 const {absPerf} = require("common/AbsPerf");
+const {NEWTAB_PREFS_ENCODING} = require("common/constants");
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Locale.jsm");
@@ -19,6 +20,7 @@ const ACTION_NOTIF = "user-action-event";
 const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 const UNDESIRED_NOTIF = "undesired-event";
+const USER_PREFS = ["showSearch", "showTopSites", "showHighlights", "showMoreTopSites"];
 
 let TOPIC_SLOW_ADDON_DETECTED;
 try {
@@ -88,12 +90,24 @@ TabTracker.prototype = {
     };
   },
 
+  _getUserPreferences() {
+    let prefs = 0;
+    USER_PREFS.forEach(item => {
+      if (simplePrefs.prefs[item]) {
+        prefs |= NEWTAB_PREFS_ENCODING[item];
+      }
+    });
+
+    return prefs;
+  },
+
   _setCommonProperties(payload, url) {
     payload.client_id = this._clientID;
     payload.addon_version = self.version;
     payload.locale = Locale.getLocale();
     payload.page = url.split("#/")[1] || eventConstants.defaultPage;
     payload.session_id = this._tabData.session_id;
+    payload.user_prefs = this._getUserPreferences();
     if (this._experimentID) {
       payload.experiment_id = this._experimentID;
     }
