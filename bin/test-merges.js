@@ -45,6 +45,8 @@ const TREEHERDER_PREFIX = "https://treeherder.mozilla.org/#/jobs?repo=pine&revis
 // already exist.
 const AS_PINE_TEST_DIR = process.env.AS_PINE_TEST_DIR;
 
+const TESTING_LOCAL_MC = path.join(AS_PINE_TEST_DIR, "mozilla-central");
+
 const SimpleGit = require("simple-git");
 const TESTING_LOCAL_GIT = path.join(AS_PINE_TEST_DIR, AS_REPO_NAME);
 const git = new SimpleGit(TESTING_LOCAL_GIT);
@@ -57,8 +59,6 @@ const AS_PMD_GIT_DIR = process.env.AS_PMD_GIT_DIR || TESTING_LOCAL_GIT;
 
 const PREPARE_MOCHITESTS_DEV =
   path.join(AS_PMD_GIT_DIR, "bin", "prepare-mochitests-dev");
-
-const TESTING_LOCAL_MC = path.join(AS_PINE_TEST_DIR, "mozilla-central");
 
 /**
  * Find all PRs merged since ${OLDEST_PR_DATE} that don't have
