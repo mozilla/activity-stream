@@ -107,7 +107,9 @@
 
     .tile-outer {
       box-shadow: none;
+      height: $tile-width;
       vertical-align: top;
+      width: $tile-width;
 
       &:hover {
         box-shadow: 0 0 0 5px $faintest-black;
