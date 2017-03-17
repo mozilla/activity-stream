@@ -206,7 +206,6 @@
     "export:copy": "cpx \"dist/mozilla-central/{addon/**,bootstrap.js,common/**,data/**,experiments.json,install.rdf.in,moz.build,package.json}\" ../mozilla-central/browser/extensions/activity-stream",
     "export:copytests": "if [ \"$SYMLINK_TESTS\" != \"true\" ]; then cpx \"test/functional/mochitest/**\" ../mozilla-central/browser/extensions/activity-stream/test/functional/mochitest; fi",
     "export:linktests": "if [ \"$SYMLINK_TESTS\" = \"true\" ]; then ln -s ../../../../activity-stream/test ../mozilla-central/browser/extensions/activity-stream/test; fi",
-    "export:enable-mc-as": "(cd ../mozilla-central && patch -Np1 --no-backup-if-mismatch -r rejected-export.diff; rm -f rejected-export.diff) < mozilla-central-patches/enable-mc-as.diff",
     "mochitest": "(cd ../mozilla-central && ./mach mochitest --setpref browser.newtabpage.activity-stream.enabled=true  --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )",
     "mochitest-debug": "(cd ../mozilla-central && ./mach mochitest --jsdebugger --setpref browser.newtabpage.activity-stream.enabled=true --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )",
     "buildmc": "npm-run-all buildmc:*",
