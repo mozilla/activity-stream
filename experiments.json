@@ -121,7 +121,7 @@
   },
   "screenshots": {
     "name": "Screenshots for Top Sites",
-    "active": true,
+    "active": false,
     "description": "Add screenshots for some Top Sites",
     "control": {
       "value": false,
@@ -162,6 +162,21 @@
       "value": true,
       "threshold": 0.2,
       "description": "New Tab Prefs is enabled"
+    }
+  },
+  "screenshotsAsync": {
+    "name": "High Res Icons and Screenshots for Top Sites",
+    "active": true,
+    "description": "Add high res icons or screenshots for some Top Sites",
+    "control": {
+      "value": false,
+      "description": "Don't show screenshots"
+    },
+    "variant": {
+      "id": "exp-012-screenshotsasync",
+      "value": true,
+      "threshold": 0.3,
+      "description": "Show screenshots"
     }
   }
 }
