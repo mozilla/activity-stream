@@ -32,11 +32,8 @@ describe("ExperimentProvider", () => {
 
   function setup(options = {}) {
     const {experiments, n} = Object.assign({}, DEFAULT_OPTIONS, options);
-    const {ExperimentProvider} = createExperimentProvider({
-      "sdk/preferences/service": prefService,
-      "sdk/preferences/event-target": PrefsTarget
-    });
-    experimentProvider = new ExperimentProvider(experiments, n && (() => n));
+    const {ExperimentProvider} = createExperimentProvider({"sdk/preferences/event-target": PrefsTarget});
+    experimentProvider = new ExperimentProvider(experiments, n && (() => n), prefService);
     experimentProvider.init();
   }
 
