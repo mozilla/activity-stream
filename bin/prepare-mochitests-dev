@@ -53,14 +53,13 @@ fi
 # Patch mozilla-central (on top of the export) so that AS is preffed on, and
 # the mochitests are turned on.
 if [ $ENABLE_MC_AS ]; then
-  # XXX Note that patch rejections do not cause the export to abort, to
-  # avoid explosions when attempting to patch already-patched files.
-  # As a result, try to change parts of a file that are less likely to change
-  # (eg the middle rather than the end), and keep your diff context low
-  # (eg by using "diff -U3" for only 3 lines of context).
-  ( cd "$FIREFOX_PATH" && patch -p1 --no-backup-if-mismatch -r \
-      rejected-export.diff; rm -f rejected-export.diff) \
-      < $AS_PMD_GIT_DIR/mozilla-central-patches/enable-mc-as.diff
+  patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
+    --input=$AS_PMD_GIT_DIR/mozilla-central-patches/enable-mc-as.diff
+
+  # If someting goes sideways, don't keep going
+  if [ $? -ne 0 ]; then
+    exit $?
+  fi
 fi
 
 
