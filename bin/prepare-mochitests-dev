@@ -26,9 +26,9 @@ fi
 MC_MODULE_PATH="$FIREFOX_PATH/browser/extensions/activity-stream"
 
 # By default, just use mozilla-central + the export.  If ENABLE_MC_AS is set to
-# 1, patch mozilla-central to turn on the AS pref and turn on the tests.  Once
-# AS is on by default in mozilla-central, stuff related to ENABLE_MC_AS can
-# go away entirely.
+# 1, patch on top of mozilla-central + the export to turn on the AS pref and
+# turn on the tests.  Once AS is on by default in mozilla-central, stuff
+# related to ENABLE_MC_AS can go away entirely.
 ENABLE_MC_AS=${ENABLE_MC_AS-0}
 
 # This will either download or update the local Firefox repo
