@@ -76,7 +76,7 @@ scripts:
     unit: karma start karma.mc.config.js || (cat logs/coverage/system-addon/text.txt && exit 2)
     post: cat logs/coverage/system-addon/text-summary.txt
 
-  tddmc: =>testmc -- --no-single-run
+  tddmc: karma start karma.mc.config.js --tdd
 
 # start: Start watching/compiling assets,
   start:

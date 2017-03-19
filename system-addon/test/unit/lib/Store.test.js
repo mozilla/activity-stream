@@ -1,13 +1,21 @@
-const {Store} = require("lib/Store.jsm");
+const injector = require("inject!lib/Store.jsm");
 const {actionTypes: at} = require("common/Actions.jsm");
 const {createStore} = require("redux");
 const {addNumberReducer} = require("test/unit/utils");
 
 describe("Store", () => {
+  let Store;
   let sandbox;
   let store;
   before(() => {
     sandbox = sinon.sandbox.create();
+    function MessageManager(options) {
+      this.dispatch = options.dispatch;
+      this.createChannel = sandbox.spy();
+      this.destroyChannel = sandbox.spy();
+      this.middleware = sandbox.spy(s => next => action => next(action));
+    }
+    ({Store} = injector({"lib/MessageManager.jsm": {MessageManager}}));
   });
   beforeEach(() => {
     store = new Store();
@@ -21,6 +29,14 @@ describe("Store", () => {
     assert.ok(store._store);
     assert.property(store, "dispatch");
     assert.property(store, "getState");
+  });
+  it("should create a MessageManager with the right dispatcher", () => {
+    assert.ok(store._mm);
+    assert.equal(store._mm.dispatch, store.dispatch);
+  });
+  it("should connect the MessageManager's middleware", () => {
+    store.dispatch({type: "FOO"});
+    assert.calledOnce(store._mm.middleware);
   });
   describe("#init", () => {
     it("should dispatch an init action", () => {
@@ -51,6 +67,10 @@ describe("Store", () => {
 
       assert.equal(s.store, store, "s.store");
     });
+    it("should initialize the MessageManager channel", () => {
+      store.init();
+      assert.calledOnce(store._mm.createChannel);
+    });
   });
   describe("#uninit", () => {
     it("should clear .feeds", () => {
@@ -67,6 +87,10 @@ describe("Store", () => {
       store.uninit();
 
       assert.calledWith(store.dispatch, {type: at.UNINIT});
+    });
+    it("should destroy the MessageManager channel", () => {
+      store.uninit();
+      assert.calledOnce(store._mm.destroyChannel);
     });
   });
   describe("#getState", () => {
