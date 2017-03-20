@@ -11,18 +11,38 @@ const PATHS = {
   systemAddonDirectory: path.resolve(__dirname, "system-addon"),
 
   // a RegEx matching all Cu.import statements of local files
-  resourcePathRegEx: /^resource:\/\/activity-stream\//
+  resourcePathRegEx: /^resource:\/\/activity-stream\//,
+
+  coverageReportingPath: "logs/coverage/system-addon"
 };
 
 const preprocessors = {};
 preprocessors[PATHS.testFilesPattern] = ["webpack"];
 
 module.exports = function(config) {
+  const isTDD = config.tdd;
   config.set({
-    singleRun: true,
+    singleRun: !isTDD,
     browsers: ["Firefox"],
     frameworks: ["mocha", "sinon", "chai"],
-    reporters: ["mocha"],
+    reporters: ["mocha", "coverage"],
+    coverageReporter: {
+      dir: PATHS.coverageReportingPath,
+      // This will make karma fail if coverage reporting is less than the minimums here
+      check: !isTDD && {
+        global: {
+          statements: 100,
+          lines: 100,
+          functions: 100,
+          branches: 100
+        }
+      },
+      reporters: [
+        {type: "html", subdir: "report-html"},
+        {type: "text", subdir: ".", file: "text.txt"},
+        {type: "text-summary", subdir: ".", file: "text-summary.txt"}
+      ]
+    },
     files: [PATHS.testEntryFile],
     preprocessors,
     webpack: {
@@ -51,6 +71,16 @@ module.exports = function(config) {
                 ]
               }
             }]
+          },
+          {
+            enforce: "post",
+            test: /\.jsm$/,
+            loader: "istanbul-instrumenter-loader",
+            include: [path.resolve("system-addon")],
+            exclude: [
+              /\.test\.js$/,
+              path.resolve("system-addon/vendor")
+            ]
           }
         ]
       }
