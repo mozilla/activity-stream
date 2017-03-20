@@ -136,7 +136,7 @@
   },
   "locallyFetchMetadata20": {
     "name": "Fetch Page Content Locally",
-    "active": true,
+    "active": false,
     "description": "Make a network request for content of a URL",
     "control": {
       "value": false,
