@@ -1,14 +1,35 @@
-#!/usr/bin/env bash -x
+#!/usr/bin/env bash
 #
 # Forked from https://github.com/devtools-html/debugger.html/blob/master/bin/prepare-mochitests-dev
 #
 # This sets up a mozilla-central build for local mochitest development with an
-# exported activity-stream tree and a symlinked test directory.
+# exported activity-stream tree and test directory.
 
-ROOT=`dirname $0`
-FIREFOX_PATH="$ROOT/../../mozilla-central"
+# If AS_PMD_GIT_DIR (the git repo from which prepare-mochitests-dev will be
+# executed) isn't set in the environment, just use the repo we're running from.
+if [ -z ${AS_PMD_GIT_DIR+x} ]; then
+  ROOT=`dirname $0`
+  AS_PMD_GIT_DIR="../../../../activity-stream"
+else
+  ROOT=${AS_PMD_GIT_DIR}/bin
+fi
+
+# If AS_PINE_TEST_DIR (the git repo from which prepare-mochitests-dev will be
+# executed) isn't set in the environment, just use the mozilla-central sibling
+# of the repo we're running from.
+if [ -z ${AS_PINE_TEST_DIR+x} ]; then
+  FIREFOX_PATH="$ROOT/../../mozilla-central"
+else
+  FIREFOX_PATH=${AS_PINE_TEST_DIR}/mozilla-central
+fi
+
 MC_MODULE_PATH="$FIREFOX_PATH/browser/extensions/activity-stream"
-AS_ROOT_RELATIVE_TO_MC_AS="../../../../activity-stream"
+
+# By default, just use mozilla-central + the export.  If ENABLE_MC_AS is set to
+# 1, patch on top of mozilla-central + the export to turn on the AS pref and
+# turn on the tests.  Once AS is on by default in mozilla-central, stuff
+# related to ENABLE_MC_AS can go away entirely.
+ENABLE_MC_AS=${ENABLE_MC_AS-0}
 
 # This will either download or update the local Firefox repo
 "$ROOT/download-firefox-artifact"
@@ -17,16 +38,30 @@ if [ $? -ne 0 ]; then
   exit -1
 fi
 
-# Clean, package, and copy the activity stream files, default SYMLINK_TESTS to
-# true but allowing the environment to override so that calling scripts like
-# test-merges.js can export real files in order to have hg add them correctly
-# during the export phase.
+# blow away any old bits in order to workaround bug 1335976 for users
+# who are using the default objdir-frontend
+rm -f ${FIREFOX_PATH}/objdir-frontend/dist/bin/browser/features/@activity-streams/*
+
+# Clean, package, and copy the activity stream files.
 npm run buildmc
 
 # If someting goes sideways during export, don't keep going
 if [ $? -ne 0 ]; then
-  exit -1
+  exit $?
 fi
+
+# Patch mozilla-central (on top of the export) so that AS is preffed on, and
+# the mochitests are turned on.
+if [ $ENABLE_MC_AS ]; then
+  patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
+    --input=$AS_PMD_GIT_DIR/mozilla-central-patches/enable-mc-as.diff
+
+  # If someting goes sideways, don't keep going
+  if [ $? -ne 0 ]; then
+    exit $?
+  fi
+fi
+
 
 # Be sure that we've built, and that the test glop in the objdir has been
 # created.

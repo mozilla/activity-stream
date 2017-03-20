@@ -1,0 +1,20 @@
+diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
+--- a/browser/app/profile/firefox.js
++++ b/browser/app/profile/firefox.js
+@@ -1195,5 +1195,5 @@ pref("browser.newtabpage.directory.ping"
+ 
+ // activates Activity Stream
+-pref("browser.newtabpage.activity-stream.enabled", false);
++pref("browser.newtabpage.activity-stream.enabled", true);
+ 
+ // Enable the DOM fullscreen API.
+diff --git a/browser/extensions/activity-stream/test/functional/mochitest/browser.ini b/browser/extensions/activity-stream/test/functional/mochitest/browser.ini
+--- a/browser/extensions/activity-stream/test/functional/mochitest/browser.ini
++++ b/browser/extensions/activity-stream/test/functional/mochitest/browser.ini
+@@ -4,5 +4,5 @@
+ # The tests can be run locally using 'npm run mochitest' which does various
+ # overrides.
+-skip-if=!activity_stream
++#skip-if=!activity_stream
+ 
+ [browser_dummy_test.js]

@@ -21,7 +21,7 @@ github.authenticate({type: "token", token});
 const AS_REPO_OWNER = process.env.AS_REPO_OWNER || "mozilla";
 const AS_REPO_NAME = process.env.AS_REPO_NAME || "activity-stream";
 const AS_REPO = `${AS_REPO_OWNER}/${AS_REPO_NAME}`;
-const OLDEST_PR_DATE = "2017-03-02";
+const OLDEST_PR_DATE = "2017-03-17";
 const HG = "hg"; // mercurial
 const HG_BRANCH_NAME = "pine";
 const ALREADY_PUSHED_LABEL = "pushed-to-pine";
@@ -43,14 +43,22 @@ const TREEHERDER_PREFIX = "https://treeherder.mozilla.org/#/jobs?repo=pine&revis
 //
 // mozilla-central - the hg repo for firefox. Will be created if it doesn't
 // already exist.
-const WORKING_DIR = process.env.AS_PINE_TEST_DIR;
+const AS_PINE_TEST_DIR = process.env.AS_PINE_TEST_DIR;
+
+const TESTING_LOCAL_MC = path.join(AS_PINE_TEST_DIR, "mozilla-central");
 
 const SimpleGit = require("simple-git");
-const TESTING_GIT_AS = path.join(WORKING_DIR, AS_REPO_NAME);
-const git = new SimpleGit(TESTING_GIT_AS);
+const TESTING_LOCAL_GIT = path.join(AS_PINE_TEST_DIR, AS_REPO_NAME);
+const git = new SimpleGit(TESTING_LOCAL_GIT);
 
-const PREPARE_MOCHITESTS_DEV = path.join(TESTING_GIT_AS, "bin", "prepare-mochitests-dev");
-const TESTING_LOCAL_MC = path.join(WORKING_DIR, "mozilla-central");
+// Mostly useful to specify during development of the test automation so that
+// prepare-mochitests-dev and friends from the development repo get used
+// instead of from the testing repo, which won't have had any changes checked in
+// just yet.
+const AS_PMD_GIT_DIR = process.env.AS_PMD_GIT_DIR || TESTING_LOCAL_GIT;
+
+const PREPARE_MOCHITESTS_DEV =
+  path.join(AS_PMD_GIT_DIR, "bin", "prepare-mochitests-dev");
 
 /**
  * Find all PRs merged since ${OLDEST_PR_DATE} that don't have
@@ -112,7 +120,7 @@ function getPRMergeCommitId(prNumber) {
 }
 
 /**
- * Checks out the given commit into ${TESTING_GIT_AS}
+ * Checks out the given commit into ${TESTING_LOCAL_GIT}
  *
  * @param  {String} commitId
  * @return {Promise<String|?>}    resolves with commitId on checkout completion,
@@ -145,8 +153,11 @@ function exportToLocalMC(commitId) {
     console.log("Preparing mochitest dev environment...");
     // Weirdly, /bin/yes causes npm-run-all bundle-static to explode, so we
     // use echo.
-    shelljs.exec(`echo yes | SYMLINK_TESTS=false bash -x ${PREPARE_MOCHITESTS_DEV}`,
-      {async: true, cwd: TESTING_GIT_AS, silent: false}, (code, stdout, stderr) => {
+    shelljs.exec(`
+      echo yes | \
+      env AS_PMD_GIT_DIR=${AS_PMD_GIT_DIR} SYMLINK_TESTS=false ENABLE_MC_AS=1 \
+      bash ${PREPARE_MOCHITESTS_DEV}`,
+      {async: true, cwd: TESTING_LOCAL_GIT, silent: false}, (code, stdout, stderr) => {
         if (code) {
           reject(new Error(`${PREPARE_MOCHITESTS_DEV} failed, exit code: ${code}`));
           return;
