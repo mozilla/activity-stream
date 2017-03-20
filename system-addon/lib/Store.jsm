@@ -25,13 +25,6 @@ this.Store = class Store {
    */
   constructor() {
     this._middleware = this._middleware.bind(this);
-    this.feeds = new Set();
-    this._mm = new MessageManager({dispatch: this.dispatch});
-    this._store = redux.createStore(
-      redux.combineReducers(reducers),
-      redux.applyMiddleware(this._middleware, this._mm.middleware)
-    );
-
     // Bind each redux method so we can call it directly from the Store. E.g.,
     // store.dispatch() will call store._store.dispatch();
     ["dispatch", "getState", "subscribe"].forEach(method => {
@@ -39,6 +32,12 @@ this.Store = class Store {
         return this._store[method](...args);
       }.bind(this);
     });
+    this.feeds = new Set();
+    this._mm = new MessageManager({dispatch: this.dispatch});
+    this._store = redux.createStore(
+      redux.combineReducers(reducers),
+      redux.applyMiddleware(this._middleware, this._mm.middleware)
+    );
   }
 
   /**

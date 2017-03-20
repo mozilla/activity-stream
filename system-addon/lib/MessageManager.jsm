@@ -30,9 +30,7 @@ const DEFAULT_OPTIONS = {
 
 class MessageManager {
   constructor(options = {}) {
-    Object.keys(DEFAULT_OPTIONS).forEach(o => {
-      this[o] = typeof options[o] !== "undefined" ?  options[o] : DEFAULT_OPTIONS[o];
-    });
+    Object.assign(this, DEFAULT_OPTIONS, options);
     this.channel = null;
 
     this.middleware = this.middleware.bind(this);
@@ -57,7 +55,7 @@ class MessageManager {
   }
 
   onActionFromContent(action, targetId) {
-    this.dispatch(ac.SendToMain(action, {fromTarget: targetId})); // todo: add TargetID
+    this.dispatch(ac.SendToMain(action, {fromTarget: targetId}));
   }
 
   broadcast(action) {
@@ -123,7 +121,6 @@ class MessageManager {
    * @param  {obj} msg The messsage from a page that was just loaded
    */
   onNewTabLoad(msg) {
-    const id = msg.target.portID;
     this.onActionFromContent({type: at.NEW_TAB_LOAD}, msg.target.portID);
   }
 
