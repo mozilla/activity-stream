@@ -1,28 +1,27 @@
 .prefs-pane {
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 11000;
+  font-size: 13px;
 
-  .modal {
-    margin: 70px auto 0;
-    max-width: $wrapper-max-width;
-    position: relative;
-    width: 90%;
+  .sidebar {
+    background: $white;
+    border-left: solid 1px $faintest-black;
+    box-shadow: $sidebar-shadow;
+    min-height: 100%;
+    padding: 40px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 400px;
+    z-index: 11000;
 
     h1 {
       border-bottom: solid 1px $faintest-black;
-      font-size: 27px;
+      font-size: 24px;
       margin: 0;
       padding: 20px 0;
     }
   }
 
   .prefs-modal-inner-wrapper {
-    padding: 20px 125px;
-
     section {
       margin: 20px 0;
 
@@ -31,7 +30,7 @@
       }
 
       label {
-        font-size: 17px;
+        font-size: 16px;
         font-weight: bold;
         position: relative;
 
@@ -42,6 +41,10 @@
         }
       }
     }
+  }
+
+  .actions {
+    padding: 15px 0;
   }
 
   // CSS styled checkbox
@@ -110,11 +113,12 @@
     background-color: transparent;
     border: 0;
     cursor: pointer;
+    opacity: 0.7;
     padding: 15px;
     position: absolute;
-    right: 5px;
-    top: 5px;
-    z-index: 11002;
+    right: 15px;
+    top: 15px;
+    z-index: 11001;
 
     &:hover {
       background-color: $very-light-grey;

@@ -7,6 +7,18 @@ const {injectIntl, FormattedMessage} = require("react-intl");
 const PreferencesPane = React.createClass({
   getDefaultProps() {return {dispatch: () => {}};},
   getInitialState() {return {showPane: false};},
+  componentDidMount() {
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  componentWillUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
+  },
+  handleClickOutside(event) {
+    // if we are showing the sidebar and there is a click outside, close it.
+    if (this.refs.sidebar && !this.refs.wrapper.contains(event.target)) {
+      this.togglePane();
+    }
+  },
   handleChange(event) {
     const target = event.target;
     this.props.dispatch(actions.NotifyPrefChange(target.name, target.checked));
@@ -24,7 +36,7 @@ const PreferencesPane = React.createClass({
     const {showSearch, showTopSites, showHighlights} = this.props.Prefs.prefs;
 
     return (
-      <div className="prefs-pane-wrapper">
+      <div className="prefs-pane-wrapper" ref="wrapper">
         <div className="prefs-pane-button">
           <button
             ref="prefs-button"
@@ -34,8 +46,7 @@ const PreferencesPane = React.createClass({
         </div>
         {this.state.showPane &&
           <div className="prefs-pane">
-            <div className="modal-overlay" />
-            <div className="modal" ref="modal">
+            <div className="sidebar" ref="sidebar">
               <div className="prefs-modal-inner-wrapper">
                 <h1><FormattedMessage id="settings_pane_header" /></h1>
                 <p><FormattedMessage id="settings_pane_body" /></p>
