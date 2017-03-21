@@ -30,14 +30,38 @@
       }
 
       label {
-        font-size: 16px;
-        font-weight: bold;
         position: relative;
 
         input {
           left: -30px;
           position: absolute;
           top: 0;
+        }
+      }
+
+      > label {
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .options {
+        background: $bg-grey;
+        border: solid 1px $faintest-black;
+        border-radius: $border-radius;
+        margin: 15px 0 15px 30px;
+        padding: 10px;
+
+        label {
+          display: inline-block;
+          font-weight: normal;
+          height: 21px;
+          line-height: 21px;
+        }
+      }
+
+      &.disabled {
+        .options {
+          opacity: 0.5;
         }
       }
     }

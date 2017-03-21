@@ -33,7 +33,7 @@ const PreferencesPane = React.createClass({
     }));
   },
   render() {
-    const {showSearch, showTopSites, showHighlights} = this.props.Prefs.prefs;
+    const {showSearch, showTopSites, showHighlights, showMoreTopSites} = this.props.Prefs.prefs;
 
     return (
       <div className="prefs-pane-wrapper" ref="wrapper">
@@ -57,12 +57,18 @@ const PreferencesPane = React.createClass({
                   </label>
                   <p><FormattedMessage id="settings_pane_search_body" /></p>
                 </section>
-                <section>
+                <section className={showTopSites ? "" : "disabled"}>
                   <input ref="showTopSitesCheckbox" type="checkbox" id="showTopSites" name="showTopSites" checked={showTopSites} onChange={this.handleChange} />
                   <label htmlFor="showTopSites">
                     <FormattedMessage id="settings_pane_topsites_header" />
                   </label>
                   <p><FormattedMessage id="settings_pane_topsites_body" /></p>
+                  <div className="options">
+                    <input ref="showMoreTopSites" type="checkbox" id="showMoreTopSites" name="showMoreTopSites" checked={showMoreTopSites} onChange={this.handleChange} disabled={!showTopSites} />
+                    <label htmlFor="showMoreTopSites">
+                      <FormattedMessage id="settings_pane_topsites_options_showmore" />
+                    </label>
+                  </div>
                 </section>
                 <section>
                   <input ref="showHighlightsCheckbox" type="checkbox" id="showHighlights" name="showHighlights" checked={showHighlights} onChange={this.handleChange} />
