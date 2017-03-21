@@ -8,4 +8,5 @@ firefox/
 logs/
 stats.json
 system-addon/vendor/
+system-addon/data/content/
 test/test-ColorAnalyzer.js
