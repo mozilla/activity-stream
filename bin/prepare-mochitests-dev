@@ -1,22 +1,22 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -x
 #
 # Forked from https://github.com/devtools-html/debugger.html/blob/master/bin/prepare-mochitests-dev
 #
 # This sets up a mozilla-central build for local mochitest development with an
 # exported activity-stream tree and test directory.
 
-# If AS_PMD_GIT_DIR (the git repo from which prepare-mochitests-dev will be
-# executed) isn't set in the environment, just use the repo we're running from.
-if [ -z ${AS_PMD_GIT_DIR+x} ]; then
+# If AS_GIT_BIN_REPO (the git repo from which prepare-mochitests-dev and
+# friends will be executed) isn't set in the environment, just use the repo
+#  we're running from.
+if [ -z ${AS_GIT_BIN_REPO+x} ]; then
   ROOT=`dirname $0`
-  AS_PMD_GIT_DIR="../../../../activity-stream"
+  AS_GIT_BIN_REPO="../../../../activity-stream"
 else
-  ROOT=${AS_PMD_GIT_DIR}/bin
+  ROOT=${AS_GIT_BIN_REPO}/bin
 fi
 
-# If AS_PINE_TEST_DIR (the git repo from which prepare-mochitests-dev will be
-# executed) isn't set in the environment, just use the mozilla-central sibling
-# of the repo we're running from.
+# Compute the mozilla-central path based on whether AS_PINE_TEST_DIR is set
+# (i.e. whether this script has been called from test-merges.js)
 if [ -z ${AS_PINE_TEST_DIR+x} ]; then
   FIREFOX_PATH="$ROOT/../../mozilla-central"
 else
@@ -45,20 +45,22 @@ rm -f ${FIREFOX_PATH}/objdir-frontend/dist/bin/browser/features/@activity-stream
 # Clean, package, and copy the activity stream files.
 npm run buildmc
 
-# If someting goes sideways during export, don't keep going
-if [ $? -ne 0 ]; then
-  exit $?
+# If someting goes sideways, don't keep going
+exit_code=$?
+if [ $exit_code -ne 0 ]; then
+  exit $exit_code
 fi
 
 # Patch mozilla-central (on top of the export) so that AS is preffed on, and
 # the mochitests are turned on.
 if [ $ENABLE_MC_AS ]; then
   patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
-    --input=$AS_PMD_GIT_DIR/mozilla-central-patches/enable-mc-as.diff
+    --input=$AS_GIT_BIN_REPO/mozilla-central-patches/enable-mc-as.diff
 
   # If someting goes sideways, don't keep going
-  if [ $? -ne 0 ]; then
-    exit $?
+  exit_code=$?
+  if [ $exit_code -ne 0 ]; then
+    exit $exit_code
   fi
 fi
 

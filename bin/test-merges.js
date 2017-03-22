@@ -55,10 +55,10 @@ const git = new SimpleGit(TESTING_LOCAL_GIT);
 // prepare-mochitests-dev and friends from the development repo get used
 // instead of from the testing repo, which won't have had any changes checked in
 // just yet.
-const AS_PMD_GIT_DIR = process.env.AS_PMD_GIT_DIR || TESTING_LOCAL_GIT;
+const AS_GIT_BIN_REPO = process.env.AS_GIT_BIN_REPO || TESTING_LOCAL_GIT;
 
 const PREPARE_MOCHITESTS_DEV =
-  path.join(AS_PMD_GIT_DIR, "bin", "prepare-mochitests-dev");
+  path.join(AS_GIT_BIN_REPO, "bin", "prepare-mochitests-dev");
 
 /**
  * Find all PRs merged since ${OLDEST_PR_DATE} that don't have
@@ -155,8 +155,8 @@ function exportToLocalMC(commitId) {
     // use echo.
     shelljs.exec(`
       echo yes | \
-      env AS_PMD_GIT_DIR=${AS_PMD_GIT_DIR} SYMLINK_TESTS=false ENABLE_MC_AS=1 \
-      bash ${PREPARE_MOCHITESTS_DEV}`,
+        env AS_GIT_BIN_REPO=${AS_GIT_BIN_REPO} SYMLINK_TESTS=false \
+        ENABLE_MC_AS=1 ${PREPARE_MOCHITESTS_DEV}`,
       {async: true, cwd: TESTING_LOCAL_GIT, silent: false}, (code, stdout, stderr) => {
         if (code) {
           reject(new Error(`${PREPARE_MOCHITESTS_DEV} failed, exit code: ${code}`));
@@ -286,7 +286,10 @@ function pushPR(pr) {
     // label with ${ALREADY_PUSHED_LABEL}
     .then(() => labelGithubPR(pr.number))
 
-    .catch(reason => console.log(reason));
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
 }
 
 function main() {
