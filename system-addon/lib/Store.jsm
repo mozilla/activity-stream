@@ -16,7 +16,8 @@ const {reducers} = Cu.import("resource://activity-stream/common/Reducers.jsm", {
  *         It also accepts an array of "Feeds" on inititalization, which
  *         can listen for any action that is dispatched through the store.
  */
-class Store {
+this.Store = class Store {
+
   /**
    * constructor - The redux store and message manager are created here,
    *               but no listeners are added until "init" is called.
@@ -29,14 +30,11 @@ class Store {
       redux.applyMiddleware(this._middleware)
     );
 
-
+    // Bind each redux method so we can call it directly from the Store. E.g.,
+    // store.dispatch() will call store._store.dispatch();
     ["dispatch", "getState", "subscribe"].forEach(method => {
-      /**
-       * This binds each redux method so we can call it directly from the Store.
-       * e.g. store.dispatch() will call store._store.dispatch();
-       */
-      this[method] = function() {
-        return this._store[method].apply(this._store, arguments);
+      this[method] = function(...args) {
+        return this._store[method](...args);
       }.bind(this);
     });
   }
@@ -79,7 +77,6 @@ class Store {
     this.feeds.clear();
     this.dispatch({type: at.UNINIT});
   }
-}
+};
 
-this.Store = Store;
 this.EXPORTED_SYMBOLS = ["Store"];

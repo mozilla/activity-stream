@@ -1,4 +1,4 @@
-const {GlobalOverrider, getBaseOverrides} = require("test/unit/utils");
+const {GlobalOverrider} = require("test/unit/utils");
 
 const req = require.context(".", true, /\.test\.js$/);
 const files = req.keys();

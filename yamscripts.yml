@@ -57,7 +57,7 @@ scripts:
   buildmc:
     pre: =>export:clean
     # Copy over the entire mozilla-central directory
-    copy: cpx "system-addon/**/*" ../mozilla-central/browser/extensions/activity-stream
+    copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream
 
 # startmc: Start developing the bootstrapped add-on
   startmc: =>prebuildmc && =>buildmc:copy -- -w
@@ -87,7 +87,7 @@ scripts:
 
 # lint: Run eslint and sass-lint
   lint:
-    eslint: esw --ext=.js,.jsx,.json . .storybook
+    eslint: esw --ext=.js,.jsm,.json . .storybook
     sasslint: sass-lint -v -q
 
 # strings-export: Copy newest en-US strings to strings repository

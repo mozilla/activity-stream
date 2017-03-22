@@ -1,4 +1,4 @@
-const {Store} = require("lib/Store.jsm")
+const {Store} = require("lib/Store.jsm");
 const {actionTypes: at} = require("common/Actions.jsm");
 const {createStore} = require("redux");
 const {addNumberReducer} = require("test/unit/utils");
@@ -27,7 +27,7 @@ describe("Store", () => {
       sandbox.spy(store, "dispatch");
 
       store.init();
-      
+
       assert.calledWith(store.dispatch, {type: at.INIT});
     });
     it("should dispatch an init action", () => {
@@ -99,7 +99,6 @@ describe("Store", () => {
   });
   describe("#subscribe", () => {
     it("should subscribe to changes to the store", () => {
-      const {subscribe} = store;
       const sub = sinon.spy();
       const action = {type: "FOO"};
 

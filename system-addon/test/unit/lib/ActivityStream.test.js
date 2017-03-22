@@ -7,9 +7,7 @@ describe("ActivityStream", () => {
   before(() => {
     sandbox = sinon.sandbox.create();
     function NewTabInit() {}
-    ({ActivityStream} = injector({
-      "lib/NewTabInit.jsm": {NewTabInit}
-    }));
+    ({ActivityStream} = injector({"lib/NewTabInit.jsm": {NewTabInit}}));
   });
 
   afterEach(() => sandbox.restore());

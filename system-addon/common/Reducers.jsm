@@ -40,8 +40,6 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
 }
 
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {
-  TopSites
-};
+this.reducers = {TopSites};
 
 this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE"];

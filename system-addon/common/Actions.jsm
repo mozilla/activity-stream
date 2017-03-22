@@ -5,7 +5,7 @@
 
 const actionTypes = [
   "INIT",
-  "UNINIT",
+  "UNINIT"
 
 // The line below creates an object like this:
 // {

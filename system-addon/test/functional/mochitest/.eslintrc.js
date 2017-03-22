@@ -1,4 +1,4 @@
-{
+module.exports = {
   "globals": {
     "add_task": false,
     "Assert": false,
@@ -39,4 +39,4 @@
     "waitForExplicitFinish": false,
     "waitForFocus": false
   }
-}
+};
