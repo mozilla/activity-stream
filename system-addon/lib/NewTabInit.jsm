@@ -10,7 +10,7 @@ const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.j
  * NewTabInit - A placeholder for now. This will send a copy of the state to all
  *              newly opened tabs.
  */
-class NewTabInit {
+this.NewTabInit = class NewTabInit {
   onAction(action) {
     switch (action.type) {
       // TODO: Replace with sending a copy of the state when a NEW_TAB_LOAD action is received
@@ -18,7 +18,6 @@ class NewTabInit {
         dump(`\n${JSON.stringify(this.store.getState(), 0, 2)}\n`);
     }
   }
-}
+};
 
-this.NewTabInit = NewTabInit;
 this.EXPORTED_SYMBOLS = ["NewTabInit"];

@@ -9,7 +9,7 @@ const {Store} = Cu.import("resource://activity-stream/lib/Store.jsm", {});
 // Feeds
 const {NewTabInit} = Cu.import("resource://activity-stream/lib/NewTabInit.jsm", {});
 
-class ActivityStream {
+this.ActivityStream = class ActivityStream {
 
   /**
    * constructor - Initializes an instance of ActivityStream
@@ -34,6 +34,6 @@ class ActivityStream {
     this.store.uninit();
     this.initialized = false;
   }
-}
+};
 
 this.EXPORTED_SYMBOLS = ["ActivityStream"];

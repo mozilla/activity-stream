@@ -21,7 +21,9 @@ class GlobalOverrider {
       // Components can be reassigned, but it will subsequently throw a deprecation
       // error in Firefox which will stop execution. Adding the assignment statement
       // to a try/catch block will prevent this from happening.
-      try {global[key] = value} catch (e) {}
+      try {
+        global[key] = value;
+      } catch (e) {} // eslint-disable-line no-empty
       return;
     }
     if (!this.originalGlobals.has(key)) {
@@ -71,7 +73,7 @@ class GlobalOverrider {
  * addNumberReducer - a simple dummy reducer for testing that adds a number
  */
 function addNumberReducer(prevState = 0, action) {
-  return action.type === "ADD" ? prevState + action.data : prevState
+  return action.type === "ADD" ? prevState + action.data : prevState;
 }
 
 module.exports = {

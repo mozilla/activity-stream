@@ -1,6 +1,5 @@
 activity-streams-env/
 addon/ColorAnalyzer.js
-addon/SimpleStorage.js
 common/vendor.js
 data/content/
 data/locales/
@@ -8,6 +7,5 @@ dist/
 firefox/
 logs/
 stats.json
+system-addon/vendor/
 test/test-ColorAnalyzer.js
-test/test-SimpleStorage.js
-system-addon/

@@ -1,4 +1,4 @@
-{
+module.exports = {
   // When adding items to this file please check for effects on sub-directories.
   "parserOptions": {
     "ecmaFeatures": {
@@ -12,6 +12,8 @@
     "node": true,
   },
   "globals": {
+    "Components": false,
+    "dump": true,
     "StopIteration": true,
     "__CONFIG__": true,
     "platform_exports": true,
@@ -283,4 +285,4 @@
     "yield-star-spacing": [2, "after"],
     "yoda": [2, "never"]
   }
-}
+};
