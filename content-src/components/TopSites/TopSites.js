@@ -185,8 +185,8 @@ TopSites.propTypes = {
 };
 
 const EditTopSites = React.createClass({
-  getDefaultProps() {return {dispatch: () => {}};},
-  getInitialState() {return {showEdit: false};},
+  getDefaultProps() { return {dispatch: () => {}}; },
+  getInitialState() { return {showEdit: false}; },
   toggleEdit() {
     const showingEdit = this.state.showEdit;
     this.setState({showEdit: !showingEdit});

@@ -3,7 +3,7 @@ const {SimpleStorage} = simpleStorage;
 
 describe("SimpleStorage", () => {
   let instance;
-  beforeEach(() => {instance = new SimpleStorage();});
+  beforeEach(() => { instance = new SimpleStorage(); });
   it("should have a .storage property", () => {
     assert.property(instance, "storage");
     assert.isObject(instance.storage);

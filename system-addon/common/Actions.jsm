@@ -13,7 +13,7 @@ const actionTypes = [
 //   UNINIT: "UNINIT"
 // }
 // It prevents accidentally adding a different key/value name.
-].reduce((obj, type) => {obj[type] = type; return obj;}, {});
+].reduce((obj, type) => { obj[type] = type; return obj; }, {});
 
 this.actionTypes = actionTypes;
 this.EXPORTED_SYMBOLS = ["actionTypes"];

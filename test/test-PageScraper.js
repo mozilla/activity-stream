@@ -196,7 +196,7 @@ before(exports, () => {
       return {images: raw.images, title: raw.title, favicon_url: raw.favicon_url, url, metadata: raw.metadata, cache_key: url};
     }
   };
-  gPageScraper._fetchContent = function() {return DUMMY_PARSED_METADATA;};
+  gPageScraper._fetchContent = function() { return DUMMY_PARSED_METADATA; };
 });
 
 after(exports, () => {

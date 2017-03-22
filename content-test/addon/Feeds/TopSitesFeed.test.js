@@ -1,6 +1,6 @@
 const testLinks = [{url: "http://foo.com/"}, {url: "http://bar.com/"}];
 const getCachedMetadata = links => links.map(
-  link => {link.hasMetadata = true; return link;}
+  link => { link.hasMetadata = true; return link; }
 );
 const PlacesProvider = {links: {getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))}};
 const testScreenshot = "screenshot.jpg";
@@ -16,7 +16,7 @@ describe("TopSitesFeed", () => {
     PlacesProvider.links.getTopFrecentSites.reset();
     reduxState = {Experiments: {values: {}}};
     instance = new TopSitesFeed({getCachedMetadata});
-    instance.store = {getState() {return reduxState;}};
+    instance.store = {getState() { return reduxState; }};
     instance.getScreenshot = sinon.spy(() => testScreenshot);
     sinon.spy(instance.options, "getCachedMetadata");
   });
@@ -123,7 +123,7 @@ describe("TopSitesFeed", () => {
     it("should set missingData to true if screenshot experiment is enabled and a topsite is missing metadata", () => {
       reduxState.Experiments.values.screenshotsAsync = true;
       instance.options.getCachedMetadata = links => links.map(
-        link => {link.hasMetadata = false; return link;}
+        link => { link.hasMetadata = false; return link; }
       );
       return instance.getData().then(result => {
         assert.equal(instance.missingData, true);

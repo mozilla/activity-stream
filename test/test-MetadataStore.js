@@ -372,7 +372,7 @@ exports.test_data_expiry = function*(assert) {
       if (items.length === expected) {
         isDeleted = true;
       }
-    }).catch(err => {throw new Error(err);});
+    }).catch(err => { throw new Error(err); });
     return false;
   }, 500);
 

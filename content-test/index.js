@@ -10,7 +10,7 @@ describe("ActivtyStreams", () => {
   let restores;
   before(() => {
     restores = [
-      overrideConsoleError(message => {throw new Error(message);}),
+      overrideConsoleError(message => { throw new Error(message); }),
       overrideGlobals(globals)
     ];
   });

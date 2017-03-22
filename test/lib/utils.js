@@ -85,13 +85,13 @@ function getTestSearchProvider() {
 
 function getTestActivityStream(options = {}) {
   const mockMetadataStore = {
-    asyncConnect() {return Promise.resolve();},
-    asyncReset() {return Promise.resolve();},
-    asyncClose() {return Promise.resolve();},
-    asyncInsert() {return Promise.resolve();},
-    asyncGetMetadataByCacheKey() {return Promise.resolve([]);},
-    asyncGetOldestInsert() {return Promise.resolve([0]);},
-    asyncCountAllItems() {return Promise.resolve([0]);}
+    asyncConnect() { return Promise.resolve(); },
+    asyncReset() { return Promise.resolve(); },
+    asyncClose() { return Promise.resolve(); },
+    asyncInsert() { return Promise.resolve(); },
+    asyncGetMetadataByCacheKey() { return Promise.resolve([]); },
+    asyncGetOldestInsert() { return Promise.resolve([0]); },
+    asyncCountAllItems() { return Promise.resolve([0]); }
   };
   const mockPageScraper = {
     options: {framescriptPath: ""},
