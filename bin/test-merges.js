@@ -142,7 +142,6 @@ function checkoutGitCommit(commitId) {
           return;
         }
         resolve(commitId);
-        return;
       });
     });
   });
@@ -164,7 +163,6 @@ function exportToLocalMC(commitId) {
         }
 
         resolve(commitId);
-        return;
       });
   });
 }
@@ -181,7 +179,6 @@ function commitToHg(commitId) {
         }
 
         resolve(code);
-        return;
       }
     );
   });
@@ -205,7 +202,6 @@ function pushToHgProjectBranch() {
         // Grab the last linked revision from the push output
         const rev = stdout.split(/(?:\/rev\/|changeset=)/).slice(-1)[0].split("\n")[0];
         resolve(`[Treeherder: ${rev}](${TREEHERDER_PREFIX}${rev})`);
-        return;
       }
     );
   });
@@ -226,7 +222,6 @@ function stripTipFromHg() {
         }
 
         resolve(code);
-        return;
       }
     );
   });
