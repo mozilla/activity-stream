@@ -41,8 +41,7 @@ function doGetFile(path, allowNonexistent) {
     }
 
     return lf;
-  }
-  catch (ex) {
+  } catch (ex) {
     doThrow(ex.toString(), Cs.caller);
   }
 

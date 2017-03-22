@@ -28,10 +28,9 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
           // If there is no data, we definitely can't load more.
           if (!action.data || !action.data.length) {
             state.canLoadMore = false;
-          }
-          // If the results returned are less than the query size,
-          // we should be on our last page of results.
-          else if (querySize && action.data.length < querySize) {
+          } else if (querySize && action.data.length < querySize) {
+            // If the results returned are less than the query size, we should
+            // be on our last page of results.
             state.canLoadMore = false;
           }
         }

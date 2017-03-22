@@ -396,9 +396,8 @@ MetadataStore.prototype = {
         // check if caller wants to handle query raws
         if (callback) {
           callback(aRow);
-        }
-        // otherwise fill in the item and add items array
-        else {
+        } else {
+          // otherwise fill in the item and add items array
           let item = null;
           // if columns array is given construct an object
           if (columns && Array.isArray(columns)) {
@@ -451,8 +450,7 @@ MetadataStore.prototype = {
           columns: ["id", "cache_key", "places_url", "title", "type", "description", "media_url", "provider_name", "metadata_source"]
         }
       );
-    }
-    catch (e) {
+    } catch (e) {
       Cu.reportError(`Failed to fetch metadata by cacheKey: ${e.message}`);
       throw e;
     }
