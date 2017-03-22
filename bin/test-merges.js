@@ -136,9 +136,9 @@ function checkoutGitCommit(commitId) {
         return;
       }
       console.log(`Starting github checkout of ${commitId}...`);
-      git.checkout(commitId, (err, data) => {
-        if (err) {
-          reject(err);
+      git.checkout(commitId, (err2, data2) => {
+        if (err2) {
+          reject(err2);
           return;
         }
         resolve(commitId);

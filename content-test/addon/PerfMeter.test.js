@@ -110,7 +110,7 @@ describe("PerfMeter", () => {
       assert.deepEqual(perfMeter._tabs, {});
     });
     it("should remove listeners for all tabs", () => {
-      const tabs = [
+      tabs = [
         new Tab({url: TEST_URL}),
         new Tab({url: TEST_URL})
       ];
@@ -140,11 +140,11 @@ describe("PerfMeter", () => {
   });
   describe("#onOpen", () => {
     let tab;
-    function setup() {
+    function setupOpen() {
       tab = new Tab({url: TEST_URL});
       perfMeter.onOpen(tab);
     }
-    beforeEach(setup);
+    beforeEach(setupOpen);
     it("should add an object at ._tabs[id], where id is the id of tab", () => {
       const tabData = perfMeter._tabs[tab.id];
       assert.isObject(tabData);
@@ -166,7 +166,7 @@ describe("PerfMeter", () => {
     });
     it("should call .displayItem", () => {
       sinon.spy(perfMeter, "displayItem");
-      setup();
+      setupOpen();
       assert.calledWith(perfMeter.displayItem, tab.id, {tag: "TAB_OPEN", start: 0});
     });
   });

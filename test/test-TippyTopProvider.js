@@ -44,15 +44,12 @@ exports["test TippyTopProvider processSite"] = function(assert) {
           background_color: "#ddd"
         }
       };
-      function getDomain(url) {
-        let domain = new URL(url).host;
-        if (domain && domain.startsWith("www.")) {
-          domain = domain.slice(4);
-        }
-        return domain;
+
+      let domain = new URL(url).host;
+      if (domain && domain.startsWith("www.")) {
+        domain = domain.slice(4);
       }
 
-      let domain = getDomain(url);
       if (domain in sites) {
         return sites[domain];
       }

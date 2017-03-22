@@ -43,7 +43,7 @@ class GlobalOverrider {
   set(key, value) {
     if (!value && typeof key === "object") {
       const overrides = key;
-      Object.keys(overrides).forEach(key => this._override(key, overrides[key]));
+      Object.keys(overrides).forEach(k => this._override(k, overrides[k]));
     } else {
       this._override(key, value);
     }

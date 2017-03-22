@@ -16,7 +16,7 @@ module.exports = function selectAndDedupe(group) {
     let current;
     let sites = options.defaults ? options.sites.concat(options.defaults) : options.sites;
     if (result.length) {
-      const previous = result.reduce((prev, current) => prev.concat(current), []);
+      const previous = result.reduce((prev, item) => prev.concat(item), []);
       current = dedupe.group([previous, sites])[1];
     } else {
       current = dedupe.one(sites);

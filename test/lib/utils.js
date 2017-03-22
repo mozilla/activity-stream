@@ -26,7 +26,7 @@ function doGetFile(path, allowNonexistent) {
       .get("CurWorkD", Ci.nsILocalFile);
 
     let bits = path.split("/");
-    for (let bit of bits.filter(bit => bit)) {
+    for (let bit of bits.filter(b => b)) {
       if (bit !== "..") {
         lf.append(bit);
       } else {
