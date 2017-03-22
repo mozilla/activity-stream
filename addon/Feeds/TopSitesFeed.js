@@ -76,9 +76,9 @@ module.exports = class TopSitesFeed extends Feed {
         // When a user visits a site, if we don't have enough top sites yet, refresh the data.
         if (state.TopSites.rows.length < TOP_SITES_SHOWMORE_LENGTH) {
           this.refresh("there were not enough sites");
-        }
-        // When a user visits a site, if the last time we refreshed the data is greater than 15 minutes, refresh the data.
-        else if (Date.now() - this.state.lastUpdated >= UPDATE_TIME) {
+        } else if (Date.now() - this.state.lastUpdated >= UPDATE_TIME) {
+          // When a user visits a site, if the last time we refreshed the data
+          // is greater than 15 minutes, refresh the data.
           this.refresh("the sites were too old");
         }
         break;

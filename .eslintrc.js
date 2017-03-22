@@ -70,7 +70,7 @@ module.exports = {
     "arrow-spacing": 2,
     "block-scoped-var": 2,
     "block-spacing": [2, "always"],
-    "brace-style": 0,
+    "brace-style": [2, "1tbs", { "allowSingleLine": true }],
     "callback-return": 0,
     "camelcase": 0,
     "comma-dangle": [2, "never"],

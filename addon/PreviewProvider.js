@@ -401,8 +401,7 @@ PreviewProvider.prototype = {
           link.favicon_width = width;
           link.favicon_height = height;
         }
-      }
-      catch (err) {}  // eslint-disable-line no-empty
+      } catch (err) {}  // eslint-disable-line no-empty
     }
   }),
 
