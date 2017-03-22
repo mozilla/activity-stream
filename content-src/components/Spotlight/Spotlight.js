@@ -38,6 +38,8 @@ const SpotlightItem = React.createClass({
 
     if (imageUrl) {
       style.backgroundImage = `url(${imageUrl})`;
+    } else if (site.screenshot) {
+      style.backgroundImage = `url(${site.screenshot})`;
     } else {
       style.backgroundColor = site.backgroundColor;
       this.props.dispatch(actions.NotifyUndesiredEvent({
@@ -45,7 +47,7 @@ const SpotlightItem = React.createClass({
         source: "HIGHLIGHTS"
       }));
     }
-    return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu})}>
+    return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu, screenshot: site.screenshot})}>
       <a onClick={this.props.onClick} className="spotlight-inner" href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image">
           <SiteIcon className="spotlight-icon" height={40} width={40} site={site} ref="icon" showBackground={true} border={false} faviconSize={32} />

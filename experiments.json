@@ -178,5 +178,20 @@
       "threshold": 0.3,
       "description": "Show screenshots"
     }
+  },
+  "bookmarkScreenshots": {
+    "name": "Screenshots for Highlights",
+    "active": true,
+    "description": "Show a screenshot for Highlights that otherwise don't have an image",
+    "control": {
+      "value": false,
+      "description": "Don't show screenshots in Highlights"
+    },
+    "variant": {
+      "id": "exp-013-bookmark-screenshots",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Show screenshots in Highlights"
+    }
   }
 }

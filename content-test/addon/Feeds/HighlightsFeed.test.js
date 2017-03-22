@@ -1,11 +1,13 @@
-const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
-const oldTestLinks = [{url: "boo.com"}, {url: "far.com"}];
-const getCachedMetadata = sites => sites.map(site => site.url.toUpperCase());
 const {TOP_SITES_DEFAULT_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const moment = require("moment");
 const {SimplePrefs} = require("sdk/simple-prefs");
 
 const simplePrefs = new SimplePrefs();
+const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
+const oldTestLinks = [{url: "boo.com"}, {url: "far.com"}];
+const getCachedMetadata = links => links.map(
+  link => { link.hasMetadata = true; return link; }
+);
 const PlacesProvider = {
   links: {
     getAllHistoryItems: sinon.spy(() => Promise.resolve(testLinks)),
@@ -13,6 +15,8 @@ const PlacesProvider = {
     getHighlightsLinks: sinon.spy(() => Promise.resolve(oldTestLinks))
   }
 };
+const testScreenshot = "screenshot.jpg";
+
 class Recommender {
   constructor(...args) {
     this.args = args;
@@ -28,15 +32,19 @@ const createStoreWithState = state => ({
 describe("HighlightsFeed", () => {
   let HighlightsFeed;
   let instance;
+  let reduxState;
   beforeEach(() => {
     HighlightsFeed = require("inject!addon/Feeds/HighlightsFeed")({
       "addon/PlacesProvider": {PlacesProvider},
       "sdk/simple-prefs": simplePrefs,
-      "common/recommender/Recommender": {Recommender}
+      "common/recommender/Recommender": {Recommender},
+      "addon/lib/getScreenshot": sinon.spy(() => testScreenshot)
     });
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
     instance = new HighlightsFeed({getCachedMetadata});
     instance.refresh = sinon.spy();
+    reduxState = {Experiments: {values: {}}};
+    instance.store = {getState() { return reduxState; }};
     sinon.spy(instance.options, "getCachedMetadata");
   });
   it("should create a HighlightsFeed", () => {
@@ -73,7 +81,10 @@ describe("HighlightsFeed", () => {
       simplePrefs.prefs.weightedHighlightsCoefficients = "[0, 1, 2]";
       return instance.initializeRecommender().then(() => {
         assert.equal(instance.baselineRecommender.args[0], testLinks);
-        assert.deepEqual(instance.baselineRecommender.args[1], {highlightsCoefficients: [0, 1, 2]});
+        assert.deepEqual(instance.baselineRecommender.args[1], {
+          experiments: reduxState.Experiments.values,
+          highlightsCoefficients: [0, 1, 2]
+        });
       });
     });
     it("should call refresh with the reason", () => {
@@ -113,6 +124,64 @@ describe("HighlightsFeed", () => {
         .then(action => (
           assert.calledWithExactly(instance.baselineRecommender.scoreEntries, getCachedMetadata(testLinks))
         ));
+    });
+    it("should not add screenshots to sites that qualify for a screenshot if the experiment is disabled", () => {
+      reduxState.Experiments.values.bookmarkScreenshots = false;
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
+      instance.shouldGetScreenshot = () => true;
+      return instance.getData().then(result => {
+        assert.notCalled(instance.getScreenshot);
+        for (let link of result.data) {
+          assert.equal(link.screenshot, undefined);
+        }
+      });
+    });
+    it("should not add screenshots to sites that don't qualify for a screenshot if the experiment is enabled", () => {
+      reduxState.Experiments.values.bookmarkScreenshots = true;
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
+      instance.shouldGetScreenshot = () => false;
+      return instance.getData().then(result => {
+        assert.notCalled(instance.getScreenshot);
+        for (let link of result.data) {
+          assert.equal(link.screenshot, undefined);
+        }
+      });
+    });
+    it("should add screenshots to sites that qualify for a screenshot if the experiment is enabled", () => {
+      reduxState.Experiments.values.bookmarkScreenshots = true;
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
+      instance.shouldGetScreenshot = () => true;
+      return instance.getData().then(result => {
+        assert.calledTwice(instance.getScreenshot);
+        for (let link of result.data) {
+          assert.equal(link.screenshot, testScreenshot);
+          assert.notEqual(link.metadata_source.indexOf("+Screenshot"), -1);
+        }
+      });
+    });
+    it("should set missingData to false if experiment is disabled", () => {
+      reduxState.Experiments.values.bookmarkScreenshots = false;
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
+      return instance.getData().then(result => assert.equal(instance.missingData, false));
+    });
+    it("should set missingData to true if experiment is enabled and a topsite is missing a required screenshot", () => {
+      reduxState.Experiments.values.bookmarkScreenshots = true;
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
+      instance.shouldGetScreenshot = () => true;
+      instance.getScreenshot = sinon.spy(site => null);
+      return instance.getData().then(result => {
+        assert.equal(instance.missingData, true);
+      });
+    });
+    it("should set missingData to true if experiment is enabled and a highlight is missing metadata", () => {
+      reduxState.Experiments.values.bookmarkScreenshots = true;
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
+      instance.options.getCachedMetadata = links => links.map(
+        link => { link.hasMetadata = false; return link; }
+      );
+      return instance.getData().then(result => {
+        assert.equal(instance.missingData, true);
+      });
     });
   });
   describe("#onAction", () => {
@@ -164,11 +233,10 @@ describe("HighlightsFeed", () => {
       assert.notCalled(instance.refresh);
     });
     it("should update the coefficients if the weightedHighlightsCoefficients pref is changed", () => {
-      instance.baselineRecommender = {updateOptions: sinon.spy()};
-      instance.getCoefficientsFromPrefs = sinon.spy(() => 123);
+      instance.baselineRecommender = {};
+      instance.initializeRecommender = sinon.spy();
       instance.onAction(store.getState(), {type: "PREF_CHANGED_RESPONSE", data: {name: "weightedHighlightsCoefficients"}});
-      assert.calledWith(instance.baselineRecommender.updateOptions, {highlightsCoefficients: 123});
-      assert.calledWith(instance.refresh, "coefficients were changed");
+      assert.calledWith(instance.initializeRecommender, "coefficients were changed");
     });
     it("should call refresh on SYNC_COMPLETE", () => {
       instance.onAction({}, {type: "SYNC_COMPLETE"});
