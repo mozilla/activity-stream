@@ -72,7 +72,8 @@ const NewTabPage = React.createClass({
             <section>
               <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
                 sites={props.TopSites.rows} showNewStyle={topSitesExperimentIsOn}
-                length={showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH} />
+                length={showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH}
+                allowEdit={newTabPrefsExperimentIsOn} />
             </section>
           }
           {showHighlights &&
