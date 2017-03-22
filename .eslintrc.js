@@ -207,7 +207,7 @@ module.exports = {
     "no-self-assign": 2,
     "no-self-compare": 2,
     "no-sequences": 2,
-    "no-shadow": 0, // TODO: Change to `1`?
+    "no-shadow": 2,
     "no-shadow-restricted-names": 2,
     "no-spaced-func": 2,
     "no-sparse-arrays": 2,

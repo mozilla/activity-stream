@@ -3,7 +3,7 @@
 "use strict";
 
 const {Cu} = require("chrome");
-const {data} = require("sdk/self");
+const self = require("sdk/self");
 const simplePrefs = require("sdk/simple-prefs");
 const windows = require("sdk/windows").browserWindows;
 const prefService = require("sdk/preferences/service");
@@ -35,7 +35,7 @@ XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
 });
 
 const DEFAULT_OPTIONS = {
-  pageURL: data.url("content/activity-streams.html"),
+  pageURL: self.data.url("content/activity-streams.html"),
   onAddWorker: null,
   onRemoveWorker: null,
   pageScraper: null,
@@ -433,7 +433,7 @@ ActivityStreams.prototype = {
   /**
    * Unload the application
    */
-  unload(reason) { // eslint-disable-line no-unused-vars
+  unload(reason) {
     let defaultUnload = () => {
       this._store.dispatch({type: "APP_UNLOAD", data: reason});
       this._previewProvider.uninit();

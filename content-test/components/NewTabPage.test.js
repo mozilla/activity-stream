@@ -40,7 +40,7 @@ describe("NewTabPage", () => {
    */
   function setupConnected(
     dispatch = () => {}, mapStatesToProps = forceIsReadySelectNewTabs) {
-    let ConnectedNewTabPage = connect(mapStatesToProps)(injectIntl(NewTabPage));
+    let ConnectedNewTabPage = connect(mapStatesToProps)(injectIntl(NewTabPage)); // eslint-disable-line no-shadow
 
     instance = TestUtils.findRenderedComponentWithType(
       renderWithProvider(<ConnectedNewTabPage />, {dispatch}),

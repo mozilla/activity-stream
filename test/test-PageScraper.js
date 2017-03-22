@@ -17,8 +17,8 @@ let parseCallCount;
 let computeImageCount;
 
 const mockPreviewProvider = {
-  processLinks(link) {
-    return link.map(link => Object.assign({}, link, {cache_key: link.url, places_url: link.url}));
+  processLinks(links) {
+    return links.map(link => Object.assign({}, link, {cache_key: link.url, places_url: link.url}));
   },
   asyncLinkExist(url) {
     let doesExists = false;

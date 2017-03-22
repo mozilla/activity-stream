@@ -3,7 +3,7 @@
 
 const {MetadataParser} = require("addon/MetadataParser");
 const {Cu} = require("chrome");
-const options = require("@loader/options");
+const loaderOptions = require("@loader/options");
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -12,7 +12,7 @@ Cu.importGlobalProperties(["URL"]);
 Cu.importGlobalProperties(["fetch"]);
 
 const DEFAULT_OPTIONS = {
-  framescriptPath: new URL("data/page-scraper-content-script.js", options.prefixURI),
+  framescriptPath: new URL("data/page-scraper-content-script.js", loaderOptions.prefixURI),
   blacklist: ["about:", "localhost:", "resource://"]
 };
 const PERFORMANCE_EVENT_NAMES = {
