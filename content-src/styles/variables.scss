@@ -1,6 +1,6 @@
 $image-path: 'img/';
 
-$bg-color: #FFF;
+$bg-color: #F2F2F2;
 $bg-grey: #FBFBFB;
 $placeholder-grey: #F7F7F7;
 $very-light-grey: #EBEBEB;
@@ -81,6 +81,7 @@ $timeline-max-width: 3 * $spotlight-item-width + 20px * 2;
 
 $site-icon-border-radius: 3px;
 
+$search-bg-color: #FFF;
 $search-border-radius: 4px;
 $search-margin-top: 52px;
 $search-margin-bottom: 62px;
@@ -187,7 +188,7 @@ $sidebar-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
   &:hover,
   &.active {
     background: $search-blue;
-    color: $bg-color;
+    color: $white;
   }
 }
 
