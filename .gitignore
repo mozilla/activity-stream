@@ -15,3 +15,4 @@ config.yml
 .amo_config.json
 common/vendor.js
 *.update.rdf
+system-addon/data/content/activity-stream.bundle.js

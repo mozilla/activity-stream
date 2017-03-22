@@ -59,13 +59,21 @@ scripts:
     # Copy over the entire mozilla-central directory
     copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream
 
+    webpack: webpack --config system-addon/webpack.mc.config.js
+
 # startmc: Start developing the bootstrapped add-on
-  startmc: =>prebuildmc && =>buildmc:copy -- -w
+  startmc:
+    _parallel: true
+    pre: =>prebuildmc
+    copy: =>buildmc:copy -- -w
+    webpack: =>buildmc:webpack -- -w
 
   # importmc: Import changes from mc to github repo
   importmc: cpx "../mozilla-central/browser/extensions/activity-stream/**/*" system-addon/
 
-  testmc: karma start karma.mc.config.js
+  testmc:
+    bundle: =>buildmc:webpack
+    unit: karma start karma.mc.config.js
 
   tddmc: =>testmc -- --no-single-run
 
