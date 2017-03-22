@@ -4,6 +4,7 @@ const {mountWithIntl} = require("test/test-utils");
 const DEFAULT_PREFS = {
   "showSearch": true,
   "showTopSites": true,
+  "showMoreTopSites": false,
   "showHighlights": true
 };
 
@@ -21,12 +22,12 @@ describe("PreferencesPane", () => {
   });
 
   it("the modal should be hidden by default", () => {
-    assert.equal(0, wrapper.ref("modal").length);
+    assert.equal(0, wrapper.ref("sidebar").length);
   });
 
   it("the modal should be shown when settings button is clicked", () => {
     wrapper.ref("prefs-button").simulate("click");
-    assert.equal(1, wrapper.ref("modal").length);
+    assert.equal(1, wrapper.ref("sidebar").length);
   });
 
   it("the search checkbox should be checked by default", () => {
@@ -37,6 +38,11 @@ describe("PreferencesPane", () => {
   it("the top sites checkbox should be checked by default", () => {
     wrapper.ref("prefs-button").simulate("click");
     assert.isTrue(wrapper.ref("showTopSitesCheckbox").prop("checked"));
+  });
+
+  it("the show two rows of top sites checkbox should be unchecked by default", () => {
+    wrapper.ref("prefs-button").simulate("click");
+    assert.isFalse(wrapper.ref("showMoreTopSites").prop("checked"));
   });
 
   it("the highlights checkbox should be checked by default", () => {
@@ -56,6 +62,12 @@ describe("PreferencesPane", () => {
     assert.isFalse(wrapper.ref("showTopSitesCheckbox").prop("checked"));
   });
 
+  it("the show two rows of top sites checkbox should be unchecked if pref is off", () => {
+    setup({showMoreTopSites: true});
+    wrapper.ref("prefs-button").simulate("click");
+    assert.isTrue(wrapper.ref("showMoreTopSites").prop("checked"));
+  });
+
   it("the highlights checkbox should be unchecked if pref is off", () => {
     setup({showHighlights: false});
     wrapper.ref("prefs-button").simulate("click");
@@ -64,8 +76,8 @@ describe("PreferencesPane", () => {
 
   it("the modal should be closed when done button is clicked", () => {
     wrapper.ref("prefs-button").simulate("click");
-    assert.equal(1, wrapper.ref("modal").length);
+    assert.equal(1, wrapper.ref("sidebar").length);
     wrapper.ref("done-button").simulate("click");
-    assert.equal(0, wrapper.ref("modal").length);
+    assert.equal(0, wrapper.ref("sidebar").length);
   });
 });

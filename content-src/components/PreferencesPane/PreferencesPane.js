@@ -7,6 +7,18 @@ const {injectIntl, FormattedMessage} = require("react-intl");
 const PreferencesPane = React.createClass({
   getDefaultProps() {return {dispatch: () => {}};},
   getInitialState() {return {showPane: false};},
+  componentDidMount() {
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  componentWillUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
+  },
+  handleClickOutside(event) {
+    // if we are showing the sidebar and there is a click outside, close it.
+    if (this.refs.sidebar && !this.refs.wrapper.contains(event.target)) {
+      this.togglePane();
+    }
+  },
   handleChange(event) {
     const target = event.target;
     this.props.dispatch(actions.NotifyPrefChange(target.name, target.checked));
@@ -21,10 +33,10 @@ const PreferencesPane = React.createClass({
     }));
   },
   render() {
-    const {showSearch, showTopSites, showHighlights} = this.props.Prefs.prefs;
+    const {showSearch, showTopSites, showHighlights, showMoreTopSites} = this.props.Prefs.prefs;
 
     return (
-      <div className="prefs-pane-wrapper">
+      <div className="prefs-pane-wrapper" ref="wrapper">
         <div className="prefs-pane-button">
           <button
             ref="prefs-button"
@@ -34,8 +46,7 @@ const PreferencesPane = React.createClass({
         </div>
         {this.state.showPane &&
           <div className="prefs-pane">
-            <div className="modal-overlay" />
-            <div className="modal" ref="modal">
+            <div className="sidebar" ref="sidebar">
               <div className="prefs-modal-inner-wrapper">
                 <h1><FormattedMessage id="settings_pane_header" /></h1>
                 <p><FormattedMessage id="settings_pane_body" /></p>
@@ -46,12 +57,18 @@ const PreferencesPane = React.createClass({
                   </label>
                   <p><FormattedMessage id="settings_pane_search_body" /></p>
                 </section>
-                <section>
+                <section className={showTopSites ? "" : "disabled"}>
                   <input ref="showTopSitesCheckbox" type="checkbox" id="showTopSites" name="showTopSites" checked={showTopSites} onChange={this.handleChange} />
                   <label htmlFor="showTopSites">
                     <FormattedMessage id="settings_pane_topsites_header" />
                   </label>
                   <p><FormattedMessage id="settings_pane_topsites_body" /></p>
+                  <div className="options">
+                    <input ref="showMoreTopSites" type="checkbox" id="showMoreTopSites" name="showMoreTopSites" checked={showMoreTopSites} onChange={this.handleChange} disabled={!showTopSites} />
+                    <label htmlFor="showMoreTopSites">
+                      <FormattedMessage id="settings_pane_topsites_options_showmore" />
+                    </label>
+                  </div>
                 </section>
                 <section>
                   <input ref="showHighlightsCheckbox" type="checkbox" id="showHighlights" name="showHighlights" checked={showHighlights} onChange={this.handleChange} />

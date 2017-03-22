@@ -29,6 +29,7 @@ $checkbox-border: #C1C1C1;
 $checkbox-blue: #1691D2;
 
 $wrapper-max-width: 736px;
+$wrapper-vertical-padding: 62px;
 $break-point: $wrapper-max-width + 40px;
 
 $base-gutter: 32px;
@@ -134,6 +135,8 @@ $tooltip-anchor-margin: -42px 0 0 -24px;
 $code-font: Menlo, Monaco, Consolas, monospace;
 $code-background: #FCF2F4;
 $code-color: #E8005C;
+
+$sidebar-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
 
 @mixin item-shadow {
   box-shadow: $item-shadow;
