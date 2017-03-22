@@ -119,7 +119,8 @@ const TopSites = React.createClass({
     return {
       length: TOP_SITES_DEFAULT_LENGTH,
       // This is for event reporting
-      page: "NEW_TAB"
+      page: "NEW_TAB",
+      allowEdit: true
     };
   },
   onClickFactory(index, site) {
@@ -157,7 +158,7 @@ const TopSites = React.createClass({
           );
         })}
       </div>
-      {!this.props.placeholder &&
+      {!this.props.placeholder && this.props.allowEdit &&
         <EditTopSitesIntl {...this.props} />
       }
     </section>);
@@ -181,7 +182,8 @@ TopSites.propTypes = {
    */
   placeholder: React.PropTypes.bool,
 
-  showNewStyle: React.PropTypes.bool
+  showNewStyle: React.PropTypes.bool,
+  allowEdit: React.PropTypes.bool
 };
 
 const EditTopSites = React.createClass({
