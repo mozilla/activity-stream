@@ -237,6 +237,7 @@ module.exports = {
     "no-useless-constructor": 2,
     "no-useless-escape": 2,
     "no-useless-rename": 2,
+    "no-useless-return": 2,
     "no-var": 2,
     "no-void": 2,
     "no-warning-comments": 0, // TODO: Change to `1`?
