@@ -265,7 +265,7 @@ const Search = React.createClass({
         onKeyDown={e => this.handleKeyPress(e)}
         onBlur={() => setTimeout(() => this.resetState(), 200)} />
       <button ref="performSearchButton"
-        onClick={e => {e.preventDefault(); this.performSearch({engineName: currentEngine.name, searchString});}}>
+        onClick={e => { e.preventDefault(); this.performSearch({engineName: currentEngine.name, searchString}); }}>
         <span className="sr-only"><FormattedMessage id="search_button" /></span>
       </button>
       <div className="search-container" role="presentation" hidden={!this.getDropdownVisible()}>

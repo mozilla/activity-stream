@@ -69,7 +69,7 @@ module.exports = {
     "arrow-parens": [2, "as-needed"],
     "arrow-spacing": 2,
     "block-scoped-var": 2,
-    "block-spacing": [2, "never"],
+    "block-spacing": [2, "always"],
     "brace-style": 0,
     "callback-return": 0,
     "camelcase": 0,

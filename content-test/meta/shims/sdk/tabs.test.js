@@ -3,7 +3,7 @@ const {Tabs, Tab} = tabs;
 
 describe("Tab", () => {
   let instance;
-  beforeEach(() => {instance = new Tab();});
+  beforeEach(() => { instance = new Tab(); });
   it("should create a tab with a title, id", () => {
     assert.property(instance, "title");
     assert.property(instance, "id");
@@ -24,7 +24,7 @@ describe("Tab", () => {
 
 describe("Tabs", () => {
   let instance;
-  beforeEach(() => {instance = new Tabs();});
+  beforeEach(() => { instance = new Tabs(); });
   it("should have an .open spy", () => {
     instance.open();
     assert.called(instance.open);

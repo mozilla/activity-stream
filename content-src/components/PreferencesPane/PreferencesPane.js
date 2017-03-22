@@ -5,8 +5,8 @@ const {justDispatch} = require("common/selectors/selectors");
 const {injectIntl, FormattedMessage} = require("react-intl");
 
 const PreferencesPane = React.createClass({
-  getDefaultProps() {return {dispatch: () => {}};},
-  getInitialState() {return {showPane: false};},
+  getDefaultProps() { return {dispatch: () => {}}; },
+  getInitialState() { return {showPane: false}; },
   componentDidMount() {
     document.addEventListener("click", this.handleClickOutside);
   },

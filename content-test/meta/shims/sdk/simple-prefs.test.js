@@ -3,7 +3,7 @@ const {SimplePrefs} = simplePrefs;
 
 describe("SimplePrefs", () => {
   let instance;
-  beforeEach(() => {instance = new SimplePrefs();});
+  beforeEach(() => { instance = new SimplePrefs(); });
   it("should have a .prefs property", () => {
     assert.property(instance, "prefs");
     assert.isObject(instance.prefs);

@@ -574,9 +574,9 @@ exports.test_TabTracker_getUsersPreferences = function(assert) {
 
   for (let fixture of fixtures) {
     // reset all prefs
-    ALL_PREFS.forEach(item => {simplePrefs.prefs[item] = false;});
+    ALL_PREFS.forEach(item => { simplePrefs.prefs[item] = false; });
     // set the prefs based on the fixture
-    fixture.prefs.forEach(item => {simplePrefs.prefs[item] = true;});
+    fixture.prefs.forEach(item => { simplePrefs.prefs[item] = true; });
     assert.deepEqual(app._tabTracker._getUserPreferences(), fixture.expected, "get the correct encoded user preferences");
   }
 

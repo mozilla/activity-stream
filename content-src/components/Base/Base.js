@@ -17,7 +17,7 @@ function addLocaleDataForReactIntl(Intl) {
 }
 
 const Base = React.createClass({
-  getInitialState() {return {showDebugPage: false};},
+  getInitialState() { return {showDebugPage: false}; },
   componentWillMount() {
     addLocaleDataForReactIntl(this.props.Intl);
     this.props.dispatch(actions.NotifyPerf("BASE_MOUNTED"));
