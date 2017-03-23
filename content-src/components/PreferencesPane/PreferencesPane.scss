@@ -7,7 +7,7 @@
     box-shadow: $sidebar-shadow;
     min-height: 100%;
     padding: 40px;
-    position: absolute;
+    position: fixed;
     right: 0;
     top: 0;
     width: 400px;
@@ -139,7 +139,7 @@
     cursor: pointer;
     opacity: 0.7;
     padding: 15px;
-    position: absolute;
+    position: fixed;
     right: 15px;
     top: 15px;
     z-index: 11001;
