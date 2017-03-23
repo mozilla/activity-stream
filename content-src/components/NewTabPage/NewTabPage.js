@@ -17,6 +17,32 @@ const NewTabPage = React.createClass({
   getInitialState() {
     return {showSettingsMenu: false};
   },
+  _getNewTabStats() {
+    let stats = {
+      highlightsSize: 0,
+      topsitesSize: 0,
+      topsitesTippytop: 0,
+      topsitesScreenshot: 0
+    };
+    if (this.props.isReady) {
+      const {showTopSites, showHighlights} = this.props.Prefs.prefs;
+      if (showHighlights) {
+        stats.highlightsSize = this.props.Highlights.rows.length;
+      }
+      if (showTopSites) {
+        const topSites = this.props.TopSites.rows;
+        stats.topsitesSize = topSites.length;
+        topSites.forEach(row => {
+          if (row.screenshot) {
+            stats.topsitesScreenshot++;
+          } else if (row.metadata_source === "TippyTopProvider") {
+            stats.topsitesTippytop++;
+          }
+        });
+      }
+    }
+    return stats;
+  },
   componentDidMount() {
     document.title = this.props.intl.formatMessage({id: "newtab_page_title"});
     setFavicon("newtab-icon.svg");
@@ -34,10 +60,13 @@ const NewTabPage = React.createClass({
         source: PAGE_NAME,
         value: this.loaderShownAt
       }));
+    } else {
+      this.props.dispatch(actions.NotifyNewTabStats(this._getNewTabStats()));
     }
   },
   componentDidUpdate(prevProps) {
     if (this.props.isReady && this.loaderShownAt) {
+      this.props.dispatch(actions.NotifyNewTabStats(this._getNewTabStats()));
       this.props.dispatch(actions.NotifyUndesiredEvent({
         event: "HIDE_LOADER",
         source: PAGE_NAME,
