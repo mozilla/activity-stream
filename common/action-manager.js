@@ -24,6 +24,7 @@ const am = new ActionManager([
   "NOTIFY_HISTORY_DELETE",
   "NOTIFY_HISTORY_DELETE_CANCELLED",
   "NOTIFY_MANAGE_ENGINES",
+  "NOTIFY_NEWTAB_STATS",
   "NOTIFY_OPEN_WINDOW",
   "NOTIFY_PERFORMANCE",
   "NOTIFY_PERFORM_SEARCH",
@@ -185,6 +186,13 @@ function NotifyUndesiredEvent(data) {
   return Notify("NOTIFY_UNDESIRED_EVENT", data);
 }
 
+function NotifyNewTabStats(data) {
+  if (!eventConstants.defaultPage === data.page) {
+    throw new Error(`${data.page} is not a valid page`);
+  }
+  return Notify("NOTIFY_NEWTAB_STATS", data);
+}
+
 function NotifyFilterQuery(data) {
   return Notify("NOTIFY_FILTER_QUERY", data);
 }
@@ -228,6 +236,7 @@ am.defineActions({
   NotifyFilterQuery,
   NotifyHistoryDelete,
   NotifyManageEngines,
+  NotifyNewTabStats,
   NotifyOpenWindow,
   NotifyPerf,
   NotifyPerformSearch,

@@ -298,6 +298,10 @@ ActivityStreams.prototype = {
     this._tabTracker.handleUndesiredEvent(msg.data);
   },
 
+  _handleNewTabStats({msg}) {
+    this._tabTracker.handleNewTabStats(msg.data);
+  },
+
   _handleExperimentChange(prefName) {
     this._tabTracker.experimentId = this._experimentProvider.exprimentID;
     this.broadcast(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
@@ -310,6 +314,8 @@ ActivityStreams.prototype = {
         return this._handleUserEvent(args);
       case am.type("NOTIFY_UNDESIRED_EVENT"):
         return this._handleUndesiredEvent(args);
+      case am.type("NOTIFY_NEWTAB_STATS"):
+        return this._handleNewTabStats(args);
     }
     return undefined;
   },
