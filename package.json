@@ -221,7 +221,7 @@
     "testmc:bundle": "npm run buildmc:webpack",
     "testmc:unit": "karma start karma.mc.config.js || (cat logs/coverage/system-addon/text.txt && exit 2)",
     "posttestmc": "cat logs/coverage/system-addon/text-summary.txt",
-    "tddmc": "npm run testmc -- --no-single-run",
+    "tddmc": "karma start karma.mc.config.js --tdd",
     "start": "npm-run-all --parallel start:*",
     "prestart": "npm run clean && npm run copyTestImages",
     "start:static": "npm run bundle:static -- -w",

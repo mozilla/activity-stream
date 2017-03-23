@@ -4,7 +4,7 @@
 "use strict";
 
 const {utils: Cu} = Components;
-const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+const {actionTypes: at, actionCreators: ac} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 /**
  * NewTabInit - A placeholder for now. This will send a copy of the state to all
@@ -12,10 +12,13 @@ const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.j
  */
 this.NewTabInit = class NewTabInit {
   onAction(action) {
+    let newAction;
     switch (action.type) {
       // TODO: Replace with sending a copy of the state when a NEW_TAB_LOAD action is received
-      case at.INIT:
-        dump(`\n${JSON.stringify(this.store.getState(), 0, 2)}\n`);
+      case at.NEW_TAB_LOAD:
+        newAction = {type: at.NEW_TAB_INITIAL_STATE, data: this.store.getState()};
+        this.store.dispatch(ac.SendToContent(newAction, action.meta.fromTarget));
+        break;
     }
   }
 };

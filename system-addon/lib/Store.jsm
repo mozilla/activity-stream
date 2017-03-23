@@ -8,6 +8,7 @@ const {utils: Cu} = Components;
 const {redux} = Cu.import("resource://activity-stream/vendor/Redux.jsm", {});
 const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {reducers} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
+const {MessageManager} = Cu.import("resource://activity-stream/lib/MessageManager.jsm", {});
 
 /**
  * Store - This has a similar structure to a redux store, but includes some extra
@@ -24,12 +25,6 @@ this.Store = class Store {
    */
   constructor() {
     this._middleware = this._middleware.bind(this);
-    this.feeds = new Set();
-    this._store = redux.createStore(
-      redux.combineReducers(reducers),
-      redux.applyMiddleware(this._middleware)
-    );
-
     // Bind each redux method so we can call it directly from the Store. E.g.,
     // store.dispatch() will call store._store.dispatch();
     ["dispatch", "getState", "subscribe"].forEach(method => {
@@ -37,6 +32,12 @@ this.Store = class Store {
         return this._store[method](...args);
       }.bind(this);
     });
+    this.feeds = new Set();
+    this._mm = new MessageManager({dispatch: this.dispatch});
+    this._store = redux.createStore(
+      redux.combineReducers(reducers),
+      redux.applyMiddleware(this._middleware, this._mm.middleware)
+    );
   }
 
   /**
@@ -64,6 +65,7 @@ this.Store = class Store {
         this.feeds.add(subscriber);
       });
     }
+    this._mm.createChannel();
     this.dispatch({type: at.INIT});
   }
 
@@ -76,6 +78,7 @@ this.Store = class Store {
   uninit() {
     this.feeds.clear();
     this.dispatch({type: at.UNINIT});
+    this._mm.destroyChannel();
   }
 };
 
