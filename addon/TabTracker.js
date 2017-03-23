@@ -166,6 +166,13 @@ TabTracker.prototype = {
     Services.obs.notifyObservers(null, PERFORMANCE_NOTIF, JSON.stringify(payload));
   },
 
+  handleNewTabStats(payload) {
+    this._tabData.highlights_size = payload.highlightsSize;
+    this._tabData.topsites_size = payload.topsitesSize;
+    this._tabData.topsites_tippytop = payload.topsitesTippytop;
+    this._tabData.topsites_screenshot = payload.topsitesScreenshot;
+  },
+
   generateEvent(eventData) {
     return Object.assign({}, eventData, {event_id: String(uuid())});
   },
@@ -177,6 +184,10 @@ TabTracker.prototype = {
     this._tabData.url = tab.url;
     this._tabData.tab_id = tab.id;
     this._tabData.load_reason = loadReason;
+    this._tabData.highlights_size = 0;
+    this._tabData.topsites_size = 0;
+    this._tabData.topsites_tippytop = 0;
+    this._tabData.topsites_screenshot = 0;
   },
 
   navigateAwayFromPage(tab, reason) {
@@ -190,42 +201,6 @@ TabTracker.prototype = {
     // calculate the session duration before the following bookkeeping computations
     if (this._tabData.start_time) {
       this._tabData.session_duration = (absPerf.now() - this._tabData.start_time);
-    }
-
-    this._tabData.highlights_size = 0;
-    this._tabData.topsites_screenshot = 0;
-    this._tabData.topsites_tippytop = 0;
-    this._tabData.topsites_size = 0;
-    if (this._store) {
-      const currentState = this._store.getState();
-
-      // Highlights stats. Fetching the highlight count here other than doing so
-      // in onOpen to make it cover all the cases, such as new tab, refresh, back,
-      // and re-activate
-      //
-      // Note: the selector "selectAndDedup" on the content side might filter out some
-      // highlight links if they also belong to the Top Sites. The highlight count
-      // would be greater than the actual value in this case. This discrepancy will
-      // eventually go away as we are phasing out the filtering in the selectAndDedup
-      if (!currentState.Highlights.error && currentState.Highlights.init) {
-        this._tabData.highlights_size = currentState.Highlights.rows.length;
-      }
-
-      // Topsites stats
-      if (!currentState.TopSites.error && currentState.TopSites.init) {
-        this._tabData.topsites_size = currentState.TopSites.rows.length;
-        currentState.TopSites.rows.forEach(row => {
-          if (row.screenshot) {
-            this._tabData.topsites_screenshot++;
-          } else if (row.favicon_url && (row.favicon_url.startsWith("favicons/images") || row.favicon_url.startsWith("resource://"))) {
-            // There is a known issue that metadata_source could be undefined even if
-            // it is a TippyTop site. See https://github.com/mozilla/activity-stream/issues/2252
-            // The following workaround should be replaced by checking the actual metadata_source
-            // i.e. if (row.metadata_source === 'TippyTopProvider')
-            this._tabData.topsites_tippytop++;
-          }
-        });
-      }
     }
 
     if (!this._tabData.tab_id) {

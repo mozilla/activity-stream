@@ -138,4 +138,18 @@ describe("NewTabPage", () => {
       }} />);
     });
   });
+
+  describe("NewTab stats event", () => {
+    it("should fire an event if data is ready", done => {
+      renderWithProvider(<NewTabPage {...fakeProps} isReady={true} dispatch={a => {
+        if (a.type === "NOTIFY_NEWTAB_STATS") {
+          assert.equal(a.data.highlightsSize, mockData.Highlights.rows.length);
+          assert.equal(a.data.topsitesSize, mockData.TopSites.rows.length);
+          assert.equal(a.data.topsitesTippytop, 0);
+          assert.equal(a.data.topsitesScreenshot, 0);
+          done();
+        }
+      }} />);
+    });
+  });
 });
