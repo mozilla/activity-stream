@@ -73,7 +73,8 @@ scripts:
 
   testmc:
     bundle: =>buildmc:webpack
-    unit: karma start karma.mc.config.js
+    unit: karma start karma.mc.config.js || (cat logs/coverage/system-addon/text.txt && exit 2)
+    post: cat logs/coverage/system-addon/text-summary.txt
 
   tddmc: =>testmc -- --no-single-run
 
