@@ -6,7 +6,7 @@ const simplePrefs = new SimplePrefs();
 const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
 const oldTestLinks = [{url: "boo.com"}, {url: "far.com"}];
 const getCachedMetadata = links => links.map(
-  link => { link.hasMetadata = true; return link; }
+  link => {link.hasMetadata = true; return link;}
 );
 const PlacesProvider = {
   links: {
@@ -44,7 +44,7 @@ describe("HighlightsFeed", () => {
     instance = new HighlightsFeed({getCachedMetadata});
     instance.refresh = sinon.spy();
     reduxState = {Experiments: {values: {}}};
-    instance.store = {getState() { return reduxState; }};
+    instance.store = {getState() {return reduxState;}};
     sinon.spy(instance.options, "getCachedMetadata");
   });
   it("should create a HighlightsFeed", () => {
@@ -177,7 +177,7 @@ describe("HighlightsFeed", () => {
       reduxState.Experiments.values.bookmarkScreenshots = true;
       instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
       instance.options.getCachedMetadata = links => links.map(
-        link => { link.hasMetadata = false; return link; }
+        link => {link.hasMetadata = false; return link;}
       );
       return instance.getData().then(result => {
         assert.equal(instance.missingData, true);
