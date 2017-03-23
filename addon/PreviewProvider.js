@@ -31,7 +31,7 @@ Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 const DEFAULT_OPTIONS = {
-  metadataTTL: 3 * 24 * 60 * 60 * 1000, // 3 days for the metadata to live
+  metadataTTL: 30 * 24 * 60 * 60 * 1000, // 30 days for the metadata to live
   proxyMaxLinks: 25, // number of links proxy accepts per request
   initFresh: false
 };
