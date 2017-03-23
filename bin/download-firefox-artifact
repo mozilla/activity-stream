@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -x
 
 # Forked from https://github.com/devtools-html/debugger.html/blob/master/bin/download-firefox-artifact
 #
@@ -6,8 +6,23 @@
 # activity-stream tree.  If it's not there, it creates it.  If it is there, it
 # updates it.
 
-ROOT=`dirname $0`
-FIREFOX_PATH="$ROOT/../../mozilla-central"
+# If AS_GIT_BIN_REPO (the git repo from which prepare-mochitests-dev and
+# friends will be executed) isn't set in the environment, just use the repo
+#  we're running from.
+if [ -z ${AS_GIT_BIN_REPO+x} ]; then
+  ROOT=`dirname $0`
+  AS_GIT_BIN_REPO="../../../../activity-stream"
+else
+  ROOT=${AS_GIT_BIN_REPO}/bin
+fi
+
+# Compute the mozilla-central path based on whether AS_PINE_TEST_DIR is set
+# (i.e. whether this script has been called from test-merges.js)
+if [ -z ${AS_PINE_TEST_DIR+x} ]; then
+  FIREFOX_PATH="$ROOT/../../mozilla-central"
+else
+  FIREFOX_PATH=${AS_PINE_TEST_DIR}/mozilla-central
+fi
 
 # check that mercurial is installed
 if [ -z "`command -v hg`" ]; then
@@ -17,7 +32,7 @@ fi
 
 if [ -d "$FIREFOX_PATH" ]; then
     # convert path to absolute path
-    FIREFOX_PATH=$(cd "$ROOT/../../mozilla-central"; pwd)
+    FIREFOX_PATH=$(cd "$FIREFOX_PATH"; pwd)
 
     # If we already have Firefox locally, just update it
     cd "$FIREFOX_PATH";
@@ -37,8 +52,9 @@ else
     echo "Downloading Firefox source code, requires about 10-30min depending on connection"
     hg clone https://hg.mozilla.org/mozilla-central/ "$FIREFOX_PATH"
     # if somebody cancels (ctrl-c) out of the long download don't continue
-    if [ $? -ne 0 ]; then
-        exit 1;
+    exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+      exit $exit_code
     fi
     cd "$FIREFOX_PATH"
 
