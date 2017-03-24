@@ -16,3 +16,4 @@ config.yml
 common/vendor.js
 *.update.rdf
 system-addon/data/content/activity-stream.bundle.js
+system-addon/data/content/activity-stream.css
