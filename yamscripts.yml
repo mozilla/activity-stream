@@ -58,8 +58,8 @@ scripts:
     pre: =>export:clean
     # Copy over the entire mozilla-central directory
     copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream
-
     webpack: webpack --config system-addon/webpack.mc.config.js
+    css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content
 
 # startmc: Start developing the bootstrapped add-on
   startmc:
@@ -67,6 +67,7 @@ scripts:
     pre: =>prebuildmc
     copy: =>buildmc:copy -- -w
     webpack: =>buildmc:webpack -- -w
+    css: =>buildmc:css && =>buildmc:css -- -w
 
   # importmc: Import changes from mc to github repo
   importmc: cpx "../mozilla-central/browser/extensions/activity-stream/**/*" system-addon/

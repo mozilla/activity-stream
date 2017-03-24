@@ -1,0 +1,106 @@
+@import './styles/normalize';
+@import './styles/variables';
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+// For screen readers
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+body {
+  background: $bg-color;
+  color: $dark-grey;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Ubuntu', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+}
+
+h1,
+h2 {
+  font-weight: normal;
+}
+
+a {
+  color: $link-blue;
+  text-decoration: none;
+
+  &:hover {
+    color: lighten($link-blue, 10%);
+  }
+}
+
+.inner-border {
+  border: 1px solid $faintest-black;
+  border-radius: $border-radius;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.show-on-init {
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+
+  &.on {
+    opacity: 1;
+    animation: fadeIn 0.2s;
+  }
+}
+
+.actions {
+  border-top: solid 1px $faintest-black;
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  padding: 15px 25px;
+  justify-content: flex-start;
+
+  button {
+    background: $default-button-bg;
+    border: solid 1px $default-button-border;
+    border-radius: 5px;
+    color: $mid-light-grey;
+    cursor: pointer;
+    padding: 10px 30px;
+
+    &:hover {
+      box-shadow: 0 0 0 5px $faintest-black;
+      transition: box-shadow 150ms;
+    }
+
+    &.done {
+      background: $blue-button-bg;
+      border: solid 1px $blue-button-border;
+      color: $white;
+      margin-inline-start: auto;
+    }
+  }
+}
+
+// Components
+@import './components/Base/Base';
