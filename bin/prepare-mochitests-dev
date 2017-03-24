@@ -10,7 +10,7 @@
 #  we're running from.
 if [ -z ${AS_GIT_BIN_REPO+x} ]; then
   ROOT=`dirname $0`
-  AS_GIT_BIN_REPO="../../../../activity-stream"
+  AS_GIT_BIN_REPO="../activity-stream" # as seen from mozilla-central
 else
   ROOT=${AS_GIT_BIN_REPO}/bin
 fi
