@@ -123,7 +123,7 @@ function getPRMergeCommitId(prNumber) {
  * Checks out the given commit into ${TESTING_LOCAL_GIT}
  *
  * @param  {String} commitId
- * @return {Promise<String|?>}    resolves with commitId on checkout completion,
+ * @return {Promise<String[]|?>} Resolves with commit [id, message] on checkout, or
  *                      rejects with error
  */
 function checkoutGitCommit(commitId) {
@@ -141,7 +141,15 @@ function checkoutGitCommit(commitId) {
           reject(err2);
           return;
         }
-        resolve(commitId);
+
+        // Pass along the original commit message
+        git.show(["-s", "--format=%B"], (err3, data3) => {
+          if (err3) {
+            reject(err3);
+            return;
+          }
+          resolve([commitId, data3.trim()]);
+        });
       });
     });
   });
@@ -167,10 +175,10 @@ function exportToLocalMC(commitId) {
   });
 }
 
-function commitToHg(commitId) {
+function commitToHg([commitId, commitMsg]) {
   return new Promise((resolve, reject) => {
     console.log(`Committing exported ${commitId} to ${AS_REPO_NAME}...`);
-    shelljs.exec(`${HG} commit --addremove -m 'Export of ${commitId} from ${AS_REPO_OWNER}/${AS_REPO_NAME}' .`,
+    shelljs.exec(`${HG} commit --addremove -m '${commitMsg}\n\nExport of ${commitId} from ${AS_REPO_OWNER}/${AS_REPO_NAME}' .`,
       {async: true, cwd: TESTING_LOCAL_MC},
       (code, stdout, stderr) => {
         if (code) {
@@ -258,13 +266,13 @@ function pushPR(pr) {
   return getPRMergeCommitId(pr.number)
 
     // get the merged commit to test
-    .then(commitId => checkoutGitCommit(commitId))
+    .then(checkoutGitCommit)
 
     // use prepare-mochitest-dev to export
-    .then(commitId => exportToLocalMC(commitId))
+    .then(exportToLocalMC)
 
     // commit latest export to hg
-    .then(commitId => commitToHg(commitId))
+    .then(commitToHg)
 
     // hg push
     .then(() => pushToHgProjectBranch().catch(() => {
