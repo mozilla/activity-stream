@@ -70,6 +70,41 @@ class GlobalOverrider {
 }
 
 /**
+ * Very simple fake for the most basic semantics of Preferences.jsm. Lots of
+ * things aren't yet supported.  Feel free to add them in.
+ *
+ * @param {[type]} args [description]
+ */
+function FakePrefs(args) {
+  if (args) {
+    if ("initHook" in args) {
+      args.initHook.call(this);
+    }
+  }
+}
+FakePrefs.prototype = {
+  observers: {},
+  observe(prefName, callback) {
+    this.observers[prefName] = callback;
+  },
+  ignore(prefName, callback) {
+    if (prefName in this.observers) {
+      delete this.observers[prefName];
+    }
+  },
+
+  prefs: {},
+  get(prefName) { return this.prefs[prefName]; },
+  set(prefName, value) {
+    this.prefs[prefName] = value;
+
+    if (prefName in this.observers) {
+      this.observers[prefName](value);
+    }
+  }
+};
+
+/**
  * addNumberReducer - a simple dummy reducer for testing that adds a number
  */
 function addNumberReducer(prevState = 0, action) {
@@ -77,6 +112,7 @@ function addNumberReducer(prevState = 0, action) {
 }
 
 module.exports = {
+  FakePrefs,
   GlobalOverrider,
   addNumberReducer
 };

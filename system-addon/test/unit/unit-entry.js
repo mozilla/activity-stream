@@ -10,16 +10,25 @@ sinon.assert.expose(assert, {prefix: ""});
 let overrider = new GlobalOverrider();
 overrider.set({
   Components: {
+    interfaces: {},
     utils: {
       import: overrider.sandbox.spy(),
+      importGlobalProperties: overrider.sandbox.spy(),
       reportError: overrider.sandbox.spy()
     }
   },
   XPCOMUtils: {
     defineLazyModuleGetter: overrider.sandbox.spy(),
-    defineLazyServiceGetter: overrider.sandbox.spy()
+    defineLazyServiceGetter: overrider.sandbox.spy(),
+    generateQI: overrider.sandbox.spy()
   },
   dump: overrider.sandbox.spy(),
+  Services: {
+    obs: {
+      addObserver: overrider.sandbox.spy(),
+      removeObserver: overrider.sandbox.spy()
+    }
+  },
   Task
 });
 
