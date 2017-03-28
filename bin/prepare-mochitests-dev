@@ -1,4 +1,7 @@
-#!/usr/bin/env bash -x
+#!/usr/bin/env bash -x -e
+#
+# -e means "exit on error", so that we don't have to constantly
+# check exit codes
 #
 # Forked from https://github.com/devtools-html/debugger.html/blob/master/bin/prepare-mochitests-dev
 #
@@ -34,10 +37,6 @@ ENABLE_MC_AS=${ENABLE_MC_AS-0}
 # This will either download or update the local Firefox repo
 "$ROOT/download-firefox-artifact"
 
-if [ $? -ne 0 ]; then
-  exit -1
-fi
-
 # blow away any old bits in order to workaround bug 1335976 for users
 # who are using the default objdir-frontend
 rm -f ${FIREFOX_PATH}/objdir-frontend/dist/bin/browser/features/@activity-streams/*
@@ -45,34 +44,18 @@ rm -f ${FIREFOX_PATH}/objdir-frontend/dist/bin/browser/features/@activity-stream
 # Clean, package, and copy the activity stream files.
 npm run buildmc
 
-# If someting goes sideways, don't keep going
-exit_code=$?
-if [ $exit_code -ne 0 ]; then
-  exit $exit_code
-fi
-
 # Patch mozilla-central (on top of the export) so that AS is preffed on, and
 # the mochitests are turned on.
 if [ $ENABLE_MC_AS ]; then
   patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
     --input=$AS_GIT_BIN_REPO/mozilla-central-patches/enable-mc-as.diff
 
-  # If someting goes sideways, don't keep going
-  exit_code=$?
-  if [ $exit_code -ne 0 ]; then
-    exit $exit_code
-  fi
-
   patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
     --input=$AS_GIT_BIN_REPO/mozilla-central-patches/disable-search-tests.diff
 
-  # If someting goes sideways, don't keep going
-  exit_code=$?
-  if [ $exit_code -ne 0 ]; then
-    exit $exit_code
-  fi
+  patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
+    --input=$AS_GIT_BIN_REPO/mozilla-central-patches/disable-tiles-tests.diff
 fi
-
 
 # Be sure that we've built, and that the test glop in the objdir has been
 # created.
