@@ -1,0 +1,7 @@
+diff --git a/browser/base/moz.build b/browser/base/moz.build
+--- a/browser/base/moz.build
++++ b/browser/base/moz.build
+@@ -21,3 +21,2 @@ BROWSER_CHROME_MANIFESTS += [
+     'content/test/general/browser.ini',
+-    'content/test/newtab/browser.ini',
+     'content/test/pageinfo/browser.ini',
