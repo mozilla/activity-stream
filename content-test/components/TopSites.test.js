@@ -1,7 +1,7 @@
 const TestUtils = require("react-addons-test-utils");
 const React = require("react");
 const ReactDOM = require("react-dom");
-const {faker, overrideConsoleError, renderWithProvider} = require("test/test-utils");
+const {faker, overrideConsoleError, renderWithProvider, mountWithIntl} = require("test/test-utils");
 const ConnectedTopSites = require("components/TopSites/TopSites");
 const {PlaceholderTopSitesItem, TopSites, TopSitesItem} = ConnectedTopSites;
 const LinkMenu = require("components/LinkMenu/LinkMenu");
@@ -90,6 +90,7 @@ describe("TopSites", () => {
 describe("TopSitesItem", () => {
   const fakeSite = fakeSiteWithImage;
   let instance;
+  let wrapper;
 
   describe("valid site", () => {
     beforeEach(() => {
@@ -117,6 +118,33 @@ describe("TopSitesItem", () => {
     });
     it("should add the .top-corner class to SiteIcon", () => {
       assert.include(instance.refs.icon.props.className, "top-corner");
+    });
+  });
+
+  describe("edit mode", () => {
+    beforeEach(() => {
+      wrapper = mountWithIntl(<TopSitesItem editMode={true} {...fakeSite} />, {context: {}, childContextTypes: {}});
+    });
+
+    it("should render the component", () => {
+      assert.ok(wrapper.find(TopSitesItem));
+    });
+
+    it("should render 3 buttons", () => {
+      assert.equal(1, wrapper.ref("pinButton").length);
+      assert.equal(1, wrapper.ref("editButton").length);
+      assert.equal(1, wrapper.ref("dismissButton").length);
+    });
+
+    it("should fire a dismiss action when the dismiss button is clicked", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_BLOCK_URL") {
+          assert.equal(a.data, fakeSite.url);
+          done();
+        }
+      }
+      wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} {...fakeSite} />, {context: {}, childContextTypes: {}});
+      wrapper.ref("dismissButton").simulate("click");
     });
   });
 });

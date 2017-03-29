@@ -193,4 +193,49 @@
     margin: 0;
     padding: 15px 30px;
   }
+
+  .edit-menu {
+    background: $white;
+    border: $edit-menu-button-border;
+    border-radius: $edit-menu-button-size / 2;
+    box-shadow: $edit-menu-button-boxshadow;
+    height: $edit-menu-button-size;
+    position: absolute;
+    offset-inline-end: -($edit-menu-button-size / 2);
+    opacity: 0;
+    overflow: hidden;
+    top: -($edit-menu-button-size / 2);
+    transform: scale(0.25);
+    transition-property: transform, opacity;
+    transition-duration: 200ms;
+    z-index: 399;
+
+    &:focus,
+    &:active {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    button {
+      border: 0;
+      border-right: $edit-menu-button-border;
+      background-color: $white;
+      cursor: pointer;
+      height: 100%;
+      width: $edit-menu-button-size;
+
+      &:hover {
+        background-color: $bg-grey;
+      }
+
+      &:last-child {
+        border-right: 0;
+      }
+    }
+  }
+
+  .tile-outer:hover .edit-menu {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
