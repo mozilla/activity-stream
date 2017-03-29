@@ -8,7 +8,7 @@ At the end of each milestone, we will start a new release process that consists 
 
 - Building release candidate. As soon as the `release-X.Y.Z` branch lands in the central repo, the CI automatically builds the add-on and ships it to the `pre-release` channel, which is supposed to be used by all the stakeholders (QA/PM/Engineers) during the release.
 
-  Important: you need to update the branch name in the `deploy` section in [travis.yml](.travis.yml) to let CI build the release candiate every once you push a new commit to the `release-X.Y.Z` branch.
+  Important: you need to update the branch name in the `deploy` section in [travis.yml](.travis.yml) to let CI build the release candidate every once you push a new commit to the `release-X.Y.Z` branch.
 
   As a side note, there are three channels for Activity Stream.
   * [dev](https://s3.amazonaws.com/moz-activity-streams-dev/dist/latest.html)
@@ -23,7 +23,7 @@ At the end of each milestone, we will start a new release process that consists 
 
 Note that the first three tasks are mostly driven by the automated "pre-release" channel, people from different release party could cooperate directly on GitHub or via IRC/Slack.
 
-Let's now focus on the final task - release deploy. Again, we break it down into three stages as pre-deploy, deploy, and post-deploy respectiviely.
+Let's now focus on the final task - release deploy. Again, we break it down into three stages as pre-deploy, deploy, and post-deploy respectively.
 
 # Pre-deploy
 
@@ -129,7 +129,7 @@ We use `fabric` in a Python virtual environment to do the job,
 
 - hotfixes
 
-  We may find futher issues after the release is out. You can create hotfixes as follows,
+  We may find further issues after the release is out. You can create hotfixes as follows,
 
   ```
   # create a hotfix branch off the current release branch
