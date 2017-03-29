@@ -47,14 +47,12 @@ npm run buildmc
 # Patch mozilla-central (on top of the export) so that AS is preffed on, and
 # the mochitests are turned on.
 if [ $ENABLE_MC_AS ]; then
-  patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
-    --input=$AS_GIT_BIN_REPO/mozilla-central-patches/enable-mc-as.diff
-
-  patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
-    --input=$AS_GIT_BIN_REPO/mozilla-central-patches/disable-search-tests.diff
-
-  patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
-    --input=$AS_GIT_BIN_REPO/mozilla-central-patches/disable-tiles-tests.diff
+  PATCHES=$AS_GIT_BIN_REPO/mozilla-central-patches/*.diff
+  for p in $PATCHES
+  do
+    patch --directory="$FIREFOX_PATH" -p1 --force --no-backup-if-mismatch \
+    --input=$p
+  done
 fi
 
 # Be sure that we've built, and that the test glop in the objdir has been
