@@ -9,6 +9,7 @@ const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
 const {prettyUrl} = require("lib/utils");
 const {injectIntl, FormattedMessage} = require("react-intl");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
+const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 
 const FULL_WIDTH = 96;
 const TIPPY_TOP_WIDTH = 80;
@@ -23,7 +24,7 @@ const TopSitesItem = React.createClass({
   getDefaultProps() {
     return {
       onClick() {},
-      includeContextMenu: true
+      editMode: false
     };
   },
   _isTippyTop(favicon_url) {
@@ -43,6 +44,17 @@ const TopSitesItem = React.createClass({
       }
     }
     return faviconSize;
+  },
+  handleDismiss() {
+    this.props.dispatch(actions.NotifyBlockURL(this.props.url));
+  },
+  handleEdit() {
+    // TODO: See issue #1987
+    alert("Editing Top Sites is coming soon! And yes, the icon is missing :)"); // eslint-disable-line no-alert
+  },
+  handlePin() {
+    // TODO: See issue #2274
+    alert("Pinning Top Sites is coming soon! And yes, the icon is missing :)"); // eslint-disable-line no-alert
   },
   render() {
     const site = this.props;
@@ -76,17 +88,36 @@ const TopSitesItem = React.createClass({
 
         {screenshot && <div ref="title" className="site-title">{label}</div>}
       </a>
-      {this.props.includeContextMenu &&
-        <LinkMenuButton onClick={() => this.setState({showContextMenu: true, activeTile: index})} />
+      {!this.props.editMode &&
+        <div>
+          <LinkMenuButton onClick={() => this.setState({showContextMenu: true, activeTile: index})} />
+          <LinkMenu
+            visible={isActive}
+            onUpdate={val => this.setState({showContextMenu: val})}
+            site={site}
+            page={this.props.page}
+            source="TOP_SITES"
+            index={index} />
+        </div>
       }
-      {this.props.includeContextMenu &&
-        <LinkMenu
-          visible={isActive}
-          onUpdate={val => this.setState({showContextMenu: val})}
-          site={site}
-          page={this.props.page}
-          source="TOP_SITES"
-          index={index} />
+      {this.props.editMode && site.type !== FIRST_RUN_TYPE &&
+        <div className="edit-menu">
+          <button
+            ref="pinButton"
+            className="icon icon-pin"
+            title={this.props.intl.formatMessage({id: "edit_topsites_pin_button"})}
+            onClick={this.handlePin} />
+          <button
+            ref="editButton"
+            className="icon icon-edit"
+            title={this.props.intl.formatMessage({id: "edit_topsites_edit_button"})}
+            onClick={this.handleEdit} />
+          <button
+            ref="dismissButton"
+            className="icon icon-dismiss"
+            title={this.props.intl.formatMessage({id: "edit_topsites_dismiss_button"})}
+            onClick={this.handleDismiss} />
+        </div>
       }
   </div>);
   }
@@ -99,7 +130,7 @@ TopSitesItem.propTypes = {
   favicon_url: React.PropTypes.string,
   onClick: React.PropTypes.func,
   showNewStyle: React.PropTypes.bool,
-  includeContextMenu: React.PropTypes.bool
+  editMode: React.PropTypes.bool
 };
 
 const PlaceholderTopSitesItem = React.createClass({
@@ -154,6 +185,7 @@ const TopSites = React.createClass({
             page={this.props.page}
             onClick={this.onClickFactory(i, site)}
             showNewStyle={this.props.showNewStyle}
+            dispatch={this.props.dispatch}
             {...site} />
           );
         })}
@@ -227,7 +259,9 @@ const EditTopSites = React.createClass({
                       page={this.props.page}
                       onClick={(index, ev) => ev.preventDefault()}
                       showNewStyle={this.props.showNewStyle}
-                      includeContextMenu={false}
+                      editMode={true}
+                      dispatch={this.props.dispatch}
+                      intl={this.props.intl}
                       {...site} />
                     )
                   )}
