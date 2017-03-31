@@ -52,10 +52,14 @@
         padding: 10px;
 
         label {
+          background-position: 35px center;
+          background-repeat: no-repeat;
           display: inline-block;
           font-weight: normal;
           height: 21px;
           line-height: 21px;
+          padding-left: 63px;
+          width: auto;
         }
       }
 
