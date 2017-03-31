@@ -65,7 +65,7 @@ const PreferencesPane = React.createClass({
                   <p><FormattedMessage id="settings_pane_topsites_body" /></p>
                   <div className="options">
                     <input ref="showMoreTopSites" type="checkbox" id="showMoreTopSites" name="showMoreTopSites" checked={showMoreTopSites} onChange={this.handleChange} disabled={!showTopSites} />
-                    <label htmlFor="showMoreTopSites">
+                    <label htmlFor="showMoreTopSites" className="icon icon-topsites">
                       <FormattedMessage id="settings_pane_topsites_options_showmore" />
                     </label>
                   </div>

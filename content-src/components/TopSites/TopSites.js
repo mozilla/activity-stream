@@ -50,11 +50,11 @@ const TopSitesItem = React.createClass({
   },
   handleEdit() {
     // TODO: See issue #1987
-    alert("Editing Top Sites is coming soon! And yes, the icon is missing :)"); // eslint-disable-line no-alert
+    alert("Editing Top Sites is coming soon!"); // eslint-disable-line no-alert
   },
   handlePin() {
     // TODO: See issue #2274
-    alert("Pinning Top Sites is coming soon! And yes, the icon is missing :)"); // eslint-disable-line no-alert
+    alert("Pinning Top Sites is coming soon!"); // eslint-disable-line no-alert
   },
   render() {
     const site = this.props;
@@ -269,12 +269,12 @@ const EditTopSites = React.createClass({
               </section>
               <section className="actions">
                 {this.props.length === TOP_SITES_DEFAULT_LENGTH &&
-                  <button ref="showMoreButton" onClick={this.toggleShowMorePref}>
+                  <button ref="showMoreButton" className="icon icon-topsites" onClick={this.toggleShowMorePref}>
                     <FormattedMessage id="edit_topsites_showmore_button" />
                   </button>
                 }
                 {this.props.length === TOP_SITES_SHOWMORE_LENGTH &&
-                  <button ref="showLessButton" onClick={this.toggleShowMorePref}>
+                  <button ref="showLessButton" className="icon icon-topsites" onClick={this.toggleShowMorePref}>
                     <FormattedMessage id="edit_topsites_showless_button" />
                   </button>
                 }

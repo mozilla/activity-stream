@@ -91,4 +91,16 @@
     margin-inline-start: auto;
     -moz-appearance: menuarrow;
   }
+
+  &.icon-edit {
+    background-image: url('#{$image-path}glyph-edit-16.svg');
+  }
+
+  &.icon-pin {
+    background-image: url('#{$image-path}glyph-pin-16.svg');
+  }
+
+  &.icon-topsites {
+    background-image: url('#{$image-path}glyph-topsites-16.svg');
+  }
 }
