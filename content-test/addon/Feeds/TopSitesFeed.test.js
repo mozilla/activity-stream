@@ -79,7 +79,7 @@ describe("TopSitesFeed", () => {
       assert.deepEqual(action.data, getCachedMetadata(testLinks));
     }));
     it("should not add screenshots to sites that qualify for a screenshot if the experiment is disabled", () => {
-      reduxState.Experiments.values.screenshotsAsync = false;
+      reduxState.Experiments.values.screenshotsLongCache = false;
       instance.shouldGetScreenshot = site => true;
       return instance.getData().then(result => {
         assert.notCalled(instance.getScreenshot);
@@ -89,7 +89,7 @@ describe("TopSitesFeed", () => {
       });
     });
     it("should not add screenshots to sites that don't qualify for a screenshot if the experiment is enabled", () => {
-      reduxState.Experiments.values.screenshotsAsync = true;
+      reduxState.Experiments.values.screenshotsLongCache = true;
       instance.shouldGetScreenshot = site => false;
       return instance.getData().then(result => {
         assert.notCalled(instance.getScreenshot);
@@ -99,7 +99,7 @@ describe("TopSitesFeed", () => {
       });
     });
     it("should add screenshots to sites that qualify for a screenshot if the experiment is enabled", () => {
-      reduxState.Experiments.values.screenshotsAsync = true;
+      reduxState.Experiments.values.screenshotsLongCache = true;
       instance.shouldGetScreenshot = site => true;
       return instance.getData().then(result => {
         assert.calledTwice(instance.getScreenshot);
@@ -113,7 +113,7 @@ describe("TopSitesFeed", () => {
       instance.getData().then(result => assert.equal(instance.missingData, false))
     );
     it("should set missingData to true if screenshot experiment is enabled and a topsite is missing a required screenshot", () => {
-      reduxState.Experiments.values.screenshotsAsync = true;
+      reduxState.Experiments.values.screenshotsLongCache = true;
       instance.shouldGetScreenshot = site => true;
       instance.getScreenshot = sinon.spy(site => null);
       return instance.getData().then(result => {
@@ -121,7 +121,7 @@ describe("TopSitesFeed", () => {
       });
     });
     it("should set missingData to true if screenshot experiment is enabled and a topsite is missing metadata", () => {
-      reduxState.Experiments.values.screenshotsAsync = true;
+      reduxState.Experiments.values.screenshotsLongCache = true;
       instance.options.getCachedMetadata = links => links.map(
         link => {link.hasMetadata = false; return link;}
       );

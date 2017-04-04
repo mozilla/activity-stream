@@ -63,6 +63,13 @@ const gMockMetadataStore = {
 };
 const gMockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
 
+function getMockStore() {
+  return {
+    dispatch: () => null,
+    getState: () => ({Experiments: {values: {screenshotsLongCache: false}}})
+  };
+}
+
 exports.test_only_request_links_once = function*(assert) {
   const msg1 = [{"url": "http://www.a.com"},
                 {"url": "http://www.b.com"},
@@ -200,7 +207,8 @@ exports.test_process_and_insert_links = function*(assert) {
   const fakeData = {"url": "http://example.com/1", "title": "Title for example.com/1"};
 
   const mockActions = [];
-  gPreviewProvider._store = {dispatch: action => mockActions.push(action)};
+  gPreviewProvider._store = getMockStore();
+  gPreviewProvider._store.dispatch = action => mockActions.push(action);
 
   // process and insert the links
   yield gPreviewProvider.processAndInsertMetadata(fakeData, "metadata_source");
@@ -443,7 +451,7 @@ exports.test_copy_over_correct_data_from_firefox = function*(assert) {
 exports.test_compute_image_sizes = function*(assert) {
   let mockExperimentProvider = {data: {metadataService: false}};
   gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, mockExperimentProvider, {initFresh: true});
-  gPreviewProvider._store = {dispatch: () => {}};
+  gPreviewProvider._store = getMockStore();
   let metadataObj = {
     url: "https://www.hasAnImage.com",
     images: [{url: "data:image;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAA"}] // a 1x1 pixel image
@@ -469,7 +477,7 @@ before(exports, () => {
   simplePrefs.prefs["metadata.endpoint"] = `${gEndpointPrefix}${gMetadataServiceEndpoint}`;
   simplePrefs.prefs["previews.enabled"] = true;
   gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, {initFresh: true});
-  gPreviewProvider._store = {dispatch: () => {}};
+  gPreviewProvider._store = getMockStore();
   gPreviewProvider._getFaviconColors = function() {
     return Promise.resolve(null);
   };

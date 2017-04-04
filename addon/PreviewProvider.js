@@ -31,7 +31,6 @@ Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 const DEFAULT_OPTIONS = {
-  metadataTTL: 30 * 24 * 60 * 60 * 1000, // 30 days for the metadata to live
   proxyMaxLinks: 25, // number of links proxy accepts per request
   initFresh: false
 };
@@ -54,6 +53,15 @@ function createCacheKey(spec) {
 }
 
 PreviewProvider.prototype = {
+
+  _getMetadataTTL() {
+    let timeout = 3 * 24 * 60 * 60 * 1000; // 3 days for the metadata to live
+
+    if (this._store.getState().Experiments.values.screenshotsLongCache) {
+      timeout = 90 * 24 * 60 * 60 * 1000; // 90 days for the metadata to live
+    }
+    return timeout;
+  },
 
   _onPrefChange(prefName) {
     if (ALLOWED_PREFS.has(prefName)) {
@@ -370,7 +378,7 @@ PreviewProvider.prototype = {
    */
   insertMetadata(links, metadataSource) {
     const linksToInsert = links.map(link => Object.assign({}, link, {
-      expired_at: (this.options.metadataTTL) + Date.now(),
+      expired_at: (this._getMetadataTTL()) + Date.now(),
       metadata_source: metadataSource
     }));
     return this._metadataStore.asyncInsert(linksToInsert, true).then(() => {

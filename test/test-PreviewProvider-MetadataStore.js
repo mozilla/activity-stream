@@ -175,7 +175,10 @@ before(exports, function*() {
   yield gMetadataStore.asyncConnect();
   let mockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
   gPreviewProvider = new PreviewProvider(mockTabTracker, gMetadataStore, {initFresh: true});
-  gPreviewProvider._store = {dispatch: () => {}};
+  gPreviewProvider._store = {
+    dispatch: () => {},
+    getState: () => ({Experiments: {values: {screenshotsLongCache: false}}})
+  };
   gPreviewProvider._getFaviconColors = function() {
     return Promise.resolve(null);
   };
