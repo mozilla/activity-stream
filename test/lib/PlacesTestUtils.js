@@ -32,9 +32,11 @@ const PlacesTestUtils = Object.freeze({
    *            [optional] visitDate: visit date in microseconds from the epoch
    *            [optional] referrer: nsIURI of the referrer for this visit
    *          }
-   *
+   * @param {Integer} updateCount
+   *        Number of updates, could be used to add a visit for an existing URL (i.e. an update).
+   *        Defaults to 0
    */
-  addVisits: Task.async(function*(placeInfo) {
+  addVisits: Task.async(function*(placeInfo, updateCount = 0) {
     let places = [];
 
     if (placeInfo instanceof Ci.nsIURI) {
@@ -100,7 +102,7 @@ const PlacesTestUtils = Object.freeze({
     yield waitUntil(() => {
       // function needs to be synchronous!
       let rows = getPlacesRows();
-      if ((rows.length - initialNumRows) !== urlList.length) {
+      if ((rows.length - initialNumRows) !== (urlList.length - updateCount)) {
         return false;
       }
       let rowChecked = 0;
