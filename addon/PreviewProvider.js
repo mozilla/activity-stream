@@ -57,7 +57,10 @@ PreviewProvider.prototype = {
   _getMetadataTTL() {
     let timeout = 3 * 24 * 60 * 60 * 1000; // 3 days for the metadata to live
 
-    if (this._store.getState().Experiments.values.screenshotsLongCache) {
+    if (
+      this._store.getState().Experiments.values.screenshotsLongCache ||
+      this._store.getState().Experiments.values.metadataLongCache
+    ) {
       timeout = 90 * 24 * 60 * 60 * 1000; // 90 days for the metadata to live
     }
     return timeout;
