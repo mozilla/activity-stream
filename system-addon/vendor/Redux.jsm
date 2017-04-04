@@ -1,5 +1,8 @@
-/*eslint-disable*/
-// This is a modified version of redux@3.6.0 to work in Firefox chrome code
+/**
+ * Redux v.3.6.0
+ *
+ * This file has been reformatted as a Javascript Core Module
+ */
 this.EXPORTED_SYMBOLS = ["redux"];
 this.redux =
 /******/ (function(modules) { // webpackBootstrap
