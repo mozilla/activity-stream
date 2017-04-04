@@ -37,7 +37,7 @@ module.exports = class TopSitesFeed extends Feed {
       this.missingData = false;
 
       // Get screenshots if the favicons are too small
-      if (experiments.screenshotsAsync) {
+      if (experiments.screenshotsLongCache) {
         for (let link of links) {
           if (this.shouldGetScreenshot(link)) {
             const screenshot = this.getScreenshot(link.url, this.store);

@@ -79,7 +79,7 @@ const NewTabPage = React.createClass({
     const props = this.props;
     const {showSearch, showTopSites, showHighlights, showMoreTopSites} = props.Prefs.prefs;
 
-    const topSitesExperimentIsOn = props.Experiments.values.screenshotsAsync;
+    const topSitesExperimentIsOn = props.Experiments.values.screenshotsLongCache;
     const newTabPrefsExperimentIsOn = props.Experiments.values.newTabPrefs;
 
     return (<main className={classNames("new-tab", {"top-sites-new-style": topSitesExperimentIsOn})}>
