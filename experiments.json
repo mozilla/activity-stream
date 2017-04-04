@@ -193,5 +193,20 @@
       "threshold": 0.2,
       "description": "Show screenshots in Highlights"
     }
+  },
+  "largestFrecency": {
+    "name": "Dedupe With Largest Frecency",
+    "active": true,
+    "description": "Dedupe hosts with no www but show largest frecency host",
+    "control": {
+      "value": false,
+      "description": "Old top sites query"
+    },
+    "variant": {
+      "id": "exp-013-largestFrecency",
+      "value": true,
+      "threshold": 0.2,
+      "description": "New query with largest frecency"
+    }
   }
 }

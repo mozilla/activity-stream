@@ -338,6 +338,123 @@ Links.prototype = {
     return null;
   }),
 
+  largestFrecencyQuery(blockedURLs) {
+    return `WITH all_history_items as (
+                      SELECT
+                        rev_host,
+                        CASE SUBSTR(rev_host, -5)
+                        WHEN ".www." THEN SUBSTR(rev_host, -4, -999)
+                        ELSE rev_host
+                        END AS rev_nowww,
+                        moz_places.url,
+                        moz_favicons.data AS favicon,
+                        mime_type AS mimeType,
+                        moz_places.title,
+                        frecency,
+                        last_visit_date,
+                        moz_places.guid AS guid,
+                        moz_bookmarks.guid AS bookmarkGuid
+                      FROM moz_places
+                      LEFT JOIN moz_favicons
+                      ON favicon_id = moz_favicons.id
+                      LEFT JOIN moz_bookmarks
+                      ON moz_places.id = moz_bookmarks.fk
+                      WHERE hidden = 0
+                      AND last_visit_date NOTNULL
+                      AND moz_places.url NOT IN (${blockedURLs})
+                      ORDER BY
+                        frecency,
+                        last_visit_date,
+                        moz_places.url DESC
+                    ),
+                    host_grouped_history_items as (
+                      SELECT * FROM all_history_items GROUP BY rev_host
+                    ),
+                    summed_host_grouped_history_items as (
+                      SELECT
+                        rev_nowww,
+                        SUM(frecency) AS summed_frecency,
+                        MAX(frecency) AS max_frecency
+                      FROM host_grouped_history_items
+                      GROUP BY rev_nowww
+                    ),
+                    deduped_history_items as (
+                      SELECT
+                        url,
+                        summed_host_grouped_history_items.rev_nowww AS reversedHost,
+                        title,
+                        summed_host_grouped_history_items.summed_frecency AS frecency,
+                        guid,
+                        bookmarkGuid,
+                        last_visit_date / 1000 AS lastVisitDate,
+                        favicon,
+                        mimeType,
+                        "history" AS type
+                      FROM host_grouped_history_items
+                      LEFT JOIN summed_host_grouped_history_items
+                      WHERE
+                        host_grouped_history_items.rev_nowww=summed_host_grouped_history_items.rev_nowww AND
+                        host_grouped_history_items.frecency=summed_host_grouped_history_items.max_frecency
+                      GROUP BY
+                        reversedHost
+                      ORDER BY
+                        summed_host_grouped_history_items.summed_frecency DESC,
+                        frecency DESC,
+                        lastVisitDate DESC,
+                        url
+                    )
+                    SELECT *
+                    FROM deduped_history_items
+                    LIMIT :limit`;
+  },
+
+  defaultQuery(blockedURLs) {
+    // GROUP first by rev_host to get the most-frecent page of an exact host
+    // then GROUP by rev_nowww to dedupe between top two pages of nowww host.
+    // Note that unlike mysql, sqlite picks the last raw from groupby bucket.
+    // Which is why subselect orders frecency and last_visit_date backwards.
+    // In general the groupby behavior in the absence of aggregates is not
+    // defined in SQL, hence we are relying on sqlite implementation that may
+    // change in the future.
+    return `SELECT url, title, SUM(frecency) frecency, guid, bookmarkGuid,
+                  last_visit_date / 1000 as lastVisitDate, favicon, mimeType,
+                  "history" as type
+            FROM (SELECT * FROM (
+              SELECT
+                rev_host,
+                CASE SUBSTR(rev_host, -5)
+                WHEN ".www." THEN SUBSTR(rev_host, -4, -999)
+                ELSE rev_host
+              END AS rev_nowww,
+                moz_places.url,
+                moz_favicons.data AS favicon,
+                mime_type AS mimeType,
+                moz_places.title,
+                frecency,
+                last_visit_date,
+                moz_places.guid AS guid,
+                moz_bookmarks.guid AS bookmarkGuid
+              FROM moz_places
+              LEFT JOIN moz_favicons
+              ON favicon_id = moz_favicons.id
+              LEFT JOIN moz_bookmarks
+              on moz_places.id = moz_bookmarks.fk
+              WHERE hidden = 0 AND last_visit_date NOTNULL
+              AND moz_places.url NOT IN (${blockedURLs})
+              ORDER BY frecency, last_visit_date, moz_places.url DESC
+            ) GROUP BY rev_host)
+            GROUP BY rev_nowww
+            ORDER BY frecency DESC, lastVisitDate DESC, url
+            LIMIT :limit`;
+  },
+
+  generateQuery(blockedURLs) {
+    if (simplePrefs.prefs["experiments.largestFrecency"]) {
+      return this.largestFrecencyQuery(blockedURLs);
+    }
+    return this.defaultQuery(blockedURLs);
+  },
+
   /**
    * Gets the top frecent sites.
    *
@@ -358,43 +475,7 @@ Links.prototype = {
 
     let blockedURLs = ignoreBlocked ? [] : this.blockedURLs.items().map(item => `"${item}"`);
 
-    // GROUP first by rev_host to get the most-frecent page of an exact host
-    // then GROUP by rev_nowww to dedupe between top two pages of nowww host.
-    // Note that unlike mysql, sqlite picks the last raw from groupby bucket.
-    // Which is why subselect orders frecency and last_visit_date backwards.
-    // In general the groupby behavior in the absence of aggregates is not
-    // defined in SQL, hence we are relying on sqlite implementation that may
-    // change in the future.
-    let sqlQuery = `SELECT url, title, SUM(frecency) frecency, guid, bookmarkGuid,
-                          last_visit_date / 1000 as lastVisitDate, favicon, mimeType,
-                          "history" as type
-                    FROM (SELECT * FROM (
-                      SELECT
-                        rev_host,
-                        CASE SUBSTR(rev_host, -5)
-                          WHEN ".www." THEN SUBSTR(rev_host, -4, -999)
-                          ELSE rev_host
-                        END AS rev_nowww,
-                        moz_places.url,
-                        moz_favicons.data AS favicon,
-                        mime_type AS mimeType,
-                        moz_places.title,
-                        frecency,
-                        last_visit_date,
-                        moz_places.guid AS guid,
-                        moz_bookmarks.guid AS bookmarkGuid
-                      FROM moz_places
-                      LEFT JOIN moz_favicons
-                      ON favicon_id = moz_favicons.id
-                      LEFT JOIN moz_bookmarks
-                      on moz_places.id = moz_bookmarks.fk
-                      WHERE hidden = 0 AND last_visit_date NOTNULL
-                      AND moz_places.url NOT IN (${blockedURLs})
-                      ORDER BY frecency, last_visit_date, moz_places.url DESC
-                    ) GROUP BY rev_host)
-                    GROUP BY rev_nowww
-                    ORDER BY frecency DESC, lastVisitDate DESC, url
-                    LIMIT :limit`;
+    let sqlQuery = this.generateQuery(blockedURLs);
 
     let links = yield this.executePlacesQuery(sqlQuery, {
       columns: [

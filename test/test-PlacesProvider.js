@@ -2,6 +2,7 @@
 "use strict";
 
 const {before} = require("sdk/test/utils");
+const simplePrefs = require("sdk/simple-prefs");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {PlacesTestUtils} = require("./lib/PlacesTestUtils");
 const {Ci, Cu} = require("chrome");
@@ -77,7 +78,7 @@ exports.test_Links_getTopFrecentSites = function*(assert) {
   assert.equal(links[0].eTLD, "com", "added visit mozilla.com has 'com' eTLD");
 };
 
-exports.test_Links_getTopFrecentSites_dedupeWWW = function*(assert) {
+exports.test_Links_getTopFrecentSites_dedupeWWW_default = function*(assert) {
   let provider = PlacesProvider.links;
 
   let links = yield provider.getTopFrecentSites();
@@ -104,6 +105,68 @@ exports.test_Links_getTopFrecentSites_dedupeWWW = function*(assert) {
   links = yield provider.getTopFrecentSites();
   assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
   assert.equal(links[0].frecency, 200, "frecency scores are combined ignoring extra pages");
+};
+
+exports.test_Links_getTopFrecentSites_dedupeWWW_experiment = function*(assert) {
+  // then test that we still dedupe properly even in the new experiment
+  simplePrefs.prefs["experiments.largestFrecency"] = true;
+  let provider = PlacesProvider.links;
+
+  let links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 0, "empty history yields empty links");
+
+  // add a visit without www
+  let testURI = NetUtil.newURI("http://mozilla.com");
+  yield PlacesTestUtils.addVisits(testURI);
+
+  // add a visit with www
+  testURI = NetUtil.newURI("http://www.mozilla.com");
+  yield PlacesTestUtils.addVisits(testURI);
+
+  // Test combined frecency score
+  links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
+  assert.equal(links[0].frecency, 200, "frecency scores are combined");
+
+  // add another page visit with www and without www
+  testURI = NetUtil.newURI("http://mozilla.com/page");
+  yield PlacesTestUtils.addVisits(testURI);
+  testURI = NetUtil.newURI("http://www.mozilla.com/page");
+  yield PlacesTestUtils.addVisits(testURI);
+  links = yield provider.getTopFrecentSites();
+  assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
+  assert.equal(links[0].frecency, 200, "frecency scores are combined ignoring extra pages");
+};
+
+exports.test_Links_getTopFrecentSites_largestFrecency = function*(assert) {
+  // ensure the experiment is on
+  simplePrefs.prefs["experiments.largestFrecency"] = true;
+  let provider = PlacesProvider.links;
+
+  let {
+    TRANSITION_TYPED,
+    TRANSITION_LINK
+  } = PlacesUtils.history;
+
+  let timeEarlier = timeDaysAgo(0);
+  let timeLater = timeDaysAgo(2);
+
+  // two sites which should be deduped on host, but with different frecencies
+  let visits = [
+    // high frecency - 2000
+    {uri: NetUtil.newURI("https://mozilla.com"), visitDate: timeEarlier, transition: TRANSITION_TYPED},
+    // low frecency - 100
+    {uri: NetUtil.newURI("https://www.mozilla.com"), visitDate: timeLater, transition: TRANSITION_LINK}
+  ];
+
+  yield PlacesTestUtils.addVisits(visits);
+
+  let links = yield provider.getTopFrecentSites();
+
+  // we expect to pick the link with the higher frecency, but still sum their frecencies
+  assert.equal(links.length, 1, "adding both www. and no-www. yields one link");
+  assert.equal(links[0].url, "https://mozilla.com/", "returned the most frecent link");
+  assert.equal(links[0].frecency, 2100, "frecency scores are combined");
 };
 
 exports.test_Links_getTopFrecentSites_limit = function*(assert) {
@@ -641,6 +704,9 @@ before(exports, function*() {
   yield faviconExpiredPromise;
   PlacesTestUtils.clearBookmarks();
   yield PlacesTestUtils.clearHistory();
+
+  // ensure the experiment is off for all tests
+  simplePrefs.prefs["experiments.largestFrecency"] = false;
 });
 
 require("sdk/test").run(exports);
