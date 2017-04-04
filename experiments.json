@@ -208,5 +208,20 @@
       "threshold": 0.2,
       "description": "Show screenshots"
     }
+  },
+  "metadataLongCache": {
+    "name": "Metadata with Long Cache",
+    "active": true,
+    "description": "Change the timeout for metadata to a long time",
+    "control": {
+      "value": false,
+      "description": "Short metadata timeout"
+    },
+    "variant": {
+      "id": "exp-015-metadatalongcache",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Long metadata timeout"
+    }
   }
 }
