@@ -341,6 +341,11 @@ Links.prototype = {
   /**
    * Gets the top frecent sites.
    *
+   * Note that implementing this type of combining/dedupe logic all in SQL may
+   * lead to an overly-complex query which in turn yields poor performance. A
+   * better implementation is needed for the graduation. For instance, using a
+   * simple 'SELECT' query then performing 'combine&dedupe' in the client code.
+   *
    * @param {Object} options
    *          options.limit: Maximum number of results to return.
    *
@@ -360,11 +365,26 @@ Links.prototype = {
 
     // GROUP first by rev_host to get the most-frecent page of an exact host
     // then GROUP by rev_nowww to dedupe between top two pages of nowww host.
-    // Note that unlike mysql, sqlite picks the last raw from groupby bucket.
+    //
+    // Note[1]: Unlike mysql, sqlite picks the last raw from groupby bucket.
     // Which is why subselect orders frecency and last_visit_date backwards.
     // In general the groupby behavior in the absence of aggregates is not
     // defined in SQL, hence we are relying on sqlite implementation that may
     // change in the future.
+    //
+    // Note[2]: In the query, the second "ORDER BY frecency, last_visit_date, moz_place.url DESC"
+    // is necessary as "GROUP BY rev_host" will break the ordering of the previous
+    // query, and may return the lower frecency url in the following "GROUP BY rev_nowww"
+    //
+    // For example:
+    // |      url            |    rev_host      |    rev_nohost   |   frecency   |
+    //   amazon.com/             moc.nozama         moc.nozama         18020
+    //   www.amazon.com/about    moc.nozama.www     moc.nozama           100
+    //
+    // Without the second "ORDER BY", the "GROUP BY rev_nowww" will return the last record
+    // with rev_nohost "moc.nozama", i.e. "www.amazon.com/about".
+    // See more details at: https://github.com/mozilla/activity-stream/issues/2264
+
     let sqlQuery = `SELECT url, title, SUM(frecency) frecency, guid, bookmarkGuid,
                           last_visit_date / 1000 as lastVisitDate, favicon, mimeType,
                           "history" as type
@@ -391,7 +411,8 @@ Links.prototype = {
                       WHERE hidden = 0 AND last_visit_date NOTNULL
                       AND moz_places.url NOT IN (${blockedURLs})
                       ORDER BY frecency, last_visit_date, moz_places.url DESC
-                    ) GROUP BY rev_host)
+                    ) GROUP BY rev_host
+                      ORDER BY frecency, last_visit_date, url DESC)
                     GROUP BY rev_nowww
                     ORDER BY frecency DESC, lastVisitDate DESC, url
                     LIMIT :limit`;
