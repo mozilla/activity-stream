@@ -8,7 +8,6 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const {shallow} = require("enzyme");
-const {SiteIcon} = require("components/SiteIcon/SiteIcon");
 const {mockData, mountWithProvider, faker, renderWithProvider} = require("test/test-utils");
 const fakeSpotlightItems = mockData.Highlights.rows;
 const fakeSiteWithImage = faker.createSite();
@@ -68,10 +67,6 @@ describe("SpotlightItem", () => {
     it("should create the element", () => {
       assert.ok(el);
     });
-    it("should render the icon", () => {
-      assert.instanceOf(instance.refs.icon, SiteIcon);
-      assert.include(instance.refs.icon.props.site, fakeSite);
-    });
     it("should render the image", () => {
       assert.include(instance.refs.image.style.backgroundImage, fakeSite.bestImage.url);
     });
@@ -123,8 +118,5 @@ describe("PlaceholderSpotlightItem", () => {
   });
   it("should render a PlaceholderHighlightContext", () => {
     assert.lengthOf(wrapper.find(PlaceholderHighlightContext), 1);
-  });
-  it("should render a .spotlight-icon", () => {
-    assert.lengthOf(wrapper.find(".spotlight-icon"), 1);
   });
 });

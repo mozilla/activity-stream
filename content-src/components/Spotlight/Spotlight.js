@@ -4,7 +4,6 @@ const {justDispatch} = require("common/selectors/selectors");
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const {prettyUrl} = require("lib/utils");
 const {actions} = require("common/action-manager");
-const {SiteIcon} = require("components/SiteIcon/SiteIcon");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {HighlightContext, PlaceholderHighlightContext} = require("components/HighlightContext/HighlightContext");
@@ -49,9 +48,7 @@ const SpotlightItem = React.createClass({
     }
     return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu, screenshot: site.screenshot})}>
       <a onClick={this.props.onClick} className="spotlight-inner" href={site.url} ref="link">
-        <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image">
-          <SiteIcon className="spotlight-icon" height={40} width={40} site={site} ref="icon" showBackground={true} border={false} faviconSize={32} />
-        </div>
+        <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image" />
         <div className="spotlight-details">
           <div className="spotlight-info">
             <div className="spotlight-text">
@@ -83,9 +80,7 @@ const PlaceholderSpotlightItem = React.createClass({
     return (
       <li className="spotlight-item placeholder">
         <a>
-          <div className="spotlight-image portrait" ref="image">
-            <div className="spotlight-icon" ref="icon" />
-          </div>
+          <div className="spotlight-image portrait" ref="image" />
           <div className="inner-border" />
         </a>
         <PlaceholderHighlightContext />
@@ -100,7 +95,6 @@ SpotlightItem.propTypes = {
   index: React.PropTypes.number,
   url: React.PropTypes.string.isRequired,
   bestImage: React.PropTypes.object,
-  favicon_url: React.PropTypes.string,
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string,
   onClick: React.PropTypes.func,

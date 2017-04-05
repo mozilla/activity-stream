@@ -79,20 +79,6 @@
     .spotlight-image {
       background-color: $placeholder-grey;
     }
-
-    .spotlight-icon {
-      width: 40px; // XXX should be derived or done from JS to match other code?
-      height: 40px;
-      background-color: $white;
-    }
-  }
-
-  .spotlight-icon {
-    border-radius: 3px;
-    left: $spotlight-icon-gutter;
-    overflow: hidden;
-    position: absolute;
-    top: $spotlight-icon-gutter;
   }
 
   .spotlight-label {
@@ -131,19 +117,6 @@
   &.screenshot {
     .spotlight-image {
       background-position: top;
-    }
-  }
-}
-
-// Overrides for Top Sites styling experiment.
-// We just hide site icons to try to better differentiate from top sites.
-// If/when we graduate the experiment, we'll just want to remove the HTML for
-// that completely.
-.top-sites-new-style {
-  .spotlight {
-    .site-icon,
-    .spotlight-icon {
-      display: none;
     }
   }
 }
