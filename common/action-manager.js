@@ -28,10 +28,12 @@ const am = new ActionManager([
   "NOTIFY_OPEN_WINDOW",
   "NOTIFY_PERFORMANCE",
   "NOTIFY_PERFORM_SEARCH",
+  "NOTIFY_PIN_TOPSITE",
   "NOTIFY_PREF_CHANGE",
   "NOTIFY_REMOVE_FORM_HISTORY_ENTRY",
   "NOTIFY_UNBLOCK_URL",
   "NOTIFY_UNDESIRED_EVENT",
+  "NOTIFY_UNPIN_TOPSITE",
   "NOTIFY_UPDATE_SEARCH_STRING",
   "NOTIFY_USER_EVENT",
   "PLACES_STATS_UPDATED",
@@ -224,6 +226,14 @@ function NotifyPrefChange(name, value) {
   return Notify("NOTIFY_PREF_CHANGE", {name, value});
 }
 
+function NotifyPinTopsite(site, index) {
+  return Notify("NOTIFY_PIN_TOPSITE", {site, index});
+}
+
+function NotifyUnpinTopsite(site) {
+  return Notify("NOTIFY_UNPIN_TOPSITE", {site});
+}
+
 am.defineActions({
   Notify,
   NotifyBlockURL,
@@ -240,10 +250,12 @@ am.defineActions({
   NotifyOpenWindow,
   NotifyPerf,
   NotifyPerformSearch,
+  NotifyPinTopsite,
   NotifyPrefChange,
   NotifyRemoveFormHistory,
   NotifyUnblockURL,
   NotifyUndesiredEvent,
+  NotifyUnpinTopsite,
   NotifyUpdateSearchString,
   PlacesStatsUpdate,
   RequestExpect,

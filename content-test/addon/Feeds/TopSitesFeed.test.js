@@ -2,6 +2,12 @@ const testLinks = [{url: "http://foo.com/"}, {url: "http://bar.com/"}];
 const getCachedMetadata = links => links.map(
   link => { link.hasMetadata = true; return link; }
 );
+const pinnedLinks = {
+  links: [],
+  pin: sinon.spy(),
+  unpin: sinon.spy(),
+  isPinned: site => false
+};
 const PlacesProvider = {links: {getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))}};
 const testScreenshot = "screenshot.jpg";
 const moment = require("moment");
@@ -15,7 +21,7 @@ describe("TopSitesFeed", () => {
   beforeEach(() => {
     PlacesProvider.links.getTopFrecentSites.reset();
     reduxState = {Experiments: {values: {}}};
-    instance = new TopSitesFeed({getCachedMetadata});
+    instance = new TopSitesFeed({getCachedMetadata, pinnedLinks});
     instance.store = {getState() { return reduxState; }};
     instance.getScreenshot = sinon.spy(() => testScreenshot);
     sinon.spy(instance.options, "getCachedMetadata");
@@ -178,10 +184,17 @@ describe("TopSitesFeed", () => {
       instance.onAction(state, {type: "RECEIVE_PLACES_CHANGES"});
       assert.notCalled(instance.refresh);
     });
-    it("should call refresh on MANY_LINKS_CHANGED", () => {
-      instance.onAction({}, {type: "MANY_LINKS_CHANGED"});
+    it("should call refresh and pin on NOTIFY_PIN_TOPSITE", () => {
+      instance.onAction({}, {type: "NOTIFY_PIN_TOPSITE", data: {site: {}, index: 1}});
+      assert.calledOnce(instance.pinnedLinks.pin);
       assert.calledOnce(instance.refresh);
-      assert.calledWith(instance.refresh, "frecency of many links changed");
+      assert.calledWith(instance.refresh, "a site was pinned");
+    });
+    it("should call refresh and unpin on NOTIFY_UNPIN_TOPSITE", () => {
+      instance.onAction({}, {type: "NOTIFY_UNPIN_TOPSITE", data: {site: {}}});
+      assert.calledOnce(instance.pinnedLinks.unpin);
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "a site was unpinned");
     });
   });
 });

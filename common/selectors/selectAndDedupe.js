@@ -1,6 +1,8 @@
 const dedupe = require("fancy-dedupe");
 
-dedupe.defaults.createKey = site => site.cache_key || site.hostname || site.url;
+// NOTE: The Math.random() fallback is because there can be empty slots thanks to pinning
+// with a limited history.
+dedupe.defaults.createKey = site => (site ? site.cache_key || site.hostname || site.url : Math.random());
 
 /**
  * Dedupe items and appends defaults if result length is smaller than required.
@@ -14,7 +16,21 @@ dedupe.defaults.createKey = site => site.cache_key || site.hostname || site.url;
 module.exports = function selectAndDedupe(group) {
   return group.reduce((result, options, index, arr) => {
     let current;
-    let sites = options.defaults ? options.sites.concat(options.defaults) : options.sites;
+    let sites = options.sites;
+
+    if (options.defaults) {
+      // Dedupe the defaults first.
+      let defaults = dedupe.group([sites, options.defaults])[1];
+      // Fill in any empty slots with default sites.
+      sites.forEach((site, i) => {
+        if (!site) {
+          sites[i] = defaults.shift();
+        }
+      });
+      // Then concatenate the rest.
+      sites = sites.concat(options.defaults);
+    }
+
     if (result.length) {
       const previous = result.reduce((prev, item) => prev.concat(item), []);
       current = dedupe.group([previous, sites])[1];

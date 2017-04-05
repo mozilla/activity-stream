@@ -6,7 +6,12 @@ const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
 const testTopSites = [{url: "example1.com"}, {url: "example2.com"}];
 const fetchNewMetadata = () => (Promise.resolve());
 const fetchNewMetadataLocally = () => (Promise.resolve());
-
+const pinnedLinks = {
+  links: [],
+  pin: sinon.spy(),
+  unpin: sinon.spy(),
+  isPinned: site => false
+};
 const PlacesProvider = {
   links: {
     getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks)),
@@ -20,7 +25,7 @@ describe("MetadataFeed", () => {
   beforeEach(() => {
     MetadataFeed = require("inject!addon/Feeds/MetadataFeed")({"addon/PlacesProvider": {PlacesProvider}});
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
-    instance = new MetadataFeed({fetchNewMetadata, fetchNewMetadataLocally});
+    instance = new MetadataFeed({fetchNewMetadata, fetchNewMetadataLocally, pinnedLinks});
     instance.refresh = sinon.spy();
     sinon.spy(instance.options, "fetchNewMetadata");
     sinon.spy(instance.options, "fetchNewMetadataLocally");
@@ -43,7 +48,7 @@ describe("MetadataFeed", () => {
       instance.getInitialMetadata().then(() => {
         assert.called(PlacesProvider.links.getTopFrecentSites);
         assert.called(PlacesProvider.links.getRecentlyVisited);
-        assert.calledTwice(instance.refresh);
+        assert.calledThrice(instance.refresh);
         assert.equal(instance.linksToFetch.size, 4);
       })
     );

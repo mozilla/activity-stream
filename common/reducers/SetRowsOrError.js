@@ -66,6 +66,22 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
         // Allow loading more even if we hit the end as the filter has changed
         state.canLoadMore = true;
         break;
+      case am.type("NOTIFY_PIN_TOPSITE"):
+        state.rows = prevState.rows.map(site => {
+          if (site.url === action.data.site.url) {
+            return Object.assign({}, site, {isPinned: true, pinIndex: action.data.index});
+          }
+          return site;
+        });
+        break;
+      case am.type("NOTIFY_UNPIN_TOPSITE"):
+        state.rows = prevState.rows.map(site => {
+          if (site.url === action.data.site.url) {
+            return Object.assign({}, site, {isPinned: false, pinIndex: null});
+          }
+          return site;
+        });
+        break;
       default:
         return prevState;
     }
