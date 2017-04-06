@@ -1,0 +1,39 @@
+diff --git a/testing/mozharness/configs/single_locale/pine.py b/testing/mozharness/configs/single_locale/pine.py
+new file mode 100644
+--- /dev/null
++++ b/testing/mozharness/configs/single_locale/pine.py
+@@ -0,0 +1,34 @@
++import os
++
++config = {
++    "nightly_build": True,
++    "branch": "pine",
++    "en_us_binary_url": "http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-mozilla-central/",
++    "update_channel": "nightly",
++
++    # l10n
++    "hg_l10n_base": "https://hg.mozilla.org/l10n-central",
++
++    # mar
++    "mar_tools_url": os.environ.get(
++        "MAR_TOOLS_URL",
++        # Buildbot l10n fetches from ftp rather than setting an environ var
++        "http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-mozilla-central/mar-tools/%(platform)s"
++    ),
++
++    # repositories
++    "mozilla_dir": "pine",
++    "repos": [{
++        "vcs": "hg",
++        "repo": "https://hg.mozilla.org/build/tools",
++        "branch": "default",
++        "dest": "tools",
++    }, {
++        "vcs": "hg",
++        "repo": "https://hg.mozilla.org/mozilla-central",
++        "branch": "default",
++        "dest": "pine",
++    }],
++    # purge options
++    'is_automation': True,
++}
