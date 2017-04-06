@@ -2,8 +2,8 @@
 
 const {Cu} = require("chrome");
 const prefService = require("sdk/preferences/service");
+const simplePrefs = require("sdk/simple-prefs");
 const {PrefsTarget} = require("sdk/preferences/event-target");
-const ss = require("sdk/simple-storage");
 const {preferencesBranch} = require("sdk/self");
 const PREF_PREFIX = `extensions.${preferencesBranch}.experiments.`;
 
@@ -49,7 +49,7 @@ exports.ExperimentProvider = class ExperimentProvider {
    * that users are pulled out of all experiment reporting.
    */
   overrideExperimentPrefs(prefName) {
-    ss.storage.overrideExperimentProvider = true;
+    simplePrefs.prefs.experimentsOverridden = true;
     this._experimentId = null;
   }
 
@@ -68,7 +68,7 @@ exports.ExperimentProvider = class ExperimentProvider {
   }
 
   setValues() {
-    if (ss.storage.overrideExperimentProvider) {
+    if (simplePrefs.prefs.experimentsOverridden) {
       console.log(`The following experiments were turned on via overrides:\n`); // eslint-disable-line no-console
       Object.keys(this._experiments).forEach(experimentName => {
         const {variant, control} = this._experiments[experimentName];
@@ -164,6 +164,6 @@ exports.ExperimentProvider = class ExperimentProvider {
     Object.keys(this._experiments).forEach(experimentName => {
       prefService.reset(PREF_PREFIX + experimentName);
     });
-    ss.storage.overrideExperimentProvider = false;
+    simplePrefs.prefs.experimentsOverridden = false;
   }
 };

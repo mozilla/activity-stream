@@ -7,7 +7,6 @@ const self = require("sdk/self");
 const simplePrefs = require("sdk/simple-prefs");
 const windows = require("sdk/windows").browserWindows;
 const prefService = require("sdk/preferences/service");
-const ss = require("sdk/simple-storage");
 const PageModProvider = require("addon/PageModProvider");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const {SearchProvider} = require("addon/SearchProvider");
@@ -385,7 +384,7 @@ ActivityStreams.prototype = {
     // Only hijack the home page if it isn't set by user or if it is set to
     // about:home/about:blank
     // AND the user didn't previously override the preference.
-    if (!ss.storage.homepageOverriden &&
+    if (!simplePrefs.prefs.homepageOverridden &&
         (!prefService.isSet(HOME_PAGE_PREF) ||
          ["about:home", "about:blank"].includes(prefService.get(HOME_PAGE_PREF)))) {
       prefService.set(HOME_PAGE_PREF, `${this._newTabURL}HOME`);
@@ -399,7 +398,7 @@ ActivityStreams.prototype = {
     } else {
       // The user changed the pref. Keep track of that so next time we don't
       // hijack it again.
-      ss.storage.homepageOverriden = true;
+      simplePrefs.prefs.homepageOverridden = true;
     }
   },
 

@@ -104,6 +104,18 @@
   "main": "addon/main.js",
   "preferences": [
     {
+      "name": "homepageOverridden",
+      "title": "Has the user overridden their home page",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "experimentsOverridden",
+      "title": "Has the user overridden their experiment assignment",
+      "type": "bool",
+      "value": false
+    },
+    {
       "name": "performance.log",
       "title": "Enable Performance Logging",
       "type": "bool",
