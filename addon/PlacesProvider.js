@@ -1,4 +1,4 @@
-/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs */
+/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs, NetUtil */
 
 "use strict";
 
@@ -23,6 +23,9 @@ XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
 
 XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
                                   "resource://gre/modules/Bookmarks.jsm");
+
+XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
+                                  "resource://gre/modules/NetUtil.jsm");
 
 XPCOMUtils.defineLazyGetter(this, "gPrincipal", () => {
   let uri = Services.io.newURI("about:newtab", null, null);
@@ -321,23 +324,6 @@ Links.prototype = {
     }
   },
 
-  getFavicon: Task.async(function*(url) {
-    let sqlQuery = `SELECT moz_favicons.mime_type as mimeType, moz_favicons.data as favicon
-                    FROM moz_favicons
-                    INNER JOIN moz_places ON
-                    moz_places.favicon_id = moz_favicons.id
-                    WHERE moz_places.url = :url`;
-    let res = yield this.executePlacesQuery(sqlQuery, {
-      columns: ["favicon", "mimeType"],
-      params: {url}
-    });
-    if (res.length) {
-      const {favicon} = this._faviconBytesToDataURI(res)[0];
-      return favicon;
-    }
-    return null;
-  }),
-
   /**
    * Gets the top frecent sites.
    *
@@ -386,7 +372,7 @@ Links.prototype = {
     // See more details at: https://github.com/mozilla/activity-stream/issues/2264
 
     let sqlQuery = `SELECT url, title, SUM(frecency) frecency, guid, bookmarkGuid,
-                          last_visit_date / 1000 as lastVisitDate, favicon, mimeType,
+                          last_visit_date / 1000 as lastVisitDate,
                           "history" as type
                     FROM (SELECT * FROM (
                       SELECT
@@ -396,16 +382,12 @@ Links.prototype = {
                           ELSE rev_host
                         END AS rev_nowww,
                         moz_places.url,
-                        moz_favicons.data AS favicon,
-                        mime_type AS mimeType,
                         moz_places.title,
                         frecency,
                         last_visit_date,
                         moz_places.guid AS guid,
                         moz_bookmarks.guid AS bookmarkGuid
                       FROM moz_places
-                      LEFT JOIN moz_favicons
-                      ON favicon_id = moz_favicons.id
                       LEFT JOIN moz_bookmarks
                       on moz_places.id = moz_bookmarks.fk
                       WHERE hidden = 0 AND last_visit_date NOTNULL
@@ -420,11 +402,9 @@ Links.prototype = {
     let links = yield this.executePlacesQuery(sqlQuery, {
       columns: [
         "bookmarkGuid",
-        "favicon",
         "frecency",
         "guid",
         "lastVisitDate",
-        "mimeType",
         "title",
         "type",
         "url"
@@ -432,7 +412,51 @@ Links.prototype = {
       params: {limit}
     });
 
+    links = yield this._addFavicons(links);
     return this._processLinks(links);
+  }),
+
+  /**
+   * Computes favicon data for each url in a set of links
+   *
+   * @param {Array} links
+   *          an array containing objects without favicon data or mimeTypes yet
+   *
+   * @returns {Promise} Returns a promise with the array of links with favicon data,
+   *                    mimeType, and byte array length
+   */
+  _addFavicons: Task.async(function*(links) {
+    if (links.length) {
+      // Each link in the array needs a favicon for it's page - so we fire off a promise
+      // for each link to compute the favicon data and attach it back to the original link object.
+      // We must wait until all favicons for the array of links are computed before returning
+      yield Promise.all(links.map(link => new Promise(resolve => {
+        try {
+          return PlacesUtils.favicons.getFaviconDataForPage(NetUtil.newURI(link.url), (iconuri, len, data, mime) => {
+            // Due to the asynchronous behaviour of inserting a favicon into moz_favicons, the data may
+            // not be available to us just yet, since we listen on a history entry being inserted.
+            // As a result, we don't want to throw if the icon uri is not here yet, we just want to resolve
+            // on an empty favicon. Activity Stream knows how to handle null favicons
+            if (!iconuri) {
+              link.favicon = null;
+              link.mimeType = null;
+            } else {
+              link.favicon = data;
+              link.mimeType = mime;
+              link.faviconLength = len;
+            }
+            return resolve(link);
+          });
+        } catch (e) {
+          // If something goes wrong - that's ok - just return a null favicon without
+          // rejecting with the entire Promise.all
+          link.favicon = null;
+          link.mimeType = null;
+          return resolve(link);
+        }
+      })));
+    }
+    return links;
   }),
 
   /**
@@ -450,12 +474,8 @@ Links.prototype = {
                           b.id as bookmarkId,
                           b.title as bookmarkTitle,
                           b.guid as bookmarkGuid,
-                          "bookmark" as type,
-                          f.data as favicon,
-                          f.mime_type as mimeType
+                          "bookmark" as type
                     FROM moz_places p, moz_bookmarks b
-                    LEFT JOIN moz_favicons f
-                      ON p.favicon_id = f.id
                     WHERE b.fk = p.id
                     AND p.rev_host IS NOT NULL
                     AND b.type = :type
@@ -467,12 +487,10 @@ Links.prototype = {
         "bookmarkGuid",
         "bookmarkId",
         "bookmarkTitle",
-        "favicon",
         "frecency",
         "guid",
         "lastModified",
         "lastVisitDate",
-        "mimeType",
         "title",
         "type",
         "url"
@@ -480,6 +498,7 @@ Links.prototype = {
       params: {id, type: Bookmarks.TYPE_BOOKMARK}
     });
 
+    links = yield this._addFavicons(links);
     links = this._processLinks(links);
     if (links.length) {
       return links[0];
@@ -507,12 +526,10 @@ Links.prototype = {
       "bookmarkGuid",
       "bookmarkId",
       "bookmarkTitle",
-      "favicon",
       "frecency",
       "guid",
       "lastModified",
       "lastVisitDate",
-      "mimeType",
       "title",
       "type",
       "url",
@@ -520,8 +537,6 @@ Links.prototype = {
     ];
     let sqlQuery = `SELECT p.url as url,
                            p.guid as guid,
-                           f.data as favicon,
-                           f.mime_type as mimeType,
                            p.title as title,
                            p.frecency as frecency,
                            p.visit_count as visitCount,
@@ -535,8 +550,6 @@ Links.prototype = {
                     FROM moz_places p
                     LEFT JOIN moz_bookmarks b
                       ON b.fk = p.id
-                    LEFT JOIN moz_favicons f
-                      ON p.favicon_id = f.id
                     WHERE p.url NOT IN (${blockedURLs})
                     AND p.title NOT NULL
                     AND p.rev_host NOT IN (${REV_HOST_BLACKLIST})
@@ -592,8 +605,6 @@ Links.prototype = {
     // construct sql query
     let sqlQuery = `SELECT moz_places.url as url,
                             moz_places.guid as guid,
-                            moz_favicons.data as favicon,
-                            moz_favicons.mime_type as mimeType,
                             moz_places.title,
                             moz_places.frecency,
                             moz_places.last_visit_date / 1000 as lastVisitDate,
@@ -601,8 +612,6 @@ Links.prototype = {
                             moz_bookmarks.guid as bookmarkGuid,
                             moz_bookmarks.dateAdded / 1000 as bookmarkDateCreated
                      FROM moz_places
-                     LEFT JOIN moz_favicons
-                     ON moz_places.favicon_id = moz_favicons.id
                      LEFT JOIN moz_bookmarks
                      ON moz_places.id = moz_bookmarks.fk
                      WHERE hidden = 0 AND last_visit_date NOTNULL
@@ -614,11 +623,9 @@ Links.prototype = {
       columns: [
         "bookmarkDateCreated",
         "bookmarkGuid",
-        "favicon",
         "frecency",
         "guid",
         "lastVisitDate",
-        "mimeType",
         "title",
         "type",
         "url"
@@ -626,6 +633,7 @@ Links.prototype = {
       params
     });
 
+    links = yield this._addFavicons(links);
     links = this._processLinks(links);
 
     // Add the sync data to each link.

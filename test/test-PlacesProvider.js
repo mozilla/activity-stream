@@ -197,6 +197,31 @@ exports.test_Links_getTopFrecentSites_Order = function*(assert) {
   }
 };
 
+exports.test_Links__addFavicons = function*(assert) {
+  let provider = PlacesProvider.links;
+
+  // start by passing in a bad uri and check that we get a null favicon back
+  let links = [{url: "mozilla.com"}];
+  yield provider._addFavicons(links);
+  assert.equal(links[0].favicon, null, "Got a null favicon because we passed in a bad url");
+  assert.equal(links[0].mimeType, null, "Got a null mime type because we passed in a bad url");
+
+  // now fix the url and try again - this time we get good favicon data back
+  links[0].url = "https://mozilla.com";
+  let base64URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAA" +
+    "AAAA6fptVAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==";
+
+  let visit = [{uri: NetUtil.newURI(links[0].url), visitDate: timeDaysAgo(0), transition: PlacesUtils.history.TRANSITION_TYPED}];
+  yield PlacesTestUtils.addVisits(visit);
+  let faviconData = {"https://mozilla.com/": base64URL};
+  yield PlacesTestUtils.addFavicons(faviconData);
+
+  yield provider._addFavicons(links);
+  assert.equal(links[0].mimeType, "image/png", "Got the right mime type before deleting it");
+  assert.equal(links[0].faviconLength, links[0].favicon.length, "Got the right length for the byte array");
+  assert.equal(provider._faviconBytesToDataURI(links)[0].favicon, base64URL, "Got the right favicon");
+};
+
 exports.test_Links_getAllHistoryItems = function*(assert) {
   let provider = PlacesProvider.links;
   let {TRANSITION_TYPED} = PlacesUtils.history;
