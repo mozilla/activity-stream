@@ -56,10 +56,10 @@ scripts:
 # buildmc: Export the bootstraped add-on to mozilla central
   buildmc:
     pre: =>export:clean
-    # Copy over the entire mozilla-central directory
-    copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream
-    webpack: webpack --config system-addon/webpack.mc.config.js
+    webpack: webpack --config webpack.system-addon.config.js
     css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content
+    # Copy over all of the mozilla-central directory except content-src
+    copy: cpx "system-addon/{bootstrap.js,install.rdf.in,jar.mn,moz.build,README.md,{common,data,lib,test,vendor}/**/{,.}*}" ../mozilla-central/browser/extensions/activity-stream
 
 # startmc: Start developing the bootstrapped add-on
   startmc:
