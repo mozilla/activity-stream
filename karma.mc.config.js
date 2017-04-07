@@ -74,7 +74,7 @@ module.exports = function(config) {
           },
           {
             enforce: "post",
-            test: /\.jsm$/,
+            test: /\.jsm?$/,
             loader: "istanbul-instrumenter-loader",
             include: [path.resolve("system-addon")],
             exclude: [

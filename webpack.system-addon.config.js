@@ -1,6 +1,8 @@
 const path = require("path");
 const absolute = relPath => path.join(__dirname, "system-addon", relPath);
 
+const resourcePathRegEx = /^resource:\/\/activity-stream\//;
+
 module.exports = {
   entry: absolute("content-src/activity-stream.jsx"),
   output: {
@@ -14,6 +16,13 @@ module.exports = {
         exclude: /node_modules/,
         loader: "babel-loader",
         options: {presets: ["react"]}
+      },
+      {
+        test: /\.jsm$/,
+        exclude: /node_modules/,
+        loader: "babel-loader",
+        // Converts .jsm files into common-js modules
+        options: {plugins: [["jsm-to-commonjs", {basePath: resourcePathRegEx, replace: true}]]}
       }
     ]
   },
@@ -27,6 +36,7 @@ module.exports = {
   },
   externals: {
     "react": "React",
-    "react-dom": "ReactDOM"
+    "react-dom": "ReactDOM",
+    "react-redux": "ReactRedux"
   }
 };
