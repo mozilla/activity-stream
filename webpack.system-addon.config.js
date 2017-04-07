@@ -1,9 +1,10 @@
 const path = require("path");
+const absolute = relPath => path.join(__dirname, "system-addon", relPath);
 
 module.exports = {
-  entry: path.join(__dirname, "content-src/activity-stream.js"),
+  entry: absolute("content-src/activity-stream.jsx"),
   output: {
-    path: path.join(__dirname, "data/content"),
+    path: absolute("data/content"),
     filename: "activity-stream.bundle.js"
   },
   module: {
@@ -18,9 +19,10 @@ module.exports = {
   },
   // This resolve config allows us to import with paths relative to the system-addon/ directory, e.g. "lib/ActivityStream.jsm"
   resolve: {
+    extensions: [".js", ".jsx"],
     modules: [
-      __dirname,
-      "node_modules"
+      "node_modules",
+      "system-addon"
     ]
   },
   externals: {
