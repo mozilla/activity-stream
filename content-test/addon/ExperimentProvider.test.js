@@ -1,8 +1,8 @@
+const simplePrefs = require("sdk/simple-prefs");
 const createExperimentProvider = require("inject!addon/ExperimentProvider");
 const {PrefService} = require("shims/sdk/preferences/service");
 const PrefsTarget = require("shims/sdk/preferences/event-target");
 const {preferencesBranch} = require("sdk/self");
-const ss = require("shims/sdk/simple-storage");
 const PREF_PREFIX = `extensions.${preferencesBranch}.experiments.`;
 
 const DEFAULT_OPTIONS = {
@@ -361,19 +361,19 @@ describe("ExperimentProvider", () => {
     it("should remain in override state after restart", () => {
       setup({n: 0.8});
       assert.isFalse(experimentProvider.data.foo);
-      assert.isFalse(ss.storage.overrideExperimentProvider);
+      assert.isFalse(simplePrefs.prefs.experimentsOverridden);
 
       prefService.set(`${PREF_PREFIX}foo`, true);
       experimentProvider._onPrefChange();
 
       assert.isTrue(experimentProvider.data.foo);
-      assert.isTrue(ss.storage.overrideExperimentProvider);
+      assert.isTrue(simplePrefs.prefs.experimentsOverridden);
 
       experimentProvider.destroy();
       setup({n: 0.8});
 
       assert.isTrue(experimentProvider.data.foo);
-      assert.isTrue(ss.storage.overrideExperimentProvider);
+      assert.isTrue(simplePrefs.prefs.experimentsOverridden);
     });
     it("should disable all active experiments if pref says so", () => {
       const data = {
