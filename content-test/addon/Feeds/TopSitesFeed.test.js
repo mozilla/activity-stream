@@ -34,32 +34,23 @@ describe("TopSitesFeed", () => {
     beforeEach(() => {
       testSite = {
         hasMetadata: true,
-        url: "http://www.example.com/",
-        favicon_width: TopSitesFeed.MIN_ICON_SIZE,
-        favicon_height: TopSitesFeed.MIN_ICON_SIZE
+        hasHighResIcon: true,
+        url: "http://www.example.com/"
       };
-    });
-    it("should not get a screenshot for sites missing metadata", () => {
-      testSite.favicon_width = null;
-      testSite.favicon_height = null;
-      testSite.hasMetadata = false;
-      assert.equal(false, instance.shouldGetScreenshot(testSite));
     });
     it("should not get a screenshot for sites with metadata and large icons", () => {
       assert.equal(false, instance.shouldGetScreenshot(testSite));
     });
+    it("should not get a screenshot for sites missing metadata", () => {
+      testSite.hasMetadata = false;
+      assert.equal(false, instance.shouldGetScreenshot(testSite));
+    });
     it("should get a screenshot for sites with metadata and small icons", () => {
-      testSite.favicon_width = TopSitesFeed.MIN_ICON_SIZE - 1;
-      testSite.favicon_height = TopSitesFeed.MIN_ICON_SIZE - 1;
+      testSite.hasHighResIcon = false;
       assert.equal(true, instance.shouldGetScreenshot(testSite));
     });
     it("should get a screenshot for sites with metadata and large icons that are not root domains", () => {
       testSite.url = "http://www.example.com/non/root/";
-      assert.equal(true, instance.shouldGetScreenshot(testSite));
-    });
-    it("should get a screenshot for sites with metadata and missing icon size", () => {
-      testSite.favicon_width = null;
-      testSite.favicon_height = null;
       assert.equal(true, instance.shouldGetScreenshot(testSite));
     });
   });

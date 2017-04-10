@@ -5,7 +5,6 @@ const Feed = require("addon/lib/Feed");
 const {TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
-const MIN_ICON_SIZE = 64;
 const getScreenshot = require("addon/lib/getScreenshot");
 const {isRootDomain} = require("addon/lib/utils");
 
@@ -18,10 +17,7 @@ module.exports = class TopSitesFeed extends Feed {
     this.missingData = false;
   }
   shouldGetScreenshot(link) {
-    const isMissingIcon = !link.favicon_width && !link.favicon_height;
-    const hasSmallIcon = !isMissingIcon && ((link.favicon_width < MIN_ICON_SIZE) || (link.favicon_height < MIN_ICON_SIZE));
-    const badIcon = link.hasMetadata && (isMissingIcon || hasSmallIcon);
-    return !isRootDomain(link.url) || badIcon;
+    return !isRootDomain(link.url) || (link.hasMetadata && !link.hasHighResIcon);
   }
   getData() {
     return Task.spawn(function*() {
@@ -92,4 +88,3 @@ module.exports = class TopSitesFeed extends Feed {
 };
 
 module.exports.UPDATE_TIME = UPDATE_TIME;
-module.exports.MIN_ICON_SIZE = MIN_ICON_SIZE;
