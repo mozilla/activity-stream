@@ -1,14 +1,6 @@
-#base,
-.outer-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
 main {
-  display: flex;
-  flex-grow: 1;
-  padding: 20px;
+  margin: 40px auto;
+  max-width: 736px;
 
   section {
     margin-bottom: $section-margin;
