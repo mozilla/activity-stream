@@ -1,15 +1,19 @@
-/* globals module, require */
+/* globals module, require, NewTabUtils */
 "use strict";
+const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const simplePrefs = require("sdk/simple-prefs");
 const Feed = require("addon/lib/Feed");
 const am = require("common/action-manager");
 const MAX_NUM_LINKS = 5;
 
+Cu.import("resource://gre/modules/NewTabUtils.jsm");
+
 module.exports = class MetadataFeed extends Feed {
   constructor(options) {
     super(options);
     this.linksToFetch = new Map();
+    this.pinnedLinks = options.pinnedLinks || NewTabUtils.pinnedLinks;
   }
 
   /**
@@ -22,10 +26,17 @@ module.exports = class MetadataFeed extends Feed {
     return PlacesProvider.links.getTopFrecentSites().then(links => {
       links.forEach(item => this.linksToFetch.set(item.url, Date.now()));
       this.refresh(reason);
+    })
     // Get initial highlights metadata
-    }).then(() => PlacesProvider.links.getRecentlyVisited())
+    .then(() => PlacesProvider.links.getRecentlyVisited())
     .then(links => {
       links.forEach(item => this.linksToFetch.set(item.url, Date.now()));
+      this.refresh(reason);
+    })
+    // Get the metadata for pinned sites
+    .then(() => {
+      let pinned = this.pinnedLinks.links;
+      pinned.forEach(item => this.linksToFetch.set(item.url, Date.now()));
       this.refresh(reason);
     });
   }

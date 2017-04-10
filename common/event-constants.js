@@ -18,8 +18,10 @@ const constants = {
     "OPEN_NEWTAB_PREFS",
     "OPEN_NEW_WINDOW",
     "OPEN_PRIVATE_WINDOW",
+    "PIN",
     "SEARCH",
-    "UNBLOCK"
+    "UNBLOCK",
+    "UNPIN"
   ]),
   undesiredEvents: new Set([
     "HIDE_LOADER",

@@ -135,6 +135,24 @@
         .site-title {
           height: 22px;
           overflow: hidden;
+
+          .icon-pin {
+            offset-inline-start: 0;
+            opacity: 0.5;
+            position: absolute;
+          }
+
+          .label {
+            flex-grow: 1;
+            text-overflow: ellipsis;
+          }
+
+          &.pinned {
+            .label {
+              padding-inline-start: 20px;
+              text-align: left;
+            }
+          }
         }
       }
     }

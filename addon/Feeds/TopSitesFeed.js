@@ -1,4 +1,4 @@
-/* globals Task */
+/* globals Task, NewTabUtils */
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
@@ -9,23 +9,64 @@ const getScreenshot = require("addon/lib/getScreenshot");
 const {isRootDomain} = require("addon/lib/utils");
 
 Cu.import("resource://gre/modules/Task.jsm");
+Cu.import("resource://gre/modules/NewTabUtils.jsm");
 
 module.exports = class TopSitesFeed extends Feed {
-  constructor(...args) {
-    super(...args);
+  constructor(options) {
+    super(options);
     this.getScreenshot = getScreenshot;
     this.missingData = false;
+    this.pinnedLinks = options.pinnedLinks || NewTabUtils.pinnedLinks;
   }
   shouldGetScreenshot(link) {
     return !isRootDomain(link.url) || (link.hasMetadata && !link.hasHighResIcon);
+  }
+  pinLink(action) {
+    this.pinnedLinks.pin(action.data.site, action.data.index);
+  }
+  unpinLink(action) {
+    this.pinnedLinks.unpin(action.data.site);
+  }
+  sortLinks(links, pinned) {
+    // Separate out the pinned from the rest
+    let pinnedLinks = [];
+    let sortedLinks = [];
+    links.forEach(link => {
+      if (this.pinnedLinks.isPinned(link)) {
+        pinnedLinks.push(link);
+      } else {
+        sortedLinks.push(link);
+      }
+    });
+
+    // Insert the pinned links in their location
+    pinned.forEach((val, index) => {
+      if (!val) { return; }
+      let site = Object.assign({}, pinnedLinks.find(link => link.url === val.url), {isPinned: true, pinIndex: index});
+      if (index > sortedLinks.length) {
+        sortedLinks[index] = site;
+      } else {
+        sortedLinks.splice(index, 0, site);
+      }
+    });
+
+    return sortedLinks;
   }
   getData() {
     return Task.spawn(function*() {
       const experiments = this.store.getState().Experiments.values;
 
-      let links;
-      // Get links from places
-      links = yield PlacesProvider.links.getTopFrecentSites();
+      // Get pinned links
+      let pinned = this.pinnedLinks.links;
+
+      // Get links from places and cache them
+      let frecent = yield PlacesProvider.links.getTopFrecentSites();
+
+      // Filter out pinned links from frecent
+      frecent = frecent.filter(link => !this.pinnedLinks.isPinned(link));
+
+      // Concat the pinned with the frecent
+      let links = pinned.concat(frecent);
 
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE");
@@ -48,6 +89,9 @@ module.exports = class TopSitesFeed extends Feed {
           }
         }
       }
+
+      // Place the pinned links where they go
+      links = this.sortLinks(links, pinned);
 
       return am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links);
     }.bind(this));
@@ -82,6 +126,14 @@ module.exports = class TopSitesFeed extends Feed {
         // manyLinksChanged is an event fired by Places when all history is cleared,
         // or when frecency of links change due to something like a sync
         this.refresh("frecency of many links changed");
+        break;
+      case am.type("NOTIFY_PIN_TOPSITE"):
+        this.pinLink(action);
+        this.refresh("a site was pinned");
+        break;
+      case am.type("NOTIFY_UNPIN_TOPSITE"):
+        this.unpinLink(action);
+        this.refresh("a site was unpinned");
         break;
     }
   }

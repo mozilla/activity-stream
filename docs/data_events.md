@@ -224,6 +224,40 @@ It doesn't capture success or failure to share after.
 }
 ```
 
+#### Pinning a site
+
+```js
+{
+  "event": "PIN",
+  "page": "NEW_TAB",
+  "source": "TOP_SITES",
+  "action_position": 4,
+  "action": "activity_stream_event",
+  "tab_id": "-5-4",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "metadata_source": ["MetadataService" | "Local" | "TippyTopProvider"],
+}
+```
+
+#### Unpinning a site
+
+```js
+{
+  "event": "UNPIN",
+  "page": "NEW_TAB",
+  "source": "TOP_SITES",
+  "action_position": 4,
+  "action": "activity_stream_event",
+  "tab_id": "-5-4",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "metadata_source": ["MetadataService" | "Local" | "TippyTopProvider"],
+}
+```
+
 ## Session end pings
 
 When a session ends, the browser will send a `"activity_stream_session"` ping to our metrics servers. This ping contains the length of the session, a unique reason for why the session ended, and some additional metadata.

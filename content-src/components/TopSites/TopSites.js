@@ -45,16 +45,34 @@ const TopSitesItem = React.createClass({
     }
     return faviconSize;
   },
+  userEvent(event) {
+    const {page, source, index, dispatch, site} = this.props;
+    let payload = {
+      event,
+      page,
+      source,
+      action_position: index,
+      metadata_source: site.metadata_source
+    };
+    dispatch(actions.NotifyEvent(payload));
+  },
   handleDismiss() {
     this.props.dispatch(actions.NotifyBlockURL(this.props.url));
+    this.userEvent("BLOCK");
   },
   handleEdit() {
     // TODO: See issue #1987
     alert("Editing Top Sites is coming soon!"); // eslint-disable-line no-alert
   },
   handlePin() {
-    // TODO: See issue #2274
-    alert("Pinning Top Sites is coming soon!"); // eslint-disable-line no-alert
+    const site = this.props;
+    if (site.isPinned) {
+      this.props.dispatch(actions.NotifyUnpinTopsite({url: site.url}));
+      this.userEvent("UNPIN");
+    } else {
+      this.props.dispatch(actions.NotifyPinTopsite({url: site.url}, site.index));
+      this.userEvent("PIN");
+    }
   },
   render() {
     const site = this.props;
@@ -82,11 +100,16 @@ const TopSitesItem = React.createClass({
           ref="icon"
           className={siteIconClasses}
           site={site} faviconSize={faviconSize}
-          showTitle={!screenshot}
+          showTitle={!topSitesExperimentIsOn}
           showBackground={showBackground}
           border={!topSitesExperimentIsOn || !!screenshot || this._isTippyTop(site.favicon_url)} />
 
-        {screenshot && <div ref="title" className="site-title">{label}</div>}
+        {topSitesExperimentIsOn &&
+          <div ref="title" className={classNames("site-title", {pinned: site.isPinned})}>
+            {site.isPinned && <div className="icon icon-pin" />}
+            <div className="label">{label}</div>
+          </div>
+        }
       </a>
       {!this.props.editMode &&
         <div>
@@ -102,11 +125,20 @@ const TopSitesItem = React.createClass({
       }
       {this.props.editMode && site.type !== FIRST_RUN_TYPE &&
         <div className="edit-menu">
-          <button
-            ref="pinButton"
-            className="icon icon-pin"
-            title={this.props.intl.formatMessage({id: "edit_topsites_pin_button"})}
-            onClick={this.handlePin} />
+          {site.isPinned &&
+            <button
+              ref="unpinButton"
+              className="icon icon-pin"
+              title={this.props.intl.formatMessage({id: "edit_topsites_unpin_button"})}
+              onClick={this.handlePin} />
+          }
+          {!site.isPinned &&
+            <button
+              ref="pinButton"
+              className="icon icon-pin"
+              title={this.props.intl.formatMessage({id: "edit_topsites_pin_button"})}
+              onClick={this.handlePin} />
+          }
           <button
             ref="editButton"
             className="icon icon-edit"
@@ -172,10 +204,11 @@ const TopSites = React.createClass({
       <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
       <div className="tiles-wrapper">
         {sites.map((site, i) => {
-          // if this is a placeholder, we want all the widgets to render empty
-          if (this.props.placeholder) {
+          // If the site is an empty slot (due to pinned sites and not not enough history)
+          // or this is a placeholder, we want the widget to render empty
+          if (!site || this.props.placeholder) {
             return (
-              <PlaceholderTopSitesItem key={site.guid || site.cache_key || i} />
+              <PlaceholderTopSitesItem key={i} />
             );
           }
 
@@ -253,7 +286,16 @@ const EditTopSites = React.createClass({
               <section className="edit-topsites-inner-wrapper">
                 <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
                 <div className="tiles-wrapper">
-                  {sites.map((site, i) => (<TopSitesItem
+                  {sites.map((site, i) => {
+                    // If the site is an empty slot (due to pinned sites and not not enough history),
+                    // we want the widget to render empty
+                    if (!site) {
+                      return (
+                        <PlaceholderTopSitesItem key={i} />
+                      );
+                    }
+
+                    return (<TopSitesItem
                       index={i}
                       key={site.guid || site.cache_key || i}
                       page={this.props.page}
@@ -263,8 +305,8 @@ const EditTopSites = React.createClass({
                       dispatch={this.props.dispatch}
                       intl={this.props.intl}
                       {...site} />
-                    )
-                  )}
+                    );
+                  })}
                 </div>
               </section>
               <section className="actions">

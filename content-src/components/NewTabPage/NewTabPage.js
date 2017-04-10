@@ -33,9 +33,9 @@ const NewTabPage = React.createClass({
         const topSites = this.props.TopSites.rows;
         stats.topsitesSize = topSites.length;
         topSites.forEach(row => {
-          if (row.screenshot) {
+          if (row && row.screenshot) {
             stats.topsitesScreenshot++;
-          } else if (row.metadata_source === "TippyTopProvider") {
+          } else if (row && row.metadata_source === "TippyTopProvider") {
             stats.topsitesTippytop++;
           }
         });

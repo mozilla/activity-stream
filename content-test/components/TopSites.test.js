@@ -136,6 +136,18 @@ describe("TopSitesItem", () => {
       assert.equal(1, wrapper.ref("dismissButton").length);
     });
 
+    it("should render the pin button if site isn't pinned", () => {
+      assert.equal(1, wrapper.ref("pinButton").length);
+      assert.equal(0, wrapper.ref("unpinButton").length);
+    });
+
+    it("should render the unpin button if site is pinned", () => {
+      const pinnedSite = Object.assign({}, fakeSiteWithImage, {isPinned: true});
+      wrapper = mountWithIntl(<TopSitesItem editMode={true} {...pinnedSite} />, {context: {}, childContextTypes: {}});
+      assert.equal(0, wrapper.ref("pinButton").length);
+      assert.equal(1, wrapper.ref("unpinButton").length);
+    });
+
     it("should fire a dismiss action when the dismiss button is clicked", done => {
       function dispatch(a) {
         if (a.type === "NOTIFY_BLOCK_URL") {
@@ -145,6 +157,30 @@ describe("TopSitesItem", () => {
       }
       wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} {...fakeSite} />, {context: {}, childContextTypes: {}});
       wrapper.ref("dismissButton").simulate("click");
+    });
+
+    it("should fire a pin action when the pin button is clicked", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_PIN_TOPSITE") {
+          assert.equal(a.data.site.url, fakeSite.url);
+          assert.equal(a.data.index, 7);
+          done();
+        }
+      }
+      wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} index={7} {...fakeSite} />, {context: {}, childContextTypes: {}});
+      wrapper.ref("pinButton").simulate("click");
+    });
+
+    it("should fire an unpin action when the pin button is clicked", done => {
+      const pinnedSite = Object.assign({}, fakeSiteWithImage, {isPinned: true});
+      function dispatch(a) {
+        if (a.type === "NOTIFY_UNPIN_TOPSITE") {
+          assert.equal(a.data.site.url, pinnedSite.url);
+          done();
+        }
+      }
+      wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} {...pinnedSite} />, {context: {}, childContextTypes: {}});
+      wrapper.ref("unpinButton").simulate("click");
     });
   });
 });
