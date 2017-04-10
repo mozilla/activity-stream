@@ -6,6 +6,7 @@
 % resource activity-stream %content/
   content/lib/ (./lib/*)
   content/common/ (./common/*)
-  content/vendor/ (./vendor/*.js)
-  content/vendor/ (./vendor/*.jsm)
+  content/vendor/Redux.jsm (./vendor/Redux.jsm)
+  content/vendor/react.js (./vendor/react.js)
+  content/vendor/react-dom.js (./vendor/react-dom.js)
   content/data/ (./data/*)
