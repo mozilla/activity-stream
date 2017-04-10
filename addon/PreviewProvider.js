@@ -9,7 +9,7 @@ const {getColor} = require("addon/ColorAnalyzerProvider");
 const {absPerf} = require("common/AbsPerf");
 const {consolidateBackgroundColors, consolidateFavicons, extractMetadataFaviconFields} = require("addon/lib/utils");
 
-const {BACKGROUND_FADE} = require("../common/constants");
+const {BACKGROUND_FADE, MIN_HIGHRES_ICON_SIZE} = require("../common/constants");
 const ENABLED_PREF = "previews.enabled";
 const ENDPOINT = "metadata.endpoint";
 const VERSION_SUFFIX = `?addon_version=${self.version}`;
@@ -203,16 +203,18 @@ PreviewProvider.prototype = {
         break;
       }
       // copy over fields we need from the original site object
-      let enhancedLink = {};
-      enhancedLink.title = link.title;
-      enhancedLink.type = link.type;
-      enhancedLink.url = link.url;
-      enhancedLink.hostname = link.hostname;
-      enhancedLink.eTLD = link.eTLD;
-      enhancedLink.cache_key = link.cache_key;
-      enhancedLink.lastVisitDate = link.lastVisitDate;
-      enhancedLink.bookmarkDateCreated = link.bookmarkDateCreated;
-      enhancedLink.bookmarkGuid = link.bookmarkGuid;
+      let enhancedLink = {
+        title: link.title,
+        type: link.type,
+        url: link.url,
+        hostname: link.hostname,
+        eTLD: link.eTLD,
+        cache_key: link.cache_key,
+        lastVisitDate: link.lastVisitDate,
+        bookmarkDateCreated: link.bookmarkDateCreated,
+        bookmarkGuid: link.bookmarkGuid,
+        hasMetadata: false
+      };
 
       // get favicon and background color from firefox
       const firefoxBackgroundColor = yield this._getFaviconColors(link);
@@ -254,6 +256,14 @@ PreviewProvider.prototype = {
       enhancedLink.favicon_width = tippyTopFaviconWidth || metadataLinkFaviconWidth;
       enhancedLink.favicon_height = tippyTopFaviconHeight || metadataLinkFaviconHeight;
       enhancedLink.background_color = consolidateBackgroundColors(tippyTopBackgroundColor, metadataLinkFaviconColor, firefoxBackgroundColor);
+
+      // check whether we have a high res icon
+      enhancedLink.hasIcon = !!(enhancedLink.favicon_width && enhancedLink.favicon_height);
+      enhancedLink.hasHighResIcon = !!(
+        enhancedLink.hasMetadata &&
+        enhancedLink.hasIcon &&
+        (enhancedLink.favicon_width > MIN_HIGHRES_ICON_SIZE) && (enhancedLink.favicon_height > MIN_HIGHRES_ICON_SIZE));
+
       results.push(enhancedLink);
     }
 

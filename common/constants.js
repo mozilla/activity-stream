@@ -37,5 +37,8 @@ module.exports = {
     "showTopSites": 1 << 1,
     "showHighlights": 1 << 2,
     "showMoreTopSites": 1 << 3
-  }
+  },
+
+  // The minimum size to consider an icon high res
+  MIN_HIGHRES_ICON_SIZE: 64
 };
