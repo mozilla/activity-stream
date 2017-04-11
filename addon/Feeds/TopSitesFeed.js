@@ -66,7 +66,7 @@ module.exports = class TopSitesFeed extends Feed {
       frecent = frecent.filter(link => !this.pinnedLinks.isPinned(link));
 
       // Concat the pinned with the frecent
-      let links = pinned.concat(frecent);
+      let links = pinned.filter(link => !!link).concat(frecent);
 
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE");
