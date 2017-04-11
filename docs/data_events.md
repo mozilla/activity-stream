@@ -19,7 +19,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "page": ["NEW_TAB" | "HOME"],
 
   // Optional field indicating the UI component type
-  "source": ["TOP_SITES" | "FEATURED" | "ACTIVITY_FEED"],
+  "source": ["TOP_SITES" | "FEATURED" | "RECOMMENDED"| "ACTIVITY_FEED"],
 
   // Optional field if there is more than one of a component type on a page.
   // It is zero-indexed.
@@ -60,7 +60,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 {
   "event": "CLICK",
   "page": ["NEW_TAB" | "HOME"],
-  "source": ["TOP_SITES" | "FEATURED" | "ACTIVITY_FEED"],
+  "source": ["TOP_SITES" | "FEATURED" | "RECOMMENDED" | "ACTIVITY_FEED"],
   "action_position": 2,
   "action": "activity_stream_event",
   "tab_id": "-5-3",
@@ -82,7 +82,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   {
     "event": "DELETE",
     "page": ["NEW_TAB" | "HOME"],
-    "source": ["TOP_SITES" | "FEATURED" | "ACTIVITY_FEED"],
+    "source": ["TOP_SITES" | "FEATURED" | "RECOMMENDED" | "ACTIVITY_FEED"],
     "action_position": 0,
     "action": "activity_stream_event",
     "tab_id": "-3-13",
@@ -114,7 +114,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 {
   "event": "BLOCK",
   "page": ["NEW_TAB" | "HOME"],
-  "source": ["TOP_SITES" | "FEATURED" | "ACTIVITY_FEED"],
+  "source": ["TOP_SITES" | "FEATURED" | "RECOMMENDED" | "ACTIVITY_FEED"],
   "action_position": 4,
   "action": "activity_stream_event",
   "tab_id": "-5-4",

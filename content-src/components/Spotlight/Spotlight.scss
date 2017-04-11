@@ -109,6 +109,12 @@
     line-height: 18px;
   }
 
+  // Applied when there's no image to display so we can fill up the space
+  // with the site's or story's description.
+  .spotlight-text-max {
+    max-height: $spotlight-text-height-max;
+  }
+
   .spotlight-description {
     font-size: $spotlight-font-size;
     margin: 0;

@@ -5,14 +5,16 @@ const DEFAULT_PREFS = {
   "showSearch": true,
   "showTopSites": true,
   "showMoreTopSites": false,
-  "showHighlights": true
+  "showHighlights": true,
+  "showPocketStories": true
 };
 
 describe("PreferencesPane", () => {
   let wrapper;
-  function setup(prefs = {}) {
+  function setup(prefs = {}, experiments = {}) {
     const customProps = {Prefs: {prefs: Object.assign({}, DEFAULT_PREFS, prefs)}};
-    wrapper = mountWithIntl(<PreferencesPane {...customProps} />, {context: {}, childContextTypes: {}});
+    const customExperiments = {Experiments: {values: experiments}};
+    wrapper = mountWithIntl(<PreferencesPane {...customProps} {...customExperiments} />, {context: {}, childContextTypes: {}});
   }
 
   beforeEach(() => setup());
@@ -79,5 +81,23 @@ describe("PreferencesPane", () => {
     assert.equal(1, wrapper.ref("sidebar").length);
     wrapper.ref("done-button").simulate("click");
     assert.equal(0, wrapper.ref("sidebar").length);
+  });
+
+  it("the pocket stories checkbox should be checked by default", () => {
+    setup({}, {pocketStories: true});
+    wrapper.ref("prefs-button").simulate("click");
+    assert.isTrue(wrapper.ref("showPocketStoriesCheckbox").prop("checked"));
+  });
+
+  it("the pocket stories checkbox should be unchecked if pref is off", () => {
+    setup({showPocketStories: false}, {pocketStories: true});
+    wrapper.ref("prefs-button").simulate("click");
+    assert.isFalse(wrapper.ref("showPocketStoriesCheckbox").prop("checked"));
+  });
+
+  it("the pocket stories checkbox should not be rendered if experiment is off", () => {
+    setup({showPocketStories: false}, {pocketStories: false});
+    wrapper.ref("prefs-button").simulate("click");
+    assert.equal(0, wrapper.ref("showPocketStoriesCheckbox").length);
   });
 });

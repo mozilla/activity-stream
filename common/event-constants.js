@@ -31,6 +31,7 @@ const constants = {
   sources: new Set([
     "TOP_SITES",
     "FEATURED",
+    "RECOMMENDED",
     "ACTIVITY_FEED",
     "NEW_TAB"
   ])

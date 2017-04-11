@@ -27,6 +27,8 @@ module.exports = function getHighlightContextFromSite(site) {
   } else if (site.isOpen) {
     result.type = "open";
     result.date = site.lastVisitDate;
+  } else if (site.recommended) {
+    result.type = "stories";
   } else {
     result.type = "history";
     result.date = site.lastVisitDate;

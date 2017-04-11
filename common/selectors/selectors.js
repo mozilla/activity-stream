@@ -21,12 +21,15 @@ module.exports.justDispatch = (() => ({}));
 module.exports.selectNewTabSites = createSelector(
   [
     state => state.Highlights,
+    state => state.PocketStories,
+    state => state.PocketTopics,
     state => state.TopSites,
     state => state.Experiments,
     state => state.Prefs,
     state => state
   ],
-  (Highlights, TopSites, Experiments, Prefs, state) => {
+
+  (Highlights, PocketStories, PocketTopics, TopSites, Experiments, Prefs, state) => { // eslint-disable-line max-params
     const [topSitesRows, highlightsRows] = selectAndDedupe([
       {
         sites: TopSites.rows,
@@ -40,6 +43,8 @@ module.exports.selectNewTabSites = createSelector(
     ]);
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
+      PocketStories: Object.assign({}, PocketStories),
+      PocketTopics: Object.assign({}, PocketTopics),
       Highlights: Object.assign({}, Highlights, {rows: highlightsRows}),
       Experiments,
       Prefs,
