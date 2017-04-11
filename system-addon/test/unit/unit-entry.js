@@ -13,7 +13,8 @@ overrider.set({
     utils: {
       import: overrider.sandbox.spy(),
       importGlobalProperties: overrider.sandbox.spy(),
-      reportError: overrider.sandbox.spy()
+      reportError: overrider.sandbox.spy(),
+      now: () => window.performance.now()
     }
   },
   XPCOMUtils: {
@@ -21,7 +22,6 @@ overrider.set({
     defineLazyServiceGetter: overrider.sandbox.spy(),
     generateQI: overrider.sandbox.stub().returns(() => {})
   },
-  console: {log: overrider.sandbox.spy()},
   dump: overrider.sandbox.spy(),
   Services: {
     obs: {

@@ -4,15 +4,14 @@ describe("ActivityStream", () => {
   let sandbox;
   let as;
   let ActivityStream;
-  function NewTabInit() {}
-  function TopSitesFeed() {}
-  function SearchFeed() {}
+  function Fake() {}
   before(() => {
     sandbox = sinon.sandbox.create();
     ({ActivityStream} = injector({
-      "lib/NewTabInit.jsm": {NewTabInit},
-      "lib/TopSitesFeed.jsm": {TopSitesFeed},
-      "lib/SearchFeed.jsm": {SearchFeed}
+      "lib/NewTabInit.jsm": {NewTabInit: Fake},
+      "lib/SearchFeed.jsm": {SearchFeed: Fake},
+      "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake},
+      "lib/TelemetryFeed.jsm": {TelemetryFeed: Fake}
     }));
   });
 
@@ -40,6 +39,17 @@ describe("ActivityStream", () => {
     it("should call .store.init", () => {
       assert.calledOnce(as.store.init);
     });
+    it("should emit an INIT event with the right version", () => {
+      as = new ActivityStream({version: "1.2.3"});
+      sandbox.stub(as.store, "init");
+      sandbox.stub(as.store, "dispatch");
+
+      as.init();
+
+      assert.calledOnce(as.store.dispatch);
+      const action = as.store.dispatch.firstCall.args[0];
+      assert.propertyVal(action.data, "version", "1.2.3");
+    });
   });
   describe("#uninit", () => {
     beforeEach(() => {
@@ -56,15 +66,19 @@ describe("ActivityStream", () => {
   describe("feeds", () => {
     it("should create a NewTabInit feed", () => {
       const feed = as.feeds["feeds.newtabinit"]();
-      assert.instanceOf(feed, NewTabInit);
+      assert.instanceOf(feed, Fake);
     });
     it("should create a TopSites feed", () => {
       const feed = as.feeds["feeds.topsites"]();
-      assert.instanceOf(feed, TopSitesFeed);
+      assert.instanceOf(feed, Fake);
+    });
+    it("should create a Telemetry feed", () => {
+      const feed = as.feeds["feeds.telemetry"]();
+      assert.instanceOf(feed, Fake);
     });
     it("should create a Search feed", () => {
       const feed = as.feeds["feeds.search"]();
-      assert.instanceOf(feed, SearchFeed);
+      assert.instanceOf(feed, Fake);
     });
   });
 });

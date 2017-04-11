@@ -1,8 +1,24 @@
 const {reducers, INITIAL_STATE} = require("common/Reducers.jsm");
-const {TopSites, Search} = reducers;
+const {TopSites, Search, App} = reducers;
 const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("Reducers", () => {
+  describe("App", () => {
+    it("should return the initial state", () => {
+      const nextState = App(undefined, {type: "FOO"});
+      assert.equal(nextState, INITIAL_STATE.App);
+    });
+    it("should not set initialized to true on INIT", () => {
+      const nextState = App(undefined, {type: "INIT"});
+      assert.propertyVal(nextState, "initialized", true);
+    });
+    it("should set initialized, version, and locale on INIT", () => {
+      const action = {type: "INIT", data: {version: "1.2.3", locale: "zh-CN"}};
+      const nextState = App(undefined, action);
+      assert.propertyVal(nextState, "version", "1.2.3");
+      assert.propertyVal(nextState, "locale", "zh-CN");
+    });
+  });
   describe("TopSites", () => {
     it("should return the initial state", () => {
       const nextState = TopSites(undefined, {type: "FOO"});

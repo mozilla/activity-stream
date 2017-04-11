@@ -89,7 +89,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
    * @param  {string} targetId The portID of the port that sent the message
    */
   onActionFromContent(action, targetId) {
-    this.dispatch(ac.SendToMain(action, {fromTarget: targetId}));
+    this.dispatch(ac.SendToMain(action, targetId));
   }
 
   /**
