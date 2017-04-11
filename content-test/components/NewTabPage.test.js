@@ -147,6 +147,7 @@ describe("NewTabPage", () => {
           assert.equal(a.data.topsitesSize, mockData.TopSites.rows.length);
           assert.equal(a.data.topsitesTippytop, 0);
           assert.equal(a.data.topsitesScreenshot, 0);
+          assert.equal(a.data.topsitesLowResIcon, 0);
           done();
         }
       }} />);

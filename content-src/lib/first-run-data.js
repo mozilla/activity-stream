@@ -13,7 +13,8 @@ module.exports = {
       "favicon_url": "facebook-com.png",
       "background_color": [59, 89, 152],
       "favicon_height": 80,
-      "favicon_width": 80
+      "favicon_width": 80,
+      "hasHighResIcon": true
     },
     {
       "title": "YouTube",
@@ -23,7 +24,8 @@ module.exports = {
       "favicon_url": "youtube-com.png",
       "background_color": [219, 67, 56],
       "favicon_height": 80,
-      "favicon_width": 80
+      "favicon_width": 80,
+      "hasHighResIcon": true
     },
     {
       "title": "Amazon",
@@ -33,7 +35,8 @@ module.exports = {
       "favicon_url": "amazon-com.png",
       "background_color": [255, 255, 255],
       "favicon_height": 80,
-      "favicon_width": 80
+      "favicon_width": 80,
+      "hasHighResIcon": true
     },
     {
       "title": "Yahoo",
@@ -43,7 +46,8 @@ module.exports = {
       "favicon_url": "yahoo-com.png",
       "background_color": [80, 9, 167],
       "favicon_height": 80,
-      "favicon_width": 80
+      "favicon_width": 80,
+      "hasHighResIcon": true
     },
     {
       "title": "eBay",
@@ -53,7 +57,8 @@ module.exports = {
       "favicon_url": "ebay-com.png",
       "background_color": [237, 237, 237],
       "favicon_height": 80,
-      "favicon_width": 80
+      "favicon_width": 80,
+      "hasHighResIcon": true
     },
     {
       "title": "Twitter",
@@ -63,7 +68,8 @@ module.exports = {
       "favicon_url": "twitter-com.png",
       "background_color": [4, 159, 245],
       "favicon_height": 80,
-      "favicon_width": 80
+      "favicon_width": 80,
+      "hasHighResIcon": true
     }
   ].map(item => {
     item.type = FIRST_RUN_TYPE;
