@@ -45,13 +45,14 @@ const SpotlightItem = React.createClass({
         event: "MISSING_IMAGE",
         source: "HIGHLIGHTS"
       }));
+      style.display = "none";
     }
     return (<li className={classNames("spotlight-item", {active: this.state.showContextMenu, screenshot: site.screenshot})}>
       <a onClick={this.props.onClick} className="spotlight-inner" href={site.url} ref="link">
         <div className={classNames("spotlight-image", {portrait: isPortrait})} style={style} ref="image" />
         <div className="spotlight-details">
           <div className="spotlight-info">
-            <div className="spotlight-text">
+            <div className={classNames("spotlight-text", {"spotlight-text-max": !imageUrl && !site.screenshot})}>
               <div ref="label" className="spotlight-label">
                 {label}
               </div>
@@ -101,6 +102,17 @@ SpotlightItem.propTypes = {
   dispatch: React.PropTypes.func.isRequired
 };
 
+function renderPlaceholderList() {
+  const PLACEHOLDER_SITE_LIST_LENGTH = 3;
+
+  let placeholders = [];
+  for (let i = 0; i < PLACEHOLDER_SITE_LIST_LENGTH; i++) {
+    placeholders.push(<PlaceholderSpotlightItem key={i} />);
+  }
+
+  return placeholders;
+}
+
 const Spotlight = React.createClass({
   getDefaultProps() {
     return {
@@ -137,23 +149,12 @@ const Spotlight = React.createClass({
           {...site} />
       );
   },
-  // XXX factor out into a stateless component
-  renderPlaceholderSiteList() {
-    const PLACEHOLDER_SITE_LIST_LENGTH = 3;
 
-    let placeholders = [];
-    for (let i = 0; i < PLACEHOLDER_SITE_LIST_LENGTH; i++) {
-      placeholders.push(<PlaceholderSpotlightItem key={i} />);
-    }
-
-    return placeholders;
-  },
   render() {
     return (<section className="spotlight">
       <h3 className="section-title"><FormattedMessage id="header_highlights" /></h3>
       <ul className="spotlight-list">
-        {this.props.placeholder ? this.renderPlaceholderSiteList() :
-          this.renderSiteList()}
+        {this.props.placeholder ? renderPlaceholderList() : this.renderSiteList()}
       </ul>
     </section>);
   }
@@ -169,3 +170,4 @@ module.exports = connect(justDispatch)(Spotlight);
 module.exports.Spotlight = Spotlight;
 module.exports.SpotlightItem = SpotlightItem;
 module.exports.PlaceholderSpotlightItem = PlaceholderSpotlightItem;
+module.exports.renderPlaceholderList = renderPlaceholderList;

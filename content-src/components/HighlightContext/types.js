@@ -18,5 +18,9 @@ module.exports = {
   topic: {
     intlID: "type_label_topic",
     icon: "topic"
+  },
+  stories: {
+    intlID: "type_label_recommended",
+    icon: "bookmark"
   }
 };

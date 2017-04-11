@@ -12,7 +12,13 @@ module.exports = {
   // Locales that should be displayed RTL
   RTL_LIST: ["ar", "he", "fa", "ur"],
 
-  // Number of large Highlight titles in the new Highlights world, including
+  // Number of large Highlight tiles used to display Pocket story recommendations
+  POCKET_STORIES_LENGTH: 3,
+
+  // Number of "Read More" topics to display at the bottom of Pocket recommendations
+  POCKET_TOPICS_LENGTH: 5,
+
+  // Number of large Highlight tiles in the new Highlights world, including
   // all rows.
   HIGHLIGHTS_LENGTH: 9,
 
@@ -36,9 +42,13 @@ module.exports = {
     "showSearch": 1 << 0,
     "showTopSites": 1 << 1,
     "showHighlights": 1 << 2,
-    "showMoreTopSites": 1 << 3
+    "showMoreTopSites": 1 << 3,
+    "showPocketStories": 1 << 4
   },
 
   // The minimum size to consider an icon high res
-  MIN_HIGHRES_ICON_SIZE: 64
+  MIN_HIGHRES_ICON_SIZE: 64,
+
+  // Frequency at which the SYSTEM_TICK event is fired
+  SYSTEM_TICK_INTERVAL: 5 * 60 * 1000
 };
