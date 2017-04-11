@@ -453,14 +453,13 @@ exports.test_Links_onLinkChanged = function*(assert) {
 
   let linkChangedPromise = new Promise(resolve => {
     let handler = (_, link) => {
-      // There are 3 linkChanged events:
+      // There are 2 linkChanged events:
       // 1. visit insertion (-1 frecency by default)
       // 2. frecency score update (after transition type calculation etc)
-      // 3. title change
       if (link.url === url) {
         assert.equal(link.url, url, "expected url on linkChanged event");
         linkChangedMsgCount += 1;
-        if (linkChangedMsgCount === 3) {
+        if (linkChangedMsgCount === 2) {
           assert.ok(true, "all linkChanged events captured");
           provider.off("linkChanged", this);
           resolve();
