@@ -1,7 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-/* globals XPCOMUtils, NewTabInit, TopSitesFeed, SearchFeed */
+
+/* globals XPCOMUtils, NewTabInit, TopSitesFeed, SearchFeed, TelemetryFeed */
 
 "use strict";
 
@@ -13,10 +14,15 @@ const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.j
 // Feeds
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabInit",
   "resource://activity-stream/lib/NewTabInit.jsm");
+
 XPCOMUtils.defineLazyModuleGetter(this, "TopSitesFeed",
   "resource://activity-stream/lib/TopSitesFeed.jsm");
+
 XPCOMUtils.defineLazyModuleGetter(this, "SearchFeed",
   "resource://activity-stream/lib/SearchFeed.jsm");
+
+XPCOMUtils.defineLazyModuleGetter(this, "TelemetryFeed",
+  "resource://activity-stream/lib/TelemetryFeed.jsm");
 
 const feeds = {
   // When you add a feed here:
@@ -27,8 +33,9 @@ const feeds = {
   // 3. You should use XPCOMUtils.defineLazyModuleGetter to import the Feed,
   //    so it isn't loaded until the feed is enabled.
   "feeds.newtabinit": () => new NewTabInit(),
-  "feeds.topsites": () => new TopSitesFeed(),
-  "feeds.search": () => new SearchFeed()
+  "feeds.search": () => new SearchFeed(),
+  "feeds.telemetry": () => new TelemetryFeed(),
+  "feeds.topsites": () => new TopSitesFeed()
 };
 
 this.ActivityStream = class ActivityStream {
@@ -41,7 +48,7 @@ this.ActivityStream = class ActivityStream {
    * @param  {string} options.version Version of the add-on. e.g. "0.1.0"
    * @param  {string} options.newTabURL URL of New Tab page on which A.S. is displayed. e.g. "about:newtab"
    */
-  constructor(options) {
+  constructor(options = {}) {
     this.initialized = false;
     this.options = options;
     this.store = new Store();
@@ -50,7 +57,13 @@ this.ActivityStream = class ActivityStream {
   init() {
     this.initialized = true;
     this.store.init(this.feeds);
-    this.store.dispatch({type: at.INIT});
+    this.store.dispatch({
+      type: at.INIT,
+      data: {
+        version: this.options.version,
+        locale: null // TODO
+      }
+    });
   }
   uninit() {
     this.store.dispatch({type: at.UNINIT});

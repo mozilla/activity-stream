@@ -6,20 +6,40 @@
 const {actionTypes: at} = Components.utils.import("resource://activity-stream/common/Actions.jsm", {});
 
 const INITIAL_STATE = {
+  App: {
+    // Have we received real data from the app yet?
+    initialized: false,
+    // The version of the system-addon
+    version: null,
+    // The locale of the browser
+    locale: null
+  },
   TopSites: {
-    init: false,
+    // Have we received real data from history yet?
+    initialized: false,
+    // The history (and possibly default) links
     rows: []
   },
   Search: {
+    // The search engine currently set by the browser
     currentEngine: {
       name: "",
       icon: ""
     },
+    // All possible search engines
     engines: []
   }
 };
 
-// TODO: Handle some real actions here, once we have a TopSites feed working
+function App(prevState = INITIAL_STATE.App, action) {
+  switch (action.type) {
+    case at.INIT:
+      return Object.assign({}, action.data || {}, {initialized: true});
+    default:
+      return prevState;
+  }
+}
+
 function TopSites(prevState = INITIAL_STATE.TopSites, action) {
   let hasMatch;
   let newRows;
@@ -28,7 +48,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       if (!action.data) {
         return prevState;
       }
-      return Object.assign({}, prevState, {init: true, rows: action.data});
+      return Object.assign({}, prevState, {initialized: true, rows: action.data});
     case at.SCREENSHOT_UPDATED:
       newRows = prevState.rows.map(row => {
         if (row.url === action.data.url) {
@@ -60,6 +80,6 @@ function Search(prevState = INITIAL_STATE.Search, action) {
   }
 }
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites, Search};
+this.reducers = {TopSites, App, Search};
 
 this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE"];

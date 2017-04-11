@@ -80,7 +80,7 @@ module.exports = function(config) {
             loader: "istanbul-instrumenter-loader",
             include: [path.resolve("system-addon")],
             exclude: [
-              /\.test\.js$/,
+              path.resolve("system-addon/test/"),
               path.resolve("system-addon/vendor")
             ]
           }
