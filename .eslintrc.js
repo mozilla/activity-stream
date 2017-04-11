@@ -3,7 +3,8 @@ module.exports = {
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
-    }
+    },
+    "ecmaVersion": 8
   },
   "env": {
     "browser": true,
