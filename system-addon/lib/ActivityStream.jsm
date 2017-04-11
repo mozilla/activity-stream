@@ -5,9 +5,11 @@
 
 const {utils: Cu} = Components;
 const {Store} = Cu.import("resource://activity-stream/lib/Store.jsm", {});
+const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 // Feeds
 const {NewTabInit} = Cu.import("resource://activity-stream/lib/NewTabInit.jsm", {});
+const {TopSitesFeed} = Cu.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
 
 this.ActivityStream = class ActivityStream {
 
@@ -27,10 +29,13 @@ this.ActivityStream = class ActivityStream {
   init() {
     this.initialized = true;
     this.store.init([
-      new NewTabInit()
+      new NewTabInit(),
+      new TopSitesFeed()
     ]);
+    this.store.dispatch({type: at.INIT});
   }
   uninit() {
+    this.store.dispatch({type: at.UNINIT});
     this.store.uninit();
     this.initialized = false;
   }
