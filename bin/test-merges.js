@@ -319,9 +319,13 @@ function main() {
       console.log("Processed all new merges.");
     }).catch(reason => {
       console.log("Something went wrong processing the merges:", reason);
+      process.exitCode = -1;
     });
   })
-  .catch(reason => console.error(reason));
+  .catch(reason => {
+    console.error(reason);
+    process.exitCode = -1;
+  });
 }
 
 main();
