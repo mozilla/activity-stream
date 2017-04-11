@@ -1,12 +1,6 @@
 @import './styles/normalize';
 @import './styles/variables';
 
-html,
-body,
-#root {
-  height: 100%;
-}
-
 // For screen readers
 .sr-only {
   position: absolute;
