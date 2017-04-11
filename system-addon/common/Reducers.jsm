@@ -3,8 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {utils: Cu} = Components;
-const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+const {actionTypes: at} = Components.utils.import("resource://activity-stream/common/Actions.jsm", {});
 
 const INITIAL_STATE = {
   TopSites: {

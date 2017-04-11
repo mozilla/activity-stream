@@ -1,4 +1,4 @@
-$bg-color: #F2F2F2;
+$bg-color: #F6F6F8;
 $bg-grey: #FBFBFB;
 $placeholder-grey: #F7F7F7;
 $very-light-grey: #EBEBEB;
@@ -22,13 +22,13 @@ $blue-button-border: #1677CF;
 $checkbox-border: #C1C1C1;
 $checkbox-blue: #1691D2;
 
-$wrapper-max-width: 736px;
-$wrapper-vertical-padding: 62px;
-$break-point: $wrapper-max-width + 40px;
-
 $base-gutter: 32px;
 $section-margin: 41px;
 
-$section-title-font-size: 12px;
-$section-title-color: $light-grey;
-$section-title-bottom-margin: 13px;
+$wrapper-max-width: 736px;
+$wrapper-vertical-padding: 62px;
+$break-point: $wrapper-max-width + $base-gutter * 2;
+
+$section-title-font-size: 13px;
+$section-title-color: #6E707E;
+$section-title-bottom-margin: 18px;

@@ -1,18 +1,47 @@
 .top-sites-list {
   $top-sites-size: 96px;
+  $top-sites-border-radius: 6px;
+  $top-sites-box-shadow: 0 1px 4px 0 rgba(9,6,13,0.1);
+  $inner-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  $top-sites-title-height: 30px;
+  $top-sites-vertical-space: 18px;
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(6, $top-sites-size);
-  grid-gap: $base-gutter;
+  margin-inline-end: -$base-gutter;
+
+  @media (min-width: $break-point) {
+    width: ($top-sites-size + $base-gutter) * 6;
+  }
+
+  li {
+    display: inline-block;
+    margin: 0 0 $top-sites-vertical-space;
+    margin-inline-end: $base-gutter;
+  }
+
   a {
+    display: block;
+    color: inherit;
+  }
+  .screenshot {
     background: $white;
     height: $top-sites-size;
     width: $top-sites-size;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: $border-radius;
+    background-size: 250%;
+    background-position: top left;
+    border-radius: $top-sites-border-radius;
+    box-shadow: $top-sites-box-shadow,
+     inset $inner-box-shadow;
+  }
+  .title {
+    height: $top-sites-title-height;
+    line-height: $top-sites-title-height;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: $top-sites-size;
   }
 }
