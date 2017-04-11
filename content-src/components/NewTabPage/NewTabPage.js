@@ -22,7 +22,8 @@ const NewTabPage = React.createClass({
       highlightsSize: 0,
       topsitesSize: 0,
       topsitesTippytop: 0,
-      topsitesScreenshot: 0
+      topsitesScreenshot: 0,
+      topsitesLowResIcon: 0
     };
     if (this.props.isReady) {
       const {showTopSites, showHighlights} = this.props.Prefs.prefs;
@@ -37,6 +38,8 @@ const NewTabPage = React.createClass({
             stats.topsitesScreenshot++;
           } else if (row.metadata_source === "TippyTopProvider") {
             stats.topsitesTippytop++;
+          } else if (row && !row.hasHighResIcon && !row.screenshot) {
+            stats.topsitesLowResIcon++;
           }
         });
       }
