@@ -11,7 +11,9 @@ const actionTypes = [
   "UNINIT",
   "NEW_TAB_INITIAL_STATE",
   "NEW_TAB_LOAD",
-  "NEW_TAB_UNLOAD"
+  "NEW_TAB_UNLOAD",
+  "SCREENSHOT_UPDATED",
+  "TOP_SITES_UPDATED"
 // The line below creates an object like this:
 // {
 //   INIT: "INIT",

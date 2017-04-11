@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+const {utils: Cu} = Components;
+const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+
 const INITIAL_STATE = {
   TopSites: {
     rows: [
@@ -36,7 +39,26 @@ const INITIAL_STATE = {
 
 // TODO: Handle some real actions here, once we have a TopSites feed working
 function TopSites(prevState = INITIAL_STATE.TopSites, action) {
-  return prevState;
+  let hasMatch;
+  let newRows;
+  switch (action.type) {
+    case at.TOP_SITES_UPDATED:
+      if (!action.data) {
+        return prevState;
+      }
+      return Object.assign({}, prevState, {rows: action.data});
+    case at.SCREENSHOT_UPDATED:
+      newRows = prevState.rows.map(row => {
+        if (row.url === action.data.url) {
+          hasMatch = true;
+          return Object.assign({}, row, {screenshot: action.data.screenshot});
+        }
+        return row;
+      });
+      return hasMatch ? Object.assign({}, prevState, {rows: newRows}) : prevState;
+    default:
+      return prevState;
+  }
 }
 
 this.INITIAL_STATE = INITIAL_STATE;
