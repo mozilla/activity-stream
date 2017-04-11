@@ -1,4 +1,5 @@
 const {GlobalOverrider} = require("test/unit/utils");
+const Task = require("co-task");
 
 const req = require.context(".", true, /\.test\.js$/);
 const files = req.keys();
@@ -18,7 +19,8 @@ overrider.set({
     defineLazyModuleGetter: overrider.sandbox.spy(),
     defineLazyServiceGetter: overrider.sandbox.spy()
   },
-  dump: overrider.sandbox.spy()
+  dump: overrider.sandbox.spy(),
+  Task
 });
 
 describe("activity-stream", () => {
