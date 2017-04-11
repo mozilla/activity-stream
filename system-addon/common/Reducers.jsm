@@ -39,17 +39,26 @@ const INITIAL_STATE = {
 
 // TODO: Handle some real actions here, once we have a TopSites feed working
 function TopSites(prevState = INITIAL_STATE.TopSites, action) {
+  let hasMatch;
+  let newRows;
   switch (action.type) {
     case at.TOP_SITES_UPDATED:
-      if (!action.data || !action.data.length) {
+      if (!action.data) {
         return prevState;
       }
       return Object.assign({}, prevState, {rows: action.data});
     case at.SCREENSHOT_UPDATED:
-
-      updateByUrl(prevState.rows, action.data.url, {screenshot: action.data.screenshot})
+      newRows = prevState.rows.map(row => {
+        if (row.url === action.data.url) {
+          hasMatch = true;
+          return Object.assign({}, row, {screenshot: action.data.screenshot});
+        }
+        return row;
+      });
+      return hasMatch ? Object.assign({}, prevState, {rows: newRows}) : prevState;
+    default:
+      return prevState;
   }
-  return prevState;
 }
 
 this.INITIAL_STATE = INITIAL_STATE;
