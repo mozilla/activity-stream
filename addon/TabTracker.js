@@ -171,6 +171,7 @@ TabTracker.prototype = {
     this._tabData.topsites_size = payload.topsitesSize;
     this._tabData.topsites_tippytop = payload.topsitesTippytop;
     this._tabData.topsites_screenshot = payload.topsitesScreenshot;
+    this._tabData.topsites_lowresicon = payload.topsitesLowResIcon;
   },
 
   generateEvent(eventData) {
@@ -188,6 +189,7 @@ TabTracker.prototype = {
     this._tabData.topsites_size = 0;
     this._tabData.topsites_tippytop = 0;
     this._tabData.topsites_screenshot = 0;
+    this._tabData.topsites_lowresicon = 0;
   },
 
   navigateAwayFromPage(tab, reason) {

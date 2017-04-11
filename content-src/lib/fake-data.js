@@ -8,7 +8,7 @@ module.exports = {
     "error": false
   },
   "TopSites": {
-    "rows": faker.createRows({images: 3}),
+    "rows": faker.createRows({images: 3}).map(row => Object.assign({}, row, {hasHighResIcon: true})),
     "error": false
   },
   "Search": {

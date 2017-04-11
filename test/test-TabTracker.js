@@ -46,6 +46,7 @@ const EXPECTED_KEYS = [
   "topsites_size",
   "topsites_screenshot",
   "topsites_tippytop",
+  "topsites_lowresicon",
   "user_prefs"
 ];
 
