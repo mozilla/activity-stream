@@ -1,6 +1,7 @@
 main {
   margin: 40px auto;
-  max-width: 736px;
+  max-width: $wrapper-max-width + $base-gutter * 2;
+  padding: $base-gutter;
 
   section {
     margin-bottom: $section-margin;
@@ -10,6 +11,7 @@ main {
 .section-title {
   color: $section-title-color;
   font-size: $section-title-font-size;
-  font-weight: normal;
+  font-weight: bold;
+  text-transform: uppercase;
   margin: 0 0 $section-title-bottom-margin;
 }
