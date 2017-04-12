@@ -1,5 +1,4 @@
 const {GlobalOverrider} = require("test/unit/utils");
-const Task = require("co-task");
 
 const req = require.context(".", true, /\.test\.js$/);
 const files = req.keys();
@@ -29,8 +28,7 @@ overrider.set({
       addObserver: overrider.sandbox.spy(),
       removeObserver: overrider.sandbox.spy()
     }
-  },
-  Task
+  }
 });
 
 describe("activity-stream", () => {

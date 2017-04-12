@@ -6,11 +6,13 @@ describe("ActivityStream", () => {
   let ActivityStream;
   function NewTabInit() {}
   function TopSitesFeed() {}
+  function SearchFeed() {}
   before(() => {
     sandbox = sinon.sandbox.create();
     ({ActivityStream} = injector({
       "lib/NewTabInit.jsm": {NewTabInit},
-      "lib/TopSitesFeed.jsm": {TopSitesFeed}
+      "lib/TopSitesFeed.jsm": {TopSitesFeed},
+      "lib/SearchFeed.jsm": {SearchFeed}
     }));
   });
 
@@ -59,6 +61,10 @@ describe("ActivityStream", () => {
     it("should create a TopSites feed", () => {
       const feed = as.feeds["feeds.topsites"]();
       assert.instanceOf(feed, TopSitesFeed);
+    });
+    it("should create a Search feed", () => {
+      const feed = as.feeds["feeds.search"]();
+      assert.instanceOf(feed, SearchFeed);
     });
   });
 });

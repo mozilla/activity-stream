@@ -1,5 +1,5 @@
 const {reducers, INITIAL_STATE} = require("common/Reducers.jsm");
-const {TopSites} = reducers;
+const {TopSites, Search} = reducers;
 const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("Reducers", () => {
@@ -28,6 +28,24 @@ describe("Reducers", () => {
       const action = {type: at.SCREENSHOT_UPDATED, data: {url: "baz.com", screenshot: "data:123"}};
       const nextState = TopSites(oldState, action);
       assert.deepEqual(nextState, oldState);
+    });
+  });
+  describe("Search", () => {
+    it("should return the initial state", () => {
+      const nextState = Search(undefined, {type: "FOO"});
+      assert.equal(nextState, INITIAL_STATE.Search);
+    });
+    it("should not update state for empty action.data on Search", () => {
+      const nextState = Search(undefined, {type: at.SEARCH_STATE_UPDATED});
+      assert.equal(nextState, INITIAL_STATE.Search);
+    });
+    it("should update the current engine and the engines on SEARCH_STATE_UPDATED", () => {
+      const newEngine = {name: "Google", iconBuffer: "icon.ico"};
+      const nextState = Search(undefined, {type: at.SEARCH_STATE_UPDATED, data: {currentEngine: newEngine, engines: [newEngine]}});
+      assert.equal(nextState.currentEngine.name, newEngine.name);
+      assert.equal(nextState.currentEngine.icon, newEngine.icon);
+      assert.equal(nextState.engines[0].name, newEngine.name);
+      assert.equal(nextState.engines[0].icon, newEngine.icon);
     });
   });
 });

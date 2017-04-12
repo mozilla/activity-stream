@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-/* globals XPCOMUtils, NewTabInit, TopSitesFeed */
+/* globals XPCOMUtils, NewTabInit, TopSitesFeed, SearchFeed */
 
 "use strict";
 
@@ -15,6 +15,8 @@ XPCOMUtils.defineLazyModuleGetter(this, "NewTabInit",
   "resource://activity-stream/lib/NewTabInit.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "TopSitesFeed",
   "resource://activity-stream/lib/TopSitesFeed.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "SearchFeed",
+  "resource://activity-stream/lib/SearchFeed.jsm");
 
 const feeds = {
   // When you add a feed here:
@@ -25,7 +27,8 @@ const feeds = {
   // 3. You should use XPCOMUtils.defineLazyModuleGetter to import the Feed,
   //    so it isn't loaded until the feed is enabled.
   "feeds.newtabinit": () => new NewTabInit(),
-  "feeds.topsites": () => new TopSitesFeed()
+  "feeds.topsites": () => new TopSitesFeed(),
+  "feeds.search": () => new SearchFeed()
 };
 
 this.ActivityStream = class ActivityStream {

@@ -12,7 +12,9 @@ const actionTypes = [
   "NEW_TAB_INITIAL_STATE",
   "NEW_TAB_LOAD",
   "NEW_TAB_UNLOAD",
+  "PERFORM_SEARCH",
   "SCREENSHOT_UPDATED",
+  "SEARCH_STATE_UPDATED",
   "TOP_SITES_UPDATED"
 // The line below creates an object like this:
 // {
