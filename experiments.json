@@ -151,7 +151,7 @@
   },
   "newTabPrefs": {
     "name": "Preferences Pane",
-    "active": true,
+    "active": false,
     "description": "Enable the New Tab Prefs feature",
     "control": {
       "value": false,
@@ -222,6 +222,21 @@
       "value": true,
       "threshold": 0.2,
       "description": "Long metadata timeout"
+    }
+  },
+  "editTopSites": {
+    "name": "Edit Top Sites",
+    "active": true,
+    "description": "Enable the Edit Top Sites feature",
+    "control": {
+      "value": false,
+      "description": "Edit Top Sites is disabled"
+    },
+    "variant": {
+      "id": "exp-016-newtab-prefs",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Edit Top Sites is enabled"
     }
   }
 }
