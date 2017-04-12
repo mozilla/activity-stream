@@ -226,7 +226,7 @@
   },
   "editTopSites": {
     "name": "Edit Top Sites",
-    "active": true,
+    "active": false,
     "description": "Enable the Edit Top Sites feature",
     "control": {
       "value": false,
