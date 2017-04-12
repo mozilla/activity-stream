@@ -83,7 +83,6 @@ const NewTabPage = React.createClass({
     const {showSearch, showTopSites, showHighlights, showMoreTopSites} = props.Prefs.prefs;
 
     const topSitesExperimentIsOn = props.Experiments.values.screenshotsLongCache;
-    const editTopSitesExperimentIsOn = props.Experiments.values.editTopSites;
 
     return (<main className={classNames("new-tab", {"top-sites-new-style": topSitesExperimentIsOn})}>
       <div className="new-tab-wrapper">
@@ -105,7 +104,7 @@ const NewTabPage = React.createClass({
               <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
                 sites={props.TopSites.rows} showNewStyle={topSitesExperimentIsOn}
                 length={showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH}
-                allowEdit={editTopSitesExperimentIsOn} />
+                allowEdit={!!props.Experiments.values.editTopSites} />
             </section>
           }
           {showHighlights &&
