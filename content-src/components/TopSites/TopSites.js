@@ -57,7 +57,11 @@ const TopSitesItem = React.createClass({
     dispatch(actions.NotifyEvent(payload));
   },
   handleDismiss() {
-    this.props.dispatch(actions.NotifyBlockURL(this.props.url));
+    const site = this.props;
+    if (site.isPinned) {
+      this.props.dispatch(actions.NotifyUnpinTopsite({url: site.url}));
+    }
+    this.props.dispatch(actions.NotifyBlockURL(site.url));
     this.userEvent("BLOCK");
   },
   handleEdit() {
@@ -162,7 +166,8 @@ TopSitesItem.propTypes = {
   favicon_url: React.PropTypes.string,
   onClick: React.PropTypes.func,
   showNewStyle: React.PropTypes.bool,
-  editMode: React.PropTypes.bool
+  editMode: React.PropTypes.bool,
+  isPinned: React.PropTypes.bool
 };
 
 const PlaceholderTopSitesItem = React.createClass({

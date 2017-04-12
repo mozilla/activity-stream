@@ -182,6 +182,18 @@ describe("TopSitesItem", () => {
       wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} {...pinnedSite} />, {context: {}, childContextTypes: {}});
       wrapper.ref("unpinButton").simulate("click");
     });
+
+    it("should fire an unpin action when a pinned site is dismissed", done => {
+      const pinnedSite = Object.assign({}, fakeSiteWithImage, {isPinned: true});
+      function dispatch(a) {
+        if (a.type === "NOTIFY_UNPIN_TOPSITE") {
+          assert.equal(a.data.site.url, pinnedSite.url);
+          done();
+        }
+      }
+      wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} {...pinnedSite} />, {context: {}, childContextTypes: {}});
+      wrapper.ref("dismissButton").simulate("click");
+    });
   });
 });
 
