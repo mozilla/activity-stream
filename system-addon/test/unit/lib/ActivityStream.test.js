@@ -4,10 +4,14 @@ describe("ActivityStream", () => {
   let sandbox;
   let as;
   let ActivityStream;
+  function NewTabInit() {}
+  function TopSitesFeed() {}
   before(() => {
     sandbox = sinon.sandbox.create();
-    function NewTabInit() {}
-    ({ActivityStream} = injector({"lib/NewTabInit.jsm": {NewTabInit}}));
+    ({ActivityStream} = injector({
+      "lib/NewTabInit.jsm": {NewTabInit},
+      "lib/TopSitesFeed.jsm": {TopSitesFeed}
+    }));
   });
 
   afterEach(() => sandbox.restore());
@@ -45,6 +49,16 @@ describe("ActivityStream", () => {
     });
     it("should call .store.uninit", () => {
       assert.calledOnce(as.store.uninit);
+    });
+  });
+  describe("feeds", () => {
+    it("should create a NewTabInit feed", () => {
+      const feed = as.feeds["feeds.newtabinit"]();
+      assert.instanceOf(feed, NewTabInit);
+    });
+    it("should create a TopSites feed", () => {
+      const feed = as.feeds["feeds.topsites"]();
+      assert.instanceOf(feed, TopSitesFeed);
     });
   });
 });

@@ -1,28 +1,36 @@
 const injector = require("inject!lib/Store.jsm");
-const {actionTypes: at} = require("common/Actions.jsm");
 const {createStore} = require("redux");
 const {addNumberReducer} = require("test/unit/utils");
-
+const {GlobalOverrider} = require("test/unit/utils");
 describe("Store", () => {
   let Store;
+  let Preferences;
   let sandbox;
   let store;
-  before(() => {
-    sandbox = sinon.sandbox.create();
+  let globals;
+  let PREF_PREFIX;
+  beforeEach(() => {
+    globals = new GlobalOverrider();
+    sandbox = globals.sandbox;
+    Preferences = new Map();
+    Preferences.observe = sandbox.spy();
+    Preferences.ignore = sandbox.spy();
+    globals.set("Preferences", Preferences);
     function MessageManager(options) {
       this.dispatch = options.dispatch;
       this.createChannel = sandbox.spy();
       this.destroyChannel = sandbox.spy();
       this.middleware = sandbox.spy(s => next => action => next(action));
     }
-    ({Store} = injector({"lib/MessageManager.jsm": {MessageManager}}));
-  });
-  beforeEach(() => {
+    ({Store, PREF_PREFIX} = injector({"lib/MessageManager.jsm": {MessageManager}}));
     store = new Store();
   });
-  afterEach(() => sandbox.restore());
-  it("should have an empty feeds Set", () => {
-    assert.instanceOf(store.feeds, Set);
+  afterEach(() => {
+    Preferences.clear();
+    globals.restore();
+  });
+  it("should have an .feeds property that is a Map", () => {
+    assert.instanceOf(store.feeds, Map);
     assert.equal(store.feeds.size, 0, ".feeds.size");
   });
   it("should have a redux store at ._store", () => {
@@ -38,34 +46,103 @@ describe("Store", () => {
     store.dispatch({type: "FOO"});
     assert.calledOnce(store._mm.middleware);
   });
+  describe("#initFeed", () => {
+    it("should add an instance of the feed to .feeds", () => {
+      class Foo {}
+      Preferences.set(`${PREF_PREFIX}foo`, false);
+      store.init({foo: () => new Foo()});
+      store.initFeed("foo");
+
+      assert.isTrue(store.feeds.has("foo"), "foo is set");
+      assert.instanceOf(store.feeds.get("foo"), Foo);
+    });
+    it("should add a .store property to the feed", () => {
+      class Foo {}
+      store._feedFactories = {foo: () => new Foo()};
+      store.initFeed("foo");
+
+      assert.propertyVal(store.feeds.get("foo"), "store", store);
+    });
+  });
+  describe("#uninitFeed", () => {
+    it("should not throw if no feed with that name exists", () => {
+      assert.doesNotThrow(() => {
+        store.uninitFeed("bar");
+      });
+    });
+    it("should call the feed's uninit function if it is defined", () => {
+      let feed;
+      function createFeed() {
+        feed = {uninit: sinon.spy()};
+        return feed;
+      }
+      store._feedFactories = {foo: createFeed};
+
+      store.initFeed("foo");
+      store.uninitFeed("foo");
+
+      assert.calledOnce(feed.uninit);
+    });
+    it("should remove the feed from .feeds", () => {
+      class Foo {}
+      store._feedFactories = {foo: () => new Foo()};
+
+      store.initFeed("foo");
+      store.uninitFeed("foo");
+
+      assert.isFalse(store.feeds.has("foo"), "foo is not in .feeds");
+    });
+  });
+  describe("maybeStartFeedAndListenForPrefChanges", () => {
+    beforeEach(() => {
+      sinon.stub(store, "initFeed");
+      sinon.stub(store, "uninitFeed");
+    });
+    it("should set the new pref in Preferences to true, if it was never defined", () => {
+      store.maybeStartFeedAndListenForPrefChanges("foo");
+      assert.isTrue(Preferences.get(`${PREF_PREFIX}foo`));
+    });
+    it("should not override the pref if it was already set", () => {
+      Preferences.set(`${PREF_PREFIX}foo`, false);
+      store.maybeStartFeedAndListenForPrefChanges("foo");
+      assert.isFalse(Preferences.get(`${PREF_PREFIX}foo`));
+    });
+    it("should initialize the feed if the Pref is set to true", () => {
+      Preferences.set(`${PREF_PREFIX}foo`, true);
+      store.maybeStartFeedAndListenForPrefChanges("foo");
+      assert.calledWith(store.initFeed, "foo");
+    });
+    it("should not initialize the feed if the Pref is set to false", () => {
+      Preferences.set(`${PREF_PREFIX}foo`, false);
+      store.maybeStartFeedAndListenForPrefChanges("foo");
+      assert.notCalled(store.initFeed);
+    });
+    it("should observe the pref", () => {
+      store.maybeStartFeedAndListenForPrefChanges("foo");
+      assert.calledWith(Preferences.observe, `${PREF_PREFIX}foo`, store._prefHandlers.get(`${PREF_PREFIX}foo`));
+    });
+    describe("handler", () => {
+      let handler;
+      beforeEach(() => {
+        store.maybeStartFeedAndListenForPrefChanges("foo");
+        handler = store._prefHandlers.get(`${PREF_PREFIX}foo`);
+      });
+      it("should initialize the feed if called with true", () => {
+        handler(true);
+        assert.calledWith(store.initFeed, "foo");
+      });
+      it("should uninitialize the feed if called with false", () => {
+        handler(false);
+        assert.calledWith(store.uninitFeed, "foo");
+      });
+    });
+  });
   describe("#init", () => {
-    it("should dispatch an init action", () => {
-      sandbox.spy(store, "dispatch");
-
-      store.init();
-
-      assert.calledWith(store.dispatch, {type: at.INIT});
-    });
-    it("should dispatch an init action", () => {
-      sandbox.spy(store, "dispatch");
-
-      store.init([]);
-
-      assert.calledWith(store.dispatch, {type: at.INIT});
-    });
-    it("should add each feed to store.feeds", () => {
-      const s = {};
-
-      store.init([s]);
-
-      assert.isTrue(store.feeds.has(s), ".feeds.has(s)");
-    });
-    it("should add a reference to the store to each feed", () => {
-      const s = {};
-
-      store.init([s]);
-
-      assert.equal(s.store, store, "s.store");
+    it("should call .maybeStartFeedAndListenForPrefChanges with each key", () => {
+      sinon.stub(store, "maybeStartFeedAndListenForPrefChanges");
+      store.init({foo: () => {}, bar: () => {}});
+      assert.calledWith(store.maybeStartFeedAndListenForPrefChanges, "foo");
+      assert.calledWith(store.maybeStartFeedAndListenForPrefChanges, "bar");
     });
     it("should initialize the MessageManager channel", () => {
       store.init();
@@ -73,20 +150,18 @@ describe("Store", () => {
     });
   });
   describe("#uninit", () => {
-    it("should clear .feeds", () => {
-      store.init([{}, {}, {}]);
-      assert.equal(store.feeds.size, 3);
+    it("should clear .feeds, ._prefHandlers, and ._feedFactories", () => {
+      store.init({
+        a: () => ({}),
+        b: () => ({}),
+        c: () => ({})
+      });
 
       store.uninit();
 
       assert.equal(store.feeds.size, 0);
-    });
-    it("should dispatch an uninit action", () => {
-      sandbox.spy(store, "dispatch");
-
-      store.uninit();
-
-      assert.calledWith(store.dispatch, {type: at.UNINIT});
+      assert.equal(store._prefHandlers.size, 0);
+      assert.isNull(store._feedFactories);
     });
     it("should destroy the MessageManager channel", () => {
       store.uninit();
@@ -106,7 +181,7 @@ describe("Store", () => {
       const sub = {onAction: sinon.spy()};
       const action = {type: "FOO"};
 
-      store.init([sub]);
+      store.init({sub: () => sub});
 
       dispatch(action);
 
