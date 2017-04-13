@@ -50,12 +50,6 @@ describe("SiteIcon", () => {
     assert.equal(el.style.width, "300px");
   });
 
-  describe("title", () => {
-    it("should not show title be default", () => {
-      assert.isTrue(instance.refs.title.hidden);
-    });
-  });
-
   describe("favicon", () => {
     it("favicon should have a height/width by default", () => {
       assert.ok(instance.refs.favicon.height);

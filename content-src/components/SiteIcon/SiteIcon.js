@@ -9,7 +9,6 @@ const SiteIcon = React.createClass({
       height: null,
       width: null,
       faviconSize: 16,
-      showTitle: false,
       showBackground: true,
       border: true
     };
@@ -25,7 +24,7 @@ const SiteIcon = React.createClass({
   },
   render() {
     const site = selectSiteIcon(this.props.site);
-    const {width, height, faviconSize, showTitle} = this.props;
+    const {width, height, faviconSize} = this.props;
     const showFallback = this.state.showFallback || !site.favicon;
     const showBackground = this.props.showBackground || showFallback;
     const showBorder = this.props.border;
@@ -54,7 +53,6 @@ const SiteIcon = React.createClass({
           onLoad={this.handleFavicon} />
         <span ref="fallback" className="site-icon-fallback" style={fallbackStyle} hidden={!showFallback} data-first-letter={site.firstLetter} />
       </div>
-      <div ref="title" hidden={!showTitle} className="site-icon-title">{site.label}</div>
     </div>);
   }
 });

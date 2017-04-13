@@ -32,9 +32,9 @@ const TopSitesItem = React.createClass({
     // FIXME: long term we want the metadata parser to pass along where the image came from.
     return favicon_url && (favicon_url.startsWith("favicons/images") || favicon_url.startsWith("resource://"));
   },
-  _faviconSize(site, topSitesExperimentIsOn, screenshot) {
+  _faviconSize(site, screenshot) {
     let faviconSize = 32;
-    if (topSitesExperimentIsOn && !screenshot) {
+    if (!screenshot) {
       if (this._isTippyTop(site.favicon_url)) {
         faviconSize = TIPPY_TOP_WIDTH;
       } else {
@@ -83,9 +83,8 @@ const TopSitesItem = React.createClass({
     const index = site.index;
     const isActive = this.state.showContextMenu && this.state.activeTile === index;
 
-    const topSitesExperimentIsOn = this.props.showNewStyle;
-    const screenshot = topSitesExperimentIsOn && site.screenshot;
-    const faviconSize = this._faviconSize(site, topSitesExperimentIsOn, screenshot);
+    const screenshot = site.screenshot;
+    const faviconSize = this._faviconSize(site, screenshot);
     const showBackground = faviconSize < FULL_WIDTH;
 
     // The top-corner class puts the site icon in the top corner, overlayed over the screenshot.
@@ -104,16 +103,13 @@ const TopSitesItem = React.createClass({
           ref="icon"
           className={siteIconClasses}
           site={site} faviconSize={faviconSize}
-          showTitle={!topSitesExperimentIsOn}
           showBackground={showBackground}
-          border={!topSitesExperimentIsOn || !!screenshot || this._isTippyTop(site.favicon_url)} />
+          border={!!screenshot || this._isTippyTop(site.favicon_url)} />
 
-        {topSitesExperimentIsOn &&
-          <div ref="title" className={classNames("site-title", {pinned: site.isPinned})}>
-            {site.isPinned && <div className="icon icon-pin" />}
-            <div className="label">{label}</div>
-          </div>
-        }
+        <div ref="title" className={classNames("site-title", {pinned: site.isPinned})}>
+          {site.isPinned && <div className="icon icon-pin" />}
+          <div className="label">{label}</div>
+        </div>
       </a>
       {!this.props.editMode &&
         <div>
