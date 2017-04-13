@@ -25,31 +25,26 @@ module.exports = class TopSitesFeed extends Feed {
   }
   getData() {
     return Task.spawn(function*() {
-      const experiments = this.store.getState().Experiments.values;
-
       let links;
       // Get links from places
       links = yield PlacesProvider.links.getTopFrecentSites();
-
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "TOP_FRECENT_SITES_RESPONSE");
 
       this.missingData = false;
 
       // Get screenshots if the favicons are too small
-      if (experiments.screenshotsLongCache) {
-        for (let link of links) {
-          if (this.shouldGetScreenshot(link)) {
-            const screenshot = this.getScreenshot(link.url, this.store);
-            if (screenshot) {
-              link.screenshot = screenshot;
-              link.metadata_source = `${link.metadata_source}+Screenshot`;
-            } else {
-              this.missingData = true;
-            }
-          } else if (!link.hasMetadata) {
+      for (let link of links) {
+        if (this.shouldGetScreenshot(link)) {
+          const screenshot = this.getScreenshot(link.url, this.store);
+          if (screenshot) {
+            link.screenshot = screenshot;
+            link.metadata_source = `${link.metadata_source}+Screenshot`;
+          } else {
             this.missingData = true;
           }
+        } else if (!link.hasMetadata) {
+          this.missingData = true;
         }
       }
 

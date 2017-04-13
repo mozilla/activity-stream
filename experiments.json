@@ -196,7 +196,7 @@
   },
   "screenshotsLongCache": {
     "name": "High Res Icons and Screenshots for Top Sites with a long metadata cache",
-    "active": true,
+    "active": false,
     "description": "Add high res icons or screenshots for some Top Sites",
     "control": {
       "value": false,

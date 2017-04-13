@@ -66,7 +66,7 @@ const gMockTabTracker = {handlePerformanceEvent() {}, generateEvent() {}};
 function getMockStore() {
   return {
     dispatch: () => null,
-    getState: () => ({Experiments: {values: {screenshotsLongCache: false}}})
+    getState: () => ({Experiments: {values: {}}})
   };
 }
 

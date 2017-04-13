@@ -1,6 +1,10 @@
 const testLinks = [{url: "http://foo.com/"}, {url: "http://bar.com/"}];
 const getCachedMetadata = links => links.map(
-  link => { link.hasMetadata = true; return link; }
+  link => {
+    link.hasMetadata = true;
+    link.hasHighResIcon = true;
+    return link;
+  }
 );
 const PlacesProvider = {links: {getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))}};
 const testScreenshot = "screenshot.jpg";
@@ -78,18 +82,7 @@ describe("TopSitesFeed", () => {
       assert.equal(action.type, "TOP_FRECENT_SITES_RESPONSE", "type");
       assert.deepEqual(action.data, getCachedMetadata(testLinks));
     }));
-    it("should not add screenshots to sites that qualify for a screenshot if the experiment is disabled", () => {
-      reduxState.Experiments.values.screenshotsLongCache = false;
-      instance.shouldGetScreenshot = site => true;
-      return instance.getData().then(result => {
-        assert.notCalled(instance.getScreenshot);
-        for (let link of result.data) {
-          assert.equal(link.screenshot, undefined);
-        }
-      });
-    });
-    it("should not add screenshots to sites that don't qualify for a screenshot if the experiment is enabled", () => {
-      reduxState.Experiments.values.screenshotsLongCache = true;
+    it("should not add screenshots to sites that don't qualify for a screenshot", () => {
       instance.shouldGetScreenshot = site => false;
       return instance.getData().then(result => {
         assert.notCalled(instance.getScreenshot);
@@ -98,8 +91,7 @@ describe("TopSitesFeed", () => {
         }
       });
     });
-    it("should add screenshots to sites that qualify for a screenshot if the experiment is enabled", () => {
-      reduxState.Experiments.values.screenshotsLongCache = true;
+    it("should add screenshots to sites that qualify for a screenshot", () => {
       instance.shouldGetScreenshot = site => true;
       return instance.getData().then(result => {
         assert.calledTwice(instance.getScreenshot);
@@ -109,19 +101,14 @@ describe("TopSitesFeed", () => {
         }
       });
     });
-    it("should set missingData to false if screenshot experiment is disabled", () =>
-      instance.getData().then(result => assert.equal(instance.missingData, false))
-    );
-    it("should set missingData to true if screenshot experiment is enabled and a topsite is missing a required screenshot", () => {
-      reduxState.Experiments.values.screenshotsLongCache = true;
+    it("should set missingData to true if a topsite is missing a required screenshot", () => {
       instance.shouldGetScreenshot = site => true;
       instance.getScreenshot = sinon.spy(site => null);
       return instance.getData().then(result => {
         assert.equal(instance.missingData, true);
       });
     });
-    it("should set missingData to true if screenshot experiment is enabled and a topsite is missing metadata", () => {
-      reduxState.Experiments.values.screenshotsLongCache = true;
+    it("should set missingData to true if and a topsite is missing metadata", () => {
       instance.options.getCachedMetadata = links => links.map(
         link => { link.hasMetadata = false; return link; }
       );
