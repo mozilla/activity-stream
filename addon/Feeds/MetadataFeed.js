@@ -36,7 +36,12 @@ module.exports = class MetadataFeed extends Feed {
     // Get the metadata for pinned sites
     .then(() => {
       let pinned = this.pinnedLinks.links;
-      pinned.forEach(item => this.linksToFetch.set(item.url, Date.now()));
+      pinned.forEach(item => {
+        // Skip any empty slots
+        if (item && item.url) {
+          this.linksToFetch.set(item.url, Date.now());
+        }
+      });
       this.refresh(reason);
     });
   }
