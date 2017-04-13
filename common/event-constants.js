@@ -26,8 +26,7 @@ const constants = {
   undesiredEvents: new Set([
     "HIDE_LOADER",
     "MISSING_IMAGE",
-    "SHOW_LOADER",
-    "SLOW_ADDON_DETECTED"
+    "SHOW_LOADER"
   ]),
   sources: new Set([
     "TOP_SITES",
