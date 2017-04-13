@@ -1,7 +1,6 @@
 "use strict";
 
 let Cu = Components.utils;
-Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 /**
@@ -14,7 +13,7 @@ Cu.import("resource://gre/modules/Services.jsm");
  * want to (separately from this test), clone/adapt that entire file for our
  * new setup.
  */
-add_task(function*checkActivityStreamLoads() {
+add_task(async function checkActivityStreamLoads() {
   const asURL = "resource://activity-stream/data/content/activity-stream.html";
 
   // simulate a newtab open as a user would
@@ -22,14 +21,14 @@ add_task(function*checkActivityStreamLoads() {
 
   // wait until the browser loads
   let browser = gBrowser.selectedBrowser;
-  yield BrowserTestUtils.browserLoaded(browser);
+  await BrowserTestUtils.browserLoaded(browser);
 
   // check what the content task thinks has been loaded.
-  yield ContentTask.spawn(browser, {url: asURL}, args => {
+  await ContentTask.spawn(browser, {url: asURL}, args => {
     Assert.ok(content.document.querySelector("body.activity-stream"),
       'Got <body class="activity-stream" Element');
   });
 
   // avoid leakage
-  yield BrowserTestUtils.removeTab(gBrowser.selectedTab);
+  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
 });
