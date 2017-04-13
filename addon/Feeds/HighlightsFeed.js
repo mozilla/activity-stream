@@ -78,8 +78,6 @@ module.exports = class HighlightsFeed extends Feed {
    */
   getData() {
     return Task.spawn(function*() {
-      const experiments = this.store.getState().Experiments.values;
-
       if (!this.baselineRecommender) {
         return Promise.reject(new Error("Tried to get weighted highlights but there was no baselineRecommender"));
       }
@@ -96,22 +94,20 @@ module.exports = class HighlightsFeed extends Feed {
 
       this.missingData = false;
 
-      if (experiments.bookmarkScreenshots) {
-        // Get screenshots if we are missing images
-        links = links.slice(0, 18);
-        for (let link of links) {
-          if (this.shouldGetScreenshot(link)) {
-            const screenshot = this.getScreenshot(link.url, this.store);
-            if (screenshot) {
-              link.screenshot = screenshot;
-              link.metadata_source = `${link.metadata_source}+Screenshot`;
-            } else {
-              this.missingData = true;
-            }
-          }
-          if (!link.hasMetadata) {
+      // Get screenshots if we are missing images
+      links = links.slice(0, 18);
+      for (let link of links) {
+        if (this.shouldGetScreenshot(link)) {
+          const screenshot = this.getScreenshot(link.url, this.store);
+          if (screenshot) {
+            link.screenshot = screenshot;
+            link.metadata_source = `${link.metadata_source}+Screenshot`;
+          } else {
             this.missingData = true;
           }
+        }
+        if (!link.hasMetadata) {
+          this.missingData = true;
         }
       }
 
@@ -145,12 +141,9 @@ module.exports = class HighlightsFeed extends Feed {
         }
         break;
       case am.type("PREF_CHANGED_RESPONSE"):
-        // If the weightedHighlightsCoefficients or experiments.bookmarkScreenshots pref was changed
-        // and we have a recommender, we reinitialize it.
+        // If the weightedHighlightsCoefficients pref was changed and we have a recommender, we reinitialize it.
         if (action.data.name === "weightedHighlightsCoefficients" && this.baselineRecommender) {
           this.initializeRecommender("coefficients were changed");
-        } else if (action.data.name === "experiments.bookmarkScreenshots" && this.baselineRecommender) {
-          this.initializeRecommender("bookmarkScreenshots experiment changed");
         }
         break;
       case am.type("SYNC_COMPLETE"):
