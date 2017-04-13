@@ -67,7 +67,9 @@ module.exports = function(config) {
               options: {
                 plugins: [
                   // Converts .jsm files into common-js modules
-                  ["jsm-to-commonjs", {basePath: PATHS.resourcePathRegEx, replace: true}]
+                  ["jsm-to-commonjs", {basePath: PATHS.resourcePathRegEx, replace: true}],
+                  ["transform-async-to-module-method", {module: "co-task", method: "async"}],
+                  "transform-es2015-modules-commonjs"
                 ]
               }
             }]
