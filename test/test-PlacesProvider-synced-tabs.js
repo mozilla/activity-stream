@@ -29,6 +29,10 @@ MockTabsEngine.prototype = {
 
   getOpenURLs() {
     return new Set();
+  },
+
+  finalize() {
+    return Promise.resolve();
   }
 };
 

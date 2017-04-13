@@ -54,8 +54,6 @@ module.exports = class TopSitesFeed extends Feed {
   }
   getData() {
     return Task.spawn(function*() {
-      const experiments = this.store.getState().Experiments.values;
-
       // Get pinned links
       let pinned = this.pinnedLinks.links;
 
@@ -74,19 +72,17 @@ module.exports = class TopSitesFeed extends Feed {
       this.missingData = false;
 
       // Get screenshots if the favicons are too small
-      if (experiments.screenshotsLongCache) {
-        for (let link of links) {
-          if (this.shouldGetScreenshot(link)) {
-            const screenshot = this.getScreenshot(link.url, this.store);
-            if (screenshot) {
-              link.screenshot = screenshot;
-              link.metadata_source = `${link.metadata_source}+Screenshot`;
-            } else {
-              this.missingData = true;
-            }
-          } else if (!link.hasMetadata) {
+      for (let link of links) {
+        if (this.shouldGetScreenshot(link)) {
+          const screenshot = this.getScreenshot(link.url, this.store);
+          if (screenshot) {
+            link.screenshot = screenshot;
+            link.metadata_source = `${link.metadata_source}+Screenshot`;
+          } else {
             this.missingData = true;
           }
+        } else if (!link.hasMetadata) {
+          this.missingData = true;
         }
       }
 
