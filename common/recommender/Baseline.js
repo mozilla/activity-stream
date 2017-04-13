@@ -109,12 +109,10 @@ class Baseline {
       newScore *= 0.2;
     }
 
-    if (this.options.experiments && this.options.experiments.bookmarkScreenshots) {
-      // Boost boomarks even if they have low score or no images giving a
-      // just-bookmarked page a near-infinite boost
-      if (features.bookmarkAge) {
-        newScore += BOOKMARK_AGE_DIVIDEND / features.bookmarkAge;
-      }
+    // Boost boomarks even if they have low score or no images giving a
+    // just-bookmarked page a near-infinite boost
+    if (features.bookmarkAge) {
+      newScore += BOOKMARK_AGE_DIVIDEND / features.bookmarkAge;
     }
 
     return newScore;

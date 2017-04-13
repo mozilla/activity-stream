@@ -181,7 +181,7 @@
   },
   "bookmarkScreenshots": {
     "name": "Screenshots for Highlights",
-    "active": true,
+    "active": false,
     "description": "Show a screenshot for Highlights that otherwise don't have an image",
     "control": {
       "value": false,
