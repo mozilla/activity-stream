@@ -11,15 +11,20 @@
 
   // This is a container for the delete menu
   .tile-outer {
-    @include item-shadow;
     @include link-menu-button;
     border-radius: $border-radius;
-    position: relative;
     display: inline-block;
+    height: $tile-width;
+    position: relative;
     margin: 0 0 $tile-gutter;
     margin-inline-end: $tile-gutter;
+    vertical-align: top;
+    width: $tile-width;
 
     &:hover {
+      box-shadow: 0 0 0 5px $faintest-black;
+      transition: box-shadow 150ms;
+
       .site-icon-title {
         background-color: $tile-title-hover-color;
       }
@@ -28,6 +33,7 @@
     .tile {
       @include accessible-link-menu-button;
       border-radius: $border-radius;
+      box-shadow: none;
       outline: 0;
       display: inline-flex;
       flex-shrink: 0;
@@ -40,13 +46,33 @@
       color: inherit;
 
       .site-title {
-        position: absolute;
-        top: 100%;
-        offset-inline-start: 0;
-        width: 100%;
-        padding-top: 6px;
         font-size: 11px;
+        height: 22px;
+        offset-inline-start: 0;
+        overflow: hidden;
+        padding-top: 6px;
+        position: absolute;
         text-align: center;
+        top: 100%;
+        width: 100%;
+
+        .icon-pin {
+          offset-inline-start: 0;
+          opacity: 0.5;
+          position: absolute;
+        }
+
+        .label {
+          flex-grow: 1;
+          text-overflow: ellipsis;
+        }
+
+        &.pinned {
+          .label {
+            padding-inline-start: 20px;
+            text-align: left;
+          }
+        }
       }
 
       .tile-img-container {
@@ -80,7 +106,7 @@
     &.placeholder {
       .site-icon-wrapper {
         width: 32px;
-        height: 74px;
+        height: $tile-width;
       }
 
       .tile {
@@ -97,89 +123,6 @@
       background-size: 250%;
       background-position: top center;
       border-radius: 3px;
-    }
-  }
-}
-
-// overrides for Top Sites styling experiment
-.top-sites-new-style {
-  .top-sites {
-
-    .tile-outer {
-      box-shadow: none;
-      height: $tile-width;
-      vertical-align: top;
-      width: $tile-width;
-
-      &:hover {
-        box-shadow: 0 0 0 5px $faintest-black;
-        transition: box-shadow 150ms;
-      }
-
-      &.placeholder {
-        .site-icon-wrapper {
-          height: $tile-width;
-        }
-      }
-
-      .tile {
-        box-shadow: none;
-
-        .tile-img-container {
-          // This is a hack so the title is visible since we are positioning
-          // it outside of the container for the experiment. If/when the experiment
-          // graduates, we should change the HTML instead.
-          overflow: visible;
-        }
-
-        .site-title {
-          height: 22px;
-          overflow: hidden;
-
-          .icon-pin {
-            offset-inline-start: 0;
-            opacity: 0.5;
-            position: absolute;
-          }
-
-          .label {
-            flex-grow: 1;
-            text-overflow: ellipsis;
-          }
-
-          &.pinned {
-            .label {
-              padding-inline-start: 20px;
-              text-align: left;
-            }
-          }
-        }
-      }
-    }
-
-    .site-icon {
-      .site-icon-background {
-        border-radius: 3px;
-      }
-
-      .site-icon-title {
-        background: transparent;
-        border: 0;
-        position: absolute;
-        top: 100%;
-        offset-inline-start: 0;
-      }
-
-      &:hover {
-        .site-icon-title {
-          background: transparent;
-        }
-      }
-    }
-
-    .site-icon-fallback {
-      height: $tile-width;
-      line-height: $tile-width;
     }
   }
 }

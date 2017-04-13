@@ -1,5 +1,3 @@
-
-
 .site-icon {
   position: relative;
   border-radius: $site-icon-border-radius;
@@ -7,6 +5,12 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  &:hover {
+    .site-icon-title {
+      background: transparent;
+    }
+  }
 
   .site-icon-wrapper {
     flex-grow: 1;
@@ -17,6 +21,7 @@
   }
 
   .site-icon-background {
+    border-radius: 3px;
     position: absolute;
     top: 0;
     left: 0;
@@ -25,8 +30,10 @@
   }
 
   .site-icon-fallback {
-    text-transform: uppercase;
+    height: $tile-width;
+    line-height: $tile-width;
     opacity: 0.75;
+    text-transform: uppercase;
 
     &::after {
       content: attr(data-first-letter);
@@ -34,12 +41,13 @@
   }
 
   .site-icon-title {
+    background: transparent;
+    position: absolute;
+    top: 100%;
+    offset-inline-start: 0;
     width: 100%;
     font-size: $tile-title-font-size;
     border-radius: 0 0 $border-radius $border-radius;
-    border-top-color: $faintest-black;
-    border-top-style: solid;
-    border-top-width: 1px;
     background-color: $tile-title-bg-color;
     height: $tile-title-height;
     line-height: $tile-title-height;
