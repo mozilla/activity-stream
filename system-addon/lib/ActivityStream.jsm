@@ -1,15 +1,20 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+/* globals XPCOMUtils, NewTabInit, TopSitesFeed */
+
 "use strict";
 
 const {utils: Cu} = Components;
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const {Store} = Cu.import("resource://activity-stream/lib/Store.jsm", {});
 const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 // Feeds
-const {NewTabInit} = Cu.import("resource://activity-stream/lib/NewTabInit.jsm", {});
-const {TopSitesFeed} = Cu.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
+XPCOMUtils.defineLazyModuleGetter(this, "NewTabInit",
+  "resource://activity-stream/lib/NewTabInit.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "TopSitesFeed",
+  "resource://activity-stream/lib/TopSitesFeed.jsm");
 
 this.ActivityStream = class ActivityStream {
 
