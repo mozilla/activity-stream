@@ -20,7 +20,7 @@ overrider.set({
   XPCOMUtils: {
     defineLazyModuleGetter: overrider.sandbox.spy(),
     defineLazyServiceGetter: overrider.sandbox.spy(),
-    generateQI: overrider.sandbox.spy()
+    generateQI: overrider.sandbox.stub().returns(() => {})
   },
   dump: overrider.sandbox.spy(),
   Services: {
