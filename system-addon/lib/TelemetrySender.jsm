@@ -71,8 +71,13 @@ TelemetrySender.prototype = {
   ]),
 
   observe(subject, topic, data) {
-    if (topic === COMPLETE_NOTIF || topic === ACTION_NOTIF || topic === PERFORMANCE_NOTIF || topic === UNDESIRED_NOTIF) {
-      this._sendPing(data);
+    switch (topic) {
+      case COMPLETE_NOTIF:
+      case ACTION_NOTIF:
+      case PERFORMANCE_NOTIF:
+      case UNDESIRED_NOTIF:
+        this._sendPing(data);
+        break;
     }
   },
 
