@@ -84,7 +84,6 @@ const PlaceholderSiteIcon = React.createClass({
       <div ref="icon" className="site-icon">
         <div className="inner-border" />
         <div className="site-icon-wrapper" />
-        <div className="site-icon-title" />
       </div>
     );
   }

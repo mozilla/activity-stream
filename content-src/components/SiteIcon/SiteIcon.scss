@@ -6,12 +6,6 @@
   flex-direction: column;
   overflow: hidden;
 
-  &:hover {
-    .site-icon-title {
-      background: transparent;
-    }
-  }
-
   .site-icon-wrapper {
     flex-grow: 1;
     display: flex;
@@ -38,23 +32,5 @@
     &::after {
       content: attr(data-first-letter);
     }
-  }
-
-  .site-icon-title {
-    background: transparent;
-    position: absolute;
-    top: 100%;
-    offset-inline-start: 0;
-    width: 100%;
-    font-size: $tile-title-font-size;
-    border-radius: 0 0 $border-radius $border-radius;
-    background-color: $tile-title-bg-color;
-    height: $tile-title-height;
-    line-height: $tile-title-height;
-    text-align: center;
-    padding: 0 5px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    z-index: 1;
   }
 }
