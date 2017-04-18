@@ -22,26 +22,26 @@ module.exports = class MetadataFeed extends Feed {
    * the state
    */
   getInitialMetadata(reason) {
-    // Get initial topsites metadata
+    // First, get the metadata for pinned sites
+    let pinned = this.pinnedLinks.links;
+    pinned.forEach(item => {
+      // Skip any empty slots
+      if (item && item.url) {
+        this.linksToFetch.set(item.url, Date.now());
+      }
+    });
+    this.refresh(reason);
+
+    // Then, get initial topsites metadata
     return PlacesProvider.links.getTopFrecentSites().then(links => {
       links.forEach(item => this.linksToFetch.set(item.url, Date.now()));
       this.refresh(reason);
     })
-    // Get initial highlights metadata
+    // Finally, get initial highlights metadata. This should be done last because
+    // it takes the longest, processing 100+ urls.
     .then(() => PlacesProvider.links.getRecentlyVisited())
     .then(links => {
       links.forEach(item => this.linksToFetch.set(item.url, Date.now()));
-      this.refresh(reason);
-    })
-    // Get the metadata for pinned sites
-    .then(() => {
-      let pinned = this.pinnedLinks.links;
-      pinned.forEach(item => {
-        // Skip any empty slots
-        if (item && item.url) {
-          this.linksToFetch.set(item.url, Date.now());
-        }
-      });
       this.refresh(reason);
     });
   }

@@ -44,14 +44,20 @@ describe("MetadataFeed", () => {
       instance.refresh = sinon.spy();
     });
 
-    it("should get TopFrecentSites metadata then RecentlyVisited metadata", () =>
-      instance.getInitialMetadata().then(() => {
+    it("should get TopFrecentSites metadata then RecentlyVisited metadata", () => {
+      instance.pinnedLinks.links = [
+        null,
+        {url: "https://github.com/mozilla/activity-stream"},
+        null,
+        null,
+        {url: "https://mozilla.org"}];
+      return instance.getInitialMetadata().then(() => {
         assert.called(PlacesProvider.links.getTopFrecentSites);
         assert.called(PlacesProvider.links.getRecentlyVisited);
         assert.calledThrice(instance.refresh);
-        assert.equal(instance.linksToFetch.size, 4);
-      })
-    );
+        assert.equal(instance.linksToFetch.size, 6);
+      });
+    });
   });
   describe("#getData", () => {
     it("should run sites through fetchNewMetadata", () => instance.getData().then(() => (
