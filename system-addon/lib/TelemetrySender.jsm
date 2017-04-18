@@ -9,6 +9,7 @@ Cu.import("resource://gre/modules/Preferences.jsm");
 Cu.importGlobalProperties(["fetch"]);
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Console.jsm"); // eslint-disable-line no-console
 
 const ENDPOINT_PREF = "telemetry.ping.endpoint";
 const TELEMETRY_PREF = "telemetry";
@@ -110,7 +111,7 @@ TelemetrySender.prototype = {
     if (this.logging) {
       // performance related pings cause a lot of logging, so we mute them
       if (JSON.parse(data).action !== "activity_stream_performance") {
-        Cu.reportError(`TELEMETRY PING: ${data}`);
+        console.log(`TELEMETRY PING: ${data}`); // eslint-disable-line no-console
       }
     }
 

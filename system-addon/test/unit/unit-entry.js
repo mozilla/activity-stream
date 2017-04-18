@@ -22,6 +22,7 @@ overrider.set({
     defineLazyServiceGetter: overrider.sandbox.spy(),
     generateQI: overrider.sandbox.stub().returns(() => {})
   },
+  console: {log: overrider.sandbox.spy()},
   dump: overrider.sandbox.spy(),
   Services: {
     obs: {

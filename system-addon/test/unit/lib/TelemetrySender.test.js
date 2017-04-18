@@ -145,7 +145,7 @@ describe("TelemetrySender", () => {
 
       await tSender._sendPing(fakePingJSON);
 
-      assert.called(global.Components.utils.reportError);
+      assert.called(console.log); // eslint-disable-line no-console
     });
   });
 
