@@ -73,7 +73,11 @@ class GlobalOverrider {
  * Very simple fake for the most basic semantics of Preferences.jsm. Lots of
  * things aren't yet supported.  Feel free to add them in.
  *
- * @param {[type]} args [description]
+ * @param {Object} args - optional arguments
+ * @param {Function} args.initHook - if present, will be called back
+ *                   inside the constructor. Typically used from tests
+ *                   to save off a pointer to the created instance so that
+ *                   stubs and spies can be inspected by the test code.
  */
 function FakePrefs(args) {
   if (args) {
