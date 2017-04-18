@@ -142,9 +142,14 @@ describe("MessageManager", () => {
       });
       it("should call onActionFromContent", () => {
         sinon.stub(mm, "onActionFromContent");
-        const action = {type: "FOO"};
-        mm.onMessage({target: {portID: "foo"}, data: action});
-        assert.calledWith(mm.onActionFromContent, action, "foo");
+        const action = {data: {data: {}, type: "FOO"}, target: {portID: "foo"}};
+        const expectedAction = {
+          type: action.data.type,
+          data: action.data.data,
+          _target: {portID: "foo"}
+        };
+        mm.onMessage(action);
+        assert.calledWith(mm.onActionFromContent, expectedAction, "foo");
       });
     });
   });

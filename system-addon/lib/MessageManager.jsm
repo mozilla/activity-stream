@@ -142,13 +142,17 @@ class MessageManager {
    * @param  {obj} msg.target A message target
    */
   onMessage(msg) {
-    const action = msg.data;
     const {portID} = msg.target;
-    if (!action || !action.type) {
+    if (!msg.data || !msg.data.type) {
       Cu.reportError(new Error(`Received an improperly formatted message from ${portID}`));
       return;
     }
-    this.onActionFromContent(action, msg.target.portID);
+    let action = {};
+    Object.assign(action, msg.data);
+    // target is used to access a browser reference that came from the content
+    // and should only be used in feeds (not reducers)
+    action._target = msg.target;
+    this.onActionFromContent(action, portID);
   }
 }
 
