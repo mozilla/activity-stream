@@ -55,10 +55,7 @@ function TelemetrySender(args) {
   this._pingEndpoint = this._prefs.get(ENDPOINT_PREF);
 
   if (this.enabled) {
-    Services.obs.addObserver(this, COMPLETE_NOTIF, true);
-    Services.obs.addObserver(this, ACTION_NOTIF, true);
-    Services.obs.addObserver(this, PERFORMANCE_NOTIF, true);
-    Services.obs.addObserver(this, UNDESIRED_NOTIF, true);
+    this._addObservers();
   }
 }
 
@@ -87,18 +84,26 @@ TelemetrySender.prototype = {
 
   _onTelemetryPrefChange(prefVal) {
     if (this.enabled && !prefVal) {
-      Services.obs.removeObserver(this, COMPLETE_NOTIF);
-      Services.obs.removeObserver(this, ACTION_NOTIF);
-      Services.obs.removeObserver(this, PERFORMANCE_NOTIF);
-      Services.obs.removeObserver(this, UNDESIRED_NOTIF);
+      this._removeObservers();
     } else if (!this.enabled && prefVal) {
-      Services.obs.addObserver(this, COMPLETE_NOTIF, true);
-      Services.obs.addObserver(this, ACTION_NOTIF, true);
-      Services.obs.addObserver(this, PERFORMANCE_NOTIF, true);
-      Services.obs.addObserver(this, UNDESIRED_NOTIF, true);
+      this._addObservers();
     }
 
     this.enabled = prefVal;
+  },
+
+  _addObservers() {
+    Services.obs.addObserver(this, COMPLETE_NOTIF, true);
+    Services.obs.addObserver(this, ACTION_NOTIF, true);
+    Services.obs.addObserver(this, PERFORMANCE_NOTIF, true);
+    Services.obs.addObserver(this, UNDESIRED_NOTIF, true);
+  },
+
+  _removeObservers() {
+    Services.obs.removeObserver(this, COMPLETE_NOTIF);
+    Services.obs.removeObserver(this, ACTION_NOTIF);
+    Services.obs.removeObserver(this, PERFORMANCE_NOTIF);
+    Services.obs.removeObserver(this, UNDESIRED_NOTIF);
   },
 
   async _sendPing(data) {
@@ -121,10 +126,7 @@ TelemetrySender.prototype = {
   uninit() {
     try {
       if (this.enabled) {
-        Services.obs.removeObserver(this, COMPLETE_NOTIF);
-        Services.obs.removeObserver(this, ACTION_NOTIF);
-        Services.obs.removeObserver(this, PERFORMANCE_NOTIF);
-        Services.obs.removeObserver(this, UNDESIRED_NOTIF);
+        this._removeObservers();
       }
       this._prefs.ignore(TELEMETRY_PREF, this._onTelemetryPrefChange);
     } catch (e) {
