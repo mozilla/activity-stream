@@ -144,22 +144,6 @@ describe("TelemetrySender", () => {
 
       assert.called(global.Components.utils.reportError);
     });
-
-    it("should POST to a changed value of telemetry.ping.endpoint", async () => {
-      FakePrefs.prototype.prefs = {
-        "telemetry": true,
-        "telemetry.ping.endpoint": fakeEndpointUrl
-      };
-      tSender = new TelemetrySender(tsArgs);
-      fetchStub.resolves(fakeFetchSuccessResponse);
-
-      fakePrefs.set("telemetry.ping.endpoint", "http://127.0.0.1/fake");
-      await tSender._sendPing(fakePingJSON);
-
-      assert.calledOnce(fetchStub);
-      assert.calledWithExactly(fetchStub, "http://127.0.0.1/fake",
-        {method: "POST", body: fakePingJSON});
-    });
   });
 
   describe("#observe()", () => {
@@ -191,15 +175,6 @@ describe("TelemetrySender", () => {
   });
 
   describe("#uninit()", () => {
-    it("should remove the telemetry.ping.endpoint pref listener", () => {
-      tSender = new TelemetrySender(tsArgs);
-      assert.property(fakePrefs.observers, "telemetry.ping.endpoint");
-
-      tSender.uninit();
-
-      assert.notProperty(fakePrefs.observers, "telemetry.ping.endpoint");
-    });
-
     it("should remove the telemetry pref listener", () => {
       tSender = new TelemetrySender(tsArgs);
       assert.property(fakePrefs.observers, "telemetry");
@@ -212,7 +187,6 @@ describe("TelemetrySender", () => {
     it("should remove all notification observers if telemetry pref is true", () => {
       FakePrefs.prototype.prefs = {telemetry: true};
       tSender = new TelemetrySender(tsArgs);
-      assert.property(fakePrefs.observers, "telemetry.ping.endpoint");
 
       tSender.uninit();
 
@@ -222,7 +196,6 @@ describe("TelemetrySender", () => {
     it("should not remove notification observers if telemetry pref is false", () => {
       FakePrefs.prototype.prefs = {telemetry: false};
       tSender = new TelemetrySender(tsArgs);
-      assert.property(fakePrefs.observers, "telemetry.ping.endpoint");
 
       tSender.uninit();
 

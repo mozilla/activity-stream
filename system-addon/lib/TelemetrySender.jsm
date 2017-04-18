@@ -53,8 +53,6 @@ function TelemetrySender(args) {
   this._prefs.observe(LOGGING_PREF, this._onLoggingPrefChange);
 
   this._pingEndpoint = this._prefs.get(ENDPOINT_PREF);
-  this._onEndpointPrefChange = this._onEndpointPrefChange.bind(this);
-  this._prefs.observe(ENDPOINT_PREF, this._onEndpointPrefChange);
 
   if (this.enabled) {
     Services.obs.addObserver(this, COMPLETE_NOTIF, true);
@@ -76,10 +74,6 @@ TelemetrySender.prototype = {
     if (topic === COMPLETE_NOTIF || topic === ACTION_NOTIF || topic === PERFORMANCE_NOTIF || topic === UNDESIRED_NOTIF) {
       this._sendPing(data);
     }
-  },
-
-  _onEndpointPrefChange(prefVal) {
-    this._pingEndpoint = prefVal;
   },
 
   _onLoggingPrefChange(prefVal) {
@@ -128,7 +122,6 @@ TelemetrySender.prototype = {
         Services.obs.removeObserver(this, UNDESIRED_NOTIF);
       }
       this._prefs.ignore(TELEMETRY_PREF, this._onTelemetryPrefChange);
-      this._prefs.ignore(ENDPOINT_PREF, this._onEndpointPrefChange);
     } catch (e) {
       Cu.reportError(e);
     }
