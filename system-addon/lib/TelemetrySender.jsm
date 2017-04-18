@@ -24,6 +24,16 @@ const UNDESIRED_NOTIF = "undesired-event";
 // installed.  Though maybe we should just forcibly disable the old add-on?
 const PREF_BRANCH = "browser.newtabpage.activity-stream";
 
+/**
+ * Observe various notifications and send them to a telemetry endpoint.
+ *
+ * @param {Object} args - optional arguments
+ * @param {Function} args.prefInitHook - if present, will be called back
+ *                   inside the Prefs constructor. Typically used from tests
+ *                   to save off a pointer to a fake Prefs instance so that
+ *                   stubs and spies can be inspected by the test code.
+ *
+ */
 function TelemetrySender(args) {
   let prefArgs = {branch: PREF_BRANCH};
   if (args) {
