@@ -10,6 +10,9 @@ cache:
   directories:
     - node_modules
 
+addons:
+  firefox: "latest-beta"
+
 before_install:
   # see https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
   - "export DISPLAY=:99.0"
@@ -28,6 +31,7 @@ before_script:
   - export FIREFOX_BIN=./firefox/firefox
   - export JPM_FIREFOX_BINARY=./firefox/firefox
   - echo $JPM_FIREFOX_BINARY
+  - find firefox
 
 script:
   - npm run travis
