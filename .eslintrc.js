@@ -26,8 +26,6 @@ module.exports = {
     "plugin:mozilla/recommended"
   ],
   "rules": {
-    "mozilla/no-useless-parameters": 0, // TODO: delete when targeting 55+
-
     "promise/param-names": 2,
     "promise/catch-or-return": 2,
 

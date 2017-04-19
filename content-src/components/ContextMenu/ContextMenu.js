@@ -9,7 +9,7 @@ const ContextMenu = React.createClass({
   componentDidUpdate(prevProps) {
     if (this.props.visible && !prevProps.visible) {
       setTimeout(() => {
-        window.addEventListener("click", this.hideContext, false);
+        window.addEventListener("click", this.hideContext);
       }, 0);
     }
     if (!this.props.visible && prevProps.visible) {
