@@ -18,6 +18,7 @@ main {
 .section-title {
   color: $section-title-color;
   font-size: $section-title-font-size;
-  font-weight: normal;
+  font-weight: bold;
   margin: 0 0 $section-title-bottom-margin;
+  text-transform: uppercase;
 }
