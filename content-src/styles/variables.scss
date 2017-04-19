@@ -30,16 +30,16 @@ $blue-button-border: #1677CF;
 $checkbox-border: #C1C1C1;
 $checkbox-blue: #1691D2;
 
-$wrapper-max-width: 736px;
-$wrapper-vertical-padding: 62px;
+$wrapper-max-width: 766px;
+$wrapper-vertical-padding: 38px;
 $break-point: $wrapper-max-width + 40px;
 
-$base-gutter: 32px;
+$base-gutter: 38px;
 $section-margin: 41px;
 
-$section-title-font-size: 12px;
-$section-title-color: $light-grey;
-$section-title-bottom-margin: 13px;
+$section-title-font-size: 13px;
+$section-title-color: #6E707E;
+$section-title-bottom-margin: 18px;
 
 $header-box-shadow: 0 4px 2px -3px rgba($black, 0.05);
 $header-nav-width: 250px;
@@ -64,14 +64,7 @@ $edit-menu-button-size: 25px;
 $edit-menu-button-border: 1px solid rgba($black, 0.2);
 $edit-menu-button-boxshadow: 0 2px 0 rgba($black, 0.1);
 
-$spotlight-info-default-padding: ($base-gutter / 2);
-
-// The top-padding needs to be less because a smaller font is used
-// immediately under it, so the default padding makes it visually appear to
-// have too much whitespace above.
-$spotlight-info-top-padding: ($base-gutter / 2) - 4;
-
-$spotlight-item-height: 262px;
+$spotlight-item-height: 290px;
 $spotlight-item-width: ($wrapper-max-width - $base-gutter * 2) / 3;
 $spotlight-img-height: 146px;
 $spotlight-text-height: 94px;
@@ -88,23 +81,24 @@ $site-icon-border-radius: 3px;
 $search-bg-color: #FFF;
 $search-border-radius: 4px;
 $search-margin-top: 52px;
-$search-margin-bottom: 62px;
+$search-margin-bottom: 48px;
 $search-height: 36px;
 $search-input-left-label-width: 35px;
 $search-input-border-color: #BFBFBF;
 $search-blue: #0996F8;
-$search-shadow: rgba(96, 181, 255, 0.75);
+$search-hover-shadow: rgba(0.11, 0.34, 0.69, 0.5);
+$search-focus-shadow: #0996F8;
 $search-button-grey: #FBFBFB;
 $search-button-border-color: #D4D4D4;
-$search-button-width: 64px;
+$search-button-width: 36px;
 $search-glyph-image: url('#{$image-path}glyph-search-16.svg');
 $search-glyph-size: 20px;
 $search-text: #666;
 $search-section-background: #F7F7F7;
 $search-border-color: #EAEAEA;
 
-$item-shadow: 0 1px 0 0 $faintest-black;
-$item-shadow-hover: 0 1px 0 0 $faintest-black, 0 0 0 5px $faintest-black;
+$item-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.06);
+$item-shadow-hover: 0 1px 2px hsla(0, 0%, 0%, 0.06), 0 0 0 5px $faintest-black;
 
 // override background transparency of image itself
 $loader-popup-background-color: $white;
@@ -198,8 +192,8 @@ $sidebar-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
 }
 
 @mixin search-input {
-  border: 1px solid $search-input-border-color;
-  box-shadow: none;
+  border: 0;
+  box-shadow: 0 1px 0 0 $faintest-black;
   flex-grow: 1;
   margin: 0;
   outline: none;
@@ -208,7 +202,7 @@ $sidebar-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
 
   &:focus {
     border-color: $search-blue;
-    box-shadow: 0 0 0 0.5px $search-shadow;
+    box-shadow: 0 0 0 2px $search-focus-shadow;
     transition: box-shadow 150ms;
     z-index: 1;
   }
