@@ -35,7 +35,7 @@
   // Space the items inside .spotlight-list out properly, until firefox 51,
   // when we can make .spotlight-list be a CSS grid
   margin-top: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
 
   .spotlight-inner {
     @include accessible-link-menu-button;
@@ -84,6 +84,7 @@
   .spotlight-label {
     color: $mid-light-grey;
     font-size: 10px;
+    padding-bottom: 4px;
   }
 
   .spotlight-title {
@@ -97,7 +98,7 @@
   }
 
   .spotlight-info {
-    padding: $spotlight-info-top-padding $spotlight-info-default-padding;
+    padding: 10px 16px 12px;
   }
 
   .spotlight-text {
