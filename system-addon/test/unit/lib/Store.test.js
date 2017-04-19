@@ -16,13 +16,13 @@ describe("Store", () => {
     Preferences.observe = sandbox.spy();
     Preferences.ignore = sandbox.spy();
     globals.set("Preferences", Preferences);
-    function MessageManager(options) {
+    function ActivityStreamMessageChannel(options) {
       this.dispatch = options.dispatch;
       this.createChannel = sandbox.spy();
       this.destroyChannel = sandbox.spy();
       this.middleware = sandbox.spy(s => next => action => next(action));
     }
-    ({Store, PREF_PREFIX} = injector({"lib/MessageManager.jsm": {MessageManager}}));
+    ({Store, PREF_PREFIX} = injector({"lib/ActivityStreamMessageChannel.jsm": {ActivityStreamMessageChannel}}));
     store = new Store();
   });
   afterEach(() => {
@@ -38,13 +38,13 @@ describe("Store", () => {
     assert.property(store, "dispatch");
     assert.property(store, "getState");
   });
-  it("should create a MessageManager with the right dispatcher", () => {
-    assert.ok(store._mm);
-    assert.equal(store._mm.dispatch, store.dispatch);
+  it("should create a ActivityStreamMessageChannel with the right dispatcher", () => {
+    assert.ok(store._messageChannel);
+    assert.equal(store._messageChannel.dispatch, store.dispatch);
   });
-  it("should connect the MessageManager's middleware", () => {
+  it("should connect the ActivityStreamMessageChannel's middleware", () => {
     store.dispatch({type: "FOO"});
-    assert.calledOnce(store._mm.middleware);
+    assert.calledOnce(store._messageChannel.middleware);
   });
   describe("#initFeed", () => {
     it("should add an instance of the feed to .feeds", () => {
@@ -144,9 +144,9 @@ describe("Store", () => {
       assert.calledWith(store.maybeStartFeedAndListenForPrefChanges, "foo");
       assert.calledWith(store.maybeStartFeedAndListenForPrefChanges, "bar");
     });
-    it("should initialize the MessageManager channel", () => {
+    it("should initialize the ActivityStreamMessageChannel channel", () => {
       store.init();
-      assert.calledOnce(store._mm.createChannel);
+      assert.calledOnce(store._messageChannel.createChannel);
     });
   });
   describe("#uninit", () => {
@@ -163,9 +163,9 @@ describe("Store", () => {
       assert.equal(store._prefHandlers.size, 0);
       assert.isNull(store._feedFactories);
     });
-    it("should destroy the MessageManager channel", () => {
+    it("should destroy the ActivityStreamMessageChannel channel", () => {
       store.uninit();
-      assert.calledOnce(store._mm.destroyChannel);
+      assert.calledOnce(store._messageChannel.destroyChannel);
     });
   });
   describe("#getState", () => {
