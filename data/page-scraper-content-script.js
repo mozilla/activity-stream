@@ -14,7 +14,7 @@ function DOMFetcher() {
 DOMFetcher.prototype = {
   init(cfmm) {
     this.cfmm = cfmm;
-    this.cfmm.addEventListener("DOMContentLoaded", (this._addWindowListeners.bind(this)), false);
+    this.cfmm.addEventListener("DOMContentLoaded", (this._addWindowListeners.bind(this)));
   },
 
   _addWindowListeners(event) {

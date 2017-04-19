@@ -116,7 +116,7 @@ SearchProvider.prototype = {
    *  Opens about:preferences#search in order to manage search settings.
    */
   manageEngines(browser) {
-    const browserWindow = browser.ownerDocument.defaultView;
+    const browserWindow = browser.ownerGlobal;
     browserWindow.openPreferences("paneSearch");
   },
 
@@ -196,7 +196,7 @@ SearchProvider.prototype = {
     // The browser may have been closed between the time its content sent the
     // message and the time we handle it. In that case, trying to call any
     // method on it will throw.
-    const browserWindow = browser.ownerDocument.defaultView;
+    const browserWindow = browser.ownerGlobal;
     const whereToOpen = browserWindow.whereToOpenLink(data.originalEvent);
 
     // There is a chance that by the time we receive the search message, the user
