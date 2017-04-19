@@ -238,5 +238,18 @@
       "threshold": 0.2,
       "description": "Edit Top Sites is enabled"
     }
+  },
+  "recommendedHighlights": {
+    "name": "Recommended Highlights",
+    "control": {
+      "value": false,
+      "description": "Recommended highlights is turned off"
+    },
+    "variant": {
+      "id": "recommended-highlights",
+      "value": true,
+      "threshold": 0.5,
+      "description": "Recommended highlights is turned on"
+    }
   }
 }
