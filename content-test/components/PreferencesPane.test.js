@@ -84,19 +84,19 @@ describe("PreferencesPane", () => {
   });
 
   it("the pocket stories checkbox should be checked by default", () => {
-    setup({}, {pocketStories: true});
+    setup({}, {pocket: true});
     wrapper.ref("prefs-button").simulate("click");
     assert.isTrue(wrapper.ref("showPocketStoriesCheckbox").prop("checked"));
   });
 
   it("the pocket stories checkbox should be unchecked if pref is off", () => {
-    setup({showPocketStories: false}, {pocketStories: true});
+    setup({showPocketStories: false}, {pocket: true});
     wrapper.ref("prefs-button").simulate("click");
     assert.isFalse(wrapper.ref("showPocketStoriesCheckbox").prop("checked"));
   });
 
   it("the pocket stories checkbox should not be rendered if experiment is off", () => {
-    setup({showPocketStories: false}, {pocketStories: false});
+    setup({showPocketStories: false}, {pocket: false});
     wrapper.ref("prefs-button").simulate("click");
     assert.equal(0, wrapper.ref("showPocketStoriesCheckbox").length);
   });

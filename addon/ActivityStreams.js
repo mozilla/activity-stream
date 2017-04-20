@@ -1,4 +1,4 @@
-/* globals NewTabURL, EventEmitter, XPCOMUtils, Services */
+/* globals NewTabURL, EventEmitter, XPCOMUtils, Services, Pocket */
 
 "use strict";
 
@@ -23,6 +23,7 @@ const {PageScraper} = require("addon/PageScraper");
 
 const FeedController = require("addon/lib/FeedController.js");
 const feeds = require("addon/Feeds/feeds.js");
+const getCurrentBrowser = require("addon/lib/getCurrentBrowser");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource:///modules/NewTabURL.jsm");
@@ -32,6 +33,8 @@ XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
   return EventEmitter;
 });
+
+XPCOMUtils.defineLazyModuleGetter(this, "Pocket", "chrome://pocket/content/Pocket.jsm");
 
 const DEFAULT_OPTIONS = {
   pageURL: self.data.url("content/activity-streams.html"),
@@ -94,6 +97,7 @@ function ActivityStreams(metadataStore, tabTracker, telemetrySender, options = {
   });
   this._store = createStore({middleware: this._feeds.reduxMiddleware});
   this._feeds.connectStore(this._store);
+  this.browser = getCurrentBrowser();
 }
 
 ActivityStreams.prototype = {
@@ -239,6 +243,9 @@ ActivityStreams.prototype = {
         break;
       case am.type("NOTIFY_UNBLOCK_URL"):
         PlacesProvider.links.unblockURL(msg.data);
+        break;
+      case am.type("NOTIFY_SAVE_TO_POCKET"):
+        Pocket.savePage(this.browser, msg.data.url, msg.data.title);
         break;
     }
   },

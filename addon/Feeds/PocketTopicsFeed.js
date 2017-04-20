@@ -35,7 +35,7 @@ module.exports = class PocketTopicsFeed extends PocketFeed {
     return Task.spawn(function*() {
       const experiments = this.store.getState().Experiments.values;
       let topics = [];
-      if (experiments.pocketStories) {
+      if (experiments.pocket) {
         topics = yield this._fetchTopics();
       }
       return am.actions.Response("POCKET_TOPICS_RESPONSE", topics);
