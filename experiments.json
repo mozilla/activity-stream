@@ -239,7 +239,7 @@
       "description": "Edit Top Sites is enabled"
     }
   },
-  "pocketStories": {
+  "pocket": {
     "name": "Trending stories provided by Pocket",
     "active": true,
     "description": "Display recommendations of trending stories by Pocket",

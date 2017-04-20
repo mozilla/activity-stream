@@ -35,7 +35,7 @@ const PreferencesPane = React.createClass({
   render() {
     const props = this.props;
     const {showSearch, showTopSites, showPocketStories, showHighlights, showMoreTopSites} = props.Prefs.prefs;
-    const pocketExperimentIsOn = props.Experiments.values.pocketStories;
+    const pocketExperimentIsOn = props.Experiments.values.pocket;
 
     return (
       <div className="prefs-pane-wrapper" ref="wrapper">

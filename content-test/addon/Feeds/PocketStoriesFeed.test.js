@@ -31,7 +31,7 @@ describe("PocketStoriesFeed", () => {
     });
     it("should fetch stories if experiment is enabled", () => {
       instance._fetchStories = sinon.mock().returns([{"title": "test"}]);
-      reduxState = {Experiments: {values: {pocketStories: true}}};
+      reduxState = {Experiments: {values: {pocket: true}}};
       return instance.getData()
         .then(action => {
           assert.isObject(action);
@@ -44,7 +44,7 @@ describe("PocketStoriesFeed", () => {
       let BrokenPocketStoriesFeed = require("inject!addon/Feeds/PocketStoriesFeed")({"../../pocket.json": {"pocket_story_endpoint": "", "pocket_consumer_key": ""}});
       let brokenInstance = new BrokenPocketStoriesFeed();
       brokenInstance.store = {getState() { return reduxState; }};
-      reduxState = {Experiments: {values: {pocketStories: true}}};
+      reduxState = {Experiments: {values: {pocket: true}}};
       return brokenInstance.getData()
         .then(action => {
           throw new Error("Expected getData to fail with missing configuration");

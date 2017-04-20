@@ -71,7 +71,8 @@ const SpotlightItem = React.createClass({
         site={site}
         page={this.props.page}
         index={this.props.index}
-        source={this.props.source} />
+        source={this.props.source}
+        experiments={this.props.experiments} />
     </li>);
   }
 });
@@ -99,7 +100,8 @@ SpotlightItem.propTypes = {
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string,
   onClick: React.PropTypes.func,
-  dispatch: React.PropTypes.func.isRequired
+  dispatch: React.PropTypes.func.isRequired,
+  experiments: React.PropTypes.object.isRequired
 };
 
 function renderPlaceholderList() {
@@ -146,6 +148,7 @@ const Spotlight = React.createClass({
           source="FEATURED"
           onClick={this.onClickFactory(i, site)}
           dispatch={this.props.dispatch}
+          experiments={this.props.experiments}
           {...site} />
       );
   },
@@ -163,6 +166,7 @@ const Spotlight = React.createClass({
 Spotlight.propTypes = {
   page: React.PropTypes.string.isRequired,
   sites: React.PropTypes.array.isRequired,
+  experiments: React.PropTypes.object.isRequired,
   length: React.PropTypes.number
 };
 

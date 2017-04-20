@@ -103,4 +103,8 @@
   &.icon-topsites {
     background-image: url('#{$image-path}glyph-topsites-16.svg');
   }
+
+  &.icon-pocket {
+    background-image: url('#{$image-path}pocket-icon.svg');
+  }
 }
