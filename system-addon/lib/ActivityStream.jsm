@@ -16,6 +16,18 @@ XPCOMUtils.defineLazyModuleGetter(this, "NewTabInit",
 XPCOMUtils.defineLazyModuleGetter(this, "TopSitesFeed",
   "resource://activity-stream/lib/TopSitesFeed.jsm");
 
+const feeds = {
+  // When you add a feed here:
+  // 1. The key in this object should directly refer to a pref, not including the
+  //    prefix (so "feeds.newtabinit" refers to the
+  //    "browser.newtabpage.activity-stream.feeds.newtabinit" pref)
+  // 2. The value should be a function that returns a feed.
+  // 3. You should use XPCOMUtils.defineLazyModuleGetter to import the Feed,
+  //    so it isn't loaded until the feed is enabled.
+  "feeds.newtabinit": () => new NewTabInit(),
+  "feeds.topsites": () => new TopSitesFeed()
+};
+
 this.ActivityStream = class ActivityStream {
 
   /**
@@ -30,13 +42,11 @@ this.ActivityStream = class ActivityStream {
     this.initialized = false;
     this.options = options;
     this.store = new Store();
+    this.feeds = feeds;
   }
   init() {
     this.initialized = true;
-    this.store.init([
-      new NewTabInit(),
-      new TopSitesFeed()
-    ]);
+    this.store.init(this.feeds);
     this.store.dispatch({type: at.INIT});
   }
   uninit() {
