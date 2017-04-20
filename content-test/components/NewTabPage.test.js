@@ -4,6 +4,7 @@ const ConnectedNewTabPage = require("components/NewTabPage/NewTabPage");
 const {NewTabPage} = ConnectedNewTabPage;
 const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
+const PocketStories = require("components/PocketStories/PocketStories");
 const {mockData, renderWithProvider} = require("test/test-utils");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const {connect} = require("react-redux");
@@ -67,30 +68,41 @@ describe("NewTabPage", () => {
     assert.equal(spotlightSites.props.sites, fakeProps.Highlights.rows);
   });
 
+  it("should render Stories components with correct data", () => {
+    const storiesComponent = TestUtils.findRenderedComponentWithType(instance, PocketStories);
+    assert.equal(storiesComponent.props.stories, fakeProps.PocketStories.rows);
+  });
+
   it("should render connected component with correct props", () => {
     const container = renderWithProvider(<ConnectedNewTabPage />);
     const inner = TestUtils.findRenderedComponentWithType(container, NewTabPage);
     Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
   });
 
-  it("should pass placeholder=true to Spotlight and TopSites when isReady is false", () => {
+  it("should pass placeholder=true to Spotlight, Stories, and TopSites when isReady is false", () => {
     instance = renderWithProvider(
       <NewTabPage {...fakeProps} dispatch={() => {}} />);
 
     let spotlight = TestUtils.findRenderedComponentWithType(instance, Spotlight);
     assert.equal(spotlight.props.placeholder, true);
 
+    let stories = TestUtils.findRenderedComponentWithType(instance, PocketStories);
+    assert.equal(stories.props.placeholder, true);
+
     let topSites = TestUtils.findRenderedComponentWithType(instance, TopSites);
     assert.equal(topSites.props.placeholder, true);
   });
 
-  it("should pass placeholder=false to Spotlight and TopSites when isReady is true", () => {
+  it("should pass placeholder=false to Spotlight, Stories, and TopSites when isReady is true", () => {
     let propsWithIsReadyTrue = Object.assign({}, fakeProps, {isReady: true});
     instance = renderWithProvider(
       <NewTabPage {...propsWithIsReadyTrue} dispatch={() => {}} />);
 
     let spotLight = TestUtils.findRenderedComponentWithType(instance, Spotlight);
     assert.equal(spotLight.props.placeholder, false);
+
+    let stories = TestUtils.findRenderedComponentWithType(instance, PocketStories);
+    assert.equal(stories.props.placeholder, false);
 
     let topSites = TestUtils.findRenderedComponentWithType(instance, TopSites);
     assert.equal(topSites.props.placeholder, false);

@@ -35,7 +35,7 @@ describe("Spotlight", () => {
   });
 
   describe("actions", () => {
-    it("should fire a click event an item is clicked", done => {
+    it("should fire a click event when an item is clicked", done => {
       function dispatch(a) {
         if (a.type === "NOTIFY_USER_EVENT") {
           assert.equal(a.data.event, "CLICK");

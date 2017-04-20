@@ -3,13 +3,14 @@ const {connect} = require("react-redux");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
+const PocketStories = require("components/PocketStories/PocketStories");
 const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
 const PreferencesPane = require("components/PreferencesPane/PreferencesPane");
 const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
-const {HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
+const {HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH, POCKET_STORIES_LENGTH} = require("common/constants");
 const {injectIntl} = require("react-intl");
 
 const NewTabPage = React.createClass({
@@ -79,7 +80,8 @@ const NewTabPage = React.createClass({
   },
   render() {
     const props = this.props;
-    const {showSearch, showTopSites, showHighlights, showMoreTopSites} = props.Prefs.prefs;
+    const {showSearch, showTopSites, showPocketStories, showHighlights, showMoreTopSites} = props.Prefs.prefs;
+    const pocketExperimentIsOn = props.Experiments.values.pocketStories;
 
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
@@ -104,6 +106,13 @@ const NewTabPage = React.createClass({
                 allowEdit={!!props.Experiments.values.editTopSites} />
             </section>
           }
+          {showPocketStories && pocketExperimentIsOn &&
+            <section>
+              <PocketStories placeholder={!this.props.isReady} page={PAGE_NAME}
+                length={POCKET_STORIES_LENGTH} stories={props.PocketStories.rows}
+                topics={props.PocketTopics.rows} />
+            </section>
+          }
           {showHighlights &&
             <section>
               <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
@@ -112,13 +121,14 @@ const NewTabPage = React.createClass({
           }
         </div>
       </div>
-      <PreferencesPane Prefs={props.Prefs} />
+      <PreferencesPane Prefs={props.Prefs} Experiments={props.Experiments} />
     </main>);
   }
 });
 
 NewTabPage.propTypes = {
   TopSites: React.PropTypes.object.isRequired,
+  PocketStories: React.PropTypes.object.isRequired,
   Highlights: React.PropTypes.object.isRequired,
   Experiments: React.PropTypes.object.isRequired,
   Prefs: React.PropTypes.object.isRequired,

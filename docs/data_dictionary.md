@@ -51,7 +51,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
   "receive_at": 1457396660000,
   "source": "top sites, or bookmarks, or...",
   "tab_id": "1-3",
-  "ua": "python-requests/2.9.1",  
+  "ua": "python-requests/2.9.1",
   "url": "https://www.example.com",
   "recommender_type": "pocket-trending",
   "metadata_source": "MetadataService or Local or TippyTopProvider",
@@ -146,5 +146,6 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `showTopSites` | 2 |
 | `showHighlights` | 4 |
 | `showMoreTopSites` | 8 |
+| `showPocketStories` | 16 |
 
 Each item above could be combined with other items through bitwise OR operation

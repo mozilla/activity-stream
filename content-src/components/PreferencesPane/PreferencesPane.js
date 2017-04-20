@@ -33,7 +33,9 @@ const PreferencesPane = React.createClass({
     }));
   },
   render() {
-    const {showSearch, showTopSites, showHighlights, showMoreTopSites} = this.props.Prefs.prefs;
+    const props = this.props;
+    const {showSearch, showTopSites, showPocketStories, showHighlights, showMoreTopSites} = props.Prefs.prefs;
+    const pocketExperimentIsOn = props.Experiments.values.pocketStories;
 
     return (
       <div className="prefs-pane-wrapper" ref="wrapper">
@@ -70,6 +72,15 @@ const PreferencesPane = React.createClass({
                     </label>
                   </div>
                 </section>
+                {pocketExperimentIsOn &&
+                   <section>
+                    <input ref="showPocketStoriesCheckbox" type="checkbox" id="showPocketStories" name="showPocketStories" checked={showPocketStories} onChange={this.handleChange} />
+                    <label htmlFor="showPocketStories">
+                      <FormattedMessage id="settings_pane_pocketstories_header" />
+                    </label>
+                    <p><FormattedMessage id="settings_pane_pocketstories_body" /></p>
+                  </section>
+                }
                 <section>
                   <input ref="showHighlightsCheckbox" type="checkbox" id="showHighlights" name="showHighlights" checked={showHighlights} onChange={this.handleChange} />
                   <label htmlFor="showHighlights">

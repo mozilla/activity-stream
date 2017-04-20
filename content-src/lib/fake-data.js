@@ -1,10 +1,18 @@
-const {HIGHLIGHTS_LENGTH, DEFAULT_LOCALE} = require("common/constants");
+const {HIGHLIGHTS_LENGTH, POCKET_STORIES_LENGTH, POCKET_TOPICS_LENGTH, DEFAULT_LOCALE} = require("common/constants");
 const faker = require("test/faker");
 const STRINGS = require("../../data/locales/locales.json")[DEFAULT_LOCALE];
 
 module.exports = {
   "Highlights": {
     "rows": faker.createRows({images: HIGHLIGHTS_LENGTH}),
+    "error": false
+  },
+  "PocketStories": {
+    "rows": faker.createRows({length: POCKET_STORIES_LENGTH}),
+    "error": false
+  },
+  "PocketTopics": {
+    "rows": faker.createRows({length: POCKET_TOPICS_LENGTH}),
     "error": false
   },
   "TopSites": {
@@ -27,7 +35,7 @@ module.exports = {
     "searchForSomethingWith": ""
   },
   "Experiments": {
-    "values": {},
+    "values": {"pocketStories": true},
     "error": false
   },
   "Filter": {"query": ""},
@@ -35,7 +43,8 @@ module.exports = {
     "prefs": {
       "showSearch": true,
       "showTopSites": true,
-      "showHighlights": true
+      "showHighlights": true,
+      "showPocketStories": true
     },
     "error": false
   },

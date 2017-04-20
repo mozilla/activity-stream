@@ -1,0 +1,27 @@
+.pocket-stories {
+
+  .pocket-logo {
+    background-image: url('img/pocketlogo@1x.png');
+    background-size: 64px 18px;
+    background-repeat: no-repeat;
+    filter: grayscale(100%);
+    padding-left: 64px;
+    margin-left: 10px;
+  }
+
+  .pocket-read-more {
+    font-size: 12px;
+    color: $light-grey;
+  }
+
+  .pocket-read-more-link {
+    margin-left: 25px;
+  }
+
+  .pocket-read-even-more {
+    float: right;
+    margin-right: 40px;
+  }
+
+}
+
