@@ -1,7 +1,20 @@
+.outer-wrapper {
+  display: flex;
+  flex-grow: 1;
+  padding: $wrapper-top-padding $base-gutter $base-gutter;
+  height: 100%;
+}
+
 main {
-  margin: 40px auto;
-  max-width: $wrapper-max-width + $base-gutter * 2;
-  padding: $base-gutter;
+  margin: auto;
+
+  @media (min-width: $break-point-medium) {
+    width: $wrapper-max-width-medium;
+  }
+
+  @media (min-width: $break-point-large) {
+    width: $wrapper-max-width-large;
+  }
 
   section {
     margin-bottom: $section-margin;

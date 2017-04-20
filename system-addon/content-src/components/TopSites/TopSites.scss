@@ -1,7 +1,7 @@
+
 .top-sites-list {
-  $top-sites-size: 96px;
+  $top-sites-size: $grid-unit;
   $top-sites-border-radius: 6px;
-  $top-sites-box-shadow: 0 1px 4px 0 rgba(9,6,13,0.1);
   $inner-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
   $top-sites-title-height: 30px;
   $top-sites-vertical-space: 18px;
@@ -10,8 +10,14 @@
   padding: 0;
   margin-inline-end: -$base-gutter;
 
-  @media (min-width: $break-point) {
-    width: ($top-sites-size + $base-gutter) * 6;
+  // 5 top sites
+  @media (min-width: $break-point-medium) {
+    width: $wrapper-max-width-medium + $base-gutter;
+  }
+
+  // 6 top sites
+  @media (min-width: $break-point-large) {
+    width: $wrapper-max-width-large + $base-gutter;
   }
 
   li {
@@ -24,16 +30,45 @@
     display: block;
     color: inherit;
   }
-  .screenshot {
-    background: $white;
+  .tile {
+    position: relative;
     height: $top-sites-size;
     width: $top-sites-size;
+    border-radius: $top-sites-border-radius;
+    box-shadow: inset $inner-box-shadow;
+
+    // For letter fallback
+    color: $light-grey;
+    font-weight: 200;
+    font-size: 32px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      box-shadow: inset $inner-box-shadow, 0 0 0 5px $faintest-black;
+      transition: box-shadow 150ms;
+    }
+  }
+  .screenshot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: $white;
+    border-radius: $top-sites-border-radius;
+    box-shadow: inset $inner-box-shadow;
     background-size: 250%;
     background-position: top left;
-    border-radius: $top-sites-border-radius;
-    box-shadow: $top-sites-box-shadow,
-     inset $inner-box-shadow;
+    transition: opacity 1s;
+    opacity: 0;
+    &.active {
+      opacity: 1;
+    }
   }
+
   .title {
     height: $top-sites-title-height;
     line-height: $top-sites-title-height;
