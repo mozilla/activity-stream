@@ -14,7 +14,6 @@ this.NewTabInit = class NewTabInit {
   onAction(action) {
     let newAction;
     switch (action.type) {
-      // TODO: Replace with sending a copy of the state when a NEW_TAB_LOAD action is received
       case at.NEW_TAB_LOAD:
         newAction = {type: at.NEW_TAB_INITIAL_STATE, data: this.store.getState()};
         this.store.dispatch(ac.SendToContent(newAction, action.meta.fromTarget));

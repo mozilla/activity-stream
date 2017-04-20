@@ -8,15 +8,15 @@ const {utils: Cu} = Components;
 
 const {redux} = Cu.import("resource://activity-stream/vendor/Redux.jsm", {});
 const {reducers} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
-const {MessageManager} = Cu.import("resource://activity-stream/lib/MessageManager.jsm", {});
+const {ActivityStreamMessageChannel} = Cu.import("resource://activity-stream/lib/ActivityStreamMessageChannel.jsm", {});
 
 const PREF_PREFIX = "browser.newtabpage.activity-stream.";
 Cu.import("resource://gre/modules/Preferences.jsm");
 
 /**
- * Store - This has a similar structure to a redux store, but includes some
- *         extra functionality to allow for routing of actions between the Main
- *         processes and child processes via a MessageManager.
+ * Store - This has a similar structure to a redux store, but includes some extra
+ *         functionality to allow for routing of actions between the Main processes
+ *         and child processes via a ActivityStreamMessageChannel.
  *         It also accepts an array of "Feeds" on inititalization, which
  *         can listen for any action that is dispatched through the store.
  */
@@ -38,10 +38,10 @@ this.Store = class Store {
     this.feeds = new Map();
     this._feedFactories = null;
     this._prefHandlers = new Map();
-    this._mm = new MessageManager({dispatch: this.dispatch});
+    this._messageChannel = new ActivityStreamMessageChannel({dispatch: this.dispatch});
     this._store = redux.createStore(
       redux.combineReducers(reducers),
-      redux.applyMiddleware(this._middleware, this._mm.middleware)
+      redux.applyMiddleware(this._middleware, this._messageChannel.middleware)
     );
   }
 
@@ -116,7 +116,7 @@ this.Store = class Store {
   }
 
   /**
-   * init - Initializes the MessageManager channel, and adds feeds.
+   * init - Initializes the ActivityStreamMessageChannel channel, and adds feeds.
    *
    * @param  {array} feeds An array of objects with an optional .onAction method
    */
@@ -127,7 +127,7 @@ this.Store = class Store {
         this.maybeStartFeedAndListenForPrefChanges(name);
       }
     }
-    this._mm.createChannel();
+    this._messageChannel.createChannel();
   }
 
   /**
@@ -142,7 +142,7 @@ this.Store = class Store {
     this._prefHandlers.clear();
     this._feedFactories = null;
     this.feeds.clear();
-    this._mm.destroyChannel();
+    this._messageChannel.destroyChannel();
   }
 };
 

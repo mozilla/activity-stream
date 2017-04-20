@@ -7,7 +7,6 @@
 
 const {utils: Cu} = Components;
 
-Cu.import("resource://gre/modules/RemotePageManager.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 const {
@@ -19,16 +18,38 @@ const {
 XPCOMUtils.defineLazyModuleGetter(this, "AboutNewTab",
   "resource:///modules/AboutNewTab.jsm");
 
+XPCOMUtils.defineLazyModuleGetter(this, "RemotePages",
+  "resource://gre/modules/RemotePageManager.jsm");
+
 const ABOUT_NEW_TAB_URL = "about:newtab";
 
 const DEFAULT_OPTIONS = {
-  dispatch(action) { dump(`\nMessage manager: Received action ${action.type}, but no dispatcher was defined.\n`); },
+  dispatch(action) {
+    throw new Error(`\nMessageChannel: Received action ${action.type}, but no dispatcher was defined.\n`);
+  },
   pageURL: ABOUT_NEW_TAB_URL,
   outgoingMessageName: "ActivityStream:MainToContent",
   incomingMessageName: "ActivityStream:ContentToMain"
 };
 
-class MessageManager {
+class ActivityStreamMessageChannel {
+
+  /**
+   * ActivityStreamMessageChannel - This module connects a Redux store to a RemotePageManager in Firefox.
+   *                  Call .createChannel to start the connection, and .destroyChannel to destroy it.
+   *                  You should use the BroadcastToContent, SendToContent, and SendToMain action creators
+   *                  in common/Actions.jsm to help you create actions that will be automatically routed
+   *                  to the correct location.
+   *
+   * @param  {object} options
+   * @param  {function} options.dispatch The dispatch method from a Redux store
+   * @param  {string} options.pageURL The URL to which a RemotePageManager should be attached.
+   *                                  Note that if it is about:newtab, the existing RemotePageManager
+   *                                  for about:newtab will also be disabled
+   * @param  {string} options.outgoingMessageName The name of the message sent to child processes
+   * @param  {string} options.incomingMessageName The name of the message received from child processes
+   * @return {ActivityStreamMessageChannel}
+   */
   constructor(options = {}) {
     Object.assign(this, DEFAULT_OPTIONS, options);
     this.channel = null;
@@ -39,6 +60,13 @@ class MessageManager {
     this.onNewTabUnload = this.onNewTabUnload.bind(this);
   }
 
+  /**
+   * middleware - Redux middleware that looks for SendToContent and BroadcastToContent type
+   *              actions, and sends them out.
+   *
+   * @param  {object} store A redux store
+   * @return {function} Redux middleware
+   */
   middleware(store) {
     return next => action => {
       if (!this.channel) {
@@ -54,19 +82,35 @@ class MessageManager {
     };
   }
 
+  /**
+   * onActionFromContent - Handler for actions from a content processes
+   *
+   * @param  {object} action  A Redux action
+   * @param  {string} targetId The portID of the port that sent the message
+   */
   onActionFromContent(action, targetId) {
     this.dispatch(ac.SendToMain(action, {fromTarget: targetId}));
   }
 
+  /**
+   * broadcast - Sends an action to all ports
+   *
+   * @param  {object} action A Redux action
+   */
   broadcast(action) {
     this.channel.sendAsyncMessage(this.outgoingMessageName, action);
   }
 
+  /**
+   * send - Sends an action to a specific port
+   *
+   * @param  {obj} action A redux action; it should contain a portID in the meta.toTarget property
+   */
   send(action) {
     const targetId = action.meta && action.meta.toTarget;
     const target = this.getTargetById(targetId);
     if (!target) {
-      Cu.reportError(new Error(`Tried to send a message to a target (${targetId}) that was no longer around.`));
+      // The target is no longer around - maybe the user closed the page
       return;
     }
     target.sendAsyncMessage(this.outgoingMessageName, action);
@@ -104,8 +148,6 @@ class MessageManager {
 
   /**
    * destroyChannel - Destroys the RemotePages channel
-   *
-   * @return {type}  description
    */
   destroyChannel() {
     this.channel.destroy();
@@ -156,6 +198,6 @@ class MessageManager {
   }
 }
 
-this.MessageManager = MessageManager;
+this.ActivityStreamMessageChannel = ActivityStreamMessageChannel;
 this.DEFAULT_OPTIONS = DEFAULT_OPTIONS;
-this.EXPORTED_SYMBOLS = ["MessageManager", "DEFAULT_OPTIONS"];
+this.EXPORTED_SYMBOLS = ["ActivityStreamMessageChannel", "DEFAULT_OPTIONS"];

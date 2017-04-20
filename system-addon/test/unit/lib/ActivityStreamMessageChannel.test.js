@@ -1,11 +1,11 @@
-const {MessageManager, DEFAULT_OPTIONS} = require("lib/MessageManager.jsm");
+const {ActivityStreamMessageChannel, DEFAULT_OPTIONS} = require("lib/ActivityStreamMessageChannel.jsm");
 const {addNumberReducer, GlobalOverrider} = require("test/unit/utils");
 const {createStore, applyMiddleware} = require("redux");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
 const OPTIONS = ["pageURL, outgoingMessageName", "incomingMessageName", "dispatch"];
 
-describe("MessageManager", () => {
+describe("ActivityStreamMessageChannel", () => {
   let globals;
   let dispatch;
   let mm;
@@ -26,28 +26,27 @@ describe("MessageManager", () => {
     dispatch = globals.sandbox.spy();
   });
   beforeEach(() => {
-    mm = new MessageManager({dispatch});
+    mm = new ActivityStreamMessageChannel({dispatch});
   });
 
   afterEach(() => globals.reset());
   after(() => globals.restore());
 
   it("should exist", () => {
-    assert.ok(MessageManager);
+    assert.ok(ActivityStreamMessageChannel);
   });
   it("should apply default options", () => {
-    mm = new MessageManager();
+    mm = new ActivityStreamMessageChannel();
     OPTIONS.forEach(o => assert.equal(mm[o], DEFAULT_OPTIONS[o], o));
   });
   it("should add options", () => {
     const options = {dispatch: () => {}, pageURL: "FOO.html", outgoingMessageName: "OUT", incomingMessageName: "IN"};
-    mm = new MessageManager(options);
+    mm = new ActivityStreamMessageChannel(options);
     OPTIONS.forEach(o => assert.equal(mm[o], options[o], o));
   });
-  it("should log a message if no dispatcher was provided", () => {
-    mm = new MessageManager();
-    mm.dispatch({type: "FOO"});
-    assert.calledOnce(global.dump);
+  it("should throw an error if no dispatcher was provided", () => {
+    mm = new ActivityStreamMessageChannel();
+    assert.throws(() => mm.dispatch({type: "FOO"}));
   });
   describe("Creating/destroying the channel", () => {
     describe("#createChannel", () => {
@@ -69,7 +68,7 @@ describe("MessageManager", () => {
         assert.calledOnce(global.AboutNewTab.override);
       });
       it("should not override AboutNewTab if the pageURL is not about:newtab", () => {
-        mm = new MessageManager({pageURL: "foo.html"});
+        mm = new ActivityStreamMessageChannel({pageURL: "foo.html"});
         mm.createChannel();
         assert.notCalled(global.AboutNewTab.override);
       });
@@ -93,7 +92,7 @@ describe("MessageManager", () => {
         assert.calledOnce(global.AboutNewTab.reset);
       });
       it("should not reset AboutNewTab if the pageURL is not about:newtab", () => {
-        mm = new MessageManager({pageURL: "foo.html"});
+        mm = new ActivityStreamMessageChannel({pageURL: "foo.html"});
         mm.createChannel();
         mm.destroyChannel();
         assert.notCalled(global.AboutNewTab.reset);
@@ -163,12 +162,12 @@ describe("MessageManager", () => {
         mm.send(action, "foo");
         assert.calledWith(t.sendAsyncMessage, DEFAULT_OPTIONS.outgoingMessageName, action);
       });
-      it("should report an error if the target isn't arround", () => {
+      it("should not throw if the target isn't around", () => {
         mm.createChannel();
         // port is not added to the channel
         const action = ac.SendToContent({type: "HELLO"}, "foo");
-        mm.send(action, "foo");
-        assert.calledOnce(global.Components.utils.reportError);
+
+        assert.doesNotThrow(() => mm.send(action, "foo"));
       });
     });
     describe("#broadcast", () => {
