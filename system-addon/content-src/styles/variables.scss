@@ -24,10 +24,13 @@ $checkbox-blue: #1691D2;
 
 $base-gutter: 32px;
 $section-margin: 41px;
+$grid-unit: 96px; // 1 top site
 
-$wrapper-max-width: 736px;
-$wrapper-vertical-padding: 62px;
-$break-point: $wrapper-max-width + $base-gutter * 2;
+$wrapper-top-padding: 62px;
+$wrapper-max-width-medium: $grid-unit * 5 + $base-gutter * 4; // 5 top sites
+$wrapper-max-width-large: $grid-unit * 6 + $base-gutter * 5; // 6 top sites
+$break-point-medium: $wrapper-max-width-medium + $base-gutter * 2;
+$break-point-large: $wrapper-max-width-large + $base-gutter * 2;
 
 $section-title-font-size: 13px;
 $section-title-color: #6E707E;
