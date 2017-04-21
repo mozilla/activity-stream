@@ -14,11 +14,11 @@ scripts:
 
   copyTestImages: cpx "node_modules/tippy-top-sites/images/**/*" data/content/favicons/images
 
-  copyPocketJson: cp -n pocket-example.json pocket.json || true
+  preparePocketJson: node ./bin/pocket-config.js
 
 # bundle: Bundle assets for production
   bundle:
-    pre: =>clean && =>copyTestImages && =>copyPocketJson
+    pre: =>clean && =>copyTestImages && =>preparePocketJson
     static: cpx "content-src/static/**/*" data/content
   # TODO: make the number of locales configurable. pontoon-to-json has an option for this
     locales: pontoon-to-json --src locales --dest data/locales
@@ -84,7 +84,7 @@ scripts:
 # start: Start watching/compiling assets,
   start:
     _parallel: true
-    pre: =>clean && =>copyTestImages && =>copyPocketJson
+    pre: =>clean && =>copyTestImages && =>preparePocketJson
     static: =>bundle:static -- -w
     locales: =>bundle:locales -- -w
     webpack: webpack -w
@@ -110,13 +110,13 @@ scripts:
 
 # test: Run all tests once
   test:
-    pre: =>bundle && =>copyTestImages && =>copyPocketJson
+    pre: =>bundle && =>copyTestImages && =>preparePocketJson
     lint: =>lint
     checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
     # test:jpm: Run jpm tests
     jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./test-prefs.json -v -f "^(?!.*benchmark)"
     # test:karma: Run content tests only
-    karma: =>copyPocketJson && NODE_ENV=test karma start
+    karma: =>preparePocketJson && NODE_ENV=test karma start
     mc: =>testmc
     post: cat logs/reports/coverage/text-summary.txt
 
