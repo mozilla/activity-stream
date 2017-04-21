@@ -70,11 +70,11 @@ function onPrefChanged(isEnabled) {
 function observe(subject, topic, data) {
   switch (topic) {
     case BROWSER_READY_NOTIFICATION:
+      // Listen for changes to the pref that enables Activity Stream
+      Preferences.observe(ACTIVITY_STREAM_ENABLED_PREF, onPrefChanged);
       // Only initialize if the pref is true
       if (Preferences.get(ACTIVITY_STREAM_ENABLED_PREF)) {
         init(startupReason);
-        // Listen for changes to the pref that enables Activity Stream
-        Preferences.observe(ACTIVITY_STREAM_ENABLED_PREF, onPrefChanged);
         Services.obs.removeObserver(this, BROWSER_READY_NOTIFICATION);
       }
       break;
