@@ -28,7 +28,9 @@ class LocalizationFeed extends Feed {
     LOCALE_PREFS.forEach(pref => this.prefsTarget.removeListener(pref, this.onPrefChange));
   }
   getData() {
-    let locale = findClosestLocale(this.availableLocales, getPreferedLocales());
+    // NB: Work around a SDK bug of partially case sensitive matching locales
+    let lowerPrefered = getPreferedLocales().map(l => l.toLowerCase());
+    let locale = findClosestLocale(this.availableLocales, lowerPrefered);
     return Promise.resolve(am.actions.Response("LOCALE_UPDATED", locale));
   }
   onAction(state, action) {
