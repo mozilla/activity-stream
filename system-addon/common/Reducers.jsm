@@ -33,6 +33,13 @@ const INITIAL_STATE = {
         "url": "https://twitter.com/"
       }
     ]
+  },
+  Search: {
+    currentEngine: {
+      name: "",
+      icon: ""
+    },
+    engines: []
   }
 };
 
@@ -60,7 +67,23 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
   }
 }
 
+function Search(prevState = INITIAL_STATE.Search, action) {
+  switch (action.type) {
+    case at.SEARCH_STATE_UPDATED: {
+      if (!action.data) {
+        return prevState;
+      }
+      let {currentEngine, engines} = action.data;
+      return Object.assign({}, prevState, {
+        currentEngine,
+        engines
+      });
+    }
+    default:
+      return prevState;
+  }
+}
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites};
+this.reducers = {TopSites, Search};
 
 this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE"];
