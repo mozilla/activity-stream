@@ -24,6 +24,14 @@ describe("PocketFeed", () => {
       instance.onAction(store.getState(), {type: "APP_INIT"});
       assert.calledOnce(instance.refresh);
     });
+    it("should call refresh on PREF_CHANGED_RESPONSE for pocket experiment", () => {
+      instance.onAction({}, {type: "PREF_CHANGED_RESPONSE", data: {name: "experiments.pocket"}});
+      assert.calledOnce(instance.refresh);
+    });
+    it("should not call refresh on unrelated PREF_CHANGED_RESPONSE", () => {
+      instance.onAction({}, {type: "PREF_CHANGED_RESPONSE", data: {}});
+      assert.notCalled(instance.refresh);
+    });
     it("should call refresh on SYSTEM_TICK", () => {
       instance.onAction({}, {type: "SYSTEM_TICK"});
       assert.calledOnce(instance.refresh);
