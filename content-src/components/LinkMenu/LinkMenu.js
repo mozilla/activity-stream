@@ -28,7 +28,7 @@ const LinkMenu = React.createClass({
     }
   },
   getOptions() {
-    const {site, allowBlock, dispatch} = this.props;
+    const {site, allowBlock, dispatch, experiments} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
     let deleteOptions;
@@ -57,7 +57,21 @@ const LinkMenu = React.createClass({
       ];
     }
 
-    return [
+    let pocketOption = [];
+    if (experiments && experiments.values.pocket) {
+      pocketOption = [
+        {
+          ref: "saveToPocket",
+          label: this.props.intl.formatMessage({id: "menu_action_save_to_pocket"}),
+          icon: "pocket",
+          userEvent: "SAVE_TO_POCKET",
+          onClick: () => dispatch(actions.NotifySaveToPocket(site.url, site.title))
+        },
+        {type: "separator"}
+      ];
+    }
+
+    return pocketOption.concat([
       (site.bookmarkGuid ? {
         ref: "removeBookmark",
         label: this.props.intl.formatMessage({id: "menu_action_remove_bookmark"}),
@@ -85,7 +99,7 @@ const LinkMenu = React.createClass({
         icon: "new-window-private",
         userEvent: "OPEN_PRIVATE_WINDOW",
         onClick: () => dispatch(actions.NotifyOpenWindow({url: site.url, isPrivate: true}))
-      }]
+      }])
       .concat(deleteOptions).filter(o => o);
   },
   render() {
@@ -106,6 +120,7 @@ LinkMenu.propTypes = {
     bookmarkGuid: React.PropTypes.string,
     recommended: React.PropTypes.bool
   }).isRequired,
+  experiments: React.PropTypes.object,
 
   // This is for events
   page: React.PropTypes.string,

@@ -30,6 +30,7 @@ const PocketStories = React.createClass({
           source="RECOMMENDED"
           onClick={this.onClickFactory(i, story)}
           dispatch={this.props.dispatch}
+          experiments={this.props.experiments}
           {...story} />
       );
   },
@@ -75,6 +76,7 @@ PocketStories.propTypes = {
   page: React.PropTypes.string.isRequired,
   stories: React.PropTypes.array.isRequired,
   topics: React.PropTypes.array.isRequired,
+  experiments: React.PropTypes.object.isRequired,
   length: React.PropTypes.number
 };
 

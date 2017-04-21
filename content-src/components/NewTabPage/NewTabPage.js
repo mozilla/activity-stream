@@ -81,7 +81,7 @@ const NewTabPage = React.createClass({
   render() {
     const props = this.props;
     const {showSearch, showTopSites, showPocketStories, showHighlights, showMoreTopSites} = props.Prefs.prefs;
-    const pocketExperimentIsOn = props.Experiments.values.pocketStories;
+    const pocketExperimentIsOn = props.Experiments.values.pocket;
 
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
@@ -110,13 +110,14 @@ const NewTabPage = React.createClass({
             <section>
               <PocketStories placeholder={!this.props.isReady} page={PAGE_NAME}
                 length={POCKET_STORIES_LENGTH} stories={props.PocketStories.rows}
-                topics={props.PocketTopics.rows} />
+                topics={props.PocketTopics.rows} experiments={props.Experiments} />
             </section>
           }
           {showHighlights &&
             <section>
               <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
-                length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows} />
+                length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows}
+                experiments={props.Experiments} />
             </section>
           }
         </div>

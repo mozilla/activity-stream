@@ -19,6 +19,7 @@ const constants = {
     "OPEN_NEW_WINDOW",
     "OPEN_PRIVATE_WINDOW",
     "PIN",
+    "SAVE_TO_POCKET",
     "SEARCH",
     "UNBLOCK",
     "UNPIN"

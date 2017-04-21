@@ -35,7 +35,7 @@ module.exports = {
     "searchForSomethingWith": ""
   },
   "Experiments": {
-    "values": {"pocketStories": true},
+    "values": {"pocket": true},
     "error": false
   },
   "Filter": {"query": ""},

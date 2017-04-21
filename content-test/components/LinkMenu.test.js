@@ -59,6 +59,18 @@ describe("LinkMenu", () => {
     assert.isUndefined(contextMenu.refs.dismiss, "hide dismiss");
   });
 
+  it("should hide pocket option if experiment is off", () => {
+    assert.isUndefined(contextMenu.refs.saveToPocket, "hide pocket");
+  });
+
+  it("should show pocket option if experiment is on", () => {
+    let props = Object.assign({}, DEFAULT_PROPS, {"experiments": {"values": {"pocket": true}}});
+    let pocketInstance = renderWithProvider(<LinkMenu {...props} />);
+    let [pocketContextMenu] = TestUtils.scryRenderedComponentsWithType(pocketInstance, ContextMenu);
+    assert.ok(pocketContextMenu);
+    assert.ok(pocketContextMenu.refs.saveToPocket, "show pocket");
+  });
+
   describe("individual options", () => {
     // Checks to make sure each action
     // 1. Fires a custom action (options.event)
@@ -128,6 +140,13 @@ describe("LinkMenu", () => {
       event: "NOTIFY_HISTORY_DELETE",
       eventData: DEFAULT_PROPS.site.url,
       userEvent: "DELETE"
+    });
+    checkOption({
+      ref: "saveToPocket",
+      event: "NOTIFY_SAVE_TO_POCKET",
+      eventData: {url: DEFAULT_PROPS.site.url, title: DEFAULT_PROPS.site.title},
+      userEvent: "SAVE_TO_POCKET",
+      props: {"experiments": {"values": {"pocket": true}}}
     });
   });
 });
