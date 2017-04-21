@@ -31,6 +31,12 @@ module.exports = class PocketFeed extends Feed {
         this.refresh();
         break;
 
+      case am.type("PREF_CHANGED_RESPONSE"):
+        if (action.data.name === "experiments.pocket") {
+          this.refresh();
+        }
+        break;
+
       case am.type("SYSTEM_TICK"):
         if (Date.now() - this.state.lastUpdated >= this.updateTime) {
           this.refresh();
