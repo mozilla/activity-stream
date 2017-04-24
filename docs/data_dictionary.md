@@ -146,6 +146,6 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `showTopSites` | 2 |
 | `showHighlights` | 4 |
 | `showMoreTopSites` | 8 |
-| `showPocketStories` | 16 |
+| `showPocket` | 16 |
 
 Each item above could be combined with other items through bitwise OR operation

@@ -185,10 +185,10 @@
       "value": true
     },
     {
-      "name": "showPocketStories",
+      "name": "showPocket",
       "title": "Show the Trending Stories section by Pocket on the New Tab page",
       "type": "bool",
-      "value": true
+      "value": false
     },
     {
       "name": "showHighlights",

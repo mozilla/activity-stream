@@ -42,11 +42,7 @@ module.exports = class PocketStoriesFeed extends PocketFeed {
    */
   getData() {
     return Task.spawn(function*() {
-      const experiments = this.store.getState().Experiments.values;
-      let stories = [];
-      if (experiments.pocket) {
-        stories = yield this._fetchStories();
-      }
+      let stories = yield this._fetchStories();
       stories = stories.map(s => ({
         "recommended": true,
         "title": s.title,
