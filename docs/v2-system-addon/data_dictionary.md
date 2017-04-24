@@ -1,97 +1,98 @@
 # Activity Stream Pings
 
-The Activity Stream addon sends various types of pings to the backend (HTTPS POST) [Onyx server](https://github.com/mozilla/onyx) :
+The Activity Stream system add-on sends various types of pings to the backend (HTTPS POST) [Onyx server](https://github.com/mozilla/onyx) :
 - a `session` ping that describes the ending of an Activity Stream session (lose focus event on Activity Stream), and
 - an `event` ping that records specific data about individual user interactions while interacting with Activity Stream
 - a `performance` ping that records specific performance related events
+- an `undesired` ping that records data about bad app states and missing data
 
+Schema definitions/validations that can be used for tests can be found in `system-addon/test/schemas/pings.js`.
 
 # Example Activity Stream `session` Log
 
-```json
+```js
 {
+  // These fields are sent from the client
   "action": "activity_stream_session",
   "addon_version": "1.0.0",
   "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
+  "locale": "en-US",
+  "page": "about:newtab or about:home",
+  "session_duration": 1635,
+  "session_id": "{12dasd-213asda-213dkakj}"
+
+  // These fields are generated on the server
   "date": "2016-03-07",
   "ip": "10.192.171.13",
-  "load_latency": 1100,
-  "load_reason": "restore",
-  "locale": "en-US",
-  "max_scroll_depth": 145,
-  "page": "NEW_TAB or HOME",
-  "receive_at": 1457396660000,
-  "session_duration": 1635,
-  "tab_id": "1-3",
-  "total_bookmarks": 19,
-  "total_history_size": 9,
   "ua": "python-requests/2.9.1",
-  "unload_reason": "close",
-  "highlights_size": 20,
-  "topsites_size": 6,
-  "topsites_screenshot": 1,
-  "topsites_tippytop": 3,
-  "user_prefs": 7
+  "receive_at": 1457396660000
 }
 ```
 
-# Example Activity Stream `event` Log
+# Example Activity Stream `user_event` Log
 
-```json
+```js
 {
-  "action": "activity_stream_event",
+  "action": "activity_stream_user_event",
   "action_position": "3",
   "addon_version": "1.0.0",
   "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
-  "date": "2016-03-07",
   "event": "click or scroll or search or delete",
-  "ip": "10.192.171.13",
   "locale": "en-US",
-  "page": "NEW_TAB or HOME",
-  "receive_at": 1457396660000,
+  "page": "about:newtab or about:home",
   "source": "top sites, or bookmarks, or...",
-  "tab_id": "1-3",
-  "ua": "python-requests/2.9.1",
-  "url": "https://www.example.com",
+  "session_id": "{12dasd-213asda-213dkakj}",
   "recommender_type": "pocket-trending",
   "metadata_source": "MetadataService or Local or TippyTopProvider",
-  "user_prefs": 7
+
+  // These fields are generated on the server
+  "ip": "10.192.171.13",
+  "ua": "python-requests/2.9.1",
+  "receive_at": 1457396660000,
+  "date": "2016-03-07",
 }
 ```
 
 # Example Activity Stream `performance` Log
 
-```json
+```js
 {
-  "action": "activity_stream_performance",
+  "action": "activity_stream_performance_event",
   "addon_version": "1.0.0",
   "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
-  "date": "2016-03-07",
   "event": "previewCacheHit",
   "event_id": "45f1912165ca4dfdb5c1c2337dbdc58f",
-  "ip": "10.192.171.13",
   "locale": "en-US",
   "receive_at": 1457396660000,
   "source": "TOP_FRECENT_SITES",
-  "tab_id": "1-3",
-  "ua": "python-requests/2.9.1",
   "value": 1
+
+  // These fields are generated on the server
+  "ip": "10.192.171.13",
+  "ua": "python-requests/2.9.1",
+  "receive_at": 1457396660000,
+  "date": "2016-03-07"
 }
 ```
 
 # Example Activity Stream `undesired event` Log
 
-```json
+```js
 {
-  "action": "activity_stream_masga_event",
+  "action": "activity_stream_undesired_event",
   "addon_version": "1.0.12",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "event": "MISSING_IMAGE",
   "locale": "en-US",
-  "page": "NEW_TAB",
+  "page": "about:newtab or about:home",
   "source": "HIGHLIGHTS",
-  "tab_id": "-5-2",
-  "value": 0
+  "value": 0,
+
+  // These fields are generated on the server
+  "ip": "10.192.171.13",
+  "ua": "python-requests/2.9.1",
+  "receive_at": 1457396660000,
+  "date": "2016-03-07"
 }
 ```
 
@@ -107,17 +108,13 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `event` | [Required] The type of event. Any user defined string ("click", "share", "delete", "more_items") | :one:
 | `highlight_type` | [Optional] Either ["bookmarks", "recommendation", "history"]. | :one:
 | `ip` | [Auto populated by Onyx] The IP address of the client. | :two:
-| `load_reason` | [Required] Either ("newtab", "refocus", "restore") and is the reason the tab was focused. | :one:
 | `locale` | [Auto populated by Onyx] The browser chrome's language (eg. en-US). | :two:
-| `max_scroll_depth` | [Optional] The maximum number of pixels the scroll bar was dragged in this session. | :one:
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`MetadataService` or `Local` or `TippyTopProvider`). | :one:
 | `page` | [Required] Either ["NEW_TAB", "HOME"]. | :one:
-| `provider` | [Optional] The name of share provider. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:
 | `session_duration` | [Required] Defined to be the time in milliseconds between the newtab gaining and losing focus. | :one:
 | `session_id` | [Optional] The unique identifier for a specific session. | :one:
 | `source` | [Required] Either ("recent_links", "recent_bookmarks", "frecent_links", "top_sites", "spotlight", "sidebar") and indicates what `action`. | :two:
-| `tab_id` | [Required] The Firefox generated unique id for the tab. | :one:
 | `timestamp` | [Auto populated by Onyx] The time in ms since epoch. | :three:
 | `total_bookmarks` | [Optional] The total number of bookmarks in the user's places db. | :one:
 | `total_history_size` | [Optional] The number of history items currently in the user's places db. | :one:
@@ -139,6 +136,22 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 :two: HTTP protocol data
 :three: server augmented data
 :four: User preferences encoding table
+
+
+Note: the following session-related fields are not yet implemented in the system-addon,
+but will likely be added in future versions:
+
+```js
+{
+  "total_bookmarks": 19,
+  "total_history_size": 9,
+  "highlights_size": 20,
+  "topsites_size": 6,
+  "topsites_screenshot": 1,
+  "topsites_tippytop": 3,
+  "user_prefs": 7
+}
+```
 
 | Preference | Encoded value |
 | --- | --- |

@@ -68,7 +68,7 @@ describe("TelemetryFeed", () => {
     });
     it("should set the page", () => {
       const session = addSession("foo");
-      assert.equal(session.page, "NEW_TAB"); // This is hardcoded for now.
+      assert.equal(session.page, "about:newtab"); // This is hardcoded for now.
     });
   });
   describe("#endSession", () => {
@@ -118,7 +118,7 @@ describe("TelemetryFeed", () => {
 
         // Make sure we added the right session-related stuff to the ping
         assert.propertyVal(ping, "session_id", sessionID);
-        assert.propertyVal(ping, "page", "NEW_TAB");
+        assert.propertyVal(ping, "page", "about:newtab");
       });
     });
     describe("#createUserEvent", () => {
@@ -189,13 +189,13 @@ describe("TelemetryFeed", () => {
       it("should create a valid event", () => {
         const ping = instance.createSessionEndEvent({
           session_id: FAKE_UUID,
-          page: "NEW_TAB",
+          page: "about:newtab",
           session_duration: 12345
         });
         // Is it valid?
         assertMatchesSchema(ping, SessionPing);
         assert.propertyVal(ping, "session_id", FAKE_UUID);
-        assert.propertyVal(ping, "page", "NEW_TAB");
+        assert.propertyVal(ping, "page", "about:newtab");
         assert.propertyVal(ping, "session_duration", 12345);
       });
     });
