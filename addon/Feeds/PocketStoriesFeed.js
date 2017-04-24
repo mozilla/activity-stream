@@ -1,7 +1,6 @@
 /* globals Task */
 const {Cu} = require("chrome");
 const PocketFeed = require("./PocketFeed");
-const {POCKET_STORIES_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
 const {pocket_story_endpoint, pocket_consumer_key} = require("../../pocket.json");
 
@@ -22,7 +21,7 @@ module.exports = class PocketStoriesFeed extends PocketFeed {
       throw new Error(err);
     }
 
-    let pocketUrl = `${pocket_story_endpoint}?consumer_key=${pocket_consumer_key}&count=${POCKET_STORIES_LENGTH}`;
+    let pocketUrl = `${pocket_story_endpoint}?consumer_key=${pocket_consumer_key}`;
     return this.fetch(pocketUrl).then(r => JSON.parse(r).list);
   }
 
