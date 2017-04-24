@@ -1,0 +1,12 @@
+diff --git a/testing/profiles/prefs_general.js b/testing/profiles/prefs_general.js
+--- a/testing/profiles/prefs_general.js
++++ b/testing/profiles/prefs_general.js
+@@ -220,6 +220,9 @@ user_pref("browser.download.panel.shown"
+ // which test runs first and happens to open about:newtab
+ user_pref("browser.newtabpage.introShown", true);
+
++// Turn off Top Sites queries in activity-stream
++user_pref("browser.newtabpage.activity-stream.feeds.topsites", false);
++
+ // Enable webapps testing mode, which bypasses native installation.
+ user_pref("browser.webapps.testing", true);
