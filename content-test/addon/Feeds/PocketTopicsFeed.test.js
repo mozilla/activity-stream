@@ -19,19 +19,8 @@ describe("PocketTopicsFeed", () => {
     assert.equal(time.hours(), 3);
   });
   describe("#getData", () => {
-    it("should not fetch topics if experiment is disabled", () => {
-      instance._fetchTopics = sinon.spy();
-      return instance.getData()
-        .then(action => {
-          assert.isObject(action);
-          assert.equal(action.type, "POCKET_TOPICS_RESPONSE");
-          assert.notCalled(instance._fetchTopics);
-          assert.lengthOf(action.data, 0);
-        });
-    });
-    it("should fetch topics if experiment is enabled", () => {
-      instance._fetchTopics = sinon.mock().returns([{"title": "test"}]);
-      reduxState = {Experiments: {values: {pocket: true}}};
+    it("should fetch topics and send response event", () => {
+      instance._fetchTopics = sinon.mock().returns([{"category": "test"}]);
       return instance.getData()
         .then(action => {
           assert.isObject(action);

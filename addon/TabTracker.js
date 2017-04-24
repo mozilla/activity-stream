@@ -20,7 +20,7 @@ const ACTION_NOTIF = "user-action-event";
 const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 const UNDESIRED_NOTIF = "undesired-event";
-const USER_PREFS = ["showSearch", "showTopSites", "showPocketStories", "showHighlights", "showMoreTopSites"];
+const USER_PREFS = ["showSearch", "showTopSites", "showPocket", "showHighlights", "showMoreTopSites"];
 
 function TabTracker(options) {
   this._tabData = {};

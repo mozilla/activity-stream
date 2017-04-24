@@ -80,8 +80,7 @@ const NewTabPage = React.createClass({
   },
   render() {
     const props = this.props;
-    const {showSearch, showTopSites, showPocketStories, showHighlights, showMoreTopSites} = props.Prefs.prefs;
-    const pocketExperimentIsOn = props.Experiments.values.pocket;
+    const {showSearch, showTopSites, showPocket, showHighlights, showMoreTopSites} = props.Prefs.prefs;
 
     return (<main className="new-tab">
       <div className="new-tab-wrapper">
@@ -106,23 +105,23 @@ const NewTabPage = React.createClass({
                 allowEdit={!!props.Experiments.values.editTopSites} />
             </section>
           }
-          {showPocketStories && pocketExperimentIsOn &&
+          {showPocket &&
             <section>
               <PocketStories placeholder={!this.props.isReady} page={PAGE_NAME}
                 length={POCKET_STORIES_LENGTH} stories={props.PocketStories.rows}
-                topics={props.PocketTopics.rows} experiments={props.Experiments} />
+                topics={props.PocketTopics.rows} prefs={props.Prefs.prefs} />
             </section>
           }
           {showHighlights &&
             <section>
               <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
                 length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows}
-                experiments={props.Experiments} />
+                prefs={props.Prefs.prefs} />
             </section>
           }
         </div>
       </div>
-      <PreferencesPane Prefs={props.Prefs} Experiments={props.Experiments} />
+      <PreferencesPane Prefs={props.Prefs} />
     </main>);
   }
 });

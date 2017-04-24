@@ -67,6 +67,15 @@ exports.ExperimentProvider = class ExperimentProvider {
     });
   }
 
+  enroll(experimentId, variant) {
+    this._experimentId = variant.id;
+    prefService.set(PREF_PREFIX + experimentId, variant.value);
+    if (experimentId === "pocket") {
+      simplePrefs.prefs.showPocket = true;
+    }
+    this.emit("experimentEnrolled", {id: experimentId, variant});
+  }
+
   setValues() {
     if (simplePrefs.prefs.experimentsOverridden) {
       console.log(`The following experiments were turned on via overrides:\n`); // eslint-disable-line no-console
