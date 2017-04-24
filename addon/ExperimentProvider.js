@@ -67,6 +67,12 @@ exports.ExperimentProvider = class ExperimentProvider {
     });
   }
 
+  enroll(experimentId, variant) {
+    this._experimentId = variant.id;
+    prefService.set(PREF_PREFIX + experimentId, variant.value);
+    this.emit("experimentEnrolled", {id: experimentId, variant});
+  }
+
   setValues() {
     if (simplePrefs.prefs.experimentsOverridden) {
       console.log(`The following experiments were turned on via overrides:\n`); // eslint-disable-line no-console
@@ -135,8 +141,7 @@ exports.ExperimentProvider = class ExperimentProvider {
       // randomly assign them to a variant (or control)
       inExperiment = randomNumber >= floor && randomNumber < ceiling;
       if (inExperiment) {
-        this._experimentId = variant.id;
-        prefService.set(PREF_PREFIX + key, variant.value);
+        this.enroll(key, variant);
       }
       floor = ceiling;
     });
