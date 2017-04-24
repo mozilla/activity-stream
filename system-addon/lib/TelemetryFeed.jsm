@@ -41,7 +41,7 @@ this.TelemetryFeed = class TelemetryFeed {
     this.sessions.set(id, {
       start_time: Components.utils.now(),
       session_id: String(gUUIDGenerator.generateUUID()),
-      page: "NEW_TAB" // TODO: Handle about:home
+      page: "about:newtab" // TODO: Handle about:home
     });
   }
 
@@ -92,7 +92,7 @@ this.TelemetryFeed = class TelemetryFeed {
     return Object.assign(
       this.createPing(au.getPortIdOfSender(action)),
       action.data,
-      {action: "activity_stream_event"}
+      {action: "activity_stream_user_event"}
     );
   }
 
@@ -101,7 +101,7 @@ this.TelemetryFeed = class TelemetryFeed {
       this.createPing(au.getPortIdOfSender(action)),
       {value: 0}, // Default value
       action.data,
-      {action: "activity_stream_masga_event"}
+      {action: "activity_stream_undesired_event"}
     );
   }
 
@@ -109,7 +109,7 @@ this.TelemetryFeed = class TelemetryFeed {
     return Object.assign(
       this.createPing(au.getPortIdOfSender(action)),
       action.data,
-      {action: "activity_stream_performance"}
+      {action: "activity_stream_performance_event"}
     );
   }
 
