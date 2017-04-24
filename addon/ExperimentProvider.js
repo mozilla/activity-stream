@@ -144,8 +144,7 @@ exports.ExperimentProvider = class ExperimentProvider {
       // randomly assign them to a variant (or control)
       inExperiment = randomNumber >= floor && randomNumber < ceiling;
       if (inExperiment) {
-        this._experimentId = variant.id;
-        prefService.set(PREF_PREFIX + key, variant.value);
+        this.enroll(key, variant);
       }
       floor = ceiling;
     });
