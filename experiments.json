@@ -211,7 +211,7 @@
   },
   "metadataLongCache": {
     "name": "Metadata with Long Cache",
-    "active": true,
+    "active": false,
     "description": "Change the timeout for metadata to a long time",
     "control": {
       "value": false,
