@@ -67,6 +67,10 @@
           .label {
             padding-inline-start: 20px;
             text-align: left;
+
+            &:dir(rtl) {
+              text-align: right;
+            }
           }
         }
       }
@@ -126,7 +130,7 @@
 .edit-topsites-wrapper {
   .edit-topsites-button {
     position: absolute;
-    right: 0;
+    offset-inline-end: 0;
     top: -2px;
 
     button {
@@ -140,7 +144,7 @@
   }
 
   .modal {
-    left: -31px;
+    offset-inline-start: -31px;
     position: absolute;
     top: -16px;
     width: calc(100% + 60px);
@@ -197,7 +201,11 @@
         background-color: $bg-grey;
       }
 
-      &:last-child {
+      &:last-child:dir(ltr) {
+        border-right: 0;
+      }
+
+      &:first-child:dir(rtl) {
         border-right: 0;
       }
     }

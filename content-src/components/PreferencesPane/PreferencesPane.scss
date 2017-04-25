@@ -6,9 +6,9 @@
     border-left: solid 1px $faintest-black;
     box-shadow: $sidebar-shadow;
     min-height: 100%;
+    offset-inline-end: 0;
     padding: 40px;
     position: fixed;
-    right: 0;
     top: 0;
     width: 400px;
     z-index: 12000;
@@ -33,7 +33,7 @@
         position: relative;
 
         input {
-          left: -30px;
+          offset-inline-start: -30px;
           position: absolute;
           top: 0;
         }
@@ -48,7 +48,8 @@
         background: $bg-grey;
         border: solid 1px $faintest-black;
         border-radius: $border-radius;
-        margin: 15px 0 15px 30px;
+        margin: 15px 0;
+        margin-inline-start: 30px;
         padding: 10px;
 
         label {
@@ -58,8 +59,12 @@
           font-weight: normal;
           height: 21px;
           line-height: 21px;
-          padding-left: 63px;
-          width: auto;
+          padding-inline-start: 63px;
+          width: 100%;
+
+          &:dir(rtl) {
+            background-position: 217px center;
+          }
         }
       }
 
@@ -78,7 +83,7 @@
   // CSS styled checkbox
   [type='checkbox']:not(:checked),
   [type='checkbox']:checked {
-    left: -9999px;
+    offset-inline-start: -9999px;
     position: absolute;
   }
 
@@ -96,7 +101,7 @@
     border-radius: $border-radius;
     content: '';
     height: 21px;
-    left: 0;
+    offset-inline-start: 0;
     position: absolute;
     top: 0;
     width: 21px;
@@ -108,7 +113,7 @@
     background: url('chrome://global/skin/in-content/check.svg#check') no-repeat center center; // sass-lint:disable-line no-url-domains
     content: '';
     height: 21px;
-    left: 0;
+    offset-inline-start: 0;
     position: absolute;
     top: 0;
     transition: opacity 0.1s;
@@ -146,7 +151,7 @@
     position: fixed;
     right: 15px;
     top: 15px;
-    z-index: 11001;
+    z-index: 12001;
 
     &:hover {
       background-color: $very-light-grey;
