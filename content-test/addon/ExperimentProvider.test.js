@@ -406,5 +406,12 @@ describe("ExperimentProvider", () => {
       experimentProvider._onPrefChange("foo");
       assert.calledWith(experimentProvider.emit, "change", "foo");
     });
+    it("should emit an event on experiment enrollment", () => {
+      setup();
+      const experimentId = "foo";
+      const variant = {description: "Twice the foo", id: "foo_01", threshold: 0.5, value: true};
+      experimentProvider.enroll(experimentId, variant);
+      assert.calledWith(experimentProvider.emit, "experimentEnrolled", {id: experimentId, variant});
+    });
   });
 });
