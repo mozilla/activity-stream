@@ -169,6 +169,7 @@ describe("HighlightsFeed", () => {
     let store;
     beforeEach(() => {
       instance.refresh = sinon.spy();
+      instance.baselineRecommender = {scoreEntries: sinon.spy(links => links)};
       clock = sinon.useFakeTimers();
       store = createStoreWithState({});
       instance.connectStore(store);
@@ -213,7 +214,6 @@ describe("HighlightsFeed", () => {
       assert.notCalled(instance.refresh);
     });
     it("should update the coefficients if the weightedHighlightsCoefficients pref is changed", () => {
-      instance.baselineRecommender = {};
       instance.initializeRecommender = sinon.spy();
       instance.onAction(store.getState(), {type: "PREF_CHANGED_RESPONSE", data: {name: "weightedHighlightsCoefficients"}});
       assert.calledWith(instance.initializeRecommender, "coefficients were changed");

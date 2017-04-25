@@ -15,7 +15,7 @@ const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 module.exports = class HighlightsFeed extends Feed {
   constructor(options) {
     super(options);
-    this.baselineRecommender = null; // Added in initializeRecommender, if the experiment is turned on
+    this.baselineRecommender = null; // Added in initializeRecommender
     this.getScreenshot = getScreenshot;
     this.missingData = false;
   }
@@ -115,6 +115,11 @@ module.exports = class HighlightsFeed extends Feed {
     }.bind(this));
   }
   onAction(state, action) {
+    // Ignore any actions that come in before APP_INIT. We aren't ready.
+    if (!this.baselineRecommender && action.type !== am.type("APP_INIT")) {
+      return;
+    }
+
     switch (action.type) {
       case am.type("APP_INIT"):
         // When the app inititalizes, create a recommender, and then refresh the data.
