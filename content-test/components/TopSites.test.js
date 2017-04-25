@@ -66,7 +66,7 @@ describe("TopSites", () => {
     it("should make the tile active when link menu button is clicked", () => {
       const button = ReactDOM.findDOMNode(TestUtils.scryRenderedComponentsWithType(topSites, LinkMenuButton)[0]);
       TestUtils.Simulate.click(button);
-      const tileOuter = el.querySelector(".tile");
+      const tileOuter = el.querySelector(".tile-outer");
       assert.include(tileOuter.className, "active");
     });
   });
