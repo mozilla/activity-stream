@@ -335,7 +335,6 @@ exports.test_mock_metadata_request = function*(assert) {
 
   // we should have saved the fake site into the database
   assert.deepEqual(gMetadataStore[0][0].description, "some metadata", "inserted and saved the metadadata");
-  assert.ok(gMetadataStore[0][0].expired_at, "an expiry time was added");
   assert.ok(gMetadataStore[0][0].favicon_height, "added a favicon_height");
   assert.ok(gMetadataStore[0][0].favicon_width, "added a favicon_width");
   assert.equal(gMetadataStore[0][0].metadata_source, "MetadataService", "a metadata source was added");

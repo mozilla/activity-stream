@@ -28,8 +28,7 @@ const SQL_DDLS = [
       type VARCHAR(32),
       description TEXT,
       media_url LONGVARCHAR,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      expired_at LONG
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE TABLE IF NOT EXISTS page_images (
     id INTEGER PRIMARY KEY,
@@ -56,9 +55,9 @@ const SQL_DDLS = [
 const SQL_LAST_INSERT_ROWID = "SELECT last_insert_rowid() AS lastInsertRowID";
 
 const SQL_INSERT_METADATA = `INSERT INTO page_metadata
-  (cache_key, places_url, title, type, description, media_url, expired_at, metadata_source, provider_name)
+  (cache_key, places_url, title, type, description, media_url, metadata_source, provider_name)
   VALUES
-  (:cache_key, :places_url, :title, :type, :description, :media_url, :expired_at, :metadata_source, :provider_name)`;
+  (:cache_key, :places_url, :title, :type, :description, :media_url, :metadata_source, :provider_name)`;
 
 const SQL_INSERT_IMAGES = `INSERT INTO page_images
   (url, type, height, width, color)
@@ -76,8 +75,6 @@ const SQL_DROPS = [
   "DROP TABLE IF EXISTS page_images",
   "DROP TABLE IF EXISTS migrations"
 ];
-
-const SQL_DELETE_EXPIRED = "DELETE FROM page_metadata WHERE expired_at <= (CAST(strftime('%s', 'now') AS LONG)*1000)";
 
 /* Image type constants */
 const IMAGE_TYPES = {
@@ -190,7 +187,6 @@ MetadataStore.prototype = {
       type: aRow.type,
       description: aRow.description,
       media_url: aRow.media && aRow.media.url,
-      expired_at: aRow.expired_at,
       metadata_source: aRow.metadata_source || "MetadataService",
       provider_name: aRow.provider_name
     };
@@ -550,41 +546,7 @@ MetadataStore.prototype = {
     } catch (e) {
       throw e;
     }
-  }),
-
-  /**
-  * Enables the data expiry job. The database connection needs to
-  * be established prior to calling this function. Once it's triggered,
-  * any following calls will be ignored unless the user disables
-  * it by disableDataExpiryJob()
-  *
-  * @param {Number} interval
-  *        an time interval in millisecond for this cron job
-  */
-  enableDataExpiryJob(interval) {
-    if (this._dataExpiryJob) {
-      return;
-    }
-
-    this._dataExpiryJob = setInterval(() => {
-      if (!this._conn) {
-        return;  // ignore the callback if the connection is invalid
-      }
-
-      this._conn.execute(SQL_DELETE_EXPIRED).catch(error => {
-        // The delete might fail if a table dropping is being processed at
-        // the same time
-        Cu.reportError(`Failed to delete expired metadata: ${error.message}`);
-      });
-    }, interval);
-  },
-
-  disableDataExpiryJob() {
-    if (this._dataExpiryJob) {
-      clearInterval(this._dataExpiryJob);
-      this._dataExpiryJob = null;
-    }
-  }
+  })
 };
 
 exports.MetadataStore = MetadataStore;

@@ -54,15 +54,6 @@ function createCacheKey(spec) {
 
 PreviewProvider.prototype = {
 
-  _getMetadataTTL() {
-    let timeout = 3 * 24 * 60 * 60 * 1000; // 3 days for the metadata to live
-
-    if (this._store.getState().Experiments.values.metadataLongCache) {
-      timeout = 90 * 24 * 60 * 60 * 1000; // 90 days for the metadata to live
-    }
-    return timeout;
-  },
-
   _onPrefChange(prefName) {
     if (ALLOWED_PREFS.has(prefName)) {
       switch (prefName) {
@@ -387,10 +378,7 @@ PreviewProvider.prototype = {
    * DB and adding them to the metadata cache
    */
   insertMetadata(links, metadataSource) {
-    const linksToInsert = links.map(link => Object.assign({}, link, {
-      expired_at: (this._getMetadataTTL()) + Date.now(),
-      metadata_source: metadataSource
-    }));
+    const linksToInsert = links.map(link => Object.assign({}, link, {metadata_source: metadataSource}));
     return this._metadataStore.asyncInsert(linksToInsert, true).then(() => {
       this._store.dispatch({type: "METADATA_UPDATED"});
     }).catch(err => {
