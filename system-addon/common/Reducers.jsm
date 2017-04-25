@@ -7,32 +7,8 @@ const {actionTypes: at} = Components.utils.import("resource://activity-stream/co
 
 const INITIAL_STATE = {
   TopSites: {
-    rows: [
-      {
-        "title": "Facebook",
-        "url": "https://www.facebook.com/"
-      },
-      {
-        "title": "YouTube",
-        "url": "https://www.youtube.com/"
-      },
-      {
-        "title": "Amazon",
-        "url": "http://www.amazon.com/"
-      },
-      {
-        "title": "Yahoo",
-        "url": "https://www.yahoo.com/"
-      },
-      {
-        "title": "eBay",
-        "url": "http://www.ebay.com"
-      },
-      {
-        "title": "Twitter",
-        "url": "https://twitter.com/"
-      }
-    ]
+    init: false,
+    rows: []
   },
   Search: {
     currentEngine: {
@@ -52,7 +28,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       if (!action.data) {
         return prevState;
       }
-      return Object.assign({}, prevState, {rows: action.data});
+      return Object.assign({}, prevState, {init: true, rows: action.data});
     case at.SCREENSHOT_UPDATED:
       newRows = prevState.rows.map(row => {
         if (row.url === action.data.url) {
