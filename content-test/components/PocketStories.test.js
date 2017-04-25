@@ -59,4 +59,31 @@ describe("PocketStories", () => {
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
     });
   });
+
+  describe("impression stats", () => {
+    it("should fire impression stats events", done => {
+      let verifiedView = false;
+      function dispatch(a) {
+        if (a.type === "NOTIFY_IMPRESSION_STATS") {
+          assert.equal(a.data.source, "pocket");
+
+          if (!verifiedView) {
+            assert.deepEqual(a.data.tiles, [
+              {id: fakePocketStories[0].guid},
+              {id: fakePocketStories[1].guid},
+              {id: fakePocketStories[2].guid}
+            ]);
+            verifiedView = true;
+          } else {
+            assert.equal(a.data.click, 0);
+            assert.deepEqual(a.data.tiles, [{id: fakePocketStories[0].guid, pos: 1}]);
+            done();
+          }
+        }
+      }
+      instance = renderWithProvider(<PocketStories page={"NEW_TAB"} dispatch={dispatch}
+        stories={fakePocketStories} topics={fakePocketTopics} />);
+      TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
+    });
+  });
 });

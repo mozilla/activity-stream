@@ -28,7 +28,7 @@ const LinkMenu = React.createClass({
     }
   },
   getOptions() {
-    const {site, allowBlock, dispatch, prefs} = this.props;
+    const {site, allowBlock, dispatch, prefs, index} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
     let deleteOptions;
@@ -44,6 +44,13 @@ const LinkMenu = React.createClass({
           icon: "dismiss",
           userEvent: "BLOCK",
           onClick: () => {
+            if (prefs && prefs.showPocket && site.pocket) {
+              dispatch(actions.NotifyImpressionStats({
+                source: "pocket",
+                block: 0,
+                tiles: [{id: site.guid, pos: index + 1}]
+              }));
+            }
             dispatch(actions.NotifyBlockURL(site.url));
           }
         },
@@ -65,12 +72,18 @@ const LinkMenu = React.createClass({
           label: this.props.intl.formatMessage({id: "menu_action_save_to_pocket"}),
           icon: "pocket",
           userEvent: "SAVE_TO_POCKET",
-          onClick: () => dispatch(actions.NotifySaveToPocket(site.url, site.title))
+          onClick: () => {
+            dispatch(actions.NotifyImpressionStats({
+              source: "pocket",
+              pocket: 0,
+              tiles: [{id: site.guid, pos: index + 1}]
+            }));
+            dispatch(actions.NotifySaveToPocket(site.url, site.title));
+          }
         },
         {type: "separator"}
       ];
     }
-
     return pocketOption.concat([
       (site.bookmarkGuid ? {
         ref: "removeBookmark",

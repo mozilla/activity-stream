@@ -74,14 +74,20 @@ describe("LinkMenu", () => {
   describe("individual options", () => {
     // Checks to make sure each action
     // 1. Fires a custom action (options.event)
-    // 2. Has the right event data (options.eventData)
-    // 3. Fires a NOTIFY_USER_EVENT with type options.userEvent
+    // 2. Optionally fires an impression stats event (options.impressionStats)
+    // 3. Has the right event data (options.eventData)
+    // 4. Fires a NOTIFY_USER_EVENT with type options.userEvent
     // When options.ref is clicked
     function checkOption(options) {
       it(`should ${options.ref}`, done => {
         let count = 0;
+        let expectedEvents = (options.impressionStats) ? 3 : 2;
         setup(options.props || {}, {
           dispatch(action) {
+            if (action.type === "NOTIFY_IMPRESSION_STATS") {
+              assert.deepEqual(options.impressionStats, action.data);
+              count++;
+            }
             if (action.type === options.event) {
               assert.deepEqual(action.data, options.eventData, "event data");
               count++;
@@ -96,7 +102,8 @@ describe("LinkMenu", () => {
               }
               count++;
             }
-            if (count === 2) {
+
+            if (count === expectedEvents) {
               done();
             }
           }
@@ -135,6 +142,15 @@ describe("LinkMenu", () => {
       eventData: DEFAULT_PROPS.site.url,
       userEvent: "BLOCK"
     });
+    // Verify that dismissing a pocket story fires an impression stats event
+    checkOption({
+      ref: "dismiss",
+      event: "NOTIFY_BLOCK_URL",
+      eventData: DEFAULT_PROPS.site.url,
+      userEvent: "BLOCK",
+      props: {prefs: {showPocket: true}, site: {guid: 123, url: "https://foo.com", pocket: true, metadata_source: "EmbedlyTest"}},
+      impressionStats: {source: "pocket", block: 0, tiles: [{id: 123, pos: 4}]}
+    });
     checkOption({
       ref: "delete",
       event: "NOTIFY_HISTORY_DELETE",
@@ -146,7 +162,8 @@ describe("LinkMenu", () => {
       event: "NOTIFY_SAVE_TO_POCKET",
       eventData: {url: DEFAULT_PROPS.site.url, title: DEFAULT_PROPS.site.title},
       userEvent: "SAVE_TO_POCKET",
-      props: {"prefs": {"showPocket": true}}
+      props: {prefs: {showPocket: true}, site: {guid: 123, url: "https://foo.com"}},
+      impressionStats: {source: "pocket", pocket: 0, tiles: [{id: 123, pos: 4}]}
     });
   });
 });

@@ -16,11 +16,22 @@ const PocketStories = React.createClass({
         action_position: index
       };
       this.props.dispatch(actions.NotifyEvent(payload));
+
+      this.props.dispatch(actions.NotifyImpressionStats({
+        source: "pocket",
+        click: 0,
+        tiles: [{id: story.guid, pos: index + 1}]
+      }));
     };
   },
 
   renderStories() {
     const stories = this.props.stories.slice(0, this.props.length);
+
+    this.props.dispatch(actions.NotifyImpressionStats({
+      source: "pocket",
+      tiles: stories.map(story => ({id: story.guid}))
+    }));
 
     return stories.map((story, i) =>
         <SpotlightItem
