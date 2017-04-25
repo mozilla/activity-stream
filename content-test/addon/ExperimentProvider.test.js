@@ -421,5 +421,13 @@ describe("ExperimentProvider", () => {
       experimentProvider.enroll(experimentId, variant);
       assert.isTrue(simplePrefs.prefs.showPocket);
     });
+    it("should set showMoreTopSites pref on topSitesTwoRowsDefault experiment enrollment", () => {
+      setup();
+      simplePrefs.prefs.showMoreTopSites = false;
+      const experimentId = "topSitesTwoRowsDefault";
+      const variant = {description: "Show two rows of Top Sites by default", id: "exp-20-topsites-tworows", threshold: 0.2, value: true};
+      experimentProvider.enroll(experimentId, variant);
+      assert.isTrue(simplePrefs.prefs.showMoreTopSites);
+    });
   });
 });
