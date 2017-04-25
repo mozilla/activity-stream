@@ -1,9 +1,0 @@
-diff --git a/.eslintignore b/.eslintignore
---- a/.eslintignore
-+++ b/.eslintignore
-@@ -72,3 +72,4 @@ browser/extensions/pocket/content/panels/js/vendor/**
- browser/locales/**
--# vendor library files in activity-stream
-+# generated or library files in activity-stream
-+browser/extensions/activity-stream/data/content/activity-stream.bundle.js
- browser/extensions/activity-stream/vendor/**
