@@ -181,7 +181,7 @@
     transform: scale(0.25);
     transition-property: transform, opacity;
     transition-duration: 200ms;
-    z-index: 399;
+    z-index: 1000;
 
     &:focus,
     &:active {
