@@ -44,12 +44,14 @@ module.exports = class PocketStoriesFeed extends PocketFeed {
     return Task.spawn(function*() {
       let stories = yield this._fetchStories();
       stories = stories.map(s => ({
+        "guid": s.id,
         "recommended": true,
         "title": s.title,
         "description": s.excerpt,
         "bestImage": {"url": this._normalizeUrl(s.image_src)},
         "url": s.dedupe_url,
-        "lastVisitDate": s.published_timestamp
+        "lastVisitDate": s.published_timestamp,
+        "pocket": true
       }));
       return am.actions.Response("POCKET_STORIES_RESPONSE", stories);
     }.bind(this));
