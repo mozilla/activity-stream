@@ -95,8 +95,8 @@ const TopSitesItem = React.createClass({
 
     const label = prettyUrl(site);
 
-    return (<div className="tile-outer" key={site.guid || site.cache_key || index}>
-      <a onClick={ev => this.props.onClick(index, ev)} className={classNames("tile", {active: isActive})} href={site.url} ref="topSiteLink">
+    return (<div className={classNames("tile-outer", {active: isActive})} key={site.guid || site.cache_key || index}>
+      <a onClick={ev => this.props.onClick(index, ev)} className="tile" href={site.url} ref="topSiteLink">
         {screenshot && <div className="inner-border" />}
         {screenshot && <div ref="screenshot" className="screenshot" style={{backgroundImage: `url(${screenshot})`}} />}
         <SiteIcon
