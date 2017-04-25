@@ -72,6 +72,8 @@ exports.ExperimentProvider = class ExperimentProvider {
     prefService.set(PREF_PREFIX + experimentId, variant.value);
     if (experimentId === "pocket") {
       simplePrefs.prefs.showPocket = true;
+    } else if (experimentId === "topSitesTwoRowsDefault") {
+      simplePrefs.prefs.showMoreTopSites = true;
     }
     this.emit("experimentEnrolled", {id: experimentId, variant});
   }
