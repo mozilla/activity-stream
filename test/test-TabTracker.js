@@ -759,6 +759,33 @@ exports.test_TabTracker_undesired_event_pings = function*(assert) {
   assert.deepEqual(eventData.msg.data.action, "activity_stream_masga_event", "the ping has the correct action");
 };
 
+exports.test_TabTracker_impression_stats_pings = function*(assert) {
+  let impressionStatsPromise = new Promise(resolve => {
+    function observe(subject, topic, data) {
+      if (topic === "impression-stats") {
+        Services.obs.removeObserver(observe, "impression-stats");
+        resolve(JSON.parse(data));
+      }
+    }
+    Services.obs.addObserver(observe, "impression-stats", false);
+  });
+
+  let statsData = {
+    msg: {
+      type: "NOTIFY_IMPRESSION_STATS",
+      data: {
+        tiles: [{"id": 1}, {"id": 2}],
+        source: "pocket"
+      }
+    }
+  };
+  app._handleImpressionStats(statsData);
+
+  let pingData = yield impressionStatsPromise;
+  assert.deepEqual(statsData.msg.data.tiles, pingData.tiles, "the ping has the correct tiles");
+  assert.deepEqual(statsData.msg.data.action, "activity_stream_impression", "the ping has the correct action");
+};
+
 exports.test_TabTracker_clear_history_ping = function*(assert) {
   let userEventPromise = new Promise(resolve => {
     function observe(subject, topic, data) {

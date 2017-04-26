@@ -95,6 +95,18 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 }
 ```
 
+# Example Activity Stream `impression stats` Log
+```json
+{
+  "source": "pocket",
+  "action": "activity_stream_impression",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "tiles": [{"id": 1000}, {"id": 1001}, {"id": 1002}]
+}
+```
+
 | KEY | DESCRIPTION | &nbsp; |
 |-----|-------------|:-----:|
 | `action_position` | [Optional] The index of the element in the `source` that was clicked. | :one:
@@ -131,6 +143,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
 | `user_prefs` | [optional] The encoded integer of user's preferences. | :one: & :four:
+| `tiles` | [Required] An array of tile stats object. e.g. `[{"id": 1000, "pos": 1}, {"id": 1001, "pos": 2}]` | :one:
 
 
 **Where:**
