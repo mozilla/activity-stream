@@ -370,7 +370,6 @@ Note that it re-uses the same payload [schema](https://github.com/mozilla/infern
   // `id` is the GUID of the recommended item
   "tiles": [{"id": 1000}, {"id": 1001}, {"id": 1002}]
 }
-
 ```
 
 ### Clicks/Blocks/Pocketed
@@ -386,6 +385,4 @@ Note that it re-uses the same payload [schema](https://github.com/mozilla/infern
   // `pos` stands for the 0-based tile position in the Newtab
   "tiles": [{"id": 1000, "pos": 3}]
 }
-
 ```
->>>>>>> f6dbdf9... fix(addon): Fix position for pocket impression stats

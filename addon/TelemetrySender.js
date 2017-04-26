@@ -13,6 +13,7 @@ const PERFORMANCE_NOTIF = "performance-event";
 const COMPLETE_NOTIF = "tab-session-complete";
 const UNDESIRED_NOTIF = "undesired-event";
 const LOGGING_PREF = "performance.log";
+const IMPRESSION_NOTIF = "impression-stats";
 
 function TelemetrySender() {
   this.enabled = simplePrefs.prefs[TELEMETRY_PREF];
@@ -27,6 +28,7 @@ function TelemetrySender() {
     Services.obs.addObserver(this, ACTION_NOTIF, true);
     Services.obs.addObserver(this, PERFORMANCE_NOTIF, true);
     Services.obs.addObserver(this, UNDESIRED_NOTIF, true);
+    Services.obs.addObserver(this, IMPRESSION_NOTIF, true);
   }
 }
 
@@ -37,7 +39,9 @@ TelemetrySender.prototype = {
   ]),
 
   observe(subject, topic, data) {
-    if (topic === COMPLETE_NOTIF || topic === ACTION_NOTIF || topic === PERFORMANCE_NOTIF || topic === UNDESIRED_NOTIF) {
+    if (topic === COMPLETE_NOTIF || topic === ACTION_NOTIF ||
+      topic === PERFORMANCE_NOTIF || topic === UNDESIRED_NOTIF ||
+      topic === IMPRESSION_NOTIF) {
       this._sendPing(data);
     }
   },
@@ -53,11 +57,13 @@ TelemetrySender.prototype = {
         Services.obs.removeObserver(this, ACTION_NOTIF);
         Services.obs.removeObserver(this, PERFORMANCE_NOTIF);
         Services.obs.removeObserver(this, UNDESIRED_NOTIF);
+        Services.obs.removeObserver(this, IMPRESSION_NOTIF);
       } else if (!this.enabled && newValue) {
         Services.obs.addObserver(this, COMPLETE_NOTIF, true);
         Services.obs.addObserver(this, ACTION_NOTIF, true);
         Services.obs.addObserver(this, PERFORMANCE_NOTIF, true);
         Services.obs.addObserver(this, UNDESIRED_NOTIF, true);
+        Services.obs.addObserver(this, IMPRESSION_NOTIF, true);
       }
 
       this.enabled = newValue;
@@ -89,6 +95,7 @@ TelemetrySender.prototype = {
         Services.obs.removeObserver(this, ACTION_NOTIF);
         Services.obs.removeObserver(this, PERFORMANCE_NOTIF);
         Services.obs.removeObserver(this, UNDESIRED_NOTIF);
+        Services.obs.removeObserver(this, IMPRESSION_NOTIF);
       }
       simplePrefs.removeListener(TELEMETRY_PREF, this._onPrefChange);
       simplePrefs.removeListener(ENDPOINT_PREF, this._onPrefChange);
