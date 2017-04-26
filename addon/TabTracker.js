@@ -20,6 +20,7 @@ const ACTION_NOTIF = "user-action-event";
 const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 const UNDESIRED_NOTIF = "undesired-event";
+const IMPRESSION_NOTIF = "impression-stats";
 const USER_PREFS = ["showSearch", "showTopSites", "showPocket", "showHighlights", "showMoreTopSites"];
 
 function TabTracker(options) {
@@ -137,6 +138,12 @@ TabTracker.prototype = {
       payload.value = 0;
     }
     Services.obs.notifyObservers(null, UNDESIRED_NOTIF, JSON.stringify(payload));
+  },
+
+  handleImpressionStats(payload, experimentId) {
+    payload.action = "activity_stream_impression";
+    this._setCommonProperties(payload, tabs.activeTab.url);
+    Services.obs.notifyObservers(null, IMPRESSION_NOTIF, JSON.stringify(payload));
   },
 
   handlePerformanceEvent(eventData, eventName, value) {

@@ -308,6 +308,10 @@ ActivityStreams.prototype = {
     this._tabTracker.handleNewTabStats(msg.data);
   },
 
+  _handleImpressionStats({msg}) {
+    this._tabTracker.handleImpressionStats(msg.data);
+  },
+
   _handleExperimentChange(prefName) {
     this._tabTracker.experimentId = this._experimentProvider.experimentID;
     this.broadcast(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
@@ -322,6 +326,8 @@ ActivityStreams.prototype = {
         return this._handleUndesiredEvent(args);
       case am.type("NOTIFY_NEWTAB_STATS"):
         return this._handleNewTabStats(args);
+      case am.type("NOTIFY_IMPRESSION_STATS"):
+        return this._handleImpressionStats(args);
     }
     return undefined;
   },
