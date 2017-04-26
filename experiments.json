@@ -253,5 +253,20 @@
       "threshold": 0.2,
       "description": "Show pocket trending stories"
     }
+  },
+  "metadataNoService": {
+    "name": "Metadata with No Remote Service",
+    "active": true,
+    "description": "Disable all calls to the metadata service",
+    "control": {
+      "value": false,
+      "description": "We still make calls to the metadata service"
+    },
+    "variant": {
+      "id": "exp-018-metadata-no-service",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Make no calls to the metadata service"
+    }
   }
 }
