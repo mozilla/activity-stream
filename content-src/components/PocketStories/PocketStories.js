@@ -42,10 +42,10 @@ const PocketStories = React.createClass({
   renderReadMoreTopics() {
     return (
       <div className="pocket-read-more">
-        <span><FormattedMessage id="pocket_read_more" />:</span>
+        <span><FormattedMessage id="pocket_read_more" /></span>
         {this.props.topics.map(t => this.renderReadMoreTopic(t.name, t.url))}
         <a className="pocket-read-even-more" href={pocket_read_more_endpoint}>
-          <FormattedMessage id="pocket_read_even_more" /> &gt;
+          <FormattedMessage id="pocket_read_even_more" />
         </a>
       </div>
     );
