@@ -24,12 +24,12 @@ describe("PreferencesPane", () => {
   });
 
   it("the modal should be hidden by default", () => {
-    assert.equal(0, wrapper.ref("sidebar").length);
+    assert.isTrue(wrapper.ref("sidebar").hasClass("hidden"));
   });
 
   it("the modal should be shown when settings button is clicked", () => {
     wrapper.ref("prefs-button").simulate("click");
-    assert.equal(1, wrapper.ref("sidebar").length);
+    assert.isFalse(wrapper.ref("sidebar").hasClass("hidden"));
   });
 
   it("the search checkbox should be checked by default", () => {
@@ -76,11 +76,11 @@ describe("PreferencesPane", () => {
     assert.isFalse(wrapper.ref("showHighlightsCheckbox").prop("checked"));
   });
 
-  it("the modal should be closed when done button is clicked", () => {
+  it("the sidebar should be closed when done button is clicked", () => {
     wrapper.ref("prefs-button").simulate("click");
-    assert.equal(1, wrapper.ref("sidebar").length);
+    assert.isFalse(wrapper.ref("sidebar").hasClass("hidden"));
     wrapper.ref("done-button").simulate("click");
-    assert.equal(0, wrapper.ref("sidebar").length);
+    assert.isTrue(wrapper.ref("sidebar").hasClass("hidden"));
   });
 
   it("the pocket stories checkbox should be checked if pref is on", () => {
