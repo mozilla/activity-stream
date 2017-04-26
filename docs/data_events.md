@@ -367,7 +367,8 @@ Note that it re-uses the same payload [schema](https://github.com/mozilla/infern
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "tiles": [{"id": 1000}, {"id": 1001}, {"id": 1002}]  # "id" is the GUID of the recommended item
+  // `id` is the GUID of the recommended item
+  "tiles": [{"id": 1000}, {"id": 1001}, {"id": 1002}]
 }
 
 ```
@@ -380,8 +381,10 @@ Note that it re-uses the same payload [schema](https://github.com/mozilla/infern
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "user_action": 0,  # user_action: [click|pocket|block], the value is the 0-based index of the "tiles" array
-  "tiles": [{"id": 1000, "pos": 3}]  # "pos" stands for the 1-based tile position in the Newtab
+  // `user_action`: `[click|pocket|block]`, the value is the 0-based index of the `tiles` array
+  "user_action": 0,
+  // `pos` stands for the 1-based tile position in the Newtab
+  "tiles": [{"id": 1000, "pos": 3}]
 }
 
 ```
