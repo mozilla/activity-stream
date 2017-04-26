@@ -28,7 +28,7 @@ const LinkMenu = React.createClass({
     }
   },
   getOptions() {
-    const {site, allowBlock, dispatch, experiments} = this.props;
+    const {site, allowBlock, dispatch, prefs} = this.props;
     const isNotDefault = site.type !== FIRST_RUN_TYPE;
 
     let deleteOptions;
@@ -58,7 +58,7 @@ const LinkMenu = React.createClass({
     }
 
     let pocketOption = [];
-    if (experiments && experiments.values.pocket) {
+    if (prefs && prefs.showPocket) {
       pocketOption = [
         {
           ref: "saveToPocket",
@@ -115,12 +115,12 @@ LinkMenu.propTypes = {
   visible: React.PropTypes.bool,
   onUpdate: React.PropTypes.func.isRequired,
   allowBlock: React.PropTypes.bool,
+  prefs: React.PropTypes.object,
   site: React.PropTypes.shape({
     url: React.PropTypes.string.isRequired,
     bookmarkGuid: React.PropTypes.string,
     recommended: React.PropTypes.bool
   }).isRequired,
-  experiments: React.PropTypes.object,
 
   // This is for events
   page: React.PropTypes.string,

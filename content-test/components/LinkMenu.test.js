@@ -64,7 +64,7 @@ describe("LinkMenu", () => {
   });
 
   it("should show pocket option if experiment is on", () => {
-    let props = Object.assign({}, DEFAULT_PROPS, {"experiments": {"values": {"pocket": true}}});
+    let props = Object.assign({}, DEFAULT_PROPS, {"prefs": {"showPocket": true}});
     let pocketInstance = renderWithProvider(<LinkMenu {...props} />);
     let [pocketContextMenu] = TestUtils.scryRenderedComponentsWithType(pocketInstance, ContextMenu);
     assert.ok(pocketContextMenu);
@@ -146,7 +146,7 @@ describe("LinkMenu", () => {
       event: "NOTIFY_SAVE_TO_POCKET",
       eventData: {url: DEFAULT_PROPS.site.url, title: DEFAULT_PROPS.site.title},
       userEvent: "SAVE_TO_POCKET",
-      props: {"experiments": {"values": {"pocket": true}}}
+      props: {"prefs": {"showPocket": true}}
     });
   });
 });

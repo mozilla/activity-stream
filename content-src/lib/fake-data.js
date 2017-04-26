@@ -44,7 +44,7 @@ module.exports = {
       "showSearch": true,
       "showTopSites": true,
       "showHighlights": true,
-      "showPocketStories": true
+      "showPocket": true
     },
     "error": false
   },

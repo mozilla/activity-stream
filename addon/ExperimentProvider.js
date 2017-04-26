@@ -70,6 +70,9 @@ exports.ExperimentProvider = class ExperimentProvider {
   enroll(experimentId, variant) {
     this._experimentId = variant.id;
     prefService.set(PREF_PREFIX + experimentId, variant.value);
+    if (experimentId === "pocket") {
+      simplePrefs.prefs.showPocket = true;
+    }
     this.emit("experimentEnrolled", {id: experimentId, variant});
   }
 

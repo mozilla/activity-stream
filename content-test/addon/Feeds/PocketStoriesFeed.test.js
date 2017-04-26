@@ -19,17 +19,7 @@ describe("PocketStoriesFeed", () => {
     assert.equal(time.minutes(), 30);
   });
   describe("#getData", () => {
-    it("should not fetch stories if experiment is disabled", () => {
-      instance._fetchStories = sinon.spy();
-      return instance.getData()
-        .then(action => {
-          assert.isObject(action);
-          assert.equal(action.type, "POCKET_STORIES_RESPONSE");
-          assert.notCalled(instance._fetchStories);
-          assert.lengthOf(action.data, 0);
-        });
-    });
-    it("should fetch stories if experiment is enabled", () => {
+    it("should fetch stories and send response event", () => {
       instance._fetchStories = sinon.mock().returns([{"title": "test"}]);
       reduxState = {Experiments: {values: {pocket: true}}};
       return instance.getData()
