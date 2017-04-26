@@ -1,13 +1,21 @@
 diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
 --- a/browser/app/profile/firefox.js
 +++ b/browser/app/profile/firefox.js
-@@ -1195,5 +1195,5 @@ pref("browser.newtabpage.directory.ping"
+@@ -1227,5 +1227,5 @@ pref("browser.newtabpage.directory.ping", "https://tiles.services.mozilla.com/v3
  
  // activates Activity Stream
 -pref("browser.newtabpage.activity-stream.enabled", false);
 +pref("browser.newtabpage.activity-stream.enabled", true);
  
  // Enable the DOM fullscreen API.
+diff --git a/browser/extensions/activity-stream/moz.build b/browser/extensions/activity-stream/moz.build
+--- a/browser/extensions/activity-stream/moz.build
++++ b/browser/extensions/activity-stream/moz.build
+@@ -17,2 +17,4 @@ FINAL_TARGET_PP_FILES.features['activity-stream@mozilla.org'] += [
+ 
+ JAR_MANIFESTS += ['jar.mn']
++
++BROWSER_CHROME_MANIFESTS += ['test/functional/mochitest/browser.ini']
 diff --git a/browser/extensions/activity-stream/test/functional/mochitest/browser.ini b/browser/extensions/activity-stream/test/functional/mochitest/browser.ini
 --- a/browser/extensions/activity-stream/test/functional/mochitest/browser.ini
 +++ b/browser/extensions/activity-stream/test/functional/mochitest/browser.ini
