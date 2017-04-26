@@ -2,7 +2,6 @@
 "use strict";
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
-const simplePrefs = require("sdk/simple-prefs");
 const Feed = require("addon/lib/Feed");
 const am = require("common/action-manager");
 const MAX_NUM_LINKS = 5;
@@ -41,7 +40,9 @@ module.exports = class MetadataFeed extends Feed {
     // it takes the longest, processing 100+ urls.
     .then(() => PlacesProvider.links.getRecentlyVisited())
     .then(links => {
-      links.forEach(item => this.linksToFetch.set(item.url, Date.now()));
+      // We need to cap this otherwise on some average profile we'll attempt to
+      // fetch hundreds of links and hog the mainthread for a long time
+      links.slice(0, 50).forEach(item => this.linksToFetch.set(item.url, Date.now()));
       this.refresh(reason);
     });
   }
@@ -51,13 +52,16 @@ module.exports = class MetadataFeed extends Feed {
    * metadata for those links, and clear the list of links which are missing metadata
    */
   getData() {
+    const experiments = this.store.getState().Experiments.values;
+
     let links = Array.from(this.linksToFetch.keys(), item => Object.assign({"url": item}));
     this.linksToFetch.clear();
 
-    // if we are in the experiment, make a network request through PageScraper
-    if (simplePrefs.prefs["experiments.locallyFetchMetadata20"]) {
+    // Make no requests for metadata
+    if (experiments.metadataNoService) {
       return this.options.fetchNewMetadataLocally(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
     }
+
     return this.options.fetchNewMetadata(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
   }
   onAction(state, action) {

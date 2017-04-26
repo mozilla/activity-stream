@@ -134,10 +134,10 @@ module.exports = class HighlightsFeed extends Feed {
           this.refresh("new metadata is available and we're missing data");
         } else if (state.Highlights.rows.length < (HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH)) {
           // If the user visits a site and we don't have enough weighted highlights yet, refresh the data.
-          this.refresh("there were not enough sites");
+          this.refresh("new metadata is available and there were not enough sites");
         } else if (Date.now() - this.state.lastUpdated >= UPDATE_TIME) {
           // If the user visits a site & the last time we refreshed the data was older than 15 minutes, refresh the data.
-          this.refresh("the sites were too old");
+          this.refresh("new metadata is available and the sites were too old");
         }
         break;
       case am.type("PREF_CHANGED_RESPONSE"):

@@ -190,7 +190,7 @@ describe("HighlightsFeed", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH - 1).fill("site")};
       instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
       assert.calledOnce(instance.refresh);
-      assert.calledWith(instance.refresh, "there were not enough sites");
+      assert.calledWith(instance.refresh, "new metadata is available and there were not enough sites");
     });
     it("should not call refresh on METADATA_UPDATED if there are enough sites", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH).fill("site")};
@@ -203,7 +203,7 @@ describe("HighlightsFeed", () => {
       clock.tick(HighlightsFeed.UPDATE_TIME);
       instance.onAction(store.getState(), {type: "METADATA_UPDATED"});
       assert.calledOnce(instance.refresh);
-      assert.calledWith(instance.refresh, "the sites were too old");
+      assert.calledWith(instance.refresh, "new metadata is available and the sites were too old");
     });
     it("should not call refresh on METADATA_UPDATED if .lastUpdated is less than update time", () => {
       store.state.Highlights = {rows: Array(HIGHLIGHTS_LENGTH + TOP_SITES_DEFAULT_LENGTH).fill("site")};
