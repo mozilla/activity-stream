@@ -47,16 +47,17 @@ const PocketStories = React.createClass({
   },
 
   renderReadMoreTopic(topic, url) {
-    return (<a key={topic} className="pocket-read-more-link" href={url}>{topic}</a>);
+    return (<li><a key={topic} className="pocket-read-more-link" href={url}>{topic}</a></li>);
   },
 
   renderReadMoreTopics() {
     return (
       <div className="pocket-read-more">
         <span><FormattedMessage id="pocket_read_more" /></span>
-        {this.props.topics.map(t => this.renderReadMoreTopic(t.name, t.url))}
+        <ul>{this.props.topics.map(t => this.renderReadMoreTopic(t.name, t.url))}</ul>
         <a className="pocket-read-even-more" href={pocket_read_more_endpoint}>
           <FormattedMessage id="pocket_read_even_more" />
+          <span className="pocket-read-even-more-logo" />
         </a>
       </div>
     );
@@ -71,7 +72,14 @@ const PocketStories = React.createClass({
     return (<section className="pocket-stories spotlight">
       <h3 className="section-title">
         <FormattedMessage id="header_stories" />
-        <span className="pocket-logo" />
+        <span className="section-title-logo" >
+          <span className="pocket-logo-text">
+              <FormattedMessage id="header_stories_by" />
+          </span>
+          <span className="pocket-logo">
+            <span className="sr-only">Pocket</span>
+          </span>
+        </span>
       </h3>
 
       <ul className="spotlight-list">

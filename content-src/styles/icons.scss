@@ -107,4 +107,8 @@
   &.icon-pocket {
     background-image: url('#{$image-path}pocket-icon.svg');
   }
+
+  &.icon-trending {
+    background-image: url('#{$image-path}trending-icon.svg');
+  }
 }

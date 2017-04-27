@@ -1,26 +1,77 @@
 .pocket-stories {
 
-  .pocket-logo {
-    background-image: url('img/pocketlogo@2x.png');
-    background-size: 64px 18px;
-    background-repeat: no-repeat;
-    filter: grayscale(100%);
-    padding-left: 64px;
-    margin-left: 10px;
+  .section-title-logo {
+    float: right;
+    margin-right: 38px;
+
+    .pocket-logo {
+      background-image: url('img/pocketlogo@2x.png');
+      background-size: 64px 18px;
+      background-repeat: no-repeat;
+      filter: grayscale(100%);
+      padding-left: 64px;
+      margin-left: 8px;
+      opacity: 0.5;
+    }
+
+    .pocket-logo-text {
+      opacity: 0.5;
+      font-family: Helvetica, Arial, sans-serif;
+      text-transform: lowercase;
+      margin-left: 16px;
+      font-weight: 200;
+      font-size: 15px;
+    }
   }
 
   .pocket-read-more {
-    font-size: 12px;
-    color: $light-grey;
+    font-size: 13px;
+    color: $topic-grey;
+
+    ul {
+      display: inline;
+      padding-left: 12px;
+    }
+
+    ul li {
+      display: inline;
+    }
+
+    ul li::after {
+      content: '•';
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    ul li:last-child::after {
+      content: none;
+    }
   }
 
   .pocket-read-more-link {
-    margin-left: 25px;
+    color: $topic-blue;
   }
 
   .pocket-read-even-more {
     float: right;
     margin-right: 40px;
+    color: $topic-blue;
+  }
+
+  .pocket-read-even-more-logo {
+    padding-right: 10px;
+    margin-left: 5px;
+    background-image: url('img/topic-show-more.svg');
+    background-repeat: no-repeat;
+    background-position-y: 2px;
+  }
+
+  ul.spotlight-list {
+    height: 320px;
+  }
+
+  .hc-label {
+    padding-bottom: 2px;
   }
 
 }
