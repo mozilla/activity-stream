@@ -20,7 +20,7 @@ const PocketStories = React.createClass({
       this.props.dispatch(actions.NotifyImpressionStats({
         source: "pocket",
         click: 0,
-        tiles: [{id: story.guid, pos: index + 1}]
+        tiles: [{id: story.guid, pos: index}]
       }));
     };
   },

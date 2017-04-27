@@ -76,7 +76,7 @@ describe("PocketStories", () => {
             verifiedView = true;
           } else {
             assert.equal(a.data.click, 0);
-            assert.deepEqual(a.data.tiles, [{id: fakePocketStories[0].guid, pos: 1}]);
+            assert.deepEqual(a.data.tiles, [{id: fakePocketStories[0].guid, pos: 0}]);
             done();
           }
         }
