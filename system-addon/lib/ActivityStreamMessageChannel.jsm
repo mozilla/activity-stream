@@ -32,7 +32,7 @@ const DEFAULT_OPTIONS = {
   incomingMessageName: "ActivityStream:ContentToMain"
 };
 
-class ActivityStreamMessageChannel {
+this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
 
   /**
    * ActivityStreamMessageChannel - This module connects a Redux store to a RemotePageManager in Firefox.
@@ -196,8 +196,7 @@ class ActivityStreamMessageChannel {
     action._target = msg.target;
     this.onActionFromContent(action, portID);
   }
-}
+};
 
-this.ActivityStreamMessageChannel = ActivityStreamMessageChannel;
 this.DEFAULT_OPTIONS = DEFAULT_OPTIONS;
 this.EXPORTED_SYMBOLS = ["ActivityStreamMessageChannel", "DEFAULT_OPTIONS"];
