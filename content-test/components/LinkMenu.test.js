@@ -149,7 +149,7 @@ describe("LinkMenu", () => {
       eventData: DEFAULT_PROPS.site.url,
       userEvent: "BLOCK",
       props: {prefs: {showPocket: true}, site: {guid: 123, url: "https://foo.com", pocket: true, metadata_source: "EmbedlyTest"}},
-      impressionStats: {source: "pocket", block: 0, tiles: [{id: 123, pos: 4}]}
+      impressionStats: {source: "pocket", block: 0, tiles: [{id: 123, pos: 3}]}
     });
     checkOption({
       ref: "delete",
@@ -163,7 +163,7 @@ describe("LinkMenu", () => {
       eventData: {url: DEFAULT_PROPS.site.url, title: DEFAULT_PROPS.site.title},
       userEvent: "SAVE_TO_POCKET",
       props: {prefs: {showPocket: true}, site: {guid: 123, url: "https://foo.com"}},
-      impressionStats: {source: "pocket", pocket: 0, tiles: [{id: 123, pos: 4}]}
+      impressionStats: {source: "pocket", pocket: 0, tiles: [{id: 123, pos: 3}]}
     });
   });
 });

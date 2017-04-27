@@ -353,3 +353,39 @@ In some undesired app states, the app will send a ping about it to our metrics s
   "locale": "en-US"
 }
 ```
+
+## Impression stats pings
+
+This could be used to capture the impression and other user interaction pings for the recommended items, e.g. Pocket.
+Note that it re-uses the same payload [schema](https://github.com/mozilla/infernyx#payloads-from-firefox) as Tiles for Firefox Newtab.
+
+### Impression
+```js
+{
+  "source": "pocket",
+  "action": "activity_stream_impression",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  // `id` is the GUID of the recommended item
+  "tiles": [{"id": 1000}, {"id": 1001}, {"id": 1002}]
+}
+
+```
+
+### Clicks/Blocks/Pocketed
+```js
+{
+  "source": "pocket",
+  "action": "activity_stream_impression",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  // `user_action`: `[click|pocket|block]`, the value is the 0-based index of the `tiles` array
+  "user_action": 0,
+  // `pos` stands for the 0-based tile position in the Newtab
+  "tiles": [{"id": 1000, "pos": 3}]
+}
+
+```
+>>>>>>> f6dbdf9... fix(addon): Fix position for pocket impression stats
