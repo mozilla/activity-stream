@@ -26,6 +26,7 @@ describe("MetadataFeed", () => {
     MetadataFeed = require("inject!addon/Feeds/MetadataFeed")({"addon/PlacesProvider": {PlacesProvider}});
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
     instance = new MetadataFeed({fetchNewMetadata, fetchNewMetadataLocally, pinnedLinks});
+    instance.store = {getState: () => ({Experiments: {values: {metadataNoService: false}}})};
     instance.refresh = sinon.spy();
     sinon.spy(instance.options, "fetchNewMetadata");
     sinon.spy(instance.options, "fetchNewMetadataLocally");
@@ -64,7 +65,7 @@ describe("MetadataFeed", () => {
         assert.calledOnce(instance.options.fetchNewMetadata)))
     );
     it("should run sites through fetchNewMetadataLocally if experiment pref is on", () => {
-      simplePrefs.prefs["experiments.locallyFetchMetadata20"] = true;
+      instance.store = {getState: () => ({Experiments: {values: {metadataNoService: true}}})};
       return instance.getData().then(() => {
         assert.notCalled(instance.options.fetchNewMetadata);
         assert.calledOnce(instance.options.fetchNewMetadataLocally);

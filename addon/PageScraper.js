@@ -97,7 +97,7 @@ PageScraper.prototype = {
       let linkExists = yield this._previewProvider.asyncLinkExist(link.url);
       if (linkExists) {
         this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_exists, Date.now());
-        return;
+        continue;
       }
       let rawHTML;
       try {
@@ -105,7 +105,7 @@ PageScraper.prototype = {
       } catch (err) {
         Cu.reportError(`PageScraper failed to get page content for ${link.url}. ${err}`);
         this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.network_fail, Date.now());
-        return;
+        continue;
       }
       this._parseAndSave(rawHTML, link.url, event);
     }
