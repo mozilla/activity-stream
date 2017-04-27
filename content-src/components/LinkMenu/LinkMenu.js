@@ -48,7 +48,7 @@ const LinkMenu = React.createClass({
               dispatch(actions.NotifyImpressionStats({
                 source: "pocket",
                 block: 0,
-                tiles: [{id: site.guid, pos: index + 1}]
+                tiles: [{id: site.guid, pos: index}]
               }));
             }
             dispatch(actions.NotifyBlockURL(site.url));
@@ -76,7 +76,7 @@ const LinkMenu = React.createClass({
             dispatch(actions.NotifyImpressionStats({
               source: "pocket",
               pocket: 0,
-              tiles: [{id: site.guid, pos: index + 1}]
+              tiles: [{id: site.guid, pos: index}]
             }));
             dispatch(actions.NotifySaveToPocket(site.url, site.title));
           }
