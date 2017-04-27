@@ -21,6 +21,6 @@ module.exports = {
   },
   stories: {
     intlID: "type_label_recommended",
-    icon: "topic"
+    icon: "trending"
   }
 };
