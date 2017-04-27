@@ -136,7 +136,6 @@
 
     &:focus + button {
       z-index: 1;
-      transition: box-shadow 150ms;
       box-shadow: 0 0 0 2px $search-focus-shadow;
       background-color: $search-blue;
       background-image: url('#{$image-path}glyph-forward-16-white.svg');
@@ -167,14 +166,12 @@
     border: 0;
     width: $search-button-width;
     padding: 0;
-    transition: box-shadow 150ms;
     box-shadow: 0 1px 0 0 $faintest-black;
     background: $white url('#{$image-path}glyph-forward-16.svg') no-repeat center center;
     background-size: 16px 16px;
 
     &:hover {
       z-index: 1;
-      transition: box-shadow 150ms;
       box-shadow: 0 1px 0 0 $search-hover-shadow;
       background-color: $search-blue;
       background-image: url('#{$image-path}glyph-forward-16-white.svg');
