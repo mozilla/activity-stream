@@ -1,4 +1,3 @@
-/* globals Task */
 const Feed = require("addon/lib/Feed");
 const am = require("common/action-manager");
 const Request = require("sdk/request").Request;
