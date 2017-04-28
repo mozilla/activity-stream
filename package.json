@@ -224,7 +224,7 @@
     "mochitest": "(cd ../mozilla-central && ./mach mochitest --setpref browser.newtabpage.activity-stream.enabled=true  --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )",
     "mochitest-debug": "(cd ../mozilla-central && ./mach mochitest --jsdebugger --setpref browser.newtabpage.activity-stream.enabled=true --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )",
     "buildmc": "npm-run-all buildmc:*",
-    "buildmc:clean": "rimraf ../mozilla-central/browser/extensions/activity-stream",
+    "prebuildmc": "rimraf ../mozilla-central/browser/extensions/activity-stream",
     "buildmc:webpack": "webpack --config webpack.system-addon.config.js",
     "buildmc:css": "node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content",
     "buildmc:copy": "cpx \"system-addon/{bootstrap.js,install.rdf.in,jar.mn,moz.build,README.md,{common,data,lib,test,vendor}/**/{,.}*}\" ../mozilla-central/browser/extensions/activity-stream",
