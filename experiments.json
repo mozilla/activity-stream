@@ -268,5 +268,20 @@
       "threshold": 0.2,
       "description": "Make no calls to the metadata service"
     }
+  },
+  "metadataLocalRefresh": {
+    "name": "Metadata with local parsing and periodic refresh",
+    "active": true,
+    "description": "Process metadata locally and periodically refresh it",
+    "control": {
+      "value": false,
+      "description": "Metadata is processed locally at browse time only"
+    },
+    "variant": {
+      "id": "exp-019-metadata-local-refresh",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Metadata is processed locally at browse time and periodically in a background task"
+    }
   }
 }
