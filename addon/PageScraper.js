@@ -23,7 +23,9 @@ const PERFORMANCE_EVENT_NAMES = {
   metadata_invalid: "metadataInvalidReceived",
   metadata_sucess: "metadataParseSuccess",
   metadata_fail: "metadataParseFail",
-  network_fail: "networkRequestFailed"
+  network_fail: "networkRequestFailed",
+  local_fetch_received: "localFetchReceived",
+  local_fetch_saved: "localFetchSaved"
 };
 
 function PageScraper(previewProvider, tabTracker, options = {}) {
@@ -91,12 +93,14 @@ PageScraper.prototype = {
    * Attempt to parse the html from that page and insert into the DB
    */
   asyncFetchLinks: Task.async(function*(links, eventType) {
+    let savedUrlsCount = 0;
+
     for (let link of links) {
-      const event = this._tabTracker.generateEvent({source: eventType});
-      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.local_fetch_event, Date.now());
+      const linkEvent = this._tabTracker.generateEvent({source: eventType});
+      this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.local_fetch_event, Date.now());
       let linkExists = yield this._previewProvider.asyncLinkExist(link.url);
       if (linkExists) {
-        this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_exists, Date.now());
+        this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.metadata_exists, Date.now());
         continue;
       }
       let rawHTML;
@@ -104,11 +108,16 @@ PageScraper.prototype = {
         rawHTML = yield this._fetchContent(link.url);
       } catch (err) {
         Cu.reportError(`PageScraper failed to get page content for ${link.url}. ${err}`);
-        this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.network_fail, Date.now());
+        this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.network_fail, Date.now());
         continue;
       }
-      this._parseAndSave(rawHTML, link.url, event);
+      this._parseAndSave(rawHTML, link.url, linkEvent);
+      savedUrlsCount++;
     }
+
+    const fetchEvent = this._tabTracker.generateEvent({source: eventType});
+    this._tabTracker.handlePerformanceEvent(fetchEvent, PERFORMANCE_EVENT_NAMES.local_fetch_received, links.length);
+    this._tabTracker.handlePerformanceEvent(fetchEvent, PERFORMANCE_EVENT_NAMES.local_fetch_saved, savedUrlsCount);
   }),
 
   /**
