@@ -14,8 +14,8 @@ const TopSites = props => (<section>
       const style = {backgroundImage: (link.screenshot ? `url(${link.screenshot})` : "none")};
       return (<li key={link.url}>
         <a href={link.url}>
-          <div className="tile">
-            <span className="letter-fallback" ariaHidden={true}>{title[0]}</span>
+          <div className="tile" aria-hidden={true}>
+            <span className="letter-fallback">{title[0]}</span>
             <div className={className} style={style} />
           </div>
           <div className="title">{title}</div>
