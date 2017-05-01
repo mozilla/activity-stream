@@ -29,13 +29,14 @@ class Search extends React.Component {
   }
   render() {
     return (<form className="search-wrapper">
-      <span className="search-label" />
-      <input value={this.state.searchString} type="search"
+      <label htmlFor="search-input" className="search-label"><span className="sr-only">Search The Web</span></label>
+      <input id="search-input" value={this.state.searchString} type="search"
+        title="Search The Web"
         onChange={this.onChange}
-        maxLength="256" title="Submit search"
+        maxLength="256"
         placeholder="Search the Web" />
-        <button onClick={this.onClick} />
-        </form>);
+        <button title="Submit search" onClick={this.onClick} />
+    </form>);
   }
 }
 
