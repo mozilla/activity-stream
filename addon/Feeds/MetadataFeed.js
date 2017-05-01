@@ -57,7 +57,7 @@ module.exports = class MetadataFeed extends Feed {
   getData() {
     const experiments = this.store.getState().Experiments.values;
 
-    const links = this.urlsToFetch.map(url => ({"url": url}));
+    const links = this.urlsToFetch.map(url => ({url}));
     this.urlsToFetch = [];
 
     // Make no requests for metadata
