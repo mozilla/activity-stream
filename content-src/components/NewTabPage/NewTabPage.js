@@ -101,8 +101,7 @@ const NewTabPage = React.createClass({
             <section>
               <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
                 sites={props.TopSites.rows} showNewStyle={true}
-                length={showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH}
-                allowEdit={!!props.Experiments.values.editTopSites} />
+                length={showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH} />
             </section>
           }
           {showPocket &&
