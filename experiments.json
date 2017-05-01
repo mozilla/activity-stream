@@ -283,5 +283,20 @@
       "threshold": 0.2,
       "description": "Metadata is processed locally at browse time and periodically in a background task"
     }
+  },
+  "topSitesTwoRowsDefault": {
+    "name": "Two rows of Top Sites by default",
+    "active": true,
+    "description": "Show two rows of Top Sites by default",
+    "control": {
+      "value": false,
+      "description": "Show one row of Top Sites by default"
+    },
+    "variant": {
+      "id": "exp-20-topsites-tworows",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Show two rows of Top Sites by default"
+    }
   }
 }
