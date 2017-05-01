@@ -3,10 +3,13 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {actionTypes, actionCreators} = require("common/Actions.jsm");
 
-const Search = React.createClass({
-  getInitialState() {
-    return {searchString: ""};
-  },
+class Search extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {searchString: ""};
+    this.onClick = this.onClick.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
   performSearch(options) {
     let searchData = {
       engineName: options.engineName,
@@ -15,15 +18,15 @@ const Search = React.createClass({
       healthReportKey: "newtab"
     };
     this.props.dispatch(actionCreators.SendToMain({type: actionTypes.PERFORM_SEARCH, data: searchData}));
-  },
+  }
   onClick(event) {
     const {currentEngine} = this.props.Search;
     event.preventDefault();
     this.performSearch({engineName: currentEngine.name, searchString: this.state.searchString});
-  },
+  }
   onChange(event) {
     this.setState({searchString: event.target.value});
-  },
+  }
   render() {
     return (<form className="search-wrapper">
       <span className="search-label" />
@@ -34,6 +37,6 @@ const Search = React.createClass({
         <button onClick={this.onClick} />
         </form>);
   }
-});
+}
 
 module.exports = connect(state => ({Search: state.Search}))(Search);
