@@ -109,14 +109,17 @@ function getPRMergeCommitId(prNumber) {
     let mergeEvents = data.filter(item => item.event === "merged");
     if (mergeEvents.length > 1) {
       throw new Error("more than one merge event, aborting");
+    } else if (!mergeEvents.length) {
+      throw new Error(`Github returned no merge events for PR ${prNumber}, aborting.  Workaround: mark this PR as pushed-to-pine, so it gets skipped`);
     }
     let [mergeEvent] = mergeEvents;
 
     if (!mergeEvent.commit_id) {
       throw new Error("merge event has no commit id attached, aborted");
     }
+
     return mergeEvent.commit_id;
-  }).catch(reason => console.log(reason));
+  }).catch(err => { throw err; });
 }
 
 /**
