@@ -48,7 +48,6 @@
     &:focus {
       border-color: $search-blue;
       box-shadow: 0 0 0 2px $search-focus-shadow;
-      transition: box-shadow 150ms;
       z-index: 1;
     }
   }
@@ -190,7 +189,6 @@
 
     &:focus + button {
       z-index: 1;
-      transition: box-shadow 150ms;
       box-shadow: 0 0 0 2px $search-focus-shadow;
       background-color: $search-blue;
       background-image: url('#{$image-path}glyph-forward-16-white.svg');
@@ -219,7 +217,6 @@
     border-radius: 0 $border-radius $border-radius 0;
     margin-inline-start: -1px;
     border: 0;
-    width: $search-button-width;
     padding: 0;
     transition: box-shadow 150ms;
     box-shadow: 0 1px 0 0 $faintest-black;
@@ -228,7 +225,6 @@
 
     &:hover {
       z-index: 1;
-      transition: box-shadow 150ms;
       box-shadow: 0 1px 0 0 $search-hover-shadow;
       background-color: $search-blue;
       background-image: url('#{$image-path}glyph-forward-16-white.svg');
