@@ -1,4 +1,4 @@
-/* globals NewTabURL, EventEmitter, XPCOMUtils, Services, Pocket */
+/* globals NewTabURL, EventEmitter, XPCOMUtils, Services, Pocket, NewTabUtils */
 
 "use strict";
 
@@ -28,6 +28,7 @@ const getCurrentBrowser = require("addon/lib/getCurrentBrowser");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource:///modules/NewTabURL.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/NewTabUtils.jsm");
 
 XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   const {EventEmitter} = Cu.import("resource://devtools/shared/event-emitter.js", {});
@@ -470,6 +471,11 @@ ActivityStreams.prototype = {
       this._pageWorker.destroy();
 
       Services.obs.removeObserver(this, TOPIC_SYNC_COMPLETE);
+
+      // I'm not exactly sure why, but any links pinned in the current browser session
+      // from A-S will turn to dead objects on the browser side (NewTabUtils) if we
+      // unload the addon. We reset the cache so it rehydrates later.
+      NewTabUtils.pinnedLinks.resetCache();
     };
 
     switch (reason) {
