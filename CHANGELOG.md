@@ -1,5 +1,5 @@
-<a name="1.10.0"></a>
-# 1.10.0 (2017-05-01)
+<a name="1.10.1"></a>
+## 1.10.1 (2017-05-02)
 
 * tests(addon): #1255 New PerfMeter tests ([514d79d](https://github.com/mozilla/activity-stream/commit/514d79d))
 * tests(addon): #1255 Remove old PerfMeter tests ([b947254](https://github.com/mozilla/activity-stream/commit/b947254))
@@ -11,6 +11,7 @@
 * tests(topsites): Add action tests for TOP_SITES click ([0b8e11c](https://github.com/mozilla/activity-stream/commit/0b8e11c))
 *  Add hasHighResIcon to link object fixes #2392 ([c82fbab](https://github.com/mozilla/activity-stream/commit/c82fbab)), closes [#2392](https://github.com/mozilla/activity-stream/issues/2392)
 *  Close localFetch20 experiment fixes #2267 ([82ed3ec](https://github.com/mozilla/activity-stream/commit/82ed3ec)), closes [#2267](https://github.com/mozilla/activity-stream/issues/2267)
+*  Fire event for experiment enrollment fixes #2477 ([4068705](https://github.com/mozilla/activity-stream/commit/4068705)), closes [#2477](https://github.com/mozilla/activity-stream/issues/2477)
 *  Update to Page Metadata Parser 0.5.2 fixes #1912 ([d3f2a91](https://github.com/mozilla/activity-stream/commit/d3f2a91)), closes [#1912](https://github.com/mozilla/activity-stream/issues/1912)
 * * fix(debug): Fix warnings and bug on debug page (#1903) ([85a90f9](https://github.com/mozilla/activity-stream/commit/85a90f9)), closes [#1903](https://github.com/mozilla/activity-stream/issues/1903)
 * 1.1.3 changelog ([741472f](https://github.com/mozilla/activity-stream/commit/741472f))
@@ -26,6 +27,7 @@
 * 1.1.9 ([1f0da08](https://github.com/mozilla/activity-stream/commit/1f0da08))
 * 1.1.9 changelog ([67b7148](https://github.com/mozilla/activity-stream/commit/67b7148))
 * 1.10.0 ([7414a82](https://github.com/mozilla/activity-stream/commit/7414a82))
+* 1.10.1 ([6ce83c3](https://github.com/mozilla/activity-stream/commit/6ce83c3))
 * 1.2.0 ([31471c9](https://github.com/mozilla/activity-stream/commit/31471c9))
 * 1.2.0 changelog ([08afc9e](https://github.com/mozilla/activity-stream/commit/08afc9e))
 * 1.3.0 ([fc89c69](https://github.com/mozilla/activity-stream/commit/fc89c69))
@@ -44,6 +46,7 @@
 * 1.9.0 changelog ([04789d1](https://github.com/mozilla/activity-stream/commit/04789d1))
 * Add .storybook files to jpm ignore ([5514695](https://github.com/mozilla/activity-stream/commit/5514695))
 * Add commit hash to the addon version for dev/pre-release channels ([b736cfc](https://github.com/mozilla/activity-stream/commit/b736cfc))
+* Add new pocket hot fix experiment fixes #2534 ([1282b3a](https://github.com/mozilla/activity-stream/commit/1282b3a)), closes [#2534](https://github.com/mozilla/activity-stream/issues/2534)
 * Add PureRenderMixin for stateless components ([33d7881](https://github.com/mozilla/activity-stream/commit/33d7881))
 * Add users/bots to .mention-bot blacklist ([24b489c](https://github.com/mozilla/activity-stream/commit/24b489c))
 * Address review comments ([5819e9e](https://github.com/mozilla/activity-stream/commit/5819e9e))
@@ -180,6 +183,7 @@
 * Update feeds on metadata change fixes #1969 ([7c93ca3](https://github.com/mozilla/activity-stream/commit/7c93ca3)), closes [#1969](https://github.com/mozilla/activity-stream/issues/1969)
 * Update to Metadata Parser 0.6.0 fixes #2082 ([f4eba25](https://github.com/mozilla/activity-stream/commit/f4eba25)), closes [#2082](https://github.com/mozilla/activity-stream/issues/2082)
 * Update travis script for v1.4.0 ([5a7dbf6](https://github.com/mozilla/activity-stream/commit/5a7dbf6))
+* Update version for this point release ([db8c713](https://github.com/mozilla/activity-stream/commit/db8c713))
 * v1.1.4 changelog ([0a91220](https://github.com/mozilla/activity-stream/commit/0a91220))
 * feat(a11y): Closes #1993 Bring '...' button to foreground ([473ead6](https://github.com/mozilla/activity-stream/commit/473ead6)), closes [#1993](https://github.com/mozilla/activity-stream/issues/1993)
 * feat(addon): #1452 Add 'Feeds' to allow for custom update cycles ([94d350b](https://github.com/mozilla/activity-stream/commit/94d350b))
