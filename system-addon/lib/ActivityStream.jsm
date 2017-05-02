@@ -15,6 +15,9 @@ const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.j
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabInit",
   "resource://activity-stream/lib/NewTabInit.jsm");
 
+XPCOMUtils.defineLazyModuleGetter(this, "PlacesFeed",
+  "resource://activity-stream/lib/PlacesFeed.jsm");
+
 XPCOMUtils.defineLazyModuleGetter(this, "TopSitesFeed",
   "resource://activity-stream/lib/TopSitesFeed.jsm");
 
@@ -33,6 +36,7 @@ const feeds = {
   // 3. You should use XPCOMUtils.defineLazyModuleGetter to import the Feed,
   //    so it isn't loaded until the feed is enabled.
   "feeds.newtabinit": () => new NewTabInit(),
+  "feeds.places": () => new PlacesFeed(),
   "feeds.search": () => new SearchFeed(),
   "feeds.telemetry": () => new TelemetryFeed(),
   "feeds.topsites": () => new TopSitesFeed()

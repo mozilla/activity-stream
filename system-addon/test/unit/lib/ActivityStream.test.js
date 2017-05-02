@@ -9,6 +9,7 @@ describe("ActivityStream", () => {
     sandbox = sinon.sandbox.create();
     ({ActivityStream} = injector({
       "lib/NewTabInit.jsm": {NewTabInit: Fake},
+      "lib/PlacesFeed.jsm": {PlacesFeed: Fake},
       "lib/SearchFeed.jsm": {SearchFeed: Fake},
       "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake},
       "lib/TelemetryFeed.jsm": {TelemetryFeed: Fake}
@@ -66,6 +67,10 @@ describe("ActivityStream", () => {
   describe("feeds", () => {
     it("should create a NewTabInit feed", () => {
       const feed = as.feeds["feeds.newtabinit"]();
+      assert.instanceOf(feed, Fake);
+    });
+    it("should create a Places feed", () => {
+      const feed = as.feeds["feeds.places"]();
       assert.instanceOf(feed, Fake);
     });
     it("should create a TopSites feed", () => {
