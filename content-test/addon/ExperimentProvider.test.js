@@ -416,7 +416,7 @@ describe("ExperimentProvider", () => {
     it("should set pocket pref on pocket experiment enrollment", () => {
       setup();
       assert.isUndefined(simplePrefs.prefs.showPocket);
-      const experimentId = "pocket";
+      const experimentId = "pocketHotFix";
       const variant = {description: "Pocket experiment", id: "pocket_01", threshold: 0.5, value: true};
       experimentProvider.enroll(experimentId, variant);
       assert.isTrue(simplePrefs.prefs.showPocket);

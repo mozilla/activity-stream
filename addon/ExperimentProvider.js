@@ -70,7 +70,7 @@ exports.ExperimentProvider = class ExperimentProvider {
   enroll(experimentId, variant) {
     this._experimentId = variant.id;
     prefService.set(PREF_PREFIX + experimentId, variant.value);
-    if (experimentId === "pocket") {
+    if (experimentId === "pocketHotFix") {
       simplePrefs.prefs.showPocket = true;
     } else if (experimentId === "topSitesTwoRowsDefault") {
       simplePrefs.prefs.showMoreTopSites = true;

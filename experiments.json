@@ -241,7 +241,7 @@
   },
   "pocket": {
     "name": "Trending stories provided by Pocket",
-    "active": true,
+    "active": false,
     "description": "Display recommendations of trending stories by Pocket",
     "control": {
       "value": false,
@@ -297,6 +297,21 @@
       "value": true,
       "threshold": 0.2,
       "description": "Show two rows of Top Sites by default"
+    }
+  },
+  "pocketHotFix": {
+    "name": "Trending stories provided by Pocket",
+    "active": true,
+    "description": "Display recommendations of trending stories by Pocket",
+    "control": {
+      "value": false,
+      "description": "Pocket trending stories active"
+    },
+    "variant": {
+      "id": "exp-021-pocketstories",
+      "value": true,
+      "threshold": 0.2,
+      "description": "Show pocket trending stories"
     }
   }
 }
