@@ -46,13 +46,13 @@ const TopSitesItem = React.createClass({
     return faviconSize;
   },
   userEvent(event) {
-    const {page, source, index, dispatch, site} = this.props;
+    const {page, source, index, dispatch, metadata_source} = this.props;
     let payload = {
       event,
       page,
       source,
       action_position: index,
-      metadata_source: site.metadata_source
+      metadata_source
     };
     dispatch(actions.NotifyEvent(payload));
   },
