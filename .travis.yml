@@ -47,7 +47,7 @@ deploy:
     skip_cleanup: true
     script: bin/continuous-integration.sh shield
     on:
-      branch: shield_study
+      branch: user-research
 
 notifications:
   email: false
