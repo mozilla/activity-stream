@@ -43,6 +43,11 @@ deploy:
     script: bin/continuous-integration.sh prerelease
     on:
       branch: release-1.4.0
+  - provider: script
+    skip_cleanup: true
+    script: bin/continuous-integration.sh shield
+    on:
+      branch: shield_study
 
 notifications:
   email: false
