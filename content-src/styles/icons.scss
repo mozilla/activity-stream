@@ -111,4 +111,16 @@
   &.icon-trending {
     background-image: url('#{$image-path}trending-icon.svg');
   }
+
+  &.icon-arrowhead-down {
+    background-image: url('#{$image-path}glyph-arrowhead-down-12.svg');
+    height: 12px;
+    width: 12px;
+  }
+
+  &.icon-arrowhead-up {
+    background-image: url('#{$image-path}glyph-arrowhead-up-12.svg');
+    height: 12px;
+    width: 12px;
+  }
 }

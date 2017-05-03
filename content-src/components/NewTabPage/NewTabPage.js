@@ -12,6 +12,7 @@ const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
 const {HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH, POCKET_STORIES_LENGTH} = require("common/constants");
 const {injectIntl} = require("react-intl");
+const classNames = require("classnames");
 
 const NewTabPage = React.createClass({
   getInitialState() {
@@ -83,7 +84,7 @@ const NewTabPage = React.createClass({
     const {showSearch, showTopSites, showPocket, showHighlights, showMoreTopSites} = props.Prefs.prefs;
 
     return (<main className="new-tab">
-      <div className="new-tab-wrapper">
+      <div className={classNames("new-tab-wrapper", {"show-highlights": showHighlights})}>
         {showSearch &&
           <section>
             <Search />

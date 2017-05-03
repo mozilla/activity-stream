@@ -202,6 +202,12 @@
       "title": "Show an extra row of Top Sites on the New Tab page",
       "type": "bool",
       "value": false
+    },
+    {
+      "name": "collapseHighlights",
+      "title": "Collapse the Highlights on the New Tab page leaving only section title visible",
+      "type": "bool",
+      "value": false
     }
   ],
   "repository": "mozilla/activity-stream",

@@ -3,6 +3,12 @@
   max-width: $wrapper-max-width;
   margin: auto;
   padding: $wrapper-vertical-padding 0;
+
+  &.show-highlights {
+    // if we are showing highlights, we want to stay top aligned to avoid everything
+    // jumping up and down when changing between collapsed/uncollapsed
+    margin-top: 0;
+  }
 }
 
 @keyframes fadeIn {
