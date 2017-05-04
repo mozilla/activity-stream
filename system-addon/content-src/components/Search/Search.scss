@@ -217,8 +217,8 @@
     border-radius: 0 $border-radius $border-radius 0;
     margin-inline-start: -1px;
     border: 0;
+    width: $search-button-width;
     padding: 0;
-    transition: box-shadow 150ms;
     box-shadow: 0 1px 0 0 $faintest-black;
     background: $white url('#{$image-path}glyph-forward-16.svg') no-repeat center center;
     background-size: 16px 16px;
