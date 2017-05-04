@@ -26,6 +26,8 @@ $base-gutter: 32px;
 $section-margin: 41px;
 $grid-unit: 96px; // 1 top site
 
+$icon-size: 16px;
+
 $wrapper-top-padding: 62px;
 $wrapper-max-width-medium: $grid-unit * 5 + $base-gutter * 4; // 5 top sites
 $wrapper-max-width-large: $grid-unit * 6 + $base-gutter * 5; // 6 top sites
@@ -35,5 +37,15 @@ $break-point-large: $wrapper-max-width-large + $base-gutter * 2;
 $section-title-font-size: 13px;
 $section-title-color: #6E707E;
 $section-title-bottom-margin: 18px;
+
+$context-menu-button-size: 27px;
+$context-menu-button-border: 1px solid rgba($black, 0.2);
+$context-menu-button-boxshadow: 0 2px 0 rgba($black, 0.1);
+$context-menu-border-color: rgba(0, 0, 0, 0.2);
+$context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px $context-menu-border-color;
+$context-menu-font-size: 14px;
+$context-menu-border-radius: 5px;
+$context-menu-outer-padding: 5px;
+$context-menu-item-padding: 3px 12px;
 
 $image-path: 'assets/';

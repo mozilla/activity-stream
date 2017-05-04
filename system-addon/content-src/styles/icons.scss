@@ -1,0 +1,33 @@
+.icon {
+  display: inline-block;
+  width: $icon-size;
+  height: $icon-size;
+  background-size: $icon-size;
+  background-position: center center;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+
+  &.icon-spacer {
+    margin-inline-end: 8px;
+  }
+
+  &.icon-bookmark {
+   background-image: url('#{$image-path}glyph-bookmark-16.svg');
+ }
+
+ &.icon-delete {
+   background-image: url('#{$image-path}glyph-delete-16.svg');
+ }
+
+ &.icon-dismiss {
+   background-image: url('#{$image-path}glyph-dismiss-16.svg');
+ }
+
+ &.icon-new-window {
+   background-image: url('#{$image-path}glyph-newWindow-16.svg');
+ }
+
+ &.icon-new-window-private {
+   background-image: url('#{$image-path}glyph-newWindow-private-16.svg');
+ }
+}

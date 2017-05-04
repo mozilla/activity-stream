@@ -1,5 +1,6 @@
 @import './styles/normalize';
 @import './styles/variables';
+@import './styles/icons';
 
 html,
 body,
@@ -106,3 +107,4 @@ a {
 @import './components/Base/Base';
 @import './components/TopSites/TopSites';
 @import './components/Search/Search';
+@import './components/ContextMenu/ContextMenu';
