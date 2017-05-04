@@ -188,6 +188,18 @@ class PlacesFeed {
       case at.UNINIT:
         this.removeObservers();
         break;
+      case at.BLOCK_URL:
+        NewTabUtils.activityStreamLinks.blockURL(action.data);
+        break;
+      case at.BOOKMARK_URL:
+        NewTabUtils.activityStreamLinks.addBookmark(action.data);
+        break;
+      case at.DELETE_BOOKMARK_BY_ID:
+        NewTabUtils.activityStreamLinks.deleteBookmark(action.data);
+        break;
+      case at.DELETE_HISTORY_URL:
+        NewTabUtils.activityStreamLinks.deleteHistoryEntry(action.data);
+        break;
     }
   }
 }

@@ -18,6 +18,10 @@ const globalImportContext = typeof Window === "undefined" ? BACKGROUND_PROCESS :
 this.globalImportContext = globalImportContext;
 
 const actionTypes = [
+  "BLOCK_URL",
+  "BOOKMARK_URL",
+  "DELETE_BOOKMARK_BY_ID",
+  "DELETE_HISTORY_URL",
   "INIT",
   "NEW_TAB_INITIAL_STATE",
   "NEW_TAB_LOAD",

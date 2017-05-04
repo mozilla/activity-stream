@@ -15,7 +15,15 @@ describe("PlacesFeed", () => {
   beforeEach(() => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
-    globals.set("NewTabUtils", {activityStreamProvider: {getBookmark() {}}});
+    globals.set("NewTabUtils", {
+      activityStreamProvider: {getBookmark() {}},
+      activityStreamLinks: {
+        addBookmark: sandbox.spy(),
+        deleteBookmark: sandbox.spy(),
+        deleteHistoryEntry: sandbox.spy(),
+        blockURL: sandbox.spy()
+      }
+    });
     globals.set("PlacesUtils", {
       history: {addObserver: sandbox.spy(), removeObserver: sandbox.spy()},
       bookmarks: {TYPE_BOOKMARK, addObserver: sandbox.spy(), removeObserver: sandbox.spy()}
@@ -58,6 +66,22 @@ describe("PlacesFeed", () => {
       assert.calledWith(global.PlacesUtils.history.removeObserver, feed.historyObserver);
       assert.calledWith(global.PlacesUtils.bookmarks.removeObserver, feed.BookmarksObserver);
       assert.calledWith(global.Services.obs.removeObserver, feed, BLOCKED_EVENT);
+    });
+    it("should block a url on BLOCK_URL", () => {
+      feed.onAction({type: at.BLOCK_URL, data: "apple.com"});
+      assert.calledWith(global.NewTabUtils.activityStreamLinks.blockURL, "apple.com");
+    });
+    it("should bookmark a url on BOOKMARK_URL", () => {
+      feed.onAction({type: at.BOOKMARK_URL, data: "pear.com"});
+      assert.calledWith(global.NewTabUtils.activityStreamLinks.addBookmark, "pear.com");
+    });
+    it("should delete a bookmark on DELETE_BOOKMARK_BY_ID", () => {
+      feed.onAction({type: at.DELETE_BOOKMARK_BY_ID, data: "g123kd"});
+      assert.calledWith(global.NewTabUtils.activityStreamLinks.deleteBookmark, "g123kd");
+    });
+    it("should delete a history entry on DELETE_HISTORY_URL", () => {
+      feed.onAction({type: at.DELETE_HISTORY_URL, data: "guava.com"});
+      assert.calledWith(global.NewTabUtils.activityStreamLinks.deleteHistoryEntry, "guava.com");
     });
   });
 
