@@ -51,10 +51,18 @@ module.exports = function(config) {
       resolveLoader: {alias: {inject: path.join(__dirname, "loaders/inject-loader")}},
       // This resolve config allows us to import with paths relative to the system-addon/ directory, e.g. "lib/ActivityStream.jsm"
       resolve: {
+        extensions: [".js", ".jsx"],
         modules: [
           PATHS.systemAddonDirectory,
           "node_modules"
         ]
+      },
+      externals: {
+        // enzyme needs these for backwards compatibility with 0.13.
+        // see https://github.com/airbnb/enzyme/blob/master/docs/guides/webpack.md#using-enzyme-with-webpack
+        "react/addons": true,
+        "react/lib/ReactContext": true,
+        "react/lib/ExecutionEnvironment": true
       },
       module: {
         rules: [
@@ -73,6 +81,12 @@ module.exports = function(config) {
                 ]
               }
             }]
+          },
+          {
+            test: /\.jsx?$/,
+            exclude: /node_modules/,
+            loader: "babel-loader",
+            options: {presets: ["react"]}
           },
           {
             enforce: "post",

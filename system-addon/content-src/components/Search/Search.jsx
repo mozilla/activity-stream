@@ -35,9 +35,10 @@ class Search extends React.Component {
         onChange={this.onChange}
         maxLength="256"
         placeholder="Search the Web" />
-        <button title="Submit search" onClick={this.onClick} />
+        <button className="search-button" title="Submit search" onClick={this.onClick} />
     </form>);
   }
 }
 
 module.exports = connect(state => ({Search: state.Search}))(Search);
+module.exports._unconnected = Search;
