@@ -70,6 +70,8 @@ scripts:
 
   tddmc: karma start karma.mc.config.js --tdd
 
+  debugcoverage: open logs/coverage/system-addon/report-html/index.html
+
 # start: Start watching/compiling assets,
   start:
     _parallel: true
