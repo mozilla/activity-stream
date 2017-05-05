@@ -246,6 +246,7 @@
     "testmc:unit": "karma start karma.mc.config.js || (cat logs/coverage/system-addon/text.txt && exit 2)",
     "posttestmc": "cat logs/coverage/system-addon/text-summary.txt",
     "tddmc": "karma start karma.mc.config.js --tdd",
+    "debugcoverage": "open logs/coverage/system-addon/report-html/index.html",
     "start": "npm-run-all --parallel start:*",
     "prestart": "npm run clean && npm run copyTestImages && npm run preparePocketJson",
     "start:static": "npm run bundle:static -- -w",
