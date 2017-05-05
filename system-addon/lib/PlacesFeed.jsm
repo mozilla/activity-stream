@@ -159,7 +159,7 @@ class PlacesFeed {
 
   removeObservers() {
     PlacesUtils.history.removeObserver(this.historyObserver);
-    PlacesUtils.bookmarks.removeObserver(this.bookmarksObsever);
+    PlacesUtils.bookmarks.removeObserver(this.bookmarksObserver);
     Services.obs.removeObserver(this, LINK_BLOCKED_EVENT);
   }
 
