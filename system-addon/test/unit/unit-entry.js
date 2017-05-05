@@ -23,7 +23,9 @@ overrider.set({
     generateQI: overrider.sandbox.stub().returns(() => {})
   },
   dump: overrider.sandbox.spy(),
+  fetch: overrider.sandbox.stub(),
   Services: {
+    locale: {getRequestedLocale: overrider.sandbox.stub()},
     obs: {
       addObserver: overrider.sandbox.spy(),
       removeObserver: overrider.sandbox.spy()

@@ -1,5 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
+const {FormattedMessage} = require("react-intl");
 const shortURL = require("content-src/lib/short-url");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 
@@ -43,7 +44,7 @@ class TopSite extends React.Component {
 }
 
 const TopSites = props => (<section>
-  <h3 className="section-title">Top Sites</h3>
+  <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
     {props.TopSites.rows.map((link, index) => <TopSite key={link.url} link={link} index={index} />)}
   </ul>

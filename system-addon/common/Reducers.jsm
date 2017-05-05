@@ -9,10 +9,12 @@ const INITIAL_STATE = {
   App: {
     // Have we received real data from the app yet?
     initialized: false,
-    // The version of the system-addon
-    version: null,
     // The locale of the browser
-    locale: null
+    locale: "",
+    // Localized strings with defaults
+    strings: {},
+    // The version of the system-addon
+    version: null
   },
   TopSites: {
     // Have we received real data from history yet?
@@ -35,6 +37,16 @@ function App(prevState = INITIAL_STATE.App, action) {
   switch (action.type) {
     case at.INIT:
       return Object.assign({}, action.data || {}, {initialized: true});
+    case at.LOCALE_UPDATED: {
+      if (!action.data) {
+        return prevState;
+      }
+      let {locale, strings} = action.data;
+      return Object.assign({}, prevState, {
+        locale,
+        strings
+      });
+    }
     default:
       return prevState;
   }
