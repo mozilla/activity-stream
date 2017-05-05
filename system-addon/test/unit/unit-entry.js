@@ -26,6 +26,10 @@ overrider.set({
   fetch: overrider.sandbox.stub(),
   Services: {
     locale: {getRequestedLocale: overrider.sandbox.stub()},
+    mm: {
+      addMessageListener: overrider.sandbox.spy((msg, cb) => cb()),
+      removeMessageListener: overrider.sandbox.spy()
+    },
     obs: {
       addObserver: overrider.sandbox.spy(),
       removeObserver: overrider.sandbox.spy()
