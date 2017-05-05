@@ -43,7 +43,8 @@ module.exports = {
     "showTopSites": 1 << 1,
     "showHighlights": 1 << 2,
     "showMoreTopSites": 1 << 3,
-    "showPocket": 1 << 4
+    "showPocket": 1 << 4,
+    "collapseHighlights": 1 << 5
   },
 
   // The minimum size to consider an icon high res

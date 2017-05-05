@@ -21,7 +21,7 @@ describe("Spotlight", () => {
 
   describe("valid sites", () => {
     beforeEach(() => {
-      instance = renderWithProvider(<Spotlight sites={fakeSpotlightItems} />);
+      instance = renderWithProvider(<Spotlight sites={fakeSpotlightItems} prefs={{}} />);
       el = ReactDOM.findDOMNode(instance);
     });
 
@@ -31,6 +31,10 @@ describe("Spotlight", () => {
     it("should render a SpotlightItem for each item", () => {
       const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
       assert.equal(children.length, 3);
+    });
+    it("should not show any SpotlightItems if collapseHighlights pref is true", () => {
+      instance = renderWithProvider(<Spotlight sites={fakeSpotlightItems} prefs={{collapseHighlights: true}} />);
+      assert.ok(instance.refs["spotlight-list"].className.indexOf("collapsed") >= 0);
     });
   });
 
@@ -47,8 +51,19 @@ describe("Spotlight", () => {
           done();
         }
       }
-      instance = renderWithProvider(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSpotlightItems} />);
+      instance = renderWithProvider(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSpotlightItems} prefs={{}} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
+    });
+    it("should fire a pref change event when section title is clicked", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_PREF_CHANGE") {
+          assert.equal(a.data.name, "collapseHighlights");
+          assert.equal(a.data.value, true);
+          done();
+        }
+      }
+      instance = renderWithProvider(<Spotlight dispatch={dispatch} sites={fakeSpotlightItems} prefs={{isCollapsed: false}} />);
+      TestUtils.Simulate.click(instance.refs["section-title"]);
     });
   });
 });

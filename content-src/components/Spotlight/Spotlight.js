@@ -123,6 +123,9 @@ const Spotlight = React.createClass({
       placeholder: false
     };
   },
+  getInitialState() {
+    return {isAnimating: false};
+  },
   onClickFactory(index, site) {
     return () => {
       let payload = {
@@ -152,11 +155,23 @@ const Spotlight = React.createClass({
           prefs={this.props.prefs} />
       );
   },
-
+  handleHeaderClick() {
+    this.setState({isAnimating: true});
+    this.props.dispatch(actions.NotifyPrefChange("collapseHighlights", !this.props.prefs.collapseHighlights));
+  },
+  handleTransitionEnd() {
+    this.setState({isAnimating: false});
+  },
   render() {
+    const isCollapsed = this.props.prefs.collapseHighlights;
+    const isAnimating = this.state.isAnimating;
+
     return (<section className="spotlight">
-      <h3 className="section-title"><FormattedMessage id="header_highlights" /></h3>
-      <ul className="spotlight-list">
+      <h3 className="section-title" ref="section-title" onClick={this.handleHeaderClick}>
+        <FormattedMessage id="header_highlights" />
+        <span className={classNames("icon", {"icon-arrowhead-down": !isCollapsed, "icon-arrowhead-up": isCollapsed})} />
+      </h3>
+      <ul ref="spotlight-list" className={classNames("spotlight-list", {"collapsed": isCollapsed, "animating": isAnimating})} onTransitionEnd={this.handleTransitionEnd}>
         {this.props.placeholder ? renderPlaceholderList() : this.renderSiteList()}
       </ul>
     </section>);
