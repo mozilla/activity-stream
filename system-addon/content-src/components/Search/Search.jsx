@@ -11,6 +11,12 @@ class Search extends React.Component {
     this.onClick = this.onClick.bind(this);
     this.onChange = this.onChange.bind(this);
   }
+
+  componentWillMount() {
+    // Trigger initialization of ContentSearch in case it hasn't happened yet
+    dispatchEvent(new CustomEvent("ContentSearchClient", {detail: {}}));
+  }
+
   performSearch(options) {
     let searchData = {
       engineName: options.engineName,
