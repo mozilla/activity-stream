@@ -19,7 +19,8 @@ function addLocaleDataForReactIntl({locale}) {
 class Base extends React.Component {
   componentDidMount() {
     // Also wait for the preloaded page to show, so the tab's title updates
-    addEventListener("visibilitychange", this);
+    addEventListener("visibilitychange", () =>
+      this.updateTitle(this.props.App), {once: true});
   }
   componentWillUpdate({App}) {
     if (App.locale !== this.props.App.locale) {
@@ -28,15 +29,6 @@ class Base extends React.Component {
     }
   }
 
-  handleEvent({type}) {
-    switch (type) {
-      // On first showing, make sure the title is updated
-      case "visibilitychange":
-        removeEventListener("visibilitychange", this);
-        this.updateTitle(this.props.App);
-        break;
-    }
-  }
   updateTitle({strings}) {
     document.title = strings.newtab_page_title;
   }
