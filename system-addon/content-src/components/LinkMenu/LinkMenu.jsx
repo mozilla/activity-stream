@@ -4,11 +4,10 @@ const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
 class LinkMenu extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {visible: false};
     this.getOptions = this.getOptions.bind(this);
   }
   getOptions() {
-    const items = [
+    return [
       {
         label: "Bookmark",
         icon: "bookmark"
@@ -31,14 +30,18 @@ class LinkMenu extends React.Component {
         label: "Delete from History",
         icon: "delete"
       }];
-    const itemLength = items.filter(item => item.type !== "separator").length;
-    return {items, itemLength};
+  }
+  getOptionsLength() {
+    // this is used for a11y - in order to be able to tab through the context menu
+    // we don't want to tab over 'separators', so we filter those out
+    return this.getOptions().filter(item => item.type !== "separator").length;
   }
   render() {
     return (<ContextMenu
       visible={this.props.visible}
       onUpdate={this.props.onUpdate}
-      options={this.getOptions()} />);
+      options={this.getOptions()}
+      tabbableOptionsLength={this.getOptionsLength()} />);
   }
 }
 

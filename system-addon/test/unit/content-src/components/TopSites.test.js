@@ -89,4 +89,9 @@ describe("<TopSite>", () => {
     const wrapper = shallow(<TopSite link={link} />);
     assert.isFalse(wrapper.find(LinkMenu).props().visible);
   });
+  it("should pass visible, onUpdate, site, and index to LinkMenu", () => {
+    const wrapper = shallow(<TopSite link={link} />);
+    const linkMenuProps = wrapper.find(LinkMenu).props();
+    ["visible", "onUpdate", "site", "index"].forEach(prop => assert.property(linkMenuProps, prop));
+  });
 });
