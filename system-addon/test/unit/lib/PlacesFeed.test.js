@@ -64,7 +64,7 @@ describe("PlacesFeed", () => {
       feed.onAction({type: at.UNINIT});
 
       assert.calledWith(global.PlacesUtils.history.removeObserver, feed.historyObserver);
-      assert.calledWith(global.PlacesUtils.bookmarks.removeObserver, feed.BookmarksObserver);
+      assert.calledWith(global.PlacesUtils.bookmarks.removeObserver, feed.bookmarksObserver);
       assert.calledWith(global.Services.obs.removeObserver, feed, BLOCKED_EVENT);
     });
     it("should block a url on BLOCK_URL", () => {
