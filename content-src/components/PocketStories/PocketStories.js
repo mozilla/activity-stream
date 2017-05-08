@@ -4,7 +4,7 @@ const {justDispatch} = require("common/selectors/selectors");
 const {FormattedMessage} = require("react-intl");
 const {SpotlightItem, renderPlaceholderList} = require("components/Spotlight/Spotlight");
 const {actions} = require("common/action-manager");
-const {pocket_read_more_endpoint} = require("../../../pocket.json");
+const {pocket_read_more_endpoint, pocket_learn_more_endpoint, pocket_survey_link} = require("../../../pocket.json");
 
 const PocketStories = React.createClass({
   onClickFactory(index, story) {
@@ -55,6 +55,7 @@ const PocketStories = React.createClass({
       <div className="pocket-read-more">
         <span><FormattedMessage id="pocket_read_more" /></span>
         <ul>{this.props.topics.map(t => this.renderReadMoreTopic(t.name, t.url))}</ul>
+
         <a className="pocket-read-even-more" href={pocket_read_more_endpoint}>
           <FormattedMessage id="pocket_read_even_more" />
           <span className="pocket-read-even-more-logo" />
@@ -72,12 +73,27 @@ const PocketStories = React.createClass({
     return (<section className="pocket-stories spotlight">
       <h3 className="section-title">
         <FormattedMessage id="header_stories" />
+
         <span className="section-title-logo" >
-          <span className="pocket-logo-text">
-              <FormattedMessage id="header_stories_by" />
-          </span>
-          <span className="pocket-logo">
-            <span className="sr-only">Pocket</span>
+          <a href={pocket_learn_more_endpoint}>
+            <span className="pocket-logo-text">
+              <FormattedMessage id="header_stories_from" />
+            </span>
+            <span className="pocket-logo">
+              <span className="sr-only">Pocket</span>
+            </span>
+          </a>
+          <span className="pocket-info">
+            <span className="sr-only">Info</span>
+            <div className="pocket-feedback-wrapper">
+              <div className="pocket-feedback">
+                <div className="pocket-feedback-header"><FormattedMessage id="pocket_feedback_header" /></div>
+                <p><FormattedMessage id="pocket_feedback_body" /></p>
+                <a href={pocket_survey_link} target="_blank" rel="noopener noreferrer" className="pocket-send-feedback">
+                  <FormattedMessage id="pocket_send_feedback" />
+                </a>
+              </div>
+            </div>
           </span>
         </span>
       </h3>
