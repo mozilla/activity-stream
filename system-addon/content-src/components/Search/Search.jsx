@@ -1,6 +1,7 @@
 "use strict";
 const React = require("react");
 const {connect} = require("react-redux");
+const {FormattedMessage, injectIntl} = require("react-intl");
 const {actionTypes, actionCreators} = require("common/Actions.jsm");
 
 class Search extends React.Component {
@@ -29,16 +30,26 @@ class Search extends React.Component {
   }
   render() {
     return (<form className="search-wrapper">
-      <label htmlFor="search-input" className="search-label"><span className="sr-only">Search The Web</span></label>
-      <input id="search-input" value={this.state.searchString} type="search"
-        title="Search The Web"
-        onChange={this.onChange}
+      <label htmlFor="search-input" className="search-label">
+        <span className="sr-only"><FormattedMessage id="search_web_placeholder" /></span>
+      </label>
+      <input
+        id="search-input"
         maxLength="256"
-        placeholder="Search the Web" />
-        <button className="search-button" title="Submit search" onClick={this.onClick} />
+        onChange={this.onChange}
+        placeholder={this.props.intl.formatMessage({id: "search_web_placeholder"})}
+        title={this.props.intl.formatMessage({id: "search_web_placeholder"})}
+        type="search"
+        value={this.state.searchString} />
+        <button
+          className="search-button"
+          onClick={this.onClick}
+          title={this.props.intl.formatMessage({id: "search_button"})}>
+          <span className="sr-only"><FormattedMessage id="search_button" /></span>
+        </button>
     </form>);
   }
 }
 
-module.exports = connect(state => ({Search: state.Search}))(Search);
+module.exports = connect(state => ({Search: state.Search}))(injectIntl(Search));
 module.exports._unconnected = Search;

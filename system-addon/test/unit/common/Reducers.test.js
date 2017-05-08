@@ -13,10 +13,20 @@ describe("Reducers", () => {
       assert.propertyVal(nextState, "initialized", true);
     });
     it("should set initialized, version, and locale on INIT", () => {
-      const action = {type: "INIT", data: {version: "1.2.3", locale: "zh-CN"}};
+      const action = {type: "INIT", data: {version: "1.2.3"}};
       const nextState = App(undefined, action);
       assert.propertyVal(nextState, "version", "1.2.3");
+    });
+    it("should not update state for empty action.data on LOCALE_UPDATED", () => {
+      const nextState = App(undefined, {type: at.LOCALE_UPDATED});
+      assert.equal(nextState, INITIAL_STATE.App);
+    });
+    it("should set locale, strings on LOCALE_UPDATE", () => {
+      const strings = {};
+      const action = {type: "LOCALE_UPDATED", data: {locale: "zh-CN", strings}};
+      const nextState = App(undefined, action);
       assert.propertyVal(nextState, "locale", "zh-CN");
+      assert.propertyVal(nextState, "strings", strings);
     });
   });
   describe("TopSites", () => {

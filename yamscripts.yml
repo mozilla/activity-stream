@@ -49,6 +49,7 @@ scripts:
     pre: rimraf ../mozilla-central/browser/extensions/activity-stream
     webpack: webpack --config webpack.system-addon.config.js
     css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content
+    locales: pontoon-to-json --src locales --dest system-addon/data
     # Copy over all of the mozilla-central directory except content-src
     copy: cpx "system-addon/{bootstrap.js,install.rdf.in,jar.mn,moz.build,README.md,{common,data,lib,test,vendor}/**/{,.}*}" ../mozilla-central/browser/extensions/activity-stream
 
@@ -64,7 +65,7 @@ scripts:
   importmc: cpx "../mozilla-central/browser/extensions/activity-stream/**/*" system-addon/
 
   testmc:
-    bundle: =>buildmc:webpack
+    build: =>buildmc:webpack && =>buildmc:locales
     unit: karma start karma.mc.config.js || (cat logs/coverage/system-addon/text.txt && exit 2)
     post: cat logs/coverage/system-addon/text-summary.txt
 

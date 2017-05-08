@@ -1,5 +1,5 @@
 const React = require("react");
-const {shallow, mount} = require("enzyme");
+const {mountWithIntl, shallowWithIntl} = require("test/unit/utils");
 const {_unconnected: Search} = require("content-src/components/Search/Search");
 const {actionTypes: at, actionUtils: au} = require("common/Actions.jsm");
 
@@ -15,7 +15,7 @@ const DEFAULT_PROPS = {
 
 describe("<Search>", () => {
   it("should render a Search element", () => {
-    const wrapper = shallow(<Search {...DEFAULT_PROPS} />);
+    const wrapper = shallowWithIntl(<Search {...DEFAULT_PROPS} />);
     assert.ok(wrapper.exists());
   });
 
@@ -27,7 +27,7 @@ describe("<Search>", () => {
       return dispatch.firstCall.args[0];
     }
     it("should send a SendToMain action with type PERFORM_SEARCH when you click the search button", () => {
-      const wrapper = mount(<Search {...DEFAULT_PROPS} dispatch={sinon.spy()} />);
+      const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} dispatch={sinon.spy()} />);
 
       const action = clickButtonAndGetAction(wrapper);
 
@@ -36,14 +36,14 @@ describe("<Search>", () => {
     });
     it("should send an action with the right engineName ", () => {
       const props = {Search: {currentEngine: {name: "foo123"}}, dispatch: sinon.spy()};
-      const wrapper = mount(<Search {...props} />);
+      const wrapper = mountWithIntl(<Search {...props} />);
 
       const action = clickButtonAndGetAction(wrapper);
 
       assert.propertyVal(action.data, "engineName", "foo123");
     });
     it("should send an action with the right searchString ", () => {
-      const wrapper = mount(<Search {...DEFAULT_PROPS} dispatch={sinon.spy()} />);
+      const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} dispatch={sinon.spy()} />);
       wrapper.setState({searchString: "hello123"});
 
       const action = clickButtonAndGetAction(wrapper);
@@ -53,7 +53,7 @@ describe("<Search>", () => {
   });
 
   it("should update state.searchString on a change event", () => {
-    const wrapper = mount(<Search {...DEFAULT_PROPS} />);
+    const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
     const inputEl = wrapper.find("#search-input");
     // as the value in the input field changes, it will update the search string
     inputEl.simulate("change", {target: {value: "hello"}});
