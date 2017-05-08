@@ -70,6 +70,31 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
         return row;
       });
       return hasMatch ? Object.assign({}, prevState, {rows: newRows}) : prevState;
+    case at.PLACES_BOOKMARK_ADDED:
+      newRows = prevState.rows.map(site => {
+        if (site.url === action.data.url) {
+          const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
+          return Object.assign({}, site, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: lastModified});
+        }
+        return site;
+      });
+      return Object.assign({}, prevState, {rows: newRows});
+    case at.PLACES_BOOKMARK_REMOVED:
+      newRows = prevState.rows.map(site => {
+        if (site.url === action.data.url) {
+          const newSite = Object.assign({}, site);
+          delete newSite.bookmarkGuid;
+          delete newSite.bookmarkTitle;
+          delete newSite.bookmarkDateCreated;
+          return newSite;
+        }
+        return site;
+      });
+      return Object.assign({}, prevState, {rows: newRows});
+    case at.PLACES_LINK_DELETED:
+    case at.PLACES_LINK_BLOCKED:
+      newRows = prevState.rows.filter(val => val.url !== action.data.url);
+      return Object.assign({}, prevState, {rows: newRows});
     default:
       return prevState;
   }

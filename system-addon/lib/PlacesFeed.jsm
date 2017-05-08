@@ -5,7 +5,7 @@
 "use strict";
 
 const {utils: Cu, interfaces: Ci} = Components;
-const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+const {actionTypes: at, actionCreators: ac} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
@@ -147,8 +147,8 @@ class BookmarksObserver extends Observer {
 
 class PlacesFeed {
   constructor() {
-    this.historyObserver = new HistoryObserver(action => this.store.dispatch(action));
-    this.bookmarksObserver = new BookmarksObserver(action => this.store.dispatch(action));
+    this.historyObserver = new HistoryObserver(action => this.store.dispatch(ac.BroadcastToContent(action)));
+    this.bookmarksObserver = new BookmarksObserver(action => this.store.dispatch(ac.BroadcastToContent(action)));
   }
 
   addObservers() {
@@ -173,10 +173,10 @@ class PlacesFeed {
    */
   observe(subject, topic, value) {
     if (topic === LINK_BLOCKED_EVENT) {
-      this.store.dispatch({
+      this.store.dispatch(ac.BroadcastToContent({
         type: at.PLACES_LINK_BLOCKED,
         data: {url: value}
-      });
+      }));
     }
   }
 
@@ -189,7 +189,7 @@ class PlacesFeed {
         this.removeObservers();
         break;
       case at.BLOCK_URL:
-        NewTabUtils.activityStreamLinks.blockURL(action.data);
+        NewTabUtils.activityStreamLinks.blockURL({url: action.data});
         break;
       case at.BOOKMARK_URL:
         NewTabUtils.activityStreamLinks.addBookmark(action.data);

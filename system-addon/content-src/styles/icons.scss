@@ -15,6 +15,10 @@
    background-image: url('#{$image-path}glyph-bookmark-16.svg');
  }
 
+ &.icon-bookmark-remove {
+   background-image: url('#{$image-path}glyph-bookmark-remove-16.svg');
+ }
+
  &.icon-delete {
    background-image: url('#{$image-path}glyph-delete-16.svg');
  }

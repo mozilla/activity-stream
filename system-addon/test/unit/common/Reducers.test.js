@@ -55,6 +55,58 @@ describe("Reducers", () => {
       const nextState = TopSites(oldState, action);
       assert.deepEqual(nextState, oldState);
     });
+    it("should bookmark an item on PLACES_BOOKMARK_ADDED", () => {
+      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
+      const action = {
+        type: at.PLACES_BOOKMARK_ADDED,
+        data: {
+          url: "bar.com",
+          bookmarkGuid: "bookmark123",
+          bookmarkTitle: "Title for bar.com",
+          lastModified: 1234567
+        }
+      };
+      const nextState = TopSites(oldState, action);
+      const newRow = nextState.rows[1];
+      // new row has bookmark data
+      assert.equal(newRow.url, action.data.url);
+      assert.equal(newRow.bookmarkGuid, action.data.bookmarkGuid);
+      assert.equal(newRow.bookmarkTitle, action.data.bookmarkTitle);
+      assert.equal(newRow.bookmarkDateCreated, action.data.lastModified);
+
+      // old row is unchanged
+      assert.equal(nextState.rows[0], oldState.rows[0]);
+    });
+    it("should remove a bookmark on PLACES_BOOKMARK_REMOVED", () => {
+      const oldState = {
+        rows: [{url: "foo.com"}, {
+          url: "bar.com",
+          bookmarkGuid: "bookmark123",
+          bookmarkTitle: "Title for bar.com",
+          lastModified: 123456
+        }]
+      };
+      const action = {type: at.PLACES_BOOKMARK_REMOVED, data: {url: "bar.com"}};
+      const nextState = TopSites(oldState, action);
+      const newRow = nextState.rows[1];
+      // new row no longer has bookmark data
+      assert.equal(newRow.url, oldState.rows[1].url);
+      assert.isUndefined(newRow.bookmarkGuid);
+      assert.isUndefined(newRow.bookmarkTitle);
+      assert.isUndefined(newRow.bookmarkDateCreated);
+
+      // old row is unchanged
+      assert.deepEqual(nextState.rows[0], oldState.rows[0]);
+    });
+    it("should remove a link on PLACES_LINK_BLOCKED and PLACES_LINK_DELETED", () => {
+      const events = [at.PLACES_LINK_BLOCKED, at.PLACES_LINK_DELETED];
+      events.forEach(event => {
+        const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
+        const action = {type: event, data: {url: "bar.com"}};
+        const nextState = TopSites(oldState, action);
+        assert.deepEqual(nextState.rows, [{url: "foo.com"}]);
+      });
+    });
   });
   describe("Search", () => {
     it("should return the initial state", () => {
