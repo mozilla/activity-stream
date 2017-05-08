@@ -1,4 +1,5 @@
 const React = require("react");
+const {injectIntl} = require("react-intl");
 const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
 
 class LinkMenu extends React.Component {
@@ -9,27 +10,31 @@ class LinkMenu extends React.Component {
   getOptions() {
     return [
       {
-        label: "Bookmark",
+        id: "menu_action_bookmark",
         icon: "bookmark"
       },
       {type: "separator"},
       {
-        label: "Open in a New Window",
+        id: "menu_action_open_new_window",
         icon: "new-window"
       },
       {
-        label: "Open in a New Private Window",
+        id: "menu_action_open_private_window",
         icon: "new-window-private"
       },
       {type: "separator"},
       {
-        label: "Dismiss",
+        id: "menu_action_dismiss",
         icon: "dismiss"
       },
       {
-        label: "Delete from History",
+        id: "menu_action_delete",
         icon: "delete"
-      }];
+      }].map(option => {
+        // Convert message ids to localized labels
+        option.label = option.id ? this.props.intl.formatMessage(option) : "";
+        return option;
+      });
   }
   getOptionsLength() {
     // this is used for a11y - in order to be able to tab through the context menu
@@ -45,4 +50,5 @@ class LinkMenu extends React.Component {
   }
 }
 
-module.exports = LinkMenu;
+module.exports = injectIntl(LinkMenu);
+module.exports._unconnected = LinkMenu;
