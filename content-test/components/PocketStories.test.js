@@ -36,6 +36,18 @@ describe("PocketStories", () => {
       const links = TestUtils.scryRenderedDOMComponentsWithClass(instance, "pocket-read-more-link");
       assert.equal(POCKET_TOPICS_LENGTH, links.length);
     });
+    it("should render the Read Even More section", () => {
+      const readEvenMore = TestUtils.scryRenderedDOMComponentsWithClass(instance, "pocket-read-even-more");
+      assert.equal(1, readEvenMore.length);
+    });
+    it("should render the Pocket Info panel", () => {
+      const pocketInfo = TestUtils.scryRenderedDOMComponentsWithClass(instance, "pocket-info");
+      assert.equal(1, pocketInfo.length);
+    });
+    it("should render the Pocket Feedback form", () => {
+      const pocketFeedback = TestUtils.scryRenderedDOMComponentsWithClass(instance, "pocket-feedback");
+      assert.equal(1, pocketFeedback.length);
+    });
     it("should not render PocketStories if no stories available", () => {
       let emptyInstance = renderWithProvider(<PocketStories stories={[]} topics={fakePocketTopics} dispatch={() => {}} />);
       el = ReactDOM.findDOMNode(emptyInstance);

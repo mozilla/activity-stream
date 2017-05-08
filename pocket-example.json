@@ -2,5 +2,7 @@
   "pocket_story_endpoint": "https://getpocket.com/v3/firefox/global-recs",
   "pocket_topic_endpoint" : "https://getpocket.com/v3/firefox/trending-topics",
   "pocket_read_more_endpoint" : "https://getpocket.com/explore/trending?src=ff_new_tab",
+  "pocket_learn_more_endpoint": "https://getpocket.com/firefox_learnmore?src=ff_newtab",
+  "pocket_survey_link": "https://www.surveymonkey.com/r/newtabffx",
   "pocket_consumer_key": ""
 }
