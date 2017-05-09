@@ -101,6 +101,16 @@ describe("TopSitesItem", () => {
       assert.instanceOf(instance.refs.icon, SiteIcon);
       assert.include(instance.refs.icon.props.site, fakeSite);
     });
+
+    it("should not render the unpinButton for unpinned sites", () => {
+      assert.isUndefined(instance.refs.unpinButton);
+    });
+
+    it("should render the unpinButton for pinned sites", () => {
+      const pinnedSite = Object.assign({}, fakeSiteWithImage, {isPinned: true});
+      instance = renderWithProvider(<TopSitesItem intl={{formatMessage: () => {}}} {...pinnedSite} />);
+      assert.ok(instance.refs.unpinButton);
+    });
   });
 
   describe("screenshot", () => {
