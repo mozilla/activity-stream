@@ -1,20 +1,20 @@
 const React = require("react");
-const {shallow} = require("enzyme");
-const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
+const {shallowWithIntl} = require("test/unit/utils");
+const {_unconnected: LinkMenu} = require("content-src/components/LinkMenu/LinkMenu");
 const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
 
 describe("<LinkMenu>", () => {
   it("should render a ContextMenu element", () => {
-    const wrapper = shallow(<LinkMenu />);
+    const wrapper = shallowWithIntl(<LinkMenu />);
     assert.ok(wrapper.find(ContextMenu));
   });
   it("should pass visible, onUpdate, and options to ContextMenu", () => {
-    const wrapper = shallow(<LinkMenu />);
+    const wrapper = shallowWithIntl(<LinkMenu />);
     const contextMenuProps = wrapper.find(ContextMenu).props();
     ["visible", "onUpdate", "options", "tabbableOptionsLength"].forEach(prop => assert.property(contextMenuProps, prop));
   });
   it("should give ContextMenu the correct tabbable options length for a11y", () => {
-    const wrapper = shallow(<LinkMenu />);
+    const wrapper = shallowWithIntl(<LinkMenu />);
 
     // stub the getOptions method
     let component = wrapper.instance();
