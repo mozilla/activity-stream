@@ -52,25 +52,21 @@
         top: 100%;
         width: 100%;
 
-        .icon-pin {
+        .icon {
           offset-inline-start: 0;
-          opacity: 0.5;
           position: absolute;
+          top: 8px;
         }
 
         .label {
           flex-grow: 1;
+          overflow: hidden;
           text-overflow: ellipsis;
         }
 
         &.pinned {
           .label {
-            padding-inline-start: 20px;
-            text-align: left;
-
-            &:dir(rtl) {
-              text-align: right;
-            }
+            padding: 0 13px;
           }
         }
       }
@@ -125,49 +121,8 @@
       border-radius: 3px;
     }
   }
-}
 
-.edit-topsites-wrapper {
-  .edit-topsites-button {
-    position: absolute;
-    offset-inline-end: 0;
-    top: -2px;
-
-    button {
-      background: none;
-      border: 0;
-      color: $light-grey;
-      cursor: pointer;
-      font-size: 12px;
-      padding: 0;
-    }
-  }
-
-  .modal {
-    offset-inline-start: -31px;
-    position: absolute;
-    top: -16px;
-    width: calc(100% + 60px);
-  }
-
-  .edit-topsites-inner-wrapper {
-    margin: 0;
-    padding: 15px 30px;
-  }
-
-  button.icon-topsites {
-    background-position: 10px center;
-    background-repeat: no-repeat;
-    height: auto;
-    padding-right: 15px;
-    width: auto;
-
-    span {
-      padding-left: 3px;
-    }
-  }
-
-  .edit-menu {
+  .hover-menu {
     background: $white;
     border: $edit-menu-button-border;
     border-radius: $edit-menu-button-size / 2;
@@ -208,11 +163,64 @@
       &:first-child:dir(rtl) {
         border-right: 0;
       }
+
+      &.link-menu-button {
+        background-position: 6px 0;
+        position: static;
+      }
+
+      + .link-menu-button {
+        background-position: 5px 0;
+      }
     }
   }
 
-  .tile-outer:hover .edit-menu {
-    transform: scale(1);
-    opacity: 1;
+  .tile-outer:hover,
+  .tile-outer.active {
+    .hover-menu {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+.edit-topsites-wrapper {
+  .edit-topsites-button {
+    position: absolute;
+    offset-inline-end: 0;
+    top: -2px;
+
+    button {
+      background: none;
+      border: 0;
+      color: $light-grey;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0;
+    }
+  }
+
+  .modal {
+    offset-inline-start: -31px;
+    position: absolute;
+    top: -16px;
+    width: calc(100% + 60px);
+  }
+
+  .edit-topsites-inner-wrapper {
+    margin: 0;
+    padding: 15px 30px;
+  }
+
+  button.icon-topsites {
+    background-position: 10px center;
+    background-repeat: no-repeat;
+    height: auto;
+    padding-right: 15px;
+    width: auto;
+
+    span {
+      padding-left: 3px;
+    }
   }
 }

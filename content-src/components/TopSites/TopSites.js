@@ -107,13 +107,23 @@ const TopSitesItem = React.createClass({
           border={!!screenshot || this._isTippyTop(site.favicon_url)} />
 
         <div ref="title" className={classNames("site-title", {pinned: site.isPinned})}>
-          {site.isPinned && <div className="icon icon-pin" />}
+          {site.isPinned && <div className="icon icon-pin-small" />}
           <div className="label">{label}</div>
         </div>
       </a>
       {!this.props.editMode &&
         <div>
-          <LinkMenuButton onClick={() => this.setState({showContextMenu: true, activeTile: index})} />
+          <div className="hover-menu">
+            {site.isPinned &&
+              <button
+                ref="unpinButton"
+                className="icon icon-unpin"
+                title={this.props.intl.formatMessage({id: "edit_topsites_unpin_button"})}
+                onClick={this.handlePin} />
+            }
+            <LinkMenuButton onClick={() => this.setState({showContextMenu: true, activeTile: index})} />
+          </div>
+
           <LinkMenu
             visible={isActive}
             onUpdate={val => this.setState({showContextMenu: val})}
@@ -124,11 +134,11 @@ const TopSitesItem = React.createClass({
         </div>
       }
       {this.props.editMode && site.type !== FIRST_RUN_TYPE &&
-        <div className="edit-menu">
+        <div className="hover-menu">
           {site.isPinned &&
             <button
               ref="unpinButton"
-              className="icon icon-pin"
+              className="icon icon-unpin"
               title={this.props.intl.formatMessage({id: "edit_topsites_unpin_button"})}
               onClick={this.handlePin} />
           }
@@ -220,6 +230,7 @@ const TopSites = React.createClass({
             onClick={this.onClickFactory(i, site)}
             showNewStyle={this.props.showNewStyle}
             dispatch={this.props.dispatch}
+            intl={this.props.intl}
             {...site} />
           );
         })}
@@ -351,7 +362,7 @@ EditTopSites.propTypes = {
 
 const EditTopSitesIntl = injectIntl(EditTopSites);
 
-module.exports = connect(justDispatch)(TopSites);
+module.exports = connect(justDispatch)(injectIntl(TopSites));
 module.exports.TopSites = TopSites;
 module.exports.TopSitesItem = TopSitesItem;
 module.exports.PlaceholderTopSitesItem = PlaceholderTopSitesItem;
