@@ -71,6 +71,15 @@ describe("LinkMenu", () => {
     assert.ok(pocketContextMenu.refs.saveToPocket, "show pocket");
   });
 
+  it("should show delete option for non pocket sites", () => {
+    assert.ok(contextMenu.refs.delete, "show delete");
+  });
+
+  it("should hide delete option for pocket sites", () => {
+    setup({site: {url: "https://foo.com", pocket: true}});
+    assert.isUndefined(contextMenu.refs.delete, "hide delete");
+  });
+
   describe("individual options", () => {
     // Checks to make sure each action
     // 1. Fires a custom action (options.event)
