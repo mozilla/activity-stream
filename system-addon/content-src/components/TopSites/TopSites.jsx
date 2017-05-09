@@ -13,7 +13,7 @@ class TopSite extends React.Component {
     this.setState({showContextMenu: true, activeTile: index});
   }
   render() {
-    const {link, index} = this.props;
+    const {link, index, dispatch} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
     const title = shortURL(link);
     const screenshotClassName = `screenshot${link.screenshot ? " active" : ""}`;
@@ -35,6 +35,7 @@ class TopSite extends React.Component {
           <span className="sr-only">{`Open context menu for ${title}`}</span>
         </button>
         <LinkMenu
+          dispatch={dispatch}
           visible={isContextMenuOpen}
           onUpdate={val => this.setState({showContextMenu: val})}
           site={link}
@@ -46,7 +47,7 @@ class TopSite extends React.Component {
 const TopSites = props => (<section>
   <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
-    {props.TopSites.rows.map((link, index) => <TopSite key={link.url} link={link} index={index} />)}
+    {props.TopSites.rows.map((link, index) => <TopSite dispatch={props.dispatch} key={link.url} link={link} index={index} />)}
   </ul>
 </section>);
 

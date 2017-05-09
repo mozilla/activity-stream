@@ -40,7 +40,8 @@ describe("PlacesFeed", () => {
 
     feed.historyObserver.dispatch(action);
 
-    assert.calledWith(feed.store.dispatch, action);
+    assert.calledOnce(feed.store.dispatch);
+    assert.equal(feed.store.dispatch.firstCall.args[0].type, action.type);
   });
 
   it("should have a BookmarksObserver that dispatch to the store", () => {
@@ -49,7 +50,8 @@ describe("PlacesFeed", () => {
 
     feed.bookmarksObserver.dispatch(action);
 
-    assert.calledWith(feed.store.dispatch, action);
+    assert.calledOnce(feed.store.dispatch);
+    assert.equal(feed.store.dispatch.firstCall.args[0].type, action.type);
   });
 
   describe("#onAction", () => {
@@ -69,7 +71,7 @@ describe("PlacesFeed", () => {
     });
     it("should block a url on BLOCK_URL", () => {
       feed.onAction({type: at.BLOCK_URL, data: "apple.com"});
-      assert.calledWith(global.NewTabUtils.activityStreamLinks.blockURL, "apple.com");
+      assert.calledWith(global.NewTabUtils.activityStreamLinks.blockURL, {url: "apple.com"});
     });
     it("should bookmark a url on BOOKMARK_URL", () => {
       feed.onAction({type: at.BOOKMARK_URL, data: "pear.com"});
@@ -88,7 +90,8 @@ describe("PlacesFeed", () => {
   describe("#observe", () => {
     it("should dispatch a PLACES_LINK_BLOCKED action with the url of the blocked link", () => {
       feed.observe(null, BLOCKED_EVENT, "foo123.com");
-      assert.calledWith(feed.store.dispatch, {type: at.PLACES_LINK_BLOCKED, data: {url: "foo123.com"}});
+      assert.equal(feed.store.dispatch.firstCall.args[0].type, at.PLACES_LINK_BLOCKED);
+      assert.deepEqual(feed.store.dispatch.firstCall.args[0].data, {url: "foo123.com"});
     });
     it("should not call dispatch if the topic is something other than BLOCKED_EVENT", () => {
       feed.observe(null, "someotherevent");
