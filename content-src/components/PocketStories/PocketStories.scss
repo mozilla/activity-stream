@@ -11,7 +11,7 @@
       filter: grayscale(100%);
       padding-left: 64px;
       margin-left: 8px;
-      opacity: 0.5;
+      opacity: 0.6;
     }
 
     .pocket-logo-text {
@@ -21,7 +21,61 @@
       margin-left: 16px;
       font-weight: 200;
       font-size: 15px;
+      color: $section-title-color;
     }
+
+    .pocket-info {
+      background-image: url('img/stories-info-icon.svg');
+      background-size: 14px 14px;
+      background-repeat: no-repeat;
+      padding-left: 16px;
+      margin-left: 8px;
+      background-position-y: 1px;
+      text-transform: none;
+    }
+
+    .pocket-info div {
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 1s, opacity 0.7s ease-in-out;
+    }
+
+    .pocket-info:hover div {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .pocket-feedback-wrapper {
+      position: relative;
+      z-index: 10000;
+    }
+
+    .pocket-feedback {
+      position: absolute;
+      background-color: $very-light-grey;
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: normal;
+      font-size: 13px;
+      border: 1px solid;
+      width: 320px;
+      right: 0;
+      top: 5px;
+      padding: 20px;
+      user-select: none;
+      -moz-user-select: none;
+    }
+
+    .pocket-feedback-header {
+      color: $black;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .pocket-send-feedback {
+      color: $topic-blue;
+      margin-top: 5px;
+    }
+
   }
 
   .pocket-read-more {
