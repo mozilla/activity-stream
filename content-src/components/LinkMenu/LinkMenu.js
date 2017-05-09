@@ -54,7 +54,7 @@ const LinkMenu = React.createClass({
             dispatch(actions.NotifyBlockURL(site.url));
           }
         },
-        {
+        !site.pocket && {
           ref: "delete",
           label: this.props.intl.formatMessage({id: "menu_action_delete"}),
           icon: "delete",
