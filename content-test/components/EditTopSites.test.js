@@ -1,4 +1,4 @@
-const {EditTopSites} = require("components/TopSites/TopSites");
+const {EditTopSites, TopSiteForm} = require("components/TopSites/TopSites");
 const React = require("react");
 const {mountWithIntl} = require("test/test-utils");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/constants");
@@ -56,5 +56,63 @@ describe("EditTopSites", () => {
     assert.equal(1, wrapper.ref("modal").length);
     wrapper.ref("doneButton").simulate("click");
     assert.equal(0, wrapper.ref("modal").length);
+  });
+});
+
+describe("TopSiteForm", () => {
+  let wrapper;
+
+  function setup(props = {}) {
+    const customProps = Object.assign({}, {onClose: sinon.spy(), dispatch: sinon.spy()}, props);
+    wrapper = mountWithIntl(<TopSiteForm {...customProps} />, {context: {}, childContextTypes: {}});
+  }
+
+  beforeEach(() => setup());
+
+  it("should render the component", () => {
+    assert.ok(wrapper.find(TopSiteForm));
+  });
+
+  it("should call onClose if Cancel button is clicked", () => {
+    wrapper.ref("cancelButton").simulate("click");
+    assert.calledOnce(wrapper.prop("onClose"));
+  });
+
+  it("should not call onClose or dispatch if URL is empty", () => {
+    wrapper.ref("addButton").simulate("click");
+    assert.notCalled(wrapper.prop("onClose"));
+    assert.notCalled(wrapper.prop("dispatch"));
+  });
+
+  it("should not call onClose or dispatch if URL is invalid", () => {
+    wrapper.setState({"url": "invalid"});
+    wrapper.ref("addButton").simulate("click");
+    assert.notCalled(wrapper.prop("onClose"));
+    assert.notCalled(wrapper.prop("dispatch"));
+  });
+
+  it("should call onClose and dispatch with right args if URL is valid", () => {
+    wrapper.setState({"url": "valid.com", "title": "a title"});
+    wrapper.ref("addButton").simulate("click");
+    assert.calledOnce(wrapper.prop("onClose"));
+    assert.calledWith(
+      wrapper.prop("dispatch"),
+      {
+        data: {title: "a title", url: "http://valid.com"},
+        meta: {broadcast: "content-to-addon", expect: "TOP_FRECENT_SITES_RESPONSE"},
+        type: "TOPSITES_ADD_REQUEST"
+      }
+    );
+  });
+
+  it("should properly validate URLs", () => {
+    wrapper.setState({"url": "mozilla.org"});
+    assert.ok(wrapper.instance().validateUrl());
+    wrapper.setState({"url": "https://mozilla.org"});
+    assert.ok(wrapper.instance().validateUrl());
+    wrapper.setState({"url": "http://mozilla.org"});
+    assert.ok(wrapper.instance().validateUrl());
+    wrapper.setState({"url": "mozillaorg"});
+    assert.isFalse(wrapper.instance().validateUrl());
   });
 });

@@ -137,6 +137,10 @@ $code-color: #E8005C;
 
 $sidebar-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
 
+$input-border-color: #424F59;
+$error-background-color: #D63920;
+$error-shadow-color: rgba(231, 111, 92, 0.75);
+
 @mixin item-shadow {
   box-shadow: $item-shadow;
 

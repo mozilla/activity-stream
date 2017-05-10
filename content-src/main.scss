@@ -105,6 +105,7 @@ a {
     border-radius: 5px;
     color: $mid-light-grey;
     cursor: pointer;
+    margin-inline-end: 10px;
     padding: 10px 30px;
 
     &:hover {
@@ -116,6 +117,7 @@ a {
       background: $blue-button-bg;
       border: solid 1px $blue-button-border;
       color: $white;
+      margin-inline-end: 0;
       margin-inline-start: auto;
     }
   }

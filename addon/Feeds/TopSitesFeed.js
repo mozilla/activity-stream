@@ -27,6 +27,26 @@ module.exports = class TopSitesFeed extends Feed {
   unpinLink(action) {
     this.pinnedLinks.unpin(action.data.site);
   }
+  addTopSite(action) {
+    // Adding a top site pins it in the first slot.
+    this._insertPin(action.data, 0);
+
+    // Return the new set of top sites.
+    this._getLinks()
+      .then(links => this.options.send(am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links), action.workerId, true))
+      .catch(Cu.reportError);
+  }
+  _insertPin(site, index) {
+    // Insert a pin at the given index. If that slot is already taken, we need
+    // to insert it in the next slot. Rinse and repeat if that next slot is also
+    // taken.
+    let pinned = this.pinnedLinks.links;
+    if (pinned.length > index && pinned[index]) {
+      // OMG! RECURSION
+      this._insertPin(pinned[index], index + 1);
+    }
+    this.pinnedLinks.pin(site, index);
+  }
   sortLinks(links, pinned) {
     // Separate out the pinned from the rest
     let pinnedLinks = [];
@@ -42,7 +62,7 @@ module.exports = class TopSitesFeed extends Feed {
     // Insert the pinned links in their location
     pinned.forEach((val, index) => {
       if (!val) { return; }
-      let site = Object.assign({}, pinnedLinks.find(link => link.url === val.url), {isPinned: true, pinIndex: index});
+      let site = Object.assign({}, pinnedLinks.find(link => link.url === val.url), {isPinned: true, pinIndex: index, pinTitle: val.title});
       if (index > sortedLinks.length) {
         sortedLinks[index] = site;
       } else {
@@ -52,7 +72,7 @@ module.exports = class TopSitesFeed extends Feed {
 
     return sortedLinks;
   }
-  getData() {
+  _getLinks() {
     return Task.spawn(function*() {
       // Get pinned links
       let pinned = this.pinnedLinks.links;
@@ -88,6 +108,13 @@ module.exports = class TopSitesFeed extends Feed {
 
       // Place the pinned links where they go
       links = this.sortLinks(links, pinned);
+
+      return links;
+    }.bind(this));
+  }
+  getData() {
+    return Task.spawn(function*() {
+      const links = yield this._getLinks();
 
       return am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links);
     }.bind(this));
@@ -130,6 +157,10 @@ module.exports = class TopSitesFeed extends Feed {
       case am.type("NOTIFY_UNPIN_TOPSITE"):
         this.unpinLink(action);
         this.refresh("a site was unpinned");
+        break;
+      case am.type("TOPSITES_ADD_REQUEST"):
+        this.addTopSite(action);
+        this.refresh("a site was added (pinned)");
         break;
     }
   }
