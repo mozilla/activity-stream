@@ -10,11 +10,11 @@ const SystemTickFeed = require("./SystemTickFeed");
 
 module.exports = [
   TopSitesFeed,
+  HighlightsFeed,
+  SearchFeed,
   PocketStoriesFeed,
   PocketTopicsFeed,
-  HighlightsFeed,
   PlacesStatsFeed,
-  SearchFeed,
   MetadataFeed,
   LocalizationFeed,
   SystemTickFeed
