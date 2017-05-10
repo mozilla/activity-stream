@@ -23,7 +23,6 @@ describe("<Search>", () => {
     function clickButtonAndGetAction(wrapper) {
       const dispatch = wrapper.prop("dispatch");
       wrapper.find(".search-button").simulate("click");
-      assert.calledOnce(dispatch);
       return dispatch.firstCall.args[0];
     }
     it("should send a SendToMain action with type PERFORM_SEARCH when you click the search button", () => {
@@ -50,8 +49,19 @@ describe("<Search>", () => {
 
       assert.propertyVal(action.data, "searchString", "hello123");
     });
-  });
+    it("should send a UserEvent action", () => {
+      const dispatch = sinon.spy();
+      const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} dispatch={dispatch} />);
+      wrapper.setState({searchString: "hello123"});
 
+      clickButtonAndGetAction(wrapper);
+
+      assert.calledTwice(dispatch);
+      const action = dispatch.secondCall.args[0];
+      assert.isUserEventAction(action);
+      assert.propertyVal(action.data, "event", "SEARCH");
+    });
+  });
   it("should update state.searchString on a change event", () => {
     const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
     const inputEl = wrapper.find("#search-input");

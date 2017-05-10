@@ -2,7 +2,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {FormattedMessage, injectIntl} = require("react-intl");
-const {actionTypes, actionCreators} = require("common/Actions.jsm");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
 class Search extends React.Component {
   constructor(props) {
@@ -24,7 +24,8 @@ class Search extends React.Component {
       searchPurpose: "newtab",
       healthReportKey: "newtab"
     };
-    this.props.dispatch(actionCreators.SendToMain({type: actionTypes.PERFORM_SEARCH, data: searchData}));
+    this.props.dispatch(ac.SendToMain({type: at.PERFORM_SEARCH, data: searchData}));
+    this.props.dispatch(ac.UserEvent({event: "SEARCH"}));
   }
   onClick(event) {
     const {currentEngine} = this.props.Search;

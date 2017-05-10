@@ -34,4 +34,29 @@ describe("<LinkMenu>", () => {
     assert.ok(!middleItem.first);
     assert.ok(!middleItem.last);
   });
+  describe(".onClick", () => {
+    const FAKE_INDEX = 3;
+    const FAKE_SOURCE = "TOP_SITES";
+    const dispatch = sinon.stub();
+    const options = shallowWithIntl(<LinkMenu site={{url: ""}} dispatch={dispatch} index={FAKE_INDEX} source={FAKE_SOURCE} />)
+      .find(ContextMenu).props().options;
+    afterEach(() => dispatch.reset());
+    options.filter(o => o.type !== "separator").forEach(option => {
+      it(`should fire a ${option.action} action for ${option.id}`, () => {
+        option.onClick();
+        assert.calledTwice(dispatch);
+        assert.propertyVal(dispatch.firstCall.args[0], "type", option.action);
+        if (option.data) {
+          assert.propertyVal(dispatch.firstCall.args[0], "data", option.data);
+        }
+      });
+      it(`should fire a UserEvent action for ${option.id}`, () => {
+        option.onClick();
+        const action = dispatch.secondCall.args[0];
+        assert.isUserEventAction(action);
+        assert.propertyVal(action.data, "source", FAKE_SOURCE);
+        assert.propertyVal(action.data, "action_position", FAKE_INDEX);
+      });
+    });
+  });
 });

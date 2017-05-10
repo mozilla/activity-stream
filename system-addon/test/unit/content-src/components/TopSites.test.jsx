@@ -94,4 +94,27 @@ describe("<TopSite>", () => {
     const linkMenuProps = wrapper.find(LinkMenu).props();
     ["visible", "onUpdate", "site", "index"].forEach(prop => assert.property(linkMenuProps, prop));
   });
+  describe("#trackClick", () => {
+    it("should call dispatch when the link is clicked", () => {
+      const dispatch = sinon.stub();
+      const wrapper = shallow(<TopSite link={link} index={3} dispatch={dispatch} />);
+
+      wrapper.find("a").simulate("click", {});
+
+      assert.calledOnce(dispatch);
+    });
+    it("should dispatch a UserEventAction with the right data", () => {
+      const dispatch = sinon.stub();
+      const wrapper = shallow(<TopSite link={link} index={3} dispatch={dispatch} />);
+
+      wrapper.find("a").simulate("click", {});
+
+      const action = dispatch.firstCall.args[0];
+      assert.isUserEventAction(action);
+
+      assert.propertyVal(action.data, "event", "CLICK");
+      assert.propertyVal(action.data, "source", "TOP_SITES");
+      assert.propertyVal(action.data, "action_position", 3);
+    });
+  });
 });

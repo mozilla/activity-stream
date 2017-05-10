@@ -3,6 +3,8 @@ const {connect} = require("react-redux");
 const {FormattedMessage} = require("react-intl");
 const shortURL = require("content-src/lib/short-url");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
+const {actionCreators: ac} = require("common/Actions.jsm");
+const TOP_SITES_SOURCE = "TOP_SITES";
 
 class TopSite extends React.Component {
   constructor(props) {
@@ -12,6 +14,13 @@ class TopSite extends React.Component {
   toggleContextMenu(event, index) {
     this.setState({showContextMenu: true, activeTile: index});
   }
+  trackClick() {
+    this.props.dispatch(ac.UserEvent({
+      event: "CLICK",
+      source: TOP_SITES_SOURCE,
+      action_position: this.props.index
+    }));
+  }
   render() {
     const {link, index, dispatch} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
@@ -20,7 +29,7 @@ class TopSite extends React.Component {
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
     const style = {backgroundImage: (link.screenshot ? `url(${link.screenshot})` : "none")};
     return (<li className={topSiteOuterClassName} key={link.url}>
-        <a href={link.url}>
+        <a onClick={() => this.trackClick()} href={link.url}>
           <div className="tile" aria-hidden={true}>
               <span className="letter-fallback">{title[0]}</span>
               <div className={screenshotClassName} style={style} />
@@ -39,7 +48,8 @@ class TopSite extends React.Component {
           visible={isContextMenuOpen}
           onUpdate={val => this.setState({showContextMenu: val})}
           site={link}
-          index={index} />
+          index={index}
+          source={TOP_SITES_SOURCE} />
     </li>);
   }
 }
@@ -47,7 +57,11 @@ class TopSite extends React.Component {
 const TopSites = props => (<section>
   <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
-    {props.TopSites.rows.map((link, index) => <TopSite dispatch={props.dispatch} key={link.url} link={link} index={index} />)}
+    {props.TopSites.rows.map((link, index) => <TopSite
+      key={link.url}
+      dispatch={props.dispatch}
+      link={link}
+      index={index} />)}
   </ul>
 </section>);
 
