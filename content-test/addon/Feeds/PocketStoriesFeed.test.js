@@ -1,11 +1,13 @@
 const moment = require("moment");
 
+const PlacesProvider = {links: {blockedURLs: new Set()}};
+
 describe("PocketStoriesFeed", () => {
   let PocketStoriesFeed;
   let instance;
   let reduxState;
   beforeEach(() => {
-    PocketStoriesFeed = require("inject!addon/Feeds/PocketStoriesFeed")({});
+    PocketStoriesFeed = require("inject!addon/Feeds/PocketStoriesFeed")({"addon/PlacesProvider": {PlacesProvider}});
     instance = new PocketStoriesFeed();
     reduxState = {Experiments: {values: {}}};
     instance.refresh = sinon.spy();
@@ -30,8 +32,24 @@ describe("PocketStoriesFeed", () => {
           assert.lengthOf(action.data, 1);
         });
     });
+    it("should exclude blocked (dismissed) URLs", () => {
+      instance._fetchStories = sinon.mock().returns([{"dedupe_url": "blocked"}, {"dedupe_url": "not_blocked"}]);
+      reduxState = {Experiments: {values: {pocket: true}}};
+      PlacesProvider.links.blockedURLs.add("blocked");
+      return instance.getData()
+        .then(action => {
+          assert.isObject(action);
+          assert.equal(action.type, "POCKET_STORIES_RESPONSE");
+          assert.calledOnce(instance._fetchStories);
+          assert.lengthOf(action.data, 1);
+          assert.equal(action.data[0].url, "not_blocked");
+        });
+    });
     it("should throw error if API key or endpoint not configured", () => {
-      let BrokenPocketStoriesFeed = require("inject!addon/Feeds/PocketStoriesFeed")({"../../pocket.json": {"pocket_story_endpoint": "", "pocket_consumer_key": ""}});
+      let BrokenPocketStoriesFeed = require("inject!addon/Feeds/PocketStoriesFeed")({
+        "../../pocket.json": {"pocket_story_endpoint": "", "pocket_consumer_key": ""},
+        "addon/PlacesProvider": PlacesProvider
+      });
       let brokenInstance = new BrokenPocketStoriesFeed();
       brokenInstance.store = {getState() { return reduxState; }};
       reduxState = {Experiments: {values: {pocket: true}}};
