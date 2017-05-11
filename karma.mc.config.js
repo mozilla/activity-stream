@@ -83,7 +83,7 @@ module.exports = function(config) {
             }]
           },
           {
-            test: /\.jsx?$/,
+            test: /\.jsx$/,
             exclude: /node_modules/,
             loader: "babel-loader",
             options: {presets: ["react"]}
