@@ -6,19 +6,23 @@ const fakeEngines = [{name: "Google", iconBuffer: "icon.ico"}];
 describe("Search Feed", () => {
   let feed;
   let globals;
-  before(() => {
-    globals = new GlobalOverrider();
-    globals.set("ContentSearch", {
-      currentStateObj: globals.sandbox.spy(() => Promise.resolve({engines: fakeEngines, currentEngine: {}})),
-      performSearch: globals.sandbox.spy((browser, searchData) => Promise.resolve({browser, searchData}))
-    });
-  });
+  let sandbox;
   beforeEach(() => {
+    globals = new GlobalOverrider();
+    sandbox = globals.sandbox;
+    globals.set("ContentSearch", {
+      currentStateObj: sandbox.spy(() => Promise.resolve({engines: fakeEngines, currentEngine: {}})),
+      performSearch: sandbox.spy((browser, searchData) => Promise.resolve({browser, searchData}))
+    });
+    sandbox.spy(global.Services.obs, "addObserver");
+    sandbox.spy(global.Services.obs, "removeObserver");
+    sandbox.spy(global.Services.mm, "addMessageListener");
+    sandbox.spy(global.Services.mm, "removeMessageListener");
+
     feed = new SearchFeed();
     feed.store = {dispatch: sinon.spy()};
   });
-  afterEach(() => globals.reset());
-  after(() => globals.restore());
+  afterEach(() => globals.restore());
 
   it("should call get state (with true) from the content search provider on INIT", async() => {
     await feed.onAction({type: at.INIT});
