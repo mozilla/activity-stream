@@ -17,7 +17,7 @@ const PATHS = {
 };
 
 const preprocessors = {};
-preprocessors[PATHS.testFilesPattern] = ["webpack"];
+preprocessors[PATHS.testFilesPattern] = ["webpack", "sourcemap"];
 
 module.exports = function(config) {
   const isTDD = config.tdd;
@@ -46,7 +46,7 @@ module.exports = function(config) {
     files: [PATHS.testEntryFile],
     preprocessors,
     webpack: {
-      devtool: "eval",
+      devtool: "inline-source-map",
       // This loader allows us to override required files in tests
       resolveLoader: {alias: {inject: path.join(__dirname, "loaders/inject-loader")}},
       // This resolve config allows us to import with paths relative to the system-addon/ directory, e.g. "lib/ActivityStream.jsm"

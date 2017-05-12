@@ -1,6 +1,6 @@
 const {GlobalOverrider} = require("test/unit/utils");
 
-const req = require.context(".", true, /\.test\.js$/);
+const req = require.context(".", true, /\.test\.jsx?$/);
 const files = req.keys();
 
 // This exposes sinon assertions to chai.assert
