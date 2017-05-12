@@ -5,7 +5,8 @@ describe("ActivityStream", () => {
   let as;
   let ActivityStream;
   function Fake() {}
-  before(() => {
+
+  beforeEach(() => {
     sandbox = sinon.sandbox.create();
     ({ActivityStream} = injector({
       "lib/LocalizationFeed.jsm": {LocalizationFeed: Fake},
@@ -15,15 +16,12 @@ describe("ActivityStream", () => {
       "lib/TelemetryFeed.jsm": {TelemetryFeed: Fake},
       "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake}
     }));
-  });
-
-  afterEach(() => sandbox.restore());
-
-  beforeEach(() => {
     as = new ActivityStream();
     sandbox.stub(as.store, "init");
     sandbox.stub(as.store, "uninit");
   });
+
+  afterEach(() => sandbox.restore());
 
   it("should exist", () => {
     assert.ok(ActivityStream);
