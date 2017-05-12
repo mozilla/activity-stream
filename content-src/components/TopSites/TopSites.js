@@ -93,7 +93,7 @@ const TopSitesItem = React.createClass({
       "full-width": !screenshot && faviconSize === FULL_WIDTH
     });
 
-    const label = prettyUrl(site);
+    const label = site.pinTitle || prettyUrl(site);
 
     return (<div className={classNames("tile-outer", {active: isActive})} key={site.guid || site.cache_key || index}>
       <a onClick={ev => this.props.onClick(index, ev)} className="tile" href={site.url} ref="topSiteLink">
@@ -265,10 +265,15 @@ TopSites.propTypes = {
 
 const EditTopSites = React.createClass({
   getDefaultProps() { return {dispatch: () => {}}; },
-  getInitialState() { return {showEdit: false}; },
+  getInitialState() {
+    return {
+      showEditModal: false,
+      showAddForm: false
+    };
+  },
   toggleEdit() {
-    const showingEdit = this.state.showEdit;
-    this.setState({showEdit: !showingEdit});
+    const showingEdit = this.state.showEditModal;
+    this.setState({showEditModal: !showingEdit});
     const event = showingEdit ? "CLOSE_EDIT_TOPSITES" : "OPEN_EDIT_TOPSITES";
     this.props.dispatch(actions.NotifyEvent({
       source: "TOP_SITES",
@@ -278,6 +283,12 @@ const EditTopSites = React.createClass({
   toggleShowMorePref() {
     const prefIsOn = this.props.length === TOP_SITES_SHOWMORE_LENGTH;
     this.props.dispatch(actions.NotifyPrefChange("showMoreTopSites", !prefIsOn));
+  },
+  handleAddButtonClick() {
+    this.setState({showAddForm: true});
+  },
+  handleAddFormClose() {
+    this.setState({showAddForm: false});
   },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
@@ -291,7 +302,7 @@ const EditTopSites = React.createClass({
             <FormattedMessage id="edit_topsites_button_text" />
           </button>
         </div>
-        {this.state.showEdit &&
+        {this.state.showEditModal && !this.state.showAddForm &&
           <div className="edit-topsites">
             <div className="modal-overlay" />
             <div className="modal" ref="modal">
@@ -322,6 +333,9 @@ const EditTopSites = React.createClass({
                 </div>
               </section>
               <section className="actions">
+                <button ref="addButton" onClick={this.handleAddButtonClick}>
+                  <FormattedMessage id="edit_topsites_add_button" />
+                </button>
                 {this.props.length === TOP_SITES_DEFAULT_LENGTH &&
                   <button ref="showMoreButton" className="icon icon-topsites" onClick={this.toggleShowMorePref}>
                     <FormattedMessage id="edit_topsites_showmore_button" />
@@ -336,6 +350,14 @@ const EditTopSites = React.createClass({
                   <FormattedMessage id="edit_topsites_done_button" />
                 </button>
               </section>
+            </div>
+          </div>
+        }
+        {this.state.showEditModal && this.state.showAddForm &&
+          <div className="edit-topsites">
+            <div className="modal-overlay" />
+            <div className="modal" ref="modal">
+              <TopSiteForm onClose={this.handleAddFormClose} dispatch={this.props.dispatch} intl={this.props.intl} />
             </div>
           </div>
         }
@@ -362,8 +384,118 @@ EditTopSites.propTypes = {
 
 const EditTopSitesIntl = injectIntl(EditTopSites);
 
+const TopSiteForm = React.createClass({
+  getDefaultProps() {
+    return {
+      dispatch: () => {},
+      onClose: () => {}
+    };
+  },
+  getInitialState() {
+    return {
+      title: "",
+      url: "",
+      validationError: false
+    };
+  },
+  handleTitleChange(event) {
+    this.resetValidation();
+    this.setState({"title": event.target.value});
+  },
+  handleUrlChange(event) {
+    this.resetValidation();
+    this.setState({"url": event.target.value});
+  },
+  handleCancel() {
+    this.props.onClose();
+  },
+  handleAdd() {
+    if (this.validateForm()) {
+      let url = this.state.url;
+      // If we are missing a protocol, prepend http://
+      if (!url.startsWith("http")) {
+        url = `http://${url}`;
+      }
+      this.props.dispatch(actions.RequestAddTopsite(url, this.state.title));
+      this.props.onClose();
+    }
+  },
+  resetValidation() {
+    if (this.state.validationError) {
+      this.setState({validationError: false});
+    }
+  },
+  validateUrl() {
+    const pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$", "i"); // fragment locater
+    return pattern.test(this.state.url);
+  },
+  validateForm() {
+    this.resetValidation();
+    // Only the URL is required and must be valid.
+    if (!this.state.url || !this.validateUrl()) {
+      this.setState({validationError: "url"});
+      this.refs["input-url"].focus();
+      return false;
+    }
+    return true;
+  },
+  render() {
+    return (
+      <div className="topsite-form">
+        <section className="edit-topsites-inner-wrapper">
+          <div className="form-wrapper">
+            <h3 className="section-title">
+              <FormattedMessage id="topsites_form_header" />
+            </h3>
+            <div className="field title">
+              <input
+                type="text"
+                ref="input-title"
+                value={this.state.title}
+                onChange={this.handleTitleChange}
+                placeholder={this.props.intl.formatMessage({id: "topsites_form_title_placeholder"})} />
+            </div>
+            <div className={classNames("field url", {"invalid": this.state.validationError === "url"})}>
+              <input
+                type="text"
+                ref="input-url"
+                value={this.state.url}
+                onChange={this.handleUrlChange}
+                placeholder={this.props.intl.formatMessage({id: "topsites_form_url_placeholder"})} />
+              {this.state.validationError === "url" &&
+                <aside className="error-tooltip">
+                  <FormattedMessage id="topsites_form_url_validation" />
+                </aside>
+              }
+            </div>
+          </div>
+        </section>
+        <section className="actions">
+          <button ref="cancelButton" className="cancel" onClick={this.handleCancel}>
+            <FormattedMessage id="topsites_form_cancel_button" />
+          </button>
+          <button ref="addButton" className="add" onClick={this.handleAdd}>
+            <FormattedMessage id="topsites_form_add_button" />
+          </button>
+        </section>
+      </div>
+    );
+  }
+});
+
+TopSiteForm.propTypes = {
+  onClose: React.PropTypes.func,
+  dispatch: React.PropTypes.func
+};
+
 module.exports = connect(justDispatch)(injectIntl(TopSites));
 module.exports.TopSites = TopSites;
 module.exports.TopSitesItem = TopSitesItem;
 module.exports.PlaceholderTopSitesItem = PlaceholderTopSitesItem;
 module.exports.EditTopSites = EditTopSites;
+module.exports.TopSiteForm = TopSiteForm;

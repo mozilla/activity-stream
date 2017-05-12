@@ -224,3 +224,100 @@
     }
   }
 }
+
+.topsite-form {
+  .form-wrapper {
+    padding: 15px 0;
+
+    .field {
+      margin-inline-start: 205px;
+      position: relative;
+    }
+
+    .section-title {
+      margin-bottom: 5px;
+      margin-inline-start: 205px;
+    }
+
+    input {
+      &[type='text'],
+      &[type='email'] {
+        border: solid 1px $input-border-color;
+        border-radius: 2px;
+        margin: 5px 0;
+        padding: 7px;
+        width: 350px;
+
+        &::placeholder {
+          font-style: italic;
+        }
+      }
+    }
+
+    .invalid {
+      input {
+        &[type='text'],
+        &[type='email'] {
+          border: solid 1px $error-background-color;
+          box-shadow: 0 0 0 2px $error-shadow-color;
+        }
+      }
+    }
+
+    .error-tooltip {
+      animation: fade-up-tt 450ms;
+      background: $error-background-color;
+      border-radius: 2px;
+      color: $white;
+      offset-inline-start: 3px;
+      padding: 5px 12px;
+      position: absolute;
+      top: 44px;
+      z-index: 1;
+
+      // tooltip caret
+      &::before {
+        background: $error-background-color;
+        bottom: -8px;
+        content: '.';
+        height: 16px;
+        offset-inline-start: 12px;
+        position: absolute;
+        text-indent: -999px;
+        top: -7px;
+        transform: rotate(45deg);
+        white-space: nowrap;
+        width: 16px;
+        z-index: -1;
+      }
+    }
+  }
+
+  .actions {
+    justify-content: flex-end;
+
+    button {
+      margin-inline-start: 10px;
+      margin-inline-end: 0;
+
+      &.add {
+        background: $blue-button-bg;
+        border: solid 1px $blue-button-border;
+        color: $white;
+      }
+    }
+  }
+}
+
+//used for tooltips below form element
+@keyframes fade-up-tt {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

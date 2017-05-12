@@ -56,6 +56,7 @@ const am = new ActionManager([
   "SYNC_COMPLETE",
   "TOP_FRECENT_SITES_REQUEST",
   "TOP_FRECENT_SITES_RESPONSE",
+  "TOPSITES_ADD_REQUEST",
   "POCKET_STORIES_REQUEST",
   "POCKET_STORIES_RESPONSE",
   "POCKET_TOPICS_REQUEST",
@@ -253,6 +254,10 @@ function NotifySaveToPocket(url, title) {
   return Notify("NOTIFY_SAVE_TO_POCKET", {url, title});
 }
 
+function RequestAddTopsite(url, title) {
+  return RequestExpect("TOPSITES_ADD_REQUEST", "TOP_FRECENT_SITES_RESPONSE", {data: {url, title}});
+}
+
 am.defineActions({
   Notify,
   NotifyBlockURL,
@@ -279,6 +284,7 @@ am.defineActions({
   NotifyUnpinTopsite,
   NotifyUpdateSearchString,
   PlacesStatsUpdate,
+  RequestAddTopsite,
   RequestExpect,
   RequestHighlightsLinks,
   RequestSearchSuggestions,

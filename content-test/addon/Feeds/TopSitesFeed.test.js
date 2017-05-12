@@ -6,12 +6,6 @@ const getCachedMetadata = links => links.map(
     return link;
   }
 );
-const pinnedLinks = {
-  links: [],
-  pin: sinon.spy(),
-  unpin: sinon.spy(),
-  isPinned: site => false
-};
 const PlacesProvider = {links: {getTopFrecentSites: sinon.spy(() => Promise.resolve(testLinks))}};
 const testScreenshot = "screenshot.jpg";
 const moment = require("moment");
@@ -25,6 +19,12 @@ describe("TopSitesFeed", () => {
   beforeEach(() => {
     PlacesProvider.links.getTopFrecentSites.reset();
     reduxState = {Experiments: {values: {}}};
+    const pinnedLinks = {
+      links: [],
+      pin: sinon.spy(),
+      unpin: sinon.spy(),
+      isPinned: site => false
+    };
     instance = new TopSitesFeed({getCachedMetadata, pinnedLinks});
     instance.store = {getState() { return reduxState; }};
     instance.getScreenshot = sinon.spy(() => testScreenshot);
@@ -173,6 +173,39 @@ describe("TopSitesFeed", () => {
       assert.calledOnce(instance.pinnedLinks.unpin);
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "a site was unpinned");
+    });
+    it("should call refresh and pin on TOPSITES_ADD_REQUEST", () => {
+      const site = {url: "foo.bar", title: "foo"};
+      instance.onAction({}, {type: "TOPSITES_ADD_REQUEST", data: site});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 0);
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "a site was added (pinned)");
+    });
+  });
+
+  describe("#addTopSite", () => {
+    it("should pin site in first slot of empty pinned list", () => {
+      const site = {url: "foo.bar", title: "foo"};
+      instance.addTopSite({data: site});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 0);
+    });
+    it("should pin site in first slot of pinned list with empty first slot", () => {
+      instance.pinnedLinks.links = [null, {url: "example.com"}];
+      const site = {url: "foo.bar", title: "foo"};
+      instance.addTopSite({data: site});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 0);
+    });
+    it("should move a pinned site in first slot to the next slot", () => {
+      const site1 = {url: "example.com"};
+      instance.pinnedLinks.links = [site1];
+      const site = {url: "foo.bar", title: "foo"};
+      instance.addTopSite({data: site});
+      assert.calledTwice(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 0);
+      assert.calledWith(instance.pinnedLinks.pin, site1, 1);
     });
   });
 });
