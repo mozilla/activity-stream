@@ -1,10 +1,13 @@
 const {GlobalOverrider} = require("test/unit/utils");
+const {chaiAssertions} = require("test/schemas/pings");
 
 const req = require.context(".", true, /\.test\.jsx?$/);
 const files = req.keys();
 
 // This exposes sinon assertions to chai.assert
 sinon.assert.expose(assert, {prefix: ""});
+
+chai.use(chaiAssertions);
 
 let overrider = new GlobalOverrider();
 overrider.set({
