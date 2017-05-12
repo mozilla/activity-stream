@@ -57,6 +57,7 @@ const am = new ActionManager([
   "TOP_FRECENT_SITES_REQUEST",
   "TOP_FRECENT_SITES_RESPONSE",
   "TOPSITES_ADD_REQUEST",
+  "TOPSITES_EDIT_REQUEST",
   "POCKET_STORIES_REQUEST",
   "POCKET_STORIES_RESPONSE",
   "POCKET_TOPICS_REQUEST",
@@ -258,6 +259,10 @@ function RequestAddTopsite(url, title) {
   return RequestExpect("TOPSITES_ADD_REQUEST", "TOP_FRECENT_SITES_RESPONSE", {data: {url, title}});
 }
 
+function RequestEditTopsite(url, title, index) {
+  return RequestExpect("TOPSITES_EDIT_REQUEST", "TOP_FRECENT_SITES_RESPONSE", {data: {url, title, index}});
+}
+
 am.defineActions({
   Notify,
   NotifyBlockURL,
@@ -285,6 +290,7 @@ am.defineActions({
   NotifyUpdateSearchString,
   PlacesStatsUpdate,
   RequestAddTopsite,
+  RequestEditTopsite,
   RequestExpect,
   RequestHighlightsLinks,
   RequestSearchSuggestions,

@@ -182,6 +182,15 @@ describe("TopSitesFeed", () => {
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "a site was added (pinned)");
     });
+
+    it("should call refresh and pin on TOPSITES_EDIT_REQUEST", () => {
+      const data = {url: "foo.bar", title: "foo", index: 3};
+      instance.onAction({}, {type: "TOPSITES_EDIT_REQUEST", data});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, {url: data.url, title: data.title}, 3);
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "a site was edited");
+    });
   });
 
   describe("#addTopSite", () => {
@@ -198,7 +207,7 @@ describe("TopSitesFeed", () => {
       assert.calledOnce(instance.pinnedLinks.pin);
       assert.calledWith(instance.pinnedLinks.pin, site, 0);
     });
-    it("should move a pinned site in first slot to the next slot", () => {
+    it("should move a pinned site in first slot to the next slot: part 1", () => {
       const site1 = {url: "example.com"};
       instance.pinnedLinks.links = [site1];
       const site = {url: "foo.bar", title: "foo"};
@@ -206,6 +215,39 @@ describe("TopSitesFeed", () => {
       assert.calledTwice(instance.pinnedLinks.pin);
       assert.calledWith(instance.pinnedLinks.pin, site, 0);
       assert.calledWith(instance.pinnedLinks.pin, site1, 1);
+    });
+    it("should move a pinned site in first slot to the next slot: part 2", () => {
+      const site1 = {url: "example.com"};
+      const site2 = {url: "example.org"};
+      instance.pinnedLinks.links = [site1, null, site2];
+      const site = {url: "foo.bar", title: "foo"};
+      instance.addTopSite({data: site});
+      assert.calledTwice(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 0);
+      assert.calledWith(instance.pinnedLinks.pin, site1, 1);
+    });
+  });
+
+  describe("#editTopSite", () => {
+    it("should pin site in specified slot empty pinned list", () => {
+      const site = {url: "foo.bar", title: "foo"};
+      instance.editTopSite({data: {index: 2, url: site.url, title: site.title}});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 2);
+    });
+    it("should pin site in specified slot of pinned list that is free", () => {
+      instance.pinnedLinks.links = [null, {url: "example.com"}];
+      const site = {url: "foo.bar", title: "foo"};
+      instance.editTopSite({data: {index: 2, url: site.url, title: site.title}});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 2);
+    });
+    it("should NOT move a pinned site in specified slot to the next slot", () => {
+      instance.pinnedLinks.links = [null, null, {url: "example.com"}];
+      const site = {url: "foo.bar", title: "foo"};
+      instance.editTopSite({data: {index: 2, url: site.url, title: site.title}});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 2);
     });
   });
 });
