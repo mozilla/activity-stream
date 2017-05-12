@@ -3,6 +3,7 @@ const {Cu} = require("chrome");
 const PocketFeed = require("./PocketFeed");
 const am = require("common/action-manager");
 const {pocket_story_endpoint, pocket_consumer_key} = require("../../pocket.json");
+const {PlacesProvider} = require("addon/PlacesProvider");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -43,7 +44,9 @@ module.exports = class PocketStoriesFeed extends PocketFeed {
   getData() {
     return Task.spawn(function*() {
       let stories = yield this._fetchStories();
-      stories = stories.map(s => ({
+      stories = stories
+      .filter(s => !PlacesProvider.links.blockedURLs.has(s.dedupe_url))
+      .map(s => ({
         "guid": s.id,
         "recommended": true,
         "title": s.title,
@@ -53,6 +56,7 @@ module.exports = class PocketStoriesFeed extends PocketFeed {
         "lastVisitDate": s.published_timestamp,
         "pocket": true
       }));
+
       return am.actions.Response("POCKET_STORIES_RESPONSE", stories);
     }.bind(this));
   }
