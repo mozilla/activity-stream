@@ -53,6 +53,14 @@ scripts:
     # Copy over all of the system-addon directory except content-src
     copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream && rimraf "../mozilla-central/browser/extensions/activity-stream/{,test/unit/}content-src"
 
+# packagemc: Build stand-alone system add-on xpi
+  packagemc:
+    pre: =>clean
+    build: =>buildmc:webpack && =>buildmc:css && =>buildmc:locales
+    copy: cpx "system-addon/**" dist/system-addon
+    process: node ./bin/process-system-addon-for-package.js dist/system-addon
+    xpi: (cd dist/system-addon && zip -r ../activity-stream-system-addon.xpi * )
+
 # startmc: Start developing the bootstrapped add-on
   startmc:
     _parallel: true
