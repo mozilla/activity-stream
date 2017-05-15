@@ -42,7 +42,7 @@ deploy:
     skip_cleanup: true
     script: bin/continuous-integration.sh prerelease
     on:
-      branch: release-1.4.0
+      branch: release-1.12.0
   - provider: script
     skip_cleanup: true
     script: bin/continuous-integration.sh shield
