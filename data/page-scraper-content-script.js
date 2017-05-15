@@ -7,9 +7,9 @@ function DOMFetcher() {
 
 /*
  * This a frame script that gets injected into web pages as they are opened.
- * It collects the raw DOM, as well as it's respective url once the content is
+ * It collects the raw DOM, as well as its respective url once the content is
  * loaded. It uses the Content Frame Message Manager to send a message to
- * whoever is registered, sending the DOM and the url as it's payload.
+ * whoever is registered, sending the DOM and the url as its payload.
  */
 DOMFetcher.prototype = {
   init(cfmm) {
