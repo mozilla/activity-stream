@@ -110,6 +110,14 @@ describe("TopSiteForm", () => {
           type: "TOPSITES_ADD_REQUEST"
         }
       );
+      assert.calledWith(
+        wrapper.prop("dispatch"),
+        {
+          data: {source: "TOP_SITES", event: "ADD_TOPSITE"},
+          meta: {broadcast: "content-to-addon"},
+          type: "NOTIFY_USER_EVENT"
+        }
+      );
     });
   });
 
@@ -154,6 +162,14 @@ describe("TopSiteForm", () => {
           data: {title: "baz", url: "https://foo.bar", index: 7},
           meta: {broadcast: "content-to-addon", expect: "TOP_FRECENT_SITES_RESPONSE"},
           type: "TOPSITES_EDIT_REQUEST"
+        }
+      );
+      assert.calledWith(
+        wrapper.prop("dispatch"),
+        {
+          data: {action_position: 7, source: "TOP_SITES", event: "EDIT_TOPSITE"},
+          meta: {broadcast: "content-to-addon"},
+          type: "NOTIFY_USER_EVENT"
         }
       );
     });

@@ -289,12 +289,20 @@ const EditTopSites = React.createClass({
   },
   handleAddButtonClick() {
     this.setState({showAddForm: true});
+    this.props.dispatch(actions.NotifyEvent({
+      source: "TOP_SITES",
+      event: "OPEN_ADD_TOPSITE_FORM"
+    }));
   },
   handleAddFormClose() {
     this.setState({showAddForm: false});
   },
   handleEdit(index) {
     this.setState({showEditForm: true, editIndex: index});
+    this.props.dispatch(actions.NotifyEvent({
+      source: "TOP_SITES",
+      event: "OPEN_EDIT_TOPSITE_FORM"
+    }));
   },
   handleEditFormClose() {
     this.setState({showEditForm: false, editIndex: -1});
@@ -442,6 +450,10 @@ const TopSiteForm = React.createClass({
     if (this.validateForm()) {
       let url = this.cleanUrl();
       this.props.dispatch(actions.RequestAddTopsite(url, this.state.title));
+      this.props.dispatch(actions.NotifyEvent({
+        source: "TOP_SITES",
+        event: "ADD_TOPSITE"
+      }));
       this.props.onClose();
     }
   },
@@ -449,6 +461,11 @@ const TopSiteForm = React.createClass({
     if (this.validateForm()) {
       let url = this.cleanUrl();
       this.props.dispatch(actions.RequestEditTopsite(url, this.state.title, this.props.slotIndex));
+      this.props.dispatch(actions.NotifyEvent({
+        source: "TOP_SITES",
+        event: "EDIT_TOPSITE",
+        action_position: this.props.slotIndex
+      }));
       this.props.onClose();
     }
   },
