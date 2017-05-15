@@ -46,13 +46,13 @@ PageScraper.prototype = {
    * Parse the HTML and attempt to insert it in the metadata database
    */
   _parseAndSave(rawHTML, url, event) {
-    this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_raw_html, Date.now());
+    this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_raw_html, 1);
     let metadata;
     try {
       metadata = this._metadataParser.parseHTMLText(rawHTML, url);
     } catch (err) {
       Cu.reportError(`MetadataParser failed to parse ${url}. ${err}`);
-      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_fail, Date.now());
+      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_fail, 1);
       return;
     }
     this._asyncSaveMetadata(metadata, event);
@@ -97,10 +97,10 @@ PageScraper.prototype = {
 
     for (let link of links) {
       const linkEvent = this._tabTracker.generateEvent({source: eventType});
-      this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.local_fetch_event, Date.now());
+      this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.local_fetch_event, 1);
       let linkExists = yield this._previewProvider.asyncLinkExist(link.url);
       if (linkExists) {
-        this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.metadata_exists, Date.now());
+        this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.metadata_exists, 1);
         continue;
       }
       let rawHTML;
@@ -108,7 +108,7 @@ PageScraper.prototype = {
         rawHTML = yield this._fetchContent(link.url);
       } catch (err) {
         Cu.reportError(`PageScraper failed to get page content for ${link.url}. ${err}`);
-        this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.network_fail, Date.now());
+        this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.network_fail, 1);
         continue;
       }
       this._parseAndSave(rawHTML, link.url, linkEvent);
@@ -137,11 +137,11 @@ PageScraper.prototype = {
   _shouldSaveMetadata: Task.async(function*(metadata, event) {
     const linkExists = yield this._previewProvider.asyncLinkExist(metadata.url);
     if (linkExists) {
-      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_exists, Date.now());
+      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_exists, 1);
     }
     const hasMetadata = metadata && !!metadata.title && !!metadata.favicon_url;
     if (!hasMetadata) {
-      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_invalid, Date.now());
+      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.metadata_invalid, 1);
     }
     return (hasMetadata && !linkExists);
   }),
@@ -162,7 +162,7 @@ PageScraper.prototype = {
     let {text, url} = message.data.data;
     if (message.data.type === "PAGE_HTML" && this._blacklistFilter(url)) {
       const event = this._tabTracker.generateEvent({source: "PAGE_SCRAPER"});
-      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.framescript_event, Date.now());
+      this._tabTracker.handlePerformanceEvent(event, PERFORMANCE_EVENT_NAMES.framescript_event, 1);
       this._parseAndSave(text, url, event);
     }
   },
