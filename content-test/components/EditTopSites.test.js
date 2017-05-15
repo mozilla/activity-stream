@@ -67,45 +67,100 @@ describe("TopSiteForm", () => {
     wrapper = mountWithIntl(<TopSiteForm {...customProps} />, {context: {}, childContextTypes: {}});
   }
 
-  beforeEach(() => setup());
+  describe("#addMode", () => {
+    beforeEach(() => setup());
 
-  it("should render the component", () => {
-    assert.ok(wrapper.find(TopSiteForm));
+    it("should render the component", () => {
+      assert.ok(wrapper.find(TopSiteForm));
+    });
+
+    it("should have an Add button", () => {
+      assert.equal(1, wrapper.ref("addButton").length);
+      // and it shouldn't have a save button.
+      assert.equal(0, wrapper.ref("saveButton").length);
+    });
+
+    it("should call onClose if Cancel button is clicked", () => {
+      wrapper.ref("cancelButton").simulate("click");
+      assert.calledOnce(wrapper.prop("onClose"));
+    });
+
+    it("should not call onClose or dispatch if URL is empty", () => {
+      wrapper.ref("addButton").simulate("click");
+      assert.notCalled(wrapper.prop("onClose"));
+      assert.notCalled(wrapper.prop("dispatch"));
+    });
+
+    it("should not call onClose or dispatch if URL is invalid", () => {
+      wrapper.setState({"url": "invalid"});
+      wrapper.ref("addButton").simulate("click");
+      assert.notCalled(wrapper.prop("onClose"));
+      assert.notCalled(wrapper.prop("dispatch"));
+    });
+
+    it("should call onClose and dispatch with right args if URL is valid", () => {
+      wrapper.setState({"url": "valid.com", "title": "a title"});
+      wrapper.ref("addButton").simulate("click");
+      assert.calledOnce(wrapper.prop("onClose"));
+      assert.calledWith(
+        wrapper.prop("dispatch"),
+        {
+          data: {title: "a title", url: "http://valid.com"},
+          meta: {broadcast: "content-to-addon", expect: "TOP_FRECENT_SITES_RESPONSE"},
+          type: "TOPSITES_ADD_REQUEST"
+        }
+      );
+    });
   });
 
-  it("should call onClose if Cancel button is clicked", () => {
-    wrapper.ref("cancelButton").simulate("click");
-    assert.calledOnce(wrapper.prop("onClose"));
-  });
+  describe("#editMode", () => {
+    beforeEach(() => setup({editMode: true, url: "https://foo.bar", title: "baz", slotIndex: 7}));
 
-  it("should not call onClose or dispatch if URL is empty", () => {
-    wrapper.ref("addButton").simulate("click");
-    assert.notCalled(wrapper.prop("onClose"));
-    assert.notCalled(wrapper.prop("dispatch"));
-  });
+    it("should render the component", () => {
+      assert.ok(wrapper.find(TopSiteForm));
+    });
 
-  it("should not call onClose or dispatch if URL is invalid", () => {
-    wrapper.setState({"url": "invalid"});
-    wrapper.ref("addButton").simulate("click");
-    assert.notCalled(wrapper.prop("onClose"));
-    assert.notCalled(wrapper.prop("dispatch"));
-  });
+    it("should have a Save button", () => {
+      assert.equal(1, wrapper.ref("saveButton").length);
+      // and it shouldn't have a add button.
+      assert.equal(0, wrapper.ref("editButton").length);
+    });
 
-  it("should call onClose and dispatch with right args if URL is valid", () => {
-    wrapper.setState({"url": "valid.com", "title": "a title"});
-    wrapper.ref("addButton").simulate("click");
-    assert.calledOnce(wrapper.prop("onClose"));
-    assert.calledWith(
-      wrapper.prop("dispatch"),
-      {
-        data: {title: "a title", url: "http://valid.com"},
-        meta: {broadcast: "content-to-addon", expect: "TOP_FRECENT_SITES_RESPONSE"},
-        type: "TOPSITES_ADD_REQUEST"
-      }
-    );
+    it("should call onClose if Cancel button is clicked", () => {
+      wrapper.ref("cancelButton").simulate("click");
+      assert.calledOnce(wrapper.prop("onClose"));
+    });
+
+    it("should not call onClose or dispatch if URL is empty", () => {
+      wrapper.setState({"url": ""});
+      wrapper.ref("saveButton").simulate("click");
+      assert.notCalled(wrapper.prop("onClose"));
+      assert.notCalled(wrapper.prop("dispatch"));
+    });
+
+    it("should not call onClose or dispatch if URL is invalid", () => {
+      wrapper.setState({"url": "invalid"});
+      wrapper.ref("saveButton").simulate("click");
+      assert.notCalled(wrapper.prop("onClose"));
+      assert.notCalled(wrapper.prop("dispatch"));
+    });
+
+    it("should call onClose and dispatch with right args if URL is valid", () => {
+      wrapper.ref("saveButton").simulate("click");
+      assert.calledOnce(wrapper.prop("onClose"));
+      assert.calledWith(
+        wrapper.prop("dispatch"),
+        {
+          data: {title: "baz", url: "https://foo.bar", index: 7},
+          meta: {broadcast: "content-to-addon", expect: "TOP_FRECENT_SITES_RESPONSE"},
+          type: "TOPSITES_EDIT_REQUEST"
+        }
+      );
+    });
   });
 
   it("should properly validate URLs", () => {
+    setup();
     wrapper.setState({"url": "mozilla.org"});
     assert.ok(wrapper.instance().validateUrl());
     wrapper.setState({"url": "https://mozilla.org"});

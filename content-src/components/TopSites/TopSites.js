@@ -24,6 +24,7 @@ const TopSitesItem = React.createClass({
   getDefaultProps() {
     return {
       onClick() {},
+      onEdit() {},
       editMode: false
     };
   },
@@ -65,8 +66,7 @@ const TopSitesItem = React.createClass({
     this.userEvent("BLOCK");
   },
   handleEdit() {
-    // TODO: See issue #1987
-    alert("Editing Top Sites is coming soon!"); // eslint-disable-line no-alert
+    this.props.onEdit(this.props.index);
   },
   handlePin() {
     const site = this.props;
@@ -171,6 +171,7 @@ TopSitesItem.propTypes = {
   url: React.PropTypes.string.isRequired,
   favicon_url: React.PropTypes.string,
   onClick: React.PropTypes.func,
+  onEdit: React.PropTypes.func,
   showNewStyle: React.PropTypes.bool,
   editMode: React.PropTypes.bool,
   isPinned: React.PropTypes.bool
@@ -268,7 +269,9 @@ const EditTopSites = React.createClass({
   getInitialState() {
     return {
       showEditModal: false,
-      showAddForm: false
+      showAddForm: false,
+      showEditForm: false,
+      editIndex: -1 // Index of top site being edited
     };
   },
   toggleEdit() {
@@ -290,6 +293,12 @@ const EditTopSites = React.createClass({
   handleAddFormClose() {
     this.setState({showAddForm: false});
   },
+  handleEdit(index) {
+    this.setState({showEditForm: true, editIndex: index});
+  },
+  handleEditFormClose() {
+    this.setState({showEditForm: false, editIndex: -1});
+  },
   render() {
     const sites = this.props.sites.slice(0, this.props.length);
     return (
@@ -302,7 +311,7 @@ const EditTopSites = React.createClass({
             <FormattedMessage id="edit_topsites_button_text" />
           </button>
         </div>
-        {this.state.showEditModal && !this.state.showAddForm &&
+        {this.state.showEditModal && !this.state.showAddForm && !this.state.showEditForm &&
           <div className="edit-topsites">
             <div className="modal-overlay" />
             <div className="modal" ref="modal">
@@ -325,6 +334,7 @@ const EditTopSites = React.createClass({
                       onClick={(index, ev) => ev.preventDefault()}
                       showNewStyle={this.props.showNewStyle}
                       editMode={true}
+                      onEdit={this.handleEdit}
                       dispatch={this.props.dispatch}
                       intl={this.props.intl}
                       {...site} />
@@ -361,6 +371,21 @@ const EditTopSites = React.createClass({
             </div>
           </div>
         }
+        {this.state.showEditModal && this.state.showEditForm &&
+          <div className="edit-topsites">
+            <div className="modal-overlay" />
+            <div className="modal" ref="modal">
+              <TopSiteForm
+                title={this.props.sites[this.state.editIndex].pinTitle || prettyUrl(this.props.sites[this.state.editIndex])}
+                url={this.props.sites[this.state.editIndex].url}
+                slotIndex={this.state.editIndex}
+                editMode={true}
+                onClose={this.handleEditFormClose}
+                dispatch={this.props.dispatch}
+                intl={this.props.intl} />
+            </div>
+          </div>
+        }
       </div>
     );
   }
@@ -387,14 +412,18 @@ const EditTopSitesIntl = injectIntl(EditTopSites);
 const TopSiteForm = React.createClass({
   getDefaultProps() {
     return {
+      title: "",
+      url: "",
+      slotIndex: 0,
+      editMode: false, // by default we are in "Add New Top Site" mode
       dispatch: () => {},
       onClose: () => {}
     };
   },
   getInitialState() {
     return {
-      title: "",
-      url: "",
+      title: this.props.title || "",
+      url: this.props.url || "",
       validationError: false
     };
   },
@@ -411,14 +440,25 @@ const TopSiteForm = React.createClass({
   },
   handleAdd() {
     if (this.validateForm()) {
-      let url = this.state.url;
-      // If we are missing a protocol, prepend http://
-      if (!url.startsWith("http")) {
-        url = `http://${url}`;
-      }
+      let url = this.cleanUrl();
       this.props.dispatch(actions.RequestAddTopsite(url, this.state.title));
       this.props.onClose();
     }
+  },
+  handleSave() {
+    if (this.validateForm()) {
+      let url = this.cleanUrl();
+      this.props.dispatch(actions.RequestEditTopsite(url, this.state.title, this.props.slotIndex));
+      this.props.onClose();
+    }
+  },
+  cleanUrl() {
+    let url = this.state.url;
+    // If we are missing a protocol, prepend http://
+    if (!url.startsWith("http")) {
+      url = `http://${url}`;
+    }
+    return url;
   },
   resetValidation() {
     if (this.state.validationError) {
@@ -450,7 +490,7 @@ const TopSiteForm = React.createClass({
         <section className="edit-topsites-inner-wrapper">
           <div className="form-wrapper">
             <h3 className="section-title">
-              <FormattedMessage id="topsites_form_header" />
+              <FormattedMessage id={this.props.editMode ? "topsites_form_edit_header" : "topsites_form_add_header"} />
             </h3>
             <div className="field title">
               <input
@@ -479,9 +519,16 @@ const TopSiteForm = React.createClass({
           <button ref="cancelButton" className="cancel" onClick={this.handleCancel}>
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
-          <button ref="addButton" className="add" onClick={this.handleAdd}>
-            <FormattedMessage id="topsites_form_add_button" />
-          </button>
+          {this.props.editMode &&
+            <button ref="saveButton" className="save" onClick={this.handleSave}>
+              <FormattedMessage id="topsites_form_save_button" />
+            </button>
+          }
+          {!this.props.editMode &&
+            <button ref="addButton" className="add" onClick={this.handleAdd}>
+              <FormattedMessage id="topsites_form_add_button" />
+            </button>
+          }
         </section>
       </div>
     );
@@ -489,6 +536,10 @@ const TopSiteForm = React.createClass({
 });
 
 TopSiteForm.propTypes = {
+  title: React.PropTypes.string,
+  url: React.PropTypes.string,
+  slotIndex: React.PropTypes.number,
+  editMode: React.PropTypes.bool,
   onClose: React.PropTypes.func,
   dispatch: React.PropTypes.func
 };

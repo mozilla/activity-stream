@@ -62,6 +62,7 @@
           flex-grow: 1;
           overflow: hidden;
           text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         &.pinned {
@@ -300,7 +301,8 @@
       margin-inline-start: 10px;
       margin-inline-end: 0;
 
-      &.add {
+      &.add,
+      &.save {
         background: $blue-button-bg;
         border: solid 1px $blue-button-border;
         color: $white;

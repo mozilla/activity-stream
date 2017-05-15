@@ -28,8 +28,22 @@ module.exports = class TopSitesFeed extends Feed {
     this.pinnedLinks.unpin(action.data.site);
   }
   addTopSite(action) {
-    // Adding a top site pins it in the first slot.
+    // Adding a top site pins it in the first slot, pushing over any link already
+    // pinned in the slot.
     this._insertPin(action.data, 0);
+
+    // Return the new set of top sites.
+    this._getLinks()
+      .then(links => this.options.send(am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links), action.workerId, true))
+      .catch(Cu.reportError);
+  }
+  editTopSite(action) {
+    const {title, url, index} = action.data;
+    const site = {title, url};
+
+    // Editing a top site pins it in the specified slot index, replacing any link
+    // already pinned in the slot.
+    this.pinnedLinks.pin(site, index);
 
     // Return the new set of top sites.
     this._getLinks()
@@ -161,6 +175,10 @@ module.exports = class TopSitesFeed extends Feed {
       case am.type("TOPSITES_ADD_REQUEST"):
         this.addTopSite(action);
         this.refresh("a site was added (pinned)");
+        break;
+      case am.type("TOPSITES_EDIT_REQUEST"):
+        this.editTopSite(action);
+        this.refresh("a site was edited");
         break;
     }
   }
