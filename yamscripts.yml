@@ -48,7 +48,7 @@ scripts:
   buildmc:
     pre: rimraf ../mozilla-central/browser/extensions/activity-stream
     webpack: webpack --config webpack.system-addon.config.js
-    css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content
+    css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/content
     locales: pontoon-to-json --src locales --dest system-addon/data
     # Copy over all of the system-addon directory except content-src
     copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream && rimraf "../mozilla-central/browser/extensions/activity-stream/{,test/unit/}content-src"

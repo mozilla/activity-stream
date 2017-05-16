@@ -6,7 +6,7 @@ const resourcePathRegEx = /^resource:\/\/activity-stream\//;
 module.exports = {
   entry: absolute("content-src/activity-stream.jsx"),
   output: {
-    path: absolute("data/content"),
+    path: absolute("content"),
     filename: "activity-stream.bundle.js"
   },
   module: {

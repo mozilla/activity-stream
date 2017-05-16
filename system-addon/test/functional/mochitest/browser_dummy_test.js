@@ -14,7 +14,7 @@ Cu.import("resource://gre/modules/Services.jsm");
  * new setup.
  */
 add_task(async function checkActivityStreamLoads() {
-  const asURL = "resource://activity-stream/data/content/activity-stream.html";
+  const asURL = "chrome://activity-stream/content/activity-stream.html";
 
   // simulate a newtab open as a user would
   BrowserOpenTab();
