@@ -2,6 +2,11 @@ const DetectUserSessionStart = require("content-src/lib/detect-user-session-star
 const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("detectUserSessionStart", () => {
+  class PerfService {
+    getMostRecentAbsMarkStartByName() { return 1234; }
+    mark() {}
+  }
+
   describe("#sendEventOrAddListener", () => {
     it("should call ._sendEvent immediately if the document is visible", () => {
       const mockDocument = {visibilityState: "visible"};
@@ -30,9 +35,26 @@ describe("detectUserSessionStart", () => {
 
       instance._sendEvent();
 
-      assert.calledWith(sendAsyncMessage, "ActivityStream:ContentToMain", {type: at.NEW_TAB_VISIBLE});
+      assert.calledWith(sendAsyncMessage, "ActivityStream:ContentToMain", {
+        type: at.NEW_TAB_VISIBLE,
+        data: {absVisibilityChangeTime: sinon.match.number}
+      });
+    });
+
+    it('should call perfService.mark("visibility-change-event")', () => {
+      let perfService = new PerfService();
+      sinon.stub(perfService, "mark");
+      const instance = new DetectUserSessionStart({
+        perfService,
+        sendAsyncMessage: () => {}
+      });
+
+      instance._sendEvent();
+
+      assert.calledWith(perfService.mark, "visibility-change-event");
     });
   });
+
   describe("_onVisibilityChange", () => {
     it("should not send an event if visiblity is not visible", () => {
       const instance = new DetectUserSessionStart({document: {visibilityState: "hidden"}});

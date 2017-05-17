@@ -15,10 +15,17 @@ const FAKE_UUID = "{foo-123-foo}";
 describe("TelemetryFeed", () => {
   let globals;
   let sandbox;
-  let store = {getState() { return {App: {version: "1.0.0", locale: "en-US"}}; }};
+  let store = {
+    dispatch() {},
+    getState() { return {App: {version: "1.0.0", locale: "en-US"}}; }
+  };
   let instance;
   class TelemetrySender {sendPing() {} uninit() {}}
-  const {TelemetryFeed} = injector({"lib/TelemetrySender.jsm": {TelemetrySender}});
+  class PerfService {getMostRecentAbsMarkStartByName() { return 1234; } mark() {}}
+  const {TelemetryFeed} = injector({
+    "lib/TelemetrySender.jsm": {TelemetrySender},
+    "common/PerfService.jsm": {perfService: new PerfService()}
+  });
 
   function addSession(id) {
     instance.addSession(id);
@@ -225,7 +232,10 @@ describe("TelemetryFeed", () => {
     });
     it("should call .addSession() on a NEW_TAB_VISIBLE action", () => {
       const stub = sandbox.stub(instance, "addSession");
-      instance.onAction(ac.SendToMain({type: at.NEW_TAB_VISIBLE}, "port123"));
+      instance.onAction(ac.SendToMain({
+        type: at.NEW_TAB_VISIBLE,
+        data: {absVisibilityChangeTime: 789}
+      }, "port123"));
       assert.calledWith(stub, "port123");
     });
     it("should call .endSession() on a NEW_TAB_UNLOAD action", () => {
