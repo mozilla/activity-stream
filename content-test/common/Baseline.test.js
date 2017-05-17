@@ -1,5 +1,3 @@
-/* globals describe, it, beforeEach */
-
 const {Baseline} = require("common/recommender/Baseline");
 const {createSite} = require("test/faker");
 

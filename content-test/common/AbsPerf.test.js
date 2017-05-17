@@ -1,4 +1,3 @@
-/* globals beforeEach, describe, it */
 const {_AbsPerf} = require("common/AbsPerf");
 
 let absPerf;

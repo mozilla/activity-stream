@@ -1,4 +1,3 @@
-/* globals XPCOMUtils, windowMediator */
 const {Cu} = require("chrome");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");

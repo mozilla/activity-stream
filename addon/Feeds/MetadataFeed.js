@@ -1,4 +1,3 @@
-/* globals module, require, NewTabUtils */
 "use strict";
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");

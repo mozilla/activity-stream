@@ -1,4 +1,3 @@
-/* globals XPCOMUtils, Services, Task */
 "use strict";
 
 const {Ci, Cu} = require("chrome");

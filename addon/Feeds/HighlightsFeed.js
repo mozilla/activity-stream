@@ -1,4 +1,3 @@
-/* globals Task */
 const simplePrefs = require("sdk/simple-prefs");
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");

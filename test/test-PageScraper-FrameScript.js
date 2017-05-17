@@ -1,5 +1,3 @@
-/* globals require, exports */
-
 "use strict";
 const {before, after} = require("sdk/test/utils");
 const tabs = require("sdk/tabs");

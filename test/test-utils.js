@@ -1,5 +1,3 @@
-/* globals require, exports */
-
 "use strict";
 
 const {hexToRGB, consolidateFavicons, consolidateBackgroundColors, extractMetadataFaviconFields} = require("addon/lib/utils");

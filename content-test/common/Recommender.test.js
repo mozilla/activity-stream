@@ -1,5 +1,3 @@
-/* globals describe, it, beforeEach */
-
 const {Recommender} = require("common/recommender/Recommender");
 const {Baseline} = require("common/recommender/Baseline");
 const {assert} = require("chai");

@@ -1,4 +1,3 @@
-/* globals XPCOMUtils, windowMediator */
 "use strict";
 
 const test = require("sdk/test");

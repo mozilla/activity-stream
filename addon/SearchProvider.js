@@ -1,6 +1,3 @@
-/* global XPCOMUtils, Task, Services, EventEmitter, FormHistory,
-SearchSuggestionController, PrivateBrowsingUtils, exports, require */
-
 "use strict";
 const {Ci, Cu} = require("chrome");
 const {PrefsTarget} = require("sdk/preferences/event-target");

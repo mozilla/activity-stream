@@ -1,4 +1,3 @@
-/* global require, module */
 "use strict";
 const setRowsOrError = require("./SetRowsOrError");
 const setSearchContent = require("./setSearchContent");

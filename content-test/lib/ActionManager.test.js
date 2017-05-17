@@ -1,5 +1,3 @@
-/* globals describe, it, beforeEach */
-
 const ActionManager = require("common/ActionManager");
 
 describe("ActionManager", () => {

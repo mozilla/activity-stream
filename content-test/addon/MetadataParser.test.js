@@ -1,4 +1,3 @@
-/* globals assert, require */
 "use strict";
 const createMetadataParser = require("inject!addon/MetadataParser");
 const TEST_TITLE = "Test Page";

@@ -1,4 +1,3 @@
-/* globals sinon, require, assert */
 "use strict";
 
 const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
