@@ -1,14 +1,19 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+/* globals Services */
 
 "use strict";
 
-const {utils: Cu} = Components;
+const {interfaces: Ci, utils: Cu} = Components;
 const {actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+const {perfService} = Cu.import("resource://activity-stream/common/PerfService.jsm", {});
 
 Cu.import("resource://gre/modules/ClientID.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+// XXX only when preffed on?
+Cu.import("resource://gre/modules/Services.jsm");
 
 XPCOMUtils.defineLazyServiceGetter(this, "gUUIDGenerator",
   "@mozilla.org/uuid-generator;1",
@@ -24,23 +29,45 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   async init() {
+    Services.obs.addObserver(this.browserOpenTabStart, "browser-open-tab-start");
+
     // TelemetrySender adds pref observers, so we initialize it after INIT
     this.telemetrySender = new TelemetrySender();
 
     const id = await ClientID.getClientID();
     this.telemetryClientId = id;
   }
+  browserOpenTabStart() {
+    // XXX comment on race condition here
+    perfService.mark("browser-open-tab-start");
+  }
 
   /**
    * addSession - Start tracking a new session
    *
    * @param  {string} id the portID of the open session
+   * @param  {number} absVisChangeTime absolute timestamp of
+   *                                   document.visibilityState becoming visible
    */
-  addSession(id) {
+  addSession(id, absVisChangeTime) {
+    let absBrowserOpenTabStart =
+      perfService.getMostRecentAbsMarkStartByName("browser-open-tab-start");
+
     this.sessions.set(id, {
       start_time: Components.utils.now(),
       session_id: String(gUUIDGenerator.generateUUID()),
-      page: "about:newtab" // TODO: Handle about:home
+      page: "about:newtab", // TODO: Handle about:home here and in perf below
+      perf: {
+        load_trigger_ts: absBrowserOpenTabStart,
+        load_trigger_type: "menu_plus_or_keyboard",
+        visibility_event_fired: absVisChangeTime
+      }
+    });
+
+    let duration = absVisChangeTime - absBrowserOpenTabStart;
+    this.store.dispatch({
+      type: at.TELEMETRY_PERFORMANCE_EVENT,
+      data: {visability_duration: duration}
     });
   }
 
@@ -134,7 +161,8 @@ this.TelemetryFeed = class TelemetryFeed {
         this.init();
         break;
       case at.NEW_TAB_VISIBLE:
-        this.addSession(au.getPortIdOfSender(action));
+        this.addSession(au.getPortIdOfSender(action),
+          action.data.absVisibilityChangeTime);
         break;
       case at.NEW_TAB_UNLOAD:
         this.endSession(au.getPortIdOfSender(action));
@@ -152,6 +180,9 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   uninit() {
+    Services.obs.removeObserver(this.browserOpenTabStart,
+      "browser-open-tab-start");
+
     this.telemetrySender.uninit();
     this.telemetrySender = null;
     // TODO: Send any unfinished sessions
