@@ -1,5 +1,3 @@
-/* globals XPCOMUtils, Services, ClientID, Task */
-
 "use strict";
 
 const {before, after} = require("sdk/test/utils");

@@ -1,5 +1,3 @@
-/* globals XPCOMUtils, Services, gPrincipal, EventEmitter, PlacesUtils, Task, Bookmarks, SyncedTabs, NetUtil */
-
 "use strict";
 
 const {Ci, Cu} = require("chrome");

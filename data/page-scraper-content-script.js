@@ -1,4 +1,4 @@
-/* globals content, sendAsyncMessage */
+/* eslint-env mozilla/frame-script */
 
 "use strict";
 function DOMFetcher() {

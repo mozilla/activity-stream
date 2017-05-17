@@ -1,4 +1,3 @@
-/* globals assert, require */
 "use strict";
 const createPreviewProvider = require("inject!addon/PreviewProvider");
 const {BACKGROUND_FADE} = require("../../common/constants");

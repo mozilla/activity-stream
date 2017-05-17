@@ -1,4 +1,3 @@
-/* globals Services */
 const {Cu} = require("chrome");
 Cu.import("resource://gre/modules/Services.jsm");
 

@@ -1,4 +1,3 @@
-/* globals Task, NewTabUtils */
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");

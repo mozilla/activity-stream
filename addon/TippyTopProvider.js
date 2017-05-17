@@ -1,4 +1,3 @@
-/* globals require, JSON */
 "use strict";
 
 const data = require("sdk/self").data;

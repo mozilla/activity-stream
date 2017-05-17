@@ -1,4 +1,3 @@
-/* globals Task */
 const {Cu} = require("chrome");
 const PocketFeed = require("./PocketFeed");
 const {POCKET_TOPICS_LENGTH} = require("common/constants");

@@ -1,4 +1,3 @@
-/* globals Task, Services, require, exports */
 "use strict";
 
 const {Cu} = require("chrome");

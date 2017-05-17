@@ -1,5 +1,3 @@
-/* globals NewTabURL, EventEmitter, XPCOMUtils, Services, Pocket, NewTabUtils */
-
 "use strict";
 
 const {Cu} = require("chrome");

@@ -1,4 +1,3 @@
-/* globals Task, ClientID */
 "use strict";
 
 const {PlacesProvider} = require("addon/PlacesProvider");

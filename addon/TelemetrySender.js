@@ -1,5 +1,3 @@
-/* globals Services, XPCOMUtils */
-
 const {Ci, Cu} = require("chrome");
 const simplePrefs = require("sdk/simple-prefs");
 Cu.import("resource://gre/modules/Services.jsm");

@@ -1,4 +1,3 @@
-/* globals Services */
 "use strict";
 
 let usablePerfObj;

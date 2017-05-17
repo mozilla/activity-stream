@@ -1,5 +1,3 @@
-/* globals require, exports, NetUtil */
-
 "use strict";
 
 const {before, after} = require("sdk/test/utils");

@@ -1,4 +1,4 @@
-/* globals sendAsyncMessage, addMessageListener */
+/* eslint-env mozilla/frame-script */
 
 const {createStore, combineReducers, applyMiddleware} = require("redux");
 const {actionUtils: au} = require("common/Actions.jsm");

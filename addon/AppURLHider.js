@@ -1,4 +1,3 @@
-/* globals Services */
 "use strict";
 
 const {Cu, Ci} = require("chrome");

@@ -1,4 +1,3 @@
-/* globals Services, Task */
 "use strict";
 
 const {MetadataParser} = require("addon/MetadataParser");

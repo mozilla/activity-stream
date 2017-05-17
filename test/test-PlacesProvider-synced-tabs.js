@@ -1,4 +1,3 @@
-/* globals Services, XPCOMUtils, NetUtil, Weave */
 "use strict";
 
 const {before, after} = require("sdk/test/utils");

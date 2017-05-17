@@ -1,4 +1,3 @@
-/* globals require, exports */
 "use strict";
 
 const {getMetadata} = require("common/vendor")("page-metadata-parser");

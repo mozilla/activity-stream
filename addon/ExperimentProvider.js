@@ -1,5 +1,3 @@
-/* global XPCOMUtils, EventEmitter */
-
 const {Cu} = require("chrome");
 const prefService = require("sdk/preferences/service");
 const simplePrefs = require("sdk/simple-prefs");

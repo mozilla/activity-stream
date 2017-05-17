@@ -1,4 +1,3 @@
-/* globals XPCOMUtils, NetUtil, PlacesUtils, btoa, Bookmarks */
 "use strict";
 
 const {before} = require("sdk/test/utils");

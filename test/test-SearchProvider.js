@@ -1,4 +1,3 @@
-/* globals Services */
 "use strict";
 
 const {before, after} = require("sdk/test/utils");

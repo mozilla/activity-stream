@@ -1,5 +1,3 @@
-/* globals require, exports */
-
 "use strict";
 
 const {before, after, waitUntil} = require("sdk/test/utils");
