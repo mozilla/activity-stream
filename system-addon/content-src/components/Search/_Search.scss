@@ -229,6 +229,7 @@
       background-color: $search-blue;
       background-image: url('#{$image-path}glyph-forward-16-white.svg');
       color: $white;
+      cursor: pointer;
     }
   }
 
