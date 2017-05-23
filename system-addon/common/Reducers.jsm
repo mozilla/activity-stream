@@ -21,6 +21,11 @@ const INITIAL_STATE = {
     initialized: false,
     // The history (and possibly default) links
     rows: []
+  },
+  AutoMigrate: {
+    display: false,
+    stage: 0,
+    msg: 1
   }
 };
 
@@ -91,7 +96,32 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
   }
 }
 
+function AutoMigrate(prevState = INITIAL_STATE.AutoMigrate, action) {
+  switch (action.type) {
+    case at.AUTOMIGRATE_AUTOMIGRATED: {
+      if (!action.data) {
+        return prevState;
+      }
+      let {msg} = action.data;
+      return Object.assign({}, prevState, {
+        display: true,
+        stage: 0,
+        msg
+      });
+    }
+    case at.AUTOMIGRATE_IS_REVERTED: {
+      return Object.assign({}, prevState, {
+        display: true,
+        stage: 1,
+        msg: ""
+      });
+    }
+    default:
+      return prevState;
+  }
+}
+
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites, App};
+this.reducers = {App, AutoMigrate, TopSites};
 
 this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE"];
