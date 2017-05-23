@@ -3,6 +3,7 @@ const {connect} = require("react-redux");
 const {FormattedMessage} = require("react-intl");
 const shortURL = require("content-src/lib/short-url");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
+const AutoMigratePrompt = require("content-src/components/AutoMigratePrompt/AutoMigratePrompt");
 const {actionCreators: ac} = require("common/Actions.jsm");
 const TOP_SITES_SOURCE = "TOP_SITES";
 
@@ -55,6 +56,7 @@ class TopSite extends React.Component {
 }
 
 const TopSites = props => (<section>
+  <AutoMigratePrompt />
   <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
     {props.TopSites.rows.map((link, index) => <TopSite
