@@ -18,7 +18,8 @@ const TopSitesItem = React.createClass({
   getInitialState() {
     return {
       showContextMenu: false,
-      activeTile: null
+      activeTile: null,
+      dragOver: false
     };
   },
   getDefaultProps() {
@@ -78,6 +79,41 @@ const TopSitesItem = React.createClass({
       this.userEvent("PIN");
     }
   },
+  handleDragStart(e) {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/topsite-index", this.props.index);
+    e.dataTransfer.setData("text/topsite-url", this.props.url);
+    e.dataTransfer.setData("text/topsite-title", this.props.pinTitle || prettyUrl(this.props));
+  },
+  handleDragOver(e) {
+    const draggedIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
+    if (draggedIndex !== this.props.index) {
+      // prevent default to allow drop
+      e.preventDefault();
+    }
+  },
+  handleDragEnter(e) {
+    const draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
+    if (draggedIndex !== this.props.index) {
+      e.preventDefault();
+      this.setState({dragOver: true});
+    }
+  },
+  handleDragLeave(e) {
+    const draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
+    if (draggedIndex !== this.props.index) {
+      e.preventDefault();
+      this.setState({dragOver: false});
+    }
+  },
+  handleDrop(e) {
+    e.preventDefault();
+    this.setState({dragOver: false});
+    this.props.dispatch(actions.RequestDropTopsite(
+      e.dataTransfer.getData("text/topsite-url"),
+      e.dataTransfer.getData("text/topsite-title"),
+      this.props.index));
+  },
   render() {
     const site = this.props;
     const index = site.index;
@@ -95,7 +131,14 @@ const TopSitesItem = React.createClass({
 
     const label = site.pinTitle || prettyUrl(site);
 
-    return (<div className={classNames("tile-outer", {active: isActive})} key={site.guid || site.cache_key || index}>
+    return (<div
+        draggable="true"
+        onDragStart={this.handleDragStart}
+        onDragOver={this.handleDragOver}
+        onDragEnter={this.handleDragEnter}
+        onDragLeave={this.handleDragLeave}
+        onDrop={this.handleDrop}
+        className={classNames("tile-outer", {active: isActive, dragover: this.state.dragOver})} key={site.guid || site.cache_key || index}>
       <a onClick={ev => this.props.onClick(index, ev)} className="tile" href={site.url} ref="topSiteLink">
         {screenshot && <div className="inner-border" />}
         {screenshot && <div ref="screenshot" className="screenshot" style={{backgroundImage: `url(${screenshot})`}} />}
@@ -178,9 +221,34 @@ TopSitesItem.propTypes = {
 };
 
 const PlaceholderTopSitesItem = React.createClass({
+  getInitialState() { return {dragOver: false}; },
+  handleDragOver(e) {
+    e.preventDefault();
+  },
+  handleDragEnter(e) {
+    e.preventDefault();
+    this.setState({dragOver: true});
+  },
+  handleDragLeave(e) {
+    e.preventDefault();
+    this.setState({dragOver: false});
+  },
+  handleDrop(e) {
+    e.preventDefault();
+    this.setState({dragOver: false});
+    this.props.dispatch(actions.RequestDropTopsite(
+      e.dataTransfer.getData("text/topsite-url"),
+      e.dataTransfer.getData("text/topsite-title"),
+      this.props.index));
+  },
   render() {
     return (
-      <div className="tile-outer placeholder">
+      <div
+        className={classNames("tile-outer placeholder", {dragover: this.state.dragOver})}
+        onDragOver={this.handleDragOver}
+        onDragEnter={this.handleDragEnter}
+        onDragLeave={this.handleDragLeave}
+        onDrop={this.handleDrop}>
         <a className="tile">
           <PlaceholderSiteIcon />
         </a>
@@ -211,7 +279,11 @@ const TopSites = React.createClass({
     };
   },
   render() {
-    const sites = this.props.sites.slice(0, this.props.length);
+    let sites = this.props.sites.slice(0, this.props.length);
+    while (this.props.length > sites.length) {
+      // Append null sites if necessary so we get placeholders for all slots.
+      sites.push(null);
+    }
     return (<section className="top-sites">
       <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
       <div className="tiles-wrapper">
@@ -220,7 +292,7 @@ const TopSites = React.createClass({
           // or this is a placeholder, we want the widget to render empty
           if (!site || this.props.placeholder) {
             return (
-              <PlaceholderTopSitesItem key={i} />
+              <PlaceholderTopSitesItem key={i} index={i} dispatch={this.props.dispatch} />
             );
           }
 
@@ -308,7 +380,11 @@ const EditTopSites = React.createClass({
     this.setState({showEditForm: false, editIndex: -1});
   },
   render() {
-    const sites = this.props.sites.slice(0, this.props.length);
+    let sites = this.props.sites.slice(0, this.props.length);
+    while (this.props.length > sites.length) {
+      // Append null sites if necessary so we get placeholders for all slots.
+      sites.push(null);
+    }
     return (
       <div className="edit-topsites-wrapper">
         <div className="edit-topsites-button">
@@ -331,7 +407,7 @@ const EditTopSites = React.createClass({
                     // we want the widget to render empty
                     if (!site) {
                       return (
-                        <PlaceholderTopSitesItem key={i} />
+                        <PlaceholderTopSitesItem key={i} index={i} dispatch={this.props.dispatch} />
                       );
                     }
 

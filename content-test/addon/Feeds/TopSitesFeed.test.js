@@ -191,6 +191,15 @@ describe("TopSitesFeed", () => {
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "a site was edited");
     });
+
+    it("should call refresh and pin on TOPSITES_DROP_REQUEST", () => {
+      const data = {url: "foo.bar", title: "foo", index: 3};
+      instance.onAction({}, {type: "TOPSITES_DROP_REQUEST", data});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, {url: data.url, title: data.title}, 3);
+      assert.calledOnce(instance.refresh);
+      assert.calledWith(instance.refresh, "a site was dragged and dropped");
+    });
   });
 
   describe("#addTopSite", () => {
@@ -248,6 +257,33 @@ describe("TopSitesFeed", () => {
       instance.editTopSite({data: {index: 2, url: site.url, title: site.title}});
       assert.calledOnce(instance.pinnedLinks.pin);
       assert.calledWith(instance.pinnedLinks.pin, site, 2);
+    });
+  });
+
+  describe("#dropTopSite", () => {
+    it("should pin site in specified slot wihout existing pin", () => {
+      const site = {url: "foo.bar", title: "foo"};
+      instance.dropTopSite({data: {index: 2, url: site.url, title: site.title}});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 2);
+    });
+    it("should move a pinned site in specified slot to the next slot", () => {
+      const site1 = {url: "example.com"};
+      instance.pinnedLinks.links = [null, null, site1];
+      const site = {url: "foo.bar", title: "foo"};
+      instance.dropTopSite({data: {index: 2, url: site.url, title: site.title}});
+      assert.calledTwice(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, 2);
+      assert.calledWith(instance.pinnedLinks.pin, site1, 3);
+    });
+    it("should not move a pinned site in specified slot past the end of the list", () => {
+      const site1 = {url: "example.com"};
+      instance.pinnedLinks.links = new Array(TOP_SITES_SHOWMORE_LENGTH);
+      instance.pinnedLinks.links[TOP_SITES_SHOWMORE_LENGTH - 1] = site1;
+      const site = {url: "foo.bar", title: "foo"};
+      instance.dropTopSite({data: {index: TOP_SITES_SHOWMORE_LENGTH - 1, url: site.url, title: site.title}});
+      assert.calledOnce(instance.pinnedLinks.pin);
+      assert.calledWith(instance.pinnedLinks.pin, site, TOP_SITES_SHOWMORE_LENGTH - 1);
     });
   });
 });

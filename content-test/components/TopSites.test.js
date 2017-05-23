@@ -50,7 +50,7 @@ describe("TopSites", () => {
     });
 
     it("should have the right links", () => {
-      const linkEls = el.querySelectorAll(".tile");
+      const linkEls = el.querySelectorAll(":not(.placeholder) > .tile");
       assert.equal(linkEls.length, fakeProps.sites.length);
       assert.include(linkEls[0].href, fakeProps.sites[0].url);
       assert.include(linkEls[1].href, fakeProps.sites[1].url);
@@ -204,6 +204,32 @@ describe("TopSitesItem", () => {
       wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} {...pinnedSite} />, {context: {}, childContextTypes: {}});
       wrapper.ref("dismissButton").simulate("click");
     });
+
+    it("should fire a drop action when a top site is dropped on it", done => {
+      const url = "http://example.com";
+      const title = "an example title";
+      const index = 7;
+      function dispatch(a) {
+        if (a.type === "TOPSITES_DROP_REQUEST") {
+          assert.equal(a.data.url, url);
+          assert.equal(a.data.title, title);
+          assert.equal(a.data.index, index);
+          done();
+        }
+      }
+      wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} index={index} {...fakeSite} />, {context: {}, childContextTypes: {}});
+      wrapper.instance().handleDrop({
+        preventDefault: () => {},
+        dataTransfer: {
+          getData: type => {
+            if (type === "text/topsite-title") {
+              return title;
+            }
+            return url;
+          }
+        }
+      });
+    });
   });
 });
 
@@ -223,5 +249,31 @@ describe("PlaceholderTopSitesItem", () => {
   it("should render a PlaceholderSiteIcon", () => {
     let icon = TestUtils.findRenderedComponentWithType(instance, PlaceholderSiteIcon);
     assert.notEqual(null, icon);
+  });
+
+  it("should fire a drop action when a top site is dropped on it", done => {
+    const url = "http://example.com";
+    const title = "an example title";
+    const index = 7;
+    function dispatch(a) {
+      if (a.type === "TOPSITES_DROP_REQUEST") {
+        assert.equal(a.data.url, url);
+        assert.equal(a.data.title, title);
+        assert.equal(a.data.index, index);
+        done();
+      }
+    }
+    instance = renderWithProvider(<PlaceholderTopSitesItem dispatch={dispatch} index={index} />);
+    instance.handleDrop({
+      preventDefault: () => {},
+      dataTransfer: {
+        getData: type => {
+          if (type === "text/topsite-title") {
+            return title;
+          }
+          return url;
+        }
+      }
+    });
   });
 });

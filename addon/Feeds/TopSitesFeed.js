@@ -49,7 +49,27 @@ module.exports = class TopSitesFeed extends Feed {
       .then(links => this.options.send(am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links), action.workerId, true))
       .catch(Cu.reportError);
   }
+  dropTopSite(action) {
+    const {title, url, index} = action.data;
+    const site = {title, url};
+
+    // Dropping a top site pins it in the slot it was dropped, pushing over any link already
+    // pinned in the slot (unless it's the last slot, then it replaces).
+    this._insertPin(site, index);
+
+    // Return the new set of top sites.
+    this._getLinks()
+      .then(links => this.options.send(am.actions.Response("TOP_FRECENT_SITES_RESPONSE", links), action.workerId, true))
+      .catch(Cu.reportError);
+  }
   _insertPin(site, index) {
+    // Don't insert any pins past the end of the visible top sites. Otherwise,
+    // we can end up with a bunch of pinned sites that can never be unpinned again
+    // from the UI.
+    if (index >= TOP_SITES_SHOWMORE_LENGTH) {
+      return;
+    }
+
     // Insert a pin at the given index. If that slot is already taken, we need
     // to insert it in the next slot. Rinse and repeat if that next slot is also
     // taken.
@@ -178,6 +198,10 @@ module.exports = class TopSitesFeed extends Feed {
       case am.type("TOPSITES_EDIT_REQUEST"):
         this.editTopSite(action);
         this.refresh("a site was edited");
+        break;
+      case am.type("TOPSITES_DROP_REQUEST"):
+        this.dropTopSite(action);
+        this.refresh("a site was dragged and dropped");
         break;
     }
   }
