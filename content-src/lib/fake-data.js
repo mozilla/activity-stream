@@ -12,7 +12,7 @@ module.exports = {
     "error": false
   },
   "PocketTopics": {
-    "rows": faker.createRows({length: POCKET_TOPICS_LENGTH}),
+    "rows": faker.createRows({length: POCKET_TOPICS_LENGTH}).map((t, i) => Object.assign({}, t, {name: `name_${i}`})),
     "error": false
   },
   "TopSites": {
