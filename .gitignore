@@ -15,7 +15,7 @@ config.yml
 .amo_config.json
 common/vendor.js
 *.update.rdf
-system-addon/data/content/activity-stream.bundle.js
-system-addon/data/content/activity-stream.css
+system-addon/content/activity-stream.bundle.js
+system-addon/content/activity-stream.css
 system-addon/data/locales.json
 pocket.json

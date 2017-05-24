@@ -3,13 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [features/activity-stream@mozilla.org] chrome.jar:
-% resource activity-stream %content/
-  content/lib/ (./lib/*)
-  content/common/ (./common/*)
-  content/vendor/Redux.jsm (./vendor/Redux.jsm)
-  content/vendor/react.js (./vendor/react.js)
-  content/vendor/react-dom.js (./vendor/react-dom.js)
-  content/vendor/react-intl.js (./vendor/react-intl.js)
-  content/vendor/redux.js (./vendor/redux.js)
-  content/vendor/react-redux.js (./vendor/react-redux.js)
-  content/data/ (./data/*)
+% resource activity-stream %res/
+  res/lib/ (./lib/*)
+  res/common/ (./common/*)
+  res/vendor/Redux.jsm (./vendor/Redux.jsm)
+  res/vendor/react.js (./vendor/react.js)
+  res/vendor/react-dom.js (./vendor/react-dom.js)
+  res/vendor/react-intl.js (./vendor/react-intl.js)
+  res/vendor/redux.js (./vendor/redux.js)
+  res/vendor/react-redux.js (./vendor/react-redux.js)
+  res/data/locales.json (./data/locales.json)
+
+% content activity-stream %content/
+  content/ (./content/*)
