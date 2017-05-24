@@ -5,6 +5,7 @@ const {FormattedMessage} = require("react-intl");
 const {SpotlightItem, renderPlaceholderList} = require("components/Spotlight/Spotlight");
 const {actions} = require("common/action-manager");
 const {pocket_read_more_endpoint, pocket_learn_more_endpoint, pocket_survey_link} = require("../../../pocket.json");
+const {POCKET_TOPICS_LENGTH} = require("common/constants");
 
 const PocketStories = React.createClass({
   onClickFactory(index, story) {
@@ -22,6 +23,20 @@ const PocketStories = React.createClass({
         click: 0,
         tiles: [{id: story.guid, pos: index}]
       }));
+    };
+  },
+
+  onTopicClick(index, topic, topic_url) {
+    return () => {
+      let payload = {
+        event: "CLICK",
+        page: this.props.page,
+        source: "RECOMMENDED",
+        action_position: index,
+        recommender_type: topic,
+        url: topic_url
+      };
+      this.props.dispatch(actions.NotifyEvent(payload));
     };
   },
 
@@ -46,17 +61,22 @@ const PocketStories = React.createClass({
       );
   },
 
-  renderReadMoreTopic(topic, url) {
-    return (<li><a key={topic} className="pocket-read-more-link" href={url}>{topic}</a></li>);
+  renderReadMoreTopic(index, topic, url) {
+    return (<li><a key={topic}
+      onClick={this.onTopicClick(index, topic, url)}
+      className="pocket-read-more-link"
+      href={url}>{topic}</a></li>);
   },
 
   renderReadMoreTopics() {
     return (
       <div className="pocket-read-more">
         <span><FormattedMessage id="pocket_read_more" /></span>
-        <ul>{this.props.topics.map(t => this.renderReadMoreTopic(t.name, t.url))}</ul>
+        <ul>{this.props.topics.map((t, i) => this.renderReadMoreTopic(i, t.name, t.url))}</ul>
 
-        <a className="pocket-read-even-more" href={pocket_read_more_endpoint}>
+        <a className="pocket-read-even-more"
+           onClick={this.onTopicClick(POCKET_TOPICS_LENGTH, "trending", pocket_read_more_endpoint)}
+           href={pocket_read_more_endpoint}>
           <FormattedMessage id="pocket_read_even_more" />
           <span className="pocket-read-even-more-logo" />
         </a>

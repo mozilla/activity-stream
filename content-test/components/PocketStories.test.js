@@ -2,6 +2,7 @@ const ConnectedSpotlight = require("components/Spotlight/Spotlight");
 const {SpotlightItem} = ConnectedSpotlight;
 
 const {POCKET_STORIES_LENGTH, POCKET_TOPICS_LENGTH} = require("common/constants");
+const {pocket_read_more_endpoint} = require("../../pocket.json");
 const ConnectedPocketStories = require("components/PocketStories/PocketStories");
 const {PocketStories} = ConnectedPocketStories;
 
@@ -69,6 +70,38 @@ describe("PocketStories", () => {
       instance = renderWithProvider(<PocketStories page={"NEW_TAB"} dispatch={dispatch}
         stories={fakePocketStories} topics={fakePocketTopics} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
+    });
+    it("should fire a click event when a topic is clicked", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "CLICK");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "RECOMMENDED");
+          assert.equal(a.data.action_position, 1);
+          assert.equal(a.data.recommender_type, fakePocketTopics[1].name);
+          assert.equal(a.data.url, fakePocketTopics[1].url);
+          done();
+        }
+      }
+      instance = renderWithProvider(<PocketStories page={"NEW_TAB"} dispatch={dispatch}
+        stories={fakePocketStories} topics={fakePocketTopics} />);
+      TestUtils.Simulate.click(TestUtils.scryRenderedDOMComponentsWithClass(instance, "pocket-read-more-link")[1]);
+    });
+    it("should fire a click event when 'read more' is clicked", done => {
+      function dispatch(a) {
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "CLICK");
+          assert.equal(a.data.page, "NEW_TAB");
+          assert.equal(a.data.source, "RECOMMENDED");
+          assert.equal(a.data.action_position, POCKET_TOPICS_LENGTH);
+          assert.equal(a.data.recommender_type, "trending");
+          assert.equal(a.data.url, pocket_read_more_endpoint);
+          done();
+        }
+      }
+      instance = renderWithProvider(<PocketStories page={"NEW_TAB"} dispatch={dispatch}
+        stories={fakePocketStories} topics={fakePocketTopics} />);
+      TestUtils.Simulate.click(TestUtils.scryRenderedDOMComponentsWithClass(instance, "pocket-read-even-more")[0]);
     });
   });
 
