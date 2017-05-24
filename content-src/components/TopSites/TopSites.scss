@@ -13,6 +13,7 @@
   .tile-outer {
     @include link-menu-button;
     border-radius: $border-radius;
+    cursor: pointer;
     display: inline-block;
     height: $tile-width;
     position: relative;
@@ -33,6 +34,15 @@
       .tile {
         display: none;
       }
+    }
+
+    .drop-zone {
+      height: $tile-width;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: $tile-width;
+      z-index: 1;
     }
 
     .tile {
@@ -110,6 +120,8 @@
     // Only display a placeholder version (ie just outlines/shapes), for use
     // before sufficient data is available to display.
     &.placeholder {
+      cursor: default;
+
       .site-icon-wrapper {
         width: 32px;
         height: $tile-width;
@@ -220,6 +232,10 @@
   .edit-topsites-inner-wrapper {
     margin: 0;
     padding: 15px 30px;
+
+    .tile-outer:not(.placeholder) {
+      cursor: move;
+    }
   }
 
   button.icon-topsites {

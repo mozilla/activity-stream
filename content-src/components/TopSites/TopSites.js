@@ -102,17 +102,19 @@ const TopSitesItem = React.createClass({
   handleDragLeave(e) {
     const draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
     if (draggedIndex !== this.props.index) {
-      e.preventDefault();
       this.setState({dragOver: false});
     }
   },
   handleDrop(e) {
     e.preventDefault();
     this.setState({dragOver: false});
-    this.props.dispatch(actions.RequestDropTopsite(
-      e.dataTransfer.getData("text/topsite-url"),
-      e.dataTransfer.getData("text/topsite-title"),
-      this.props.index));
+    const draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
+    if (draggedIndex !== this.props.index) {
+      this.props.dispatch(actions.RequestDropTopsite(
+        e.dataTransfer.getData("text/topsite-url"),
+        e.dataTransfer.getData("text/topsite-title"),
+        this.props.index));
+    }
   },
   render() {
     const site = this.props;
@@ -134,10 +136,6 @@ const TopSitesItem = React.createClass({
     return (<div
         draggable="true"
         onDragStart={this.handleDragStart}
-        onDragOver={this.handleDragOver}
-        onDragEnter={this.handleDragEnter}
-        onDragLeave={this.handleDragLeave}
-        onDrop={this.handleDrop}
         className={classNames("tile-outer", {active: isActive, dragover: this.state.dragOver})} key={site.guid || site.cache_key || index}>
       <a onClick={ev => this.props.onClick(index, ev)} className="tile" href={site.url} ref="topSiteLink">
         {screenshot && <div className="inner-border" />}
@@ -154,6 +152,12 @@ const TopSitesItem = React.createClass({
           <div className="label">{label}</div>
         </div>
       </a>
+      <div
+        className="drop-zone"
+        onDragOver={this.handleDragOver}
+        onDragEnter={this.handleDragEnter}
+        onDragLeave={this.handleDragLeave}
+        onDrop={this.handleDrop} />
       {!this.props.editMode &&
         <div>
           <div className="hover-menu">
