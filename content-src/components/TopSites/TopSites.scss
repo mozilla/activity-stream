@@ -35,6 +35,15 @@
       }
     }
 
+    .drop-zone {
+      height: $tile-width;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: $tile-width;
+      z-index: 1;
+    }
+
     .tile {
       @include accessible-link-menu-button;
       border-radius: $border-radius;
