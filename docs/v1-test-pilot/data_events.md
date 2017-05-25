@@ -449,3 +449,25 @@ Note that it re-uses the same payload [schema](https://github.com/mozilla/infern
 }
 
 ```
+
+## Performance Pings
+
+Activity Stream will send data back to Mozilla for the purpose of measuring latency and performance of the add-on in order to optimize the performance of Activity Stream.
+
+```js
+{
+  "action": "activity_stream_performance",
+  "addon_version": "1.0.0",
+  "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
+  "date": "2016-03-07",
+  "event": "previewCacheHit",
+  "event_id": "45f1912165ca4dfdb5c1c2337dbdc58f",
+  "ip": "10.192.171.13",
+  "locale": "en-US",
+  "receive_at": 1457396660000,
+  "source": ["TOP_SITES" | "FEATURED" | "RECOMMENDED" | "ACTIVITY_FEED"],
+  "tab_id": "1-3",
+  "ua": "python-requests/2.9.1",
+  "value": 1
+}
+```
