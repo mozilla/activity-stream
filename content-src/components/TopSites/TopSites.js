@@ -94,6 +94,7 @@ const TopSitesItem = React.createClass({
     e.dataTransfer.setData("text/topsite-index", this.props.index);
     e.dataTransfer.setData("text/topsite-url", this.props.url);
     e.dataTransfer.setData("text/topsite-title", this.props.pinTitle || prettyUrl(this.props));
+    this.userEvent("DRAG_TOPSITE");
   },
   handleDragOver(e) {
     if (_allowDrop(e, this.props.index)) {
@@ -120,6 +121,7 @@ const TopSitesItem = React.createClass({
         e.dataTransfer.getData("text/topsite-url"),
         e.dataTransfer.getData("text/topsite-title"),
         this.props.index));
+      this.userEvent("DROP_TOPSITE");
     }
   },
   render() {
@@ -257,6 +259,12 @@ const PlaceholderTopSitesItem = React.createClass({
         e.dataTransfer.getData("text/topsite-url"),
         e.dataTransfer.getData("text/topsite-title"),
         this.props.index));
+      this.props.dispatch(actions.NotifyEvent({
+        event: "DROP_TOPSITE",
+        page: "NEW_TAB",
+        source: "TOP_SITES",
+        action_position: this.props.index
+      }));
     }
   },
   render() {

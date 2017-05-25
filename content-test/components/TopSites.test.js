@@ -209,12 +209,22 @@ describe("TopSitesItem", () => {
       const url = "http://example.com";
       const title = "an example title";
       const index = 7;
+      let callCount = 0;
       function dispatch(a) {
         if (a.type === "TOPSITES_DROP_REQUEST") {
           assert.equal(a.data.url, url);
           assert.equal(a.data.title, title);
           assert.equal(a.data.index, index);
-          done();
+          if (++callCount === 2) {
+            done();
+          }
+        }
+        if (a.type === "NOTIFY_USER_EVENT") {
+          assert.equal(a.data.event, "DROP_TOPSITE");
+          assert.equal(a.data.action_position, index);
+          if (++callCount === 2) {
+            done();
+          }
         }
       }
       wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={dispatch} index={index} {...fakeSite} />, {context: {}, childContextTypes: {}});
@@ -267,12 +277,22 @@ describe("PlaceholderTopSitesItem", () => {
     const url = "http://example.com";
     const title = "an example title";
     const index = 7;
+    let callCount = 0;
     function dispatch(a) {
       if (a.type === "TOPSITES_DROP_REQUEST") {
         assert.equal(a.data.url, url);
         assert.equal(a.data.title, title);
         assert.equal(a.data.index, index);
-        done();
+        if (++callCount === 2) {
+          done();
+        }
+      }
+      if (a.type === "NOTIFY_USER_EVENT") {
+        assert.equal(a.data.event, "DROP_TOPSITE");
+        assert.equal(a.data.action_position, index);
+        if (++callCount === 2) {
+          done();
+        }
       }
     }
     instance = renderWithProvider(<PlaceholderTopSitesItem dispatch={dispatch} index={index} />);
