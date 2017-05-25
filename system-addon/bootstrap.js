@@ -75,7 +75,6 @@ function init(reason) {
 function uninit(reason) {
   if (activityStream) {
     activityStream.uninit(reason);
-    activityStream = null;
   }
 }
 
@@ -156,4 +155,9 @@ this.shutdown = function shutdown(data, reason) {
   modulesToUnload.forEach(Cu.unload);
 };
 
-this.uninstall = function uninstall(data, reason) {};
+this.uninstall = function uninstall(data, reason) {
+  if (activityStream) {
+    activityStream.uninstall(reason);
+    activityStream = null;
+  }
+};

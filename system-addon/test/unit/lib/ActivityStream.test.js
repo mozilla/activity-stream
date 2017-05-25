@@ -1,5 +1,7 @@
 const injector = require("inject!lib/ActivityStream.jsm");
 
+const REASON_ADDON_UNINSTALL = 6;
+
 describe("ActivityStream", () => {
   let sandbox;
   let as;
@@ -18,6 +20,8 @@ describe("ActivityStream", () => {
     as = new ActivityStream();
     sandbox.stub(as.store, "init");
     sandbox.stub(as.store, "uninit");
+    sandbox.stub(as._defaultPrefs, "init");
+    sandbox.stub(as._defaultPrefs, "reset");
   });
 
   afterEach(() => sandbox.restore());
@@ -32,6 +36,9 @@ describe("ActivityStream", () => {
     beforeEach(() => {
       as.init();
     });
+    it("should initialize default prefs", () => {
+      assert.calledOnce(as._defaultPrefs.init);
+    });
     it("should set .initialized to true", () => {
       assert.isTrue(as.initialized, ".initialized");
     });
@@ -42,6 +49,7 @@ describe("ActivityStream", () => {
       as = new ActivityStream({version: "1.2.3"});
       sandbox.stub(as.store, "init");
       sandbox.stub(as.store, "dispatch");
+      sandbox.stub(as._defaultPrefs, "init");
 
       as.init();
 
@@ -60,6 +68,16 @@ describe("ActivityStream", () => {
     });
     it("should call .store.uninit", () => {
       assert.calledOnce(as.store.uninit);
+    });
+  });
+  describe("#uninstall", () => {
+    it("should reset default prefs if the reason is REASON_ADDON_UNINSTALL", () => {
+      as.uninstall(REASON_ADDON_UNINSTALL);
+      assert.calledOnce(as._defaultPrefs.reset);
+    });
+    it("should not reset default prefs if the reason is something else", () => {
+      as.uninstall("foo");
+      assert.notCalled(as._defaultPrefs.reset);
     });
   });
   describe("feeds", () => {

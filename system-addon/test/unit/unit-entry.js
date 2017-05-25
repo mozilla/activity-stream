@@ -1,4 +1,4 @@
-const {GlobalOverrider} = require("test/unit/utils");
+const {GlobalOverrider, FakePrefs} = require("test/unit/utils");
 const {chaiAssertions} = require("test/schemas/pings");
 
 const req = require.context(".", true, /\.test\.jsx?$/);
@@ -24,6 +24,7 @@ overrider.set({
   ContentSearchUIController: function() {}, // NB: This is a function/constructor
   dump() {},
   fetch() {},
+  Preferences: FakePrefs,
   Services: {
     locale: {getRequestedLocale() {}},
     mm: {
@@ -33,6 +34,16 @@ overrider.set({
     obs: {
       addObserver() {},
       removeObserver() {}
+    },
+    prefs: {
+      getDefaultBranch() {
+        return {
+          setBoolPref() {},
+          setIntPref() {},
+          setStringPref() {},
+          clearUserPref() {}
+        };
+      }
     }
   },
   XPCOMUtils: {
