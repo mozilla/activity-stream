@@ -222,6 +222,9 @@ describe("TopSitesItem", () => {
         preventDefault: () => {},
         dataTransfer: {
           getData: type => {
+            if (type === "text/topsite-index") {
+              return 1;
+            }
             if (type === "text/topsite-title") {
               return title;
             }
@@ -229,6 +232,15 @@ describe("TopSitesItem", () => {
           }
         }
       });
+    });
+
+    it("should should not allow drops without required topsites type", () => {
+      wrapper = mountWithIntl(<TopSitesItem editMode={true} dispatch={sinon.spy()} index={7} {...fakeSite} />, {context: {}, childContextTypes: {}});
+      wrapper.instance().handleDrop({
+        preventDefault: () => {},
+        dataTransfer: {getData: type => undefined}
+      });
+      assert.notCalled(wrapper.prop("dispatch"));
     });
   });
 });
@@ -268,6 +280,9 @@ describe("PlaceholderTopSitesItem", () => {
       preventDefault: () => {},
       dataTransfer: {
         getData: type => {
+          if (type === "text/topsite-index") {
+            return 1;
+          }
           if (type === "text/topsite-title") {
             return title;
           }
@@ -275,5 +290,14 @@ describe("PlaceholderTopSitesItem", () => {
         }
       }
     });
+  });
+
+  it("should should not allow drops without required topsites type", () => {
+    instance = renderWithProvider(<PlaceholderTopSitesItem dispatch={sinon.spy()} index={7} />);
+    instance.handleDrop({
+      preventDefault: () => {},
+      dataTransfer: {getData: type => undefined}
+    });
+    assert.notCalled(instance.props.dispatch);
   });
 });

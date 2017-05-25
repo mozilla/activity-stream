@@ -14,6 +14,16 @@ const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 const FULL_WIDTH = 96;
 const TIPPY_TOP_WIDTH = 80;
 
+// Helper to determine whether the drop zone should allow a drop. We only allow
+// dropping top sites for now.
+function _allowDrop(e, index) {
+  let draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
+  if (!isNaN(draggedIndex) && draggedIndex !== index) {
+    return true;
+  }
+  return false;
+}
+
 const TopSitesItem = React.createClass({
   getInitialState() {
     return {
@@ -86,30 +96,26 @@ const TopSitesItem = React.createClass({
     e.dataTransfer.setData("text/topsite-title", this.props.pinTitle || prettyUrl(this.props));
   },
   handleDragOver(e) {
-    const draggedIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
-    if (draggedIndex !== this.props.index) {
+    if (_allowDrop(e, this.props.index)) {
       // prevent default to allow drop
       e.preventDefault();
     }
   },
   handleDragEnter(e) {
-    const draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
-    if (draggedIndex !== this.props.index) {
+    if (_allowDrop(e, this.props.index)) {
       e.preventDefault();
       this.setState({dragOver: true});
     }
   },
   handleDragLeave(e) {
-    const draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
-    if (draggedIndex !== this.props.index) {
+    if (_allowDrop(e, this.props.index)) {
       this.setState({dragOver: false});
     }
   },
   handleDrop(e) {
-    e.preventDefault();
-    this.setState({dragOver: false});
-    const draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
-    if (draggedIndex !== this.props.index) {
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: false});
       this.props.dispatch(actions.RequestDropTopsite(
         e.dataTransfer.getData("text/topsite-url"),
         e.dataTransfer.getData("text/topsite-title"),
@@ -227,23 +233,31 @@ TopSitesItem.propTypes = {
 const PlaceholderTopSitesItem = React.createClass({
   getInitialState() { return {dragOver: false}; },
   handleDragOver(e) {
-    e.preventDefault();
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+    }
   },
   handleDragEnter(e) {
-    e.preventDefault();
-    this.setState({dragOver: true});
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: true});
+    }
   },
   handleDragLeave(e) {
-    e.preventDefault();
-    this.setState({dragOver: false});
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: false});
+    }
   },
   handleDrop(e) {
-    e.preventDefault();
-    this.setState({dragOver: false});
-    this.props.dispatch(actions.RequestDropTopsite(
-      e.dataTransfer.getData("text/topsite-url"),
-      e.dataTransfer.getData("text/topsite-title"),
-      this.props.index));
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: false});
+      this.props.dispatch(actions.RequestDropTopsite(
+        e.dataTransfer.getData("text/topsite-url"),
+        e.dataTransfer.getData("text/topsite-title"),
+        this.props.index));
+    }
   },
   render() {
     return (
