@@ -319,6 +319,38 @@ It doesn't capture success or failure to share after.
 }
 ```
 
+#### Drag a Top Site
+
+```js
+{
+  "event": "DRAG_TOPSITE",
+  "page": "NEW_TAB",
+  "source": "TOP_SITES",
+  "action_position": 2,
+  "action": "activity_stream_event",
+  "tab_id": "-5-3",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+}
+```
+
+#### Drop a Top Site on another
+
+```js
+{
+  "event": "DROP_TOPSITE",
+  "page": "NEW_TAB",
+  "source": "TOP_SITES",
+  "action_position": 2,
+  "action": "activity_stream_event",
+  "tab_id": "-5-3",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+}
+```
+
 ## Session end pings
 
 When a session ends, the browser will send a `"activity_stream_session"` ping to our metrics servers. This ping contains the length of the session, a unique reason for why the session ended, and some additional metadata.
