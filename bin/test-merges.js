@@ -9,7 +9,7 @@ const process = require("process");
 const path = require("path");
 const GitHubApi = require("github");
 const shelljs = require("shelljs");
-
+const child_process = require("child_process");
 const github = new GitHubApi({debug: false});
 
 // some of our API requests need to be authenticated
@@ -180,9 +180,19 @@ function exportToLocalMC(commitId) {
 
 function commitToHg([commitId, commitMsg]) {
   return new Promise((resolve, reject) => {
+    // we use child_process.execFile here because shelljs.exec goes through
+    // the shell, which means that if the original commit message has shell
+    // quote characters, things can go haywire in weird ways.
     console.log(`Committing exported ${commitId} to ${AS_REPO_NAME}...`);
-    shelljs.exec(`${HG} commit --addremove -m '${commitMsg}\n\nExport of ${commitId} from ${AS_REPO_OWNER}/${AS_REPO_NAME}' .`,
-      {async: true, cwd: TESTING_LOCAL_MC},
+    child_process.execFile(HG,
+      [
+        "commit",
+        "--addremove",
+        "-m",
+        `${commitMsg}\n\nExport of ${commitId} from ${AS_REPO_OWNER}/${AS_REPO_NAME}`,
+        "."
+      ],
+      {cwd: TESTING_LOCAL_MC, env: process.env, timeout: 5 * 60 * 1000},
       (code, stdout, stderr) => {
         if (code) {
           reject(new Error(`${HG} commit failed, output: ${stderr}`));
