@@ -1,73 +1,66 @@
 const React = require("react");
-const {mountWithIntl, shallowWithIntl} = require("test/unit/utils");
+const {GlobalOverrider, mountWithIntl, shallowWithIntl} = require("test/unit/utils");
 const {_unconnected: Search} = require("content-src/components/Search/Search");
-const {actionTypes: at, actionUtils: au} = require("common/Actions.jsm");
 
-const DEFAULT_PROPS = {
-  Search: {
-    currentEngine: {
-      name: "google",
-      icon: "google.jpg"
-    }
-  },
-  dispatch() {}
-};
+const DEFAULT_PROPS = {dispatch() {}};
 
 describe("<Search>", () => {
+  let globals;
+  let sandbox;
+  beforeEach(() => {
+    globals = new GlobalOverrider();
+    sandbox = globals.sandbox;
+
+    global.ContentSearchUIController.prototype = {search: sandbox.spy()};
+  });
+  afterEach(() => {
+    globals.restore();
+  });
+
   it("should render a Search element", () => {
     const wrapper = shallowWithIntl(<Search {...DEFAULT_PROPS} />);
     assert.ok(wrapper.exists());
   });
+  it("should listen for ContentSearchClient on render", () => {
+    const spy = globals.set("addEventListener", sandbox.spy());
 
-  describe("#performSearch", () => {
-    function clickButtonAndGetAction(wrapper) {
-      const dispatch = wrapper.prop("dispatch");
-      wrapper.find(".search-button").simulate("click");
-      return dispatch.firstCall.args[0];
-    }
-    it("should send a SendToMain action with type PERFORM_SEARCH when you click the search button", () => {
-      const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} dispatch={sinon.spy()} />);
-
-      const action = clickButtonAndGetAction(wrapper);
-
-      assert.propertyVal(action, "type", at.PERFORM_SEARCH);
-      assert.isTrue(au.isSendToMain(action));
-    });
-    it("should send an action with the right engineName ", () => {
-      const props = {Search: {currentEngine: {name: "foo123"}}, dispatch: sinon.spy()};
-      const wrapper = mountWithIntl(<Search {...props} />);
-
-      const action = clickButtonAndGetAction(wrapper);
-
-      assert.propertyVal(action.data, "engineName", "foo123");
-    });
-    it("should send an action with the right searchString ", () => {
-      const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} dispatch={sinon.spy()} />);
-      wrapper.setState({searchString: "hello123"});
-
-      const action = clickButtonAndGetAction(wrapper);
-
-      assert.propertyVal(action.data, "searchString", "hello123");
-    });
-    it("should send a UserEvent action", () => {
-      const dispatch = sinon.spy();
-      const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} dispatch={dispatch} />);
-      wrapper.setState({searchString: "hello123"});
-
-      clickButtonAndGetAction(wrapper);
-
-      assert.calledTwice(dispatch);
-      const action = dispatch.secondCall.args[0];
-      assert.isUserEventAction(action);
-      assert.propertyVal(action.data, "event", "SEARCH");
-    });
-  });
-  it("should update state.searchString on a change event", () => {
     const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
-    const inputEl = wrapper.find("#search-input");
-    // as the value in the input field changes, it will update the search string
-    inputEl.simulate("change", {target: {value: "hello"}});
 
-    assert.equal(wrapper.state().searchString, "hello");
+    assert.calledOnce(spy);
+    assert.equal(spy.firstCall.args[0], "ContentSearchClient");
+    assert.equal(spy.firstCall.args[1], wrapper.node);
+  });
+  it("should stop listening for ContentSearchClient on unmount", () => {
+    const spy = globals.set("removeEventListener", sandbox.spy());
+    const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
+
+    wrapper.unmount();
+
+    assert.calledOnce(spy);
+    assert.equal(spy.firstCall.args[0], "ContentSearchClient");
+    assert.equal(spy.firstCall.args[1], wrapper.node);
+  });
+  it("should pass along search when clicking the search button", () => {
+    const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
+
+    wrapper.find(".search-button").simulate("click");
+
+    const {search} = wrapper.node.controller;
+    assert.calledOnce(search);
+    assert.propertyVal(search.firstCall.args[0], "type", "click");
+  });
+  it("should send a UserEvent action", () => {
+    global.ContentSearchUIController.prototype.search = () => {
+      dispatchEvent(new CustomEvent("ContentSearchClient", {detail: {type: "Search"}}));
+    };
+    const dispatch = sinon.spy();
+    const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} dispatch={dispatch} />);
+
+    wrapper.find(".search-button").simulate("click");
+
+    assert.calledOnce(dispatch);
+    const action = dispatch.firstCall.args[0];
+    assert.isUserEventAction(action);
+    assert.propertyVal(action.data, "event", "SEARCH");
   });
 });

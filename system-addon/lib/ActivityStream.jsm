@@ -18,9 +18,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "NewTabInit",
 XPCOMUtils.defineLazyModuleGetter(this, "PlacesFeed",
   "resource://activity-stream/lib/PlacesFeed.jsm");
 
-XPCOMUtils.defineLazyModuleGetter(this, "SearchFeed",
-  "resource://activity-stream/lib/SearchFeed.jsm");
-
 XPCOMUtils.defineLazyModuleGetter(this, "TelemetryFeed",
   "resource://activity-stream/lib/TelemetryFeed.jsm");
 
@@ -38,7 +35,6 @@ const feeds = {
   "feeds.localization": () => new LocalizationFeed(),
   "feeds.newtabinit": () => new NewTabInit(),
   "feeds.places": () => new PlacesFeed(),
-  "feeds.search": () => new SearchFeed(),
   "feeds.telemetry": () => new TelemetryFeed(),
   "feeds.topsites": () => new TopSitesFeed()
 };

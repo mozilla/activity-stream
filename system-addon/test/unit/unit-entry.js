@@ -20,11 +20,8 @@ overrider.set({
       now: () => window.performance.now()
     }
   },
-  XPCOMUtils: {
-    defineLazyModuleGetter() {},
-    defineLazyServiceGetter() {},
-    generateQI() { return {}; }
-  },
+  // eslint-disable-next-line object-shorthand
+  ContentSearchUIController: function() {}, // NB: This is a function/constructor
   dump() {},
   fetch() {},
   Services: {
@@ -37,6 +34,11 @@ overrider.set({
       addObserver() {},
       removeObserver() {}
     }
+  },
+  XPCOMUtils: {
+    defineLazyModuleGetter() {},
+    defineLazyServiceGetter() {},
+    generateQI() { return {}; }
   }
 });
 

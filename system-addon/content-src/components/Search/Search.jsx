@@ -1,40 +1,37 @@
+/* globals ContentSearchUIController */
 "use strict";
 const React = require("react");
 const {connect} = require("react-redux");
 const {FormattedMessage, injectIntl} = require("react-intl");
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+const {actionCreators: ac} = require("common/Actions.jsm");
 
 class Search extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {searchString: ""};
     this.onClick = this.onClick.bind(this);
-    this.onChange = this.onChange.bind(this);
+    this.onInputMount = this.onInputMount.bind(this);
   }
 
-  componentWillMount() {
-    // Trigger initialization of ContentSearch in case it hasn't happened yet
-    dispatchEvent(new CustomEvent("ContentSearchClient", {detail: {}}));
-  }
-
-  performSearch(options) {
-    let searchData = {
-      engineName: options.engineName,
-      searchString: options.searchString,
-      searchPurpose: "newtab",
-      healthReportKey: "newtab"
-    };
-    this.props.dispatch(ac.SendToMain({type: at.PERFORM_SEARCH, data: searchData}));
-    this.props.dispatch(ac.UserEvent({event: "SEARCH"}));
+  handleEvent(event) {
+    // Also track search events with our own telemetry
+    if (event.detail.type === "Search") {
+      this.props.dispatch(ac.UserEvent({event: "SEARCH"}));
+    }
   }
   onClick(event) {
-    const {currentEngine} = this.props.Search;
-    event.preventDefault();
-    this.performSearch({engineName: currentEngine.name, searchString: this.state.searchString});
+    this.controller.search(event);
   }
-  onChange(event) {
-    this.setState({searchString: event.target.value});
+  onInputMount(input) {
+    if (input) {
+      this.controller = new ContentSearchUIController(input, input.parentNode,
+        "newtab", "activity");
+      addEventListener("ContentSearchClient", this);
+    } else {
+      this.controller = null;
+      removeEventListener("ContentSearchClient", this);
+    }
   }
+
   render() {
     return (<form className="search-wrapper">
       <label htmlFor="search-input" className="search-label">
@@ -43,11 +40,10 @@ class Search extends React.Component {
       <input
         id="search-input"
         maxLength="256"
-        onChange={this.onChange}
         placeholder={this.props.intl.formatMessage({id: "search_web_placeholder"})}
+        ref={this.onInputMount}
         title={this.props.intl.formatMessage({id: "search_web_placeholder"})}
-        type="search"
-        value={this.state.searchString} />
+        type="search" />
         <button
           className="search-button"
           onClick={this.onClick}
@@ -58,5 +54,5 @@ class Search extends React.Component {
   }
 }
 
-module.exports = connect(state => ({Search: state.Search}))(injectIntl(Search));
+module.exports = connect()(injectIntl(Search));
 module.exports._unconnected = Search;
