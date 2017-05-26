@@ -90,11 +90,19 @@ const TopSitesItem = React.createClass({
     }
   },
   handleDragStart(e) {
+    this.isDragging = true;
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/topsite-index", this.props.index);
     e.dataTransfer.setData("text/topsite-url", this.props.url);
     e.dataTransfer.setData("text/topsite-title", this.props.pinTitle || prettyUrl(this.props));
     this.userEvent("DRAG_TOPSITE");
+  },
+  handleDragEnd(e) {
+    setTimeout(() => {
+      // This is to prevent browser from following to the link url when a topsite
+      // is dragged onto itself.
+      this.isDragging = false;
+    }, 1000);
   },
   handleDragOver(e) {
     if (_allowDrop(e, this.props.index)) {
@@ -124,6 +132,13 @@ const TopSitesItem = React.createClass({
       this.userEvent("DROP_TOPSITE");
     }
   },
+  handleClick(e) {
+    if (this.isDragging) {
+      // Cancel the link click event if it was being dragged.
+      e.preventDefault();
+    }
+    this.props.onClick(this.props.index, e);
+  },
   render() {
     const site = this.props;
     const index = site.index;
@@ -144,8 +159,9 @@ const TopSitesItem = React.createClass({
     return (<div
         draggable="true"
         onDragStart={this.handleDragStart}
+        onDragEnd={this.handleDragEnd}
         className={classNames("tile-outer", {active: isActive, dragover: this.state.dragOver})} key={site.guid || site.cache_key || index}>
-      <a onClick={ev => this.props.onClick(index, ev)} className="tile" href={site.url} ref="topSiteLink">
+      <a onClick={this.handleClick} className="tile" href={site.url} ref="topSiteLink">
         {screenshot && <div className="inner-border" />}
         {screenshot && <div ref="screenshot" className="screenshot" style={{backgroundImage: `url(${screenshot})`}} />}
         <SiteIcon
@@ -160,11 +176,8 @@ const TopSitesItem = React.createClass({
           <div className="label">{label}</div>
         </div>
       </a>
-      <a
-        onClick={ev => this.props.onClick(index, ev)}
-        href={site.url}
+      <div
         className="drop-zone"
-        draggable="false"
         onDragOver={this.handleDragOver}
         onDragEnter={this.handleDragEnter}
         onDragLeave={this.handleDragLeave}
