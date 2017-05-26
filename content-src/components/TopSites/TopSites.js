@@ -95,6 +95,9 @@ const TopSitesItem = React.createClass({
     e.dataTransfer.setData("text/topsite-index", this.props.index);
     e.dataTransfer.setData("text/topsite-url", this.props.url);
     e.dataTransfer.setData("text/topsite-title", this.props.pinTitle || prettyUrl(this.props));
+    if (this.state.showContextMenu) {
+      this.setState({showContextMenu: false});
+    }
     this.userEvent("DRAG_TOPSITE");
   },
   handleDragEnd(e) {
