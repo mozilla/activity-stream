@@ -160,8 +160,11 @@ const TopSitesItem = React.createClass({
           <div className="label">{label}</div>
         </div>
       </a>
-      <div
+      <a
+        onClick={ev => this.props.onClick(index, ev)}
+        href={site.url}
         className="drop-zone"
+        draggable="false"
         onDragOver={this.handleDragOver}
         onDragEnter={this.handleDragEnter}
         onDragLeave={this.handleDragLeave}
