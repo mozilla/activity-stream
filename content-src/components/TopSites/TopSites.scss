@@ -25,6 +25,10 @@
     &:hover {
       box-shadow: 0 0 0 5px $faintest-black;
       transition: box-shadow 150ms;
+
+      .tile {
+        z-index: 1;
+      }
     }
 
     &.dragover {
@@ -59,6 +63,7 @@
       text-decoration: none;
       width: $tile-width;
       color: inherit;
+      z-index: 0;
 
       .site-title {
         font-size: 11px;
