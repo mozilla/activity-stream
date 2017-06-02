@@ -128,9 +128,10 @@
     width: 12px;
   }
 
-  &.icon-arrowhead-up {
-    background-image: url('#{$image-path}glyph-arrowhead-up-12.svg');
+  &.icon-arrowhead-forward {
+    background-image: url('#{$image-path}glyph-arrowhead-down-12.svg');
     height: 12px;
+    transform: rotate(270deg);
     width: 12px;
   }
 }

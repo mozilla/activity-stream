@@ -1,8 +1,13 @@
 .top-sites {
   position: relative;
 
+  .section-title {
+    margin-bottom: $section-title-bottom-margin - 7;
+  }
+
   .tiles-wrapper {
     margin-inline-end: -20px;
+    padding-top: 7px;
 
     @media (min-width: $break-point) {
       width: ($tile-width + $tile-gutter) * 6;
@@ -253,6 +258,12 @@
     span {
       padding-left: 3px;
     }
+  }
+}
+
+.collapsed {
+  .edit-topsites-button {
+    display: none;
   }
 }
 

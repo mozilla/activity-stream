@@ -1,4 +1,17 @@
 .pocket-stories {
+  position: relative;
+
+  .pocket-links {
+    offset-inline-end: 0;
+    position: absolute;
+    top: 0;
+  }
+
+  &.collapsed {
+    .pocket-links {
+      display: none;
+    }
+  }
 
   .section-title-logo {
     float: right;
@@ -129,4 +142,3 @@
   }
 
 }
-

@@ -208,6 +208,18 @@
       "title": "Collapse the Highlights on the New Tab page leaving only section title visible",
       "type": "bool",
       "value": false
+    },
+    {
+      "name": "collapseTopSites",
+      "title": "Collapse the Top Sites on the New Tab page leaving only section title visible",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "collapsePocket",
+      "title": "Collapse the Pocket on the New Tab page leaving only section title visible",
+      "type": "bool",
+      "value": false
     }
   ],
   "repository": "mozilla/activity-stream",

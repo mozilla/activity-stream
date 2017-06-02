@@ -99,25 +99,20 @@ const NewTabPage = React.createClass({
           defaultLabel="default_label_loading" />
         <div className="show-on-init on">
           {showTopSites &&
-            <section>
-              <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
-                sites={props.TopSites.rows} showNewStyle={true}
-                length={showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH} />
-            </section>
+            <TopSites placeholder={!this.props.isReady} page={PAGE_NAME}
+              sites={props.TopSites.rows} showNewStyle={true}
+              length={showMoreTopSites ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH}
+              prefs={props.Prefs.prefs} />
           }
           {showPocket &&
-            <section>
-              <PocketStories placeholder={!this.props.isReady} page={PAGE_NAME}
-                length={POCKET_STORIES_LENGTH} stories={props.PocketStories.rows}
-                topics={props.PocketTopics.rows} prefs={props.Prefs.prefs} />
-            </section>
+            <PocketStories placeholder={!this.props.isReady} page={PAGE_NAME}
+              length={POCKET_STORIES_LENGTH} stories={props.PocketStories.rows}
+              topics={props.PocketTopics.rows} prefs={props.Prefs.prefs} />
           }
           {showHighlights &&
-            <section>
-              <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
-                length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows}
-                prefs={props.Prefs.prefs} />
-            </section>
+            <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
+              length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows}
+              prefs={props.Prefs.prefs} />
           }
         </div>
       </div>
