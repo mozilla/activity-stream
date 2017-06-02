@@ -48,5 +48,10 @@ describe("Prefs reducer", () => {
       const state = Prefs(prevState({foo: 1}), {type: "PREF_CHANGED_RESPONSE", data: {name: "foo", value: 2}});
       assert.equal(state.prefs.foo, 2);
     });
+    it("should return a new .pref object instead of mutating", () => {
+      const oldState = prevState({foo: 1});
+      const state = Prefs(oldState, {type: "PREF_CHANGED_RESPONSE", data: {name: "foo", value: 2}});
+      assert.notEqual(oldState.prefs, state.prefs);
+    });
   });
 });
