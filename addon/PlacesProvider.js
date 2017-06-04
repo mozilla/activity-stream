@@ -782,7 +782,7 @@ Links.prototype = {
                     FROM moz_bookmarks b, moz_places p
                     WHERE type = :type
                     AND b.fk = p.id
-                    AND b.lastVisitDate IS NOT NULL
+                    AND p.last_visit_date IS NOT NULL
                     ORDER BY b.lastModified DESC
                     LIMIT ${limit}`;
 
