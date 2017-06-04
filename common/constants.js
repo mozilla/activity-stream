@@ -22,6 +22,9 @@ module.exports = {
   // all rows.
   HIGHLIGHTS_LENGTH: 9,
 
+  // Number of items in the Bookmarks section.
+  BOOKMARKS_LENGTH: 3,
+
   // How many items per query?
   LINKS_QUERY_LIMIT: 500,
 
@@ -44,7 +47,9 @@ module.exports = {
     "showHighlights": 1 << 2,
     "showMoreTopSites": 1 << 3,
     "showPocket": 1 << 4,
-    "collapseHighlights": 1 << 5
+    "collapseHighlights": 1 << 5,
+    "collapseBookmarks": 1 << 6,
+    "showBookmarks": 1 << 7
   },
 
   // The minimum size to consider an icon high res
