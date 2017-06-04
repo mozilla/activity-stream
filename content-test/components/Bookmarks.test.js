@@ -9,6 +9,7 @@ const {mockData, faker, renderWithProvider} = require("test/test-utils");
 const fakeBookmarkItems = mockData.Bookmarks.rows;
 const fakeNonBookmarkItems = mockData.Highlights.rows;
 const fakeSiteWithImage = faker.createSite();
+const getBestImage = require("common/getBestImage");
 
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 
@@ -58,6 +59,17 @@ describe("Bookmarks", () => {
                                                prefs={{collapseBookmarks: false}} />);
       const children = TestUtils.scryRenderedComponentsWithType(instance, PlaceholderBookmarks);
       assert.equal(children.length, 1);
+    });
+    it("should show provide bestImage prop to SpotlightItems", () => {
+      let i;
+      instance = renderWithProvider(<Bookmarks dispatch={stubDispatcher}
+                                               placeholder={false}
+                                               sites={fakeBookmarkItems}
+                                               prefs={{collapseBookmarks: false}} />);
+      const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
+      for (i = 0; i < children.length; i++) {
+        assert.equal(children[i].props.bestImage, getBestImage(fakeBookmarkItems[i].images));
+      }
     });
   });
 
