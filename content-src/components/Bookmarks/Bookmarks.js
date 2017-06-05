@@ -9,7 +9,9 @@ const getBestImage = require("common/getBestImage");
 
 const PlaceholderBookmarks = React.createClass({
   render() {
-    return <div className="bookmarks-placeholder">You don't have any bookmarks yet.</div>;
+    return (<div className="bookmarks-placeholder">
+      <FormattedMessage id="header_bookmarks_placeholder" />
+    </div>);
   }
 });
 
