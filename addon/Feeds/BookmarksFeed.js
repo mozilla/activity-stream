@@ -67,7 +67,6 @@ module.exports = class BookmarksFeed extends Feed {
   }
 
   onAction(state, action) {
-    // console.log("BOOKMARKS FEED", action.type);
     switch (action.type) {
       case am.type("APP_INIT"):
         // When the app inititalizes refresh the data. TODO
