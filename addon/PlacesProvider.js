@@ -25,11 +25,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
 XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
                                   "resource://gre/modules/NetUtil.jsm");
 
-XPCOMUtils.defineLazyGetter(this, "gPrincipal", () => {
-  let uri = Services.io.newURI("about:newtab", null, null);
-  return Services.scriptSecurityManager.getNoAppCodebasePrincipal(uri);
-});
-
 const {TOP_SITES_DEFAULT_LENGTH, LINKS_QUERY_LIMIT} = require("../common/constants");
 
 const REV_HOST_BLACKLIST = [
@@ -148,7 +143,8 @@ let LinkChecker = {
       return false;
     }
     try {
-      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(gPrincipal, aURI, this.flags);
+      let systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(systemPrincipal, aURI, this.flags);
       return true;
     } catch (e) {
       // We got a weird URI or one that would inherit the caller's principal.
