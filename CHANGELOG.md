@@ -1,3 +1,13 @@
+<a name="1.12.1"></a>
+## 1.12.1 (2017-06-05)
+
+* 1.12.0 changelog ([97aaf71](https://github.com/mozilla/activity-stream/commit/97aaf71))
+* 1.12.1 ([32c6caf](https://github.com/mozilla/activity-stream/commit/32c6caf))
+* Enable travisci for 1.12.1 ([0126ba0](https://github.com/mozilla/activity-stream/commit/0126ba0))
+* fix (addon): #2670 fix LinkChecker to match m-c ([83a2fa0](https://github.com/mozilla/activity-stream/commit/83a2fa0)), closes [#2670](https://github.com/mozilla/activity-stream/issues/2670)
+
+
+
 <a name="1.12.0"></a>
 # 1.12.0 (2017-05-30)
 
