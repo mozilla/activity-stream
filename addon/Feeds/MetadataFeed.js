@@ -60,7 +60,7 @@ module.exports = class MetadataFeed extends Feed {
     this.urlsToFetch = [];
 
     // Make no requests for metadata
-    if (experiments.metadataNoService || experiments.metadataLocalRefresh) {
+    if (experiments.metadataNoService) {
       return this.options.fetchNewMetadataLocally(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
     }
 
@@ -75,10 +75,6 @@ module.exports = class MetadataFeed extends Feed {
         break;
       case am.type("RECEIVE_PLACES_CHANGES"):
         this.urlsToFetch.push(action.data.url);
-
-        if (experiments.metadataLocalRefresh && ((Date.now() - this.lastRefreshed) >= UPDATE_TIME)) {
-          this.getInitialMetadata("periodically refreshing metadata");
-        }
 
         if (this.urlsToFetch.length > MAX_NUM_LINKS) {
           this.refresh("metadata was needed for these links");
