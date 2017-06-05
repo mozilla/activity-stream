@@ -46,8 +46,8 @@ function formatISODate(timestamp) {
 
 exports.test_LinkChecker_securityCheck = function(assert) {
   let urls = [
-    {url: "file://home/file/image.png", expected: false},
-    {url: "resource:///modules/PlacesProvider.jsm", expected: false},
+    {url: "file://home/file/image.png", expected: true},
+    {url: "resource:///modules/PlacesProvider.jsm", expected: true},
     {url: "javascript:alert('hello')", expected: false}, // eslint-disable-line no-script-url
     {url: "data:image/png;base64,XXX", expected: false},
     {url: "about:newtab", expected: true},
