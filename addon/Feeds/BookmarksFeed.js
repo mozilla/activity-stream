@@ -33,7 +33,7 @@ module.exports = class BookmarksFeed extends Feed {
   /**
    * getData
    *
-   * @return Promise  A promise that resolves with the "HIGHLIGHTS_RESPONSE" action
+   * @return Promise  A promise that resolves with the "BOOKMARKS_RESPONSE" action
    */
   getData() {
     return Task.spawn(function*() {
