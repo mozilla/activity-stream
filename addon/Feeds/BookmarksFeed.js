@@ -76,7 +76,7 @@ module.exports = class BookmarksFeed extends Feed {
         // We always want new bookmarks
         this.refresh("a bookmark was added");
         break;
-      case am.type("RECEIVE_PLACES_CHANGES"):
+      case am.type("RECEIVE_BOOKMARK_REMOVED"):
         this.refresh("a bookmark was removed");
         break;
       case am.type("SCREENSHOT_UPDATED"):
