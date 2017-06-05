@@ -54,21 +54,12 @@ module.exports = class MetadataFeed extends Feed {
    * metadata for those links, and clear the list of links which are missing metadata
    */
   getData() {
-    const experiments = this.store.getState().Experiments.values;
-
     const links = this.urlsToFetch.map(url => ({"url": url}));
     this.urlsToFetch = [];
 
-    // Make no requests for metadata
-    if (experiments.metadataNoService) {
-      return this.options.fetchNewMetadataLocally(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
-    }
-
-    return this.options.fetchNewMetadata(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
+    return this.options.fetchNewMetadataLocally(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
   }
   onAction(state, action) {
-    const experiments = this.store.getState().Experiments.values;
-
     switch (action.type) {
       case am.type("APP_INIT"):
         this.getInitialMetadata("app was initializing");

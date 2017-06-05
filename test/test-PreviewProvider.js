@@ -2,13 +2,8 @@
 
 const {before, after} = require("sdk/test/utils");
 const simplePrefs = require("sdk/simple-prefs");
-const self = require("sdk/self");
-const {Loader} = require("sdk/test/loader");
-const loader = Loader(module);
-const httpd = loader.require("./lib/httpd");
 const {Cu} = require("chrome");
 const {PreviewProvider} = require("addon/PreviewProvider");
-const {hexToRGB} = require("addon/lib/utils");
 
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
 const DISALLOWED_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
@@ -22,12 +17,8 @@ const URL_FILTERS = [
 Cu.importGlobalProperties(["URL"]);
 Cu.import("resource://gre/modules/NetUtil.jsm");
 
-const gPort = 8089;
-const gEndpointPrefix = `http://localhost:${gPort}`;
-const gMetadataServiceEndpoint = "/metadataServiceLinkData";
 let gPreviewProvider;
 let gMetadataStore = [];
-let gMetadataPref = simplePrefs.prefs["metadata.endpoint"];
 let gPrefEnabled = simplePrefs.prefs["previews.enabled"];
 
 // mocks for metadataStore & tabTracker
@@ -67,47 +58,6 @@ function getMockStore() {
     getState: () => ({Experiments: {values: {}}})
   };
 }
-
-exports.test_only_request_links_once = function*(assert) {
-  const msg1 = [{"url": "http://www.a.com"},
-                {"url": "http://www.b.com"},
-                {"url": "http://www.c.com"}];
-
-  const msg2 = [{"url": "http://www.b.com"},
-                {"url": "http://www.c.com"},
-                {"url": "http://www.d.com"}];
-
-  const endpoint = gPreviewProvider._metadataEndpoint;
-  assert.ok(endpoint, "The metadata endpoint is set");
-  let srv = httpd.startServerAsync(gPort);
-
-  let urlsRequested = {};
-  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
-    let data = JSON.parse(
-        NetUtil.readInputStreamToString(
-          request.bodyInputStream,
-          request.bodyInputStream.available()
-        )
-    );
-    // count the times each url has been requested
-    data.urls.forEach(url => (urlsRequested[url] = (urlsRequested[url] + 1) || 1));
-    response.setHeader("Content-Type", "application/json", false);
-    response.write(JSON.stringify({"urls": {urlsRequested}}));
-  });
-
-  // request 'b.com' and 'c.com' twice
-  gPreviewProvider.asyncSaveLinks(msg1);
-  yield gPreviewProvider.asyncSaveLinks(msg2);
-
-  Object.keys(urlsRequested).forEach(url => {
-    // each url should have a count of just one
-    assert.equal(urlsRequested[url], 1, "URL was requested only once");
-  });
-
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
 
 exports.test_filter_urls = function(assert) {
   const fakeData = {
@@ -259,167 +209,6 @@ exports.test_dedupe_urls = function(assert) {
   });
 };
 
-exports.test_throw_out_non_requested_responses = function*(assert) {
-  const fakeSite1 = {"url": "http://example1.com/"};
-  const fakeSite2 = {"url": "http://example2.com/"};
-  const fakeSite3 = {"url": "http://example3.com/"};
-  const fakeSite4 = {"url": "http://example4.com/"};
-  // send site 1, 2, 4
-  const fakeData = [fakeSite1, fakeSite2, fakeSite4];
-
-  // receive site 1, 2, 3
-  const fakeResponse = {
-    "urls": {
-      "http://example1.com/": {"description": "some good metadata for fake site 1"},
-      "http://example2.com/": {"description": "some good metadata for fake site 2"},
-      "http://example3.com/": {"description": "oh no I didn't request this!"}
-    }
-  };
-
-  const endpoint = gPreviewProvider._metadataEndpoint;
-  assert.ok(endpoint, "The metadata endpoint is set");
-  let srv = httpd.startServerAsync(gPort);
-
-  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
-    response.setHeader("Content-Type", "application/json", false);
-    response.write(JSON.stringify(fakeResponse));
-  });
-
-  yield gPreviewProvider.asyncSaveLinks(fakeData);
-
-  // database should contain example1.com and example2.com
-  assert.equal(gMetadataStore[0].length, 2, "saved two items");
-  assert.equal(gMetadataStore[0][0].url, fakeSite1.url, "first site was saved as expected");
-  assert.equal(gMetadataStore[0][1].url, fakeSite2.url, "second site was saved as expected");
-
-  // database should not contain example3.com and example4.com
-  gMetadataStore[0].forEach(item => {
-    assert.ok(item.url !== fakeSite3.url, "third site was not saved");
-    assert.ok(item.url !== fakeSite4.url, "fourth site was not saved");
-  });
-
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
-
-exports.test_mock_metadata_request = function*(assert) {
-  const fakeSite = {
-    "url": "http://example.com/",
-    "title": null,
-    "lastVisitDate": 1459537019061,
-    "frecency": 2000,
-    "favicons": [{"url": "http://imageForExample.com", "color": "#000000"}],
-    "bookmarkDateCreated": 1459537019061,
-    "type": "history"
-  };
-  const fakeRequest = [fakeSite];
-  const fakeResponse = {"urls": {"http://example.com/": {"description": "some metadata"}}};
-
-  const versionQuery = "addon_version=";
-  const endpoint = gPreviewProvider._metadataEndpoint;
-  assert.ok(endpoint, "The metadata endpoint is set");
-
-  let srv = httpd.startServerAsync(gPort);
-  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
-    // first, check that the version included in the query string
-    assert.deepEqual(`${request.queryString}`, `${versionQuery}${self.version}`, "we're hitting the correct endpoint");
-    response.setHeader("Content-Type", "application/json", false);
-    response.write(JSON.stringify(fakeResponse));
-  });
-
-  // make a request to metadat service with 'fakeSite'
-  yield gPreviewProvider.asyncSaveLinks(fakeRequest);
-
-  // we should have saved the fake site into the database
-  assert.deepEqual(gMetadataStore[0][0].description, "some metadata", "inserted and saved the metadadata");
-  assert.ok(gMetadataStore[0][0].expired_at, "an expiry time was added");
-  assert.ok(gMetadataStore[0][0].favicon_height, "added a favicon_height");
-  assert.ok(gMetadataStore[0][0].favicon_width, "added a favicon_width");
-  assert.equal(gMetadataStore[0][0].metadata_source, "MetadataService", "a metadata source was added");
-
-  // retrieve the contents of the database - don't go to metadata service
-  let cachedLinks = yield gPreviewProvider.asyncGetEnhancedLinks(fakeRequest);
-  assert.equal(cachedLinks[0].lastVisitDate, fakeSite.lastVisitDate, "getEnhancedLinks should prioritize new data");
-  assert.equal(cachedLinks[0].bookmarkDateCreated, fakeSite.bookmarkDateCreated, "getEnhancedLinks should prioritize new data");
-  assert.deepEqual(gMetadataStore[0][0].cache_key, cachedLinks[0].cache_key, "the cached link is now retrieved next time");
-  assert.equal(cachedLinks[0].favicon_url, fakeSite.favicons[0].url, "added a favicon_url field");
-  assert.deepEqual(cachedLinks[0].background_color, hexToRGB(fakeSite.favicons[0].color), "added a background_color field");
-
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
-
-exports.test_no_metadata_source = function*(assert) {
-  const fakeSite = {
-    "url": "http://www.amazon.com/",
-    "title": null
-  };
-  const fakeResponse = {"urls": {"http://www.amazon.com/": {"description": "some metadata"}}};
-
-  let cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
-  assert.equal(cachedLink[0].metadata_source, "TippyTopProvider", "metadata came from TippyTopProvider");
-
-  let srv = httpd.startServerAsync(gPort);
-  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
-    response.setHeader("Content-Type", "application/json", false);
-    response.write(JSON.stringify(fakeResponse));
-  });
-  yield gPreviewProvider.asyncSaveLinks([fakeSite]);
-  cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
-
-  assert.equal(gMetadataStore[0][0].metadata_source, "MetadataService", "correct metadata_source in database");
-  assert.equal(cachedLink[0].metadata_source, "MetadataService", "correct metadata_source returned for this link");
-
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
-
-exports.test_prefer_tippytop_favicons = function*(assert) {
-  // we're using youtube here because it's known that the favicon that metadata service
-  // returns is worse than the tippytop favicon - so we want to use the tippytop one
-  const fakeSite = {
-    "url": "http://www.youtube.com/",
-    "title": null
-  };
-  const fakeResponse = {
-    "urls": {
-      "http://www.youtube.com/": {
-        "description": "some generated description",
-        "favicon_url": "https://badicon.com",
-        "background_color": "#BADCOLR"
-      }
-    }
-  };
-
-  // get the tippytop favicon_url and background_color and compare with
-  // what we get from the cached link
-  let tippyTopLink = gPreviewProvider._tippyTopProvider.processSite(fakeSite);
-  let cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
-
-  assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "TippyTopProvider added a favicon_url");
-  assert.deepEqual(hexToRGB(tippyTopLink.background_color), cachedLink[0].background_color, "TippyTopProvider added a background_color");
-
-  let srv = httpd.startServerAsync(gPort);
-  srv.registerPathHandler(gMetadataServiceEndpoint, function handle(request, response) {
-    response.setHeader("Content-Type", "application/json", false);
-    response.write(JSON.stringify(fakeResponse));
-  });
-  // insert a link with some less nice icons in it and get them back
-  yield gPreviewProvider.asyncSaveLinks([fakeSite]);
-  cachedLink = yield gPreviewProvider.asyncGetEnhancedLinks([fakeSite]);
-
-  assert.equal(tippyTopLink.favicon_url, cachedLink[0].favicon_url, "we still took the better tippyTop favicon_url");
-  assert.deepEqual(hexToRGB(tippyTopLink.background_color), cachedLink[0].background_color, "we still took the better tippyTop background_color");
-  assert.equal(fakeResponse.urls["http://www.youtube.com/"].description, cachedLink[0].description, "but we still have other metadata");
-
-  yield new Promise(resolve => {
-    srv.stop(resolve);
-  });
-};
-
 exports.test_get_enhanced_disabled = function*(assert) {
   const fakeData = [
     {url: "http://foo.com/", lastVisitDate: 1459537019061}
@@ -472,7 +261,6 @@ exports.test_compute_image_sizes = function*(assert) {
 };
 
 before(exports, () => {
-  simplePrefs.prefs["metadata.endpoint"] = `${gEndpointPrefix}${gMetadataServiceEndpoint}`;
   simplePrefs.prefs["previews.enabled"] = true;
   gPreviewProvider = new PreviewProvider(gMockTabTracker, gMockMetadataStore, {initFresh: true});
   gPreviewProvider._store = getMockStore();
@@ -485,7 +273,6 @@ before(exports, () => {
 });
 
 after(exports, () => {
-  simplePrefs.prefs["metadata.endpoint"] = gMetadataPref;
   simplePrefs.prefs["previews.enabled"] = gPrefEnabled;
   gMetadataStore = [];
   gPreviewProvider.uninit();
