@@ -413,14 +413,6 @@ describe("ExperimentProvider", () => {
       experimentProvider.enroll(experimentId, variant);
       assert.calledWith(experimentProvider.emit, "experimentEnrolled", {id: experimentId, variant});
     });
-    it("should set pocket pref on pocket experiment enrollment", () => {
-      setup();
-      assert.isUndefined(simplePrefs.prefs.showPocket);
-      const experimentId = "pocketHotFix";
-      const variant = {description: "Pocket experiment", id: "pocket_01", threshold: 0.5, value: true};
-      experimentProvider.enroll(experimentId, variant);
-      assert.isTrue(simplePrefs.prefs.showPocket);
-    });
     it("should set showMoreTopSites pref on topSitesTwoRowsDefault experiment enrollment", () => {
       setup();
       simplePrefs.prefs.showMoreTopSites = false;
