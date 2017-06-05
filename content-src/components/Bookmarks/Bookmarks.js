@@ -73,7 +73,7 @@ const Bookmarks = React.createClass({
 
     return (<section className="section-container">
       <h3 className="section-title" ref="section-title" onClick={this.handleHeaderClick}>
-        <FormattedMessage id="header_bookmarks" />
+        <span className="icon icon-bookmark"></span> <FormattedMessage id="header_bookmarks" />
         <span className={classNames("icon", {"icon-arrowhead-down": !isCollapsed, "icon-arrowhead-up": isCollapsed})} />
       </h3>
       <ul ref="bookmarks-list" className={classNames("bookmarks-list", {"collapsed": isCollapsed, "animating": isAnimating})} onTransitionEnd={this.handleTransitionEnd}>
