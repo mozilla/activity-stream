@@ -3,6 +3,7 @@ const {connect} = require("react-redux");
 const {justDispatch} = require("common/selectors/selectors");
 const {actions} = require("common/action-manager");
 const classNames = require("classnames");
+const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSection");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
@@ -308,7 +309,8 @@ const TopSites = React.createClass({
       length: TOP_SITES_DEFAULT_LENGTH,
       // This is for event reporting
       page: "NEW_TAB",
-      allowEdit: true
+      allowEdit: true,
+      prefs: {}
     };
   },
   onClickFactory(index, site) {
@@ -329,34 +331,35 @@ const TopSites = React.createClass({
       // Append null sites if necessary so we get placeholders for all slots.
       sites.push(null);
     }
-    return (<section className="top-sites">
-      <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
-      <div className="tiles-wrapper">
-        {sites.map((site, i) => {
-          // If the site is an empty slot (due to pinned sites and not not enough history)
-          // or this is a placeholder, we want the widget to render empty
-          if (!site || this.props.placeholder) {
-            return (
-              <PlaceholderTopSitesItem key={i} index={i} dispatch={this.props.dispatch} />
-            );
-          }
+    return (
+      <CollapsibleSection className="top-sites" titleId="header_top_sites" prefName="collapseTopSites" prefs={this.props.prefs}>
+        <div className="tiles-wrapper">
+          {sites.map((site, i) => {
+            // If the site is an empty slot (due to pinned sites and not not enough history)
+            // or this is a placeholder, we want the widget to render empty
+            if (!site || this.props.placeholder) {
+              return (
+                <PlaceholderTopSitesItem key={i} index={i} dispatch={this.props.dispatch} />
+              );
+            }
 
-          return (<TopSitesItem
-            index={i}
-            key={site.guid || site.cache_key || i}
-            page={this.props.page}
-            onClick={this.onClickFactory(i, site)}
-            showNewStyle={this.props.showNewStyle}
-            dispatch={this.props.dispatch}
-            intl={this.props.intl}
-            {...site} />
-          );
-        })}
-      </div>
-      {!this.props.placeholder && this.props.allowEdit &&
-        <EditTopSitesIntl {...this.props} />
-      }
-    </section>);
+            return (<TopSitesItem
+              index={i}
+              key={site.guid || site.cache_key || i}
+              page={this.props.page}
+              onClick={this.onClickFactory(i, site)}
+              showNewStyle={this.props.showNewStyle}
+              dispatch={this.props.dispatch}
+              intl={this.props.intl}
+              {...site} />
+            );
+          })}
+        </div>
+        {!this.props.placeholder && this.props.allowEdit &&
+          <EditTopSitesIntl {...this.props} />
+        }
+      </CollapsibleSection>
+    );
   }
 });
 
@@ -378,7 +381,8 @@ TopSites.propTypes = {
   placeholder: React.PropTypes.bool,
 
   showNewStyle: React.PropTypes.bool,
-  allowEdit: React.PropTypes.bool
+  allowEdit: React.PropTypes.bool,
+  prefs: React.PropTypes.object
 };
 
 const EditTopSites = React.createClass({
@@ -546,7 +550,8 @@ const TopSiteForm = React.createClass({
       slotIndex: 0,
       editMode: false, // by default we are in "Add New Top Site" mode
       dispatch: () => {},
-      onClose: () => {}
+      onClose: () => {},
+      prefs: {}
     };
   },
   getInitialState() {
