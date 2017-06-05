@@ -271,7 +271,7 @@
   },
   "metadataLocalRefresh": {
     "name": "Metadata with local parsing and periodic refresh",
-    "active": true,
+    "active": false,
     "description": "Process metadata locally and periodically refresh it",
     "control": {
       "value": false,

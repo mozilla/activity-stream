@@ -24,7 +24,7 @@ describe("MetadataFeed", () => {
     MetadataFeed = require("inject!addon/Feeds/MetadataFeed")({"addon/PlacesProvider": {PlacesProvider}});
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
     instance = new MetadataFeed({fetchNewMetadata, fetchNewMetadataLocally, pinnedLinks});
-    instance.store = {getState: () => ({Experiments: {values: {metadataNoService: false, metadataLocalRefresh: false}}})};
+    instance.store = {getState: () => ({Experiments: {values: {metadataNoService: false}}})};
     instance.refresh = sinon.spy();
     sinon.spy(instance.options, "fetchNewMetadata");
     sinon.spy(instance.options, "fetchNewMetadataLocally");
@@ -63,7 +63,7 @@ describe("MetadataFeed", () => {
         assert.calledOnce(instance.options.fetchNewMetadata)))
     );
     it("should run sites through fetchNewMetadataLocally if experiment pref is on", () => {
-      instance.store = {getState: () => ({Experiments: {values: {metadataNoService: true, metadataLocalRefresh: false}}})};
+      instance.store = {getState: () => ({Experiments: {values: {metadataNoService: true}}})};
       return instance.getData().then(() => {
         assert.notCalled(instance.options.fetchNewMetadata);
         assert.calledOnce(instance.options.fetchNewMetadataLocally);
@@ -124,7 +124,7 @@ describe("MetadataFeed", () => {
       assert.calledWith(instance.refresh, "metadata was needed for these links");
     });
     it("should call getInitialMetadata on RECEIVE_PLACES_CHANGES if we are in the refresh experiment and enough time has expired", () => {
-      instance.store = {getState: () => ({Experiments: {values: {metadataNoService: false, metadataLocalRefresh: true}}})};
+      instance.store = {getState: () => ({Experiments: {values: {metadataNoService: false}}})};
       instance.getInitialMetadata = sinon.spy();
       instance.lastRefreshed = Date.now() - MetadataFeed.UPDATE_TIME - 5000;
       instance.onAction({}, {type: "RECEIVE_PLACES_CHANGES", data: {url: "example.com/"}});
