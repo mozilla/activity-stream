@@ -256,7 +256,7 @@
   },
   "metadataNoService": {
     "name": "Metadata with No Remote Service",
-    "active": true,
+    "active": false,
     "description": "Disable all calls to the metadata service",
     "control": {
       "value": false,

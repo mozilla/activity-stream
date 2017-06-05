@@ -152,13 +152,6 @@
       "hidden": true
     },
     {
-      "name": "metadata.endpoint",
-      "title": "Local Metadata Endpoint",
-      "type": "string",
-      "value": "https://embedly-proxy.services.mozilla.com/v2/metadata",
-      "hidden": true
-    },
-    {
       "name": "weightedHighlightsCoefficients",
       "title": "recommender weights",
       "description": "weightedHighlightsCoefficients",
