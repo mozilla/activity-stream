@@ -71,6 +71,17 @@ describe("Bookmarks", () => {
         assert.equal(children[i].props.bestImage, getBestImage(fakeBookmarkItems[i].images));
       }
     });
+    it("should show provide `BOOKMARKS` source prop to SpotlightItems", () => {
+      let i;
+      instance = renderWithProvider(<Bookmarks dispatch={stubDispatcher}
+                                               placeholder={false}
+                                               sites={fakeBookmarkItems}
+                                               prefs={{collapseBookmarks: false}} />);
+      const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
+      for (i = 0; i < children.length; i++) {
+        assert.equal(children[i].props.source, "BOOKMARKS");
+      }
+    });
   });
 
   describe("actions", () => {
