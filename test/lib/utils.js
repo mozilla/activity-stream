@@ -97,7 +97,7 @@ function getTestActivityStream(options = {}) {
     init() {},
     uninit() {},
     _parseAndSave() {},
-    asyncFetchLinks() {}
+    asyncFetchLinks() { return Promise.resolve([]); }
   };
 
   const mockPageWorker = {
