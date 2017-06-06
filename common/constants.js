@@ -25,6 +25,7 @@ module.exports = {
   // Number of items in the Bookmarks section. Request more than actually being displayed
   // in case the user will remove some of them we still have 3 items to display.
   BOOKMARKS_LENGTH: 6,
+  BOOKMARKS_DISPLAYED_LENGTH: 3,
 
   // How many items per query?
   LINKS_QUERY_LIMIT: 500,

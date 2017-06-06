@@ -10,6 +10,7 @@ const {mockData, renderWithProvider} = require("test/test-utils");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const {connect} = require("react-redux");
 const {injectIntl} = require("react-intl");
+const {BOOKMARKS_DISPLAYED_LENGTH} = require("common/constants");
 
 const fakeProps = Object.assign({}, {intl: {formatMessage: () => {}}}, mockData);
 
@@ -129,6 +130,14 @@ describe("NewTabPage", () => {
 
     const children = TestUtils.scryRenderedComponentsWithType(instance, Bookmarks);
     assert.equal(children.length, 0);
+  });
+
+  it("should correct length prop to Bookmarks component", () => {
+    let propsWithIsReadyTrue = Object.assign({}, fakeProps, {isReady: true});
+    instance = renderWithProvider(<NewTabPage {...propsWithIsReadyTrue} dispatch={() => {}} />);
+
+    const comp = TestUtils.findRenderedComponentWithType(instance, Bookmarks);
+    assert.equal(comp.props.length, BOOKMARKS_DISPLAYED_LENGTH);
   });
 
   describe("delete events", () => {

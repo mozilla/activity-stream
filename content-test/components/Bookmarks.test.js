@@ -10,6 +10,7 @@ const fakeBookmarkItems = mockData.Bookmarks.rows;
 const fakeNonBookmarkItems = mockData.Highlights.rows;
 const fakeSiteWithImage = faker.createSite();
 const getBestImage = require("common/getBestImage");
+const {BOOKMARKS_DISPLAYED_LENGTH} = require("common/constants");
 
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
 
@@ -28,9 +29,13 @@ describe("Bookmarks", () => {
     it("should create the element", () => {
       assert.ok(el);
     });
-    it("should render a SpotlightItem for each item", () => {
+    it("should render correct number of SpotlightItems", () => {
       const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
-      assert.equal(children.length, 3);
+
+      // Make sure more than BOOKMARKS_DISPLAY_LENGTH sites are provided and
+      // component actually slices down to the correct number.
+      assert.isTrue(instance.props.sites.length > BOOKMARKS_DISPLAYED_LENGTH);
+      assert.equal(children.length, BOOKMARKS_DISPLAYED_LENGTH);
     });
     it("should filter out any items that are not bookmarks", () => {
       instance = renderWithProvider(<Bookmarks dispatch={stubDispatcher}

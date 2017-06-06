@@ -14,7 +14,7 @@ const PAGE_NAME = "NEW_TAB";
 const {
   HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH,
   TOP_SITES_SHOWMORE_LENGTH, POCKET_STORIES_LENGTH,
-  BOOKMARKS_LENGTH
+  BOOKMARKS_DISPLAYED_LENGTH
 } = require("common/constants");
 const {injectIntl} = require("react-intl");
 const classNames = require("classnames");
@@ -122,7 +122,7 @@ const NewTabPage = React.createClass({
           {showBookmarks &&
             <section>
               <Bookmarks placeholder={!this.props.isReady} page={PAGE_NAME}
-                         length={BOOKMARKS_LENGTH} sites={props.Bookmarks.rows}
+                         length={BOOKMARKS_DISPLAYED_LENGTH} sites={props.Bookmarks.rows}
                          prefs={props.Prefs.prefs} />
             </section>
           }
