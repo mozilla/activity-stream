@@ -22,8 +22,9 @@ module.exports = {
   // all rows.
   HIGHLIGHTS_LENGTH: 9,
 
-  // Number of items in the Bookmarks section.
-  BOOKMARKS_LENGTH: 3,
+  // Number of items in the Bookmarks section. Request more than actually being displayed
+  // in case the user will remove some of them we still have 3 items to display.
+  BOOKMARKS_LENGTH: 6,
 
   // How many items per query?
   LINKS_QUERY_LIMIT: 500,
