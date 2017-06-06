@@ -2,9 +2,9 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("common/selectors/selectors");
 const {actions} = require("common/action-manager");
-const classNames = require("classnames");
 const {FormattedMessage} = require("react-intl");
 const {SpotlightItem} = require("components/Spotlight/Spotlight");
+const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSection");
 const getBestImage = require("common/getBestImage");
 
 const PlaceholderBookmarks = React.createClass({
@@ -22,9 +22,6 @@ const Bookmarks = React.createClass({
       page: "NEW_TAB",
       placeholder: false
     };
-  },
-  getInitialState() {
-    return {isAnimating: false};
   },
   onClickFactory(index, site) {
     return () => {
@@ -57,29 +54,15 @@ const Bookmarks = React.createClass({
         prefs={this.props.prefs} />
     );
   },
-  handleHeaderClick() {
-    this.setState({isAnimating: true});
-    this.props.dispatch(actions.NotifyPrefChange("collapseBookmarks", !this.props.prefs.collapseBookmarks));
-  },
-  handleTransitionEnd() {
-    this.setState({isAnimating: false});
-  },
   render() {
-    const isCollapsed = this.props.prefs.collapseBookmarks;
-    const isAnimating = this.state.isAnimating;
     const sites = this.props.sites.filter(site => site.bookmarkGuid);
     // If placeholder is true or we have no items to show.
     const showPlaceholder = this.props.placeholder || (sites.length === 0);
 
-    return (<section className="section-container">
-      <h3 className="section-title" ref="section-title" onClick={this.handleHeaderClick}>
-        <span className="icon icon-bookmark" /> <FormattedMessage id="header_bookmarks" />
-        <span className={classNames("icon", {"icon-arrowhead-down": !isCollapsed, "icon-arrowhead-up": isCollapsed})} />
-      </h3>
-      <ul ref="bookmarks-list" className={classNames("bookmarks-list", {"collapsed": isCollapsed, "animating": isAnimating})} onTransitionEnd={this.handleTransitionEnd}>
+    return (<CollapsibleSection className="section-container" icon="icon-bookmark" titleId="header_bookmarks"
+                                prefName="collapseBookmarks" prefs={this.props.prefs}>
         {showPlaceholder ? <PlaceholderBookmarks /> : this.renderSiteList()}
-      </ul>
-    </section>);
+      </CollapsibleSection>);
   }
 });
 
