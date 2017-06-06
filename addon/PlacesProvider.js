@@ -786,9 +786,9 @@ Links.prototype = {
                     ORDER BY b.lastModified DESC
                     LIMIT ${limit}`;
 
-    let result = yield this.executePlacesQuery(sqlQuery, {columns, params: {type: Bookmarks.TYPE_BOOKMARK}});
-
-    return result;
+    let links = yield this.executePlacesQuery(sqlQuery, {columns, params: {type: Bookmarks.TYPE_BOOKMARK}});
+    links = yield this._addFavicons(links);
+    return this._processLinks(links);
   }),
 
   /**

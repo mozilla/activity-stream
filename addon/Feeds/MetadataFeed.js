@@ -38,6 +38,12 @@ module.exports = class MetadataFeed extends Feed {
       links.forEach(link => this.urlsToFetch.push(link.url));
       this.refresh(reason);
     })
+    // Then, get the recent bookmarks metadata.
+    .then(() => PlacesProvider.links.getBookmarks())
+    .then(links => {
+      links.forEach(link => this.urlsToFetch.push(link.url));
+      this.refresh(reason);
+    })
     // Finally, get initial highlights metadata. This should be done last because
     // it takes the longest, processing 100+ urls.
     .then(() => PlacesProvider.links.getRecentlyVisited())
