@@ -19,6 +19,13 @@ const CollapsibleSection = React.createClass({
   handleTransitionEnd() {
     this.setState({isAnimating: false});
   },
+  renderIcon() {
+    if (this.props.icon) {
+      return <span className={classNames("icon", this.props.icon)} />;
+    }
+
+    return null;
+  },
   render() {
     const isCollapsed = this.props.prefs[this.props.prefName];
     const isAnimating = this.state.isAnimating;
@@ -26,7 +33,7 @@ const CollapsibleSection = React.createClass({
     return (
       <section className={classNames("collapsible-section", this.props.className, {"collapsed": isCollapsed})}>
         <h3 className="section-title" ref="title" onClick={this.handleHeaderClick}>
-          <FormattedMessage id={this.props.titleId} />
+          {this.renderIcon()} <FormattedMessage id={this.props.titleId} />
           <span className={classNames("icon", {"icon-arrowhead-down": !isCollapsed, "icon-arrowhead-forward": isCollapsed})} />
         </h3>
         <div className={classNames("section-body", {"animating": isAnimating})} onTransitionEnd={this.handleTransitionEnd}>
