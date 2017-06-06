@@ -301,7 +301,7 @@
   },
   "pocketHotFix": {
     "name": "Trending stories provided by Pocket",
-    "active": true,
+    "active": false,
     "description": "Display recommendations of trending stories by Pocket",
     "control": {
       "value": false,
