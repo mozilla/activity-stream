@@ -31,9 +31,10 @@
       opacity: 0.5;
       font-family: Helvetica, Arial, sans-serif;
       text-transform: lowercase;
-      margin-left: 16px;
       font-weight: 200;
       font-size: 15px;
+      line-height: 18px;
+      vertical-align: top;
       color: $section-title-color;
     }
 
@@ -94,6 +95,7 @@
   .pocket-read-more {
     font-size: 13px;
     color: $topic-grey;
+    min-width: 800px;
 
     ul {
       display: inline;
@@ -133,8 +135,9 @@
     background-position-y: 2px;
   }
 
-  ul.spotlight-list {
-    height: 320px;
+  li.spotlight-item {
+    // Overridden to bring the pocket topics closer to the tiles
+    margin-bottom: 16px;
   }
 
   .hc-label {
