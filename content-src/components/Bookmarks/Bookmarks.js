@@ -62,9 +62,11 @@ const Bookmarks = React.createClass({
     // If placeholder is true or we have no items to show.
     const showPlaceholder = this.props.placeholder || (sites.length === 0);
 
-    return (<CollapsibleSection className="section-container" icon="icon-bookmark" titleId="header_bookmarks"
+    return (<CollapsibleSection className="recent-bookmarks" icon="icon-bookmark" titleId="header_bookmarks"
                                 prefName="collapseBookmarks" prefs={this.props.prefs}>
-        {showPlaceholder ? <PlaceholderBookmarks /> : this.renderSiteList()}
+          <ul ref="spotlight-list" className="spotlight-list">
+            {showPlaceholder ? <PlaceholderBookmarks /> : this.renderSiteList()}
+          </ul>
       </CollapsibleSection>);
   }
 });
