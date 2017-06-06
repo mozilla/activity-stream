@@ -32,12 +32,6 @@ describe("Bookmarks", () => {
       const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
       assert.equal(children.length, 3);
     });
-    it("should not show any SpotlightItems if collapseBookmarks pref is true", () => {
-      instance = renderWithProvider(<Bookmarks dispatch={stubDispatcher}
-                                               sites={fakeBookmarkItems}
-                                               prefs={{collapseBookmarks: true}} />);
-      assert.ok(instance.refs["bookmarks-list"].className.indexOf("collapsed") >= 0);
-    });
     it("should filter out any items that are not bookmarks", () => {
       instance = renderWithProvider(<Bookmarks dispatch={stubDispatcher}
                                                sites={fakeNonBookmarkItems}
@@ -99,17 +93,6 @@ describe("Bookmarks", () => {
       }
       instance = renderWithProvider(<Bookmarks page={"NEW_TAB"} dispatch={dispatch} sites={fakeBookmarkItems} prefs={{}} />);
       TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
-    });
-    it("should fire a pref change event when section title is clicked", done => {
-      function dispatch(a) {
-        if (a.type === "NOTIFY_PREF_CHANGE") {
-          assert.equal(a.data.name, "collapseBookmarks");
-          assert.equal(a.data.value, true);
-          done();
-        }
-      }
-      instance = renderWithProvider(<Bookmarks dispatch={dispatch} sites={fakeBookmarkItems} prefs={{isCollapsed: false}} />);
-      TestUtils.Simulate.click(instance.refs["section-title"]);
     });
   });
 });
