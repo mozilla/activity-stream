@@ -2,6 +2,10 @@
 
 This is an overview of the different kinds of data we collect in Activity Stream experiment. See [data_dictionary.md](data_dictionary.md) for more details for each field.
 
+## Data Retention
+
+Raw data collected on Firefox's `about:newtab` page are retained for six months (180 days) on Mozilla servers and databases before being permanently deleted.  Aggregate data, which is data derived from raw data by aggregating it over one or more auxiliary dimensions (such as date, country, platform, browser version, etc.), is retained for 12 months.
+
 ## User event pings
 
 These pings are captured when a user **performs some kind of interaction** in the add-on.
