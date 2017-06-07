@@ -38,7 +38,6 @@ const SpotlightItem = React.createClass({
     if (image) {
       imageUrl = image.url;
       isPortrait = image.height > image.width;
-
       style.backgroundImage = `url(${imageUrl})`;
     } else if (site.screenshot) {
       style.backgroundImage = `url(${site.screenshot})`;
