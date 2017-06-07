@@ -1,3 +1,5 @@
+/* global Services */
+
 const injector = require("inject!lib/TelemetryFeed.jsm");
 const {GlobalOverrider} = require("test/unit/utils");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
@@ -22,9 +24,10 @@ describe("TelemetryFeed", () => {
   let instance;
   class TelemetrySender {sendPing() {} uninit() {}}
   class PerfService {getMostRecentAbsMarkStartByName() { return 1234; } mark() {}}
+  const perfService = new PerfService();
   const {TelemetryFeed} = injector({
     "lib/TelemetrySender.jsm": {TelemetrySender},
-    "common/PerfService.jsm": {perfService: new PerfService()}
+    "common/PerfService.jsm": {perfService}
   });
 
   function addSession(id) {
@@ -54,6 +57,13 @@ describe("TelemetryFeed", () => {
       await instance.init();
       assert.equal(instance.telemetryClientId, FAKE_TELEMETRY_ID);
     });
+    it("should make this.browserOpenTabStart() observe browser-open-tab-start", async () => {
+      sandbox.spy(Services.obs, "addObserver");
+      await instance.init();
+      assert.calledOnce(Services.obs.addObserver);
+      assert.calledWithExactly(Services.obs.addObserver,
+        instance.browserOpenTabStart, "browser-open-tab-start");
+    });
   });
   describe("#addSession", () => {
     it("should add a session", () => {
@@ -77,6 +87,17 @@ describe("TelemetryFeed", () => {
       assert.equal(session.page, "about:newtab"); // This is hardcoded for now.
     });
   });
+  describe("#browserOpenTabStart", () => {
+    it("should call perfService.mark with browser-open-tab-start", () => {
+      sandbox.stub(perfService, "mark");
+
+      instance.browserOpenTabStart();
+
+      assert.calledOnce(perfService.mark);
+      assert.calledWithExactly(perfService.mark, "browser-open-tab-start");
+    });
+  });
+
   describe("#endSession", () => {
     it("should not throw if there is no session for the given port ID", () => {
       assert.doesNotThrow(() => instance.endSession("doesn't exist"));
@@ -222,6 +243,17 @@ describe("TelemetryFeed", () => {
       instance.uninit();
       assert.calledOnce(stub);
       assert.isNull(instance.telemetrySender);
+    });
+    it("should make this.browserOpenTabStart() stop observing browser-open-tab-start", async () => {
+      await instance.init();
+      sandbox.spy(Services.obs, "removeObserver");
+      sandbox.stub(instance.telemetrySender, "uninit");
+
+      await instance.uninit();
+
+      assert.calledOnce(Services.obs.removeObserver);
+      assert.calledWithExactly(Services.obs.removeObserver,
+        instance.browserOpenTabStart, "browser-open-tab-start");
     });
   });
   describe("#onAction", () => {

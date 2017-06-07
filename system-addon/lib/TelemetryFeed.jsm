@@ -37,8 +37,8 @@ this.TelemetryFeed = class TelemetryFeed {
     const id = await ClientID.getClientID();
     this.telemetryClientId = id;
   }
+
   browserOpenTabStart() {
-    // XXX comment on race condition here
     perfService.mark("browser-open-tab-start");
   }
 
@@ -50,6 +50,7 @@ this.TelemetryFeed = class TelemetryFeed {
    *                                   document.visibilityState becoming visible
    */
   addSession(id, absVisChangeTime) {
+    // XXX note that there is a race condition here; test for this?
     let absBrowserOpenTabStart =
       perfService.getMostRecentAbsMarkStartByName("browser-open-tab-start");
 
