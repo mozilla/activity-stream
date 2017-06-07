@@ -29,7 +29,7 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   async init() {
-    Services.obs.addObserver(this.browserOpenTabStart, "browser-open-tab-start");
+    Services.obs.addObserver(this.browserOpenNewtabStart, "browser-open-newtab-start");
 
     // TelemetrySender adds pref observers, so we initialize it after INIT
     this.telemetrySender = new TelemetrySender();
@@ -38,8 +38,8 @@ this.TelemetryFeed = class TelemetryFeed {
     this.telemetryClientId = id;
   }
 
-  browserOpenTabStart() {
-    perfService.mark("browser-open-tab-start");
+  browserOpenNewtabStart() {
+    perfService.mark("browser-open-newtab-start");
   }
 
   /**
@@ -50,9 +50,10 @@ this.TelemetryFeed = class TelemetryFeed {
    *                                   document.visibilityState becoming visible
    */
   addSession(id, absVisChangeTime) {
-    // XXX note that there is a race condition here; test for this?
+    // XXX note that there is a race condition here; we're assuming that the
+    // most recent tab
     let absBrowserOpenTabStart =
-      perfService.getMostRecentAbsMarkStartByName("browser-open-tab-start");
+      perfService.getMostRecentAbsMarkStartByName("browser-open-newtab-start");
 
     this.sessions.set(id, {
       start_time: Components.utils.now(),
@@ -181,8 +182,8 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   uninit() {
-    Services.obs.removeObserver(this.browserOpenTabStart,
-      "browser-open-tab-start");
+    Services.obs.removeObserver(this.browserOpenNewtabStart,
+      "browser-open-newtab-start");
 
     this.telemetrySender.uninit();
     this.telemetrySender = null;
