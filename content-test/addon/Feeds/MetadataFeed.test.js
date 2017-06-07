@@ -2,6 +2,7 @@
 
 const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
 const testTopSites = [{url: "example1.com"}, {url: "example2.com"}];
+const testRecentBookmarks = [{url: "bookmark1.com"}, {url: "bookmark2.com"}, {url: "bookmark3.com"}];
 const fetchNewMetadataLocally = () => (Promise.resolve());
 const pinnedLinks = {
   links: [],
@@ -12,7 +13,8 @@ const pinnedLinks = {
 const PlacesProvider = {
   links: {
     getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks)),
-    getTopFrecentSites: sinon.spy(() => Promise.resolve(testTopSites))
+    getTopFrecentSites: sinon.spy(() => Promise.resolve(testTopSites)),
+    getBookmarks: sinon.spy(() => Promise.resolve(testRecentBookmarks))
   }
 };
 
@@ -50,8 +52,10 @@ describe("MetadataFeed", () => {
       return instance.getInitialMetadata().then(() => {
         assert.called(PlacesProvider.links.getTopFrecentSites);
         assert.called(PlacesProvider.links.getRecentlyVisited);
-        assert.calledThrice(instance.refresh);
-        assert.equal(instance.urlsToFetch.length, 6);
+        assert.called(PlacesProvider.links.getBookmarks);
+        assert.callCount(instance.refresh, 4);
+        // FrecentSites + RecentlyVisited + Bookmarks + 2 Pinned sites.
+        assert.equal(instance.urlsToFetch.length, 9);
       });
     });
   });

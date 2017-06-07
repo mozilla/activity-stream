@@ -2,6 +2,7 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const TopSites = require("components/TopSites/TopSites");
+const Bookmarks = require("components/Bookmarks/Bookmarks");
 const Spotlight = require("components/Spotlight/Spotlight");
 const PocketStories = require("components/PocketStories/PocketStories");
 const Search = require("components/Search/Search");
@@ -10,7 +11,11 @@ const PreferencesPane = require("components/PreferencesPane/PreferencesPane");
 const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
-const {HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH, POCKET_STORIES_LENGTH} = require("common/constants");
+const {
+  HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH,
+  TOP_SITES_SHOWMORE_LENGTH, POCKET_STORIES_LENGTH,
+  BOOKMARKS_DISPLAYED_LENGTH
+} = require("common/constants");
 const {injectIntl} = require("react-intl");
 const classNames = require("classnames");
 
@@ -81,7 +86,7 @@ const NewTabPage = React.createClass({
   },
   render() {
     const props = this.props;
-    const {showSearch, showTopSites, showPocket, showHighlights, showMoreTopSites} = props.Prefs.prefs;
+    const {showSearch, showTopSites, showPocket, showHighlights, showBookmarks, showMoreTopSites} = props.Prefs.prefs;
 
     return (<main className="new-tab">
       <div className={classNames("new-tab-wrapper", {"show-highlights": showHighlights})}>
@@ -114,6 +119,11 @@ const NewTabPage = React.createClass({
               length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows}
               prefs={props.Prefs.prefs} />
           }
+          {showBookmarks &&
+            <Bookmarks placeholder={!this.props.isReady} page={PAGE_NAME}
+                       length={BOOKMARKS_DISPLAYED_LENGTH} sites={props.Bookmarks.rows}
+                       prefs={props.Prefs.prefs} />
+          }
         </div>
       </div>
       <PreferencesPane Prefs={props.Prefs} />
@@ -125,6 +135,7 @@ NewTabPage.propTypes = {
   TopSites: React.PropTypes.object.isRequired,
   PocketStories: React.PropTypes.object.isRequired,
   Highlights: React.PropTypes.object.isRequired,
+  Bookmarks: React.PropTypes.object.isRequired,
   Experiments: React.PropTypes.object.isRequired,
   Prefs: React.PropTypes.object.isRequired,
   isReady: React.PropTypes.bool.isRequired,

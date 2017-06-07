@@ -191,6 +191,12 @@
       "value": true
     },
     {
+      "name": "showBookmarks",
+      "title": "Show the Bookmarks section on the New Tab page",
+      "type": "bool",
+      "value": true
+    },
+    {
       "name": "showMoreTopSites",
       "title": "Show an extra row of Top Sites on the New Tab page",
       "type": "bool",
@@ -211,6 +217,12 @@
     {
       "name": "collapsePocket",
       "title": "Collapse the Pocket on the New Tab page leaving only section title visible",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "collapseBookmarks",
+      "title": "Collapse the Bookmarks section on the New Tab page leaving only section title visible",
       "type": "bool",
       "value": false
     }

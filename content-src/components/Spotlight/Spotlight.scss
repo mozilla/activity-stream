@@ -1,4 +1,5 @@
-.spotlight {
+.spotlight,
+.recent-bookmarks {
   margin-inline-end: -$base-gutter;
 
   .section-title {
@@ -9,7 +10,8 @@
     margin: 0 0 7px;
   }
 
-  ul.spotlight-list {
+  ul.spotlight-list,
+  ul.bookmarks-list {
     align-items: flex-start;
     display: flex;
     flex-wrap: wrap; // avoid horizontal overflow of items

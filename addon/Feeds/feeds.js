@@ -7,6 +7,7 @@ const SearchFeed = require("./SearchFeed");
 const MetadataFeed = require("./MetadataFeed");
 const LocalizationFeed = require("./LocalizationFeed");
 const SystemTickFeed = require("./SystemTickFeed");
+const BookmarksFeed = require("./BookmarksFeed");
 
 module.exports = [
   TopSitesFeed,
@@ -17,5 +18,6 @@ module.exports = [
   PlacesStatsFeed,
   MetadataFeed,
   LocalizationFeed,
-  SystemTickFeed
+  SystemTickFeed,
+  BookmarksFeed
 ];

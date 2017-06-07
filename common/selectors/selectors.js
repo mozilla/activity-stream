@@ -26,10 +26,11 @@ module.exports.selectNewTabSites = createSelector(
     state => state.TopSites,
     state => state.Experiments,
     state => state.Prefs,
+    state => state.Bookmarks,
     state => state
   ],
 
-  (Highlights, PocketStories, PocketTopics, TopSites, Experiments, Prefs, state) => { // eslint-disable-line max-params
+  (Highlights, PocketStories, PocketTopics, TopSites, Experiments, Prefs, Bookmarks, state) => { // eslint-disable-line max-params
     const [topSitesRows, highlightsRows] = selectAndDedupe([
       {
         sites: TopSites.rows,
@@ -48,6 +49,7 @@ module.exports.selectNewTabSites = createSelector(
       Highlights: Object.assign({}, Highlights, {rows: highlightsRows}),
       Experiments,
       Prefs,
+      Bookmarks: Object.assign({}, Bookmarks, {rows: Bookmarks.rows}),
       isReady: areSelectorsReady(state)
     };
   }

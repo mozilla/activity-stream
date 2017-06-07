@@ -35,7 +35,7 @@ const PreferencesPane = React.createClass({
   },
   render() {
     const props = this.props;
-    const {showSearch, showTopSites, showPocket, showHighlights, showMoreTopSites} = props.Prefs.prefs;
+    const {showSearch, showTopSites, showPocket, showHighlights, showBookmarks, showMoreTopSites} = props.Prefs.prefs;
 
     return (
       <div className="prefs-pane-wrapper" ref="wrapper">
@@ -84,6 +84,13 @@ const PreferencesPane = React.createClass({
                   <FormattedMessage id="settings_pane_highlights_header" />
                 </label>
                 <p><FormattedMessage id="settings_pane_highlights_body" /></p>
+              </section>
+              <section>
+                <input ref="showBookmarksCheckbox" type="checkbox" id="showBookmarks" name="showBookmarks" checked={showBookmarks} onChange={this.handleChange} />
+                <label htmlFor="showBookmarks">
+                  <FormattedMessage id="settings_pane_bookmarks_header" />
+                </label>
+                <p><FormattedMessage id="settings_pane_bookmarks_body" /></p>
               </section>
             </div>
             <section className="actions">

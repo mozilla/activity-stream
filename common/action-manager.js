@@ -5,6 +5,8 @@ const eventConstants = require("./event-constants");
 const am = new ActionManager([
   "APP_INIT",
   "APP_UNLOAD",
+  "BOOKMARKS_REQUEST",
+  "BOOKMARKS_RESPONSE",
   "EXPERIMENTS_RESPONSE",
   "HIGHLIGHTS_AWAITING_METADATA",
   "HIGHLIGHTS_LINKS_REQUEST",

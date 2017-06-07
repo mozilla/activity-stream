@@ -26,16 +26,18 @@ const SpotlightItem = React.createClass({
   render() {
     const site = this.props;
     const image = site.bestImage;
-    const imageUrl = image.url;
     const description = site.description || site.url;
-    const isPortrait = image.height > image.width;
+    let isPortrait;
+    let imageUrl;
 
     // We may want to reconsider this as part of
     // https://github.com/mozilla/activity-stream/issues/1473
     const label = prettyUrl(site);
     const style = {};
 
-    if (imageUrl) {
+    if (image) {
+      imageUrl = image.url;
+      isPortrait = image.height > image.width;
       style.backgroundImage = `url(${imageUrl})`;
     } else if (site.screenshot) {
       style.backgroundImage = `url(${site.screenshot})`;

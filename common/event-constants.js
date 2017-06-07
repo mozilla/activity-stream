@@ -40,7 +40,8 @@ const constants = {
     "FEATURED",
     "RECOMMENDED",
     "ACTIVITY_FEED",
-    "NEW_TAB"
+    "NEW_TAB",
+    "BOOKMARKS"
   ])
 };
 
