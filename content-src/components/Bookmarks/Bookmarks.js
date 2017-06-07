@@ -6,9 +6,7 @@ const {FormattedMessage} = require("react-intl");
 const {SpotlightItem} = require("components/Spotlight/Spotlight");
 const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSection");
 const getBestImage = require("common/getBestImage");
-
-// Displaying fewer bookmarks than actually requesting.
-const BOOKMARKS_TO_DISPLAY = 3;
+const {BOOKMARKS_DISPLAYED_LENGTH} = require("common/constants");
 
 const PlaceholderBookmarks = React.createClass({
   render() {
@@ -21,7 +19,7 @@ const PlaceholderBookmarks = React.createClass({
 const Bookmarks = React.createClass({
   getDefaultProps() {
     return {
-      length: BOOKMARKS_TO_DISPLAY,
+      length: BOOKMARKS_DISPLAYED_LENGTH,
       page: "NEW_TAB",
       placeholder: false
     };
