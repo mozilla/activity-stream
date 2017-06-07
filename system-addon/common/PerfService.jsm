@@ -4,6 +4,8 @@
 let usablePerfObj;
 
 let Cu;
+
+/* istanbul ignore if */
 if (typeof Window === "undefined") {
   Cu = Components.utils;
 } else {
@@ -14,7 +16,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 // XXX only if profiling turned on by pref
 Cu.import("resource://gre/modules/Console.jsm"); // eslint-disable-line no-console
 
-// if we're running in an addon module
+/* istanbul ignore if */
 if (typeof Window === "undefined") {
   // Borrow the high-resolution timer from the hidden window....
   usablePerfObj = Services.appShell.hiddenDOMWindow.performance;
