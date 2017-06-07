@@ -57,12 +57,12 @@ describe("TelemetryFeed", () => {
       await instance.init();
       assert.equal(instance.telemetryClientId, FAKE_TELEMETRY_ID);
     });
-    it("should make this.browserOpenTabStart() observe browser-open-tab-start", async () => {
+    it("should make this.browserOpenNewtabStart() observe browser-open-newtab-start", async () => {
       sandbox.spy(Services.obs, "addObserver");
       await instance.init();
       assert.calledOnce(Services.obs.addObserver);
       assert.calledWithExactly(Services.obs.addObserver,
-        instance.browserOpenTabStart, "browser-open-tab-start");
+        instance.browserOpenNewtabStart, "browser-open-newtab-start");
     });
   });
   describe("#addSession", () => {
@@ -87,14 +87,14 @@ describe("TelemetryFeed", () => {
       assert.equal(session.page, "about:newtab"); // This is hardcoded for now.
     });
   });
-  describe("#browserOpenTabStart", () => {
-    it("should call perfService.mark with browser-open-tab-start", () => {
+  describe("#browserOpenNewtabStart", () => {
+    it("should call perfService.mark with browser-open-newtab-start", () => {
       sandbox.stub(perfService, "mark");
 
-      instance.browserOpenTabStart();
+      instance.browserOpenNewtabStart();
 
       assert.calledOnce(perfService.mark);
-      assert.calledWithExactly(perfService.mark, "browser-open-tab-start");
+      assert.calledWithExactly(perfService.mark, "browser-open-newtab-start");
     });
   });
 
@@ -244,7 +244,7 @@ describe("TelemetryFeed", () => {
       assert.calledOnce(stub);
       assert.isNull(instance.telemetrySender);
     });
-    it("should make this.browserOpenTabStart() stop observing browser-open-tab-start", async () => {
+    it("should make this.browserOpenNewtabStart() stop observing browser-open-newtab-start", async () => {
       await instance.init();
       sandbox.spy(Services.obs, "removeObserver");
       sandbox.stub(instance.telemetrySender, "uninit");
@@ -253,7 +253,7 @@ describe("TelemetryFeed", () => {
 
       assert.calledOnce(Services.obs.removeObserver);
       assert.calledWithExactly(Services.obs.removeObserver,
-        instance.browserOpenTabStart, "browser-open-tab-start");
+        instance.browserOpenNewtabStart, "browser-open-newtab-start");
     });
   });
   describe("#onAction", () => {
