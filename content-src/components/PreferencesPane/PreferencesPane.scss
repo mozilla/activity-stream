@@ -5,9 +5,10 @@
     background: $white;
     border-left: solid 1px $faintest-black;
     box-shadow: $sidebar-shadow;
-    min-height: 100%;
+    height: 100%;
     offset-inline-end: 0;
-    padding: 40px;
+    overflow: hidden;
+    padding: 40px 40px 70px;
     position: fixed;
     top: 0;
     transition: 0.1s cubic-bezier(0, 0, 0, 1);
@@ -28,6 +29,9 @@
   }
 
   .prefs-modal-inner-wrapper {
+    height: 100%;
+    overflow: scroll;
+
     section {
       margin: 20px 0;
 
@@ -82,8 +86,19 @@
     }
   }
 
+  .sidebar-inner-wrapper {
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
   .actions {
+    background: $white;
+    bottom: -70px;
     padding: 15px 0;
+    position: absolute;
+    right: 0;
+    width: 100%;
   }
 
   // CSS styled checkbox
