@@ -41,6 +41,8 @@ module.exports = class RecentlyVisitedFeed extends Feed {
       // Get links from places
       links = yield PlacesProvider.links.getRecentlyVisited({limit: 24});
 
+      console.log("recently visited", links);
+
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "RECENTLYVISITED_RESPONSE");
 
