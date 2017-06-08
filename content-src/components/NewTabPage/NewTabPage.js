@@ -3,6 +3,7 @@ const {connect} = require("react-redux");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const TopSites = require("components/TopSites/TopSites");
 const Bookmarks = require("components/Bookmarks/Bookmarks");
+// const RecentlyVisited = require("components/Bookmarks/Bookmarks");
 const Spotlight = require("components/Spotlight/Spotlight");
 const PocketStories = require("components/PocketStories/PocketStories");
 const Search = require("components/Search/Search");
@@ -122,6 +123,11 @@ const NewTabPage = React.createClass({
           {showBookmarks &&
             <Bookmarks placeholder={!this.props.isReady} page={PAGE_NAME}
                        length={BOOKMARKS_DISPLAYED_LENGTH} sites={props.Bookmarks.rows}
+                       prefs={props.Prefs.prefs} />
+          }
+          {showBookmarks &&
+            <Bookmarks placeholder={!this.props.isReady} page={PAGE_NAME}
+                       length={6} sites={props.RecentlyVisited.rows}
                        prefs={props.Prefs.prefs} />
           }
         </div>
