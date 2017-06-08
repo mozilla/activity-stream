@@ -11,6 +11,7 @@ describe("ActivityStream", () => {
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     ({ActivityStream} = injector({
+      "lib/AutomigrateFeed.jsm": {AutomigrateFeed: Fake},
       "lib/LocalizationFeed.jsm": {LocalizationFeed: Fake},
       "lib/NewTabInit.jsm": {NewTabInit: Fake},
       "lib/PlacesFeed.jsm": {PlacesFeed: Fake},
@@ -81,6 +82,10 @@ describe("ActivityStream", () => {
     });
   });
   describe("feeds", () => {
+    it("should create a Automigrate feed", () => {
+      const feed = as.feeds["feeds.automigrate"]();
+      assert.instanceOf(feed, Fake);
+    });
     it("should create a Localization feed", () => {
       const feed = as.feeds["feeds.localization"]();
       assert.instanceOf(feed, Fake);
