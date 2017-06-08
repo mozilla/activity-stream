@@ -783,8 +783,8 @@ Links.prototype = {
                     WHERE type = :type
                     AND b.fk = p.id
                     AND p.last_visit_date IS NOT NULL
-                    ORDER BY b.lastModified DESC
                     GROUP BY p.guid
+                    ORDER BY b.lastModified DESC
                     LIMIT ${limit}`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {columns, params: {type: Bookmarks.TYPE_BOOKMARK}});
