@@ -783,6 +783,7 @@ Links.prototype = {
                     WHERE type = :type
                     AND b.fk = p.id
                     AND p.last_visit_date IS NOT NULL
+                    GROUP BY p.guid
                     ORDER BY b.lastModified DESC
                     LIMIT ${limit}`;
 
