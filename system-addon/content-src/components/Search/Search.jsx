@@ -24,7 +24,7 @@ class Search extends React.Component {
   onInputMount(input) {
     if (input) {
       this.controller = new ContentSearchUIController(input, input.parentNode,
-        "newtab", "activity");
+        "activity", "newtab");
       addEventListener("ContentSearchClient", this);
     } else {
       this.controller = null;
