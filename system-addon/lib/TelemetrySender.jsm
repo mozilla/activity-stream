@@ -8,6 +8,7 @@ Cu.import("resource://gre/modules/Preferences.jsm");
 Cu.importGlobalProperties(["fetch"]);
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Console.jsm"); // eslint-disable-line no-console
+Cu.import("resource://gre/modules/UITelemetry.jsm");
 
 // This is intentionally a different pref-branch than the SDK-based add-on
 // used, to avoid extra weirdness for people who happen to have the SDK-based
@@ -26,6 +27,8 @@ const LOGGING_PREF = "telemetry.log";
  *                   inside the Prefs constructor. Typically used from tests
  *                   to save off a pointer to a fake Prefs instance so that
  *                   stubs and spies can be inspected by the test code.
+ * @param {Function} args.UITelemetry - if present will be used instead of the
+ *                   global UITelemetry from UITelemtry.jsm
  *
  */
 function TelemetrySender(args) {
@@ -34,11 +37,18 @@ function TelemetrySender(args) {
     if ("prefInitHook" in args) {
       prefArgs.initHook = args.prefInitHook;
     }
+
+    /* istanbul ignore else */
+    if ("UITelemetry" in args) {
+      this._UITelemetry = args.UITelemetry;
+    } else {
+      this._UITelemetry = UITelemetry;
+    }
   }
 
   this._prefs = new Preferences(prefArgs);
 
-  this.enabled = this._prefs.get(TELEMETRY_PREF);
+  this._enabled = this._prefs.get(TELEMETRY_PREF);
   this._onTelemetryPrefChange = this._onTelemetryPrefChange.bind(this);
   this._prefs.observe(TELEMETRY_PREF, this._onTelemetryPrefChange);
 
@@ -50,13 +60,16 @@ function TelemetrySender(args) {
 }
 
 TelemetrySender.prototype = {
+  get enabled() {
+    return this._enabled && this._UITelemetry.enabled;
+  },
 
   _onLoggingPrefChange(prefVal) {
     this.logging = prefVal;
   },
 
   _onTelemetryPrefChange(prefVal) {
-    this.enabled = prefVal;
+    this._enabled = prefVal;
   },
 
   async sendPing(data) {

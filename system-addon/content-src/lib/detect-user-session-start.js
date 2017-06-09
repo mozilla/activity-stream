@@ -9,7 +9,7 @@ module.exports = class DetectUserSessionStart {
     // Overrides for testing
     this.sendAsyncMessage = options.sendAsyncMessage || window.sendAsyncMessage;
     this.document = options.document || document;
-    this.perfService = options.perfService || perfSvc;
+    this._perfService = options.perfService || perfSvc;
     this._onVisibilityChange = this._onVisibilityChange.bind(this);
   }
 
@@ -36,9 +36,9 @@ module.exports = class DetectUserSessionStart {
    *              visibility-change-event time in ms from the UNIX epoch.
    */
   _sendEvent() {
-    this.perfService.mark("visibility-change-event");
+    this._perfService.mark("visibility-change-event");
 
-    let absVisChangeTime = this.perfService
+    let absVisChangeTime = this._perfService
         .getMostRecentAbsMarkStartByName("visibility-change-event");
 
     this.sendAsyncMessage("ActivityStream:ContentToMain", {

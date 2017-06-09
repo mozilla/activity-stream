@@ -59,7 +59,9 @@ describe("TelemetryFeed", () => {
     });
     it("should make this.browserOpenNewtabStart() observe browser-open-newtab-start", async () => {
       sandbox.spy(Services.obs, "addObserver");
+
       await instance.init();
+
       assert.calledOnce(Services.obs.addObserver);
       assert.calledWithExactly(Services.obs.addObserver,
         instance.browserOpenNewtabStart, "browser-open-newtab-start");

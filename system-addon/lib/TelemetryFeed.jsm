@@ -11,8 +11,6 @@ const {perfService} = Cu.import("resource://activity-stream/common/PerfService.j
 
 Cu.import("resource://gre/modules/ClientID.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-// XXX only when preffed on?
 Cu.import("resource://gre/modules/Services.jsm");
 
 XPCOMUtils.defineLazyServiceGetter(this, "gUUIDGenerator",

@@ -13,8 +13,6 @@ if (typeof Window === "undefined") {
 }
 
 Cu.import("resource://gre/modules/Services.jsm");
-// XXX only if profiling turned on by pref
-Cu.import("resource://gre/modules/Console.jsm"); // eslint-disable-line no-console
 
 /* istanbul ignore if */
 if (typeof Window === "undefined") {
