@@ -8,7 +8,7 @@ Cu.import("resource://gre/modules/Task.jsm");
 
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 
-module.exports = class RecentlyVisitedFeed extends Feed {
+module.exports = class VisitAgainFeed extends Feed {
   constructor(options) {
     super(options);
     this.getScreenshot = getScreenshot;
@@ -32,7 +32,7 @@ module.exports = class RecentlyVisitedFeed extends Feed {
   /**
    * getData
    *
-   * @return Promise  A promise that resolves with the "RECENTLYVISITED_RESPONSE" action
+   * @return Promise  A promise that resolves with the "VISITAGAIN_RESPONSE" action
    */
   getData() {
     return Task.spawn(function*() {
@@ -41,7 +41,7 @@ module.exports = class RecentlyVisitedFeed extends Feed {
       links = yield PlacesProvider.links.getRecentlyVisited({limit: 24});
 
       // Get metadata from PreviewProvider
-      links = yield this.options.getCachedMetadata(links, "RECENTLYVISITED_RESPONSE");
+      links = yield this.options.getCachedMetadata(links, "VISITAGAIN_RESPONSE");
 
       this.missingData = false;
 
@@ -61,7 +61,7 @@ module.exports = class RecentlyVisitedFeed extends Feed {
         }
       }
 
-      return am.actions.Response("RECENTLYVISITED_RESPONSE", links);
+      return am.actions.Response("VISITAGAIN_RESPONSE", links);
     }.bind(this));
   }
 

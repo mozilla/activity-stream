@@ -2,7 +2,6 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {justDispatch} = require("common/selectors/selectors");
 const {actions} = require("common/action-manager");
-const {FormattedMessage} = require("react-intl");
 const {SpotlightItem} = require("components/Spotlight/Spotlight");
 const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSection");
 const getBestImage = require("common/getBestImage");
@@ -31,7 +30,8 @@ const NewTabSection = React.createClass({
   },
   // XXX factor out into a stateless component
   renderSiteList() {
-    const sites = this.props.sites.slice(0, this.props.length);
+    const sites = this.props.sites.filter(s => s.images.length > 0)
+                                  .slice(0, this.props.length);
 
     return sites.map((site, i) =>
       <SpotlightItem
@@ -47,7 +47,7 @@ const NewTabSection = React.createClass({
     );
   },
   render() {
-    return (<CollapsibleSection className="recent-bookmarks" icon="icon-bookmark" titleId="header_bookmarks"
+    return (<CollapsibleSection className="recent-bookmarks" icon="icon-history" titleId="header_visit_again"
                                 prefName="collapseBookmarks" prefs={this.props.prefs}>
       <ul ref="newtabsection-list" className="spotlight-list">
         {this.props.sites.length ? this.renderSiteList() : null}
