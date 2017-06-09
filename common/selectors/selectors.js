@@ -1,6 +1,6 @@
 const {createSelector} = require("common/vendor")("reselect");
 const firstRunData = require("lib/first-run-data");
-const selectAndDedupe = require("./selectAndDedupe");
+const {selectAndDedupe, dedupeOne} = require("./selectAndDedupe");
 const {assignImageAndBackgroundColor} = require("./colorSelectors");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const {areSelectorsReady} = require("./selectorUtils");
@@ -44,6 +44,7 @@ module.exports.selectNewTabSites = createSelector(
         max: HIGHLIGHTS_LENGTH
       }
     ]);
+    console.log(RecentlyVisited.rows.map(e => e.url));
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       PocketStories: Object.assign({}, PocketStories),
@@ -52,7 +53,7 @@ module.exports.selectNewTabSites = createSelector(
       Experiments,
       Prefs,
       Bookmarks: Object.assign({}, Bookmarks, {rows: Bookmarks.rows}),
-      RecentlyVisited,
+      RecentlyVisited: Object.assign({}, RecentlyVisited, {rows: dedupeOne(RecentlyVisited.rows)}),
       isReady: areSelectorsReady(state)
     };
   }

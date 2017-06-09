@@ -1,7 +1,6 @@
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
-const {BOOKMARKS_LENGTH} = require("common/constants");
 const am = require("common/action-manager");
 const getScreenshot = require("addon/lib/getScreenshot");
 
@@ -41,8 +40,6 @@ module.exports = class RecentlyVisitedFeed extends Feed {
       // Get links from places
       links = yield PlacesProvider.links.getRecentlyVisited({limit: 24});
 
-      console.log("recently visited", links);
-
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "RECENTLYVISITED_RESPONSE");
 
@@ -74,17 +71,13 @@ module.exports = class RecentlyVisitedFeed extends Feed {
         // When the app inititalizes refresh the data. TODO
         this.refresh("app was initializing");
         break;
-      case am.type("RECEIVE_BOOKMARK_ADDED"):
-        // We always want new bookmarks
-        this.refresh("a bookmark was added");
-        break;
-      case am.type("RECEIVE_BOOKMARK_REMOVED"):
-        this.refresh("a bookmark was removed");
-        break;
       case am.type("SCREENSHOT_UPDATED"):
         if (this.missingData) {
           this.refresh("new screenshot is available and we're missing data");
         }
+        break;
+      case am.type("RECEIVE_PLACES_CHANGES"):
+        this.refresh("always need the newest sites");
         break;
       case am.type("METADATA_UPDATED"):
         if (this.missingData) {

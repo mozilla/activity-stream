@@ -8,14 +8,6 @@ const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSec
 const getBestImage = require("common/getBestImage");
 const {BOOKMARKS_DISPLAYED_LENGTH} = require("common/constants");
 
-const PlaceholderBookmarks = React.createClass({
-  render() {
-    return (<div className="bookmarks-placeholder">
-      <FormattedMessage id="header_bookmarks_placeholder" />
-    </div>);
-  }
-});
-
 const NewTabSection = React.createClass({
   getDefaultProps() {
     return {
@@ -29,7 +21,7 @@ const NewTabSection = React.createClass({
       let payload = {
         event: "CLICK",
         page: this.props.page,
-        source: "BOOKMARKS",
+        source: "RECENTLYVISITED",
         action_position: index,
         highlight_type: site.type,
         metadata_source: site.metadata_source
@@ -55,14 +47,10 @@ const NewTabSection = React.createClass({
     );
   },
   render() {
-    const sites = this.props.sites.filter(site => site.bookmarkGuid);
-    // If placeholder is true or we have no items to show.
-    const showPlaceholder = this.props.placeholder || (sites.length === 0);
-
     return (<CollapsibleSection className="recent-bookmarks" icon="icon-bookmark" titleId="header_bookmarks"
                                 prefName="collapseBookmarks" prefs={this.props.prefs}>
       <ul ref="newtabsection-list" className="spotlight-list">
-        {showPlaceholder ? <PlaceholderBookmarks /> : this.renderSiteList()}
+        {this.props.sites.length ? this.renderSiteList() : null}
       </ul>
     </CollapsibleSection>);
   }
@@ -77,4 +65,3 @@ NewTabSection.propTypes = {
 
 module.exports = connect(justDispatch)(NewTabSection);
 module.exports.NewTabSection = NewTabSection;
-module.exports.PlaceholderBookmarks = PlaceholderBookmarks;
