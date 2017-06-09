@@ -30,7 +30,7 @@
 
   .prefs-modal-inner-wrapper {
     height: 100%;
-    overflow: scroll;
+    overflow-y: auto;
 
     section {
       margin: 20px 0;
