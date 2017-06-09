@@ -13,7 +13,9 @@ let fakePrefs;
 const prefInitHook = function() {
   fakePrefs = this; // eslint-disable-line consistent-this
 };
-const tsArgs = {prefInitHook};
+
+let UITelemetry = {enabled: true};
+const tsArgs = {prefInitHook, UITelemetry};
 
 describe("TelemetrySender", () => {
   let globals;
@@ -49,23 +51,27 @@ describe("TelemetrySender", () => {
   });
 
   describe("#enabled", () => {
-    it("should return false if the enabled pref is false", () => {
-      FakePrefs.prototype.prefs = {};
-      FakePrefs.prototype.prefs[TELEMETRY_PREF] = false;
+    let testParams = [
+      {enabledPref: true, UITEnabled: true, result: true},
+      {enabledPref: false, UITEnabled: true, result: false},
+      {enabledPref: true, UITEnabled: false, result: false},
+      {enabledPref: false, UITEnabled: false, result: false}
+    ];
+
+    function testEnabled(p) {
+      FakePrefs.prototype.prefs[TELEMETRY_PREF] = p.enabledPref;
+      globals.sandbox.stub(UITelemetry, "enabled").get(() => p.UITEnabled);
 
       tSender = new TelemetrySender(tsArgs);
 
-      assert.isFalse(tSender.enabled);
-    });
+      assert.equal(tSender.enabled, p.result);
+    }
 
-    it("should return true if the enabled pref is true", () => {
-      FakePrefs.prototype.prefs = {};
-      FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
-
-      tSender = new TelemetrySender(tsArgs);
-
-      assert.isTrue(tSender.enabled);
-    });
+    for (let p of testParams) {
+      it(`should return ${p.result} if UITelemetry.enabled is ${p.UITEnabled} and telemetry.enabled is ${p.enabledPref}`, () => {
+        testEnabled(p);
+      });
+    }
 
     describe("telemetry.enabled pref changes from true to false", () => {
       beforeEach(() => {
@@ -76,6 +82,8 @@ describe("TelemetrySender", () => {
       });
 
       it("should set the enabled property to false", () => {
+        globals.sandbox.stub(UITelemetry, "enabled").get(() => true); // eslint-disable-line max-nested-callbacks
+
         fakePrefs.set(TELEMETRY_PREF, false);
 
         assert.propertyVal(tSender, "enabled", false);
@@ -87,10 +95,13 @@ describe("TelemetrySender", () => {
         FakePrefs.prototype.prefs = {};
         FakePrefs.prototype.prefs[TELEMETRY_PREF] = false;
         tSender = new TelemetrySender(tsArgs);
+
         assert.propertyVal(tSender, "enabled", false);
       });
 
       it("should set the enabled property to true", () => {
+        globals.sandbox.stub(UITelemetry, "enabled").get(() => true);        // eslint-disable-line max-nested-callbacks
+
         fakePrefs.set(TELEMETRY_PREF, true);
 
         assert.propertyVal(tSender, "enabled", true);
@@ -107,7 +118,8 @@ describe("TelemetrySender", () => {
     });
 
     it("should not send if the TelemetrySender is disabled", async () => {
-      tSender.enabled = false;
+      FakePrefs.prototype.prefs[TELEMETRY_PREF] = false;
+      tSender = new TelemetrySender(tsArgs);
 
       await tSender.sendPing(fakePingJSON);
 
