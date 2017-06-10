@@ -60,7 +60,7 @@ this.TelemetryFeed = class TelemetryFeed {
       perf: {
         load_trigger_ts: absBrowserOpenTabStart,
         load_trigger_type: "menu_plus_or_keyboard",
-        visibility_event_fired: absVisChangeTime
+        visibility_event_rcvd_ts: absVisChangeTime
       }
     });
 
@@ -146,7 +146,8 @@ this.TelemetryFeed = class TelemetryFeed {
         session_id: session.session_id,
         page: session.page,
         session_duration: session.session_duration,
-        action: "activity_stream_session"
+        action: "activity_stream_session",
+        perf: session.perf
       }
     );
   }

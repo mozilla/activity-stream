@@ -225,3 +225,30 @@ Here are different scenarios that cause a session end event to be sent:
 3. Closing the browser
 5. Refreshing
 6. Navigating to a new URL via the url bar or file menu
+
+
+### Session performance data
+
+This data is held in a child object of the `activity_stream_session` event called `perf`.  All fields suffixed by `_ts` are type `DOMHighResTimeStamp` (aka a double of milliseconds, with a 5 microsecond precision) with 0 being the [timeOrigin](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp#The_time_origin) of the browser's hidden chrome window.
+
+An example might look like this:
+
+```javascript
+perf: {
+  // Timestamp of the action perceived by the user to trigger the load
+  // of this page.
+  //
+  // Not required at least for error cases where the
+  // observer event doesn't fire
+  "load_trigger_ts": 1,
+
+  // What was the perceived trigger of the load action:
+  "load_trigger_type": [
+    "menu_plus_or_keyboard" // newtab only
+  ],
+
+  // when the page itself receives an event that document.visibilityStat=visible
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2539
+  "visibility_event_rcvd_ts": 2,
+}
+```

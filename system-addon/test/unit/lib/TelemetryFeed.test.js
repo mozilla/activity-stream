@@ -219,7 +219,12 @@ describe("TelemetryFeed", () => {
         const ping = instance.createSessionEndEvent({
           session_id: FAKE_UUID,
           page: "about:newtab",
-          session_duration: 12345
+          session_duration: 12345,
+          perf: {
+            load_trigger_ts: 10,
+            load_trigger_type: "menu_plus_or_keyboard",
+            visibility_event_rcvd_ts: 20
+          }
         });
         // Is it valid?
         assert.validate(ping, SessionPing);
