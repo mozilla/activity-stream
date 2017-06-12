@@ -27,6 +27,11 @@ module.exports = {
   BOOKMARKS_LENGTH: 6,
   BOOKMARKS_DISPLAYED_LENGTH: 3,
 
+  // Number of links request from recent browsing history.
+  VISITAGAIN_LENGTH: 24,
+  // Number of links actually displayed.
+  VISITAGAIN_DISPLAYED_LENGTH: 6,
+
   // How many items per query?
   LINKS_QUERY_LIMIT: 500,
 
