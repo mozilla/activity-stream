@@ -13,7 +13,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   // This indicates the type of interaction
-  "event": ["CLICK", "SEARCH", "BLOCK", "DELETE", "OPEN_NEW_WINDOW", "OPEN_PRIVATE_WINDOW", "BOOKMARK_DELETE", "BOOKMARK_ADD"],
+  "event": ["CLICK", "SEARCH", "BLOCK", "DELETE", "OPEN_NEW_WINDOW", "OPEN_PRIVATE_WINDOW", "BOOKMARK_DELETE", "BOOKMARK_ADD", "OPEN_NEWTAB_PREFS", "CLOSE_NEWTAB_PREFS"],
 
   // Optional field indicating the UI component type
   "source": "TOP_SITES",
@@ -158,6 +158,36 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "OPEN_PRIVATE_WINDOW",
   "source": "TOP_SITES",
   "action_position": 2,
+  
+  // Basic metadata
+  "action": "activity_stream_event",
+  "page": ["about:newtab" | "about:home"],
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```
+
+#### Opening the new tab preferences pane
+
+```js
+{
+  "event": "OPEN_NEWTAB_PREFS",
+  
+  // Basic metadata
+  "action": "activity_stream_event",
+  "page": ["about:newtab" | "about:home"],
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```
+
+#### Closing the new tab preferences pane
+
+```js
+{
+  "event": "CLOSE_NEWTAB_PREFS",
   
   // Basic metadata
   "action": "activity_stream_event",
