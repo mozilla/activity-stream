@@ -20,7 +20,10 @@ const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 const UNDESIRED_NOTIF = "undesired-event";
 const IMPRESSION_NOTIF = "impression-stats";
-const USER_PREFS = ["showSearch", "showTopSites", "showPocket", "showHighlights", "showBookmarks", "showMoreTopSites", "collapseHighlights", "collapseBookmarks"];
+const USER_PREFS = [
+  "showSearch", "showTopSites", "showPocket", "showHighlights", "showBookmarks", "showMoreTopSites",
+  "collapseHighlights", "collapseBookmarks", "collapseVisitAgain", "showVisitAgain"
+];
 
 function TabTracker(options) {
   this._tabData = {};

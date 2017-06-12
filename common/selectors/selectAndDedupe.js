@@ -1,4 +1,5 @@
-const dedupe = require("fancy-dedupe");
+const vendor = require("common/vendor");
+const dedupe = vendor("fancy-dedupe");
 
 /**
  * Dedupe items and appends defaults if result length is smaller than required.

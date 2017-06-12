@@ -3,6 +3,7 @@ const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
 const am = require("common/action-manager");
 const getScreenshot = require("addon/lib/getScreenshot");
+const {dedupeOne} = require("common/selectors/selectAndDedupe");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -60,6 +61,8 @@ module.exports = class VisitAgainFeed extends Feed {
           this.missingData = true;
         }
       }
+
+      links = dedupeOne(links.filter(s => s.hasMetadata && s.images && s.images.length));
 
       return am.actions.Response("VISITAGAIN_RESPONSE", links);
     }.bind(this));

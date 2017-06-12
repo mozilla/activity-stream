@@ -30,8 +30,7 @@ const NewTabSection = React.createClass({
   },
   // XXX factor out into a stateless component
   renderSiteList() {
-    const sites = this.props.sites.filter(s => s.images.length > 0)
-                                  .slice(0, this.props.length);
+    const sites = this.props.sites.slice(0, this.props.length);
 
     return sites.map((site, i) =>
       <SpotlightItem
@@ -48,7 +47,7 @@ const NewTabSection = React.createClass({
   },
   render() {
     return (<CollapsibleSection className="recent-bookmarks" icon="icon-history" titleId="header_visit_again"
-                                prefName="collapseBookmarks" prefs={this.props.prefs}>
+                                prefName="collapseVisitAgain" prefs={this.props.prefs}>
       <ul ref="newtabsection-list" className="spotlight-list">
         {this.props.sites.length ? this.renderSiteList() : null}
       </ul>

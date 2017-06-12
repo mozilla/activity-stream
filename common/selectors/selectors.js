@@ -1,6 +1,6 @@
 const {createSelector} = require("common/vendor")("reselect");
 const firstRunData = require("lib/first-run-data");
-const {selectAndDedupe, dedupeOne} = require("./selectAndDedupe");
+const {selectAndDedupe} = require("./selectAndDedupe");
 const {assignImageAndBackgroundColor} = require("./colorSelectors");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH, HIGHLIGHTS_LENGTH} = require("common/constants");
 const {areSelectorsReady} = require("./selectorUtils");
@@ -32,7 +32,6 @@ module.exports.selectNewTabSites = createSelector(
   ],
 
   (Highlights, PocketStories, PocketTopics, TopSites, Experiments, Prefs, Bookmarks, VisitAgain, state) => { // eslint-disable-line max-params
-
     const [topSitesRows, highlightsRows] = selectAndDedupe([
       {
         sites: TopSites.rows,
@@ -44,7 +43,6 @@ module.exports.selectNewTabSites = createSelector(
         max: HIGHLIGHTS_LENGTH
       }
     ]);
-    console.log(VisitAgain.rows);
     return {
       TopSites: Object.assign({}, TopSites, {rows: topSitesRows}),
       PocketStories: Object.assign({}, PocketStories),
@@ -53,7 +51,7 @@ module.exports.selectNewTabSites = createSelector(
       Experiments,
       Prefs,
       Bookmarks: Object.assign({}, Bookmarks, {rows: Bookmarks.rows}),
-      VisitAgain: Object.assign({}, VisitAgain, {rows: dedupeOne(VisitAgain.rows)}),
+      VisitAgain,
       isReady: areSelectorsReady(state)
     };
   }
