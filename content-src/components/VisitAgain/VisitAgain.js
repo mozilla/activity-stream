@@ -20,7 +20,7 @@ const NewTabSection = React.createClass({
       let payload = {
         event: "CLICK",
         page: this.props.page,
-        source: "RECENTLYVISITED",
+        source: "VISITAGAIN",
         action_position: index,
         highlight_type: site.type,
         metadata_source: site.metadata_source
@@ -37,7 +37,7 @@ const NewTabSection = React.createClass({
         index={i}
         key={site.guid || site.cache_key || i}
         page={this.props.page}
-        source="BOOKMARKS"
+        source="VISITAGAIN"
         bestImage={getBestImage(site.images)}
         onClick={this.onClickFactory(i, site)}
         dispatch={this.props.dispatch}
