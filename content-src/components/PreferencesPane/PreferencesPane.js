@@ -93,18 +93,18 @@ const PreferencesPane = React.createClass({
                   </label>
                   <p><FormattedMessage id="settings_pane_bookmarks_body" /></p>
                 </section>
+                <section>
+                  <input ref="showVisitAgainCheckbox" type="checkbox" id="showVisitAgain" name="showVisitAgain" checked={showVisitAgain} onChange={this.handleChange} />
+                  <label htmlFor="showVisitAgain">
+                    <FormattedMessage id="settings_pane_visit_again_header" />
+                  </label>
+                  <p><FormattedMessage id="settings_pane_visit_again_body" /></p>
+                </section>
               </div>
               <section className="actions">
                 <button ref="done-button" className="done" onClick={this.togglePane}>
                   <FormattedMessage id="settings_pane_done_button" />
                 </button>
-              </section>
-              <section>
-                <input ref="showVisitAgainCheckbox" type="checkbox" id="showVisitAgain" name="showVisitAgain" checked={showVisitAgain} onChange={this.handleChange} />
-                <label htmlFor="showVisitAgain">
-                  <FormattedMessage id="settings_pane_visit_again_header" />
-                </label>
-                <p><FormattedMessage id="settings_pane_visit_again_body" /></p>
               </section>
             </div>
           </div>
