@@ -4,9 +4,10 @@
 let usablePerfObj;
 
 let Cu;
+const isRunningInChrome = typeof Window === "undefined";
 
 /* istanbul ignore if */
-if (typeof Window === "undefined") {
+if (isRunningInChrome) {
   Cu = Components.utils;
 } else {
   Cu = {import() {}};
@@ -15,7 +16,7 @@ if (typeof Window === "undefined") {
 Cu.import("resource://gre/modules/Services.jsm");
 
 /* istanbul ignore if */
-if (typeof Window === "undefined") {
+if (isRunningInChrome) {
   // Borrow the high-resolution timer from the hidden window....
   usablePerfObj = Services.appShell.hiddenDOMWindow.performance;
 } else { // we must be running in content space
