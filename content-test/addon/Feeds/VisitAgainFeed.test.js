@@ -9,11 +9,7 @@ const getCachedMetadata = links => links.map(
     return link;
   }
 );
-const PlacesProvider = {
-  links: {
-    getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks))
-  }
-};
+const PlacesProvider = {links: {getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks))}};
 const testScreenshot = "screenshot.jpg";
 
 const createStoreWithState = state => ({
@@ -47,31 +43,31 @@ describe("VisitAgainFeed", () => {
     assert.equal(time.minutes(), 15);
   });
   describe("#getData", () => {
-    it("should resolve with a VISITAGAIN_RESPONSE action", () => {
-      return instance.getData()
+    it("should resolve with a VISITAGAIN_RESPONSE action", () =>
+      instance.getData()
         .then(action => {
           assert.isObject(action);
           assert.equal(action.type, "VISITAGAIN_RESPONSE");
           assert.lengthOf(action.data, 2);
-        });
-    });
-    it("should call getRecentlyVisited with a limit of VISITAGAIN_LENGTH", () => {
-      return instance.getData()
+        })
+    );
+    it("should call getRecentlyVisited with a limit of VISITAGAIN_LENGTH", () =>
+      instance.getData()
         .then(() => {
           assert.calledWithExactly(PlacesProvider.links.getRecentlyVisited, {limit: VISITAGAIN_LENGTH});
-        });
-    });
-    it("should run sites through getCachedMetadata", () => {
-      return instance.getData()
+        })
+    );
+    it("should run sites through getCachedMetadata", () =>
+      instance.getData()
         .then(action => {
           assert.calledOnce(instance.options.getCachedMetadata);
           assert.deepEqual(action.data, getCachedMetadata(testLinks));
-        });
-    });
+        })
+    );
     it("should set missingData to true if a topsite is missing a required screenshot", () => {
       instance.shouldGetScreenshot = () => true;
       instance.getScreenshot = sinon.spy(site => null);
-      return instance.getData().then(result => {
+      return instance.getData().then(() => {
         assert.equal(instance.missingData, true);
       });
     });
@@ -79,7 +75,7 @@ describe("VisitAgainFeed", () => {
       instance.options.getCachedMetadata = links => links.map(
         link => { link.hasMetadata = false; return link; }
       );
-      return instance.getData().then(result => {
+      return instance.getData().then(() => {
         assert.equal(instance.missingData, true);
       });
     });
