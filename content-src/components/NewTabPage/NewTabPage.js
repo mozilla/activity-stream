@@ -15,7 +15,7 @@ const PAGE_NAME = "NEW_TAB";
 const {
   HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH,
   TOP_SITES_SHOWMORE_LENGTH, POCKET_STORIES_LENGTH,
-  BOOKMARKS_DISPLAYED_LENGTH
+  BOOKMARKS_DISPLAYED_LENGTH, VISITAGAIN_DISPLAYED_LENGTH
 } = require("common/constants");
 const {injectIntl} = require("react-intl");
 const classNames = require("classnames");
@@ -127,7 +127,7 @@ const NewTabPage = React.createClass({
           }
           {showVisitAgain &&
             <VisitAgain placeholder={!this.props.isReady} page={PAGE_NAME}
-                       length={6} sites={props.VisitAgain.rows}
+                       length={VISITAGAIN_DISPLAYED_LENGTH} sites={props.VisitAgain.rows}
                        prefs={props.Prefs.prefs} />
           }
         </div>

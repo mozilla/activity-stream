@@ -5,12 +5,12 @@ const {actions} = require("common/action-manager");
 const {SpotlightItem} = require("components/Spotlight/Spotlight");
 const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSection");
 const getBestImage = require("common/getBestImage");
-const {BOOKMARKS_DISPLAYED_LENGTH} = require("common/constants");
+const {VISITAGAIN_DISPLAYED_LENGTH} = require("common/constants");
 
-const NewTabSection = React.createClass({
+const VisitAgain = React.createClass({
   getDefaultProps() {
     return {
-      length: BOOKMARKS_DISPLAYED_LENGTH,
+      length: VISITAGAIN_DISPLAYED_LENGTH,
       page: "NEW_TAB",
       placeholder: false
     };
@@ -46,21 +46,27 @@ const NewTabSection = React.createClass({
     );
   },
   render() {
+    const shouldRender = !this.props.placeholder && (this.props.sites.length !== 0);
+
+    if (!shouldRender) {
+      return null;
+    }
+
     return (<CollapsibleSection className="recent-bookmarks" icon="icon-history" titleId="header_visit_again"
                                 prefName="collapseVisitAgain" prefs={this.props.prefs}>
-      <ul ref="newtabsection-list" className="spotlight-list">
-        {this.props.sites.length ? this.renderSiteList() : null}
+      <ul ref="visitagain-list" className="spotlight-list">
+        {this.renderSiteList()}
       </ul>
     </CollapsibleSection>);
   }
 });
 
-NewTabSection.propTypes = {
+VisitAgain.propTypes = {
   page: React.PropTypes.string.isRequired,
   sites: React.PropTypes.array.isRequired,
   length: React.PropTypes.number,
   prefs: React.PropTypes.object
 };
 
-module.exports = connect(justDispatch)(NewTabSection);
-module.exports.NewTabSection = NewTabSection;
+module.exports = connect(justDispatch)(VisitAgain);
+module.exports.VisitAgain = VisitAgain;

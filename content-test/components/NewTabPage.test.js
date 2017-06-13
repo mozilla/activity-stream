@@ -5,12 +5,13 @@ const {NewTabPage} = ConnectedNewTabPage;
 const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
 const Bookmarks = require("components/Bookmarks/Bookmarks");
+const VisitAgain = require("components/VisitAgain/VisitAgain");
 const PocketStories = require("components/PocketStories/PocketStories");
 const {mockData, renderWithProvider} = require("test/test-utils");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const {connect} = require("react-redux");
 const {injectIntl} = require("react-intl");
-const {BOOKMARKS_DISPLAYED_LENGTH} = require("common/constants");
+const {BOOKMARKS_DISPLAYED_LENGTH, VISITAGAIN_DISPLAYED_LENGTH} = require("common/constants");
 
 const fakeProps = Object.assign({}, {intl: {formatMessage: () => {}}}, mockData);
 
@@ -75,6 +76,11 @@ describe("NewTabPage", () => {
     assert.equal(storiesComponent.props.stories, fakeProps.PocketStories.rows);
   });
 
+  it("should render VisitAgain component with correct data", () => {
+    const comp = TestUtils.findRenderedComponentWithType(instance, VisitAgain);
+    assert.equal(comp.props.sites, fakeProps.VisitAgain.rows);
+  });
+
   it("should render connected component with correct props", () => {
     const container = renderWithProvider(<ConnectedNewTabPage />);
     const inner = TestUtils.findRenderedComponentWithType(container, NewTabPage);
@@ -96,6 +102,9 @@ describe("NewTabPage", () => {
 
     let bookmarks = TestUtils.findRenderedComponentWithType(instance, Bookmarks);
     assert.equal(bookmarks.props.placeholder, true);
+
+    let visitAgain = TestUtils.findRenderedComponentWithType(instance, VisitAgain);
+    assert.equal(visitAgain.props.placeholder, true);
   });
 
   it("should pass placeholder=false to Spotlight, Stories, TopSites and Bookmarks when isReady is true", () => {
@@ -114,6 +123,9 @@ describe("NewTabPage", () => {
 
     let bookmarks = TestUtils.findRenderedComponentWithType(instance, Bookmarks);
     assert.equal(bookmarks.props.placeholder, false);
+
+    let visitAgain = TestUtils.findRenderedComponentWithType(instance, VisitAgain);
+    assert.equal(visitAgain.props.placeholder, false);
   });
 
   it("should show the Bookmarks section when showBookmarks is true", () => {
@@ -138,6 +150,30 @@ describe("NewTabPage", () => {
 
     const comp = TestUtils.findRenderedComponentWithType(instance, Bookmarks);
     assert.equal(comp.props.length, BOOKMARKS_DISPLAYED_LENGTH);
+  });
+
+  it("should show the VisitAgain section when showBookmarks is true", () => {
+    let props = Object.assign({}, fakeProps, {isReady: true, Prefs: {prefs: {showVisitAgain: true}}});
+    instance = renderWithProvider(<NewTabPage {...props} dispatch={() => {}} />);
+
+    const children = TestUtils.scryRenderedComponentsWithType(instance, VisitAgain);
+    assert.equal(children.length, 1);
+  });
+
+  it("should hide the VisitAgain section when showBookmarks is false", () => {
+    let props = Object.assign({}, fakeProps, {isReady: true, Prefs: {prefs: {showVisitAgain: false}}});
+    instance = renderWithProvider(<NewTabPage {...props} dispatch={() => {}} />);
+
+    const children = TestUtils.scryRenderedComponentsWithType(instance, VisitAgain);
+    assert.equal(children.length, 0);
+  });
+
+  it("should pass correct length prop to VisitAgain component", () => {
+    let propsWithIsReadyTrue = Object.assign({}, fakeProps, {isReady: true});
+    instance = renderWithProvider(<NewTabPage {...propsWithIsReadyTrue} dispatch={() => {}} />);
+
+    const comp = TestUtils.findRenderedComponentWithType(instance, VisitAgain);
+    assert.equal(comp.props.length, VISITAGAIN_DISPLAYED_LENGTH);
   });
 
   describe("delete events", () => {
