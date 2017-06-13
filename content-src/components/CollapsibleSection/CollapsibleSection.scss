@@ -17,6 +17,10 @@
     max-height: 500px;
     transition: max-height 0.5s cubic-bezier(0.07, 0.95, 0, 1);
 
+    // This is so the top sites favicon doesn't get clipped during animation:
+    margin-inline-start: -7px;
+    padding: 0 7px;
+
     &.animating {
       overflow: hidden;
     }
