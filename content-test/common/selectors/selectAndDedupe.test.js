@@ -1,8 +1,23 @@
-const selectAndDedupe = require("common/selectors/selectAndDedupe");
+const {selectAndDedupe, dedupeOne} = require("common/selectors/selectAndDedupe");
 
-const urlToSite = url => ({url});
+describe("dedupeOne", () => {
+  const urlToSite = url => ({url, hostname: url});
+
+  it("should dedupe items by hostname", () => {
+    const result = dedupeOne([
+      "http://www.mozilla.org",
+      "http://www.firefox.org",
+      "http://www.mozilla.org"
+    ].map(urlToSite));
+    assert.lengthOf(result, 2);
+    assert.deepEqual(result[0].url, "http://www.mozilla.org");
+    assert.deepEqual(result[1].url, "http://www.firefox.org");
+  });
+});
 
 describe("selectAndDedupe", () => {
+  const urlToSite = url => ({url});
+
   it("should dedupe items", () => {
     const result = selectAndDedupe([
       {sites: [{url: "http://www.mozilla.org"}]},
