@@ -14,3 +14,4 @@ Adding telemetry generally involves a few steps:
 1. - [ ] Get review from Nan (@ncloudioj) and (XXX or?) Marina (@emtwo) on the data schema and the documentation changes.
 1. - [ ] Get review from a [data steward]() of the documentation changes to make sure this data collection fits under the "share additional data" pref, which is opt-in in 53-release, and opt-out in 55-nightly (XXX waiting on info from @tspurway for the correct general framing here?).
 1. - [ ] Implement as usual...
+1. - [ ] After landing the implementation, check with Nan (@ncloudioj) to make sure the pings are making it to the database
