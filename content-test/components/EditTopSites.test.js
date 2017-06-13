@@ -185,5 +185,7 @@ describe("TopSiteForm", () => {
     assert.ok(wrapper.instance().validateUrl());
     wrapper.setState({"url": "mozillaorg"});
     assert.isFalse(wrapper.instance().validateUrl());
+    wrapper.setState({"url": "https://mozilla.invisionapp.com/d/main/#/projects/prototypes"});
+    assert.ok(wrapper.instance().validateUrl());
   });
 });
