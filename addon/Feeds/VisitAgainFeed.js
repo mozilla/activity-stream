@@ -4,6 +4,7 @@ const Feed = require("addon/lib/Feed");
 const am = require("common/action-manager");
 const getScreenshot = require("addon/lib/getScreenshot");
 const {dedupeOne} = require("common/selectors/selectAndDedupe");
+const {VISITAGAIN_LENGTH} = require("common/constants");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -33,13 +34,13 @@ module.exports = class VisitAgainFeed extends Feed {
   /**
    * getData
    *
-   * @return Promise  A promise that resolves with the "VISITAGAIN_RESPONSE" action
+   * @return Promise A promise that resolves with the "VISITAGAIN_RESPONSE" action
    */
   getData() {
     return Task.spawn(function*() {
       let links;
       // Get links from places
-      links = yield PlacesProvider.links.getRecentlyVisited({limit: 24});
+      links = yield PlacesProvider.links.getRecentlyVisited({limit: VISITAGAIN_LENGTH});
 
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "VISITAGAIN_RESPONSE");
