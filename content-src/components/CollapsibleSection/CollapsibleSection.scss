@@ -1,6 +1,9 @@
 .collapsible-section {
   .section-title {
-    cursor: pointer;
+
+    .click-target {
+      cursor: pointer;
+    }
 
     .icon {
       margin: -5px 0 0;
