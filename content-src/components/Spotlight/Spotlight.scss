@@ -23,6 +23,8 @@
   &.collapsible-section {
     .section-body {
       max-height: 975px;
+      margin-inline-start: 0;
+      padding: 0;
     }
   }
 }
