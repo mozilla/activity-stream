@@ -26,6 +26,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   // Basic metadata
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "action": "activity_stream_event"
@@ -44,6 +45,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -61,6 +63,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -78,6 +81,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -95,6 +99,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -112,6 +117,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -129,6 +135,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -146,6 +153,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -163,6 +171,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -178,6 +187,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -193,6 +203,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -209,6 +220,7 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
 ```js
   "action": "activity_stream_session",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "page": ["about:newtab" | "about:home"],
