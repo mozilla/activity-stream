@@ -8,7 +8,6 @@ Cu.import("resource://gre/modules/Preferences.jsm");
 Cu.importGlobalProperties(["fetch"]);
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Console.jsm"); // eslint-disable-line no-console
-Cu.import("resource://gre/modules/UITelemetry.jsm");
 
 // This is intentionally a different pref-branch than the SDK-based add-on
 // used, to avoid extra weirdness for people who happen to have the SDK-based
@@ -27,22 +26,12 @@ const LOGGING_PREF = `${PREF_BRANCH}telemetry.log`;
  *                   inside the Prefs constructor. Typically used from tests
  *                   to save off a pointer to a fake Prefs instance so that
  *                   stubs and spies can be inspected by the test code.
- * @param {Function} args.UITelemetry - if present will be used instead of the
- *                   global UITelemetry from UITelemtry.jsm
- *
  */
 function TelemetrySender(args) {
   let prefArgs = {};
   if (args) {
     if ("prefInitHook" in args) {
       prefArgs.initHook = args.prefInitHook;
-    }
-
-    /* istanbul ignore else */
-    if ("UITelemetry" in args) {
-      this._UITelemetry = args.UITelemetry;
-    } else {
-      this._UITelemetry = UITelemetry;
     }
   }
 
@@ -61,7 +50,7 @@ function TelemetrySender(args) {
 
 TelemetrySender.prototype = {
   get enabled() {
-    return this._enabled && this._UITelemetry.enabled;
+    return this._enabled;
   },
 
   _onLoggingPrefChange(prefVal) {
