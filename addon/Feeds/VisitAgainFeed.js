@@ -19,16 +19,13 @@ module.exports = class VisitAgainFeed extends Feed {
 
   /**
    * shouldGetScreenshot - Returns true if the link/site provided meets the following:
-   * - is a bookmark
    * - has metadata
    * - doesn't have any images
    *
    * @return bool
    */
   shouldGetScreenshot(link) {
-    return link.bookmarkGuid &&
-      link.hasMetadata &&
-      (!link.images || link.images.length === 0);
+    return link.hasMetadata && (!link.images || link.images.length === 0);
   }
 
   /**

@@ -28,7 +28,6 @@ const VisitAgain = React.createClass({
       this.props.dispatch(actions.NotifyEvent(payload));
     };
   },
-  // XXX factor out into a stateless component
   renderSiteList() {
     const sites = this.props.sites.slice(0, this.props.length);
 

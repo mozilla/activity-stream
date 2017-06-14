@@ -152,7 +152,7 @@ describe("NewTabPage", () => {
     assert.equal(comp.props.length, BOOKMARKS_DISPLAYED_LENGTH);
   });
 
-  it("should show the VisitAgain section when showBookmarks is true", () => {
+  it("should show the VisitAgain section when showVisitAgain is true", () => {
     let props = Object.assign({}, fakeProps, {isReady: true, Prefs: {prefs: {showVisitAgain: true}}});
     instance = renderWithProvider(<NewTabPage {...props} dispatch={() => {}} />);
 
@@ -160,7 +160,7 @@ describe("NewTabPage", () => {
     assert.equal(children.length, 1);
   });
 
-  it("should hide the VisitAgain section when showBookmarks is false", () => {
+  it("should hide the VisitAgain section when showVisitAgain is false", () => {
     let props = Object.assign({}, fakeProps, {isReady: true, Prefs: {prefs: {showVisitAgain: false}}});
     instance = renderWithProvider(<NewTabPage {...props} dispatch={() => {}} />);
 

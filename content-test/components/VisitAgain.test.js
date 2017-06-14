@@ -46,7 +46,7 @@ describe("Bookmarks", () => {
       assert.isTrue(instance.props.sites.length > VISITAGAIN_DISPLAYED_LENGTH);
       assert.equal(children.length, VISITAGAIN_DISPLAYED_LENGTH);
     });
-    it("should show provide `VISITAGAIN` source prop to SpotlightItems", () => {
+    it("should provide `VISITAGAIN` source prop to SpotlightItems", () => {
       let i;
       instance = renderWithProvider(<VisitAgain dispatch={stubDispatcher}
                                                placeholder={false}
@@ -59,7 +59,7 @@ describe("Bookmarks", () => {
         assert.equal(children[i].props.source, "VISITAGAIN");
       }
     });
-    it("should show provide bestImage prop to SpotlightItems", () => {
+    it("should provide bestImage prop to SpotlightItems", () => {
       let i;
       instance = renderWithProvider(<VisitAgain dispatch={stubDispatcher}
                                                placeholder={false}

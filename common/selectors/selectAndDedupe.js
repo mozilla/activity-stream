@@ -46,6 +46,12 @@ module.exports.selectAndDedupe = function selectAndDedupe(group) {
   }, []);
 };
 
+/**
+ * Dedupe websites based on hostname.
+ *
+ * @param {Array} list
+ * @returns {Array}
+ */
 module.exports.dedupeOne = list => {
   dedupe.defaults.createKey = site => (site ? site.hostname : Math.random());
 
