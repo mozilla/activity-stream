@@ -15,9 +15,9 @@ Cu.import("resource://gre/modules/UITelemetry.jsm");
 // installed.  Though maybe we should just forcibly disable the old add-on?
 const PREF_BRANCH = "browser.newtabpage.activity-stream.";
 
-const ENDPOINT_PREF = "telemetry.ping.endpoint";
-const TELEMETRY_PREF = "telemetry";
-const LOGGING_PREF = "telemetry.log";
+const ENDPOINT_PREF = `${PREF_BRANCH}telemetry.ping.endpoint`;
+const TELEMETRY_PREF = `${PREF_BRANCH}telemetry`;
+const LOGGING_PREF = `${PREF_BRANCH}telemetry.log`;
 
 /**
  * Observe various notifications and send them to a telemetry endpoint.
@@ -32,7 +32,7 @@ const LOGGING_PREF = "telemetry.log";
  *
  */
 function TelemetrySender(args) {
-  let prefArgs = {branch: PREF_BRANCH};
+  let prefArgs = {};
   if (args) {
     if ("prefInitHook" in args) {
       prefArgs.initHook = args.prefInitHook;
