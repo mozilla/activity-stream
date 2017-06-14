@@ -225,7 +225,12 @@ ActivityStreams.prototype = {
   _respondToPlacesRequests({msg, worker}) {
     switch (msg.type) {
       case am.type("NOTIFY_BOOKMARK_ADD"):
-        PlacesProvider.links.asyncAddBookmark(msg.data);
+        PlacesProvider.links.asyncAddBookmark(msg.data.url);
+
+        // Request metadata for the new bookmark if it has been added from PocketStories.
+        if (msg.data.source === "RECOMMENDED") {
+          this._pageScraper.asyncFetchLinks([{url: msg.data.url}], msg.type);
+        }
         break;
       case am.type("NOTIFY_BOOKMARK_DELETE"):
         PlacesProvider.links.asyncDeleteBookmark(msg.data);

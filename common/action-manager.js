@@ -149,8 +149,8 @@ function NotifyUpdateSearchString(searchString) {
   return Notify("NOTIFY_UPDATE_SEARCH_STRING", {searchString}, {skipMasterStore: true});
 }
 
-function NotifyBookmarkAdd(url) {
-  return Notify("NOTIFY_BOOKMARK_ADD", url);
+function NotifyBookmarkAdd(data) {
+  return Notify("NOTIFY_BOOKMARK_ADD", data);
 }
 
 function NotifyBookmarkDelete(bookmarkGuid) {

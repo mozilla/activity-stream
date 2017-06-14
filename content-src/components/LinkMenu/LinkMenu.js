@@ -96,7 +96,7 @@ const LinkMenu = React.createClass({
         label: this.props.intl.formatMessage({id: "menu_action_bookmark"}),
         icon: "bookmark",
         userEvent: "BOOKMARK_ADD",
-        onClick: () => dispatch(actions.NotifyBookmarkAdd(site.url))
+        onClick: () => dispatch(actions.NotifyBookmarkAdd({url: site.url, source: this.props.source}))
       }),
       {type: "separator"},
       {

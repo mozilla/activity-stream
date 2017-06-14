@@ -782,8 +782,8 @@ Links.prototype = {
                     FROM moz_bookmarks b, moz_places p
                     WHERE type = :type
                     AND b.fk = p.id
-                    AND p.last_visit_date IS NOT NULL
                     AND (SELECT guid FROM moz_bookmarks WHERE id = (SELECT parent FROM moz_bookmarks WHERE id = b.parent)) != "tags________"
+                    AND url_hash NOT BETWEEN hash("place", "prefix_lo") AND hash("place", "prefix_hi")
                     ORDER BY b.lastModified DESC
                     LIMIT ${limit}`;
 
