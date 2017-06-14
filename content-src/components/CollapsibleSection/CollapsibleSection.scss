@@ -3,10 +3,14 @@
     cursor: pointer;
 
     .icon {
-      margin: -5px 0 0 8px;
+      margin: -5px 0 0;
+
+      &.icon-arrowhead-down {
+        margin-left: 8px;
+      }
 
       &.icon-arrowhead-forward {
-        margin-top: -4px;
+        margin: -4px 0 0 8px;
       }
     }
   }
