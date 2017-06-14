@@ -70,14 +70,18 @@ const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
     // Timestamp of the action perceived by the user to trigger the load
     // of this page.
     //
-    // Not required at least for error cases where the
+    // Not required at least for the error cases where the
     // observer event doesn't fire
-    load_trigger_ts: Joi.number().positive(),
+    load_trigger_ts: Joi.number().positive()
+      .notes(["server counter", "server counter alert"]),
+
     // What was the perceived trigger of the load action?
     //
-    // Not required at least for error cases where the observer event
+    // Not required at least for the error cases where the observer event
     // doesn't fire
-    load_trigger_type: Joi.valid(["menu_plus_or_keyboard"]),
+    load_trigger_type: Joi.valid(["menu_plus_or_keyboard"])
+      .notes(["server counter", "server counter alert"]),
+
     // When the page itself receives an event that document.visibilityState
     // == visible.
     //
@@ -85,6 +89,7 @@ const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
     // visibility_event doesn't fire.  (It's not clear whether this
     // can happen in practice, but if it does, we'd like to know about it).
     visibility_event_rcvd_ts: Joi.number().positive()
+      .notes(["server counter", "server counter alert"])
   }).required()
 }));
 

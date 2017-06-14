@@ -109,8 +109,8 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `highlight_type` | [Optional] Either ["bookmarks", "recommendation", "history"]. | :one:
 | `ip` | [Auto populated by Onyx] The IP address of the client. | :two:
 | `locale` | [Auto populated by Onyx] The browser chrome's language (eg. en-US). | :two:
-| `load_trigger_ts` | [Optional] DOMHighResTimeStamp of the action perceived by the user to trigger the load of this page. | :one:
-| `load_trigger_type` | [Optional] Currently only "menu_plus_or_keyboard" allowed. | :one:
+| `load_trigger_ts` | [Optional][Server Counter][Server Alert for too many omissions]  DOMHighResTimeStamp of the action perceived by the user to trigger the load of this page. | :one:
+| `load_trigger_type` | [Optional][Server Counter][Server Alert for too many omissions] Currently only "menu_plus_or_keyboard" allowed. | :one:
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`MetadataService` or `Local` or `TippyTopProvider`). | :one:
 | `page` | [Required] Either ["NEW_TAB", "HOME"]. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:
@@ -130,7 +130,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
 | `user_prefs` | [optional] The encoded integer of user's preferences. | :one: & :four:
-| `visibility_event_rcvd_ts` | [Optional] DOMHighResTimeStamp of when the page itself receives an event that document.visibilityState == visible. | :one:
+| `visibility_event_rcvd_ts` | [Optional][Server Counter][Server Alert for too many omissions] DOMHighResTimeStamp of when the page itself receives an event that document.visibilityState == visible. | :one:
 
 **Where:**
 
