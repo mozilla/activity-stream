@@ -9,12 +9,19 @@ const {actionTypes: at, actionCreators: ac} = Cu.import("resource://activity-str
 
 XPCOMUtils.defineLazyModuleGetter(this, "AutoMigrate",
   "resource:///modules/AutoMigrate.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "MigrationUtils",
+  "resource:///modules/MigrationUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Services",
   "resource://gre/modules/Services.jsm");
 
 this.AutoMigrateFeed = class AutoMigrateFeed {
   onAction(action) {
     switch (action.type) {
+      case at.AUTOMIGRATE_MANUAL_IMPORT:
+        // We pass in the type of source we're using for use in telemetry
+        MigrationUtils.showMigrationWizard(action._target.browser.ownerGlobal,
+          [MigrationUtils.MIGRATION_ENTRYPOINT_NEWTAB]);
+        break;
       case at.AUTOMIGRATE_MIGRATE_DONE:
         AutoMigrate.keepAutoMigration();
         this.store.dispatch(ac.BroadcastToContent({type: at.AUTOMIGRATE_HIDE}));

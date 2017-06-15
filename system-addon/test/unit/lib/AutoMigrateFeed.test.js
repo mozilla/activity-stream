@@ -14,6 +14,7 @@ describe("AutoMigrateFeed", () => {
       shouldShowMigratePrompt: globals.sandbox.stub().resolves(true),
       undoAutoMigration: globals.sandbox.stub()
     });
+    globals.set("MigrationUtils", {showMigrationWizard: globals.sandbox.stub()});
 
     sandbox = globals.sandbox;
     sandbox.spy(global.Components.utils, "reportError");
@@ -31,6 +32,15 @@ describe("AutoMigrateFeed", () => {
       });
 
       assert.calledOnce(global.AutoMigrate.shouldShowMigratePrompt);
+    });
+
+    it("should keep the migration when received MIGRATE_DONE action", () => {
+      feed.onAction({
+        type: at.AUTOMIGRATE_MANUAL_IMPORT,
+        _target
+      });
+
+      assert.calledOnce(global.MigrationUtils.showMigrationWizard);
     });
 
     it("should keep the migration when received MIGRATE_DONE action", () => {

@@ -17,15 +17,23 @@ const AutoMigratePrompt = props => {
       </div>
     </div>) : (<div className="migrate-prompt">
       <FormattedMessage id="migrate_manual_import_msg" />&nbsp;
-      <FormattedMessage id="migrate_manual_import_link_msg" />&nbsp;
+      <a href="#" onClick={props.onManualImportClick}><FormattedMessage id="migrate_manual_import_link_msg" /></a>&nbsp;
       <FormattedMessage id="migrate_manual_import_msg_trail" />
     </div>);
+};
+
+AutoMigratePrompt.propTypes = {
+  AutoMigrate: React.PropTypes.object.isRequired,
+  onImportClick: React.PropTypes.func.isRequired,
+  onManualImportClick: React.PropTypes.func.isRequired,
+  onUndoClick: React.PropTypes.func.isRequired
 };
 
 module.exports = connect(
   state => ({AutoMigrate: state.AutoMigrate}),
   dispatch => ({
     onImportClick: () => dispatch(ac.SendToMain({type: at.AUTOMIGRATE_MIGRATE_DONE})),
+    onManualImportClick: () => dispatch(ac.SendToMain({type: at.AUTOMIGRATE_MANUAL_IMPORT})),
     onUndoClick: () => dispatch(ac.SendToMain({type: at.AUTOMIGRATE_UNDO_MIGRATION}))
   })
 )(injectIntl(AutoMigratePrompt));
