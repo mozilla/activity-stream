@@ -48,8 +48,25 @@ this.TelemetryFeed = class TelemetryFeed {
    *                                   document.visibilityState becoming visible
    */
   addSession(id, absVisChangeTime) {
-    // XXX note that there is a race condition here; we're assuming that the
-    // most recent tab
+    // XXX note that there is a race condition here; we're assuming that no
+    // other tab will be interleaving calls to browserOpenNewtabStart and
+    // addSession on this object.  For manually created windows, it's hard to
+    // imagine us hitting this race condition.
+    //
+    // However, for session restore, where multiple windows with multiple tabs
+    // might be restored much closer together in time, it's somewhat less hard,
+    // though it should still be pretty rare.
+    //
+    // The fix to this would be making all of the load-trigger notifications
+    // return some data with their notifications, and somehow propagate that
+    // data through closures into the tab itself so that we could match them
+    //
+    // As of this writing (very early days of system add-on perf telemetry),
+    // the hypothesis is that hitting this race should be so rare that makes
+    // more sense to live with the slight data inaccuracy that it would
+    // introduce, rather than doing the correct by complicated thing.  It may
+    // well be worth reexamining this hypothesis after we have more experience
+    // with the data.
     let absBrowserOpenTabStart =
       perfService.getMostRecentAbsMarkStartByName("browser-open-newtab-start");
 
