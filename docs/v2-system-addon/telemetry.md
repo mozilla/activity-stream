@@ -8,10 +8,10 @@ Adding telemetry generally involves a few steps:
 
 1. - [ ] File or update your existing client-side implementation bug so that it points to the "user story issue".
 1. - [ ] Talk to Marina (@emtwo) about the dashboard you're hoping to see from the data you're adding, and work with her to create a data model (or request her review on it after the fact).
-1. - [ ] Update `system-addons/test/schemas/pings.js` with a commented JOI schema of your changes, and add tests to system-addons/test/unit/TelemetryFeed.test.js to exercise the ping creation.
+1. - [ ] Update `system-addon/test/schemas/pings.js` with a commented JOI schema of your changes, and add tests to system-addon/test/unit/TelemetryFeed.test.js to exercise the ping creation.
 1. - [ ] Update [data_events.md](data_events.md) with an example of the data in question
 1. - [ ] Update any fields that you've added, deleted, or changed in [data_dictionary.md](data_dictionary.md)
-1. - [ ] Get review from Nan (@ncloudioj) and (XXX or?) Marina (@emtwo) on the data schema and the documentation changes.
-1. - [ ] Get review from a [data steward]() of the documentation changes to make sure this data collection fits under the "share additional data" pref, which is opt-in in 53-release, and opt-out in 55-nightly (XXX waiting on info from @tspurway for the correct general framing here?).
+1. - [ ] Get review from Nan (@ncloudioj) and/or Marina (@emtwo) on the data schema and the documentation changes.
+1. - [ ] Request `data-review` of your documentation changes from a [data steward](https://wiki.mozilla.org/Firefox/Data_Collection) to ensure suitability for collection controlled by the opt-out `datareporting.healthreport.uploadEnabled` pref. We've been working with François Marier (@fmarier), so he's a good candidate as he's likely to have the most context.
 1. - [ ] Implement as usual...
 1. - [ ] After landing the implementation, check with Nan (@ncloudioj) to make sure the pings are making it to the database
