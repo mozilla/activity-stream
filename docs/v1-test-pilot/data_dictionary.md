@@ -115,7 +115,7 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `client_id` | [Required] An identifier for this client. | :one:
 | `date` | [Auto populated by Onyx] The date in YYYY-MM-DD format. | :three:
 | `experiment_id` | [Optional] The unique identifier for a specific experiment. | :one:
-| `event_id` | [Required] An identifier shared by multiple performance pings that describe ane entire request flow. | :one:
+| `event_id` | [Required] An identifier shared by multiple performance pings that describe an entire request flow. | :one:
 | `event` | [Required] The type of event. Any user defined string ("click", "share", "delete", "more_items") | :one:
 | `highlight_type` | [Optional] Either ["bookmarks", "recommendation", "history"]. | :one:
 | `ip` | [Auto populated by Onyx] The IP address of the client. | :two:
