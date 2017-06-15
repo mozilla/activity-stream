@@ -32,9 +32,11 @@ const CollapsibleSection = React.createClass({
 
     return (
       <section className={classNames("collapsible-section", this.props.className, {"collapsed": isCollapsed})}>
-        <h3 className="section-title" ref="title" onClick={this.handleHeaderClick}>
-          {this.renderIcon()} <FormattedMessage id={this.props.titleId} />
-          <span className={classNames("icon", {"icon-arrowhead-down": !isCollapsed, "icon-arrowhead-forward": isCollapsed})} />
+        <h3 className="section-title">
+          <span className="click-target" ref="title" onClick={this.handleHeaderClick}>
+            {this.renderIcon()} <FormattedMessage id={this.props.titleId} />
+            <span className={classNames("icon", {"icon-arrowhead-down": !isCollapsed, "icon-arrowhead-forward": isCollapsed})} />
+          </span>
         </h3>
         <div className={classNames("section-body", {"animating": isAnimating})} onTransitionEnd={this.handleTransitionEnd}>
           {this.props.children}
