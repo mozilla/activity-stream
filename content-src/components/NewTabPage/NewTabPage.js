@@ -3,6 +3,7 @@ const {connect} = require("react-redux");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const TopSites = require("components/TopSites/TopSites");
 const Bookmarks = require("components/Bookmarks/Bookmarks");
+const VisitAgain = require("components/VisitAgain/VisitAgain");
 const Spotlight = require("components/Spotlight/Spotlight");
 const PocketStories = require("components/PocketStories/PocketStories");
 const Search = require("components/Search/Search");
@@ -14,7 +15,7 @@ const PAGE_NAME = "NEW_TAB";
 const {
   HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH,
   TOP_SITES_SHOWMORE_LENGTH, POCKET_STORIES_LENGTH,
-  BOOKMARKS_DISPLAYED_LENGTH
+  BOOKMARKS_DISPLAYED_LENGTH, VISITAGAIN_DISPLAYED_LENGTH
 } = require("common/constants");
 const {injectIntl} = require("react-intl");
 const classNames = require("classnames");
@@ -86,7 +87,7 @@ const NewTabPage = React.createClass({
   },
   render() {
     const props = this.props;
-    const {showSearch, showTopSites, showPocket, showHighlights, showBookmarks, showMoreTopSites} = props.Prefs.prefs;
+    const {showSearch, showTopSites, showPocket, showHighlights, showBookmarks, showVisitAgain, showMoreTopSites} = props.Prefs.prefs;
 
     return (<main className="new-tab">
       <div className={classNames("new-tab-wrapper", {"show-highlights": showHighlights})}>
@@ -122,6 +123,11 @@ const NewTabPage = React.createClass({
           {showBookmarks &&
             <Bookmarks placeholder={!this.props.isReady} page={PAGE_NAME}
                        length={BOOKMARKS_DISPLAYED_LENGTH} sites={props.Bookmarks.rows}
+                       prefs={props.Prefs.prefs} />
+          }
+          {showVisitAgain &&
+            <VisitAgain placeholder={!this.props.isReady} page={PAGE_NAME}
+                       length={VISITAGAIN_DISPLAYED_LENGTH} sites={props.VisitAgain.rows}
                        prefs={props.Prefs.prefs} />
           }
         </div>

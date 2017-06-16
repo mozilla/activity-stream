@@ -1,8 +1,5 @@
-const dedupe = require("fancy-dedupe");
-
-// NOTE: The Math.random() fallback is because there can be empty slots thanks to pinning
-// with a limited history.
-dedupe.defaults.createKey = site => (site ? site.cache_key || site.hostname || site.url : Math.random());
+const vendor = require("common/vendor");
+const dedupe = vendor("fancy-dedupe");
 
 /**
  * Dedupe items and appends defaults if result length is smaller than required.
@@ -13,10 +10,14 @@ dedupe.defaults.createKey = site => (site ? site.cache_key || site.hostname || s
  * @param {Array} group.defaults - default values to use.
  * @returns {Array}
  */
-module.exports = function selectAndDedupe(group) {
+module.exports.selectAndDedupe = function selectAndDedupe(group) {
   return group.reduce((result, options, index, arr) => {
     let current;
     let sites = options.sites;
+
+    // NOTE: The Math.random() fallback is because there can be empty slots thanks to pinning
+    // with a limited history.
+    dedupe.defaults.createKey = site => (site ? site.cache_key || site.hostname || site.url : Math.random());
 
     if (options.defaults) {
       // Dedupe the defaults first.
@@ -43,4 +44,16 @@ module.exports = function selectAndDedupe(group) {
     result.push(current);
     return result;
   }, []);
+};
+
+/**
+ * Dedupe websites based on hostname.
+ *
+ * @param {Array} list
+ * @returns {Array}
+ */
+module.exports.dedupeOne = list => {
+  dedupe.defaults.createKey = site => (site ? site.hostname : Math.random());
+
+  return dedupe.one(list);
 };

@@ -41,7 +41,8 @@ const constants = {
     "RECOMMENDED",
     "ACTIVITY_FEED",
     "NEW_TAB",
-    "BOOKMARKS"
+    "BOOKMARKS",
+    "VISITAGAIN"
   ])
 };
 

@@ -27,6 +27,11 @@ module.exports = {
   BOOKMARKS_LENGTH: 6,
   BOOKMARKS_DISPLAYED_LENGTH: 3,
 
+  // Number of links requested from placesProvider.
+  VISITAGAIN_LENGTH: 24,
+  // Number of links actually displayed.
+  VISITAGAIN_DISPLAYED_LENGTH: 6,
+
   // How many items per query?
   LINKS_QUERY_LIMIT: 500,
 
@@ -51,7 +56,9 @@ module.exports = {
     "showPocket": 1 << 4,
     "collapseHighlights": 1 << 5,
     "collapseBookmarks": 1 << 6,
-    "showBookmarks": 1 << 7
+    "showBookmarks": 1 << 7,
+    "showVisitAgain": 1 << 8,
+    "collapseVisitAgain": 1 << 9
   },
 
   // The minimum size to consider an icon high res

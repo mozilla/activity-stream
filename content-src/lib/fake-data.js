@@ -1,10 +1,17 @@
-const {HIGHLIGHTS_LENGTH, POCKET_STORIES_LENGTH, POCKET_TOPICS_LENGTH, DEFAULT_LOCALE} = require("common/constants");
+const {
+  HIGHLIGHTS_LENGTH, POCKET_STORIES_LENGTH,
+  POCKET_TOPICS_LENGTH, DEFAULT_LOCALE, VISITAGAIN_LENGTH
+} = require("common/constants");
 const faker = require("test/faker");
 const STRINGS = require("../../data/locales/locales.json")[DEFAULT_LOCALE];
 
 module.exports = {
   "Highlights": {
     "rows": faker.createRows({images: HIGHLIGHTS_LENGTH}),
+    "error": false
+  },
+  "VisitAgain": {
+    "rows": faker.createRows({images: VISITAGAIN_LENGTH}),
     "error": false
   },
   "Bookmarks": {
@@ -49,6 +56,7 @@ module.exports = {
       "showTopSites": true,
       "showHighlights": true,
       "showBookmarks": true,
+      "showVisitAgain": true,
       "showPocket": true
     },
     "error": false
