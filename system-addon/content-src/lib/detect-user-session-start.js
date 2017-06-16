@@ -1,4 +1,5 @@
 const {actionTypes: at} = require("common/Actions.jsm");
+const {perfService: perfSvc} = require("common/PerfService.jsm");
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -8,7 +9,7 @@ module.exports = class DetectUserSessionStart {
     // Overrides for testing
     this.sendAsyncMessage = options.sendAsyncMessage || window.sendAsyncMessage;
     this.document = options.document || document;
-
+    this._perfService = options.perfService || perfSvc;
     this._onVisibilityChange = this._onVisibilityChange.bind(this);
   }
 
@@ -30,11 +31,20 @@ module.exports = class DetectUserSessionStart {
   }
 
   /**
-   * _sendEvent - Sends a message to the main process to indicate the current tab
-   *             is now visible to the user.
+   * _sendEvent - Sends a message to the main process to indicate the current
+   *              tab is now visible to the user, includes the
+   *              visibility-change-event time in ms from the UNIX epoch.
    */
   _sendEvent() {
-    this.sendAsyncMessage("ActivityStream:ContentToMain", {type: at.NEW_TAB_VISIBLE});
+    this._perfService.mark("visibility-change-event");
+
+    let absVisChangeTime = this._perfService
+        .getMostRecentAbsMarkStartByName("visibility-change-event");
+
+    this.sendAsyncMessage("ActivityStream:ContentToMain", {
+      type: at.NEW_TAB_VISIBLE,
+      data: {absVisibilityChangeTime: absVisChangeTime}
+    });
   }
 
   /**
