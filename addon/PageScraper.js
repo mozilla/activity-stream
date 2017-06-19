@@ -90,18 +90,27 @@ PageScraper.prototype = {
   /**
    * Make a network request for links that the MetadataFeed has requested metadata for.
    * Attempt to parse the html from that page and insert into the DB
+   *
+   * @param {Array} links Links that need metadata.
+   *        {String} eventType Source event of request.
+   *        {Bool} forceFetch Flag to avoid checking if metadata exists. Used for unvisited bookmarks.
    */
-  asyncFetchLinks: Task.async(function*(links, eventType) {
+  asyncFetchLinks: Task.async(function*(links, eventType, forceFetch = false) {
     let savedUrlsCount = 0;
 
     for (let link of links) {
       const linkEvent = this._tabTracker.generateEvent({source: eventType});
       this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.local_fetch_event, 1);
-      let linkExists = yield this._previewProvider.asyncLinkExist(link.url);
-      if (linkExists) {
-        this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.metadata_exists, 1);
-        continue;
+
+      // When we are not certain if metadata exists.
+      if (!forceFetch) {
+        let linkExists = yield this._previewProvider.asyncLinkExist(link.url);
+        if (linkExists) {
+          this._tabTracker.handlePerformanceEvent(linkEvent, PERFORMANCE_EVENT_NAMES.metadata_exists, 1);
+          continue;
+        }
       }
+
       let rawHTML;
       try {
         rawHTML = yield this._fetchContent(link.url);

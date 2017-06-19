@@ -229,7 +229,7 @@ ActivityStreams.prototype = {
 
         // Request metadata for the new bookmark if it has been added from PocketStories.
         if (msg.data.source === "RECOMMENDED") {
-          this._pageScraper.asyncFetchLinks([{url: msg.data.url}], msg.type);
+          this._pageScraper.asyncFetchLinks([{url: msg.data.url}], msg.type, true);
         }
         break;
       case am.type("NOTIFY_BOOKMARK_DELETE"):
