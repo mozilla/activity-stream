@@ -397,7 +397,6 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "page": ["NEW_TAB" | "HOME"],
   "action": "activity_stream_session",
   "session_duration": 4199,
-  "highlights_size": 20,
   "topsites_size": 6,
   "topsites_screenshot": 1,
   "topsites_tippytop": 3,
@@ -421,22 +420,6 @@ Here are different scenarios that cause a session end event to be sent and the c
 In some undesired app states, the app will send a ping about it to our metrics server.
 
 ### Types of bad states
-
-#### Highlight without an image
-
-```js
-{
-  "event": "MISSING_IMAGE",
-  "source": "HIGHLIGHTS",
-  "page": "NEW_TAB",
-  "action": "activity_stream_masga_event",
-  "tab_id": "-5-2",
-  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
-  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
-  "addon_version": "1.0.12",
-  "locale": "en-US"
-}
-```
 
 #### Show loader
 

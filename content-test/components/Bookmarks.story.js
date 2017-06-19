@@ -3,7 +3,7 @@ const {Bookmarks} = require("components/Bookmarks/Bookmarks");
 const {storiesOf, action} = require("@kadira/storybook");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const {createMockProvider, rawMockData, faker} = require("test/test-utils");
-const {HIGHLIGHTS_LENGTH} = require("common/constants");
+const {BOOKMARKS_LENGTH} = require("common/constants");
 const Provider = createMockProvider({dispatch: action("dispatched a redux action")});
 
 // We have to set up both faker slightly differently if we're building
@@ -44,21 +44,21 @@ let fakeBookmarksItems = mockData.Bookmarks.rows;
 storiesOf("Highlight List", module)
   .add("All valid properties", () =>
     <Container>
-      <Bookmarks length={HIGHLIGHTS_LENGTH} page="BOOKMARKS_STORYBOOK" sites={fakeBookmarksItems} />
+      <Bookmarks length={BOOKMARKS_LENGTH} page="BOOKMARKS_STORYBOOK" sites={fakeBookmarksItems} />
     </Container>
   )
   .add("Missing a row (eg because user has insufficient history)", () =>
     <Container>
-      <Bookmarks length={HIGHLIGHTS_LENGTH} page="BOOKMARKS_STORYBOOK" sites={fakeBookmarksItems.slice(2)} />
+      <Bookmarks length={BOOKMARKS_LENGTH} page="BOOKMARKS_STORYBOOK" sites={fakeBookmarksItems.slice(2)} />
     </Container>
   )
   .add("Missing an item (eg because user has insufficient history)", () =>
     <Container>
-      <Bookmarks length={HIGHLIGHTS_LENGTH} page="BOOKMARKS_STORYBOOK" sites={fakeBookmarksItems.slice(1)} />
+      <Bookmarks length={BOOKMARKS_LENGTH} page="BOOKMARKS_STORYBOOK" sites={fakeBookmarksItems.slice(1)} />
     </Container>
   )
   .add("Placeholder view (data still loading)", () =>
     <Container>
-      <Bookmarks placeholder={true} length={HIGHLIGHTS_LENGTH} page="BOOKMARKS_STORYBOOK" sites={fakeBookmarksItems} />
+      <Bookmarks placeholder={true} length={BOOKMARKS_LENGTH} page="BOOKMARKS_STORYBOOK" sites={fakeBookmarksItems} />
     </Container>
   );

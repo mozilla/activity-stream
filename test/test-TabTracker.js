@@ -546,7 +546,7 @@ exports.test_TabTracker_getUsersPreferences = function(assert) {
   const fixtures = [
     {
       prefs: [p1, p2, p3, p4],
-      expected: 1 | (1 << 1) | (1 << 2) | (1 << 3)
+      expected: 1 | (1 << 1) | (1 << 3) | (1 << 4)
     },
     {
       prefs: [p1, p2],

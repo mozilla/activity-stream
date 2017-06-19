@@ -3,7 +3,6 @@ const TestUtils = require("react-addons-test-utils");
 const ConnectedNewTabPage = require("components/NewTabPage/NewTabPage");
 const {NewTabPage} = ConnectedNewTabPage;
 const TopSites = require("components/TopSites/TopSites");
-const Spotlight = require("components/Spotlight/Spotlight");
 const Bookmarks = require("components/Bookmarks/Bookmarks");
 const VisitAgain = require("components/VisitAgain/VisitAgain");
 const PocketStories = require("components/PocketStories/PocketStories");
@@ -66,11 +65,6 @@ describe("NewTabPage", () => {
     assert.equal(topSites.props.sites, fakeProps.TopSites.rows);
   });
 
-  it("should render Spotlight components with correct data", () => {
-    const spotlightSites = TestUtils.findRenderedComponentWithType(instance, Spotlight);
-    assert.equal(spotlightSites.props.sites, fakeProps.Highlights.rows);
-  });
-
   it("should render Stories components with correct data", () => {
     const storiesComponent = TestUtils.findRenderedComponentWithType(instance, PocketStories);
     assert.equal(storiesComponent.props.stories, fakeProps.PocketStories.rows);
@@ -87,12 +81,9 @@ describe("NewTabPage", () => {
     Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
   });
 
-  it("should pass placeholder=true to Spotlight, Stories, TopSites and Bookmarks when isReady is false", () => {
+  it("should pass placeholder=true to Stories, TopSites and Bookmarks when isReady is false", () => {
     instance = renderWithProvider(
       <NewTabPage {...fakeProps} dispatch={() => {}} />);
-
-    let spotlight = TestUtils.findRenderedComponentWithType(instance, Spotlight);
-    assert.equal(spotlight.props.placeholder, true);
 
     let stories = TestUtils.findRenderedComponentWithType(instance, PocketStories);
     assert.equal(stories.props.placeholder, true);
@@ -107,13 +98,10 @@ describe("NewTabPage", () => {
     assert.equal(visitAgain.props.placeholder, true);
   });
 
-  it("should pass placeholder=false to Spotlight, Stories, TopSites and Bookmarks when isReady is true", () => {
+  it("should pass placeholder=false to Stories, TopSites and Bookmarks when isReady is true", () => {
     let propsWithIsReadyTrue = Object.assign({}, fakeProps, {isReady: true});
     instance = renderWithProvider(
       <NewTabPage {...propsWithIsReadyTrue} dispatch={() => {}} />);
-
-    let spotLight = TestUtils.findRenderedComponentWithType(instance, Spotlight);
-    assert.equal(spotLight.props.placeholder, false);
 
     let stories = TestUtils.findRenderedComponentWithType(instance, PocketStories);
     assert.equal(stories.props.placeholder, false);
@@ -191,20 +179,6 @@ describe("NewTabPage", () => {
       const deleteLink = TestUtils.scryRenderedDOMComponentsWithClass(item, "context-menu-link")[0];
       TestUtils.Simulate.click(deleteLink);
     });
-    it("should have the correct page, source, index for spotlight delete menu", done => {
-      setupConnected(a => {
-        if (a.type === "NOTIFY_USER_EVENT") {
-          assert.equal(a.data.page, "NEW_TAB");
-          assert.equal(a.data.source, "FEATURED");
-          assert.equal(a.data.action_position, 0);
-          assert.equal(a.data.metadata_source, "EmbedlyTest");
-          done();
-        }
-      });
-      const item = TestUtils.findRenderedComponentWithType(instance, Spotlight);
-      const deleteLink = TestUtils.scryRenderedDOMComponentsWithClass(item, "context-menu-link")[0];
-      TestUtils.Simulate.click(deleteLink);
-    });
   });
 
   describe("loader events", () => {
@@ -223,7 +197,6 @@ describe("NewTabPage", () => {
     it("should fire an event if data is ready", done => {
       renderWithProvider(<NewTabPage {...fakeProps} isReady={true} dispatch={a => {
         if (a.type === "NOTIFY_NEWTAB_STATS") {
-          assert.equal(a.data.highlightsSize, mockData.Highlights.rows.length);
           assert.equal(a.data.topsitesSize, mockData.TopSites.rows.length);
           assert.equal(a.data.topsitesTippytop, 0);
           assert.equal(a.data.topsitesScreenshot, 0);

@@ -185,12 +185,6 @@
       "value": true
     },
     {
-      "name": "showHighlights",
-      "title": "Show the Highlights section on the New Tab page",
-      "type": "bool",
-      "value": true
-    },
-    {
       "name": "showBookmarks",
       "title": "Show the Bookmarks section on the New Tab page",
       "type": "bool",
@@ -207,12 +201,6 @@
       "title": "Show the Visit Again section on the New Tab page",
       "type": "bool",
       "value": true
-    },
-    {
-      "name": "collapseHighlights",
-      "title": "Collapse the Highlights on the New Tab page leaving only section title visible",
-      "type": "bool",
-      "value": false
     },
     {
       "name": "collapseTopSites",
