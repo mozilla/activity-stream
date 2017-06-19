@@ -96,6 +96,21 @@ exports.test_fetch_links_parses_HTML_once = function*(assert) {
   assert.equal(parseCallCount, 1, "we did not parse the same link again");
 };
 
+exports.test_force_fetch_items = function*(assert) {
+  gPageScraper._asyncSaveMetadata = link => {
+    mockPreviewProvider.processAndInsertMetadata(link, "Local");
+  };
+  let link = [{url: "https://www.foo.com"}];
+
+  // attempt to parse and save a page and make sure we parsed once
+  yield gPageScraper.asyncFetchLinks(link);
+  assert.equal(parseCallCount, 1, "we parsed the HTML once");
+
+  // Force fetch links bypass `asyncLinkExist` check.
+  yield gPageScraper.asyncFetchLinks(link, "eventType", true);
+  assert.equal(parseCallCount, 2, "we added the same link again because forceFetch is true");
+};
+
 exports.test_fetch_links_locally_and_save_them = function*(assert) {
   // we don't care about checking if the link should be saved - we want to save it
   gPageScraper._asyncSaveMetadata = link => {
