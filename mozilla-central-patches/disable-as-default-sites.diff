@@ -1,0 +1,18 @@
+diff --git a/testing/profiles/prefs_general.js b/testing/profiles/prefs_general.js
+index c9a402c7f197..fe42e9fedad3 100644
+--- a/testing/profiles/prefs_general.js
++++ b/testing/profiles/prefs_general.js
+@@ -291,2 +291,5 @@ user_pref("browser.aboutHomeSnippets.updateUrl", "nonexistent://test");
+ 
++// Use an empty list of sites to avoid fetching
++user_pref("browser.newtabpage.activity-stream.default.sites", "");
++
+ // Don't fetch directory tiles data from real servers
+diff --git a/testing/talos/talos/config.py b/testing/talos/talos/config.py
+index 04d1a27298d6..c84df65032be 100644
+--- a/testing/talos/talos/config.py
++++ b/testing/talos/talos/config.py
+@@ -94,2 +94,3 @@ DEFAULTS = dict(
+         'take_over_this_computer': True,
++        'browser.newtabpage.activity-stream.default.sites': '',
+         'browser.newtabpage.directory.source':
