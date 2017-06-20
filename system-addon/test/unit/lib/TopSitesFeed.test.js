@@ -1,12 +1,15 @@
 "use strict";
-const {TopSitesFeed, UPDATE_TIME, TOP_SITES_SHOWMORE_LENGTH, DEFAULT_TOP_SITES} = require("lib/TopSitesFeed.jsm");
-const {GlobalOverrider} = require("test/unit/utils");
+const injector = require("inject!lib/TopSitesFeed.jsm");
+const {UPDATE_TIME, TOP_SITES_SHOWMORE_LENGTH} = require("lib/TopSitesFeed.jsm");
+const {FakePrefs, GlobalOverrider} = require("test/unit/utils");
 const action = {meta: {fromTarget: {}}};
 const {actionTypes: at} = require("common/Actions.jsm");
 const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({url: `site${i}.com`}));
 const FAKE_SCREENSHOT = "data123";
 
 describe("Top Sites Feed", () => {
+  let TopSitesFeed;
+  let DEFAULT_TOP_SITES;
   let feed;
   let globals;
   let sandbox;
@@ -18,6 +21,8 @@ describe("Top Sites Feed", () => {
     sandbox = globals.sandbox;
     globals.set("NewTabUtils", {activityStreamLinks: {getTopSites: sandbox.spy(() => Promise.resolve(links))}});
     globals.set("PreviewProvider", {getThumbnail: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))});
+    FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
+    ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({"lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs}}));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
     links = FAKE_LINKS;
@@ -29,6 +34,7 @@ describe("Top Sites Feed", () => {
   });
 
   it("should have default sites with .isDefault = true", () => {
+    assert.ok(DEFAULT_TOP_SITES.length);
     DEFAULT_TOP_SITES.forEach(link => assert.propertyVal(link, "isDefault", true));
   });
 

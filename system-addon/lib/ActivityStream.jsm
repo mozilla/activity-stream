@@ -33,6 +33,11 @@ XPCOMUtils.defineLazyModuleGetter(this, "TopSitesFeed",
   "resource://activity-stream/lib/TopSitesFeed.jsm");
 
 const PREFS_CONFIG = [
+  {
+    name: "default.sites",
+    title: "Comma-separated list of default top sites to fill in behind visited sites",
+    value: "https://www.facebook.com/,https://www.youtube.com/,https://www.amazon.com/,https://www.yahoo.com/,https://www.ebay.com/,https://twitter.com/"
+  },
   // When you add a feed pref here:
   // 1. The pref should be prefixed with "feeds."
   // 2. The init property should be a function that instantiates your Feed

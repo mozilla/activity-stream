@@ -5,20 +5,27 @@
 
 const {utils: Cu} = Components;
 const {actionTypes: at, actionCreators: ac} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 
 Cu.import("resource://gre/modules/NewTabUtils.jsm");
 Cu.import("resource:///modules/PreviewProvider.jsm");
 
 const TOP_SITES_SHOWMORE_LENGTH = 12;
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
-const DEFAULT_TOP_SITES = [
-  {"url": "https://www.facebook.com/"},
-  {"url": "https://www.youtube.com/"},
-  {"url": "http://www.amazon.com/"},
-  {"url": "https://www.yahoo.com/"},
-  {"url": "http://www.ebay.com"},
-  {"url": "https://twitter.com/"}
-].map(row => Object.assign(row, {isDefault: true}));
+const DEFAULT_TOP_SITES = [];
+
+// Add default sites if any based on the pref
+try {
+  let sites = new Prefs().get("default.sites").split(",");
+  sites.filter(url => url).forEach(url => {
+    DEFAULT_TOP_SITES.push({
+      isDefault: true,
+      url
+    });
+  });
+} catch (e) {
+  // Use no defaults if something went wrong
+}
 
 this.TopSitesFeed = class TopSitesFeed {
   constructor() {
