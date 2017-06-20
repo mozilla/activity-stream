@@ -25,11 +25,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "Bookmarks",
 XPCOMUtils.defineLazyModuleGetter(this, "NetUtil",
                                   "resource://gre/modules/NetUtil.jsm");
 
-XPCOMUtils.defineLazyGetter(this, "gPrincipal", () => {
-  let uri = Services.io.newURI("about:newtab", null, null);
-  return Services.scriptSecurityManager.getNoAppCodebasePrincipal(uri);
-});
-
 const {TOP_SITES_DEFAULT_LENGTH, LINKS_QUERY_LIMIT} = require("../common/constants");
 
 const REV_HOST_BLACKLIST = [
@@ -148,7 +143,8 @@ let LinkChecker = {
       return false;
     }
     try {
-      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(gPrincipal, aURI, this.flags);
+      let systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(systemPrincipal, aURI, this.flags);
       return true;
     } catch (e) {
       // We got a weird URI or one that would inherit the caller's principal.
@@ -746,6 +742,53 @@ Links.prototype = {
 
     let result = yield this.executePlacesQuery(sqlQuery, {params: {type: Bookmarks.TYPE_BOOKMARK}});
     return result[0][0];
+  }),
+
+  /**
+   * Gets bookmarks, sorted in descending order by edit date, by default limited to 3 items.
+   *
+   * @returns {Promise} Returns a promise with the most recent bookmarks.
+   */
+  getBookmarks: Task.async(function*(options = {limit: 3}) {
+    let {limit} = options;
+
+    const columns = [
+      "bookmarkDateCreated",
+      "bookmarkGuid",
+      "bookmarkId",
+      "bookmarkTitle",
+      "frecency",
+      "guid",
+      "type",
+      "lastModified",
+      "lastVisitDate",
+      "title",
+      "url",
+      "visitCount"
+    ];
+
+    let sqlQuery = `SELECT p.url as url,
+                           p.guid as guid,
+                           p.title as title,
+                           p.frecency as frecency,
+                           p.visit_count as visitCount,
+                           p.last_visit_date / 1000 as lastVisitDate,
+                           b.id as bookmarkId,
+                           "bookmark" as type,
+                           b.guid as bookmarkGuid,
+                           b.title as bookmarkTitle,
+                           b.lastModified / 1000 as lastModified,
+                           b.dateAdded / 1000 as bookmarkDateCreated
+                    FROM moz_bookmarks b, moz_places p
+                    WHERE type = :type
+                    AND b.fk = p.id
+                    AND p.last_visit_date IS NOT NULL
+                    ORDER BY b.lastModified DESC
+                    LIMIT ${limit}`;
+
+    let links = yield this.executePlacesQuery(sqlQuery, {columns, params: {type: Bookmarks.TYPE_BOOKMARK}});
+    links = yield this._addFavicons(links);
+    return this._processLinks(links);
   }),
 
   /**

@@ -2,7 +2,7 @@
 
 const testLinks = [{url: "foo.com"}, {url: "bar.com"}];
 const testTopSites = [{url: "example1.com"}, {url: "example2.com"}];
-const fetchNewMetadata = () => (Promise.resolve());
+const testRecentBookmarks = [{url: "bookmark1.com"}, {url: "bookmark2.com"}, {url: "bookmark3.com"}];
 const fetchNewMetadataLocally = () => (Promise.resolve());
 const pinnedLinks = {
   links: [],
@@ -13,7 +13,8 @@ const pinnedLinks = {
 const PlacesProvider = {
   links: {
     getRecentlyVisited: sinon.spy(() => Promise.resolve(testLinks)),
-    getTopFrecentSites: sinon.spy(() => Promise.resolve(testTopSites))
+    getTopFrecentSites: sinon.spy(() => Promise.resolve(testTopSites)),
+    getBookmarks: sinon.spy(() => Promise.resolve(testRecentBookmarks))
   }
 };
 
@@ -23,10 +24,8 @@ describe("MetadataFeed", () => {
   beforeEach(() => {
     MetadataFeed = require("inject!addon/Feeds/MetadataFeed")({"addon/PlacesProvider": {PlacesProvider}});
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
-    instance = new MetadataFeed({fetchNewMetadata, fetchNewMetadataLocally, pinnedLinks});
-    instance.store = {getState: () => ({Experiments: {values: {metadataNoService: false, metadataLocalRefresh: false}}})};
+    instance = new MetadataFeed({fetchNewMetadataLocally, pinnedLinks});
     instance.refresh = sinon.spy();
-    sinon.spy(instance.options, "fetchNewMetadata");
     sinon.spy(instance.options, "fetchNewMetadataLocally");
   });
   it("should create a MetadataFeed", () => {
@@ -53,22 +52,17 @@ describe("MetadataFeed", () => {
       return instance.getInitialMetadata().then(() => {
         assert.called(PlacesProvider.links.getTopFrecentSites);
         assert.called(PlacesProvider.links.getRecentlyVisited);
-        assert.calledThrice(instance.refresh);
-        assert.equal(instance.urlsToFetch.length, 6);
+        assert.called(PlacesProvider.links.getBookmarks);
+        assert.callCount(instance.refresh, 4);
+        // FrecentSites + RecentlyVisited + Bookmarks + 2 Pinned sites.
+        assert.equal(instance.urlsToFetch.length, 9);
       });
     });
   });
   describe("#getData", () => {
-    it("should run sites through fetchNewMetadata", () => instance.getData().then(() => (
-        assert.calledOnce(instance.options.fetchNewMetadata)))
+    it("should run sites through fetchNewMetadataLocally", () => instance.getData().then(() => (
+        assert.calledOnce(instance.options.fetchNewMetadataLocally)))
     );
-    it("should run sites through fetchNewMetadataLocally if experiment pref is on", () => {
-      instance.store = {getState: () => ({Experiments: {values: {metadataNoService: true, metadataLocalRefresh: false}}})};
-      return instance.getData().then(() => {
-        assert.notCalled(instance.options.fetchNewMetadata);
-        assert.calledOnce(instance.options.fetchNewMetadataLocally);
-      });
-    });
     it("should resolve with an action, but no data", () => (
       instance.getData().then(action => {
         assert.isObject(action);
@@ -122,13 +116,6 @@ describe("MetadataFeed", () => {
       instance.onAction({}, {type: "RECEIVE_PLACES_CHANGES", data: {url: "example.com/6"}});
       assert.calledOnce(instance.refresh);
       assert.calledWith(instance.refresh, "metadata was needed for these links");
-    });
-    it("should call getInitialMetadata on RECEIVE_PLACES_CHANGES if we are in the refresh experiment and enough time has expired", () => {
-      instance.store = {getState: () => ({Experiments: {values: {metadataNoService: false, metadataLocalRefresh: true}}})};
-      instance.getInitialMetadata = sinon.spy();
-      instance.lastRefreshed = Date.now() - MetadataFeed.UPDATE_TIME - 5000;
-      instance.onAction({}, {type: "RECEIVE_PLACES_CHANGES", data: {url: "example.com/"}});
-      assert.calledWith(instance.getInitialMetadata, "periodically refreshing metadata");
     });
   });
 });

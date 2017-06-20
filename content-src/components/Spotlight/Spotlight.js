@@ -4,11 +4,11 @@ const {justDispatch} = require("common/selectors/selectors");
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const {prettyUrl} = require("lib/utils");
 const {actions} = require("common/action-manager");
+const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSection");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {HighlightContext, PlaceholderHighlightContext} = require("components/HighlightContext/HighlightContext");
 const classNames = require("classnames");
-const {FormattedMessage} = require("react-intl");
 
 const SpotlightItem = React.createClass({
   getInitialState() {
@@ -26,16 +26,18 @@ const SpotlightItem = React.createClass({
   render() {
     const site = this.props;
     const image = site.bestImage;
-    const imageUrl = image.url;
     const description = site.description || site.url;
-    const isPortrait = image.height > image.width;
+    let isPortrait;
+    let imageUrl;
 
     // We may want to reconsider this as part of
     // https://github.com/mozilla/activity-stream/issues/1473
     const label = prettyUrl(site);
     const style = {};
 
-    if (imageUrl) {
+    if (image) {
+      imageUrl = image.url;
+      isPortrait = image.height > image.width;
       style.backgroundImage = `url(${imageUrl})`;
     } else if (site.screenshot) {
       style.backgroundImage = `url(${site.screenshot})`;
@@ -120,11 +122,9 @@ const Spotlight = React.createClass({
     return {
       length: 3,
       page: "NEW_TAB",
-      placeholder: false
+      placeholder: false,
+      prefs: {}
     };
-  },
-  getInitialState() {
-    return {isAnimating: false};
   },
   onClickFactory(index, site) {
     return () => {
@@ -155,26 +155,14 @@ const Spotlight = React.createClass({
           prefs={this.props.prefs} />
       );
   },
-  handleHeaderClick() {
-    this.setState({isAnimating: true});
-    this.props.dispatch(actions.NotifyPrefChange("collapseHighlights", !this.props.prefs.collapseHighlights));
-  },
-  handleTransitionEnd() {
-    this.setState({isAnimating: false});
-  },
   render() {
-    const isCollapsed = this.props.prefs.collapseHighlights;
-    const isAnimating = this.state.isAnimating;
-
-    return (<section className="spotlight">
-      <h3 className="section-title" ref="section-title" onClick={this.handleHeaderClick}>
-        <FormattedMessage id="header_highlights" />
-        <span className={classNames("icon", {"icon-arrowhead-down": !isCollapsed, "icon-arrowhead-up": isCollapsed})} />
-      </h3>
-      <ul ref="spotlight-list" className={classNames("spotlight-list", {"collapsed": isCollapsed, "animating": isAnimating})} onTransitionEnd={this.handleTransitionEnd}>
-        {this.props.placeholder ? renderPlaceholderList() : this.renderSiteList()}
-      </ul>
-    </section>);
+    return (
+      <CollapsibleSection className="spotlight" titleId="header_highlights" prefName="collapseHighlights" prefs={this.props.prefs}>
+        <ul ref="spotlight-list" className="spotlight-list">
+          {this.props.placeholder ? renderPlaceholderList() : this.renderSiteList()}
+        </ul>
+      </CollapsibleSection>
+    );
   }
 });
 

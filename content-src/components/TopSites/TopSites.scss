@@ -1,8 +1,13 @@
 .top-sites {
   position: relative;
 
+  .section-title {
+    margin-bottom: $section-title-bottom-margin - 7;
+  }
+
   .tiles-wrapper {
     margin-inline-end: -20px;
+    padding-top: 7px;
 
     @media (min-width: $break-point) {
       width: ($tile-width + $tile-gutter) * 6;
@@ -13,6 +18,7 @@
   .tile-outer {
     @include link-menu-button;
     border-radius: $border-radius;
+    cursor: pointer;
     display: inline-block;
     height: $tile-width;
     position: relative;
@@ -24,6 +30,28 @@
     &:hover {
       box-shadow: 0 0 0 5px $faintest-black;
       transition: box-shadow 150ms;
+
+      .tile {
+        z-index: 1;
+      }
+    }
+
+    &.dragover {
+      background: $faintest-black;
+      box-shadow: 0 0 0 5px $faintest-black;
+
+      .tile {
+        display: none;
+      }
+    }
+
+    .drop-zone {
+      height: $tile-width;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: $tile-width;
+      z-index: 0;
     }
 
     .tile {
@@ -40,6 +68,7 @@
       text-decoration: none;
       width: $tile-width;
       color: inherit;
+      z-index: 0;
 
       .site-title {
         font-size: 11px;
@@ -101,6 +130,8 @@
     // Only display a placeholder version (ie just outlines/shapes), for use
     // before sufficient data is available to display.
     &.placeholder {
+      cursor: default;
+
       .site-icon-wrapper {
         width: 32px;
         height: $tile-width;
@@ -211,6 +242,10 @@
   .edit-topsites-inner-wrapper {
     margin: 0;
     padding: 15px 30px;
+
+    .tile-outer:not(.placeholder) {
+      cursor: move;
+    }
   }
 
   button.icon-topsites {
@@ -223,6 +258,12 @@
     span {
       padding-left: 3px;
     }
+  }
+}
+
+.collapsed {
+  .edit-topsites-button {
+    display: none;
   }
 }
 

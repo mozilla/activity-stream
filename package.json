@@ -1,7 +1,7 @@
 {
   "name": "activity-streams",
   "description": "A rich visual history feed and a reimagined home page make it easier than ever to find exactly what you're looking for in Firefox.\n\nLearn more about this Test Pilot experiment at https://testpilot.firefox.com/.",
-  "version": "1.11.0",
+  "version": "1.12.1",
   "author": "Mozilla (https://mozilla.org/)",
   "bugs": {
     "url": "https://github.com/mozilla/activity-stream/issues"
@@ -152,13 +152,6 @@
       "hidden": true
     },
     {
-      "name": "metadata.endpoint",
-      "title": "Local Metadata Endpoint",
-      "type": "string",
-      "value": "https://embedly-proxy.services.mozilla.com/v2/metadata",
-      "hidden": true
-    },
-    {
       "name": "weightedHighlightsCoefficients",
       "title": "recommender weights",
       "description": "weightedHighlightsCoefficients",
@@ -189,11 +182,17 @@
       "name": "showPocket",
       "title": "Show the Trending Stories section by Pocket on the New Tab page",
       "type": "bool",
-      "value": false
+      "value": true
     },
     {
       "name": "showHighlights",
       "title": "Show the Highlights section on the New Tab page",
+      "type": "bool",
+      "value": true
+    },
+    {
+      "name": "showBookmarks",
+      "title": "Show the Bookmarks section on the New Tab page",
       "type": "bool",
       "value": true
     },
@@ -206,6 +205,24 @@
     {
       "name": "collapseHighlights",
       "title": "Collapse the Highlights on the New Tab page leaving only section title visible",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "collapseTopSites",
+      "title": "Collapse the Top Sites on the New Tab page leaving only section title visible",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "collapsePocket",
+      "title": "Collapse the Pocket on the New Tab page leaving only section title visible",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "collapseBookmarks",
+      "title": "Collapse the Bookmarks section on the New Tab page leaving only section title visible",
       "type": "bool",
       "value": false
     }
@@ -235,7 +252,14 @@
     "buildmc:webpack": "webpack --config webpack.system-addon.config.js",
     "buildmc:css": "node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content",
     "buildmc:locales": "pontoon-to-json --src locales --dest system-addon/data",
-    "buildmc:copy": "cpx \"system-addon/**/{,.}*\" ../mozilla-central/browser/extensions/activity-stream && rimraf \"../mozilla-central/browser/extensions/activity-stream/{,test/unit/}content-src\"",
+    "buildmc:copy": "cpx \"system-addon/**/{,.}*\" ../mozilla-central/browser/extensions/activity-stream",
+    "buildmc:rmcontentsrc": "rimraf \"../mozilla-central/browser/extensions/activity-stream/{,test/unit/}content-src\"",
+    "packagemc": "npm-run-all packagemc:*",
+    "prepackagemc": "npm run clean",
+    "packagemc:build": "npm run buildmc:webpack && npm run buildmc:css && npm run buildmc:locales",
+    "packagemc:copy": "cpx \"system-addon/**\" dist/system-addon",
+    "packagemc:process": "node ./bin/process-system-addon-for-package.js dist/system-addon",
+    "packagemc:xpi": "(cd dist/system-addon && zip -r ../activity-stream-system-addon.xpi * )",
     "startmc": "npm-run-all --parallel startmc:*",
     "prestartmc": "npm run prebuildmc",
     "startmc:copy": "npm run buildmc:copy -- -w",

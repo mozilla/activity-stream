@@ -13,6 +13,8 @@ const constants = {
     "CLOSE_EDIT_TOPSITES",
     "CLOSE_NEWTAB_PREFS",
     "DELETE",
+    "DRAG_TOPSITE",
+    "DROP_TOPSITE",
     "EDIT_TOPSITE",
     "LOAD_MORE",
     "LOAD_MORE_SCROLL",
@@ -38,7 +40,8 @@ const constants = {
     "FEATURED",
     "RECOMMENDED",
     "ACTIVITY_FEED",
-    "NEW_TAB"
+    "NEW_TAB",
+    "BOOKMARKS"
   ])
 };
 

@@ -68,7 +68,7 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
         break;
       case am.type("NOTIFY_PIN_TOPSITE"):
         state.rows = prevState.rows.map(site => {
-          if (site.url === action.data.site.url) {
+          if (site && site.url === action.data.site.url) {
             return Object.assign({}, site, {isPinned: true, pinIndex: action.data.index});
           }
           return site;
@@ -76,7 +76,7 @@ module.exports = function setRowsOrError(requestType, responseType, querySize) {
         break;
       case am.type("NOTIFY_UNPIN_TOPSITE"):
         state.rows = prevState.rows.map(site => {
-          if (site.url === action.data.site.url) {
+          if (site && site.url === action.data.site.url) {
             return Object.assign({}, site, {isPinned: false, pinIndex: null});
           }
           return site;

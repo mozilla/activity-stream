@@ -139,12 +139,14 @@ const DebugPage = React.createClass({
             {this.state.component === "TopSites" &&
               <TopSites
                 sites={this.props.raw[this.state.dataSource].rows}
-                length={this.props.raw[this.state.dataSource].rows.length} />
+                length={this.props.raw[this.state.dataSource].rows.length}
+                prefs={{}} />
             }
             {this.state.component === "Highlights" &&
               <Spotlight
                 sites={assignImageAndBackgroundColor(this.props.raw[this.state.dataSource].rows)}
-                length={this.props.raw[this.state.dataSource].rows.length} />
+                length={this.props.raw[this.state.dataSource].rows.length}
+                prefs={{}} />
             }
           </div>
         </section>

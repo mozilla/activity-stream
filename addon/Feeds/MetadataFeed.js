@@ -38,6 +38,12 @@ module.exports = class MetadataFeed extends Feed {
       links.forEach(link => this.urlsToFetch.push(link.url));
       this.refresh(reason);
     })
+    // Then, get the recent bookmarks metadata.
+    .then(() => PlacesProvider.links.getBookmarks())
+    .then(links => {
+      links.forEach(link => this.urlsToFetch.push(link.url));
+      this.refresh(reason);
+    })
     // Finally, get initial highlights metadata. This should be done last because
     // it takes the longest, processing 100+ urls.
     .then(() => PlacesProvider.links.getRecentlyVisited())
@@ -54,31 +60,18 @@ module.exports = class MetadataFeed extends Feed {
    * metadata for those links, and clear the list of links which are missing metadata
    */
   getData() {
-    const experiments = this.store.getState().Experiments.values;
-
     const links = this.urlsToFetch.map(url => ({"url": url}));
     this.urlsToFetch = [];
 
-    // Make no requests for metadata
-    if (experiments.metadataNoService || experiments.metadataLocalRefresh) {
-      return this.options.fetchNewMetadataLocally(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
-    }
-
-    return this.options.fetchNewMetadata(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
+    return this.options.fetchNewMetadataLocally(links, "METADATA_FEED_REQUEST").then(() => (am.actions.Response("METADATA_UPDATED")));
   }
   onAction(state, action) {
-    const experiments = this.store.getState().Experiments.values;
-
     switch (action.type) {
       case am.type("APP_INIT"):
         this.getInitialMetadata("app was initializing");
         break;
       case am.type("RECEIVE_PLACES_CHANGES"):
         this.urlsToFetch.push(action.data.url);
-
-        if (experiments.metadataLocalRefresh && ((Date.now() - this.lastRefreshed) >= UPDATE_TIME)) {
-          this.getInitialMetadata("periodically refreshing metadata");
-        }
 
         if (this.urlsToFetch.length > MAX_NUM_LINKS) {
           this.refresh("metadata was needed for these links");

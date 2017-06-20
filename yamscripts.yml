@@ -50,8 +50,17 @@ scripts:
     webpack: webpack --config webpack.system-addon.config.js
     css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content
     locales: pontoon-to-json --src locales --dest system-addon/data
-    # Copy over all of the system-addon directory except content-src
-    copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream && rimraf "../mozilla-central/browser/extensions/activity-stream/{,test/unit/}content-src"
+    # Copy over all of the system-addon directory
+    copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream
+    rmcontentsrc: rimraf "../mozilla-central/browser/extensions/activity-stream/{,test/unit/}content-src"
+
+# packagemc: Build stand-alone system add-on xpi
+  packagemc:
+    pre: =>clean
+    build: =>buildmc:webpack && =>buildmc:css && =>buildmc:locales
+    copy: cpx "system-addon/**" dist/system-addon
+    process: node ./bin/process-system-addon-for-package.js dist/system-addon
+    xpi: (cd dist/system-addon && zip -r ../activity-stream-system-addon.xpi * )
 
 # startmc: Start developing the bootstrapped add-on
   startmc:

@@ -1,0 +1,14 @@
+.bookmarks-placeholder {
+  @include item-shadow;
+  color: $light-grey;
+  font-size: 14px;
+  background: $white;
+  display: inline-block;
+  margin-inline-end: $base-gutter;
+  border-radius: $border-radius;
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+
+  padding: 14px;
+}

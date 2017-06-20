@@ -5,6 +5,8 @@ const eventConstants = require("./event-constants");
 const am = new ActionManager([
   "APP_INIT",
   "APP_UNLOAD",
+  "BOOKMARKS_REQUEST",
+  "BOOKMARKS_RESPONSE",
   "EXPERIMENTS_RESPONSE",
   "HIGHLIGHTS_AWAITING_METADATA",
   "HIGHLIGHTS_LINKS_REQUEST",
@@ -57,6 +59,7 @@ const am = new ActionManager([
   "TOP_FRECENT_SITES_REQUEST",
   "TOP_FRECENT_SITES_RESPONSE",
   "TOPSITES_ADD_REQUEST",
+  "TOPSITES_DROP_REQUEST",
   "TOPSITES_EDIT_REQUEST",
   "POCKET_STORIES_REQUEST",
   "POCKET_STORIES_RESPONSE",
@@ -263,6 +266,10 @@ function RequestEditTopsite(url, title, index) {
   return RequestExpect("TOPSITES_EDIT_REQUEST", "TOP_FRECENT_SITES_RESPONSE", {data: {url, title, index}});
 }
 
+function RequestDropTopsite(url, title, index) {
+  return RequestExpect("TOPSITES_DROP_REQUEST", "TOP_FRECENT_SITES_RESPONSE", {data: {url, title, index}});
+}
+
 am.defineActions({
   Notify,
   NotifyBlockURL,
@@ -290,6 +297,7 @@ am.defineActions({
   NotifyUpdateSearchString,
   PlacesStatsUpdate,
   RequestAddTopsite,
+  RequestDropTopsite,
   RequestEditTopsite,
   RequestExpect,
   RequestHighlightsLinks,

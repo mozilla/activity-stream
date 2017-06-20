@@ -3,6 +3,7 @@ const {connect} = require("react-redux");
 const {justDispatch} = require("common/selectors/selectors");
 const {actions} = require("common/action-manager");
 const classNames = require("classnames");
+const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSection");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {PlaceholderSiteIcon, SiteIcon} = require("components/SiteIcon/SiteIcon");
@@ -14,11 +15,22 @@ const {FIRST_RUN_TYPE} = require("lib/first-run-data");
 const FULL_WIDTH = 96;
 const TIPPY_TOP_WIDTH = 80;
 
+// Helper to determine whether the drop zone should allow a drop. We only allow
+// dropping top sites for now.
+function _allowDrop(e, index) {
+  let draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
+  if (!isNaN(draggedIndex) && draggedIndex !== index) {
+    return true;
+  }
+  return false;
+}
+
 const TopSitesItem = React.createClass({
   getInitialState() {
     return {
       showContextMenu: false,
-      activeTile: null
+      activeTile: null,
+      dragOver: false
     };
   },
   getDefaultProps() {
@@ -78,6 +90,59 @@ const TopSitesItem = React.createClass({
       this.userEvent("PIN");
     }
   },
+  handleDragStart(e) {
+    this.isDragging = true;
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/topsite-index", this.props.index);
+    e.dataTransfer.setData("text/topsite-url", this.props.url);
+    e.dataTransfer.setData("text/topsite-title", this.props.pinTitle || prettyUrl(this.props));
+    if (this.state.showContextMenu) {
+      this.setState({showContextMenu: false});
+    }
+    this.userEvent("DRAG_TOPSITE");
+  },
+  handleDragEnd(e) {
+    setTimeout(() => {
+      // This is to prevent browser from following to the link url when a topsite
+      // is dragged onto itself.
+      this.isDragging = false;
+    }, 1000);
+  },
+  handleDragOver(e) {
+    if (_allowDrop(e, this.props.index)) {
+      // prevent default to allow drop
+      e.preventDefault();
+    }
+  },
+  handleDragEnter(e) {
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: true});
+    }
+  },
+  handleDragLeave(e) {
+    if (_allowDrop(e, this.props.index)) {
+      this.setState({dragOver: false});
+    }
+  },
+  handleDrop(e) {
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: false});
+      this.props.dispatch(actions.RequestDropTopsite(
+        e.dataTransfer.getData("text/topsite-url"),
+        e.dataTransfer.getData("text/topsite-title"),
+        this.props.index));
+      this.userEvent("DROP_TOPSITE");
+    }
+  },
+  handleClick(e) {
+    if (this.isDragging) {
+      // Cancel the link click event if it was being dragged.
+      e.preventDefault();
+    }
+    this.props.onClick(this.props.index, e);
+  },
   render() {
     const site = this.props;
     const index = site.index;
@@ -95,8 +160,12 @@ const TopSitesItem = React.createClass({
 
     const label = site.pinTitle || prettyUrl(site);
 
-    return (<div className={classNames("tile-outer", {active: isActive})} key={site.guid || site.cache_key || index}>
-      <a onClick={ev => this.props.onClick(index, ev)} className="tile" href={site.url} ref="topSiteLink">
+    return (<div
+        draggable="true"
+        onDragStart={this.handleDragStart}
+        onDragEnd={this.handleDragEnd}
+        className={classNames("tile-outer", {active: isActive, dragover: this.state.dragOver})} key={site.guid || site.cache_key || index}>
+      <a onClick={this.handleClick} className="tile" href={site.url} ref="topSiteLink">
         {screenshot && <div className="inner-border" />}
         {screenshot && <div ref="screenshot" className="screenshot" style={{backgroundImage: `url(${screenshot})`}} />}
         <SiteIcon
@@ -111,6 +180,12 @@ const TopSitesItem = React.createClass({
           <div className="label">{label}</div>
         </div>
       </a>
+      <div
+        className="drop-zone"
+        onDragOver={this.handleDragOver}
+        onDragEnter={this.handleDragEnter}
+        onDragLeave={this.handleDragLeave}
+        onDrop={this.handleDrop} />
       {!this.props.editMode &&
         <div>
           <div className="hover-menu">
@@ -178,9 +253,48 @@ TopSitesItem.propTypes = {
 };
 
 const PlaceholderTopSitesItem = React.createClass({
+  getInitialState() { return {dragOver: false}; },
+  handleDragOver(e) {
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+    }
+  },
+  handleDragEnter(e) {
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: true});
+    }
+  },
+  handleDragLeave(e) {
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: false});
+    }
+  },
+  handleDrop(e) {
+    if (_allowDrop(e, this.props.index)) {
+      e.preventDefault();
+      this.setState({dragOver: false});
+      this.props.dispatch(actions.RequestDropTopsite(
+        e.dataTransfer.getData("text/topsite-url"),
+        e.dataTransfer.getData("text/topsite-title"),
+        this.props.index));
+      this.props.dispatch(actions.NotifyEvent({
+        event: "DROP_TOPSITE",
+        page: "NEW_TAB",
+        source: "TOP_SITES",
+        action_position: this.props.index
+      }));
+    }
+  },
   render() {
     return (
-      <div className="tile-outer placeholder">
+      <div
+        className={classNames("tile-outer placeholder", {dragover: this.state.dragOver})}
+        onDragOver={this.handleDragOver}
+        onDragEnter={this.handleDragEnter}
+        onDragLeave={this.handleDragLeave}
+        onDrop={this.handleDrop}>
         <a className="tile">
           <PlaceholderSiteIcon />
         </a>
@@ -195,7 +309,8 @@ const TopSites = React.createClass({
       length: TOP_SITES_DEFAULT_LENGTH,
       // This is for event reporting
       page: "NEW_TAB",
-      allowEdit: true
+      allowEdit: true,
+      prefs: {}
     };
   },
   onClickFactory(index, site) {
@@ -211,35 +326,40 @@ const TopSites = React.createClass({
     };
   },
   render() {
-    const sites = this.props.sites.slice(0, this.props.length);
-    return (<section className="top-sites">
-      <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
-      <div className="tiles-wrapper">
-        {sites.map((site, i) => {
-          // If the site is an empty slot (due to pinned sites and not not enough history)
-          // or this is a placeholder, we want the widget to render empty
-          if (!site || this.props.placeholder) {
-            return (
-              <PlaceholderTopSitesItem key={i} />
-            );
-          }
+    let sites = this.props.sites.slice(0, this.props.length);
+    while (this.props.length > sites.length) {
+      // Append null sites if necessary so we get placeholders for all slots.
+      sites.push(null);
+    }
+    return (
+      <CollapsibleSection className="top-sites" titleId="header_top_sites" prefName="collapseTopSites" prefs={this.props.prefs}>
+        <div className="tiles-wrapper">
+          {sites.map((site, i) => {
+            // If the site is an empty slot (due to pinned sites and not not enough history)
+            // or this is a placeholder, we want the widget to render empty
+            if (!site || this.props.placeholder) {
+              return (
+                <PlaceholderTopSitesItem key={i} index={i} dispatch={this.props.dispatch} />
+              );
+            }
 
-          return (<TopSitesItem
-            index={i}
-            key={site.guid || site.cache_key || i}
-            page={this.props.page}
-            onClick={this.onClickFactory(i, site)}
-            showNewStyle={this.props.showNewStyle}
-            dispatch={this.props.dispatch}
-            intl={this.props.intl}
-            {...site} />
-          );
-        })}
-      </div>
-      {!this.props.placeholder && this.props.allowEdit &&
-        <EditTopSitesIntl {...this.props} />
-      }
-    </section>);
+            return (<TopSitesItem
+              index={i}
+              key={site.guid || site.cache_key || i}
+              page={this.props.page}
+              onClick={this.onClickFactory(i, site)}
+              showNewStyle={this.props.showNewStyle}
+              dispatch={this.props.dispatch}
+              intl={this.props.intl}
+              {...site} />
+            );
+          })}
+        </div>
+        {!this.props.placeholder && this.props.allowEdit &&
+          <EditTopSitesIntl {...this.props} />
+        }
+      </CollapsibleSection>
+    );
   }
 });
 
@@ -261,7 +381,8 @@ TopSites.propTypes = {
   placeholder: React.PropTypes.bool,
 
   showNewStyle: React.PropTypes.bool,
-  allowEdit: React.PropTypes.bool
+  allowEdit: React.PropTypes.bool,
+  prefs: React.PropTypes.object
 };
 
 const EditTopSites = React.createClass({
@@ -308,7 +429,11 @@ const EditTopSites = React.createClass({
     this.setState({showEditForm: false, editIndex: -1});
   },
   render() {
-    const sites = this.props.sites.slice(0, this.props.length);
+    let sites = this.props.sites.slice(0, this.props.length);
+    while (this.props.length > sites.length) {
+      // Append null sites if necessary so we get placeholders for all slots.
+      sites.push(null);
+    }
     return (
       <div className="edit-topsites-wrapper">
         <div className="edit-topsites-button">
@@ -331,7 +456,7 @@ const EditTopSites = React.createClass({
                     // we want the widget to render empty
                     if (!site) {
                       return (
-                        <PlaceholderTopSitesItem key={i} />
+                        <PlaceholderTopSitesItem key={i} index={i} dispatch={this.props.dispatch} />
                       );
                     }
 
@@ -425,7 +550,8 @@ const TopSiteForm = React.createClass({
       slotIndex: 0,
       editMode: false, // by default we are in "Add New Top Site" mode
       dispatch: () => {},
-      onClose: () => {}
+      onClose: () => {},
+      prefs: {}
     };
   },
   getInitialState() {

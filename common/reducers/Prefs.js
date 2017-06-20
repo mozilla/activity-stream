@@ -23,6 +23,7 @@ module.exports = function Prefs(prevState = INITIAL_STATE, action) {
       }
       return state;
     case am.type("PREF_CHANGED_RESPONSE"):
+      state.prefs = Object.assign({}, prevState.prefs);
       state.prefs[action.data.name] = action.data.value;
       return state;
     default:

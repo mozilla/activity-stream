@@ -4,11 +4,13 @@ const ConnectedNewTabPage = require("components/NewTabPage/NewTabPage");
 const {NewTabPage} = ConnectedNewTabPage;
 const TopSites = require("components/TopSites/TopSites");
 const Spotlight = require("components/Spotlight/Spotlight");
+const Bookmarks = require("components/Bookmarks/Bookmarks");
 const PocketStories = require("components/PocketStories/PocketStories");
 const {mockData, renderWithProvider} = require("test/test-utils");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const {connect} = require("react-redux");
 const {injectIntl} = require("react-intl");
+const {BOOKMARKS_DISPLAYED_LENGTH} = require("common/constants");
 
 const fakeProps = Object.assign({}, {intl: {formatMessage: () => {}}}, mockData);
 
@@ -79,7 +81,7 @@ describe("NewTabPage", () => {
     Object.keys(NewTabPage.propTypes).forEach(key => assert.property(inner.props, key));
   });
 
-  it("should pass placeholder=true to Spotlight, Stories, and TopSites when isReady is false", () => {
+  it("should pass placeholder=true to Spotlight, Stories, TopSites and Bookmarks when isReady is false", () => {
     instance = renderWithProvider(
       <NewTabPage {...fakeProps} dispatch={() => {}} />);
 
@@ -91,9 +93,12 @@ describe("NewTabPage", () => {
 
     let topSites = TestUtils.findRenderedComponentWithType(instance, TopSites);
     assert.equal(topSites.props.placeholder, true);
+
+    let bookmarks = TestUtils.findRenderedComponentWithType(instance, Bookmarks);
+    assert.equal(bookmarks.props.placeholder, true);
   });
 
-  it("should pass placeholder=false to Spotlight, Stories, and TopSites when isReady is true", () => {
+  it("should pass placeholder=false to Spotlight, Stories, TopSites and Bookmarks when isReady is true", () => {
     let propsWithIsReadyTrue = Object.assign({}, fakeProps, {isReady: true});
     instance = renderWithProvider(
       <NewTabPage {...propsWithIsReadyTrue} dispatch={() => {}} />);
@@ -106,6 +111,33 @@ describe("NewTabPage", () => {
 
     let topSites = TestUtils.findRenderedComponentWithType(instance, TopSites);
     assert.equal(topSites.props.placeholder, false);
+
+    let bookmarks = TestUtils.findRenderedComponentWithType(instance, Bookmarks);
+    assert.equal(bookmarks.props.placeholder, false);
+  });
+
+  it("should show the Bookmarks section when showBookmarks is true", () => {
+    let props = Object.assign({}, fakeProps, {isReady: true, Prefs: {prefs: {showBookmarks: true}}});
+    instance = renderWithProvider(<NewTabPage {...props} dispatch={() => {}} />);
+
+    const children = TestUtils.scryRenderedComponentsWithType(instance, Bookmarks);
+    assert.equal(children.length, 1);
+  });
+
+  it("should hide the Bookmarks section when showBookmarks is false", () => {
+    let props = Object.assign({}, fakeProps, {isReady: true, Prefs: {prefs: {showBookmarks: false}}});
+    instance = renderWithProvider(<NewTabPage {...props} dispatch={() => {}} />);
+
+    const children = TestUtils.scryRenderedComponentsWithType(instance, Bookmarks);
+    assert.equal(children.length, 0);
+  });
+
+  it("should correct length prop to Bookmarks component", () => {
+    let propsWithIsReadyTrue = Object.assign({}, fakeProps, {isReady: true});
+    instance = renderWithProvider(<NewTabPage {...propsWithIsReadyTrue} dispatch={() => {}} />);
+
+    const comp = TestUtils.findRenderedComponentWithType(instance, Bookmarks);
+    assert.equal(comp.props.length, BOOKMARKS_DISPLAYED_LENGTH);
   });
 
   describe("delete events", () => {

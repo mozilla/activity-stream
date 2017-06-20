@@ -256,7 +256,7 @@
   },
   "metadataNoService": {
     "name": "Metadata with No Remote Service",
-    "active": true,
+    "active": false,
     "description": "Disable all calls to the metadata service",
     "control": {
       "value": false,
@@ -271,7 +271,7 @@
   },
   "metadataLocalRefresh": {
     "name": "Metadata with local parsing and periodic refresh",
-    "active": true,
+    "active": false,
     "description": "Process metadata locally and periodically refresh it",
     "control": {
       "value": false,
@@ -301,7 +301,7 @@
   },
   "pocketHotFix": {
     "name": "Trending stories provided by Pocket",
-    "active": true,
+    "active": false,
     "description": "Display recommendations of trending stories by Pocket",
     "control": {
       "value": false,

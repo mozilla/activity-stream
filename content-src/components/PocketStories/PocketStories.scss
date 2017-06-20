@@ -1,4 +1,17 @@
 .pocket-stories {
+  position: relative;
+
+  .pocket-links {
+    offset-inline-end: 0;
+    position: absolute;
+    top: 0;
+  }
+
+  &.collapsed {
+    .pocket-links {
+      display: none;
+    }
+  }
 
   .section-title-logo {
     float: right;
@@ -18,9 +31,10 @@
       opacity: 0.5;
       font-family: Helvetica, Arial, sans-serif;
       text-transform: lowercase;
-      margin-left: 16px;
       font-weight: 200;
       font-size: 15px;
+      line-height: 18px;
+      vertical-align: top;
       color: $section-title-color;
     }
 
@@ -37,7 +51,7 @@
     .pocket-info div {
       visibility: hidden;
       opacity: 0;
-      transition: visibility 1s, opacity 0.7s ease-in-out;
+      transition: visibility 0.5s, opacity 0.5s ease-in-out;
     }
 
     .pocket-info:hover div {
@@ -81,6 +95,7 @@
   .pocket-read-more {
     font-size: 13px;
     color: $topic-grey;
+    min-width: 800px;
 
     ul {
       display: inline;
@@ -120,8 +135,9 @@
     background-position-y: 2px;
   }
 
-  ul.spotlight-list {
-    height: 320px;
+  li.spotlight-item {
+    // Overridden to bring the pocket topics closer to the tiles
+    margin-bottom: 16px;
   }
 
   .hc-label {
@@ -129,4 +145,3 @@
   }
 
 }
-

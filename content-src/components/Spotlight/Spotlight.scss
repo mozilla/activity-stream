@@ -1,40 +1,28 @@
-.spotlight {
+.spotlight,
+.recent-bookmarks {
   margin-inline-end: -$base-gutter;
 
   .section-title {
-    cursor: pointer;
-
     // Compensate for margin on spotlight-items.  Once spotlight-list can be a
     // a CSS grid (firefox 51); we should be able to ditch this.
     //
     // XXX figure out if similar hack is needed for bottom of spotlight-list
     margin: 0 0 7px;
-
-    .icon {
-      margin: -5px 0 0 8px;
-    }
   }
 
-  ul.spotlight-list {
+  ul.spotlight-list,
+  ul.bookmarks-list {
     align-items: flex-start;
     display: flex;
     flex-wrap: wrap; // avoid horizontal overflow of items
     list-style: none;
     margin: 0;
     padding: 0;
+  }
 
-    // max-height needs to be set to a value larger than it will ever reasonably get.
-    // We then transition on max-height, since we can't transition height to/from auto.
-    max-height: 975px;
-    transition: max-height 0.5s cubic-bezier(0.07, 0.95, 0, 1);
-
-    &.collapsed {
-      max-height: 0;
-      overflow: hidden;
-    }
-
-    &.animating {
-      overflow: hidden;
+  &.collapsible-section {
+    .section-body {
+      max-height: 975px;
     }
   }
 }

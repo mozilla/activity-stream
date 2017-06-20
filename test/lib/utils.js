@@ -97,7 +97,7 @@ function getTestActivityStream(options = {}) {
     init() {},
     uninit() {},
     _parseAndSave() {},
-    asyncFetchLinks() {}
+    asyncFetchLinks() { return Promise.resolve([]); }
   };
 
   const mockPageWorker = {
@@ -112,6 +112,8 @@ function getTestActivityStream(options = {}) {
   const testTelemetrySender = new TelemetrySender();
   let mockApp = new ActivityStreams(mockMetadataStore, testTabTracker, testTelemetrySender, options);
   mockApp.init();
+  mockApp._feeds.feeds[3]._fetchStories = () => Promise.resolve([]);
+  mockApp._feeds.feeds[4]._fetchTopics = () => Promise.resolve([]);
   return mockApp;
 }
 

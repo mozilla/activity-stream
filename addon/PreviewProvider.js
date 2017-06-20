@@ -2,16 +2,12 @@
 
 const {Cu} = require("chrome");
 const simplePrefs = require("sdk/simple-prefs");
-const self = require("sdk/self");
 const {TippyTopProvider} = require("addon/TippyTopProvider");
 const {getColor} = require("addon/ColorAnalyzerProvider");
-const {absPerf} = require("common/AbsPerf");
 const {consolidateBackgroundColors, consolidateFavicons, extractMetadataFaviconFields} = require("addon/lib/utils");
 
 const {BACKGROUND_FADE, MIN_HIGHRES_ICON_SIZE} = require("../common/constants");
 const ENABLED_PREF = "previews.enabled";
-const ENDPOINT = "metadata.endpoint";
-const VERSION_SUFFIX = `?addon_version=${self.version}`;
 const ALLOWED_PREFS = new Set([ENABLED_PREF]);
 
 const ALLOWED_QUERY_PARAMS = new Set(["id", "p", "q", "query", "s", "search", "sitesearch", "v"]);
@@ -290,93 +286,6 @@ PreviewProvider.prototype = {
   }),
 
   /**
-   * Request links from metadata service, optionally filtering out known links
-   */
-  asyncSaveLinks: Task.async(function*(links, event) {
-    let processedLinks = this._processLinks(links);
-    let dbLinks = yield this._asyncFindItemsInDB(processedLinks);
-    let existingLinks = new Set();
-    dbLinks.forEach(item => existingLinks.add(item.cache_key));
-    let linksList = this._uniqueLinks(processedLinks)
-      // If a request is in progress, don't re-request it
-      .filter(link => !this._alreadyRequested.has(link.cache_key))
-      // If we already have the link in the database don't request it again
-      .filter(link => !existingLinks.has(link.cache_key));
-
-    linksList.forEach(link => this._alreadyRequested.add(link.cache_key));
-
-    let requestQueue = [];
-    let promises = [];
-    while (linksList.length !== 0) {
-      // we have some new links we need to fetch the metadata for, put them on the queue
-      requestQueue.push(linksList.splice(0, this.options.proxyMaxLinks));
-    }
-    // for each bundle of 25 links, create a new request to metadata service
-    requestQueue.forEach(requestBundle => {
-      promises.push(this._asyncFetchAndStore(requestBundle, event));
-    });
-    yield Promise.all(promises).catch(err => Cu.reportError(err));
-  }),
-
-  /**
-   * Makes the necessary requests to metadata service to get data for each link
-   */
-  _asyncGetLinkData: Task.async(function*(newLinks) {
-    try {
-      let response = yield fetch(this._metadataEndpoint, {
-        method: "POST",
-        body: JSON.stringify({urls: newLinks}),
-        headers: {"Content-Type": "application/json"}
-      });
-      return response;
-    } catch (err) {
-      Cu.reportError(err);
-      throw err;
-    }
-  }),
-
-  /**
-   * Extracts data from metadata service and saves in the MetadataStore
-   * Also, collect metrics on how many requests were made, how much time each
-   * request took to complete, and their success or failure status
-   */
-  _asyncFetchAndStore: Task.async(function*(newLinks, event) {
-    if (!this.enabled) {
-      return;
-    }
-    // extract only the sanitized link urls to send to metadata service
-    let linkURLs = newLinks.map(link => link.sanitized_url);
-    this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestSentCount", newLinks.length);
-    try {
-      // Make network call when enabled and record how long the network call took
-      const startNetworkCall = absPerf.now();
-      let response = yield this._asyncGetLinkData(linkURLs);
-      const endNetworkCall = absPerf.now();
-      this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestTime", endNetworkCall - startNetworkCall);
-
-      if (response.ok) {
-        let responseJson = yield response.json();
-        this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestReceivedCount", Object.keys(responseJson.urls).length);
-        this._tabTracker.handlePerformanceEvent(event, "embedlyProxyRequestSucess", 1);
-        let linksToInsert = newLinks.filter(link => responseJson.urls[link.sanitized_url])
-          .map(link => Object.assign({}, link, responseJson.urls[link.sanitized_url]));
-
-        // add favicon_height and favicon_width to the favicon and store it in db
-        yield this._asyncAddFaviconHeightAndWidth(linksToInsert);
-        this.insertMetadata(linksToInsert, "MetadataService");
-      } else {
-        this._tabTracker.handlePerformanceEvent(event, "embedlyProxyFailure", 1);
-      }
-    } catch (err) {
-      Cu.reportError(err);
-      throw err;
-    }
-    // regardess of if the link has been cached or if the request has failed, we
-    // must still remove the in-flight links from the list
-    newLinks.forEach(link => this._alreadyRequested.delete(link.cache_key));
-  }),
-
-  /**
    * Do some post-processing on the links before inserting them into the metadata
    * DB and adding them to the metadata cache
    */
@@ -453,9 +362,6 @@ PreviewProvider.prototype = {
    * Initialize Preview Provider
    */
   init() {
-    this._alreadyRequested = new Set();
-    const endpoint = simplePrefs.prefs[ENDPOINT];
-    this._metadataEndpoint = `${endpoint}${VERSION_SUFFIX}`;
     this.enabled = simplePrefs.prefs[ENABLED_PREF];
     simplePrefs.on("", this._onPrefChange);
   },
@@ -465,8 +371,6 @@ PreviewProvider.prototype = {
    */
   uninit() {
     simplePrefs.off("", this._onPrefChange);
-    this._alreadyRequested = new Set();
-    this._metadataEndpoint = null;
   }
 };
 

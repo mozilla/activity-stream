@@ -7,12 +7,16 @@ module.exports = {
     "rows": faker.createRows({images: HIGHLIGHTS_LENGTH}),
     "error": false
   },
+  "Bookmarks": {
+    "rows": faker.createRows({images: HIGHLIGHTS_LENGTH, type: "bookmark"}),
+    "error": false
+  },
   "PocketStories": {
     "rows": faker.createRows({length: POCKET_STORIES_LENGTH}),
     "error": false
   },
   "PocketTopics": {
-    "rows": faker.createRows({length: POCKET_TOPICS_LENGTH}),
+    "rows": faker.createRows({length: POCKET_TOPICS_LENGTH}).map((t, i) => Object.assign({}, t, {name: `name_${i}`})),
     "error": false
   },
   "TopSites": {
@@ -44,6 +48,7 @@ module.exports = {
       "showSearch": true,
       "showTopSites": true,
       "showHighlights": true,
+      "showBookmarks": true,
       "showPocket": true
     },
     "error": false
