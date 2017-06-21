@@ -65,7 +65,7 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   site = {url: "https://mozilla.org"};
   assert.deepEqual({
     url: site.url,
-    favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
+    favicon_url: "resource://activity-stream-shield-study/data/content/favicons/images/mozilla-org.png",
     favicon_height: IMAGE_SIZE,
     favicon_width: IMAGE_SIZE,
     background_color: "#fff",
@@ -76,7 +76,7 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   site = {url: "https://github.com"};
   assert.deepEqual({
     url: site.url,
-    favicon_url: "resource://activity-streams/data/content/favicons/images/github-com.png",
+    favicon_url: "resource://activity-stream-shield-study/data/content/favicons/images/github-com.png",
     favicon_height: IMAGE_SIZE,
     favicon_width: IMAGE_SIZE,
     background_color: "#eee",
@@ -87,7 +87,7 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   site = {url: "http://www.github.com"};
   assert.deepEqual({
     url: site.url,
-    favicon_url: "resource://activity-streams/data/content/favicons/images/github-com.png",
+    favicon_url: "resource://activity-stream-shield-study/data/content/favicons/images/github-com.png",
     favicon_height: IMAGE_SIZE,
     favicon_width: IMAGE_SIZE,
     background_color: "#eee",
@@ -98,7 +98,7 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   site = {url: "http://example.com"};
   assert.deepEqual({
     url: site.url,
-    favicon_url: "resource://activity-streams/data/content/favicons/images/example-com.png",
+    favicon_url: "resource://activity-stream-shield-study/data/content/favicons/images/example-com.png",
     favicon_height: IMAGE_SIZE,
     favicon_width: IMAGE_SIZE,
     background_color: "#ddd",
@@ -109,7 +109,7 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   site = {url: "https://mozilla.org/an/arbitrary/path"};
   assert.deepEqual({
     url: site.url,
-    favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
+    favicon_url: "resource://activity-stream-shield-study/data/content/favicons/images/mozilla-org.png",
     favicon_height: IMAGE_SIZE,
     favicon_width: IMAGE_SIZE,
     background_color: "#fff",
@@ -120,7 +120,7 @@ exports["test TippyTopProvider processSite"] = function(assert) {
   site = {url: "https://mozilla.org?anarbitrary=querystring"};
   assert.deepEqual({
     url: site.url,
-    favicon_url: "resource://activity-streams/data/content/favicons/images/mozilla-org.png",
+    favicon_url: "resource://activity-stream-shield-study/data/content/favicons/images/mozilla-org.png",
     favicon_height: IMAGE_SIZE,
     favicon_width: IMAGE_SIZE,
     background_color: "#fff",

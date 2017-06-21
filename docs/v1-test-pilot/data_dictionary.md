@@ -142,7 +142,8 @@ The Activity Stream addon sends various types of pings to the backend (HTTPS POS
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
 | `user_prefs` | [optional] The encoded integer of user's preferences. | :one: & :four:
 | `tiles` | [Required] An array of tile stats object. e.g. `[{"id": 1000, "pos": 1}, {"id": 1001, "pos": 2}]` | :one:
-
+| `shield_variant` | [Optional] The current variant a user is in for the SHIELD study | :one:
+| `tp_version` | [Optional] The current version of the test pilot Activity Stream that shield users are running at time of study release. | :one:
 
 **Where:**
 
