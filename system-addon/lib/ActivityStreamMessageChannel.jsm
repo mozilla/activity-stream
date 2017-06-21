@@ -108,11 +108,11 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
   send(action) {
     const targetId = action.meta && action.meta.toTarget;
     const target = this.getTargetById(targetId);
-    if (!target) {
-      // The target is no longer around - maybe the user closed the page
-      return;
+    try {
+      target.sendAsyncMessage(this.outgoingMessageName, action);
+    } catch (e) {
+      // The target page is closed/closing by the user or test, so just ignore.
     }
-    target.sendAsyncMessage(this.outgoingMessageName, action);
   }
 
   /**
