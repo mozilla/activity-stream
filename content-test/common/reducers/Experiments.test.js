@@ -25,7 +25,7 @@ describe("Experiments reducer", () => {
   it("should ignore events other than EXPERIMENTS_RESPONSE", () => {
     const prevState = {error: false, data: {}};
     const state = Experiments(prevState, {
-      type: "SPOTLIGHT_RESPONSE",
+      type: "BOOKMARKS_RESPONSE",
       error: true,
       data: new Error("Whatever")
     });

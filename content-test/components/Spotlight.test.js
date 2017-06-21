@@ -1,5 +1,5 @@
 const ConnectedSpotlight = require("components/Spotlight/Spotlight");
-const {PlaceholderSpotlightItem, Spotlight, SpotlightItem} = ConnectedSpotlight;
+const {PlaceholderSpotlightItem, SpotlightItem} = ConnectedSpotlight;
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
@@ -8,50 +8,11 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const TestUtils = require("react-addons-test-utils");
 const {shallow} = require("enzyme");
-const {mockData, mountWithProvider, faker, renderWithProvider} = require("test/test-utils");
-const fakeSpotlightItems = mockData.Highlights.rows;
+const {mountWithProvider, faker, renderWithProvider} = require("test/test-utils");
 const fakeSiteWithImage = faker.createSite();
 const {prettyUrl} = require("lib/utils");
 
 fakeSiteWithImage.bestImage = fakeSiteWithImage.images[0];
-
-describe("Spotlight", () => {
-  let instance;
-  let el;
-
-  describe("valid sites", () => {
-    beforeEach(() => {
-      instance = renderWithProvider(<Spotlight sites={fakeSpotlightItems} prefs={{}} />);
-      el = ReactDOM.findDOMNode(instance);
-    });
-
-    it("should create the element", () => {
-      assert.ok(el);
-    });
-    it("should render a SpotlightItem for each item", () => {
-      const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
-      assert.equal(children.length, 3);
-    });
-  });
-
-  describe("actions", () => {
-    it("should fire a click event when an item is clicked", done => {
-      function dispatch(a) {
-        if (a.type === "NOTIFY_USER_EVENT") {
-          assert.equal(a.data.event, "CLICK");
-          assert.equal(a.data.page, "NEW_TAB");
-          assert.equal(a.data.source, "FEATURED");
-          assert.equal(a.data.action_position, 0);
-          assert.equal(a.data.metadata_source, "EmbedlyTest");
-          assert.equal(a.data.highlight_type, fakeSpotlightItems[0].type);
-          done();
-        }
-      }
-      instance = renderWithProvider(<Spotlight page={"NEW_TAB"} dispatch={dispatch} sites={fakeSpotlightItems} prefs={{}} />);
-      TestUtils.Simulate.click(TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem)[0].refs.link);
-    });
-  });
-});
 
 describe("SpotlightItem", () => {
   const fakeSite = fakeSiteWithImage;

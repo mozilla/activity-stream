@@ -1,10 +1,7 @@
 const React = require("react");
-const {connect} = require("react-redux");
-const {justDispatch} = require("common/selectors/selectors");
 const getHighlightContextFromSite = require("common/selectors/getHighlightContextFromSite");
 const {prettyUrl} = require("lib/utils");
 const {actions} = require("common/action-manager");
-const CollapsibleSection = require("components/CollapsibleSection/CollapsibleSection");
 const LinkMenu = require("components/LinkMenu/LinkMenu");
 const LinkMenuButton = require("components/LinkMenuButton/LinkMenuButton");
 const {HighlightContext, PlaceholderHighlightContext} = require("components/HighlightContext/HighlightContext");
@@ -117,64 +114,6 @@ function renderPlaceholderList() {
   return placeholders;
 }
 
-const Spotlight = React.createClass({
-  getDefaultProps() {
-    return {
-      length: 3,
-      page: "NEW_TAB",
-      placeholder: false,
-      prefs: {}
-    };
-  },
-  onClickFactory(index, site) {
-    return () => {
-      let payload = {
-        event: "CLICK",
-        page: this.props.page,
-        source: "FEATURED",
-        action_position: index,
-        highlight_type: site.type,
-        metadata_source: site.metadata_source
-      };
-      this.props.dispatch(actions.NotifyEvent(payload));
-    };
-  },
-  // XXX factor out into a stateless component
-  renderSiteList() {
-    const sites = this.props.sites.slice(0, this.props.length);
-
-    return sites.map((site, i) =>
-        <SpotlightItem
-          index={i}
-          key={site.guid || site.cache_key || i}
-          page={this.props.page}
-          source="FEATURED"
-          onClick={this.onClickFactory(i, site)}
-          dispatch={this.props.dispatch}
-          {...site}
-          prefs={this.props.prefs} />
-      );
-  },
-  render() {
-    return (
-      <CollapsibleSection className="spotlight" titleId="header_highlights" prefName="collapseHighlights" prefs={this.props.prefs}>
-        <ul ref="spotlight-list" className="spotlight-list">
-          {this.props.placeholder ? renderPlaceholderList() : this.renderSiteList()}
-        </ul>
-      </CollapsibleSection>
-    );
-  }
-});
-
-Spotlight.propTypes = {
-  page: React.PropTypes.string.isRequired,
-  sites: React.PropTypes.array.isRequired,
-  length: React.PropTypes.number,
-  prefs: React.PropTypes.object
-};
-
-module.exports = connect(justDispatch)(Spotlight);
-module.exports.Spotlight = Spotlight;
 module.exports.SpotlightItem = SpotlightItem;
 module.exports.PlaceholderSpotlightItem = PlaceholderSpotlightItem;
 module.exports.renderPlaceholderList = renderPlaceholderList;

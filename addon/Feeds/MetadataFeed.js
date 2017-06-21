@@ -3,6 +3,7 @@ const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
 const am = require("common/action-manager");
+const {VISITAGAIN_LENGTH} = require("common/constants");
 const MAX_NUM_LINKS = 5;
 const UPDATE_TIME = 24 * 60 * 60 * 1000; // Update once per day
 
@@ -44,13 +45,10 @@ module.exports = class MetadataFeed extends Feed {
       links.forEach(link => this.urlsToFetch.push(link.url));
       this.refresh(reason);
     })
-    // Finally, get initial highlights metadata. This should be done last because
-    // it takes the longest, processing 100+ urls.
-    .then(() => PlacesProvider.links.getRecentlyVisited())
+    // Finally, get initial visit again metadata.
+    .then(() => PlacesProvider.links.getRecentlyVisited({limit: VISITAGAIN_LENGTH}))
     .then(links => {
-      // We need to cap this otherwise on some average profile we'll attempt to
-      // fetch hundreds of links and hog the mainthread for a long time
-      links.slice(0, 50).forEach(link => this.urlsToFetch.push(link.url));
+      links.forEach(link => this.urlsToFetch.push(link.url));
       this.refresh(reason);
     });
   }
