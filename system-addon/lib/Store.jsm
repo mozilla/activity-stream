@@ -7,7 +7,7 @@ const {utils: Cu} = Components;
 
 const {ActivityStreamMessageChannel} = Cu.import("resource://activity-stream/lib/ActivityStreamMessageChannel.jsm", {});
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
-const {reducers} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
+const {parentReducers} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 const {redux} = Cu.import("resource://activity-stream/vendor/Redux.jsm", {});
 
 /**
@@ -34,7 +34,7 @@ this.Store = class Store {
     this._prefs = new Prefs();
     this._messageChannel = new ActivityStreamMessageChannel({dispatch: this.dispatch});
     this._store = redux.createStore(
-      redux.combineReducers(reducers),
+      redux.combineReducers(parentReducers),
       redux.applyMiddleware(this._middleware, this._messageChannel.middleware)
     );
   }

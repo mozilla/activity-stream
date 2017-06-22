@@ -1,5 +1,5 @@
-const {reducers, INITIAL_STATE, insertPinned} = require("common/Reducers.jsm");
-const {TopSites, App, Prefs, Dialog} = reducers;
+const {childReducers, INITIAL_STATE, insertPinned} = require("common/Reducers.jsm");
+const {TopSites, App, Prefs, Dialog, DidFirstRender} = childReducers;
 const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("Reducers", () => {
@@ -111,7 +111,6 @@ describe("Reducers", () => {
       const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
       const action = {type: at.PINNED_SITES_UPDATED, data: [{url: "baz.com", title: "baz"}]};
       const nextState = TopSites(oldState, action);
-      console.log(nextState.rows);
       assert.deepEqual(nextState.rows, [{url: "baz.com", title: "baz", isPinned: true, pinIndex: 0, pinTitle: "baz"}, {url: "foo.com"}, {url: "bar.com"}]);
     });
   });
@@ -180,6 +179,7 @@ describe("Reducers", () => {
       assert.deepEqual(INITIAL_STATE.Dialog, nextState);
     });
   });
+
   describe("#insertPinned", () => {
     let links;
 
@@ -243,6 +243,15 @@ describe("Reducers", () => {
       const pinned = [links[7]];
       const result = insertPinned(links, pinned);
       assert.equal(links.length, result.length);
+    });
+  });
+
+  describe("DidFirstRender", () => {
+    it("should return INITIAL_STATE by default", () => {
+      assert.equal(INITIAL_STATE.DidFirstRender, DidFirstRender(undefined, {type: "non_existent"}));
+    });
+    it("should set DidFirstRender to true if a FIRST_REACT_RENDER action was dispatched", () => {
+      assert.isTrue(DidFirstRender(INITIAL_STATE.Dialog, {type: at.FIRST_REACT_RENDER}));
     });
   });
 });

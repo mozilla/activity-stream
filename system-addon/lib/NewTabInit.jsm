@@ -15,7 +15,7 @@ this.NewTabInit = class NewTabInit {
   onAction(action) {
     let newAction;
     switch (action.type) {
-      case at.NEW_TAB_LOAD:
+      case at.FIRST_REACT_RENDER:
         newAction = {type: at.NEW_TAB_INITIAL_STATE, data: this.store.getState()};
         this.store.dispatch(ac.SendToContent(newAction, action.meta.fromTarget));
         break;

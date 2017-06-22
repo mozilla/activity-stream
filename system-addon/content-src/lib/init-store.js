@@ -28,7 +28,6 @@ function mergeStateReducer(mainReducer) {
     if (action.type === MERGE_STORE_ACTION) {
       return Object.assign({}, prevState, action.data);
     }
-
     return mainReducer(prevState, action);
   };
 }
@@ -37,9 +36,11 @@ function mergeStateReducer(mainReducer) {
  * messageMiddleware - Middleware that looks for SentToMain type actions, and sends them if necessary
  */
 const messageMiddleware = store => next => action => {
+  // Send any "SendToMain" type actions to the main process.
   if (au.isSendToMain(action)) {
     sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
   }
+
   next(action);
 };
 
@@ -49,15 +50,26 @@ const messageMiddleware = store => next => action => {
  * @param  {object} reducers An object containing Redux reducers
  * @return {object}          A redux store
  */
-module.exports = function initStore(reducers) {
+module.exports = function initStore(reducers, initialState) {
   const store = createStore(
     mergeStateReducer(combineReducers(reducers)),
+    initialState,
     applyMiddleware(messageMiddleware)
   );
 
-  addMessageListener(INCOMING_MESSAGE_NAME, msg => {
-    store.dispatch(msg.data);
-  });
+  if (global.addMessageListener) {
+    const unsubscribe = store.subscribe(() => {
+      if (store.getState().DidFirstRender) {
+        // Add incoming listener after react has rendered for the first time.
+        // This is to ensure our first render has the exact same state as the
+        // prerendered HTML
+        global.addMessageListener(INCOMING_MESSAGE_NAME, msg => {
+          store.dispatch(msg.data);
+        });
+        unsubscribe();
+      }
+    });
+  }
 
   return store;
 };
