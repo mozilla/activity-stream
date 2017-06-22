@@ -45,10 +45,7 @@ describe("<LinkMenu>", () => {
       it(`should fire a ${option.action} action for ${option.id}`, () => {
         option.onClick();
         assert.calledTwice(dispatch);
-        assert.propertyVal(dispatch.firstCall.args[0], "type", option.action);
-        if (option.data) {
-          assert.propertyVal(dispatch.firstCall.args[0], "data", option.data);
-        }
+        assert.equal(dispatch.firstCall.args[0], option.action);
       });
       it(`should fire a UserEvent action for ${option.id}`, () => {
         option.onClick();
