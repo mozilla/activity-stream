@@ -5,13 +5,10 @@
 
 const {utils: Cu} = Components;
 
-const {redux} = Cu.import("resource://activity-stream/vendor/Redux.jsm", {});
-const {reducers} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 const {ActivityStreamMessageChannel} = Cu.import("resource://activity-stream/lib/ActivityStreamMessageChannel.jsm", {});
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-XPCOMUtils.defineLazyModuleGetter(this, "Prefs",
-  "resource://activity-stream/lib/ActivityStreamPrefs.jsm");
+const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
+const {reducers} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
+const {redux} = Cu.import("resource://activity-stream/vendor/Redux.jsm", {});
 
 /**
  * Store - This has a similar structure to a redux store, but includes some extra

@@ -6,19 +6,21 @@
 "use strict";
 
 const {interfaces: Ci, utils: Cu} = Components;
-const {actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
-const {perfService} = Cu.import("resource://activity-stream/common/PerfService.jsm", {});
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+const {actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+
+XPCOMUtils.defineLazyModuleGetter(this, "ClientID",
+  "resource://gre/modules/ClientID.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "perfService",
+  "resource://activity-stream/common/PerfService.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "TelemetrySender",
+  "resource://activity-stream/lib/TelemetrySender.jsm");
 
 XPCOMUtils.defineLazyServiceGetter(this, "gUUIDGenerator",
   "@mozilla.org/uuid-generator;1",
   "nsIUUIDGenerator");
-XPCOMUtils.defineLazyModuleGetter(this, "ClientID",
-  "resource://gre/modules/ClientID.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "TelemetrySender",
-  "resource://activity-stream/lib/TelemetrySender.jsm");
 
 this.TelemetryFeed = class TelemetryFeed {
   constructor(options) {

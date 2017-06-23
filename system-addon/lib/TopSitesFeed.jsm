@@ -4,11 +4,15 @@
 "use strict";
 
 const {utils: Cu} = Components;
-const {actionTypes: at, actionCreators: ac} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 
-Cu.import("resource://gre/modules/NewTabUtils.jsm");
-Cu.import("resource:///modules/PreviewProvider.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
+  "resource://gre/modules/NewTabUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PreviewProvider",
+  "resource:///modules/PreviewProvider.jsm");
 
 const TOP_SITES_SHOWMORE_LENGTH = 12;
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes

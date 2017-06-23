@@ -5,20 +5,10 @@
 "use strict";
 
 const {utils: Cu} = Components;
+Cu.import("resource:///modules/AboutNewTab.jsm");
+Cu.import("resource://gre/modules/RemotePageManager.jsm");
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-const {
-  actionUtils: au,
-  actionCreators: ac,
-  actionTypes: at
-} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
-
-XPCOMUtils.defineLazyModuleGetter(this, "AboutNewTab",
-  "resource:///modules/AboutNewTab.jsm");
-
-XPCOMUtils.defineLazyModuleGetter(this, "RemotePages",
-  "resource://gre/modules/RemotePageManager.jsm");
+const {actionCreators: ac, actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 const ABOUT_NEW_TAB_URL = "about:newtab";
 

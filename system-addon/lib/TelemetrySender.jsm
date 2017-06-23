@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const {interfaces: Ci, utils: Cu} = Components;
-
 Cu.import("resource://gre/modules/Preferences.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.importGlobalProperties(["fetch"]);
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Console.jsm"); // eslint-disable-line no-console
+
+XPCOMUtils.defineLazyModuleGetter(this, "console",
+  "resource://gre/modules/Console.jsm");
 
 // This is intentionally a different pref-branch than the SDK-based add-on
 // used, to avoid extra weirdness for people who happen to have the SDK-based
