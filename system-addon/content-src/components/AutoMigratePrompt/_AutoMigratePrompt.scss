@@ -1,0 +1,30 @@
+.migrate-prompt {
+  text-align: center;
+  font-size: 14px;
+  padding-bottom: 10px;
+}
+
+.confirm {
+  padding: 10px 10px 0 10px;
+}
+
+.confirm button {
+  padding: 4px 10px;
+  margin-right: 20px;
+  background: $default-button-bg;
+  border: solid 1px $default-button-border;
+  border-radius: 5px;
+  color: $mid-light-grey;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 0 0 5px $faintest-black;
+    transition: box-shadow 150ms;
+  }
+
+  &.primary {
+    background: $blue-button-bg;
+    border: solid 1px $blue-button-border;
+    color: $white;
+  }
+}

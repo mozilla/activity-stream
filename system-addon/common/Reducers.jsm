@@ -25,6 +25,11 @@ const INITIAL_STATE = {
   Prefs: {
     initialized: false,
     values: {}
+  },
+  AutoMigrate: {
+    display: false,
+    stage: 0,
+    msg: ""
   }
 };
 
@@ -104,12 +109,42 @@ function Prefs(prevState = INITIAL_STATE.Prefs, action) {
       newValues = Object.assign({}, prevState.values);
       newValues[action.data.name] = action.data.value;
       return Object.assign({}, prevState, {values: newValues});
+  }
+}
+
+function AutoMigrate(prevState = INITIAL_STATE.AutoMigrate, action) {
+  switch (action.type) {
+    case at.AUTOMIGRATE_HIDE: {
+      return {
+        display: false,
+        stage: 0,
+        msg: ""
+      };
+    }
+    case at.AUTOMIGRATE_MIGRATED: {
+      if (!action.data && !action.data.msg) {
+        return prevState;
+      }
+      let {msg} = action.data;
+      return {
+        display: true,
+        stage: 0,
+        msg
+      };
+    }
+    case at.AUTOMIGRATE_IS_REVERTED: {
+      return {
+        display: true,
+        stage: 1,
+        msg: ""
+      };
+    }
     default:
       return prevState;
   }
 }
 
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites, App, Prefs};
+this.reducers = {App, AutoMigrate, Prefs, TopSites};
 
 this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE"];

@@ -14,6 +14,9 @@ XPCOMUtils.defineLazyModuleGetter(this, "DefaultPrefs",
   "resource://activity-stream/lib/ActivityStreamPrefs.jsm");
 
 // Feeds
+XPCOMUtils.defineLazyModuleGetter(this, "AutoMigrateFeed",
+  "resource://activity-stream/lib/AutoMigrateFeed.jsm");
+
 XPCOMUtils.defineLazyModuleGetter(this, "LocalizationFeed",
   "resource://activity-stream/lib/LocalizationFeed.jsm");
 
@@ -43,6 +46,12 @@ const PREFS_CONFIG = [
   // 2. The init property should be a function that instantiates your Feed
   // 3. You should use XPCOMUtils.defineLazyModuleGetter to import the Feed,
   //    so it isn't loaded until the feed is enabled.
+  {
+    name: "feeds.automigrate",
+    title: "Trigger message and actions if we auto-migrated user's data from other browser",
+    value: true,
+    init: () => new AutoMigrateFeed()
+  },
   {
     name: "feeds.localization",
     title: "Initialize strings and detect locale for Activity Stream",

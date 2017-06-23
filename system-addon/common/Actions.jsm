@@ -18,6 +18,12 @@ const globalImportContext = typeof Window === "undefined" ? BACKGROUND_PROCESS :
 this.globalImportContext = globalImportContext;
 
 const actionTypes = [
+  "AUTOMIGRATE_HIDE",
+  "AUTOMIGRATE_IS_REVERTED",
+  "AUTOMIGRATE_MANUAL_IMPORT",
+  "AUTOMIGRATE_MIGRATED",
+  "AUTOMIGRATE_MIGRATE_DONE",
+  "AUTOMIGRATE_UNDO_MIGRATION",
   "BLOCK_URL",
   "BOOKMARK_URL",
   "DELETE_BOOKMARK_BY_ID",
