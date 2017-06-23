@@ -18,9 +18,22 @@ this.Prefs = class Prefs extends Preferences {
   constructor(branch = ACTIVITY_STREAM_PREF_BRANCH) {
     super({branch});
     this._branchName = branch;
+    this._branchObservers = new Map();
   }
   get branchName() {
     return this._branchName;
+  }
+  ignoreBranch(listener) {
+    const observer = this._branchObservers.get(listener);
+    this._prefBranch.removeObserver(this._branchName, observer);
+    this._branchObservers.delete(listener);
+  }
+  observeBranch(listener) {
+    const observer = (subject, topic, pref) => {
+      listener.onPrefChanged(pref, this.get(pref));
+    };
+    this._prefBranch.addObserver("", observer);
+    this._branchObservers.set(listener, observer);
   }
 };
 
@@ -29,8 +42,8 @@ this.DefaultPrefs = class DefaultPrefs {
   /**
    * DefaultPrefs - A helper for setting and resetting default prefs for the add-on
    *
-   * @param  {Array} config An array of configuration objects with the following properties:
-   *         {string} .name The name of the pref
+   * @param  {Map} config A Map with {string} key of the pref name and {object}
+   *                      value with the following pref properties:
    *         {string} .title (optional) A description of the pref
    *         {bool|string|number} .value The default value for the pref
    * @param  {string} branch (optional) The pref branch (defaults to ACTIVITY_STREAM_PREF_BRANCH)
@@ -64,8 +77,8 @@ this.DefaultPrefs = class DefaultPrefs {
    * init - Set default prefs for all prefs in the config
    */
   init() {
-    for (const pref of this._config) {
-      this._setDefaultPref(pref.name, pref.value);
+    for (const pref of this._config.keys()) {
+      this._setDefaultPref(pref, this._config.get(pref).value);
     }
   }
 
@@ -73,8 +86,8 @@ this.DefaultPrefs = class DefaultPrefs {
    * reset - Resets all user-defined prefs for prefs in ._config to their defaults
    */
   reset() {
-    for (const pref of this._config) {
-      this.branch.clearUserPref(pref.name);
+    for (const name of this._config.keys()) {
+      this.branch.clearUserPref(name);
     }
   }
 };

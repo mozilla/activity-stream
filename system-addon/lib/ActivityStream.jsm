@@ -19,83 +19,75 @@ const {TopSitesFeed} = Cu.import("resource://activity-stream/lib/TopSitesFeed.js
 
 const REASON_ADDON_UNINSTALL = 6;
 
-const PREFS_CONFIG = [
-  {
-    name: "default.sites",
+const PREFS_CONFIG = new Map([
+  ["default.sites", {
     title: "Comma-separated list of default top sites to fill in behind visited sites",
     value: "https://www.facebook.com/,https://www.youtube.com/,https://www.amazon.com/,https://www.yahoo.com/,https://www.ebay.com/,https://twitter.com/"
-  },
-  // When you add a feed pref here:
-  // 1. The pref should be prefixed with "feeds."
-  // 2. The init property should be a function that instantiates your Feed
-  {
-    name: "feeds.localization",
-    title: "Initialize strings and detect locale for Activity Stream",
-    value: true,
-    init: () => new LocalizationFeed()
-  },
-  {
-    name: "feeds.newtabinit",
-    title: "Sends a copy of the state to each new tab that is opened",
-    value: true,
-    init: () => new NewTabInit()
-  },
-  {
-    name: "feeds.places",
-    title: "Listens for and relays various Places-related events",
-    value: true,
-    init: () => new PlacesFeed()
-  },
-  {
-    name: "feeds.prefs",
-    title: "Preferences",
-    value: true,
-    init: () => new PrefsFeed(PREFS_CONFIG.map(pref => pref.name))
-  },
-  {
-    name: "feeds.telemetry",
-    title: "Relays telemetry-related actions to TelemetrySender",
-    value: true,
-    init: () => new TelemetryFeed()
-  },
-  {
-    name: "feeds.topsites",
-    title: "Queries places and gets metadata for Top Sites section",
-    value: true,
-    init: () => new TopSitesFeed()
-  },
-  {
-    name: "showSearch",
+  }],
+  ["showSearch", {
     title: "Show the Search bar on the New Tab page",
+    value: true
+  }],
+  ["showTopSites", {
+    title: "Show the Top Sites section on the New Tab page",
+    value: true
+  }],
+  ["telemetry", {
+    title: "Enable system error and usage data collection",
+    value: false
+  }],
+  ["telemetry.log", {
+    title: "Log telemetry events in the console",
+    value: false
+  }],
+  ["telemetry.ping.endpoint", {
+    title: "Telemetry server endpoint",
+    value: "https://tiles.services.mozilla.com/v3/links/activity-stream"
+  }]
+]);
+
+const FEEDS_CONFIG = new Map();
+for (const {name, factory, title, value} of [
+  {
+    name: "localization",
+    factory: () => new LocalizationFeed(),
+    title: "Initialize strings and detect locale for Activity Stream",
     value: true
   },
   {
-    name: "showTopSites",
-    title: "Show the Top Sites section on the New Tab page",
+    name: "newtabinit",
+    factory: () => new NewTabInit(),
+    title: "Sends a copy of the state to each new tab that is opened",
+    value: true
+  },
+  {
+    name: "places",
+    factory: () => new PlacesFeed(),
+    title: "Listens for and relays various Places-related events",
+    value: true
+  },
+  {
+    name: "prefs",
+    factory: () => new PrefsFeed(PREFS_CONFIG),
+    title: "Preferences",
     value: true
   },
   {
     name: "telemetry",
-    title: "Enable system error and usage data collection",
-    value: false
+    factory: () => new TelemetryFeed(),
+    title: "Relays telemetry-related actions to TelemetrySender",
+    value: true
   },
   {
-    name: "telemetry.log",
-    title: "Log telemetry events in the console",
-    value: false
-  },
-  {
-    name: "telemetry.ping.endpoint",
-    title: "Telemetry server endpoint",
-    value: "https://tiles.services.mozilla.com/v3/links/activity-stream"
+    name: "topsites",
+    factory: () => new TopSitesFeed(),
+    title: "Queries places and gets metadata for Top Sites section",
+    value: true
   }
-];
-
-const feeds = {};
-for (const pref of PREFS_CONFIG) {
-  if (pref.name.startsWith("feeds.")) {
-    feeds[pref.name] = pref.init;
-  }
+]) {
+  const pref = `feeds.${name}`;
+  FEEDS_CONFIG.set(pref, factory);
+  PREFS_CONFIG.set(pref, {title, value});
 }
 
 this.ActivityStream = class ActivityStream {
@@ -112,7 +104,7 @@ this.ActivityStream = class ActivityStream {
     this.initialized = false;
     this.options = options;
     this.store = new Store();
-    this.feeds = feeds;
+    this.feeds = FEEDS_CONFIG;
     this._defaultPrefs = new DefaultPrefs(PREFS_CONFIG);
   }
   init() {

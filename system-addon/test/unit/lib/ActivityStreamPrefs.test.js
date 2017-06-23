@@ -1,28 +1,73 @@
 const ACTIVITY_STREAM_PREF_BRANCH = "browser.newtabpage.activity-stream.";
 const {Prefs, DefaultPrefs} = require("lib/ActivityStreamPrefs.jsm");
 
-const TEST_PREF_CONFIG = [
-  {name: "foo", value: true},
-  {name: "bar", value: "BAR"},
-  {name: "baz", value: 1}
-];
+const TEST_PREF_CONFIG = new Map([
+  ["foo", {value: true}],
+  ["bar", {value: "BAR"}],
+  ["baz", {value: 1}]
+]);
 
 describe("ActivityStreamPrefs", () => {
   describe("Prefs", () => {
+    let p;
+    beforeEach(() => {
+      p = new Prefs();
+    });
     it("should have get, set, and observe methods", () => {
-      const p = new Prefs();
       assert.property(p, "get");
       assert.property(p, "set");
       assert.property(p, "observe");
     });
     describe(".branchName", () => {
       it("should return the activity stream branch by default", () => {
-        const p = new Prefs();
         assert.equal(p.branchName, ACTIVITY_STREAM_PREF_BRANCH);
       });
       it("should return the custom branch name if it was passed to the constructor", () => {
-        const p = new Prefs("foo");
+        p = new Prefs("foo");
         assert.equal(p.branchName, "foo");
+      });
+    });
+    describe("#observeBranch", () => {
+      let listener;
+      beforeEach(() => {
+        p._prefBranch = {addObserver: sinon.stub()};
+        listener = {onPrefChanged: sinon.stub()};
+        p.observeBranch(listener);
+      });
+      it("should add an observer", () => {
+        assert.calledOnce(p._prefBranch.addObserver);
+      });
+      it("should store the listener", () => {
+        assert.equal(p._branchObservers.size, 1);
+        assert.ok(p._branchObservers.has(listener));
+      });
+      it("should call listener's onPrefChanged", () => {
+        p._branchObservers.get(listener)();
+
+        assert.calledOnce(listener.onPrefChanged);
+      });
+    });
+    describe("#ignoreBranch", () => {
+      let listener;
+      beforeEach(() => {
+        p._prefBranch = {
+          addObserver: sinon.stub(),
+          removeObserver: sinon.stub()
+        };
+        listener = {};
+        p.observeBranch(listener);
+      });
+      it("should remove the observer", () => {
+        p.ignoreBranch(listener);
+
+        assert.calledOnce(p._prefBranch.addObserver);
+      });
+      it("should remove the listener", () => {
+        assert.equal(p._branchObservers.size, 1);
+
+        p.ignoreBranch(listener);
+
+        assert.equal(p._branchObservers.size, 0);
       });
     });
   });
@@ -54,8 +99,8 @@ describe("ActivityStreamPrefs", () => {
         const defaultPrefs = new DefaultPrefs(TEST_PREF_CONFIG);
         sinon.spy(defaultPrefs.branch, "clearUserPref");
         defaultPrefs.reset();
-        for (const pref of TEST_PREF_CONFIG) {
-          assert.calledWith(defaultPrefs.branch.clearUserPref, pref.name);
+        for (const name of TEST_PREF_CONFIG.keys()) {
+          assert.calledWith(defaultPrefs.branch.clearUserPref, name);
         }
       });
     });
