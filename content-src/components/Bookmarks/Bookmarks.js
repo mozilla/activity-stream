@@ -45,7 +45,7 @@ const Bookmarks = React.createClass({
     return sites.map((site, i) =>
       <SpotlightItem
         index={i}
-        key={site.guid || site.cache_key || i}
+        key={site.bookmarkGuid || site.cache_key || i}
         page={this.props.page}
         source="BOOKMARKS"
         bestImage={getBestImage(site.images)}

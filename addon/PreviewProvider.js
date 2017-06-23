@@ -135,7 +135,7 @@ PreviewProvider.prototype = {
       .map(link => {
         const sanitizedURLObject = this._sanitizeURL(link.url);
         const sanitizedURL = sanitizedURLObject ? sanitizedURLObject.toString() : "";
-        const cacheKey = createCacheKey(sanitizedURL);
+        const cacheKey = createCacheKey(link.url);
         const hostname = sanitizedURLObject && sanitizedURLObject.hostname;
         return Object.assign({}, link, {
           sanitized_url: sanitizedURL,

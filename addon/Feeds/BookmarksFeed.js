@@ -64,7 +64,7 @@ module.exports = class BookmarksFeed extends Feed {
 
       // Filter out bookmarks that don't have metadata and images.
       // This will prevent default bookmarks with no visits from showing up.
-      links = links.filter(l => l.hasMetadata && l.images && l.images.length);
+      links = links.filter(l => l.hasMetadata);
 
       return am.actions.Response("BOOKMARKS_RESPONSE", links);
     }.bind(this));

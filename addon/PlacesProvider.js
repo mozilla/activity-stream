@@ -784,7 +784,7 @@ Links.prototype = {
                     AND b.fk = p.id
                     AND (SELECT guid FROM moz_bookmarks WHERE id = (SELECT parent FROM moz_bookmarks WHERE id = b.parent)) != "tags________"
                     AND url_hash NOT BETWEEN hash("place", "prefix_lo") AND hash("place", "prefix_hi")
-                    ORDER BY b.lastModified DESC
+                    ORDER BY b.dateAdded DESC
                     LIMIT ${limit}`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {columns, params: {type: Bookmarks.TYPE_BOOKMARK}});
