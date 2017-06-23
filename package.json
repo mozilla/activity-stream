@@ -282,7 +282,7 @@
     "start:html": "npm run bundle:html -- --baseUrl http://localhost:1963/ --csp off",
     "start:server": "live-server data/content --port=1963 --no-browser",
     "start:eslint": "npm run lint:eslint -- -w",
-    "firefox": "npm run bundle:webpackAddon && jpm run -b nightly --prefs ./dev-prefs.json -p default",
+    "firefox": "npm run bundle:webpackAddon && jpm run -b nightly --prefs ./dev-prefs.json",
     "lint": "npm-run-all lint:*",
     "lint:eslint": "esw --ext=.js,.jsm,.json,.jsx . .storybook",
     "lint:sasslint": "sass-lint -v -q",
