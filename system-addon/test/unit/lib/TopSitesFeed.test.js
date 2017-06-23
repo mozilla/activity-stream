@@ -33,12 +33,27 @@ describe("Top Sites Feed", () => {
     clock.restore();
   });
 
-  it("should have default sites with .isDefault = true", () => {
-    assert.ok(DEFAULT_TOP_SITES.length);
-    DEFAULT_TOP_SITES.forEach(link => assert.propertyVal(link, "isDefault", true));
+  describe("#init", () => {
+    it("should add defaults on INIT", () => {
+      feed.onAction({type: at.INIT});
+      assert.ok(DEFAULT_TOP_SITES.length);
+    });
+    it("should have default sites with .isDefault = true", () => {
+      feed.init();
+      DEFAULT_TOP_SITES.forEach(link => assert.propertyVal(link, "isDefault", true));
+    });
+    it("should add no defaults on empty pref", () => {
+      FakePrefs.prototype.prefs["default.sites"] = "";
+      feed.init();
+      assert.equal(DEFAULT_TOP_SITES.length, 0);
+    });
   });
 
   describe("#getLinksWithDefaults", () => {
+    beforeEach(() => {
+      feed.init();
+    });
+
     it("should get the links from NewTabUtils", async () => {
       const result = await feed.getLinksWithDefaults();
       assert.deepEqual(result, links);

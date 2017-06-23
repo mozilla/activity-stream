@@ -14,22 +14,21 @@ const TOP_SITES_SHOWMORE_LENGTH = 12;
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_TOP_SITES = [];
 
-// Add default sites if any based on the pref
-try {
-  let sites = new Prefs().get("default.sites").split(",");
-  sites.filter(url => url).forEach(url => {
-    DEFAULT_TOP_SITES.push({
-      isDefault: true,
-      url
-    });
-  });
-} catch (e) {
-  // Use no defaults if something went wrong
-}
-
 this.TopSitesFeed = class TopSitesFeed {
   constructor() {
     this.lastUpdated = 0;
+  }
+  init() {
+    // Add default sites if any based on the pref
+    let sites = new Prefs().get("default.sites");
+    if (sites) {
+      for (const url of sites.split(",")) {
+        DEFAULT_TOP_SITES.push({
+          isDefault: true,
+          url
+        });
+      }
+    }
   }
   async getScreenshot(url) {
     let screenshot = await PreviewProvider.getThumbnail(url);
@@ -71,6 +70,9 @@ this.TopSitesFeed = class TopSitesFeed {
   onAction(action) {
     let realRows;
     switch (action.type) {
+      case at.INIT:
+        this.init();
+        break;
       case at.NEW_TAB_LOAD:
         // Only check against real rows returned from history, not default ones.
         realRows = this.store.getState().TopSites.rows.filter(row => !row.isDefault);
