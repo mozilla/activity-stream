@@ -286,7 +286,7 @@
   },
   "topSitesTwoRowsDefault": {
     "name": "Two rows of Top Sites by default",
-    "active": true,
+    "active": false,
     "description": "Show two rows of Top Sites by default",
     "control": {
       "value": false,

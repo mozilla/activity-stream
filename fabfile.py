@@ -103,6 +103,24 @@ def make_shield_manifest(fresh_manifest=True, commit_hash=""):
                   sort_keys=True, indent=2, separators=(',', ': '))
 
 
+def make_shield_manifest(fresh_manifest=True):
+    if to_bool(fresh_manifest):
+        restore_manifest()
+
+    with open("./package.json", "r+") as f:
+        current_time = int(time.time())
+        manifest = json.load(f)
+        manifest["title"] = "{} Shield Study".format(manifest["title"])
+        manifest["updateLink"] = SHIELD_UPDATE_LINK
+        manifest["updateURL"] = SHIELD_UPDATE_URL
+        manifest["version"] = "{}-shield-study-{}".format(
+            _get_dev_version(manifest["version"]), current_time)
+        f.seek(0)
+        f.truncate(0)
+        json.dump(manifest, f,
+                  sort_keys=True, indent=2, separators=(',', ': '))
+
+
 def restore_manifest():
     local("git checkout -- ./package.json")
 
