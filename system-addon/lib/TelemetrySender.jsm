@@ -71,7 +71,7 @@ TelemetrySender.prototype = {
     this._fhrEnabled = prefVal;
   },
 
-  async sendPing(data) {
+  sendPing(data) {
     if (this.logging) {
       // performance related pings cause a lot of logging, so we mute them
       if (data.action !== "activity_stream_performance") {
