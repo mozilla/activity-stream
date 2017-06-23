@@ -150,8 +150,14 @@ class PlacesFeed {
   }
 
   addObservers() {
-    PlacesUtils.history.addObserver(this.historyObserver, true);
-    PlacesUtils.bookmarks.addObserver(this.bookmarksObserver, true);
+    // NB: Directly get services without importing the *BIG* PlacesUtils module
+    Cc["@mozilla.org/browser/nav-history-service;1"]
+      .getService(Ci.nsINavHistoryService)
+      .addObserver(this.historyObserver, true);
+    Cc["@mozilla.org/browser/nav-bookmarks-service;1"]
+      .getService(Ci.nsINavBookmarksService)
+      .addObserver(this.bookmarksObserver, true);
+
     Services.obs.addObserver(this, LINK_BLOCKED_EVENT);
   }
 

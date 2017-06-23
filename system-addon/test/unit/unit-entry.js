@@ -13,6 +13,7 @@ let overrider = new GlobalOverrider();
 
 overrider.set({
   Components: {
+    classes: {},
     interfaces: {},
     utils: {
       import() {},
