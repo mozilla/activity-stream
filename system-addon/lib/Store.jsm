@@ -30,11 +30,9 @@ this.Store = class Store {
     this._middleware = this._middleware.bind(this);
     // Bind each redux method so we can call it directly from the Store. E.g.,
     // store.dispatch() will call store._store.dispatch();
-    ["dispatch", "getState", "subscribe"].forEach(method => {
-      this[method] = function(...args) {
-        return this._store[method](...args);
-      }.bind(this);
-    });
+    for (const method of ["dispatch", "getState", "subscribe"]) {
+      this[method] = (...args) => this._store[method](...args);
+    }
     this.feeds = new Map();
     this._feedFactories = null;
     this._prefs = new Prefs();
@@ -51,10 +49,14 @@ this.Store = class Store {
    *               it calls each feed's .onAction method, if one
    *               is defined.
    */
-  _middleware(store) {
+  _middleware() {
     return next => action => {
       next(action);
-      this.feeds.forEach(s => s.onAction && s.onAction(action));
+      for (const store of this.feeds.values()) {
+        if (store.onAction) {
+          store.onAction(action);
+        }
+      }
     };
   }
 
