@@ -3,7 +3,7 @@ const {connect} = require("react-redux");
 const {addLocaleData, IntlProvider} = require("react-intl");
 const TopSites = require("content-src/components/TopSites/TopSites");
 const Search = require("content-src/components/Search/Search");
-const Dialog = require("content-src/components/Dialog/Dialog");
+const ConfirmDialog = require("content-src/components/ConfirmDialog/ConfirmDialog");
 const PreferencesPane = require("content-src/components/PreferencesPane/PreferencesPane");
 
 // Locales that should be displayed RTL
@@ -49,7 +49,7 @@ class Base extends React.Component {
           <main>
             {prefs.showSearch && <Search />}
             {prefs.showTopSites && <TopSites />}
-            <Dialog />
+            <ConfirmDialog />
           </main>
           <PreferencesPane />
         </div>

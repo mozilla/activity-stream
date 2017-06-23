@@ -101,7 +101,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
 
 function Dialog(prevState = INITIAL_STATE.Dialog, action) {
   switch (action.type) {
-    case at.DELETE_HISTORY_URL_CONFIRM:
+    case at.DIALOG_OPEN:
       return Object.assign({}, prevState, {visible: true, data: action.data});
     case at.DIALOG_CANCEL:
       return Object.assign({}, prevState, {visible: false});

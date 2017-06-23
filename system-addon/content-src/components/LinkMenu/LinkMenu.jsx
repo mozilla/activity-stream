@@ -56,11 +56,18 @@ const BlockUrl = site => ({
 const DeleteUrl = site => ({
   id: "menu_action_delete",
   icon: "delete",
-  action: ac.SendToMain({
-    type: at.DELETE_HISTORY_URL,
-    data: site.url
-  }),
-  userEvent: "DELETE"
+  action: {
+    type: at.DIALOG_OPEN,
+    data: {
+      onConfirm: [
+        ac.SendToMain({type: at.DELETE_HISTORY_URL, data: site.url}),
+        ac.UserEvent({event: "DELETE"})
+      ],
+      body_string_id: ["confirm_history_delete", "confirm_history_delete_notice"],
+      confirm_button_string_id: "menu_action_delete"
+    }
+  },
+  userEvent: "DIALOG_OPEN"
 });
 
 class LinkMenu extends React.Component {

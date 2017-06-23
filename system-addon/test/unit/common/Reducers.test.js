@@ -151,13 +151,13 @@ describe("Reducers", () => {
     it("should return INITIAL_STATE by default", () => {
       assert.equal(INITIAL_STATE.Dialog, Dialog(undefined, {type: "non_existent"}));
     });
-    it("should toggle visible to true on DELETE_HISTORY_URL_CONFIRM", () => {
-      const action = {type: at.DELETE_HISTORY_URL_CONFIRM};
+    it("should toggle visible to true on DIALOG_OPEN", () => {
+      const action = {type: at.DIALOG_OPEN};
       const nextState = Dialog(INITIAL_STATE.Dialog, action);
       assert.isTrue(nextState.visible);
     });
-    it("should pass url data on DELETE_HISTORY_URL_CONFIRM", () => {
-      const action = {type: at.DELETE_HISTORY_URL_CONFIRM, data: "some url"};
+    it("should pass url data on DIALOG_OPEN", () => {
+      const action = {type: at.DIALOG_OPEN, data: "some url"};
       const nextState = Dialog(INITIAL_STATE.Dialog, action);
       assert.equal(nextState.data, action.data);
     });

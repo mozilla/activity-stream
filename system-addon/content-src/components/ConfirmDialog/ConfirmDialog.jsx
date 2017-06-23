@@ -4,7 +4,7 @@ const {FormattedMessage} = require("react-intl");
 const {actionTypes, actionCreators: ac} = require("common/Actions.jsm");
 
 /**
- * Confirmation Dialog component.
+ * ConfirmDialog component.
  * One primary action button, one cancel button.
  *
  * Content displayed is controlled by `data` prop the component receives.
@@ -22,7 +22,7 @@ const {actionTypes, actionCreators: ac} = require("common/Actions.jsm");
  *   confirm_btn_id: "menu_action_delete"
  * },
  */
-const Dialog = React.createClass({
+const ConfirmDialog = React.createClass({
   getDefaultProps() {
     return {
       visible: false,
@@ -31,18 +31,16 @@ const Dialog = React.createClass({
   },
 
   _handleCancelBtn() {
-    this.props.dispatch(ac.SendToMain({type: actionTypes.DIALOG_CANCEL}));
+    this.props.dispatch({type: actionTypes.DIALOG_CANCEL});
     this.props.dispatch(ac.UserEvent({event: actionTypes.DIALOG_CANCEL}));
   },
 
   _handleConfirmBtn() {
-    const data = this.props.Dialog.data;
-    this.props.dispatch(ac.SendToMain({type: actionTypes[data.action], data: data.payload}));
-    this.props.dispatch(ac.UserEvent({event: data.userEvent}));
+    this.props.data.onConfirm.forEach(this.props.dispatch);
   },
 
   _renderModalMessage() {
-    const message_body = this.props.Dialog.data.message_body;
+    const message_body = this.props.data.body_string_id;
 
     if (!message_body) {
       return null;
@@ -54,14 +52,12 @@ const Dialog = React.createClass({
   },
 
   render() {
-    const props = this.props.Dialog;
-
-    if (!props.visible) {
+    if (!this.props.visible) {
       return null;
     }
 
     return (<div className="confirmation-dialog">
-      <div className="modal-overlay" />
+      <div className="modal-overlay" onClick={this._handleCancelBtn} />
       <div className="modal" ref="modal">
         <section className="modal-message">
           {this._renderModalMessage()}
@@ -71,7 +67,7 @@ const Dialog = React.createClass({
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
           <button ref="confirmButton" className="done" onClick={this._handleConfirmBtn}>
-            <FormattedMessage id={props.data.confirm_btn_id} />
+            <FormattedMessage id={this.props.data.confirm_button_string_id} />
           </button>
         </section>
       </div>
@@ -79,6 +75,6 @@ const Dialog = React.createClass({
   }
 });
 
-module.exports = connect(state => ({Dialog: state.Dialog}))(Dialog);
-module.exports._unconnected = Dialog;
-module.exports.Dialog = Dialog;
+module.exports = connect(state => state.Dialog)(ConfirmDialog);
+module.exports._unconnected = ConfirmDialog;
+module.exports.Dialog = ConfirmDialog;

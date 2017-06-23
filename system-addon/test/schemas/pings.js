@@ -33,6 +33,7 @@ const UserEventAction = Joi.object().keys({
       "DELETE",
       "DELETE_CONFIRM",
       "DIALOG_CANCEL",
+      "DIALOG_OPEN",
       "OPEN_NEW_WINDOW",
       "OPEN_PRIVATE_WINDOW",
       "OPEN_NEWTAB_PREFS",
