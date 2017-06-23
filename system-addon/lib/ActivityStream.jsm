@@ -93,7 +93,7 @@ const PREFS_CONFIG = [
 
 const feeds = {};
 for (const pref of PREFS_CONFIG) {
-  if (pref.name.match(/^feeds\./)) {
+  if (pref.name.startsWith("feeds.")) {
     feeds[pref.name] = pref.init;
   }
 }
