@@ -70,11 +70,21 @@ describe("Top Sites Feed", () => {
       assert.propertyVal(feed.store.dispatch.firstCall.args[0], "type", at.TOP_SITES_UPDATED);
       assert.deepEqual(feed.store.dispatch.firstCall.args[0].data, links);
     });
-    it("should call .getScreenshot for each link", async () => {
+    it("should reuse screenshots for existing links, and call feed.getScreenshot for others", async () => {
       sandbox.stub(feed, "getScreenshot");
+      const rows = [{url: FAKE_LINKS[0].url, screenshot: "foo.jpg"}];
+      feed.store.getState = () => ({TopSites: {rows}});
       await feed.refresh(action);
 
-      links.forEach(link => assert.calledWith(feed.getScreenshot, link.url));
+      const results = feed.store.dispatch.firstCall.args[0].data;
+
+      results.forEach(link => {
+        if (link.url === FAKE_LINKS[0].url) {
+          assert.equal(link.screenshot, "foo.jpg");
+        } else {
+          assert.calledWith(feed.getScreenshot, link.url);
+        }
+      });
     });
   });
   describe("getScreenshot", () => {
