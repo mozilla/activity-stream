@@ -1,0 +1,50 @@
+.confirmation-dialog {
+  .modal {
+    position: fixed;
+    width: 400px;
+    top: 20%;
+    left: 50%;
+    margin-left: -200px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
+  }
+
+  section {
+    margin: 0;
+  }
+
+  .modal-message {
+    padding: 24px;
+  }
+
+  .actions {
+    justify-content: flex-end;
+
+    button {
+      margin-inline-end: 16px;
+
+      &.done {
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+      }
+    }
+  }
+}
+
+.modal-overlay {
+  background: $bg-grey;
+  height: 100%;
+  left: 0;
+  opacity: 0.8;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 11001;
+}
+
+.modal {
+  background: $white;
+  border: solid 1px $faintest-black;
+  border-radius: $border-radius;
+  font-size: 14px;
+  z-index: 11002;
+}
