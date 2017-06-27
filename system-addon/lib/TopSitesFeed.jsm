@@ -56,16 +56,29 @@ this.TopSitesFeed = class TopSitesFeed {
   }
   async refresh(action) {
     const links = await this.getLinksWithDefaults();
+
+    // First, cache existing screenshots in case we need to reuse them
+    const currentScreenshots = {};
+    for (const link of this.store.getState().TopSites.rows) {
+      if (link.screenshot) {
+        currentScreenshots[link.url] = link.screenshot;
+      }
+    }
+
+    // Now, get a screenshot for every item
+    for (let link of links) {
+      if (currentScreenshots[link.url]) {
+        link.screenshot = currentScreenshots[link.url];
+      } else {
+        this.getScreenshot(link.url);
+      }
+    }
+
     const newAction = {type: at.TOP_SITES_UPDATED, data: links};
 
     // Send an update to content so the preloaded tab can get the updated content
     this.store.dispatch(ac.SendToContent(newAction, action.meta.fromTarget));
     this.lastUpdated = Date.now();
-
-    // Now, get a screenshot for every item
-    for (let link of links) {
-      this.getScreenshot(link.url);
-    }
   }
   openNewWindow(action, isPrivate = false) {
     const win = action._target.browser.ownerGlobal;
@@ -80,12 +93,14 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.NEW_TAB_LOAD:
         // Only check against real rows returned from history, not default ones.
         realRows = this.store.getState().TopSites.rows.filter(row => !row.isDefault);
-        // When a new tab is opened, if we don't have enough top sites yet, refresh the data.
-        if (realRows.length < TOP_SITES_SHOWMORE_LENGTH) {
-          this.refresh(action);
-        } else if (Date.now() - this.lastUpdated >= UPDATE_TIME) {
+        if (
+          // When a new tab is opened, if we don't have enough top sites yet, refresh the data.
+          (realRows.length < TOP_SITES_SHOWMORE_LENGTH) ||
+
           // When a new tab is opened, if the last time we refreshed the data
           // is greater than 15 minutes, refresh the data.
+          (Date.now() - this.lastUpdated >= UPDATE_TIME)
+        ) {
           this.refresh(action);
         }
         break;
