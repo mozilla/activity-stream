@@ -116,13 +116,16 @@
   // checkmark
   [type='checkbox']:not(:checked) + label::after,
   [type='checkbox']:checked + label::after {
-    background: url('chrome://global/skin/in-content/check.svg#check') no-repeat center center; // sass-lint:disable-line no-url-domains
+    background: url('chrome://global/skin/in-content/check.svg') no-repeat center center; // sass-lint:disable-line no-url-domains
     content: '';
     height: 21px;
     offset-inline-start: 0;
     position: absolute;
     top: 0;
     width: 21px;
+    -moz-context-properties: fill, stroke;
+    fill: $checkbox-blue;
+    stroke: none;
   }
 
   // checkmark changes
