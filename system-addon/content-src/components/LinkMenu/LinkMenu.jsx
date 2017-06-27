@@ -63,7 +63,7 @@ const DeleteUrl = site => ({
         ac.SendToMain({type: at.DELETE_HISTORY_URL, data: site.url}),
         ac.UserEvent({event: "DELETE"})
       ],
-      body_string_id: ["confirm_history_delete", "confirm_history_delete_notice"],
+      body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],
       confirm_button_string_id: "menu_action_delete"
     }
   },

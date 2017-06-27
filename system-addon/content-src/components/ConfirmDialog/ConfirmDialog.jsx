@@ -17,9 +17,9 @@ const {actionTypes, actionCreators: ac} = require("common/Actions.jsm");
  *   // Primary button USerEvent action.
  *   userEvent: "DELETE",
  *   // Array of locale ids to display.
- *   message_body: ["confirm_history_delete", "confirm_history_delete_notice"],
+ *   message_body: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],
  *   // Text for primary button.
- *   confirm_btn_id: "menu_action_delete"
+ *   confirm_button_string_id: "menu_action_delete"
  * },
  */
 const ConfirmDialog = React.createClass({
