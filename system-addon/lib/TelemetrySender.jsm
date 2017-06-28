@@ -82,7 +82,7 @@ TelemetrySender.prototype = {
     if (!this.enabled) {
       return Promise.resolve();
     }
-    return fetch(this._pingEndpoint, {method: "POST", body: data}).then(response => {
+    return fetch(this._pingEndpoint, {method: "POST", body: JSON.stringify(data)}).then(response => {
       if (!response.ok) {
         Cu.reportError(`Ping failure with HTTP response code: ${response.status}`);
       }
