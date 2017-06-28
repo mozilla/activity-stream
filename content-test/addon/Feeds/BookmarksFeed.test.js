@@ -92,16 +92,12 @@ describe("VisitAgainFeed", () => {
           assert.equal(result.data.length, 0);
         });
       });
-      it("should get some links from PlacesProvider", () => {
-        return PlacesProvider.links.getBookmarks().then(links => {
-          assert.notEqual(links, 0);
-        });
-      });
-      it("should allow links with with metadata", () => {
-        return instance.getData().then(result => {
-          assert.equal(result.data.length, testLinks.length);
-        });
-      });
+      it("should get some links from PlacesProvider", () =>
+        PlacesProvider.links.getBookmarks().then(links => assert.notEqual(links, 0))
+      );
+      it("should allow links with with metadata", () =>
+        instance.getData().then(result => assert.equal(result.data.length, testLinks.length))
+      );
     });
   });
   describe("#onAction", () => {
