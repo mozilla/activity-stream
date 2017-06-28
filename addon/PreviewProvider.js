@@ -135,7 +135,7 @@ PreviewProvider.prototype = {
       .map(link => {
         const sanitizedURLObject = this._sanitizeURL(link.url);
         const sanitizedURL = sanitizedURLObject ? sanitizedURLObject.toString() : "";
-        const cacheKey = createCacheKey(link.url);
+        const cacheKey = createCacheKey(sanitizedURL);
         const hostname = sanitizedURLObject && sanitizedURLObject.hostname;
         return Object.assign({}, link, {
           sanitized_url: sanitizedURL,
@@ -349,7 +349,9 @@ PreviewProvider.prototype = {
    * Check if a single link exists in the metadata DB
    */
   asyncLinkExist: Task.async(function*(url) {
-    let key = createCacheKey(url);
+    const sanitizedURLObject = this._sanitizeURL(url);
+    const sanitizedURL = sanitizedURLObject ? sanitizedURLObject.toString() : "";
+    const key = createCacheKey(sanitizedURL);
     if (!key) {
       return false;
     }
