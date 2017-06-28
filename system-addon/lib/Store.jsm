@@ -123,10 +123,10 @@ this.Store = class Store {
    * @return {type}  description
    */
   uninit() {
+    this._prefs.ignoreBranch(this);
     this.feeds.forEach(feed => this.uninitFeed(feed));
     this.feeds.clear();
     this._feedFactories = null;
-    this._prefs.ignoreBranch(this);
     this._messageChannel.destroyChannel();
   }
 };
