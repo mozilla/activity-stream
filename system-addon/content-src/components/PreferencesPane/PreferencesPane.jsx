@@ -1,7 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {injectIntl, FormattedMessage} = require("react-intl");
-const classNames = require("classnames");
 const {actionCreators: ac} = require("common/Actions.jsm");
 
 const PreferencesInput = props => (
@@ -51,12 +50,12 @@ class PreferencesPane extends React.Component {
       <div className="prefs-pane-wrapper" ref="wrapper">
         <div className="prefs-pane-button">
           <button
-            className={classNames("prefs-button icon", isVisible ? "icon-dismiss" : "icon-settings")}
+            className={`prefs-button icon ${isVisible ? "icon-dismiss" : "icon-settings"}`}
             title={props.intl.formatMessage({id: isVisible ? "settings_pane_done_button" : "settings_pane_button_label"})}
             onClick={this.togglePane} />
         </div>
         <div className="prefs-pane">
-          <div className={classNames("sidebar", {hidden: !isVisible})}>
+          <div className={`sidebar ${isVisible ? "" : "hidden"}`}>
             <div className="prefs-modal-inner-wrapper">
               <h1><FormattedMessage id="settings_pane_header" /></h1>
               <p><FormattedMessage id="settings_pane_body" /></p>

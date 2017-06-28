@@ -47,6 +47,27 @@ describe("<TopSite>", () => {
 
     assert.equal(titleEl.text(), "foobar");
   });
+  it("should render the pinTitle if set", () => {
+    link.isPinned = true;
+    link.pinnedIndex = 7;
+    link.pinTitle = "pinned";
+    const wrapper = shallow(<TopSite link={link} />);
+    const titleEl = wrapper.find(".title");
+
+    assert.equal(titleEl.text(), "pinned");
+  });
+  it("should render the pin icon for pinned links", () => {
+    link.isPinned = true;
+    link.pinnedIndex = 7;
+    link.pinTitle = "pinned";
+    const wrapper = shallow(<TopSite link={link} />);
+    assert.equal(wrapper.find(".icon-pin-small").length, 1);
+  });
+  it("should not render the pin icon for non pinned links", () => {
+    link.isPinned = false;
+    const wrapper = shallow(<TopSite link={link} />);
+    assert.equal(wrapper.find(".icon-pin-small").length, 0);
+  });
   it("should render the first letter of the title as a fallback for missing screenshots", () => {
     const wrapper = shallow(<TopSite link={link} />);
     assert.equal(wrapper.find(".letter-fallback").text(), "f");
@@ -77,7 +98,7 @@ describe("<TopSite>", () => {
   });
   it("should render a context menu button", () => {
     const wrapper = shallow(<TopSite link={link} />);
-    assert.ok(wrapper.find(".context-menu-button"));
+    assert.equal(wrapper.find(".context-menu-button").length, 1);
   });
   it("should render a link menu when button is clicked", () => {
     const wrapper = shallow(<TopSite link={link} />);

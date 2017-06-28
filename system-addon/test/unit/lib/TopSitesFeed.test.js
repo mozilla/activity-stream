@@ -15,11 +15,19 @@ describe("Top Sites Feed", () => {
   let sandbox;
   let links;
   let clock;
+  let fakeNewTabUtils;
 
   beforeEach(() => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
-    globals.set("NewTabUtils", {activityStreamLinks: {getTopSites: sandbox.spy(() => Promise.resolve(links))}});
+    fakeNewTabUtils = {
+      activityStreamLinks: {getTopSites: sandbox.spy(() => Promise.resolve(links))},
+      pinnedLinks: {
+        links: [],
+        isPinned: () => false
+      }
+    };
+    globals.set("NewTabUtils", fakeNewTabUtils);
     globals.set("PreviewProvider", {getThumbnail: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))});
     FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({"lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs}}));
@@ -48,7 +56,54 @@ describe("Top Sites Feed", () => {
       assert.equal(DEFAULT_TOP_SITES.length, 0);
     });
   });
+  describe("#sortLinks", () => {
+    beforeEach(() => {
+      feed.init();
+    });
 
+    it("should place pinned links where they belong", () => {
+      const pinned = [
+        {"url": "http://github.com/mozilla/activity-stream", "title": "moz/a-s"},
+        {"url": "http://example.com", "title": "example"}
+      ];
+      const result = feed.sortLinks(links, pinned);
+      for (let index of [0, 1]) {
+        assert.equal(result[index].url, pinned[index].url);
+        assert.ok(result[index].isPinned);
+        assert.equal(result[index].pinTitle, pinned[index].title);
+        assert.equal(result[index].pinIndex, index);
+      }
+      assert.deepEqual(result.slice(2), links.slice(0, -2));
+    });
+    it("should handle empty slots in the pinned list", () => {
+      const pinned = [
+        null,
+        {"url": "http://github.com/mozilla/activity-stream", "title": "moz/a-s"},
+        null,
+        null,
+        {"url": "http://example.com", "title": "example"}
+      ];
+      const result = feed.sortLinks(links, pinned);
+      for (let index of [1, 4]) {
+        assert.equal(result[index].url, pinned[index].url);
+        assert.ok(result[index].isPinned);
+        assert.equal(result[index].pinTitle, pinned[index].title);
+        assert.equal(result[index].pinIndex, index);
+      }
+      result.splice(4, 1);
+      result.splice(1, 1);
+      assert.deepEqual(result, links.slice(0, -2));
+    });
+    it("should handle a pinned site past the end of the list of frecent+default", () => {
+      const pinned = [];
+      pinned[11] = {"url": "http://github.com/mozilla/activity-stream", "title": "moz/a-s"};
+      const result = feed.sortLinks([], pinned);
+      assert.equal(result[11].url, pinned[11].url);
+      assert.isTrue(result[11].isPinned);
+      assert.equal(result[11].pinTitle, pinned[11].title);
+      assert.equal(result[11].pinIndex, 11);
+    });
+  });
   describe("#getLinksWithDefaults", () => {
     beforeEach(() => {
       feed.init();
