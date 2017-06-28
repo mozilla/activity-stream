@@ -37,6 +37,7 @@ describe("ActivityStreamPrefs", () => {
       });
       it("should add an observer", () => {
         assert.calledOnce(p._prefBranch.addObserver);
+        assert.calledWith(p._prefBranch.addObserver, "");
       });
       it("should store the listener", () => {
         assert.equal(p._branchObservers.size, 1);
@@ -61,7 +62,8 @@ describe("ActivityStreamPrefs", () => {
       it("should remove the observer", () => {
         p.ignoreBranch(listener);
 
-        assert.calledOnce(p._prefBranch.addObserver);
+        assert.calledOnce(p._prefBranch.removeObserver);
+        assert.calledWith(p._prefBranch.removeObserver, p._prefBranch.addObserver.firstCall.args[0]);
       });
       it("should remove the listener", () => {
         assert.equal(p._branchObservers.size, 1);

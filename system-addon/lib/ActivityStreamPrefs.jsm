@@ -25,7 +25,7 @@ this.Prefs = class Prefs extends Preferences {
   }
   ignoreBranch(listener) {
     const observer = this._branchObservers.get(listener);
-    this._prefBranch.removeObserver(this._branchName, observer);
+    this._prefBranch.removeObserver("", observer);
     this._branchObservers.delete(listener);
   }
   observeBranch(listener) {
