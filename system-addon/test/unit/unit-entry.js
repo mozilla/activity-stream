@@ -39,6 +39,7 @@ overrider.set({
       removeObserver() {}
     },
     prefs: {
+      getStringPref() {},
       getDefaultBranch() {
         return {
           setBoolPref() {},
