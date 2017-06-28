@@ -119,11 +119,28 @@
       height: $top-sites-title-height;
       line-height: $top-sites-title-height;
       text-align: center;
-      white-space: nowrap;
       font-size: 11px;
-      overflow: hidden;
-      text-overflow: ellipsis;
       width: $top-sites-size;
+      position: relative;
+
+      .icon {
+        offset-inline-start: 0;
+        position: absolute;
+        top: 10px;
+      }
+
+      span {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      &.pinned {
+        span {
+          padding: 0 13px;
+        }
+      }
     }
   }
 }

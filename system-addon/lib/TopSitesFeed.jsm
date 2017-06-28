@@ -39,20 +39,34 @@ this.TopSitesFeed = class TopSitesFeed {
     const action = {type: at.SCREENSHOT_UPDATED, data: {url, screenshot}};
     this.store.dispatch(ac.BroadcastToContent(action));
   }
+  sortLinks(frecent, pinned) {
+    let sortedLinks = [...frecent, ...DEFAULT_TOP_SITES];
+    sortedLinks = sortedLinks.filter(link => !NewTabUtils.pinnedLinks.isPinned(link));
+
+    // Insert the pinned links in their specified location
+    pinned.forEach((val, index) => {
+      if (!val) { return; }
+      let link = Object.assign({}, val, {isPinned: true, pinIndex: index, pinTitle: val.title});
+      if (index > sortedLinks.length) {
+        sortedLinks[index] = link;
+      } else {
+        sortedLinks.splice(index, 0, link);
+      }
+    });
+
+    return sortedLinks.slice(0, TOP_SITES_SHOWMORE_LENGTH);
+  }
   async getLinksWithDefaults(action) {
-    let links = await NewTabUtils.activityStreamLinks.getTopSites();
+    let pinned = NewTabUtils.pinnedLinks.links;
+    let frecent = await NewTabUtils.activityStreamLinks.getTopSites();
 
-    if (!links) {
-      links = [];
+    if (!frecent) {
+      frecent = [];
     } else {
-      links = links.filter(link => link && link.type !== "affiliate").slice(0, 12);
+      frecent = frecent.filter(link => link && link.type !== "affiliate");
     }
 
-    if (links.length < TOP_SITES_SHOWMORE_LENGTH) {
-      links = [...links, ...DEFAULT_TOP_SITES].slice(0, TOP_SITES_SHOWMORE_LENGTH);
-    }
-
-    return links;
+    return this.sortLinks(frecent, pinned);
   }
   async refresh(action) {
     const links = await this.getLinksWithDefaults();

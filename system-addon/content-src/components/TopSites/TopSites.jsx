@@ -24,7 +24,7 @@ class TopSite extends React.Component {
   render() {
     const {link, index, dispatch} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
-    const title = shortURL(link);
+    const title = link.pinTitle || shortURL(link);
     const screenshotClassName = `screenshot${link.screenshot ? " active" : ""}`;
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
     const style = {backgroundImage: (link.screenshot ? `url(${link.screenshot})` : "none")};
@@ -34,7 +34,10 @@ class TopSite extends React.Component {
               <span className="letter-fallback">{title[0]}</span>
               <div className={screenshotClassName} style={style} />
           </div>
-          <div className="title">{title}</div>
+          <div className={`title ${link.isPinned ? "pinned" : ""}`}>
+            {link.isPinned && <div className="icon icon-pin-small" />}
+            <span>{title}</span>
+          </div>
         </a>
         <button className="context-menu-button"
           onClick={e => {
