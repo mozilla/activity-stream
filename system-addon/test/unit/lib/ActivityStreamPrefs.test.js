@@ -4,7 +4,8 @@ const {Prefs, DefaultPrefs} = require("lib/ActivityStreamPrefs.jsm");
 const TEST_PREF_CONFIG = new Map([
   ["foo", {value: true}],
   ["bar", {value: "BAR"}],
-  ["baz", {value: 1}]
+  ["baz", {value: 1}],
+  ["qux", {value: "foo", value_local_dev: "foofoo"}]
 ]);
 
 describe("ActivityStreamPrefs", () => {
@@ -75,11 +76,16 @@ describe("ActivityStreamPrefs", () => {
   describe("DefaultPrefs", () => {
     describe("#init", () => {
       let defaultPrefs;
+      let sandbox;
       beforeEach(() => {
+        sandbox = sinon.sandbox.create();
         defaultPrefs = new DefaultPrefs(TEST_PREF_CONFIG);
         sinon.spy(defaultPrefs.branch, "setBoolPref");
         sinon.spy(defaultPrefs.branch, "setStringPref");
         sinon.spy(defaultPrefs.branch, "setIntPref");
+      });
+      afterEach(() => {
+        sandbox.restore();
       });
       it("should initialize a boolean pref", () => {
         defaultPrefs.init();
@@ -92,6 +98,11 @@ describe("ActivityStreamPrefs", () => {
       it("should initialize a integer pref", () => {
         defaultPrefs.init();
         assert.calledWith(defaultPrefs.branch.setIntPref, "baz", 1);
+      });
+      it("should initialize a pref with value_local_dev if Firefox is a local build", () => {
+        sandbox.stub(global.Services.prefs, "getStringPref", () => "default"); // eslint-disable-line max-nested-callbacks
+        defaultPrefs.init();
+        assert.calledWith(defaultPrefs.branch.setStringPref, "qux", "foofoo");
       });
     });
     describe("#reset", () => {

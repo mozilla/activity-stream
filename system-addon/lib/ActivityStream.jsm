@@ -34,15 +34,17 @@ const PREFS_CONFIG = new Map([
   }],
   ["telemetry", {
     title: "Enable system error and usage data collection",
-    value: false
+    value: true,
+    value_local_dev: false
   }],
   ["telemetry.log", {
     title: "Log telemetry events in the console",
-    value: false
+    value: false,
+    value_local_dev: true
   }],
   ["telemetry.ping.endpoint", {
     title: "Telemetry server endpoint",
-    value: "https://tiles.services.mozilla.com/v3/links/activity-stream"
+    value: "https://onyx_tiles.stage.mozaws.net/v4/links/activity-stream"
   }]
 ]);
 

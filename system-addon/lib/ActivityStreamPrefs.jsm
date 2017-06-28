@@ -77,8 +77,19 @@ this.DefaultPrefs = class DefaultPrefs {
    * init - Set default prefs for all prefs in the config
    */
   init() {
+    // If Firefox is a locally built version or a testing build on try, etc.
+    // the value of the app.update.channel pref should be "default"
+    const IS_UNOFFICIAL_BUILD = Services.prefs.getStringPref("app.update.channel") === "default";
+
     for (const pref of this._config.keys()) {
-      this._setDefaultPref(pref, this._config.get(pref).value);
+      const prefConfig = this._config.get(pref);
+      let value;
+      if (IS_UNOFFICIAL_BUILD && "value_local_dev" in prefConfig) {
+        value = prefConfig.value_local_dev;
+      } else {
+        value = prefConfig.value;
+      }
+      this._setDefaultPref(pref, value);
     }
   }
 
