@@ -4,6 +4,8 @@
   $inner-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
   $top-sites-title-height: 30px;
   $top-sites-vertical-space: 18px;
+  $screenshot-size: cover;
+
   list-style: none;
   margin: 0;
   padding: 0;
@@ -106,7 +108,7 @@
       background-color: $white;
       border-radius: $top-sites-border-radius;
       box-shadow: inset $inner-box-shadow;
-      background-size: 250%;
+      background-size: $screenshot-size;
       background-position: top left;
       transition: opacity 1s;
       opacity: 0;
