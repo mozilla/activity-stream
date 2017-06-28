@@ -5,7 +5,6 @@ const testLinks = [{url: "foo.com", hostname: "foo.com"},
 const getCachedMetadata = links => links.map(
   link => {
     link.hasMetadata = true;
-    link.images = [1, 2, 3];
     return link;
   }
 );
@@ -94,25 +93,11 @@ describe("VisitAgainFeed", () => {
         });
       });
       it("should get some links from PlacesProvider", () => {
-        instance.options.getCachedMetadata = links => links.map(
-          link => {
-            link.hasMetadata = false;
-            return link;
-          }
-        );
-
         return PlacesProvider.links.getBookmarks().then(links => {
           assert.notEqual(links, 0);
         });
       });
       it("should allow links with with metadata", () => {
-        instance.options.getCachedMetadata = links => links.map(
-          link => {
-            link.hasMetadata = true;
-            return link;
-          }
-        );
-
         return instance.getData().then(result => {
           assert.equal(result.data.length, testLinks.length);
         });

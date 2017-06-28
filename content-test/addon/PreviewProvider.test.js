@@ -31,18 +31,6 @@ describe("PreviewProvider", () => {
       const fakeMetadataStore = {asyncCacheKeyExists: url => Promise.resolve(url)};
       previewProvider = new PreviewProvider({}, fakeMetadataStore);
 
-      const url1 = previewProvider.asyncLinkExist("https://developer.mozilla.org/");
-      const url2 = previewProvider.asyncLinkExist("https://developer.mozilla.org");
-
-      return Promise.all([url1, url2]).then(([v1, v2]) => {
-        assert.equal(v1, v2);
-      });
-    });
-
-    it("should sanitize the url before calling createCacheKey", () => {
-      const fakeMetadataStore = {asyncCacheKeyExists: url => Promise.resolve(url)};
-      previewProvider = new PreviewProvider({}, fakeMetadataStore);
-
       const url1 = previewProvider.asyncLinkExist("https://developer.mozilla.org/search?bar=foo");
       const url2 = previewProvider.asyncLinkExist("https://developer.mozilla.org/search");
 
