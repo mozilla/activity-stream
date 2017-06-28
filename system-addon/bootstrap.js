@@ -63,7 +63,11 @@ function init(reason) {
   }
   const options = Object.assign({}, startupData || {}, ACTIVITY_STREAM_OPTIONS);
   activityStream = new ActivityStream(options);
-  activityStream.init(reason);
+  try {
+    activityStream.init(reason);
+  } catch (e) {
+    Cu.reportError(e);
+  }
 }
 
 /**

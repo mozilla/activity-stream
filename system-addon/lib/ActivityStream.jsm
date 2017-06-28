@@ -110,13 +110,13 @@ this.ActivityStream = class ActivityStream {
     this._defaultPrefs = new DefaultPrefs(PREFS_CONFIG);
   }
   init() {
-    this.initialized = true;
     this._defaultPrefs.init();
     this.store.init(this.feeds);
     this.store.dispatch({
       type: at.INIT,
       data: {version: this.options.version}
     });
+    this.initialized = true;
   }
   uninit() {
     this.store.dispatch({type: at.UNINIT});
