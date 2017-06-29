@@ -24,7 +24,9 @@ describe("Top Sites Feed", () => {
       activityStreamLinks: {getTopSites: sandbox.spy(() => Promise.resolve(links))},
       pinnedLinks: {
         links: [],
-        isPinned: () => false
+        isPinned: () => false,
+        pin: sandbox.spy(),
+        unpin: sandbox.spy()
       }
     };
     globals.set("NewTabUtils", fakeNewTabUtils);
@@ -218,6 +220,28 @@ describe("Top Sites Feed", () => {
       sinon.stub(openWindowAction._target.browser.ownerGlobal, "openLinkIn");
       feed.onAction(openWindowAction);
       assert.calledOnce(openWindowAction._target.browser.ownerGlobal.openLinkIn);
+    });
+    it("should call refresh and pin with correct paramaeters on TOP_SITES_PIN", () => {
+      const pinAction = {
+        type: at.TOP_SITES_PIN,
+        data: {site: {url: "foo.com"}, index: 7}
+      };
+      sinon.stub(feed, "refresh");
+      feed.onAction(pinAction);
+      assert.calledOnce(feed.refresh);
+      assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
+      assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, pinAction.data.site, pinAction.data.index);
+    });
+    it("should call refresh and unpin with correct paramaeters on TOP_SITES_UNPIN", () => {
+      const unpinAction = {
+        type: at.TOP_SITES_UNPIN,
+        data: {site: {url: "foo.com"}}
+      };
+      sinon.stub(feed, "refresh");
+      feed.onAction(unpinAction);
+      assert.calledOnce(feed.refresh);
+      assert.calledOnce(fakeNewTabUtils.pinnedLinks.unpin);
+      assert.calledWith(fakeNewTabUtils.pinnedLinks.unpin, unpinAction.data.site);
     });
   });
 });

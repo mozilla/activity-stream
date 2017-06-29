@@ -98,6 +98,12 @@ this.TopSitesFeed = class TopSitesFeed {
     const win = action._target.browser.ownerGlobal;
     win.openLinkIn(action.data.url, "window", {private: isPrivate});
   }
+  pin(action) {
+    NewTabUtils.pinnedLinks.pin(action.data.site, action.data.index);
+  }
+  unpin(action) {
+    NewTabUtils.pinnedLinks.unpin(action.data.site);
+  }
   onAction(action) {
     let realRows;
     switch (action.type) {
@@ -121,10 +127,17 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.OPEN_NEW_WINDOW:
         this.openNewWindow(action);
         break;
-      case at.OPEN_PRIVATE_WINDOW: {
+      case at.OPEN_PRIVATE_WINDOW:
         this.openNewWindow(action, true);
         break;
-      }
+      case at.TOP_SITES_PIN:
+        this.pin(action);
+        this.refresh(action);
+        break;
+      case at.TOP_SITES_UNPIN:
+        this.unpin(action);
+        this.refresh(action);
+        break;
     }
   }
 };
