@@ -1,4 +1,4 @@
-const {BOOKMARKS_LENGTH} = require("common/constants");
+const {BOOKMARKS_LENGTH, BOOKMARKS_THRESHOLD} = require("common/constants");
 const moment = require("moment");
 const testLinks = [{url: "foo.com", hostname: "foo.com"},
   {url: "bar.com", hostname: "bar.com"}];
@@ -8,7 +8,12 @@ const getCachedMetadata = links => links.map(
     return link;
   }
 );
-const PlacesProvider = {links: {getBookmarks: sinon.spy(() => Promise.resolve(testLinks))}};
+const PlacesProvider = {
+  links: {
+    getBookmarks: sinon.spy(() => Promise.resolve(testLinks)),
+    getDefaultBookmarksAge: sinon.spy(() => Promise.resolve(50))
+  }
+};
 const testScreenshot = "screenshot.jpg";
 
 const createStoreWithState = state => ({
@@ -22,10 +27,13 @@ describe("VisitAgainFeed", () => {
   let BookmarksFeed;
   let instance;
   let reduxState;
+  let fakeSimplePrefs;
   beforeEach(() => {
+    fakeSimplePrefs = {prefs: {defaultBookmarksAge: "0"}};
     BookmarksFeed = require("inject!addon/Feeds/BookmarksFeed")({
       "addon/PlacesProvider": {PlacesProvider},
-      "addon/lib/getScreenshot": sinon.spy(() => testScreenshot)
+      "addon/lib/getScreenshot": sinon.spy(() => testScreenshot),
+      "sdk/simple-prefs": fakeSimplePrefs
     });
     Object.keys(PlacesProvider.links).forEach(k => PlacesProvider.links[k].reset());
     instance = new BookmarksFeed({getCachedMetadata});
@@ -50,10 +58,13 @@ describe("VisitAgainFeed", () => {
           assert.lengthOf(action.data, 2);
         })
     );
-    it("should call getBookmarks with a limit of BOOKMARKS_LENGTH", () =>
+    it("should call getBookmarks with a limit of BOOKMARKS_LENGTH and defaultBookmarkAge", () =>
       instance.getData()
         .then(() => {
-          assert.calledWithExactly(PlacesProvider.links.getBookmarks, {limit: BOOKMARKS_LENGTH});
+          assert.calledWithExactly(PlacesProvider.links.getBookmarks, {
+            limit: BOOKMARKS_LENGTH,
+            ageMin: 50 + BOOKMARKS_THRESHOLD
+          });
         })
     );
     it("should run sites through getCachedMetadata", () =>
@@ -98,6 +109,34 @@ describe("VisitAgainFeed", () => {
       it("should allow links with with metadata", () =>
         instance.getData().then(result => assert.equal(result.data.length, testLinks.length))
       );
+    });
+    describe("fetching bookmark timestamp", () => {
+      it("should call getDefaultBookmarksAge when the defaultBookmarksAge is not set (is 0)", () =>
+        instance.getData().then(() => {
+          assert.calledOnce(PlacesProvider.links.getDefaultBookmarksAge);
+        }
+      ));
+      it("should set defaultBookmarksAge to '50' (the string)", () =>
+        instance.getData().then(() => {
+          assert.equal(fakeSimplePrefs.prefs.defaultBookmarksAge, "50");
+        }
+      ));
+      it("should use the defaultBookmarksAge pref value instead of placesProvider query", () => {
+        fakeSimplePrefs = {prefs: {defaultBookmarksAge: "99"}};
+        BookmarksFeed = require("inject!addon/Feeds/BookmarksFeed")({
+          "addon/PlacesProvider": {PlacesProvider},
+          "addon/lib/getScreenshot": sinon.spy(() => testScreenshot),
+          "sdk/simple-prefs": fakeSimplePrefs
+        });
+        instance = new BookmarksFeed({getCachedMetadata});
+
+        return instance.getData().then(result => {
+          assert.calledWithExactly(PlacesProvider.links.getBookmarks, {
+            limit: BOOKMARKS_LENGTH,
+            ageMin: 99 + BOOKMARKS_THRESHOLD
+          });
+        });
+      });
     });
   });
   describe("#onAction", () => {

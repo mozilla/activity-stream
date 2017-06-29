@@ -225,6 +225,12 @@
       "title": "Collapse the Visit Again section on the New Tab page leaving only section title visible",
       "type": "bool",
       "value": false
+    },
+    {
+      "name": "defaultBookmarksAge",
+      "title": "Timestamp of oldest bookmark used to filter out default bookmarks. String type used in order to support large timestamp value.",
+      "type": "string",
+      "value": "0"
     }
   ],
   "repository": "mozilla/activity-stream",

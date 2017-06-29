@@ -1,9 +1,10 @@
 const {Cu} = require("chrome");
 const {PlacesProvider} = require("addon/PlacesProvider");
 const Feed = require("addon/lib/Feed");
-const {BOOKMARKS_LENGTH} = require("common/constants");
+const {BOOKMARKS_LENGTH, BOOKMARKS_THRESHOLD} = require("common/constants");
 const am = require("common/action-manager");
 const getScreenshot = require("addon/lib/getScreenshot");
+const simplePrefs = require("sdk/simple-prefs");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -14,6 +15,20 @@ module.exports = class BookmarksFeed extends Feed {
     super(options);
     this.getScreenshot = getScreenshot;
     this.missingData = false;
+  }
+
+  _getDefaultBookmarksAge() {
+    return Task.spawn(function*() {
+      const pref = parseInt(simplePrefs.prefs.defaultBookmarksAge, 10);
+
+      if (pref && pref !== 0) {
+        return pref;
+      }
+
+      const result = yield PlacesProvider.links.getDefaultBookmarksAge();
+      simplePrefs.prefs.defaultBookmarksAge = result.toString();
+      return result;
+    });
   }
 
   /**
@@ -38,8 +53,12 @@ module.exports = class BookmarksFeed extends Feed {
   getData() {
     return Task.spawn(function*() {
       let links;
+      const defaultBookmarksAge = yield this._getDefaultBookmarksAge();
       // Get links from places
-      links = yield PlacesProvider.links.getBookmarks({limit: BOOKMARKS_LENGTH});
+      links = yield PlacesProvider.links.getBookmarks({
+        limit: BOOKMARKS_LENGTH,
+        ageMin: defaultBookmarksAge + BOOKMARKS_THRESHOLD
+      });
 
       // Get metadata from PreviewProvider
       links = yield this.options.getCachedMetadata(links, "BOOKMARKS_RESPONSE");

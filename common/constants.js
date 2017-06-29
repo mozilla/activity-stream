@@ -22,6 +22,8 @@ module.exports = {
   // in case the user will remove some of them we still have 3 items to display.
   BOOKMARKS_LENGTH: 6,
   BOOKMARKS_DISPLAYED_LENGTH: 3,
+  // Delay amount added to oldest bookmarkAdded timestamp, used to filter out default browser bookmarks.
+  BOOKMARKS_THRESHOLD: 5000,
 
   // Number of links requested from placesProvider.
   VISITAGAIN_LENGTH: 24,
@@ -52,7 +54,8 @@ module.exports = {
     "collapseBookmarks": 1 << 6,
     "showBookmarks": 1 << 7,
     "showVisitAgain": 1 << 8,
-    "collapseVisitAgain": 1 << 9
+    "collapseVisitAgain": 1 << 9,
+    "defaultBookmarksAge": 1 << 10
   },
 
   // The minimum size to consider an icon high res

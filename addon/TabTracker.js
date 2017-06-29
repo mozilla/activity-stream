@@ -22,7 +22,7 @@ const UNDESIRED_NOTIF = "undesired-event";
 const IMPRESSION_NOTIF = "impression-stats";
 const USER_PREFS = [
   "showSearch", "showTopSites", "showPocket", "showHighlights", "showBookmarks", "showMoreTopSites",
-  "collapseHighlights", "collapseBookmarks", "collapseVisitAgain", "showVisitAgain"
+  "collapseHighlights", "collapseBookmarks", "collapseVisitAgain", "showVisitAgain", "defaultBookmarksAge"
 ];
 
 function TabTracker(options) {
