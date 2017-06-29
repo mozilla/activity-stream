@@ -39,6 +39,14 @@
    background-image: url('#{$image-path}glyph-settings-16.svg');
  }
 
+  &.icon-pin {
+    background-image: url('#{$image-path}glyph-pin-16.svg');
+  }
+
+  &.icon-unpin {
+    background-image: url('#{$image-path}glyph-unpin-16.svg');
+  }
+
  &.icon-pin-small {
    background-image: url('#{$image-path}glyph-pin-12.svg');
    background-size: $smaller-icon-size;

@@ -34,6 +34,25 @@ describe("<LinkMenu>", () => {
     assert.ok(!middleItem.first);
     assert.ok(!middleItem.last);
   });
+  it("should show Pin option by default (unpinned site)", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: ""}} source={"TOP_SITES"} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    const item = options[1];
+    assert.equal("menu_action_pin", item.id);
+  });
+  it("should show Unpin option for a pinned site", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", isPinned: true}} source={"TOP_SITES"} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    const item = options[1];
+    assert.equal("menu_action_unpin", item.id);
+  });
+  it("should not show Pin or Unpin option if source is not TOP_SITES", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: ""}} source={"FOO_BAR"} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    for (let option of options) {
+      assert.isFalse(["menu_action_pin", "menu_action_unpin"].includes(option.id));
+    }
+  });
   describe(".onClick", () => {
     const FAKE_INDEX = 3;
     const FAKE_SOURCE = "TOP_SITES";

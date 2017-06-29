@@ -2,6 +2,7 @@ const React = require("react");
 const {injectIntl} = require("react-intl");
 const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+const TOP_SITES_SOURCE = "TOP_SITES";
 
 const RemoveBookmark = site => ({
   id: "menu_action_remove_bookmark",
@@ -70,18 +71,44 @@ const DeleteUrl = site => ({
   userEvent: "DIALOG_OPEN"
 });
 
+const PinTopSite = (site, index) => ({
+  id: "menu_action_pin",
+  icon: "pin",
+  action: ac.SendToMain({
+    type: at.TOP_SITES_PIN,
+    data: {site: {url: site.url}, index}
+  }),
+  userEvent: "PIN"
+});
+
+const UnpinTopSite = site => ({
+  id: "menu_action_unpin",
+  icon: "unpin",
+  action: ac.SendToMain({
+    type: at.TOP_SITES_UNPIN,
+    data: {site: {url: site.url}}
+  }),
+  userEvent: "UNPIN"
+});
+
 class LinkMenu extends React.Component {
   getOptions() {
     const props = this.props;
-    const {site} = props;
+    const {site, index, source} = props;
     const isBookmark = site.bookmarkGuid;
     const isDefault = site.isDefault;
+    const isPinned = site.isPinned;
 
     const options = [
 
       // Bookmarks
       !isDefault && (isBookmark ? RemoveBookmark(site) : AddBookmark(site)),
-      !isDefault && {type: "separator"},
+
+      // Pinning
+      (source === TOP_SITES_SOURCE) && (isPinned ? UnpinTopSite(site) : PinTopSite(site, index)),
+
+      // Separator
+      (!isDefault || (source === TOP_SITES_SOURCE)) && {type: "separator"},
 
       // Menu items for all sites
       OpenInNewWindow(site),
@@ -101,8 +128,8 @@ class LinkMenu extends React.Component {
           if (userEvent) {
             props.dispatch(ac.UserEvent({
               event: userEvent,
-              source: props.source,
-              action_position: props.index
+              source,
+              action_position: index
             }));
           }
         };
