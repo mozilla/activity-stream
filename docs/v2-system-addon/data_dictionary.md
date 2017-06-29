@@ -110,7 +110,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `ip` | [Auto populated by Onyx] The IP address of the client. | :two:
 | `locale` | [Auto populated by Onyx] The browser chrome's language (eg. en-US). | :two:
 | `load_trigger_ts` | [Optional][Server Counter][Server Alert for too many omissions]  DOMHighResTimeStamp of the action perceived by the user to trigger the load of this page. | :one:
-| `load_trigger_type` | [Optional][Server Counter][Server Alert for too many omissions] Currently only "menu_plus_or_keyboard" allowed. | :one:
+| `load_trigger_type` | [Server Counter][Server Alert for too many omissions] Either ["menu_plus_or_keyboard", "unexpected"]. | :one:
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`MetadataService` or `Local` or `TippyTopProvider`). | :one:
 | `page` | [Required] Either ["NEW_TAB", "HOME"]. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:

@@ -82,8 +82,8 @@ const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
     //
     // Not required at least for the error cases where the observer event
     // doesn't fire
-    load_trigger_type: Joi.valid(["menu_plus_or_keyboard"])
-      .notes(["server counter", "server counter alert"]),
+    load_trigger_type: Joi.valid(["menu_plus_or_keyboard", "unexpected"])
+      .notes(["server counter", "server counter alert"]).required(),
 
     // When the page itself receives an event that document.visibilityState
     // == visible.
