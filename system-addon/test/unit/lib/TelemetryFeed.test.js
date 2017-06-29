@@ -171,11 +171,12 @@ describe("TelemetryFeed", () => {
         assert.propertyVal(ping, "session_id", sessionID);
         assert.propertyVal(ping, "page", "about:newtab");
       });
-      it("should create an unexpected session ping if no session yet portID is supplied", async () => {
+      it("should create an unexpected base ping if no session yet portID is supplied", async () => {
         const ping = await instance.createPing("foo");
 
         assert.validate(ping, BasePing);
         assert.propertyVal(ping, "page", "about:newtab");
+        assert.propertyVal(instance.sessions.get("foo").perf, "load_trigger_type", "unexpected");
       });
     });
     describe("#createUserEvent", () => {
@@ -263,6 +264,21 @@ describe("TelemetryFeed", () => {
         assert.propertyVal(ping, "session_id", FAKE_UUID);
         assert.propertyVal(ping, "page", "about:newtab");
         assert.propertyVal(ping, "session_duration", 12345);
+      });
+      it("should create a valid unexpected session event", async () => {
+        const ping = await instance.createSessionEndEvent({
+          session_id: FAKE_UUID,
+          page: "about:newtab",
+          session_duration: 12345,
+          perf: {load_trigger_type: "unexpected"}
+        });
+
+        // Is it valid?
+        assert.validate(ping, SessionPing);
+        assert.propertyVal(ping, "session_id", FAKE_UUID);
+        assert.propertyVal(ping, "page", "about:newtab");
+        assert.propertyVal(ping, "session_duration", 12345);
+        assert.propertyVal(ping.perf, "load_trigger_type", "unexpected");
       });
     });
   });
