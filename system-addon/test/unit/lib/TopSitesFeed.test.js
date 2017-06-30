@@ -4,6 +4,7 @@ const {UPDATE_TIME, TOP_SITES_SHOWMORE_LENGTH} = require("lib/TopSitesFeed.jsm")
 const {FakePrefs, GlobalOverrider} = require("test/unit/utils");
 const action = {meta: {fromTarget: {}}};
 const {actionTypes: at} = require("common/Actions.jsm");
+const {insertPinned} = require("common/Reducers.jsm");
 const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({url: `site${i}.com`}));
 const FAKE_SCREENSHOT = "data123";
 
@@ -32,7 +33,10 @@ describe("Top Sites Feed", () => {
     globals.set("NewTabUtils", fakeNewTabUtils);
     globals.set("PreviewProvider", {getThumbnail: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))});
     FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
-    ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({"lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs}}));
+    ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
+      "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
+      "common/Reducers.jsm": {insertPinned}
+    }));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
     links = FAKE_LINKS;
@@ -56,54 +60,6 @@ describe("Top Sites Feed", () => {
       FakePrefs.prototype.prefs["default.sites"] = "";
       feed.init();
       assert.equal(DEFAULT_TOP_SITES.length, 0);
-    });
-  });
-  describe("#sortLinks", () => {
-    beforeEach(() => {
-      feed.init();
-    });
-
-    it("should place pinned links where they belong", () => {
-      const pinned = [
-        {"url": "http://github.com/mozilla/activity-stream", "title": "moz/a-s"},
-        {"url": "http://example.com", "title": "example"}
-      ];
-      const result = feed.sortLinks(links, pinned);
-      for (let index of [0, 1]) {
-        assert.equal(result[index].url, pinned[index].url);
-        assert.ok(result[index].isPinned);
-        assert.equal(result[index].pinTitle, pinned[index].title);
-        assert.equal(result[index].pinIndex, index);
-      }
-      assert.deepEqual(result.slice(2), links.slice(0, -2));
-    });
-    it("should handle empty slots in the pinned list", () => {
-      const pinned = [
-        null,
-        {"url": "http://github.com/mozilla/activity-stream", "title": "moz/a-s"},
-        null,
-        null,
-        {"url": "http://example.com", "title": "example"}
-      ];
-      const result = feed.sortLinks(links, pinned);
-      for (let index of [1, 4]) {
-        assert.equal(result[index].url, pinned[index].url);
-        assert.ok(result[index].isPinned);
-        assert.equal(result[index].pinTitle, pinned[index].title);
-        assert.equal(result[index].pinIndex, index);
-      }
-      result.splice(4, 1);
-      result.splice(1, 1);
-      assert.deepEqual(result, links.slice(0, -2));
-    });
-    it("should handle a pinned site past the end of the list of frecent+default", () => {
-      const pinned = [];
-      pinned[11] = {"url": "http://github.com/mozilla/activity-stream", "title": "moz/a-s"};
-      const result = feed.sortLinks([], pinned);
-      assert.equal(result[11].url, pinned[11].url);
-      assert.isTrue(result[11].isPinned);
-      assert.equal(result[11].pinTitle, pinned[11].title);
-      assert.equal(result[11].pinIndex, 11);
     });
   });
   describe("#getLinksWithDefaults", () => {
@@ -157,6 +113,13 @@ describe("Top Sites Feed", () => {
           assert.calledWith(feed.getScreenshot, link.url);
         }
       });
+    });
+    it("should handle empty slots in the resulting top sites array", async () => {
+      links = [FAKE_LINKS[0]];
+      fakeNewTabUtils.pinnedLinks.links = [null, null, FAKE_LINKS[1], null, null, null, null, null, FAKE_LINKS[2]];
+      sandbox.stub(feed, "getScreenshot");
+      await feed.refresh(action);
+      assert.calledOnce(feed.store.dispatch);
     });
   });
   describe("getScreenshot", () => {
@@ -221,25 +184,22 @@ describe("Top Sites Feed", () => {
       feed.onAction(openWindowAction);
       assert.calledOnce(openWindowAction._target.browser.ownerGlobal.openLinkIn);
     });
-    it("should call refresh and pin with correct paramaeters on TOP_SITES_PIN", () => {
+    it("should call with correct paramaeters on TOP_SITES_PIN", () => {
       const pinAction = {
         type: at.TOP_SITES_PIN,
         data: {site: {url: "foo.com"}, index: 7}
       };
-      sinon.stub(feed, "refresh");
       feed.onAction(pinAction);
-      assert.calledOnce(feed.refresh);
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, pinAction.data.site, pinAction.data.index);
     });
-    it("should call refresh and unpin with correct paramaeters on TOP_SITES_UNPIN", () => {
+    it("should call unpin with correct paramaeters on TOP_SITES_UNPIN", () => {
+      fakeNewTabUtils.pinnedLinks.links = [null, null, {url: "foo.com"}, null, null, null, null, null, FAKE_LINKS[0]];
       const unpinAction = {
         type: at.TOP_SITES_UNPIN,
         data: {site: {url: "foo.com"}}
       };
-      sinon.stub(feed, "refresh");
       feed.onAction(unpinAction);
-      assert.calledOnce(feed.refresh);
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.unpin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.unpin, unpinAction.data.site);
     });
