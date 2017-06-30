@@ -664,6 +664,27 @@ exports.test_blocked_urls = function*(assert) {
   assert.equal(sizeQueryResult, 1, "bookmark size is one");
 };
 
+exports.test_getDefaultBookmarksAge = function*(assert) {
+  let provider = PlacesProvider.links;
+  let timeToday = timeDaysAgo(0) / 1000;
+  let timeEarlier = timeDaysAgo(2) / 1000;
+
+  let bookmarks = [
+    {url: "https://mozilla1.com/0", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK, dateAdded: new Date(timeToday)},
+    {url: "https://mozilla1.com/1", parentGuid: "root________", type: Bookmarks.TYPE_BOOKMARK, dateAdded: new Date(timeEarlier)}
+  ];
+
+  let bookmarksSize = yield provider.getBookmarksSize();
+  assert.equal(bookmarksSize, 0, "empty bookmarks yields 0 size");
+
+  for (let placeInfo of bookmarks) {
+    yield Bookmarks.insert(placeInfo);
+  }
+
+  const timestamp = yield provider.getDefaultBookmarksAge();
+  assert.equal(timestamp, timeEarlier * 1000, "should return the correct timestamp");
+};
+
 before(exports, function*() {
   let faviconExpiredPromise = new Promise(resolve => {
     systemEvents.once("places-favicons-expired", resolve);

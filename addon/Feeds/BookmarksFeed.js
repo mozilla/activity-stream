@@ -27,7 +27,6 @@ module.exports = class BookmarksFeed extends Feed {
 
       const result = yield PlacesProvider.links.getDefaultBookmarksAge();
       simplePrefs.prefs.defaultBookmarksAge = result.toString();
-      console.log("got default age pl", result);
       return result;
     });
   }
@@ -41,9 +40,7 @@ module.exports = class BookmarksFeed extends Feed {
    * @return bool
    */
   shouldGetScreenshot(link) {
-    return link.bookmarkGuid &&
-      link.hasMetadata &&
-      (!link.images || link.images.length === 0);
+    return link.bookmarkGuid && (!link.images || link.images.length === 0);
   }
 
   /**
@@ -83,9 +80,8 @@ module.exports = class BookmarksFeed extends Feed {
         }
       }
 
-      // Filter out bookmarks that don't have metadata and images.
-      // This will prevent default bookmarks with no visits from showing up.
-      links = links.filter(l => l.hasMetadata || l.title);
+      // Filter out bookmarks that don't have title.
+      links = links.filter(l => l.title);
 
       return am.actions.Response("BOOKMARKS_RESPONSE", links);
     }.bind(this));

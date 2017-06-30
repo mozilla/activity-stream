@@ -9,7 +9,7 @@ describe("getHighlightContextFromSite", () => {
   });
   it("should set type:bookmark for items that have a bookmark", () => {
     assert.deepEqual(
-      getHighlightContextFromSite({type: "history", lastVisitDate: 111, bookmarkDateCreated: 123}),
+      getHighlightContextFromSite({type: "history", lastVisitDate: 111, bookmarkDateCreated: 123, bookmarkLastModified: 123}),
       {type: "bookmark", date: 123}
     );
   });

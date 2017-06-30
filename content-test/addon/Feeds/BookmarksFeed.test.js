@@ -4,7 +4,7 @@ const testLinks = [{url: "foo.com", hostname: "foo.com"},
   {url: "bar.com", hostname: "bar.com"}];
 const getCachedMetadata = links => links.map(
   link => {
-    link.hasMetadata = true;
+    link.title = link.url;
     return link;
   }
 );
@@ -23,7 +23,7 @@ const createStoreWithState = state => ({
   }
 });
 
-describe("VisitAgainFeed", () => {
+describe("BookmarksFeed", () => {
   let BookmarksFeed;
   let instance;
   let reduxState;
@@ -95,9 +95,9 @@ describe("VisitAgainFeed", () => {
         store = createStoreWithState({});
         instance.connectStore(store);
       });
-      it("should filter links with hasMetadata set to false", () => {
+      it("should filter links with no title", () => {
         instance.options.getCachedMetadata = links => links.map(
-          link => { link.hasMetadata = false; return link; }
+          link => { link.title = null; return link; }
         );
         return instance.getData().then(result => {
           assert.equal(result.data.length, 0);
