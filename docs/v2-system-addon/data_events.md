@@ -256,11 +256,11 @@ perf: {
 
   // What was the perceived trigger of the load action:
   "load_trigger_type": [
-    "menu_plus_or_keyboard" // newtab only
+    "menu_plus_or_keyboard" | // newtab only
+    "unexpected" // sessions lacking actual start times
   ],
 
   // when the page itself receives an event that document.visibilityStat=visible
-  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2539
   "visibility_event_rcvd_ts": 2,
 }
 ```
