@@ -202,6 +202,7 @@ PreviewProvider.prototype = {
         cache_key: link.cache_key,
         lastVisitDate: link.lastVisitDate,
         bookmarkDateCreated: link.bookmarkDateCreated,
+        bookmarkLastModified: link.lastModified,
         bookmarkGuid: link.bookmarkGuid,
         hasMetadata: false
       };
@@ -349,7 +350,9 @@ PreviewProvider.prototype = {
    * Check if a single link exists in the metadata DB
    */
   asyncLinkExist: Task.async(function*(url) {
-    let key = createCacheKey(url);
+    const sanitizedURLObject = this._sanitizeURL(url);
+    const sanitizedURL = sanitizedURLObject ? sanitizedURLObject.toString() : "";
+    const key = createCacheKey(sanitizedURL);
     if (!key) {
       return false;
     }
