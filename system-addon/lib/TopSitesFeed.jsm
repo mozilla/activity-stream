@@ -8,6 +8,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
+const {insertPinned} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
@@ -39,23 +40,6 @@ this.TopSitesFeed = class TopSitesFeed {
     const action = {type: at.SCREENSHOT_UPDATED, data: {url, screenshot}};
     this.store.dispatch(ac.BroadcastToContent(action));
   }
-  sortLinks(frecent, pinned) {
-    let sortedLinks = [...frecent, ...DEFAULT_TOP_SITES];
-    sortedLinks = sortedLinks.filter(link => !NewTabUtils.pinnedLinks.isPinned(link));
-
-    // Insert the pinned links in their specified location
-    pinned.forEach((val, index) => {
-      if (!val) { return; }
-      let link = Object.assign({}, val, {isPinned: true, pinIndex: index, pinTitle: val.title});
-      if (index > sortedLinks.length) {
-        sortedLinks[index] = link;
-      } else {
-        sortedLinks.splice(index, 0, link);
-      }
-    });
-
-    return sortedLinks.slice(0, TOP_SITES_SHOWMORE_LENGTH);
-  }
   async getLinksWithDefaults(action) {
     let pinned = NewTabUtils.pinnedLinks.links;
     let frecent = await NewTabUtils.activityStreamLinks.getTopSites();
@@ -66,7 +50,7 @@ this.TopSitesFeed = class TopSitesFeed {
       frecent = frecent.filter(link => link && link.type !== "affiliate");
     }
 
-    return this.sortLinks(frecent, pinned);
+    return insertPinned([...frecent, ...DEFAULT_TOP_SITES], pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
   }
   async refresh(action) {
     const links = await this.getLinksWithDefaults();
@@ -74,13 +58,14 @@ this.TopSitesFeed = class TopSitesFeed {
     // First, cache existing screenshots in case we need to reuse them
     const currentScreenshots = {};
     for (const link of this.store.getState().TopSites.rows) {
-      if (link.screenshot) {
+      if (link && link.screenshot) {
         currentScreenshots[link.url] = link.screenshot;
       }
     }
 
     // Now, get a screenshot for every item
     for (let link of links) {
+      if (!link) { continue; }
       if (currentScreenshots[link.url]) {
         link.screenshot = currentScreenshots[link.url];
       } else {
@@ -98,11 +83,27 @@ this.TopSitesFeed = class TopSitesFeed {
     const win = action._target.browser.ownerGlobal;
     win.openLinkIn(action.data.url, "window", {private: isPrivate});
   }
+  _getPinnedWithData() {
+    // Augment the pinned links with any other extra data we have for them already in the store
+    const links = this.store.getState().TopSites.rows;
+    const pinned = NewTabUtils.pinnedLinks.links;
+    return pinned.map(pinnedLink => (pinnedLink ? Object.assign(links.find(link => link && link.url === pinnedLink.url) || {}, pinnedLink, {isDefault: false}) : pinnedLink));
+  }
   pin(action) {
-    NewTabUtils.pinnedLinks.pin(action.data.site, action.data.index);
+    const {site, index} = action.data;
+    NewTabUtils.pinnedLinks.pin(site, index);
+    this.store.dispatch(ac.BroadcastToContent({
+      type: at.PINNED_SITES_UPDATED,
+      data: this._getPinnedWithData()
+    }));
   }
   unpin(action) {
-    NewTabUtils.pinnedLinks.unpin(action.data.site);
+    const {site} = action.data;
+    NewTabUtils.pinnedLinks.unpin(site);
+    this.store.dispatch(ac.BroadcastToContent({
+      type: at.PINNED_SITES_UPDATED,
+      data: this._getPinnedWithData()
+    }));
   }
   onAction(action) {
     let realRows;
@@ -132,11 +133,9 @@ this.TopSitesFeed = class TopSitesFeed {
         break;
       case at.TOP_SITES_PIN:
         this.pin(action);
-        this.refresh(action);
         break;
       case at.TOP_SITES_UNPIN:
         this.unpin(action);
-        this.refresh(action);
         break;
     }
   }

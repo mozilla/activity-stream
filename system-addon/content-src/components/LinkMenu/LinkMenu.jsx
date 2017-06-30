@@ -2,6 +2,7 @@ const React = require("react");
 const {injectIntl} = require("react-intl");
 const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+const shortURL = require("content-src/lib/short-url");
 const TOP_SITES_SOURCE = "TOP_SITES";
 
 const RemoveBookmark = site => ({
@@ -76,7 +77,7 @@ const PinTopSite = (site, index) => ({
   icon: "pin",
   action: ac.SendToMain({
     type: at.TOP_SITES_PIN,
-    data: {site: {url: site.url}, index}
+    data: {site: {url: site.url, title: shortURL(site)}, index}
   }),
   userEvent: "PIN"
 });

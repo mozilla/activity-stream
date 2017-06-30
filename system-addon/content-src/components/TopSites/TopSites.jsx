@@ -60,7 +60,7 @@ class TopSite extends React.Component {
 const TopSites = props => (<section>
   <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
-    {props.TopSites.rows.map((link, index) => <TopSite
+    {props.TopSites.rows.map((link, index) => link && <TopSite
       key={link.url}
       dispatch={props.dispatch}
       link={link}
