@@ -797,7 +797,7 @@ Links.prototype = {
     const columns = ["defaultBookmarksAge"];
     let sqlQuery = `SELECT dateAdded AS defaultBookmarksAge
                     FROM moz_bookmarks
-                    ORDER BY dateAdded DESC
+                    ORDER BY dateAdded ASC
                     LIMIT 1`;
 
     const result = yield this.executePlacesQuery(sqlQuery, {columns});

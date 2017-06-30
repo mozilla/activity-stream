@@ -14,10 +14,9 @@ module.exports = function getHighlightContextFromSite(site) {
   if (site.context_message) {
     result.label = site.context_message;
   }
-
-  if (site.bookmarkDateCreated) {
+  if (site.bookmarkLastModified) {
     result.type = "bookmark";
-    result.date = site.bookmarkDateCreated;
+    result.date = site.bookmarkLastModified;
   // syncedFrom and isOpen are not currently implemented, but they
   // will be added in the future
   } else if (site.syncedFrom) {

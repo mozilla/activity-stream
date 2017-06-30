@@ -202,6 +202,7 @@ PreviewProvider.prototype = {
         cache_key: link.cache_key,
         lastVisitDate: link.lastVisitDate,
         bookmarkDateCreated: link.bookmarkDateCreated,
+        bookmarkLastModified: link.lastModified,
         bookmarkGuid: link.bookmarkGuid,
         hasMetadata: false
       };

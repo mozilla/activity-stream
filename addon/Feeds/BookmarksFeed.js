@@ -19,14 +19,15 @@ module.exports = class BookmarksFeed extends Feed {
 
   _getDefaultBookmarksAge() {
     return Task.spawn(function*() {
-      const pref = parseInt(simplePrefs.prefs.defaultBookmarksAge, 10);
+      const prefValue = parseInt(simplePrefs.prefs.defaultBookmarksAge, 10);
 
-      if (pref && pref !== 0) {
-        return pref;
+      if (prefValue && prefValue !== 0) {
+        return prefValue;
       }
 
       const result = yield PlacesProvider.links.getDefaultBookmarksAge();
       simplePrefs.prefs.defaultBookmarksAge = result.toString();
+      console.log("got default age pl", result);
       return result;
     });
   }
@@ -54,6 +55,7 @@ module.exports = class BookmarksFeed extends Feed {
     return Task.spawn(function*() {
       let links;
       const defaultBookmarksAge = yield this._getDefaultBookmarksAge();
+
       // Get links from places
       links = yield PlacesProvider.links.getBookmarks({
         limit: BOOKMARKS_LENGTH,
@@ -83,7 +85,7 @@ module.exports = class BookmarksFeed extends Feed {
 
       // Filter out bookmarks that don't have metadata and images.
       // This will prevent default bookmarks with no visits from showing up.
-      links = links.filter(l => l.hasMetadata);
+      links = links.filter(l => l.hasMetadata || l.title);
 
       return am.actions.Response("BOOKMARKS_RESPONSE", links);
     }.bind(this));
