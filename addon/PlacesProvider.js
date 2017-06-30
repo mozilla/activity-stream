@@ -793,6 +793,9 @@ Links.prototype = {
     return this._processLinks(links);
   }),
 
+  /**
+   * Get the timestamp/dateAdded of the oldest bookmark.
+   */
   getDefaultBookmarksAge: Task.async(function*() {
     const columns = ["defaultBookmarksAge"];
     let sqlQuery = `SELECT dateAdded AS defaultBookmarksAge

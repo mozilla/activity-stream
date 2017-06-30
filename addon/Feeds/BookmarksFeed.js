@@ -17,6 +17,13 @@ module.exports = class BookmarksFeed extends Feed {
     this.missingData = false;
   }
 
+  /**
+   * Get the timestamp of the oldest bookmark. Used to filter out default bookmarks.
+   * Tries to fetch from prefs first otherwise goes out and does a query in PlacesProvider for it.
+   *
+   * @returns Integer Timestamp with dateAdded of oldest bookmark.
+   * @private
+   */
   _getDefaultBookmarksAge() {
     return Task.spawn(function*() {
       const prefValue = parseInt(simplePrefs.prefs.defaultBookmarksAge, 10);
@@ -34,7 +41,6 @@ module.exports = class BookmarksFeed extends Feed {
   /**
    * shouldGetScreenshot - Returns true if the link/site provided meets the following:
    * - is a bookmark
-   * - has metadata
    * - doesn't have any images
    *
    * @return bool
