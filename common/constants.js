@@ -54,8 +54,7 @@ module.exports = {
     "collapseBookmarks": 1 << 6,
     "showBookmarks": 1 << 7,
     "showVisitAgain": 1 << 8,
-    "collapseVisitAgain": 1 << 9,
-    "defaultBookmarksAge": 1 << 10
+    "collapseVisitAgain": 1 << 9
   },
 
   // The minimum size to consider an icon high res
