@@ -1,3 +1,12 @@
+<a name="1.14.1"></a>
+## 1.14.1 (2017-07-04)
+
+* 1.14.0 changelog ([466fba6](https://github.com/mozilla/activity-stream/commit/466fba6))
+* 1.14.1 ([b212502](https://github.com/mozilla/activity-stream/commit/b212502))
+* fix(db): 2817 - Add shutdown blocker for metadata store ([78d6ddf](https://github.com/mozilla/activity-stream/commit/78d6ddf))
+
+
+
 <a name="1.14.0"></a>
 # 1.14.0 (2017-06-28)
 
