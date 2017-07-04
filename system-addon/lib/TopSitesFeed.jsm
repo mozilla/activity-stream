@@ -52,7 +52,7 @@ this.TopSitesFeed = class TopSitesFeed {
 
     return insertPinned([...frecent, ...DEFAULT_TOP_SITES], pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
   }
-  async refresh(action) {
+  async refresh(target = null) {
     const links = await this.getLinksWithDefaults();
 
     // First, cache existing screenshots in case we need to reuse them
@@ -72,11 +72,15 @@ this.TopSitesFeed = class TopSitesFeed {
         this.getScreenshot(link.url);
       }
     }
-
     const newAction = {type: at.TOP_SITES_UPDATED, data: links};
 
-    // Send an update to content so the preloaded tab can get the updated content
-    this.store.dispatch(ac.SendToContent(newAction, action.meta.fromTarget));
+    if (target) {
+      // Send an update to content so the preloaded tab can get the updated content
+      this.store.dispatch(ac.SendToContent(newAction, target));
+    } else {
+      // Broadcast an update to all open content pages
+      this.store.dispatch(ac.BroadcastToContent(newAction));
+    }
     this.lastUpdated = Date.now();
   }
   openNewWindow(action, isPrivate = false) {
@@ -122,7 +126,7 @@ this.TopSitesFeed = class TopSitesFeed {
           // is greater than 15 minutes, refresh the data.
           (Date.now() - this.lastUpdated >= UPDATE_TIME)
         ) {
-          this.refresh(action);
+          this.refresh(action.meta.fromTarget);
         }
         break;
       case at.OPEN_NEW_WINDOW:
@@ -130,6 +134,9 @@ this.TopSitesFeed = class TopSitesFeed {
         break;
       case at.OPEN_PRIVATE_WINDOW:
         this.openNewWindow(action, true);
+        break;
+      case at.PLACES_HISTORY_CLEARED:
+        this.refresh();
         break;
       case at.TOP_SITES_PIN:
         this.pin(action);
