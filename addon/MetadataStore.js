@@ -164,7 +164,19 @@ MetadataStore.prototype = {
     }
 
     try {
-      this._conn = yield Sqlite.openConnection({path: this._path});
+      let conn = yield Sqlite.openConnection({path: this._path});
+      // Set up shutdown blocker for sqlite.jsm to ensure this connection gets closed properly
+      try {
+        Sqlite.shutdown.addBlocker("Activity Stream metadata store connection is closing",
+                                   Task.async(function*() {
+                                     yield conn.close();
+                                   }));
+      } catch (ex) {
+        // It's too late to block shutdown, just close the connection.
+        yield conn.close();
+        throw ex;
+      }
+      this._conn = conn;
       yield this._conn.execute("PRAGMA journal_mode = WAL;");
       yield this._conn.execute("PRAGMA foreign_keys = ON;");
       yield this._asyncCreateTableSchema();
