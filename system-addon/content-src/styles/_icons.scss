@@ -47,6 +47,10 @@
     background-image: url('#{$image-path}glyph-unpin-16.svg');
   }
 
+  &.icon-pocket {
+    background-image: url('#{$image-path}glyph-pocket-16.svg');
+  }
+
  &.icon-pin-small {
    background-image: url('#{$image-path}glyph-pin-12.svg');
    background-size: $smaller-icon-size;

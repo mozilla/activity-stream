@@ -92,6 +92,16 @@ const UnpinTopSite = site => ({
   userEvent: "UNPIN"
 });
 
+const SaveToPocket = site => ({
+  id: "menu_action_save_to_pocket",
+  icon: "pocket",
+  action: ac.SendToMain({
+    type: at.SAVE_TO_POCKET,
+    data: {site: {url: site.url, title: site.title}}
+  }),
+  userEvent: "SAVE_TO_POCKET"
+});
+
 class LinkMenu extends React.Component {
   getOptions() {
     const props = this.props;
@@ -107,6 +117,9 @@ class LinkMenu extends React.Component {
 
       // Pinning
       (source === TOP_SITES_SOURCE) && (isPinned ? UnpinTopSite(site) : PinTopSite(site, index)),
+
+      // Save to Pocket
+      !isDefault && (source !== TOP_SITES_SOURCE) && SaveToPocket(site, index),
 
       // Separator
       (!isDefault || (source === TOP_SITES_SOURCE)) && {type: "separator"},
