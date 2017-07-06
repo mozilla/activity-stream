@@ -110,10 +110,16 @@ describe("<TopSite>", () => {
     const wrapper = shallow(<TopSite link={link} />);
     assert.isFalse(wrapper.find(LinkMenu).props().visible);
   });
-  it("should pass visible, onUpdate, site, and index to LinkMenu", () => {
+  it("should pass visible, onUpdate, site, options, and index to LinkMenu", () => {
     const wrapper = shallow(<TopSite link={link} />);
     const linkMenuProps = wrapper.find(LinkMenu).props();
-    ["visible", "onUpdate", "site", "index"].forEach(prop => assert.property(linkMenuProps, prop));
+    ["visible", "onUpdate", "site", "index", "options"].forEach(prop => assert.property(linkMenuProps, prop));
+  });
+  it("should pass through the correct menu options to LinkMenu", () => {
+    const wrapper = shallow(<TopSite link={link} />);
+    const linkMenuProps = wrapper.find(LinkMenu).props();
+    assert.deepEqual(linkMenuProps.options,
+      ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"]);
   });
   describe("#trackClick", () => {
     it("should call dispatch when the link is clicked", () => {

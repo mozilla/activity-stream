@@ -6,7 +6,7 @@ const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
 describe("<LinkMenu>", () => {
   let wrapper;
   beforeEach(() => {
-    wrapper = shallowWithIntl(<LinkMenu site={{url: ""}} dispatch={() => {}} />);
+    wrapper = shallowWithIntl(<LinkMenu site={{url: ""}} options={["CheckPinTopSite", "CheckBookmark", "OpenInNewWindow"]} dispatch={() => {}} />);
   });
   it("should render a ContextMenu element", () => {
     assert.ok(wrapper.find(ContextMenu));
@@ -20,7 +20,6 @@ describe("<LinkMenu>", () => {
     const options = wrapper.find(ContextMenu).props().options;
     const firstItem = options[0];
     const lastItem = options[options.length - 1];
-    const middleItem = options[Math.ceil(options.length / 2)];
 
     // first item should have {first: true}
     assert.isTrue(firstItem.first);
@@ -31,33 +30,44 @@ describe("<LinkMenu>", () => {
     assert.ok(!lastItem.first);
 
     // middle items should have neither
-    assert.ok(!middleItem.first);
-    assert.ok(!middleItem.last);
-  });
-  it("should show Pin option by default (unpinned site)", () => {
-    wrapper = shallowWithIntl(<LinkMenu site={{url: ""}} source={"TOP_SITES"} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
-    const item = options[1];
-    assert.equal("menu_action_pin", item.id);
-  });
-  it("should show Unpin option for a pinned site", () => {
-    wrapper = shallowWithIntl(<LinkMenu site={{url: "", isPinned: true}} source={"TOP_SITES"} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
-    const item = options[1];
-    assert.equal("menu_action_unpin", item.id);
-  });
-  it("should not show Pin or Unpin option if source is not TOP_SITES", () => {
-    wrapper = shallowWithIntl(<LinkMenu site={{url: ""}} source={"FOO_BAR"} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
-    for (let option of options) {
-      assert.isFalse(["menu_action_pin", "menu_action_unpin"].includes(option.id));
+    for (let i = 1; i < options.length - 1; i++) {
+      assert.ok(!options[i].first && !options[i].last);
     }
+  });
+  it("should show the correct options for default sites", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", isDefault: true}} options={["CheckBookmark"]} source={"TOP_SITES"} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    assert.ok(["menu_action_pin", "menu_action_unpin"].includes(options[0].id));
+    assert.ok(options[1].type === "separator");
+    assert.ok(options[2].id === "menu_action_open_new_window");
+    assert.ok(options[3].id === "menu_action_open_private_window");
+  });
+  it("should show Unpin option for a pinned site if CheckPinTopSite in options list", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", isPinned: true}} source={"TOP_SITES"} options={["CheckPinTopSite"]} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_unpin")));
+  });
+  it("should show Pin option for an unpinned site if CheckPinTopSite in options list", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", isPinned: false}} source={"TOP_SITES"} options={["CheckPinTopSite"]} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_pin")));
+  });
+  it("should show Unbookmark option for a bookmarked site if CheckBookmark in options list", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", bookmarkGuid: 1234}} source={"TOP_SITES"} options={["CheckBookmark"]} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_remove_bookmark")));
+  });
+  it("should show Bookmark option for an unbookmarked site if CheckBookmark in options list", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", bookmarkGuid: 0}} source={"TOP_SITES"} options={["CheckBookmark"]} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_bookmark")));
   });
   describe(".onClick", () => {
     const FAKE_INDEX = 3;
     const FAKE_SOURCE = "TOP_SITES";
     const dispatch = sinon.stub();
-    const options = shallowWithIntl(<LinkMenu site={{url: ""}} dispatch={dispatch} index={FAKE_INDEX} source={FAKE_SOURCE} />)
+    const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket"];
+    const options = shallowWithIntl(<LinkMenu site={{url: ""}} dispatch={dispatch} index={FAKE_INDEX} options={propOptions} source={FAKE_SOURCE} />)
       .find(ContextMenu).props().options;
     afterEach(() => dispatch.reset());
     options.filter(o => o.type !== "separator").forEach(option => {
