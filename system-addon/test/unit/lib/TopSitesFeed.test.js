@@ -17,6 +17,7 @@ describe("Top Sites Feed", () => {
   let links;
   let clock;
   let fakeNewTabUtils;
+  let fakeScreenshot;
 
   beforeEach(() => {
     globals = new GlobalOverrider();
@@ -30,12 +31,13 @@ describe("Top Sites Feed", () => {
         unpin: sandbox.spy()
       }
     };
+    fakeScreenshot = {getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))};
     globals.set("NewTabUtils", fakeNewTabUtils);
-    globals.set("PreviewProvider", {getThumbnail: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))});
     FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
-      "common/Reducers.jsm": {insertPinned}
+      "common/Reducers.jsm": {insertPinned},
+      "lib/Screenshots.jsm": {Screenshots: fakeScreenshot}
     }));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
@@ -123,10 +125,10 @@ describe("Top Sites Feed", () => {
     });
   });
   describe("getScreenshot", () => {
-    it("should call PreviewProvider.getThumbnail with the right url", async () => {
+    it("should call Screenshots.getScreenshotForURL with the right url", async () => {
       const url = "foo.com";
       await feed.getScreenshot(url);
-      assert.calledWith(global.PreviewProvider.getThumbnail, url);
+      assert.calledWith(fakeScreenshot.getScreenshotForURL, url);
     });
   });
   describe("#onAction", () => {

@@ -12,8 +12,8 @@ const {insertPinned} = Cu.import("resource://activity-stream/common/Reducers.jsm
 
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "PreviewProvider",
-  "resource:///modules/PreviewProvider.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "Screenshots",
+  "resource://activity-stream/lib/Screenshots.jsm");
 
 const TOP_SITES_SHOWMORE_LENGTH = 12;
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
@@ -36,7 +36,7 @@ this.TopSitesFeed = class TopSitesFeed {
     }
   }
   async getScreenshot(url) {
-    let screenshot = await PreviewProvider.getThumbnail(url);
+    let screenshot = await Screenshots.getScreenshotForURL(url);
     const action = {type: at.SCREENSHOT_UPDATED, data: {url, screenshot}};
     this.store.dispatch(ac.BroadcastToContent(action));
   }
