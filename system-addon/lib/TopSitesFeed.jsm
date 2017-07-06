@@ -131,6 +131,9 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.OPEN_PRIVATE_WINDOW:
         this.openNewWindow(action, true);
         break;
+      case at.PLACES_HISTORY_CLEARED:
+        this.refresh(action);
+        break;
       case at.TOP_SITES_PIN:
         this.pin(action);
         break;
