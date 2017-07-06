@@ -139,6 +139,9 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.SAVE_TO_POCKET:
         this.saveToPocket(action);
         break;
+      case at.PLACES_HISTORY_CLEARED:
+        this.refresh(action);
+        break;
       case at.TOP_SITES_PIN:
         this.pin(action);
         break;

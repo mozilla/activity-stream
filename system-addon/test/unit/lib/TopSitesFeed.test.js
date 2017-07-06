@@ -225,5 +225,10 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(global.Pocket.savePage);
       assert.calledWith(global.Pocket.savePage, saveToPocketAction._target.browser, saveToPocketAction.data.site.url, saveToPocketAction.data.site.title);
     });
+    it("should call refresh if we clear history with PLACES_HISTORY_CLEARED", () => {
+      sinon.stub(feed, "refresh");
+      feed.onAction({type: at.PLACES_HISTORY_CLEARED});
+      assert.calledOnce(feed.refresh);
+    });
   });
 });
