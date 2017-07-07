@@ -130,36 +130,37 @@ describe("Top Sites Feed", () => {
     });
   });
   describe("#onAction", () => {
+    const newTabAction = {type: at.NEW_TAB_LOAD, meta: {fromTarget: "target"}};
     it("should call refresh if there are not enough sites on NEW_TAB_LOAD", () => {
       feed.store.getState = function() { return {TopSites: {rows: []}}; };
       sinon.stub(feed, "refresh");
-      feed.onAction({type: at.NEW_TAB_LOAD});
-      assert.calledOnce(feed.refresh);
+      feed.onAction(newTabAction);
+      assert.calledWith(feed.refresh, newTabAction.meta.fromTarget);
     });
     it("should call refresh if there are not sites on NEW_TAB_LOAD, not counting defaults", () => {
       feed.store.getState = function() { return {TopSites: {rows: [{url: "foo.com"}, ...DEFAULT_TOP_SITES]}}; };
       sinon.stub(feed, "refresh");
-      feed.onAction({type: at.NEW_TAB_LOAD});
-      assert.calledOnce(feed.refresh);
+      feed.onAction(newTabAction);
+      assert.calledWith(feed.refresh, newTabAction.meta.fromTarget);
     });
     it("should not call refresh if there are enough sites on NEW_TAB_LOAD", () => {
       feed.lastUpdated = Date.now();
       sinon.stub(feed, "refresh");
-      feed.onAction({type: at.NEW_TAB_LOAD});
+      feed.onAction(newTabAction);
       assert.notCalled(feed.refresh);
     });
     it("should call refresh if .lastUpdated is too old on NEW_TAB_LOAD", () => {
       feed.lastUpdated = 0;
       clock.tick(UPDATE_TIME);
       sinon.stub(feed, "refresh");
-      feed.onAction({type: at.NEW_TAB_LOAD});
-      assert.calledOnce(feed.refresh);
+      feed.onAction(newTabAction);
+      assert.calledWith(feed.refresh, newTabAction.meta.fromTarget);
     });
     it("should not call refresh if .lastUpdated is less than update time on NEW_TAB_LOAD", () => {
       feed.lastUpdated = 0;
       clock.tick(UPDATE_TIME - 1);
       sinon.stub(feed, "refresh");
-      feed.onAction({type: at.NEW_TAB_LOAD});
+      feed.onAction(newTabAction);
       assert.notCalled(feed.refresh);
     });
     it("should call openNewWindow with the correct url on OPEN_NEW_WINDOW", () => {
@@ -202,6 +203,18 @@ describe("Top Sites Feed", () => {
       feed.onAction(unpinAction);
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.unpin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.unpin, unpinAction.data.site);
+    });
+    it("should call refresh without a target if we clear history with PLACES_HISTORY_CLEARED", () => {
+      sandbox.stub(feed, "refresh");
+      feed.onAction({type: at.PLACES_HISTORY_CLEARED});
+      assert.calledOnce(feed.refresh);
+      assert.equal(feed.refresh.firstCall.args[0], null);
+    });
+    it("should still dispatch an action even if there's no target provided", async () => {
+      sandbox.stub(feed, "getScreenshot");
+      await feed.refresh();
+      assert.calledOnce(feed.store.dispatch);
+      assert.propertyVal(feed.store.dispatch.firstCall.args[0], "type", at.TOP_SITES_UPDATED);
     });
   });
 });
