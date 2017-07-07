@@ -94,7 +94,7 @@ this.TopSitesFeed = class TopSitesFeed {
     // Augment the pinned links with any other extra data we have for them already in the store
     const links = this.store.getState().TopSites.rows;
     const pinned = NewTabUtils.pinnedLinks.links;
-    return pinned.map(pinnedLink => (pinnedLink ? Object.assign(links.find(link => link && link.url === pinnedLink.url) || {}, pinnedLink, {isDefault: false}) : pinnedLink));
+    return pinned.map(pinnedLink => (pinnedLink ? Object.assign(links.find(link => link && link.url === pinnedLink.url) || {}, pinnedLink) : pinnedLink));
   }
   pin(action) {
     const {site, index} = action.data;
