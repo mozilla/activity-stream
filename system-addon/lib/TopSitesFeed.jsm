@@ -43,12 +43,15 @@ this.TopSitesFeed = class TopSitesFeed {
   async getLinksWithDefaults(action) {
     let pinned = NewTabUtils.pinnedLinks.links;
     let frecent = await NewTabUtils.activityStreamLinks.getTopSites();
+    const defaultUrls = DEFAULT_TOP_SITES.map(site => site.url);
 
     if (!frecent) {
       frecent = [];
     } else {
       frecent = frecent.filter(link => link && link.type !== "affiliate");
     }
+
+    pinned = pinned.map(site => site && Object.assign({}, site, {isDefault: defaultUrls.indexOf(site.url) !== -1}));
 
     return insertPinned([...frecent, ...DEFAULT_TOP_SITES], pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
   }
