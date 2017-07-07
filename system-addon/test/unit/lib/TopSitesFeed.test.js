@@ -203,10 +203,5 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.unpin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.unpin, unpinAction.data.site);
     });
-    it("should call refresh if we clear history with PLACES_HISTORY_CLEARED", () => {
-      sinon.stub(feed, "refresh");
-      feed.onAction({type: at.PLACES_HISTORY_CLEARED});
-      assert.calledOnce(feed.refresh);
-    });
   });
 });
