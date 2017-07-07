@@ -1,6 +1,11 @@
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const shortURL = require("content-src/lib/short-url");
 
+/**
+ * List of functions that return items that can be included as menu options in a
+ * LinkMenu. All functions take the site as the first parameter, and optionally
+ * the index of the site.
+ */
 module.exports = {
   Separator: () => ({type: "separator"}),
   RemoveBookmark: site => ({

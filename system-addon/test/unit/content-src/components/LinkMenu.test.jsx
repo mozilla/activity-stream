@@ -37,6 +37,7 @@ describe("<LinkMenu>", () => {
   it("should show the correct options for default sites", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: "", isDefault: true}} options={["CheckBookmark"]} source={"TOP_SITES"} dispatch={() => {}} />);
     const options = wrapper.find(ContextMenu).props().options;
+    assert.ok(options.length === 4);
     assert.ok(["menu_action_pin", "menu_action_unpin"].includes(options[0].id));
     assert.ok(options[1].type === "separator");
     assert.ok(options[2].id === "menu_action_open_new_window");

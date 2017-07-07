@@ -3,6 +3,7 @@ const {injectIntl} = require("react-intl");
 const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
 const {actionCreators: ac} = require("common/Actions.jsm");
 const linkMenuOptions = require("content-src/lib/link-menu-options");
+const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow"];
 
 class LinkMenu extends React.Component {
   getOptions() {
@@ -10,7 +11,7 @@ class LinkMenu extends React.Component {
     const {site, index, source} = props;
 
     // Handle special case of default site
-    const propOptions = !site.isDefault ? props.options : ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow"];
+    const propOptions = !site.isDefault ? props.options : DEFAULT_SITE_MENU_OPTIONS;
 
     const options = propOptions.map(o => linkMenuOptions[o](site, index)).map(option => {
       const {action, id, type, userEvent} = option;

@@ -32,7 +32,6 @@ describe("Top Sites Feed", () => {
     };
     globals.set("NewTabUtils", fakeNewTabUtils);
     globals.set("PreviewProvider", {getThumbnail: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))});
-    globals.set("Pocket", {savePage: sandbox.spy(() => Promise.resolve())});
     FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
@@ -185,7 +184,7 @@ describe("Top Sites Feed", () => {
       feed.onAction(openWindowAction);
       assert.calledOnce(openWindowAction._target.browser.ownerGlobal.openLinkIn);
     });
-    it("should call with correct paramaeters on TOP_SITES_PIN", () => {
+    it("should call with correct parameters on TOP_SITES_PIN", () => {
       const pinAction = {
         type: at.TOP_SITES_PIN,
         data: {site: {url: "foo.com"}, index: 7}
@@ -203,27 +202,6 @@ describe("Top Sites Feed", () => {
       feed.onAction(unpinAction);
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.unpin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.unpin, unpinAction.data.site);
-    });
-    it("should call saveToPocket with correct parameters on SAVE_TO_POCKET", () => {
-      sinon.stub(feed, "saveToPocket");
-      const saveToPocketAction = {
-        type: at.SAVE_TO_POCKET,
-        data: {site: {url: "https://foo.com", title: "foo"}},
-        _target: {browser: {}}
-      };
-      feed.onAction(saveToPocketAction);
-      assert.calledOnce(feed.saveToPocket);
-      assert.calledWith(feed.saveToPocket, saveToPocketAction);
-    });
-    it("should call Pocket.savePage on saveToPocket with correct parameters", () => {
-      const saveToPocketAction = {
-        type: at.SAVE_TO_POCKET,
-        data: {site: {url: "https://foo.com", title: "foo"}},
-        _target: {browser: {}}
-      };
-      feed.onAction(saveToPocketAction);
-      assert.calledOnce(global.Pocket.savePage);
-      assert.calledWith(global.Pocket.savePage, saveToPocketAction._target.browser, saveToPocketAction.data.site.url, saveToPocketAction.data.site.title);
     });
     it("should call refresh if we clear history with PLACES_HISTORY_CLEARED", () => {
       sinon.stub(feed, "refresh");

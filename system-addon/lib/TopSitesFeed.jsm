@@ -14,8 +14,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "PreviewProvider",
   "resource:///modules/PreviewProvider.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "Pocket",
-  "chrome://pocket/content/Pocket.jsm");
 
 const TOP_SITES_SHOWMORE_LENGTH = 12;
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
@@ -107,9 +105,6 @@ this.TopSitesFeed = class TopSitesFeed {
       data: this._getPinnedWithData()
     }));
   }
-  saveToPocket(action) {
-    Pocket.savePage(action._target.browser, action.data.site.url, action.data.site.title);
-  }
   onAction(action) {
     let realRows;
     switch (action.type) {
@@ -135,9 +130,6 @@ this.TopSitesFeed = class TopSitesFeed {
         break;
       case at.OPEN_PRIVATE_WINDOW:
         this.openNewWindow(action, true);
-        break;
-      case at.SAVE_TO_POCKET:
-        this.saveToPocket(action);
         break;
       case at.PLACES_HISTORY_CLEARED:
         this.refresh(action);

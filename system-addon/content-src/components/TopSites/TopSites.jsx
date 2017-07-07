@@ -5,7 +5,7 @@ const shortURL = require("content-src/lib/short-url");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {actionCreators: ac} = require("common/Actions.jsm");
 const TOP_SITES_SOURCE = "TOP_SITES";
-const TOP_SITES_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow",
+const TOP_SITES_CONTEXT_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow",
   "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"];
 
 class TopSite extends React.Component {
@@ -55,7 +55,7 @@ class TopSite extends React.Component {
           site={link}
           index={index}
           source={TOP_SITES_SOURCE}
-          options={TOP_SITES_OPTIONS} />
+          options={TOP_SITES_CONTEXT_MENU_OPTIONS} />
     </li>);
   }
 }
