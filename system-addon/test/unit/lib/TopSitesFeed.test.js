@@ -184,7 +184,7 @@ describe("Top Sites Feed", () => {
       feed.onAction(openWindowAction);
       assert.calledOnce(openWindowAction._target.browser.ownerGlobal.openLinkIn);
     });
-    it("should call with correct paramaeters on TOP_SITES_PIN", () => {
+    it("should call with correct parameters on TOP_SITES_PIN", () => {
       const pinAction = {
         type: at.TOP_SITES_PIN,
         data: {site: {url: "foo.com"}, index: 7}
@@ -193,7 +193,7 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, pinAction.data.site, pinAction.data.index);
     });
-    it("should call unpin with correct paramaeters on TOP_SITES_UNPIN", () => {
+    it("should call unpin with correct parameters on TOP_SITES_UNPIN", () => {
       fakeNewTabUtils.pinnedLinks.links = [null, null, {url: "foo.com"}, null, null, null, null, null, FAKE_LINKS[0]];
       const unpinAction = {
         type: at.TOP_SITES_UNPIN,

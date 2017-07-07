@@ -41,7 +41,8 @@ const UserEventAction = Joi.object().keys({
       "BOOKMARK_DELETE",
       "BOOKMARK_ADD",
       "PIN",
-      "UNPIN"
+      "UNPIN",
+      "SAVE_TO_POCKET"
     ]).required(),
     source: Joi.valid(["TOP_SITES"]),
     action_position: Joi.number().integer()

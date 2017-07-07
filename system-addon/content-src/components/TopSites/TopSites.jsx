@@ -5,6 +5,8 @@ const shortURL = require("content-src/lib/short-url");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {actionCreators: ac} = require("common/Actions.jsm");
 const TOP_SITES_SOURCE = "TOP_SITES";
+const TOP_SITES_CONTEXT_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow",
+  "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"];
 
 class TopSite extends React.Component {
   constructor(props) {
@@ -52,7 +54,8 @@ class TopSite extends React.Component {
           onUpdate={val => this.setState({showContextMenu: val})}
           site={link}
           index={index}
-          source={TOP_SITES_SOURCE} />
+          source={TOP_SITES_SOURCE}
+          options={TOP_SITES_CONTEXT_MENU_OPTIONS} />
     </li>);
   }
 }

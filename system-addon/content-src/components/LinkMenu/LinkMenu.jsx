@@ -1,126 +1,19 @@
 const React = require("react");
 const {injectIntl} = require("react-intl");
 const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
-const shortURL = require("content-src/lib/short-url");
-const TOP_SITES_SOURCE = "TOP_SITES";
-
-const RemoveBookmark = site => ({
-  id: "menu_action_remove_bookmark",
-  icon: "bookmark-remove",
-  action: ac.SendToMain({
-    type: at.DELETE_BOOKMARK_BY_ID,
-    data: site.bookmarkGuid
-  }),
-  userEvent: "BOOKMARK_DELETE"
-});
-
-const AddBookmark = site => ({
-  id: "menu_action_bookmark",
-  icon: "bookmark",
-  action: ac.SendToMain({
-    type: at.BOOKMARK_URL,
-    data: site.url
-  }),
-  userEvent: "BOOKMARK_ADD"
-});
-
-const OpenInNewWindow = site => ({
-  id: "menu_action_open_new_window",
-  icon: "new-window",
-  action: ac.SendToMain({
-    type: at.OPEN_NEW_WINDOW,
-    data: {url: site.url}
-  }),
-  userEvent: "OPEN_NEW_WINDOW"
-});
-
-const OpenInPrivateWindow = site => ({
-  id: "menu_action_open_private_window",
-  icon: "new-window-private",
-  action: ac.SendToMain({
-    type: at.OPEN_PRIVATE_WINDOW,
-    data: {url: site.url}
-  }),
-  userEvent: "OPEN_PRIVATE_WINDOW"
-});
-
-const BlockUrl = site => ({
-  id: "menu_action_dismiss",
-  icon: "dismiss",
-  action: ac.SendToMain({
-    type: at.BLOCK_URL,
-    data: site.url
-  }),
-  userEvent: "BLOCK"
-});
-
-const DeleteUrl = site => ({
-  id: "menu_action_delete",
-  icon: "delete",
-  action: {
-    type: at.DIALOG_OPEN,
-    data: {
-      onConfirm: [
-        ac.SendToMain({type: at.DELETE_HISTORY_URL, data: site.url}),
-        ac.UserEvent({event: "DELETE"})
-      ],
-      body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],
-      confirm_button_string_id: "menu_action_delete"
-    }
-  },
-  userEvent: "DIALOG_OPEN"
-});
-
-const PinTopSite = (site, index) => ({
-  id: "menu_action_pin",
-  icon: "pin",
-  action: ac.SendToMain({
-    type: at.TOP_SITES_PIN,
-    data: {site: {url: site.url, title: shortURL(site)}, index}
-  }),
-  userEvent: "PIN"
-});
-
-const UnpinTopSite = site => ({
-  id: "menu_action_unpin",
-  icon: "unpin",
-  action: ac.SendToMain({
-    type: at.TOP_SITES_UNPIN,
-    data: {site: {url: site.url}}
-  }),
-  userEvent: "UNPIN"
-});
+const {actionCreators: ac} = require("common/Actions.jsm");
+const linkMenuOptions = require("content-src/lib/link-menu-options");
+const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow"];
 
 class LinkMenu extends React.Component {
   getOptions() {
     const props = this.props;
     const {site, index, source} = props;
-    const isBookmark = site.bookmarkGuid;
-    const isDefault = site.isDefault;
-    const isPinned = site.isPinned;
 
-    const options = [
+    // Handle special case of default site
+    const propOptions = !site.isDefault ? props.options : DEFAULT_SITE_MENU_OPTIONS;
 
-      // Bookmarks
-      !isDefault && (isBookmark ? RemoveBookmark(site) : AddBookmark(site)),
-
-      // Pinning
-      (source === TOP_SITES_SOURCE) && (isPinned ? UnpinTopSite(site) : PinTopSite(site, index)),
-
-      // Separator
-      (!isDefault || (source === TOP_SITES_SOURCE)) && {type: "separator"},
-
-      // Menu items for all sites
-      OpenInNewWindow(site),
-      OpenInPrivateWindow(site),
-
-      // Blocking and deleting
-      !isDefault && {type: "separator"},
-      !isDefault && BlockUrl(site),
-      !isDefault && DeleteUrl(site)
-
-    ].filter(o => o).map(option => {
+    const options = propOptions.map(o => linkMenuOptions[o](site, index)).map(option => {
       const {action, id, type, userEvent} = option;
       if (!type && id) {
         option.label = props.intl.formatMessage(option);
