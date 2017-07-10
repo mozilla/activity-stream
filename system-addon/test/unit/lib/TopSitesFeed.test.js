@@ -3,7 +3,7 @@ const injector = require("inject!lib/TopSitesFeed.jsm");
 const {UPDATE_TIME, TOP_SITES_SHOWMORE_LENGTH} = require("lib/TopSitesFeed.jsm");
 const {FakePrefs, GlobalOverrider} = require("test/unit/utils");
 const action = {meta: {fromTarget: {}}};
-const {actionTypes: at} = require("common/Actions.jsm");
+const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {insertPinned} = require("common/Reducers.jsm");
 const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({url: `site${i}.com`}));
 const FAKE_SCREENSHOT = "data123";
@@ -193,6 +193,41 @@ describe("Top Sites Feed", () => {
       feed.onAction(pinAction);
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, pinAction.data.site, pinAction.data.index);
+    });
+    it("should get correct isDefault and index property", () => {
+      // When calling _getPinnedWithData the state in `pinnedLinks` and in the store should merge.
+      const site = {url: "foo.com"};
+      const siteWithIndex = {url: "foo.com", isDefault: true, index: 7};
+      fakeNewTabUtils.pinnedLinks.links = [siteWithIndex];
+      feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: [site]}}; }};
+      const pinAction = {
+        type: at.TOP_SITES_PIN,
+        data: {}
+      };
+      feed.onAction(pinAction);
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({
+        type: at.PINNED_SITES_UPDATED,
+        data: [siteWithIndex]
+      }));
+    });
+    it("should get correct pinned links and data", () => {
+      // When calling _getPinnedWithData the state in `pinnedLinks` and in the store should merge.
+      // In this case `site1` is a pinned site and should be returned.
+      const site1 = {url: "foo.com", isDefault: true};
+      const site2 = {url: "bar.com", isDefault: false};
+      fakeNewTabUtils.pinnedLinks.links = [site1];
+      feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: [site2]}}; }};
+      const pinAction = {
+        type: at.TOP_SITES_PIN,
+        data: {}
+      };
+      feed.onAction(pinAction);
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({
+        type: at.PINNED_SITES_UPDATED,
+        data: [site1]
+      }));
     });
     it("should call unpin with correct parameters on TOP_SITES_UNPIN", () => {
       fakeNewTabUtils.pinnedLinks.links = [null, null, {url: "foo.com"}, null, null, null, null, null, FAKE_LINKS[0]];
