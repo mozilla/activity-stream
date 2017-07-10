@@ -8,22 +8,23 @@ In addition to the useful reading that @digitarald suggested, I also got a bunch
 
 In addition to replacing `about:newtab`, activity stream also replaces `about:home`. There are a number of  key performance contexts here:
 
-1. `about:newtab` always preloaded in a hidden context, and then made visible in a fresh tab
+1. `about:newtab` preloaded in a hidden context, and then made visible in a fresh tab
+
+1. XXX add non-preloaded about:newtab case
 
 1. `about:home` by default, the first page that comes up in the default tab in a new browser window, including at startup time. This is effectively a normal render.
 
 1. `about:home` from the toolbar button (not shown by default): will make the current tab load activity stream. Tab-blanking followed by a normal
 render.
 
-XXX add non-preloaded newtab case
-XXX to fill in perceived start of measurement for each context
+1. XXX fill in perceived start of measurement for each context
 
 ## Proposed initial user timings
 Here are the candidate first user timings.  The idea is that we should (over time) be able to easily use the included markers for all of:
 
 * profiling/optimizing
-* real user monitoring (a.k.a. rum), accomplished by Telemetry
-* synthetic regression testing (talos/WebPageTest)
+* real user monitoring (a.k.a. RUM), accomplished by telemetry
+* synthetic regression testing (talos?)
 
 The highest priority wants to be implementing the timing markers themselves and sending them to telemetry dashboards.
 
@@ -52,20 +53,20 @@ Risk: Synthetic regression testing in continuous integration (e.g. talos-style) 
     * time to first real interaction (first keypress or click event) (#2668)
 * bad states
     * top sites data is ready (if later than render time) (#2672)
-    * bookend all event handlers send bad state if > 10ms (#2669)
+    * bookend all event handlers and send bad state if > 10ms (#2669)
 
-There is some perceptual stuff that I hope that we can get out of WebPageTest/Talos as well as performance.timing eventually, but I don't think that's the highest priority, since so much of that is focused on loading stuff over the network, and that's a set of issues we just don't have.
+There is some perceptual stuff that I hope that we can get out ofTalos as well as performance.timing eventually, but I don't think that's the highest priority, since so much of that is focused on loading stuff over the network, and that's a set of issues we just don't have.
 
 maybe/later
 
-* for regressions: get measurements from WebPageTest via Talos
+* for regressions: get measurements from user timings from Talos somehow
 * write metric using MozAfterPaint to track final paint time (but this looks hard for content pages)
     * https://groups.google.com/forum/#!topic/mozilla.dev.platform/pCLwWdYc_GY
     * but, see
         * https://bugzilla.mozilla.org/show_bug.cgi?id=1264798#c12
         * http://searchfox.org/mozilla-central/source/dom/webidl/NotifyPaintEvent.webidl
 * jank monitor
-> The workaround is having a "heartbeat" (continues 50ms timer, not having much perf impact). Using the skew of expected time and actual time you can tell if the main thread was blocked. Make sure to also include page visibility as factor as that can throttle timers. Somes sites started using this technique + meaningful paint to guess TTI.
+> The workaround is having a "heartbeat" (continuous 50ms timer, not having much perf impact). Using the skew of expected time and actual time you can tell if the main thread was blocked. Make sure to also include page visibility as factor as that can throttle timers. Somes sites started using this technique + meaningful paint to guess TTI.
 
 * tti
     * performance.timing.timeToInteractive

@@ -266,8 +266,7 @@ An example might look like this:
     "toolbar_button" | // home only
     "session_restore" | // home or newtab
     "url_bar" | // home or newtab
-    "refresh" | // home or newtab
-    "other"], // home or newtab
+    "refresh"] // home or newtab
 
   // when the page itself receives an event that document.visibilityState=visible
   "visibility_event_rcvd_ts": 2,
