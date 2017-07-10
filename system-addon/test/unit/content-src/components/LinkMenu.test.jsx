@@ -46,6 +46,10 @@ describe("<LinkMenu>", () => {
     assert.ok(options[1].type === "separator");
     assert.ok(options[2].id === "menu_action_open_new_window");
     assert.ok(options[3].id === "menu_action_open_private_window");
+    // Double check that dismiss and delete options are not included
+    options.filter(o => o.type !== "separator").forEach(o => {
+      assert.notInclude(["menu_action_dismiss", "menu_action_delete"], o.id);
+    });
   });
   it("should show Unpin option for a pinned site if CheckPinTopSite in options list", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: "", isPinned: true}} source={"TOP_SITES"} options={["CheckPinTopSite"]} dispatch={() => {}} />);
@@ -67,7 +71,7 @@ describe("<LinkMenu>", () => {
     const options = wrapper.find(ContextMenu).props().options;
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_bookmark")));
   });
-  it("should call intl.formatMessage with the correct arguments", () => {
+  it("should call intl.formatMessage with the correct string ids", () => {
     const FAKE_OPTIONS = ["AddBookmark", "OpenInNewWindow"];
     const intlProvider = new IntlProvider({locale: "en", messages});
     const {intl} = intlProvider.getChildContext();
@@ -113,7 +117,8 @@ describe("<LinkMenu>", () => {
         // option.action is dispatched
         assert.ok(dispatch.firstCall.calledWith(option.action));
 
-        // option.action has correct data (delete is a special case as it has to be confirmed)
+        // option.action has correct data
+        // (delete is a special case as it dispatches a nested DIALOG_OPEN-type action)
         if (option.id === "menu_action_delete") {
           assert.deepEqual(option.action.data.onConfirm[0].data, expectedActionData[option.id]);
         } else {
