@@ -13,6 +13,7 @@ const {LocalizationFeed} = Cu.import("resource://activity-stream/lib/Localizatio
 const {NewTabInit} = Cu.import("resource://activity-stream/lib/NewTabInit.jsm", {});
 const {PlacesFeed} = Cu.import("resource://activity-stream/lib/PlacesFeed.jsm", {});
 const {PrefsFeed} = Cu.import("resource://activity-stream/lib/PrefsFeed.jsm", {});
+const {SectionsFeed} = Cu.import("resource://activity-stream/lib/SectionsFeed.jsm", {});
 const {Store} = Cu.import("resource://activity-stream/lib/Store.jsm", {});
 const {TelemetryFeed} = Cu.import("resource://activity-stream/lib/TelemetryFeed.jsm", {});
 const {TopSitesFeed} = Cu.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
@@ -23,6 +24,10 @@ const PREFS_CONFIG = new Map([
   ["default.sites", {
     title: "Comma-separated list of default top sites to fill in behind visited sites",
     value: "https://www.facebook.com/,https://www.youtube.com/,https://www.amazon.com/,https://www.yahoo.com/,https://www.ebay.com/,https://twitter.com/"
+  }],
+  ["showSections", {
+    title: "Comma-separated list of ids of sections to show on the New Tab page",
+    value: "dummy_section"
   }],
   ["showSearch", {
     title: "Show the Search bar on the New Tab page",
@@ -73,6 +78,12 @@ for (const {name, factory, title, value} of [
     factory: () => new PrefsFeed(PREFS_CONFIG),
     title: "Preferences",
     value: true
+  },
+  {
+    name: "sections.dummy",
+    factory: () => new SectionsFeed(),
+    title: "Dummy section feed",
+    value: false
   },
   {
     name: "telemetry",

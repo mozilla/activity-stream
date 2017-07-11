@@ -5,6 +5,7 @@ const TopSites = require("content-src/components/TopSites/TopSites");
 const Search = require("content-src/components/Search/Search");
 const ConfirmDialog = require("content-src/components/ConfirmDialog/ConfirmDialog");
 const PreferencesPane = require("content-src/components/PreferencesPane/PreferencesPane");
+const Sections = require("content-src/components/Sections/Sections");
 
 // Locales that should be displayed RTL
 const RTL_LIST = ["ar", "he", "fa", "ur"];
@@ -49,6 +50,7 @@ class Base extends React.Component {
           <main>
             {prefs.showSearch && <Search />}
             {prefs.showTopSites && <TopSites />}
+            <Sections enabled={prefs.showSections.split(",")} />
             <ConfirmDialog />
           </main>
           <PreferencesPane />

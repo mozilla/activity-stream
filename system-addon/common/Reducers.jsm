@@ -29,7 +29,8 @@ const INITIAL_STATE = {
   Dialog: {
     visible: false,
     data: {}
-  }
+  },
+  Sections: [{id: "dummy_section", title: "Dummy Section", options: {}, rows: []}]
 };
 
 function App(prevState = INITIAL_STATE.App, action) {
@@ -165,8 +166,25 @@ function Prefs(prevState = INITIAL_STATE.Prefs, action) {
   }
 }
 
+function Sections(prevState = INITIAL_STATE.Sections, action) {
+  switch (action.type) {
+    case at.SECTION_INIT:
+      return prevState.map(section => {
+        if (section && section.id === action.data.id) {
+          return Object.assign({}, section, {options: action.data.options});
+        }
+        return section;
+      });
+    case at.SECTION_ROWS_UPDATE:
+      // TODO
+      return prevState;
+    default:
+      return prevState;
+  }
+}
+
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites, App, Prefs, Dialog};
+this.reducers = {TopSites, App, Prefs, Dialog, Sections};
 this.insertPinned = insertPinned;
 
 this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned"];
