@@ -14,6 +14,7 @@ const {NewTabInit} = Cu.import("resource://activity-stream/lib/NewTabInit.jsm", 
 const {PlacesFeed} = Cu.import("resource://activity-stream/lib/PlacesFeed.jsm", {});
 const {PrefsFeed} = Cu.import("resource://activity-stream/lib/PrefsFeed.jsm", {});
 const {Store} = Cu.import("resource://activity-stream/lib/Store.jsm", {});
+const {SnippetsFeed} = Cu.import("resource://activity-stream/lib/SnippetsFeed.jsm", {});
 const {TelemetryFeed} = Cu.import("resource://activity-stream/lib/TelemetryFeed.jsm", {});
 const {TopSitesFeed} = Cu.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
 const {DummySectionFeed} = Cu.import("resource://activity-stream/lib/DummySectionFeed.jsm", {});
@@ -93,6 +94,12 @@ for (const {name, factory, title, value} of SECTION_FEEDS_CONFIG.concat([
     factory: () => new PrefsFeed(PREFS_CONFIG),
     title: "Preferences",
     value: true
+  },
+  {
+    name: "snippets",
+    factory: () => new SnippetsFeed(),
+    title: "Gets snippets data",
+    value: false
   },
   {
     name: "telemetry",
