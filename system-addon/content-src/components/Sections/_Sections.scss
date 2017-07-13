@@ -1,5 +1,4 @@
 .sections-list {
-
   .section-top-bar {
     position: relative;
 
@@ -35,6 +34,7 @@
     }
 
     .info-option {
+      z-index: 9999;
       position: absolute;
       background: $white;
       border: solid 1px $faintest-black;
@@ -71,6 +71,7 @@
   }
 
   .section-list {
+    width: $wrapper-card-outer;
     clear: both;
     margin: 0;
   }
