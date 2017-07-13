@@ -1,6 +1,7 @@
 const {Cu} = require("chrome");
 const prefService = require("sdk/preferences/service");
 const simplePrefs = require("sdk/simple-prefs");
+const {setTimeout} = require("sdk/timers");
 const {PrefsTarget} = require("sdk/preferences/event-target");
 const {preferencesBranch} = require("sdk/self");
 const PREF_PREFIX = `extensions.${preferencesBranch}.experiments.`;
@@ -12,9 +13,15 @@ XPCOMUtils.defineLazyGetter(this, "EventEmitter", () => {
   return EventEmitter;
 });
 
+Cu.importGlobalProperties(["fetch"]);
+
+const EXPERIMENTS_ENDPOINT = "experiments.endpoint";
+const EXPERIMENTS_REFRESH_TIMEOUT = 60 * 60 * 1000; // Refresh once per hour
+
 exports.ExperimentProvider = class ExperimentProvider {
-  constructor(experiments = require("../experiments.json"), rng) {
-    this._experiments = experiments;
+  constructor(rng) {
+    this._experiments = null;
+    this._experimentsEndpoint = simplePrefs.prefs[EXPERIMENTS_ENDPOINT];
     this._rng = rng || Math.random;
     this._data = {};
     this._experimentId = null;
@@ -25,30 +32,35 @@ exports.ExperimentProvider = class ExperimentProvider {
   }
 
   init() {
-    this.setValues();
-    Object.keys(this._experiments).forEach(experimentName => {
-      this._target.on(PREF_PREFIX + experimentName, this._onPrefChange);
-      Object.defineProperty(this._data, experimentName, {
-        get() {
-          return prefService.get(PREF_PREFIX + experimentName);
-        },
-        enumerable: true
+    if (!this._experimentsEndpoint) {
+      return;
+    }
+
+    fetch(this._experimentsEndpoint).then(response => response.json()).then(experimentsData => {
+      this._experiments = experimentsData;
+
+      this.setValues();
+
+      this._data = {};
+      this._experiments.forEach(experiment => {
+        this._target.on(PREF_PREFIX + experiment.slug, this._onPrefChange);
+        Object.defineProperty(this._data, experiment.slug, {
+          get() {
+            return prefService.get(PREF_PREFIX + experiment.slug);
+          },
+          enumerable: true
+        });
       });
+    })
+    .catch(e => {
+      Cu.reportError(e);
     });
+
+    setTimeout(this.init.bind(this), EXPERIMENTS_REFRESH_TIMEOUT);
   }
 
   _onPrefChange(prefName) {
-    this.overrideExperimentPrefs(prefName);
     this.emit("change", prefName);
-  }
-
-  /**
-   * This is called when experiment prefs are changed so
-   * that users are pulled out of all experiment reporting.
-   */
-  overrideExperimentPrefs(prefName) {
-    simplePrefs.prefs.experimentsOverridden = true;
-    this._experimentId = null;
   }
 
   /**
@@ -56,33 +68,21 @@ exports.ExperimentProvider = class ExperimentProvider {
    * values to their original control value.
    */
   disableAllExperiments() {
-    Object.keys(this._experiments).forEach(key => {
-      const experiment = this._experiments[key];
-      const {active, control} = experiment;
-      if (active) {
-        prefService.set(PREF_PREFIX + key, control.value);
+    this._experiments.forEach(experiment => {
+      if (experiment.active) {
+        prefService.set(PREF_PREFIX + experiment.slug, experiment.control.value);
       }
     });
-  }
-
-  enroll(experimentId, variant) {
-    this._experimentId = variant.id;
-    prefService.set(PREF_PREFIX + experimentId, variant.value);
-    if (experimentId === "topSitesTwoRowsDefault") {
-      simplePrefs.prefs.showMoreTopSites = true;
-    }
-    this.emit("experimentEnrolled", {id: experimentId, variant});
   }
 
   setValues() {
     if (simplePrefs.prefs.experimentsOverridden) {
       console.log(`The following experiments were turned on via overrides:\n`); // eslint-disable-line no-console
-      Object.keys(this._experiments).forEach(experimentName => {
-        const {variant, control} = this._experiments[experimentName];
-        if (prefService.get(PREF_PREFIX + experimentName) === variant.value) {
-          console.log(`- ${experimentName} - \n`); // eslint-disable-line no-console
+      this._experiments.forEach(experiment => {
+        if (prefService.get(PREF_PREFIX + experiment.slug) === experiment.variant.value) {
+          console.log(`- ${experiment.slug} - \n`); // eslint-disable-line no-console
         } else {
-          prefService.set(PREF_PREFIX + experimentName, control.value);
+          prefService.set(PREF_PREFIX + experiment.slug, experiment.control.value);
         }
       });
       return;
@@ -98,36 +98,31 @@ exports.ExperimentProvider = class ExperimentProvider {
     let floor = 0;
     let inExperiment;
 
-    Object.keys(this._experiments).forEach(key => {
-      const experiment = this._experiments[key];
-      const {variant, control} = experiment;
-
-      if (prefService.get(PREF_PREFIX + key) === variant.value) {
+    this._experiments.forEach(experiment => {
+      if (prefService.get(PREF_PREFIX + experiment.slug) === experiment.variant.value) {
         if (experiment.active) {
           // If the user is already part of an active experiment, set the experiment id.
-          this._experimentId = variant.id;
+          this._experimentId = experiment.slug;
         } else {
           // If the user is part of an inactive experiment,
           // reset that experiment's pref.
-          prefService.set(PREF_PREFIX + key, control.value);
+          prefService.set(PREF_PREFIX + experiment.slug, experiment.control.value);
           this._experimentId = null;
         }
       }
     });
 
-    Object.keys(this._experiments).forEach(key => {
-      const experiment = this._experiments[key];
-      const {variant, control} = experiment;
-      const ceiling = variant.threshold + floor;
+    this._experiments.forEach(experiment => {
+      const ceiling = experiment.variant.threshold + floor;
 
       // If the experiment is not new or not active you will not be assigned to it.
-      if (prefService.has(PREF_PREFIX + key) || !experiment.active) {
+      if (prefService.has(PREF_PREFIX + experiment.slug) || !experiment.active) {
         return;
       }
 
       // If the experiment pref is undefined, it's a new experiment. Start
       // by assuming the user will not be in it.
-      prefService.set(PREF_PREFIX + key, control.value);
+      prefService.set(PREF_PREFIX + experiment.slug, experiment.control.value);
 
       if (ceiling > 1) {
         throw new Error("Your variant cohort sizes should add up to less than 1.");
@@ -142,7 +137,8 @@ exports.ExperimentProvider = class ExperimentProvider {
       // randomly assign them to a variant (or control)
       inExperiment = randomNumber >= floor && randomNumber < ceiling;
       if (inExperiment) {
-        this.enroll(key, variant);
+        this._experimentId = experiment.slug;
+        prefService.set(PREF_PREFIX + experiment.slug, experiment.variant.value);
       }
       floor = ceiling;
     });
@@ -161,14 +157,14 @@ exports.ExperimentProvider = class ExperimentProvider {
 
   destroy() {
     this._experimentId = null;
-    Object.keys(this._experiments).forEach(experimentName => {
-      this._target.removeListener(PREF_PREFIX + experimentName, this._onPrefChange);
+    this._experiments.forEach(experiment => {
+      this._target.removeListener(PREF_PREFIX + experiment.slug, this._onPrefChange);
     });
   }
 
   clearPrefs() {
-    Object.keys(this._experiments).forEach(experimentName => {
-      prefService.reset(PREF_PREFIX + experimentName);
+    this._experiments.forEach(experiment => {
+      prefService.reset(PREF_PREFIX + experiment.slug);
     });
     simplePrefs.prefs.experimentsOverridden = false;
   }

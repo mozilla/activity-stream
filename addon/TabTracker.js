@@ -39,9 +39,9 @@ TabTracker.prototype = {
     return this._tabData;
   },
 
-  init(trackableURLs, experimentId, store) {
+  init(trackableURLs, experimentProvider, store) {
     this._trackableURLs = trackableURLs;
-    this._experimentID = experimentId;
+    this._experimentProvider = experimentProvider;
     this._store = store;
 
     this.enabled = simplePrefs.prefs[TELEMETRY_PREF];
@@ -101,8 +101,8 @@ TabTracker.prototype = {
     this._tabData.session_id = this._tabData.session_id || String(uuid());
     payload.session_id = this._tabData.session_id;
     payload.user_prefs = this._getUserPreferences();
-    if (this._experimentID) {
-      payload.experiment_id = this._experimentID;
+    if (this._experimentProvider._experimentId) {
+      payload.experiment_id = this._experimentProvider._experimentId;
     }
   },
 
@@ -112,10 +112,6 @@ TabTracker.prototype = {
       simplePrefs.removeListener(TELEMETRY_PREF, this._onPrefChange);
       this.enabled = false;
     }
-  },
-
-  set experimentId(experimentId) {
-    this._experimentID = experimentId || null;
   },
 
   isActivityStreamsURL(URL) {

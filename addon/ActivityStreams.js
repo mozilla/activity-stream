@@ -107,7 +107,7 @@ ActivityStreams.prototype = {
     if (!this.options.shield_variant) {
       this._experimentProvider.init();
     }
-    this._tabTracker.init(this.appURLs, this._experimentProvider.experimentId, this._store);
+    this._tabTracker.init(this.appURLs, this._experimentProvider, this._store);
     this._searchProvider.init();
     this._initializePreviewProvider(this._metadataStore, this._tabTracker, this._store);
     this._initializePageScraper(this._previewProvider, this._tabTracker);
