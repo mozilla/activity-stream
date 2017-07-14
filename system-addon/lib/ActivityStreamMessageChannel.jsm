@@ -7,6 +7,7 @@
 const {utils: Cu} = Components;
 Cu.import("resource:///modules/AboutNewTab.jsm");
 Cu.import("resource://gre/modules/RemotePageManager.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 
 const {actionCreators: ac, actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
@@ -133,6 +134,19 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
     this.channel.addMessageListener("RemotePage:Load", this.onNewTabLoad);
     this.channel.addMessageListener("RemotePage:Unload", this.onNewTabUnload);
     this.channel.addMessageListener(this.incomingMessageName, this.onMessage);
+
+    // Reload any already-loaded pages that should be remote to properly init
+    const browsers = Services.wm.getEnumerator("navigator:browser");
+    while (browsers.hasMoreElements()) {
+      const {gBrowser} = browsers.getNext();
+      if (gBrowser) {
+        for (const {linkedBrowser} of gBrowser.tabs) {
+          if (linkedBrowser.currentURI.spec === this.pageURL) {
+            linkedBrowser.reload();
+          }
+        }
+      }
+    }
   }
 
   /**
