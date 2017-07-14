@@ -4,6 +4,8 @@ const {connect} = require("react-redux");
 class Section extends React.Component {
   render() {
     const {title, initialized, rows} = this.props;
+    // <Section> <-- React component
+    // <section> <-- HTML5 element
     return (<section>
         <h3 className="section-title">{title}</h3>
         {initialized ? (<ul className="section-list">
@@ -16,13 +18,9 @@ class Section extends React.Component {
 class Sections extends React.Component {
   render() {
     const sections = this.props.Sections;
-    // <Section> <-- React component
-    // <section> <-- HTML5 element
     return (
       <ul className="sections-list">
-        {sections.map(section =>
-            <Section key={section.id} {...section} />
-          )}
+        {sections.map(section => <Section key={section.id} {...section} />)}
       </ul>
     );
   }
