@@ -37,7 +37,8 @@ const DEFAULT_SECTION_IDS = Array.from(SECTIONS.keys())
   .filter(id => SECTIONS.get(id).showByDefault);
 
 const SECTION_FEEDS_CONFIG = Array.from(SECTIONS.entries()).map(entry => {
-  const [id, section] = entry;
+  const id = entry[0];
+  const section = entry[1];
   const Feed = section.feed;
   return {
     name: `section.${id}`,
