@@ -31,6 +31,10 @@
    background-image: url('#{$image-path}glyph-dismiss-16.svg');
  }
 
+ &.icon-info {
+   background-image: url('#{$image-path}glyph-info-16.svg');
+ }
+
  &.icon-new-window {
    background-image: url('#{$image-path}glyph-newWindow-16.svg');
  }
