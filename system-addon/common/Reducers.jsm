@@ -30,7 +30,7 @@ const INITIAL_STATE = {
     visible: false,
     data: {}
   },
-  Sections: [{id: "dummy_section", title: "Dummy Section", options: {}, rows: []}]
+  Sections: []
 };
 
 function App(prevState = INITIAL_STATE.App, action) {
@@ -167,17 +167,34 @@ function Prefs(prevState = INITIAL_STATE.Prefs, action) {
 }
 
 function Sections(prevState = INITIAL_STATE.Sections, action) {
+  let hasMatch;
+  let newState;
   switch (action.type) {
-    case at.SECTION_INIT:
-      return prevState.map(section => {
+    case at.SECTION_DEREGISTER:
+      return prevState.filter(section => section.id !== action.data);
+    case at.SECTION_REGISTER:
+      // If section exists in prevState, update it
+      newState = prevState.map(section => {
         if (section && section.id === action.data.id) {
-          return Object.assign({}, section, {options: action.data.options});
+          hasMatch = true;
+          return Object.assign({}, section, action.data);
         }
         return section;
       });
+      // If section doesn't exist in prevState, create a new section object and
+      // append it to the sections state
+      if (!hasMatch) {
+        const initialized = action.data.rows && action.data.rows.length > 0;
+        newState.push(Object.assign({title: "", initialized, rows: []}, action.data));
+      }
+      return newState;
     case at.SECTION_ROWS_UPDATE:
-      // TODO
-      return prevState;
+      return prevState.map(section => {
+        if (section && section.id === action.data.id) {
+          return Object.assign({}, section, {initialized: true, rows: action.data.rows});
+        }
+        return section;
+      });
     default:
       return prevState;
   }

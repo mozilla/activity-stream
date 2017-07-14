@@ -50,7 +50,7 @@ class Base extends React.Component {
           <main>
             {prefs.showSearch && <Search />}
             {prefs.showTopSites && <TopSites />}
-            <Sections enabled={prefs.showSections.split(",")} />
+            <Sections />
             <ConfirmDialog />
           </main>
           <PreferencesPane />
