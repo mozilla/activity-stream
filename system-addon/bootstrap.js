@@ -63,11 +63,9 @@ function init(reason) {
   }
   const options = Object.assign({}, startupData || {}, ACTIVITY_STREAM_OPTIONS);
   activityStream = new ActivityStream(options);
-  try {
-    activityStream.init(reason);
-  } catch (e) {
-    Cu.reportError(e);
-  }
+  // Slightly delay the rest of initialization from constructing to avoid
+  // loading some services too early.
+  setTimeout(() => activityStream.init(reason));
 }
 
 /**
