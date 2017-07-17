@@ -17,7 +17,6 @@ const {Store} = Cu.import("resource://activity-stream/lib/Store.jsm", {});
 const {TelemetryFeed} = Cu.import("resource://activity-stream/lib/TelemetryFeed.jsm", {});
 const {TopSitesFeed} = Cu.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
 const {DummySectionFeed} = Cu.import("resource://activity-stream/lib/DummySectionFeed.jsm", {});
-const {DummySectionFeed2} = Cu.import("resource://activity-stream/lib/DummySectionFeed2.jsm", {});
 
 const REASON_ADDON_UNINSTALL = 6;
 
@@ -26,25 +25,17 @@ const SECTIONS = new Map([
   ["dummy_section", {
     feed: DummySectionFeed,
     showByDefault: false
-  }],
-  ["dummy_section2", {
-    feed: DummySectionFeed2,
-    showByDefault: false
   }]
 ]);
 
-const DEFAULT_SECTION_IDS = Array.from(SECTIONS.keys())
-  .filter(id => SECTIONS.get(id).showByDefault);
-
 const SECTION_FEEDS_CONFIG = Array.from(SECTIONS.entries()).map(entry => {
   const id = entry[0];
-  const section = entry[1];
-  const Feed = section.feed;
+  const {feed: Feed, showByDefault: value} = entry[1];
   return {
     name: `section.${id}`,
     factory: () => new Feed(),
-    title: `${section.title} feed`,
-    value: DEFAULT_SECTION_IDS.includes(id)
+    title: `${id} section feed`,
+    value
   };
 });
 

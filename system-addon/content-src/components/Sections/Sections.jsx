@@ -19,9 +19,9 @@ class Sections extends React.Component {
   render() {
     const sections = this.props.Sections;
     return (
-      <ul className="sections-list">
+      <div className="sections-list">
         {sections.map(section => <Section key={section.id} {...section} />)}
-      </ul>
+      </div>
     );
   }
 }

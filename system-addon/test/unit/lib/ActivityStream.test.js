@@ -18,8 +18,7 @@ describe("ActivityStream", () => {
       "lib/TelemetryFeed.jsm": {TelemetryFeed: Fake},
       "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake},
       "lib/PrefsFeed.jsm": {PrefsFeed: Fake},
-      "lib/DummySectionFeed.jsm": {DummySectionFeed: Fake},
-      "lib/DummySectionFeed2.jsm": {DummySectionFeed2: Fake}
+      "lib/DummySectionFeed.jsm": {DummySectionFeed: Fake}
     }));
     as = new ActivityStream();
     sandbox.stub(as.store, "init");
@@ -110,8 +109,8 @@ describe("ActivityStream", () => {
       assert.instanceOf(feed, Fake);
     });
     it("should create a section feed for each section in SECTIONS", () => {
-      // If new sections are added, they will have to be added to the list of
-      // injected feeds above for this test to pass
+      // If new sections are added, their feeds will have to be added to the
+      // list of injected feeds above for this test to pass
       SECTIONS.forEach((value, key) => {
         const feed = as.feeds.get(`feeds.section.${key}`)();
         assert.instanceOf(feed, Fake);
