@@ -6,5 +6,6 @@
   "extensions.@activity-streams.previews.enabled": false,
   "extensions.@activity-streams.telemetry": true,
   "extensions.@activity-streams.telemetry.ping.endpoint": "https://onyx_tiles.stage.mozaws.net/v3/links/activity-stream",
-  "extensions.@activity-streams.experimentOverrides": ""
+  "extensions.@activity-streams.experimentOverrides": "",
+  "extensions.@activity-streams.experiments.endpoint": ""
 }

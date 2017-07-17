@@ -152,6 +152,13 @@
       "hidden": true
     },
     {
+      "name": "experiments.endpoint",
+      "title": "Experiments Definitions Endpoint",
+      "type": "string",
+      "value": "https://d1fufu6b87cnvj.cloudfront.net/api/v1/activity-stream/experiments.json",
+      "hidden": true
+    },
+    {
       "name": "weightedHighlightsCoefficients",
       "title": "recommender weights",
       "description": "weightedHighlightsCoefficients",
