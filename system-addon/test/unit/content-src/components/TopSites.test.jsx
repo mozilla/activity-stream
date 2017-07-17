@@ -47,6 +47,14 @@ describe("<TopSite>", () => {
 
     assert.equal(titleEl.text(), "foobar");
   });
+  it("should fallback to link title for file:// protocol", () => {
+    link.url = "file:///Users/voprea/Work/activity-stream/logs/coverage/system-addon/report-html/index.html";
+    link.title = "Code coverage report";
+    const wrapper = shallow(<TopSite link={link} />);
+    const titleEl = wrapper.find(".title");
+
+    assert.equal(titleEl.text(), link.title);
+  });
   it("should render the pinTitle if set", () => {
     link.isPinned = true;
     link.pinnedIndex = 7;
