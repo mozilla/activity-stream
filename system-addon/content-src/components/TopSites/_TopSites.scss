@@ -10,6 +10,7 @@
   margin: 0;
   padding: 0;
   margin-inline-end: -$base-gutter;
+  min-height: 288px;
 
   // 5 top sites
   @media (min-width: $break-point-medium) {

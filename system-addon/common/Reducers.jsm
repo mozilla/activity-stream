@@ -24,12 +24,15 @@ const INITIAL_STATE = {
   },
   Prefs: {
     initialized: false,
-    values: {}
+    values: {showSearch: true, showTopSites: true}
   },
+
   Dialog: {
     visible: false,
     data: {}
-  }
+  },
+
+  DidFirstRender: false
 };
 
 function App(prevState = INITIAL_STATE.App, action) {
@@ -165,8 +168,22 @@ function Prefs(prevState = INITIAL_STATE.Prefs, action) {
   }
 }
 
+function DidFirstRender(prevState = INITIAL_STATE.DidFirstRender, action) {
+  if (action.type === at.FIRST_REACT_RENDER) {
+    return true;
+  }
+  return prevState;
+}
+
+// These reducers are used by both parent and child reducers
+const sharedReducers = {TopSites, App, Prefs};
+
+this.parentReducers = sharedReducers;
+this.childReducers = Object.assign({}, sharedReducers, {DidFirstRender, Dialog});
+
+// Note that INITIAL_STATE includes *all* reducers
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites, App, Prefs, Dialog};
+
 this.insertPinned = insertPinned;
 
-this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned"];
+this.EXPORTED_SYMBOLS = ["parentReducers", "childReducers", "INITIAL_STATE", "insertPinned"];

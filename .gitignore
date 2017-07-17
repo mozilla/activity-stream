@@ -17,5 +17,8 @@ common/vendor.js
 *.update.rdf
 system-addon/data/content/activity-stream.bundle.js
 system-addon/data/content/activity-stream.css
+system-addon/data/content/activity-stream.html
 system-addon/data/locales.json
 pocket.json
+bin/prerender.js
+bin/prerender.js.map
