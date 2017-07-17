@@ -23,19 +23,10 @@ class TopSite extends React.Component {
       action_position: this.props.index
     }));
   }
-  _selectTileTitle(link) {
-    const title = link.pinTitle || shortURL(link);
-
-    if (title.length > 0) {
-      return title;
-    }
-
-    return link.title;
-  }
   render() {
     const {link, index, dispatch} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
-    const title = this._selectTileTitle(link);
+    const title = link.pinTitle || shortURL(link);
     const screenshotClassName = `screenshot${link.screenshot ? " active" : ""}`;
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
     const style = {backgroundImage: (link.screenshot ? `url(${link.screenshot})` : "none")};
