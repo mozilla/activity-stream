@@ -29,7 +29,8 @@ const INITIAL_STATE = {
   Dialog: {
     visible: false,
     data: {}
-  }
+  },
+  Sections: []
 };
 
 function App(prevState = INITIAL_STATE.App, action) {
@@ -165,8 +166,42 @@ function Prefs(prevState = INITIAL_STATE.Prefs, action) {
   }
 }
 
+function Sections(prevState = INITIAL_STATE.Sections, action) {
+  let hasMatch;
+  let newState;
+  switch (action.type) {
+    case at.SECTION_DEREGISTER:
+      return prevState.filter(section => section.id !== action.data);
+    case at.SECTION_REGISTER:
+      // If section exists in prevState, update it
+      newState = prevState.map(section => {
+        if (section && section.id === action.data.id) {
+          hasMatch = true;
+          return Object.assign({}, section, action.data);
+        }
+        return section;
+      });
+      // If section doesn't exist in prevState, create a new section object and
+      // append it to the sections state
+      if (!hasMatch) {
+        const initialized = action.data.rows && action.data.rows.length > 0;
+        newState.push(Object.assign({title: "", initialized, rows: []}, action.data));
+      }
+      return newState;
+    case at.SECTION_ROWS_UPDATE:
+      return prevState.map(section => {
+        if (section && section.id === action.data.id) {
+          return Object.assign({}, section, {initialized: true, rows: action.data.rows});
+        }
+        return section;
+      });
+    default:
+      return prevState;
+  }
+}
+
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites, App, Prefs, Dialog};
+this.reducers = {TopSites, App, Prefs, Dialog, Sections};
 this.insertPinned = insertPinned;
 
 this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned"];
