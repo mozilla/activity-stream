@@ -196,28 +196,28 @@ describe("Reducers", () => {
     });
     it("should remove the correct section on SECTION_DEREGISTER", () => {
       const newState = Sections(oldState, {type: at.SECTION_DEREGISTER, data: "foo_bar_2"});
-      assert.equal(newState.length, 4);
+      assert.lengthOf(newState, 4);
       const expectedNewState = oldState.splice(2, 1) && oldState;
       assert.deepEqual(newState, expectedNewState);
     });
     it("should add a section on SECTION_REGISTER if it doesn't already exist", () => {
       const action = {type: at.SECTION_REGISTER, data: {id: "foo_bar_5", title: "Foo Bar 5"}};
       const newState = Sections(oldState, action);
-      assert.equal(newState.length, 6);
+      assert.lengthOf(newState, 6);
       const insertedSection = newState.find(section => section.id === "foo_bar_5");
-      assert.ok(insertedSection && insertedSection.title === action.data.title);
+      assert.propertyVal(insertedSection, "title", action.data.title);
     });
     it("should set newSection.rows === [] if no rows are provided on SECTION_REGISTER", () => {
       const action = {type: at.SECTION_REGISTER, data: {id: "foo_bar_5", title: "Foo Bar 5"}};
       const newState = Sections(oldState, action);
       const insertedSection = newState.find(section => section.id === "foo_bar_5");
-      assert.ok(Array.isArray(insertedSection.rows) && insertedSection.rows.length === 0);
+      assert.deepEqual(insertedSection.rows, []);
     });
     it("should update a section on SECTION_REGISTER if it already exists", () => {
       const NEW_TITLE = "New Title";
       const action = {type: at.SECTION_REGISTER, data: {id: "foo_bar_2", title: NEW_TITLE}};
       const newState = Sections(oldState, action);
-      assert.equal(newState.length, 5);
+      assert.lengthOf(newState, 5);
       const updatedSection = newState.find(section => section.id === "foo_bar_2");
       assert.ok(updatedSection && updatedSection.title === NEW_TITLE);
     });

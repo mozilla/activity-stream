@@ -13,6 +13,10 @@ const DUMMY_DATA = [
   "https://c1.staticflickr.com/1/204/509363724_1f5d8813d0_b.jpg"
 ];
 
+/**
+ * DummySectionFeed - Included to test the Sections API, prefed off by default.
+ * Dispatches three image urls as rows data on init.
+ */
 this.DummySectionFeed = class DummySectionFeed {
   constructor() {
     this.options = {id: "dummy_section", title: "Dummy Section", rows: DUMMY_DATA};
@@ -23,13 +27,6 @@ this.DummySectionFeed = class DummySectionFeed {
   uninit() {
     this.store.dispatch(ac.BroadcastToContent({type: at.SECTION_DEREGISTER, data: this.options.id}));
   }
-  rowsUpdate() {
-    const rowsUpdateAction = {
-      type: at.SECTION_ROWS_UPDATE,
-      data: {id: this.options.id, rows: DUMMY_DATA}
-    };
-    this.store.dispatch(ac.BroadcastToContent(rowsUpdateAction));
-  }
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -37,9 +34,6 @@ this.DummySectionFeed = class DummySectionFeed {
         break;
       case at.FEED_INIT:
         if (action.data === "feeds.section.dummy_section") { this.init(); }
-        break;
-      case at.SECTION_ROWS_UPDATE_REQUEST:
-        this.rowsUpdate();
         break;
     }
   }

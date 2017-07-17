@@ -6,11 +6,12 @@ class Section extends React.Component {
     const {title, initialized, rows} = this.props;
     // <Section> <-- React component
     // <section> <-- HTML5 element
+    // Dummy component, finished card component needs to be substituted in here
     return (<section>
         <h3 className="section-title">{title}</h3>
-        {initialized ? (<ul className="section-list">
-          {rows.map(url => url && <img src={url} />)}
-        </ul>) : <p>Uninitialized</p>}
+        {initialized && (<ul className="section-list" style={{padding: 0}}>
+          {rows.map(url => url && <img style={{maxHeight: "10em"}} src={url} />)}
+        </ul>)}
       </section>);
   }
 }
