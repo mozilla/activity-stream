@@ -83,6 +83,19 @@ module.exports = function(config) {
             }]
           },
           {
+            test: /\.js$/,
+            exclude: [/node_modules/, /test/],
+            use: [{
+              loader: "babel-loader",
+              options: {
+                plugins: [
+                  ["transform-async-to-module-method", {module: "co-task", method: "async"}],
+                  "transform-es2015-modules-commonjs"
+                ]
+              }
+            }]
+          },
+          {
             test: /\.jsx$/,
             exclude: /node_modules/,
             loader: "babel-loader",

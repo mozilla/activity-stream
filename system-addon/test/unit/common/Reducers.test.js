@@ -1,5 +1,6 @@
 const {reducers, INITIAL_STATE, insertPinned} = require("common/Reducers.jsm");
-const {TopSites, App, Prefs, Dialog, Sections} = reducers;
+const {TopSites, App, Snippets, Prefs, Dialog, Sections} = reducers;
+
 const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("Reducers", () => {
@@ -297,6 +298,25 @@ describe("Reducers", () => {
       const pinned = [links[7]];
       const result = insertPinned(links, pinned);
       assert.equal(links.length, result.length);
+    });
+  });
+  describe("Snippets", () => {
+    it("should return INITIAL_STATE by default", () => {
+      assert.equal(Snippets(undefined, {type: "some_action"}), INITIAL_STATE.Snippets);
+    });
+    it("should set initialized to true on a SNIPPETS_DATA action", () => {
+      const state = Snippets(undefined, {type: at.SNIPPETS_DATA, data: {}});
+      assert.isTrue(state.initialized);
+    });
+    it("should set the snippet data on a SNIPPETS_DATA action", () => {
+      const data = {snippetsURL: "foo.com", version: 4};
+      const state = Snippets(undefined, {type: at.SNIPPETS_DATA, data});
+      assert.propertyVal(state, "snippetsURL", data.snippetsURL);
+      assert.propertyVal(state, "version", data.version);
+    });
+    it("should reset to the initial state on a SNIPPETS_RESET action", () => {
+      const state = Snippets({initalized: true, foo: "bar"}, {type: at.SNIPPETS_RESET});
+      assert.equal(state, INITIAL_STATE.Snippets);
     });
   });
 });

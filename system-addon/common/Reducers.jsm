@@ -16,6 +16,7 @@ const INITIAL_STATE = {
     // The version of the system-addon
     version: null
   },
+  Snippets: {initialized: false},
   TopSites: {
     // Have we received real data from history yet?
     initialized: false,
@@ -200,8 +201,20 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
   }
 }
 
+function Snippets(prevState = INITIAL_STATE.Snippets, action) {
+  switch (action.type) {
+    case at.SNIPPETS_DATA:
+      return Object.assign({}, prevState, {initialized: true}, action.data);
+    case at.SNIPPETS_RESET:
+      return INITIAL_STATE.Snippets;
+    default:
+      return prevState;
+  }
+}
+
 this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites, App, Prefs, Dialog, Sections};
+
+this.reducers = {TopSites, App, Snippets, Prefs, Dialog, Sections};
 this.insertPinned = insertPinned;
 
 this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned"];
