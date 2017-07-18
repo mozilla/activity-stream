@@ -1,20 +1,16 @@
 $bg-color: #F6F6F8;
 $bg-grey: #FBFBFB;
-$placeholder-grey: #F7F7F7;
 $very-light-grey: #EBEBEB;
 $light-grey: #A0A0A0;
 $mid-light-grey: #858585;
-$mid-grey: #56565A;
 $dark-grey: #383E49;
 $link-blue: #00AFF7;
 $star-blue: #2B99FF;
 $black: #000;
 $white: #FFF;
-$header-border-color: #DFE0E1;
 $faintest-black: rgba($black, 0.1);
 $faint-black: rgba($black, 0.2);
 $border-radius: 3px;
-$green: #4EB748;
 $default-button-bg: #FBFBFB;
 $default-button-border: #BFBFBF;
 $blue-button-bg: #0695F9;
@@ -25,7 +21,7 @@ $info-option-text-color: #0C0C0D;
 $info-option-link-color: #0A84FF;
 
 $base-gutter: 32px;
-$section-margin: 41px;
+$section-margin: 40px;
 $grid-unit: 96px; // 1 top site
 
 $icon-size: 16px;
@@ -36,6 +32,7 @@ $wrapper-max-width-medium: $grid-unit * 5 + $base-gutter * 4; // 5 top sites
 $wrapper-max-width-large: $grid-unit * 6 + $base-gutter * 5; // 6 top sites
 $break-point-medium: $wrapper-max-width-medium + $base-gutter * 2;
 $break-point-large: $wrapper-max-width-large + $base-gutter * 2;
+$wrapper-card-outer: 768px;
 
 $section-title-font-size: 13px;
 $section-title-color: #6E707E;
@@ -52,5 +49,47 @@ $context-menu-outer-padding: 5px;
 $context-menu-item-padding: 3px 12px;
 
 $sidebar-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
+$inner-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 
 $image-path: 'assets/';
+
+@mixin fade-in {
+  box-shadow: inset $inner-box-shadow, 0 0 0 5px $faintest-black;
+  transition: box-shadow 150ms;
+}
+
+@mixin context-menu-button {
+  .context-menu-button {
+    cursor: pointer;
+    position: absolute;
+    top: -($context-menu-button-size / 2);
+    offset-inline-end: -($context-menu-button-size / 2);
+    width: $context-menu-button-size;
+    height: $context-menu-button-size;
+    background-color: $white;
+    background-image: url('#{$image-path}glyph-more-16.svg');
+    background-position: 65%;
+    background-repeat: no-repeat;
+    background-clip: padding-box;
+    border: $context-menu-button-border;
+    border-radius: 100%;
+    box-shadow: $context-menu-button-boxshadow;
+    transform: scale(0.25);
+    opacity: 0;
+    transition-property: transform, opacity;
+    transition-duration: 200ms;
+    z-index: 399;
+
+    &:focus, &:active {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+@mixin context-menu-button-hover {
+  .context-menu-button {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

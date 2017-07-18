@@ -8,9 +8,9 @@ const {utils: Cu} = Components;
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 const DUMMY_DATA = [
-  "http://cdn.attackofthecute.com/February-13-2013-20-34-03-ii.jpg",
-  "https://c1.staticflickr.com/1/202/509388231_d774116746_b.jpg",
-  "https://c1.staticflickr.com/1/204/509363724_1f5d8813d0_b.jpg"
+  {url: "http://www.example.com", context_menu_options: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"], type: "history", image: "http://cdn.attackofthecute.com/February-13-2013-20-34-03-ii.jpg", title: "Some dummy title goes here", description: "some dummy description goes here lalalala i'm very long and alalalalla"},
+  {url: "http://www.example.com/1", context_menu_options: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"], type: "bookmark", image: null, title: "Some dummy title goes here", description: "some dummy description goes here lalalala i'm very long and alalalalla"},
+  {url: "http://www.example.com/2", context_menu_options: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"], type: "trending", image: "http://cdn.attackofthecute.com/February-13-2013-20-34-03-ii.jpg", title: "Some dummy title goes here", description: "some dummy description goes here lalalala i'm very long and alalalalla"}
 ];
 
 /**
@@ -21,6 +21,7 @@ this.DummySectionFeed = class DummySectionFeed {
   constructor() {
     this.options = {
       id: "dummy_section",
+      icon: "pocket",
       title: {id: "Dummy Section"},
       rows: DUMMY_DATA,
       infoOption: {
