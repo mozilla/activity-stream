@@ -97,6 +97,11 @@ describe("Top Stories Feed", () => {
         data: SECTION_ID
       }));
     });
+    it("should initialize on FEED_INIT", () => {
+      instance.init = sinon.spy();
+      instance.onAction({type: at.FEED_INIT, data: "feeds.topstories"});
+      assert.calledOnce(instance.init);
+    });
   });
   describe("#fetch", () => {
     it("should fetch stories and send event", async () => {
