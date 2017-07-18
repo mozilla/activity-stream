@@ -19,7 +19,20 @@ const DUMMY_DATA = [
  */
 this.DummySectionFeed = class DummySectionFeed {
   constructor() {
-    this.options = {id: "dummy_section", title: "Dummy Section", rows: DUMMY_DATA};
+    this.options = {
+      id: "dummy_section",
+      title: {id: "Dummy Section"},
+      rows: DUMMY_DATA,
+      infoOption: {
+        header: {id: "fake_id", defaultMessage: "Red Pandas"},
+        body: {id: "fake_id", defaultMessage: "Find out more about the pandas on Wikipedia."},
+        link: {
+          href: "https://en.wikipedia.org/wiki/Red_panda",
+          id: "fake_id",
+          defaultMessage: "Red pandas article"
+        }
+      }
+    };
   }
   init() {
     this.store.dispatch(ac.BroadcastToContent({type: at.SECTION_REGISTER, data: this.options}));
