@@ -12,7 +12,7 @@ class Section extends React.Component {
         <div className="section-top-bar">
           <h3 className="section-title"><FormattedMessage {...title} /></h3>
           {infoOption && <span className="section-info-option">
-            <span className="sr-only">Info</span>
+            <span className="sr-only"><FormattedMessage id="section_info_option" /></span>
             <img className="info-option-icon" />
             <div className="info-option">
               {infoOption.header &&
