@@ -19,7 +19,9 @@ describe("ActivityStream", () => {
       "lib/TelemetryFeed.jsm": {TelemetryFeed: Fake},
       "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake},
       "lib/PrefsFeed.jsm": {PrefsFeed: Fake},
-      "lib/SnippetsFeed.jsm": {SnippetsFeed: Fake}
+      "lib/SnippetsFeed.jsm": {SnippetsFeed: Fake},
+      "lib/TopStoriesFeed.jsm": {TopStoriesFeed: Fake},
+      "lib/SystemTickFeed.jsm": {SystemTickFeed: Fake}
     }));
     as = new ActivityStream();
     sandbox.stub(as.store, "init");
@@ -119,6 +121,14 @@ describe("ActivityStream", () => {
     });
     it("should create a Snippets feed", () => {
       const feed = as.feeds.get("feeds.snippets")();
+      assert.instanceOf(feed, Fake);
+    });
+    it("should create a TopStories feed", () => {
+      const feed = as.feeds.get("feeds.topstories")();
+      assert.instanceOf(feed, Fake);
+    });
+    it("should create a SystemTick feed", () => {
+      const feed = as.feeds.get("feeds.systemtick")();
       assert.instanceOf(feed, Fake);
     });
   });

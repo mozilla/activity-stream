@@ -192,7 +192,7 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
     case at.SECTION_ROWS_UPDATE:
       return prevState.map(section => {
         if (section && section.id === action.data.id) {
-          return Object.assign({}, section, {initialized: true, rows: action.data.rows});
+          return Object.assign({}, section, action.data);
         }
         return section;
       });
