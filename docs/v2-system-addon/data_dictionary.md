@@ -5,6 +5,7 @@ The Activity Stream system add-on sends various types of pings to the backend (H
 - an `event` ping that records specific data about individual user interactions while interacting with Activity Stream
 - a `performance` ping that records specific performance related events
 - an `undesired` ping that records data about bad app states and missing data
+- an `impression_stats` ping that records data about Pocket impressions and user interactions
 
 Schema definitions/validations that can be used for tests can be found in `system-addon/test/schemas/pings.js`.
 
@@ -95,6 +96,39 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "date": "2016-03-07"
 }
 ```
+# Example Activity Stream `impression_stats` Logs
+
+```js
+{
+  "action": "activity_stream_impression_stats",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "source": "pocket",
+  "page": "about:newtab",
+  "tiles": [{"id": 10000}, {"id": 10001}, {"id": 10002}]
+}
+```
+
+```js
+{
+  "action": "activity_stream_impression_stats",
+  "client_id": "n/a",
+  "session_id": "n/a",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "source": "pocket",
+  "page": "about:newtab",
+
+  // "pos" is the 0-based index to record the tile's position in the Pocket section.
+  "tiles": [{"id": 10000, "pos": 0}],
+
+  // A 0-based index to record which tile in the "tiles" list that the user just interacted with.
+  "click|block|pocket": 0
+}
+```
+
 
 | KEY | DESCRIPTION | &nbsp; |
 |-----|-------------|:-----:|
@@ -133,6 +167,10 @@ and losing focus. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
 | `user_prefs` | [optional] The encoded integer of user's preferences. | :one: & :four:
 | `visibility_event_rcvd_ts` | [Optional][Server Counter][Server Alert for too many omissions] DOMHighResTimeStamp of when the page itself receives an event that document.visibilityState == visible. | :one:
+| `tiles` | [Required] A list of tile objects for the Pocket articles. Each tile object mush have a ID, and optionally a "pos" property to indicate the tile position | :one:
+| `click` | [Optional] An integer to record the 0-based index when user clicks on a Pocket tile. | :one:
+| `block` | [Optional] An integer to record the 0-based index when user blocks a Pocket tile. | :one:
+| `pocket` | [Optional] An integer to record the 0-based index when user saves a Pocket tile to Pocket. | :one:
 
 **Where:**
 

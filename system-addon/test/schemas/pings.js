@@ -60,6 +60,20 @@ const UndesiredPing = Joi.object().keys(Object.assign({}, baseKeys, {
   value: Joi.number().required()
 }));
 
+const TileSchema = Joi.object().keys({
+  id: Joi.number().integer().required(),
+  pos: Joi.number().integer()
+});
+
+const ImpressionStatsPing = Joi.object().keys(Object.assign({}, baseKeys, {
+  source: Joi.string().required(),
+  action: Joi.valid("activity_stream_impression_stats").required(),
+  tiles: Joi.array().items(TileSchema).required(),
+  click: Joi.number().integer(),
+  block: Joi.number().integer(),
+  pocket: Joi.number().integer()
+}));
+
 const PerfPing = Joi.object().keys(Object.assign({}, baseKeys, {
   source: Joi.string(),
   event: Joi.string().required(),
@@ -147,6 +161,7 @@ module.exports = {
   UndesiredPing,
   UserEventPing,
   UserEventAction,
+  ImpressionStatsPing,
   PerfPing,
   SessionPing,
   chaiAssertions
