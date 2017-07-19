@@ -279,3 +279,48 @@ perf: {
   "topsites_first_painted_ts": 5,
 }
 ```
+
+## Top Story pings
+
+When Top Story (currently powered by Pocket) is enabled in Activity Stream, the browser will send following `activity_stream_impression_stats` to our metrics servers.
+
+### Impression stats
+
+This reports all the Pocket recommended articles (a list of `id`s) when the user opens a newtab.
+
+```js
+{
+  "action": "activity_stream_impression_stats",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "source": "pocket",
+  "page": "about:newtab",
+  "tiles": [{"id": 10000}, {"id": 10001}, {"id": 10002}]
+}
+```
+
+### Click/block/save_to_pocket ping
+
+This reports the user's interaction with those Pocket tiles.
+
+```js
+{
+  "action": "activity_stream_impression_stats",
+
+  // both "client_id" and "session_id" are set to "n/a" in this ping.
+  "client_id": "n/a",
+  "session_id": "n/a",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "source": "pocket",
+  "page": "about:newtab",
+
+  // "pos" is the 0-based index to record the tile's position in the Pocket section.
+  "tiles": [{"id": 10000, "pos": 0}],
+
+  // A 0-based index to record which tile in the "tiles" list that the user just interacted with.
+  "click|block|pocket": 0
+}
+```

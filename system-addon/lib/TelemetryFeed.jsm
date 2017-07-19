@@ -151,6 +151,31 @@ this.TelemetryFeed = class TelemetryFeed {
     return ping;
   }
 
+  /**
+   * createImpressionStats - Create a ping for an impression stats
+   *
+   * @param  {ob} action The object with data to be included in the ping.
+   *                     For some user interactions, a boolean "incognito"
+   *                     field of the "data" object could be used to empty
+   *                     all the user specific IDs with "n/a" in the ping.
+   * @return {obj}    A telemetry ping
+   */
+  async createImpressionStats(action) {
+    let ping = Object.assign(
+      await this.createPing(au.getPortIdOfSender(action)),
+      action.data,
+      {action: "activity_stream_impression_stats"}
+    );
+
+    if (ping.incognito) {
+      ping.client_id = "n/a";
+      ping.session_id = "n/a";
+      delete ping.incognito;
+    }
+
+    return ping;
+  }
+
   async createUserEvent(action) {
     return Object.assign(
       await this.createPing(au.getPortIdOfSender(action)),
@@ -207,6 +232,9 @@ this.TelemetryFeed = class TelemetryFeed {
         break;
       case at.SAVE_SESSION_PERF_DATA:
         this.saveSessionPerfData(au.getPortIdOfSender(action), action.data);
+        break;
+      case at.TELEMETRY_IMPRESSION_STATS:
+        this.sendEvent(this.createImpressionStats(action));
         break;
       case at.TELEMETRY_UNDESIRED_EVENT:
         this.sendEvent(this.createUndesiredEvent(action));
