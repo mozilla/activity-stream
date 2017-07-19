@@ -1,3 +1,12 @@
+<a name="1.14.2"></a>
+## 1.14.2 (2017-07-19)
+
+* 1.14.1 changelog ([642b84b](https://github.com/mozilla/activity-stream/commit/642b84b))
+* 1.14.2 ([a4df548](https://github.com/mozilla/activity-stream/commit/a4df548))
+* Query experiment definitions from experimenter fixes #2100 ([9fe0978](https://github.com/mozilla/activity-stream/commit/9fe0978)), closes [#2100](https://github.com/mozilla/activity-stream/issues/2100)
+
+
+
 <a name="1.14.1"></a>
 ## 1.14.1 (2017-07-04)
 
