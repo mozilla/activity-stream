@@ -21,15 +21,6 @@ class Card extends React.Component {
   toggleContextMenu(event, index) {
     this.setState({showContextMenu: true, activeCard: index});
   }
-  setBackgroundImageStyle(image) {
-    const style = {};
-    if (image) {
-      style.backgroundImage = `url(${image})`;
-    } else {
-      style.display = "none";
-    }
-    return style;
-  }
   render() {
     const {index, link, dispatch} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
@@ -39,7 +30,7 @@ class Card extends React.Component {
     return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}`}>
       <a href={link.url}>
         <div className="card">
-          <div className="card-preview-image" style={this.setBackgroundImageStyle(link.image)} />
+          {link.image && <div className="card-preview-image" style={{backgroundImage: `url(${link.image})`}} />}
           <div className="card-details">
             <div className="card-host-name"> {hostname} </div>
             <h4 className="card-title"> {link.title} </h4>
