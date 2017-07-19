@@ -188,7 +188,7 @@ describe("Reducers", () => {
         id: `foo_bar_${i}`,
         title: `Foo Bar ${i}`,
         initialized: false,
-        rows: []
+        rows: [{url: "www.foo.bar"}, {url: "www.other.url"}]
       }));
     });
 
@@ -233,6 +233,15 @@ describe("Reducers", () => {
       const newState = Sections(oldState, action);
       const updatedSection = newState.find(section => section.id === "foo_bar_2");
       assert.equal(updatedSection.rows, FAKE_DATA);
+    });
+    it("should remove blocked and deleted urls from all rows in all sections", () => {
+      const blockAction = {type: at.PLACES_LINK_BLOCKED, data: {url: "www.foo.bar"}};
+      const deleteAction = {type: at.PLACES_LINK_DELETED, data: {url: "www.foo.bar"}};
+      const newBlockState = Sections(oldState, blockAction);
+      const newDeleteState = Sections(oldState, deleteAction);
+      newBlockState.concat(newDeleteState).forEach(section => {
+        assert.deepEqual(section.rows, [{url: "www.other.url"}]);
+      });
     });
   });
   describe("#insertPinned", () => {

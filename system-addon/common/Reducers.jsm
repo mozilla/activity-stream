@@ -196,6 +196,10 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
         }
         return section;
       });
+    case at.PLACES_LINK_DELETED:
+    case at.PLACES_LINK_BLOCKED:
+      return prevState.map(section =>
+        Object.assign({}, section, {rows: section.rows.filter(site => site.url !== action.data.url)}));
     default:
       return prevState;
   }
