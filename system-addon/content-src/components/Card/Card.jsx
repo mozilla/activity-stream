@@ -22,7 +22,7 @@ class Card extends React.Component {
     this.setState({showContextMenu: true, activeCard: index});
   }
   render() {
-    const {index, link, dispatch} = this.props;
+    const {index, link, dispatch, contextMenuOptions} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     const hostname = shortURL(link);
     const {icon, intlID} = cardContextTypes[link.type];
@@ -33,8 +33,10 @@ class Card extends React.Component {
           {link.image && <div className="card-preview-image" style={{backgroundImage: `url(${link.image})`}} />}
           <div className="card-details">
             <div className="card-host-name"> {hostname} </div>
-            <h4 className="card-title"> {link.title} </h4>
-            <p className={`card-description${link.image ? "" : " full-height"}`}> {link.description} </p>
+            <div className={`card-text${link.image ? "" : " full-height"}`}>
+              <h4 className="card-title"> {link.title} </h4>
+              <p className="card-description"> {link.description} </p>
+            </div>
             <div className="card-context">
               <span className={`card-context-icon icon icon-${icon}`} />
               <div className="card-context-label"><FormattedMessage id={intlID} defaultMessage="Visited" /></div>
@@ -55,7 +57,7 @@ class Card extends React.Component {
       onUpdate={val => this.setState({showContextMenu: val})}
       index={index}
       site={link}
-      options={link.context_menu_options} />
+      options={link.context_menu_options || contextMenuOptions} />
    </li>);
   }
 }

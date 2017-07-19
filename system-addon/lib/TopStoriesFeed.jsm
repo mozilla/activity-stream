@@ -29,8 +29,29 @@ this.TopStoriesFeed = class TopStoriesFeed {
       const apiKey = this._getApiKeyFromPref(options.api_key_pref);
       this.stories_endpoint = this._produceUrlWithApiKey(options.stories_endpoint, apiKey);
       this.topics_endpoint = this._produceUrlWithApiKey(options.topics_endpoint, apiKey);
+      this.read_more_endpoint = options.read_more_endpoint;
 
-      const sectionOptions = {id: SECTION_ID, title: {id: "header_recommended_by", values: {provider: options.provider_name}}};
+      // TODO https://github.com/mozilla/activity-stream/issues/2902
+      const sectionOptions = {
+        id: SECTION_ID,
+        icon: options.provider_icon,
+        title: {id: "header_recommended_by", values: {provider: options.provider_name}},
+        rows: [],
+        maxCards: 3,
+        contextMenuOptions: ["SaveToPocket", "Separator", "CheckBookmark", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
+        infoOption: {
+          header: {id: "pocket_feedback_header"},
+          body: {id: "pocket_feedback_body"},
+          link: {
+            href: options.survey_link,
+            id: "pocket_send_feedback"
+          }
+        },
+        emptyState: {
+          message: {id: "empty_state_topstories"},
+          icon: "check"
+        }
+      };
       this.store.dispatch(ac.BroadcastToContent({type: at.SECTION_REGISTER, data: sectionOptions}));
 
       this.fetchStories();
@@ -59,10 +80,10 @@ this.TopStoriesFeed = class TopStoriesFeed {
             .filter(s => !NewTabUtils.blockedLinks.isBlocked(s.dedupe_url))
             .map(s => ({
               "guid": s.id,
-              "recommended": true,
+              "type": "trending",
               "title": s.title,
               "description": s.excerpt,
-              "bestImage": {"url": this._normalizeUrl(s.image_src)},
+              "image": this._normalizeUrl(s.image_src),
               "url": s.dedupe_url,
               "lastVisitDate": s.published_timestamp
             }));
@@ -92,7 +113,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
       if (topics) {
         this.dispatchUpdateEvent(this.topicsLastUpdated,
-          {"type": at.SECTION_ROWS_UPDATE, "data": {"id": SECTION_ID, "topics": topics}});
+          {"type": at.SECTION_ROWS_UPDATE, "data": {"id": SECTION_ID, "topics": topics, "read_more_endpoint": this.read_more_endpoint}});
         this.topicsLastUpdated = Date.now();
       }
     }
