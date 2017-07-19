@@ -37,7 +37,7 @@ class Section extends React.Component {
         {!initialized &&
           <div className="section-empty-state">
             <div className="empty-state">
-              <img className="empty-state-icon icon-top-stories" />
+              <img className={`empty-state-icon icon icon-${emptyState.icon}`} />
               <p className="empty-state-message">
                 <FormattedMessage {...emptyState.message} />
               </p>

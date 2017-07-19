@@ -73,4 +73,8 @@
     height: $smaller-icon-size;
     width: $smaller-icon-size;
   }
+
+  &.icon-check {
+    background-image: url('#{$image-path}glyph-check-16.svg');
+  }
 }
