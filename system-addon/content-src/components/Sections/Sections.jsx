@@ -4,7 +4,8 @@ const {FormattedMessage} = require("react-intl");
 
 class Section extends React.Component {
   render() {
-    const {title, initialized, rows, infoOption} = this.props;
+    const {title, rows, infoOption, emptyState} = this.props;
+    const initialized = rows && rows.length > 0;
     // <Section> <-- React component
     // <section> <-- HTML5 element
     // Dummy component, finished card component needs to be substituted in here
@@ -33,6 +34,15 @@ class Section extends React.Component {
         {initialized && (<ul className="section-list" style={{padding: 0}}>
           {rows.map(url => url && <img style={{maxHeight: "10em"}} src={url} />)}
         </ul>)}
+        {!initialized &&
+          <div className="section-empty-state">
+            <div className="empty-state">
+              <img className="empty-state-icon icon-top-stories" />
+              <p className="empty-state-message">
+                <FormattedMessage {...emptyState.message} />
+              </p>
+            </div>
+          </div>}
       </section>);
   }
 }
