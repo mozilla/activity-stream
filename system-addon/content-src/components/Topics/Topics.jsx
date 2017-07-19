@@ -25,5 +25,6 @@ class Topics extends React.Component {
   }
 }
 
+module.exports = Topics;
 module.exports._unconnected = Topics;
 module.exports.Topic = Topic;

@@ -2,6 +2,7 @@
   background: $white;
   display: inline-block;
   margin-inline-end: $base-gutter;
+  margin-bottom: $card-margin-bottom;
   width: $card-width;
   border-radius: $border-radius;
   border-color: $faintest-black;
@@ -50,6 +51,15 @@
     padding: 10px 16px 12px;
   }
 
+  .card-text {
+    overflow: hidden;
+    max-height: $card-text-height;
+
+    &.full-height {
+      max-height: $card-description-height-max;
+    }
+  }
+
   .card-host-name {
     color: $mid-light-grey;
     font-size: 10px;
@@ -70,10 +80,6 @@
     overflow: hidden;
     line-height: 18px;
     max-height: $card-description-height;
-
-    &.full-height {
-      max-height: $card-description-height-max;
-    }
   }
 
   .card-context {

@@ -17,8 +17,10 @@ describe("Top Stories Feed", () => {
     FakePrefs.prototype.prefs["feeds.topstories.options"] = `{
       "stories_endpoint": "https://somedomain.org/stories?key=$apiKey",
       "topics_endpoint": "https://somedomain.org/topics?key=$apiKey",
+      "survey_link": "https://www.surveymonkey.com/r/newtabffx",
       "api_key_pref": "apiKeyPref",
-      "provider_name": "test-provider"
+      "provider_name": "test-provider",
+      "provider_icon": "provider-icon"
     }`;
     FakePrefs.prototype.prefs.apiKeyPref = "test-api-key";
 
@@ -43,12 +45,33 @@ describe("Top Stories Feed", () => {
       assert.equal("https://somedomain.org/topics?key=test-api-key", instance.topics_endpoint);
     });
     it("should register section", () => {
+      const expectedSectionOptions = {
+        id: SECTION_ID,
+        icon: "provider-icon",
+        title: {id: "header_recommended_by", values: {provider: "test-provider"}},
+        rows: [],
+        maxCards: 3,
+        contextMenuOptions: ["SaveToPocket", "Separator", "CheckBookmark", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
+        infoOption: {
+          header: {id: "pocket_feedback_header"},
+          body: {id: "pocket_feedback_body"},
+          link: {
+            href: "https://www.surveymonkey.com/r/newtabffx",
+            id: "pocket_send_feedback"
+          }
+        },
+        emptyState: {
+          message: {id: "empty_state_topstories"},
+          icon: "check"
+        }
+      };
+
       instance.onAction({type: at.INIT});
       assert.calledOnce(instance.store.dispatch);
       assert.propertyVal(instance.store.dispatch.firstCall.args[0], "type", at.SECTION_REGISTER);
       assert.calledWith(instance.store.dispatch, ac.BroadcastToContent({
         type: at.SECTION_REGISTER,
-        data: {id: SECTION_ID, title: {id: "header_recommended_by", values: {provider: "test-provider"}}}
+        data: expectedSectionOptions
       }));
     });
     it("should fetch stories on init", () => {
@@ -118,10 +141,10 @@ describe("Top Stories Feed", () => {
       }]}`;
       const stories = [{
         "guid": "1",
-        "recommended": true,
+        "type": "trending",
         "title": "title",
         "description": "description",
-        "bestImage": {"url": "image-url"},
+        "image": "image-url",
         "url": "rec-url",
         "lastVisitDate": "123"
       }];

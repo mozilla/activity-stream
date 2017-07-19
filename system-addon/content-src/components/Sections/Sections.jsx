@@ -2,11 +2,13 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {FormattedMessage} = require("react-intl");
 const Card = require("content-src/components/Card/Card");
+const Topics = require("content-src/components/Topics/Topics");
 
 class Section extends React.Component {
   render() {
-    const {title, icon, rows, infoOption, emptyState, dispatch} = this.props;
+    const {id, title, icon, rows, infoOption, emptyState, dispatch, maxCards, contextMenuOptions} = this.props;
     const initialized = rows && rows.length > 0;
+    const shouldShowTopics = (id === "TopStories" && this.props.topics && this.props.read_more_endpoint);
     // <Section> <-- React component
     // <section> <-- HTML5 element
     return (<section>
@@ -31,8 +33,9 @@ class Section extends React.Component {
             </div>
           </span>}
         </div>
-        {initialized && (<ul className="section-list" style={{padding: 0}}>
-          {rows.map((link, index) => link && <Card index={index} dispatch={dispatch} link={link} />)}
+        {(<ul className="section-list" style={{padding: 0}}>
+          {rows.slice(0, maxCards).map((link, index) => link &&
+            <Card index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions} />)}
         </ul>)}
         {!initialized &&
           <div className="section-empty-state">
@@ -43,6 +46,7 @@ class Section extends React.Component {
               </p>
             </div>
           </div>}
+        {shouldShowTopics && <Topics topics={this.props.topics} read_more_endpoint={this.props.read_more_endpoint} />}
       </section>);
   }
 }
