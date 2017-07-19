@@ -1,7 +1,6 @@
 .top-sites-list {
   $top-sites-size: $grid-unit;
   $top-sites-border-radius: 6px;
-  $inner-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
   $top-sites-title-height: 30px;
   $top-sites-vertical-space: 18px;
   $screenshot-size: cover;
@@ -38,48 +37,18 @@
 
       &.active, &:focus {
         .tile {
-          box-shadow: inset $inner-box-shadow, 0 0 0 5px $faintest-black;
-          transition: box-shadow 150ms;
+          @include fade-in;
         }
       }
     }
 
-    .context-menu-button {
-      cursor: pointer;
-      position: absolute;
-      top: -($context-menu-button-size / 2);
-      offset-inline-end: -($context-menu-button-size / 2);
-      width: $context-menu-button-size;
-      height: $context-menu-button-size;
-      background-color: $white;
-      background-image: url('#{$image-path}glyph-more-16.svg');
-      background-position: 65%;
-      background-repeat: no-repeat;
-      background-clip: padding-box;
-      border: $context-menu-button-border;
-      border-radius: 100%;
-      box-shadow: $context-menu-button-boxshadow;
-      transform: scale(0.25);
-      opacity: 0;
-      transition-property: transform, opacity;
-      transition-duration: 200ms;
-      z-index: 399;
+    @include context-menu-button;
 
-      &:focus, &:active {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    &:hover, &:active, &:focus, &.active {
+    &:hover, &:focus, &.active {
       .tile {
-        box-shadow: inset $inner-box-shadow, 0 0 0 5px $faintest-black;
-        transition: box-shadow 150ms;
+        @include fade-in;
       }
-      .context-menu-button {
-        transform: scale(1);
-        opacity: 1;
-      }
+      @include context-menu-button-hover;
     }
 
     .tile {

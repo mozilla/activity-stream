@@ -20,9 +20,7 @@ const unsubscribe = store.subscribe(() => {
   if (state.Snippets.initialized) {
     snippets.init({
       snippetsURL: state.Snippets.snippetsURL,
-      version: state.Snippets.version,
-      // TODO: We need to enable IndexedDB on about:newtab to be able to connect to it.
-      connect: false
+      version: state.Snippets.version
     });
     unsubscribe();
   }

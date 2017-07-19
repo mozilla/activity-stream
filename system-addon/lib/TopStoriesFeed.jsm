@@ -151,6 +151,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
       case at.UNINIT:
         this.uninit();
         break;
+      case at.FEED_INIT:
+        if (action.data === "feeds.topstories") {
+          this.init();
+        }
+        break;
     }
   }
 };

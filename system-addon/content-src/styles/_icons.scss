@@ -11,6 +11,10 @@
     margin-inline-end: 8px;
   }
 
+  &.icon-small-spacer {
+    margin-inline-end: 6px;
+  }
+
   &.icon-bookmark {
    background-image: url('#{$image-path}glyph-bookmark-16.svg');
  }
@@ -51,11 +55,22 @@
     background-image: url('#{$image-path}glyph-pocket-16.svg');
   }
 
- &.icon-pin-small {
-   background-image: url('#{$image-path}glyph-pin-12.svg');
-   background-size: $smaller-icon-size;
-   height: $smaller-icon-size;
-   width: $smaller-icon-size;
- }
+  &.icon-historyItem {
+    background-image: url('#{$image-path}glyph-historyItem-16.svg');
+  }
 
+  &.icon-trending {
+    background-image: url('#{$image-path}glyph-trending-16.svg');
+  }
+
+  &.icon-now {
+    background-image: url('#{$image-path}glyph-now-16.svg');
+  }
+
+  &.icon-pin-small {
+    background-image: url('#{$image-path}glyph-pin-12.svg');
+    background-size: $smaller-icon-size;
+    height: $smaller-icon-size;
+    width: $smaller-icon-size;
+  }
 }

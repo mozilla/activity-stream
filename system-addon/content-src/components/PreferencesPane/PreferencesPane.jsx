@@ -66,6 +66,9 @@ class PreferencesPane extends React.Component {
               <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handleChange}
                 titleStringId="settings_pane_topsites_header" descStringId="settings_pane_topsites_body" />
 
+              <PreferencesInput className="showTopStories" prefName="feeds.topstories" value={prefs["feeds.topstories"]} onChange={this.handleChange}
+                titleStringId="settings_pane_pocketstories_header" descStringId="settings_pane_pocketstories_body" />
+
             </div>
             <section className="actions">
               <button className="done" onClick={this.togglePane}>
