@@ -19,6 +19,7 @@ $checkbox-border: #C1C1C1;
 $checkbox-blue: #1691D2;
 $info-option-text-color: #0C0C0D;
 $info-option-link-color: #0A84FF;
+$section-empty-grey: rgba($light-grey, 0.4);
 
 $base-gutter: 32px;
 $section-margin: 40px;
@@ -37,6 +38,12 @@ $wrapper-card-outer: 768px;
 $section-title-font-size: 13px;
 $section-title-color: #6E707E;
 $section-title-bottom-margin: 18px;
+
+$card-width: $grid-unit * 2 + $base-gutter;
+$card-height: 266px;
+$card-preview-image-height: 122px;
+$card-description-height: 34px;
+$card-description-height-max: 200px;
 
 $context-menu-button-size: 27px;
 $context-menu-button-border: 1px solid rgba($black, 0.2);

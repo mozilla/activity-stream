@@ -5,7 +5,8 @@ const Card = require("content-src/components/Card/Card");
 
 class Section extends React.Component {
   render() {
-    const {title, icon, initialized, rows, infoOption, dispatch} = this.props;
+    const {title, icon, rows, infoOption, emptyState, dispatch} = this.props;
+    const initialized = rows && rows.length > 0;
     // <Section> <-- React component
     // <section> <-- HTML5 element
     return (<section>
@@ -33,6 +34,15 @@ class Section extends React.Component {
         {initialized && (<ul className="section-list" style={{padding: 0}}>
           {rows.map((link, index) => link && <Card index={index} dispatch={dispatch} link={link} />)}
         </ul>)}
+        {!initialized &&
+          <div className="section-empty-state">
+            <div className="empty-state">
+              <img className={`empty-state-icon icon icon-${emptyState.icon}`} />
+              <p className="empty-state-message">
+                <FormattedMessage {...emptyState.message} />
+              </p>
+            </div>
+          </div>}
       </section>);
   }
 }

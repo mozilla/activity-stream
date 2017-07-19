@@ -32,6 +32,10 @@ this.DummySectionFeed = class DummySectionFeed {
           id: "fake_id",
           defaultMessage: "Red pandas article"
         }
+      },
+      emptyState: {
+        message: {id: "fake_id", defaultMessage: "Cupcake ipsum dolor sit amet caramels caramels. Powder jelly beans tart. Tootsie roll sesame snaps marzipan brownie jujubes. Lollipop jelly-o gingerbread."},
+        icon: "check"
       }
     };
   }
