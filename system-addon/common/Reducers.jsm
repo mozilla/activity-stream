@@ -107,6 +107,9 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       });
       return hasMatch ? Object.assign({}, prevState, {rows: newRows}) : prevState;
     case at.PLACES_BOOKMARK_ADDED:
+      if (!action.data) {
+        return prevState;
+      }
       newRows = prevState.rows.map(site => {
         if (site && site.url === action.data.url) {
           const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
@@ -116,6 +119,9 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       });
       return Object.assign({}, prevState, {rows: newRows});
     case at.PLACES_BOOKMARK_REMOVED:
+      if (!action.data) {
+        return prevState;
+      }
       newRows = prevState.rows.map(site => {
         if (site && site.url === action.data.url) {
           const newSite = Object.assign({}, site);
