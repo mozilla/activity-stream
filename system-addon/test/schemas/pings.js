@@ -45,7 +45,7 @@ const UserEventAction = Joi.object().keys({
       "UNPIN",
       "SAVE_TO_POCKET"
     ]).required(),
-    source: Joi.valid(["TOP_SITES"]),
+    source: Joi.valid(["TOP_SITES", "TOP_STORIES"]),
     action_position: Joi.number().integer()
   }).required(),
   meta: Joi.object().keys({
