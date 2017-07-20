@@ -54,10 +54,10 @@ class Card extends React.Component {
         <div className="card">
           {link.image && <div className="card-preview-image" style={{backgroundImage: `url(${link.image})`}} />}
           <div className="card-details">
-            <div className="card-host-name"> {link.hostname} </div>
+            <div className="card-host-name">{link.hostname}</div>
             <div className={`card-text${link.image ? "" : " full-height"}`}>
-              <h4 className="card-title" dir="auto"> {link.title} </h4>
-              <p className="card-description" dir="auto"> {link.description} </p>
+              <h4 className="card-title" dir="auto">{link.title}</h4>
+              <p className="card-description" dir="auto">{link.description}</p>
             </div>
             <div className="card-context">
               <span className={`card-context-icon icon icon-${icon}`} />
