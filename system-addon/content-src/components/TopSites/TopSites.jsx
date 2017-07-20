@@ -30,7 +30,7 @@ class TopSite extends React.Component {
     const screenshotClassName = `screenshot${link.screenshot ? " active" : ""}`;
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
     const style = {backgroundImage: (link.screenshot ? `url(${link.screenshot})` : "none")};
-    return (<li className={topSiteOuterClassName} key={link.url}>
+    return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
         <a onClick={() => this.trackClick()} href={link.url}>
           <div className="tile" aria-hidden={true}>
               <span className="letter-fallback">{title[0]}</span>
@@ -64,7 +64,7 @@ const TopSites = props => (<section>
   <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
     {props.TopSites.rows.map((link, index) => link && <TopSite
-      key={link.url}
+      key={link.guid || link.url}
       dispatch={props.dispatch}
       link={link}
       index={index} />)}
