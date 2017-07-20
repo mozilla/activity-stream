@@ -78,6 +78,10 @@ describe("Reducers", () => {
       // old row is unchanged
       assert.equal(nextState.rows[0], oldState.rows[0]);
     });
+    it("should not update state for empty action.data on PLACES_BOOKMARK_ADDED", () => {
+      const nextState = TopSites(undefined, {type: at.PLACES_BOOKMARK_ADDED});
+      assert.equal(nextState, INITIAL_STATE.TopSites);
+    });
     it("should remove a bookmark on PLACES_BOOKMARK_REMOVED", () => {
       const oldState = {
         rows: [{url: "foo.com"}, {
@@ -98,6 +102,10 @@ describe("Reducers", () => {
 
       // old row is unchanged
       assert.deepEqual(nextState.rows[0], oldState.rows[0]);
+    });
+    it("should not update state for empty action.data on PLACES_BOOKMARK_REMOVED", () => {
+      const nextState = TopSites(undefined, {type: at.PLACES_BOOKMARK_REMOVED});
+      assert.equal(nextState, INITIAL_STATE.TopSites);
     });
     it("should remove a link on PLACES_LINK_BLOCKED and PLACES_LINK_DELETED", () => {
       const events = [at.PLACES_LINK_BLOCKED, at.PLACES_LINK_DELETED];
