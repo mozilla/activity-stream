@@ -40,6 +40,26 @@ describe("<Search>", () => {
     assert.equal(spy.firstCall.args[0], "ContentSearchClient");
     assert.equal(spy.firstCall.args[1], wrapper.node);
   });
+  it("should create a ContentSearchUIController when the search input is focused", () => {
+    const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
+
+    assert.isNull(wrapper.node.controller);
+
+    wrapper.find("#newtab-search-text").simulate("focus");
+
+    assert.instanceOf(wrapper.node.controller, global.ContentSearchUIController);
+  });
+  it("should not reinitialize ContentSearchUIController a second time", () => {
+    const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
+
+    wrapper.find("#newtab-search-text").simulate("focus");
+
+    const originalController = wrapper.node.controller;
+
+    wrapper.find("#newtab-search-text").simulate("focus");
+
+    assert.strictEqual(wrapper.node.controller, originalController);
+  });
   it("should pass along search when clicking the search button", () => {
     const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
 
