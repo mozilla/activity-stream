@@ -8,45 +8,33 @@ const {actionCreators: ac} = require("common/Actions.jsm");
 class Search extends React.Component {
   constructor(props) {
     super(props);
-    this.controller = null;
     this.onClick = this.onClick.bind(this);
-    this.onFocus = this.onFocus.bind(this);
     this.onInputMount = this.onInputMount.bind(this);
   }
+
   handleEvent(event) {
     // Also track search events with our own telemetry
     if (event.detail.type === "Search") {
       this.props.dispatch(ac.UserEvent({event: "SEARCH"}));
     }
   }
-  onInputMount(input) {
-    this.input = input;
-  }
-  ensureSearchIsInitialized() {
-    if (this.controller) {
-      return;
-    }
-    // The first "newtab" parameter here is called the "healthReportKey" and needs
-    // to be "newtab" so that BrowserUsageTelemetry.jsm knows to handle events with
-    // this name, and can add the appropriate telemetry probes for search. Without the
-    // correct name, certain tests like browser_UsageTelemetry_content.js will fail (See
-    // github ticket #2348 for more details)
-    this.controller = new ContentSearchUIController(this.input, this.input.parentNode,
-      "newtab", "newtab");
-  }
   onClick(event) {
-    this.ensureSearchIsInitialized();
     this.controller.search(event);
   }
-  onFocus(e) {
-    this.ensureSearchIsInitialized();
-  }
-  componentDidMount() {
-    addEventListener("ContentSearchClient", this);
-  }
-  componentWillUnmount() {
-    this.controller = null;
-    removeEventListener("ContentSearchClient", this);
+  onInputMount(input) {
+    if (input) {
+      // The first "newtab" parameter here is called the "healthReportKey" and needs
+      // to be "newtab" so that BrowserUsageTelemetry.jsm knows to handle events with
+      // this name, and can add the appropriate telemetry probes for search. Without the
+      // correct name, certain tests like browser_UsageTelemetry_content.js will fail (See
+      // github ticket #2348 for more details)
+      this.controller = new ContentSearchUIController(input, input.parentNode,
+        "newtab", "newtab");
+      addEventListener("ContentSearchClient", this);
+    } else {
+      this.controller = null;
+      removeEventListener("ContentSearchClient", this);
+    }
   }
 
   /*
@@ -61,10 +49,9 @@ class Search extends React.Component {
       </label>
       <input
         id="newtab-search-text"
-        ref={this.onInputMount}
         maxLength="256"
-        onFocus={this.onFocus}
         placeholder={this.props.intl.formatMessage({id: "search_web_placeholder"})}
+        ref={this.onInputMount}
         title={this.props.intl.formatMessage({id: "search_web_placeholder"})}
         type="search" />
         <button
