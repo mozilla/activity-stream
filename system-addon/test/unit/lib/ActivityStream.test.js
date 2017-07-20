@@ -12,7 +12,6 @@ describe("ActivityStream", () => {
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     ({ActivityStream, SECTIONS} = injector({
-      "lib/DummySectionFeed.jsm": {DummySectionFeed: Fake},
       "lib/LocalizationFeed.jsm": {LocalizationFeed: Fake},
       "lib/NewTabInit.jsm": {NewTabInit: Fake},
       "lib/PlacesFeed.jsm": {PlacesFeed: Fake},
@@ -121,10 +120,6 @@ describe("ActivityStream", () => {
     });
     it("should create a Snippets feed", () => {
       const feed = as.feeds.get("feeds.snippets")();
-      assert.instanceOf(feed, Fake);
-    });
-    it("should create a TopStories feed", () => {
-      const feed = as.feeds.get("feeds.topstories")();
       assert.instanceOf(feed, Fake);
     });
     it("should create a SystemTick feed", () => {

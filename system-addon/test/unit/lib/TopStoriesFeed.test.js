@@ -14,7 +14,7 @@ describe("Top Stories Feed", () => {
   let globals;
 
   beforeEach(() => {
-    FakePrefs.prototype.prefs["feeds.topstories.options"] = `{
+    FakePrefs.prototype.prefs["feeds.section.topstories.options"] = `{
       "stories_endpoint": "https://somedomain.org/stories?key=$apiKey",
       "topics_endpoint": "https://somedomain.org/topics?key=$apiKey",
       "survey_link": "https://www.surveymonkey.com/r/newtabffx",
@@ -89,13 +89,13 @@ describe("Top Stories Feed", () => {
     it("should not fetch if endpoint not configured", () => {
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
-      FakePrefs.prototype.prefs["feeds.topstories.options"] = "{}";
+      FakePrefs.prototype.prefs["feeds.section.topstories.options"] = "{}";
       instance.init();
       assert.notCalled(fetchStub);
     });
     it("should report error for invalid configuration", () => {
       globals.sandbox.spy(global.Components.utils, "reportError");
-      FakePrefs.prototype.prefs["feeds.topstories.options"] = "invalid";
+      FakePrefs.prototype.prefs["feeds.section.topstories.options"] = "invalid";
       instance.init();
 
       assert.called(Components.utils.reportError);
@@ -104,7 +104,7 @@ describe("Top Stories Feed", () => {
       let fakeServices = {prefs: {getCharPref: sinon.spy()}};
       globals.set("Services", fakeServices);
       globals.sandbox.spy(global.Components.utils, "reportError");
-      FakePrefs.prototype.prefs["feeds.topstories.options"] = `{
+      FakePrefs.prototype.prefs["feeds.section.topstories.options"] = `{
         "stories_endpoint": "https://somedomain.org/stories?key=$apiKey",
         "topics_endpoint": "https://somedomain.org/topics?key=$apiKey"
       }`;
@@ -122,7 +122,7 @@ describe("Top Stories Feed", () => {
     });
     it("should initialize on FEED_INIT", () => {
       instance.init = sinon.spy();
-      instance.onAction({type: at.FEED_INIT, data: "feeds.topstories"});
+      instance.onAction({type: at.FEED_INIT, data: "feeds.section.topstories"});
       assert.calledOnce(instance.init);
     });
   });

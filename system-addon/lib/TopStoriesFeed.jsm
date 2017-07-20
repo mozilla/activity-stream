@@ -25,7 +25,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
   init() {
     try {
       const prefs = new Prefs();
-      const options = JSON.parse(prefs.get("feeds.topstories.options"));
+      const options = JSON.parse(prefs.get("feeds.section.topstories.options"));
       const apiKey = this._getApiKeyFromPref(options.api_key_pref);
       this.stories_endpoint = this._produceUrlWithApiKey(options.stories_endpoint, apiKey);
       this.topics_endpoint = this._produceUrlWithApiKey(options.topics_endpoint, apiKey);
@@ -173,7 +173,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.uninit();
         break;
       case at.FEED_INIT:
-        if (action.data === "feeds.topstories") {
+        if (action.data === "feeds.section.topstories") {
           this.init();
         }
         break;

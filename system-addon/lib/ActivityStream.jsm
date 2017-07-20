@@ -18,26 +18,26 @@ const {SnippetsFeed} = Cu.import("resource://activity-stream/lib/SnippetsFeed.js
 const {SystemTickFeed} = Cu.import("resource://activity-stream/lib/SystemTickFeed.jsm", {});
 const {TelemetryFeed} = Cu.import("resource://activity-stream/lib/TelemetryFeed.jsm", {});
 const {TopSitesFeed} = Cu.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
-const {DummySectionFeed} = Cu.import("resource://activity-stream/lib/DummySectionFeed.jsm", {});
 const {TopStoriesFeed} = Cu.import("resource://activity-stream/lib/TopStoriesFeed.jsm", {});
 
 const REASON_ADDON_UNINSTALL = 6;
 
 // Sections, keyed by section id
 const SECTIONS = new Map([
-  ["dummy_section", {
-    feed: DummySectionFeed,
+  ["topstories", {
+    feed: TopStoriesFeed,
+    prefTitle: "Fetches content recommendations from a configurable content provider",
     showByDefault: false
   }]
 ]);
 
 const SECTION_FEEDS_CONFIG = Array.from(SECTIONS.entries()).map(entry => {
   const id = entry[0];
-  const {feed: Feed, showByDefault: value} = entry[1];
+  const {feed: Feed, prefTitle, showByDefault: value} = entry[1];
   return {
     name: `section.${id}`,
     factory: () => new Feed(),
-    title: `${id} section feed`,
+    title: prefTitle || `${id} section feed`,
     value
   };
 });
@@ -69,7 +69,7 @@ const PREFS_CONFIG = new Map([
     title: "Telemetry server endpoint",
     value: "https://tiles.services.mozilla.com/v4/links/activity-stream"
   }],
-  ["feeds.topstories.options", {
+  ["feeds.section.topstories.options", {
     title: "Configuration options for top stories feed",
     value: `{
       "stories_endpoint": "https://getpocket.com/v3/firefox/global-recs?consumer_key=$apiKey",
@@ -133,12 +133,6 @@ for (const {name, factory, title, value} of SECTION_FEEDS_CONFIG.concat([
     factory: () => new TopSitesFeed(),
     title: "Queries places and gets metadata for Top Sites section",
     value: true
-  },
-  {
-    name: "topstories",
-    factory: () => new TopStoriesFeed(),
-    title: "Fetches content recommendations from a configurable content provider",
-    value: false
   }
 ])) {
   const pref = `feeds.${name}`;
