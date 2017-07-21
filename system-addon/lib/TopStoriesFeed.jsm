@@ -14,6 +14,7 @@ const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.js
 
 const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
+const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
 const SECTION_ID = "TopStories";
 
 this.TopStoriesFeed = class TopStoriesFeed {
@@ -80,12 +81,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
             .filter(s => !NewTabUtils.blockedLinks.isBlocked(s.dedupe_url))
             .map(s => ({
               "guid": s.id,
-              "type": "trending",
+              "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
               "title": s.title,
               "description": s.excerpt,
               "image": this._normalizeUrl(s.image_src),
-              "url": s.dedupe_url,
-              "lastVisitDate": s.published_timestamp
+              "url": s.dedupe_url
             }));
           return items;
         })

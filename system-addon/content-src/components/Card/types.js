@@ -10,5 +10,9 @@ module.exports = {
   trending: {
     intlID: "type_label_recommended",
     icon: "trending"
+  },
+  now: {
+    intlID: "type_label_now",
+    icon: "now"
   }
 };
