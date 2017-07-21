@@ -12,16 +12,29 @@ class TopSite extends React.Component {
   constructor(props) {
     super(props);
     this.state = {showContextMenu: false, activeTile: null};
+    this.onLinkClick = this.onLinkClick.bind(this);
+    this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
+    this.onMenuUpdate = this.onMenuUpdate.bind(this);
   }
   toggleContextMenu(event, index) {
-    this.setState({showContextMenu: true, activeTile: index});
+    this.setState({
+      activeTile: index,
+      showContextMenu: true
+    });
   }
-  trackClick() {
+  onLinkClick() {
     this.props.dispatch(ac.UserEvent({
       event: "CLICK",
       source: TOP_SITES_SOURCE,
       action_position: this.props.index
     }));
+  }
+  onMenuButtonClick(event) {
+    event.preventDefault();
+    this.toggleContextMenu(event, this.props.index);
+  }
+  onMenuUpdate(showContextMenu) {
+    this.setState({showContextMenu});
   }
   render() {
     const {link, index, dispatch} = this.props;
@@ -31,7 +44,7 @@ class TopSite extends React.Component {
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
     const style = {backgroundImage: (link.screenshot ? `url(${link.screenshot})` : "none")};
     return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
-        <a onClick={() => this.trackClick()} href={link.url}>
+        <a href={link.url} onClick={this.onLinkClick}>
           <div className="tile" aria-hidden={true}>
               <span className="letter-fallback">{title[0]}</span>
               <div className={screenshotClassName} style={style} />
@@ -41,21 +54,17 @@ class TopSite extends React.Component {
             <span>{title}</span>
           </div>
         </a>
-        <button className="context-menu-button"
-          onClick={e => {
-            e.preventDefault();
-            this.toggleContextMenu(e, index);
-          }}>
+        <button className="context-menu-button" onClick={this.onMenuButtonClick}>
           <span className="sr-only">{`Open context menu for ${title}`}</span>
         </button>
         <LinkMenu
           dispatch={dispatch}
-          visible={isContextMenuOpen}
-          onUpdate={val => this.setState({showContextMenu: val})}
-          site={link}
           index={index}
+          onUpdate={this.onMenuUpdate}
+          options={TOP_SITES_CONTEXT_MENU_OPTIONS}
+          site={link}
           source={TOP_SITES_SOURCE}
-          options={TOP_SITES_CONTEXT_MENU_OPTIONS} />
+          visible={isContextMenuOpen} />
     </li>);
   }
 }
