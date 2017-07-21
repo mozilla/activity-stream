@@ -47,6 +47,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
     this.onMessage = this.onMessage.bind(this);
     this.onNewTabLoad = this.onNewTabLoad.bind(this);
     this.onNewTabUnload = this.onNewTabUnload.bind(this);
+    this.onNewTabInit = this.onNewTabInit.bind(this);
   }
 
   /**

@@ -29,19 +29,19 @@ describe("detectUserSessionStart", () => {
     });
   });
   describe("#_sendEvent", () => {
-    it("should send an async message with the NEW_TAB_VISIBLE event", () => {
+    it("should send an async message with the SAVE_SESSION_PERF_DATA", () => {
       const sendAsyncMessage = sinon.spy();
       const instance = new DetectUserSessionStart({sendAsyncMessage});
 
       instance._sendEvent();
 
       assert.calledWith(sendAsyncMessage, "ActivityStream:ContentToMain", {
-        type: at.NEW_TAB_VISIBLE,
-        data: {absVisibilityChangeTime: sinon.match.number}
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {visibility_event_rcvd_ts: sinon.match.number}
       });
     });
 
-    it('should call perfService.mark("visibility-change-event")', () => {
+    it('should call perfService.mark("visibility_event_rcvd_ts")', () => {
       let perfService = new PerfService();
       sinon.stub(perfService, "mark");
       const instance = new DetectUserSessionStart({
@@ -51,7 +51,7 @@ describe("detectUserSessionStart", () => {
 
       instance._sendEvent();
 
-      assert.calledWith(perfService.mark, "visibility-change-event");
+      assert.calledWith(perfService.mark, "visibility_event_rcvd_ts");
     });
   });
 

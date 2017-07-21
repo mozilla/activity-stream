@@ -90,21 +90,6 @@ describe("TelemetryFeed", () => {
 
       assert.propertyVal(session.perf, "load_trigger_type", "unexpected");
     });
-    it("should set the perf type with timestamp", () => {
-      const session = instance.addSession("foo", 123);
-
-      assert.propertyVal(session.perf, "load_trigger_type", "menu_plus_or_keyboard"); // This is hardcoded for now.
-    });
-    it("should save visibility time", () => {
-      const session = instance.addSession("foo", 123);
-
-      assert.propertyVal(session.perf, "visibility_event_rcvd_ts", 123);
-    });
-    it("should not save visibility time when lacking timestamp", () => {
-      const session = instance.addSession("foo");
-
-      assert.propertyVal(session.perf, "visibility_event_rcvd_ts", undefined);
-    });
   });
   describe("#browserOpenNewtabStart", () => {
     it("should call perfService.mark with browser-open-newtab-start", () => {
@@ -290,6 +275,43 @@ describe("TelemetryFeed", () => {
       assert.calledWith(instance.telemetrySender.sendPing, event);
     });
   });
+
+  describe("#setLoadTriggerInfo", () => {
+    it("should call saveSessionPerfData w/load_trigger_{ts,type} data", () => {
+      const stub = sandbox.stub(instance, "saveSessionPerfData");
+      sandbox.stub(perfService, "getMostRecentAbsMarkStartByName").returns(777);
+      instance.addSession("port123");
+
+      instance.setLoadTriggerInfo("port123");
+
+      assert.calledWith(stub, "port123", {
+        load_trigger_ts: 777,
+        load_trigger_type: "menu_plus_or_keyboard"
+      });
+    });
+
+    it("should not call saveSessionPerfData when getting mark throws", () => {
+      const stub = sandbox.stub(instance, "saveSessionPerfData");
+      sandbox.stub(perfService, "getMostRecentAbsMarkStartByName").throws();
+      instance.addSession("port123");
+
+      instance.setLoadTriggerInfo("port123");
+
+      assert.notCalled(stub);
+    });
+  });
+
+  describe("#saveSessionPerfData", () => {
+    it("should update the given session with the given data", () => {
+      instance.addSession("port123");
+      assert.notProperty(instance.sessions.get("port123"), "fake_ts");
+      const data = {fake_ts: 456, other_fake_ts: 789};
+
+      instance.saveSessionPerfData("port123", data);
+
+      assert.include(instance.sessions.get("port123").perf, data);
+    });
+  });
   describe("#uninit", () => {
     it("should call .telemetrySender.uninit", () => {
       const stub = sandbox.stub(instance.telemetrySender, "uninit");
@@ -314,18 +336,42 @@ describe("TelemetryFeed", () => {
       instance.onAction({type: at.INIT});
       assert.calledOnce(stub);
     });
-    it("should call .addSession() on a NEW_TAB_VISIBLE action", () => {
+    it("should call .addSession() on a NEW_TAB_INIT action", () => {
       const stub = sandbox.stub(instance, "addSession");
+      sandbox.stub(instance, "setLoadTriggerInfo");
+
       instance.onAction(ac.SendToMain({
-        type: at.NEW_TAB_VISIBLE,
-        data: {absVisibilityChangeTime: 789}
+        type: at.NEW_TAB_INIT,
+        data: {}
       }, "port123"));
+
+      assert.calledOnce(stub);
+      assert.calledWith(stub, "port123");
+    });
+    it("should call .setLoadTriggerInfo() on NEW_TAB_INIT action", () => {
+      const stub = sandbox.stub(instance, "setLoadTriggerInfo");
+
+      instance.onAction(ac.SendToMain({
+        type: at.NEW_TAB_INIT,
+        data: {}
+      }, "port123"));
+
+      assert.calledOnce(stub);
       assert.calledWith(stub, "port123");
     });
     it("should call .endSession() on a NEW_TAB_UNLOAD action", () => {
       const stub = sandbox.stub(instance, "endSession");
       instance.onAction(ac.SendToMain({type: at.NEW_TAB_UNLOAD}, "port123"));
       assert.calledWith(stub, "port123");
+    });
+    it("should call .saveSessionPerfData on SAVE_SESSION_PERF_DATA", () => {
+      const stub = sandbox.stub(instance, "saveSessionPerfData");
+      const data = {some_ts: 10};
+      const action = {type: at.SAVE_SESSION_PERF_DATA, data};
+
+      instance.onAction(ac.SendToMain(action, "port123"));
+
+      assert.calledWith(stub, "port123", data);
     });
     it("should send an event on an TELEMETRY_UNDESIRED_EVENT action", () => {
       const sendEvent = sandbox.stub(instance, "sendEvent");

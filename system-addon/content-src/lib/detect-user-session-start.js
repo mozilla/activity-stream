@@ -33,17 +33,17 @@ module.exports = class DetectUserSessionStart {
   /**
    * _sendEvent - Sends a message to the main process to indicate the current
    *              tab is now visible to the user, includes the
-   *              visibility-change-event time in ms from the UNIX epoch.
+   *              visibility_event_rcvd_ts time in ms from the UNIX epoch.
    */
   _sendEvent() {
-    this._perfService.mark("visibility-change-event");
+    this._perfService.mark("visibility_event_rcvd_ts");
 
-    let absVisChangeTime = this._perfService
-        .getMostRecentAbsMarkStartByName("visibility-change-event");
+    let visibility_event_rcvd_ts = this._perfService
+        .getMostRecentAbsMarkStartByName("visibility_event_rcvd_ts");
 
     this.sendAsyncMessage("ActivityStream:ContentToMain", {
-      type: at.NEW_TAB_VISIBLE,
-      data: {absVisibilityChangeTime: absVisChangeTime}
+      type: at.SAVE_SESSION_PERF_DATA,
+      data: {visibility_event_rcvd_ts}
     });
   }
 
