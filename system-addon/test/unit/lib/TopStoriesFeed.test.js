@@ -51,7 +51,7 @@ describe("Top Stories Feed", () => {
         title: {id: "header_recommended_by", values: {provider: "test-provider"}},
         rows: [],
         maxCards: 3,
-        contextMenuOptions: ["SaveToPocket", "Separator", "CheckBookmark", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
+        contextMenuOptions: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
         infoOption: {
           header: {id: "pocket_feedback_header"},
           body: {id: "pocket_feedback_body"},
