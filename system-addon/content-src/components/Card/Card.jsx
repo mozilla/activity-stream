@@ -17,9 +17,18 @@ class Card extends React.Component {
   constructor(props) {
     super(props);
     this.state = {showContextMenu: false, activeCard: null};
+    this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
+    this.onMenuUpdate = this.onMenuUpdate.bind(this);
   }
-  toggleContextMenu(event, index) {
-    this.setState({showContextMenu: true, activeCard: index});
+  onMenuButtonClick(event) {
+    event.preventDefault();
+    this.setState({
+      activeCard: this.props.index,
+      showContextMenu: true
+    });
+  }
+  onMenuUpdate(showContextMenu) {
+    this.setState({showContextMenu});
   }
   render() {
     const {index, link, dispatch, contextMenuOptions} = this.props;
@@ -45,19 +54,16 @@ class Card extends React.Component {
         </div>
       </a>
       <button className="context-menu-button"
-        onClick={e => {
-          e.preventDefault();
-          this.toggleContextMenu(e, index);
-        }}>
+        onClick={this.onMenuButtonClick}>
         <span className="sr-only">{`Open context menu for ${link.title}`}</span>
       </button>
       <LinkMenu
-      dispatch={dispatch}
-      visible={isContextMenuOpen}
-      onUpdate={val => this.setState({showContextMenu: val})}
-      index={index}
-      site={link}
-      options={link.context_menu_options || contextMenuOptions} />
+        dispatch={dispatch}
+        index={index}
+        onUpdate={this.onMenuUpdate}
+        options={link.context_menu_options || contextMenuOptions}
+        site={link}
+        visible={isContextMenuOpen} />
    </li>);
   }
 }
