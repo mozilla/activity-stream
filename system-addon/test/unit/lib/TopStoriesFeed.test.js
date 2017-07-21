@@ -141,12 +141,11 @@ describe("Top Stories Feed", () => {
       }]}`;
       const stories = [{
         "guid": "1",
-        "type": "trending",
+        "type": "now",
         "title": "title",
         "description": "description",
         "image": "image-url",
-        "url": "rec-url",
-        "lastVisitDate": "123"
+        "url": "rec-url"
       }];
 
       instance.stories_endpoint = "stories-endpoint";
@@ -192,6 +191,30 @@ describe("Top Stories Feed", () => {
       assert.propertyVal(instance.store.dispatch.firstCall.args[0], "type", at.SECTION_ROWS_UPDATE);
       assert.equal(instance.store.dispatch.firstCall.args[0].data.rows.length, 1);
       assert.equal(instance.store.dispatch.firstCall.args[0].data.rows[0].url, "not_blocked");
+    });
+    it("should mark stories as new", async () => {
+      let fetchStub = globals.sandbox.stub();
+      globals.set("fetch", fetchStub);
+      globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
+      clock.restore();
+      const response = JSON.stringify({
+        "list": [
+          {"published_timestamp": Date.now() / 1000},
+          {"published_timestamp": "0"},
+          {"published_timestamp": (Date.now() - 2 * 24 * 60 * 60 * 1000) / 1000}
+        ]
+      });
+
+      instance.stories_endpoint = "stories-endpoint";
+      fetchStub.resolves({ok: true, status: 200, text: () => response});
+
+      await instance.fetchStories();
+      assert.calledOnce(instance.store.dispatch);
+      assert.propertyVal(instance.store.dispatch.firstCall.args[0], "type", at.SECTION_ROWS_UPDATE);
+      assert.equal(instance.store.dispatch.firstCall.args[0].data.rows.length, 3);
+      assert.equal(instance.store.dispatch.firstCall.args[0].data.rows[0].type, "now");
+      assert.equal(instance.store.dispatch.firstCall.args[0].data.rows[1].type, "trending");
+      assert.equal(instance.store.dispatch.firstCall.args[0].data.rows[2].type, "trending");
     });
     it("should fetch topics and send event", async () => {
       let fetchStub = globals.sandbox.stub();
