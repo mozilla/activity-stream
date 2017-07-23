@@ -88,6 +88,13 @@ const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
     load_trigger_type: Joi.valid(["menu_plus_or_keyboard", "unexpected"])
       .notes(["server counter", "server counter alert"]).required(),
 
+    // When did the topsites element finish painting?  Note that, at least for
+    // the first tab to be loaded, and maybe some others, this will be before
+    // topsites has yet to receive screenshots updates from the add-on code,
+    // and is therefore just showing placeholder screenshots.
+    topsites_first_painted_ts: Joi.number().positive()
+      .notes(["server counter", "server counter alert"]),
+
     // When the page itself receives an event that document.visibilityState
     // == visible.
     //

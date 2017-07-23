@@ -262,5 +262,11 @@ perf: {
 
   // when the page itself receives an event that document.visibilityStat=visible
   "visibility_event_rcvd_ts": 2,
+
+  // When did the topsites element finish painting?  Note that, at least for
+  // the first tab to be loaded, and maybe some others, this will be before
+  // topsites has yet to receive screenshots updates from the add-on code,
+  // and is therefore just showing placeholder screenshots.
+  "topsites_first_painted_ts": 5,
 }
 ```

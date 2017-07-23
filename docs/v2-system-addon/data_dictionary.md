@@ -126,6 +126,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `value` | [Required] An integer that represents the measured performance value. Can store counts, times in milliseconds, and should always be a positive integer.| :one:
 | `ver` | [Auto populated by Onyx] The version of the Onyx API the ping was sent to. | :one:
 | `highlights_size` | [Optional] The size of the Highlights set. | :one:
+| `topsites_first_painted_ts` | [Optional][Service Counter][Server Alert for too many omissions] Timestamp of when the Top Sites element finished painting (possibly with only placeholder screenshots) | :one:
 | `topsites_size` | [Optional] The size of the Topsites set. | :one:
 | `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
