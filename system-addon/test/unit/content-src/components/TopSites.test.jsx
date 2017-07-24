@@ -39,6 +39,11 @@ describe("<TopSite>", () => {
     const wrapper = shallow(<TopSite link={link} />);
     assert.propertyVal(wrapper.find("a").props(), "href", "https://www.foobar.org");
   });
+  it("should have rtl direction automatically set for text", () => {
+    const wrapper = shallow(<TopSite link={link} />);
+
+    assert.isTrue(wrapper.find("[dir='auto']").length > 0);
+  });
   it("should render a shortened title based off the url", () => {
     link.url = "https://www.foobar.org";
     link.eTLD = "org";
