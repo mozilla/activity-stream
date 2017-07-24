@@ -31,8 +31,8 @@ module.exports = function(config) {
       // This will make karma fail if coverage reporting is less than the minimums here
       check: !isTDD && {
         global: {
-          statements: 100,
-          lines: 100,
+          statements: 90,
+          lines: 90,
           functions: 100,
           branches: 90
         }
