@@ -31,7 +31,7 @@ module.exports = {
     icon: "new-window",
     action: ac.SendToMain({
       type: at.OPEN_NEW_WINDOW,
-      data: {url: site.url}
+      data: {url: site.url, referrer: site.referrer}
     }),
     userEvent: "OPEN_NEW_WINDOW"
   }),
@@ -40,7 +40,7 @@ module.exports = {
     icon: "new-window-private",
     action: ac.SendToMain({
       type: at.OPEN_PRIVATE_WINDOW,
-      data: {url: site.url}
+      data: {url: site.url, referrer: site.referrer}
     }),
     userEvent: "OPEN_PRIVATE_WINDOW"
   }),

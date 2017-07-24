@@ -3,6 +3,7 @@ const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const shortURL = require("content-src/lib/short-url");
 const {FormattedMessage} = require("react-intl");
 const cardContextTypes = require("./types");
+const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
 /**
  * Card component.
@@ -19,6 +20,7 @@ class Card extends React.Component {
     this.state = {showContextMenu: false, activeCard: null};
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
+    this.onLinkClick = this.onLinkClick.bind(this);
   }
   onMenuButtonClick(event) {
     event.preventDefault();
@@ -26,6 +28,10 @@ class Card extends React.Component {
       activeCard: this.props.index,
       showContextMenu: true
     });
+  }
+  onLinkClick(event) {
+    event.preventDefault();
+    this.props.dispatch(ac.SendToMain({type: at.OPEN_LINK, data: this.props.link}));
   }
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});
@@ -37,7 +43,7 @@ class Card extends React.Component {
     const {icon, intlID} = cardContextTypes[link.type];
 
     return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}`}>
-      <a href={link.url}>
+      <a href={link.url} onClick={this.onLinkClick}>
         <div className="card">
           {link.image && <div className="card-preview-image" style={{backgroundImage: `url(${link.image})`}} />}
           <div className="card-details">
