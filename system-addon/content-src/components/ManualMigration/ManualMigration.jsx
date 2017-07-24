@@ -12,18 +12,19 @@ const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
  * 4.  User clicks "Cancel" on the import wizard (currently not implemented).
  */
 class ManualMigration extends React.Component {
-  _launchTour(dispatch) {
-    return () => {
-      dispatch(ac.SendToMain({type: at.MIGRATION_START}));
-      dispatch(ac.UserEvent({event: at.MIGRATION_START}));
-    };
+  constructor(props) {
+    super(props);
+    this.onLaunchTour = this.onLaunchTour.bind(this);
+    this.onCancelTour = this.onCancelTour.bind(this);
+  }
+  onLaunchTour() {
+    this.props.dispatch(ac.SendToMain({type: at.MIGRATION_START}));
+    this.props.dispatch(ac.UserEvent({event: at.MIGRATION_START}));
   }
 
-  _cancelTour(dispatch) {
-    return () => {
-      dispatch(ac.SendToMain({type: at.MIGRATION_CANCEL}));
-      dispatch(ac.UserEvent({event: at.MIGRATION_CANCEL}));
-    };
+  onCancelTour() {
+    this.props.dispatch(ac.SendToMain({type: at.MIGRATION_CANCEL}));
+    this.props.dispatch(ac.UserEvent({event: at.MIGRATION_CANCEL}));
   }
 
   render() {
@@ -33,10 +34,10 @@ class ManualMigration extends React.Component {
           <FormattedMessage id="manual_migration_explanation" />
         </p>
         <div className="manual-migration-actions actions">
-          <button onClick={this._cancelTour(this.props.dispatch)}>
+          <button onClick={this.onCancelTour}>
             <FormattedMessage id="manual_migration_cancel_button" />
           </button>
-          <button className="done" onClick={this._launchTour(this.props.dispatch)}>
+          <button className="done" onClick={this.onLaunchTour}>
             <FormattedMessage id="manual_migration_import_button" />
           </button>
         </div>
@@ -44,5 +45,5 @@ class ManualMigration extends React.Component {
   }
 }
 
-module.exports = connect(state => state.Prefs)(ManualMigration);
+module.exports = connect()(ManualMigration);
 module.exports._unconnected = ManualMigration;

@@ -85,13 +85,11 @@ const PREFS_CONFIG = new Map([
   }],
   ["migrationExpired", {
     title: "Boolean flag that decides whether to show the migration message or not.",
-    value: false,
-    value_local_dev: false
+    value: false
   }],
   ["migrationRemainingDays", {
     title: "Number of days to show the manual migration message",
-    value: 4,
-    value_local_dev: 2
+    value: 4
   }],
   ["migrationLastShownDate", {
     title: "Timestamp when migration message was last shown. In seconds.",
