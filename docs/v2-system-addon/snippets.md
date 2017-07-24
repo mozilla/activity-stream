@@ -36,3 +36,13 @@ where possible.
 `snippets-last-update`: The last time snippets were updated.
 
 `snippets`: The cached payload of the response from the snippets server.
+
+`appData.snippetsURL`: The URL at from which snippets are fetched
+
+`appData.version`: The current version of snippets
+
+`appData.profileCreatedWeeksAgo`: The date the user's profile was created
+
+`appData.profileResetWeeksAgo`: The date the user's profile was reset. `null` if the profile hasn't been reset.
+
+`appData.telemetryEnabled`: Is telemetry enabled for the user?

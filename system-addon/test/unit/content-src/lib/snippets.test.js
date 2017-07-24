@@ -127,10 +127,14 @@ describe("SnippetsProvider", () => {
 
       assert.calledOnce(snippets._showDefaultSnippets);
     });
+    it("should set each item in .appData in gSnippetsMap as appData.{item}", async () => {
+      await snippets.init({connect: false, appData: {foo: 123, bar: "hello"}});
+      assert.equal(snippets.snippetsMap.get("appData.foo"), 123);
+      assert.equal(snippets.snippetsMap.get("appData.bar"), "hello");
+    });
   });
   describe("#_refreshSnippets", () => {
     let clock;
-    const validOptions = {connect: false, version: 4, snippetsURL: "foo.com"};
     beforeEach(() => {
       clock = sinon.useFakeTimers();
       snippets = new SnippetsProvider();
@@ -141,28 +145,28 @@ describe("SnippetsProvider", () => {
     });
     it("should clear gSnippetsMap if the cached version is different than the current version or missing", async () => {
       sandbox.spy(global.gSnippetsMap, "clear");
-      snippets.init(Object.assign({}, validOptions, {version: 5}));
+      await snippets.init({connect: false, appData: {version: 5, snippetsURL: "foo.com"}});
       assert.calledOnce(global.gSnippetsMap.clear);
 
       global.gSnippetsMap.clear.reset();
       global.gSnippetsMap.delete("snippets-cached-version");
-      await snippets.init(Object.assign({}, validOptions, {version: 5}));
+      await snippets.init({connect: false, appData: {version: 5, snippetsURL: "foo.com"}});
       assert.calledOnce(global.gSnippetsMap.clear);
     });
     it("should not clear gSnippetsMap if the cached version the same as the current version", async () => {
       sandbox.spy(global.gSnippetsMap, "clear");
-      await snippets.init(validOptions);
+      await snippets.init({connect: false, appData: {version: 4, snippetsURL: "foo.com"}});
       assert.notCalled(global.gSnippetsMap.clear);
     });
     it("should fetch new data if no last update time was cached", async () => {
-      await snippets.init(validOptions);
+      await snippets.init({connect: false, appData: {version: 4, snippetsURL: "foo.com"}});
       assert.calledOnce(global.fetch);
     });
     it("should fetch new data if it has been at least SNIPPETS_UPDATE_INTERVAL_MS since the last update", async () => {
       global.gSnippetsMap.set("snippets-last-update", Date.now());
       clock.tick(SNIPPETS_UPDATE_INTERVAL_MS + 1);
 
-      await snippets.init(validOptions);
+      await snippets.init({connect: false, appData: {version: 4, snippetsURL: "foo.com"}});
 
       assert.calledOnce(global.fetch);
     });
@@ -171,7 +175,7 @@ describe("SnippetsProvider", () => {
 
       clock.tick(5);
 
-      await snippets.init(validOptions);
+      await snippets.init({connect: false, appData: {version: 4, snippetsURL: "foo.com"}});
 
       assert.notCalled(global.fetch);
     });
@@ -179,7 +183,7 @@ describe("SnippetsProvider", () => {
       clock.tick(7);
       global.fetch.returns(Promise.resolve({status: 200, text: () => Promise.resolve("foo123")}));
 
-      await snippets.init(Object.assign({}, validOptions, {version: 5}));
+      await snippets.init({connect: false, appData: {version: 5, snippetsURL: "foo.com"}});
 
       assert.equal(global.gSnippetsMap.get("snippets"), "foo123");
       assert.equal(global.gSnippetsMap.get("snippets-last-update"), 7);
@@ -189,7 +193,7 @@ describe("SnippetsProvider", () => {
       sandbox.stub(global.console, "error");
       global.fetch.returns(Promise.reject({status: 400}));
 
-      await snippets.init(Object.assign({}, validOptions, {version: 5}));
+      await snippets.init({connect: false, appData: {version: 5, snippetsURL: "foo.com"}});
 
       assert.calledOnce(global.console.error);
     });
