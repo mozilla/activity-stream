@@ -70,7 +70,7 @@ class TopSite extends React.Component {
 }
 
 const TopSites = props => (<section>
-  <h3 className="section-title"><FormattedMessage id="header_top_sites" /></h3>
+  <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
     {props.TopSites.rows.map((link, index) => link && <TopSite
       key={link.guid || link.url}
