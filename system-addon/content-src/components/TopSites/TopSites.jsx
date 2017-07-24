@@ -51,7 +51,7 @@ class TopSite extends React.Component {
           </div>
           <div className={`title ${link.isPinned ? "pinned" : ""}`}>
             {link.isPinned && <div className="icon icon-pin-small" />}
-            <span>{title}</span>
+            <span dir="auto">{title}</span>
           </div>
         </a>
         <button className="context-menu-button" onClick={this.onMenuButtonClick}>
