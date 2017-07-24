@@ -29,4 +29,9 @@ describe("shortURL", () => {
   it("should return hostname for localhost", () => {
     assert.equal(shortURL({url: "http://localhost:8000/", eTLD: "localhost"}), "localhost");
   });
+
+  it("should return the url if no hostname or title is provided", () => {
+    const url = "file://foo/bar.txt";
+    assert.equal(shortURL({url, eTLD: "foo"}), url);
+  });
 });
