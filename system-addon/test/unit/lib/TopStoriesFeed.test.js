@@ -180,7 +180,7 @@ describe("Top Stories Feed", () => {
     it("should exclude blocked (dismissed) URLs", async () => {
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
-      globals.set("NewTabUtils", {blockedLinks: {isBlocked: url => url === "blocked"}});
+      globals.set("NewTabUtils", {blockedLinks: {isBlocked: site => site.url === "blocked"}});
 
       const response = `{"list": [{"dedupe_url" : "blocked"}, {"dedupe_url" : "not_blocked"}]}`;
       instance.stories_endpoint = "stories-endpoint";

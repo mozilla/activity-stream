@@ -78,7 +78,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         .then(body => {
           let items = JSON.parse(body).list;
           items = items
-            .filter(s => !NewTabUtils.blockedLinks.isBlocked(s.dedupe_url))
+            .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.dedupe_url}))
             .map(s => ({
               "guid": s.id,
               "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
