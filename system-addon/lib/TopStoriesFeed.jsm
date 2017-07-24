@@ -49,7 +49,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
           }
         },
         emptyState: {
-          message: {id: "empty_state_topstories"},
+          message: {id: "topstories_empty_state", values: {provider: options.provider_name}},
           icon: "check"
         }
       };
