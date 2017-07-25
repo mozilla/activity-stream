@@ -16,6 +16,7 @@ describe("Top Stories Feed", () => {
   beforeEach(() => {
     FakePrefs.prototype.prefs["feeds.section.topstories.options"] = `{
       "stories_endpoint": "https://somedomain.org/stories?key=$apiKey",
+      "stories_referrer": "https://somedomain.org/referrer",
       "topics_endpoint": "https://somedomain.org/topics?key=$apiKey",
       "survey_link": "https://www.surveymonkey.com/r/newtabffx",
       "api_key_pref": "apiKeyPref",
@@ -42,6 +43,7 @@ describe("Top Stories Feed", () => {
     it("should initialize endpoints based on prefs", () => {
       instance.onAction({type: at.INIT});
       assert.equal("https://somedomain.org/stories?key=test-api-key", instance.stories_endpoint);
+      assert.equal("https://somedomain.org/referrer", instance.stories_referrer);
       assert.equal("https://somedomain.org/topics?key=test-api-key", instance.topics_endpoint);
     });
     it("should register section", () => {
@@ -145,10 +147,12 @@ describe("Top Stories Feed", () => {
         "title": "title",
         "description": "description",
         "image": "image-url",
+        "referrer": "referrer",
         "url": "rec-url"
       }];
 
       instance.stories_endpoint = "stories-endpoint";
+      instance.stories_referrer = "referrer";
       fetchStub.resolves({ok: true, status: 200, text: () => response});
       await instance.fetchStories();
 
