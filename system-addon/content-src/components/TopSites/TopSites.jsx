@@ -3,7 +3,8 @@ const {connect} = require("react-redux");
 const {FormattedMessage} = require("react-intl");
 const shortURL = require("content-src/lib/short-url");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
-const {actionCreators: ac} = require("common/Actions.jsm");
+const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
+const {perfService: perfSvc} = require("common/PerfService.jsm");
 const TOP_SITES_SOURCE = "TOP_SITES";
 const TOP_SITES_CONTEXT_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow",
   "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"];
@@ -69,6 +70,93 @@ class TopSite extends React.Component {
   }
 }
 
+/**
+ * A proxy class that uses double requestAnimationFrame from
+ * componentDidMount to dispatch a SAVE_SESSION_PERF_DATA to the main procsess
+ * after the paint.
+ *
+ * This uses two callbacks because, after one callback, this part of the tree
+ * may have rendered but not yet reflowed.  This strategy is modeled after
+ * https://stackoverflow.com/a/34999925 but uses a double rFA because
+ * we want to get to the closest reliable paint for measuring, and
+ * setTimeout is often throttled or queued by browsers in ways that could
+ * make it lag too long.
+ *
+ * XXX Should be made more generic by using this.props.children, or potentially
+ * even split out into a higher-order component to wrap whatever.
+ *
+ * @class TopSitesPerfTimer
+ * @extends {React.Component}
+ */
+class TopSitesPerfTimer extends React.Component {
+  constructor(props) {
+    super(props);
+    // Just for test dependency injection:
+    this.perfSvc = this.props.perfSvc || perfSvc;
+
+    this._sendPaintedEvent = this._sendPaintedEvent.bind(this);
+    this._timestampSent = false;
+  }
+
+  componentDidMount() {
+    this._maybeSendPaintedEvent();
+  }
+
+  componentDidUpdate() {
+    this._maybeSendPaintedEvent();
+  }
+
+  /**
+   * Call the given callback when the subsequent animation frame
+   * (not the upcoming one) paints.
+   *
+   * @param {Function} callback
+   *
+   * @returns void
+   */
+  _onNextFrame(callback) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(callback);
+    });
+  }
+
+  _maybeSendPaintedEvent() {
+    // If we've already saved a timestamp for this session, don't do so again.
+    if (this._timestampSent) {
+      return;
+    }
+
+    // We don't want this to ever happen, but sometimes it does.  And when it
+    // does (typically on the first newtab at startup time calling
+    // componentDidMount), the paint(s) we care about will be later (eg
+    // in a subsequent componentDidUpdate).
+    if (!this.props.TopSites.initialized) {
+      // XXX should send bad event
+      return;
+    }
+
+    this._onNextFrame(this._sendPaintedEvent);
+  }
+
+  _sendPaintedEvent() {
+    // XXX should collapse these two calls below by adding a
+    // perfSvc.markAndGetAbsStart() method
+    this.perfSvc.mark("topsites_first_painted_ts");
+    let topsites_first_painted_ts = this.perfSvc
+      .getMostRecentAbsMarkStartByName("topsites_first_painted_ts");
+
+    this.props.dispatch(ac.SendToMain({
+      type: at.SAVE_SESSION_PERF_DATA,
+      data: {topsites_first_painted_ts}
+    }));
+
+    this._timestampSent = true;
+  }
+  render() {
+    return (<TopSites {...this.props} />);
+  }
+}
+
 const TopSites = props => (<section>
   <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
@@ -80,6 +168,7 @@ const TopSites = props => (<section>
   </ul>
 </section>);
 
-module.exports = connect(state => ({TopSites: state.TopSites}))(TopSites);
-module.exports._unconnected = TopSites;
+module.exports = connect(state => ({TopSites: state.TopSites}))(TopSitesPerfTimer);
+module.exports._unconnected = TopSitesPerfTimer;
 module.exports.TopSite = TopSite;
+module.exports.TopSites = TopSites;

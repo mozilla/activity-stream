@@ -114,7 +114,8 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`MetadataService` or `Local` or `TippyTopProvider`). | :one:
 | `page` | [Required] Either ["NEW_TAB", "HOME"]. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:
-| `session_duration` | [Required] Defined to be the time in milliseconds between the newtab gaining and losing focus. | :one:
+| `session_duration` | [Optional][Server Counter][Server Alert for too many omissions] Time in (integer) milliseconds of the difference between the new tab becoming visible
+and losing focus. | :one:
 | `session_id` | [Optional] The unique identifier for a specific session. | :one:
 | `source` | [Required] Either ("recent_links", "recent_bookmarks", "frecent_links", "top_sites", "spotlight", "sidebar") and indicates what `action`. | :two:
 | `timestamp` | [Auto populated by Onyx] The time in ms since epoch. | :three:
@@ -126,6 +127,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `value` | [Required] An integer that represents the measured performance value. Can store counts, times in milliseconds, and should always be a positive integer.| :one:
 | `ver` | [Auto populated by Onyx] The version of the Onyx API the ping was sent to. | :one:
 | `highlights_size` | [Optional] The size of the Highlights set. | :one:
+| `topsites_first_painted_ts` | [Optional][Service Counter][Server Alert for too many omissions] Timestamp of when the Top Sites element finished painting (possibly with only placeholder screenshots) | :one:
 | `topsites_size` | [Optional] The size of the Topsites set. | :one:
 | `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
