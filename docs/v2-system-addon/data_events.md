@@ -76,7 +76,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "DELETE",
   "source": "TOP_SITES",
   "action_position": 2,
-  
+
   // Basic metadata
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
@@ -148,7 +148,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "OPEN_NEW_WINDOW",
   "source": "TOP_SITES",
   "action_position": 2,
-  
+
   // Basic metadata
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
@@ -238,29 +238,80 @@ Here are different scenarios that cause a session end event to be sent:
 5. Refreshing
 6. Navigating to a new URL via the url bar or file menu
 
-
 ### Session performance data
-
-This data is held in a child object of the `activity_stream_session` event called `perf`.  All fields suffixed by `_ts` are type `DOMHighResTimeStamp` (aka a double of milliseconds, with a 5 microsecond precision) with 0 being the [timeOrigin](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp#The_time_origin) of the browser's hidden chrome window.
+This data is held in a child object of the `activity_stream_session` event called `perf`.  All fields suffixed by `_ts` are of type (approximately, talk to @ncloudioj for details) `DOMHighResTimeStamp` (aka a double of milliseconds, with a 5 microsecond precision) with 0 being the [timeOrigin](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp#The_time_origin) of the browser's hidden chrome window.
 
 An example might look like this:
 
-```javascript
-perf: {
+```js
+{
   // Timestamp of the action perceived by the user to trigger the load
   // of this page.
   //
   // Not required at least for error cases where the
   // observer event doesn't fire
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2658
+
   "load_trigger_ts": 1,
 
   // What was the perceived trigger of the load action:
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2658
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2685
+
   "load_trigger_type": [
     "menu_plus_or_keyboard" | // newtab only
     "unexpected" // sessions lacking actual start times
-  ],
+    "first_window_open" | // home only
+    "subsequent_window_open" | // home only
+    "toolbar_button" | // home only
+    "session_restore" | // home or newtab
+    "url_bar" | // home or newtab
+    "refresh"] // home or newtab
 
-  // when the page itself receives an event that document.visibilityStat=visible
+  // when the page itself receives an event that document.visibilityState=visible
   "visibility_event_rcvd_ts": 2,
+
+  // As of this writing, this will be false for the first tab in every window,
+  // and true for every subsequent tab in that window.
+  //
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2539
+  "new_tab_preloaded": false,
+
+  // first thing a user might want to interact with
+  "search_box_painted_ts": 3,
+
+  // Most likely thing (based on previous telemetry) that the user is going
+  // to interact with (i.e. Hero element).
+  //
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2661
+  "top_sites_painted_ts": 5,
+
+  // When the entire page has been painted (not including stuff like screenshots
+  // showing up later).
+  //
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2662
+  "display_done_ts": 7,
+
+  // XXX below here, things are more up in the air.  We may not want to use
+  // the schema proposed below, or even implement all of the stuff to be
+  // collected here.
+
+  // See when the data was ready in case if and only if it happened
+  // after the data was required to render.
+  //
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2672
+  "top_sites_data_ready_ts": 9,
+
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2663
+  "search_keystroke_latency": ["TBD"],
+
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2664
+  "search_keystroke_autocomplete_latency": ["TBD"],
+
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2673
+  "slow_event_handlers": [{stack: "", approxTime: 50}],
+
+  // TO BE IMPLEMENTED: https://github.com/mozilla/activity-stream/issues/2526
+  "time running on main thread": "[TBD]"
 }
 ```
