@@ -18,10 +18,7 @@ const snippets = new SnippetsProvider();
 const unsubscribe = store.subscribe(() => {
   const state = store.getState();
   if (state.Snippets.initialized) {
-    snippets.init({
-      snippetsURL: state.Snippets.snippetsURL,
-      version: state.Snippets.version
-    });
+    snippets.init({appData: state.Snippets});
     unsubscribe();
   }
 });

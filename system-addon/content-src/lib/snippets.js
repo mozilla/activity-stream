@@ -159,7 +159,8 @@ class SnippetsProvider {
     // Check if the cached version of of the snippets in snippetsMap. If it's too
     // old, blow away the entire snippetsMap.
     const cachedVersion = this.snippetsMap.get("snippets-cached-version");
-    if (cachedVersion !== this.version) {
+
+    if (cachedVersion !== this.appData.version) {
       this.snippetsMap.clear();
     }
 
@@ -167,16 +168,16 @@ class SnippetsProvider {
     const lastUpdate = this.snippetsMap.get("snippets-last-update");
     const needsUpdate = !(lastUpdate >= 0) || Date.now() - lastUpdate > SNIPPETS_UPDATE_INTERVAL_MS;
 
-    if (needsUpdate && this.snippetsURL) {
+    if (needsUpdate && this.appData.snippetsURL) {
       this.snippetsMap.set("snippets-last-update", Date.now());
       try {
         // TODO: timeout?
-        const response = await fetch(this.snippetsURL);
+        const response = await fetch(this.appData.snippetsURL);
         if (response.status === 200) {
           const payload = await response.text();
 
           this.snippetsMap.set("snippets", payload);
-          this.snippetsMap.set("snippets-cached-version", this.version);
+          this.snippetsMap.set("snippets-cached-version", this.appData.version);
         }
       } catch (e) {
         console.error(e); // eslint-disable-line no-console
@@ -223,14 +224,15 @@ class SnippetsProvider {
    * init - Fetch the snippet payload and show snippets
    *
    * @param  {obj} options
-   * @param  {str} options.snippetsURL  The URL from which we fetch snippets
-   * @param  {int} options.version  The current snippets version
-   * @param  {str} options.elementId  The id of the element of the snippets container
+   * @param  {str} options.appData.snippetsURL  The URL from which we fetch snippets
+   * @param  {int} options.appData.version  The current snippets version
+   * @param  {str} options.elementId  The id of the element in which to inject snippets
+   * @param  {str} options.containerElementId  The id of the element of element containing the snippets element
+   * @param  {bool} options.connect  Should gSnippetsMap connect to indexedDB?
    */
   async init(options) {
     Object.assign(this, {
-      snippetsURL: "",
-      version: 0,
+      appData: {},
       elementId: "snippets",
       containerElementId: "snippets-container",
       connect: true
@@ -244,6 +246,11 @@ class SnippetsProvider {
       } catch (e) {
         console.error(e); // eslint-disable-line no-console
       }
+    }
+
+    // Cache app data values so they can be accessible from gSnippetsMap
+    for (const key of Object.keys(this.appData)) {
+      this.snippetsMap.set(`appData.${key}`, this.appData[key]);
     }
 
     // Refresh snippets, if enough time has passed.
