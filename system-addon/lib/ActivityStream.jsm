@@ -83,7 +83,8 @@ const PREFS_CONFIG = new Map([
       "survey_link": "https://www.surveymonkey.com/r/newtabffx",
       "api_key_pref": "extensions.pocket.oAuthConsumerKey",
       "provider_name": "Pocket",
-      "provider_icon": "pocket"
+      "provider_icon": "pocket",
+      "provider_description": "pocket_feedback_body"
     }`
   }],
   ["migrationExpired", {

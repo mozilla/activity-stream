@@ -21,7 +21,8 @@ describe("Top Stories Feed", () => {
       "survey_link": "https://www.surveymonkey.com/r/newtabffx",
       "api_key_pref": "apiKeyPref",
       "provider_name": "test-provider",
-      "provider_icon": "provider-icon"
+      "provider_icon": "provider-icon",
+      "provider_description": "provider_desc"
     }`;
     FakePrefs.prototype.prefs.apiKeyPref = "test-api-key";
 
@@ -56,7 +57,7 @@ describe("Top Stories Feed", () => {
         contextMenuOptions: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
         infoOption: {
           header: {id: "pocket_feedback_header"},
-          body: {id: "pocket_feedback_body"},
+          body: {id: "provider_desc"},
           link: {
             href: "https://www.surveymonkey.com/r/newtabffx",
             id: "pocket_send_feedback"

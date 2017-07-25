@@ -43,7 +43,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         contextMenuOptions: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
         infoOption: {
           header: {id: "pocket_feedback_header"},
-          body: {id: "pocket_feedback_body"},
+          body: {id: options.provider_description},
           link: {
             href: options.survey_link,
             id: "pocket_send_feedback"
