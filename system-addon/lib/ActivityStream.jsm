@@ -4,6 +4,7 @@
 "use strict";
 
 const {utils: Cu} = Components;
+Cu.import("resource://gre/modules/Services.jsm");
 
 // NB: Eagerly load modules that will be loaded/constructed/initialized in the
 // common case to avoid the overhead of wrapping and detecting lazy loading.
@@ -28,7 +29,8 @@ const SECTIONS = new Map([
   ["topstories", {
     feed: TopStoriesFeed,
     prefTitle: "Fetches content recommendations from a configurable content provider",
-    showByDefault: false
+     // for now, we only want to show top stories by default to the following locales
+    showByDefault: ["en-US", "en-CA"].includes(Services.locale.getRequestedLocale())
   }]
 ]);
 
