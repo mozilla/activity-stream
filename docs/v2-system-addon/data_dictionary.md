@@ -114,7 +114,8 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`MetadataService` or `Local` or `TippyTopProvider`). | :one:
 | `page` | [Required] Either ["NEW_TAB", "HOME"]. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:
-| `session_duration` | [Required] Defined to be the time in milliseconds between the newtab gaining and losing focus. | :one:
+| `session_duration` | [Optional][Server Counter][Server Alert for too many omissions] Time in (integer) milliseconds of the difference between the new tab becoming visible
+and losing focus. | :one:
 | `session_id` | [Optional] The unique identifier for a specific session. | :one:
 | `source` | [Required] Either ("recent_links", "recent_bookmarks", "frecent_links", "top_sites", "spotlight", "sidebar") and indicates what `action`. | :two:
 | `timestamp` | [Auto populated by Onyx] The time in ms since epoch. | :three:

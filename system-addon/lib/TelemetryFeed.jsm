@@ -95,7 +95,6 @@ this.TelemetryFeed = class TelemetryFeed {
    */
   addSession(id) {
     const session = {
-      start_time: Components.utils.now(),
       session_id: String(gUUIDGenerator.generateUUID()),
       page: "about:newtab", // TODO: Handle about:home here
       // "unexpected" will be overwritten when appropriate
@@ -119,7 +118,10 @@ this.TelemetryFeed = class TelemetryFeed {
       return;
     }
 
-    session.session_duration = Math.round(Components.utils.now() - session.start_time);
+    if (session.perf.visibility_event_rcvd_ts) {
+      session.session_duration = Math.round(perfService.absNow() - session.perf.visibility_event_rcvd_ts);
+    }
+
     this.sendEvent(this.createSessionEndEvent(session));
     this.sessions.delete(portID);
   }

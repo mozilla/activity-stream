@@ -23,7 +23,11 @@ describe("TelemetryFeed", () => {
   };
   let instance;
   class TelemetrySender {sendPing() {} uninit() {}}
-  class PerfService {getMostRecentAbsMarkStartByName() { return 1234; } mark() {}}
+  class PerfService {
+    getMostRecentAbsMarkStartByName() { return 1234; }
+    mark() {}
+    absNow() { return 123; }
+  }
   const perfService = new PerfService();
   const {TelemetryFeed} = injector({
     "lib/TelemetrySender.jsm": {TelemetrySender},
@@ -64,14 +68,6 @@ describe("TelemetryFeed", () => {
 
       assert.equal(instance.sessions.get("foo"), session);
     });
-    it("should set the start_time", () => {
-      sandbox.spy(Components.utils, "now");
-
-      const session = instance.addSession("foo");
-
-      assert.calledOnce(Components.utils.now);
-      assert.equal(session.start_time, Components.utils.now.firstCall.returnValue);
-    });
     it("should set the session_id", () => {
       sandbox.spy(global.gUUIDGenerator, "generateUUID");
 
@@ -106,13 +102,24 @@ describe("TelemetryFeed", () => {
     it("should not throw if there is no session for the given port ID", () => {
       assert.doesNotThrow(() => instance.endSession("doesn't exist"));
     });
-    it("should add a session_duration", () => {
+    it("should add a session_duration integer if there is a visibility_event_rcvd_ts", () => {
+      sandbox.stub(instance, "sendEvent");
+      const session = instance.addSession("foo");
+      session.perf.visibility_event_rcvd_ts = 444.4732;
+
+      instance.endSession("foo");
+
+      assert.isNumber(session.session_duration);
+      assert.ok(Number.isInteger(session.session_duration),
+        "session_duration should be an integer");
+    });
+    it("shouldn't add session_duration if there's no visibility_event_rcvd_ts", () => {
       sandbox.stub(instance, "sendEvent");
       const session = instance.addSession("foo");
 
       instance.endSession("foo");
 
-      assert.property(session, "session_duration");
+      assert.notProperty(session, "session_duration");
     });
     it("should remove the session from .sessions", () => {
       sandbox.stub(instance, "sendEvent");

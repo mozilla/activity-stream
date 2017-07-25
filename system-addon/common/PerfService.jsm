@@ -70,7 +70,17 @@ _PerfService.prototype = {
   },
 
   /**
-   * This returns the startTime from the most recen!t performance.mark()
+   * Returns the "absolute" version of performance.now(), i.e. one that
+   * based on the timeOrigin of the XUL hiddenwindow.
+   *
+   * @return {Number}
+   */
+  absNow: function absNow() {
+    return this.timeOrigin + this._perf.now();
+  },
+
+  /**
+   * This returns the absolute startTime from the most recent performance.mark()
    * with the given name.
    *
    * @param  {String} name  the name to lookup the start time for

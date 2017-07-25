@@ -70,7 +70,7 @@ const PerfPing = Joi.object().keys(Object.assign({}, baseKeys, {
 const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
   session_id: baseKeys.session_id.required(),
   page: baseKeys.page.required(),
-  session_duration: Joi.number().integer().required(),
+  session_duration: Joi.number().integer(),
   action: Joi.valid("activity_stream_session").required(),
   perf: Joi.object().keys({
     // Timestamp of the action perceived by the user to trigger the load
