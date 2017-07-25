@@ -168,7 +168,7 @@ this.TelemetryFeed = class TelemetryFeed {
 
   async createPerformanceEvent(action) {
     return Object.assign(
-      await this.createPing(au.getPortIdOfSender(action)),
+      await this.createPing(),
       action.data,
       {action: "activity_stream_performance_event"}
     );

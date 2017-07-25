@@ -216,21 +216,6 @@ describe("TelemetryFeed", () => {
         // Does it have the right value?
         assert.propertyVal(ping, "value", 100);
       });
-      it("should create a valid event with a session", async () => {
-        const portID = "foo";
-        const data = {event: "PAGE_LOADED", value: 100};
-        const action = ac.SendToMain(ac.PerfEvent(data), portID);
-        const session = instance.addSession(portID);
-
-        const ping = await instance.createPerformanceEvent(action);
-
-        // Is it valid?
-        assert.validate(ping, PerfPing);
-        // Does it have the right session_id?
-        assert.propertyVal(ping, "session_id", session.session_id);
-        // Does it have the right value?
-        assert.propertyVal(ping, "value", 100);
-      });
     });
     describe("#createSessionEndEvent", () => {
       it("should create a valid event", async () => {
