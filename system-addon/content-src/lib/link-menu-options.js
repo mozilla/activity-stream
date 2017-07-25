@@ -1,5 +1,4 @@
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
-const shortURL = require("content-src/lib/short-url");
 
 /**
  * List of functions that return items that can be included as menu options in a
@@ -74,7 +73,7 @@ module.exports = {
     icon: "pin",
     action: ac.SendToMain({
       type: at.TOP_SITES_PIN,
-      data: {site: {url: site.url, title: shortURL(site)}, index}
+      data: {site: {url: site.url, title: site.hostname}, index}
     }),
     userEvent: "PIN"
   }),

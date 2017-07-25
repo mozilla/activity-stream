@@ -13,7 +13,10 @@
  *         {str} link.title (optional) - The title of the link
  * @return {str}   A short url
  */
-module.exports = function shortURL(link) {
+
+Components.utils.importGlobalProperties(["URL"]);
+
+function shortURL(link) {
   if (!link.url && !link.hostname) {
     return "";
   }
@@ -25,4 +28,8 @@ module.exports = function shortURL(link) {
   const eTLDExtra = eTLDLength > 0 ? -(eTLDLength + 1) : Infinity;
   // If URL and hostname are not present fallback to page title.
   return hostname.slice(0, eTLDExtra).toLowerCase() || hostname || link.title || link.url;
-};
+}
+
+this.shortURL = shortURL;
+
+this.EXPORTED_SYMBOLS = ["shortURL"];

@@ -177,7 +177,7 @@ describe("<TopSites>", () => {
 describe("<TopSite>", () => {
   let link;
   beforeEach(() => {
-    link = {url: "https://foo.com", screenshot: "foo.jpg"};
+    link = {url: "https://foo.com", screenshot: "foo.jpg", hostname: "foo"};
   });
 
   it("should render a TopSite", () => {
@@ -196,19 +196,12 @@ describe("<TopSite>", () => {
   });
   it("should render a shortened title based off the url", () => {
     link.url = "https://www.foobar.org";
+    link.hostname = "foobar";
     link.eTLD = "org";
     const wrapper = shallow(<TopSite link={link} />);
     const titleEl = wrapper.find(".title");
 
     assert.equal(titleEl.text(), "foobar");
-  });
-  it("should fallback to link title for file:// protocol", () => {
-    link.url = "file:///Users/voprea/Work/activity-stream/logs/coverage/system-addon/report-html/index.html";
-    link.title = "Code coverage report";
-    const wrapper = shallow(<TopSite link={link} />);
-    const titleEl = wrapper.find(".title");
-
-    assert.equal(titleEl.text(), link.title);
   });
   it("should render the pinTitle if set", () => {
     link.isPinned = true;

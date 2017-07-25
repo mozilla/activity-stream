@@ -24,6 +24,8 @@ describe("Top Sites Feed", () => {
   let clock;
   let fakeNewTabUtils;
   let fakeScreenshot;
+  let shortURLStub;
+  let dedupeStub;
 
   beforeEach(() => {
     globals = new GlobalOverrider();
@@ -38,16 +40,21 @@ describe("Top Sites Feed", () => {
       }
     };
     fakeScreenshot = {getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))};
+    shortURLStub = sinon.stub().callsFake(site => site.url);
+    dedupeStub = function() {};
     globals.set("NewTabUtils", fakeNewTabUtils);
     FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
+      "common/Dedupe.jsm": {Dedupe: dedupeStub},
       "common/Reducers.jsm": {insertPinned},
       "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
-      "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider}
+      "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider},
+      "common/ShortURL.jsm": {shortURL: shortURLStub}
     }));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
+    feed.dedupe.one = sites => sites;
     links = FAKE_LINKS;
     clock = sinon.useFakeTimers();
   });
@@ -94,13 +101,29 @@ describe("Top Sites Feed", () => {
       assert.deepEqual(result, links);
       assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
     });
+    it("should call dedupe on the links", async () => {
+      feed.dedupe.one = sinon.stub().returns([]);
+
+      await feed.getLinksWithDefaults();
+
+      assert.calledOnce(feed.dedupe.one);
+    });
+    it("should dedupe the links by hostname", async () => {
+      const site = {url: "foo", hostname: "bar"};
+      const result = feed._dedupeKey(site);
+
+      assert.equal(result, site.hostname);
+    });
     it("should add defaults if there are are not enough links", async () => {
       links = [{url: "foo.com"}];
       const result = await feed.getLinksWithDefaults();
-      assert.deepEqual(result, [{url: "foo.com"}, ...DEFAULT_TOP_SITES]);
+      assert.deepEqual(result, [{url: "foo.com", hostname: "foo.com"}, ...DEFAULT_TOP_SITES]);
     });
     it("should only add defaults up to TOP_SITES_SHOWMORE_LENGTH", async () => {
-      links = new Array(TOP_SITES_SHOWMORE_LENGTH - 1).fill({url: "foo.com"});
+      links = [];
+      for (let i = 0; i < TOP_SITES_SHOWMORE_LENGTH - 1; i++) {
+        links.push({url: `foo${i}.com`});
+      }
       const result = await feed.getLinksWithDefaults();
       assert.lengthOf(result, TOP_SITES_SHOWMORE_LENGTH);
       assert.deepEqual(result, [...links, DEFAULT_TOP_SITES[0]]);

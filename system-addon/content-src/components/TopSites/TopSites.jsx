@@ -1,7 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {FormattedMessage} = require("react-intl");
-const shortURL = require("content-src/lib/short-url");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {perfService: perfSvc} = require("common/PerfService.jsm");
@@ -40,7 +39,7 @@ class TopSite extends React.Component {
   render() {
     const {link, index, dispatch} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
-    const title = link.pinTitle || shortURL(link);
+    const title = link.pinTitle || link.hostname;
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
     const {tippyTopIcon} = link;
     let imageClassName;

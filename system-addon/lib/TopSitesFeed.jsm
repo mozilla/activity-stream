@@ -9,6 +9,8 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {TippyTopProvider} = Cu.import("resource://activity-stream/lib/TippyTopProvider.jsm", {});
 const {insertPinned} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
+const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
+const {shortURL} = Cu.import("resource://activity-stream/common/ShortURL.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
@@ -25,6 +27,10 @@ this.TopSitesFeed = class TopSitesFeed {
     this.lastUpdated = 0;
     this._tippyTopProvider = new TippyTopProvider();
     this._tippyTopProvider.init();
+    this.dedupe = new Dedupe(this._dedupeKey);
+  }
+  _dedupeKey(site) {
+    return site.hostname;
   }
   refreshDefaults(sites) {
     // Clear out the array of any previous defaults
@@ -57,7 +63,12 @@ this.TopSitesFeed = class TopSitesFeed {
       frecent = frecent.filter(link => link && link.type !== "affiliate");
     }
 
-    return insertPinned([...frecent, ...DEFAULT_TOP_SITES], pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
+    pinned = insertPinned([...frecent, ...DEFAULT_TOP_SITES], pinned);
+
+    // Parse site url and extract hostname.
+    pinned.forEach(site => { site.hostname = shortURL(site); });
+
+    return this.dedupe.one(pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
   }
   async refresh(target = null) {
     const links = await this.getLinksWithDefaults();

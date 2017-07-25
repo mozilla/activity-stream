@@ -1,6 +1,5 @@
 const React = require("react");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
-const shortURL = require("content-src/lib/short-url");
 const {FormattedMessage} = require("react-intl");
 const cardContextTypes = require("./types");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
@@ -48,15 +47,13 @@ class Card extends React.Component {
   render() {
     const {index, link, dispatch, contextMenuOptions, eventSource} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
-    const hostname = shortURL(link);
     const {icon, intlID} = cardContextTypes[link.type];
-
     return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}`}>
       <a href={link.url} onClick={this.onLinkClick}>
         <div className="card">
           {link.image && <div className="card-preview-image" style={{backgroundImage: `url(${link.image})`}} />}
           <div className="card-details">
-            <div className="card-host-name"> {hostname} </div>
+            <div className="card-host-name"> {link.hostname} </div>
             <div className={`card-text${link.image ? "" : " full-height"}`}>
               <h4 className="card-title" dir="auto"> {link.title} </h4>
               <p className="card-description" dir="auto"> {link.description} </p>
