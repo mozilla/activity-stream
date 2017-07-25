@@ -7,6 +7,7 @@ const {utils: Cu} = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+const {TippyTopProvider} = Cu.import("resource://activity-stream/lib/TippyTopProvider.jsm", {});
 const {insertPinned} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
@@ -22,6 +23,8 @@ const DEFAULT_TOP_SITES = [];
 this.TopSitesFeed = class TopSitesFeed {
   constructor() {
     this.lastUpdated = 0;
+    this._tippyTopProvider = new TippyTopProvider();
+    this._tippyTopProvider.init();
   }
   refreshDefaults(sites) {
     // Clear out the array of any previous defaults
@@ -67,9 +70,15 @@ this.TopSitesFeed = class TopSitesFeed {
       }
     }
 
-    // Now, get a screenshot for every item
+    // Now, get a tippy top icon or screenshot for every item
     for (let link of links) {
       if (!link) { continue; }
+
+      // Check for tippy top icon.
+      link = this._tippyTopProvider.processSite(link);
+      if (link.tippyTopIcon) { continue; }
+
+      // If no tippy top, then we get a screenshot.
       if (currentScreenshots[link.url]) {
         link.screenshot = currentScreenshots[link.url];
       } else {

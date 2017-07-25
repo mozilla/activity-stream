@@ -40,9 +40,16 @@ scripts:
   # mochitest somewhere.
   mochitest-debug: (cd ../mozilla-central && ./mach mochitest --jsdebugger browser/extensions/activity-stream/test/functional/mochitest )
 
+  cleanmc: rimraf ../mozilla-central/browser/extensions/activity-stream
+
+  tippymc:
+    pre: rimraf system-addon/data/content/tippytop
+    manifest: cpx "node_modules/tippy-top-sites/top_sites.json" system-addon/data/content/tippytop
+    images: cpx "node_modules/tippy-top-sites/images/**/*" system-addon/data/content/tippytop/images
+
 # buildmc: Export the bootstraped add-on to mozilla central
   buildmc:
-    pre: rimraf ../mozilla-central/browser/extensions/activity-stream
+    pre: =>cleanmc && =>tippymc
     webpack: webpack --config webpack.system-addon.config.js
     css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content
     locales: pontoon-to-json --src locales --dest system-addon/data

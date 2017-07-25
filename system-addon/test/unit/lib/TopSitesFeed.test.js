@@ -8,6 +8,12 @@ const {insertPinned} = require("common/Reducers.jsm");
 const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({url: `site${i}.com`}));
 const FAKE_SCREENSHOT = "data123";
 
+function FakeTippyTopProvider() {}
+FakeTippyTopProvider.prototype = {
+  init() {},
+  processSite(site) { return site; }
+};
+
 describe("Top Sites Feed", () => {
   let TopSitesFeed;
   let DEFAULT_TOP_SITES;
@@ -37,7 +43,8 @@ describe("Top Sites Feed", () => {
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
       "common/Reducers.jsm": {insertPinned},
-      "lib/Screenshots.jsm": {Screenshots: fakeScreenshot}
+      "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
+      "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider}
     }));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
@@ -135,6 +142,17 @@ describe("Top Sites Feed", () => {
       sandbox.stub(feed, "getScreenshot");
       await feed.refresh(action);
       assert.calledOnce(feed.store.dispatch);
+    });
+    it("should skip getting screenshot if there is a tippy top icon", async () => {
+      sandbox.stub(feed, "getScreenshot");
+      feed._tippyTopProvider.processSite = site => {
+        site.tippyTopIcon = "icon.png";
+        site.backgroundColor = "#fff";
+        return site;
+      };
+      await feed.refresh(action);
+      assert.calledOnce(feed.store.dispatch);
+      assert.notCalled(feed.getScreenshot);
     });
   });
   describe("getScreenshot", () => {
