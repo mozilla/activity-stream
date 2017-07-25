@@ -7,7 +7,7 @@ const PreferencesInput = props => (
   <section>
     <input type="checkbox" id={props.prefName} name={props.prefName} checked={props.value} onChange={props.onChange} className={props.className} />
     <label htmlFor={props.prefName}>
-      <FormattedMessage id={props.titleStringId} />
+      <FormattedMessage id={props.titleStringId} values={props.titleStringValues} />
     </label>
     {props.descStringId && <p className="prefs-input-description"><FormattedMessage id={props.descStringId} /></p>}
   </section>
@@ -20,6 +20,13 @@ class PreferencesPane extends React.Component {
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.togglePane = this.togglePane.bind(this);
+
+    // TODO This is temporary until sections register their PreferenceInput component automatically
+    try {
+      this.topStoriesOptions = JSON.parse(props.Prefs.values["feeds.section.topstories.options"]);
+    } catch (e) {
+      console.error("Problem parsing feeds.section.topstories.options", e); // eslint-disable-line no-console
+    }
   }
   componentDidMount() {
     document.addEventListener("click", this.handleClickOutside);
@@ -66,9 +73,10 @@ class PreferencesPane extends React.Component {
               <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handleChange}
                 titleStringId="settings_pane_topsites_header" descStringId="settings_pane_topsites_body" />
 
-              <PreferencesInput className="showTopStories" prefName="feeds.section.topstories" value={prefs["feeds.section.topstories"]} onChange={this.handleChange}
-                titleStringId="settings_pane_pocketstories_header" descStringId="settings_pane_pocketstories_body" />
-
+              {this.topStoriesOptions && <PreferencesInput className="showTopStories" prefName="feeds.section.topstories"
+                value={prefs["feeds.section.topstories"]} onChange={this.handleChange}
+                titleStringId="header_recommended_by" titleStringValues={{provider: this.topStoriesOptions.provider_name}}
+                descStringId={this.topStoriesOptions.provider_description} />}
             </div>
             <section className="actions">
               <button className="done" onClick={this.togglePane}>
