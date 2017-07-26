@@ -36,6 +36,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       // TODO https://github.com/mozilla/activity-stream/issues/2902
       const sectionOptions = {
         id: SECTION_ID,
+        eventSource: "TOP_STORIES",
         icon: options.provider_icon,
         title: {id: "header_recommended_by", values: {provider: options.provider_name}},
         rows: [],

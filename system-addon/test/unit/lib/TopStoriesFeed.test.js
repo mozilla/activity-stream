@@ -50,6 +50,7 @@ describe("Top Stories Feed", () => {
     it("should register section", () => {
       const expectedSectionOptions = {
         id: SECTION_ID,
+        eventSource: "TOP_STORIES",
         icon: "provider-icon",
         title: {id: "header_recommended_by", values: {provider: "test-provider"}},
         rows: [],

@@ -32,6 +32,11 @@ class Card extends React.Component {
   onLinkClick(event) {
     event.preventDefault();
     this.props.dispatch(ac.SendToMain({type: at.OPEN_LINK, data: this.props.link}));
+    this.props.dispatch(ac.UserEvent({
+      event: "CLICK",
+      source: this.props.eventSource,
+      action_position: this.props.index
+    }));
   }
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});
