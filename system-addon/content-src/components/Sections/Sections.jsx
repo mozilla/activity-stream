@@ -6,7 +6,7 @@ const Topics = require("content-src/components/Topics/Topics");
 
 class Section extends React.Component {
   render() {
-    const {id, title, icon, rows, infoOption, emptyState, dispatch, maxCards, contextMenuOptions} = this.props;
+    const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxCards, contextMenuOptions} = this.props;
     const initialized = rows && rows.length > 0;
     const shouldShowTopics = (id === "TopStories" && this.props.topics && this.props.read_more_endpoint);
     // <Section> <-- React component
@@ -35,7 +35,7 @@ class Section extends React.Component {
         </div>
         {(<ul className="section-list" style={{padding: 0}}>
           {rows.slice(0, maxCards).map((link, index) => link &&
-            <Card index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions} />)}
+            <Card index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions} eventSource={eventSource} />)}
         </ul>)}
         {!initialized &&
           <div className="section-empty-state">
