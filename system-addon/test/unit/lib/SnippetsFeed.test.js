@@ -42,8 +42,8 @@ describe("SnippetsFeed", () => {
     const action = feed.store.dispatch.firstCall.args[0];
     assert.propertyVal(action, "type", at.SNIPPETS_DATA);
     assert.isObject(action.data);
-    assert.propertyVal(action.data, "snippetsURL", "foo.com/4");
-    assert.propertyVal(action.data, "version", 4);
+    assert.propertyVal(action.data, "snippetsURL", "foo.com/5");
+    assert.propertyVal(action.data, "version", 5);
     assert.propertyVal(action.data, "profileCreatedWeeksAgo", 2);
     assert.propertyVal(action.data, "profileResetWeeksAgo", 1);
     assert.propertyVal(action.data, "telemetryEnabled", true);
