@@ -17,7 +17,7 @@ const SNIPPETS_URL_PREF = "browser.aboutHomeSnippets.updateUrl";
 const TELEMETRY_PREF = "datareporting.healthreport.uploadEnabled";
 
 // Should be bumped up if the snippets content format changes.
-const STARTPAGE_VERSION = 4;
+const STARTPAGE_VERSION = 5;
 
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 
