@@ -5,6 +5,7 @@
   font-size: 13px;
   color: $topic-grey;
   min-width: 780px;
+  line-height: 16px;
 
   ul {
     display: inline;
@@ -40,7 +41,7 @@
     margin-left: 5px;
     background-image: url('#{$image-path}topic-show-more-12.svg');
     background-repeat: no-repeat;
-    background-position-y: 2px;
+    vertical-align: middle;
   }
 
 }
