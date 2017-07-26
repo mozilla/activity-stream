@@ -71,6 +71,7 @@
     margin: 0 0 2px;
     font-size: inherit;
     word-wrap: break-word;
+    line-height: 19px;
   }
 
   .card-description {
@@ -78,8 +79,7 @@
     margin: 0;
     word-wrap: break-word;
     overflow: hidden;
-    line-height: 18px;
-    max-height: $card-description-height;
+    line-height: 19px;
   }
 
   .card-context {
