@@ -1,0 +1,57 @@
+diff --git a/layout/tools/reftest/reftest-preferences.js b/layout/tools/reftest/reftest-preferences.js
+--- a/layout/tools/reftest/reftest-preferences.js
++++ b/layout/tools/reftest/reftest-preferences.js
+@@ -138,8 +138,11 @@ user_pref("places.history.enabled", fals
+ user_pref("plugin.load_flash_only", false);
+ 
+ user_pref("media.openUnsupportedTypeWithExternalApp", false);
+ 
+ // Disable all recommended Marionette preferences for Gecko tests.
+ // The prefs recommended by Marionette are typically geared towards
+ // consumer automation; not vendor testing.
+ user_pref("marionette.prefs.recommended", false);
++
++// Make sure we don't reach out to the network with pocket
++user_pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
+diff --git a/testing/profiles/prefs_general.js b/testing/profiles/prefs_general.js
+--- a/testing/profiles/prefs_general.js
++++ b/testing/profiles/prefs_general.js
+@@ -293,16 +293,17 @@ user_pref("browser.translation.yandex.tr
+ user_pref("browser.translation.engine", "bing");
+ 
+ // Make sure we don't try to load snippets from the network.
+ user_pref("browser.aboutHomeSnippets.updateUrl", "nonexistent://test");
+ 
+ // Use an empty list of sites to avoid fetching
+ user_pref("browser.newtabpage.activity-stream.default.sites", "");
+ user_pref("browser.newtabpage.activity-stream.telemetry", false);
++user_pref("browser.newtabpage.activity-stream.feeds.section.topstories", false);
+ 
+ // Don't fetch directory tiles data from real servers
+ user_pref("browser.newtabpage.directory.source", 'data:application/json,{"testing":1}');
+ 
+ // Ensure UITour won't hit the network
+ user_pref("browser.uitour.pinnedTabUrl", "http://%(server)s/uitour-dummy/pinnedTab");
+ user_pref("browser.uitour.url", "http://%(server)s/uitour-dummy/tour");
+ 
+diff --git a/testing/talos/talos/config.py b/testing/talos/talos/config.py
+--- a/testing/talos/talos/config.py
++++ b/testing/talos/talos/config.py
+@@ -94,16 +94,17 @@ DEFAULTS = dict(
+         'network.proxy.type': 1,
+         'security.enable_java': False,
+         'security.fileuri.strict_origin_policy': False,
+         'dom.send_after_paint_to_content': True,
+         'security.turn_off_all_security_so_that_viruses_can_'
+         'take_over_this_computer': True,
+         'browser.newtabpage.activity-stream.default.sites': '',
+         'browser.newtabpage.activity-stream.telemetry': False,
++        'browser.newtabpage.activity-stream.feeds.section.topstories': False,
+         'browser.newtabpage.directory.source':
+             '${webserver}/directoryLinks.json',
+         'browser.newtabpage.introShown': True,
+         'browser.safebrowsing.downloads.remote.url':
+             'http://127.0.0.1/safebrowsing-dummy/downloads',
+         'browser.safebrowsing.provider.google.gethashURL':
+             'http://127.0.0.1/safebrowsing-dummy/gethash',
+         'browser.safebrowsing.provider.google.updateURL':
