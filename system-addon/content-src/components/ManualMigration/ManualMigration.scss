@@ -34,6 +34,7 @@
     margin-inline-end: 0;
     margin-right: 12px;
     font-size: 13px;
-    width: 106px;
+    min-width: 100px;
+    white-space: nowrap;
   }
 }
