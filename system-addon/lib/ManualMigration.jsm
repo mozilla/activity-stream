@@ -7,11 +7,13 @@ const {utils: Cu} = Components;
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 const MIGRATION_ENDED_EVENT = "Migration:Ended";
+const MS_PER_DAY = 86400000;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, "MigrationUtils", "resource:///modules/MigrationUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "ProfileAge", "resource://gre/modules/ProfileAge.jsm");
 
 this.ManualMigration = class ManualMigration {
   constructor() {
@@ -23,20 +25,22 @@ this.ManualMigration = class ManualMigration {
     Services.obs.removeObserver(this, MIGRATION_ENDED_EVENT);
   }
 
-  isMigrationMessageExpired() {
+  async isMigrationMessageExpired() {
     let migrationLastShownDate = new Date(this._prefs.get("migrationLastShownDate") * 1000);
     let today = new Date();
     // Round down to midnight.
     today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
     if (migrationLastShownDate < today) {
+      let profileAge = new ProfileAge(null, null);
+      let profileCreationDate = await profileAge.created;
+      let daysSinceProfileCreation = (Date.now() - profileCreationDate) / MS_PER_DAY;
       let migrationRemainingDays = this._prefs.get("migrationRemainingDays") - 1;
 
       this._prefs.set("migrationRemainingDays", migrationRemainingDays);
       // .valueOf returns a value that is too large to store so we need to divide by 1000.
       this._prefs.set("migrationLastShownDate", today.valueOf() / 1000);
 
-      if (migrationRemainingDays <= 0) {
+      if (migrationRemainingDays <= 0 || daysSinceProfileCreation > 3) {
         return true;
       }
     }
@@ -51,8 +55,9 @@ this.ManualMigration = class ManualMigration {
    * @param {bool} alreadyExpired Pref flag that is false for the first 3 active days,
    *                              time in which we display the migration message to the user.
    */
-  expireIfNecessary(alreadyExpired) {
-    if (!alreadyExpired && this.isMigrationMessageExpired()) {
+  async expireIfNecessary(alreadyExpired) {
+    const isMigrationExpired = await this.isMigrationMessageExpired();
+    if (!alreadyExpired && isMigrationExpired) {
       this.expireMigration();
     }
   }
