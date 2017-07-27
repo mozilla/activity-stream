@@ -24,13 +24,14 @@ const {TopStoriesFeed} = Cu.import("resource://activity-stream/lib/TopStoriesFee
 
 const REASON_ADDON_UNINSTALL = 6;
 
+// For now, we only want to show top stories by default to the following locales
+const showTopStoriesByDefault = ["en-US", "en-CA"].includes(Services.locale.getRequestedLocale());
 // Sections, keyed by section id
 const SECTIONS = new Map([
   ["topstories", {
     feed: TopStoriesFeed,
     prefTitle: "Fetches content recommendations from a configurable content provider",
-     // for now, we only want to show top stories by default to the following locales
-    showByDefault: ["en-US", "en-CA"].includes(Services.locale.getRequestedLocale())
+    showByDefault: showTopStoriesByDefault
   }]
 ]);
 
@@ -84,7 +85,8 @@ const PREFS_CONFIG = new Map([
       "api_key_pref": "extensions.pocket.oAuthConsumerKey",
       "provider_name": "Pocket",
       "provider_icon": "pocket",
-      "provider_description": "pocket_feedback_body"
+      "provider_description": "pocket_feedback_body",
+      "hidden": ${!showTopStoriesByDefault}
     }`
   }],
   ["migrationExpired", {
