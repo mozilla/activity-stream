@@ -22,7 +22,7 @@ class SnippetsMap extends Map {
     return this._dbTransaction(db => db.put(value, key));
   }
 
-  delete(key, value) {
+  delete(key) {
     super.delete(key);
     return this._dbTransaction(db => db.delete(key));
   }
@@ -30,6 +30,28 @@ class SnippetsMap extends Map {
   clear() {
     super.clear();
     return this._dbTransaction(db => db.clear());
+  }
+
+  get blockList() {
+    return this.get("blockList") || [];
+  }
+
+  /**
+   * blockSnippetById - Blocks a snippet given an id
+   *
+   * @param  {str|int} id   The id of the snippet
+   * @return {Promise}      Resolves when the id has been written to indexedDB,
+   *                        or immediately if the snippetMap is not connected
+   */
+  async blockSnippetById(id) {
+    if (!id) {
+      return;
+    }
+    let blockList = this.blockList;
+    if (!blockList.includes(id)) {
+      blockList.push(id);
+    }
+    await this.set("blockList", blockList);
   }
 
   /**
@@ -221,14 +243,12 @@ class SnippetsProvider {
    * @param  {str} options.appData.snippetsURL  The URL from which we fetch snippets
    * @param  {int} options.appData.version  The current snippets version
    * @param  {str} options.elementId  The id of the element in which to inject snippets
-   * @param  {str} options.containerElementId  The id of the element of element containing the snippets element
    * @param  {bool} options.connect  Should gSnippetsMap connect to indexedDB?
    */
   async init(options) {
     Object.assign(this, {
       appData: {},
       elementId: "snippets",
-      containerElementId: "snippets-container",
       connect: true
     }, options);
 

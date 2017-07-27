@@ -67,6 +67,31 @@ describe("SnippetsMap", () => {
       assert.propertyVal(snippetsMap, "size", 0);
     });
   });
+  describe("#.blockList", () => {
+    it("should return an empty array if blockList is not set", () => {
+      assert.deepEqual(snippetsMap.blockList, []);
+    });
+    it("should return the blockList it is set", () => {
+      snippetsMap.blockSnippetById(123);
+      assert.deepEqual(snippetsMap.blockList, [123]);
+    });
+  });
+  describe("#blockSnippetById(id)", () => {
+    it("should not modify the blockList if no id was passed in", () => {
+      snippetsMap.blockSnippetById(null);
+      assert.deepEqual(snippetsMap.blockList, []);
+    });
+    it("should add new ids to the blockList", () => {
+      snippetsMap.blockSnippetById(123);
+      assert.deepEqual(snippetsMap.blockList, [123]);
+    });
+    it("should not add ids that are already blocked", () => {
+      snippetsMap.blockSnippetById(123);
+      snippetsMap.blockSnippetById(123);
+      snippetsMap.blockSnippetById(456);
+      assert.deepEqual(snippetsMap.blockList, [123, 456]);
+    });
+  });
 });
 
 describe("SnippetsProvider", () => {
