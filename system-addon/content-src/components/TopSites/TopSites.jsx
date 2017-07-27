@@ -139,16 +139,21 @@ class TopSitesPerfTimer extends React.Component {
   }
 
   _sendPaintedEvent() {
-    // XXX should collapse these two calls below by adding a
-    // perfSvc.markAndGetAbsStart() method
     this.perfSvc.mark("topsites_first_painted_ts");
-    let topsites_first_painted_ts = this.perfSvc
-      .getMostRecentAbsMarkStartByName("topsites_first_painted_ts");
 
-    this.props.dispatch(ac.SendToMain({
-      type: at.SAVE_SESSION_PERF_DATA,
-      data: {topsites_first_painted_ts}
-    }));
+    try {
+      let topsites_first_painted_ts = this.perfSvc
+        .getMostRecentAbsMarkStartByName("topsites_first_painted_ts");
+
+      this.props.dispatch(ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {topsites_first_painted_ts}
+      }));
+    } catch (ex) {
+      // If this failed, it's likely because the `privacy.resistFingerprinting`
+      // pref is true.  We should at least not blow up, and should continue
+      // to set this._timestampSent to avoid going through this again.
+    }
 
     this._timestampSent = true;
   }

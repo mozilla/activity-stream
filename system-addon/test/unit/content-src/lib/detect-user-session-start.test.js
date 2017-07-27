@@ -41,6 +41,20 @@ describe("detectUserSessionStart", () => {
       });
     });
 
+    it("shouldn't send a message if getMostRecentAbsMarkStartByName throws", () => {
+      let perfService = new PerfService();
+      sinon.stub(perfService, "getMostRecentAbsMarkStartByName").throws();
+      const sendAsyncMessage = sinon.spy();
+      const instance = new DetectUserSessionStart({
+        perfService,
+        sendAsyncMessage
+      });
+
+      instance._sendEvent();
+
+      assert.notCalled(sendAsyncMessage);
+    });
+
     it('should call perfService.mark("visibility_event_rcvd_ts")', () => {
       let perfService = new PerfService();
       sinon.stub(perfService, "mark");
