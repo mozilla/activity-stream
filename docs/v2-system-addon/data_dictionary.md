@@ -1,7 +1,7 @@
 # Activity Stream Pings
 
 The Activity Stream system add-on sends various types of pings to the backend (HTTPS POST) [Onyx server](https://github.com/mozilla/onyx) :
-- a `session` ping that describes the ending of an Activity Stream session (lose focus event on Activity Stream), and
+- a `session` ping that describes the ending of an Activity Stream session (a new tab is closed or refreshed), and
 - an `event` ping that records specific data about individual user interactions while interacting with Activity Stream
 - a `performance` ping that records specific performance related events
 - an `undesired` ping that records data about bad app states and missing data
