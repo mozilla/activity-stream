@@ -68,7 +68,7 @@ this.TopSitesFeed = class TopSitesFeed {
     // Parse site url and extract hostname.
     pinned.forEach(site => { site.hostname = shortURL(site); });
 
-    return this.dedupe.one(pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
+    return this.dedupe.collection(pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
   }
   async refresh(target = null) {
     const links = await this.getLinksWithDefaults();

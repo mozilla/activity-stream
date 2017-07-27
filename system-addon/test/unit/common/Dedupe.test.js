@@ -12,7 +12,7 @@ describe("Dedupe", () => {
       "http://www.mozilla.org"
     ];
 
-    const result = instance.one(websites);
+    const result = instance.collection(websites);
 
     assert.lengthOf(result, 2);
   });
@@ -27,7 +27,7 @@ describe("Dedupe", () => {
         "http://www.mozilla.org"
       ].map(urlToSite);
 
-      const result = instance.one(websites);
+      const result = instance.collection(websites);
 
       assert.lengthOf(result, 2);
       assert.deepEqual(result[0].url, "http://www.mozilla.org");

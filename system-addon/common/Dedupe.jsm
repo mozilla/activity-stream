@@ -12,7 +12,7 @@ this.Dedupe = class Dedupe {
     return false;
   }
 
-  one(values) {
+  collection(values) {
     const valueMap = new Map();
     values.forEach(value => {
       const key = this.createKey(value);

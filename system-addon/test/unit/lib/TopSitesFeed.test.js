@@ -54,7 +54,7 @@ describe("Top Sites Feed", () => {
     }));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
-    feed.dedupe.one = sites => sites;
+    feed.dedupe.collection = sites => sites;
     links = FAKE_LINKS;
     clock = sinon.useFakeTimers();
   });
@@ -102,11 +102,11 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
     });
     it("should call dedupe on the links", async () => {
-      feed.dedupe.one = sinon.stub().returns([]);
+      feed.dedupe.collection = sinon.stub().returns([]);
 
       await feed.getLinksWithDefaults();
 
-      assert.calledOnce(feed.dedupe.one);
+      assert.calledOnce(feed.dedupe.collection);
     });
     it("should dedupe the links by hostname", async () => {
       const site = {url: "foo", hostname: "bar"};
