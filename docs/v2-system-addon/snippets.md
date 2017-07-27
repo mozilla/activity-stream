@@ -37,6 +37,11 @@ where possible.
 
 `snippets`: The cached payload of the response from the snippets server.
 
+`blockList`: An array of snippet IDs that have been blocked by the users, or an empty array if none have been blocked.
+
+`blockSnippetById(id)`: A function that adds an id to a blockList and returns
+a Promise that resolves when the blockList has been written to indexedDB.
+
 `appData.snippetsURL`: The URL at from which snippets are fetched
 
 `appData.version`: The current version of snippets
