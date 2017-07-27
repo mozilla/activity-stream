@@ -12,6 +12,11 @@ this.Dedupe = class Dedupe {
     return false;
   }
 
+  /**
+   * Removes duplicates in a list based on createKey.
+   * @param {Array} values
+   * @returns {Array}
+   */
   collection(values) {
     const valueMap = new Map();
     values.forEach(value => {
