@@ -144,6 +144,17 @@ describe("<TopSitesPerfTimer>", () => {
         data: {topsites_first_painted_ts: 777}
       }));
     });
+
+    it("shouldn't dispatch if getMostRecentAbsMarkStartByName throws", () => {
+      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
+        .withArgs("topsites_first_painted_ts").throws();
+      const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.notCalled(spy);
+    });
   });
 });
 

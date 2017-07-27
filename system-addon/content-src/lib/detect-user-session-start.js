@@ -38,13 +38,18 @@ module.exports = class DetectUserSessionStart {
   _sendEvent() {
     this._perfService.mark("visibility_event_rcvd_ts");
 
-    let visibility_event_rcvd_ts = this._perfService
+    try {
+      let visibility_event_rcvd_ts = this._perfService
         .getMostRecentAbsMarkStartByName("visibility_event_rcvd_ts");
 
-    this.sendAsyncMessage("ActivityStream:ContentToMain", {
-      type: at.SAVE_SESSION_PERF_DATA,
-      data: {visibility_event_rcvd_ts}
-    });
+      this.sendAsyncMessage("ActivityStream:ContentToMain", {
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {visibility_event_rcvd_ts}
+      });
+    } catch (ex) {
+      // If this failed, it's likely because the `privacy.resistFingerprinting`
+      // pref is true.  We should at least not blow up.
+    }
   }
 
   /**
