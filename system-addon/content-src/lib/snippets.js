@@ -259,6 +259,32 @@ class SnippetsProvider {
   }
 }
 
-module.exports.SnippetsMap = SnippetsMap;
-module.exports.SnippetsProvider = SnippetsProvider;
-module.exports.SNIPPETS_UPDATE_INTERVAL_MS = SNIPPETS_UPDATE_INTERVAL_MS;
+/**
+ * addSnippetsSubscriber - Creates a SnippetsProvider that Initializes
+ *                         when the store has received the appropriate
+ *                         Snippet data.
+ *
+ * @param  {obj} store   The redux store
+ * @return {obj}        Returns the snippets instance and unsubscribe function
+ */
+function addSnippetsSubscriber(store) {
+  const snippets = new SnippetsProvider();
+  const unsubscribe = store.subscribe(() => {
+    const state = store.getState();
+    if (state.Snippets.initialized) {
+      if (state.Snippets.onboardingFinished) {
+        snippets.init({appData: state.Snippets});
+      }
+      unsubscribe();
+    }
+  });
+  // These values are returned for testing purposes
+  return snippets;
+}
+
+module.exports = {
+  addSnippetsSubscriber,
+  SnippetsMap,
+  SnippetsProvider,
+  SNIPPETS_UPDATE_INTERVAL_MS
+};
