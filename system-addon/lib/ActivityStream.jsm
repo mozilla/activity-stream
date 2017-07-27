@@ -75,9 +75,9 @@ const PREFS_CONFIG = new Map([
   ["feeds.section.topstories.options", {
     title: "Configuration options for top stories feed",
     value: `{
-      "stories_endpoint": "https://getpocket.com/v3/firefox/global-recs?consumer_key=$apiKey",
+      "stories_endpoint": "https://getpocket.com/v3/firefox/global-recs?consumer_key=$apiKey&locale_lang=$locale",
       "stories_referrer": "https://getpocket.com/recommendations",
-      "topics_endpoint": "https://getpocket.com/v3/firefox/trending-topics?consumer_key=$apiKey",
+      "topics_endpoint": "https://getpocket.com/v3/firefox/trending-topics?consumer_key=$apiKey&locale_lang=$locale",
       "read_more_endpoint": "https://getpocket.com/explore/trending?src=ff_new_tab",
       "learn_more_endpoint": "https://getpocket.com/firefox_learnmore?src=ff_newtab",
       "survey_link": "https://www.surveymonkey.com/r/newtabffx",
