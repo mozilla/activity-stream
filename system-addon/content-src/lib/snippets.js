@@ -191,7 +191,6 @@ class SnippetsProvider {
 
   _showRemoteSnippets() {
     const snippetsEl = document.getElementById(this.elementId);
-    const containerEl = document.getElementById(this.containerElementId);
     const payload = this.snippetsMap.get("snippets");
 
     if (!snippetsEl) {
@@ -212,11 +211,6 @@ class SnippetsProvider {
       const relocatedScript = document.createElement("script");
       relocatedScript.text = scriptEl.text;
       scriptEl.parentNode.replaceChild(relocatedScript, scriptEl);
-    }
-
-    // Unhide the container if everything went OK
-    if (containerEl) {
-      containerEl.style.display = "block";
     }
   }
 
