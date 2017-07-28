@@ -42,7 +42,7 @@ class Card extends React.Component {
     this.setState({showContextMenu});
   }
   render() {
-    const {index, link, dispatch, contextMenuOptions} = this.props;
+    const {index, link, dispatch, contextMenuOptions, eventSource} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     const hostname = shortURL(link);
     const {icon, intlID} = cardContextTypes[link.type];
@@ -71,6 +71,7 @@ class Card extends React.Component {
       <LinkMenu
         dispatch={dispatch}
         index={index}
+        source={eventSource}
         onUpdate={this.onMenuUpdate}
         options={link.context_menu_options || contextMenuOptions}
         site={link}
