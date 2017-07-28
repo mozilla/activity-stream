@@ -9,7 +9,9 @@
   justify-content: space-between;
 
   p {
-    margin: 0 4px 0 12px;
+    margin: 0;
+    margin-inline-end: 4px;
+    margin-inline-start: 12px;
     align-self: center;
     display: flex;
     justify-content: space-between;
