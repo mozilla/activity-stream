@@ -5,7 +5,7 @@ const {Provider} = require("react-redux");
 const initStore = require("content-src/lib/init-store");
 const {reducers} = require("common/Reducers.jsm");
 const DetectUserSessionStart = require("content-src/lib/detect-user-session-start");
-const {SnippetsProvider} = require("content-src/lib/snippets");
+const {addSnippetsSubscriber} = require("content-src/lib/snippets");
 
 new DetectUserSessionStart().sendEventOrAddListener();
 
@@ -13,12 +13,4 @@ const store = initStore(reducers);
 
 ReactDOM.render(<Provider store={store}><Base /></Provider>, document.getElementById("root"));
 
-// Trigger snippets when snippets data has been received.
-const snippets = new SnippetsProvider();
-const unsubscribe = store.subscribe(() => {
-  const state = store.getState();
-  if (state.Snippets.initialized) {
-    snippets.init({appData: state.Snippets});
-    unsubscribe();
-  }
-});
+addSnippetsSubscriber(store);

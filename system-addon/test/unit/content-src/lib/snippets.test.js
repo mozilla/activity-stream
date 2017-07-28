@@ -1,4 +1,12 @@
-const {SnippetsMap, SnippetsProvider, SNIPPETS_UPDATE_INTERVAL_MS} = require("content-src/lib/snippets.js");
+const {
+  SnippetsMap,
+  SnippetsProvider,
+  SNIPPETS_UPDATE_INTERVAL_MS,
+  addSnippetsSubscriber
+} = require("content-src/lib/snippets.js");
+const {createStore, combineReducers} = require("redux");
+const {reducers} = require("common/Reducers.jsm");
+const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("SnippetsMap", () => {
   let snippetsMap;
@@ -252,5 +260,41 @@ describe("SnippetsProvider", () => {
       await snippets.init({connect: false});
       assert.notCalled(snippets._showDefaultSnippets);
     });
+  });
+});
+
+describe("addSnippetsSubscriber", () => {
+  let store;
+  let sandbox;
+  let snippets;
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+    store = createStore(combineReducers(reducers));
+    sandbox.spy(store, "subscribe");
+
+    snippets = addSnippetsSubscriber(store);
+
+    sandbox.stub(snippets, "init");
+  });
+  afterEach(async () => {
+    sandbox.restore();
+    if (global.gSnippetsMap) {
+      await global.gSnippetsMap.clear();
+    }
+    delete global.gSnippetsMap;
+  });
+  it("should not initialize SnippetsProvider if .initialized is false", () => {
+    store.dispatch({type: "FOO"});
+
+    assert.calledOnce(store.subscribe);
+    assert.notCalled(snippets.init);
+  });
+  it("should initialize SnippetsProvider if .initialize and .onboardingFinished are true ", () => {
+    store.dispatch({type: at.SNIPPETS_DATA, data: {onboardingFinished: true}});
+    assert.calledOnce(snippets.init);
+  });
+  it("should not initialize SnippetsProvider if .initialize is true and .onboardingFinished is false", () => {
+    store.dispatch({type: at.SNIPPETS_DATA, data: {onboardingFinished: false}});
+    assert.notCalled(snippets.init);
   });
 });
