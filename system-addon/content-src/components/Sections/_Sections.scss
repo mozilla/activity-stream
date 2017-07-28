@@ -72,9 +72,11 @@
   }
 
   .section-list {
-    width: $wrapper-card-outer;
     clear: both;
     margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, $card-width);
+    grid-gap: $base-gutter;
   }
 
   .section-empty-state {

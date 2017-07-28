@@ -7,6 +7,11 @@
 
 main {
   margin: auto;
+  width: $wrapper-default-width;
+
+  @media (min-width: $break-point-small) {
+    width: $wrapper-max-width-small;
+  }
 
   @media (min-width: $break-point-medium) {
     width: $wrapper-max-width-medium;
