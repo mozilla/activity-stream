@@ -1,34 +1,56 @@
 .manual-migration-container {
   background: rgba(215, 215, 219, .5);
   font-size: 13px;
-  height: 50px;
   border-radius: 2px;
   margin-bottom: $search-margin-bottom;
+  padding: 20px;
+  text-align: center;
 
-  display: flex;
-  justify-content: space-between;
+  @media (min-width: $break-point-medium) {
+    display: flex;
+    justify-content: space-between;
+    height: 100px;
+    padding: 0;
+    text-align: left;
+  }
+
+  @media (min-width: $break-point-large) {
+    height: 50px;
+  }
 
   p {
     margin: 0;
-    margin-inline-end: 4px;
-    margin-inline-start: 12px;
-    align-self: center;
-    display: flex;
-    justify-content: space-between;
+    @media (min-width: $break-point-medium) {
+      margin-inline-end: 4px;
+      margin-inline-start: 12px;
+      align-self: center;
+      display: flex;
+      justify-content: space-between;
+    }
   }
 
   .icon {
-    margin: 0;
-    margin-inline-end: 12px;
-    align-self: center;
+    display: none;
+    @media (min-width: $break-point-medium) {
+      display: block;
+      margin: 0;
+      margin-inline-end: 12px;
+      align-self: center;
+    }
   }
 }
 
 .manual-migration-actions {
-  display: flex;
-  justify-content: space-between;
   border: none;
-  padding: 0;
+  display: block;
+  padding: 10px 0 0 0;
+  line-height: 34px;
+
+  @media (min-width: $break-point-medium) {
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+  }
 
   button {
     align-self: center;
