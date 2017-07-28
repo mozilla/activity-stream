@@ -115,7 +115,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `session_duration` | [Required] Defined to be the time in milliseconds between the newtab gaining and losing focus. | :one:
 | `session_id` | [Optional] The unique identifier for a specific session. | :one:
 | `source` | [Required] Either ("recent_links", "recent_bookmarks", "frecent_links", "top_sites", "spotlight", "sidebar") and indicates what `action`. | :two:
-| `timestamp` | [Auto populated by Onyx] The time in ms since epoch. | :three:
+| `received_at` | [Auto populated by Onyx] The time in ms since epoch. | :three:
 | `total_bookmarks` | [Optional] The total number of bookmarks in the user's places db. | :one:
 | `total_history_size` | [Optional] The number of history items currently in the user's places db. | :one:
 | `ua` | [Auto populated by Onyx] The user agent string. | :two:

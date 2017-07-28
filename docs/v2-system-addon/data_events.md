@@ -185,6 +185,7 @@ When a session ends, the browser will send a `"activity_stream_session"` ping to
 All `"activity_stream_session"` pings have the following basic shape. Some fields are variable.
 
 ```js
+{
   "action": "activity_stream_session",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
