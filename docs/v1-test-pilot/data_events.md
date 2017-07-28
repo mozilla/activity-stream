@@ -33,6 +33,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   // Basic metadata
   "tab_id": "-5-2",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "action": "activity_stream_event",
@@ -53,6 +54,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "tab_id": "-5-2",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -69,6 +71,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "metadata_source": ["MetadataService" | "Local" | "TippyTopProvider"],
@@ -91,6 +94,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
     "action": "activity_stream_event",
     "tab_id": "-3-13",
     "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
+    "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
     "addon_version": "1.0.12",
     "locale": "en-US",
     "metadata_source": ["MetadataService" | "Local" | "TippyTopProvider"]
@@ -107,6 +111,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -123,6 +128,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "tab_id": "-5-4",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "metadata_source": ["MetadataService" | "Local" | "TippyTopProvider"],
@@ -145,6 +151,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "tab_id": "-3-16",
   "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -163,6 +170,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-3-16",
   "client_id": "83982d21-4f49-eb44-a3ed-8e9ac6f87b05",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -178,6 +186,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -193,6 +202,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -208,6 +218,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -223,6 +234,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -239,6 +251,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-4",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "metadata_source": ["MetadataService" | "Local" | "TippyTopProvider"],
@@ -256,6 +269,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-4",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "metadata_source": ["MetadataService" | "Local" | "TippyTopProvider"],
@@ -272,6 +286,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -287,6 +302,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -302,6 +318,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -318,6 +335,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -334,6 +352,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -350,6 +369,7 @@ It doesn't capture success or failure to share after.
   "action": "activity_stream_event",
   "tab_id": "-5-3",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
 }
@@ -375,12 +395,12 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "tab_id": "-5-2",
   "load_latency": 774,
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "page": ["NEW_TAB" | "HOME"],
   "action": "activity_stream_session",
   "session_duration": 4199,
-  "highlights_size": 20,
   "topsites_size": 6,
   "topsites_screenshot": 1,
   "topsites_tippytop": 3,
@@ -405,21 +425,6 @@ In some undesired app states, the app will send a ping about it to our metrics s
 
 ### Types of bad states
 
-#### Highlight without an image
-
-```js
-{
-  "event": "MISSING_IMAGE",
-  "source": "HIGHLIGHTS",
-  "page": "NEW_TAB",
-  "action": "activity_stream_masga_event",
-  "tab_id": "-5-2",
-  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
-  "addon_version": "1.0.12",
-  "locale": "en-US"
-}
-```
-
 #### Show loader
 
 ```js
@@ -430,6 +435,7 @@ In some undesired app states, the app will send a ping about it to our metrics s
   "action": "activity_stream_masga_event",
   "tab_id": "-5-2",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -446,6 +452,7 @@ In some undesired app states, the app will send a ping about it to our metrics s
   "action": "activity_stream_masga_event",
   "tab_id": "-5-2",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -462,6 +469,7 @@ Note that it re-uses the same payload [schema](https://github.com/mozilla/infern
   "source": "pocket",
   "action": "activity_stream_impression",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   // `id` is the GUID of the recommended item
@@ -476,6 +484,7 @@ Note that it re-uses the same payload [schema](https://github.com/mozilla/infern
   "source": "pocket",
   "action": "activity_stream_impression",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   // `user_action`: `[click|pocket|block]`, the value is the 0-based index of the `tiles` array

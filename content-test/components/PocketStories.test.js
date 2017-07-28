@@ -54,6 +54,11 @@ describe("PocketStories", () => {
       el = ReactDOM.findDOMNode(emptyInstance);
       assert.notOk(el);
     });
+    it("should pass correct source value to SpotlightItems", () => {
+      const children = TestUtils.scryRenderedComponentsWithType(instance, SpotlightItem);
+
+      assert.equal(children[0].props.source, "RECOMMENDED");
+    });
   });
 
   describe("actions", () => {

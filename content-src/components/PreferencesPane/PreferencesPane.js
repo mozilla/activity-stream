@@ -35,7 +35,7 @@ const PreferencesPane = React.createClass({
   },
   render() {
     const props = this.props;
-    const {showSearch, showTopSites, showPocket, showHighlights, showBookmarks, showMoreTopSites} = props.Prefs.prefs;
+    const {showSearch, showTopSites, showPocket, showBookmarks, showVisitAgain, showMoreTopSites} = props.Prefs.prefs;
 
     return (
       <div className="prefs-pane-wrapper" ref="wrapper">
@@ -48,56 +48,58 @@ const PreferencesPane = React.createClass({
         </div>
         <div className="prefs-pane">
           <div className={classNames("sidebar", {hidden: !this.state.showPane})} ref="sidebar">
-            <div className="prefs-modal-inner-wrapper">
-              <h1><FormattedMessage id="settings_pane_header" /></h1>
-              <p><FormattedMessage id="settings_pane_body" /></p>
-              <section>
-                <input ref="showSearchCheckbox" type="checkbox" id="showSearch" name="showSearch" checked={showSearch} onChange={this.handleChange} />
-                <label htmlFor="showSearch">
-                  <FormattedMessage id="settings_pane_search_header" />
-                </label>
-                <p><FormattedMessage id="settings_pane_search_body" /></p>
-              </section>
-              <section className={showTopSites ? "" : "disabled"}>
-                <input ref="showTopSitesCheckbox" type="checkbox" id="showTopSites" name="showTopSites" checked={showTopSites} onChange={this.handleChange} />
-                <label htmlFor="showTopSites">
-                  <FormattedMessage id="settings_pane_topsites_header" />
-                </label>
-                <p><FormattedMessage id="settings_pane_topsites_body" /></p>
-                <div className="options">
-                  <input ref="showMoreTopSites" type="checkbox" id="showMoreTopSites" name="showMoreTopSites" checked={showMoreTopSites} onChange={this.handleChange} disabled={!showTopSites} />
-                  <label htmlFor="showMoreTopSites" className="icon icon-topsites">
-                    <FormattedMessage id="settings_pane_topsites_options_showmore" />
+            <div className="sidebar-inner-wrapper">
+              <div className="prefs-modal-inner-wrapper">
+                <h1><FormattedMessage id="settings_pane_header" /></h1>
+                <p><FormattedMessage id="settings_pane_body" /></p>
+                <section>
+                  <input ref="showSearchCheckbox" type="checkbox" id="showSearch" name="showSearch" checked={showSearch} onChange={this.handleChange} />
+                  <label htmlFor="showSearch">
+                    <FormattedMessage id="settings_pane_search_header" />
                   </label>
-                </div>
-              </section>
-              <section>
-                <input ref="showPocketCheckbox" type="checkbox" id="showPocket" name="showPocket" checked={showPocket} onChange={this.handleChange} />
-                <label htmlFor="showPocket">
-                  <FormattedMessage id="settings_pane_pocketstories_header" />
-                </label>
-                <p><FormattedMessage id="settings_pane_pocketstories_body" /></p>
-              </section>
-              <section>
-                <input ref="showHighlightsCheckbox" type="checkbox" id="showHighlights" name="showHighlights" checked={showHighlights} onChange={this.handleChange} />
-                <label htmlFor="showHighlights">
-                  <FormattedMessage id="settings_pane_highlights_header" />
-                </label>
-                <p><FormattedMessage id="settings_pane_highlights_body" /></p>
-              </section>
-              <section>
-                <input ref="showBookmarksCheckbox" type="checkbox" id="showBookmarks" name="showBookmarks" checked={showBookmarks} onChange={this.handleChange} />
-                <label htmlFor="showBookmarks">
-                  <FormattedMessage id="settings_pane_bookmarks_header" />
-                </label>
-                <p><FormattedMessage id="settings_pane_bookmarks_body" /></p>
+                  <p><FormattedMessage id="settings_pane_search_body" /></p>
+                </section>
+                <section className={showTopSites ? "" : "disabled"}>
+                  <input ref="showTopSitesCheckbox" type="checkbox" id="showTopSites" name="showTopSites" checked={showTopSites} onChange={this.handleChange} />
+                  <label htmlFor="showTopSites">
+                    <FormattedMessage id="settings_pane_topsites_header" />
+                  </label>
+                  <p><FormattedMessage id="settings_pane_topsites_body" /></p>
+                  <div className="options">
+                    <input ref="showMoreTopSites" type="checkbox" id="showMoreTopSites" name="showMoreTopSites" checked={showMoreTopSites} onChange={this.handleChange} disabled={!showTopSites} />
+                    <label htmlFor="showMoreTopSites" className="icon icon-topsites">
+                      <FormattedMessage id="settings_pane_topsites_options_showmore" />
+                    </label>
+                  </div>
+                </section>
+                <section>
+                  <input ref="showPocketCheckbox" type="checkbox" id="showPocket" name="showPocket" checked={showPocket} onChange={this.handleChange} />
+                  <label htmlFor="showPocket">
+                    <FormattedMessage id="settings_pane_pocketstories_header" />
+                  </label>
+                  <p><FormattedMessage id="settings_pane_pocketstories_body" /></p>
+                </section>
+                <section>
+                  <input ref="showBookmarksCheckbox" type="checkbox" id="showBookmarks" name="showBookmarks" checked={showBookmarks} onChange={this.handleChange} />
+                  <label htmlFor="showBookmarks">
+                    <FormattedMessage id="settings_pane_bookmarks_header" />
+                  </label>
+                  <p><FormattedMessage id="settings_pane_bookmarks_body" /></p>
+                </section>
+                <section>
+                  <input ref="showVisitAgainCheckbox" type="checkbox" id="showVisitAgain" name="showVisitAgain" checked={showVisitAgain} onChange={this.handleChange} />
+                  <label htmlFor="showVisitAgain">
+                    <FormattedMessage id="settings_pane_visit_again_header" />
+                  </label>
+                  <p><FormattedMessage id="settings_pane_visit_again_body" /></p>
+                </section>
+              </div>
+              <section className="actions">
+                <button ref="done-button" className="done" onClick={this.togglePane}>
+                  <FormattedMessage id="settings_pane_done_button" />
+                </button>
               </section>
             </div>
-            <section className="actions">
-              <button ref="done-button" className="done" onClick={this.togglePane}>
-                <FormattedMessage id="settings_pane_done_button" />
-              </button>
-            </section>
           </div>
         </div>
       </div>);

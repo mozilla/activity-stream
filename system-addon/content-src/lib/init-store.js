@@ -56,7 +56,12 @@ module.exports = function initStore(reducers) {
   );
 
   addMessageListener(INCOMING_MESSAGE_NAME, msg => {
-    store.dispatch(msg.data);
+    try {
+      store.dispatch(msg.data);
+    } catch (ex) {
+      console.error("Content msg:", msg, "Dispatch error: ", ex); // eslint-disable-line no-console
+      dump(`Content msg: ${JSON.stringify(msg)}\nDispatch error: ${ex}\n${ex.stack}`);
+    }
   });
 
   return store;

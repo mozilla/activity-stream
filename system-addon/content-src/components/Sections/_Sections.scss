@@ -1,0 +1,116 @@
+.sections-list {
+  .section-top-bar {
+    position: relative;
+    height: 16px;
+    margin-bottom: 18px;
+
+    .section-title {
+      float: left;
+    }
+
+    .section-info-option {
+      float: right;
+    }
+
+    .info-option-icon {
+      background-image: url('#{$image-path}glyph-info-option-12.svg');
+      background-size: 12px 12px;
+      background-repeat: no-repeat;
+      background-position: center;
+      height: 16px;
+      width: 16px;
+      display: inline-block;
+    }
+
+    .section-info-option div {
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.2s, opacity 0.2s ease-out;
+      transition-delay: 0.5s;
+    }
+
+    .section-info-option:hover div {
+      visibility: visible;
+      opacity: 1;
+      transition: visibility 0.2s, opacity 0.2s ease-out;
+    }
+
+    .info-option {
+      z-index: 9999;
+      position: absolute;
+      background: $white;
+      border: solid 1px $faintest-black;
+      border-radius: $border-radius;
+      font-size: 13px;
+      color: $info-option-text-color;
+      line-height: 120%;
+      width: 320px;
+      right: 0;
+      top: 34px;
+      margin-top: -4px;
+      margin-right: -4px;
+      padding: 24px;
+      -moz-user-select: none;
+    }
+
+    .info-option-header {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .info-option-body {
+      margin: 0;
+      margin-top: 12px;
+    }
+
+    .info-option-link {
+      display: block;
+      margin-top: 12px;
+      color: $info-option-link-color;
+    }
+
+  }
+
+  .section-list {
+    width: $wrapper-card-outer;
+    clear: both;
+    margin: 0;
+  }
+
+  .section-empty-state {
+    width: 100%;
+    height: $card-height;
+    display: flex;
+    border: solid 1px $faintest-black;
+    border-radius: $border-radius;
+    margin-bottom: 16px;
+
+    .empty-state {
+      margin: auto;
+      max-width: 350px;
+
+      .empty-state-icon {
+        background-size: 50px 50px;
+        background-repeat: no-repeat;
+        background-position: center;
+        fill: $section-empty-grey;
+        -moz-context-properties: fill;
+        height: 50px;
+        width: 50px;
+        margin: 0 auto;
+        display: block;
+      }
+
+      .empty-state-message {
+        margin-bottom: 0;
+        font-size: 13px;
+        font-weight: 300;
+        color: $light-grey;
+        text-align: center;
+      }
+
+    }
+
+  }
+
+}

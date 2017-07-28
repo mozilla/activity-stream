@@ -5,20 +5,10 @@
 "use strict";
 
 const {utils: Cu} = Components;
+Cu.import("resource:///modules/AboutNewTab.jsm");
+Cu.import("resource://gre/modules/RemotePageManager.jsm");
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-const {
-  actionUtils: au,
-  actionCreators: ac,
-  actionTypes: at
-} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
-
-XPCOMUtils.defineLazyModuleGetter(this, "AboutNewTab",
-  "resource:///modules/AboutNewTab.jsm");
-
-XPCOMUtils.defineLazyModuleGetter(this, "RemotePages",
-  "resource://gre/modules/RemotePageManager.jsm");
+const {actionCreators: ac, actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 const ABOUT_NEW_TAB_URL = "about:newtab";
 
@@ -57,6 +47,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
     this.onMessage = this.onMessage.bind(this);
     this.onNewTabLoad = this.onNewTabLoad.bind(this);
     this.onNewTabUnload = this.onNewTabUnload.bind(this);
+    this.onNewTabInit = this.onNewTabInit.bind(this);
   }
 
   /**
@@ -108,11 +99,11 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
   send(action) {
     const targetId = action.meta && action.meta.toTarget;
     const target = this.getTargetById(targetId);
-    if (!target) {
-      // The target is no longer around - maybe the user closed the page
-      return;
+    try {
+      target.sendAsyncMessage(this.outgoingMessageName, action);
+    } catch (e) {
+      // The target page is closed/closing by the user or test, so just ignore.
     }
-    target.sendAsyncMessage(this.outgoingMessageName, action);
   }
 
   /**
@@ -140,6 +131,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
       AboutNewTab.override();
     }
     this.channel = new RemotePages(this.pageURL);
+    this.channel.addMessageListener("RemotePage:Init", this.onNewTabInit);
     this.channel.addMessageListener("RemotePage:Load", this.onNewTabLoad);
     this.channel.addMessageListener("RemotePage:Unload", this.onNewTabUnload);
     this.channel.addMessageListener(this.incomingMessageName, this.onMessage);
@@ -154,6 +146,16 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
     if (this.pageURL === ABOUT_NEW_TAB_URL) {
       AboutNewTab.reset();
     }
+  }
+
+/**
+ * onNewTabInit - Handler for special RemotePage:Init message fired
+ * by RemotePages
+ *
+ * @param  {obj} msg The messsage from a page that was just initialized
+ */
+  onNewTabInit(msg) {
+    this.onActionFromContent({type: at.NEW_TAB_INIT}, msg.target.portID);
   }
 
   /**

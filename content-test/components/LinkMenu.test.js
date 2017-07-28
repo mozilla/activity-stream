@@ -130,7 +130,8 @@ describe("LinkMenu", () => {
     checkOption({
       ref: "addBookmark",
       event: "NOTIFY_BOOKMARK_ADD",
-      eventData: DEFAULT_PROPS.site.url,
+      // Event source defined by DEFAULT_PROPS.
+      eventData: {url: DEFAULT_PROPS.site.url, source: "ACTIVITY_FEED"},
       userEvent: "BOOKMARK_ADD"
     });
     checkOption({

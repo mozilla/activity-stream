@@ -1,7 +1,7 @@
 # Activity Stream Pings
 
 The Activity Stream system add-on sends various types of pings to the backend (HTTPS POST) [Onyx server](https://github.com/mozilla/onyx) :
-- a `session` ping that describes the ending of an Activity Stream session (lose focus event on Activity Stream), and
+- a `session` ping that describes the ending of an Activity Stream session (a new tab is closed or refreshed), and
 - an `event` ping that records specific data about individual user interactions while interacting with Activity Stream
 - a `performance` ping that records specific performance related events
 - an `undesired` ping that records data about bad app states and missing data
@@ -109,10 +109,13 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `highlight_type` | [Optional] Either ["bookmarks", "recommendation", "history"]. | :one:
 | `ip` | [Auto populated by Onyx] The IP address of the client. | :two:
 | `locale` | [Auto populated by Onyx] The browser chrome's language (eg. en-US). | :two:
+| `load_trigger_ts` | [Optional][Server Counter][Server Alert for too many omissions]  DOMHighResTimeStamp of the action perceived by the user to trigger the load of this page. | :one:
+| `load_trigger_type` | [Server Counter][Server Alert for too many omissions] Either ["menu_plus_or_keyboard", "unexpected"]. | :one:
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`MetadataService` or `Local` or `TippyTopProvider`). | :one:
 | `page` | [Required] Either ["NEW_TAB", "HOME"]. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:
-| `session_duration` | [Required] Defined to be the time in milliseconds between the newtab gaining and losing focus. | :one:
+| `session_duration` | [Optional][Server Counter][Server Alert for too many omissions] Time in (integer) milliseconds of the difference between the new tab becoming visible
+and losing focus. | :one:
 | `session_id` | [Optional] The unique identifier for a specific session. | :one:
 | `source` | [Required] Either ("recent_links", "recent_bookmarks", "frecent_links", "top_sites", "spotlight", "sidebar") and indicates what `action`. | :two:
 | `received_at` | [Auto populated by Onyx] The time in ms since epoch. | :three:
@@ -124,11 +127,12 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `value` | [Required] An integer that represents the measured performance value. Can store counts, times in milliseconds, and should always be a positive integer.| :one:
 | `ver` | [Auto populated by Onyx] The version of the Onyx API the ping was sent to. | :one:
 | `highlights_size` | [Optional] The size of the Highlights set. | :one:
+| `topsites_first_painted_ts` | [Optional][Service Counter][Server Alert for too many omissions] Timestamp of when the Top Sites element finished painting (possibly with only placeholder screenshots) | :one:
 | `topsites_size` | [Optional] The size of the Topsites set. | :one:
 | `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
 | `user_prefs` | [optional] The encoded integer of user's preferences. | :one: & :four:
-
+| `visibility_event_rcvd_ts` | [Optional][Server Counter][Server Alert for too many omissions] DOMHighResTimeStamp of when the page itself receives an event that document.visibilityState == visible. | :one:
 
 **Where:**
 

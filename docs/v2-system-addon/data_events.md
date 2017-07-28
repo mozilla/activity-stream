@@ -21,7 +21,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   // This indicates the type of interaction
-  "event": ["CLICK", "SEARCH", "BLOCK", "DELETE", "OPEN_NEW_WINDOW", "OPEN_PRIVATE_WINDOW", "BOOKMARK_DELETE", "BOOKMARK_ADD"],
+  "event": ["CLICK", "SEARCH", "BLOCK", "DELETE", "OPEN_NEW_WINDOW", "OPEN_PRIVATE_WINDOW", "BOOKMARK_DELETE", "BOOKMARK_ADD", "OPEN_NEWTAB_PREFS", "CLOSE_NEWTAB_PREFS"],
 
   // Optional field indicating the UI component type
   "source": "TOP_SITES",
@@ -34,6 +34,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   // Basic metadata
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "action": "activity_stream_event"
@@ -52,6 +53,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -69,6 +71,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -86,6 +89,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -103,6 +107,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -120,6 +125,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -137,6 +143,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -154,6 +161,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -171,6 +179,39 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action": "activity_stream_event",
   "page": ["about:newtab" | "about:home"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```
+
+#### Opening the new tab preferences pane
+
+```js
+{
+  "event": "OPEN_NEWTAB_PREFS",
+  
+  // Basic metadata
+  "action": "activity_stream_event",
+  "page": ["about:newtab" | "about:home"],
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "addon_version": "1.0.12",
+  "locale": "en-US"
+}
+```
+
+#### Closing the new tab preferences pane
+
+```js
+{
+  "event": "CLOSE_NEWTAB_PREFS",
+  
+  // Basic metadata
+  "action": "activity_stream_event",
+  "page": ["about:newtab" | "about:home"],
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US"
 }
@@ -188,6 +229,7 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
 {
   "action": "activity_stream_session",
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "page": ["about:newtab" | "about:home"],
@@ -204,3 +246,36 @@ Here are different scenarios that cause a session end event to be sent:
 3. Closing the browser
 5. Refreshing
 6. Navigating to a new URL via the url bar or file menu
+
+
+### Session performance data
+
+This data is held in a child object of the `activity_stream_session` event called `perf`.  All fields suffixed by `_ts` are type `DOMHighResTimeStamp` (aka a double of milliseconds, with a 5 microsecond precision) with 0 being the [timeOrigin](https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp#The_time_origin) of the browser's hidden chrome window.
+
+An example might look like this:
+
+```javascript
+perf: {
+  // Timestamp of the action perceived by the user to trigger the load
+  // of this page.
+  //
+  // Not required at least for error cases where the
+  // observer event doesn't fire
+  "load_trigger_ts": 1,
+
+  // What was the perceived trigger of the load action:
+  "load_trigger_type": [
+    "menu_plus_or_keyboard" | // newtab only
+    "unexpected" // sessions lacking actual start times
+  ],
+
+  // when the page itself receives an event that document.visibilityStat=visible
+  "visibility_event_rcvd_ts": 2,
+
+  // When did the topsites element finish painting?  Note that, at least for
+  // the first tab to be loaded, and maybe some others, this will be before
+  // topsites has yet to receive screenshots updates from the add-on code,
+  // and is therefore just showing placeholder screenshots.
+  "topsites_first_painted_ts": 5,
+}
+```

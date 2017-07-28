@@ -11,6 +11,10 @@
     margin-inline-end: 8px;
   }
 
+  &.icon-small-spacer {
+    margin-inline-end: 6px;
+  }
+
   &.icon-bookmark {
    background-image: url('#{$image-path}glyph-bookmark-16.svg');
  }
@@ -27,6 +31,10 @@
    background-image: url('#{$image-path}glyph-dismiss-16.svg');
  }
 
+ &.icon-info {
+   background-image: url('#{$image-path}glyph-info-16.svg');
+ }
+
  &.icon-new-window {
    background-image: url('#{$image-path}glyph-newWindow-16.svg');
  }
@@ -34,4 +42,47 @@
  &.icon-new-window-private {
    background-image: url('#{$image-path}glyph-newWindow-private-16.svg');
  }
+
+ &.icon-settings {
+   background-image: url('#{$image-path}glyph-settings-16.svg');
+ }
+
+  &.icon-pin {
+    background-image: url('#{$image-path}glyph-pin-16.svg');
+  }
+
+  &.icon-unpin {
+    background-image: url('#{$image-path}glyph-unpin-16.svg');
+  }
+
+  &.icon-pocket {
+    background-image: url('#{$image-path}glyph-pocket-16.svg');
+  }
+
+  &.icon-historyItem {
+    background-image: url('#{$image-path}glyph-historyItem-16.svg');
+  }
+
+  &.icon-trending {
+    background-image: url('#{$image-path}glyph-trending-16.svg');
+  }
+
+  &.icon-now {
+    background-image: url('#{$image-path}glyph-now-16.svg');
+  }
+
+  &.icon-topsites {
+    background-image: url('#{$image-path}glyph-topsites-16.svg');
+  }
+
+  &.icon-pin-small {
+    background-image: url('#{$image-path}glyph-pin-12.svg');
+    background-size: $smaller-icon-size;
+    height: $smaller-icon-size;
+    width: $smaller-icon-size;
+  }
+
+  &.icon-check {
+    background-image: url('chrome://browser/skin/check.svg');
+  }
 }

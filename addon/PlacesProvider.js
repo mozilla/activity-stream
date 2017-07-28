@@ -749,8 +749,8 @@ Links.prototype = {
    *
    * @returns {Promise} Returns a promise with the most recent bookmarks.
    */
-  getBookmarks: Task.async(function*(options = {limit: 3}) {
-    let {limit} = options;
+  getBookmarks: Task.async(function*(options = {limit: 3, ageMin: 0}) {
+    let {limit, ageMin} = options;
 
     const columns = [
       "bookmarkDateCreated",
@@ -781,14 +781,30 @@ Links.prototype = {
                            b.dateAdded / 1000 as bookmarkDateCreated
                     FROM moz_bookmarks b, moz_places p
                     WHERE type = :type
+                    AND b.lastModified > ${ageMin}
                     AND b.fk = p.id
-                    AND p.last_visit_date IS NOT NULL
+                    AND (SELECT guid FROM moz_bookmarks WHERE id = (SELECT parent FROM moz_bookmarks WHERE id = b.parent)) != "tags________"
+                    AND url_hash NOT BETWEEN hash("place", "prefix_lo") AND hash("place", "prefix_hi")
                     ORDER BY b.lastModified DESC
                     LIMIT ${limit}`;
 
     let links = yield this.executePlacesQuery(sqlQuery, {columns, params: {type: Bookmarks.TYPE_BOOKMARK}});
     links = yield this._addFavicons(links);
     return this._processLinks(links);
+  }),
+
+  /**
+   * Get the timestamp/dateAdded of the oldest bookmark.
+   */
+  getDefaultBookmarksAge: Task.async(function*() {
+    const columns = ["defaultBookmarksAge"];
+    let sqlQuery = `SELECT dateAdded AS defaultBookmarksAge
+                    FROM moz_bookmarks
+                    ORDER BY dateAdded ASC
+                    LIMIT 1`;
+
+    const result = yield this.executePlacesQuery(sqlQuery, {columns});
+    return result[0].defaultBookmarksAge;
   }),
 
   /**

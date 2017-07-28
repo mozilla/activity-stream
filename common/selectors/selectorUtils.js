@@ -5,6 +5,6 @@
  * @return {Boolean}
  */
 function areSelectorsReady(state) {
-  return state.TopSites.init && state.Highlights.init && state.Experiments.init;
+  return state.TopSites.init && state.Experiments.init;
 }
 module.exports = {areSelectorsReady};

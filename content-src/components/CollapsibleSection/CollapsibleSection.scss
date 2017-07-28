@@ -1,12 +1,19 @@
 .collapsible-section {
   .section-title {
-    cursor: pointer;
+
+    .click-target {
+      cursor: pointer;
+    }
 
     .icon {
-      margin: -5px 0 0 8px;
+      margin: -5px 0 0;
+
+      &.icon-arrowhead-down {
+        margin-left: 8px;
+      }
 
       &.icon-arrowhead-forward {
-        margin-top: -4px;
+        margin: -4px 0 0 8px;
       }
     }
   }
@@ -16,6 +23,10 @@
     // We then transition on max-height, since we can't transition height to/from auto.
     max-height: 500px;
     transition: max-height 0.5s cubic-bezier(0.07, 0.95, 0, 1);
+
+    // This is so the top sites favicon doesn't get clipped during animation:
+    margin-inline-start: -7px;
+    padding: 0 7px;
 
     &.animating {
       overflow: hidden;

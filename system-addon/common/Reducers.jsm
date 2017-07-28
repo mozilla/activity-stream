@@ -16,12 +16,22 @@ const INITIAL_STATE = {
     // The version of the system-addon
     version: null
   },
+  Snippets: {initialized: false},
   TopSites: {
     // Have we received real data from history yet?
     initialized: false,
     // The history (and possibly default) links
     rows: []
-  }
+  },
+  Prefs: {
+    initialized: false,
+    values: {}
+  },
+  Dialog: {
+    visible: false,
+    data: {}
+  },
+  Sections: []
 };
 
 function App(prevState = INITIAL_STATE.App, action) {
@@ -43,9 +53,44 @@ function App(prevState = INITIAL_STATE.App, action) {
   }
 }
 
+/**
+ * insertPinned - Inserts pinned links in their specified slots
+ *
+ * @param {array} a list of links
+ * @param {array} a list of pinned links
+ * @return {array} resulting list of links with pinned links inserted
+ */
+function insertPinned(links, pinned) {
+  // Remove any pinned links
+  const pinnedUrls = pinned.map(link => link && link.url);
+  let newLinks = links.filter(link => (link ? !pinnedUrls.includes(link.url) : false));
+  newLinks = newLinks.map(link => {
+    if (link && link.isPinned) {
+      delete link.isPinned;
+      delete link.pinTitle;
+      delete link.pinIndex;
+    }
+    return link;
+  });
+
+  // Then insert them in their specified location
+  pinned.forEach((val, index) => {
+    if (!val) { return; }
+    let link = Object.assign({}, val, {isPinned: true, pinIndex: index, pinTitle: val.title});
+    if (index > newLinks.length) {
+      newLinks[index] = link;
+    } else {
+      newLinks.splice(index, 0, link);
+    }
+  });
+
+  return newLinks;
+}
+
 function TopSites(prevState = INITIAL_STATE.TopSites, action) {
   let hasMatch;
   let newRows;
+  let pinned;
   switch (action.type) {
     case at.TOP_SITES_UPDATED:
       if (!action.data) {
@@ -54,7 +99,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       return Object.assign({}, prevState, {initialized: true, rows: action.data});
     case at.SCREENSHOT_UPDATED:
       newRows = prevState.rows.map(row => {
-        if (row.url === action.data.url) {
+        if (row && row.url === action.data.url) {
           hasMatch = true;
           return Object.assign({}, row, {screenshot: action.data.screenshot});
         }
@@ -62,8 +107,11 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       });
       return hasMatch ? Object.assign({}, prevState, {rows: newRows}) : prevState;
     case at.PLACES_BOOKMARK_ADDED:
+      if (!action.data) {
+        return prevState;
+      }
       newRows = prevState.rows.map(site => {
-        if (site.url === action.data.url) {
+        if (site && site.url === action.data.url) {
           const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
           return Object.assign({}, site, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: lastModified});
         }
@@ -71,8 +119,11 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       });
       return Object.assign({}, prevState, {rows: newRows});
     case at.PLACES_BOOKMARK_REMOVED:
+      if (!action.data) {
+        return prevState;
+      }
       newRows = prevState.rows.map(site => {
-        if (site.url === action.data.url) {
+        if (site && site.url === action.data.url) {
           const newSite = Object.assign({}, site);
           delete newSite.bookmarkGuid;
           delete newSite.bookmarkTitle;
@@ -84,14 +135,127 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       return Object.assign({}, prevState, {rows: newRows});
     case at.PLACES_LINK_DELETED:
     case at.PLACES_LINK_BLOCKED:
-      newRows = prevState.rows.filter(val => val.url !== action.data.url);
+      newRows = prevState.rows.filter(val => val && val.url !== action.data.url);
+      return Object.assign({}, prevState, {rows: newRows});
+    case at.PINNED_SITES_UPDATED:
+      pinned = action.data;
+      newRows = insertPinned(prevState.rows, pinned);
       return Object.assign({}, prevState, {rows: newRows});
     default:
       return prevState;
   }
 }
 
-this.INITIAL_STATE = INITIAL_STATE;
-this.reducers = {TopSites, App};
+function Dialog(prevState = INITIAL_STATE.Dialog, action) {
+  switch (action.type) {
+    case at.DIALOG_OPEN:
+      return Object.assign({}, prevState, {visible: true, data: action.data});
+    case at.DIALOG_CANCEL:
+      return Object.assign({}, prevState, {visible: false});
+    case at.DELETE_HISTORY_URL:
+      return Object.assign({}, INITIAL_STATE.Dialog);
+    default:
+      return prevState;
+  }
+}
 
-this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE"];
+function Prefs(prevState = INITIAL_STATE.Prefs, action) {
+  let newValues;
+  switch (action.type) {
+    case at.PREFS_INITIAL_VALUES:
+      return Object.assign({}, prevState, {initialized: true, values: action.data});
+    case at.PREF_CHANGED:
+      newValues = Object.assign({}, prevState.values);
+      newValues[action.data.name] = action.data.value;
+      return Object.assign({}, prevState, {values: newValues});
+    default:
+      return prevState;
+  }
+}
+
+function Sections(prevState = INITIAL_STATE.Sections, action) {
+  let hasMatch;
+  let newState;
+  switch (action.type) {
+    case at.SECTION_DEREGISTER:
+      return prevState.filter(section => section.id !== action.data);
+    case at.SECTION_REGISTER:
+      // If section exists in prevState, update it
+      newState = prevState.map(section => {
+        if (section && section.id === action.data.id) {
+          hasMatch = true;
+          return Object.assign({}, section, action.data);
+        }
+        return section;
+      });
+      // If section doesn't exist in prevState, create a new section object and
+      // append it to the sections state
+      if (!hasMatch) {
+        const initialized = action.data.rows && action.data.rows.length > 0;
+        newState.push(Object.assign({title: "", initialized, rows: []}, action.data));
+      }
+      return newState;
+    case at.SECTION_ROWS_UPDATE:
+      return prevState.map(section => {
+        if (section && section.id === action.data.id) {
+          return Object.assign({}, section, action.data);
+        }
+        return section;
+      });
+    case at.PLACES_BOOKMARK_ADDED:
+      if (!action.data) {
+        return prevState;
+      }
+      return prevState.map(section => Object.assign({}, section, {
+        rows: section.rows.map(item => {
+          // find the item within the rows that is attempted to be bookmarked
+          if (item.url === action.data.url) {
+            const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
+            Object.assign(item, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: lastModified});
+          }
+          return item;
+        })
+      }));
+    case at.PLACES_BOOKMARK_REMOVED:
+      if (!action.data) {
+        return prevState;
+      }
+      return prevState.map(section => Object.assign({}, section, {
+        rows: section.rows.map(item => {
+          // find the bookmark within the rows that is attempted to be removed
+          if (item.url === action.data.url) {
+            const newSite = Object.assign({}, item);
+            delete newSite.bookmarkGuid;
+            delete newSite.bookmarkTitle;
+            delete newSite.bookmarkDateCreated;
+            return newSite;
+          }
+          return item;
+        })
+      }));
+    case at.PLACES_LINK_DELETED:
+    case at.PLACES_LINK_BLOCKED:
+      return prevState.map(section =>
+        Object.assign({}, section, {rows: section.rows.filter(site => site.url !== action.data.url)}));
+    default:
+      return prevState;
+  }
+}
+
+function Snippets(prevState = INITIAL_STATE.Snippets, action) {
+  switch (action.type) {
+    case at.SNIPPETS_DATA:
+      return Object.assign({}, prevState, {initialized: true}, action.data);
+    case at.SNIPPETS_RESET:
+      return INITIAL_STATE.Snippets;
+    default:
+      return prevState;
+  }
+}
+
+this.INITIAL_STATE = INITIAL_STATE;
+
+this.reducers = {TopSites, App, Snippets, Prefs, Dialog, Sections};
+this.insertPinned = insertPinned;
+
+this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned"];

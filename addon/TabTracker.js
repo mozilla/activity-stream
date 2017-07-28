@@ -20,7 +20,10 @@ const PERFORMANCE_NOTIF = "performance-event";
 const PERF_LOG_COMPLETE_NOTIF = "performance-log-complete";
 const UNDESIRED_NOTIF = "undesired-event";
 const IMPRESSION_NOTIF = "impression-stats";
-const USER_PREFS = ["showSearch", "showTopSites", "showPocket", "showHighlights", "showBookmarks", "showMoreTopSites", "collapseHighlights", "collapseBookmarks"];
+const USER_PREFS = [
+  "showSearch", "showTopSites", "showPocket", "showHighlights", "showBookmarks", "showMoreTopSites",
+  "collapseHighlights", "collapseBookmarks", "collapseVisitAgain", "showVisitAgain"
+];
 
 function TabTracker(options) {
   this._tabData = {};
@@ -36,9 +39,9 @@ TabTracker.prototype = {
     return this._tabData;
   },
 
-  init(trackableURLs, experimentId, store) {
+  init(trackableURLs, experimentProvider, store) {
+    this._experimentProvider = experimentProvider;
     this._trackableURLs = trackableURLs;
-    this._experimentID = experimentId;
     this._store = store;
 
     this.enabled = simplePrefs.prefs[TELEMETRY_PREF];
@@ -98,8 +101,8 @@ TabTracker.prototype = {
     this._tabData.session_id = this._tabData.session_id || String(uuid());
     payload.session_id = this._tabData.session_id;
     payload.user_prefs = this._getUserPreferences();
-    if (this._experimentID) {
-      payload.experiment_id = this._experimentID;
+    if (this._experimentProvider.experimentId) {
+      payload.experiment_id = this._experimentProvider.experimentId;
     }
   },
 
@@ -111,15 +114,11 @@ TabTracker.prototype = {
     }
   },
 
-  set experimentId(experimentId) {
-    this._experimentID = experimentId || null;
-  },
-
   isActivityStreamsURL(URL) {
     return this._trackableURLs.indexOf(URL) !== -1;
   },
 
-  handleUserEvent(payload, experimentId) {
+  handleUserEvent(payload) {
     payload.action = "activity_stream_event";
     payload.tab_id = tabs.activeTab.id;
     this._setCommonProperties(payload, tabs.activeTab.url);
@@ -129,7 +128,7 @@ TabTracker.prototype = {
     }
   },
 
-  handleUndesiredEvent(payload, experimentId) {
+  handleUndesiredEvent(payload) {
     payload.action = "activity_stream_masga_event";
     payload.tab_id = tabs.activeTab.id;
     this._setCommonProperties(payload, tabs.activeTab.url);
@@ -139,7 +138,7 @@ TabTracker.prototype = {
     Services.obs.notifyObservers(null, UNDESIRED_NOTIF, JSON.stringify(payload));
   },
 
-  handleImpressionStats(payload, experimentId) {
+  handleImpressionStats(payload) {
     payload.action = "activity_stream_impression";
     this._setCommonProperties(payload, tabs.activeTab.url);
     Services.obs.notifyObservers(null, IMPRESSION_NOTIF, JSON.stringify(payload));

@@ -18,14 +18,17 @@ module.exports = {
   // Number of "Read More" topics to display at the bottom of Pocket recommendations
   POCKET_TOPICS_LENGTH: 5,
 
-  // Number of large Highlight tiles in the new Highlights world, including
-  // all rows.
-  HIGHLIGHTS_LENGTH: 9,
-
   // Number of items in the Bookmarks section. Request more than actually being displayed
   // in case the user will remove some of them we still have 3 items to display.
-  BOOKMARKS_LENGTH: 6,
+  BOOKMARKS_LENGTH: 12,
   BOOKMARKS_DISPLAYED_LENGTH: 3,
+  // Delay amount added to oldest bookmarkAdded timestamp, used to filter out default browser bookmarks.
+  BOOKMARKS_THRESHOLD: 3 * 1e6, // 3 seconds to microseconds.
+
+  // Number of links requested from placesProvider.
+  VISITAGAIN_LENGTH: 24,
+  // Number of links actually displayed.
+  VISITAGAIN_DISPLAYED_LENGTH: 6,
 
   // How many items per query?
   LINKS_QUERY_LIMIT: 500,
@@ -46,12 +49,12 @@ module.exports = {
   NEWTAB_PREFS_ENCODING: {
     "showSearch": 1 << 0,
     "showTopSites": 1 << 1,
-    "showHighlights": 1 << 2,
     "showMoreTopSites": 1 << 3,
     "showPocket": 1 << 4,
-    "collapseHighlights": 1 << 5,
     "collapseBookmarks": 1 << 6,
-    "showBookmarks": 1 << 7
+    "showBookmarks": 1 << 7,
+    "showVisitAgain": 1 << 8,
+    "collapseVisitAgain": 1 << 9
   },
 
   // The minimum size to consider an icon high res

@@ -6,16 +6,22 @@ describe("ActivityStream", () => {
   let sandbox;
   let as;
   let ActivityStream;
+  let SECTIONS;
   function Fake() {}
 
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
-    ({ActivityStream} = injector({
+    ({ActivityStream, SECTIONS} = injector({
       "lib/LocalizationFeed.jsm": {LocalizationFeed: Fake},
+      "lib/ManualMigration.jsm": {ManualMigration: Fake},
       "lib/NewTabInit.jsm": {NewTabInit: Fake},
       "lib/PlacesFeed.jsm": {PlacesFeed: Fake},
+      "lib/PrefsFeed.jsm": {PrefsFeed: Fake},
+      "lib/SnippetsFeed.jsm": {SnippetsFeed: Fake},
+      "lib/SystemTickFeed.jsm": {SystemTickFeed: Fake},
       "lib/TelemetryFeed.jsm": {TelemetryFeed: Fake},
-      "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake}
+      "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake},
+      "lib/TopStoriesFeed.jsm": {TopStoriesFeed: Fake}
     }));
     as = new ActivityStream();
     sandbox.stub(as.store, "init");
@@ -82,23 +88,47 @@ describe("ActivityStream", () => {
   });
   describe("feeds", () => {
     it("should create a Localization feed", () => {
-      const feed = as.feeds["feeds.localization"]();
+      const feed = as.feeds.get("feeds.localization")();
       assert.instanceOf(feed, Fake);
     });
     it("should create a NewTabInit feed", () => {
-      const feed = as.feeds["feeds.newtabinit"]();
+      const feed = as.feeds.get("feeds.newtabinit")();
       assert.instanceOf(feed, Fake);
     });
     it("should create a Places feed", () => {
-      const feed = as.feeds["feeds.places"]();
+      const feed = as.feeds.get("feeds.places")();
       assert.instanceOf(feed, Fake);
     });
     it("should create a TopSites feed", () => {
-      const feed = as.feeds["feeds.topsites"]();
+      const feed = as.feeds.get("feeds.topsites")();
       assert.instanceOf(feed, Fake);
     });
     it("should create a Telemetry feed", () => {
-      const feed = as.feeds["feeds.telemetry"]();
+      const feed = as.feeds.get("feeds.telemetry")();
+      assert.instanceOf(feed, Fake);
+    });
+    it("should create a Prefs feed", () => {
+      const feed = as.feeds.get("feeds.prefs")();
+      assert.instanceOf(feed, Fake);
+    });
+    it("should create a section feed for each section in SECTIONS", () => {
+      // If new sections are added, their feeds will have to be added to the
+      // list of injected feeds above for this test to pass
+      SECTIONS.forEach((value, key) => {
+        const feed = as.feeds.get(`feeds.section.${key}`)();
+        assert.instanceOf(feed, Fake);
+      });
+    });
+    it("should create a ManualMigration feed", () => {
+      const feed = as.feeds.get("feeds.migration")();
+      assert.instanceOf(feed, Fake);
+    });
+    it("should create a Snippets feed", () => {
+      const feed = as.feeds.get("feeds.snippets")();
+      assert.instanceOf(feed, Fake);
+    });
+    it("should create a SystemTick feed", () => {
+      const feed = as.feeds.get("feeds.systemtick")();
       assert.instanceOf(feed, Fake);
     });
   });

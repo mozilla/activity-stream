@@ -10,7 +10,7 @@ body,
 
 body {
   background: $bg-color;
-  color: $dark-grey;
+  color: $grey-90;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Ubuntu', 'Helvetica Neue', sans-serif;
   font-size: 16px;
 }
@@ -85,7 +85,7 @@ a {
     background: $default-button-bg;
     border: solid 1px $default-button-border;
     border-radius: 5px;
-    color: $mid-light-grey;
+    color: $grey-90;
     cursor: pointer;
     padding: 10px 30px;
 
@@ -106,5 +106,11 @@ a {
 // Components
 @import './components/Base/Base';
 @import './components/TopSites/TopSites';
+@import './components/Sections/Sections';
+@import './components/Topics/Topics';
 @import './components/Search/Search';
 @import './components/ContextMenu/ContextMenu';
+@import './components/PreferencesPane/PreferencesPane';
+@import './components/ConfirmDialog/ConfirmDialog';
+@import './components/Card/Card';
+@import './components/ManualMigration/ManualMigration';

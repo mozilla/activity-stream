@@ -1,6 +1,6 @@
 const React = require("react");
 const {shallow, mount} = require("enzyme");
-const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
+const {ContextMenu, ContextMenuItem} = require("content-src/components/ContextMenu/ContextMenu");
 const DEFAULT_PROPS = {
   onUpdate: () => {},
   visible: false,
@@ -30,16 +30,16 @@ describe("<ContextMenu>", () => {
   it("should add a link for all types that are not separators", () => {
     const options = [{label: "item1"}, {type: "separator"}];
     const wrapper = shallow(<ContextMenu {...DEFAULT_PROPS} options={options} />);
-    assert.lengthOf(wrapper.find(".context-menu-item"), 1);
+    assert.lengthOf(wrapper.find(ContextMenuItem), 1);
   });
   it("should add an icon to items that need icons", () => {
     const options = [{label: "item1", icon: "icon1"}, {type: "separator"}];
-    const wrapper = shallow(<ContextMenu {...DEFAULT_PROPS} options={options} />);
+    const wrapper = mount(<ContextMenu {...DEFAULT_PROPS} options={options} />);
     assert.lengthOf(wrapper.find(".icon-icon1"), 1);
   });
   it("should be tabbable", () => {
     const options = [{label: "item1", icon: "icon1"}, {type: "separator"}];
-    const wrapper = shallow(<ContextMenu {...DEFAULT_PROPS} options={options} />);
+    const wrapper = mount(<ContextMenu {...DEFAULT_PROPS} options={options} />);
     assert.equal(wrapper.find(".context-menu-item").props().role, "menuitem");
   });
   it("should call onUpdate with false when an option is clicked", () => {

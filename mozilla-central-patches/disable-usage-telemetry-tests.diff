@@ -1,7 +1,0 @@
-diff --git a/browser/modules/test/browser/browser.ini b/browser/modules/test/browser/browser.ini
---- a/browser/modules/test/browser/browser.ini
-+++ b/browser/modules/test/browser/browser.ini
-@@ -44,2 +44,3 @@ support-files =
- [browser_UsageTelemetry_content.js]
-+skip-if = true # disabled on pine until we have newtab search implemented
- [browser_UsageTelemetry_content_aboutHome.js]

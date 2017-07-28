@@ -1,12 +1,162 @@
 const React = require("react");
+const createMockRaf = require("mock-raf");
 const {shallow} = require("enzyme");
-const {_unconnected: TopSites, TopSite} = require("content-src/components/TopSites/TopSites");
+const {_unconnected: TopSitesPerfTimer, TopSite, TopSites} = require("content-src/components/TopSites/TopSites");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 
-const DEFAULT_PROPS = {
-  TopSites: {rows: []},
-  dispatch() {}
+const perfSvc = {
+  mark() {},
+  getMostRecentAbsMarkStartByName() {}
 };
+
+const DEFAULT_PROPS = {
+  TopSites: {initialized: true, rows: []},
+  dispatch() {},
+  perfSvc
+};
+
+describe("<TopSitesPerfTimer>", () => {
+  let mockRaf;
+  let sandbox;
+
+  beforeEach(() => {
+    mockRaf = createMockRaf();
+    sandbox = sinon.sandbox.create();
+    sandbox.stub(window, "requestAnimationFrame").callsFake(mockRaf.raf);
+  });
+  afterEach(() => {
+    sandbox.restore();
+  });
+
+  it("should render <TopSites {...this.props}>", () => {
+    const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+    const props = wrapper.find(TopSites).shallow().instance().props;
+
+    assert.deepEqual(props, DEFAULT_PROPS);
+  });
+
+  describe("#_componentDidMount", () => {
+    it("should call _maybeSendPaintedEvent", () => {
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_maybeSendPaintedEvent");
+
+      instance.componentDidMount();
+
+      assert.calledOnce(stub);
+    });
+  });
+
+  describe("#_componentDidUpdate", () => {
+    it("should call _maybeSendPaintedEvent", () => {
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_maybeSendPaintedEvent");
+
+      instance.componentDidUpdate();
+
+      assert.calledOnce(stub);
+    });
+  });
+
+  describe("#_maybeSendPaintedEvent", () => {
+    it("should call _onNextFrame if props.TopSites.initialized is true", () => {
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_onNextFrame");
+
+      instance._maybeSendPaintedEvent();
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, instance._sendPaintedEvent);
+    });
+    it("should not call _onNextFrame if props.TopSites.initialized is false", () => {
+      sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(false);
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_onNextFrame");
+
+      instance._maybeSendPaintedEvent();
+
+      assert.notCalled(stub);
+    });
+    it("should not call _onNextFrame if this._timestampSent is true", () => {
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_onNextFrame");
+      instance._timestampSent = true;
+
+      instance._maybeSendPaintedEvent();
+
+      assert.notCalled(stub);
+    });
+  });
+
+  describe("#_onNextFrame", () => {
+    it("should call callback one frame after the current one", () => {
+      const callback = sandbox.spy();
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+
+      const instance = wrapper.instance();
+      instance._onNextFrame(callback);
+
+      mockRaf.step({count: 1});
+      assert.notCalled(callback);
+
+      mockRaf.step({count: 1});
+      assert.calledOnce(callback);
+    });
+  });
+
+  describe("#_sendPaintedEvent", () => {
+    it("should call perfSvc.mark with 'topsites_first_painted_ts'", () => {
+      sandbox.spy(perfSvc, "mark");
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.calledOnce(perfSvc.mark);
+      assert.calledWithExactly(perfSvc.mark, "topsites_first_painted_ts");
+    });
+
+    it("should set this._timestamp_sent to true", () => {
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      const instance = wrapper.instance();
+      assert.isFalse(instance._timestampSent);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.isTrue(instance._timestampSent);
+    });
+
+    it("should send a SAVE_SESSION_PERF_DATA message with the result of perfSvc.getMostRecentAbsMarkStartByName two frames after mount", () => {
+      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
+        .withArgs("topsites_first_painted_ts").returns(777);
+      const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.calledOnce(spy);
+      assert.calledWithExactly(spy, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {topsites_first_painted_ts: 777}
+      }));
+    });
+
+    it("shouldn't dispatch if getMostRecentAbsMarkStartByName throws", () => {
+      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
+        .withArgs("topsites_first_painted_ts").throws();
+      const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.notCalled(spy);
+    });
+  });
+});
 
 describe("<TopSites>", () => {
   it("should render a TopSites element", () => {
@@ -39,6 +189,11 @@ describe("<TopSite>", () => {
     const wrapper = shallow(<TopSite link={link} />);
     assert.propertyVal(wrapper.find("a").props(), "href", "https://www.foobar.org");
   });
+  it("should have rtl direction automatically set for text", () => {
+    const wrapper = shallow(<TopSite link={link} />);
+
+    assert.isTrue(wrapper.find("[dir='auto']").length > 0);
+  });
   it("should render a shortened title based off the url", () => {
     link.url = "https://www.foobar.org";
     link.eTLD = "org";
@@ -46,6 +201,35 @@ describe("<TopSite>", () => {
     const titleEl = wrapper.find(".title");
 
     assert.equal(titleEl.text(), "foobar");
+  });
+  it("should fallback to link title for file:// protocol", () => {
+    link.url = "file:///Users/voprea/Work/activity-stream/logs/coverage/system-addon/report-html/index.html";
+    link.title = "Code coverage report";
+    const wrapper = shallow(<TopSite link={link} />);
+    const titleEl = wrapper.find(".title");
+
+    assert.equal(titleEl.text(), link.title);
+  });
+  it("should render the pinTitle if set", () => {
+    link.isPinned = true;
+    link.pinnedIndex = 7;
+    link.pinTitle = "pinned";
+    const wrapper = shallow(<TopSite link={link} />);
+    const titleEl = wrapper.find(".title");
+
+    assert.equal(titleEl.text(), "pinned");
+  });
+  it("should render the pin icon for pinned links", () => {
+    link.isPinned = true;
+    link.pinnedIndex = 7;
+    link.pinTitle = "pinned";
+    const wrapper = shallow(<TopSite link={link} />);
+    assert.equal(wrapper.find(".icon-pin-small").length, 1);
+  });
+  it("should not render the pin icon for non pinned links", () => {
+    link.isPinned = false;
+    const wrapper = shallow(<TopSite link={link} />);
+    assert.equal(wrapper.find(".icon-pin-small").length, 0);
   });
   it("should render the first letter of the title as a fallback for missing screenshots", () => {
     const wrapper = shallow(<TopSite link={link} />);
@@ -77,7 +261,7 @@ describe("<TopSite>", () => {
   });
   it("should render a context menu button", () => {
     const wrapper = shallow(<TopSite link={link} />);
-    assert.ok(wrapper.find(".context-menu-button"));
+    assert.equal(wrapper.find(".context-menu-button").length, 1);
   });
   it("should render a link menu when button is clicked", () => {
     const wrapper = shallow(<TopSite link={link} />);
@@ -89,10 +273,16 @@ describe("<TopSite>", () => {
     const wrapper = shallow(<TopSite link={link} />);
     assert.isFalse(wrapper.find(LinkMenu).props().visible);
   });
-  it("should pass visible, onUpdate, site, and index to LinkMenu", () => {
+  it("should pass visible, onUpdate, site, options, and index to LinkMenu", () => {
     const wrapper = shallow(<TopSite link={link} />);
     const linkMenuProps = wrapper.find(LinkMenu).props();
-    ["visible", "onUpdate", "site", "index"].forEach(prop => assert.property(linkMenuProps, prop));
+    ["visible", "onUpdate", "site", "index", "options"].forEach(prop => assert.property(linkMenuProps, prop));
+  });
+  it("should pass through the correct menu options to LinkMenu", () => {
+    const wrapper = shallow(<TopSite link={link} />);
+    const linkMenuProps = wrapper.find(LinkMenu).props();
+    assert.deepEqual(linkMenuProps.options,
+      ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"]);
   });
   describe("#trackClick", () => {
     it("should call dispatch when the link is clicked", () => {

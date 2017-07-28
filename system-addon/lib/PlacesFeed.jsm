@@ -3,17 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {utils: Cu, interfaces: Ci} = Components;
-const {actionTypes: at, actionCreators: ac} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
-
+const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
   "resource://gre/modules/PlacesUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "Services",
-  "resource://gre/modules/Services.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "Pocket",
+  "chrome://pocket/content/Pocket.jsm");
 
 const LINK_BLOCKED_EVENT = "newtab-linkBlocked";
 
@@ -151,8 +152,14 @@ class PlacesFeed {
   }
 
   addObservers() {
-    PlacesUtils.history.addObserver(this.historyObserver, true);
-    PlacesUtils.bookmarks.addObserver(this.bookmarksObserver, true);
+    // NB: Directly get services without importing the *BIG* PlacesUtils module
+    Cc["@mozilla.org/browser/nav-history-service;1"]
+      .getService(Ci.nsINavHistoryService)
+      .addObserver(this.historyObserver, true);
+    Cc["@mozilla.org/browser/nav-bookmarks-service;1"]
+      .getService(Ci.nsINavBookmarksService)
+      .addObserver(this.bookmarksObserver, true);
+
     Services.obs.addObserver(this, LINK_BLOCKED_EVENT);
   }
 
@@ -179,10 +186,19 @@ class PlacesFeed {
     }
   }
 
+  openNewWindow(action, isPrivate = false) {
+    const win = action._target.browser.ownerGlobal;
+    const privateParam = {private: isPrivate};
+    const params = (action.data.referrer) ?
+      Object.assign(privateParam, {referrerURI: Services.io.newURI(action.data.referrer)}) : privateParam;
+    win.openLinkIn(action.data.url, "window", params);
+  }
+
   onAction(action) {
     switch (action.type) {
       case at.INIT:
-        this.addObservers();
+        // Briefly avoid loading services for observing for better startup timing
+        Services.tm.dispatchToMainThread(() => this.addObservers());
         break;
       case at.UNINIT:
         this.removeObservers();
@@ -199,6 +215,23 @@ class PlacesFeed {
       case at.DELETE_HISTORY_URL:
         NewTabUtils.activityStreamLinks.deleteHistoryEntry(action.data);
         break;
+      case at.OPEN_NEW_WINDOW:
+        this.openNewWindow(action);
+        break;
+      case at.OPEN_PRIVATE_WINDOW:
+        this.openNewWindow(action, true);
+        break;
+      case at.SAVE_TO_POCKET:
+        Pocket.savePage(action._target.browser, action.data.site.url, action.data.site.title);
+        break;
+      case at.OPEN_LINK: {
+        if (action.data.referrer) {
+          action._target.browser.loadURI(action.data.url, Services.io.newURI(action.data.referrer));
+        } else {
+          action._target.browser.loadURI(action.data.url);
+        }
+        break;
+      }
     }
   }
 }

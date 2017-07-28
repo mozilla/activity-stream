@@ -1,0 +1,110 @@
+.card-outer {
+  background: $white;
+  display: inline-block;
+  margin-inline-end: $base-gutter;
+  margin-bottom: $card-margin-bottom;
+  width: $card-width;
+  border-radius: $border-radius;
+  border-color: $faintest-black;
+  height: $card-height;
+  position: relative;
+  @include context-menu-button;
+
+  .card {
+    height: 100%;
+    border-radius: $border-radius;
+  }
+
+  > a {
+    display: block;
+    color: inherit;
+    height: 100%;
+    outline: none;
+    position: absolute;
+
+    &.active, &:focus {
+      .card {
+        @include fade-in;
+      }
+    }
+  }
+
+  &:hover, &:focus, &.active {
+    outline: none;
+    @include fade-in;
+    @include context-menu-button-hover;
+  }
+
+  .card-preview-image {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: $card-preview-image-height;
+    border-bottom-color: $faintest-black;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-radius: $border-radius $border-radius 0 0;
+  }
+
+  .card-details {
+    padding: 10px 16px 12px;
+  }
+
+  .card-text {
+    overflow: hidden;
+    max-height: $card-text-height;
+
+    &.full-height {
+      max-height: $card-description-height-max;
+    }
+  }
+
+  .card-host-name {
+    color: $mid-light-grey;
+    font-size: 10px;
+    padding-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .card-title {
+    margin: 0 0 2px;
+    font-size: inherit;
+    word-wrap: break-word;
+    line-height: 19px;
+  }
+
+  .card-description {
+    font-size: 12px;
+    margin: 0;
+    word-wrap: break-word;
+    overflow: hidden;
+    line-height: 19px;
+  }
+
+  .card-context {
+    padding: 16px 16px 14px 14px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: $light-grey;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+  }
+
+  .card-context-icon {
+    opacity: 0.5;
+    font-size: 13px;
+    margin-inline-end: 6px;
+    display: block;
+  }
+
+  .card-context-label {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

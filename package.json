@@ -1,7 +1,7 @@
 {
   "name": "activity-streams",
   "description": "A rich visual history feed and a reimagined home page make it easier than ever to find exactly what you're looking for in Firefox.\n\nLearn more about this Test Pilot experiment at https://testpilot.firefox.com/.",
-  "version": "1.12.1",
+  "version": "1.14.2",
   "author": "Mozilla (https://mozilla.org/)",
   "bugs": {
     "url": "https://github.com/mozilla/activity-stream/issues"
@@ -73,6 +73,7 @@
     "minimist": "1.2.0",
     "mkdirp": "0.5.1",
     "mocha": "3.1.2",
+    "mock-raf": "1.0.0",
     "node-sass": "3.11.2",
     "npm-run-all": "3.1.1",
     "pontoon-to-json": "2.0.0",
@@ -84,7 +85,7 @@
     "sass-lint": "1.10.1",
     "shelljs": "0.7.6",
     "simple-git": "1.65.0",
-    "sinon": "2.1.0",
+    "sinon": "2.3.4",
     "style-loader": "0.13.1",
     "svgo": "0.7.1",
     "webpack": "2.2.1",
@@ -152,6 +153,13 @@
       "hidden": true
     },
     {
+      "name": "experiments.endpoint",
+      "title": "Experiments Definitions Endpoint",
+      "type": "string",
+      "value": "https://experimenter-cdn.services.mozilla.com/api/v1/activity-stream/experiments.json",
+      "hidden": true
+    },
+    {
       "name": "weightedHighlightsCoefficients",
       "title": "recommender weights",
       "description": "weightedHighlightsCoefficients",
@@ -185,12 +193,6 @@
       "value": true
     },
     {
-      "name": "showHighlights",
-      "title": "Show the Highlights section on the New Tab page",
-      "type": "bool",
-      "value": true
-    },
-    {
       "name": "showBookmarks",
       "title": "Show the Bookmarks section on the New Tab page",
       "type": "bool",
@@ -203,10 +205,10 @@
       "value": false
     },
     {
-      "name": "collapseHighlights",
-      "title": "Collapse the Highlights on the New Tab page leaving only section title visible",
+      "name": "showVisitAgain",
+      "title": "Show the Visit Again section on the New Tab page",
       "type": "bool",
-      "value": false
+      "value": true
     },
     {
       "name": "collapseTopSites",
@@ -225,6 +227,18 @@
       "title": "Collapse the Bookmarks section on the New Tab page leaving only section title visible",
       "type": "bool",
       "value": false
+    },
+    {
+      "name": "collapseVisitAgain",
+      "title": "Collapse the Visit Again section on the New Tab page leaving only section title visible",
+      "type": "bool",
+      "value": false
+    },
+    {
+      "name": "defaultBookmarksAge",
+      "title": "Timestamp of oldest bookmark used to filter out default bookmarks. String type used in order to support large timestamp value.",
+      "type": "string",
+      "value": "0"
     }
   ],
   "repository": "mozilla/activity-stream",
@@ -245,8 +259,8 @@
     "bundle:html": "node ./bin/generate-html.js > data/content/activity-streams.html",
     "postbundle": "du -hs ./data/content/*",
     "bundlestats": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
-    "mochitest": "(cd ../mozilla-central && ./mach mochitest --setpref browser.newtabpage.activity-stream.enabled=true  --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )",
-    "mochitest-debug": "(cd ../mozilla-central && ./mach mochitest --jsdebugger --setpref browser.newtabpage.activity-stream.enabled=true --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )",
+    "mochitest": "(cd ../mozilla-central && ./mach mochitest browser/extensions/activity-stream/test/functional/mochitest )",
+    "mochitest-debug": "(cd ../mozilla-central && ./mach mochitest --jsdebugger browser/extensions/activity-stream/test/functional/mochitest )",
     "buildmc": "npm-run-all buildmc:*",
     "prebuildmc": "rimraf ../mozilla-central/browser/extensions/activity-stream",
     "buildmc:webpack": "webpack --config webpack.system-addon.config.js",

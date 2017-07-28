@@ -3,7 +3,7 @@ const {connect} = require("react-redux");
 const {selectNewTabSites} = require("common/selectors/selectors");
 const TopSites = require("components/TopSites/TopSites");
 const Bookmarks = require("components/Bookmarks/Bookmarks");
-const Spotlight = require("components/Spotlight/Spotlight");
+const VisitAgain = require("components/VisitAgain/VisitAgain");
 const PocketStories = require("components/PocketStories/PocketStories");
 const Search = require("components/Search/Search");
 const Loader = require("components/Loader/Loader");
@@ -12,12 +12,11 @@ const {actions} = require("common/action-manager");
 const setFavicon = require("lib/set-favicon");
 const PAGE_NAME = "NEW_TAB";
 const {
-  HIGHLIGHTS_LENGTH, TOP_SITES_DEFAULT_LENGTH,
+  TOP_SITES_DEFAULT_LENGTH,
   TOP_SITES_SHOWMORE_LENGTH, POCKET_STORIES_LENGTH,
-  BOOKMARKS_DISPLAYED_LENGTH
+  BOOKMARKS_DISPLAYED_LENGTH, VISITAGAIN_DISPLAYED_LENGTH
 } = require("common/constants");
 const {injectIntl} = require("react-intl");
-const classNames = require("classnames");
 
 const NewTabPage = React.createClass({
   getInitialState() {
@@ -25,17 +24,13 @@ const NewTabPage = React.createClass({
   },
   _getNewTabStats() {
     let stats = {
-      highlightsSize: 0,
       topsitesSize: 0,
       topsitesTippytop: 0,
       topsitesScreenshot: 0,
       topsitesLowResIcon: 0
     };
     if (this.props.isReady) {
-      const {showTopSites, showHighlights} = this.props.Prefs.prefs;
-      if (showHighlights) {
-        stats.highlightsSize = this.props.Highlights.rows.length;
-      }
+      const {showTopSites} = this.props.Prefs.prefs;
       if (showTopSites) {
         const topSites = this.props.TopSites.rows;
         stats.topsitesSize = topSites.length;
@@ -86,10 +81,10 @@ const NewTabPage = React.createClass({
   },
   render() {
     const props = this.props;
-    const {showSearch, showTopSites, showPocket, showHighlights, showBookmarks, showMoreTopSites} = props.Prefs.prefs;
+    const {showSearch, showTopSites, showPocket, showBookmarks, showVisitAgain, showMoreTopSites} = props.Prefs.prefs;
 
     return (<main className="new-tab">
-      <div className={classNames("new-tab-wrapper", {"show-highlights": showHighlights})}>
+      <div className="new-tab-wrapper">
         {showSearch &&
           <section>
             <Search />
@@ -114,14 +109,14 @@ const NewTabPage = React.createClass({
               length={POCKET_STORIES_LENGTH} stories={props.PocketStories.rows}
               topics={props.PocketTopics.rows} prefs={props.Prefs.prefs} />
           }
-          {showHighlights &&
-            <Spotlight placeholder={!this.props.isReady} page={PAGE_NAME}
-              length={HIGHLIGHTS_LENGTH} sites={props.Highlights.rows}
-              prefs={props.Prefs.prefs} />
-          }
           {showBookmarks &&
             <Bookmarks placeholder={!this.props.isReady} page={PAGE_NAME}
                        length={BOOKMARKS_DISPLAYED_LENGTH} sites={props.Bookmarks.rows}
+                       prefs={props.Prefs.prefs} />
+          }
+          {showVisitAgain &&
+            <VisitAgain placeholder={!this.props.isReady} page={PAGE_NAME}
+                       length={VISITAGAIN_DISPLAYED_LENGTH} sites={props.VisitAgain.rows}
                        prefs={props.Prefs.prefs} />
           }
         </div>
@@ -134,7 +129,6 @@ const NewTabPage = React.createClass({
 NewTabPage.propTypes = {
   TopSites: React.PropTypes.object.isRequired,
   PocketStories: React.PropTypes.object.isRequired,
-  Highlights: React.PropTypes.object.isRequired,
   Bookmarks: React.PropTypes.object.isRequired,
   Experiments: React.PropTypes.object.isRequired,
   Prefs: React.PropTypes.object.isRequired,

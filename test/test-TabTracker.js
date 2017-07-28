@@ -546,7 +546,7 @@ exports.test_TabTracker_getUsersPreferences = function(assert) {
   const fixtures = [
     {
       prefs: [p1, p2, p3, p4],
-      expected: 1 | (1 << 1) | (1 << 2) | (1 << 3)
+      expected: 1 | (1 << 1) | (1 << 3) | (1 << 4)
     },
     {
       prefs: [p1, p2],
@@ -814,18 +814,8 @@ before(exports, function*() {
   let clientID = yield ClientID.getClientID();
   simplePrefs.prefs.telemetry = true;
   // Return 0.1 from rng will trigger the variant
-  app = getTestActivityStream({
-    clientID,
-    experiments: {
-      test: {
-        name: "foo",
-        active: true,
-        control: {value: false},
-        variant: {id: "foo_01", value: true, threshold: 0.5}
-      }
-    },
-    rng: () => 0.1
-  });
+  app = getTestActivityStream({clientID});
+  app._experimentProvider._experimentId = "foo_01";
   ACTIVITY_STREAMS_URL = app.appURLs[1];
   app._store.dispatch({type: "PLACES_STATS_UPDATED", data: {historySize: 0, bookmarksSize: 0}});
 });

@@ -1,0 +1,42 @@
+.manual-migration-container {
+  background: rgba(215, 215, 219, .5);
+  font-size: 13px;
+  height: 50px;
+  border-radius: 2px;
+  margin-bottom: $search-margin-bottom;
+
+  display: flex;
+  justify-content: space-between;
+
+  p {
+    margin: 0;
+    margin-inline-end: 4px;
+    margin-inline-start: 12px;
+    align-self: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .icon {
+    margin: 0;
+    margin-inline-end: 12px;
+    align-self: center;
+  }
+}
+
+.manual-migration-actions {
+  display: flex;
+  justify-content: space-between;
+  border: none;
+  padding: 0;
+
+  button {
+    align-self: center;
+    padding: 0 12px;
+    height: 24px;
+    margin-inline-end: 12px;
+    font-size: 13px;
+    min-width: 100px;
+    white-space: nowrap;
+  }
+}

@@ -34,6 +34,7 @@ module.exports = {
     "react/jsx-curly-spacing": [2, "never"],
     "react/jsx-equals-spacing": [2, "never"],
     "react/jsx-key": 2,
+    "react/jsx-no-bind": 2,
     "react/jsx-no-comment-textnodes": 2,
     "react/jsx-no-duplicate-props": 2,
     "react/jsx-no-target-blank": 2,

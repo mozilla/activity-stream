@@ -32,17 +32,13 @@ scripts:
 # bundlestats: Display bundle stats
   bundlestats: NODE_ENV=production webpack --json | webpack-bundle-size-analyzer
 
-  # Run the activity-stream mochitests.  Right now, a-s is turned off in
-  # m-c, so we have to locally force them on with the --set-pref.  In m-c,
-  # the tests are skipped, and the --extra-mozinfo-json is used to force them
-  # to run locally too.
-  mochitest: (cd ../mozilla-central && ./mach mochitest --setpref browser.newtabpage.activity-stream.enabled=true  --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )
+  # Run the activity-stream mochitests
+  mochitest: (cd ../mozilla-central && ./mach mochitest browser/extensions/activity-stream/test/functional/mochitest )
 
   # Run the activity-stream mochitests with the browser toolbox debugger.
   # Often handy in combination with adding a "debugger" statement in your
-  # mochitest somewhere.  See the comment for the mochitest target for more
-  # details about how this is implemented.
-  mochitest-debug: (cd ../mozilla-central && ./mach mochitest --jsdebugger --setpref browser.newtabpage.activity-stream.enabled=true --extra-mozinfo-json=$PWD/browser/extensions/activity-stream/test/mozinfo.json browser/extensions/activity-stream/test/functional/mochitest )
+  # mochitest somewhere.
+  mochitest-debug: (cd ../mozilla-central && ./mach mochitest --jsdebugger browser/extensions/activity-stream/test/functional/mochitest )
 
 # buildmc: Export the bootstraped add-on to mozilla central
   buildmc:

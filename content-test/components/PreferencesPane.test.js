@@ -5,7 +5,6 @@ const DEFAULT_PREFS = {
   "showSearch": true,
   "showTopSites": true,
   "showMoreTopSites": false,
-  "showHighlights": true,
   "showPocket": false
 };
 
@@ -47,11 +46,6 @@ describe("PreferencesPane", () => {
     assert.isFalse(wrapper.ref("showMoreTopSites").prop("checked"));
   });
 
-  it("the highlights checkbox should be checked by default", () => {
-    wrapper.ref("prefs-button").simulate("click");
-    assert.isTrue(wrapper.ref("showHighlightsCheckbox").prop("checked"));
-  });
-
   it("the search checkbox should be unchecked if pref is off", () => {
     setup({showSearch: false});
     wrapper.ref("prefs-button").simulate("click");
@@ -68,12 +62,6 @@ describe("PreferencesPane", () => {
     setup({showMoreTopSites: true});
     wrapper.ref("prefs-button").simulate("click");
     assert.isTrue(wrapper.ref("showMoreTopSites").prop("checked"));
-  });
-
-  it("the highlights checkbox should be unchecked if pref is off", () => {
-    setup({showHighlights: false});
-    wrapper.ref("prefs-button").simulate("click");
-    assert.isFalse(wrapper.ref("showHighlightsCheckbox").prop("checked"));
   });
 
   it("the sidebar should be closed when done button is clicked", () => {

@@ -107,7 +107,7 @@ ActivityStreams.prototype = {
     if (!this.options.shield_variant) {
       this._experimentProvider.init();
     }
-    this._tabTracker.init(this.appURLs, this._experimentProvider.experimentId, this._store);
+    this._tabTracker.init(this.appURLs, this._experimentProvider, this._store);
     this._searchProvider.init();
     this._initializePreviewProvider(this._metadataStore, this._tabTracker, this._store);
     this._initializePageScraper(this._previewProvider, this._tabTracker);
@@ -225,7 +225,12 @@ ActivityStreams.prototype = {
   _respondToPlacesRequests({msg, worker}) {
     switch (msg.type) {
       case am.type("NOTIFY_BOOKMARK_ADD"):
-        PlacesProvider.links.asyncAddBookmark(msg.data);
+        PlacesProvider.links.asyncAddBookmark(msg.data.url);
+
+        // Request metadata for the new bookmark if it has been added from PocketStories.
+        if (msg.data.source === "RECOMMENDED") {
+          this._pageScraper.asyncFetchLinks([{url: msg.data.url}], msg.type, true);
+        }
         break;
       case am.type("NOTIFY_BOOKMARK_DELETE"):
         PlacesProvider.links.asyncDeleteBookmark(msg.data);
@@ -307,11 +312,6 @@ ActivityStreams.prototype = {
     this._tabTracker.handleImpressionStats(msg.data);
   },
 
-  _handleExperimentChange(prefName) {
-    this._tabTracker.experimentId = this._experimentProvider.experimentID;
-    this.broadcast(am.actions.Response("EXPERIMENTS_RESPONSE", this._experimentProvider.data));
-  },
-
   _respondToUIChanges(args) {
     const {msg} = args;
     switch (msg.type) {
@@ -341,9 +341,6 @@ ActivityStreams.prototype = {
     this._handleCurrentEngineChanges = this._handleCurrentEngineChanges.bind(this);
     this._searchProvider.on("browser-search-engine-modified", this._handleCurrentEngineChanges);
 
-    this._handleExperimentChange = this._handleExperimentChange.bind(this);
-    this._experimentProvider.on("change", this._handleExperimentChange);
-
     // This is a collection of handlers that receive messages from content
     this._contentToAddonHandlers = (msgName, args) => {
       // Log requests first so that the requests are logged before responses
@@ -370,7 +367,6 @@ ActivityStreams.prototype = {
   _removeListeners() {
     PLACES_CHANGES_EVENTS.forEach(event => PlacesProvider.links.off(event, this._handlePlacesChanges));
     this._searchProvider.off("browser-search-engine-modified", this._handleCurrentEngineChanges);
-    this._experimentProvider.off("change", this._handleExperimentChange);
     this.off(CONTENT_TO_ADDON, this._contentToAddonHandlers);
   },
 

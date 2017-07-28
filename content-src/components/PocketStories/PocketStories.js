@@ -53,7 +53,7 @@ const PocketStories = React.createClass({
     return stories.map((story, i) =>
         <SpotlightItem
           index={i}
-          key={story.url || i}
+          key={story.guid || story.url || i}
           page={this.props.page}
           source="RECOMMENDED"
           onClick={this.onClickFactory(i, story)}

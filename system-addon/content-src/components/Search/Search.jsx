@@ -23,8 +23,13 @@ class Search extends React.Component {
   }
   onInputMount(input) {
     if (input) {
+      // The first "newtab" parameter here is called the "healthReportKey" and needs
+      // to be "newtab" so that BrowserUsageTelemetry.jsm knows to handle events with
+      // this name, and can add the appropriate telemetry probes for search. Without the
+      // correct name, certain tests like browser_UsageTelemetry_content.js will fail (See
+      // github ticket #2348 for more details)
       this.controller = new ContentSearchUIController(input, input.parentNode,
-        "newtab", "activity");
+        "newtab", "newtab");
       addEventListener("ContentSearchClient", this);
     } else {
       this.controller = null;
@@ -32,13 +37,18 @@ class Search extends React.Component {
     }
   }
 
+  /*
+   * Do not change the ID on the input field, as legacy newtab code
+   * specifically looks for the id 'newtab-search-text' on input fields
+   * in order to execute searches in various tests
+   */
   render() {
     return (<form className="search-wrapper">
-      <label htmlFor="search-input" className="search-label">
+      <label htmlFor="newtab-search-text" className="search-label">
         <span className="sr-only"><FormattedMessage id="search_web_placeholder" /></span>
       </label>
       <input
-        id="search-input"
+        id="newtab-search-text"
         maxLength="256"
         placeholder={this.props.intl.formatMessage({id: "search_web_placeholder"})}
         ref={this.onInputMount}

@@ -63,6 +63,10 @@
     background-image: url('#{$image-path}list-icon.svg');
   }
 
+  &.icon-history {
+    background-image: url('#{$image-path}glyph-history-16.svg');
+  }
+
   &.icon-historyItem {
     background-image: url('#{$image-path}glyph-historyItem-16.svg');
   }
