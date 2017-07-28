@@ -47,7 +47,7 @@ this.SnippetsFeed = class SnippetsFeed {
       version: STARTPAGE_VERSION,
       profileCreatedWeeksAgo: profileInfo.createdWeeksAgo,
       profileResetWeeksAgo: profileInfo.resetWeeksAgo,
-      telemetryEnabled: Services.prefs.getBoolPref(TELEMETRY_PREF)
+      telemetryEnabled: Services.telemetry.canRecordBase
     };
 
     this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPETS_DATA, data}));
