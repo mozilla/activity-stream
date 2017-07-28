@@ -118,21 +118,18 @@ describe("ManualMigration", () => {
       beforeEach(() => {
         instance._prefs = fakePrefs;
       });
-      it("should check migrationLastShownDate (case: today)", () => {
-        const action = {
-          type: at.PREFS_INITIAL_VALUES,
-          data: {migrationExpired: false}
-        };
+      it("should check migrationLastShownDate (case: today)", async () => {
         let today = new Date();
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
         const migrationSpy = sinon.spy(instance, "isMigrationMessageExpired");
         fakePrefs.get.returns(today);
-        instance.onAction(action);
+        const ret = await instance.isMigrationMessageExpired();
 
         assert.calledOnce(migrationSpy);
         assert.calledOnce(fakePrefs.get);
         assert.calledWithExactly(fakePrefs.get, "migrationLastShownDate");
+        assert.equal(ret, false);
       });
       it("should return false if lastShownDate is today", async () => {
         let today = new Date();
@@ -222,6 +219,23 @@ describe("ManualMigration", () => {
         fakePrefs.get.withArgs("migrationRemainingDays").returns(2);
         const ret = await instance.isMigrationMessageExpired();
 
+        assert.equal(ret, true);
+      });
+      it("should return early and not check prefs if profile age > 3", async () => {
+        let today = new Date();
+        let someDaysAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 4);
+        fakeProfileAge.prototype = {
+          get created() {
+            return new Promise(resolve => {
+              resolve(someDaysAgo.valueOf());
+            });
+          }
+        };
+
+        const ret = await instance.isMigrationMessageExpired();
+
+        assert.equal(fakePrefs.get.callCount, 0);
+        assert.equal(fakePrefs.set.callCount, 0);
         assert.equal(ret, true);
       });
     });

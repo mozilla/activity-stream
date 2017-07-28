@@ -26,21 +26,27 @@ this.ManualMigration = class ManualMigration {
   }
 
   async isMigrationMessageExpired() {
+    let profileAge = new ProfileAge();
+    let profileCreationDate = await profileAge.created;
+    let daysSinceProfileCreation = (Date.now() - profileCreationDate) / MS_PER_DAY;
+
+    // We don't want to show the migration message to profiles older than 3 days.
+    if (daysSinceProfileCreation > 3) {
+      return true;
+    }
+
     let migrationLastShownDate = new Date(this._prefs.get("migrationLastShownDate") * 1000);
     let today = new Date();
     // Round down to midnight.
     today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     if (migrationLastShownDate < today) {
-      let profileAge = new ProfileAge();
-      let profileCreationDate = await profileAge.created;
-      let daysSinceProfileCreation = (Date.now() - profileCreationDate) / MS_PER_DAY;
       let migrationRemainingDays = this._prefs.get("migrationRemainingDays") - 1;
 
       this._prefs.set("migrationRemainingDays", migrationRemainingDays);
       // .valueOf returns a value that is too large to store so we need to divide by 1000.
       this._prefs.set("migrationLastShownDate", today.valueOf() / 1000);
 
-      if (migrationRemainingDays <= 0 || daysSinceProfileCreation > 3) {
+      if (migrationRemainingDays <= 0) {
         return true;
       }
     }
