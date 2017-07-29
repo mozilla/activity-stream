@@ -53,6 +53,12 @@ class PreferencesPane extends React.Component {
     const props = this.props;
     const prefs = props.Prefs.values;
     const isVisible = this.state.visible;
+
+    // Show prefs for top stories only if we have some top story option and
+    // either it should be shown by default or it was already turned on
+    const showTopStoriesPref = this.topStoriesOptions &&
+      (this.topStoriesOptions.shownByDefault || prefs["feeds.section.topstories"]);
+
     return (
       <div className="prefs-pane-wrapper" ref="wrapper">
         <div className="prefs-pane-button">
@@ -73,7 +79,7 @@ class PreferencesPane extends React.Component {
               <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handleChange}
                 titleStringId="settings_pane_topsites_header" descStringId="settings_pane_topsites_body" />
 
-              {this.topStoriesOptions && !this.topStoriesOptions.hidden &&
+              {showTopStoriesPref &&
                 <PreferencesInput className="showTopStories" prefName="feeds.section.topstories"
                   value={prefs["feeds.section.topstories"]} onChange={this.handleChange}
                   titleStringId="header_recommended_by" titleStringValues={{provider: this.topStoriesOptions.provider_name}}

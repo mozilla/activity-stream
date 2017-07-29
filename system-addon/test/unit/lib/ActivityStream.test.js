@@ -133,3 +133,80 @@ describe("ActivityStream", () => {
     });
   });
 });
+
+describe("ActivityStream load", () => {
+  let SECTIONS;
+  let sandbox;
+
+  // Use the injector without any fakes just to trigger a fresh load
+  function loadAS() {
+    ({SECTIONS} = injector({}));
+  }
+
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+  afterEach(() => sandbox.restore());
+
+  describe("topstories default", () => {
+    it("should be false with no geo/locale", () => {
+      loadAS();
+
+      assert.isFalse(SECTIONS.get("topstories").showByDefault);
+    });
+    it("should be false with unexpected geo", () => {
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      sandbox.stub(global.Services.prefs, "getStringPref").returns("NOGEO");
+
+      loadAS();
+
+      assert.isFalse(SECTIONS.get("topstories").showByDefault);
+    });
+    it("should be false with expected geo and unexpected locale", () => {
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      sandbox.stub(global.Services.prefs, "getStringPref").returns("US");
+      sandbox.stub(global.Services.locale, "getRequestedLocale").returns("no-LOCALE");
+
+      loadAS();
+
+      assert.isFalse(SECTIONS.get("topstories").showByDefault);
+    });
+    it("should be true with expected geo and locale", () => {
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      sandbox.stub(global.Services.prefs, "getStringPref").returns("US");
+      sandbox.stub(global.Services.locale, "getRequestedLocale").returns("en-US");
+
+      loadAS();
+
+      assert.isTrue(SECTIONS.get("topstories").showByDefault);
+    });
+  });
+  describe("topstories delayed default", () => {
+    let setPrefSpy;
+    beforeEach(() => {
+      // Have addObserver cause prefHasUserValue to now return true then call cb
+      sandbox.stub(global.Services.prefs, "addObserver").callsFake(() => {
+        sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      }).callsArg(1);
+
+      setPrefSpy = sandbox.spy();
+      sandbox.stub(global.Services.prefs, "getDefaultBranch").returns({setBoolPref: setPrefSpy});
+    });
+
+    it("should set false with unexpected geo", () => {
+      sandbox.stub(global.Services.prefs, "getStringPref").returns("NOGEO");
+
+      loadAS();
+
+      assert.isFalse(setPrefSpy.firstCall.args[1]);
+    });
+    it("should set true with expected geo and locale", () => {
+      sandbox.stub(global.Services.prefs, "getStringPref").returns("US");
+      sandbox.stub(global.Services.locale, "getRequestedLocale").returns("en-US");
+
+      loadAS();
+
+      assert.isTrue(setPrefSpy.firstCall.args[1]);
+    });
+  });
+});

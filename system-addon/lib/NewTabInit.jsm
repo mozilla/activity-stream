@@ -11,6 +11,7 @@ const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-str
  * NewTabInit - A placeholder for now. This will send a copy of the state to all
  *              newly opened tabs.
  */
+/* istanbul ignore next but should be fixed to have code coverage! */
 this.NewTabInit = class NewTabInit {
   onAction(action) {
     let newAction;
