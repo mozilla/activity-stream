@@ -13,13 +13,18 @@ All preferences for Activity Stream should be defined in the `PREFS_CONFIG` Arra
 found in [lib/ActivityStream.jsm](../../system-addon/lib/ActivityStream.jsm).
 The configuration object should have a `name` (the name of the pref), a `title`
 that describes the functionality of the pref, and a `value`, the default value
-of the pref. For example:
+of the pref. Optionally a `getValue` function can be provided to dynamically
+generate a default pref value based on args, e.g., geo and locale. For
+developers-specific defaults, an optional `value_local_dev` will be used instead
+of `value`. For example:
 
 ```js
 {
   name: "telemetry.log",
   title: "Log telemetry events in the console",
-  value: false
+  value: false,
+  value_local_dev: true,
+  getValue: ({geo}) => geo === "CA"
 }
 ```
 
