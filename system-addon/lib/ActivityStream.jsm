@@ -24,14 +24,44 @@ const {TopStoriesFeed} = Cu.import("resource://activity-stream/lib/TopStoriesFee
 
 const REASON_ADDON_UNINSTALL = 6;
 
-// For now, we only want to show top stories by default to the following locales
-const showTopStoriesByDefault = ["en-US", "en-CA"].includes(Services.locale.getRequestedLocale());
 // Sections, keyed by section id
 const SECTIONS = new Map([
   ["topstories", {
     feed: TopStoriesFeed,
     prefTitle: "Fetches content recommendations from a configurable content provider",
-    showByDefault: showTopStoriesByDefault
+    // This temporary code exists while Pocket is only available in certain geo
+    // region and locale but eventually it should be just `showByDefault: true`
+    showByDefault: (() => {
+      const GEO_PREF = "browser.search.region";
+
+      // Return true if the current geo AND locale are allowed for this section
+      const checkGeoAndLocale = () => {
+        const locales = ({
+          "US": ["en-US", "en-GB", "en-ZA"],
+          "CA": ["en-US", "en-GB", "en-ZA"],
+          "DE": ["de", "de-DE", "de-AT", "de-CH"]
+        })[Services.prefs.getStringPref(GEO_PREF)];
+        return !!locales && locales.includes(Services.locale.getRequestedLocale());
+      };
+
+      // If we don't have a geo, pretend it shouldn't be shown and wait for pref
+      if (!Services.prefs.prefHasUserValue(GEO_PREF)) {
+        const onGeoChange = () => {
+          Services.prefs.removeObserver(GEO_PREF, onGeoChange);
+
+          // Directly overwrite the default that would have been set from
+          // PREFS_CONFIG as DefaultPrefs will clean up this change anyway
+          Services.prefs.getDefaultBranch("browser.newtabpage.activity-stream.feeds.section.topstories")
+            .setBoolPref("", checkGeoAndLocale());
+
+          // NB: This doesn't update other defaults that depend on this value,
+          // e.g., feeds.section.topstories.options' JSON string
+        };
+        Services.prefs.addObserver(GEO_PREF, onGeoChange);
+        return false;
+      }
+      return checkGeoAndLocale();
+    })()
   }]
 ]);
 
@@ -86,7 +116,7 @@ const PREFS_CONFIG = new Map([
       "provider_name": "Pocket",
       "provider_icon": "pocket",
       "provider_description": "pocket_feedback_body",
-      "hidden": ${!showTopStoriesByDefault}
+      "shownByDefault": ${SECTIONS.get("topstories").showByDefault}
     }`
   }],
   ["migrationExpired", {
