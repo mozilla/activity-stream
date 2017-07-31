@@ -41,6 +41,7 @@ overrider.set({
     },
     prefs: {
       addObserver() {},
+      prefHasUserValue() {},
       removeObserver() {},
       getStringPref() {},
       getBoolPref() {},
