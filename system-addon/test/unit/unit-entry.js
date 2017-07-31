@@ -53,7 +53,9 @@ overrider.set({
         };
       }
     },
-    tm: {dispatchToMainThread: cb => cb()}
+    tm: {dispatchToMainThread: cb => cb()},
+    eTLD: {getPublicSuffix() {}},
+    io: {NewURI() {}}
   },
   XPCOMUtils: {
     defineLazyModuleGetter() {},
