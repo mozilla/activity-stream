@@ -28,7 +28,11 @@ overrider.set({
   fetch() {},
   Preferences: FakePrefs,
   Services: {
-    locale: {getRequestedLocale() {}},
+    locale: {
+      getAppLocalesAsLangTags() {},
+      getRequestedLocale() {},
+      negotiateLanguages() {}
+    },
     urlFormatter: {formatURL: str => str},
     mm: {
       addMessageListener: (msg, cb) => cb(),
