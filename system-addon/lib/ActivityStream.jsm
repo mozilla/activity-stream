@@ -44,10 +44,10 @@ const PREFS_CONFIG = new Map([
       provider_icon: "pocket",
       provider_name: "Pocket",
       read_more_endpoint: "https://getpocket.com/explore/trending?src=ff_new_tab",
-      stories_endpoint: "https://getpocket.com/v3/firefox/global-recs?consumer_key=$apiKey&locale_lang=$locale",
+      stories_endpoint: `https://getpocket.com/v3/firefox/global-recs?consumer_key=$apiKey&locale_lang=${args.locale}`,
       stories_referrer: "https://getpocket.com/recommendations",
       survey_link: "https://www.surveymonkey.com/r/newtabffx",
-      topics_endpoint: "https://getpocket.com/v3/firefox/trending-topics?consumer_key=$apiKey&locale_lang=$locale"
+      topics_endpoint: `https://getpocket.com/v3/firefox/trending-topics?consumer_key=$apiKey&locale_lang=${args.locale}`
     })
   }],
   ["migrationExpired", {
