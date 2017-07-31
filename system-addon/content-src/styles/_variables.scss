@@ -108,3 +108,21 @@ $image-path: 'assets/';
     opacity: 1;
   }
 }
+
+@mixin context-menu-open-middle {
+  .context-menu {
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+    offset-inline-start: -$base-gutter;
+    offset-inline-end: auto;
+  }
+}
+
+@mixin context-menu-open-left {
+  .context-menu {
+    margin-inline-start: auto;
+    margin-inline-end: 5px;
+    offset-inline-start: auto;
+    offset-inline-end: 0;
+  }
+}

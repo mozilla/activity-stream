@@ -77,6 +77,22 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, $card-width);
     grid-gap: $base-gutter;
+
+    @media (max-width: $break-point-medium) {
+      @include context-menu-open-left;
+    }
+
+    @media (min-width: $break-point-medium) and (max-width: $break-point-large) {
+      :nth-child(2n) {
+        @include context-menu-open-left;
+      }
+    }
+
+    @media (min-width: $break-point-large) and (max-width: $break-point-large + 2*$card-width) {
+      :nth-child(3n) {
+        @include context-menu-open-left;
+      }
+    }
   }
 
   .section-empty-state {

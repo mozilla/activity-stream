@@ -10,14 +10,45 @@
   padding: 0;
   margin-inline-end: -$base-gutter;
 
-  // 5 top sites
-  @media (min-width: $break-point-medium) {
-    width: $wrapper-max-width-medium + $base-gutter;
+  // Two columns
+  @media (max-width: $break-point-small) {
+    :nth-child(2n+1) {
+      @include context-menu-open-middle;
+    }
+    :nth-child(2n) {
+      @include context-menu-open-left;
+    }
   }
 
-  // 6 top sites
-  @media (min-width: $break-point-large) {
-    width: $wrapper-max-width-large + $base-gutter;
+  // Three columns
+  @media (min-width: $break-point-small) and (max-width: $break-point-medium) {
+    :nth-child(3n+2), :nth-child(3n) {
+      @include context-menu-open-left;
+    }
+  }
+
+  // Four columns
+  @media (min-width: $break-point-medium) and (max-width: $break-point-large) {
+    :nth-child(4n) {
+      @include context-menu-open-left;
+    }
+  }
+  @media (min-width: $break-point-medium) and (max-width: $break-point-medium + $card-width) {
+    :nth-child(4n+3) {
+      @include context-menu-open-left;
+    }
+  }
+
+  // Six columns
+  @media (min-width: $break-point-large) and (max-width: $break-point-large + 2*$card-width) {
+    :nth-child(6n) {
+      @include context-menu-open-left;
+    }
+  }
+  @media (min-width: $break-point-large) and (max-width: $break-point-large + $card-width) {
+    :nth-child(6n+5) {
+      @include context-menu-open-left;
+    }
   }
 
   li {
