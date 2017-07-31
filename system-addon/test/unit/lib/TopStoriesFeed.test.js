@@ -163,7 +163,8 @@ describe("Top Stories Feed", () => {
         "description": "description",
         "image": "image-url",
         "referrer": "referrer",
-        "url": "rec-url"
+        "url": "rec-url",
+        "eTLD": ""
       }];
 
       instance.stories_endpoint = "stories-endpoint";

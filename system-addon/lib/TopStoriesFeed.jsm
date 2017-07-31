@@ -90,7 +90,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
               "description": s.excerpt,
               "image": this._normalizeUrl(s.image_src),
               "referrer": this.stories_referrer,
-              "url": s.dedupe_url
+              "url": s.dedupe_url,
+              "eTLD": this._addETLD(s.dedupe_url)
             }));
           return items;
         })
@@ -160,6 +161,14 @@ this.TopStoriesFeed = class TopStoriesFeed {
       return url.replace(/\(/g, "%28").replace(/\)/g, "%29");
     }
     return url;
+  }
+
+  _addETLD(url) {
+    try {
+      return Services.eTLD.getPublicSuffix(Services.io.newURI(url));
+    } catch (err) {
+      return "";
+    }
   }
 
   onAction(action) {
