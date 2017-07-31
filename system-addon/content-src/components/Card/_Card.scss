@@ -20,6 +20,7 @@
     height: 100%;
     outline: none;
     position: absolute;
+    max-width: $card-width;
 
     &.active, &:focus {
       .card {
