@@ -4,27 +4,37 @@
 
   font-size: 13px;
   color: $topic-grey;
-  min-width: 780px;
-  line-height: 16px;
   margin-top: $topic-margin-top;
+  line-height: 1.6;
+
+  @media (min-width: $break-point-large) {
+    line-height: 16px;
+    min-width: 780px;
+  }
 
   ul {
-    display: inline;
-    padding-left: 12px;
+    margin: 0;
+    padding: 0;
+    @media (min-width: $break-point-large) {
+      display: inline;
+      padding-left: 12px;
+    }
   }
+
 
   ul li {
-    display: inline;
-  }
-
-  ul li::after {
-    content: '•';
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-
-  ul li:last-child::after {
-    content: none;
+    display: inline-block;
+    @media (min-width: $break-point-large) {
+      display: inline;
+    }
+    &::after {
+      content: '•';
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+    &:last-child::after {
+      content: none;
+    }
   }
 
   .topic-link {
@@ -32,8 +42,10 @@
   }
 
   .topic-read-more {
-    float: right;
-    margin-right: 40px;
+    @media (min-width: $break-point-large) {
+      margin-right: 40px;
+      float: right;
+    }
     color: $topic-blue;
   }
 
