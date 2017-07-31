@@ -9,6 +9,7 @@
   margin: 0;
   padding: 0;
   margin-inline-end: -$base-gutter;
+  margin-bottom: -$top-sites-vertical-space;
 
   // Two columns
   @media (max-width: $break-point-small) {
