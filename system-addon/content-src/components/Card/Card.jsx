@@ -31,7 +31,11 @@ class Card extends React.Component {
   }
   onLinkClick(event) {
     event.preventDefault();
-    this.props.dispatch(ac.SendToMain({type: at.OPEN_LINK, data: this.props.link}));
+    const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
+    this.props.dispatch(ac.SendToMain({
+      type: at.OPEN_LINK,
+      data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
+    }));
     this.props.dispatch(ac.UserEvent({
       event: "CLICK",
       source: this.props.eventSource,
