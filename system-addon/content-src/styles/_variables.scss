@@ -68,6 +68,8 @@ $search-margin-bottom: 40px;
 
 $image-path: 'assets/';
 
+$snippets-container-height: 120px;
+
 @mixin fade-in {
   box-shadow: inset $inner-box-shadow, 0 0 0 5px $faintest-black;
   transition: box-shadow 150ms;

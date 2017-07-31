@@ -9,6 +9,10 @@ main {
   margin: auto;
   width: $wrapper-default-width;
 
+  // This is needed to offset the snippets container so things
+  // at the bottom of the page are still visible when snippets are visible
+  padding-bottom: $snippets-container-height;
+
   @media (min-width: $break-point-small) {
     width: $wrapper-max-width-small;
   }
