@@ -25,6 +25,9 @@
       .card {
         @include fade-in;
       }
+      .card-title {
+        color: $link-blue;
+      }
     }
   }
 
@@ -32,6 +35,10 @@
     outline: none;
     @include fade-in;
     @include context-menu-button-hover;
+
+    .card-title {
+      color: $link-blue;
+    }
   }
 
   .card-preview-image {
