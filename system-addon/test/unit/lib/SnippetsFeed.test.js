@@ -37,6 +37,9 @@ describe("SnippetsFeed", () => {
     sandbox.stub(global.Services.prefs, "getBoolPref")
       .withArgs("browser.onboarding.notification.finished")
       .returns(false);
+    sandbox.stub(global.Services.prefs, "prefHasUserValue")
+      .withArgs("services.sync.username")
+      .returns(true);
     sandbox.stub(global.Services.telemetry, "canRecordBase").value(false);
 
     const feed = new SnippetsFeed();
@@ -53,6 +56,7 @@ describe("SnippetsFeed", () => {
     assert.propertyVal(state, "profileResetWeeksAgo", 1);
     assert.propertyVal(state, "telemetryEnabled", false);
     assert.propertyVal(state, "onboardingFinished", false);
+    assert.propertyVal(state, "fxaccount", true);
   });
   it("should update telemetryEnabled on each new tab", () => {
     sandbox.stub(global.Services.telemetry, "canRecordBase").value(false);
