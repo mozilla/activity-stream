@@ -147,7 +147,7 @@ const FEEDS_DATA = [
     name: "snippets",
     factory: () => new SnippetsFeed(),
     title: "Gets snippets data",
-    value: false
+    value: true
   },
   {
     name: "systemtick",
