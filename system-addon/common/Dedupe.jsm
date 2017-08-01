@@ -22,17 +22,17 @@ this.Dedupe = class Dedupe {
   group(groups) {
     const globalKeys = new Set();
     const result = [];
-    groups.forEach(values => {
+    for (const values of groups) {
       const valueMap = new Map();
-      values.forEach(value => {
+      for (const value of values) {
         const key = this.createKey(value);
         if (!globalKeys.has(key) && (!valueMap.has(key) || this.compare(valueMap.get(key), value))) {
           valueMap.set(key, value);
         }
-      });
+      }
       result.push(valueMap);
       valueMap.forEach((value, key) => globalKeys.add(key));
-    });
+    }
     return result.map(m => Array.from(m.values()));
   }
 };

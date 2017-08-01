@@ -30,7 +30,7 @@ this.TopSitesFeed = class TopSitesFeed {
     this.dedupe = new Dedupe(this._dedupeKey);
   }
   _dedupeKey(site) {
-    return site.hostname;
+    return site && site.hostname;
   }
   refreshDefaults(sites) {
     // Clear out the array of any previous defaults
@@ -64,12 +64,10 @@ this.TopSitesFeed = class TopSitesFeed {
     }
 
     // Group together websites that require deduping.
-    const topsitesGroup = [pinned, frecent, DEFAULT_TOP_SITES];
-    topsitesGroup.forEach(group => group.forEach(site => {
-      if (site) {
-        site.hostname = shortURL(site);
-      }
-    }));
+    let topsitesGroup = [];
+    for (const group of [pinned, frecent, DEFAULT_TOP_SITES]) {
+      topsitesGroup.push(group.filter(site => site).map(site => Object.assign({}, site, {hostname: shortURL(site)})));
+    }
 
     const dedupedGroups = this.dedupe.group(topsitesGroup);
     // Insert original pinned websites in the result of the dedupe operation.

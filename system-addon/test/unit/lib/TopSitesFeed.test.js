@@ -5,8 +5,9 @@ const {FakePrefs, GlobalOverrider} = require("test/unit/utils");
 const action = {meta: {fromTarget: {}}};
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {insertPinned} = require("common/Reducers.jsm");
-const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({url: `site${i}.com`}));
+const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({url: `http://www.site${i}.com`}));
 const FAKE_SCREENSHOT = "data123";
+const {shortURL} = require("common/ShortURL.jsm");
 
 function FakeTippyTopProvider() {}
 FakeTippyTopProvider.prototype = {
@@ -97,7 +98,9 @@ describe("Top Sites Feed", () => {
 
     it("should get the links from NewTabUtils", async () => {
       const result = await feed.getLinksWithDefaults();
-      assert.deepEqual(result, links);
+      const reference = links.map(site => Object.assign({}, site, {hostname: shortURLStub(site)}));
+
+      assert.deepEqual(result, reference);
       assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
     });
     it("should call dedupe on the links", async () => {
@@ -115,8 +118,11 @@ describe("Top Sites Feed", () => {
     });
     it("should add defaults if there are are not enough links", async () => {
       links = [{url: "foo.com"}];
+
       const result = await feed.getLinksWithDefaults();
-      assert.deepEqual(result, [{url: "foo.com", hostname: "foo.com"}, ...DEFAULT_TOP_SITES]);
+      const reference = [...links, ...DEFAULT_TOP_SITES].map(s => Object.assign({}, s, {hostname: shortURLStub(s)}));
+
+      assert.deepEqual(result, reference);
     });
     it("should only add defaults up to TOP_SITES_SHOWMORE_LENGTH", async () => {
       links = [];
@@ -124,8 +130,10 @@ describe("Top Sites Feed", () => {
         links.push({url: `foo${i}.com`});
       }
       const result = await feed.getLinksWithDefaults();
+      const reference = [...links, DEFAULT_TOP_SITES[0]].map(s => Object.assign({}, s, {hostname: shortURLStub(s)}));
+
       assert.lengthOf(result, TOP_SITES_SHOWMORE_LENGTH);
-      assert.deepEqual(result, [...links, DEFAULT_TOP_SITES[0]]);
+      assert.deepEqual(result, reference);
     });
     it("should not throw if NewTabUtils returns null", () => {
       links = null;
@@ -171,15 +179,22 @@ describe("Top Sites Feed", () => {
         // Frecent results are removed and only pinned are kept.
         assert.lengthOf(sites, 2);
       });
+      it("should check against null entries", async () => {
+        fakeNewTabUtils.pinnedLinks.links = [null];
+
+        await feed.getLinksWithDefaults();
+      });
     });
   });
   describe("#refresh", () => {
     it("should dispatch an action with the links returned", async () => {
       sandbox.stub(feed, "getScreenshot");
       await feed.refresh(action);
+      const reference = links.map(site => Object.assign({}, site, {hostname: shortURLStub(site)}));
+
       assert.calledOnce(feed.store.dispatch);
       assert.propertyVal(feed.store.dispatch.firstCall.args[0], "type", at.TOP_SITES_UPDATED);
-      assert.deepEqual(feed.store.dispatch.firstCall.args[0].data, links);
+      assert.deepEqual(feed.store.dispatch.firstCall.args[0].data, reference);
     });
     it("should reuse screenshots for existing links, and call feed.getScreenshot for others", async () => {
       sandbox.stub(feed, "getScreenshot");
