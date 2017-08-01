@@ -13,19 +13,27 @@ this.Dedupe = class Dedupe {
   }
 
   /**
-   * Removes duplicates in a list based on createKey.
-   * @param {Array} values
+   * Dedupe an array containing groups of elements.
+   * Duplicate removal favors earlier groups.
+   *
+   * @param {Array} groups Contains an arbitrary number of arrays of elements.
    * @returns {Array}
    */
-  collection(values) {
-    const valueMap = new Map();
-    values.forEach(value => {
-      const key = this.createKey(value);
-      if (!valueMap.has(key) || this.compare(valueMap.get(key), value)) {
-        valueMap.set(key, value);
-      }
+  group(groups) {
+    const globalKeys = new Set();
+    const result = [];
+    groups.forEach(values => {
+      const valueMap = new Map();
+      values.forEach(value => {
+        const key = this.createKey(value);
+        if (!globalKeys.has(key) && (!valueMap.has(key) || this.compare(valueMap.get(key), value))) {
+          valueMap.set(key, value);
+        }
+      });
+      result.push(valueMap);
+      valueMap.forEach((value, key) => globalKeys.add(key));
     });
-    return Array.from(valueMap.values());
+    return result.map(m => Array.from(m.values()));
   }
 };
 

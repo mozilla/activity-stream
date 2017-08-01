@@ -32,9 +32,6 @@ this.TopSitesFeed = class TopSitesFeed {
   _dedupeKey(site) {
     return site.hostname;
   }
-  _dedupeCompare(storedValue, newValue) {
-    return newValue.isPinned;
-  }
   refreshDefaults(sites) {
     // Clear out the array of any previous defaults
     DEFAULT_TOP_SITES.length = 0;
@@ -66,12 +63,18 @@ this.TopSitesFeed = class TopSitesFeed {
       frecent = frecent.filter(link => link && link.type !== "affiliate");
     }
 
-    pinned = insertPinned([...frecent, ...DEFAULT_TOP_SITES], pinned);
+    const topsitesGroup = [pinned, frecent, DEFAULT_TOP_SITES];
+    topsitesGroup.forEach(group => group.forEach(site => {
+      if (site) {
+        site.hostname = shortURL(site);
+      }
+    }));
+
+    const dedupedGroups = this.dedupe.group(topsitesGroup);
+    pinned = insertPinned([...dedupedGroups[1], ...dedupedGroups[2]], pinned);
 
     // Parse site url and extract hostname.
-    pinned.forEach(site => { site.hostname = shortURL(site); });
-
-    return this.dedupe.collection(pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
+    return pinned.slice(0, TOP_SITES_SHOWMORE_LENGTH);
   }
   async refresh(target = null) {
     const links = await this.getLinksWithDefaults();

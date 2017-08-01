@@ -2,72 +2,41 @@ const {Dedupe} = require("common/Dedupe.jsm");
 
 describe("Dedupe", () => {
   let instance;
-  const urlToSite = url => ({url});
-
-  it("should create an instance with default comparators", () => {
+  beforeEach(() => {
     instance = new Dedupe();
-    const websites = [
-      "http://www.mozilla.org",
-      "http://www.firefox.org",
-      "http://www.mozilla.org"
-    ];
-
-    const result = instance.collection(websites);
-
-    assert.lengthOf(result, 2);
   });
-
-  describe("collection", () => {
-    it("should dedupe items by hostname", () => {
-      const dedupeKey = url => url.url;
-      instance = new Dedupe(dedupeKey);
-      const websites = [
-        "http://www.mozilla.org",
-        "http://www.firefox.org",
-        "http://www.mozilla.org"
-      ].map(urlToSite);
-
-      const result = instance.collection(websites);
-
-      assert.lengthOf(result, 2);
-      assert.deepEqual(result[0].url, "http://www.mozilla.org");
-      assert.deepEqual(result[1].url, "http://www.firefox.org");
+  describe("group", () => {
+    it("should remove duplicates inside the groups", () => {
+      const beforeItems = [[1, 1, 1], [2, 2, 2], [3, 3, 3]];
+      const afterItems = [[1], [2], [3]];
+      assert.deepEqual(instance.group(beforeItems), afterItems);
     });
-    it("should keep pinned items", () => {
-      const dedupeKey = url => url.hostname;
-      const compareFn = (storedSite, newSite) => newSite.isPinned;
-      instance = new Dedupe(dedupeKey, compareFn);
-      const sites = [{
-        url: "http://www.mozilla.org",
-        hostname: "mozilla",
-        isPinned: true
-      }, {
-        url: "http://www.mozilla.org/about",
-        hostname: "mozilla"
-      }];
-
-      const result = instance.collection(sites);
-
-      assert.lengthOf(result, 1);
-      assert.deepEqual(result[0], sites[0]);
+    it("should remove duplicates between groups, favouring earlier groups", () => {
+      const beforeItems = [[1, 2, 3], [2, 3, 4], [3, 4, 5]];
+      const afterItems = [[1, 2, 3], [4], [5]];
+      assert.deepEqual(instance.group(beforeItems), afterItems);
     });
-    it("should keep pinned items", () => {
-      const dedupeKey = url => url.hostname;
-      const compareFn = (storedSite, newSite) => newSite.isPinned;
-      instance = new Dedupe(dedupeKey, compareFn);
-      const sites = [{
-        url: "http://www.mozilla.org",
-        hostname: "mozilla"
-      }, {
-        url: "http://www.mozilla.org/about",
-        hostname: "mozilla",
-        isPinned: true
-      }];
+    it("should remove duplicates from groups of objects", () => {
+      instance = new Dedupe(item => item.id);
+      const beforeItems = [[{id: 1}, {id: 1}, {id: 2}], [{id: 1}, {id: 3}, {id: 2}], [{id: 1}, {id: 2}, {id: 5}]];
+      const afterItems = [[{id: 1}, {id: 2}], [{id: 3}], [{id: 5}]];
+      assert.deepEqual(instance.group(beforeItems), afterItems);
+    });
+    it("should take a custom comparison function", () => {
+      function compare(previous, current) {
+        return current.amount > previous.amount;
+      }
+      instance = new Dedupe(item => item.id, compare);
+      const beforeItems = [
+        [{id: 1, amount: 50}, {id: 1, amount: 100}],
+        [{id: 1, amount: 200}, {id: 2, amount: 0}, {id: 2, amount: 100}]
+      ];
+      const afterItems = [
+        [{id: 1, amount: 100}],
+        [{id: 2, amount: 100}]
+      ];
 
-      const result = instance.collection(sites);
-
-      assert.lengthOf(result, 1);
-      assert.deepEqual(result[0], sites[1]);
+      assert.deepEqual(instance.group(beforeItems), afterItems);
     });
   });
 });

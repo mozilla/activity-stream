@@ -53,7 +53,7 @@ describe("Top Sites Feed", () => {
     }));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
-    feed.dedupe.collection = sites => sites;
+    feed.dedupe.group = sites => sites;
     links = FAKE_LINKS;
     clock = sinon.useFakeTimers();
   });
@@ -101,24 +101,17 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
     });
     it("should call dedupe on the links", async () => {
-      feed.dedupe.collection = sinon.stub().returns([]);
+      const stub = sinon.stub(feed.dedupe, "group", id => id);
 
       await feed.getLinksWithDefaults();
 
-      assert.calledOnce(feed.dedupe.collection);
+      assert.calledOnce(stub);
     });
     it("should dedupe the links by hostname", async () => {
       const site = {url: "foo", hostname: "bar"};
       const result = feed._dedupeKey(site);
 
       assert.equal(result, site.hostname);
-    });
-    it("should prefer pinned sites for dedupe", async () => {
-      const storedValue = {url: "foo", hostname: "bar", isPinned: false};
-      const newValue = {url: "foo", hostname: "bar", isPinned: true};
-      const result = feed._dedupeCompare(storedValue, newValue);
-
-      assert.isTrue(result);
     });
     it("should add defaults if there are are not enough links", async () => {
       links = [{url: "foo.com"}];
@@ -138,6 +131,45 @@ describe("Top Sites Feed", () => {
       links = null;
       assert.doesNotThrow(() => {
         feed.getLinksWithDefaults(action);
+      });
+    });
+    describe("deduping", () => {
+      beforeEach(() => {
+        ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
+          "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
+          "common/Reducers.jsm": {insertPinned},
+          "lib/Screenshots.jsm": {Screenshots: fakeScreenshot}
+        }));
+        feed = new TopSitesFeed();
+      });
+      it("should not dedupe pinned sites", async () => {
+        fakeNewTabUtils.pinnedLinks.links = [
+          {url: "https://developer.mozilla.org/en-US/docs/Web"},
+          {url: "https://developer.mozilla.org/en-US/docs/Learn"}
+        ];
+
+        const sites = await feed.getLinksWithDefaults();
+
+        assert.lengthOf(sites, 12);
+        assert.equal(sites[0].url, fakeNewTabUtils.pinnedLinks.links[0].url);
+        assert.equal(sites[1].url, fakeNewTabUtils.pinnedLinks.links[1].url);
+        assert.equal(sites[0].hostname, sites[1].hostname);
+      });
+      it("should not dedupe pinned sites", async () => {
+        fakeNewTabUtils.pinnedLinks.links = [
+          {url: "https://developer.mozilla.org/en-US/docs/Web"},
+          {url: "https://developer.mozilla.org/en-US/docs/Learn"}
+        ];
+        // These will be the frecent results.
+        links = [
+          {url: "https://developer.mozilla.org/en-US/docs/Web"},
+          {url: "https://developer.mozilla.org/en-US/docs/Learn"}
+        ];
+
+        const sites = await feed.getLinksWithDefaults();
+
+        // Frecent results are removed and only pinned are kept.
+        assert.lengthOf(sites, 2);
       });
     });
   });
