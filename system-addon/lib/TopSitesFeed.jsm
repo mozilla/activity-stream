@@ -63,6 +63,7 @@ this.TopSitesFeed = class TopSitesFeed {
       frecent = frecent.filter(link => link && link.type !== "affiliate");
     }
 
+    // Group together websites that require deduping.
     const topsitesGroup = [pinned, frecent, DEFAULT_TOP_SITES];
     topsitesGroup.forEach(group => group.forEach(site => {
       if (site) {
@@ -71,9 +72,9 @@ this.TopSitesFeed = class TopSitesFeed {
     }));
 
     const dedupedGroups = this.dedupe.group(topsitesGroup);
+    // Insert original pinned websites in the result of the dedupe operation.
     pinned = insertPinned([...dedupedGroups[1], ...dedupedGroups[2]], pinned);
 
-    // Parse site url and extract hostname.
     return pinned.slice(0, TOP_SITES_SHOWMORE_LENGTH);
   }
   async refresh(target = null) {
