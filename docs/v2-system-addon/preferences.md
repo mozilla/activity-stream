@@ -28,6 +28,20 @@ of `value`. For example:
 }
 ```
 
+### IMPORTANT: Setting test-specific values for Mozilla Central
+
+If a feed or feature behind a pref makes any network calls or would other be
+disruptive for automated tests and that pref is on by default, make sure you
+disable it for tests in Mozilla Central.
+
+You should create a bug in Bugzilla and a patch that adds lines to turn off your
+pref in the following files:
+- layout/tools/reftest/reftest-preferences.js
+- testing/profiles/prefs_general.js
+- testing/talos/talos/config.py
+
+You can see an example in [this patch](https://github.com/mozilla/activity-stream/pull/2977).
+
 ## Reading, setting, and observing preferences from `.jsm`s
 
 To read/set/observe Activity Stream preferences, construct a `Prefs` instance found in [lib/ActivityStreamPrefs.jsm](../../system-addon/lib/ActivityStreamPrefs.jsm).
