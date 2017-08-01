@@ -27,7 +27,8 @@ class Base extends React.Component {
       this.updateTitle(this.props.App), {once: true});
   }
   componentWillUpdate({App}) {
-    if (App.locale !== this.props.App.locale) {
+    // Early loads might not have locale yet, so wait until we do
+    if (App.locale && App.locale !== this.props.App.locale) {
       addLocaleDataForReactIntl(App);
       this.updateTitle(App);
     }
