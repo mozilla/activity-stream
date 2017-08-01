@@ -22,6 +22,17 @@ const {TelemetryFeed} = Cu.import("resource://activity-stream/lib/TelemetryFeed.
 const {TopSitesFeed} = Cu.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
 const {TopStoriesFeed} = Cu.import("resource://activity-stream/lib/TopStoriesFeed.jsm", {});
 
+const DEFAULT_SITES = new Map([
+  // This first item is the global list fallback for any unexpected geos
+  ["", "https://www.youtube.com/,https://www.facebook.com/,https://www.wikipedia.org/,https://www.reddit.com/,https://www.amazon.com/,https://twitter.com/"],
+  ["US", "https://www.youtube.com/,https://www.facebook.com/,https://www.amazon.com/,https://www.reddit.com/,https://www.wikipedia.org/,https://twitter.com/"],
+  ["CA", "https://www.youtube.com/,https://www.facebook.com/,https://www.reddit.com/,https://www.wikipedia.org/,https://www.amazon.ca/,https://twitter.com/"],
+  ["DE", "https://www.youtube.com/,https://www.facebook.com/,https://www.amazon.de/,https://www.ebay.de/,https://www.wikipedia.org/,https://www.reddit.com/"],
+  ["PL", "https://www.youtube.com/,https://www.facebook.com/,https://allegro.pl/,https://www.wikipedia.org/,https://www.olx.pl/,https://www.wykop.pl/"],
+  ["RU", "https://vk.com/,https://www.youtube.com/,https://ok.ru/,https://www.avito.ru/,https://www.aliexpress.com/,https://www.wikipedia.org/"],
+  ["GB", "https://www.youtube.com/,https://www.facebook.com/,https://www.reddit.com/,https://www.amazon.co.uk/,https://www.bbc.co.uk/,https://www.ebay.co.uk/"],
+  ["FR", "https://www.youtube.com/,https://www.facebook.com/,https://www.wikipedia.org/,https://www.amazon.fr/,https://www.leboncoin.fr/,https://twitter.com/"]
+]);
 const GEO_PREF = "browser.search.region";
 const REASON_ADDON_UNINSTALL = 6;
 
@@ -30,7 +41,7 @@ const REASON_ADDON_UNINSTALL = 6;
 const PREFS_CONFIG = new Map([
   ["default.sites", {
     title: "Comma-separated list of default top sites to fill in behind visited sites",
-    value: "https://www.facebook.com/,https://www.youtube.com/,https://www.amazon.com/,https://www.yahoo.com/,https://www.ebay.com/,https://twitter.com/"
+    getValue: ({geo}) => DEFAULT_SITES.get(DEFAULT_SITES.has(geo) ? geo : "")
   }],
   ["feeds.section.topstories.options", {
     title: "Configuration options for top stories feed",
