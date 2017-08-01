@@ -41,14 +41,25 @@ class TopSite extends React.Component {
     const {link, index, dispatch} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
     const title = link.pinTitle || shortURL(link);
-    const screenshotClassName = `screenshot${link.screenshot ? " active" : ""}`;
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
-    const style = {backgroundImage: (link.screenshot ? `url(${link.screenshot})` : "none")};
+    const {tippyTopIcon} = link;
+    let imageClassName;
+    let imageStyle;
+    if (tippyTopIcon) {
+      imageClassName = "tippy-top-icon";
+      imageStyle = {
+        backgroundColor: link.backgroundColor,
+        backgroundImage: `url(${tippyTopIcon})`
+      };
+    } else {
+      imageClassName = `screenshot${link.screenshot ? " active" : ""}`;
+      imageStyle = {backgroundImage: link.screenshot ? `url(${link.screenshot})` : "none"};
+    }
     return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
         <a href={link.url} onClick={this.onLinkClick}>
           <div className="tile" aria-hidden={true}>
               <span className="letter-fallback">{title[0]}</span>
-              <div className={screenshotClassName} style={style} />
+              <div className={imageClassName} style={imageStyle} />
           </div>
           <div className={`title ${link.isPinned ? "pinned" : ""}`}>
             {link.isPinned && <div className="icon icon-pin-small" />}

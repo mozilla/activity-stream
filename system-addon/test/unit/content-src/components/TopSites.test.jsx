@@ -284,6 +284,16 @@ describe("<TopSite>", () => {
     assert.deepEqual(linkMenuProps.options,
       ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"]);
   });
+  it("should render the tippy top icon if provided", () => {
+    link.tippyTopIcon = "foo.png";
+    link.backgroundColor = "#FFFFFF";
+    const wrapper = shallow(<TopSite link={link} />);
+    assert.equal(wrapper.find(".screenshot").length, 0);
+    const tippyTop = wrapper.find(".tippy-top-icon");
+    assert.propertyVal(tippyTop.props().style, "backgroundImage", "url(foo.png)");
+    assert.propertyVal(tippyTop.props().style, "backgroundColor", "#FFFFFF");
+  });
+
   describe("#trackClick", () => {
     it("should call dispatch when the link is clicked", () => {
       const dispatch = sinon.stub();
