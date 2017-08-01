@@ -2,7 +2,7 @@
   $topic-grey: #BFC0C7;
   $topic-blue: #008EA4;
 
-  font-size: 13px;
+  font-size: 12px;
   color: $topic-grey;
   margin-top: $topic-margin-top;
   line-height: 1.6;
@@ -55,6 +55,7 @@
     background-image: url('#{$image-path}topic-show-more-12.svg');
     background-repeat: no-repeat;
     vertical-align: middle;
+    background-position-y: 1px;
   }
 
 }
