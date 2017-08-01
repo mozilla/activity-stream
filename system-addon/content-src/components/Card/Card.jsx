@@ -48,6 +48,7 @@ class Card extends React.Component {
     const {index, link, dispatch, contextMenuOptions, eventSource} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     const {icon, intlID} = cardContextTypes[link.type];
+
     return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}`}>
       <a href={link.url} onClick={this.onLinkClick}>
         <div className="card">
