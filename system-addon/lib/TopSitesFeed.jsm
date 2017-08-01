@@ -32,6 +32,9 @@ this.TopSitesFeed = class TopSitesFeed {
   _dedupeKey(site) {
     return site.hostname;
   }
+  _dedupeCompare(storedValue, newValue) {
+    return newValue.isPinned;
+  }
   refreshDefaults(sites) {
     // Clear out the array of any previous defaults
     DEFAULT_TOP_SITES.length = 0;
@@ -130,15 +133,9 @@ this.TopSitesFeed = class TopSitesFeed {
     }));
   }
   onAction(action) {
-    let realRows;
     switch (action.type) {
       case at.NEW_TAB_LOAD:
-        // Only check against real rows returned from history, not default ones.
-        realRows = this.store.getState().TopSites.rows.filter(row => !row.isDefault);
         if (
-          // When a new tab is opened, if we don't have enough top sites yet, refresh the data.
-          (realRows.length < TOP_SITES_SHOWMORE_LENGTH) ||
-
           // When a new tab is opened, if the last time we refreshed the data
           // is greater than 15 minutes, refresh the data.
           (Date.now() - this.lastUpdated >= UPDATE_TIME)

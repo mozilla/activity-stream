@@ -17,7 +17,7 @@ describe("Dedupe", () => {
     assert.lengthOf(result, 2);
   });
 
-  describe("one", () => {
+  describe("collection", () => {
     it("should dedupe items by hostname", () => {
       const dedupeKey = url => url.url;
       instance = new Dedupe(dedupeKey);
@@ -32,6 +32,42 @@ describe("Dedupe", () => {
       assert.lengthOf(result, 2);
       assert.deepEqual(result[0].url, "http://www.mozilla.org");
       assert.deepEqual(result[1].url, "http://www.firefox.org");
+    });
+    it("should keep pinned items", () => {
+      const dedupeKey = url => url.hostname;
+      const compareFn = (storedSite, newSite) => newSite.isPinned;
+      instance = new Dedupe(dedupeKey, compareFn);
+      const sites = [{
+        url: "http://www.mozilla.org",
+        hostname: "mozilla",
+        isPinned: true
+      }, {
+        url: "http://www.mozilla.org/about",
+        hostname: "mozilla"
+      }];
+
+      const result = instance.collection(sites);
+
+      assert.lengthOf(result, 1);
+      assert.deepEqual(result[0], sites[0]);
+    });
+    it("should keep pinned items", () => {
+      const dedupeKey = url => url.hostname;
+      const compareFn = (storedSite, newSite) => newSite.isPinned;
+      instance = new Dedupe(dedupeKey, compareFn);
+      const sites = [{
+        url: "http://www.mozilla.org",
+        hostname: "mozilla"
+      }, {
+        url: "http://www.mozilla.org/about",
+        hostname: "mozilla",
+        isPinned: true
+      }];
+
+      const result = instance.collection(sites);
+
+      assert.lengthOf(result, 1);
+      assert.deepEqual(result[0], sites[1]);
     });
   });
 });

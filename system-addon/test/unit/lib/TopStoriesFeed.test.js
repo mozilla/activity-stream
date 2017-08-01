@@ -35,7 +35,7 @@ describe("Top Stories Feed", () => {
 
     shortURLStub = sinon.stub().callsFake(site => site.url);
 
-    ({TopStoriesFeed, STORIES_UPDATE_TIME, TOPICS_UPDATE_TIME, SECTION_ID} = injector({
+    ({TopStoriesFeed, STORIES_UPDATE_TIME, TOPICS_UPDATE_TIME, SECTION_ID, FEED_PREF, SECTION_OPTIONS_PREF} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
       "common/ShortURL.jsm": {shortURL: shortURLStub}
     }));

@@ -25,7 +25,6 @@ describe("Top Sites Feed", () => {
   let fakeNewTabUtils;
   let fakeScreenshot;
   let shortURLStub;
-  let dedupeStub;
 
   beforeEach(() => {
     globals = new GlobalOverrider();
@@ -41,12 +40,12 @@ describe("Top Sites Feed", () => {
     };
     fakeScreenshot = {getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))};
     shortURLStub = sinon.stub().callsFake(site => site.url);
-    dedupeStub = function() {};
+    const fakeDedupe = function() {};
     globals.set("NewTabUtils", fakeNewTabUtils);
     FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
-      "common/Dedupe.jsm": {Dedupe: dedupeStub},
+      "common/Dedupe.jsm": {Dedupe: fakeDedupe},
       "common/Reducers.jsm": {insertPinned},
       "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
       "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider},
@@ -113,6 +112,13 @@ describe("Top Sites Feed", () => {
       const result = feed._dedupeKey(site);
 
       assert.equal(result, site.hostname);
+    });
+    it("should prefer pinned sites for dedupe", async () => {
+      const storedValue = {url: "foo", hostname: "bar", isPinned: false};
+      const newValue = {url: "foo", hostname: "bar", isPinned: true};
+      const result = feed._dedupeCompare(storedValue, newValue);
+
+      assert.isTrue(result);
     });
     it("should add defaults if there are are not enough links", async () => {
       links = [{url: "foo.com"}];
@@ -187,18 +193,6 @@ describe("Top Sites Feed", () => {
   });
   describe("#onAction", () => {
     const newTabAction = {type: at.NEW_TAB_LOAD, meta: {fromTarget: "target"}};
-    it("should call refresh if there are not enough sites on NEW_TAB_LOAD", () => {
-      feed.store.getState = function() { return {TopSites: {rows: []}}; };
-      sinon.stub(feed, "refresh");
-      feed.onAction(newTabAction);
-      assert.calledWith(feed.refresh, newTabAction.meta.fromTarget);
-    });
-    it("should call refresh if there are not sites on NEW_TAB_LOAD, not counting defaults", () => {
-      feed.store.getState = function() { return {TopSites: {rows: [{url: "foo.com"}, ...DEFAULT_TOP_SITES]}}; };
-      sinon.stub(feed, "refresh");
-      feed.onAction(newTabAction);
-      assert.calledWith(feed.refresh, newTabAction.meta.fromTarget);
-    });
     it("should not call refresh if there are enough sites on NEW_TAB_LOAD", () => {
       feed.lastUpdated = Date.now();
       sinon.stub(feed, "refresh");
