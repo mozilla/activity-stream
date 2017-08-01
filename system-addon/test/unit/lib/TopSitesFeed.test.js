@@ -7,7 +7,6 @@ const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {insertPinned} = require("common/Reducers.jsm");
 const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({url: `http://www.site${i}.com`}));
 const FAKE_SCREENSHOT = "data123";
-const {shortURL} = require("common/ShortURL.jsm");
 
 function FakeTippyTopProvider() {}
 FakeTippyTopProvider.prototype = {
