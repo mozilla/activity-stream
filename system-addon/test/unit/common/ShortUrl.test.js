@@ -1,4 +1,4 @@
-const shortURL = require("content-src/lib/short-url");
+const {shortURL} = require("common/ShortURL.jsm");
 
 describe("shortURL", () => {
   it("should return a blank string if url and hostname is falsey", () => {
@@ -28,6 +28,15 @@ describe("shortURL", () => {
 
   it("should return hostname for localhost", () => {
     assert.equal(shortURL({url: "http://localhost:8000/", eTLD: "localhost"}), "localhost");
+  });
+
+  it("should fallback to link title if it exists", () => {
+    const link = {
+      url: "file:///Users/voprea/Work/activity-stream/logs/coverage/system-addon/report-html/index.html",
+      title: "Code coverage report"
+    };
+
+    assert.equal(shortURL(link), link.title);
   });
 
   it("should return the url if no hostname or title is provided", () => {

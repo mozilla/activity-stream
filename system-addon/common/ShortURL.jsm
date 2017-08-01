@@ -1,3 +1,5 @@
+Components.utils.importGlobalProperties(["URL"]);
+
 /**
  * shortURL - Creates a short version of a link's url, used for display purposes
  *            e.g. {url: http://www.foosite.com, eTLD: "com"}  =>  "foosite"
@@ -13,7 +15,7 @@
  *         {str} link.title (optional) - The title of the link
  * @return {str}   A short url
  */
-module.exports = function shortURL(link) {
+this.shortURL = function shortURL(link) {
   if (!link.url && !link.hostname) {
     return "";
   }
@@ -26,3 +28,5 @@ module.exports = function shortURL(link) {
   // If URL and hostname are not present fallback to page title.
   return hostname.slice(0, eTLDExtra).toLowerCase() || hostname || link.title || link.url;
 };
+
+this.EXPORTED_SYMBOLS = ["shortURL"];

@@ -5,7 +5,6 @@ const {_unconnected: LinkMenu} = require("content-src/components/LinkMenu/LinkMe
 const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
 const {IntlProvider} = require("react-intl");
 const messages = require("data/locales.json")["en-US"];
-const shortURL = require("content-src/lib/short-url");
 
 describe("<LinkMenu>", () => {
   let wrapper;
@@ -91,7 +90,7 @@ describe("<LinkMenu>", () => {
   describe(".onClick", () => {
     const FAKE_INDEX = 3;
     const FAKE_SOURCE = "TOP_SITES";
-    const FAKE_SITE = {url: "https://foo.com", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234};
+    const FAKE_SITE = {url: "https://foo.com", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo"};
     const dispatch = sinon.stub();
     const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket"];
     const expectedActionData = {
@@ -101,7 +100,7 @@ describe("<LinkMenu>", () => {
       menu_action_open_private_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_dismiss: FAKE_SITE.url,
       menu_action_delete: FAKE_SITE.url,
-      menu_action_pin: {site: {url: FAKE_SITE.url, title: shortURL(FAKE_SITE)}, index: FAKE_INDEX},
+      menu_action_pin: {site: {url: FAKE_SITE.url, title: FAKE_SITE.hostname}, index: FAKE_INDEX},
       menu_action_unpin: {site: {url: FAKE_SITE.url}},
       menu_action_save_to_pocket: {site: {url: FAKE_SITE.url, title: FAKE_SITE.title}}
     };
