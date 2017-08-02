@@ -17,9 +17,12 @@ class Section extends React.Component {
   }
 
   onInfoLeave(event) {
+    // If we have a related target, check to see if it is within the current
+    // target (section-info-option) to keep infoActive true. False otherwise.
     this.setState({
-      infoActive: event && event.relatedTarget && (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
-        Node.DOCUMENT_POSITION_CONTAINS)
+      infoActive: event && event.relatedTarget && (
+        event.relatedTarget.compareDocumentPosition(event.currentTarget) &
+          Node.DOCUMENT_POSITION_CONTAINS)
     });
   }
 
