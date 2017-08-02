@@ -18,8 +18,8 @@ class Section extends React.Component {
 
   onInfoLeave(event) {
     this.setState({
-      infoActive: event.relatedTarget.compareDocumentPosition(event.currentTarget) &
-        Node.DOCUMENT_POSITION_CONTAINS
+      infoActive: event && event.relatedTarget && (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
+        Node.DOCUMENT_POSITION_CONTAINS)
     });
   }
 
