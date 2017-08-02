@@ -7,19 +7,20 @@ const Topics = require("content-src/components/Topics/Topics");
 class Section extends React.Component {
   constructor(props) {
     super(props);
-    this.onMouseOverSectionInfoOption =
-      this.onMouseOverSectionInfoOption.bind(this);
-    this.onMouseOutSectionInfoOption =
-      this.onMouseOutSectionInfoOption.bind(this);
-    this.state = {isHovering: false};
+    this.onInfoEnter = this.onInfoEnter.bind(this);
+    this.onInfoLeave = this.onInfoLeave.bind(this);
+    this.state = {infoActive: false};
   }
 
-  onMouseOverSectionInfoOption() {
-    this.setState({isHovering: true});
+  onInfoEnter() {
+    this.setState({infoActive: true});
   }
 
-  onMouseOutSectionInfoOption() {
-    this.setState({isHovering: false});
+  onInfoLeave(event) {
+    this.setState({
+      infoActive: event.relatedTarget.compareDocumentPosition(event.currentTarget) &
+        Node.DOCUMENT_POSITION_CONTAINS
+    });
   }
 
   render() {
@@ -30,7 +31,7 @@ class Section extends React.Component {
     const infoOptionIconA11yAttrs = {
       "aria-haspopup": "true",
       "aria-controls": "info-option",
-      "aria-expanded": this.state.isHovering ? "true" : "false",
+      "aria-expanded": this.state.infoActive ? "true" : "false",
       "role": "note",
       "tabIndex": 0
     };
@@ -44,8 +45,10 @@ class Section extends React.Component {
           <h3 className="section-title"><span className={`icon icon-small-spacer icon-${icon}`} /><FormattedMessage {...title} /></h3>
           {infoOption &&
           <span className="section-info-option"
-            onMouseOver={this.onMouseOverSectionInfoOption}
-            onMouseOut={this.onMouseOutSectionInfoOption}>
+            onBlur={this.onInfoLeave}
+            onFocus={this.onInfoEnter}
+            onMouseOut={this.onInfoLeave}
+            onMouseOver={this.onInfoEnter}>
             <img className="info-option-icon" title={sectionInfoTitle}
               {...infoOptionIconA11yAttrs} />
             <div className="info-option">

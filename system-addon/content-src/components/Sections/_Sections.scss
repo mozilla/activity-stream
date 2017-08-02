@@ -22,14 +22,14 @@
       display: inline-block;
     }
 
-    .section-info-option div {
+    .section-info-option .info-option {
       visibility: hidden;
       opacity: 0;
       transition: visibility 0.2s, opacity 0.2s ease-out;
       transition-delay: 0.5s;
     }
 
-    .section-info-option:hover div {
+    .info-option-icon[aria-expanded="true"] + .info-option {
       visibility: visible;
       opacity: 1;
       transition: visibility 0.2s, opacity 0.2s ease-out;
