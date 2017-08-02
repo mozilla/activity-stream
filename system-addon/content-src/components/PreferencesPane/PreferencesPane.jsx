@@ -22,10 +22,13 @@ class PreferencesPane extends React.Component {
     this.togglePane = this.togglePane.bind(this);
 
     // TODO This is temporary until sections register their PreferenceInput component automatically
-    try {
-      this.topStoriesOptions = JSON.parse(props.Prefs.values["feeds.section.topstories.options"]);
-    } catch (e) {
-      console.error("Problem parsing feeds.section.topstories.options", e); // eslint-disable-line no-console
+    const optionJSON = props.Prefs.values["feeds.section.topstories.options"];
+    if (optionJSON) {
+      try {
+        this.topStoriesOptions = JSON.parse(optionJSON);
+      } catch (e) {
+        console.error("Problem parsing feeds.section.topstories.options", e); // eslint-disable-line no-console
+      }
     }
   }
   componentDidMount() {
