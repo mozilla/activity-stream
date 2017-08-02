@@ -13,7 +13,7 @@ If you would like to see changes more regularly, you can install the [dev build]
 
 ## For Localizers
 
-If you would like to help localize this project, check out out project on [Pontoon](https://pontoon.mozilla.org/projects/activity-stream-new-tab/).
+Activity Stream localization is managed via [Pontoon](https://pontoon.mozilla.org/projects/activity-stream-new-tab/), not direct pull requests to the repository. If you want to fix a typo, add a new language, or simply know more about localization, please get in touch with the [existing localization team](https://pontoon.mozilla.org/teams/) for your language, or Mozilla’s [l10n-drivers](https://wiki.mozilla.org/L10n:Mozilla_Team#Mozilla_Corporation) for guidance.
 
 ## For Developers
 
