@@ -1,4 +1,4 @@
-const {reducers, INITIAL_STATE, insertPinned} = require("common/Reducers.jsm");
+const {reducers, INITIAL_STATE, insertPinned, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 const {TopSites, App, Snippets, Prefs, Dialog, Sections} = reducers;
 
 const {actionTypes: at} = require("common/Actions.jsm");
@@ -125,6 +125,16 @@ describe("Reducers", () => {
       const action = {type: at.PINNED_SITES_UPDATED, data: [{url: "baz.com", title: "baz"}]};
       const nextState = TopSites(oldState, action);
       assert.deepEqual(nextState.rows, [{url: "baz.com", title: "baz", isPinned: true, pinIndex: 0, pinTitle: "baz"}, {url: "foo.com"}, {url: "bar.com"}]);
+    });
+    it("should return at most TOP_SITES_SHOWMORE_LENGTH sites on PINNED_SITES_UPDATED", () => {
+      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
+      const data = new Array(20).fill(null).map((s, i) => ({
+        url: "foo.com",
+        pinIndex: i
+      }));
+      const action = {type: at.PINNED_SITES_UPDATED, data};
+      const nextState = TopSites(oldState, action);
+      assert.lengthOf(nextState.rows, TOP_SITES_SHOWMORE_LENGTH);
     });
   });
   describe("Prefs", () => {

@@ -5,6 +5,8 @@
 
 const {actionTypes: at} = Components.utils.import("resource://activity-stream/common/Actions.jsm", {});
 
+const TOP_SITES_SHOWMORE_LENGTH = 12;
+
 const INITIAL_STATE = {
   App: {
     // Have we received real data from the app yet?
@@ -139,7 +141,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       return Object.assign({}, prevState, {rows: newRows});
     case at.PINNED_SITES_UPDATED:
       pinned = action.data;
-      newRows = insertPinned(prevState.rows, pinned);
+      newRows = insertPinned(prevState.rows, pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
       return Object.assign({}, prevState, {rows: newRows});
     default:
       return prevState;
@@ -258,4 +260,4 @@ this.INITIAL_STATE = INITIAL_STATE;
 this.reducers = {TopSites, App, Snippets, Prefs, Dialog, Sections};
 this.insertPinned = insertPinned;
 
-this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned"];
+this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned", "TOP_SITES_SHOWMORE_LENGTH"];

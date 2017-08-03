@@ -1,10 +1,10 @@
 "use strict";
 const injector = require("inject!lib/TopSitesFeed.jsm");
-const {UPDATE_TIME, TOP_SITES_SHOWMORE_LENGTH} = require("lib/TopSitesFeed.jsm");
+const {UPDATE_TIME} = require("lib/TopSitesFeed.jsm");
 const {FakePrefs, GlobalOverrider} = require("test/unit/utils");
 const action = {meta: {fromTarget: {}}};
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
-const {insertPinned} = require("common/Reducers.jsm");
+const {insertPinned, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({url: `http://www.site${i}.com`}));
 const FAKE_SCREENSHOT = "data123";
 
@@ -46,7 +46,7 @@ describe("Top Sites Feed", () => {
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
       "common/Dedupe.jsm": {Dedupe: fakeDedupe},
-      "common/Reducers.jsm": {insertPinned},
+      "common/Reducers.jsm": {insertPinned, TOP_SITES_SHOWMORE_LENGTH},
       "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
       "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider},
       "common/ShortURL.jsm": {shortURL: shortURLStub}
@@ -144,7 +144,7 @@ describe("Top Sites Feed", () => {
       beforeEach(() => {
         ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
           "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
-          "common/Reducers.jsm": {insertPinned},
+          "common/Reducers.jsm": {insertPinned, TOP_SITES_SHOWMORE_LENGTH},
           "lib/Screenshots.jsm": {Screenshots: fakeScreenshot}
         }));
         feed = new TopSitesFeed();
@@ -157,7 +157,7 @@ describe("Top Sites Feed", () => {
 
         const sites = await feed.getLinksWithDefaults();
 
-        assert.lengthOf(sites, 12);
+        assert.lengthOf(sites, TOP_SITES_SHOWMORE_LENGTH);
         assert.equal(sites[0].url, fakeNewTabUtils.pinnedLinks.links[0].url);
         assert.equal(sites[1].url, fakeNewTabUtils.pinnedLinks.links[1].url);
         assert.equal(sites[0].hostname, sites[1].hostname);
