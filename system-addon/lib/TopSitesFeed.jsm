@@ -8,7 +8,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {TippyTopProvider} = Cu.import("resource://activity-stream/lib/TippyTopProvider.jsm", {});
-const {insertPinned} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
+const {insertPinned, TOP_SITES_SHOWMORE_LENGTH} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
 const {shortURL} = Cu.import("resource://activity-stream/common/ShortURL.jsm", {});
 
@@ -17,7 +17,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
 XPCOMUtils.defineLazyModuleGetter(this, "Screenshots",
   "resource://activity-stream/lib/Screenshots.jsm");
 
-const TOP_SITES_SHOWMORE_LENGTH = 12;
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_SITES_PREF = "default.sites";
 const DEFAULT_TOP_SITES = [];
@@ -170,6 +169,5 @@ this.TopSitesFeed = class TopSitesFeed {
 };
 
 this.UPDATE_TIME = UPDATE_TIME;
-this.TOP_SITES_SHOWMORE_LENGTH = TOP_SITES_SHOWMORE_LENGTH;
 this.DEFAULT_TOP_SITES = DEFAULT_TOP_SITES;
-this.EXPORTED_SYMBOLS = ["TopSitesFeed", "UPDATE_TIME", "DEFAULT_TOP_SITES", "TOP_SITES_SHOWMORE_LENGTH"];
+this.EXPORTED_SYMBOLS = ["TopSitesFeed", "UPDATE_TIME", "DEFAULT_TOP_SITES"];
