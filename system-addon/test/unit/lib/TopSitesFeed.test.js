@@ -10,7 +10,7 @@ const FAKE_SCREENSHOT = "data123";
 
 function FakeTippyTopProvider() {}
 FakeTippyTopProvider.prototype = {
-  init() {},
+  async init() {},
   processSite(site) { return site; }
 };
 
@@ -334,6 +334,11 @@ describe("Top Sites Feed", () => {
       await feed.refresh();
       assert.calledOnce(feed.store.dispatch);
       assert.propertyVal(feed.store.dispatch.firstCall.args[0], "type", at.TOP_SITES_UPDATED);
+    });
+    it("should call refresh on INIT action", async () => {
+      sinon.stub(feed, "refresh");
+      await feed.onAction({type: at.INIT});
+      assert.calledOnce(feed.refresh);
     });
   });
 });
