@@ -26,7 +26,6 @@ this.TopSitesFeed = class TopSitesFeed {
   constructor() {
     this.lastUpdated = 0;
     this._tippyTopProvider = new TippyTopProvider();
-    this._tippyTopProvider.init();
     this.dedupe = new Dedupe(this._dedupeKey);
   }
   _dedupeKey(site) {
@@ -137,8 +136,12 @@ this.TopSitesFeed = class TopSitesFeed {
       data: this._getPinnedWithData()
     }));
   }
-  onAction(action) {
+  async onAction(action) {
     switch (action.type) {
+      case at.INIT:
+        await this._tippyTopProvider.init();
+        this.refresh();
+        break;
       case at.NEW_TAB_LOAD:
         if (
           // When a new tab is opened, if the last time we refreshed the data
