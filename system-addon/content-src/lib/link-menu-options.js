@@ -73,7 +73,7 @@ module.exports = {
     icon: "pin",
     action: ac.SendToMain({
       type: at.TOP_SITES_PIN,
-      data: {site: {url: site.url, title: site.hostname}, index}
+      data: {site: {url: site.url}, index}
     }),
     userEvent: "PIN"
   }),
