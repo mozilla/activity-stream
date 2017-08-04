@@ -46,6 +46,7 @@ npm run buildmc
 
 # Patch mozilla-central (on top of the export) so that AS is preffed on, and
 # the mochitests are turned on.
+shopt -s nullglob # don't explode if there are no patches right now
 if [ $ENABLE_MC_AS ]; then
   PATCHES=$AS_GIT_BIN_REPO/mozilla-central-patches/*.diff
   for p in $PATCHES
@@ -54,6 +55,7 @@ if [ $ENABLE_MC_AS ]; then
     --input=$p
   done
 fi
+shopt -u nullglob
 
 # Be sure that we've built, and that the test glop in the objdir has been
 # created.
