@@ -100,7 +100,7 @@ describe("<LinkMenu>", () => {
       menu_action_open_private_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_dismiss: FAKE_SITE.url,
       menu_action_delete: FAKE_SITE.url,
-      menu_action_pin: {site: {url: FAKE_SITE.url, title: FAKE_SITE.hostname}, index: FAKE_INDEX},
+      menu_action_pin: {site: {url: FAKE_SITE.url}, index: FAKE_INDEX},
       menu_action_unpin: {site: {url: FAKE_SITE.url}},
       menu_action_save_to_pocket: {site: {url: FAKE_SITE.url, title: FAKE_SITE.title}}
     };
