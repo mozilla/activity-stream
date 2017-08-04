@@ -1,8 +1,0 @@
-diff --git a/browser/components/search/test/browser.ini b/browser/components/search/test/browser.ini
---- a/browser/components/search/test/browser.ini
-+++ b/browser/components/search/test/browser.ini
-@@ -31,3 +34,3 @@ skip-if = artifact # bug 1315953
- [browser_google_codes.js]
--skip-if = artifact # bug 1315953
-+skip-if = true # bug 1315953 / mozilla/activity-stream#2366
- [browser_google_nocodes.js]
