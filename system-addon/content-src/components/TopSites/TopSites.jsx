@@ -39,7 +39,7 @@ class TopSite extends React.Component {
   render() {
     const {link, index, dispatch} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
-    const title = link.pinTitle || link.hostname;
+    const title = link.hostname;
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
     const {tippyTopIcon} = link;
     let imageClassName;

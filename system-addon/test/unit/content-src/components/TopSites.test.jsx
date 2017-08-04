@@ -203,19 +203,9 @@ describe("<TopSite>", () => {
 
     assert.equal(titleEl.text(), "foobar");
   });
-  it("should render the pinTitle if set", () => {
-    link.isPinned = true;
-    link.pinnedIndex = 7;
-    link.pinTitle = "pinned";
-    const wrapper = shallow(<TopSite link={link} />);
-    const titleEl = wrapper.find(".title");
-
-    assert.equal(titleEl.text(), "pinned");
-  });
   it("should render the pin icon for pinned links", () => {
     link.isPinned = true;
     link.pinnedIndex = 7;
-    link.pinTitle = "pinned";
     const wrapper = shallow(<TopSite link={link} />);
     assert.equal(wrapper.find(".icon-pin-small").length, 1);
   });
