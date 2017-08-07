@@ -117,17 +117,21 @@ class TopSitesPerfTimer extends React.Component {
   }
 
   /**
-   * Call the given callback when the subsequent animation frame
-   * (not the upcoming one) paints.
+   * Call the given callback after the upcoming frame paints.  We're using
+   * a Promise rather than a setTimeout or double rFA, as Promise resolution
+   * is faster, as of this writing (Firefox 57 Nightly) - see #3105 for
+   * details.
    *
    * @param {Function} callback
    *
    * @returns void
    */
-  _onNextFrame(callback) {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(callback);
-    });
+  _afterFramePaint(callback) {
+    new Promise(resolve => requestAnimationFrame(resolve))
+      .then(callback).catch(reason => {
+        // eslint-disable-next-line no-console
+        console.warn("_afterFramePaint Promise rejected, reason:", reason);
+      });
   }
 
   _maybeSendPaintedEvent() {
@@ -153,7 +157,7 @@ class TopSitesPerfTimer extends React.Component {
     // handle it.
     this._timestampHandled = true;
 
-    this._onNextFrame(this._sendPaintedEvent);
+    this._afterFramePaint(this._sendPaintedEvent);
   }
 
   _sendPaintedEvent() {

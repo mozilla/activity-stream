@@ -61,31 +61,31 @@ describe("<TopSitesPerfTimer>", () => {
   });
 
   describe("#_maybeSendPaintedEvent", () => {
-    it("should call _onNextFrame if props.TopSites.initialized is true", () => {
+    it("should call _afterFramePaint if props.TopSites.initialized is true", () => {
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_onNextFrame");
+      const stub = sandbox.stub(instance, "_afterFramePaint");
 
       instance._maybeSendPaintedEvent();
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, instance._sendPaintedEvent);
     });
-    it("should not call _onNextFrame if props.TopSites.initialized is false", () => {
+    it("should not call _afterFramePaint if props.TopSites.initialized is false", () => {
       sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(false);
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_onNextFrame");
+      const stub = sandbox.stub(instance, "_afterFramePaint");
 
       instance._maybeSendPaintedEvent();
 
       assert.notCalled(stub);
     });
 
-    it("should not call _onNextFrame if this._timestampHandled is true", () => {
+    it("should not call _afterFramePaint if this._timestampHandled is true", () => {
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_onNextFrame");
+      const stub = sandbox.stub(instance, "_afterFramePaint");
       instance._timestampHandled = true;
 
       instance._maybeSendPaintedEvent();
@@ -96,7 +96,7 @@ describe("<TopSitesPerfTimer>", () => {
     it("should set this._timestampHandled=true when called with Topsites.initialized === true", () => {
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
-      sandbox.stub(instance, "_onNextFrame");
+      sandbox.stub(instance, "_afterFramePaint");
       instance._timestampHandled = false;
 
       instance._maybeSendPaintedEvent();
@@ -108,7 +108,7 @@ describe("<TopSitesPerfTimer>", () => {
       Object.assign(props, DEFAULT_PROPS, {TopSites: {initialized: false}});
       const wrapper = shallow(<TopSitesPerfTimer {...props} />);
       const instance = wrapper.instance();
-      sandbox.stub(instance, "_onNextFrame");
+      sandbox.stub(instance, "_afterFramePaint");
       instance._timestampHandled = false;
 
       instance._maybeSendPaintedEvent();
@@ -117,19 +117,17 @@ describe("<TopSitesPerfTimer>", () => {
     });
   });
 
-  describe("#_onNextFrame", () => {
-    it("should call callback one frame after the current one", () => {
-      const callback = sandbox.spy();
+  describe("#_afterFramePaint", () => {
+    it("should call callback after the requestAnimationFrame callback returns", done => {
+      this.callback = () => done();
+      sandbox.spy(this, "callback");
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
-
       const instance = wrapper.instance();
-      instance._onNextFrame(callback);
 
-      mockRaf.step({count: 1});
-      assert.notCalled(callback);
+      instance._afterFramePaint(this.callback);
 
+      assert.notCalled(this.callback);
       mockRaf.step({count: 1});
-      assert.calledOnce(callback);
     });
   });
 
