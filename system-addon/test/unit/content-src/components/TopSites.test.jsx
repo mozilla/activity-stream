@@ -81,15 +81,39 @@ describe("<TopSitesPerfTimer>", () => {
 
       assert.notCalled(stub);
     });
-    it("should not call _onNextFrame if this._timestampSent is true", () => {
+
+    it("should not call _onNextFrame if this._timestampHandled is true", () => {
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_onNextFrame");
-      instance._timestampSent = true;
+      instance._timestampHandled = true;
 
       instance._maybeSendPaintedEvent();
 
       assert.notCalled(stub);
+    });
+
+    it("should set this._timestampHandled=true when called with Topsites.initialized === true", () => {
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      const instance = wrapper.instance();
+      sandbox.stub(instance, "_onNextFrame");
+      instance._timestampHandled = false;
+
+      instance._maybeSendPaintedEvent();
+
+      assert.isTrue(instance._timestampHandled);
+    });
+    it("should not set this._timestampHandled=true when called with Topsites.initialized === false", () => {
+      let props = {};
+      Object.assign(props, DEFAULT_PROPS, {TopSites: {initialized: false}});
+      const wrapper = shallow(<TopSitesPerfTimer {...props} />);
+      const instance = wrapper.instance();
+      sandbox.stub(instance, "_onNextFrame");
+      instance._timestampHandled = false;
+
+      instance._maybeSendPaintedEvent();
+
+      assert.isFalse(instance._timestampHandled);
     });
   });
 
@@ -118,16 +142,6 @@ describe("<TopSitesPerfTimer>", () => {
 
       assert.calledOnce(perfSvc.mark);
       assert.calledWithExactly(perfSvc.mark, "topsites_first_painted_ts");
-    });
-
-    it("should set this._timestamp_sent to true", () => {
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
-      const instance = wrapper.instance();
-      assert.isFalse(instance._timestampSent);
-
-      wrapper.instance()._sendPaintedEvent();
-
-      assert.isTrue(instance._timestampSent);
     });
 
     it("should send a SAVE_SESSION_PERF_DATA message with the result of perfSvc.getMostRecentAbsMarkStartByName two frames after mount", () => {
