@@ -16,8 +16,8 @@ XPCOMUtils.defineLazyModuleGetter(this, "ClientID",
   "resource://gre/modules/ClientID.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "perfService",
   "resource://activity-stream/common/PerfService.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "TelemetrySender",
-  "resource://activity-stream/lib/TelemetrySender.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PingCentre",
+  "resource://activity-stream/lib/PingCentre.jsm");
 
 XPCOMUtils.defineLazyServiceGetter(this, "gUUIDGenerator",
   "@mozilla.org/uuid-generator;1",
@@ -155,11 +155,11 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   /**
-   * Lazily initialize TelemetrySender to send pings
+   * Lazily initialize PingCentre to send pings
    */
-  get telemetrySender() {
-    Object.defineProperty(this, "telemetrySender", {value: new TelemetrySender()});
-    return this.telemetrySender;
+  get pingCentre() {
+    Object.defineProperty(this, "pingCentre", {value: new PingCentre()});
+    return this.pingCentre;
   }
 
   /**
@@ -306,7 +306,7 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   async sendEvent(eventPromise) {
-    this.telemetrySender.sendPing(await eventPromise);
+    this.pingCentre.sendPing(await eventPromise);
   }
 
   handleImpressionStats(action) {
@@ -408,8 +408,8 @@ this.TelemetryFeed = class TelemetryFeed {
       "browser-open-newtab-start");
 
     // Only uninit if the getter has initialized it
-    if (Object.prototype.hasOwnProperty.call(this, "telemetrySender")) {
-      this.telemetrySender.uninit();
+    if (Object.prototype.hasOwnProperty.call(this, "pingCentre")) {
+      this.pingCentre.uninit();
     }
     // TODO: Send any unfinished sessions
   }

@@ -181,7 +181,7 @@ const FEEDS_DATA = [
   {
     name: "telemetry",
     factory: () => new TelemetryFeed(),
-    title: "Relays telemetry-related actions to TelemetrySender",
+    title: "Relays telemetry-related actions to PingCentre",
     value: true
   },
   {

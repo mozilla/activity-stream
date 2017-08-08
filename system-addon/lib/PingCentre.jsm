@@ -30,7 +30,7 @@ const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
  *                   to save off a pointer to a fake Prefs instance so that
  *                   stubs and spies can be inspected by the test code.
  */
-function TelemetrySender(args) {
+function PingCentre(args) {
   let prefArgs = {};
   if (args) {
     if ("prefInitHook" in args) {
@@ -55,7 +55,7 @@ function TelemetrySender(args) {
   this._pingEndpoint = this._prefs.get(ENDPOINT_PREF);
 }
 
-TelemetrySender.prototype = {
+PingCentre.prototype = {
   get enabled() {
     return this._enabled && this._fhrEnabled;
   },
@@ -102,11 +102,11 @@ TelemetrySender.prototype = {
   }
 };
 
-this.TelemetrySender = TelemetrySender;
-this.TelemetrySenderConstants = {
+this.PingCentre = PingCentre;
+this.PingCentreConstants = {
   ENDPOINT_PREF,
   FHR_UPLOAD_ENABLED_PREF,
   TELEMETRY_PREF,
   LOGGING_PREF
 };
-this.EXPORTED_SYMBOLS = ["TelemetrySender", "TelemetrySenderConstants"];
+this.EXPORTED_SYMBOLS = ["PingCentre", "PingCentreConstants"];

@@ -25,7 +25,7 @@ describe("TelemetryFeed", () => {
   };
   let instance;
   let clock;
-  class TelemetrySender {sendPing() {} uninit() {}}
+  class PingCentre {sendPing() {} uninit() {}}
   class PerfService {
     getMostRecentAbsMarkStartByName() { return 1234; }
     mark() {}
@@ -40,7 +40,7 @@ describe("TelemetryFeed", () => {
     PREF_IMPRESSION_STATS_BLOCKED,
     PREF_IMPRESSION_STATS_POCKETED
   } = injector({
-    "lib/TelemetrySender.jsm": {TelemetrySender},
+    "lib/PingCentre.jsm": {PingCentre},
     "common/PerfService.jsm": {perfService}
   });
 
@@ -59,8 +59,8 @@ describe("TelemetryFeed", () => {
     FakePrefs.prototype.prefs = {};
   });
   describe("#init", () => {
-    it("should add .telemetrySender, a TelemetrySender instance", () => {
-      assert.instanceOf(instance.telemetrySender, TelemetrySender);
+    it("should add .pingCentre, a PingCentre instance", () => {
+      assert.instanceOf(instance.pingCentre, PingCentre);
     });
     it("should add .telemetryClientId from the ClientID module", async () => {
       assert.equal(await instance.telemetryClientId, FAKE_TELEMETRY_ID);
@@ -336,11 +336,11 @@ describe("TelemetryFeed", () => {
     });
   });
   describe("#sendEvent", () => {
-    it("should call telemetrySender", async () => {
-      sandbox.stub(instance.telemetrySender, "sendPing");
+    it("should call PingCentre", async () => {
+      sandbox.stub(instance.pingCentre, "sendPing");
       const event = {};
       await instance.sendEvent(Promise.resolve(event));
-      assert.calledWith(instance.telemetrySender.sendPing, event);
+      assert.calledWith(instance.pingCentre.sendPing, event);
     });
   });
 
@@ -403,15 +403,15 @@ describe("TelemetryFeed", () => {
   });
 
   describe("#uninit", () => {
-    it("should call .telemetrySender.uninit", () => {
-      const stub = sandbox.stub(instance.telemetrySender, "uninit");
+    it("should call .pingCentre.uninit", () => {
+      const stub = sandbox.stub(instance.pingCentre, "uninit");
       instance.uninit();
       assert.calledOnce(stub);
     });
     it("should make this.browserOpenNewtabStart() stop observing browser-open-newtab-start", async () => {
       await instance.init();
       sandbox.spy(Services.obs, "removeObserver");
-      sandbox.stub(instance.telemetrySender, "uninit");
+      sandbox.stub(instance.pingCentre, "uninit");
 
       await instance.uninit();
 
