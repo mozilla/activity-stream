@@ -267,7 +267,7 @@
     "tippymc:manifest": "cpx \"node_modules/tippy-top-sites/top_sites.json\" system-addon/data/content/tippytop",
     "tippymc:images": "cpx \"node_modules/tippy-top-sites/images/**/*\" system-addon/data/content/tippytop/images",
     "buildmc": "npm-run-all buildmc:*",
-    "prebuildmc": "npm run cleanmc && npm run tippymc",
+    "prebuildmc": "npm run cleanmc && rimraf system-addon/data/content/tippytop",
     "buildmc:webpack": "webpack --config webpack.system-addon.config.js",
     "buildmc:css": "node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content",
     "buildmc:locales": "pontoon-to-json --src locales --dest system-addon/data",

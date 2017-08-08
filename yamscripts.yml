@@ -49,7 +49,7 @@ scripts:
 
 # buildmc: Export the bootstraped add-on to mozilla central
   buildmc:
-    pre: =>cleanmc && =>tippymc
+    pre: =>cleanmc && rimraf system-addon/data/content/tippytop
     webpack: webpack --config webpack.system-addon.config.js
     css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content
     locales: pontoon-to-json --src locales --dest system-addon/data
