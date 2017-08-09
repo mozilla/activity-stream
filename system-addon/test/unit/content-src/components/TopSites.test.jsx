@@ -142,7 +142,7 @@ describe("<TopSitesPerfTimer>", () => {
       assert.calledWithExactly(perfSvc.mark, "topsites_first_painted_ts");
     });
 
-    it("should send a SAVE_SESSION_PERF_DATA message with the result of perfSvc.getMostRecentAbsMarkStartByName two frames after mount", () => {
+    it("should send a SAVE_SESSION_PERF_DATA message with the result of perfSvc.getMostRecentAbsMarkStartByName", () => {
       sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
         .withArgs("topsites_first_painted_ts").returns(777);
       const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
