@@ -14,7 +14,7 @@ const INITIAL_STATE = {
     // The locale of the browser
     locale: "",
     // Localized strings with defaults
-    strings: {},
+    strings: null,
     // The version of the system-addon
     version: null
   },
