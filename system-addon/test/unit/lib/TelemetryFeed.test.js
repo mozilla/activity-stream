@@ -12,7 +12,6 @@ const {
   SessionPing
 } = require("test/schemas/pings");
 
-const FAKE_TELEMETRY_ID = "foo123";
 const FAKE_UUID = "{foo-123-foo}";
 
 describe("TelemetryFeed", () => {
@@ -48,7 +47,6 @@ describe("TelemetryFeed", () => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     clock = sinon.useFakeTimers();
-    globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
     globals.set("gUUIDGenerator", {generateUUID: () => FAKE_UUID});
     instance = new TelemetryFeed();
     instance.store = store;
@@ -61,9 +59,6 @@ describe("TelemetryFeed", () => {
   describe("#init", () => {
     it("should add .pingCentre, a PingCentre instance", () => {
       assert.instanceOf(instance.pingCentre, PingCentre);
-    });
-    it("should add .telemetryClientId from the ClientID module", async () => {
-      assert.equal(await instance.telemetryClientId, FAKE_TELEMETRY_ID);
     });
     it("should make this.browserOpenNewtabStart() observe browser-open-newtab-start", () => {
       sandbox.spy(Services.obs, "addObserver");
@@ -339,7 +334,7 @@ describe("TelemetryFeed", () => {
     it("should call PingCentre", async () => {
       sandbox.stub(instance.pingCentre, "sendPing");
       const event = {};
-      await instance.sendEvent(Promise.resolve(event));
+      await instance.sendEvent(event);
       assert.calledWith(instance.pingCentre.sendPing, event);
     });
   });

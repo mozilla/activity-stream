@@ -7,6 +7,8 @@ Cu.import("resource://gre/modules/Preferences.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.importGlobalProperties(["fetch"]);
 
+XPCOMUtils.defineLazyModuleGetter(this, "ClientID",
+  "resource://gre/modules/ClientID.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "console",
   "resource://gre/modules/Console.jsm");
 
@@ -24,72 +26,95 @@ const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
 /**
  * Observe various notifications and send them to a telemetry endpoint.
  *
+ * @param {string} topic - a unique ID for users of PingCentre to distinguish
+ *                  their data on the server side.
+ * @param {string} pingEndpoint - the URL where the POST with data is sent.
  * @param {Object} args - optional arguments
  * @param {Function} args.prefInitHook - if present, will be called back
  *                   inside the Prefs constructor. Typically used from tests
  *                   to save off a pointer to a fake Prefs instance so that
  *                   stubs and spies can be inspected by the test code.
  */
-function PingCentre(args) {
-  let prefArgs = {};
-  if (args) {
-    if ("prefInitHook" in args) {
-      prefArgs.initHook = args.prefInitHook;
+class PingCentre {
+  constructor(topic, pingEndpoint, args) {
+    let prefArgs = {};
+    if (args) {
+      if ("prefInitHook" in args) {
+        prefArgs.initHook = args.prefInitHook;
+      }
     }
+
+    if (!topic) {
+      throw new Error("Must specify topic.");
+    }
+
+    this._topic = topic;
+    this._prefs = new Preferences(prefArgs);
+    this._pingEndpoint = pingEndpoint || this._prefs.get(ENDPOINT_PREF);
+
+    this._enabled = this._prefs.get(TELEMETRY_PREF);
+    this._onTelemetryPrefChange = this._onTelemetryPrefChange.bind(this);
+    this._prefs.observe(TELEMETRY_PREF, this._onTelemetryPrefChange);
+
+    this._fhrEnabled = this._prefs.get(FHR_UPLOAD_ENABLED_PREF);
+    this._onFhrPrefChange = this._onFhrPrefChange.bind(this);
+    this._prefs.observe(FHR_UPLOAD_ENABLED_PREF, this._onFhrPrefChange);
+
+    this.logging = this._prefs.get(LOGGING_PREF);
+    this._onLoggingPrefChange = this._onLoggingPrefChange.bind(this);
+    this._prefs.observe(LOGGING_PREF, this._onLoggingPrefChange);
   }
 
-  this._prefs = new Preferences(prefArgs);
+  /**
+   * Lazily get the Telemetry id promise
+   */
+  get telemetryClientId() {
+    Object.defineProperty(this, "telemetryClientId", {value: ClientID.getClientID()});
+    return this.telemetryClientId;
+  }
 
-  this._enabled = this._prefs.get(TELEMETRY_PREF);
-  this._onTelemetryPrefChange = this._onTelemetryPrefChange.bind(this);
-  this._prefs.observe(TELEMETRY_PREF, this._onTelemetryPrefChange);
-
-  this._fhrEnabled = this._prefs.get(FHR_UPLOAD_ENABLED_PREF);
-  this._onFhrPrefChange = this._onFhrPrefChange.bind(this);
-  this._prefs.observe(FHR_UPLOAD_ENABLED_PREF, this._onFhrPrefChange);
-
-  this.logging = this._prefs.get(LOGGING_PREF);
-  this._onLoggingPrefChange = this._onLoggingPrefChange.bind(this);
-  this._prefs.observe(LOGGING_PREF, this._onLoggingPrefChange);
-
-  this._pingEndpoint = this._prefs.get(ENDPOINT_PREF);
-}
-
-PingCentre.prototype = {
   get enabled() {
     return this._enabled && this._fhrEnabled;
-  },
+  }
 
   _onLoggingPrefChange(prefVal) {
     this.logging = prefVal;
-  },
+  }
 
   _onTelemetryPrefChange(prefVal) {
     this._enabled = prefVal;
-  },
+  }
 
   _onFhrPrefChange(prefVal) {
     this._fhrEnabled = prefVal;
-  },
+  }
 
-  sendPing(data) {
-    if (this.logging) {
-      // performance related pings cause a lot of logging, so we mute them
-      if (data.action !== "activity_stream_performance") {
-        console.log(`TELEMETRY PING: ${JSON.stringify(data)}\n`); // eslint-disable-line no-console
-      }
-    }
+  async sendPing(data) {
     if (!this.enabled) {
       return Promise.resolve();
     }
-    return fetch(this._pingEndpoint, {method: "POST", body: JSON.stringify(data)}).then(response => {
+
+    let clientID = data.client_id || await this.telemetryClientId;
+    const payload = Object.assign({
+      topic: this._topic,
+      client_id: clientID
+    }, data);
+
+    if (this.logging) {
+      // performance related pings cause a lot of logging, so we mute them
+      if (data.action !== "activity_stream_performance") {
+        console.log(`TELEMETRY PING: ${JSON.stringify(payload)}\n`); // eslint-disable-line no-console
+      }
+    }
+
+    return fetch(this._pingEndpoint, {method: "POST", body: JSON.stringify(payload)}).then(response => {
       if (!response.ok) {
         Cu.reportError(`Ping failure with HTTP response code: ${response.status}`);
       }
     }).catch(e => {
       Cu.reportError(`Ping failure with error: ${e}`);
     });
-  },
+  }
 
   uninit() {
     try {
@@ -100,7 +125,7 @@ PingCentre.prototype = {
       Cu.reportError(e);
     }
   }
-};
+}
 
 this.PingCentre = PingCentre;
 this.PingCentreConstants = {

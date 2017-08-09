@@ -12,8 +12,6 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 
-XPCOMUtils.defineLazyModuleGetter(this, "ClientID",
-  "resource://gre/modules/ClientID.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "perfService",
   "resource://activity-stream/common/PerfService.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "PingCentre",
@@ -147,18 +145,10 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   /**
-   * Lazily get the Telemetry id promise
-   */
-  get telemetryClientId() {
-    Object.defineProperty(this, "telemetryClientId", {value: ClientID.getClientID()});
-    return this.telemetryClientId;
-  }
-
-  /**
    * Lazily initialize PingCentre to send pings
    */
   get pingCentre() {
-    Object.defineProperty(this, "pingCentre", {value: new PingCentre()});
+    Object.defineProperty(this, "pingCentre", {value: new PingCentre("activity-stream")});
     return this.pingCentre;
   }
 
@@ -222,10 +212,9 @@ this.TelemetryFeed = class TelemetryFeed {
    * @param  {string} id The portID of the session, if a session is relevant (optional)
    * @return {obj}    A telemetry ping
    */
-  async createPing(portID) {
+  createPing(portID) {
     const appInfo = this.store.getState().App;
     const ping = {
-      client_id: await this.telemetryClientId,
       addon_version: appInfo.version,
       locale: appInfo.locale,
       user_prefs: this.userPreferences
@@ -251,9 +240,9 @@ this.TelemetryFeed = class TelemetryFeed {
    *                     all the user specific IDs with "n/a" in the ping.
    * @return {obj}    A telemetry ping
    */
-  async createImpressionStats(action) {
+  createImpressionStats(action) {
     let ping = Object.assign(
-      await this.createPing(au.getPortIdOfSender(action)),
+      this.createPing(au.getPortIdOfSender(action)),
       action.data,
       {action: "activity_stream_impression_stats"}
     );
@@ -267,34 +256,34 @@ this.TelemetryFeed = class TelemetryFeed {
     return ping;
   }
 
-  async createUserEvent(action) {
+  createUserEvent(action) {
     return Object.assign(
-      await this.createPing(au.getPortIdOfSender(action)),
+      this.createPing(au.getPortIdOfSender(action)),
       action.data,
       {action: "activity_stream_user_event"}
     );
   }
 
-  async createUndesiredEvent(action) {
+  createUndesiredEvent(action) {
     return Object.assign(
-      await this.createPing(au.getPortIdOfSender(action)),
+      this.createPing(au.getPortIdOfSender(action)),
       {value: 0}, // Default value
       action.data,
       {action: "activity_stream_undesired_event"}
     );
   }
 
-  async createPerformanceEvent(action) {
+  createPerformanceEvent(action) {
     return Object.assign(
-      await this.createPing(),
+      this.createPing(),
       action.data,
       {action: "activity_stream_performance_event"}
     );
   }
 
-  async createSessionEndEvent(session) {
+  createSessionEndEvent(session) {
     return Object.assign(
-      await this.createPing(),
+      this.createPing(),
       {
         session_id: session.session_id,
         page: session.page,
@@ -305,8 +294,8 @@ this.TelemetryFeed = class TelemetryFeed {
     );
   }
 
-  async sendEvent(eventPromise) {
-    this.pingCentre.sendPing(await eventPromise);
+  async sendEvent(event_object) {
+    this.pingCentre.sendPing(event_object);
   }
 
   handleImpressionStats(action) {
