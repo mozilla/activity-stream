@@ -7,6 +7,7 @@ const {
   BasePing,
   UndesiredPing,
   UserEventPing,
+  ImpressionStatsPing,
   PerfPing,
   SessionPing
 } = require("test/schemas/pings");
@@ -259,6 +260,57 @@ describe("TelemetryFeed", () => {
       });
     });
   });
+  describe("#createImpressionStats", () => {
+    it("should create a valid impression stats ping", async () => {
+      const tiles = [{id: 10001}, {id: 10002}, {id: 10003}];
+      const action = ac.ImpressionStats({source: "POCKET", tiles});
+      const ping = await instance.createImpressionStats(action);
+
+      assert.validate(ping, ImpressionStatsPing);
+      assert.propertyVal(ping, "source", "POCKET");
+      assert.propertyVal(ping, "tiles", tiles);
+    });
+    it("should empty all the user specific IDs in the ping", async () => {
+      const tiles = [{id: 10001, pos: 2}];
+      const incognito = true;
+      const action = ac.ImpressionStats({source: "POCKET", incognito, tiles, click: 0});
+      const ping = await instance.createImpressionStats(action);
+
+      assert.validate(ping, ImpressionStatsPing);
+      assert.propertyVal(ping, "click", 0);
+      assert.propertyVal(ping, "tiles", tiles);
+      assert.propertyVal(ping, "client_id", "n/a");
+      assert.propertyVal(ping, "session_id", "n/a");
+      assert.isUndefined(ping.incognito);
+    });
+    it("should create a valid click ping", async () => {
+      const tiles = [{id: 10001, pos: 2}];
+      const action = ac.ImpressionStats({source: "POCKET", tiles, click: 0});
+      const ping = await instance.createImpressionStats(action);
+
+      assert.validate(ping, ImpressionStatsPing);
+      assert.propertyVal(ping, "click", 0);
+      assert.propertyVal(ping, "tiles", tiles);
+    });
+    it("should create a valid block ping", async () => {
+      const tiles = [{id: 10001, pos: 2}];
+      const action = ac.ImpressionStats({source: "POCKET", tiles, block: 0});
+      const ping = await instance.createImpressionStats(action);
+
+      assert.validate(ping, ImpressionStatsPing);
+      assert.propertyVal(ping, "block", 0);
+      assert.propertyVal(ping, "tiles", tiles);
+    });
+    it("should create a valid pocket ping", async () => {
+      const tiles = [{id: 10001, pos: 2}];
+      const action = ac.ImpressionStats({source: "POCKET", tiles, pocket: 0});
+      const ping = await instance.createImpressionStats(action);
+
+      assert.validate(ping, ImpressionStatsPing);
+      assert.propertyVal(ping, "pocket", 0);
+      assert.propertyVal(ping, "tiles", tiles);
+    });
+  });
   describe("#sendEvent", () => {
     it("should call telemetrySender", async () => {
       sandbox.stub(instance.telemetrySender, "sendPing");
@@ -365,7 +417,7 @@ describe("TelemetryFeed", () => {
 
       assert.calledWith(stub, "port123", data);
     });
-    it("should send an event on an TELEMETRY_UNDESIRED_EVENT action", () => {
+    it("should send an event on a TELEMETRY_UNDESIRED_EVENT action", () => {
       const sendEvent = sandbox.stub(instance, "sendEvent");
       const eventCreator = sandbox.stub(instance, "createUndesiredEvent");
       const action = {type: at.TELEMETRY_UNDESIRED_EVENT};
@@ -373,7 +425,7 @@ describe("TelemetryFeed", () => {
       assert.calledWith(eventCreator, action);
       assert.calledWith(sendEvent, eventCreator.returnValue);
     });
-    it("should send an event on an TELEMETRY_USER_EVENT action", () => {
+    it("should send an event on a TELEMETRY_USER_EVENT action", () => {
       const sendEvent = sandbox.stub(instance, "sendEvent");
       const eventCreator = sandbox.stub(instance, "createUserEvent");
       const action = {type: at.TELEMETRY_USER_EVENT};
@@ -381,10 +433,18 @@ describe("TelemetryFeed", () => {
       assert.calledWith(eventCreator, action);
       assert.calledWith(sendEvent, eventCreator.returnValue);
     });
-    it("should send an event on an TELEMETRY_PERFORMANCE_EVENT action", () => {
+    it("should send an event on a TELEMETRY_PERFORMANCE_EVENT action", () => {
       const sendEvent = sandbox.stub(instance, "sendEvent");
       const eventCreator = sandbox.stub(instance, "createPerformanceEvent");
       const action = {type: at.TELEMETRY_PERFORMANCE_EVENT};
+      instance.onAction(action);
+      assert.calledWith(eventCreator, action);
+      assert.calledWith(sendEvent, eventCreator.returnValue);
+    });
+    it("should send an event on a TELEMETRY_IMPRESSION_STATS action", () => {
+      const sendEvent = sandbox.stub(instance, "sendEvent");
+      const eventCreator = sandbox.stub(instance, "createImpressionStats");
+      const action = {type: at.TELEMETRY_IMPRESSION_STATS};
       instance.onAction(action);
       assert.calledWith(eventCreator, action);
       assert.calledWith(sendEvent, eventCreator.returnValue);
