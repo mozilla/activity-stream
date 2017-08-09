@@ -61,51 +61,76 @@ describe("<TopSitesPerfTimer>", () => {
   });
 
   describe("#_maybeSendPaintedEvent", () => {
-    it("should call _onNextFrame if props.TopSites.initialized is true", () => {
+    it("should call _afterFramePaint if props.TopSites.initialized is true", () => {
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_onNextFrame");
+      const stub = sandbox.stub(instance, "_afterFramePaint");
 
       instance._maybeSendPaintedEvent();
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, instance._sendPaintedEvent);
     });
-    it("should not call _onNextFrame if props.TopSites.initialized is false", () => {
+    it("should not call _afterFramePaint if props.TopSites.initialized is false", () => {
       sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(false);
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_onNextFrame");
+      const stub = sandbox.stub(instance, "_afterFramePaint");
 
       instance._maybeSendPaintedEvent();
 
       assert.notCalled(stub);
     });
-    it("should not call _onNextFrame if this._timestampSent is true", () => {
+
+    it("should not call _afterFramePaint if this._timestampHandled is true", () => {
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_onNextFrame");
-      instance._timestampSent = true;
+      const stub = sandbox.stub(instance, "_afterFramePaint");
+      instance._timestampHandled = true;
 
       instance._maybeSendPaintedEvent();
 
       assert.notCalled(stub);
+    });
+
+    it("should set this._timestampHandled=true when called with Topsites.initialized === true", () => {
+      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      const instance = wrapper.instance();
+      sandbox.stub(instance, "_afterFramePaint");
+      instance._timestampHandled = false;
+
+      instance._maybeSendPaintedEvent();
+
+      assert.isTrue(instance._timestampHandled);
+    });
+    it("should not set this._timestampHandled=true when called with Topsites.initialized === false", () => {
+      let props = {};
+      Object.assign(props, DEFAULT_PROPS, {TopSites: {initialized: false}});
+      const wrapper = shallow(<TopSitesPerfTimer {...props} />);
+      const instance = wrapper.instance();
+      sandbox.stub(instance, "_afterFramePaint");
+      instance._timestampHandled = false;
+
+      instance._maybeSendPaintedEvent();
+
+      assert.isFalse(instance._timestampHandled);
     });
   });
 
-  describe("#_onNextFrame", () => {
-    it("should call callback one frame after the current one", () => {
-      const callback = sandbox.spy();
+  describe("#_afterFramePaint", () => {
+    it("should call callback after the requestAnimationFrame callback returns", done => {
+      // Setting the callback to done is the test that it does finally get
+      // called at the correct time, after the event loop ticks again.
+      // If it doesn't get called, this test will time out.
+      this.callback = () => done();
+      sandbox.spy(this, "callback");
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
-
       const instance = wrapper.instance();
-      instance._onNextFrame(callback);
 
-      mockRaf.step({count: 1});
-      assert.notCalled(callback);
+      instance._afterFramePaint(this.callback);
 
+      assert.notCalled(this.callback);
       mockRaf.step({count: 1});
-      assert.calledOnce(callback);
     });
   });
 
@@ -120,17 +145,7 @@ describe("<TopSitesPerfTimer>", () => {
       assert.calledWithExactly(perfSvc.mark, "topsites_first_painted_ts");
     });
 
-    it("should set this._timestamp_sent to true", () => {
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
-      const instance = wrapper.instance();
-      assert.isFalse(instance._timestampSent);
-
-      wrapper.instance()._sendPaintedEvent();
-
-      assert.isTrue(instance._timestampSent);
-    });
-
-    it("should send a SAVE_SESSION_PERF_DATA message with the result of perfSvc.getMostRecentAbsMarkStartByName two frames after mount", () => {
+    it("should send a SAVE_SESSION_PERF_DATA message with the result of perfSvc.getMostRecentAbsMarkStartByName", () => {
       sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
         .withArgs("topsites_first_painted_ts").returns(777);
       const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
