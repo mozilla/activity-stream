@@ -119,6 +119,9 @@ describe("<TopSitesPerfTimer>", () => {
 
   describe("#_afterFramePaint", () => {
     it("should call callback after the requestAnimationFrame callback returns", done => {
+      // Setting the callback to done is the test that it does finally get
+      // called at the correct time, after the event loop ticks again.
+      // If it doesn't get called, this test will time out.
       this.callback = () => done();
       sandbox.spy(this, "callback");
       const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
