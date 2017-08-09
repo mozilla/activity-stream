@@ -149,12 +149,11 @@ class TopSitesPerfTimer extends React.Component {
       return;
     }
 
-    // And if we haven't, we're doing so now, so remember that.
-    // Even if something goes wrong in the callback, we can't
-    // try again, as we'd be sending back the wrong data, and we
-    // have to do it here, so that other calls to this method
-    // while waiting for the next frame won't also try to handle
-    // handle it.
+    // And if we haven't, we're doing so now, so remember that. Even if
+    // something goes wrong in the callback, we can't try again, as we'd be
+    // sending back the wrong data, and we have to do it here, so that other
+    // calls to this method while waiting for the next frame won't also try to
+    // handle handle it.
     this._timestampHandled = true;
 
     this._afterFramePaint(this._sendPaintedEvent);
