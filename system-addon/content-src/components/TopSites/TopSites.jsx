@@ -120,13 +120,17 @@ class TopSitesPerfTimer extends React.Component {
    * Call the given callback after the upcoming frame paints.
    *
    * @note Both setTimeout and requestAnimationFrame are throttled when the page
-   * is hidden, so this will give incorrect results in that case.  We'll want to
-   * filter out preloaded tabs, and otherwise, this is presumably, a fairly rare
-   * case that will get lost in the noise.  If we decide that it's important to
-   * find out when something that's hidden has "painted", however, another
-   * option is to post a message to this window. That should happen even faster
-   * than setTimeout, and, at least as of this writing, it's not throttled in
-   * hidden windows in Firefox.
+   * is hidden, so this callback may get called up to a second or so after the
+   * requestAnimationFrame "paint" for hidden tabs.
+   *
+   * Newtabs hidden while loading will presumably be fairly rare (other than
+   * preloaded tabs, which we will be filtering out on the server side), so such
+   * cases should get lost in the noise.
+   *
+   * If we decide that it's important to find out when something that's hidden
+   * has "painted", however, another option is to post a message to this window.
+   * That should happen even faster than setTimeout, and, at least as of this
+   * writing, it's not throttled in hidden windows in Firefox.
    *
    * @param {Function} callback
    *
