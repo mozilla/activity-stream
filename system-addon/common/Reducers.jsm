@@ -255,6 +255,7 @@ function Snippets(prevState = INITIAL_STATE.Snippets, action) {
 }
 
 this.INITIAL_STATE = INITIAL_STATE;
+this.TOP_SITES_SHOWMORE_LENGTH = TOP_SITES_SHOWMORE_LENGTH;
 
 this.reducers = {TopSites, App, Snippets, Prefs, Dialog, Sections};
 this.insertPinned = insertPinned;
