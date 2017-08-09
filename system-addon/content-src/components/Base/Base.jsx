@@ -35,14 +35,16 @@ class Base extends React.Component {
   }
 
   updateTitle({strings}) {
-    document.title = strings.newtab_page_title;
+    if (strings) {
+      document.title = strings.newtab_page_title;
+    }
   }
 
   render() {
     const props = this.props;
     const {locale, strings, initialized} = props.App;
     const prefs = props.Prefs.values;
-    if (!initialized) {
+    if (!initialized || !strings) {
       return null;
     }
 
