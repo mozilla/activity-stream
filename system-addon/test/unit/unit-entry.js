@@ -1,4 +1,4 @@
-const {GlobalOverrider, FakePrefs, FakePerformance} = require("test/unit/utils");
+const {GlobalOverrider, FakePrefs, FakePerformance, EventEmitter} = require("test/unit/utils");
 const {chaiAssertions} = require("test/schemas/pings");
 
 const req = require.context(".", true, /\.test\.jsx?$/);
@@ -66,7 +66,8 @@ overrider.set({
     defineLazyModuleGetter() {},
     defineLazyServiceGetter() {},
     generateQI() { return {}; }
-  }
+  },
+  EventEmitter
 });
 
 describe("activity-stream", () => {
