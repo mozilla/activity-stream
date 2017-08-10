@@ -20,7 +20,8 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "locale": "en-US",
   "page": "about:newtab or about:home",
   "session_duration": 1635,
-  "session_id": "{12dasd-213asda-213dkakj}"
+  "session_id": "{12dasd-213asda-213dkakj}",
+  "user_prefs": 7
 
   // These fields are generated on the server
   "date": "2016-03-07",
@@ -45,6 +46,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "session_id": "{12dasd-213asda-213dkakj}",
   "recommender_type": "pocket-trending",
   "metadata_source": "MetadataService or Local or TippyTopProvider",
+  "user_prefs": 7
 
   // These fields are generated on the server
   "ip": "10.192.171.13",
@@ -66,7 +68,8 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "locale": "en-US",
   "receive_at": 1457396660000,
   "source": "TOP_FRECENT_SITES",
-  "value": 1
+  "value": 1,
+  "user_prefs": 7,
 
   // These fields are generated on the server
   "ip": "10.192.171.13",
@@ -88,6 +91,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "page": "about:newtab or about:home",
   "source": "HIGHLIGHTS",
   "value": 0,
+  "user_prefs": 7,
 
   // These fields are generated on the server
   "ip": "10.192.171.13",
@@ -108,6 +112,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "source": "pocket",
   "page": "about:newtab",
   "tiles": [{"id": 10000}, {"id": 10001}, {"id": 10002}]
+  "user_prefs": 7
 }
 ```
 
@@ -120,6 +125,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "locale": "en-US",
   "source": "pocket",
   "page": "about:newtab",
+  "user_prefs": 7,
 
   // "pos" is the 0-based index to record the tile's position in the Pocket section.
   "tiles": [{"id": 10000, "pos": 0}],
@@ -171,6 +177,7 @@ and losing focus. | :one:
 | `click` | [Optional] An integer to record the 0-based index when user clicks on a Pocket tile. | :one:
 | `block` | [Optional] An integer to record the 0-based index when user blocks a Pocket tile. | :one:
 | `pocket` | [Optional] An integer to record the 0-based index when user saves a Pocket tile to Pocket. | :one:
+| `user_prefs` | [Required] The encoded integer of user's preferences. | :one: & :four:
 
 **Where:**
 
@@ -191,16 +198,14 @@ but will likely be added in future versions:
   "topsites_size": 6,
   "topsites_screenshot": 1,
   "topsites_tippytop": 3,
-  "user_prefs": 7
 }
 ```
 
+This encoding mapping was defined in `system-addon/lib/TelemetryFeed.jsm`
 | Preference | Encoded value |
 | --- | --- |
 | `showSearch` | 1 |
 | `showTopSites` | 2 |
-| `showHighlights` | 4 |
-| `showMoreTopSites` | 8 |
-| `showPocketStories` | 16 |
+| `showTopStories` | 4 |
 
 Each item above could be combined with other items through bitwise OR operation

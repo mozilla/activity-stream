@@ -10,6 +10,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 const {actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
+const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "ClientID",
   "resource://gre/modules/ClientID.jsm");
@@ -22,9 +23,17 @@ XPCOMUtils.defineLazyServiceGetter(this, "gUUIDGenerator",
   "@mozilla.org/uuid-generator;1",
   "nsIUUIDGenerator");
 
+// This is a mapping table between the user preferences and its encoding code
+const USER_PREFS_ENCODING = {
+  "showSearch": 1 << 0,
+  "showTopSites": 1 << 1,
+  "feeds.section.topstories": 1 << 2
+};
+
 this.TelemetryFeed = class TelemetryFeed {
   constructor(options) {
     this.sessions = new Map();
+    this._prefs = new Prefs();
   }
 
   init() {
@@ -87,6 +96,20 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   /**
+   * Get encoded user preferences, multiple prefs will be combined via bitwise OR operator
+   */
+  get userPreferences() {
+    let prefs = 0;
+
+    for (const pref of Object.keys(USER_PREFS_ENCODING)) {
+      if (this._prefs.get(pref)) {
+        prefs |= USER_PREFS_ENCODING[pref];
+      }
+    }
+    return prefs;
+  }
+
+  /**
    * addSession - Start tracking a new session
    *
    * @param  {string} id the portID of the open session
@@ -137,7 +160,8 @@ this.TelemetryFeed = class TelemetryFeed {
     const ping = {
       client_id: await this.telemetryClientId,
       addon_version: appInfo.version,
-      locale: appInfo.locale
+      locale: appInfo.locale,
+      user_prefs: this.userPreferences
     };
 
     // If the ping is part of a user session, add session-related info
@@ -281,4 +305,4 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["TelemetryFeed"];
+this.EXPORTED_SYMBOLS = ["TelemetryFeed", "USER_PREFS_ENCODING"];
