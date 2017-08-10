@@ -37,7 +37,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "action": "activity_stream_event"
+  "action": "activity_stream_event",
+  "user_prefs": 7
 }
 ```
 
@@ -55,7 +56,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -73,7 +75,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -91,7 +94,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -109,7 +113,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -127,7 +132,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -145,7 +151,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -163,7 +170,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -181,7 +189,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -197,7 +206,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -213,7 +223,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
-  "locale": "en-US"
+  "locale": "en-US",
+  "user_prefs": 7
 }
 ```
 
@@ -233,7 +244,8 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "addon_version": "1.0.12",
   "locale": "en-US",
   "page": ["about:newtab" | "about:home"],
-  "session_duration": 4199
+  "session_duration": 4199,
+  "user_prefs": 7
 }
 ```
 
@@ -297,6 +309,7 @@ This reports all the Pocket recommended articles (a list of `id`s) when the user
   "locale": "en-US",
   "source": "pocket",
   "page": "about:newtab",
+  "user_prefs": 7,
   "tiles": [{"id": 10000}, {"id": 10001}, {"id": 10002}]
 }
 ```
@@ -316,6 +329,7 @@ This reports the user's interaction with those Pocket tiles.
   "locale": "en-US",
   "source": "pocket",
   "page": "about:newtab",
+  "user_prefs": 7,
 
   // "pos" is the 0-based index to record the tile's position in the Pocket section.
   "tiles": [{"id": 10000, "pos": 0}],
