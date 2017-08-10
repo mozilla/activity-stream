@@ -1,7 +1,7 @@
 /* global Services */
 
 const injector = require("inject!lib/TelemetryFeed.jsm");
-const {GlobalOverrider} = require("test/unit/utils");
+const {GlobalOverrider, FakePrefs} = require("test/unit/utils");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {
   BasePing,
@@ -18,6 +18,7 @@ const FAKE_UUID = "{foo-123-foo}";
 describe("TelemetryFeed", () => {
   let globals;
   let sandbox;
+  let expectedUserPrefs;
   let store = {
     dispatch() {},
     getState() { return {App: {version: "1.0.0", locale: "en-US"}}; }
@@ -30,7 +31,7 @@ describe("TelemetryFeed", () => {
     absNow() { return 123; }
   }
   const perfService = new PerfService();
-  const {TelemetryFeed} = injector({
+  const {TelemetryFeed, USER_PREFS_ENCODING} = injector({
     "lib/TelemetrySender.jsm": {TelemetrySender},
     "common/PerfService.jsm": {perfService}
   });
@@ -45,6 +46,7 @@ describe("TelemetryFeed", () => {
   });
   afterEach(() => {
     globals.restore();
+    FakePrefs.prototype.prefs = {};
   });
   describe("#init", () => {
     it("should add .telemetrySender, a TelemetrySender instance", () => {
@@ -143,7 +145,14 @@ describe("TelemetryFeed", () => {
     });
   });
   describe("ping creators", () => {
-    beforeEach(() => instance.init());
+    beforeEach(() => {
+      FakePrefs.prototype.prefs = {};
+      for (const pref of Object.keys(USER_PREFS_ENCODING)) {
+        FakePrefs.prototype.prefs[pref] = true;
+        expectedUserPrefs |= USER_PREFS_ENCODING[pref];
+      }
+      instance.init();
+    });
     describe("#createPing", () => {
       it("should create a valid base ping without a session if no portID is supplied", async () => {
         const ping = await instance.createPing();
@@ -170,6 +179,11 @@ describe("TelemetryFeed", () => {
         assert.validate(ping, BasePing);
         assert.propertyVal(ping, "page", "about:newtab");
         assert.propertyVal(instance.sessions.get("foo").perf, "load_trigger_type", "unexpected");
+      });
+      it("should create a base ping with user_prefs", async () => {
+        const ping = await instance.createPing("foo");
+        assert.validate(ping, BasePing);
+        assert.propertyVal(ping, "user_prefs", expectedUserPrefs);
       });
     });
     describe("#createUserEvent", () => {
