@@ -369,7 +369,29 @@ describe("TelemetryFeed", () => {
 
       assert.include(instance.sessions.get("port123").perf, data);
     });
+
+    it("should call setLoadTriggerInfo if data has visibility_event_rcvd_ts", () => {
+      sandbox.stub(instance, "setLoadTriggerInfo");
+      instance.addSession("port123");
+      const data = {visibility_event_rcvd_ts: 444455};
+
+      instance.saveSessionPerfData("port123", data);
+
+      assert.calledOnce(instance.setLoadTriggerInfo);
+      assert.calledWithExactly(instance.setLoadTriggerInfo, "port123");
+      assert.include(instance.sessions.get("port123").perf, data);
+    });
+
+    it("shouldn't call setLoadTriggerInfo if data has no visibility_event_rcvd_ts", () => {
+      sandbox.stub(instance, "setLoadTriggerInfo");
+      instance.addSession("port123");
+
+      instance.saveSessionPerfData("port123", {monkeys_ts: 444455});
+
+      assert.notCalled(instance.setLoadTriggerInfo);
+    });
   });
+
   describe("#uninit", () => {
     it("should call .telemetrySender.uninit", () => {
       const stub = sandbox.stub(instance.telemetrySender, "uninit");
@@ -397,17 +419,6 @@ describe("TelemetryFeed", () => {
     it("should call .addSession() on a NEW_TAB_INIT action", () => {
       const stub = sandbox.stub(instance, "addSession");
       sandbox.stub(instance, "setLoadTriggerInfo");
-
-      instance.onAction(ac.SendToMain({
-        type: at.NEW_TAB_INIT,
-        data: {}
-      }, "port123"));
-
-      assert.calledOnce(stub);
-      assert.calledWith(stub, "port123");
-    });
-    it("should call .setLoadTriggerInfo() on NEW_TAB_INIT action", () => {
-      const stub = sandbox.stub(instance, "setLoadTriggerInfo");
 
       instance.onAction(ac.SendToMain({
         type: at.NEW_TAB_INIT,

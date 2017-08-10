@@ -249,7 +249,6 @@ this.TelemetryFeed = class TelemetryFeed {
         break;
       case at.NEW_TAB_INIT:
         this.addSession(au.getPortIdOfSender(action));
-        this.setLoadTriggerInfo(au.getPortIdOfSender(action));
         break;
       case at.NEW_TAB_UNLOAD:
         this.endSession(au.getPortIdOfSender(action));
@@ -289,6 +288,15 @@ this.TelemetryFeed = class TelemetryFeed {
     // XXX should use try/catch and send a bad state indicator if this
     // get blows up.
     let session = this.sessions.get(port);
+
+    // Partial workaround for #3118; avoids the worst incorrect associations of
+    // times with browsers, by associating the load trigger with the visibility
+    // event as the user is most likely associating the trigger to the tab just
+    // shown. This helps avoid associateing with a preloaded browser as those
+    // don't get the event until shown. Better fix for more cases forthcoming.
+    if (data.visibility_event_rcvd_ts) {
+      this.setLoadTriggerInfo(port);
+    }
 
     Object.assign(session.perf, data);
   }
