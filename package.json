@@ -85,7 +85,7 @@
     "sass-lint": "1.10.1",
     "shelljs": "0.7.6",
     "simple-git": "1.65.0",
-    "sinon": "2.3.4",
+    "sinon": "3.2.0",
     "style-loader": "0.13.1",
     "svgo": "0.7.1",
     "webpack": "3.5.3",
