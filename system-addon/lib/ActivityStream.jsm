@@ -103,11 +103,6 @@ const PREFS_CONFIG = new Map([
     value: true,
     value_local_dev: false
   }],
-  ["telemetry.log", {
-    title: "Log telemetry events in the console",
-    value: false,
-    value_local_dev: true
-  }],
   ["telemetry.ping.endpoint", {
     title: "Telemetry server endpoint",
     value: "https://tiles.services.mozilla.com/v4/links/activity-stream"

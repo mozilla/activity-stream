@@ -333,6 +333,7 @@ describe("TelemetryFeed", () => {
   describe("#sendEvent", () => {
     it("should call PingCentre", async () => {
       sandbox.stub(instance.pingCentre, "sendPing");
+      FakePrefs.prototype.prefs.telemetry = true;
       const event = {};
       await instance.sendEvent(event);
       assert.calledWith(instance.pingCentre.sendPing, event);

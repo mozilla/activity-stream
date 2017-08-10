@@ -7,19 +7,19 @@ Cu.import("resource://gre/modules/Preferences.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.importGlobalProperties(["fetch"]);
 
+XPCOMUtils.defineLazyModuleGetter(this, "AppConstants",
+  "resource://gre/modules/AppConstants.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "ClientID",
   "resource://gre/modules/ClientID.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "console",
   "resource://gre/modules/Console.jsm");
 
-// This is intentionally a different pref-branch than the SDK-based add-on
-// used, to avoid extra weirdness for people who happen to have the SDK-based
-// installed.  Though maybe we should just forcibly disable the old add-on?
-const PREF_BRANCH = "browser.newtabpage.activity-stream.";
+const PREF_BRANCH = "browser.ping-centre.";
 
-const ENDPOINT_PREF = `${PREF_BRANCH}telemetry.ping.endpoint`;
 const TELEMETRY_PREF = `${PREF_BRANCH}telemetry`;
-const LOGGING_PREF = `${PREF_BRANCH}telemetry.log`;
+const LOGGING_PREF = `${PREF_BRANCH}log`;
+const STAGING_ENDPOINT_PREF = `${PREF_BRANCH}staging.endpoint`;
+const PRODUCTION_ENDPOINT_PREF = `${PREF_BRANCH}production.endpoint`;
 
 const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
 
@@ -28,7 +28,7 @@ const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
  *
  * @param {string} topic - a unique ID for users of PingCentre to distinguish
  *                  their data on the server side.
- * @param {string} pingEndpoint - the URL where the POST with data is sent.
+ * @param {string} pingEndpoint - optional pref for URL where the POST is sent.
  * @param {Object} args - optional arguments
  * @param {Function} args.prefInitHook - if present, will be called back
  *                   inside the Prefs constructor. Typically used from tests
@@ -36,7 +36,7 @@ const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
  *                   stubs and spies can be inspected by the test code.
  */
 class PingCentre {
-  constructor(topic, pingEndpoint, args) {
+  constructor(topic, overrideEndpointPref, args) {
     let prefArgs = {};
     if (args) {
       if ("prefInitHook" in args) {
@@ -50,7 +50,8 @@ class PingCentre {
 
     this._topic = topic;
     this._prefs = new Preferences(prefArgs);
-    this._pingEndpoint = pingEndpoint || this._prefs.get(ENDPOINT_PREF);
+
+    this._setPingEndpoint(topic, overrideEndpointPref);
 
     this._enabled = this._prefs.get(TELEMETRY_PREF);
     this._onTelemetryPrefChange = this._onTelemetryPrefChange.bind(this);
@@ -75,6 +76,17 @@ class PingCentre {
 
   get enabled() {
     return this._enabled && this._fhrEnabled;
+  }
+
+  _setPingEndpoint(topic, overrideEndpointPref) {
+    const overrideValue = overrideEndpointPref && this._prefs.get(overrideEndpointPref);
+    if (overrideValue) {
+      this._pingEndpoint = overrideValue;
+    } else if (AppConstants.MOZ_UPDATE_CHANNEL === "release") {
+      this._pingEndpoint = this._prefs.get(PRODUCTION_ENDPOINT_PREF);
+    } else {
+      this._pingEndpoint = this._prefs.get(STAGING_ENDPOINT_PREF);
+    }
   }
 
   _onLoggingPrefChange(prefVal) {
@@ -129,7 +141,7 @@ class PingCentre {
 
 this.PingCentre = PingCentre;
 this.PingCentreConstants = {
-  ENDPOINT_PREF,
+  PRODUCTION_ENDPOINT_PREF,
   FHR_UPLOAD_ENABLED_PREF,
   TELEMETRY_PREF,
   LOGGING_PREF

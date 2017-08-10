@@ -3,8 +3,10 @@
 
 const {GlobalOverrider, FakePrefs} = require("test/unit/utils");
 const {PingCentre, PingCentreConstants} = require("lib/PingCentre.jsm");
-const {ENDPOINT_PREF, FHR_UPLOAD_ENABLED_PREF, TELEMETRY_PREF, LOGGING_PREF} =
-  PingCentreConstants;
+const {
+  PRODUCTION_ENDPOINT_PREF, FHR_UPLOAD_ENABLED_PREF, TELEMETRY_PREF,
+  LOGGING_PREF
+} = PingCentreConstants;
 
 /**
  * A reference to the fake preferences object created by the PingCentre
@@ -17,6 +19,7 @@ const prefInitHook = function() {
 
 const tsArgs = {prefInitHook};
 const FAKE_TELEMETRY_ID = "foo123";
+const FAKE_AS_ENDPOINT_PREF = "some.as.endpoint.pref";
 
 describe("PingCentre", () => {
   let globals;
@@ -24,7 +27,7 @@ describe("PingCentre", () => {
   let sandbox;
   let fetchStub;
   const fakeEndpointUrl = "http://127.0.0.1/stuff";
-  const fakePingJSON = JSON.stringify({action: "fake_action", monkey: 1});
+  const fakePingJSON = {action: "fake_action", monkey: 1};
   const fakeFetchHttpErrorResponse = {ok: false, status: 400};
   const fakeFetchSuccessResponse = {ok: true, status: 200};
 
@@ -36,6 +39,7 @@ describe("PingCentre", () => {
     globals.set("Preferences", FakePrefs);
     globals.set("fetch", fetchStub);
     globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
+    globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: "beta"});
     sandbox.spy(global.Components.utils, "reportError");
   });
 
@@ -45,7 +49,7 @@ describe("PingCentre", () => {
   });
 
   it("should add .telemetryClientId from the ClientID module", async () => {
-    tSender = new PingCentre("activity-stream", fakeEndpointUrl, tsArgs);
+    tSender = new PingCentre("activity-stream", "", tsArgs);
     assert.equal(await tSender.telemetryClientId, FAKE_TELEMETRY_ID);
   });
 
@@ -65,7 +69,7 @@ describe("PingCentre", () => {
 
   describe("telemetry.enabled pref changes from true to false", () => {
     beforeEach(() => {
-      FakePrefs.prototype.prefs[IS_PRODUCTION_PREF] = true;
+      globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: "release"});
       FakePrefs.prototype.prefs[PRODUCTION_ENDPOINT_PREF] = fakeEndpointUrl;
     });
 
@@ -170,8 +174,8 @@ describe("PingCentre", () => {
       FakePrefs.prototype.prefs = {};
       FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
-      FakePrefs.prototype.prefs[ENDPOINT_PREF] = fakeEndpointUrl;
-      tSender = new PingCentre("activity-stream", fakeEndpointUrl, tsArgs);
+      FakePrefs.prototype.prefs[FAKE_AS_ENDPOINT_PREF] = fakeEndpointUrl;
+      tSender = new PingCentre("activity-stream", FAKE_AS_ENDPOINT_PREF, tsArgs);
     });
 
     it("should not send if the PingCentre is disabled", async () => {
