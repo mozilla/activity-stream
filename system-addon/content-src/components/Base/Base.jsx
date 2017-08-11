@@ -22,9 +22,11 @@ function addLocaleDataForReactIntl({locale}) {
 
 class Base extends React.Component {
   componentDidMount() {
-    // Also wait for the preloaded page to show, so the tab's title updates
-    addEventListener("visibilitychange", () =>
-      this.updateTitle(this.props.App), {once: true});
+    // Also wait for the preloaded page to show, so the tab's title and favicon updates
+    addEventListener("visibilitychange", () => {
+      this.updateTitle(this.props.App);
+      document.getElementById("favicon").href += "#";
+    }, {once: true});
   }
   componentWillUpdate({App}) {
     // Early loads might not have locale yet, so wait until we do
