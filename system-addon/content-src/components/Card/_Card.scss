@@ -4,7 +4,6 @@
   margin-inline-end: $base-gutter;
   width: $card-width;
   border-radius: $border-radius;
-  border-color: $faintest-black;
   height: $card-height;
   position: relative;
   @include context-menu-button;
@@ -12,6 +11,7 @@
   .card {
     height: 100%;
     border-radius: $border-radius;
+    box-shadow: $card-box-shadow;
   }
 
   > a {
@@ -24,7 +24,7 @@
 
     &.active, &:focus {
       .card {
-        @include fade-in;
+        @include fade-in-card;
       }
       .card-title {
         color: $link-blue;
@@ -34,7 +34,7 @@
 
   &:hover, &:focus, &.active {
     outline: none;
-    @include fade-in;
+    @include fade-in-card;
     @include context-menu-button-hover;
 
     .card-title {

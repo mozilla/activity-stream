@@ -48,6 +48,7 @@ $card-preview-image-height: 122px;
 $card-description-height: 34px;
 $card-description-height-max: 200px;
 $card-text-height: 78px;
+$card-box-shadow: 0 1px 4px 0 rgba(9,6,13,0.1);
 
 $topic-margin-top:16px;
 
@@ -72,6 +73,11 @@ $snippets-container-height: 120px;
 
 @mixin fade-in {
   box-shadow: inset $inner-box-shadow, 0 0 0 5px $faintest-black;
+  transition: box-shadow 150ms;
+}
+
+@mixin fade-in-card {
+  box-shadow: 0 0 0 5px $faintest-black;
   transition: box-shadow 150ms;
 }
 
