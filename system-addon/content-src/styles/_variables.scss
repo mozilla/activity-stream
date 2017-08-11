@@ -22,7 +22,7 @@ $info-option-link-color: #0A84FF;
 $section-empty-grey: rgba($light-grey, 0.4);
 
 $base-gutter: 32px;
-$section-margin: 40px;
+$section-margin: 32px;
 $grid-unit: 96px; // 1 top site
 
 $icon-size: 16px;
@@ -40,7 +40,6 @@ $wrapper-card-outer: 768px;
 
 $section-title-font-size: 13px;
 $section-title-color: #6E707E;
-$section-title-bottom-margin: 18px;
 
 $card-width: $grid-unit * 2 + $base-gutter;
 $card-height: 266px;
@@ -50,7 +49,7 @@ $card-description-height-max: 200px;
 $card-text-height: 78px;
 $card-box-shadow: 0 1px 4px 0 rgba(9,6,13,0.1);
 
-$topic-margin-top:16px;
+$topic-margin-top: 12px;
 
 $context-menu-button-size: 27px;
 $context-menu-button-border: 1px solid rgba($black, 0.2);
