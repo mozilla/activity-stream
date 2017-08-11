@@ -77,6 +77,7 @@ scripts:
   importmc: cpx "../mozilla-central/browser/extensions/activity-stream/**/*" system-addon/
 
   testmc:
+    lint: =>lint
     build: =>buildmc:webpack && =>buildmc:locales
     unit: karma start karma.mc.config.js || (cat logs/coverage/system-addon/text.txt && exit 2)
     post: cat logs/coverage/system-addon/text-summary.txt
@@ -113,35 +114,23 @@ scripts:
   strings-import: node ./bin/strings-import.js ../activity-stream-l10n
 
 # test: Run all tests once
-  test:
-    pre: =>bundle && =>copyTestImages && =>preparePocketJson
-    lint: =>lint
-    checkbinary: echo "JPM_FIREFOX_BINARY: ${JPM_FIREFOX_BINARY}"
-    # test:jpm: Run jpm tests
-    jpm: jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./test-prefs.json -v -f "^(?!.*benchmark)"
-    # test:karma: Run content tests only
-    karma: =>preparePocketJson && NODE_ENV=test karma start
-    mc: =>testmc
-    post: cat logs/reports/coverage/text-summary.txt
+  test: =>testmc
 
   benchmark-with: =>bundle && JSGC_DISABLE_POISONING=1 jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./benchmark-prefs.json
 # benchmark: Run all benchmarks
   benchmark: =>benchmark-with -- -f ".*benchmark.js"
 
 # tdd: Run content tests continuously
-  tdd: =>test:karma -- --no-single-run --browsers Chrome
+  tdd: =>tddmc
 
 # package: Build add-on
 # Add a SUPPORTED_LOCALES variable to your environment as a comma separated list to include certain locales.
 # e.g. SUPPORTED_LOCALES=en-US,fr
   package: =>bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
 
-  # This is for ci
-  travis: =>test
-
   # This is just to make sure we don't make commits with failing tests
   # or uncompiled yamscripts.yml. Run automatically with husky.
-  prepush: =>test:lint && =>yamscripts
+  prepush: =>lint && =>yamscripts
 
 # Build a local react-storybook containing local stories for
 # development.  Expects "npm run start" to be running in another

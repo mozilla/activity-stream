@@ -103,7 +103,7 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
     });
     it("should call dedupe on the links", async () => {
-      const stub = sinon.stub(feed.dedupe, "group", id => id);
+      const stub = sinon.stub(feed.dedupe, "group").callsFake(id => id);
 
       await feed.getLinksWithDefaults();
 
