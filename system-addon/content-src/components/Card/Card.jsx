@@ -47,22 +47,22 @@ class Card extends React.Component {
   render() {
     const {index, link, dispatch, contextMenuOptions, eventSource} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
-    const {icon, intlID} = cardContextTypes[link.type];
+    const {icon, intlID} = link.type ? cardContextTypes[link.type] : {};
 
     return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}`}>
       <a href={link.url} onClick={this.onLinkClick}>
         <div className="card">
           {link.image && <div className="card-preview-image" style={{backgroundImage: `url(${link.image})`}} />}
-          <div className="card-details">
-            <div className="card-host-name">{link.hostname}</div>
-            <div className={`card-text${link.image ? "" : " full-height"}`}>
+          <div className={`card-details${link.image ? "" : " no-image"}`}>
+            {link.hostname && <div className="card-host-name">{link.hostname}</div>}
+            <div className={`card-text${link.image ? "" : " no-image"}${link.hostname ? "" : " no-host-name"}${icon ? "" : " no-context"}`}>
               <h4 className="card-title" dir="auto">{link.title}</h4>
               <p className="card-description" dir="auto">{link.description}</p>
             </div>
-            <div className="card-context">
+            {icon && <div className="card-context">
               <span className={`card-context-icon icon icon-${icon}`} />
               <div className="card-context-label"><FormattedMessage id={intlID} defaultMessage="Visited" /></div>
-            </div>
+            </div>}
           </div>
         </div>
       </a>
