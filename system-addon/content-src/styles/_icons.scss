@@ -85,4 +85,8 @@
   &.icon-check {
     background-image: url('chrome://browser/skin/check.svg');
   }
+
+  &.icon-webextension {
+    background-image: url('#{$image-path}glyph-webextension-16.svg');
+  }
 }

@@ -45,7 +45,7 @@ class Section extends React.Component {
     // <section> <-- HTML5 element
     return (<section>
         <div className="section-top-bar">
-          <h3 className="section-title"><span className={`icon icon-small-spacer icon-${icon}`} /><FormattedMessage {...title} /></h3>
+          <h3 className="section-title"><span className={`icon icon-small-spacer icon-${icon || "webextension"}`} /><FormattedMessage {...title} /></h3>
           {infoOption &&
           <span className="section-info-option"
             onBlur={this.onInfoLeave}

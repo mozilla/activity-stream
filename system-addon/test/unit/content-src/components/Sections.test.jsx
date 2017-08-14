@@ -34,6 +34,11 @@ describe("<Section>", () => {
     infoOption: {}
   };
 
+  it("should use the icon `webextension` if no other is provided", () => {
+    const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+    assert.ok(wrapper.find(".icon").first().hasClass("icon-webextension"));
+  });
+
   it("should render info-option-icon with a tabindex", () => {
     const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
 
