@@ -56,14 +56,30 @@
 
   .card-details {
     padding: 15px 16px 12px;
+
+    &.no-image {
+      padding-top: 16px;
+    }
   }
 
   .card-text {
     overflow: hidden;
-    max-height: $card-text-height;
+    max-height: 4*$card-text-line-height + $card-title-margin;
 
-    &.full-height {
-      max-height: $card-description-height-max;
+    &.no-image {
+      max-height: 10*$card-text-line-height + $card-title-margin;
+    }
+    &.no-host-name, &.no-context {
+      max-height: 5*$card-text-line-height + $card-title-margin;
+    }
+    &.no-image.no-host-name, &.no-image.no-context {
+      max-height: 11*$card-text-line-height + $card-title-margin;
+    }
+    &.no-host-name.no-context {
+      max-height: 6*$card-text-line-height + $card-title-margin;
+    }
+    &.no-image.no-host-name.no-context {
+      max-height: 12*$card-text-line-height + $card-title-margin;
     }
   }
 
@@ -75,10 +91,10 @@
   }
 
   .card-title {
-    margin: 0 0 2px;
+    margin: 0 0 $card-title-margin;
     font-size: 14px;
     word-wrap: break-word;
-    line-height: 19px;
+    line-height: $card-text-line-height;
   }
 
   .card-description {
@@ -86,7 +102,7 @@
     margin: 0;
     word-wrap: break-word;
     overflow: hidden;
-    line-height: 19px;
+    line-height: $card-text-line-height;
   }
 
   .card-context {
