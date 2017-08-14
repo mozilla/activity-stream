@@ -13,8 +13,8 @@ class LinkMenu extends React.Component {
     // Handle special case of default site
     const propOptions = !site.isDefault ? props.options : DEFAULT_SITE_MENU_OPTIONS;
 
-    const options = propOptions.map(o => linkMenuOptions[o](site, index)).map(option => {
-      const {action, id, type, userEvent} = option;
+    const options = propOptions.map(o => linkMenuOptions[o](site, index, source)).map(option => {
+      const {action, impression, id, type, userEvent} = option;
       if (!type && id) {
         option.label = props.intl.formatMessage(option);
         option.onClick = () => {
@@ -25,6 +25,9 @@ class LinkMenu extends React.Component {
               source,
               action_position: index
             }));
+          }
+          if (impression) {
+            props.dispatch(impression);
           }
         };
       }
