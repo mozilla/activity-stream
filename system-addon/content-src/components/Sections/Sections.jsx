@@ -27,7 +27,8 @@ class Section extends React.Component {
   }
 
   render() {
-    const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxCards, contextMenuOptions, intl} = this.props;
+    const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxRows, contextMenuOptions, intl} = this.props;
+    const maxCards = 3 * maxRows;
     const initialized = rows && rows.length > 0;
     const shouldShowTopics = (id === "TopStories" && this.props.topics && this.props.read_more_endpoint);
 
