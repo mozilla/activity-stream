@@ -98,6 +98,7 @@ describe("<Section>", () => {
     const FAKE_TOPSTORIES_SECTION = {
       id: "TopStories",
       title: "Foo Bar 1",
+      maxRows: 1,
       rows: [{guid: 1}, {guid: 2}],
       infoOption: {}
     };
