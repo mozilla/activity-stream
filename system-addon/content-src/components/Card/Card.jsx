@@ -43,6 +43,7 @@ class Card extends React.Component {
     this.props.dispatch(ac.ImpressionStats({
       source: this.props.eventSource,
       click: 0,
+      incognito: true,
       tiles: [{id: this.props.link.guid, pos: this.props.index}]
     }));
   }

@@ -105,6 +105,7 @@ describe("<Card>", () => {
       assert.calledWith(DEFAULT_PROPS.dispatch.thirdCall, ac.ImpressionStats({
         source: DEFAULT_PROPS.eventSource,
         click: 0,
+        incognito: true,
         tiles: [{id: DEFAULT_PROPS.link.guid, pos: DEFAULT_PROPS.index}]
       }));
     });
