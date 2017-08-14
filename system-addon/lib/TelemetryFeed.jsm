@@ -15,7 +15,7 @@ const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.js
 XPCOMUtils.defineLazyModuleGetter(this, "perfService",
   "resource://activity-stream/common/PerfService.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "PingCentre",
-  "resource://activity-stream/lib/PingCentre.jsm");
+  "resource:///modules/PingCentre.jsm");
 
 XPCOMUtils.defineLazyServiceGetter(this, "gUUIDGenerator",
   "@mozilla.org/uuid-generator;1",

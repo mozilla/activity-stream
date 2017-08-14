@@ -56,6 +56,8 @@ scripts:
     # Copy over all of the system-addon directory
     copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream
     version: node ./bin/update-version.js ../mozilla-central/browser/extensions/activity-stream
+    copyPingCentre: cpx "system-addon/lib/PingCentre.jsm" ../mozilla-central/browser/modules
+    rmDupePingCentre: rimraf "../mozilla-central/browser/extensions/activity-stream/lib/PingCentre.jsm"
     rmcontentsrc: rimraf "../mozilla-central/browser/extensions/activity-stream/{,test/unit/}content-src"
 
 # packagemc: Build stand-alone system add-on xpi

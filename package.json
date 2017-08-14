@@ -273,6 +273,8 @@
     "buildmc:locales": "pontoon-to-json --src locales --dest system-addon/data",
     "buildmc:copy": "cpx \"system-addon/**/{,.}*\" ../mozilla-central/browser/extensions/activity-stream",
     "buildmc:version": "node ./bin/update-version.js ../mozilla-central/browser/extensions/activity-stream",
+    "buildmc:copyPingCentre": "cpx \"system-addon/lib/PingCentre.jsm\" ../mozilla-central/browser/modules",
+    "buildmc:rmDupePingCentre": "rimraf \"../mozilla-central/browser/extensions/activity-stream/lib/PingCentre.jsm\"",
     "buildmc:rmcontentsrc": "rimraf \"../mozilla-central/browser/extensions/activity-stream/{,test/unit/}content-src\"",
     "packagemc": "npm-run-all packagemc:*",
     "prepackagemc": "npm run clean",

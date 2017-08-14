@@ -38,16 +38,14 @@ describe("TelemetryFeed", () => {
     PREF_IMPRESSION_STATS_CLICKED,
     PREF_IMPRESSION_STATS_BLOCKED,
     PREF_IMPRESSION_STATS_POCKETED
-  } = injector({
-    "lib/PingCentre.jsm": {PingCentre},
-    "common/PerfService.jsm": {perfService}
-  });
+  } = injector({"common/PerfService.jsm": {perfService}});
 
   beforeEach(() => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     clock = sinon.useFakeTimers();
     globals.set("gUUIDGenerator", {generateUUID: () => FAKE_UUID});
+    globals.set("PingCentre", PingCentre);
     instance = new TelemetryFeed();
     instance.store = store;
   });
