@@ -15,7 +15,8 @@ let DEFAULT_PROPS = {
     url: "http://www.foo.com",
     type: "history",
     description: "A description for foo",
-    image: "http://www.foo.com/img.png"
+    image: "http://www.foo.com/img.png",
+    guid: 1
   },
   eventSource: "TOP_STORIES",
   contextMenuOptions: ["Separator"]
@@ -86,7 +87,7 @@ describe("<Card>", () => {
       const card = wrapper.find(".card");
       const event = {altKey: "1", button: "2", ctrlKey: "3", metaKey: "4", shiftKey: "5"};
       card.simulate("click", Object.assign({}, event, {preventDefault: () => {}}));
-      assert.calledTwice(DEFAULT_PROPS.dispatch);
+      assert.calledThrice(DEFAULT_PROPS.dispatch);
 
       // first dispatch call is the SendToMain message which will open a link in a window, and send some event data
       assert.equal(DEFAULT_PROPS.dispatch.firstCall.args[0].type, at.OPEN_LINK);
@@ -98,6 +99,13 @@ describe("<Card>", () => {
         event: "CLICK",
         source: DEFAULT_PROPS.eventSource,
         action_position: DEFAULT_PROPS.index
+      }));
+
+      // third dispatch call is to send impression stats
+      assert.calledWith(DEFAULT_PROPS.dispatch.thirdCall, ac.ImpressionStats({
+        source: DEFAULT_PROPS.eventSource,
+        click: 0,
+        tiles: [{id: DEFAULT_PROPS.link.guid, pos: DEFAULT_PROPS.index}]
       }));
     });
   });

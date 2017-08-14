@@ -40,6 +40,11 @@ class Card extends React.Component {
       source: this.props.eventSource,
       action_position: this.props.index
     }));
+    this.props.dispatch(ac.ImpressionStats({
+      source: this.props.eventSource,
+      click: 0,
+      tiles: [{id: this.props.link.guid, pos: this.props.index}]
+    }));
   }
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});

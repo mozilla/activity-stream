@@ -43,12 +43,17 @@ module.exports = {
     }),
     userEvent: "OPEN_PRIVATE_WINDOW"
   }),
-  BlockUrl: site => ({
+  BlockUrl: (site, index, eventSource) => ({
     id: "menu_action_dismiss",
     icon: "dismiss",
     action: ac.SendToMain({
       type: at.BLOCK_URL,
       data: site.url
+    }),
+    impression: ac.ImpressionStats({
+      source: eventSource,
+      block: 0,
+      tiles: [{id: site.guid, pos: index}]
     }),
     userEvent: "BLOCK"
   }),
@@ -86,12 +91,17 @@ module.exports = {
     }),
     userEvent: "UNPIN"
   }),
-  SaveToPocket: site => ({
+  SaveToPocket: (site, index, eventSource) => ({
     id: "menu_action_save_to_pocket",
     icon: "pocket",
     action: ac.SendToMain({
       type: at.SAVE_TO_POCKET,
       data: {site: {url: site.url, title: site.title}}
+    }),
+    impression: ac.ImpressionStats({
+      source: eventSource,
+      pocket: 0,
+      tiles: [{id: site.guid, pos: index}]
     }),
     userEvent: "SAVE_TO_POCKET"
   })

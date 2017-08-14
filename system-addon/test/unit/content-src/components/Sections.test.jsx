@@ -3,6 +3,7 @@ const {shallow} = require("enzyme");
 const {shallowWithIntl} = require("test/unit/utils");
 const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl} =
   require("content-src/components/Sections/Sections");
+const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("<Sections>", () => {
   let wrapper;
@@ -91,5 +92,23 @@ describe("<Section>", () => {
     wrapper.find(".section-info-option").simulate("mouseout");
 
     assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
+  });
+
+  it("should send impression stats for topstories", () => {
+    const FAKE_TOPSTORIES_SECTION = {
+      id: "TopStories",
+      title: "Foo Bar 1",
+      rows: [{guid: 1}, {guid: 2}],
+      infoOption: {}
+    };
+
+    const dispatch = sinon.spy();
+    shallowWithIntl(<Section {...FAKE_TOPSTORIES_SECTION} dispatch={dispatch} eventSource={"TOP_STORIES"} />);
+    assert.calledOnce(dispatch);
+
+    const action = dispatch.firstCall.args[0];
+    assert.equal(action.type, at.TELEMETRY_IMPRESSION_STATS);
+    assert.equal(action.data.source, "TOP_STORIES");
+    assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}]);
   });
 });

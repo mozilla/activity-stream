@@ -3,6 +3,7 @@ const {connect} = require("react-redux");
 const {injectIntl, FormattedMessage} = require("react-intl");
 const Card = require("content-src/components/Card/Card");
 const Topics = require("content-src/components/Topics/Topics");
+const {actionCreators: ac} = require("common/Actions.jsm");
 
 class Section extends React.Component {
   constructor(props) {
@@ -30,6 +31,13 @@ class Section extends React.Component {
     const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxCards, contextMenuOptions, intl} = this.props;
     const initialized = rows && rows.length > 0;
     const shouldShowTopics = (id === "TopStories" && this.props.topics && this.props.read_more_endpoint);
+
+    if (dispatch) {
+      dispatch(ac.ImpressionStats({
+        source: eventSource,
+        tiles: rows.slice(0, maxCards).map(link => ({id: link.guid}))
+      }));
+    }
 
     const infoOptionIconA11yAttrs = {
       "aria-haspopup": "true",
