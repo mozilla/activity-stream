@@ -111,7 +111,12 @@ describe("<LinkMenu>", () => {
     options.filter(o => o.type !== "separator").forEach(option => {
       it(`should fire a ${option.action.type} action for ${option.id} with the expected data`, () => {
         option.onClick();
-        assert.calledTwice(dispatch);
+
+        if (option.impression) {
+          assert.calledThrice(dispatch);
+        } else {
+          assert.calledTwice(dispatch);
+        }
 
         // option.action is dispatched
         assert.ok(dispatch.firstCall.calledWith(option.action));
@@ -130,6 +135,13 @@ describe("<LinkMenu>", () => {
         assert.isUserEventAction(action);
         assert.propertyVal(action.data, "source", FAKE_SOURCE);
         assert.propertyVal(action.data, "action_position", FAKE_INDEX);
+      });
+      it(`should send impression stats for ${option.id}`, () => {
+        if (option.impression) {
+          option.onClick();
+          const action = dispatch.thirdCall.args[0];
+          assert.deepEqual(action, option.impression);
+        }
       });
     });
   });
