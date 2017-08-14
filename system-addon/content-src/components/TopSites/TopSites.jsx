@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {FormattedMessage} = require("react-intl");
+const {FormattedMessage, injectIntl} = require("react-intl");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {perfService: perfSvc} = require("common/PerfService.jsm");
@@ -188,7 +188,7 @@ class TopSitesPerfTimer extends React.Component {
   }
 }
 
-const TopSites = props => (<section>
+const TopSites = props => (<section className="top-sites">
   <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
     {props.TopSites.rows.map((link, index) => link && <TopSite
@@ -197,9 +197,63 @@ const TopSites = props => (<section>
       link={link}
       index={index} />)}
   </ul>
+  <TopSitesEditIntl {...props} />
 </section>);
+
+class TopSitesEdit extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {showEditModal: false};
+    this.onEditButtonClick = this.onEditButtonClick.bind(this);
+  }
+  onEditButtonClick() {
+    this.setState({showEditModal: !this.state.showEditModal});
+    const event = this.state.showEditModal ? "TOP_SITES_EDIT_OPEN" : "TOP_SITES_EDIT_CLOSE";
+    this.props.dispatch(ac.UserEvent({
+      source: TOP_SITES_SOURCE,
+      event
+    }));
+  }
+  render() {
+    return (<div className="edit-topsites-wrapper">
+      <div className="edit-topsites-button">
+        <button
+          className="edit"
+          title={this.props.intl.formatMessage({id: "edit_topsites_button_label"})}
+          onClick={this.onEditButtonClick}>
+          <FormattedMessage id="edit_topsites_button_text" />
+        </button>
+      </div>
+      {this.state.showEditModal &&
+        <div className="edit-topsites">
+          <div className="modal-overlay" />
+          <div className="modal">
+            <section className="edit-topsites-inner-wrapper">
+              <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
+              <ul className="top-sites-list">
+                {this.props.TopSites.rows.map((link, index) => link && <TopSite
+                  key={link.guid || link.url}
+                  dispatch={this.props.dispatch}
+                  link={link}
+                  index={index} />)}
+              </ul>
+            </section>
+            <section className="actions">
+              <button className="done" onClick={this.onEditButtonClick}>
+                <FormattedMessage id="edit_topsites_done_button" />
+              </button>
+            </section>
+          </div>
+        </div>
+      }
+    </div>);
+  }
+}
+
+const TopSitesEditIntl = injectIntl(TopSitesEdit);
 
 module.exports = connect(state => ({TopSites: state.TopSites}))(TopSitesPerfTimer);
 module.exports._unconnected = TopSitesPerfTimer;
 module.exports.TopSite = TopSite;
 module.exports.TopSites = TopSites;
+module.exports.TopSitesEdit = TopSitesEdit;
