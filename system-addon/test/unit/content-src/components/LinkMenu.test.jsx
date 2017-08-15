@@ -95,7 +95,7 @@ describe("<LinkMenu>", () => {
     const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket"];
     const expectedActionData = {
       menu_action_remove_bookmark: FAKE_SITE.bookmarkGuid,
-      menu_action_bookmark: FAKE_SITE.url,
+      menu_action_bookmark: {url: FAKE_SITE.url, title: FAKE_SITE.title},
       menu_action_open_new_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_open_private_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_dismiss: FAKE_SITE.url,
