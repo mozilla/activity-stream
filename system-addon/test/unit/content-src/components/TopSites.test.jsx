@@ -1,7 +1,7 @@
 const React = require("react");
 const createMockRaf = require("mock-raf");
 const {shallow} = require("enzyme");
-const {_unconnected: TopSitesPerfTimer, TopSite, TopSites} = require("content-src/components/TopSites/TopSites");
+const {_unconnected: TopSitesPerfTimer, TopSite, TopSites, TopSitesEdit} = require("content-src/components/TopSites/TopSites");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 
@@ -13,6 +13,7 @@ const perfSvc = {
 const DEFAULT_PROPS = {
   TopSites: {initialized: true, rows: []},
   dispatch() {},
+  intl: {formatMessage: x => x},
   perfSvc
 };
 
@@ -314,5 +315,47 @@ describe("<TopSite>", () => {
       assert.propertyVal(action.data, "source", "TOP_SITES");
       assert.propertyVal(action.data, "action_position", 3);
     });
+  });
+});
+
+describe("<TopSitesEdit>", () => {
+  let wrapper;
+  function setup(props = {}) {
+    const customProps = Object.assign({}, DEFAULT_PROPS, props);
+    wrapper = shallow(<TopSitesEdit {...customProps} />);
+  }
+
+  beforeEach(() => setup());
+
+  it("should render the component", () => {
+    assert.ok(wrapper.find(TopSitesEdit));
+  });
+
+  it("the modal should not be rendered by default", () => {
+    assert.equal(0, wrapper.find(".modal").length);
+  });
+
+  it("the modal should be rendered when edit button is clicked", () => {
+    wrapper.find(".edit").simulate("click");
+    assert.equal(1, wrapper.find(".modal").length);
+  });
+
+  it("the modal should be closed when done button is clicked", () => {
+    // Open the modal first.
+    wrapper.find(".edit").simulate("click");
+    assert.equal(1, wrapper.find(".modal").length);
+    // Then click Done button to close it.
+    wrapper.find(".done").simulate("click");
+    assert.equal(0, wrapper.find(".modal").length);
+  });
+  it("should render a TopSite for each link with the right url", () => {
+    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
+    setup({TopSites: {rows}});
+
+    // Open the modal then check the links.
+    wrapper.find(".edit").simulate("click");
+    const links = wrapper.find(TopSite);
+    assert.lengthOf(links, 2);
+    links.forEach((link, i) => assert.equal(link.props().link.url, rows[i].url));
   });
 });

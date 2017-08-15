@@ -161,3 +161,42 @@
     }
   }
 }
+
+.top-sites {
+  position: relative;
+}
+
+.edit-topsites-wrapper {
+  .edit-topsites-button {
+    position: absolute;
+    offset-inline-end: 0;
+    top: -2px;
+
+    button {
+      background: none;
+      border: 0;
+      color: $light-grey;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0;
+
+      &:focus {
+        background: $very-light-grey;
+        border-bottom: dotted 1px $light-grey;
+      }
+    }
+  }
+
+  .modal {
+    offset-inline-start: -31px;
+    position: absolute;
+    top: -29px;
+    width: calc(100% + 62px);
+  }
+
+  .edit-topsites-inner-wrapper {
+    margin: 0;
+    padding: 15px 30px;
+  }
+
+}
