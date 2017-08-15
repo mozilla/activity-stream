@@ -30,10 +30,77 @@ const USER_PREFS_ENCODING = {
   "feeds.section.topstories": 1 << 2
 };
 
+const IMPRESSION_STATS_RESET_TIME = 60 * 60 * 1000; // 60 minutes
+const PREF_IMPRESSION_STATS_CLICKED = "impressionStats.clicked";
+const PREF_IMPRESSION_STATS_BLOCKED = "impressionStats.blocked";
+const PREF_IMPRESSION_STATS_POCKETED = "impressionStats.pocketed";
+
+/**
+ * A pref persistent GUID set
+ */
+class PersistentGuidSet extends Set {
+  constructor(prefs, prefName) {
+    let guids = [];
+    try {
+      guids = JSON.parse(prefs.get(prefName));
+      if (typeof guids[Symbol.iterator] !== "function") {
+        guids = [];
+        prefs.set(prefName, "[]");
+      }
+    } catch (e) {
+      Cu.reportError(e);
+      prefs.set(prefName, "[]");
+    }
+
+    super(guids);
+
+    this._prefs = prefs;
+    this._prefName = prefName;
+  }
+
+  /**
+   * Add a GUID and persist
+   *
+   * @param {Integer|String} guid a GUID to save
+   * @returns {Boolean} true if the item has been added
+   */
+  save(guid) {
+    if (!this.has(guid)) {
+      this.add(guid);
+      this._prefs.set(this._prefName, JSON.stringify(this.items()));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Clear GUID set and persist
+   */
+  clear() {
+    if (this.size !== 0) {
+      this._prefs.set(this._prefName, "[]");
+      super.clear();
+    }
+  }
+
+  /**
+   * Return GUID set as an array ordered by insertion time
+   */
+  items() {
+    return [...this];
+  }
+}
+
 this.TelemetryFeed = class TelemetryFeed {
   constructor(options) {
     this.sessions = new Map();
     this._prefs = new Prefs();
+    this._impressionStatsLastReset = Date.now();
+    this._impressionStats = {
+      clicked: new PersistentGuidSet(this._prefs, PREF_IMPRESSION_STATS_CLICKED),
+      blocked: new PersistentGuidSet(this._prefs, PREF_IMPRESSION_STATS_BLOCKED),
+      pocketed: new PersistentGuidSet(this._prefs, PREF_IMPRESSION_STATS_POCKETED)
+    };
   }
 
   init() {
@@ -242,6 +309,36 @@ this.TelemetryFeed = class TelemetryFeed {
     this.telemetrySender.sendPing(await eventPromise);
   }
 
+  handleImpressionStats(action) {
+    const payload = action.data;
+    let guidSet;
+    let index;
+
+    if ("click" in payload) {
+      guidSet = this._impressionStats.clicked;
+      index = payload.click;
+    } else if ("block" in payload) {
+      guidSet = this._impressionStats.blocked;
+      index = payload.block;
+    } else if ("pocket" in payload) {
+      guidSet = this._impressionStats.pocketed;
+      index = payload.pocket;
+    }
+
+    // If it is an impression ping, just send it out. For the click, block, and
+    // save to pocket pings, it only sends the first ping for the same article.
+    if (!guidSet || guidSet.save(payload.tiles[index].id)) {
+      this.sendEvent(this.createImpressionStats(action));
+    }
+  }
+
+  resetImpressionStats() {
+    for (const key of Object.keys(this._impressionStats)) {
+      this._impressionStats[key].clear();
+    }
+    this._impressionStatsLastReset = Date.now();
+  }
+
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -256,8 +353,13 @@ this.TelemetryFeed = class TelemetryFeed {
       case at.SAVE_SESSION_PERF_DATA:
         this.saveSessionPerfData(au.getPortIdOfSender(action), action.data);
         break;
+      case at.SYSTEM_TICK:
+        if (Date.now() - this._impressionStatsLastReset >= IMPRESSION_STATS_RESET_TIME) {
+          this.resetImpressionStats();
+        }
+        break;
       case at.TELEMETRY_IMPRESSION_STATS:
-        this.sendEvent(this.createImpressionStats(action));
+        this.handleImpressionStats(action);
         break;
       case at.TELEMETRY_UNDESIRED_EVENT:
         this.sendEvent(this.createUndesiredEvent(action));
@@ -313,4 +415,12 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["TelemetryFeed", "USER_PREFS_ENCODING"];
+this.EXPORTED_SYMBOLS = [
+  "TelemetryFeed",
+  "PersistentGuidSet",
+  "USER_PREFS_ENCODING",
+  "IMPRESSION_STATS_RESET_TIME",
+  "PREF_IMPRESSION_STATS_CLICKED",
+  "PREF_IMPRESSION_STATS_BLOCKED",
+  "PREF_IMPRESSION_STATS_POCKETED"
+];
