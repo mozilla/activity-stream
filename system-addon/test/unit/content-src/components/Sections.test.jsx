@@ -26,6 +26,18 @@ describe("<Sections>", () => {
 });
 
 describe("<Section>", () => {
+  const FAKE_SECTION = {
+    id: `foo_bar_1`,
+    title: `Foo Bar 1`,
+    rows: [{link: "http://localhost", index: 0}],
+    infoOption: {}
+  };
+
+  it("should use the icon `webextension` if no other is provided", () => {
+    const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+    assert.ok(wrapper.find(".icon").first().hasClass("icon-webextension"));
+  });
+
   it("should send impression stats for topstories", () => {
     const FAKE_TOPSTORIES_SECTION = {
       id: "TopStories",

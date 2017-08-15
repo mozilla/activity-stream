@@ -6,6 +6,11 @@ const Topics = require("content-src/components/Topics/Topics");
 const {actionCreators: ac} = require("common/Actions.jsm");
 
 class Section extends React.Component {
+
+  getFormattedMessage(message) {
+    return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
+  }
+
   render() {
     const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxRows, contextMenuOptions} = this.props;
     const maxCards = 3 * maxRows;
@@ -18,26 +23,30 @@ class Section extends React.Component {
         tiles: rows.slice(0, maxCards).map(link => ({id: link.guid}))
       }));
     }
+
     // <Section> <-- React component
     // <section> <-- HTML5 element
     return (<section>
         <div className="section-top-bar">
-          <h3 className="section-title"><span className={`icon icon-small-spacer icon-${icon}`} /><FormattedMessage {...title} /></h3>
+          <h3 className="section-title">
+            <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />
+            {this.getFormattedMessage(title)}
+          </h3>
           {infoOption && <span className="section-info-option">
-            <span className="sr-only"><FormattedMessage id="section_info_option" /></span>
+            <span className="sr-only">{this.getFormattedMessage({id: "section_info_option"})}</span>
             <img className="info-option-icon" />
             <div className="info-option">
               {infoOption.header &&
                 <div className="info-option-header">
-                  <FormattedMessage {...infoOption.header} />
+                  {this.getFormattedMessage(infoOption.header)}
                 </div>}
               {infoOption.body &&
                 <p className="info-option-body">
-                  <FormattedMessage {...infoOption.body} />
+                  {this.getFormattedMessage(infoOption.body)}
                 </p>}
               {infoOption.link &&
                 <a href={infoOption.link.href} target="_blank" rel="noopener noreferrer" className="info-option-link">
-                  <FormattedMessage {...infoOption.link} />
+                  {this.getFormattedMessage(infoOption.link.title || infoOption.link)}
                 </a>}
             </div>
           </span>}
@@ -51,7 +60,7 @@ class Section extends React.Component {
             <div className="empty-state">
               <img className={`empty-state-icon icon icon-${emptyState.icon}`} />
               <p className="empty-state-message">
-                <FormattedMessage {...emptyState.message} />
+                {this.getFormattedMessage(emptyState.message)}
               </p>
             </div>
           </div>}
