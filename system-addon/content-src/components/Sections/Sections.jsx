@@ -5,6 +5,9 @@ const Card = require("content-src/components/Card/Card");
 const Topics = require("content-src/components/Topics/Topics");
 const {actionCreators: ac} = require("common/Actions.jsm");
 
+const VISIBLE = "visible";
+const VISIBILITY_CHANGE_EVENT = "visibilitychange";
+
 class Section extends React.Component {
   constructor(props) {
     super(props);
@@ -27,17 +30,71 @@ class Section extends React.Component {
     });
   }
 
+  getFormattedMessage(message) {
+    return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
+  }
+
+  _dispatchImpressionStats() {
+    const {props} = this;
+    const maxCards = 3 * props.maxRows;
+    props.dispatch(ac.ImpressionStats({
+      source: props.eventSource,
+      tiles: props.rows.slice(0, maxCards).map(link => ({id: link.guid}))
+    }));
+  }
+
+  // This sends an event when a user sees a set of new content. If content
+  // changes while the page is hidden (i.e. preloaded or on a hidden tab),
+  // only send the event if the page becomes visible again.
+  sendImpressionStatsOrAddListener() {
+    const {props} = this;
+
+    if (!props.dispatch) {
+      return;
+    }
+
+    if (props.document.visibilityState === VISIBLE) {
+      this._dispatchImpressionStats();
+    } else {
+      // We should only ever send the latest impression stats ping, so remove any
+      // older listeners.
+      if (this._onVisibilityChange) {
+        props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
+      }
+
+      // When the page becoems visible, send the impression stats ping.
+      this._onVisibilityChange = () => {
+        if (props.document.visibilityState === VISIBLE) {
+          this._dispatchImpressionStats();
+          props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
+        }
+      };
+      props.document.addEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
+    }
+  }
+
+  componentDidMount() {
+    if (this.props.rows.length) {
+      this.sendImpressionStatsOrAddListener();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const {props} = this;
+    if (
+      // Don't send impression stats for the empty state
+      props.rows.length &&
+      // We only want to send impression stats if the content of the cards has changed
+      props.rows !== prevProps.rows
+    ) {
+      this.sendImpressionStatsOrAddListener();
+    }
+  }
+
   render() {
     const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxCards, contextMenuOptions, intl} = this.props;
     const initialized = rows && rows.length > 0;
     const shouldShowTopics = (id === "TopStories" && this.props.topics && this.props.read_more_endpoint);
-
-    if (dispatch) {
-      dispatch(ac.ImpressionStats({
-        source: eventSource,
-        tiles: rows.slice(0, maxCards).map(link => ({id: link.guid}))
-      }));
-    }
 
     const infoOptionIconA11yAttrs = {
       "aria-haspopup": "true",
@@ -95,6 +152,8 @@ class Section extends React.Component {
       </section>);
   }
 }
+
+Section.defaultProps = {document: global.document};
 
 const SectionIntl = injectIntl(Section);
 
