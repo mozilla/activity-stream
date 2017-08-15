@@ -316,6 +316,87 @@ describe("<TopSite>", () => {
       assert.propertyVal(action.data, "action_position", 3);
     });
   });
+
+  describe("#editMode", () => {
+    let wrapper;
+    const defaultProps = {
+      editMode: true,
+      link: {url: "https://foo.com", screenshot: "foo.jpg", hostname: "foo"},
+      dispatch() {},
+      intl: {formatMessage: x => x}
+    };
+
+    function setup(props = {}) {
+      const customProps = Object.assign({}, defaultProps, props);
+      wrapper = shallow(<TopSite {...customProps} />);
+    }
+
+    beforeEach(() => setup());
+
+    it("should render the component", () => {
+      assert.ok(wrapper.exists());
+    });
+    it("should render 2 buttons by default", () => {
+      assert.equal(2, wrapper.find(".edit-menu button").length);
+      assert.equal(1, wrapper.find(".icon-pin").length);
+      assert.equal(1, wrapper.find(".icon-dismiss").length);
+    });
+    it("should render 1 button for a default site", () => {
+      setup({link: Object.assign({}, defaultProps.link, {isDefault: true})});
+      assert.equal(1, wrapper.find(".edit-menu button").length);
+      assert.equal(1, wrapper.find(".icon-pin").length);
+    });
+    it("should render the pin button if site isn't pinned", () => {
+      assert.equal(1, wrapper.find(".icon-pin").length);
+      assert.equal(0, wrapper.find(".icon-unpin").length);
+    });
+    it("should render the unpin button if site is pinned", () => {
+      setup({link: Object.assign({}, defaultProps.link, {isPinned: true})});
+      assert.equal(0, wrapper.find(".icon-pin").length);
+      assert.equal(1, wrapper.find(".icon-unpin").length);
+    });
+    it("should fire a dismiss action when the dismiss button is clicked", done => {
+      function dispatch(a) {
+        if (a.type === at.BLOCK_URL) {
+          assert.equal(a.data, defaultProps.link.url);
+          done();
+        }
+      }
+      setup({dispatch});
+      wrapper.find(".icon-dismiss").simulate("click");
+    });
+    it("should fire a pin action when the pin button is clicked", done => {
+      function dispatch(a) {
+        if (a.type === at.TOP_SITES_PIN) {
+          assert.equal(a.data.site.url, defaultProps.link.url);
+          assert.equal(a.data.index, 7);
+          done();
+        }
+      }
+      setup({index: 7, dispatch});
+      wrapper.find(".icon-pin").simulate("click");
+    });
+    it("should fire an unpin action when the pin button is clicked", done => {
+      function dispatch(a) {
+        if (a.type === at.TOP_SITES_UNPIN) {
+          assert.equal(a.data.site.url, defaultProps.link.url);
+          done();
+        }
+      }
+      setup({link: Object.assign({}, defaultProps.link, {isPinned: true}), dispatch});
+      wrapper.find(".icon-unpin").simulate("click");
+    });
+    it("should fire an unpin action when a pinned site is dismissed", done => {
+      function dispatch(a) {
+        if (a.type === at.TOP_SITES_UNPIN) {
+          assert.equal(a.data.site.url, defaultProps.link.url);
+          done();
+        }
+      }
+      setup({link: Object.assign({}, defaultProps.link, {isPinned: true}), dispatch});
+      wrapper.find(".icon-dismiss").simulate("click");
+    });
+  });
 });
 
 describe("<TopSitesEdit>", () => {
@@ -330,16 +411,13 @@ describe("<TopSitesEdit>", () => {
   it("should render the component", () => {
     assert.ok(wrapper.find(TopSitesEdit));
   });
-
   it("the modal should not be rendered by default", () => {
     assert.equal(0, wrapper.find(".modal").length);
   });
-
   it("the modal should be rendered when edit button is clicked", () => {
     wrapper.find(".edit").simulate("click");
     assert.equal(1, wrapper.find(".modal").length);
   });
-
   it("the modal should be closed when done button is clicked", () => {
     // Open the modal first.
     wrapper.find(".edit").simulate("click");
