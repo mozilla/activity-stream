@@ -123,7 +123,9 @@ class Section extends React.Component {
     return (<section>
         <div className="section-top-bar">
           <h3 className="section-title">
-            <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />
+            {icon && icon.startsWith("moz-extension://") ?
+              <span className="icon icon-small-spacer" style={{"background-image": `url('${icon}')`}} /> :
+              <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />}
             {this.getFormattedMessage(title)}
           </h3>
           {infoOption &&
