@@ -12,18 +12,29 @@ class Section extends React.Component {
     this.state = {infoActive: false};
   }
 
+  /**
+   * Take a truthy value to conditionally change the infoActive state.
+   */
+  _setInfoState(nextActive) {
+    const infoActive = !!nextActive;
+    if (infoActive !== this.state.infoActive) {
+      this.setState(Object.assign({}, this.state, {infoActive}));
+    }
+  }
+
   onInfoEnter() {
-    this.setState({infoActive: true});
+    // We're getting focus or hover, so info state should be true if not yet.
+    this._setInfoState(true);
   }
 
   onInfoLeave(event) {
-    // If we have a related target, check to see if it is within the current
-    // target (section-info-option) to keep infoActive true. False otherwise.
-    this.setState({
-      infoActive: event && event.relatedTarget && (
-        event.relatedTarget.compareDocumentPosition(event.currentTarget) &
-          Node.DOCUMENT_POSITION_CONTAINS)
-    });
+    // We currently have an active (true) info state, so keep it true only if we
+    // have a related event target that is contained "within" the current target
+    // (section-info-option) as itself or a descendant. Set to false otherwise.
+    this._setInfoState(event && event.relatedTarget && (
+      event.relatedTarget === event.currentTarget ||
+      (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
+        Node.DOCUMENT_POSITION_CONTAINS)));
   }
 
   render() {
