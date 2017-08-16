@@ -1,6 +1,8 @@
 const React = require("react");
+const {shallow} = require("enzyme");
 const {shallowWithIntl} = require("test/unit/utils");
-const {_unconnected: Sections, Section} = require("content-src/components/Sections/Sections");
+const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl} =
+  require("content-src/components/Sections/Sections");
 const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("<Sections>", () => {
@@ -13,141 +15,212 @@ describe("<Sections>", () => {
       initialized: false,
       rows: []
     }));
-    wrapper = shallowWithIntl(<Sections Sections={FAKE_SECTIONS} />);
+    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} />);
   });
   it("should render a Sections element", () => {
     assert.ok(wrapper.exists());
   });
   it("should render a Section for each one passed in props.Sections", () => {
-    const sectionElems = wrapper.find(Section);
+    const sectionElems = wrapper.find(SectionIntl);
     assert.lengthOf(sectionElems, 5);
     sectionElems.forEach((section, i) => assert.equal(section.props().id, FAKE_SECTIONS[i].id));
   });
 });
 
-const FAKE_TOPSTORIES_SECTION_PROPS = {
-  id: "TopStories",
-  title: "Foo Bar 1",
-  maxRows: 1,
-  rows: [{guid: 1}, {guid: 2}],
-  infoOption: {id: "foo"},
-
-  document: {
-    visibilityState: "visible",
-    addEventListener: sinon.stub(),
-    removeEventListener: sinon.stub()
-  },
-  eventSource: "TOP_STORIES"
+const FAKE_SECTION = {
+  id: `foo_bar_1`,
+  title: `Foo Bar 1`,
+  rows: [{link: "http://localhost", index: 0}],
+  infoOption: {}
 };
-
-function renderSection(props = {}) {
-  return shallowWithIntl(<Section
-    {...FAKE_TOPSTORIES_SECTION_PROPS}
-    {...props} />, {lifecycleExperimental: true});
-}
 
 describe("<Section>", () => {
   it("should use the icon `webextension` if no other is provided", () => {
-    const wrapper = shallowWithIntl(<Section {...FAKE_TOPSTORIES_SECTION_PROPS} />);
+    const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
     assert.ok(wrapper.find(".icon").first().hasClass("icon-webextension"));
   });
-  it("should send impression with the right stats when the page loads", () => {
-    const dispatch = sinon.spy();
-    renderSection({dispatch});
 
-    assert.calledOnce(dispatch);
+  describe("info option", () => {
+    it("should render info-option-icon with a tabindex", () => {
+      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
 
-    const action = dispatch.firstCall.args[0];
-    assert.equal(action.type, at.TELEMETRY_IMPRESSION_STATS);
-    assert.equal(action.data.source, "TOP_STORIES");
-    assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}]);
+      // Because this is a shallow render, we need to use the casing
+      // that react understands (tabIndex), rather than the one used by
+      // the browser itself (tabindex).
+      assert.lengthOf(wrapper.find(".info-option-icon[tabIndex]"), 1);
+    });
+
+    it("should render info-option-icon with a role of 'note'", () => {
+      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+
+      assert.lengthOf(wrapper.find('.info-option-icon[role="note"]'), 1);
+    });
+
+    it("should render info-option-icon with a title attribute", () => {
+      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+
+      assert.lengthOf(wrapper.find(".info-option-icon[title]"), 1);
+    });
+
+    it("should render info-option-icon with aria-haspopup", () => {
+      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+
+      assert.lengthOf(wrapper.find('.info-option-icon[aria-haspopup="true"]'),
+        1);
+    });
+
+    it('should render info-option-icon with aria-controls="info-option"', () => {
+      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+
+      assert.lengthOf(
+        wrapper.find('.info-option-icon[aria-controls="info-option"]'), 1);
+    });
+
+    it('should render info-option-icon aria-expanded["false"] by default', () => {
+      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+
+      assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'),
+        1);
+    });
+
+    it("should render info-option-icon w/aria-expanded when moused over", () => {
+      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+
+      wrapper.find(".section-info-option").simulate("mouseover");
+
+      assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="true"]'), 1);
+    });
+
+    it('should render info-option-icon w/aria-expanded["false"] when moused out', () => {
+      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+      wrapper.find(".section-info-option").simulate("mouseover");
+
+      wrapper.find(".section-info-option").simulate("mouseout");
+
+      assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
+    });
   });
-  it("should send 1 impression when the page becomes visibile after loading", () => {
-    const props = {
-      dispatch: sinon.spy(),
+
+  describe("impression stats", () => {
+    const FAKE_TOPSTORIES_SECTION_PROPS = {
+      id: "TopStories",
+      title: "Foo Bar 1",
+      maxRows: 1,
+      rows: [{guid: 1}, {guid: 2}],
+      infoOption: {id: "foo"},
+
       document: {
-        visibilityState: "hidden",
-        addEventListener: sinon.spy(),
-        removeEventListener: sinon.spy()
-      }
+        visibilityState: "visible",
+        addEventListener: sinon.stub(),
+        removeEventListener: sinon.stub()
+      },
+      eventSource: "TOP_STORIES"
     };
 
-    renderSection(props);
+    function renderSection(props = {}) {
+      return shallowWithIntl(<Section
+        {...FAKE_TOPSTORIES_SECTION_PROPS}
+        {...props} />, {lifecycleExperimental: true});
+    }
 
-    // Was the event listener added?
-    assert.calledWith(props.document.addEventListener, "visibilitychange");
+    it("should send impression with the right stats when the page loads", () => {
+      const dispatch = sinon.spy();
+      renderSection({dispatch});
 
-    // Make sure dispatch wasn't called yet
-    assert.notCalled(props.dispatch);
+      assert.calledOnce(dispatch);
 
-    // Simulate a visibilityChange event
-    const listener = props.document.addEventListener.firstCall.args[1];
-    props.document.visibilityState = "visible";
-    listener();
+      const action = dispatch.firstCall.args[0];
+      assert.equal(action.type, at.TELEMETRY_IMPRESSION_STATS);
+      assert.equal(action.data.source, "TOP_STORIES");
+      assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}]);
+    });
+    it("should send 1 impression when the page becomes visibile after loading", () => {
+      const props = {
+        dispatch: sinon.spy(),
+        document: {
+          visibilityState: "hidden",
+          addEventListener: sinon.spy(),
+          removeEventListener: sinon.spy()
+        }
+      };
 
-    // Did we actually dispatch an event?
-    assert.calledOnce(props.dispatch);
-    assert.equal(props.dispatch.firstCall.args[0].type, at.TELEMETRY_IMPRESSION_STATS);
+      renderSection(props);
 
-    // Did we remove the event listener?
-    assert.calledWith(props.document.removeEventListener, "visibilitychange", listener);
-  });
-  it("should send an impression if props are updated and props.rows are different", () => {
-    const props = {dispatch: sinon.spy()};
-    const wrapper = renderSection(props);
-    props.dispatch.reset();
+      // Was the event listener added?
+      assert.calledWith(props.document.addEventListener, "visibilitychange");
 
-    // New rows
-    wrapper.setProps(Object.assign({},
-      FAKE_TOPSTORIES_SECTION_PROPS,
-      {rows: [{guid: 123}]}
-    ));
+      // Make sure dispatch wasn't called yet
+      assert.notCalled(props.dispatch);
 
-    assert.calledOnce(props.dispatch);
-  });
-  it("should not send an impression if props are updated but props.rows are the same", () => {
-    const props = {dispatch: sinon.spy()};
-    const wrapper = renderSection(props);
-    props.dispatch.reset();
+      // Simulate a visibilityChange event
+      const listener = props.document.addEventListener.firstCall.args[1];
+      props.document.visibilityState = "visible";
+      listener();
 
-    // Only update the infoOption prop
-    wrapper.setProps(Object.assign({},
-      FAKE_TOPSTORIES_SECTION_PROPS,
-      {infoOption: {id: "bar"}}
-    ));
+      // Did we actually dispatch an event?
+      assert.calledOnce(props.dispatch);
+      assert.equal(props.dispatch.firstCall.args[0].type, at.TELEMETRY_IMPRESSION_STATS);
 
-    assert.notCalled(props.dispatch);
-  });
-  it("should only send the latest impression on a visibility change", () => {
-    const listeners = new Set();
-    const props = {
-      dispatch: sinon.spy(),
-      document: {
-        visibilityState: "hidden",
-        addEventListener: (ev, cb) => listeners.add(cb),
-        removeEventListener: (ev, cb) => listeners.delete(cb)
-      }
-    };
+      // Did we remove the event listener?
+      assert.calledWith(props.document.removeEventListener, "visibilitychange", listener);
+    });
+    it("should send an impression if props are updated and props.rows are different", () => {
+      const props = {dispatch: sinon.spy()};
+      const wrapper = renderSection(props);
+      props.dispatch.reset();
 
-    const wrapper = renderSection(props);
+      // New rows
+      wrapper.setProps(Object.assign({},
+        FAKE_TOPSTORIES_SECTION_PROPS,
+        {rows: [{guid: 123}]}
+      ));
 
-    // Update twice
-    wrapper.setProps(Object.assign({}, props,
-      {rows: [{guid: 123}]}
-    ));
-    wrapper.setProps(Object.assign({}, props,
-      {rows: [{guid: 2432}]}
-    ));
+      assert.calledOnce(props.dispatch);
+    });
+    it("should not send an impression if props are updated but props.rows are the same", () => {
+      const props = {dispatch: sinon.spy()};
+      const wrapper = renderSection(props);
+      props.dispatch.reset();
 
-    assert.notCalled(props.dispatch);
+      // Only update the infoOption prop
+      wrapper.setProps(Object.assign({},
+        FAKE_TOPSTORIES_SECTION_PROPS,
+        {infoOption: {id: "bar"}}
+      ));
 
-    // Simulate listeners getting called
-    props.document.visibilityState = "visible";
-    listeners.forEach(l => l());
+      assert.notCalled(props.dispatch);
+    });
+    it("should only send the latest impression on a visibility change", () => {
+      const listeners = new Set();
+      const props = {
+        dispatch: sinon.spy(),
+        document: {
+          visibilityState: "hidden",
+          addEventListener: (ev, cb) => listeners.add(cb),
+          removeEventListener: (ev, cb) => listeners.delete(cb)
+        }
+      };
 
-    // Make sure we only sent the latest event
-    assert.calledOnce(props.dispatch);
-    const action = props.dispatch.firstCall.args[0];
-    assert.deepEqual(action.data.tiles, [{id: 2432}]);
+      const wrapper = renderSection(props);
+
+      // Update twice
+      wrapper.setProps(Object.assign({}, props,
+        {rows: [{guid: 123}]}
+      ));
+      wrapper.setProps(Object.assign({}, props,
+        {rows: [{guid: 2432}]}
+      ));
+
+      assert.notCalled(props.dispatch);
+
+      // Simulate listeners getting called
+      props.document.visibilityState = "visible";
+      listeners.forEach(l => l());
+
+      // Make sure we only sent the latest event
+      assert.calledOnce(props.dispatch);
+      const action = props.dispatch.firstCall.args[0];
+      assert.deepEqual(action.data.tiles, [{id: 2432}]);
+    });
   });
 });
