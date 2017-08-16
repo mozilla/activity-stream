@@ -20,7 +20,8 @@ overrider.set({
       importGlobalProperties() {},
       reportError() {},
       now: () => window.performance.now()
-    }
+    },
+    isSuccessCode: () => true
   },
   // eslint-disable-next-line object-shorthand
   ContentSearchUIController: function() {}, // NB: This is a function/constructor
@@ -60,14 +61,20 @@ overrider.set({
     },
     tm: {dispatchToMainThread: cb => cb()},
     eTLD: {getPublicSuffix() {}},
-    io: {NewURI() {}}
+    io: {NewURI() {}},
+    search: {
+      init(cb) { cb(); },
+      getVisibleEngines: () => [{identifier: "google"}, {identifier: "bing"}],
+      defaultEngine: {identifier: "google"}
+    }
   },
   XPCOMUtils: {
     defineLazyModuleGetter() {},
     defineLazyServiceGetter() {},
     generateQI() { return {}; }
   },
-  EventEmitter
+  EventEmitter,
+  ShellService: {isDefaultBrowser: () => true}
 });
 
 describe("activity-stream", () => {
