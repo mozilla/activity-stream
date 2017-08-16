@@ -15,6 +15,8 @@ class TopSite extends React.Component {
     this.onLinkClick = this.onLinkClick.bind(this);
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
+    this.onDismissButtonClick = this.onDismissButtonClick.bind(this);
+    this.onPinButtonClick = this.onPinButtonClick.bind(this);
   }
   toggleContextMenu(event, index) {
     this.setState({
@@ -22,12 +24,20 @@ class TopSite extends React.Component {
       showContextMenu: true
     });
   }
-  onLinkClick() {
+  userEvent(event) {
     this.props.dispatch(ac.UserEvent({
-      event: "CLICK",
+      event,
       source: TOP_SITES_SOURCE,
       action_position: this.props.index
     }));
+  }
+  onLinkClick(ev) {
+    if (this.props.editMode) {
+      // Ignore clicks if we are in the edit modal.
+      ev.preventDefault();
+      return;
+    }
+    this.userEvent("CLICK");
   }
   onMenuButtonClick(event) {
     event.preventDefault();
@@ -36,8 +46,38 @@ class TopSite extends React.Component {
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});
   }
+  onDismissButtonClick() {
+    const {link} = this.props;
+    if (link.isPinned) {
+      this.props.dispatch(ac.SendToMain({
+        type: at.TOP_SITES_UNPIN,
+        data: {site: {url: link.url}}
+      }));
+    }
+    this.props.dispatch(ac.SendToMain({
+      type: at.BLOCK_URL,
+      data: link.url
+    }));
+    this.userEvent("BLOCK");
+  }
+  onPinButtonClick() {
+    const {link, index} = this.props;
+    if (link.isPinned) {
+      this.props.dispatch(ac.SendToMain({
+        type: at.TOP_SITES_UNPIN,
+        data: {site: {url: link.url}}
+      }));
+      this.userEvent("UNPIN");
+    } else {
+      this.props.dispatch(ac.SendToMain({
+        type: at.TOP_SITES_PIN,
+        data: {site: {url: link.url}, index}
+      }));
+      this.userEvent("PIN");
+    }
+  }
   render() {
-    const {link, index, dispatch} = this.props;
+    const {link, index, dispatch, editMode} = this.props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
     const title = link.hostname;
     const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
@@ -65,20 +105,40 @@ class TopSite extends React.Component {
             <span dir="auto">{title}</span>
           </div>
         </a>
-        <button className="context-menu-button" onClick={this.onMenuButtonClick}>
-          <span className="sr-only">{`Open context menu for ${title}`}</span>
-        </button>
-        <LinkMenu
-          dispatch={dispatch}
-          index={index}
-          onUpdate={this.onMenuUpdate}
-          options={TOP_SITES_CONTEXT_MENU_OPTIONS}
-          site={link}
-          source={TOP_SITES_SOURCE}
-          visible={isContextMenuOpen} />
+        {!editMode &&
+          <div>
+            <button className="context-menu-button" onClick={this.onMenuButtonClick}>
+              <span className="sr-only">{`Open context menu for ${title}`}</span>
+            </button>
+            <LinkMenu
+              dispatch={dispatch}
+              index={index}
+              onUpdate={this.onMenuUpdate}
+              options={TOP_SITES_CONTEXT_MENU_OPTIONS}
+              site={link}
+              source={TOP_SITES_SOURCE}
+              visible={isContextMenuOpen} />
+          </div>
+        }
+        {editMode &&
+          <div className="edit-menu">
+            <button
+              className={`icon icon-${link.isPinned ? "unpin" : "pin"}`}
+              title={this.props.intl.formatMessage({id: `edit_topsites_${link.isPinned ? "unpin" : "pin"}_button`})}
+              onClick={this.onPinButtonClick} />
+            {!link.isDefault &&
+              <button
+                className="icon icon-dismiss"
+                title={this.props.intl.formatMessage({id: "edit_topsites_dismiss_button"})}
+                onClick={this.onDismissButtonClick} />
+            }
+          </div>
+        }
     </li>);
   }
 }
+
+TopSite.defaultProps = {editMode: false};
 
 /**
  * A proxy class that uses double requestAnimationFrame from
@@ -195,7 +255,8 @@ const TopSites = props => (<section className="top-sites">
       key={link.guid || link.url}
       dispatch={props.dispatch}
       link={link}
-      index={index} />)}
+      index={index}
+      intl={props.intl} />)}
   </ul>
   <TopSitesEditIntl {...props} />
 </section>);
@@ -235,7 +296,9 @@ class TopSitesEdit extends React.Component {
                   key={link.guid || link.url}
                   dispatch={this.props.dispatch}
                   link={link}
-                  index={index} />)}
+                  index={index}
+                  intl={this.props.intl}
+                  editMode={true} />)}
               </ul>
             </section>
             <section className="actions">
