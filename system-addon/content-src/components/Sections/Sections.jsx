@@ -1,6 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
-const {FormattedMessage} = require("react-intl");
+const {injectIntl, FormattedMessage} = require("react-intl");
 const Card = require("content-src/components/Card/Card");
 const Topics = require("content-src/components/Topics/Topics");
 const {actionCreators: ac} = require("common/Actions.jsm");
@@ -9,6 +9,27 @@ const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 
 class Section extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onInfoEnter = this.onInfoEnter.bind(this);
+    this.onInfoLeave = this.onInfoLeave.bind(this);
+    this.state = {infoActive: false};
+  }
+
+  onInfoEnter() {
+    this.setState({infoActive: true});
+  }
+
+  onInfoLeave(event) {
+    // If we have a related target, check to see if it is within the current
+    // target (section-info-option) to keep infoActive true. False otherwise.
+    this.setState({
+      infoActive: event && event.relatedTarget && (
+        event.relatedTarget.compareDocumentPosition(event.currentTarget) &
+          Node.DOCUMENT_POSITION_CONTAINS)
+    });
+  }
+
   getFormattedMessage(message) {
     return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
   }
@@ -71,10 +92,20 @@ class Section extends React.Component {
   }
 
   render() {
-    const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxRows, contextMenuOptions} = this.props;
+    const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxRows, contextMenuOptions, intl} = this.props;
     const maxCards = 3 * maxRows;
     const initialized = rows && rows.length > 0;
     const shouldShowTopics = (id === "TopStories" && this.props.topics && this.props.read_more_endpoint);
+
+    const infoOptionIconA11yAttrs = {
+      "aria-haspopup": "true",
+      "aria-controls": "info-option",
+      "aria-expanded": this.state.infoActive ? "true" : "false",
+      "role": "note",
+      "tabIndex": 0
+    };
+
+    const sectionInfoTitle = intl.formatMessage({id: "section_info_option"});
 
     // <Section> <-- React component
     // <section> <-- HTML5 element
@@ -84,12 +115,17 @@ class Section extends React.Component {
             <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />
             {this.getFormattedMessage(title)}
           </h3>
-          {infoOption && <span className="section-info-option">
-            <span className="sr-only">{this.getFormattedMessage({id: "section_info_option"})}</span>
-            <img className="info-option-icon" />
+          {infoOption &&
+          <span className="section-info-option"
+            onBlur={this.onInfoLeave}
+            onFocus={this.onInfoEnter}
+            onMouseOut={this.onInfoLeave}
+            onMouseOver={this.onInfoEnter}>
+            <img className="info-option-icon" title={sectionInfoTitle}
+              {...infoOptionIconA11yAttrs} />
             <div className="info-option">
               {infoOption.header &&
-                <div className="info-option-header">
+                <div className="info-option-header" role="heading">
                   {this.getFormattedMessage(infoOption.header)}
                 </div>}
               {infoOption.body &&
@@ -123,12 +159,14 @@ class Section extends React.Component {
 
 Section.defaultProps = {document: global.document};
 
+const SectionIntl = injectIntl(Section);
+
 class Sections extends React.Component {
   render() {
     const sections = this.props.Sections;
     return (
       <div className="sections-list">
-        {sections.map(section => <Section key={section.id} {...section} dispatch={this.props.dispatch} />)}
+        {sections.map(section => <SectionIntl key={section.id} {...section} dispatch={this.props.dispatch} />)}
       </div>
     );
   }
@@ -136,4 +174,5 @@ class Sections extends React.Component {
 
 module.exports = connect(state => ({Sections: state.Sections}))(Sections);
 module.exports._unconnected = Sections;
-module.exports.Section = Section;
+module.exports.SectionIntl = SectionIntl;
+module.exports._unconnectedSection = Section;
