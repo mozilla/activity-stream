@@ -126,12 +126,10 @@ class TopSite extends React.Component {
               className={`icon icon-${link.isPinned ? "unpin" : "pin"}`}
               title={this.props.intl.formatMessage({id: `edit_topsites_${link.isPinned ? "unpin" : "pin"}_button`})}
               onClick={this.onPinButtonClick} />
-            {!link.isDefault &&
-              <button
-                className="icon icon-dismiss"
-                title={this.props.intl.formatMessage({id: "edit_topsites_dismiss_button"})}
-                onClick={this.onDismissButtonClick} />
-            }
+            <button
+              className="icon icon-dismiss"
+              title={this.props.intl.formatMessage({id: "edit_topsites_dismiss_button"})}
+              onClick={this.onDismissButtonClick} />
           </div>
         }
     </li>);
