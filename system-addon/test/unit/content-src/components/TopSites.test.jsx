@@ -341,10 +341,11 @@ describe("<TopSite>", () => {
       assert.equal(1, wrapper.find(".icon-pin").length);
       assert.equal(1, wrapper.find(".icon-dismiss").length);
     });
-    it("should render 1 button for a default site", () => {
+    it("should render 2 button for a default site too", () => {
       setup({link: Object.assign({}, defaultProps.link, {isDefault: true})});
-      assert.equal(1, wrapper.find(".edit-menu button").length);
+      assert.equal(2, wrapper.find(".edit-menu button").length);
       assert.equal(1, wrapper.find(".icon-pin").length);
+      assert.equal(1, wrapper.find(".icon-dismiss").length);
     });
     it("should render the pin button if site isn't pinned", () => {
       assert.equal(1, wrapper.find(".icon-pin").length);
