@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const {interfaces: Ci, utils: Cu} = Components;
-Cu.import("resource://gre/modules/Preferences.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.importGlobalProperties(["fetch"]);
 
@@ -30,41 +30,29 @@ const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
  * @param {string} options.topic - a unique ID for users of PingCentre to distinguish
  *                  their data on the server side.
  * @param {string} options.overrideEndpointPref - optional pref for URL where the POST is sent.
- * @param {Object} args - optional arguments
- * @param {Function} args.prefInitHook - if present, will be called back
- *                   inside the Prefs constructor. Typically used from tests
- *                   to save off a pointer to a fake Prefs instance so that
- *                   stubs and spies can be inspected by the test code.
  */
 class PingCentre {
-  constructor(options, args) {
-    let prefArgs = {};
-    if (args) {
-      if ("prefInitHook" in args) {
-        prefArgs.initHook = args.prefInitHook;
-      }
-    }
-
+  constructor(options) {
     if (!options.topic) {
       throw new Error("Must specify topic.");
     }
 
     this._topic = options.topic;
-    this._prefs = new Preferences(prefArgs);
+    this._prefs = Services.prefs.getBranch("");
 
     this._setPingEndpoint(options.topic, options.overrideEndpointPref);
 
-    this._enabled = this._prefs.get(TELEMETRY_PREF);
+    this._enabled = this._prefs.getBoolPref(TELEMETRY_PREF);
     this._onTelemetryPrefChange = this._onTelemetryPrefChange.bind(this);
-    this._prefs.observe(TELEMETRY_PREF, this._onTelemetryPrefChange);
+    this._prefs.addObserver(TELEMETRY_PREF, this._onTelemetryPrefChange);
 
-    this._fhrEnabled = this._prefs.get(FHR_UPLOAD_ENABLED_PREF);
+    this._fhrEnabled = this._prefs.getBoolPref(FHR_UPLOAD_ENABLED_PREF);
     this._onFhrPrefChange = this._onFhrPrefChange.bind(this);
-    this._prefs.observe(FHR_UPLOAD_ENABLED_PREF, this._onFhrPrefChange);
+    this._prefs.addObserver(FHR_UPLOAD_ENABLED_PREF, this._onFhrPrefChange);
 
-    this.logging = this._prefs.get(LOGGING_PREF);
+    this.logging = this._prefs.getBoolPref(LOGGING_PREF);
     this._onLoggingPrefChange = this._onLoggingPrefChange.bind(this);
-    this._prefs.observe(LOGGING_PREF, this._onLoggingPrefChange);
+    this._prefs.addObserver(LOGGING_PREF, this._onLoggingPrefChange);
   }
 
   /**
@@ -80,26 +68,27 @@ class PingCentre {
   }
 
   _setPingEndpoint(topic, overrideEndpointPref) {
-    const overrideValue = overrideEndpointPref && this._prefs.get(overrideEndpointPref);
+    const overrideValue = overrideEndpointPref &&
+      this._prefs.getStringPref(overrideEndpointPref);
     if (overrideValue) {
       this._pingEndpoint = overrideValue;
     } else if (AppConstants.MOZ_UPDATE_CHANNEL === "release") {
-      this._pingEndpoint = this._prefs.get(PRODUCTION_ENDPOINT_PREF);
+      this._pingEndpoint = this._prefs.getStringPref(PRODUCTION_ENDPOINT_PREF);
     } else {
-      this._pingEndpoint = this._prefs.get(STAGING_ENDPOINT_PREF);
+      this._pingEndpoint = this._prefs.getStringPref(STAGING_ENDPOINT_PREF);
     }
   }
 
-  _onLoggingPrefChange(prefVal) {
-    this.logging = prefVal;
+  _onLoggingPrefChange(aSubject, aTopic, prefKey) {
+    this.logging = this._prefs.getBoolPref(prefKey);
   }
 
-  _onTelemetryPrefChange(prefVal) {
-    this._enabled = prefVal;
+  _onTelemetryPrefChange(aSubject, aTopic, prefKey) {
+    this._enabled = this._prefs.getBoolPref(prefKey);
   }
 
-  _onFhrPrefChange(prefVal) {
-    this._fhrEnabled = prefVal;
+  _onFhrPrefChange(aSubject, aTopic, prefKey) {
+    this._fhrEnabled = this._prefs.getBoolPref(prefKey);
   }
 
   async sendPing(data) {
@@ -131,9 +120,9 @@ class PingCentre {
 
   uninit() {
     try {
-      this._prefs.ignore(TELEMETRY_PREF, this._onTelemetryPrefChange);
-      this._prefs.ignore(LOGGING_PREF, this._onLoggingPrefChange);
-      this._prefs.ignore(FHR_UPLOAD_ENABLED_PREF, this._onFhrPrefChange);
+      this._prefs.removeObserver(TELEMETRY_PREF, this._onTelemetryPrefChange);
+      this._prefs.removeObserver(LOGGING_PREF, this._onLoggingPrefChange);
+      this._prefs.removeObserver(FHR_UPLOAD_ENABLED_PREF, this._onFhrPrefChange);
     } catch (e) {
       Cu.reportError(e);
     }

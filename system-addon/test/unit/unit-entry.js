@@ -50,6 +50,7 @@ overrider.set({
       removeObserver() {},
       getStringPref() {},
       getBoolPref() {},
+      getBranch() {},
       getDefaultBranch() {
         return {
           setBoolPref() {},

@@ -17,7 +17,6 @@ const prefInitHook = function() {
   fakePrefs = this; // eslint-disable-line consistent-this
 };
 
-const tsArgs = {prefInitHook};
 const FAKE_TELEMETRY_ID = "foo123";
 const FAKE_AS_ENDPOINT_PREF = "some.as.endpoint.pref";
 
@@ -36,7 +35,8 @@ describe("PingCentre", () => {
     sandbox = globals.sandbox;
     fetchStub = sandbox.stub();
 
-    globals.set("Preferences", FakePrefs);
+    sandbox.stub(global.Services.prefs, "getBranch")
+        .returns(new FakePrefs({initHook: prefInitHook}));
     globals.set("fetch", fetchStub);
     globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
     globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: "beta"});
@@ -49,35 +49,33 @@ describe("PingCentre", () => {
   });
 
   it("should add .telemetryClientId from the ClientID module", async () => {
-    tSender = new PingCentre({topic: "activity-stream"}, tsArgs);
+    tSender = new PingCentre({topic: "activity-stream"});
     assert.equal(await tSender.telemetryClientId, FAKE_TELEMETRY_ID);
   });
 
   it("should construct the Prefs object", () => {
-    globals.sandbox.spy(global, "Preferences");
-
     tSender = new PingCentre({
       topic: "activity-stream",
       overrideEndpointPref: fakeEndpointUrl
-    }, tsArgs);
+    });
 
-    assert.calledOnce(global.Preferences);
+    assert.calledOnce(global.Services.prefs.getBranch);
   });
 
   it("should throw when topic is not specified", () => {
     assert.throws(() => {
-      tSender = new PingCentre({overrideEndpointPref: fakeEndpointUrl}, tsArgs);
+      tSender = new PingCentre({overrideEndpointPref: fakeEndpointUrl});
     });
   });
 
-  describe("telemetry.enabled pref changes from true to false", () => {
+  describe("setting the telemetry endpoint", () => {
     beforeEach(() => {
       globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: "release"});
       FakePrefs.prototype.prefs[PRODUCTION_ENDPOINT_PREF] = fakeEndpointUrl;
     });
 
     it("should correctly set endpoint based on topic", () => {
-      tSender = new PingCentre({topic: "onboarding"}, tsArgs);
+      tSender = new PingCentre({topic: "onboarding"});
       assert.equal(tSender._pingEndpoint, fakeEndpointUrl);
     });
   });
@@ -97,7 +95,7 @@ describe("PingCentre", () => {
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: fakeEndpointUrl
-      }, tsArgs);
+      });
 
       assert.equal(tSender.enabled, p.result);
     }
@@ -113,15 +111,16 @@ describe("PingCentre", () => {
         FakePrefs.prototype.prefs = {};
         FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
         FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
+
         tSender = new PingCentre({
           topic: "activity-stream",
           overrideEndpointPref: fakeEndpointUrl
-        }, tsArgs);
+        });
         assert.propertyVal(tSender, "enabled", true);
       });
 
       it("should set the enabled property to false", () => {
-        fakePrefs.set(TELEMETRY_PREF, false);
+        fakePrefs.setBoolPref(TELEMETRY_PREF, false);
 
         assert.propertyVal(tSender, "enabled", false);
       });
@@ -135,13 +134,13 @@ describe("PingCentre", () => {
         tSender = new PingCentre({
           topic: "activity-stream",
           overrideEndpointPref: fakeEndpointUrl
-        }, tsArgs);
+        });
 
         assert.propertyVal(tSender, "enabled", false);
       });
 
       it("should set the enabled property to true", () => {
-        fakePrefs.set(TELEMETRY_PREF, true);
+        fakePrefs.setBoolPref(TELEMETRY_PREF, true);
 
         assert.propertyVal(tSender, "enabled", true);
       });
@@ -155,12 +154,12 @@ describe("PingCentre", () => {
         tSender = new PingCentre({
           topic: "activity-stream",
           overrideEndpointPref: fakeEndpointUrl
-        }, tsArgs);
+        });
         assert.propertyVal(tSender, "enabled", true);
       });
 
       it("should set the enabled property to false", () => {
-        fakePrefs.set(FHR_UPLOAD_ENABLED_PREF, false);
+        fakePrefs.setBoolPref(FHR_UPLOAD_ENABLED_PREF, false);
 
         assert.propertyVal(tSender, "enabled", false);
       });
@@ -174,13 +173,13 @@ describe("PingCentre", () => {
         tSender = new PingCentre({
           topic: "activity-stream",
           overrideEndpointPref: fakeEndpointUrl
-        }, tsArgs);
+        });
 
         assert.propertyVal(tSender, "enabled", false);
       });
 
       it("should set the enabled property to true", () => {
-        fakePrefs.set(FHR_UPLOAD_ENABLED_PREF, true);
+        fakePrefs.setBoolPref(FHR_UPLOAD_ENABLED_PREF, true);
 
         assert.propertyVal(tSender, "enabled", true);
       });
@@ -196,7 +195,7 @@ describe("PingCentre", () => {
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: FAKE_AS_ENDPOINT_PREF
-      }, tsArgs);
+      });
     });
 
     it("should not send if the PingCentre is disabled", async () => {
@@ -204,7 +203,7 @@ describe("PingCentre", () => {
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: fakeEndpointUrl
-      }, tsArgs);
+      });
 
       await tSender.sendPing(fakePingJSON);
 
@@ -252,7 +251,7 @@ describe("PingCentre", () => {
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: fakeEndpointUrl
-      }, tsArgs);
+      });
 
       await tSender.sendPing(fakePingJSON);
 
@@ -265,7 +264,7 @@ describe("PingCentre", () => {
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: fakeEndpointUrl
-      }, tsArgs);
+      });
       assert.property(fakePrefs.observers, TELEMETRY_PREF);
 
       tSender.uninit();
@@ -277,7 +276,7 @@ describe("PingCentre", () => {
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: fakeEndpointUrl
-      }, tsArgs);
+      });
       assert.property(fakePrefs.observers, FHR_UPLOAD_ENABLED_PREF);
 
       tSender.uninit();
@@ -286,7 +285,7 @@ describe("PingCentre", () => {
     });
 
     it("should remove the telemetry log listener", () => {
-      tSender = new PingCentre({topic: "activity-stream"}, tsArgs);
+      tSender = new PingCentre({topic: "activity-stream"});
       assert.property(fakePrefs.observers, LOGGING_PREF);
 
       tSender.uninit();
@@ -294,12 +293,12 @@ describe("PingCentre", () => {
       assert.notProperty(fakePrefs.observers, TELEMETRY_PREF);
     });
 
-    it("should call Cu.reportError if this._prefs.ignore throws", () => {
-      globals.sandbox.stub(FakePrefs.prototype, "ignore").throws("Some Error");
+    it("should call Cu.reportError if this._prefs.removeObserver throws", () => {
+      globals.sandbox.stub(FakePrefs.prototype, "removeObserver").throws("Some Error");
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: fakeEndpointUrl
-      }, tsArgs);
+      });
 
       tSender.uninit();
 
@@ -315,10 +314,10 @@ describe("PingCentre", () => {
         tSender = new PingCentre({
           topic: "activity-stream",
           overrideEndpointPref: fakeEndpointUrl
-        }, tsArgs);
+        });
         assert.propertyVal(tSender, "logging", false);
 
-        fakePrefs.set(LOGGING_PREF, true);
+        fakePrefs.setBoolPref(LOGGING_PREF, true);
 
         assert.propertyVal(tSender, "logging", true);
       });
