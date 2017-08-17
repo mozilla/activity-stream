@@ -248,17 +248,113 @@
     padding: 15px 30px;
   }
 
-
-  button.icon-topsites {
-    background-position: 10px center;
+  .show-more,
+  .show-less {
+    background-position: left 10px center;
     background-repeat: no-repeat;
     height: auto;
-    margin-left: 10px;
-    padding-right: 15px;
+    margin-inline-start: 10px;
+    padding-inline-end: 15px;
     width: auto;
 
-    span {
-      padding-left: 3px;
+    &:dir(rtl) {
+      background-position: right 10px center;
     }
+
+    span {
+      padding-inline-start: 3px;
+    }
+  }
+}
+
+.topsite-form {
+  .form-wrapper {
+    padding: 15px 0;
+
+    .field {
+      margin-inline-start: 205px;
+      position: relative;
+    }
+
+    .section-title {
+      margin-bottom: 5px;
+      margin-inline-start: 205px;
+    }
+
+    input {
+      &[type='text'] {
+        border: $input-border;
+        border-radius: 2px;
+        margin: 5px 0;
+        padding: 7px;
+        width: 350px;
+
+        &:focus {
+          border: $input-border-active;
+        }
+
+        &::placeholder {
+          font-style: italic;
+        }
+      }
+    }
+
+    .invalid {
+      input {
+        &[type='text'] {
+          border: $input-error-border;
+          box-shadow: $input-error-boxshadow;
+        }
+      }
+    }
+
+    .error-tooltip {
+      animation: fade-up-tt 450ms;
+      background: $red-60;
+      border-radius: 2px;
+      color: $white;
+      offset-inline-start: 3px;
+      padding: 5px 12px;
+      position: absolute;
+      top: 44px;
+      z-index: 1;
+
+      // tooltip caret
+      &::before {
+        background: $red-60;
+        bottom: -8px;
+        content: '.';
+        height: 16px;
+        offset-inline-start: 12px;
+        position: absolute;
+        text-indent: -999px;
+        top: -7px;
+        transform: rotate(45deg);
+        white-space: nowrap;
+        width: 16px;
+        z-index: -1;
+      }
+    }
+  }
+
+  .actions {
+    justify-content: flex-end;
+
+    button {
+      margin-inline-start: 10px;
+      margin-inline-end: 0;
+    }
+  }
+}
+
+//used for tooltips below form element
+@keyframes fade-up-tt {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

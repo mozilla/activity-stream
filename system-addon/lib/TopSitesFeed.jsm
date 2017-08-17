@@ -121,23 +121,46 @@ this.TopSitesFeed = class TopSitesFeed {
     // Augment the pinned links with any other extra data we have for them already in the store
     const links = this.store.getState().TopSites.rows;
     const pinned = NewTabUtils.pinnedLinks.links;
-    return pinned.map(pinnedLink => (pinnedLink ? Object.assign(links.find(link => link && link.url === pinnedLink.url) || {}, pinnedLink) : pinnedLink));
+    return pinned.map(pinnedLink => {
+      if (pinnedLink) {
+        const hostname = shortURL(pinnedLink);
+        return Object.assign(links.find(link => link && link.url === pinnedLink.url) || {hostname}, pinnedLink);
+      }
+      return pinnedLink;
+    });
+  }
+  _broadcastPinnedSitesUpdated() {
+    this.store.dispatch(ac.BroadcastToContent({
+      type: at.PINNED_SITES_UPDATED,
+      data: this._getPinnedWithData()
+    }));
   }
   pin(action) {
     const {site, index} = action.data;
     NewTabUtils.pinnedLinks.pin(site, index);
-    this.store.dispatch(ac.BroadcastToContent({
-      type: at.PINNED_SITES_UPDATED,
-      data: this._getPinnedWithData()
-    }));
+    this._broadcastPinnedSitesUpdated();
   }
   unpin(action) {
     const {site} = action.data;
     NewTabUtils.pinnedLinks.unpin(site);
-    this.store.dispatch(ac.BroadcastToContent({
-      type: at.PINNED_SITES_UPDATED,
-      data: this._getPinnedWithData()
-    }));
+    this._broadcastPinnedSitesUpdated();
+  }
+  _insertPin(site, index) {
+    // Insert a pin at the given index. If that slot is already taken, we need
+    // to insert it in the next slot. Rinse and repeat if that next slot is also
+    // taken.
+    let pinned = NewTabUtils.pinnedLinks.links;
+    if (pinned.length > index && pinned[index]) {
+      this._insertPin(pinned[index], index + 1);
+    }
+    NewTabUtils.pinnedLinks.pin(site, index);
+  }
+  add(action) {
+    // Adding a top site pins it in the first slot, pushing over any link already
+    // pinned in the slot.
+    this._insertPin(action.data.site, 0);
+
+    this._broadcastPinnedSitesUpdated();
   }
   async onAction(action) {
     switch (action.type) {
@@ -173,6 +196,9 @@ this.TopSitesFeed = class TopSitesFeed {
         break;
       case at.TOP_SITES_UNPIN:
         this.unpin(action);
+        break;
+      case at.TOP_SITES_ADD:
+        this.add(action);
         break;
     }
   }

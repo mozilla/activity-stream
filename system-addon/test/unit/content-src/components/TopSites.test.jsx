@@ -1,7 +1,8 @@
 const React = require("react");
 const createMockRaf = require("mock-raf");
 const {shallow} = require("enzyme");
-const {_unconnected: TopSitesPerfTimer, TopSite, TopSites, TopSitesEdit} = require("content-src/components/TopSites/TopSites");
+const {mountWithIntl} = require("test/unit/utils");
+const {_unconnected: TopSitesPerfTimer, TopSite, TopSites, TopSitesEdit, TopSiteForm} = require("content-src/components/TopSites/TopSites");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
@@ -332,6 +333,7 @@ describe("<TopSite>", () => {
     const defaultProps = {
       editMode: true,
       link: {url: "https://foo.com", screenshot: "foo.jpg", hostname: "foo"},
+      index: 7,
       dispatch() {},
       intl: {formatMessage: x => x}
     };
@@ -346,16 +348,18 @@ describe("<TopSite>", () => {
     it("should render the component", () => {
       assert.ok(wrapper.exists());
     });
-    it("should render 2 buttons by default", () => {
-      assert.equal(2, wrapper.find(".edit-menu button").length);
+    it("should render 3 buttons by default", () => {
+      assert.equal(3, wrapper.find(".edit-menu button").length);
       assert.equal(1, wrapper.find(".icon-pin").length);
       assert.equal(1, wrapper.find(".icon-dismiss").length);
+      assert.equal(1, wrapper.find(".icon-edit").length);
     });
-    it("should render 2 button for a default site too", () => {
+    it("should render 3 button for a default site too", () => {
       setup({link: Object.assign({}, defaultProps.link, {isDefault: true})});
-      assert.equal(2, wrapper.find(".edit-menu button").length);
+      assert.equal(3, wrapper.find(".edit-menu button").length);
       assert.equal(1, wrapper.find(".icon-pin").length);
       assert.equal(1, wrapper.find(".icon-dismiss").length);
+      assert.equal(1, wrapper.find(".icon-edit").length);
     });
     it("should render the pin button if site isn't pinned", () => {
       assert.equal(1, wrapper.find(".icon-pin").length);
@@ -406,6 +410,14 @@ describe("<TopSite>", () => {
       }
       setup({link: Object.assign({}, defaultProps.link, {isPinned: true}), dispatch});
       wrapper.find(".icon-dismiss").simulate("click");
+    });
+    it("should call onEdit prop when the edit button is clicked", done => {
+      function onEdit(index) {
+        assert.equal(index, defaultProps.index);
+        done();
+      }
+      setup({onEdit});
+      wrapper.find(".icon-edit").simulate("click");
     });
   });
 });
@@ -487,5 +499,161 @@ describe("<TopSitesEdit>", () => {
     setup({TopSitesCount: TOP_SITES_SHOWMORE_LENGTH, dispatch});
     wrapper.find(".edit").simulate("click");
     wrapper.find(".show-less").simulate("click");
+  });
+});
+
+describe("<TopSiteForm>", () => {
+  let wrapper;
+  let sandbox;
+
+  function setup(props = {}) {
+    sandbox = sinon.sandbox.create();
+    const customProps = Object.assign({}, {onClose: sandbox.spy(), dispatch: sandbox.spy()}, props);
+    wrapper = mountWithIntl(<TopSiteForm {...customProps} />);
+  }
+
+  describe("#addMode", () => {
+    beforeEach(() => setup());
+
+    it("should render the component", () => {
+      assert.ok(wrapper.find(TopSiteForm));
+    });
+    it("should have an Add button", () => {
+      assert.equal(1, wrapper.find(".add").length);
+      // and it shouldn't have a save button.
+      assert.equal(0, wrapper.find(".save").length);
+    });
+    it("should call onClose if Cancel button is clicked", () => {
+      wrapper.find(".cancel").simulate("click");
+      assert.calledOnce(wrapper.instance().props.onClose);
+    });
+    it("should show error and not call onClose or dispatch if URL is empty", () => {
+      assert.equal(0, wrapper.find(".error-tooltip").length);
+      wrapper.find(".add").simulate("click");
+      assert.equal(1, wrapper.find(".error-tooltip").length);
+      assert.notCalled(wrapper.instance().props.onClose);
+      assert.notCalled(wrapper.instance().props.dispatch);
+    });
+    it("should show error and not call onClose or dispatch if URL is invalid", () => {
+      wrapper.setState({"url": "invalid"});
+      assert.equal(0, wrapper.find(".error-tooltip").length);
+      wrapper.find(".add").simulate("click");
+      assert.equal(1, wrapper.find(".error-tooltip").length);
+      assert.notCalled(wrapper.instance().props.onClose);
+      assert.notCalled(wrapper.instance().props.dispatch);
+    });
+    it("should call onClose and dispatch with right args if URL is valid", () => {
+      wrapper.setState({"url": "valid.com", "label": "a label"});
+      wrapper.find(".add").simulate("click");
+      assert.calledOnce(wrapper.instance().props.onClose);
+      assert.calledWith(
+        wrapper.instance().props.dispatch,
+        {
+          data: {site: {label: "a label", url: "http://valid.com"}},
+          meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+          type: at.TOP_SITES_ADD
+        }
+      );
+      assert.calledWith(
+        wrapper.instance().props.dispatch,
+        {
+          data: {source: "TOP_SITES", event: "TOP_SITES_ADD"},
+          meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+          type: at.TELEMETRY_USER_EVENT
+        }
+      );
+    });
+    it("should not pass empty string label in dispatch data", () => {
+      wrapper.setState({"url": "valid.com", "label": ""});
+      wrapper.find(".add").simulate("click");
+      assert.calledWith(
+        wrapper.instance().props.dispatch,
+        {
+          data: {site: {url: "http://valid.com"}},
+          meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+          type: at.TOP_SITES_ADD
+        }
+      );
+    });
+  });
+
+  describe("#editMode", () => {
+    beforeEach(() => setup({editMode: true, url: "https://foo.bar", label: "baz", index: 7}));
+
+    it("should render the component", () => {
+      assert.ok(wrapper.find(TopSiteForm));
+    });
+    it("should have a Save button", () => {
+      assert.equal(1, wrapper.find(".save").length);
+      // and it shouldn't have a add button.
+      assert.equal(0, wrapper.find(".edit").length);
+    });
+    it("should call onClose if Cancel button is clicked", () => {
+      wrapper.find(".cancel").simulate("click");
+      assert.calledOnce(wrapper.instance().props.onClose);
+    });
+    it("should show error and not call onClose or dispatch if URL is empty", () => {
+      wrapper.setState({"url": ""});
+      assert.equal(0, wrapper.find(".error-tooltip").length);
+      wrapper.find(".save").simulate("click");
+      assert.equal(1, wrapper.find(".error-tooltip").length);
+      assert.notCalled(wrapper.instance().props.onClose);
+      assert.notCalled(wrapper.instance().props.dispatch);
+    });
+    it("should show error and not call onClose or dispatch if URL is invalid", () => {
+      wrapper.setState({"url": "invalid"});
+      assert.equal(0, wrapper.find(".error-tooltip").length);
+      wrapper.find(".save").simulate("click");
+      assert.equal(1, wrapper.find(".error-tooltip").length);
+      assert.notCalled(wrapper.instance().props.onClose);
+      assert.notCalled(wrapper.instance().props.dispatch);
+    });
+    it("should call onClose and dispatch with right args if URL is valid", () => {
+      wrapper.find(".save").simulate("click");
+      assert.calledOnce(wrapper.instance().props.onClose);
+      assert.calledTwice(wrapper.instance().props.dispatch);
+      assert.calledWith(
+        wrapper.instance().props.dispatch,
+        {
+          data: {site: {label: "baz", url: "https://foo.bar"}, index: 7},
+          meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+          type: at.TOP_SITES_PIN
+        }
+      );
+      assert.calledWith(
+        wrapper.instance().props.dispatch,
+        {
+          data: {action_position: 7, source: "TOP_SITES", event: "TOP_SITES_EDIT"},
+          meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+          type: at.TELEMETRY_USER_EVENT
+        }
+      );
+    });
+    it("should not pass empty string label in dispatch data", () => {
+      wrapper.setState({"label": ""});
+      wrapper.find(".save").simulate("click");
+      assert.calledWith(
+        wrapper.instance().props.dispatch,
+        {
+          data: {site: {url: "https://foo.bar"}, index: 7},
+          meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+          type: at.TOP_SITES_PIN
+        }
+      );
+    });
+  });
+
+  it("should properly validate URLs", () => {
+    setup();
+    wrapper.setState({"url": "mozilla.org"});
+    assert.ok(wrapper.instance().validateUrl());
+    wrapper.setState({"url": "https://mozilla.org"});
+    assert.ok(wrapper.instance().validateUrl());
+    wrapper.setState({"url": "http://mozilla.org"});
+    assert.ok(wrapper.instance().validateUrl());
+    wrapper.setState({"url": "mozillaorg"});
+    assert.isFalse(wrapper.instance().validateUrl());
+    wrapper.setState({"url": "https://mozilla.invisionapp.com/d/main/#/projects/prototypes"});
+    assert.ok(wrapper.instance().validateUrl());
   });
 });
