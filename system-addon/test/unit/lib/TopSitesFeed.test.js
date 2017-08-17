@@ -30,6 +30,10 @@ describe("Top Sites Feed", () => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     fakeNewTabUtils = {
+      blockedLinks: {
+        links: [],
+        isBlocked: () => false
+      },
       activityStreamLinks: {getTopSites: sandbox.spy(() => Promise.resolve(links))},
       pinnedLinks: {
         links: [],
@@ -101,6 +105,20 @@ describe("Top Sites Feed", () => {
 
       assert.deepEqual(result, reference);
       assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
+    });
+    it("should filter out the defaults that have been blocked", async () => {
+      // make sure we only have one top site, and we block the only default site we have to show
+      const url = "www.myonlytopsite.com";
+      const topsite = {url, hostname: shortURLStub({url})};
+      const blockedDefaultSite = {url: "https://foo.com"};
+      fakeNewTabUtils.activityStreamLinks.getTopSites = () => [topsite];
+      fakeNewTabUtils.blockedLinks.isBlocked = site => (site.url === blockedDefaultSite.url);
+      const result = await feed.getLinksWithDefaults();
+
+      // what we should be left with is just the top site we added, and not the default site we blocked
+      assert.lengthOf(result, 1);
+      assert.deepEqual(result[0], topsite);
+      assert.notInclude(result, blockedDefaultSite);
     });
     it("should call dedupe on the links", async () => {
       const stub = sinon.stub(feed.dedupe, "group").callsFake(id => id);

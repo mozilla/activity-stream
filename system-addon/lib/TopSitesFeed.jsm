@@ -51,7 +51,8 @@ this.TopSitesFeed = class TopSitesFeed {
   }
   async getLinksWithDefaults(action) {
     let frecent = await NewTabUtils.activityStreamLinks.getTopSites();
-    const defaultUrls = DEFAULT_TOP_SITES.map(site => site.url);
+    const notBlockedDefaultSites = DEFAULT_TOP_SITES.filter(site => !NewTabUtils.blockedLinks.isBlocked({url: site.url}));
+    const defaultUrls = notBlockedDefaultSites.map(site => site.url);
     let pinned = NewTabUtils.pinnedLinks.links;
     pinned = pinned.map(site => site && Object.assign({}, site, {
       isDefault: defaultUrls.indexOf(site.url) !== -1,
@@ -66,7 +67,7 @@ this.TopSitesFeed = class TopSitesFeed {
 
     // Group together websites that require deduping.
     let topsitesGroup = [];
-    for (const group of [pinned, frecent, DEFAULT_TOP_SITES]) {
+    for (const group of [pinned, frecent, notBlockedDefaultSites]) {
       topsitesGroup.push(group.filter(site => site).map(site => Object.assign({}, site, {hostname: shortURL(site)})));
     }
 
