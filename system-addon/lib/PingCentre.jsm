@@ -26,9 +26,10 @@ const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
 /**
  * Observe various notifications and send them to a telemetry endpoint.
  *
- * @param {string} topic - a unique ID for users of PingCentre to distinguish
+ * @param {Object} options
+ * @param {string} options.topic - a unique ID for users of PingCentre to distinguish
  *                  their data on the server side.
- * @param {string} pingEndpoint - optional pref for URL where the POST is sent.
+ * @param {string} options.overrideEndpointPref - optional pref for URL where the POST is sent.
  * @param {Object} args - optional arguments
  * @param {Function} args.prefInitHook - if present, will be called back
  *                   inside the Prefs constructor. Typically used from tests
@@ -36,7 +37,7 @@ const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
  *                   stubs and spies can be inspected by the test code.
  */
 class PingCentre {
-  constructor(topic, overrideEndpointPref, args) {
+  constructor(options, args) {
     let prefArgs = {};
     if (args) {
       if ("prefInitHook" in args) {
@@ -44,14 +45,14 @@ class PingCentre {
       }
     }
 
-    if (!topic) {
+    if (!options.topic) {
       throw new Error("Must specify topic.");
     }
 
-    this._topic = topic;
+    this._topic = options.topic;
     this._prefs = new Preferences(prefArgs);
 
-    this._setPingEndpoint(topic, overrideEndpointPref);
+    this._setPingEndpoint(options.topic, options.overrideEndpointPref);
 
     this._enabled = this._prefs.get(TELEMETRY_PREF);
     this._onTelemetryPrefChange = this._onTelemetryPrefChange.bind(this);

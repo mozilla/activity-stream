@@ -151,7 +151,12 @@ this.TelemetryFeed = class TelemetryFeed {
    */
   get pingCentre() {
     Object.defineProperty(this, "pingCentre",
-      {value: new PingCentre("activity-stream", ACTIVITY_STREAM_ENDPOINT_PREF)});
+      {
+        value: new PingCentre({
+          topic: "activity-stream",
+          overrideEndpointPref: ACTIVITY_STREAM_ENDPOINT_PREF
+        })
+      });
     return this.pingCentre;
   }
 
