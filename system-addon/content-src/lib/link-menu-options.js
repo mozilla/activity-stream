@@ -9,7 +9,7 @@ module.exports = {
   Separator: () => ({type: "separator"}),
   RemoveBookmark: site => ({
     id: "menu_action_remove_bookmark",
-    icon: "bookmark-remove",
+    icon: "bookmark-added",
     action: ac.SendToMain({
       type: at.DELETE_BOOKMARK_BY_ID,
       data: site.bookmarkGuid
@@ -18,7 +18,7 @@ module.exports = {
   }),
   AddBookmark: site => ({
     id: "menu_action_bookmark",
-    icon: "bookmark",
+    icon: "bookmark-hollow",
     action: ac.SendToMain({
       type: at.BOOKMARK_URL,
       data: {url: site.url, title: site.title}

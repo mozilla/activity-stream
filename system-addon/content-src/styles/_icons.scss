@@ -6,6 +6,8 @@
   background-position: center center;
   background-repeat: no-repeat;
   vertical-align: middle;
+  fill: $icon-grey;
+  -moz-context-properties: fill;
 
   &.icon-spacer {
     margin-inline-end: 8px;
@@ -15,12 +17,12 @@
     margin-inline-end: 6px;
   }
 
-  &.icon-bookmark {
-   background-image: url('#{$image-path}glyph-bookmark-16.svg');
+  &.icon-bookmark-added {
+   background-image: url('chrome://browser/skin/bookmark.svg');
  }
 
- &.icon-bookmark-remove {
-   background-image: url('#{$image-path}glyph-bookmark-remove-16.svg');
+ &.icon-bookmark-hollow {
+   background-image: url('chrome://browser/skin/bookmark-hollow.svg');
  }
 
  &.icon-delete {
@@ -40,7 +42,7 @@
  }
 
  &.icon-new-window-private {
-   background-image: url('#{$image-path}glyph-newWindow-private-16.svg');
+   background-image: url('chrome://browser/skin/privateBrowsing.svg');
  }
 
  &.icon-settings {
@@ -68,7 +70,7 @@
   }
 
   &.icon-now {
-    background-image: url('#{$image-path}glyph-now-16.svg');
+    background-image: url('chrome://browser/skin/history.svg');
   }
 
   &.icon-topsites {
