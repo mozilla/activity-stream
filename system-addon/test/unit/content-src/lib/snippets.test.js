@@ -10,8 +10,10 @@ const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("SnippetsMap", () => {
   let snippetsMap;
+  let dispatch;
   beforeEach(() => {
-    snippetsMap = new SnippetsMap();
+    dispatch = sinon.spy();
+    snippetsMap = new SnippetsMap(dispatch);
   });
   afterEach(async () => {
     await snippetsMap.clear();
@@ -100,6 +102,13 @@ describe("SnippetsMap", () => {
       assert.deepEqual(snippetsMap.blockList, [123, 456]);
     });
   });
+  describe("#showFirefoxAccounts", () => {
+    it("should dispatch the right action", () => {
+      snippetsMap.showFirefoxAccounts();
+      assert.calledOnce(dispatch);
+      assert.equal(dispatch.firstCall.args[0].type, at.SHOW_FIREFOX_ACCOUNTS);
+    });
+  });
 });
 
 describe("SnippetsProvider", () => {
@@ -116,9 +125,11 @@ describe("SnippetsProvider", () => {
     delete global.gSnippetsMap;
     sandbox.restore();
   });
-  it("should create a gSnippetsMap", () => {
-    snippets = new SnippetsProvider();
+  it("should create a gSnippetsMap with a dispatch function", () => {
+    const dispatch = () => {};
+    snippets = new SnippetsProvider(dispatch);
     assert.instanceOf(global.gSnippetsMap, SnippetsMap);
+    assert.equal(global.gSnippetsMap._dispatch, dispatch);
   });
   describe("#init(options)", () => {
     beforeEach(() => {
