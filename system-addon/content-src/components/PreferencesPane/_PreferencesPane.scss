@@ -11,12 +11,16 @@
     position: fixed;
     top: 0;
     transition: 0.1s cubic-bezier(0, 0, 0, 1);
-    transition-property: left, right;
+    transition-property: transform;
     width: 400px;
     z-index: 12000;
 
     &.hidden {
-      offset-inline-end: -400px;
+      transform: translateX(100%);
+
+      &:dir(rtl) {
+        transform: translateX(-100%);
+      }
     }
 
     h1 {
