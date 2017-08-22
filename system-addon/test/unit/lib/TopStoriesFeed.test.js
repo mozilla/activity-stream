@@ -33,16 +33,18 @@ describe("Top Stories Feed", () => {
     globals.set("Services", {locale: {getRequestedLocale: () => "en-CA"}});
     clock = sinon.useFakeTimers();
 
+    const ShortURLClass = function() {};
     shortURLStub = sinon.stub().callsFake(site => site.url);
 
     ({TopStoriesFeed, STORIES_UPDATE_TIME, TOPICS_UPDATE_TIME, SECTION_ID, FEED_PREF, SECTION_OPTIONS_PREF} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
-      "common/ShortURL.jsm": {shortURL: shortURLStub}
+      "lib/ShortURL.jsm": {ShortURL: ShortURLClass}
     }));
     instance = new TopStoriesFeed();
     instance.store = {getState() { return {}; }, dispatch: sinon.spy()};
     instance.storiesLastUpdated = 0;
     instance.topicsLastUpdated = 0;
+    instance.ShortURL = {shortURL: shortURLStub};
   });
   afterEach(() => {
     globals.restore();
