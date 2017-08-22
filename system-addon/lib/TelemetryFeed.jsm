@@ -34,6 +34,7 @@ const IMPRESSION_STATS_RESET_TIME = 60 * 60 * 1000; // 60 minutes
 const PREF_IMPRESSION_STATS_CLICKED = "impressionStats.clicked";
 const PREF_IMPRESSION_STATS_BLOCKED = "impressionStats.blocked";
 const PREF_IMPRESSION_STATS_POCKETED = "impressionStats.pocketed";
+const TELEMETRY_PREF = "telemetry";
 
 /**
  * A pref persistent GUID set
@@ -101,6 +102,10 @@ this.TelemetryFeed = class TelemetryFeed {
       blocked: new PersistentGuidSet(this._prefs, PREF_IMPRESSION_STATS_BLOCKED),
       pocketed: new PersistentGuidSet(this._prefs, PREF_IMPRESSION_STATS_POCKETED)
     };
+
+    this.telemetryEnabled = this._prefs.get(TELEMETRY_PREF);
+    this._onTelemetryPrefChange = this._onTelemetryPrefChange.bind(this);
+    this._prefs.observe(TELEMETRY_PREF, this._onTelemetryPrefChange);
   }
 
   init() {
@@ -144,6 +149,10 @@ this.TelemetryFeed = class TelemetryFeed {
       return;
     }
     this.saveSessionPerfData(port, data_to_save);
+  }
+
+  _onTelemetryPrefChange(prefVal) {
+    this.telemetryEnabled = prefVal;
   }
 
   /**
@@ -303,7 +312,7 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   async sendEvent(event_object) {
-    if (this._prefs.get("telemetry")) {
+    if (this.telemetryEnabled) {
       this.pingCentre.sendPing(event_object);
     }
   }
@@ -410,6 +419,12 @@ this.TelemetryFeed = class TelemetryFeed {
     if (Object.prototype.hasOwnProperty.call(this, "pingCentre")) {
       this.pingCentre.uninit();
     }
+
+    try {
+      this._prefs.ignore(TELEMETRY_PREF, this._onTelemetryPrefChange);
+    } catch (e) {
+      Cu.reportError(e);
+    }
     // TODO: Send any unfinished sessions
   }
 };
@@ -419,6 +434,7 @@ this.EXPORTED_SYMBOLS = [
   "PersistentGuidSet",
   "USER_PREFS_ENCODING",
   "IMPRESSION_STATS_RESET_TIME",
+  "TELEMETRY_PREF",
   "PREF_IMPRESSION_STATS_CLICKED",
   "PREF_IMPRESSION_STATS_BLOCKED",
   "PREF_IMPRESSION_STATS_POCKETED"

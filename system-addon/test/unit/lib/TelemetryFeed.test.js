@@ -35,6 +35,7 @@ describe("TelemetryFeed", () => {
     TelemetryFeed,
     USER_PREFS_ENCODING,
     IMPRESSION_STATS_RESET_TIME,
+    TELEMETRY_PREF,
     PREF_IMPRESSION_STATS_CLICKED,
     PREF_IMPRESSION_STATS_BLOCKED,
     PREF_IMPRESSION_STATS_POCKETED
@@ -44,6 +45,7 @@ describe("TelemetryFeed", () => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     clock = sinon.useFakeTimers();
+    sandbox.spy(global.Components.utils, "reportError");
     globals.set("gUUIDGenerator", {generateUUID: () => FAKE_UUID});
     globals.set("PingCentre", PingCentre);
     instance = new TelemetryFeed();
@@ -66,6 +68,21 @@ describe("TelemetryFeed", () => {
       assert.calledOnce(Services.obs.addObserver);
       assert.calledWithExactly(Services.obs.addObserver,
         instance.browserOpenNewtabStart, "browser-open-newtab-start");
+    });
+    describe("telemetry pref changes from false to true", () => {
+      beforeEach(() => {
+        FakePrefs.prototype.prefs = {};
+        FakePrefs.prototype.prefs[TELEMETRY_PREF] = false;
+        instance = new TelemetryFeed();
+
+        assert.propertyVal(instance, "telemetryEnabled", false);
+      });
+
+      it("should set the enabled property to true", () => {
+        instance._prefs.set(TELEMETRY_PREF, true);
+
+        assert.propertyVal(instance, "telemetryEnabled", true);
+      });
     });
   });
   describe("#addSession", () => {
@@ -330,9 +347,10 @@ describe("TelemetryFeed", () => {
   });
   describe("#sendEvent", () => {
     it("should call PingCentre", async () => {
-      sandbox.stub(instance.pingCentre, "sendPing");
       FakePrefs.prototype.prefs.telemetry = true;
       const event = {};
+      instance = new TelemetryFeed();
+      sandbox.stub(instance.pingCentre, "sendPing");
       await instance.sendEvent(event);
       assert.calledWith(instance.pingCentre.sendPing, event);
     });
@@ -401,6 +419,23 @@ describe("TelemetryFeed", () => {
       const stub = sandbox.stub(instance.pingCentre, "uninit");
       instance.uninit();
       assert.calledOnce(stub);
+    });
+    it("should remove the a-s telemetry pref listener", () => {
+      FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
+      instance = new TelemetryFeed();
+      assert.property(instance._prefs.observers, TELEMETRY_PREF);
+
+      instance.uninit();
+
+      assert.notProperty(instance._prefs.observers, TELEMETRY_PREF);
+    });
+    it("should call Cu.reportError if this._prefs.ignore throws", () => {
+      globals.sandbox.stub(FakePrefs.prototype, "ignore").throws("Some Error");
+      instance = new TelemetryFeed();
+
+      instance.uninit();
+
+      assert.called(global.Components.utils.reportError);
     });
     it("should make this.browserOpenNewtabStart() stop observing browser-open-newtab-start", async () => {
       await instance.init();
