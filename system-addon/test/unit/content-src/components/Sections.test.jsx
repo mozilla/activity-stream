@@ -1,6 +1,6 @@
 const React = require("react");
 const {shallow} = require("enzyme");
-const {shallowWithIntl} = require("test/unit/utils");
+const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
 const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl} =
   require("content-src/components/Sections/Sections");
 const {actionTypes: at} = require("common/Actions.jsm");
@@ -98,6 +98,24 @@ describe("<Section>", () => {
       wrapper.find(".section-info-option").simulate("mouseout");
 
       assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
+    });
+
+    it("should render topics component for non-empty topics", () => {
+      let TOP_STORIES_SECTION = {
+        id: "TopStories",
+        title: "TopStories",
+        rows: [{guid: 1, link: "http://localhost", isDefault: true}],
+        topics: [],
+        read_more_endpoint: "http://localhost/read-more",
+        maxRows: 1,
+        eventSource: "TOP_STORIES"
+      };
+      let wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      assert.lengthOf(wrapper.find(".topic"), 0);
+
+      TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      assert.lengthOf(wrapper.find(".topic"), 1);
     });
   });
 
