@@ -248,4 +248,17 @@
     padding: 15px 30px;
   }
 
+
+  button.icon-topsites {
+    background-position: 10px center;
+    background-repeat: no-repeat;
+    height: auto;
+    margin-left: 10px;
+    padding-right: 15px;
+    width: auto;
+
+    span {
+      padding-left: 3px;
+    }
+  }
 }

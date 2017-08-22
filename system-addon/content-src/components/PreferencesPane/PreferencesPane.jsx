@@ -2,6 +2,7 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {injectIntl, FormattedMessage} = require("react-intl");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
+const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 
 const getFormattedMessage = message =>
   (typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />);
@@ -9,7 +10,7 @@ const getFormattedMessage = message =>
 const PreferencesInput = props => (
   <section>
     <input type="checkbox" id={props.prefName} name={props.prefName} checked={props.value} onChange={props.onChange} className={props.className} />
-    <label htmlFor={props.prefName}>
+    <label htmlFor={props.prefName} className={props.labelClassName}>
       {getFormattedMessage(props.titleString)}
     </label>
     {props.descString && <p className="prefs-input-description">
@@ -41,7 +42,12 @@ class PreferencesPane extends React.Component {
   }
   handlePrefChange(event) {
     const target = event.target;
-    this.props.dispatch(ac.SetPref(target.name, target.checked));
+    const {name, checked} = target;
+    let value = checked;
+    if (name === "topSitesCount") {
+      value = checked ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH;
+    }
+    this.props.dispatch(ac.SetPref(name, value));
   }
   handleSectionChange(event) {
     const target = event.target;
@@ -79,6 +85,11 @@ class PreferencesPane extends React.Component {
               <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handlePrefChange}
                 titleString={{id: "settings_pane_topsites_header"}} descString={{id: "settings_pane_topsites_body"}} />
 
+              <div className="options">
+                <PreferencesInput className="showMoreTopSites" prefName="topSitesCount" value={prefs.topSitesCount !== TOP_SITES_DEFAULT_LENGTH} onChange={this.handlePrefChange}
+                  titleString={{id: "settings_pane_topsites_options_showmore"}} labelClassName="icon icon-topsites" />
+              </div>
+
               {sections
                 .filter(section => !section.shouldHidePref)
                 .map(({id, title, enabled, pref}) =>
@@ -86,6 +97,11 @@ class PreferencesPane extends React.Component {
                     value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
                     titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />)}
 
+              {this.topStoriesOptions && !this.topStoriesOptions.hidden &&
+                <PreferencesInput className="showTopStories" prefName="feeds.section.topstories"
+                  value={prefs["feeds.section.topstories"]} onChange={this.handleChange}
+                  titleStringId="header_recommended_by" titleStringValues={{provider: this.topStoriesOptions.provider_name}}
+                  descStringId={this.topStoriesOptions.provider_description} />}
             </div>
             <section className="actions">
               <button className="done" onClick={this.togglePane}>
