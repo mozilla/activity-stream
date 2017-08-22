@@ -68,8 +68,9 @@
       z-index: 1;
       box-shadow: 0 0 0 2px $search-focus-shadow;
       background-color: $search-blue;
-      background-image: url('#{$image-path}glyph-forward-16-white.svg');
-      color: $white;
+      background-image: url('chrome://browser/skin/forward.svg');
+      fill: $white;
+      -moz-context-properties: fill;
     }
 
     &[aria-expanded="true"] {
@@ -105,15 +106,18 @@
     width: $search-button-width;
     padding: 0;
     box-shadow: 0 1px 0 0 $faintest-black;
-    background: $white url('#{$image-path}glyph-forward-16.svg') no-repeat center center;
+    background: $white url('chrome://browser/skin/forward.svg') no-repeat center center;
+    fill: $light-grey;
+    -moz-context-properties: fill;
     background-size: 16px 16px;
 
     &:hover {
       z-index: 1;
       box-shadow: 0 1px 0 0 $search-hover-shadow;
       background-color: $search-blue;
-      background-image: url('#{$image-path}glyph-forward-16-white.svg');
-      color: $white;
+      background-image: url('chrome://browser/skin/forward.svg');
+      fill: $white;
+      -moz-context-properties: fill;
       cursor: pointer;
     }
 
