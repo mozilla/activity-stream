@@ -45,6 +45,7 @@ describe("Top Sites Feed", () => {
     fakeScreenshot = {getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT))};
     shortURLStub = sinon.stub().callsFake(site => site.url);
     const fakeDedupe = function() {};
+    const fakeShortURL = function() {};
     globals.set("NewTabUtils", fakeNewTabUtils);
     FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
@@ -53,11 +54,12 @@ describe("Top Sites Feed", () => {
       "common/Reducers.jsm": {insertPinned, TOP_SITES_SHOWMORE_LENGTH},
       "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
       "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider},
-      "common/ShortURL.jsm": {shortURL: shortURLStub}
+      "lib/ShortURL.jsm": {ShortURL: fakeShortURL}
     }));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
     feed.dedupe.group = sites => sites;
+    feed.ShortURL = {shortURL: shortURLStub};
     links = FAKE_LINKS;
     clock = sinon.useFakeTimers();
   });
@@ -160,12 +162,16 @@ describe("Top Sites Feed", () => {
     });
     describe("deduping", () => {
       beforeEach(() => {
+        const fakeShortURL = function() {};
+
         ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
           "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
           "common/Reducers.jsm": {insertPinned, TOP_SITES_SHOWMORE_LENGTH},
-          "lib/Screenshots.jsm": {Screenshots: fakeScreenshot}
+          "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
+          "common/ShortURL.jsm": {ShortURL: fakeShortURL}
         }));
         feed = new TopSitesFeed();
+        feed.ShortURL = {shortURL: shortURLStub};
       });
       it("should not dedupe pinned sites", async () => {
         fakeNewTabUtils.pinnedLinks.links = [
@@ -178,7 +184,6 @@ describe("Top Sites Feed", () => {
         assert.lengthOf(sites, TOP_SITES_SHOWMORE_LENGTH);
         assert.equal(sites[0].url, fakeNewTabUtils.pinnedLinks.links[0].url);
         assert.equal(sites[1].url, fakeNewTabUtils.pinnedLinks.links[1].url);
-        assert.equal(sites[0].hostname, sites[1].hostname);
       });
       it("should not dedupe pinned sites", async () => {
         fakeNewTabUtils.pinnedLinks.links = [

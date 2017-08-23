@@ -11,7 +11,7 @@ Cu.importGlobalProperties(["fetch"]);
 
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
-const {shortURL} = Cu.import("resource://activity-stream/common/ShortURL.jsm", {});
+const {ShortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 
 const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
@@ -35,6 +35,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
       this.read_more_endpoint = options.read_more_endpoint;
       this.stories_referrer = options.stories_referrer;
+
+      this.ShortURL = new ShortURL();
 
       // TODO https://github.com/mozilla/activity-stream/issues/2902
       const sectionOptions = {
@@ -86,7 +88,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
             .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.dedupe_url}))
             .map(s => ({
               "guid": s.id,
-              "hostname": shortURL(Object.assign({}, s, {url: s.dedupe_url})),
+              "hostname": this.ShortURL.shortURL(Object.assign({}, s, {url: s.dedupe_url})),
               "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
               "title": s.title,
               "description": s.excerpt,

@@ -10,7 +10,7 @@ const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-str
 const {TippyTopProvider} = Cu.import("resource://activity-stream/lib/TippyTopProvider.jsm", {});
 const {insertPinned, TOP_SITES_SHOWMORE_LENGTH} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
-const {shortURL} = Cu.import("resource://activity-stream/common/ShortURL.jsm", {});
+const {ShortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
@@ -26,6 +26,7 @@ this.TopSitesFeed = class TopSitesFeed {
     this.lastUpdated = 0;
     this._tippyTopProvider = new TippyTopProvider();
     this.dedupe = new Dedupe(this._dedupeKey);
+    this.ShortURL = new ShortURL();
   }
   _dedupeKey(site) {
     return site && site.hostname;
@@ -56,7 +57,7 @@ this.TopSitesFeed = class TopSitesFeed {
     let pinned = NewTabUtils.pinnedLinks.links;
     pinned = pinned.map(site => site && Object.assign({}, site, {
       isDefault: defaultUrls.indexOf(site.url) !== -1,
-      hostname: shortURL(site)
+      hostname: this.ShortURL.shortURL(site)
     }));
 
     if (!frecent) {
@@ -68,7 +69,7 @@ this.TopSitesFeed = class TopSitesFeed {
     // Group together websites that require deduping.
     let topsitesGroup = [];
     for (const group of [pinned, frecent, notBlockedDefaultSites]) {
-      topsitesGroup.push(group.filter(site => site).map(site => Object.assign({}, site, {hostname: shortURL(site)})));
+      topsitesGroup.push(group.filter(site => site).map(site => Object.assign({}, site, {hostname: this.ShortURL.shortURL(site)})));
     }
 
     const dedupedGroups = this.dedupe.group(topsitesGroup);
