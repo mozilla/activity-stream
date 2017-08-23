@@ -13,6 +13,7 @@ describe("<Sections>", () => {
       id: `foo_bar_${i}`,
       title: `Foo Bar ${i}`,
       initialized: false,
+      enabled: !!(i % 2),
       rows: []
     }));
     wrapper = shallow(<Sections Sections={FAKE_SECTIONS} />);
@@ -20,10 +21,13 @@ describe("<Sections>", () => {
   it("should render a Sections element", () => {
     assert.ok(wrapper.exists());
   });
-  it("should render a Section for each one passed in props.Sections", () => {
+  it("should render a Section for each one passed in props.Sections with .enabled === true", () => {
     const sectionElems = wrapper.find(SectionIntl);
-    assert.lengthOf(sectionElems, 5);
-    sectionElems.forEach((section, i) => assert.equal(section.props().id, FAKE_SECTIONS[i].id));
+    assert.lengthOf(sectionElems, 2);
+    sectionElems.forEach((section, i) => {
+      assert.equal(section.props().id, FAKE_SECTIONS[2 * i + 1].id);
+      assert.equal(section.props().enabled, true);
+    });
   });
 });
 
@@ -102,7 +106,7 @@ describe("<Section>", () => {
 
     it("should render topics component for non-empty topics", () => {
       let TOP_STORIES_SECTION = {
-        id: "TopStories",
+        id: "topstories",
         title: "TopStories",
         rows: [{guid: 1, link: "http://localhost", isDefault: true}],
         topics: [],

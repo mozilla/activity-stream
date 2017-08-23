@@ -106,7 +106,7 @@ class Section extends React.Component {
     const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxRows, contextMenuOptions, intl} = this.props;
     const maxCards = 3 * maxRows;
     const initialized = rows && rows.length > 0;
-    const shouldShowTopics = (id === "TopStories" &&
+    const shouldShowTopics = (id === "topstories" &&
       this.props.topics &&
       this.props.topics.length > 0 &&
       this.props.read_more_endpoint);
@@ -182,7 +182,9 @@ class Sections extends React.Component {
     const sections = this.props.Sections;
     return (
       <div className="sections-list">
-        {sections.map(section => <SectionIntl key={section.id} {...section} dispatch={this.props.dispatch} />)}
+        {sections
+          .filter(section => section.enabled)
+          .map(section => <SectionIntl key={section.id} {...section} dispatch={this.props.dispatch} />)}
       </div>
     );
   }
