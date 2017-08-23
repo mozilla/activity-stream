@@ -11,6 +11,7 @@ const {getAddonByID} = require("sdk/addon/manager");
 const {get, set} = require("sdk/preferences/service");
 
 const self = require("sdk/self");
+const system = require("sdk/system");
 
 Cu.import("resource://gre/modules/ClientID.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
@@ -35,7 +36,8 @@ Object.assign(exports, {
 
     Task.spawn(function*() {
       let addon = yield getAddonByID(self.id);
-      if (addon) {
+      let version = system.version.split(".")[0];
+      if (addon && version === "56") {
         const pref = "browser.newtabpage.activity-stream.enabled";
         if (!get(pref)) {
           set(pref, true);
