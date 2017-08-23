@@ -53,7 +53,7 @@ describe("Top Sites Feed", () => {
       "common/Reducers.jsm": {insertPinned, TOP_SITES_SHOWMORE_LENGTH},
       "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
       "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider},
-      "common/ShortURL.jsm": {shortURL: shortURLStub}
+      "lib/ShortURL.jsm": {shortURL: shortURLStub}
     }));
     feed = new TopSitesFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill("site")}}; }};
