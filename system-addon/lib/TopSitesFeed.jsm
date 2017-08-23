@@ -10,7 +10,7 @@ const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-str
 const {TippyTopProvider} = Cu.import("resource://activity-stream/lib/TippyTopProvider.jsm", {});
 const {insertPinned, TOP_SITES_SHOWMORE_LENGTH} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
-const {shortURL} = Cu.import("resource://activity-stream/common/ShortURL.jsm", {});
+const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");

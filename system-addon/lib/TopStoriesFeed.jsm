@@ -11,7 +11,7 @@ Cu.importGlobalProperties(["fetch"]);
 
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
-const {shortURL} = Cu.import("resource://activity-stream/common/ShortURL.jsm", {});
+const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 
 const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
