@@ -44,6 +44,7 @@ overrider.set({
       addObserver() {},
       removeObserver() {}
     },
+    console: {logStringMessage: () => {}},
     prefs: {
       addObserver() {},
       prefHasUserValue() {},

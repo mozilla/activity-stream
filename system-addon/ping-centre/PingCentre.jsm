@@ -11,8 +11,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "AppConstants",
   "resource://gre/modules/AppConstants.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "ClientID",
   "resource://gre/modules/ClientID.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "console",
-  "resource://gre/modules/Console.jsm");
 
 const PREF_BRANCH = "browser.ping-centre.";
 
@@ -105,7 +103,7 @@ class PingCentre {
     if (this.logging) {
       // performance related pings cause a lot of logging, so we mute them
       if (data.action !== "activity_stream_performance") {
-        console.log(`TELEMETRY PING: ${JSON.stringify(payload)}\n`); // eslint-disable-line no-console
+        Services.console.logStringMessage(`TELEMETRY PING: ${JSON.stringify(payload)}\n`);
       }
     }
 

@@ -242,7 +242,7 @@ describe("PingCentre", () => {
     });
 
     it("should log if logging is on && if action is not activity_stream_performance", async () => {
-      globals.sandbox.stub(console, "log");
+      globals.sandbox.stub(global.Services.console, "logStringMessage");
       FakePrefs.prototype.prefs = {};
       FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
@@ -255,7 +255,7 @@ describe("PingCentre", () => {
 
       await tSender.sendPing(fakePingJSON);
 
-      assert.called(console.log); // eslint-disable-line no-console
+      assert.called(global.Services.console.logStringMessage); // eslint-disable-line no-console
     });
   });
 
