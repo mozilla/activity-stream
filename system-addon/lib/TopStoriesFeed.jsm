@@ -61,19 +61,19 @@ this.TopStoriesFeed = class TopStoriesFeed {
           throw new Error(`Stories endpoint returned unexpected status: ${response.status}`);
         })
         .then(body => {
-          let items = JSON.parse(body).list;
+          let items = JSON.parse(body).recommendations;
           items = items
-            .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.dedupe_url}))
+            .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.url}))
             .map(s => ({
               "guid": s.id,
-              "hostname": shortURL(Object.assign({}, s, {url: s.dedupe_url})),
+              "hostname": shortURL(Object.assign({}, s, {url: s.url})),
               "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
               "title": s.title,
               "description": s.excerpt,
               "image": this._normalizeUrl(s.image_src),
               "referrer": this.stories_referrer,
-              "url": s.dedupe_url,
-              "eTLD": this._addETLD(s.dedupe_url)
+              "url": s.url,
+              "eTLD": this._addETLD(s.url)
             }));
           return items;
         })
