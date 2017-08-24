@@ -137,11 +137,11 @@ describe("Top Stories Feed", () => {
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
 
-      const response = `{"list": [{"id" : "1",
+      const response = `{"recommendations": [{"id" : "1",
         "title": "title",
         "excerpt": "description",
         "image_src": "image-url",
-        "dedupe_url": "rec-url",
+        "url": "rec-url",
         "published_timestamp" : "123"
       }]}`;
       const stories = [{
@@ -190,7 +190,7 @@ describe("Top Stories Feed", () => {
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: site => site.url === "blocked"}});
 
-      const response = `{"list": [{"dedupe_url" : "blocked"}, {"dedupe_url" : "not_blocked"}]}`;
+      const response = `{"recommendations": [{"url" : "blocked"}, {"url" : "not_blocked"}]}`;
       instance.stories_endpoint = "stories-endpoint";
       fetchStub.resolves({ok: true, status: 200, text: () => response});
       await instance.fetchStories();
@@ -205,7 +205,7 @@ describe("Top Stories Feed", () => {
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
       clock.restore();
       const response = JSON.stringify({
-        "list": [
+        "recommendations": [
           {"published_timestamp": Date.now() / 1000},
           {"published_timestamp": "0"},
           {"published_timestamp": (Date.now() - 2 * 24 * 60 * 60 * 1000) / 1000}
