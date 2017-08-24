@@ -95,7 +95,7 @@
       box-shadow: inset $inner-box-shadow;
 
       // For letter fallback
-      color: $light-grey;
+      color: $text-secondary;
       font-weight: 200;
       font-size: 32px;
       text-transform: uppercase;
@@ -144,6 +144,7 @@
       position: relative;
 
       .icon {
+        fill: $fill-secondary;
         offset-inline-start: 0;
         position: absolute;
         top: 10px;
@@ -225,14 +226,14 @@
     button {
       background: none;
       border: 0;
-      color: $light-grey;
+      color: $text-secondary;
       cursor: pointer;
       font-size: 12px;
       padding: 0;
 
       &:focus {
         background: $very-light-grey;
-        border-bottom: dotted 1px $light-grey;
+        border-bottom: dotted 1px $text-secondary;
       }
     }
   }

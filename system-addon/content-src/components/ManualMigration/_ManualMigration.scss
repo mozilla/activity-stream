@@ -33,6 +33,7 @@
     display: none;
     @media (min-width: $break-point-medium) {
       display: block;
+      fill: $fill-secondary;
       margin: 0;
       margin-inline-end: 12px;
       align-self: center;
