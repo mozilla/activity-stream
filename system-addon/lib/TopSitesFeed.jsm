@@ -154,6 +154,9 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.PLACES_HISTORY_CLEARED:
         this.refresh();
         break;
+      case at.BLOCK_URL: // Topsite blocked, we want to get a new one in.
+        this.refresh();
+        break;
       case at.PREF_CHANGED:
         if (action.data.name === DEFAULT_SITES_PREF) {
           this.refreshDefaults(action.data.value);
