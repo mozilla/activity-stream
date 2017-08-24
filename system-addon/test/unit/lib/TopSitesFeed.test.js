@@ -358,5 +358,10 @@ describe("Top Sites Feed", () => {
       await feed.onAction({type: at.INIT});
       assert.calledOnce(feed.refresh);
     });
+    it("should call refresh on BLOCK_URL action", async () => {
+      sinon.stub(feed, "refresh");
+      await feed.onAction({type: at.BLOCK_URL});
+      assert.calledOnce(feed.refresh);
+    });
   });
 });
