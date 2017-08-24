@@ -1,7 +1,7 @@
 .outer-wrapper {
   display: flex;
   flex-grow: 1;
-  padding: $wrapper-top-padding $base-gutter $base-gutter;
+  padding: $section-spacing $base-gutter $base-gutter;
   height: 100%;
 }
 
@@ -26,7 +26,8 @@ main {
   }
 
   section {
-    margin-bottom: $section-margin;
+    margin-bottom: $section-spacing;
+    position: relative;
   }
 }
 
