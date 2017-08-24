@@ -26,10 +26,10 @@ describe("shortURL", () => {
   });
 
   it("should call convertToDisplayIDN when calling shortURL", () => {
-    shortURL({hostname: "com.blah.com", eTLD: "com"});
+    const hostname = shortURL({hostname: "com.blah.com", eTLD: "com"});
 
     assert.calledOnce(IDNStub);
-    assert.calledWithExactly(IDNStub, "com.blah.com", {});
+    assert.calledWithExactly(IDNStub, hostname, {});
   });
 
   it("should use the hostname, if provided", () => {
