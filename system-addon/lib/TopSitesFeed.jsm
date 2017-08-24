@@ -20,6 +20,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "Screenshots",
 const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_SITES_PREF = "default.sites";
 const DEFAULT_TOP_SITES = [];
+const FRECENCY_THRESHOLD = 100; // 1 visit (skip first-run/one-time pages)
 
 this.TopSitesFeed = class TopSitesFeed {
   constructor() {
@@ -62,7 +63,9 @@ this.TopSitesFeed = class TopSitesFeed {
     if (!frecent) {
       frecent = [];
     } else {
-      frecent = frecent.filter(link => link && link.type !== "affiliate");
+      // Get the best history links that pass the frecency threshold
+      frecent = frecent.filter(link => link && link.type !== "affiliate" &&
+        link.frecency > FRECENCY_THRESHOLD);
     }
 
     // Group together websites that require deduping.
