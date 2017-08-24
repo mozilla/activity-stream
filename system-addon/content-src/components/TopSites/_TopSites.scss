@@ -137,7 +137,7 @@
 
     .title {
       font: message-box;
-      height: $top-sites-title-height;
+      height: 20px;
       line-height: $top-sites-title-height;
       text-align: center;
       width: $top-sites-size;
@@ -214,10 +214,6 @@
       }
     }
   }
-}
-
-.top-sites {
-  position: relative;
 }
 
 .edit-topsites-wrapper {

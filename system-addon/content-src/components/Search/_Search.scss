@@ -1,8 +1,6 @@
 .search-wrapper {
   $search-bg-color: #FFF;
   $search-border-radius: 4px;
-  $search-margin-top: 52px;
-  $search-margin-bottom: $search-margin-bottom;
   $search-height: 36px;
   $search-input-left-label-width: 35px;
   $search-input-border-color: #BFBFBF;
@@ -55,7 +53,7 @@
   cursor: default;
   display: flex;
   position: relative;
-  margin: 0 0 $search-margin-bottom;
+  margin: 0 0 $section-spacing;
   width: 100%;
   height: $search-height;
 
