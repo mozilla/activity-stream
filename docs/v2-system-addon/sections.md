@@ -1,66 +1,65 @@
 # Sections in Activity Stream
 
 Each section in Activity Stream displays data from a corresponding section feed
-in a standardised `Section` UI component. Section feeds are responsible for
-registering/deregistering their UI component and supplying rows data (the sites
-for the section to display).
-
-Activity Stream loads sections from the `SECTIONS` map in `ActivityStream.jsm`.
-Configuration objects must be keyed by a unique section id and have the
-properties `{feed, showByDefault}`, where `feed` is the section feed class.
+in a standardised `Section` UI component. Each section feed is responsible for
+listening to events and updating the section options such as the title, icon,
+and rows (the cards for the section to display).
 
 The `Section` UI component displays the rows provided by the section feed. If no
 rows are available it displays an empty state consisting of an icon and a
 message. Optionally, the section may have a info option menu that is displayed
 when users hover over the info icon.
 
+On load, `SectionsManager` and `SectionsFeed` in `SectionsManager.jsm` add the
+sections configured in the `BUILT_IN_SECTIONS` map to the state. These sections
+are initially disabled, so aren't visible. The section's feed may use the
+methods provided by the `SectionsManager` to enable its section and update its
+properties.
+
+The section configuration in `BUILT_IN_SECTIONS` constists of a generator
+function keyed by the pref name for the section feed. The generator function
+takes an `options` argument as the only parameter, which is passed the object
+stored as serialised JSON in the pref `{feed_pref_name}.options`, or the empty
+object if this doesn't exist. The generator returns a section configuration
+object which may have the following properties:
+
+Property | Type | Description
+--- | --- | ---
+id | String | Non-optional unique id.
+title | Localisation object | Has property `id`, the string localisation id, and optionaly a `values` object to fill in placeholders.
+icon | String | Icon id. New icons should be added in icons.scss.
+maxRows | Integer | Maximum number of rows of cards to display. Should be >= 1.
+contextMenuOptions | Array of strings | The menu options to provide in the card context menus.
+shouldHidePref | Boolean | If true, will the section preference in the preferences pane will not be shown.
+pref | Object | Configures the section preference to show in the preferences pane. Has properties `titleString` and `descString`.
+emptyState | Object | Configures the empty state of the section. Has properties `message` and `icon`.
+infoOption | Object | Configures the info option. Has properties `header`, `body`, and `link`.
+
 ## Section feeds
 
-Each section feed is given the pref
-`{Activity Stream pref branch}.feeds.section.{section_id}`. This pref turns the
-section feed on and off.
+Each section feed should be controlled by the pref `feeds.section.{section_id}`.
 
-### Registering the section
+### Enabling the section
 
-The section feed must listen for the events `INIT` (dispatched
-when Activity Stream is initialised) and `FEED_INIT` (dispatched when a feed is
-re-enabled having been turned off, with the feed id as the `data`) and respond
-by dispatching a `SECTION_REGISTER` action to enable the section's UI component.
-The action's `data` object should have the following properties:
+The section feed must listen for the events `INIT` (dispatched when Activity
+Stream is initialised) and `FEED_INIT` (dispatched when a feed is re-enabled
+having been turned off, with the feed id as the `data`). On these events it must
+call `SectionsManager.enableSection(id)`. Care should be taken that this happens
+only once `SectionsManager` has also initialised; the feed can use the method
+`SectionsManager.onceInitialized()`.
 
-```js
-{
-  id, // Unique section id
-  icon, // Section icon id - new icons should be added to icons.scss
-  title: {id, values}, // Title localisation id and placeholder values
-  maxCards, // Max number of site cards to dispay
-  contextMenuOptions, // Default context-menu options for cards
-  infoOption: { // Info option dialog
-    header: {id, values}, // Header localisation id and values
-    body: {id, values}, // Body localisation id and values
-    link: {href, id, values}, // Link href, localisation id and values
-  },
-  emptyState: { // State if no cards are visible
-    message: {id, values}, // Message localisation id and values
-    icon // Icon id - new icons should be added to icons.scss
-  }
-}
-```
-
-### Deregistering the section
+### Disabling the section
 
 The section feed must have an `uninit` method. This is called when the section
-feed is disabled by turning the section's pref off.
-
-In `uninit` the feed must broadcast a `SECTION_DEREGISTER` action with the
-section id as the data. This will remove the section's UI component from every
-existing Activity Stream page.
+feed is disabled by turning the section's pref off. In `uninit` the feed must
+call `SectionsManager.disableSection(id)`. This will remove the section's UI
+component from every existing Activity Stream page.
 
 ### Updating the section rows
 
-The section feed can dispatch a `SECTION_ROWS_UPDATE` action to update its rows.
-The action's data object must be passed the section's `id` and an array `rows`
-of sites to display. Each site object must have the following properties:
+The section feed can call `SectionsManager.updateSection(id, options)` to update
+section options. The `rows` array property of `options` stores the cards of
+sites to display. Each card object may have the following properties:
 
 ```js
 {
@@ -71,6 +70,3 @@ of sites to display. Each site object must have the following properties:
   url // Site url
 }
 ```
-
-Optionally, rows can also be passed with the `SECTION_REGISTER` action if the
-feed already has rows to display.

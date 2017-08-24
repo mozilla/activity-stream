@@ -6,13 +6,13 @@ const {PreferencesPane, PreferencesInput} = require("content-src/components/Pref
 const {actionCreators: ac} = require("common/Actions.jsm");
 
 describe("<PreferencesInput>", () => {
-  const testStringIds = {
-    titleStringId: "settings_pane_search_header",
-    descStringId: "settings_pane_search_body"
+  const testStrings = {
+    titleString: {id: "settings_pane_search_header"},
+    descString: {id: "settings_pane_search_body"}
   };
   let wrapper;
   beforeEach(() => {
-    wrapper = shallow(<PreferencesInput prefName="foo" {...testStringIds} />);
+    wrapper = shallow(<PreferencesInput prefName="foo" {...testStrings} />);
   });
 
   it("should set the name and id on the input and the 'for' attribute on the label to props.prefName", () => {
@@ -23,17 +23,17 @@ describe("<PreferencesInput>", () => {
     assert.propertyVal(labelProps, "htmlFor", "foo");
   });
   it("should set the checked value of the input to props.value", () => {
-    wrapper = shallow(<PreferencesInput prefName="foo" value={true} {...testStringIds} />);
+    wrapper = shallow(<PreferencesInput prefName="foo" value={true} {...testStrings} />);
     assert.propertyVal(wrapper.find("input").props(), "checked", true);
   });
-  it("should render a FormattedString in the label with id=titleStringId", () => {
-    assert.propertyVal(wrapper.find("label").find(FormattedMessage).props(), "id", testStringIds.titleStringId);
+  it("should render a FormattedString in the label with id=titleString", () => {
+    assert.propertyVal(wrapper.find("label").find(FormattedMessage).props(), "id", testStrings.titleString.id);
   });
-  it("should render a FormattedString in the description with id=descStringId", () => {
-    assert.propertyVal(wrapper.find(".prefs-input-description").find(FormattedMessage).props(), "id", testStringIds.descStringId);
+  it("should render a FormattedString in the description with id=descString", () => {
+    assert.propertyVal(wrapper.find(".prefs-input-description").find(FormattedMessage).props(), "id", testStrings.descString.id);
   });
   it("should not render the description element if no descStringId is given", () => {
-    wrapper = shallow(<PreferencesInput prefName="foo" titleStringId="bar" />);
+    wrapper = shallow(<PreferencesInput prefName="foo" titleString="bar" />);
     assert.lengthOf(wrapper.find(".prefs-input-description"), 0);
   });
 });
@@ -44,7 +44,12 @@ describe("<PreferencesPane>", () => {
   beforeEach(() => {
     dispatch = sinon.spy();
     const fakePrefs = {values: {showSearch: true, showTopSites: true}};
-    wrapper = shallowWithIntl(<PreferencesPane dispatch={dispatch} Prefs={fakePrefs} />);
+    const fakeSections = [
+      {id: "section1", shouldHidePref: false, enabled: true, pref: {title: "fake_title", feed: "section1_feed"}},
+      {id: "section2", shouldHidePref: false, enabled: false, pref: {}},
+      {id: "section3", shouldHidePref: true, enabled: true}
+    ];
+    wrapper = shallowWithIntl(<PreferencesPane dispatch={dispatch} Prefs={fakePrefs} Sections={fakeSections} />);
   });
   it("should hide the sidebar and show a settings icon by default", () => {
     assert.isTrue(wrapper.find(".sidebar").hasClass("hidden"));
@@ -77,10 +82,23 @@ describe("<PreferencesPane>", () => {
     wrapper.find("button.done").simulate("click");
     assert.isTrue(wrapper.find(".sidebar").hasClass("hidden"));
   });
-  it("should dispatch a SetPref action when a PreferencesInput is clicked", () => {
+  it("should dispatch a SetPref action when a non-section PreferencesInput is clicked", () => {
     const showSearchWrapper = wrapper.find(".showSearch");
     showSearchWrapper.simulate("change", {target: {name: "showSearch", checked: false}});
     assert.calledOnce(dispatch);
     assert.calledWith(dispatch, ac.SetPref("showSearch", false));
+  });
+  it("should show PreferencesInputs for a section if and only if shouldHidePref is false", () => {
+    const sectionsWrapper = wrapper.find(".showSection");
+    assert.equal(sectionsWrapper.length, 2);
+    assert.ok(sectionsWrapper.containsMatchingElement(<PreferencesInput prefName="section1_feed" />));
+    assert.ok(sectionsWrapper.containsMatchingElement(<PreferencesInput prefName="section2" />));
+    assert.notOk(sectionsWrapper.containsMatchingElement(<PreferencesInput prefName="section3" />));
+  });
+  it("should set the value prop of a section PreferencesInput to equal section.enabled", () => {
+    const section1 = wrapper.findWhere(prefInput => prefInput.props().prefName === "section1_feed");
+    const section2 = wrapper.findWhere(prefInput => prefInput.props().prefName === "section2");
+    assert.equal(section1.props().value, true);
+    assert.equal(section2.props().value, false);
   });
 });

@@ -1,15 +1,20 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {injectIntl, FormattedMessage} = require("react-intl");
-const {actionCreators: ac} = require("common/Actions.jsm");
+const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
+
+const getFormattedMessage = message =>
+  (typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />);
 
 const PreferencesInput = props => (
   <section>
     <input type="checkbox" id={props.prefName} name={props.prefName} checked={props.value} onChange={props.onChange} className={props.className} />
     <label htmlFor={props.prefName}>
-      <FormattedMessage id={props.titleStringId} values={props.titleStringValues} />
+      {getFormattedMessage(props.titleString)}
     </label>
-    {props.descStringId && <p className="prefs-input-description"><FormattedMessage id={props.descStringId} /></p>}
+    {props.descString && <p className="prefs-input-description">
+      {getFormattedMessage(props.descString)}
+    </p>}
   </section>
 );
 
@@ -18,18 +23,9 @@ class PreferencesPane extends React.Component {
     super(props);
     this.state = {visible: false};
     this.handleClickOutside = this.handleClickOutside.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.handlePrefChange = this.handlePrefChange.bind(this);
+    this.handleSectionChange = this.handleSectionChange.bind(this);
     this.togglePane = this.togglePane.bind(this);
-
-    // TODO This is temporary until sections register their PreferenceInput component automatically
-    const optionJSON = props.Prefs.values["feeds.section.topstories.options"];
-    if (optionJSON) {
-      try {
-        this.topStoriesOptions = JSON.parse(optionJSON);
-      } catch (e) {
-        console.error("Problem parsing feeds.section.topstories.options", e); // eslint-disable-line no-console
-      }
-    }
   }
   componentDidMount() {
     document.addEventListener("click", this.handleClickOutside);
@@ -43,9 +39,15 @@ class PreferencesPane extends React.Component {
       this.togglePane();
     }
   }
-  handleChange(event) {
+  handlePrefChange(event) {
     const target = event.target;
     this.props.dispatch(ac.SetPref(target.name, target.checked));
+  }
+  handleSectionChange(event) {
+    const target = event.target;
+    const id = target.name;
+    const type = target.checked ? at.SECTION_ENABLE : at.SECTION_DISABLE;
+    this.props.dispatch(ac.SendToMain({type, data: id}));
   }
   togglePane() {
     this.setState({visible: !this.state.visible});
@@ -55,6 +57,7 @@ class PreferencesPane extends React.Component {
   render() {
     const props = this.props;
     const prefs = props.Prefs.values;
+    const sections = props.Sections;
     const isVisible = this.state.visible;
     return (
       <div className="prefs-pane-wrapper" ref="wrapper">
@@ -70,17 +73,19 @@ class PreferencesPane extends React.Component {
               <h1><FormattedMessage id="settings_pane_header" /></h1>
               <p><FormattedMessage id="settings_pane_body" /></p>
 
-              <PreferencesInput className="showSearch" prefName="showSearch" value={prefs.showSearch} onChange={this.handleChange}
-                titleStringId="settings_pane_search_header" descStringId="settings_pane_search_body" />
+              <PreferencesInput className="showSearch" prefName="showSearch" value={prefs.showSearch} onChange={this.handlePrefChange}
+                titleString={{id: "settings_pane_search_header"}} descString={{id: "settings_pane_search_body"}} />
 
-              <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handleChange}
-                titleStringId="settings_pane_topsites_header" descStringId="settings_pane_topsites_body" />
+              <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handlePrefChange}
+                titleString={{id: "settings_pane_topsites_header"}} descString={{id: "settings_pane_topsites_body"}} />
 
-              {this.topStoriesOptions && !this.topStoriesOptions.hidden &&
-                <PreferencesInput className="showTopStories" prefName="feeds.section.topstories"
-                  value={prefs["feeds.section.topstories"]} onChange={this.handleChange}
-                  titleStringId="header_recommended_by" titleStringValues={{provider: this.topStoriesOptions.provider_name}}
-                  descStringId={this.topStoriesOptions.provider_description} />}
+              {sections
+                .filter(section => !section.shouldHidePref)
+                .map(({id, title, enabled, pref}) =>
+                  <PreferencesInput key={id} className="showSection" prefName={(pref && pref.feed) || id}
+                    value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
+                    titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />)}
+
             </div>
             <section className="actions">
               <button className="done" onClick={this.togglePane}>
@@ -93,6 +98,6 @@ class PreferencesPane extends React.Component {
   }
 }
 
-module.exports = connect(state => ({Prefs: state.Prefs}))(injectIntl(PreferencesPane));
+module.exports = connect(state => ({Prefs: state.Prefs, Sections: state.Sections}))(injectIntl(PreferencesPane));
 module.exports.PreferencesPane = PreferencesPane;
 module.exports.PreferencesInput = PreferencesInput;
