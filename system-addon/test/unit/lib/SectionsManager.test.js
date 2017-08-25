@@ -138,14 +138,8 @@ describe("SectionsFeed", () => {
     feed.uninit();
   });
   describe("#init", () => {
-    it("should create a SectionsFeed and bind to SectionsManager.INIT", () => {
+    it("should create a SectionsFeed", () => {
       assert.instanceOf(feed, SectionsFeed);
-      SectionsManager.initialized = false;
-      sinon.spy(SectionsManager, "once");
-      feed = new SectionsFeed();
-      assert.calledOnce(SectionsManager.once);
-      assert.calledWith(SectionsManager.once, SectionsManager.INIT, feed.init);
-      SectionsManager.once.restore();
     });
     it("should bind appropriate listeners", () => {
       sinon.spy(SectionsManager, "on");
@@ -158,6 +152,15 @@ describe("SectionsFeed", () => {
       ]) {
         assert.calledWith(SectionsManager.on, event, listener);
       }
+    });
+    it("should call onAddSection for any already added sections in SectionsManager", () => {
+      SectionsManager.init();
+      assert.ok(SectionsManager.sections.has("topstories"));
+      const topstories = SectionsManager.sections.get("topstories");
+      sinon.spy(feed, "onAddSection");
+      feed.init();
+      assert.calledOnce(feed.onAddSection);
+      assert.calledWith(feed.onAddSection, SectionsManager.ADD_SECTION, "topstories", topstories);
     });
   });
   describe("#uninit", () => {
@@ -226,6 +229,12 @@ describe("SectionsFeed", () => {
     });
   });
   describe("#onAction", () => {
+    it("should bind this.init to SectionsManager.INIT on INIT", () => {
+      sinon.spy(SectionsManager, "once");
+      feed.onAction({type: "INIT"});
+      assert.calledOnce(SectionsManager.once);
+      assert.calledWith(SectionsManager.once, SectionsManager.INIT, feed.init);
+    });
     it("should call SectionsManager.init on action PREFS_INITIAL_VALUES", () => {
       sinon.spy(SectionsManager, "init");
       feed.onAction({type: "PREFS_INITIAL_VALUES", data: {foo: "bar"}});

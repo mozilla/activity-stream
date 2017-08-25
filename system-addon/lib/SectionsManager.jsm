@@ -109,7 +109,6 @@ class SectionsFeed {
     this.onAddSection = this.onAddSection.bind(this);
     this.onRemoveSection = this.onRemoveSection.bind(this);
     this.onUpdateSection = this.onUpdateSection.bind(this);
-    SectionsManager.onceInitialized(this.init);
   }
 
   init() {
@@ -148,6 +147,9 @@ class SectionsFeed {
 
   onAction(action) {
     switch (action.type) {
+      case at.INIT:
+        SectionsManager.onceInitialized(this.init);
+        break;
       // Wait for pref values, as some sections have options stored in prefs
       case at.PREFS_INITIAL_VALUES:
         SectionsManager.init(action.data);
