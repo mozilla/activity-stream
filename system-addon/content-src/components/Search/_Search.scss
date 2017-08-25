@@ -2,23 +2,18 @@
   $search-border-radius: 4px;
   $search-height: 36px;
   $search-input-left-label-width: 35px;
-  $search-hover-shadow: rgba(0.11, 0.34, 0.69, 0.5);
   $search-button-width: 36px;
   $search-glyph-image: url('#{$image-path}glyph-search-16.svg');
   $search-glyph-size: 20px;
+  $search-shadow-outline: 0 0 0 2px $input-primary;
 
   @mixin search-input {
     border: 0;
     box-shadow: $shadow-secondary;
-    flex-grow: 1;
-    margin: 0;
-    outline: none;
-    padding: 0 12px 0 $search-input-left-label-width;
-    height: 100%;
 
     &:focus {
       border-color: $input-primary;
-      box-shadow: 0 0 0 2px $input-primary;
+      box-shadow: $search-shadow-outline;
       z-index: 1;
     }
   }
@@ -32,12 +27,14 @@
 
   input {
     @include search-input;
-    border-radius: $search-border-radius 0 0 $search-border-radius;
-    padding-inline-start: 35px;
+    border-radius: $search-border-radius;
+    padding: 0;
+    padding-inline-end: $search-button-width;
+    padding-inline-start: $search-input-left-label-width;
+    width: 100%;
 
     &:focus + .search-button {
       z-index: 1;
-      box-shadow: 0 0 0 2px $input-primary;
       background-color: $input-primary;
       background-image: url('chrome://browser/skin/forward.svg');
       fill: $white;
@@ -45,15 +42,7 @@
     }
 
     &[aria-expanded="true"] {
-      border-radius: $search-border-radius 0 0 0;
-    }
-
-    &:dir(rtl) {
-      border-radius: 0 $search-border-radius $search-border-radius 0;
-
-      &[aria-expanded="true"] {
-        border-radius: 0 $search-border-radius 0 0;
-      }
+      border-radius: $search-border-radius $search-border-radius 0 0;
     }
   }
 
@@ -62,31 +51,26 @@
     fill: $fill-secondary;
     -moz-context-properties: fill;
     position: absolute;
-    top: 0;
     offset-inline-start: 0;
     height: 100%;
     width: $search-input-left-label-width;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     z-index: 2;
   }
 
   .search-button {
+    background: url('chrome://browser/skin/forward.svg') no-repeat center center;
     border-radius: 0 $border-radius $border-radius 0;
-    margin-inline-start: -1px;
     border: 0;
     width: $search-button-width;
-    padding: 0;
-    box-shadow: $shadow-secondary;
-    background: $white url('chrome://browser/skin/forward.svg') no-repeat center center;
     fill: $fill-secondary;
     -moz-context-properties: fill;
     background-size: 16px 16px;
+    height: 100%;
+    offset-inline-end: 0;
+    position: absolute;
 
     &:hover {
       z-index: 1;
-      box-shadow: 0 1px 0 0 $search-hover-shadow;
       background-color: $input-primary;
       fill: $white;
       cursor: pointer;
@@ -99,10 +83,8 @@
 
   // Adjust the style of the contentSearchUI-generated table
   .contentSearchSuggestionTable {
-    transform: translate(-2px, 2px);
-
-    &:dir(rtl) {
-      transform: translate(2px, 2px);
-    }
+    border: 0;
+    box-shadow: $search-shadow-outline;
+    transform: translateY(2px);
   }
 }
