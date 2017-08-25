@@ -7,34 +7,14 @@
   $search-hover-shadow: rgba(0.11, 0.34, 0.69, 0.5);
   $search-focus-shadow: #0996F8;
   $search-button-grey: #FBFBFB;
-  $search-button-border-color: #D4D4D4;
   $search-button-width: 36px;
   $search-glyph-image: url('#{$image-path}glyph-search-16.svg');
   $search-glyph-size: 20px;
   $search-text: #666;
-  $search-border-color: #EAEAEA;
-
-  @mixin list-items {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  @mixin list-link {
-    cursor: default;
-    color: $black;
-    display: block;
-
-    &:hover,
-    &.active {
-      background: $search-blue;
-      color: $white;
-    }
-  }
 
   @mixin search-input {
     border: 0;
-    box-shadow: 0 1px 0 0 $faintest-black;
+    box-shadow: $shadow-secondary;
     flex-grow: 1;
     margin: 0;
     outline: none;
@@ -103,7 +83,7 @@
     border: 0;
     width: $search-button-width;
     padding: 0;
-    box-shadow: 0 1px 0 0 $faintest-black;
+    box-shadow: $shadow-secondary;
     background: $white url('chrome://browser/skin/forward.svg') no-repeat center center;
     fill: $fill-secondary;
     -moz-context-properties: fill;

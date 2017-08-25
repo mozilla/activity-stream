@@ -3,8 +3,8 @@
 
   .sidebar {
     background: $white;
-    border-left: solid 1px $faintest-black;
-    box-shadow: $sidebar-shadow;
+    border-left: $border-secondary;
+    box-shadow: $shadow-secondary;
     min-height: 100%;
     offset-inline-end: 0;
     padding: 40px;
@@ -24,7 +24,7 @@
     }
 
     h1 {
-      border-bottom: solid 1px $faintest-black;
+      border-bottom: $border-secondary;
       font-size: 24px;
       margin: 0;
       padding: 20px 0;
@@ -56,7 +56,7 @@
 
       .options {
         background: $background-secondary;
-        border: solid 1px $faintest-black;
+        border: $border-secondary;
         border-radius: $border-radius;
         margin: 15px 0;
         margin-inline-start: 30px;
@@ -107,7 +107,7 @@
   [type='checkbox']:not(:checked) + label::before,
   [type='checkbox']:checked + label::before {
     background: $white;
-    border: 1px solid $checkbox-border;
+    border: $border-primary;
     border-radius: $border-radius;
     content: '';
     height: 21px;

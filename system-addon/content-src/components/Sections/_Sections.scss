@@ -39,7 +39,7 @@
       z-index: 9999;
       position: absolute;
       background: $white;
-      border: solid 1px $faintest-black;
+      border: $border-secondary;
       border-radius: $border-radius;
       font-size: 13px;
       line-height: 120%;
@@ -96,7 +96,7 @@
     width: 100%;
     height: $card-height;
     display: flex;
-    border: solid 1px $faintest-black;
+    border: $border-secondary;
     border-radius: $border-radius;
     margin-bottom: 16px;
 

@@ -11,7 +11,7 @@
   .card {
     height: 100%;
     border-radius: $border-radius;
-    box-shadow: $card-box-shadow;
+    box-shadow: $shadow-secondary;
   }
 
   > a {
@@ -48,9 +48,7 @@
     background-position: center;
     background-repeat: no-repeat;
     height: $card-preview-image-height;
-    border-bottom-color: $faintest-black;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
+    border-bottom: $border-secondary;
     border-radius: $border-radius $border-radius 0 0;
   }
 

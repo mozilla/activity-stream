@@ -1,6 +1,8 @@
 // Photon colors from http://design.firefox.com/photon/visual/color.html
 $grey-10: #F9F9FA;
 $grey-20: #EDEDF0;
+$grey-30: #D7D7DB;
+$grey-40: #B1B1B3;
 $grey-50: #737373;
 $grey-90: #0C0C0D;
 $teal-60: #00C8D7;
@@ -9,24 +11,24 @@ $teal-70: #008EA4;
 // Aliases and derived styles based on Photon colors for common usage
 $background-primary: $grey-20;
 $background-secondary: $grey-10;
+$border-primary: 1px solid $grey-40;
+$border-secondary: 1px solid $grey-30;
 $fill-primary: rgba($grey-90, 0.8);
 $fill-secondary: rgba($grey-90, 0.6);
 $link-primary: $teal-70;
 $link-secondary: $teal-60;
+$shadow-primary: 0 0 0 5px $grey-30;
+$shadow-secondary: 0 1px 4px 0 rgba($grey-90, 0.1);
 $text-primary: $grey-90;
 $text-secondary: $grey-50;
 
 $star-blue: #2B99FF;
-$black: #000;
 $white: #FFF;
-$faintest-black: rgba($black, 0.1);
-$faint-black: rgba($black, 0.2);
 $border-radius: 3px;
 $default-button-bg: #FBFBFB;
 $default-button-border: #BFBFBF;
 $blue-button-bg: #0695F9;
 $blue-button-border: #1677CF;
-$checkbox-border: #C1C1C1;
 $checkbox-blue: #1691D2;
 
 $base-gutter: 32px;
@@ -52,13 +54,11 @@ $card-height: 266px;
 $card-preview-image-height: 122px;
 $card-title-margin: 2px;
 $card-text-line-height: 19px;
-$card-box-shadow: 0 1px 4px 0 rgba(9,6,13,0.1);
 
 $topic-margin-top: 12px;
 
 $context-menu-button-size: 27px;
-$context-menu-button-border: 1px solid rgba($black, 0.2);
-$context-menu-button-boxshadow: 0 2px 0 rgba($black, 0.1);
+$context-menu-button-boxshadow: 0 2px rgba($grey-90, 0.1);
 $context-menu-border-color: rgba(0, 0, 0, 0.2);
 $context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px $context-menu-border-color;
 $context-menu-font-size: 14px;
@@ -66,7 +66,6 @@ $context-menu-border-radius: 5px;
 $context-menu-outer-padding: 5px;
 $context-menu-item-padding: 3px 12px;
 
-$sidebar-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
 $inner-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 
 $image-path: 'assets/';
@@ -74,12 +73,12 @@ $image-path: 'assets/';
 $snippets-container-height: 120px;
 
 @mixin fade-in {
-  box-shadow: inset $inner-box-shadow, 0 0 0 5px $faintest-black;
+  box-shadow: inset $inner-box-shadow, $shadow-primary;
   transition: box-shadow 150ms;
 }
 
 @mixin fade-in-card {
-  box-shadow: 0 0 0 5px $faintest-black;
+  box-shadow: $shadow-primary;
   transition: box-shadow 150ms;
 }
 
@@ -95,7 +94,7 @@ $snippets-container-height: 120px;
     background-image: url('chrome://browser/skin/page-action.svg');
     background-position: 55%;
     background-clip: padding-box;
-    border: $context-menu-button-border;
+    border: $border-primary;
     border-radius: 100%;
     box-shadow: $context-menu-button-boxshadow;
     fill: $fill-primary;

@@ -42,7 +42,7 @@ a {
 }
 
 .inner-border {
-  border: 1px solid $faintest-black;
+  border: $border-secondary;
   border-radius: $border-radius;
   position: absolute;
   top: 0;
@@ -74,7 +74,7 @@ a {
 }
 
 .actions {
-  border-top: solid 1px $faintest-black;
+  border-top: $border-secondary;
   display: flex;
   flex-direction: row;
   margin: 0;
@@ -90,7 +90,7 @@ a {
     padding: 10px 30px;
 
     &:hover {
-      box-shadow: 0 0 0 5px $faintest-black;
+      box-shadow: $shadow-primary;
       transition: box-shadow 150ms;
     }
 
