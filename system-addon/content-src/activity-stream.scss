@@ -82,8 +82,8 @@ a {
   justify-content: flex-start;
 
   button {
-    background: $default-button-bg;
-    border: solid 1px $default-button-border;
+    background: $input-secondary;
+    border: $border-primary;
     border-radius: 5px;
     color: $grey-90;
     cursor: pointer;
@@ -95,8 +95,8 @@ a {
     }
 
     &.done {
-      background: $blue-button-bg;
-      border: solid 1px $blue-button-border;
+      background: $input-primary;
+      border: solid 1px $blue-60;
       color: $white;
       margin-inline-start: auto;
     }

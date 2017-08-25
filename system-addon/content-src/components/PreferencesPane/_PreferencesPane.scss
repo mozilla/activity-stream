@@ -128,7 +128,7 @@
     top: 0;
     width: 21px;
     -moz-context-properties: fill, stroke;
-    fill: $checkbox-blue;
+    fill: $input-primary;
     stroke: none;
   }
 
@@ -143,13 +143,13 @@
 
   // hover
   [type='checkbox'] + label:hover::before {
-    border: 1px solid $checkbox-blue;
+    border: 1px solid $input-primary;
   }
 
   // accessibility
   [type='checkbox']:checked:focus + label::before,
   [type='checkbox']:not(:checked):focus + label::before {
-    border: 1px dotted $checkbox-blue;
+    border: 1px dotted $input-primary;
   }
 }
 
