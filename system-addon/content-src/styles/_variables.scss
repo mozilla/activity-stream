@@ -1,10 +1,14 @@
 // Photon colors from http://design.firefox.com/photon/visual/color.html
+$grey-10: #F9F9FA;
+$grey-20: #EDEDF0;
 $grey-50: #737373;
 $grey-90: #0C0C0D;
 $teal-60: #00C8D7;
 $teal-70: #008EA4;
 
 // Aliases and derived styles based on Photon colors for common usage
+$background-primary: $grey-20;
+$background-secondary: $grey-10;
 $fill-primary: rgba($grey-90, 0.8);
 $fill-secondary: rgba($grey-90, 0.6);
 $link-primary: $teal-70;
@@ -12,9 +16,6 @@ $link-secondary: $teal-60;
 $text-primary: $grey-90;
 $text-secondary: $grey-50;
 
-$bg-color: #F6F6F8;
-$bg-grey: #FBFBFB;
-$very-light-grey: #EBEBEB;
 $star-blue: #2B99FF;
 $black: #000;
 $white: #FFF;

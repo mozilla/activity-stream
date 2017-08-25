@@ -55,7 +55,7 @@
       }
 
       .options {
-        background: $bg-grey;
+        background: $background-secondary;
         border: solid 1px $faintest-black;
         border-radius: $border-radius;
         margin: 15px 0;
@@ -165,7 +165,11 @@
     z-index: 12001;
 
     &:hover {
-      background-color: $very-light-grey;
+      background-color: $background-secondary;
+    }
+
+    &:active {
+      background-color: $background-primary;
     }
 
     &:dir(rtl) {

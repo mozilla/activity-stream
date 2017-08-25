@@ -1,5 +1,4 @@
 .search-wrapper {
-  $search-bg-color: #FFF;
   $search-border-radius: 4px;
   $search-height: 36px;
   $search-input-left-label-width: 35px;
@@ -13,7 +12,6 @@
   $search-glyph-image: url('#{$image-path}glyph-search-16.svg');
   $search-glyph-size: 20px;
   $search-text: #666;
-  $search-section-background: #F7F7F7;
   $search-border-color: #EAEAEA;
 
   @mixin list-items {

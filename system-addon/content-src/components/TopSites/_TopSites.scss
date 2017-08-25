@@ -195,7 +195,7 @@
         width: $edit-menu-button-size;
 
         &:hover {
-          background-color: $bg-grey;
+          background-color: $background-secondary;
         }
 
         &:last-child:dir(ltr) {
@@ -232,7 +232,7 @@
       padding: 0;
 
       &:focus {
-        background: $very-light-grey;
+        background: $background-secondary;
         border-bottom: dotted 1px $text-secondary;
       }
     }
