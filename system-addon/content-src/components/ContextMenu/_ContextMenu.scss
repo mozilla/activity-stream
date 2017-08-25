@@ -7,7 +7,7 @@
   offset-inline-start: 100%;
   margin-inline-start: 5px;
   z-index: 10000;
-  background: $bg-grey;
+  background: $background-secondary;
   border-radius: $context-menu-border-radius;
 
   > ul {
@@ -34,7 +34,7 @@
         align-items: center;
 
         &:hover, &:focus {
-          background: $star-blue;
+          background: $input-primary;
           color: $white;
 
           a {

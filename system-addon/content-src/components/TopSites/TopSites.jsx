@@ -107,7 +107,7 @@ class TopSite extends React.Component {
         </a>
         {!editMode &&
           <div>
-            <button className="context-menu-button" onClick={this.onMenuButtonClick}>
+            <button className="context-menu-button icon" onClick={this.onMenuButtonClick}>
               <span className="sr-only">{`Open context menu for ${title}`}</span>
             </button>
             <LinkMenu

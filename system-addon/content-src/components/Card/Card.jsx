@@ -72,7 +72,7 @@ class Card extends React.Component {
           </div>
         </div>
       </a>
-      <button className="context-menu-button"
+      <button className="context-menu-button icon"
         onClick={this.onMenuButtonClick}>
         <span className="sr-only">{`Open context menu for ${link.title}`}</span>
       </button>

@@ -1,5 +1,7 @@
 .manual-migration-container {
-  background: rgba(215, 215, 219, .5);
+  background: $background-secondary;
+  border: $border-secondary;
+  box-shadow: $shadow-secondary;
   font-size: 13px;
   border-radius: 2px;
   margin-bottom: $section-spacing;
@@ -33,6 +35,7 @@
     display: none;
     @media (min-width: $break-point-medium) {
       display: block;
+      fill: $fill-secondary;
       margin: 0;
       margin-inline-end: 12px;
       align-self: center;

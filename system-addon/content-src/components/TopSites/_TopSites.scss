@@ -6,8 +6,6 @@
   $screenshot-size: cover;
   $tippy-top-size: 96px;
   $edit-menu-button-size: 25px;
-  $edit-menu-button-border: 1px solid $faint-black;
-  $edit-menu-button-boxshadow: 0 2px 0 $faintest-black;
 
   list-style: none;
   margin: 0;
@@ -92,10 +90,10 @@
       height: $top-sites-size;
       width: $top-sites-size;
       border-radius: $top-sites-border-radius;
-      box-shadow: inset $inner-box-shadow;
+      box-shadow: inset $inner-box-shadow, $shadow-secondary;
 
       // For letter fallback
-      color: $light-grey;
+      color: $text-secondary;
       font-weight: 200;
       font-size: 32px;
       text-transform: uppercase;
@@ -144,6 +142,7 @@
       position: relative;
 
       .icon {
+        fill: $fill-secondary;
         offset-inline-start: 0;
         position: absolute;
         top: 10px;
@@ -165,9 +164,9 @@
 
     .edit-menu {
       background: $white;
-      border: $edit-menu-button-border;
+      border: $border-primary;
       border-radius: $edit-menu-button-size / 2;
-      box-shadow: $edit-menu-button-boxshadow;
+      box-shadow: $context-menu-button-boxshadow;
       height: $edit-menu-button-size;
       position: absolute;
       offset-inline-end: -($edit-menu-button-size / 2);
@@ -187,14 +186,14 @@
 
       button {
         border: 0;
-        border-right: $edit-menu-button-border;
+        border-right: $border-primary;
         background-color: $white;
         cursor: pointer;
         height: 100%;
         width: $edit-menu-button-size;
 
         &:hover {
-          background-color: $bg-grey;
+          background-color: $background-secondary;
         }
 
         &:last-child:dir(ltr) {
@@ -225,14 +224,14 @@
     button {
       background: none;
       border: 0;
-      color: $light-grey;
+      color: $text-secondary;
       cursor: pointer;
       font-size: 12px;
       padding: 0;
 
       &:focus {
-        background: $very-light-grey;
-        border-bottom: dotted 1px $light-grey;
+        background: $background-secondary;
+        border-bottom: dotted 1px $text-secondary;
       }
     }
   }

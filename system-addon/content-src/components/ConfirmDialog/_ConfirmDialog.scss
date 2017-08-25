@@ -31,7 +31,7 @@
 }
 
 .modal-overlay {
-  background: $bg-grey;
+  background: $background-secondary;
   height: 100%;
   left: 0;
   opacity: 0.8;
@@ -43,7 +43,7 @@
 
 .modal {
   background: $white;
-  border: solid 1px $faintest-black;
+  border: $border-secondary;
   border-radius: $border-radius;
   font-size: 14px;
   z-index: 11002;
