@@ -28,6 +28,7 @@
   input {
     @include search-input;
     border-radius: $search-border-radius;
+    color: inherit;
     padding: 0;
     padding-inline-end: $search-button-width;
     padding-inline-start: $search-input-left-label-width;
