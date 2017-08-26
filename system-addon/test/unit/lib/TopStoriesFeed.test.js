@@ -10,7 +10,6 @@ describe("Top Stories Feed", () => {
   let TOPICS_UPDATE_TIME;
   let DOMAIN_AFFINITY_UPDATE_TIME;
   let SECTION_ID;
-  let FEED_PREF;
   let instance;
   let clock;
   let globals;
@@ -45,7 +44,7 @@ describe("Top Stories Feed", () => {
     };
 
     class FakeUserDomainAffinityProvider {}
-    ({TopStoriesFeed, STORIES_UPDATE_TIME, TOPICS_UPDATE_TIME, DOMAIN_AFFINITY_UPDATE_TIME, SECTION_ID, FEED_PREF} = injector({
+    ({TopStoriesFeed, STORIES_UPDATE_TIME, TOPICS_UPDATE_TIME, DOMAIN_AFFINITY_UPDATE_TIME, SECTION_ID} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
       "lib/ShortURL.jsm": {shortURL: shortURLStub},
       "lib/UserDomainAffinityProvider.jsm": {UserDomainAffinityProvider: FakeUserDomainAffinityProvider},
@@ -120,11 +119,6 @@ describe("Top Stories Feed", () => {
       instance.init();
 
       assert.called(Components.utils.reportError);
-    });
-    it("should initialize on FEED_INIT", () => {
-      instance.init = sinon.spy();
-      instance.onAction({type: at.FEED_INIT, data: FEED_PREF});
-      assert.calledOnce(instance.init);
     });
   });
   describe("#uninit", () => {
