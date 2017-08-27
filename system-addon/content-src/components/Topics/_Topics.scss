@@ -6,7 +6,6 @@
 
   @media (min-width: $break-point-large) {
     line-height: 16px;
-    min-width: 780px;
   }
 
   ul {
@@ -14,21 +13,19 @@
     padding: 0;
     @media (min-width: $break-point-large) {
       display: inline;
-      padding-left: 12px;
+      padding-inline-start: 12px;
     }
   }
 
 
   ul li {
     display: inline-block;
-    @media (min-width: $break-point-large) {
-      display: inline;
-    }
+
     &::after {
       content: '•';
-      padding-left: 8px;
-      padding-right: 8px;
+      padding: 8px;
     }
+
     &:last-child::after {
       content: none;
     }
@@ -39,21 +36,31 @@
   }
 
   .topic-read-more {
-    @media (min-width: $break-point-large) {
-      margin-right: 40px;
-      float: right;
-    }
     color: $link-primary;
-  }
 
-  .topic-read-more-logo {
-    padding-right: 10px;
-    margin-left: 5px;
-    background-image: url('#{$image-path}topic-show-more-12.svg');
-    background-repeat: no-repeat;
-    fill: $link-primary;
-    -moz-context-properties: fill;
-    vertical-align: middle;
-  }
+    @media (min-width: $break-point-large) {
+      float: right;
 
+      &:dir(rtl) {
+        float: left;
+      }
+    }
+
+    &::after {
+      background-image: url('#{$image-path}topic-show-more-12.svg');
+      background-repeat: no-repeat;
+      content: '';
+      -moz-context-properties: fill;
+      display: inline-block;
+      fill: $link-primary;
+      height: 16px;
+      margin-inline-start: 5px;
+      vertical-align: middle;
+      width: 12px;
+    }
+
+    &:dir(rtl)::after  {
+      transform: scaleX(-1);
+    }
+  }
 }

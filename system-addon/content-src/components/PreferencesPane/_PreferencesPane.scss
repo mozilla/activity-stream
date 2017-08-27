@@ -160,7 +160,7 @@
     cursor: pointer;
     padding: 15px;
     position: fixed;
-    right: 15px;
+    offset-inline-end: 15px;
     top: 15px;
     z-index: 12001;
 
@@ -170,11 +170,6 @@
 
     &:active {
       background-color: $background-primary;
-    }
-
-    &:dir(rtl) {
-      left: 5px;
-      right: auto;
     }
   }
 }
