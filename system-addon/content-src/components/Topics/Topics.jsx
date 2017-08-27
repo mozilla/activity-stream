@@ -18,7 +18,6 @@ class Topics extends React.Component {
 
         <a className="topic-read-more" href={read_more_endpoint}>
           <FormattedMessage id="pocket_read_even_more" />
-          <span className="topic-read-more-logo" />
         </a>
       </div>
     );
