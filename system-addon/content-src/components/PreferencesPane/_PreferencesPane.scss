@@ -40,7 +40,9 @@
       }
 
       label {
+        display: inline-block;
         position: relative;
+        width: 100%;
 
         input {
           offset-inline-start: -30px;
