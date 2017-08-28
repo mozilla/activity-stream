@@ -21,6 +21,11 @@ describe("<Search>", () => {
     const wrapper = shallowWithIntl(<Search {...DEFAULT_PROPS} />);
     assert.ok(wrapper.exists());
   });
+  it("should not use a <form> element", () => {
+    const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
+
+    assert.equal(wrapper.find("form").length, 0);
+  });
   it("should listen for ContentSearchClient on render", () => {
     const spy = globals.set("addEventListener", sandbox.spy());
 

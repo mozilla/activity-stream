@@ -43,7 +43,7 @@ class Search extends React.Component {
    * in order to execute searches in various tests
    */
   render() {
-    return (<form className="search-wrapper">
+    return (<div className="search-wrapper">
       <label htmlFor="newtab-search-text" className="search-label">
         <span className="sr-only"><FormattedMessage id="search_web_placeholder" /></span>
       </label>
@@ -60,7 +60,7 @@ class Search extends React.Component {
           title={this.props.intl.formatMessage({id: "search_button"})}>
           <span className="sr-only"><FormattedMessage id="search_button" /></span>
         </button>
-    </form>);
+    </div>);
   }
 }
 
