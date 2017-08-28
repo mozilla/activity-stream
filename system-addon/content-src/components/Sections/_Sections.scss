@@ -22,6 +22,10 @@
       display: inline-block;
     }
 
+    .info-option-icon[aria-expanded="true"] {
+      fill: $fill-primary;
+    }
+
     .section-info-option .info-option {
       visibility: hidden;
       opacity: 0;
@@ -45,8 +49,8 @@
       line-height: 120%;
       margin-inline-end: -1px;
       offset-inline-end: 0;
+      top: 20px;
       width: 320px;
-      top: 23px;
       padding: 24px;
       -moz-user-select: none;
     }
