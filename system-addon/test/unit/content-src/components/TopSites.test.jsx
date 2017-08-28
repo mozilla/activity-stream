@@ -4,6 +4,7 @@ const {shallow} = require("enzyme");
 const {_unconnected: TopSitesPerfTimer, TopSite, TopSites, TopSitesEdit} = require("content-src/components/TopSites/TopSites");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
+const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 
 const perfSvc = {
   mark() {},
@@ -12,6 +13,7 @@ const perfSvc = {
 
 const DEFAULT_PROPS = {
   TopSites: {initialized: true, rows: []},
+  TopSitesCount: TOP_SITES_DEFAULT_LENGTH,
   dispatch() {},
   intl: {formatMessage: x => x},
   perfSvc
@@ -187,6 +189,14 @@ describe("<TopSites>", () => {
     const links = wrapper.find(TopSite);
     assert.lengthOf(links, 2);
     links.forEach((link, i) => assert.equal(link.props().link.url, rows[i].url));
+  });
+  it("should slice the TopSite rows to the TopSitesCount pref", () => {
+    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}, {url: "https://baz.com"}, {url: "https://bam.com"}, {url: "https://zoom.com"}, {url: "https://woo.com"}, {url: "https://eh.com"}];
+
+    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={TOP_SITES_DEFAULT_LENGTH} />);
+
+    const links = wrapper.find(TopSite);
+    assert.lengthOf(links, TOP_SITES_DEFAULT_LENGTH);
   });
 });
 
@@ -427,6 +437,14 @@ describe("<TopSitesEdit>", () => {
     wrapper.find(".done").simulate("click");
     assert.equal(0, wrapper.find(".modal").length);
   });
+  it("the modal should be closed when this overlay is clicked", () => {
+    // Open the modal first.
+    wrapper.find(".edit").simulate("click");
+    assert.equal(1, wrapper.find(".modal").length);
+    // Then click Done button to close it.
+    wrapper.find(".modal-overlay").simulate("click");
+    assert.equal(0, wrapper.find(".modal").length);
+  });
   it("should render a TopSite for each link with the right url", () => {
     const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
     setup({TopSites: {rows}});
@@ -436,5 +454,38 @@ describe("<TopSitesEdit>", () => {
     const links = wrapper.find(TopSite);
     assert.lengthOf(links, 2);
     links.forEach((link, i) => assert.equal(link.props().link.url, rows[i].url));
+  });
+  it("should show the 'Show more' button by default", () => {
+    wrapper.find(".edit").simulate("click");
+    assert.equal(1, wrapper.find(".show-more").length);
+    assert.equal(0, wrapper.find(".show-less").length);
+  });
+  it("should show the 'Show less' button if we are showing more already", () => {
+    setup({TopSitesCount: TOP_SITES_SHOWMORE_LENGTH});
+    wrapper.find(".edit").simulate("click");
+    assert.equal(0, wrapper.find(".show-more").length);
+    assert.equal(1, wrapper.find(".show-less").length);
+  });
+  it("should fire a SET_PREF action when the 'Show more' button is clicked", done => {
+    function dispatch(a) {
+      if (a.type === at.SET_PREF) {
+        assert.deepEqual(a.data, {name: "topSitesCount", value: TOP_SITES_SHOWMORE_LENGTH});
+        done();
+      }
+    }
+    setup({dispatch});
+    wrapper.find(".edit").simulate("click");
+    wrapper.find(".show-more").simulate("click");
+  });
+  it("should fire a SET_PREF action when the 'Show less' button is clicked", done => {
+    function dispatch(a) {
+      if (a.type === at.SET_PREF) {
+        assert.deepEqual(a.data, {name: "topSitesCount", value: TOP_SITES_DEFAULT_LENGTH});
+        done();
+      }
+    }
+    setup({TopSitesCount: TOP_SITES_SHOWMORE_LENGTH, dispatch});
+    wrapper.find(".edit").simulate("click");
+    wrapper.find(".show-less").simulate("click");
   });
 });

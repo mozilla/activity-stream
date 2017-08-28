@@ -101,4 +101,16 @@ describe("<PreferencesPane>", () => {
     assert.equal(section1.props().value, true);
     assert.equal(section2.props().value, false);
   });
+  it("should dispatch a SetPref with the right value for topSitesCount when unchecked", () => {
+    const showMoreTopSitesWrapper = wrapper.find(".showMoreTopSites");
+    showMoreTopSitesWrapper.simulate("change", {target: {name: "topSitesCount", checked: false}});
+    assert.calledOnce(dispatch);
+    assert.calledWith(dispatch, ac.SetPref("topSitesCount", 6));
+  });
+  it("should dispatch a SetPref with the right value for topSitesCount when checked", () => {
+    const showMoreTopSitesWrapper = wrapper.find(".showMoreTopSites");
+    showMoreTopSitesWrapper.simulate("change", {target: {name: "topSitesCount", checked: true}});
+    assert.calledOnce(dispatch);
+    assert.calledWith(dispatch, ac.SetPref("topSitesCount", 12));
+  });
 });

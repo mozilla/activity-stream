@@ -82,6 +82,10 @@ const PREFS_CONFIG = new Map([
     title: "Show the Top Sites section on the New Tab page",
     value: true
   }],
+  ["topSitesCount", {
+    title: "Number of Top Sites to display",
+    value: 6
+  }],
   ["impressionStats.clicked", {
     title: "GUIDs of clicked Top stories items",
     value: "[]"

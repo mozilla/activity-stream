@@ -4,6 +4,7 @@ const {FormattedMessage, injectIntl} = require("react-intl");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {perfService: perfSvc} = require("common/PerfService.jsm");
+const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 const TOP_SITES_SOURCE = "TOP_SITES";
 const TOP_SITES_CONTEXT_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow",
   "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"];
@@ -249,7 +250,7 @@ class TopSitesPerfTimer extends React.Component {
 const TopSites = props => (<section className="top-sites">
   <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
   <ul className="top-sites-list">
-    {props.TopSites.rows.map((link, index) => link && <TopSite
+    {props.TopSites.rows.slice(0, props.TopSitesCount).map((link, index) => link && <TopSite
       key={link.guid || link.url}
       dispatch={props.dispatch}
       link={link}
@@ -264,6 +265,8 @@ class TopSitesEdit extends React.Component {
     super(props);
     this.state = {showEditModal: false};
     this.onEditButtonClick = this.onEditButtonClick.bind(this);
+    this.onShowMoreLessClick = this.onShowMoreLessClick.bind(this);
+    this.onModalOverlayClick = this.onModalOverlayClick.bind(this);
   }
   onEditButtonClick() {
     this.setState({showEditModal: !this.state.showEditModal});
@@ -271,6 +274,24 @@ class TopSitesEdit extends React.Component {
     this.props.dispatch(ac.UserEvent({
       source: TOP_SITES_SOURCE,
       event
+    }));
+  }
+  onModalOverlayClick() {
+    this.setState({showEditModal: false});
+    this.props.dispatch(ac.UserEvent({
+      source: TOP_SITES_SOURCE,
+      event: "TOP_SITES_EDIT_CLOSE"
+    }));
+  }
+  onShowMoreLessClick() {
+    const prefIsSetToDefault = this.props.TopSitesCount === TOP_SITES_DEFAULT_LENGTH;
+    this.props.dispatch(ac.SendToMain({
+      type: at.SET_PREF,
+      data: {name: "topSitesCount", value: prefIsSetToDefault ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH}
+    }));
+    this.props.dispatch(ac.UserEvent({
+      source: TOP_SITES_SOURCE,
+      event: prefIsSetToDefault ? "TOP_SITES_EDIT_SHOW_MORE" : "TOP_SITES_EDIT_SHOW_LESS"
     }));
   }
   render() {
@@ -285,12 +306,12 @@ class TopSitesEdit extends React.Component {
       </div>
       {this.state.showEditModal &&
         <div className="edit-topsites">
-          <div className="modal-overlay" />
+          <div className="modal-overlay" onClick={this.onModalOverlayClick} />
           <div className="modal">
             <section className="edit-topsites-inner-wrapper">
               <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
               <ul className="top-sites-list">
-                {this.props.TopSites.rows.map((link, index) => link && <TopSite
+                {this.props.TopSites.rows.slice(0, this.props.TopSitesCount).map((link, index) => link && <TopSite
                   key={link.guid || link.url}
                   dispatch={this.props.dispatch}
                   link={link}
@@ -300,6 +321,9 @@ class TopSitesEdit extends React.Component {
               </ul>
             </section>
             <section className="actions">
+              <button className={`icon icon-topsites show-${this.props.TopSitesCount === TOP_SITES_DEFAULT_LENGTH ? "more" : "less"}`} onClick={this.onShowMoreLessClick}>
+                <FormattedMessage id={`edit_topsites_show${this.props.TopSitesCount === TOP_SITES_DEFAULT_LENGTH ? "more" : "less"}_button`} />
+              </button>
               <button className="done" onClick={this.onEditButtonClick}>
                 <FormattedMessage id="edit_topsites_done_button" />
               </button>
@@ -313,7 +337,7 @@ class TopSitesEdit extends React.Component {
 
 const TopSitesEditIntl = injectIntl(TopSitesEdit);
 
-module.exports = connect(state => ({TopSites: state.TopSites}))(TopSitesPerfTimer);
+module.exports = connect(state => ({TopSites: state.TopSites, TopSitesCount: state.Prefs.values.topSitesCount}))(TopSitesPerfTimer);
 module.exports._unconnected = TopSitesPerfTimer;
 module.exports.TopSite = TopSite;
 module.exports.TopSites = TopSites;
