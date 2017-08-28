@@ -79,6 +79,13 @@ describe("SectionsManager", () => {
       assert.calledWith(SectionsManager.updateSection, FAKE_ID, {enabled: true}, true);
       SectionsManager.updateSection.restore();
     });
+    it("should emit an ENABLE_SECTION event", () => {
+      const spy = sinon.spy();
+      SectionsManager.on(SectionsManager.ENABLE_SECTION, spy);
+      SectionsManager.enableSection(FAKE_ID);
+      assert.calledOnce(spy);
+      assert.calledWith(spy, SectionsManager.ENABLE_SECTION, FAKE_ID);
+    });
   });
   describe("#disableSection", () => {
     it("should call updateSection with {enabled: false, rows: []}", () => {
@@ -88,6 +95,13 @@ describe("SectionsManager", () => {
       assert.calledOnce(SectionsManager.updateSection);
       assert.calledWith(SectionsManager.updateSection, FAKE_ID, {enabled: false, rows: []}, true);
       SectionsManager.updateSection.restore();
+    });
+    it("should emit a DISABLE_SECTION event", () => {
+      const spy = sinon.spy();
+      SectionsManager.on(SectionsManager.DISABLE_SECTION, spy);
+      SectionsManager.disableSection(FAKE_ID);
+      assert.calledOnce(spy);
+      assert.calledWith(spy, SectionsManager.DISABLE_SECTION, FAKE_ID);
     });
   });
   describe("#updateSection", () => {

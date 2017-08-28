@@ -71,9 +71,11 @@ const SectionsManager = {
   },
   enableSection(id) {
     this.updateSection(id, {enabled: true}, true);
+    this.emit(this.ENABLE_SECTION, id);
   },
   disableSection(id) {
     this.updateSection(id, {enabled: false, rows: []}, true);
+    this.emit(this.DISABLE_SECTION, id);
   },
   updateSection(id, options, shouldBroadcast) {
     if (this.sections.has(id)) {
@@ -94,6 +96,8 @@ for (const action of [
   "ACTION_DISPATCHED",
   "ADD_SECTION",
   "REMOVE_SECTION",
+  "ENABLE_SECTION",
+  "DISABLE_SECTION",
   "UPDATE_SECTION",
   "INIT",
   "UNINIT"
