@@ -40,14 +40,13 @@ this.shortURL = function shortURL(link) {
     return "";
   }
   const {eTLD} = link;
-  const asciiHost = (link.hostname || new URL(link.url).hostname).replace(/^www\./i, "");
-  const hostname = handleIDNHost(asciiHost);
+  const hostname = (link.hostname || new URL(link.url).hostname).replace(/^www\./i, "");
 
   // Remove the eTLD (e.g., com, net) and the preceding period from the hostname
   const eTLDLength = (eTLD || "").length || (hostname.match(/\.com$/) && 3);
   const eTLDExtra = eTLDLength > 0 ? -(eTLDLength + 1) : Infinity;
   // If URL and hostname are not present fallback to page title.
-  return hostname.slice(0, eTLDExtra).toLowerCase() || hostname || link.title || link.url;
+  return handleIDNHost(hostname.slice(0, eTLDExtra).toLowerCase() || hostname) || link.title || link.url;
 };
 
 this.EXPORTED_SYMBOLS = ["shortURL"];
