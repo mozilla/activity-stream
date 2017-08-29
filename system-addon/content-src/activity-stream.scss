@@ -88,10 +88,17 @@ a {
     color: inherit;
     cursor: pointer;
     padding: 10px 30px;
+    white-space: nowrap;
 
-    &:hover {
+    &:hover:not(.dismiss) {
       box-shadow: $shadow-primary;
       transition: box-shadow 150ms;
+    }
+
+    &.dismiss {
+      border: 0;
+      padding: 0;
+      text-decoration: underline;
     }
 
     &.done {

@@ -32,11 +32,11 @@
   }
 
   .topic-link {
-    color: $link-primary;
+    color: $link-secondary;
   }
 
   .topic-read-more {
-    color: $link-primary;
+    color: $link-secondary;
 
     @media (min-width: $break-point-large) {
       float: right;
@@ -52,7 +52,7 @@
       content: '';
       -moz-context-properties: fill;
       display: inline-block;
-      fill: $link-primary;
+      fill: $link-secondary;
       height: 16px;
       margin-inline-start: 5px;
       vertical-align: middle;

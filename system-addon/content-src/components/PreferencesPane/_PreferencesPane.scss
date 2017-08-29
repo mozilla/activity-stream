@@ -58,7 +58,7 @@
     }
 
     .options {
-      background: $background-secondary;
+      background: $background-primary;
       border: $border-secondary;
       border-radius: $border-radius;
       margin: 15px 0;
@@ -161,6 +161,7 @@
     background-color: transparent;
     border: 0;
     cursor: pointer;
+    fill: $fill-secondary;
     padding: 15px;
     position: fixed;
     offset-inline-end: 15px;
