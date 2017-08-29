@@ -8,6 +8,7 @@ $grey-50: #737373;
 $grey-60: #4A4A4F;
 $grey-90: #0C0C0D;
 $teal-70: #008EA4;
+$red-60: #D70022;
 
 // Aliases and derived styles based on Photon colors for common usage
 $background-primary: $grey-10;
@@ -25,6 +26,10 @@ $shadow-primary: 0 0 0 5px $grey-30;
 $shadow-secondary: 0 1px 4px 0 rgba($grey-90, 0.1);
 $text-primary: $grey-90;
 $text-secondary: $grey-50;
+$input-border: solid 1px rgba($grey-90, 0.20);
+$input-border-active: solid 1px rgba($grey-90, 0.40);
+$input-error-border: solid 1px $red-60;
+$input-error-boxshadow: 0 0 0 2px rgba($red-60, 0.35);
 
 $white: #FFF;
 $border-radius: 3px;
