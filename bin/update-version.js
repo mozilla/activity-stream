@@ -53,7 +53,7 @@ simpleGit.revparse(["--short", "HEAD"], (err, gitHash) => {
   let versionString = String(time.getUTCFullYear()) +
     "." + zeroPadStart(time.getUTCMonth() + 1, 2) +
     "." + zeroPadStart(time.getUTCDate(), 2) +
-    "." + zeroPadStart(minuteOfDay, 5) +
+    "." + zeroPadStart(minuteOfDay, 4) +
     "-" + gitHash.trim();
 
   cd(process.argv[2]);
