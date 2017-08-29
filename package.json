@@ -95,7 +95,9 @@
     "yamscripts": "0.0.3"
   },
   "engines": {
-    "firefox": ">=45.0 <=*"
+    "firefox": ">=45.0 <=*",
+    "//": "when changing node versions, also edit .travis.yml and .nvmrc",
+    "node": "7.*"
   },
   "homepage": "https://github.com/mozilla/activity-stream",
   "icon": "resource://activity-streams/data/content/img/ActivityStream-32.svg",

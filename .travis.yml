@@ -1,7 +1,8 @@
 language: node_js
 
 node_js:
-  - "6.9.1"
+  # when changing this, be sure to edit .nvrmc and package.json too
+  - 7
 
 python:
   - "2.7"
