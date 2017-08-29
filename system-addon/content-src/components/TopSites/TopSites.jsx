@@ -467,7 +467,7 @@ class TopSiteForm extends React.Component {
   cleanUrl() {
     let url = this.state.url;
     // If we are missing a protocol, prepend http://
-    if (!url.startsWith("http")) {
+    if (!url.startsWith("http:") && !url.startsWith("https:")) {
       url = `http://${url}`;
     }
     return url;
@@ -478,13 +478,11 @@ class TopSiteForm extends React.Component {
     }
   }
   validateUrl() {
-    const pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
-      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[\\/-a-z\\d_]*)?$", "i"); // fragment locater
-    return pattern.test(this.state.url);
+    try {
+      return !!new URL(this.cleanUrl());
+    } catch (e) {
+      return false;
+    }
   }
   validateForm() {
     this.resetValidation();

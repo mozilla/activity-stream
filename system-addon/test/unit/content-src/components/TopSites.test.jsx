@@ -535,7 +535,7 @@ describe("<TopSiteForm>", () => {
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
-      wrapper.setState({"url": "invalid"});
+      wrapper.setState({"url": "not valid"});
       assert.equal(0, wrapper.find(".error-tooltip").length);
       wrapper.find(".add").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
@@ -601,7 +601,7 @@ describe("<TopSiteForm>", () => {
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
-      wrapper.setState({"url": "invalid"});
+      wrapper.setState({"url": "not valid"});
       assert.equal(0, wrapper.find(".error-tooltip").length);
       wrapper.find(".save").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
@@ -643,17 +643,41 @@ describe("<TopSiteForm>", () => {
     });
   });
 
-  it("should properly validate URLs", () => {
-    setup();
-    wrapper.setState({"url": "mozilla.org"});
-    assert.ok(wrapper.instance().validateUrl());
-    wrapper.setState({"url": "https://mozilla.org"});
-    assert.ok(wrapper.instance().validateUrl());
-    wrapper.setState({"url": "http://mozilla.org"});
-    assert.ok(wrapper.instance().validateUrl());
-    wrapper.setState({"url": "mozillaorg"});
-    assert.isFalse(wrapper.instance().validateUrl());
-    wrapper.setState({"url": "https://mozilla.invisionapp.com/d/main/#/projects/prototypes"});
-    assert.ok(wrapper.instance().validateUrl());
+  describe("#validateUrl", () => {
+    it("should properly validate URLs", () => {
+      setup();
+      wrapper.setState({"url": "mozilla.org"});
+      assert.ok(wrapper.instance().validateUrl());
+      wrapper.setState({"url": "https://mozilla.org"});
+      assert.ok(wrapper.instance().validateUrl());
+      wrapper.setState({"url": "http://mozilla.org"});
+      assert.ok(wrapper.instance().validateUrl());
+      wrapper.setState({"url": "https://mozilla.invisionapp.com/d/main/#/projects/prototypes"});
+      assert.ok(wrapper.instance().validateUrl());
+      wrapper.setState({"url": "httpfoobar"});
+      assert.ok(wrapper.instance().validateUrl());
+      wrapper.setState({"url": "httpsfoo.bar"});
+      assert.ok(wrapper.instance().validateUrl());
+      wrapper.setState({"url": "mozilla org"});
+      assert.isFalse(wrapper.instance().validateUrl());
+      wrapper.setState({"url": ""});
+      assert.isFalse(wrapper.instance().validateUrl());
+    });
+  });
+
+  describe("#cleanUrl", () => {
+    it("should properly prepend http:// to URLs when required", () => {
+      setup();
+      wrapper.setState({"url": "mozilla.org"});
+      assert.equal("http://mozilla.org", wrapper.instance().cleanUrl());
+      wrapper.setState({"url": "https.org"});
+      assert.equal("http://https.org", wrapper.instance().cleanUrl());
+      wrapper.setState({"url": "httpcom"});
+      assert.equal("http://httpcom", wrapper.instance().cleanUrl());
+      wrapper.setState({"url": "http://mozilla.org"});
+      assert.equal("http://mozilla.org", wrapper.instance().cleanUrl());
+      wrapper.setState({"url": "https://firefox.com"});
+      assert.equal("https://firefox.com", wrapper.instance().cleanUrl());
+    });
   });
 });
