@@ -30,14 +30,14 @@ class ManualMigration extends React.Component {
   render() {
     return (<div className="manual-migration-container">
         <p>
-          <span className="icon icon-info" />
+          <span className="icon icon-import" />
           <FormattedMessage id="manual_migration_explanation" />
         </p>
         <div className="manual-migration-actions actions">
-          <button onClick={this.onCancelTour}>
+          <button className="dismiss" onClick={this.onCancelTour}>
             <FormattedMessage id="manual_migration_cancel_button" />
           </button>
-          <button className="done" onClick={this.onLaunchTour}>
+          <button onClick={this.onLaunchTour}>
             <FormattedMessage id="manual_migration_import_button" />
           </button>
         </div>

@@ -1,13 +1,8 @@
-$migration-spacing: 12px;
-
 .manual-migration-container {
-  background: $background-secondary;
-  border: $border-secondary;
-  box-shadow: $shadow-secondary;
+  color: $grey-60;
   font-size: 13px;
-  border-radius: 2px;
+  line-height: 15px;
   margin-bottom: $section-spacing;
-  padding: $migration-spacing 0;
   text-align: center;
 
   @media (min-width: $break-point-medium) {
@@ -17,7 +12,7 @@ $migration-spacing: 12px;
   }
 
   p {
-    margin: 0 $migration-spacing;
+    margin: 0;
     @media (min-width: $break-point-medium) {
       align-self: center;
       display: flex;
@@ -30,8 +25,7 @@ $migration-spacing: 12px;
     @media (min-width: $break-point-medium) {
       display: block;
       fill: $fill-secondary;
-      margin: 0;
-      margin-inline-end: $migration-spacing;
+      margin-inline-end: 6px;
       align-self: center;
     }
   }
@@ -40,8 +34,6 @@ $migration-spacing: 12px;
 .manual-migration-actions {
   border: none;
   display: block;
-  padding: $migration-spacing 0 0;
-  line-height: 34px;
 
   @media (min-width: $break-point-medium) {
     display: flex;
@@ -51,11 +43,8 @@ $migration-spacing: 12px;
 
   button {
     align-self: center;
-    height: 24px;
-    margin-inline-end: $migration-spacing;
-    font-size: 13px;
-    min-width: 100px;
-    padding: 0 $migration-spacing;
-    white-space: nowrap;
+    height: 26px;
+    margin-inline-start: 20px;
+    padding: 0 12px;
   }
 }

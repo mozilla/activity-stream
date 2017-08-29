@@ -37,6 +37,8 @@ main {
   text-transform: uppercase;
 
   span {
+    color: $text-secondary;
+    fill: $text-secondary;
     vertical-align: middle;
   }
 }
