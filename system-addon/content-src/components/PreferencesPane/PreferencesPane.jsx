@@ -66,7 +66,7 @@ class PreferencesPane extends React.Component {
     const sections = props.Sections;
     const isVisible = this.state.visible;
     return (
-      <div className="prefs-pane-wrapper" ref="wrapper">
+      <div className="prefs-pane-wrapper">
         <div className="prefs-pane-button">
           <button
             className={`prefs-button icon ${isVisible ? "icon-dismiss" : "icon-settings"}`}

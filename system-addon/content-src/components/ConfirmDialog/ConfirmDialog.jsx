@@ -58,15 +58,15 @@ const ConfirmDialog = React.createClass({
 
     return (<div className="confirmation-dialog">
       <div className="modal-overlay" onClick={this._handleCancelBtn} />
-      <div className="modal" ref="modal">
+      <div className="modal">
         <section className="modal-message">
           {this._renderModalMessage()}
         </section>
         <section className="actions">
-          <button ref="cancelButton" onClick={this._handleCancelBtn}>
+          <button onClick={this._handleCancelBtn}>
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
-          <button ref="confirmButton" className="done" onClick={this._handleConfirmBtn}>
+          <button className="done" onClick={this._handleConfirmBtn}>
             <FormattedMessage id={this.props.data.confirm_button_string_id} />
           </button>
         </section>
