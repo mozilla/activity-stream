@@ -53,7 +53,7 @@ const PREFS_CONFIG = new Map([
       hidden: !PREFS_CONFIG.get("feeds.section.topstories").getValue(args),
       learn_more_endpoint: "https://getpocket.cdn.mozilla.net/firefox_learnmore?src=ff_newtab",
       provider_header: "pocket_feedback_header",
-      provider_description: "pocket_feedback_body",
+      provider_description: "pocket_description",
       provider_icon: "pocket",
       provider_name: "Pocket",
       read_more_endpoint: "https://getpocket.cdn.mozilla.net/explore/trending?src=ff_new_tab",

@@ -31,7 +31,7 @@ class ManualMigration extends React.Component {
     return (<div className="manual-migration-container">
         <p>
           <span className="icon icon-import" />
-          <FormattedMessage id="manual_migration_explanation" />
+          <FormattedMessage id="manual_migration_explanation2" />
         </p>
         <div className="manual-migration-actions actions">
           <button className="dismiss" onClick={this.onCancelTour}>
