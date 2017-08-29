@@ -97,11 +97,6 @@ class PreferencesPane extends React.Component {
                     value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
                     titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />)}
 
-              {this.topStoriesOptions && !this.topStoriesOptions.hidden &&
-                <PreferencesInput className="showTopStories" prefName="feeds.section.topstories"
-                  value={prefs["feeds.section.topstories"]} onChange={this.handleChange}
-                  titleStringId="header_recommended_by" titleStringValues={{provider: this.topStoriesOptions.provider_name}}
-                  descStringId={this.topStoriesOptions.provider_description} />}
             </div>
             <section className="actions">
               <button className="done" onClick={this.togglePane}>
