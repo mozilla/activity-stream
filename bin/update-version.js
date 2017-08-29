@@ -23,6 +23,24 @@ const simpleGit = require("simple-git")(process.cwd());
 const time = new Date();
 const minuteOfDay = time.getUTCHours() * 60 + time.getUTCMinutes();
 
+/**
+ * Return the given string padded with 0s out to the given width.
+ *
+ * XXX we should ditch this function in favor of using padStart once
+ * we start requiring Node 8.
+ *
+ * @param {any} s - the string to pad, will be coerced to String first
+ * @param {Number} width - what's the desired width?
+ */
+function zeroPadStart(s, width) {
+  let padded = String(s);
+  while (padded.length < width) {
+    padded = `0${padded}`;
+  }
+
+  return padded;
+}
+
 // git rev-parse --short HEAD
 simpleGit.revparse(["--short", "HEAD"], (err, gitHash) => {
   if (err) {
@@ -33,9 +51,9 @@ simpleGit.revparse(["--short", "HEAD"], (err, gitHash) => {
 
   // eslint-disable-next-line prefer-template
   let versionString = String(time.getUTCFullYear()) +
-    "." + String(time.getUTCMonth() + 1).padStart(2, "0") +
-    "." + String(time.getUTCDate()).padStart(2, "0") +
-    "." + String(minuteOfDay).padStart(4, "0") +
+    "." + zeroPadStart(time.getUTCMonth() + 1, 2) +
+    "." + zeroPadStart(time.getUTCDate(), 2) +
+    "." + zeroPadStart(minuteOfDay, 5) +
     "-" + gitHash.trim();
 
   cd(process.argv[2]);
