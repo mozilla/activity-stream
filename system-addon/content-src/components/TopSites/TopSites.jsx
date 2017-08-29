@@ -478,13 +478,16 @@ class TopSiteForm extends React.Component {
     }
   }
   validateUrl() {
-    const pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
-      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[\\/-a-z\\d_]*)?$", "i"); // fragment locater
-    return pattern.test(this.state.url);
+    let url = this.state.url;
+    if (url && !url.startsWith("http")) {
+      url = `http://${url}`;
+    }
+    try {
+      url = new URL(url);
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
   validateForm() {
     this.resetValidation();

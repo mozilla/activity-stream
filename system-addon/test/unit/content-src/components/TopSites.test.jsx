@@ -535,7 +535,7 @@ describe("<TopSiteForm>", () => {
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
-      wrapper.setState({"url": "invalid"});
+      wrapper.setState({"url": ""});
       assert.equal(0, wrapper.find(".error-tooltip").length);
       wrapper.find(".add").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
@@ -601,7 +601,7 @@ describe("<TopSiteForm>", () => {
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
-      wrapper.setState({"url": "invalid"});
+      wrapper.setState({"url": ""});
       assert.equal(0, wrapper.find(".error-tooltip").length);
       wrapper.find(".save").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
@@ -651,8 +651,6 @@ describe("<TopSiteForm>", () => {
     assert.ok(wrapper.instance().validateUrl());
     wrapper.setState({"url": "http://mozilla.org"});
     assert.ok(wrapper.instance().validateUrl());
-    wrapper.setState({"url": "mozillaorg"});
-    assert.isFalse(wrapper.instance().validateUrl());
     wrapper.setState({"url": "https://mozilla.invisionapp.com/d/main/#/projects/prototypes"});
     assert.ok(wrapper.instance().validateUrl());
   });
