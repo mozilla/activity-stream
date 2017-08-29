@@ -467,7 +467,7 @@ class TopSiteForm extends React.Component {
   cleanUrl() {
     let url = this.state.url;
     // If we are missing a protocol, prepend http://
-    if (!url.startsWith("http")) {
+    if (!url.startsWith("http:") && !url.startsWith("https:")) {
       url = `http://${url}`;
     }
     return url;
@@ -478,16 +478,11 @@ class TopSiteForm extends React.Component {
     }
   }
   validateUrl() {
-    let url = this.state.url;
-    if (url && !url.startsWith("http")) {
-      url = `http://${url}`;
-    }
     try {
-      url = new URL(url);
+      return !!new URL(this.cleanUrl());
     } catch (e) {
       return false;
     }
-    return true;
   }
   validateForm() {
     this.resetValidation();
