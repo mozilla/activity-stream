@@ -1,0 +1,12 @@
+diff --git a/browser/components/privatebrowsing/test/browser/browser.ini b/browser/components/privatebrowsing/test/browser/browser.ini
+index e80d09676b53..6c88d8b67303 100644
+--- a/browser/components/privatebrowsing/test/browser/browser.ini
++++ b/browser/components/privatebrowsing/test/browser/browser.ini
+@@ -22,6 +22,7 @@ support-files =
+ [browser_privatebrowsing_DownloadLastDirWithCPS.js]
+ [browser_privatebrowsing_about.js]
+ tags = trackingprotection
++skip-if = true # mozilla/activity-stream#3278
+ [browser_privatebrowsing_aboutHomeButtonAfterWindowClose.js]
+ [browser_privatebrowsing_aboutSessionRestore.js]
+ [browser_privatebrowsing_cache.js]
