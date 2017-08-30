@@ -1,6 +1,6 @@
 const React = require("react");
 const {shallow} = require("enzyme");
-const {shallowWithIntl} = require("test/unit/utils");
+const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
 const {FormattedMessage} = require("react-intl");
 const {PreferencesPane, PreferencesInput} = require("content-src/components/PreferencesPane/PreferencesPane");
 const {actionCreators: ac} = require("common/Actions.jsm");
@@ -41,14 +41,14 @@ describe("<PreferencesInput>", () => {
 describe("<PreferencesPane>", () => {
   let wrapper;
   let dispatch;
+  const fakePrefs = {values: {showSearch: true, showTopSites: true}};
+  const fakeSections = [
+    {id: "section1", shouldHidePref: false, enabled: true, pref: {titleString: "section1", feed: "section1_feed"}},
+    {id: "section2", shouldHidePref: false, enabled: false, pref: {titleString: "section2"}},
+    {id: "section3", shouldHidePref: true, enabled: true, pref: {titleString: {id: "section3"}}}
+  ];
   beforeEach(() => {
     dispatch = sinon.spy();
-    const fakePrefs = {values: {showSearch: true, showTopSites: true}};
-    const fakeSections = [
-      {id: "section1", shouldHidePref: false, enabled: true, pref: {title: "fake_title", feed: "section1_feed"}},
-      {id: "section2", shouldHidePref: false, enabled: false, pref: {}},
-      {id: "section3", shouldHidePref: true, enabled: true}
-    ];
     wrapper = shallowWithIntl(<PreferencesPane dispatch={dispatch} Prefs={fakePrefs} Sections={fakeSections} />);
   });
   it("should hide the sidebar and show a settings icon by default", () => {
@@ -80,6 +80,15 @@ describe("<PreferencesPane>", () => {
     assert.isFalse(wrapper.find(".sidebar").hasClass("hidden"));
 
     wrapper.find("button.done").simulate("click");
+    assert.isTrue(wrapper.find(".sidebar").hasClass("hidden"));
+  });
+  it("the sidebar should be closed when anything outside the component is clicked", () => {
+    dispatch = sinon.spy();
+    wrapper = mountWithIntl(<PreferencesPane dispatch={dispatch} Prefs={fakePrefs} Sections={fakeSections} />);
+    wrapper.setState({visible: true});
+    assert.isFalse(wrapper.find(".sidebar").hasClass("hidden"));
+
+    wrapper.instance().handleClickOutside({target: document.createElement("div")});
     assert.isTrue(wrapper.find(".sidebar").hasClass("hidden"));
   });
   it("should dispatch a SetPref action when a non-section PreferencesInput is clicked", () => {

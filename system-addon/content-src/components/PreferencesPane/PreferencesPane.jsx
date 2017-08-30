@@ -27,6 +27,7 @@ class PreferencesPane extends React.Component {
     this.handlePrefChange = this.handlePrefChange.bind(this);
     this.handleSectionChange = this.handleSectionChange.bind(this);
     this.togglePane = this.togglePane.bind(this);
+    this.onWrapperMount = this.onWrapperMount.bind(this);
   }
   componentDidMount() {
     document.addEventListener("click", this.handleClickOutside);
@@ -36,7 +37,7 @@ class PreferencesPane extends React.Component {
   }
   handleClickOutside(event) {
     // if we are showing the sidebar and there is a click outside, close it.
-    if (this.state.visible && !this.refs.wrapper.contains(event.target)) {
+    if (this.state.visible && !this.wrapper.contains(event.target)) {
       this.togglePane();
     }
   }
@@ -60,13 +61,16 @@ class PreferencesPane extends React.Component {
     const event = this.state.visible ? "CLOSE_NEWTAB_PREFS" : "OPEN_NEWTAB_PREFS";
     this.props.dispatch(ac.UserEvent({event}));
   }
+  onWrapperMount(wrapper) {
+    this.wrapper = wrapper;
+  }
   render() {
     const props = this.props;
     const prefs = props.Prefs.values;
     const sections = props.Sections;
     const isVisible = this.state.visible;
     return (
-      <div className="prefs-pane-wrapper">
+      <div className="prefs-pane-wrapper" ref={this.onWrapperMount}>
         <div className="prefs-pane-button">
           <button
             className={`prefs-button icon ${isVisible ? "icon-dismiss" : "icon-settings"}`}
