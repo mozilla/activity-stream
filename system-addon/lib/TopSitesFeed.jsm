@@ -177,10 +177,9 @@ this.TopSitesFeed = class TopSitesFeed {
           this.refresh(action.meta.fromTarget);
         }
         break;
-      case at.PLACES_HISTORY_CLEARED:
-        this.refresh();
-        break;
-      case at.BLOCK_URL: // Topsite blocked, we want to get a new one in.
+      case at.PLACES_HISTORY_CLEARED: // All these actions mean we need new top sites
+      case at.PLACES_LINK_DELETED:
+      case at.PLACES_LINK_BLOCKED:
         this.refresh();
         break;
       case at.PREF_CHANGED:

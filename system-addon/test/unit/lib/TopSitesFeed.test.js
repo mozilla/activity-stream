@@ -380,10 +380,17 @@ describe("Top Sites Feed", () => {
       await feed.onAction({type: at.INIT});
       assert.calledOnce(feed.refresh);
     });
-    it("should call refresh on BLOCK_URL action", async () => {
+    it("should call refresh without a target on PLACES_LINK_BLOCKED action", async () => {
       sinon.stub(feed, "refresh");
-      await feed.onAction({type: at.BLOCK_URL});
+      await feed.onAction({type: at.PLACES_LINK_BLOCKED});
       assert.calledOnce(feed.refresh);
+      assert.equal(feed.refresh.firstCall.args[0], null);
+    });
+    it("should call refresh without a target on PLACES_LINK_DELETED action", async () => {
+      sinon.stub(feed, "refresh");
+      await feed.onAction({type: at.PLACES_LINK_DELETED});
+      assert.calledOnce(feed.refresh);
+      assert.equal(feed.refresh.firstCall.args[0], null);
     });
     it("should call pin with correct args on TOP_SITES_ADD", () => {
       const addAction = {
