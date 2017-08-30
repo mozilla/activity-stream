@@ -81,7 +81,7 @@ class Card extends React.Component {
         index={index}
         source={eventSource}
         onUpdate={this.onMenuUpdate}
-        options={link.context_menu_options || contextMenuOptions}
+        options={link.contextMenuOptions || contextMenuOptions}
         site={link}
         visible={isContextMenuOpen} />
    </li>);

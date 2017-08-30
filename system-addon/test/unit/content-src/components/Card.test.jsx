@@ -62,10 +62,10 @@ describe("<Card>", () => {
     assert.equal(index, DEFAULT_PROPS.index);
   });
   it("should pass through the correct menu options to LinkMenu if overridden by individual card", () => {
-    DEFAULT_PROPS.link.context_menu_options = ["CheckBookmark"];
+    DEFAULT_PROPS.link.contextMenuOptions = ["CheckBookmark"];
     wrapper = mountWithIntl(<Card {...DEFAULT_PROPS} />);
     const {options} = wrapper.find(LinkMenu).props();
-    assert.equal(options, DEFAULT_PROPS.link.context_menu_options);
+    assert.equal(options, DEFAULT_PROPS.link.contextMenuOptions);
   });
   it("should have a context based on type", () => {
     wrapper = shallow(<Card {...DEFAULT_PROPS} />);
