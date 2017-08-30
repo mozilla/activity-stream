@@ -3,6 +3,8 @@ const DATABASE_VERSION = 1;
 const SNIPPETS_OBJECTSTORE_NAME = "snippets";
 const SNIPPETS_UPDATE_INTERVAL_MS = 14400000; // 4 hours.
 
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+
 /**
  * SnippetsMap - A utility for cacheing values related to the snippet. It has
  *               the same interface as a Map, but is optionally backed by
@@ -12,9 +14,10 @@ const SNIPPETS_UPDATE_INTERVAL_MS = 14400000; // 4 hours.
  *
  */
 class SnippetsMap extends Map {
-  constructor(...args) {
-    super(...args);
+  constructor(dispatch) {
+    super();
     this._db = null;
+    this._dispatch = dispatch;
   }
 
   set(key, value) {
@@ -52,6 +55,10 @@ class SnippetsMap extends Map {
       blockList.push(id);
     }
     await this.set("blockList", blockList);
+  }
+
+  showFirefoxAccounts() {
+    this._dispatch(ac.SendToMain({type: at.SHOW_FIREFOX_ACCOUNTS}));
   }
 
   /**
@@ -167,10 +174,10 @@ class SnippetsMap extends Map {
  *                    snippets cannot be retrieved.
  */
 class SnippetsProvider {
-  constructor() {
+  constructor(dispatch) {
     // Initialize the Snippets Map and attaches it to a global so that
     // the snippet payload can interact with it.
-    global.gSnippetsMap = new SnippetsMap();
+    global.gSnippetsMap = new SnippetsMap(dispatch);
   }
 
   get snippetsMap() {
@@ -288,7 +295,7 @@ class SnippetsProvider {
  * @return {obj}        Returns the snippets instance and unsubscribe function
  */
 function addSnippetsSubscriber(store) {
-  const snippets = new SnippetsProvider();
+  const snippets = new SnippetsProvider(store.dispatch);
   const unsubscribe = store.subscribe(() => {
     const state = store.getState();
     if (state.Snippets.initialized) {

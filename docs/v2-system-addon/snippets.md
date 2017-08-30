@@ -33,6 +33,9 @@ async function setFoo() {
 `.blockSnippetById(id)`: (func) A function that adds an id to a blockList and returns
 a Promise that resolves when the blockList has been written to indexedDB.
 
+`.showFirefoxAccounts()`: (func) A function that opens the Firefox Accounts signup page
+(specifically `about:accounts?action=signup&entrypoint=snippets`)
+
 ### Expected values in gSnippetsMap
 
 Note that names and functionality of values in v4 snippets have been preserved
