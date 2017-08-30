@@ -51,7 +51,7 @@ class Section extends React.Component {
     props.dispatch(ac.ImpressionStats({
       source: props.eventSource,
       tiles: props.rows.slice(0, maxCards).map(link => ({id: link.guid})),
-      incognito: props.options.personalized
+      incognito: props.options && props.options.personalized
     }));
   }
 
