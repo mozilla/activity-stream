@@ -50,7 +50,8 @@ class Section extends React.Component {
     const maxCards = 3 * props.maxRows;
     props.dispatch(ac.ImpressionStats({
       source: props.eventSource,
-      tiles: props.rows.slice(0, maxCards).map(link => ({id: link.guid}))
+      tiles: props.rows.slice(0, maxCards).map(link => ({id: link.guid})),
+      incognito: props.options.personalized
     }));
   }
 
