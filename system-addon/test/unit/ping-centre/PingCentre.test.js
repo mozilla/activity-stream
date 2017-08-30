@@ -18,6 +18,7 @@ const prefInitHook = function() {
 };
 
 const FAKE_TELEMETRY_ID = "foo123";
+const FAKE_UPDATE_CHANNEL = "beta";
 const FAKE_AS_ENDPOINT_PREF = "some.as.endpoint.pref";
 
 describe("PingCentre", () => {
@@ -39,7 +40,7 @@ describe("PingCentre", () => {
         .returns(new FakePrefs({initHook: prefInitHook}));
     globals.set("fetch", fetchStub);
     globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
-    globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: "beta"});
+    globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: FAKE_UPDATE_CHANNEL});
     sandbox.spy(global.Components.utils, "reportError");
   });
 
@@ -217,7 +218,8 @@ describe("PingCentre", () => {
 
       const EXPECTED_RESULT = Object.assign({
         topic: "activity-stream",
-        client_id: FAKE_TELEMETRY_ID
+        client_id: FAKE_TELEMETRY_ID,
+        release_channel: FAKE_UPDATE_CHANNEL
       }, fakePingJSON);
 
       assert.calledOnce(fetchStub);
