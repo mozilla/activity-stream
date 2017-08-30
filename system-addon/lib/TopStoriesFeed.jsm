@@ -12,7 +12,7 @@ Cu.importGlobalProperties(["fetch"]);
 const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
-const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
+const {shortURL, getETLD} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {SectionsManager} = Cu.import("resource://activity-stream/lib/SectionsManager.jsm", {});
 
 const {UserDomainAffinityProvider} = Cu.import("resource://activity-stream/lib/UserDomainAffinityProvider.jsm", {});
@@ -81,7 +81,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
               "image": this._normalizeUrl(s.image_src),
               "referrer": this.stories_referrer,
               "url": s.url,
-              "eTLD": this._addETLD(s.url),
+              "eTLD": getETLD(s.url),
               "score": this.personalized ? this.affinityProvider.calculateItemRelevanceScore(s) : 1
             }))
             .sort(this.personalized ? this.compareScore : (a, b) => 0);
@@ -181,14 +181,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
       return url.replace(/\(/g, "%28").replace(/\)/g, "%29");
     }
     return url;
-  }
-
-  _addETLD(url) {
-    try {
-      return Services.eTLD.getPublicSuffix(Services.io.newURI(url));
-    } catch (err) {
-      return "";
-    }
   }
 
   onAction(action) {
