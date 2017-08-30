@@ -12,7 +12,6 @@ describe("<Sections>", () => {
     FAKE_SECTIONS = new Array(5).fill(null).map((v, i) => ({
       id: `foo_bar_${i}`,
       title: `Foo Bar ${i}`,
-      initialized: false,
       enabled: !!(i % 2),
       rows: []
     }));
@@ -31,23 +30,55 @@ describe("<Sections>", () => {
   });
 });
 
-const FAKE_SECTION = {
-  id: `foo_bar_1`,
-  title: `Foo Bar 1`,
-  rows: [{link: "http://localhost", index: 0}],
-  infoOption: {}
-};
-
 describe("<Section>", () => {
-  it("should use the icon `webextension` if no other is provided", () => {
-    const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-    assert.ok(wrapper.find(".icon").first().hasClass("icon-webextension"));
+  let wrapper;
+  let FAKE_SECTION;
+
+  beforeEach(() => {
+    FAKE_SECTION = {
+      id: `foo_bar_1`,
+      title: `Foo Bar 1`,
+      rows: [{link: "http://localhost", index: 0}],
+      infoOption: {},
+      emptyState: {
+        icon: "check",
+        message: "Some message"
+      }
+    };
+    wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+  });
+
+  describe("icon", () => {
+    it("should use the icon prop value as the url if it starts with `moz-extension://`", () => {
+      Object.assign(FAKE_SECTION, {icon: "moz-extension://some/extension/path"});
+      wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+      const props = wrapper.find(".icon").first().props();
+      assert.equal(props.style["background-image"], `url('${FAKE_SECTION.icon}')`);
+    });
+    it("should use the icon `webextension` if no other is provided", () => {
+      assert.ok(wrapper.find(".icon").first().hasClass("icon-webextension"));
+    });
+  });
+
+  describe("empty state", () => {
+    beforeEach(() => {
+      Object.assign(FAKE_SECTION, {
+        rows: [],
+        emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
+      });
+      wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+    });
+    it("should be shown when rows is empty", () => {
+      assert.ok(wrapper.find(".empty-state").exists());
+    });
+    it("should use the icon prop as the icon url if it starts with `moz-extension://`", () => {
+      const props = wrapper.find(".empty-state-icon").first().props();
+      assert.equal(props.style["background-image"], `url('${FAKE_SECTION.emptyState.icon}')`);
+    });
   });
 
   describe("info option", () => {
     it("should render info-option-icon with a tabindex", () => {
-      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-
       // Because this is a shallow render, we need to use the casing
       // that react understands (tabIndex), rather than the one used by
       // the browser itself (tabindex).
@@ -55,48 +86,35 @@ describe("<Section>", () => {
     });
 
     it("should render info-option-icon with a role of 'note'", () => {
-      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-
       assert.lengthOf(wrapper.find('.info-option-icon[role="note"]'), 1);
     });
 
     it("should render info-option-icon with a title attribute", () => {
-      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-
       assert.lengthOf(wrapper.find(".info-option-icon[title]"), 1);
     });
 
     it("should render info-option-icon with aria-haspopup", () => {
-      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-
       assert.lengthOf(wrapper.find('.info-option-icon[aria-haspopup="true"]'),
         1);
     });
 
     it('should render info-option-icon with aria-controls="info-option"', () => {
-      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-
       assert.lengthOf(
         wrapper.find('.info-option-icon[aria-controls="info-option"]'), 1);
     });
 
     it('should render info-option-icon aria-expanded["false"] by default', () => {
-      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-
       assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'),
         1);
     });
 
     it("should render info-option-icon w/aria-expanded when moused over", () => {
-      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-
       wrapper.find(".section-info-option").simulate("mouseover");
 
       assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="true"]'), 1);
     });
 
     it('should render info-option-icon w/aria-expanded["false"] when moused out', () => {
-      const wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
       wrapper.find(".section-info-option").simulate("mouseover");
 
       wrapper.find(".section-info-option").simulate("mouseout");
@@ -114,7 +132,7 @@ describe("<Section>", () => {
         maxRows: 1,
         eventSource: "TOP_STORIES"
       };
-      let wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
       assert.lengthOf(wrapper.find(".topic"), 0);
 
       TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
@@ -188,7 +206,7 @@ describe("<Section>", () => {
     });
     it("should send an impression if props are updated and props.rows are different", () => {
       const props = {dispatch: sinon.spy()};
-      const wrapper = renderSection(props);
+      wrapper = renderSection(props);
       props.dispatch.reset();
 
       // New rows
@@ -201,7 +219,7 @@ describe("<Section>", () => {
     });
     it("should not send an impression if props are updated but props.rows are the same", () => {
       const props = {dispatch: sinon.spy()};
-      const wrapper = renderSection(props);
+      wrapper = renderSection(props);
       props.dispatch.reset();
 
       // Only update the infoOption prop
@@ -223,7 +241,7 @@ describe("<Section>", () => {
         }
       };
 
-      const wrapper = renderSection(props);
+      wrapper = renderSection(props);
 
       // Update twice
       wrapper.setProps(Object.assign({}, props,
