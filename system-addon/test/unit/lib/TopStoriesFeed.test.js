@@ -16,7 +16,6 @@ describe("Top Stories Feed", () => {
   let globals;
   let sectionsManagerStub;
   let shortURLStub;
-  let getETLDStub;
 
   const FAKE_OPTIONS = {
     "stories_endpoint": "https://somedomain.org/stories?key=$apiKey",
@@ -37,7 +36,6 @@ describe("Top Stories Feed", () => {
     globals.set("PlacesUtils", {history: {}});
     clock = sinon.useFakeTimers();
     shortURLStub = sinon.stub().callsFake(site => site.url);
-    getETLDStub = sinon.stub();
     sectionsManagerStub = {
       onceInitialized: sinon.stub().callsFake(callback => callback()),
       enableSection: sinon.spy(),
@@ -49,7 +47,7 @@ describe("Top Stories Feed", () => {
     class FakeUserDomainAffinityProvider {}
     ({TopStoriesFeed, STORIES_UPDATE_TIME, TOPICS_UPDATE_TIME, DOMAIN_AFFINITY_UPDATE_TIME, SECTION_ID, FEED_PREF} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
-      "lib/ShortURL.jsm": {shortURL: shortURLStub, getETLD: getETLDStub},
+      "lib/ShortURL.jsm": {shortURL: shortURLStub},
       "lib/UserDomainAffinityProvider.jsm": {UserDomainAffinityProvider: FakeUserDomainAffinityProvider},
       "lib/SectionsManager.jsm": {SectionsManager: sectionsManagerStub}
     }));
@@ -141,8 +139,6 @@ describe("Top Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
-      const eTLD = "eTLD";
-      getETLDStub.callsFake(() => eTLD);
 
       const response = `{"recommendations": [{"id" : "1",
         "title": "title",
@@ -159,7 +155,6 @@ describe("Top Stories Feed", () => {
         "image": "image-url",
         "referrer": "referrer",
         "url": "rec-url",
-        "eTLD": eTLD,
         "hostname": "rec-url",
         "score": 1
       }];
@@ -170,7 +165,6 @@ describe("Top Stories Feed", () => {
       await instance.fetchStories();
 
       assert.calledOnce(fetchStub);
-      assert.calledOnce(getETLDStub);
       assert.calledOnce(shortURLStub);
       assert.calledWithExactly(fetchStub, instance.stories_endpoint);
       assert.calledOnce(sectionsManagerStub.updateSection);
