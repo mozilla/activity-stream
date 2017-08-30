@@ -2,7 +2,7 @@ const React = require("react");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {FormattedMessage} = require("react-intl");
 
-const TOP_SITES_SOURCE = "TOP_SITES";
+const {TOP_SITES_SOURCE} = require("./TopSitesConstants");
 
 class TopSiteForm extends React.Component {
   constructor(props) {

@@ -3,9 +3,10 @@ const {FormattedMessage, injectIntl} = require("react-intl");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
 const TopSiteForm = require("./TopSiteForm");
+const TopSite = require("./TopSite");
 
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
-const TOP_SITES_SOURCE = "TOP_SITES";
+const {TOP_SITES_SOURCE} = require("./TopSitesConstants");
 
 class TopSitesEdit extends React.Component {
   constructor(props) {
@@ -134,4 +135,5 @@ class TopSitesEdit extends React.Component {
   }
 }
 
-const TopSitesEditIntl = injectIntl(TopSitesEdit);
+module.exports = injectIntl(TopSitesEdit);
+module.exports._unconnected = TopSitesEdit;

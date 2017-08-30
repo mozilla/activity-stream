@@ -2,7 +2,13 @@ const React = require("react");
 const createMockRaf = require("mock-raf");
 const {shallow} = require("enzyme");
 const {mountWithIntl} = require("test/unit/utils");
-const {_unconnected: TopSitesPerfTimer, TopSite, TopSites, TopSitesEdit, TopSiteForm} = require("content-src/components/TopSites/TopSites");
+
+const {_unconnected: TopSitesPerfTimer} = require("content-src/components/TopSites/TopSitesPerfTimer");
+const TopSiteForm = require("content-src/components/TopSites/TopSiteForm");
+const {_unconnected: TopSitesEdit} = require("content-src/components/TopSites/TopSitesEdit");
+const TopSite = require("content-src/components/TopSites/TopSite");
+const {_unconnected: TopSites} = require("content-src/components/TopSites/TopSites");
+
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
@@ -23,26 +29,26 @@ const DEFAULT_PROPS = {
 describe("<TopSitesPerfTimer>", () => {
   let mockRaf;
   let sandbox;
+  let wrapper;
+
+  const InnerEl = () => (<div>Inner Element</div>);
 
   beforeEach(() => {
     mockRaf = createMockRaf();
     sandbox = sinon.sandbox.create();
     sandbox.stub(window, "requestAnimationFrame").callsFake(mockRaf.raf);
+    wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS}><InnerEl /></TopSitesPerfTimer>);
   });
   afterEach(() => {
     sandbox.restore();
   });
 
-  it("should render <TopSites {...this.props}>", () => {
-    const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
-    const props = wrapper.find(TopSites).shallow().instance().props;
-
-    assert.deepEqual(props, DEFAULT_PROPS);
+  it("should render props.children", () => {
+    assert.ok(wrapper.contains(<InnerEl />));
   });
 
   describe("#_componentDidMount", () => {
     it("should call _maybeSendPaintedEvent", () => {
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_maybeSendPaintedEvent");
 
@@ -54,7 +60,6 @@ describe("<TopSitesPerfTimer>", () => {
 
   describe("#_componentDidUpdate", () => {
     it("should call _maybeSendPaintedEvent", () => {
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_maybeSendPaintedEvent");
 
@@ -66,7 +71,6 @@ describe("<TopSitesPerfTimer>", () => {
 
   describe("#_maybeSendPaintedEvent", () => {
     it("should call _afterFramePaint if props.TopSites.initialized is true", () => {
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
 
@@ -77,7 +81,6 @@ describe("<TopSitesPerfTimer>", () => {
     });
     it("should not call _afterFramePaint if props.TopSites.initialized is false", () => {
       sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(false);
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
 
@@ -87,7 +90,6 @@ describe("<TopSitesPerfTimer>", () => {
     });
 
     it("should not call _afterFramePaint if this._timestampHandled is true", () => {
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
       instance._timestampHandled = true;
@@ -98,7 +100,6 @@ describe("<TopSitesPerfTimer>", () => {
     });
 
     it("should set this._timestampHandled=true when called with Topsites.initialized === true", () => {
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
       const instance = wrapper.instance();
       sandbox.stub(instance, "_afterFramePaint");
       instance._timestampHandled = false;
@@ -110,7 +111,7 @@ describe("<TopSitesPerfTimer>", () => {
     it("should not set this._timestampHandled=true when called with Topsites.initialized === false", () => {
       let props = {};
       Object.assign(props, DEFAULT_PROPS, {TopSites: {initialized: false}});
-      const wrapper = shallow(<TopSitesPerfTimer {...props} />);
+      wrapper = shallow(<TopSitesPerfTimer {...props}><InnerEl /></TopSitesPerfTimer>);
       const instance = wrapper.instance();
       sandbox.stub(instance, "_afterFramePaint");
       instance._timestampHandled = false;
@@ -128,7 +129,7 @@ describe("<TopSitesPerfTimer>", () => {
       // If it doesn't get called, this test will time out.
       this.callback = () => done();
       sandbox.spy(this, "callback");
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+
       const instance = wrapper.instance();
 
       instance._afterFramePaint(this.callback);
@@ -141,7 +142,6 @@ describe("<TopSitesPerfTimer>", () => {
   describe("#_sendPaintedEvent", () => {
     it("should call perfSvc.mark with 'topsites_first_painted_ts'", () => {
       sandbox.spy(perfSvc, "mark");
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
 
       wrapper.instance()._sendPaintedEvent();
 
@@ -153,7 +153,7 @@ describe("<TopSitesPerfTimer>", () => {
       sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
         .withArgs("topsites_first_painted_ts").returns(777);
       const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS}><InnerEl /></TopSitesPerfTimer>);
 
       wrapper.instance()._sendPaintedEvent();
 
@@ -168,7 +168,7 @@ describe("<TopSitesPerfTimer>", () => {
       sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
         .withArgs("topsites_first_painted_ts").throws();
       const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
-      const wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS} />);
+      wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS}><InnerEl /></TopSitesPerfTimer>);
 
       wrapper.instance()._sendPaintedEvent();
 
