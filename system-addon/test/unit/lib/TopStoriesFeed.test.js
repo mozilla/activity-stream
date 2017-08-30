@@ -155,7 +155,6 @@ describe("Top Stories Feed", () => {
         "image": "image-url",
         "referrer": "referrer",
         "url": "rec-url",
-        "eTLD": "",
         "hostname": "rec-url",
         "score": 1
       }];
