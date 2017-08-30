@@ -162,7 +162,9 @@ class Section extends React.Component {
         {!initialized &&
           <div className="section-empty-state">
             <div className="empty-state">
-              <img className={`empty-state-icon icon icon-${emptyState.icon}`} />
+              {emptyState.icon && emptyState.icon.startsWith("moz-extension://") ?
+                <img className="empty-state-icon icon" style={{"background-image": `url('${emptyState.icon}')`}} /> :
+                <img className={`empty-state-icon icon icon-${emptyState.icon}`} />}
               <p className="empty-state-message">
                 {this.getFormattedMessage(emptyState.message)}
               </p>
