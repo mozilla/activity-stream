@@ -66,17 +66,18 @@
       padding: 10px;
 
       label {
-        background-position: 35px center;
+        background-position-x: 35px;
+        background-position-y: 2.5px;
         background-repeat: no-repeat;
         display: inline-block;
         font-size: 13px;
         font-weight: normal;
-        height: 21px;
+        height: auto;
         line-height: 21px;
         width: 100%;
 
         &:dir(rtl) {
-          background-position: 217px center;
+          background-position-x: 217px;
         }
       }
       [type='checkbox']:not(:checked) + label,
