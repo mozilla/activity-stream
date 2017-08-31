@@ -86,6 +86,8 @@ class PreferencesPane extends React.Component {
               <PreferencesInput className="showSearch" prefName="showSearch" value={prefs.showSearch} onChange={this.handlePrefChange}
                 titleString={{id: "settings_pane_search_header"}} descString={{id: "settings_pane_search_body"}} />
 
+              <hr />
+
               <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handlePrefChange}
                 titleString={{id: "settings_pane_topsites_header"}} descString={{id: "settings_pane_topsites_body"}} />
 

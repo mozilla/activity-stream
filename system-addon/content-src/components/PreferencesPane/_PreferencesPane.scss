@@ -1,18 +1,25 @@
 .prefs-pane {
-  font-size: 13px;
+  $options-spacing: 10px;
+  $prefs-spacing: 20px;
+  $prefs-width: 400px;
+
+  color: $text-conditional;
+  font-size: 15px;
+  line-height: 21px;
 
   .sidebar {
     background: $white;
     border-left: $border-secondary;
     box-shadow: $shadow-secondary;
-    min-height: 100%;
+    height: 100%;
     offset-inline-end: 0;
+    overflow-y: auto;
     padding: 40px;
     position: fixed;
     top: 0;
     transition: 0.1s cubic-bezier(0, 0, 0, 1);
     transition-property: transform;
-    width: 400px;
+    width: $prefs-width;
     z-index: 12000;
 
     &.hidden {
@@ -24,16 +31,23 @@
     }
 
     h1 {
-      border-bottom: $border-secondary;
       font-size: 24px;
       margin: 0;
-      padding: 20px 0;
+      padding-top: $prefs-spacing;
     }
   }
 
+  hr {
+    border: 0;
+    border-bottom: $border-secondary;
+    margin: 28px 0;
+  }
+
   .prefs-modal-inner-wrapper {
+    padding-bottom: 100px;
+
     section {
-      margin: 20px 0;
+      margin: $prefs-spacing 0;
 
       p {
         margin: 5px 0 5px 30px;
@@ -52,18 +66,19 @@
       }
 
       > label {
-        font-size: 16px;
+        font-size: 17px;
         font-weight: bold;
+        line-height: 19px;
       }
     }
 
     .options {
       background: $background-primary;
       border: $border-secondary;
-      border-radius: $border-radius;
-      margin: 15px 0;
+      border-radius: 2px;
+      margin: -$options-spacing 0 $prefs-spacing;
       margin-inline-start: 30px;
-      padding: 10px;
+      padding: $options-spacing;
 
       label {
         background-position-x: 35px;
@@ -91,7 +106,16 @@
   }
 
   .actions {
-    padding: 15px 0;
+    background-color: $background-primary;
+    bottom: 0;
+    offset-inline-end: -1px;
+    padding: $prefs-spacing;
+    position: fixed;
+    width: $prefs-width;
+
+    button {
+      margin-inline-end: $prefs-spacing;
+    }
   }
 
   // CSS styled checkbox
