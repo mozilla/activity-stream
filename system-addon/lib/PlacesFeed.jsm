@@ -55,6 +55,16 @@ class HistoryObserver extends Observer {
   onClearHistory() {
     this.dispatch({type: at.PLACES_HISTORY_CLEARED});
   }
+
+  // Empty functions to make xpconnect happy
+  onBeginUpdateBatch() {}
+  onEndUpdateBatch() {}
+  onVisit() {}
+  onTitleChanged() {}
+  onFrecencyChanged() {}
+  onManyFrecenciesChanged() {}
+  onPageChanged() {}
+  onDeleteVisits() {}
 }
 
 /**
@@ -143,6 +153,12 @@ class BookmarksObserver extends Observer {
       Cu.reportError(e);
     }
   }
+
+  // Empty functions to make xpconnect happy
+  onBeginUpdateBatch() {}
+  onEndUpdateBatch() {}
+  onItemVisited() {}
+  onItemMoved() {}
 }
 
 class PlacesFeed {
