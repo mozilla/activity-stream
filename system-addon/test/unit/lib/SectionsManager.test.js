@@ -109,12 +109,12 @@ describe("SectionsManager", () => {
     });
   });
   describe("#disableSection", () => {
-    it("should call updateSection with {enabled: false, rows: []}", () => {
+    it("should call updateSection with {enabled: false, rows: [], initialized: false}", () => {
       sinon.spy(SectionsManager, "updateSection");
       SectionsManager.addSection(FAKE_ID, FAKE_OPTIONS);
       SectionsManager.disableSection(FAKE_ID);
       assert.calledOnce(SectionsManager.updateSection);
-      assert.calledWith(SectionsManager.updateSection, FAKE_ID, {enabled: false, rows: []}, true);
+      assert.calledWith(SectionsManager.updateSection, FAKE_ID, {enabled: false, rows: [], initialized: false}, true);
       SectionsManager.updateSection.restore();
     });
     it("should emit a DISABLE_SECTION event", () => {

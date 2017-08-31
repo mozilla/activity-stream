@@ -8,6 +8,13 @@
   position: relative;
   @include context-menu-button;
 
+  &.placeholder {
+    background: transparent;
+    .card {
+      box-shadow:  inset $inner-box-shadow;
+    }
+  }
+
   .card {
     height: 100%;
     border-radius: $border-radius;

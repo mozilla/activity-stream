@@ -140,13 +140,16 @@ describe("Top Stories Feed", () => {
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
 
-      const response = `{"recommendations": [{"id" : "1",
-        "title": "title",
-        "excerpt": "description",
-        "image_src": "image-url",
-        "url": "rec-url",
-        "published_timestamp" : "123"
-      }]}`;
+      const response = {
+        "recommendations": [{
+          "id": "1",
+          "title": "title",
+          "excerpt": "description",
+          "image_src": "image-url",
+          "url": "rec-url",
+          "published_timestamp": "123"
+        }]
+      };
       const stories = [{
         "guid": "1",
         "type": "now",
@@ -161,7 +164,7 @@ describe("Top Stories Feed", () => {
 
       instance.stories_endpoint = "stories-endpoint";
       instance.stories_referrer = "referrer";
-      fetchStub.resolves({ok: true, status: 200, text: () => response});
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchStories();
 
       assert.calledOnce(fetchStub);
@@ -193,9 +196,9 @@ describe("Top Stories Feed", () => {
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: site => site.url === "blocked"}});
 
-      const response = `{"recommendations": [{"url" : "blocked"}, {"url" : "not_blocked"}]}`;
+      const response = {"recommendations": [{"url": "blocked"}, {"url": "not_blocked"}]};
       instance.stories_endpoint = "stories-endpoint";
-      fetchStub.resolves({ok: true, status: 200, text: () => response});
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchStories();
 
       assert.calledOnce(sectionsManagerStub.updateSection);
@@ -207,16 +210,16 @@ describe("Top Stories Feed", () => {
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
       clock.restore();
-      const response = JSON.stringify({
+      const response = {
         "recommendations": [
           {"published_timestamp": Date.now() / 1000},
           {"published_timestamp": "0"},
           {"published_timestamp": (Date.now() - 2 * 24 * 60 * 60 * 1000) / 1000}
         ]
-      });
+      };
 
       instance.stories_endpoint = "stories-endpoint";
-      fetchStub.resolves({ok: true, status: 200, text: () => response});
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
 
       await instance.fetchStories();
       assert.calledOnce(sectionsManagerStub.updateSection);
@@ -229,7 +232,7 @@ describe("Top Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
 
-      const response = `{"topics": [{"name" : "topic1", "url" : "url-topic1"}, {"name" : "topic2", "url" : "url-topic2"}]}`;
+      const response = {"topics": [{"name": "topic1", "url": "url-topic1"}, {"name": "topic2", "url": "url-topic2"}]};
       const topics = [{
         "name": "topic1",
         "url": "url-topic1"
@@ -239,7 +242,7 @@ describe("Top Stories Feed", () => {
       }];
 
       instance.topics_endpoint = "topics-endpoint";
-      fetchStub.resolves({ok: true, status: 200, text: () => response});
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchTopics();
 
       assert.calledOnce(fetchStub);
@@ -262,24 +265,24 @@ describe("Top Stories Feed", () => {
       assert.called(Components.utils.reportError);
     });
     it("should initialize user domain affinity provider if personalization is preffed on", async () => {
-      const response = `{
+      const response = {
         "recommendations":  [{
-          "id" : "1",
+          "id": "1",
           "title": "title",
           "excerpt": "description",
           "image_src": "image-url",
           "url": "rec-url",
-          "published_timestamp" : "123"}
-        ],
+          "published_timestamp": "123"
+        }],
         "settings": {"timeSegments": {}, "domainAffinityParameterSets": {}}
-      }`;
+      };
 
       instance.affinityProvider = undefined;
 
       instance.stories_endpoint = "stories-endpoint";
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
-      fetchStub.resolves({ok: true, status: 200, text: () => response});
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
 
       await instance.fetchStories();
       assert.isUndefined(instance.affinityProvider);
@@ -289,10 +292,10 @@ describe("Top Stories Feed", () => {
       assert.isDefined(instance.affinityProvider);
     });
     it("should sort stories if personalization is preffed on", async () => {
-      const response = `{
-        "recommendations":  [{"id" : "1"}, {"id" : "2"}],
+      const response = {
+        "recommendations":  [{"id": "1"}, {"id": "2"}],
         "settings": {"timeSegments": {}, "domainAffinityParameterSets": {}}
-      }`;
+      };
 
       instance.personalized = true;
       instance.compareScore = sinon.spy();
@@ -301,7 +304,7 @@ describe("Top Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
-      fetchStub.resolves({ok: true, status: 200, text: () => response});
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
 
       await instance.fetchStories();
       assert.calledOnce(instance.compareScore);
@@ -319,7 +322,7 @@ describe("Top Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
-      fetchStub.resolves({ok: true, status: 200, text: () => response});
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
 
       await instance.fetchStories();
       assert.notCalled(instance.compareScore);

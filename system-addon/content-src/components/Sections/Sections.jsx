@@ -2,11 +2,13 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {injectIntl, FormattedMessage} = require("react-intl");
 const Card = require("content-src/components/Card/Card");
+const {PlaceholderCard} = Card;
 const Topics = require("content-src/components/Topics/Topics");
 const {actionCreators: ac} = require("common/Actions.jsm");
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
+const CARDS_PER_ROW = 3;
 
 class Section extends React.Component {
   constructor(props) {
@@ -103,10 +105,20 @@ class Section extends React.Component {
     }
   }
 
+  numberOfPlaceholders(items) {
+    if (items === 0) {
+      return CARDS_PER_ROW;
+    }
+    const remainder = items % CARDS_PER_ROW;
+    if (remainder === 0) {
+      return 0;
+    }
+    return CARDS_PER_ROW - remainder;
+  }
+
   render() {
-    const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxRows, contextMenuOptions, intl} = this.props;
-    const maxCards = 3 * maxRows;
-    const initialized = rows && rows.length > 0;
+    const {id, eventSource, title, icon, rows, infoOption, emptyState, dispatch, maxRows, contextMenuOptions, intl, initialized} = this.props;
+    const maxCards = CARDS_PER_ROW * maxRows;
     const shouldShowTopics = (id === "topstories" &&
       this.props.topics &&
       this.props.topics.length > 0 &&
@@ -121,6 +133,13 @@ class Section extends React.Component {
     };
 
     const sectionInfoTitle = intl.formatMessage({id: "section_info_option"});
+
+    const realRows = rows.slice(0, maxCards);
+    const placeholders = this.numberOfPlaceholders(realRows.length);
+
+    // The empty state should only be shown after we have initialized and there is no content.
+    // Otherwise, we should show placeholders.
+    const shouldShowEmptyState = initialized && !rows.length;
 
     // <Section> <-- React component
     // <section> <-- HTML5 element
@@ -156,11 +175,12 @@ class Section extends React.Component {
             </div>
           </span>}
         </div>
-        {(<ul className="section-list" style={{padding: 0}}>
-          {rows.slice(0, maxCards).map((link, index) => link &&
-            <Card index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions} eventSource={eventSource} />)}
+        {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
+          {realRows.map((link, index) => link &&
+            <Card key={index} index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions} eventSource={eventSource} />)}
+          {placeholders > 0 && [...new Array(placeholders)].map((_, i) => <PlaceholderCard key={i} />)}
         </ul>)}
-        {!initialized &&
+        {shouldShowEmptyState &&
           <div className="section-empty-state">
             <div className="empty-state">
               {emptyState.icon && emptyState.icon.startsWith("moz-extension://") ?
@@ -176,7 +196,12 @@ class Section extends React.Component {
   }
 }
 
-Section.defaultProps = {document: global.document};
+Section.defaultProps = {
+  document: global.document,
+  rows: [],
+  emptyState: {},
+  title: ""
+};
 
 const SectionIntl = injectIntl(Section);
 
