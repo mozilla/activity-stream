@@ -253,13 +253,17 @@ describe("PlacesFeed", () => {
         sandbox.stub(global.NewTabUtils.activityStreamProvider, "getBookmark")
           .withArgs(FAKE_BOOKMARK.guid).returns(Promise.resolve(FAKE_BOOKMARK));
       });
-      it("should dispatch a PLACES_BOOKMARK_CHANGED action with the bookmark data", async () => {
+      it("has an empty function to keep xpconnect happy", async () => {
+        await observer.onItemChanged();
+      });
+      // Disabled in Issue 3203, see observer.onItemChanged for more information.
+      it.skip("should dispatch a PLACES_BOOKMARK_CHANGED action with the bookmark data", async () => {
         const args = [null, "title", null, null, null, TYPE_BOOKMARK, null, FAKE_BOOKMARK.guid];
         await observer.onItemChanged(...args);
 
         assert.calledWith(dispatch, {type: at.PLACES_BOOKMARK_CHANGED, data: FAKE_BOOKMARK});
       });
-      it("should catch errors gracefully", async () => {
+      it.skip("should catch errors gracefully", async () => {
         const e = new Error("test error");
         global.NewTabUtils.activityStreamProvider.getBookmark.restore();
         sandbox.stub(global.NewTabUtils.activityStreamProvider, "getBookmark")
@@ -270,11 +274,11 @@ describe("PlacesFeed", () => {
 
         assert.calledWith(global.Components.utils.reportError, e);
       });
-      it("should ignore events that are not of TYPE_BOOKMARK", async () => {
+      it.skip("should ignore events that are not of TYPE_BOOKMARK", async () => {
         await observer.onItemChanged(null, "title", null, null, null, "nottypebookmark");
         assert.notCalled(dispatch);
       });
-      it("should ignore events that are not changes to uri/title", async () => {
+      it.skip("should ignore events that are not changes to uri/title", async () => {
         await observer.onItemChanged(null, "tags", null, null, null, TYPE_BOOKMARK);
         assert.notCalled(dispatch);
       });
