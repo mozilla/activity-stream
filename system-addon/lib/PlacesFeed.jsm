@@ -127,21 +127,29 @@ class BookmarksObserver extends Observer {
    * @param  {str} guid         The unique id of the bookmark
    */
   async onItemChanged(...args) {
-    const property = args[1];
-    const type = args[5];
-    const guid = args[7];
+    // Disabled due to performance cost, see Issue 3203 /
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1392267.
+    //
+    // If this is used, please consider avoiding the call to
+    // NewTabUtils.activityStreamProvider.getBookmark which performs an additional
+    // fetch to the database.
+    // If you need more fields, please talk to the places team.
 
-    // Only process this event if it is a TYPE_BOOKMARK, and uri or title was the property changed.
-    if (type !== PlacesUtils.bookmarks.TYPE_BOOKMARK || !["uri", "title"].includes(property)) {
-      return;
-    }
-    try {
-      // bookmark: {bookmarkGuid, bookmarkTitle, lastModified, url}
-      const bookmark = await NewTabUtils.activityStreamProvider.getBookmark(guid);
-      this.dispatch({type: at.PLACES_BOOKMARK_CHANGED, data: bookmark});
-    } catch (e) {
-      Cu.reportError(e);
-    }
+    // const property = args[1];
+    // const type = args[5];
+    // const guid = args[7];
+    //
+    // // Only process this event if it is a TYPE_BOOKMARK, and uri or title was the property changed.
+    // if (type !== PlacesUtils.bookmarks.TYPE_BOOKMARK || !["uri", "title"].includes(property)) {
+    //   return;
+    // }
+    // try {
+    //   // bookmark: {bookmarkGuid, bookmarkTitle, lastModified, url}
+    //   const bookmark = await NewTabUtils.activityStreamProvider.getBookmark(guid);
+    //   this.dispatch({type: at.PLACES_BOOKMARK_CHANGED, data: bookmark});
+    // } catch (e) {
+    //   Cu.reportError(e);
+    // }
   }
 }
 
