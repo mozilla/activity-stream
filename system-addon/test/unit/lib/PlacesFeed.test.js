@@ -184,6 +184,18 @@ describe("PlacesFeed", () => {
         assert.calledWith(dispatch, {type: at.PLACES_HISTORY_CLEARED});
       });
     });
+    describe("Other empty methods (to keep code coverage happy)", () => {
+      it("should have a various empty functions for xpconnect happiness", () => {
+        observer.onBeginUpdateBatch();
+        observer.onEndUpdateBatch();
+        observer.onVisit();
+        observer.onTitleChanged();
+        observer.onFrecencyChanged();
+        observer.onManyFrecenciesChanged();
+        observer.onPageChanged();
+        observer.onDeleteVisits();
+      });
+    });
   });
 
   describe("BookmarksObserver", () => {
@@ -265,6 +277,14 @@ describe("PlacesFeed", () => {
       it("should ignore events that are not changes to uri/title", async () => {
         await observer.onItemChanged(null, "tags", null, null, null, TYPE_BOOKMARK);
         assert.notCalled(dispatch);
+      });
+    });
+    describe("Other empty methods (to keep code coverage happy)", () => {
+      it("should have a various empty functions for xpconnect happiness", () => {
+        observer.onBeginUpdateBatch();
+        observer.onEndUpdateBatch();
+        observer.onItemVisited();
+        observer.onItemMoved();
       });
     });
   });
