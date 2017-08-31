@@ -79,34 +79,36 @@ class PreferencesPane extends React.Component {
         </div>
         <div className="prefs-pane">
           <div className={`sidebar ${isVisible ? "" : "hidden"}`}>
-            <div className="prefs-modal-inner-wrapper">
-              <h1><FormattedMessage id="settings_pane_header" /></h1>
-              <p><FormattedMessage id="settings_pane_body" /></p>
+            <div className="sidebar-inner-wrapper">
+              <div className="prefs-modal-inner-wrapper">
+                <h1><FormattedMessage id="settings_pane_header" /></h1>
+                <p><FormattedMessage id="settings_pane_body" /></p>
 
-              <PreferencesInput className="showSearch" prefName="showSearch" value={prefs.showSearch} onChange={this.handlePrefChange}
-                titleString={{id: "settings_pane_search_header"}} descString={{id: "settings_pane_search_body"}} />
+                <PreferencesInput className="showSearch" prefName="showSearch" value={prefs.showSearch} onChange={this.handlePrefChange}
+                  titleString={{id: "settings_pane_search_header"}} descString={{id: "settings_pane_search_body"}} />
 
-              <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handlePrefChange}
-                titleString={{id: "settings_pane_topsites_header"}} descString={{id: "settings_pane_topsites_body"}} />
+                <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handlePrefChange}
+                  titleString={{id: "settings_pane_topsites_header"}} descString={{id: "settings_pane_topsites_body"}} />
 
-              <div className="options">
-                <PreferencesInput className="showMoreTopSites" prefName="topSitesCount" value={prefs.topSitesCount !== TOP_SITES_DEFAULT_LENGTH} onChange={this.handlePrefChange}
-                  titleString={{id: "settings_pane_topsites_options_showmore"}} labelClassName="icon icon-topsites" />
+                <div className="options">
+                  <PreferencesInput className="showMoreTopSites" prefName="topSitesCount" value={prefs.topSitesCount !== TOP_SITES_DEFAULT_LENGTH} onChange={this.handlePrefChange}
+                    titleString={{id: "settings_pane_topsites_options_showmore"}} labelClassName="icon icon-topsites" />
+                </div>
+
+                {sections
+                  .filter(section => !section.shouldHidePref)
+                  .map(({id, title, enabled, pref}) =>
+                    <PreferencesInput key={id} className="showSection" prefName={(pref && pref.feed) || id}
+                      value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
+                      titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />)}
+
               </div>
-
-              {sections
-                .filter(section => !section.shouldHidePref)
-                .map(({id, title, enabled, pref}) =>
-                  <PreferencesInput key={id} className="showSection" prefName={(pref && pref.feed) || id}
-                    value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
-                    titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />)}
-
+              <section className="actions">
+                <button className="done" onClick={this.togglePane}>
+                  <FormattedMessage id="settings_pane_done_button" />
+                </button>
+              </section>
             </div>
-            <section className="actions">
-              <button className="done" onClick={this.togglePane}>
-                <FormattedMessage id="settings_pane_done_button" />
-              </button>
-            </section>
           </div>
         </div>
       </div>);

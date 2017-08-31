@@ -5,15 +5,16 @@
     background: $white;
     border-left: $border-secondary;
     box-shadow: $shadow-secondary;
-    min-height: 100%;
+    height: 100%;
     offset-inline-end: 0;
-    padding: 40px;
+    overflow: hidden;
+    padding: 40px 40px 70px;
     position: fixed;
     top: 0;
     transition: 0.1s cubic-bezier(0, 0, 0, 1);
     transition-property: transform;
     width: 400px;
-    z-index: 12000;
+    z-index: 22000;
 
     &.hidden {
       transform: translateX(100%);
@@ -32,6 +33,9 @@
   }
 
   .prefs-modal-inner-wrapper {
+    height: 100%;
+    overflow-y: auto;
+
     section {
       margin: 20px 0;
 
@@ -90,8 +94,19 @@
     }
   }
 
+  .sidebar-inner-wrapper {
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
   .actions {
+    background: $white;
+    bottom: -70px;
+    offset-inline-end: 0;
     padding: 15px 0;
+    position: absolute;
+    width: 100%;
   }
 
   // CSS styled checkbox
@@ -167,7 +182,7 @@
     position: fixed;
     offset-inline-end: 15px;
     top: 15px;
-    z-index: 12001;
+    z-index: 22001;
 
     &:hover {
       background-color: $background-secondary;
