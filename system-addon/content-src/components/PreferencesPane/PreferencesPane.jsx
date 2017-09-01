@@ -81,7 +81,7 @@ class PreferencesPane extends React.Component {
           <div className={`sidebar ${isVisible ? "" : "hidden"}`}>
             <div className="prefs-modal-inner-wrapper">
               <h1><FormattedMessage id="settings_pane_header" /></h1>
-              <p><FormattedMessage id="settings_pane_body" /></p>
+              <p><FormattedMessage id="settings_pane_body2" /></p>
 
               <PreferencesInput className="showSearch" prefName="showSearch" value={prefs.showSearch} onChange={this.handlePrefChange}
                 titleString={{id: "settings_pane_search_header"}} descString={{id: "settings_pane_search_body"}} />

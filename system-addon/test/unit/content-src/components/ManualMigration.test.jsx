@@ -18,7 +18,7 @@ describe("<ManualMigration>", () => {
     const fm = wrapper.find("p").find(FormattedMessage);
 
     assert.isNotNull(fm.getNode());
-    assert.equal(fm.props().id, "manual_migration_explanation");
+    assert.equal(fm.props().id, "manual_migration_explanation2");
   });
   describe("actions", () => {
     it("should render two buttons", () => {
