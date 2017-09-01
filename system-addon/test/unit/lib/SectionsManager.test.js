@@ -320,6 +320,13 @@ describe("SectionsFeed", () => {
       assert.calledWith(SectionsManager.enableSection, 1234);
       SectionsManager.enableSection.restore();
     });
+    it("should call the feed's uninit on UNINIT", () => {
+      sinon.stub(feed, "uninit");
+
+      feed.onAction({type: "UNINIT"});
+
+      assert.calledOnce(feed.uninit);
+    });
     it("should emit a ACTION_DISPATCHED event and forward any action in ACTIONS_TO_PROXY if there are any sections", () => {
       const spy = sinon.spy();
       const allowedActions = SectionsManager.ACTIONS_TO_PROXY;

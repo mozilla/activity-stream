@@ -211,6 +211,9 @@ class SectionsFeed {
       case at.SECTION_ENABLE:
         SectionsManager.enableSection(action.data);
         break;
+      case at.UNINIT:
+        this.uninit();
+        break;
     }
     if (SectionsManager.ACTIONS_TO_PROXY.includes(action.type) && SectionsManager.sections.size > 0) {
       SectionsManager.emit(SectionsManager.ACTION_DISPATCHED, action.type, action.data);

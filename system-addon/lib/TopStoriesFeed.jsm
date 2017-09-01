@@ -22,7 +22,6 @@ const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
 const DOMAIN_AFFINITY_UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
 const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
 const SECTION_ID = "topstories";
-const FEED_PREF = "feeds.section.topstories";
 
 this.TopStoriesFeed = class TopStoriesFeed {
 
@@ -198,11 +197,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
       case at.UNINIT:
         this.uninit();
         break;
-      case at.FEED_INIT:
-        if (action.data === FEED_PREF) {
-          this.init();
-        }
-        break;
     }
   }
 };
@@ -210,5 +204,4 @@ this.TopStoriesFeed = class TopStoriesFeed {
 this.STORIES_UPDATE_TIME = STORIES_UPDATE_TIME;
 this.TOPICS_UPDATE_TIME = TOPICS_UPDATE_TIME;
 this.SECTION_ID = SECTION_ID;
-this.FEED_PREF = FEED_PREF;
-this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "DOMAIN_AFFINITY_UPDATE_TIME", "SECTION_ID", "FEED_PREF"];
+this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "DOMAIN_AFFINITY_UPDATE_TIME", "SECTION_ID"];

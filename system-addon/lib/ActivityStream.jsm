@@ -218,11 +218,10 @@ this.ActivityStream = class ActivityStream {
     this._defaultPrefs.init();
 
     // Hook up the store and let all feeds and pages initialize
-    this.store.init(this.feeds);
-    this.store.dispatch(ac.BroadcastToContent({
+    this.store.init(this.feeds, ac.BroadcastToContent({
       type: at.INIT,
       data: {version: this.options.version}
-    }));
+    }), {type: at.UNINIT});
 
     this.initialized = true;
   }
@@ -231,9 +230,7 @@ this.ActivityStream = class ActivityStream {
       Services.prefs.removeObserver(GEO_PREF, this);
     }
 
-    this.store.dispatch({type: at.UNINIT});
     this.store.uninit();
-
     this.initialized = false;
   }
   uninstall(reason) {
