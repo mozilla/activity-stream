@@ -76,6 +76,22 @@ describe("<Card>", () => {
     assert.isTrue(context.childAt(1).hasClass("card-context-label"));
     assert.equal(context.childAt(1).props().children.props.id, intlID);
   });
+  it("should support setting custom context", () => {
+    const linkWithCustomContext = {
+      type: "history",
+      context: "Custom",
+      icon: "icon-url"
+    };
+
+    wrapper = shallow(<Card {...Object.assign({}, DEFAULT_PROPS, {link: linkWithCustomContext})} />);
+    const context = wrapper.find(".card-context");
+    const {icon} = cardContextTypes[DEFAULT_PROPS.link.type];
+    assert.isFalse(context.childAt(0).hasClass(`icon-${icon}`));
+    assert.equal(context.childAt(0).props().style.backgroundImage, "url('icon-url')");
+
+    assert.isTrue(context.childAt(1).hasClass("card-context-label"));
+    assert.equal(context.childAt(1).text(), linkWithCustomContext.context);
+  });
   it("should have .active class, on card-outer if context menu is open", () => {
     const button = wrapper.find(".context-menu-button");
     assert.isFalse(wrapper.find(".card-outer").hasClass("active"));
