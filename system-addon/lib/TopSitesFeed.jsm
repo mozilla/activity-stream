@@ -177,7 +177,9 @@ this.TopSitesFeed = class TopSitesFeed {
           this.refresh(action.meta.fromTarget);
         }
         break;
-      case at.PLACES_HISTORY_CLEARED: // All these actions mean we need new top sites
+      // All these actions mean we need new top sites
+      case at.MIGRATION_COMPLETED:
+      case at.PLACES_HISTORY_CLEARED:
       case at.PLACES_LINK_DELETED:
       case at.PLACES_LINK_BLOCKED:
         this.refresh();
