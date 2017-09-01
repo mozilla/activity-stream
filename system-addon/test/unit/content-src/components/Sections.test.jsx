@@ -3,6 +3,7 @@ const {shallow} = require("enzyme");
 const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
 const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl} =
   require("content-src/components/Sections/Sections");
+const {PlaceholderCard} = require("content-src/components/Card/Card");
 const {actionTypes: at} = require("common/Actions.jsm");
 
 describe("<Sections>", () => {
@@ -60,16 +61,56 @@ describe("<Section>", () => {
     });
   });
 
+  describe("placeholders", () => {
+    const CARDS_PER_ROW = 3;
+    const fakeSite = {link: "http://localhost"};
+    function renderWithSites(rows) {
+      return shallowWithIntl(<Section {...FAKE_SECTION} rows={rows} maxRows={2} />);
+    }
+
+    it("should return 1 row of placeholders if realRows is 0", () => {
+      wrapper = renderWithSites([]);
+      assert.lengthOf(wrapper.find(PlaceholderCard), 3);
+    });
+    it("should fill in the rest of the row", () => {
+      wrapper = renderWithSites(new Array(CARDS_PER_ROW + 1).fill(fakeSite));
+      assert.lengthOf(wrapper.find(PlaceholderCard), 2, "CARDS_PER_ROW + 1");
+
+      wrapper = renderWithSites(new Array(CARDS_PER_ROW + 2).fill(fakeSite));
+      assert.lengthOf(wrapper.find(PlaceholderCard), 1, "CARDS_PER_ROW + 2");
+
+      wrapper = renderWithSites(new Array(2 * CARDS_PER_ROW - 1).fill(fakeSite));
+      assert.lengthOf(wrapper.find(PlaceholderCard), 1, "CARDS_PER_ROW - 1");
+    });
+    it("should not add placeholders if a whole row is filled in", () => {
+      wrapper = renderWithSites(new Array(CARDS_PER_ROW).fill(fakeSite));
+      assert.lengthOf(wrapper.find(PlaceholderCard), 0, "1 row");
+
+      wrapper = renderWithSites(new Array(2 * CARDS_PER_ROW).fill(fakeSite));
+      assert.lengthOf(wrapper.find(PlaceholderCard), 0, "2 rows");
+    });
+  });
+
   describe("empty state", () => {
     beforeEach(() => {
       Object.assign(FAKE_SECTION, {
+        initialized: true,
         rows: [],
         emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
       });
       wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
     });
-    it("should be shown when rows is empty", () => {
+    it("should be shown when rows is empty and initialized is true", () => {
       assert.ok(wrapper.find(".empty-state").exists());
+    });
+    it("should not be shown in initialized is false", () => {
+      Object.assign(FAKE_SECTION, {
+        initialized: false,
+        rows: [],
+        emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
+      });
+      wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+      assert.isFalse(wrapper.find(".empty-state").exists());
     });
     it("should use the icon prop as the icon url if it starts with `moz-extension://`", () => {
       const props = wrapper.find(".empty-state-icon").first().props();

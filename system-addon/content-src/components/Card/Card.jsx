@@ -52,11 +52,12 @@ class Card extends React.Component {
   }
   render() {
     const {index, link, dispatch, contextMenuOptions, eventSource} = this.props;
+    const {props} = this;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     const {icon, intlID} = link.type ? cardContextTypes[link.type] : {};
 
-    return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}`}>
-      <a href={link.url} onClick={this.onLinkClick}>
+    return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}${props.placeholder ? " placeholder" : ""}`}>
+      <a href={link.url} onClick={!props.placeholder && this.onLinkClick}>
         <div className="card">
           {link.image && <div className="card-preview-image" style={{backgroundImage: `url(${link.image})`}} />}
           <div className={`card-details${link.image ? "" : " no-image"}`}>
@@ -72,19 +73,24 @@ class Card extends React.Component {
           </div>
         </div>
       </a>
-      <button className="context-menu-button icon"
+      {!props.placeholder && <button className="context-menu-button icon"
         onClick={this.onMenuButtonClick}>
         <span className="sr-only">{`Open context menu for ${link.title}`}</span>
-      </button>
-      <LinkMenu
+      </button>}
+      {!props.placeholder && <LinkMenu
         dispatch={dispatch}
         index={index}
         source={eventSource}
         onUpdate={this.onMenuUpdate}
         options={link.contextMenuOptions || contextMenuOptions}
         site={link}
-        visible={isContextMenuOpen} />
+        visible={isContextMenuOpen} />}
    </li>);
   }
 }
+Card.defaultProps = {link: {}};
+
+const PlaceholderCard = () => <Card placeholder={true} />;
+
 module.exports = Card;
+module.exports.PlaceholderCard = PlaceholderCard;

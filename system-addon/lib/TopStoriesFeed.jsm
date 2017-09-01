@@ -57,60 +57,59 @@ this.TopStoriesFeed = class TopStoriesFeed {
   }
 
   async fetchStories() {
-    if (this.stories_endpoint) {
-      const stories = await fetch(this.stories_endpoint)
-        .then(response => {
-          if (response.ok) {
-            return response.text();
-          }
-          throw new Error(`Stories endpoint returned unexpected status: ${response.status}`);
-        })
-        .then(body => {
-          const response = JSON.parse(body);
-          this.updateDomainAffinities(response.settings);
+    if (!this.stories_endpoint) {
+      return;
+    }
+    try {
+      const response = await fetch(this.stories_endpoint);
 
-          const items = response.recommendations
-            .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.url}))
-            .map(s => ({
-              "guid": s.id,
-              "hostname": shortURL(Object.assign({}, s, {url: s.url})),
-              "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
-              "title": s.title,
-              "description": s.excerpt,
-              "image": this._normalizeUrl(s.image_src),
-              "referrer": this.stories_referrer,
-              "url": s.url,
-              "score": this.personalized ? this.affinityProvider.calculateItemRelevanceScore(s) : 1
-            }))
-            .sort(this.personalized ? this.compareScore : (a, b) => 0);
-
-          return this.rotate(items);
-        })
-        .catch(error => Cu.reportError(`Failed to fetch content: ${error.message}`));
-
-      if (stories) {
-        this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: stories});
-        this.storiesLastUpdated = Date.now();
+      if (!response.ok) {
+        throw new Error(`Stories endpoint returned unexpected status: ${response.status}`);
       }
+
+      const body = await response.json();
+      this.updateDomainAffinities(body.settings);
+
+      const recommendations = body.recommendations
+        .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.url}))
+        .map(s => ({
+          "guid": s.id,
+          "hostname": shortURL(Object.assign({}, s, {url: s.url})),
+          "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
+          "title": s.title,
+          "description": s.excerpt,
+          "image": this._normalizeUrl(s.image_src),
+          "referrer": this.stories_referrer,
+          "url": s.url,
+          "score": this.personalized ? this.affinityProvider.calculateItemRelevanceScore(s) : 1
+        }))
+        .sort(this.personalized ? this.compareScore : (a, b) => 0);
+
+      const rows = this.rotate(recommendations);
+
+      this.dispatchUpdateEvent(this.storiesLastUpdated, {rows});
+      this.storiesLastUpdated = Date.now();
+    } catch (error) {
+      Cu.reportError(`Failed to fetch content: ${error.message}`);
     }
   }
 
   async fetchTopics() {
-    if (this.topics_endpoint) {
-      const topics = await fetch(this.topics_endpoint)
-        .then(response => {
-          if (response.ok) {
-            return response.text();
-          }
-          throw new Error(`Topics endpoint returned unexpected status: ${response.status}`);
-        })
-        .then(body => JSON.parse(body).topics)
-        .catch(error => Cu.reportError(`Failed to fetch topics: ${error.message}`));
-
+    if (!this.topics_endpoint) {
+      return;
+    }
+    try {
+      const response = await fetch(this.topics_endpoint);
+      if (!response.ok) {
+        throw new Error(`Topics endpoint returned unexpected status: ${response.status}`);
+      }
+      const {topics} = await response.json();
       if (topics) {
         this.dispatchUpdateEvent(this.topicsLastUpdated, {topics, read_more_endpoint: this.read_more_endpoint});
         this.topicsLastUpdated = Date.now();
       }
+    } catch (error) {
+      Cu.reportError(`Failed to fetch topics: ${error.message}`);
     }
   }
 

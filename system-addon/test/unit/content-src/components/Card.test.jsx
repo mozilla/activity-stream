@@ -2,6 +2,7 @@ const React = require("react");
 const {shallow} = require("enzyme");
 const {mountWithIntl} = require("test/unit/utils");
 const Card = require("content-src/components/Card/Card");
+const {PlaceholderCard} = Card;
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const cardContextTypes = require("content-src/components/Card/types");
@@ -82,6 +83,28 @@ describe("<Card>", () => {
     assert.isTrue(wrapper.find(".card-outer").hasClass("active"));
   });
 
+  describe("placeholder=true", () => {
+    beforeEach(() => {
+      wrapper = mountWithIntl(<Card placeholder={true} />);
+    });
+    it("should render when placeholder=true", () => {
+      assert.ok(wrapper.exists());
+    });
+    it("should add a placeholder class to the outer element", () => {
+      assert.isTrue(wrapper.find(".card-outer").hasClass("placeholder"));
+    });
+    it("should not have a context menu button or LinkMenu", () => {
+      assert.isFalse(wrapper.find(".context-menu-button").exists(), "context menu button");
+      assert.isFalse(wrapper.find(LinkMenu).exists(), "LinkMenu");
+    });
+    it("should not call onLinkClick when the link is clicked", () => {
+      const spy = sinon.spy(wrapper.instance(), "onLinkClick");
+      const card = wrapper.find(".card");
+      card.simulate("click");
+      assert.notCalled(spy);
+    });
+  });
+
   describe("#trackClick", () => {
     it("should call dispatch when the link is clicked with the right data", () => {
       const card = wrapper.find(".card");
@@ -109,5 +132,12 @@ describe("<Card>", () => {
         tiles: [{id: DEFAULT_PROPS.link.guid, pos: DEFAULT_PROPS.index}]
       }));
     });
+  });
+});
+
+describe("<PlaceholderCard />", () => {
+  it("should render a Card with placeholder=true", () => {
+    const wrapper = shallow(<PlaceholderCard />);
+    assert.isTrue(wrapper.find(Card).props().placeholder);
   });
 });

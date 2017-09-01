@@ -92,7 +92,7 @@ const SectionsManager = {
     this.emit(this.ENABLE_SECTION, id);
   },
   disableSection(id) {
-    this.updateSection(id, {enabled: false, rows: []}, true);
+    this.updateSection(id, {enabled: false, rows: [], initialized: false}, true);
     this.emit(this.DISABLE_SECTION, id);
   },
   updateSections() {
