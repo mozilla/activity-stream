@@ -20,6 +20,10 @@ const prefInitHook = function() {
 const FAKE_TELEMETRY_ID = "foo123";
 const FAKE_UPDATE_CHANNEL = "beta";
 const FAKE_AS_ENDPOINT_PREF = "some.as.endpoint.pref";
+const FAKE_ACTIVE_EXPERIMENTS = {
+  "pref-flip-quantum-css-style-r1-1381147": {"branch": "stylo"},
+  "nightly-nothing-burger-1-pref": {"branch": "Control"}
+};
 
 describe("PingCentre", () => {
   let globals;
@@ -40,6 +44,8 @@ describe("PingCentre", () => {
         .returns(new FakePrefs({initHook: prefInitHook}));
     globals.set("fetch", fetchStub);
     globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
+    globals.set("TelemetryEnvironment",
+      {getActiveExperiments: sandbox.spy(() => FAKE_ACTIVE_EXPERIMENTS)});
     globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: FAKE_UPDATE_CHANNEL});
     sandbox.spy(global.Components.utils, "reportError");
   });
@@ -187,12 +193,65 @@ describe("PingCentre", () => {
     });
   });
 
+  describe("#_createExperimentsString", () => {
+    beforeEach(() => {
+      tSender = new PingCentre({
+        topic: "activity-stream",
+        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF
+      });
+    });
+
+    function testExperimentString(experimentString, activeExperiments) {
+      for (let experimentID in activeExperiments) {
+        if (activeExperiments[experimentID] &&
+            activeExperiments[experimentID].branch) {
+          const EXPECTED_SUBSTRING =
+            `${experimentID}:${activeExperiments[experimentID].branch}`;
+
+          if (tSender._filter && !experimentID.includes(tSender._filter)) {
+            assert.isFalse(experimentString.includes(EXPECTED_SUBSTRING));
+            continue;
+          }
+
+          assert.isTrue(experimentString.includes(EXPECTED_SUBSTRING));
+        }
+      }
+    }
+
+    it("should apply filter to experiment list", () => {
+      const FILTER = "boop";
+
+      tSender = new PingCentre({
+        topic: "activity-stream",
+        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
+        filter: FILTER
+      });
+
+      let expString = tSender._createExperimentsString(FAKE_ACTIVE_EXPERIMENTS);
+      testExperimentString(expString, FAKE_ACTIVE_EXPERIMENTS);
+    });
+
+    it("should generate the correct experiment string", () => {
+      let expString = tSender._createExperimentsString(FAKE_ACTIVE_EXPERIMENTS);
+      testExperimentString(expString, FAKE_ACTIVE_EXPERIMENTS);
+    });
+
+    it("should exclude malformed experiments from experiment string", () => {
+      let MALFORMED_EXPERIMENTS = Object.assign({}, FAKE_ACTIVE_EXPERIMENTS);
+      MALFORMED_EXPERIMENTS["test-id"] = "beep";
+
+      let expString = tSender._createExperimentsString(MALFORMED_EXPERIMENTS);
+      testExperimentString(expString, MALFORMED_EXPERIMENTS);
+    });
+  });
+
   describe("#sendPing()", () => {
     beforeEach(() => {
       FakePrefs.prototype.prefs = {};
       FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
       FakePrefs.prototype.prefs[FAKE_AS_ENDPOINT_PREF] = fakeEndpointUrl;
+
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: FAKE_AS_ENDPOINT_PREF
@@ -216,9 +275,12 @@ describe("PingCentre", () => {
       fetchStub.resolves(fakeFetchSuccessResponse);
       await tSender.sendPing(fakePingJSON);
 
+      const EXPECTED_SHIELD_STRING =
+        "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
       const EXPECTED_RESULT = Object.assign({
         topic: "activity-stream",
         client_id: FAKE_TELEMETRY_ID,
+        shield_id: EXPECTED_SHIELD_STRING,
         release_channel: FAKE_UPDATE_CHANNEL
       }, fakePingJSON);
 
