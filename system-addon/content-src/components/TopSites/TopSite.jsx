@@ -5,6 +5,41 @@ const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 
 const {TOP_SITES_SOURCE, TOP_SITES_CONTEXT_MENU_OPTIONS} = require("./TopSitesConstants");
 
+const TopSiteLink = props => {
+  const {link} = props;
+  const topSiteOuterClassName = `top-site-outer${props.className ? ` ${props.className}` : ""}`;
+  const {tippyTopIcon} = link;
+  let imageClassName;
+  let imageStyle;
+  if (tippyTopIcon) {
+    imageClassName = "tippy-top-icon";
+    imageStyle = {
+      backgroundColor: link.backgroundColor,
+      backgroundImage: `url(${tippyTopIcon})`
+    };
+  } else {
+    imageClassName = `screenshot${link.screenshot ? " active" : ""}`;
+    imageStyle = {backgroundImage: link.screenshot ? `url(${link.screenshot})` : "none"};
+  }
+  return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
+   <a href={link.url} onClick={props.onClick}>
+     <div className="tile" aria-hidden={true}>
+         <span className="letter-fallback">{props.title[0]}</span>
+         <div className={imageClassName} style={imageStyle} />
+     </div>
+     <div className={`title ${link.isPinned ? "pinned" : ""}`}>
+       {link.isPinned && <div className="icon icon-pin-small" />}
+       <span dir="auto">{props.title}</span>
+     </div>
+   </a>
+   {props.children}
+  </li>);
+};
+TopSiteLink.defaultProps = {
+  title: "",
+  link: {}
+};
+
 class TopSite extends React.Component {
   constructor(props) {
     super(props);
@@ -78,42 +113,19 @@ class TopSite extends React.Component {
     this.props.onEdit(this.props.index);
   }
   render() {
-    const {link, index, dispatch, editMode} = this.props;
-    const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === index;
+    const {props} = this;
+    const {link} = props;
+    const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === props.index;
     const title = link.label || link.hostname;
-    const topSiteOuterClassName = `top-site-outer${isContextMenuOpen ? " active" : ""}`;
-    const {tippyTopIcon} = link;
-    let imageClassName;
-    let imageStyle;
-    if (tippyTopIcon) {
-      imageClassName = "tippy-top-icon";
-      imageStyle = {
-        backgroundColor: link.backgroundColor,
-        backgroundImage: `url(${tippyTopIcon})`
-      };
-    } else {
-      imageClassName = `screenshot${link.screenshot ? " active" : ""}`;
-      imageStyle = {backgroundImage: link.screenshot ? `url(${link.screenshot})` : "none"};
-    }
-    return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
-        <a href={link.url} onClick={this.onLinkClick}>
-          <div className="tile" aria-hidden={true}>
-              <span className="letter-fallback">{title[0]}</span>
-              <div className={imageClassName} style={imageStyle} />
-          </div>
-          <div className={`title ${link.isPinned ? "pinned" : ""}`}>
-            {link.isPinned && <div className="icon icon-pin-small" />}
-            <span dir="auto">{title}</span>
-          </div>
-        </a>
-        {!editMode &&
+    return (<TopSiteLink {...props} onClick={this.onLinkClick} className={isContextMenuOpen ? "active" : ""} title={title}>
+        {!props.editMode &&
           <div>
             <button className="context-menu-button icon" onClick={this.onMenuButtonClick}>
               <span className="sr-only">{`Open context menu for ${title}`}</span>
             </button>
             <LinkMenu
-              dispatch={dispatch}
-              index={index}
+              dispatch={props.dispatch}
+              index={props.index}
               onUpdate={this.onMenuUpdate}
               options={TOP_SITES_CONTEXT_MENU_OPTIONS}
               site={link}
@@ -121,7 +133,7 @@ class TopSite extends React.Component {
               visible={isContextMenuOpen} />
           </div>
         }
-        {editMode &&
+        {props.editMode &&
           <div className="edit-menu">
             <button
               className={`icon icon-${link.isPinned ? "unpin" : "pin"}`}
@@ -137,13 +149,17 @@ class TopSite extends React.Component {
               onClick={this.onDismissButtonClick} />
           </div>
         }
-    </li>);
+    </TopSiteLink>);
   }
 }
-
 TopSite.defaultProps = {
   editMode: false,
+  link: {},
   onEdit() {}
 };
 
-module.exports = TopSite;
+const TopSitePlaceholder = () => <TopSiteLink className="placeholder" />;
+
+module.exports.TopSite = TopSite;
+module.exports.TopSiteLink = TopSiteLink;
+module.exports.TopSitePlaceholder = TopSitePlaceholder;

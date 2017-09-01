@@ -102,6 +102,15 @@
       justify-content: center;
     }
 
+    &.placeholder {
+      .tile {
+        box-shadow: inset $inner-box-shadow;
+      }
+      .screenshot {
+        display: none;
+      }
+    }
+
     .screenshot {
       position: absolute;
       top: 0;
@@ -135,7 +144,7 @@
 
     .title {
       font: message-box;
-      height: 20px;
+      height: $top-sites-title-height;
       line-height: $top-sites-title-height;
       text-align: center;
       width: $top-sites-size;
@@ -149,6 +158,7 @@
       }
 
       span {
+        height: $top-sites-title-height;
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;

@@ -3,7 +3,7 @@ const {FormattedMessage, injectIntl} = require("react-intl");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
 const TopSiteForm = require("./TopSiteForm");
-const TopSite = require("./TopSite");
+const {TopSite, TopSitePlaceholder} = require("./TopSite");
 
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 const {TOP_SITES_SOURCE} = require("./TopSitesConstants");
@@ -68,6 +68,8 @@ class TopSitesEdit extends React.Component {
     }));
   }
   render() {
+    const realTopSites = this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
+    const placeholderCount = this.props.TopSitesCount - realTopSites.length;
     return (<div className="edit-topsites-wrapper">
       <div className="edit-topsites-button">
         <button
@@ -84,7 +86,7 @@ class TopSitesEdit extends React.Component {
             <section className="edit-topsites-inner-wrapper">
               <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
               <ul className="top-sites-list">
-                {this.props.TopSites.rows.slice(0, this.props.TopSitesCount).map((link, index) => link && <TopSite
+                {realTopSites.map((link, index) => link && <TopSite
                   key={link.guid || link.url}
                   dispatch={this.props.dispatch}
                   link={link}
@@ -92,6 +94,7 @@ class TopSitesEdit extends React.Component {
                   intl={this.props.intl}
                   onEdit={this.onEdit}
                   editMode={true} />)}
+                  {placeholderCount > 0 && [...Array(placeholderCount)].map((_, i) => <TopSitePlaceholder key={i} />)}
               </ul>
             </section>
             <section className="actions">

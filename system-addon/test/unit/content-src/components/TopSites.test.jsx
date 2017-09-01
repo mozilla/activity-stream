@@ -5,8 +5,9 @@ const {mountWithIntl} = require("test/unit/utils");
 
 const {_unconnected: TopSitesPerfTimer} = require("content-src/components/TopSites/TopSitesPerfTimer");
 const TopSiteForm = require("content-src/components/TopSites/TopSiteForm");
-const {_unconnected: TopSitesEdit} = require("content-src/components/TopSites/TopSitesEdit");
-const TopSite = require("content-src/components/TopSites/TopSite");
+const TopSitesEditConnected = require("content-src/components/TopSites/TopSitesEdit");
+const {_unconnected: TopSitesEdit} = TopSitesEditConnected;
+const {TopSite, TopSiteLink, TopSitePlaceholder} = require("content-src/components/TopSites/TopSite");
 const {_unconnected: TopSites} = require("content-src/components/TopSites/TopSites");
 
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
@@ -188,8 +189,8 @@ describe("<TopSites>", () => {
     const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
 
     const links = wrapper.find(TopSite);
-    assert.lengthOf(links, 2);
-    links.forEach((link, i) => assert.equal(link.props().link.url, rows[i].url));
+
+    rows.forEach((row, i) => assert.equal(links.nodes[i].props.link.url, row.url));
   });
   it("should slice the TopSite rows to the TopSitesCount pref", () => {
     const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}, {url: "https://baz.com"}, {url: "https://bam.com"}, {url: "https://zoom.com"}, {url: "https://woo.com"}, {url: "https://eh.com"}];
@@ -198,6 +199,92 @@ describe("<TopSites>", () => {
 
     const links = wrapper.find(TopSite);
     assert.lengthOf(links, TOP_SITES_DEFAULT_LENGTH);
+  });
+  it("should fill with placeholders if TopSites rows is less than TopSitesCount", () => {
+    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
+    const topSitesCount = 5;
+
+    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={topSitesCount} />);
+
+    assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
+    assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
+  });
+  it("should render TopSitesEdit if there are top sites", () => {
+    const rows = [{url: "https://foo.com"}];
+    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
+    assert.lengthOf(wrapper.find(TopSitesEditConnected), 1);
+  });
+  it("should not render TopSitesEdit if there are no sites", () => {
+    const rows = [];
+    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
+    assert.lengthOf(wrapper.find(TopSitesEditConnected), 0);
+  });
+});
+
+describe("<TopSiteLink>", () => {
+  let link;
+  beforeEach(() => {
+    link = {url: "https://foo.com", screenshot: "foo.jpg", hostname: "foo"};
+  });
+  it("should add the right url", () => {
+    link.url = "https://www.foobar.org";
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    assert.propertyVal(wrapper.find("a").props(), "href", "https://www.foobar.org");
+  });
+  it("should have rtl direction automatically set for text", () => {
+    const wrapper = shallow(<TopSiteLink link={link} />);
+
+    assert.isTrue(wrapper.find("[dir='auto']").length > 0);
+  });
+  it("should render a title", () => {
+    const wrapper = shallow(<TopSiteLink link={link} title="foobar" />);
+    const titleEl = wrapper.find(".title");
+
+    assert.equal(titleEl.text(), "foobar");
+  });
+  it("should render the pin icon for pinned links", () => {
+    link.isPinned = true;
+    link.pinnedIndex = 7;
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    assert.equal(wrapper.find(".icon-pin-small").length, 1);
+  });
+  it("should not render the pin icon for non pinned links", () => {
+    link.isPinned = false;
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    assert.equal(wrapper.find(".icon-pin-small").length, 0);
+  });
+  it("should render the first letter of the title as a fallback for missing screenshots", () => {
+    const wrapper = shallow(<TopSiteLink link={link} title={"foo"} />);
+    assert.equal(wrapper.find(".letter-fallback").text(), "f");
+  });
+  it("should render a screenshot with the .active class, if it is provided", () => {
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    const screenshotEl = wrapper.find(".screenshot");
+
+    assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
+    assert.isTrue(screenshotEl.hasClass("active"));
+  });
+  it("should not add the .active class to the screenshot element if no screenshot prop is provided", () => {
+    link.screenshot = null;
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    assert.isFalse(wrapper.find(".screenshot").hasClass("active"));
+  });
+  it("should render the tippy top icon if provided", () => {
+    link.tippyTopIcon = "foo.png";
+    link.backgroundColor = "#FFFFFF";
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    assert.equal(wrapper.find(".screenshot").length, 0);
+    const tippyTop = wrapper.find(".tippy-top-icon");
+    assert.propertyVal(tippyTop.props().style, "backgroundImage", "url(foo.png)");
+    assert.propertyVal(tippyTop.props().style, "backgroundColor", "#FFFFFF");
+  });
+  it("should apply just the default class name to the outer link if props.className is falsey", () => {
+    const wrapper = shallow(<TopSiteLink className={false} />);
+    assert.ok(wrapper.find("li").hasClass("top-site-outer"));
+  });
+  it("should add props.className to the outer link element", () => {
+    const wrapper = shallow(<TopSiteLink className="foo bar" />);
+    assert.ok(wrapper.find("li").hasClass("top-site-outer foo bar"));
   });
 });
 
@@ -211,63 +298,26 @@ describe("<TopSite>", () => {
     const wrapper = shallow(<TopSite link={link} />);
     assert.ok(wrapper.exists());
   });
-  it("should add the right url", () => {
-    link.url = "https://www.foobar.org";
-    const wrapper = shallow(<TopSite link={link} />);
-    assert.propertyVal(wrapper.find("a").props(), "href", "https://www.foobar.org");
-  });
-  it("should have rtl direction automatically set for text", () => {
-    const wrapper = shallow(<TopSite link={link} />);
 
-    assert.isTrue(wrapper.find("[dir='auto']").length > 0);
-  });
   it("should render a shortened title based off the url", () => {
     link.url = "https://www.foobar.org";
     link.hostname = "foobar";
     link.eTLD = "org";
     const wrapper = shallow(<TopSite link={link} />);
-    const titleEl = wrapper.find(".title");
 
-    assert.equal(titleEl.text(), "foobar");
+    assert.equal(wrapper.find(TopSiteLink).props().title, "foobar");
   });
-  it("should render the pin icon for pinned links", () => {
-    link.isPinned = true;
-    link.pinnedIndex = 7;
-    const wrapper = shallow(<TopSite link={link} />);
-    assert.equal(wrapper.find(".icon-pin-small").length, 1);
-  });
-  it("should not render the pin icon for non pinned links", () => {
-    link.isPinned = false;
-    const wrapper = shallow(<TopSite link={link} />);
-    assert.equal(wrapper.find(".icon-pin-small").length, 0);
-  });
-  it("should render the first letter of the title as a fallback for missing screenshots", () => {
-    const wrapper = shallow(<TopSite link={link} />);
-    assert.equal(wrapper.find(".letter-fallback").text(), "f");
-  });
-  it("should render a screenshot with the .active class, if it is provided", () => {
-    const wrapper = shallow(<TopSite link={link} />);
-    const screenshotEl = wrapper.find(".screenshot");
 
-    assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
-    assert.isTrue(screenshotEl.hasClass("active"));
-  });
-  it("should not add the .active class to the screenshot element if no screenshot prop is provided", () => {
-    link.screenshot = null;
-    const wrapper = shallow(<TopSite link={link} />);
-    assert.isFalse(wrapper.find(".screenshot").hasClass("active"));
-  });
   it("should have .active class, on top-site-outer if context menu is open", () => {
     const wrapper = shallow(<TopSite link={link} index={1} />);
     wrapper.setState({showContextMenu: true, activeTile: 1});
-    const topSiteEl = wrapper.find(".top-site-outer");
-    assert.isTrue(topSiteEl.hasClass("active"));
+
+    assert.equal(wrapper.find(TopSiteLink).props().className, "active");
   });
   it("should not add .active class, on top-site-outer if context menu is closed", () => {
     const wrapper = shallow(<TopSite link={link} index={1} />);
     wrapper.setState({showContextMenu: false, activeTile: 1});
-    const topSiteEl = wrapper.find(".top-site-outer");
-    assert.isFalse(topSiteEl.hasClass("active"));
+    assert.equal(wrapper.find(TopSiteLink).props().className, "");
   });
   it("should render a context menu button", () => {
     const wrapper = shallow(<TopSite link={link} />);
@@ -294,22 +344,13 @@ describe("<TopSite>", () => {
     assert.deepEqual(linkMenuProps.options,
       ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"]);
   });
-  it("should render the tippy top icon if provided", () => {
-    link.tippyTopIcon = "foo.png";
-    link.backgroundColor = "#FFFFFF";
-    const wrapper = shallow(<TopSite link={link} />);
-    assert.equal(wrapper.find(".screenshot").length, 0);
-    const tippyTop = wrapper.find(".tippy-top-icon");
-    assert.propertyVal(tippyTop.props().style, "backgroundImage", "url(foo.png)");
-    assert.propertyVal(tippyTop.props().style, "backgroundColor", "#FFFFFF");
-  });
 
   describe("#trackClick", () => {
     it("should call dispatch when the link is clicked", () => {
       const dispatch = sinon.stub();
       const wrapper = shallow(<TopSite link={link} index={3} dispatch={dispatch} />);
 
-      wrapper.find("a").simulate("click", {});
+      wrapper.find(TopSiteLink).simulate("click", {});
 
       assert.calledOnce(dispatch);
     });
@@ -317,7 +358,7 @@ describe("<TopSite>", () => {
       const dispatch = sinon.stub();
       const wrapper = shallow(<TopSite link={link} index={3} dispatch={dispatch} />);
 
-      wrapper.find("a").simulate("click", {});
+      wrapper.find(TopSiteLink).simulate("click", {});
 
       const action = dispatch.firstCall.args[0];
       assert.isUserEventAction(action);
@@ -466,6 +507,15 @@ describe("<TopSitesEdit>", () => {
     const links = wrapper.find(TopSite);
     assert.lengthOf(links, 2);
     links.forEach((link, i) => assert.equal(link.props().link.url, rows[i].url));
+  });
+  it("should fill with placeholders if TopSites rows is less than TopSitesCount", () => {
+    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
+
+    setup({TopSites: {rows}, TopSitesCount: 5});
+    wrapper.find(".edit").simulate("click");
+
+    assert.lengthOf(wrapper.find(TopSite), 2, "top sites");
+    assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
   });
   it("should show the 'Show more' button by default", () => {
     wrapper.find(".edit").simulate("click");
