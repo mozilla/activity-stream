@@ -45,12 +45,19 @@ describe("<Search>", () => {
     assert.equal(spy.firstCall.args[0], "ContentSearchClient");
     assert.equal(spy.firstCall.args[1], wrapper.node);
   });
+  it("should add gContentSearchController as a global", () => {
+    // current about:home tests need gContentSearchController to exist as a global
+    // so let's test it here too to ensure we don't break this behaviour
+    mountWithIntl(<Search {...DEFAULT_PROPS} />);
+    assert.property(window, "gContentSearchController");
+    assert.ok(window.gContentSearchController);
+  });
   it("should pass along search when clicking the search button", () => {
     const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
 
     wrapper.find(".search-button").simulate("click");
 
-    const {search} = wrapper.node.controller;
+    const {search} = window.gContentSearchController;
     assert.calledOnce(search);
     assert.propertyVal(search.firstCall.args[0], "type", "click");
   });

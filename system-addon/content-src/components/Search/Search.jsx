@@ -4,6 +4,7 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {FormattedMessage, injectIntl} = require("react-intl");
 const {actionCreators: ac} = require("common/Actions.jsm");
+const {IS_NEWTAB} = require("content-src/lib/constants");
 
 class Search extends React.Component {
   constructor(props) {
@@ -19,20 +20,35 @@ class Search extends React.Component {
     }
   }
   onClick(event) {
-    this.controller.search(event);
+    window.gContentSearchController.search(event);
+  }
+  componentWillUnmount() {
+    delete window.gContentSearchController;
   }
   onInputMount(input) {
     if (input) {
-      // The first "newtab" parameter here is called the "healthReportKey" and needs
-      // to be "newtab" so that BrowserUsageTelemetry.jsm knows to handle events with
-      // this name, and can add the appropriate telemetry probes for search. Without the
-      // correct name, certain tests like browser_UsageTelemetry_content.js will fail (See
-      // github ticket #2348 for more details)
-      this.controller = new ContentSearchUIController(input, input.parentNode,
-        "newtab", "newtab");
+      // The "healthReportKey" and needs to be "newtab" or "abouthome" so that
+      // BrowserUsageTelemetry.jsm knows to handle events with this name, and
+      // can add the appropriate telemetry probes for search. Without the correct
+      // name, certain tests like browser_UsageTelemetry_content.js will fail
+      // (See github ticket #2348 for more details)
+      const healthReportKey = IS_NEWTAB ? "newtab" : "abouthome";
+
+      // The "searchSource" needs to be "newtab" or "homepage" and is sent with
+      // the search data and acts as context for the search request (See
+      // nsISearchEngine.getSubmission). It is necessary so that search engine
+      // plugins can correctly atribute referrals. (See github ticket #3321 for
+      // more details)
+      const searchSource = IS_NEWTAB ? "newtab" : "homepage";
+
+      // gContentSearchController needs to exist as a global so that tests for
+      // the existing about:home can find it; and so it allows these tests to pass.
+      // In the future, when activity stream is default about:home, this can be renamed
+      window.gContentSearchController = new ContentSearchUIController(input, input.parentNode,
+        healthReportKey, searchSource);
       addEventListener("ContentSearchClient", this);
     } else {
-      this.controller = null;
+      window.gContentSearchController = null;
       removeEventListener("ContentSearchClient", this);
     }
   }
@@ -55,6 +71,7 @@ class Search extends React.Component {
         title={this.props.intl.formatMessage({id: "search_web_placeholder"})}
         type="search" />
         <button
+          id="searchSubmit"
           className="search-button"
           onClick={this.onClick}
           title={this.props.intl.formatMessage({id: "search_button"})}>
