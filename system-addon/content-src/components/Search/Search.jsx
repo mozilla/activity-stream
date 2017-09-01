@@ -23,13 +23,12 @@ class Search extends React.Component {
   }
   onInputMount(input) {
     if (input) {
-      // The first "newtab" parameter here is called the "healthReportKey" and needs
-      // to be "newtab" so that BrowserUsageTelemetry.jsm knows to handle events with
-      // this name, and can add the appropriate telemetry probes for search. Without the
-      // correct name, certain tests like browser_UsageTelemetry_content.js will fail (See
-      // github ticket #2348 for more details)
-      this.controller = new ContentSearchUIController(input, input.parentNode,
-        "newtab", "newtab");
+      // ContentSearchUIController component:
+      // https://dxr.mozilla.org/mozilla-central/rev/7d2e89fb92331d7e4296391213c1e63db628e046/browser/base/content/contentSearchUI.js#16
+      // "activitystream" parameter is meant for FHR (Firefox Health Report) and is the key under which data is stored
+      // in the telemetry tab.
+      // "newtab" indicates the context of the search (where the search is triggered from in the UI).
+      this.controller = new ContentSearchUIController(input, input.parentNode, "activitystream", "newtab");
       addEventListener("ContentSearchClient", this);
     } else {
       this.controller = null;
