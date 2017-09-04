@@ -114,8 +114,8 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       }
       newRows = prevState.rows.map(site => {
         if (site && site.url === action.data.url) {
-          const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
-          return Object.assign({}, site, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: lastModified});
+          const {bookmarkGuid, bookmarkTitle, dateAdded} = action.data;
+          return Object.assign({}, site, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: dateAdded});
         }
         return site;
       });
@@ -231,8 +231,8 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
         rows: section.rows.map(item => {
           // find the item within the rows that is attempted to be bookmarked
           if (item.url === action.data.url) {
-            const {bookmarkGuid, bookmarkTitle, lastModified} = action.data;
-            Object.assign(item, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: lastModified});
+            const {bookmarkGuid, bookmarkTitle, dateAdded} = action.data;
+            Object.assign(item, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: dateAdded});
           }
           return item;
         })
