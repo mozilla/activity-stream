@@ -68,7 +68,7 @@ describe("Reducers", () => {
           url: "bar.com",
           bookmarkGuid: "bookmark123",
           bookmarkTitle: "Title for bar.com",
-          lastModified: 1234567
+          dateAdded: 1234567
         }
       };
       const nextState = TopSites(oldState, action);
@@ -77,7 +77,7 @@ describe("Reducers", () => {
       assert.equal(newRow.url, action.data.url);
       assert.equal(newRow.bookmarkGuid, action.data.bookmarkGuid);
       assert.equal(newRow.bookmarkTitle, action.data.bookmarkTitle);
-      assert.equal(newRow.bookmarkDateCreated, action.data.lastModified);
+      assert.equal(newRow.bookmarkDateCreated, action.data.dateAdded);
 
       // old row is unchanged
       assert.equal(nextState.rows[0], oldState.rows[0]);
@@ -92,7 +92,7 @@ describe("Reducers", () => {
           url: "bar.com",
           bookmarkGuid: "bookmark123",
           bookmarkTitle: "Title for bar.com",
-          lastModified: 123456
+          dateAdded: 123456
         }]
       };
       const action = {type: at.PLACES_BOOKMARK_REMOVED, data: {url: "bar.com"}};
@@ -328,7 +328,7 @@ describe("Reducers", () => {
           url: "www.foo.bar",
           bookmarkGuid: "bookmark123",
           bookmarkTitle: "Title for bar.com",
-          lastModified: 1234567
+          dateAdded: 1234567
         }
       };
       const nextState = Sections(oldState, action);
@@ -340,7 +340,7 @@ describe("Reducers", () => {
       assert.equal(newRow.url, action.data.url);
       assert.equal(newRow.bookmarkGuid, action.data.bookmarkGuid);
       assert.equal(newRow.bookmarkTitle, action.data.bookmarkTitle);
-      assert.equal(newRow.bookmarkDateCreated, action.data.lastModified);
+      assert.equal(newRow.bookmarkDateCreated, action.data.dateAdded);
 
       // old row is unchanged
       assert.equal(oldRow, oldState[0].rows[1]);
