@@ -10,3 +10,5 @@ stats.json
 system-addon/vendor/
 system-addon/data/
 test/test-ColorAnalyzer.js
+bin/prerender.js
+bin/prerender.js.map

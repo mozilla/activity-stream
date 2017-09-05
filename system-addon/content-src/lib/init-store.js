@@ -47,22 +47,26 @@ const messageMiddleware = store => next => action => {
  * initStore - Create a store and listen for incoming actions
  *
  * @param  {object} reducers An object containing Redux reducers
+ * @param  {object} intialState (optional) The initial state of the store, if desired
  * @return {object}          A redux store
  */
-module.exports = function initStore(reducers) {
+module.exports = function initStore(reducers, initialState) {
   const store = createStore(
     mergeStateReducer(combineReducers(reducers)),
+    initialState,
     applyMiddleware(messageMiddleware)
   );
 
-  addMessageListener(INCOMING_MESSAGE_NAME, msg => {
-    try {
-      store.dispatch(msg.data);
-    } catch (ex) {
-      console.error("Content msg:", msg, "Dispatch error: ", ex); // eslint-disable-line no-console
-      dump(`Content msg: ${JSON.stringify(msg)}\nDispatch error: ${ex}\n${ex.stack}`);
-    }
-  });
+  if (global.addMessageListener) {
+    global.addMessageListener(INCOMING_MESSAGE_NAME, msg => {
+      try {
+        store.dispatch(msg.data);
+      } catch (ex) {
+        console.error("Content msg:", msg, "Dispatch error: ", ex); // eslint-disable-line no-console
+        dump(`Content msg: ${JSON.stringify(msg)}\nDispatch error: ${ex}\n${ex.stack}`);
+      }
+    });
+  }
 
   return store;
 };

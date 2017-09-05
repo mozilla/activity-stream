@@ -23,8 +23,12 @@ function addLocaleDataForReactIntl({locale}) {
 
 class Base extends React.Component {
   componentDidMount() {
-    // Request state after the first render
-    this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
+    // Request state AFTER the first render to ensure we don't cause the
+    // prerendered DOM to be unmounted. Otherwise, NEW_TAB_STATE_REQUEST is
+    // dispatched right after the store is ready.
+    if (this.props.isPrerendered) {
+      this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
+    }
 
     // Also wait for the preloaded page to show, so the tab's title and favicon updates
     addEventListener("visibilitychange", () => {
@@ -54,7 +58,14 @@ class Base extends React.Component {
       return null;
     }
 
-    return (<IntlProvider key={locale} locale={locale} messages={strings}>
+    if (!props.isPrerendered && !initialized) {
+      return null;
+    }
+
+    // Note: the key on IntlProvider must be static in order to not blow away
+    // all elements on a locale change (such as after preloading).
+    // See https://github.com/yahoo/react-intl/issues/695 for more info.
+    return (<IntlProvider key="STATIC" locale={locale} messages={strings}>
         <div className="outer-wrapper">
           <main>
             {prefs.showSearch && <Search />}

@@ -24,6 +24,17 @@ describe("initStore", () => {
     callback(message);
     assert.calledWith(store.dispatch, message.data);
   });
+  it("should not throw if addMessageListener is not defined", () => {
+    // Note: this is being set/restored by GlobalOverrider
+    delete global.addMessageListener;
+
+    assert.doesNotThrow(() => initStore({number: addNumberReducer}));
+  });
+  it("should initialize with an initial state if provided as the second argument", () => {
+    store = initStore({number: addNumberReducer}, {number: 42});
+
+    assert.equal(store.getState().number, 42);
+  });
   it("should log errors from failed messages", () => {
     const callback = global.addMessageListener.firstCall.args[1];
     globals.sandbox.stub(global.console, "error");

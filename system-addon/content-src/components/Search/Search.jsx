@@ -81,5 +81,6 @@ class Search extends React.Component {
   }
 }
 
-module.exports = connect()(injectIntl(Search));
+// initialized is passed to props so that Search will rerender when it receives strings
+module.exports = connect(state => ({locale: state.App.locale}))(injectIntl(Search));
 module.exports._unconnected = Search;

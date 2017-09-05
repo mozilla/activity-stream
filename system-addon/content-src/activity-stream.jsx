@@ -6,11 +6,19 @@ const initStore = require("content-src/lib/init-store");
 const {reducers} = require("common/Reducers.jsm");
 const DetectUserSessionStart = require("content-src/lib/detect-user-session-start");
 const {addSnippetsSubscriber} = require("content-src/lib/snippets");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
 new DetectUserSessionStart().sendEventOrAddListener();
 
-const store = initStore(reducers);
+const store = initStore(reducers, global.gActivityStreamPrerenderedState);
 
-ReactDOM.render(<Provider store={store}><Base /></Provider>, document.getElementById("root"));
+// If we are starting in a prerendered state, we must wait until the first render
+// to request state rehydration (see Base.jsx). If we are NOT in a prerendered state,
+// we can request it immedately.
+if (!global.gActivityStreamPrerenderedState) {
+  store.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
+}
+
+ReactDOM.render(<Provider store={store}><Base isPrerendered={!!global.gActivityStreamPrerenderedState} /></Provider>, document.getElementById("root"));
 
 addSnippetsSubscriber(store);
