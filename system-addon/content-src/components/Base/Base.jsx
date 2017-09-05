@@ -7,6 +7,7 @@ const ConfirmDialog = require("content-src/components/ConfirmDialog/ConfirmDialo
 const ManualMigration = require("content-src/components/ManualMigration/ManualMigration");
 const PreferencesPane = require("content-src/components/PreferencesPane/PreferencesPane");
 const Sections = require("content-src/components/Sections/Sections");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
 // Locales that should be displayed RTL
 const RTL_LIST = ["ar", "he", "fa", "ur"];
@@ -22,6 +23,9 @@ function addLocaleDataForReactIntl({locale}) {
 
 class Base extends React.Component {
   componentDidMount() {
+    // Request state after the first render
+    this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
+
     // Also wait for the preloaded page to show, so the tab's title and favicon updates
     addEventListener("visibilitychange", () => {
       this.updateTitle(this.props.App);
@@ -46,7 +50,7 @@ class Base extends React.Component {
     const props = this.props;
     const {locale, strings, initialized} = props.App;
     const prefs = props.Prefs.values;
-    if (!initialized || !strings) {
+    if (!strings) {
       return null;
     }
 
@@ -59,7 +63,7 @@ class Base extends React.Component {
             <Sections />
             <ConfirmDialog />
           </main>
-          <PreferencesPane />
+          {initialized && <PreferencesPane />}
         </div>
       </IntlProvider>);
   }
