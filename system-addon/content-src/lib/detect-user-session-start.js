@@ -7,8 +7,8 @@ const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 module.exports = class DetectUserSessionStart {
   constructor(options = {}) {
     // Overrides for testing
-    this.sendAsyncMessage = options.sendAsyncMessage || window.sendAsyncMessage;
-    this.document = options.document || document;
+    this.sendAsyncMessage = options.sendAsyncMessage || global.sendAsyncMessage;
+    this.document = options.document || global.document;
     this._perfService = options.perfService || perfSvc;
     this._onVisibilityChange = this._onVisibilityChange.bind(this);
   }
