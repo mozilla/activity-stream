@@ -34,7 +34,7 @@ this.PrerenderData = {
       id: "topstories",
       order: 1,
       title: {id: "header_recommended_by", values: {provider: "Pocket"}},
-      topics: []
+      topics: [{}]
     }
   ]
 };
