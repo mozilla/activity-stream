@@ -99,4 +99,8 @@
   &.icon-webextension {
     background-image: url('#{$image-path}glyph-webextension-16.svg');
   }
+
+  &.icon-highlights {
+    background-image: url('#{$image-path}glyph-highlights-16.svg');
+  }
 }

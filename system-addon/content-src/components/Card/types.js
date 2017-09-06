@@ -5,7 +5,7 @@ module.exports = {
   },
   bookmark: {
     intlID: "type_label_bookmarked",
-    icon: "bookmark"
+    icon: "bookmark-added"
   },
   trending: {
     intlID: "type_label_recommended",

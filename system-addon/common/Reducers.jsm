@@ -203,12 +203,16 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
         let order;
         let index;
         if (prevState.length > 0) {
-          order = action.data.order || prevState[0].order - 1;
+          order = action.data.order !== undefined ? action.data.order : prevState[0].order - 1;
           index = newState.findIndex(section => section.order >= order);
+          if (index === -1) {
+            index = newState.length;
+          }
         } else {
-          order = action.data.order || 1;
+          order = action.data.order !== undefined ? action.data.order : 0;
           index = 0;
         }
+
         const section = Object.assign({title: "", rows: [], order, enabled: false}, action.data, {initialized});
         newState.splice(index, 0, section);
       }

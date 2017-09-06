@@ -254,6 +254,24 @@ describe("Reducers", () => {
       assert.equal(newState[0].id, newSection.id);
       assert.ok(newState[0].order < newState[1].order);
     });
+    it("should insert sections with a 0 `order` at the top on SECTION_REGISTER", () => {
+      const newSection = {id: "new_section", order: 0};
+      const action = {type: at.SECTION_REGISTER, data: newSection};
+      const newState = Sections(oldState, action);
+      assert.equal(newState[0].id, newSection.id);
+    });
+    it("should insert sections with a 1 `order` in the right spot on SECTION_REGISTER", () => {
+      const newSection = {id: "new_section", order: 1};
+      const action = {type: at.SECTION_REGISTER, data: newSection};
+      const newState = Sections(oldState, action);
+      assert.equal(newState[1].id, newSection.id);
+    });
+    it("should insert sections with higher `order` than any existing at the bottom on SECTION_REGISTER", () => {
+      const newSection = {id: "new_section", order: 10000};
+      const action = {type: at.SECTION_REGISTER, data: newSection};
+      const newState = Sections(oldState, action);
+      assert.equal(newState[newState.length - 1].id, newSection.id);
+    });
     it("should set newSection.rows === [] if no rows are provided on SECTION_REGISTER", () => {
       const action = {type: at.SECTION_REGISTER, data: {id: "foo_bar_5", title: "Foo Bar 5"}};
       const newState = Sections(oldState, action);
