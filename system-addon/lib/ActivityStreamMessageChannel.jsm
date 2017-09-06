@@ -60,7 +60,8 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
    */
   middleware(store) {
     return next => action => {
-      if (!this.channel) {
+      const skipMain = action.meta && action.meta.skipMain;
+      if (!this.channel && !skipMain) {
         next(action);
         return;
       }
@@ -69,7 +70,10 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
       } else if (au.isBroadcastToContent(action)) {
         this.broadcast(action);
       }
-      next(action);
+
+      if (!skipMain) {
+        next(action);
+      }
     };
   }
 

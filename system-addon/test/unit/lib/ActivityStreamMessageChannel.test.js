@@ -245,6 +245,17 @@ describe("ActivityStreamMessageChannel", () => {
         store.dispatch({type: "ADD", data: 10});
         assert.equal(store.getState(), 10);
       });
+      it("should not call next if skipMain is true", () => {
+        store.dispatch({type: "ADD", data: 10, meta: {skipMain: true}});
+        assert.equal(store.getState(), 0);
+
+        sinon.stub(mm, "send");
+        const action = ac.SendToContent({type: "ADD", data: 10, meta: {skipMain: true}}, "foo");
+        mm.createChannel();
+        store.dispatch(action);
+        assert.calledWith(mm.send, action);
+        assert.equal(store.getState(), 0);
+      });
       it("should call .send if the action is SendToContent", () => {
         sinon.stub(mm, "send");
         const action = ac.SendToContent({type: "FOO"}, "foo");
