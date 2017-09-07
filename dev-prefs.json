@@ -1,7 +1,0 @@
-{
-  "dom.ipc.processCount": 1,
-  "javascript.options.strict": false,
-  "xpinstall.signatures.required": false,
-  "extensions.@activity-streams.sdk.console.logLevel": "info",
-  "extensions.@activity-streams.telemetry.ping.endpoint": "https://onyx_tiles.stage.mozaws.net/v3/links/activity-stream"
-}

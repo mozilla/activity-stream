@@ -4,34 +4,6 @@
 # to compile your changes.
 
 scripts:
-
-# once: Build/serve the assets and run the add-on
-  once: =>bundle && =>firefox
-
-  clean: rimraf data/content/* && rimraf data/locales/* && mkdirp data/content && rimraf dist/*
-
-  changelog: conventional-changelog -i CHANGELOG.md -s
-
-  copyTestImages: cpx "node_modules/tippy-top-sites/images/**/*" data/content/favicons/images
-
-  preparePocketJson: node ./bin/pocket-config.js
-
-# bundle: Bundle assets for production
-  bundle:
-    pre: =>clean && =>copyTestImages && =>preparePocketJson
-    static: cpx "content-src/static/**/*" data/content
-  # TODO: make the number of locales configurable. pontoon-to-json has an option for this
-    locales: pontoon-to-json --src locales --dest data/locales
-    svgo: svgo -q -f data/content/img/
-    webpack: NODE_ENV=production webpack
-    webpackAddon: webpack --config webpack.addon.config.js
-    css: node-sass content-src/main.scss -o data/content
-    html: node ./bin/generate-html.js > data/content/activity-streams.html
-    post: du -hs ./data/content/*
-
-# bundlestats: Display bundle stats
-  bundlestats: NODE_ENV=production webpack --json | webpack-bundle-size-analyzer
-
   # Run the activity-stream mochitests
   mochitest: (cd ../mozilla-central && ./mach mochitest browser/extensions/activity-stream/test/functional/mochitest )
 
@@ -62,7 +34,7 @@ scripts:
 
 # packagemc: Build stand-alone system add-on xpi
   packagemc:
-    pre: =>clean
+    pre: =>cleanmc
     build: =>buildmc:webpack && =>buildmc:css && =>buildmc:locales
     copy: cpx "system-addon/**" dist/system-addon
     version: node ./bin/update-version.js dist/system-addon
@@ -91,26 +63,10 @@ scripts:
 
   debugcoverage: open logs/coverage/system-addon/report-html/index.html
 
-# start: Start watching/compiling assets,
-  start:
-    _parallel: true
-    pre: =>clean && =>copyTestImages && =>preparePocketJson
-    static: =>bundle:static -- -w
-    locales: =>bundle:locales -- -w
-    webpack: webpack -w
-    webpackAddon: =>bundle:webpackAddon -- -w
-    css: =>bundle:css && =>bundle:css -- -w
-    html: =>bundle:html -- --baseUrl http://localhost:1963/ --csp off
-    server: live-server data/content --port=1963 --no-browser
-    eslint: =>lint:eslint -- -w
-
-# firefox: Launch addon with jpm run
-  firefox: =>bundle:webpackAddon && jpm run -b nightly --prefs ./dev-prefs.json
-
 # lint: Run eslint and sass-lint
   lint:
-    eslint: esw --ext=.js,.jsm,.json,.jsx . .storybook
-    sasslint: sass-lint -v -q
+    eslint: esw --ext=.js,.jsm,.json,.jsx .
+    # sasslint: sass-lint -v -q
 
 # strings-export: Copy newest en-US strings to strings repository
   strings-export: node ./bin/strings-export.js ../activity-stream-l10n
@@ -121,27 +77,9 @@ scripts:
 # test: Run all tests once
   test: =>testmc
 
-  benchmark-with: =>bundle && JSGC_DISABLE_POISONING=1 jpm test -b ${JPM_FIREFOX_BINARY:-"nightly"} --prefs ./benchmark-prefs.json
-# benchmark: Run all benchmarks
-  benchmark: =>benchmark-with -- -f ".*benchmark.js"
-
 # tdd: Run content tests continuously
   tdd: =>tddmc
-
-# package: Build add-on
-# Add a SUPPORTED_LOCALES variable to your environment as a comma separated list to include certain locales.
-# e.g. SUPPORTED_LOCALES=en-US,fr
-  package: =>bundle && jpm xpi && mv activity-streams.xpi dist/activity-streams-$npm_package_version.xpi
 
   # This is just to make sure we don't make commits with failing tests
   # or uncompiled yamscripts.yml. Run automatically with husky.
   prepush: =>lint && =>yamscripts
-
-# Build a local react-storybook containing local stories for
-# development.  Expects "npm run start" to be running in another
-# window to get CSS changes noticed.
-  storybook: start-storybook -p 9001 -s ./data/content
-
-# build-storybook: used by storybooks.io service to build a static copy for
-# automatic storybook building in github PRs
-  build-storybook: =>bundle && STORYBOOK_STATIC=true build-storybook -s ./data/content -o ./.static-storybook

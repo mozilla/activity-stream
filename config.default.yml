@@ -1,6 +1,0 @@
-DEVELOPMENT: true
-LOGGING: true
-
-# This will fire fake events; use this if you want to run the project
-# outside of the add-on
-USE_SHIM: false
