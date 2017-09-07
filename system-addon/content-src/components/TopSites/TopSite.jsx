@@ -110,7 +110,10 @@ class TopSite extends React.Component {
     }
   }
   onEditButtonClick() {
-    this.props.onEdit(this.props.index);
+    this.props.onEdit({
+      index: this.props.index,
+      link: this.props.link
+    });
   }
   render() {
     const {props} = this;
