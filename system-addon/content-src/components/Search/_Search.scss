@@ -41,10 +41,6 @@
       fill: $white;
       -moz-context-properties: fill;
     }
-
-    &[aria-expanded="true"] {
-      border-radius: $search-border-radius $search-border-radius 0 0;
-    }
   }
 
   .search-label {
@@ -85,7 +81,6 @@
   // Adjust the style of the contentSearchUI-generated table
   .contentSearchSuggestionTable {
     border: 0;
-    box-shadow: $search-shadow-outline;
     transform: translateY(2px);
   }
 }
