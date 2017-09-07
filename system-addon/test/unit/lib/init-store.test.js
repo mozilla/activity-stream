@@ -1,4 +1,5 @@
 const initStore = require("content-src/lib/init-store");
+const {MERGE_STORE_ACTION} = initStore;
 const {GlobalOverrider, addNumberReducer} = require("test/unit/utils");
 const {actionCreators: ac} = require("common/Actions.jsm");
 
@@ -16,12 +17,37 @@ describe("initStore", () => {
     assert.ok(store);
     assert.property(store.getState(), "number");
   });
-  it("should add a listener for incoming actions", () => {
+  it("should add a listener that dispatches MERGE_STORE_ACTION", () => {
     assert.calledWith(global.addMessageListener, initStore.INCOMING_MESSAGE_NAME);
-    const callback = global.addMessageListener.firstCall.args[1];
+    const listener = global.addMessageListener.firstCall.args[1];
+    globals.sandbox.spy(store, "dispatch");
+    globals.sandbox.stub(store, "getState").returns({App: {initialized: false}});
+    const message = {name: initStore.INCOMING_MESSAGE_NAME, data: {type: MERGE_STORE_ACTION}};
+
+    listener(message);
+
+    assert.calledWith(store.dispatch, message.data);
+  });
+  it("should not dispatch incoming actions if MERGE_STORE_ACTION was never received", () => {
+    const listener = global.addMessageListener.firstCall.args[1];
     globals.sandbox.spy(store, "dispatch");
     const message = {name: initStore.INCOMING_MESSAGE_NAME, data: {type: "FOO"}};
-    callback(message);
+
+    listener(message);
+
+    assert.notCalled(store.dispatch);
+  });
+  it("should dispatch incoming actions if MERGE_STORE_ACTION was received", () => {
+    const listener = global.addMessageListener.firstCall.args[1];
+    const dispatchSpy = globals.sandbox.spy(store, "dispatch");
+    const message = {name: initStore.INCOMING_MESSAGE_NAME, data: {type: "FOO"}};
+
+    // First dispatch the merge store action
+    listener({name: initStore.INCOMING_MESSAGE_NAME, data: {type: MERGE_STORE_ACTION}});
+    dispatchSpy.reset();
+    // Now dispatch the message
+    listener(message);
+
     assert.calledWith(store.dispatch, message.data);
   });
   it("should not throw if addMessageListener is not defined", () => {
@@ -40,7 +66,7 @@ describe("initStore", () => {
     globals.sandbox.stub(global.console, "error");
     globals.sandbox.stub(store, "dispatch").throws(Error("failed"));
 
-    const message = {name: initStore.INCOMING_MESSAGE_NAME, data: {type: "FOO"}};
+    const message = {name: initStore.INCOMING_MESSAGE_NAME, data: {type: MERGE_STORE_ACTION}};
     callback(message);
 
     assert.calledOnce(global.console.error);
@@ -49,7 +75,7 @@ describe("initStore", () => {
     store.dispatch({type: initStore.MERGE_STORE_ACTION, data: {number: 42}});
     assert.deepEqual(store.getState(), {number: 42});
   });
-  it("should send out SendToMain ations", () => {
+  it("should send out SendToMain actions", () => {
     const action = ac.SendToMain({type: "FOO"});
     store.dispatch(action);
     assert.calledWith(global.sendAsyncMessage, initStore.OUTGOING_MESSAGE_NAME, action);

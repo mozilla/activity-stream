@@ -58,7 +58,17 @@ module.exports = function initStore(reducers, initialState) {
   );
 
   if (global.addMessageListener) {
+    let didInitialize = false;
     global.addMessageListener(INCOMING_MESSAGE_NAME, msg => {
+      // We should discard any messages received before the initial rehydration
+      // message from Chrome, since that replaces the whole state anyway.
+      const isMergeStoreAction = msg.data.type === MERGE_STORE_ACTION;
+      if (!didInitialize && !isMergeStoreAction) {
+        return;
+      }
+      if (isMergeStoreAction) {
+        didInitialize = true;
+      }
       try {
         store.dispatch(msg.data);
       } catch (ex) {

@@ -54,9 +54,6 @@ class Base extends React.Component {
     const props = this.props;
     const {locale, strings, initialized} = props.App;
     const prefs = props.Prefs.values;
-    if (!strings) {
-      return null;
-    }
 
     if (!props.isPrerendered && !initialized) {
       return null;
