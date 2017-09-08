@@ -5,9 +5,6 @@
 
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/NewTabUtils.jsm");
-Cu.importGlobalProperties(["fetch"]);
 
 const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
@@ -39,7 +36,6 @@ this.HighlightsFeed = class HighlightsFeed {
 
   postInit() {
     SectionsManager.enableSection(SECTION_ID);
-    this.fetchHighlights();
   }
 
   uninit() {
