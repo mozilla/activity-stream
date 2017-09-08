@@ -128,6 +128,7 @@ class TopSitesEdit extends React.Component {
               url={this.props.TopSites.rows[this.state.editIndex].url}
               index={this.state.editIndex}
               editMode={true}
+              link={this.props.TopSites.rows[this.state.editIndex]}
               onClose={this.onFormClose}
               dispatch={this.props.dispatch}
               intl={this.props.intl} />
