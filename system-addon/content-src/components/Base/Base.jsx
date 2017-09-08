@@ -7,6 +7,7 @@ const ConfirmDialog = require("content-src/components/ConfirmDialog/ConfirmDialo
 const ManualMigration = require("content-src/components/ManualMigration/ManualMigration");
 const PreferencesPane = require("content-src/components/PreferencesPane/PreferencesPane");
 const Sections = require("content-src/components/Sections/Sections");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
 // Locales that should be displayed RTL
 const RTL_LIST = ["ar", "he", "fa", "ur"];
@@ -22,6 +23,13 @@ function addLocaleDataForReactIntl({locale}) {
 
 class Base extends React.Component {
   componentDidMount() {
+    // Request state AFTER the first render to ensure we don't cause the
+    // prerendered DOM to be unmounted. Otherwise, NEW_TAB_STATE_REQUEST is
+    // dispatched right after the store is ready.
+    if (this.props.isPrerendered) {
+      this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
+    }
+
     // Also wait for the preloaded page to show, so the tab's title and favicon updates
     addEventListener("visibilitychange", () => {
       this.updateTitle(this.props.App);
@@ -46,11 +54,15 @@ class Base extends React.Component {
     const props = this.props;
     const {locale, strings, initialized} = props.App;
     const prefs = props.Prefs.values;
-    if (!initialized || !strings) {
+
+    if (!props.isPrerendered && !initialized) {
       return null;
     }
 
-    return (<IntlProvider key={locale} locale={locale} messages={strings}>
+    // Note: the key on IntlProvider must be static in order to not blow away
+    // all elements on a locale change (such as after preloading).
+    // See https://github.com/yahoo/react-intl/issues/695 for more info.
+    return (<IntlProvider key="STATIC" locale={locale} messages={strings}>
         <div className="outer-wrapper">
           <main>
             {prefs.showSearch && <Search />}
@@ -59,7 +71,7 @@ class Base extends React.Component {
             <Sections />
             <ConfirmDialog />
           </main>
-          <PreferencesPane />
+          {initialized && <PreferencesPane />}
         </div>
       </IntlProvider>);
   }

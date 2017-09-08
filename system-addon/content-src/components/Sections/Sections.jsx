@@ -125,8 +125,7 @@ class Section extends React.Component {
     const maxCards = CARDS_PER_ROW * maxRows;
     const shouldShowTopics = (id === "topstories" &&
       this.props.topics &&
-      this.props.topics.length > 0 &&
-      this.props.read_more_endpoint);
+      this.props.topics.length > 0);
 
     const infoOptionIconA11yAttrs = {
       "aria-haspopup": "true",

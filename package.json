@@ -272,6 +272,7 @@
     "prebuildmc": "npm run cleanmc",
     "buildmc:webpack": "webpack --config webpack.system-addon.config.js",
     "buildmc:css": "node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content",
+    "buildmc:html": "webpack --config webpack.prerender.config.js && node ./bin/render-activity-stream-html.js",
     "buildmc:locales": "pontoon-to-json --src locales --dest system-addon/data",
     "buildmc:copy": "cpx \"system-addon/**/{,.}*\" ../mozilla-central/browser/extensions/activity-stream",
     "buildmc:version": "node ./bin/update-version.js ../mozilla-central/browser/extensions/activity-stream",

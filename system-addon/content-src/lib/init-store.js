@@ -1,7 +1,7 @@
 /* eslint-env mozilla/frame-script */
 
 const {createStore, combineReducers, applyMiddleware} = require("redux");
-const {actionUtils: au} = require("common/Actions.jsm");
+const {actionTypes: at, actionCreators: ac, actionUtils: au} = require("common/Actions.jsm");
 
 const MERGE_STORE_ACTION = "NEW_TAB_INITIAL_STATE";
 const OUTGOING_MESSAGE_NAME = "ActivityStream:ContentToMain";
@@ -43,30 +43,71 @@ const messageMiddleware = store => next => action => {
   next(action);
 };
 
+const rehydrationMiddleware = store => next => action => {
+  if (store._didRehydrate) {
+    return next(action);
+  }
+
+  const isMergeStoreAction = action.type === MERGE_STORE_ACTION;
+  const isRehydrationRequest = action.type === at.NEW_TAB_STATE_REQUEST;
+
+  if (isRehydrationRequest) {
+    store._didRequestInitialState = true;
+    return next(action);
+  }
+
+  if (isMergeStoreAction) {
+    store._didRehydrate = true;
+    return next(action);
+  }
+
+  // If init happened after our request was made, we need to re-request
+  if (store._didRequestInitialState && action.type === at.INIT) {
+    return next(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
+  }
+
+  if (au.isBroadcastToContent(action) || au.isSendToContent(action)) {
+    // Note that actions received before didRehydrate will not be dispatched
+    // because this could negatively affect preloading and the the state
+    // will be replaced by rehydration anyway.
+    return null;
+  }
+
+  return next(action);
+};
+
 /**
  * initStore - Create a store and listen for incoming actions
  *
  * @param  {object} reducers An object containing Redux reducers
+ * @param  {object} intialState (optional) The initial state of the store, if desired
  * @return {object}          A redux store
  */
-module.exports = function initStore(reducers) {
+module.exports = function initStore(reducers, initialState) {
   const store = createStore(
     mergeStateReducer(combineReducers(reducers)),
-    applyMiddleware(messageMiddleware)
+    initialState,
+    global.addMessageListener && applyMiddleware(rehydrationMiddleware, messageMiddleware)
   );
 
-  addMessageListener(INCOMING_MESSAGE_NAME, msg => {
-    try {
-      store.dispatch(msg.data);
-    } catch (ex) {
-      console.error("Content msg:", msg, "Dispatch error: ", ex); // eslint-disable-line no-console
-      dump(`Content msg: ${JSON.stringify(msg)}\nDispatch error: ${ex}\n${ex.stack}`);
-    }
-  });
+  store._didRehydrate = false;
+  store._didRequestInitialState = false;
+
+  if (global.addMessageListener) {
+    global.addMessageListener(INCOMING_MESSAGE_NAME, msg => {
+      try {
+        store.dispatch(msg.data);
+      } catch (ex) {
+        console.error("Content msg:", msg, "Dispatch error: ", ex); // eslint-disable-line no-console
+        dump(`Content msg: ${JSON.stringify(msg)}\nDispatch error: ${ex}\n${ex.stack}`);
+      }
+    });
+  }
 
   return store;
 };
 
+module.exports.rehydrationMiddleware = rehydrationMiddleware;
 module.exports.MERGE_STORE_ACTION = MERGE_STORE_ACTION;
 module.exports.OUTGOING_MESSAGE_NAME = OUTGOING_MESSAGE_NAME;
 module.exports.INCOMING_MESSAGE_NAME = INCOMING_MESSAGE_NAME;
