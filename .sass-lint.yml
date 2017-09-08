@@ -2,7 +2,7 @@ options:
   merge-default-rules: true
 
 files:
-  include: 'content-src/**/*.scss'
+  include: 'system-addon/content-src/**/*.scss'
 
 
 rules:
