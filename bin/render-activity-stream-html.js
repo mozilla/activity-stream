@@ -43,7 +43,7 @@ function templateHTML(options, html) {
     <link rel="stylesheet" href="${options.baseUrl}data/content/activity-stream.css" />
     <link rel="icon" type="image/svg+xml" href="${options.baseUrl}img/newtab-icon.svg">
   </head>
-  <body>
+  <body class="activity-stream">
     <div id="root">${isPrerendered ? html : ""}</div>
     <div id="snippets-container">
       <div id="snippets"></div>
