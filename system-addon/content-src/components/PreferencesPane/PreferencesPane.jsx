@@ -103,6 +103,13 @@ class PreferencesPane extends React.Component {
                     value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
                     titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />)}
 
+              <hr />
+
+              <PreferencesInput className="showSnippets" prefName="feeds.snippets"
+                value={prefs["feeds.snippets"]} onChange={this.handlePrefChange}
+                titleString={{id: "settings_pane_snippets_header"}}
+                descString={{id: "settings_pane_snippets_body"}} />
+
             </div>
             <section className="actions">
               <button className="done" onClick={this.togglePane}>
