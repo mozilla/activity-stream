@@ -60,10 +60,12 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(sectionsManagerStub.enableSection);
       assert.calledWith(sectionsManagerStub.enableSection, SECTION_ID);
     });
-    it("should fetch highlights on init", () => {
+    it("should *not* fetch highlights on init to avoid loading Places too early", () => {
       feed.fetchHighlights = sinon.spy();
+
       feed.onAction({type: at.INIT});
-      assert.calledOnce(feed.fetchHighlights);
+
+      assert.notCalled(feed.fetchHighlights);
     });
   });
   describe("#fetchHighlights", () => {
@@ -94,7 +96,7 @@ describe("Top Sites Feed", () => {
   });
   describe("#onAction", () => {
     it("should fetch highlights on NEW_TAB_LOAD after update interval", async () => {
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.NEW_TAB_LOAD});
       assert.notCalled(feed.fetchHighlights);
@@ -105,62 +107,62 @@ describe("Top Sites Feed", () => {
     });
     it("should fetch highlights on NEW_TAB_LOAD if grid is empty", async () => {
       links = [];
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.NEW_TAB_LOAD});
       assert.calledOnce(feed.fetchHighlights);
     });
     it("should fetch highlights on NEW_TAB_LOAD if grid isn't full", async () => {
       links = new Array(8).fill(null).map((v, i) => ({url: `http://www.site${i}.com`}));
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.NEW_TAB_LOAD});
       assert.calledOnce(feed.fetchHighlights);
     });
     it("should fetch highlights on MIGRATION_COMPLETED", async () => {
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.MIGRATION_COMPLETED});
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, true);
     });
     it("should fetch highlights on PLACES_HISTORY_CLEARED", async () => {
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.PLACES_HISTORY_CLEARED});
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, true);
     });
     it("should fetch highlights on PLACES_LINK_DELETED", async () => {
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.PLACES_LINK_DELETED});
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, true);
     });
     it("should fetch highlights on PLACES_LINK_BLOCKED", async () => {
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.PLACES_LINK_BLOCKED});
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, true);
     });
     it("should fetch highlights on PLACES_BOOKMARK_ADDED", async () => {
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.PLACES_BOOKMARK_ADDED});
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, false);
     });
     it("should fetch highlights on PLACES_BOOKMARK_REMOVED", async () => {
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.PLACES_BOOKMARK_REMOVED});
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, false);
     });
     it("should fetch highlights on TOP_SITES_UPDATED", async () => {
-      await feed.init();
+      await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.TOP_SITES_UPDATED});
       assert.calledOnce(feed.fetchHighlights);
