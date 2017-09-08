@@ -252,14 +252,6 @@ describe("Top Sites Feed", () => {
       await feed.refresh(action);
       assert.ok(feed._tippyTopProvider.initialized);
     });
-    it("should do nothing if another refresh is already in progress", async () => {
-      feed.isRefreshing = true;
-      sinon.spy(feed, "getLinksWithDefaults");
-      sinon.spy(feed, "getScreenshot");
-      await feed.refresh(action);
-      assert.notCalled(feed.getLinksWithDefaults);
-      assert.notCalled(feed.getScreenshot);
-    });
     it("should dispatch an action with the links returned", async () => {
       sandbox.stub(feed, "getScreenshot");
       await feed.refresh(action);

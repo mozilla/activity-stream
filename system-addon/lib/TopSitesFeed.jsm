@@ -81,9 +81,6 @@ this.TopSitesFeed = class TopSitesFeed {
     return pinned.slice(0, TOP_SITES_SHOWMORE_LENGTH);
   }
   async refresh(target = null) {
-    if (this.isRefreshing) { return; }
-    this.isRefreshing = true;
-
     if (!this._tippyTopProvider.initialized) {
       await this._tippyTopProvider.init();
     }
@@ -123,7 +120,6 @@ this.TopSitesFeed = class TopSitesFeed {
       this.store.dispatch(ac.BroadcastToContent(newAction));
     }
     this.lastUpdated = Date.now();
-    this.isRefreshing = false;
   }
   _getPinnedWithData() {
     // Augment the pinned links with any other extra data we have for them already in the store
