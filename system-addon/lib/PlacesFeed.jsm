@@ -103,7 +103,7 @@ class BookmarksObserver extends Observer {
         bookmarkGuid,
         bookmarkTitle,
         dateAdded,
-        url: uri.href
+        url: uri.spec
       }
     });
   }

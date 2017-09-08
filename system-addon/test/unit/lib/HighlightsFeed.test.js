@@ -84,6 +84,11 @@ describe("Top Sites Feed", () => {
       assert.equal(feed.highlights.length, 1);
       assert.deepEqual(feed.highlights[0], links[0]);
     });
+    it("should set type to bookmark if there is a bookmarkGuid", async () => {
+      links = [{url: "https://mozilla.org", type: "history", bookmarkGuid: "1234567890"}];
+      await feed.fetchHighlights();
+      assert.equal(feed.highlights[0].type, "bookmark");
+    });
   });
   describe("#uninit", () => {
     it("should disable its section", () => {
