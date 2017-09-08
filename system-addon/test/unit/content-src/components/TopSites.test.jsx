@@ -550,7 +550,7 @@ describe("<TopSitesEdit>", () => {
     wrapper.find(".edit").simulate("click");
     wrapper.find(".show-less").simulate("click");
   });
-  it("should save editIndex and editLink in state when onEdit is called", () => {
+  it("should save editIndex in state when onEdit is called", () => {
     assert.equal(wrapper.instance().state.editIndex, -1);
     assert.equal(wrapper.instance().state.showEditForm, false);
 
