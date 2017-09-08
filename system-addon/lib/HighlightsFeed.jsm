@@ -51,6 +51,9 @@ this.HighlightsFeed = class HighlightsFeed {
     for (let highlight of this.highlights) {
       highlight.hostname = shortURL(Object.assign({}, highlight, {url: highlight.url}));
       highlight.image = highlight.preview_image_url;
+      if (highlight.bookmarkGuid) {
+        highlight.type = "bookmark";
+      }
     }
 
     // Remove any Highlights that are in Top Sites already

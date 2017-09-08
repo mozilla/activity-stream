@@ -237,6 +237,9 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
           if (item.url === action.data.url) {
             const {bookmarkGuid, bookmarkTitle, dateAdded} = action.data;
             Object.assign(item, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: dateAdded});
+            if (!item.type || item.type === "history") {
+              item.type = "bookmark";
+            }
           }
           return item;
         })
@@ -253,6 +256,9 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
             delete newSite.bookmarkGuid;
             delete newSite.bookmarkTitle;
             delete newSite.bookmarkDateCreated;
+            if (!newSite.type || newSite.type === "bookmark") {
+              newSite.type = "history";
+            }
             return newSite;
           }
           return item;

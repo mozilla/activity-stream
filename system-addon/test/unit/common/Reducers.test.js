@@ -211,7 +211,8 @@ describe("Reducers", () => {
         title: `Foo Bar ${i}`,
         initialized: false,
         rows: [{url: "www.foo.bar"}, {url: "www.other.url"}],
-        order: i
+        order: i,
+        type: "history"
       }));
     });
 
@@ -356,6 +357,7 @@ describe("Reducers", () => {
 
       // new row has bookmark data
       assert.equal(newRow.url, action.data.url);
+      assert.equal(newRow.type, "bookmark");
       assert.equal(newRow.bookmarkGuid, action.data.bookmarkGuid);
       assert.equal(newRow.bookmarkTitle, action.data.bookmarkTitle);
       assert.equal(newRow.bookmarkDateCreated, action.data.dateAdded);
@@ -380,14 +382,16 @@ describe("Reducers", () => {
         item.rows[0].bookmarkGuid = "bookmark123";
         item.rows[0].bookmarkTitle = "Title for bar.com";
         item.rows[0].bookmarkDateCreated = 1234567;
+        item.rows[0].type = "bookmark";
       });
       const nextState = Sections(oldState, action);
       // check a section to ensure the correct bookmark was removed
       const newRow = nextState[0].rows[0];
       const oldRow = nextState[0].rows[1];
 
-      // new row has bookmark data
+      // new row isn't a bookmark
       assert.equal(newRow.url, action.data.url);
+      assert.equal(newRow.type, "history");
       assert.isUndefined(newRow.bookmarkGuid);
       assert.isUndefined(newRow.bookmarkTitle);
       assert.isUndefined(newRow.bookmarkDateCreated);
