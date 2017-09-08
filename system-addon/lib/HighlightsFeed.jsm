@@ -13,6 +13,7 @@ const {actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.j
 
 const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {SectionsManager} = Cu.import("resource://activity-stream/lib/SectionsManager.jsm", {});
+const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
@@ -25,6 +26,11 @@ this.HighlightsFeed = class HighlightsFeed {
   constructor() {
     this.highlightsLastUpdated = 0;
     this.highlights = [];
+    this.dedupe = new Dedupe(this._dedupeKey);
+  }
+
+  _dedupeKey(site) {
+    return site && site.url;
   }
 
   init() {
@@ -48,8 +54,8 @@ this.HighlightsFeed = class HighlightsFeed {
     }
 
     // Remove any Highlights that are in Top Sites already
-    const topsites = this.store.getState().TopSites.rows.map(site => site.url);
-    this.highlights = this.highlights.filter(site => topsites.indexOf(site.url) === -1);
+    const deduped = this.dedupe.group(this.store.getState().TopSites.rows, this.highlights);
+    this.highlights = deduped[1];
 
     SectionsManager.updateSection(SECTION_ID, {rows: this.highlights}, this.highlightsLastUpdated === 0 || broadcast);
     this.highlightsLastUpdated = Date.now();
