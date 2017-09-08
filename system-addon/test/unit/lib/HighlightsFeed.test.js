@@ -159,5 +159,12 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, false);
     });
+    it("should fetch highlights on TOP_SITES_UPDATED", async () => {
+      await feed.init();
+      feed.fetchHighlights = sinon.spy();
+      feed.onAction({type: at.TOP_SITES_UPDATED});
+      assert.calledOnce(feed.fetchHighlights);
+      assert.calledWith(feed.fetchHighlights, false);
+    });
   });
 });

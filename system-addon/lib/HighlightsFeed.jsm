@@ -83,6 +83,7 @@ this.HighlightsFeed = class HighlightsFeed {
         break;
       case at.PLACES_BOOKMARK_ADDED:
       case at.PLACES_BOOKMARK_REMOVED:
+      case at.TOP_SITES_UPDATED:
         this.fetchHighlights(false);
         break;
       case at.UNINIT:
