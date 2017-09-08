@@ -56,7 +56,8 @@ class TopSiteForm extends React.Component {
       if (this.state.label !== "") {
         site.label = this.state.label;
       }
-      if (this.props.link.isPinned) {
+      // Unpin links if the URL changed.
+      if (this.props.link.isPinned && this.props.link.url !== site.url) {
         this.props.dispatch(ac.SendToMain({
           type: at.TOP_SITES_UNPIN,
           data: {site: {url: this.props.link.url}}

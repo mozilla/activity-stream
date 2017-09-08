@@ -146,12 +146,12 @@ this.TopSitesFeed = class TopSitesFeed {
   pin(action) {
     const {site, index} = action.data;
     NewTabUtils.pinnedLinks.pin(site, index);
-    this.refresh();
+    this._broadcastPinnedSitesUpdated();
   }
   unpin(action) {
     const {site} = action.data;
     NewTabUtils.pinnedLinks.unpin(site);
-    this.refresh();
+    this._broadcastPinnedSitesUpdated();
   }
   _insertPin(site, index) {
     // Insert a pin at the given index. If that slot is already taken, we need
@@ -162,7 +162,6 @@ this.TopSitesFeed = class TopSitesFeed {
       this._insertPin(pinned[index], index + 1);
     }
     NewTabUtils.pinnedLinks.pin(site, index);
-    this.refresh();
   }
   add(action) {
     // Adding a top site pins it in the first slot, pushing over any link already

@@ -453,8 +453,9 @@ describe("<TopSite>", () => {
       wrapper.find(".icon-dismiss").simulate("click");
     });
     it("should call onEdit prop when the edit button is clicked", done => {
-      function onEdit(index) {
-        assert.equal(index, defaultProps.index);
+      function onEdit(site) {
+        assert.equal(site.index, defaultProps.index);
+        assert.equal(site.link, defaultProps.link);
         done();
       }
       setup({onEdit});
@@ -550,6 +551,17 @@ describe("<TopSitesEdit>", () => {
     wrapper.find(".edit").simulate("click");
     wrapper.find(".show-less").simulate("click");
   });
+  it("should save editIndex and editLink in state when onEdit is called", () => {
+    const site = {
+      index: 1,
+      link: {url: "https://foo.bar"}
+    };
+
+    wrapper.instance().onEdit(site);
+
+    assert.equal(wrapper.instance().state.editIndex, site.index);
+    assert.equal(wrapper.instance().state.editLink, site.link);
+  });
 });
 
 describe("<TopSiteForm>", () => {
@@ -628,7 +640,13 @@ describe("<TopSiteForm>", () => {
   });
 
   describe("#editMode", () => {
-    beforeEach(() => setup({editMode: true, url: "https://foo.bar", label: "baz", index: 7}));
+    beforeEach(() => setup({
+      editMode: true,
+      url: "https://foo.bar",
+      label: "baz",
+      index: 7,
+      link: {url: "https://foo.bar"}
+    }));
 
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
@@ -690,6 +708,48 @@ describe("<TopSiteForm>", () => {
           type: at.TOP_SITES_PIN
         }
       );
+    });
+    describe("#editMode (pinned links, same URL)", () => {
+      const props = {
+        editMode: true,
+        url: "https://foo.bar",
+        label: "baz",
+        index: 7,
+        link: {url: "https://foo.bar", isPinned: true}
+      };
+
+      beforeEach(() => setup(props));
+
+      it("should not dispatch TOP_SITES_UNPIN if the url is the same", () => {
+        wrapper.find(".save").simulate("click");
+        assert.isTrue(wrapper.instance().props.dispatch.neverCalledWith(
+          ac.SendToMain({
+            type: at.TOP_SITES_UNPIN,
+            data: {site: {url: props.link.url}}
+          })
+        ));
+      });
+    });
+    describe("#editMode (pinned links, different URL)", () => {
+      const props = {
+        editMode: true,
+        url: "https://foo.bar",
+        label: "baz",
+        index: 7,
+        link: {url: "https://old.url", isPinned: true}
+      };
+
+      beforeEach(() => setup(props));
+
+      it("should dispatch TOP_SITES_UNPIN if the link edited is pinned && the url changed", () => {
+        wrapper.find(".save").simulate("click");
+        assert.calledWith(wrapper.instance().props.dispatch,
+          ac.SendToMain({
+            type: at.TOP_SITES_UNPIN,
+            data: {site: {url: props.link.url}}
+          })
+        );
+      });
     });
   });
 
