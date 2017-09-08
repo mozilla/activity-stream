@@ -15,8 +15,7 @@ class TopSitesEdit extends React.Component {
       showEditModal: false,
       showAddForm: false,
       showEditForm: false,
-      editIndex: -1, // Index of top site being edited,
-      editLink: null
+      editIndex: -1 // Index of top site being edited
     };
     this.onEditButtonClick = this.onEditButtonClick.bind(this);
     this.onShowMoreLessClick = this.onShowMoreLessClick.bind(this);
@@ -61,12 +60,8 @@ class TopSitesEdit extends React.Component {
   onFormClose() {
     this.setState({showAddForm: false, showEditForm: false});
   }
-  onEdit(site) {
-    this.setState({
-      showEditForm: true,
-      editIndex: site.index,
-      editLink: site.link
-    });
+  onEdit(index) {
+    this.setState({showEditForm: true, editIndex: index});
     this.props.dispatch(ac.UserEvent({
       source: TOP_SITES_SOURCE,
       event: "TOP_SITES_EDIT_FORM_OPEN"
@@ -133,7 +128,7 @@ class TopSitesEdit extends React.Component {
               url={this.props.TopSites.rows[this.state.editIndex].url}
               index={this.state.editIndex}
               editMode={true}
-              link={this.state.editLink}
+              link={this.props.TopSites.rows[this.state.editIndex]}
               onClose={this.onFormClose}
               dispatch={this.props.dispatch}
               intl={this.props.intl} />

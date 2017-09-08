@@ -453,9 +453,8 @@ describe("<TopSite>", () => {
       wrapper.find(".icon-dismiss").simulate("click");
     });
     it("should call onEdit prop when the edit button is clicked", done => {
-      function onEdit(site) {
-        assert.equal(site.index, defaultProps.index);
-        assert.equal(site.link, defaultProps.link);
+      function onEdit(index) {
+        assert.equal(index, defaultProps.index);
         done();
       }
       setup({onEdit});
@@ -552,15 +551,25 @@ describe("<TopSitesEdit>", () => {
     wrapper.find(".show-less").simulate("click");
   });
   it("should save editIndex and editLink in state when onEdit is called", () => {
-    const site = {
-      index: 1,
-      link: {url: "https://foo.bar"}
-    };
+    assert.equal(wrapper.instance().state.editIndex, -1);
+    assert.equal(wrapper.instance().state.showEditForm, false);
 
-    wrapper.instance().onEdit(site);
+    wrapper.instance().onEdit(1);
 
-    assert.equal(wrapper.instance().state.editIndex, site.index);
-    assert.equal(wrapper.instance().state.editLink, site.link);
+    assert.equal(wrapper.instance().state.editIndex, 1);
+    assert.equal(wrapper.instance().state.showEditForm, true);
+  });
+  describe("it should provider link prop to TopSiteForm", () => {
+    const FAKE_TOP_SITES = {TopSites: {initialized: true, rows: [{url: "https://mozilla.org"}]}};
+
+    beforeEach(() => setup(FAKE_TOP_SITES));
+
+    it("should provide prop to TopSiteForm", () => {
+      wrapper.setState({showEditModal: true, showEditForm: true, editIndex: 0});
+      const form = wrapper.find(TopSiteForm);
+
+      assert.equal(form.props().link, FAKE_TOP_SITES.TopSites.rows[0]);
+    });
   });
 });
 
