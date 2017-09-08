@@ -4,7 +4,7 @@
   $top-sites-title-height: 30px;
   $top-sites-vertical-space: 18px;
   $screenshot-size: cover;
-  $tippy-top-size: 96px;
+  $rich-icon-size: 96px;
   $edit-menu-button-size: 25px;
 
   list-style: none;
@@ -129,7 +129,7 @@
       }
     }
 
-    .tippy-top-icon {
+    .rich-icon {
       position: absolute;
       top: 0;
       left: 0;
@@ -138,7 +138,8 @@
       border-radius: $top-sites-border-radius;
       box-shadow: inset $inner-box-shadow;
       background-position: center center;
-      background-size: $tippy-top-size;
+      background-size: $rich-icon-size;
+      background-color: $background-primary;
       background-repeat: no-repeat;
     }
 
