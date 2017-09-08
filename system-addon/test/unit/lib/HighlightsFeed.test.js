@@ -1,8 +1,8 @@
 "use strict";
 const injector = require("inject!lib/HighlightsFeed.jsm");
 const {GlobalOverrider} = require("test/unit/utils");
-// const action = {meta: {fromTarget: {}}};
-const {/* actionCreators: ac,*/actionTypes: at} = require("common/Actions.jsm");
+const {actionTypes: at} = require("common/Actions.jsm");
+const {Dedupe} = require("common/Dedupe.jsm");
 
 const FAKE_LINKS = new Array(9).fill(null).map((v, i) => ({url: `http://www.site${i}.com`}));
 
@@ -34,7 +34,8 @@ describe("Top Sites Feed", () => {
     globals.set("NewTabUtils", fakeNewTabUtils);
     ({HighlightsFeed, HIGHLIGHTS_UPDATE_TIME, SECTION_ID} = injector({
       "lib/ShortURL.jsm": {shortURL: shortURLStub},
-      "lib/SectionsManager.jsm": {SectionsManager: sectionsManagerStub}
+      "lib/SectionsManager.jsm": {SectionsManager: sectionsManagerStub},
+      "common/Dedupe.jsm": {Dedupe}
     }));
     feed = new HighlightsFeed();
     feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill(null).map((v, i) => ({url: `http://www.topsite${i}.com`}))}}; }};
@@ -155,6 +156,13 @@ describe("Top Sites Feed", () => {
       await feed.init();
       feed.fetchHighlights = sinon.spy();
       feed.onAction({type: at.PLACES_BOOKMARK_REMOVED});
+      assert.calledOnce(feed.fetchHighlights);
+      assert.calledWith(feed.fetchHighlights, false);
+    });
+    it("should fetch highlights on TOP_SITES_UPDATED", async () => {
+      await feed.init();
+      feed.fetchHighlights = sinon.spy();
+      feed.onAction({type: at.TOP_SITES_UPDATED});
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, false);
     });
