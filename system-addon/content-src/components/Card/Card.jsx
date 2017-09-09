@@ -54,7 +54,8 @@ class Card extends React.Component {
     const {index, link, dispatch, contextMenuOptions, eventSource} = this.props;
     const {props} = this;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
-    const {icon, intlID} = link.type ? cardContextTypes[link.type] : {};
+    // Display "now" as "trending" until we have new strings #3402
+    const {icon, intlID} = cardContextTypes[link.type === "now" ? "trending" : link.type] || {};
 
     return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}${props.placeholder ? " placeholder" : ""}`}>
       <a href={link.url} onClick={!props.placeholder && this.onLinkClick}>
