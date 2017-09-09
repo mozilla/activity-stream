@@ -123,13 +123,12 @@
 
   .card-context-icon {
     fill: $fill-secondary;
-    font-size: 13px;
     margin-inline-end: 6px;
-    display: block;
   }
 
   .card-context-label {
     flex-grow: 1;
+    line-height: $icon-size;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
