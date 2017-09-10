@@ -9,16 +9,13 @@ const PreferencesPane = require("content-src/components/PreferencesPane/Preferen
 const Sections = require("content-src/components/Sections/Sections");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
-// Locales that should be displayed RTL
-const RTL_LIST = ["ar", "he", "fa", "ur"];
-
 // Add the locale data for pluralization and relative-time formatting for now,
 // this just uses english locale data. We can make this more sophisticated if
 // more features are needed.
-function addLocaleDataForReactIntl({locale}) {
+function addLocaleDataForReactIntl({locale, textDirection}) {
   addLocaleData([{locale, parentLocale: "en"}]);
   document.documentElement.lang = locale;
-  document.documentElement.dir = RTL_LIST.indexOf(locale.split("-")[0]) >= 0 ? "rtl" : "ltr";
+  document.documentElement.dir = textDirection;
 }
 
 class Base extends React.Component {

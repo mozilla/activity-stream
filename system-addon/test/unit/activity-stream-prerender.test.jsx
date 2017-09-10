@@ -14,7 +14,7 @@ describe("prerenderStore", () => {
     const state = store.getState();
     assert.equal(state.App.initialized, false);
   });
-  it("should set the right locale and strings", () => {
+  it("should set the right locale, strings, and text direction", () => {
     const strings = {foo: "foo"};
 
     const store = prerenderStore("en-FOO", strings);
@@ -22,6 +22,7 @@ describe("prerenderStore", () => {
     const state = store.getState();
     assert.equal(state.App.locale, "en-FOO");
     assert.equal(state.App.strings, strings);
+    assert.equal(state.App.textDirection, "ltr");
   });
   it("should add the right initial prefs", () => {
     const store = prerenderStore();

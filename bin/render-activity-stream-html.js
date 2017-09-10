@@ -13,7 +13,6 @@ const INITIAL_STATE_JS_FILE_PATH = path.join(BASE_FILE_PATH, "activity-stream-in
 const DEFAULT_OPTIONS = {
   baseUrl: "resource://activity-stream/",
   locale: "", // TODO: pass in options.locale. For now, we're just doing empty strings.
-  direction: "ltr",
   title: "New Tab"
 };
 
@@ -90,13 +89,13 @@ function main() {
     alias: {
       baseUrl: "b",
       title: "t",
-      locale: "l",
-      direction: "d"
+      locale: "l"
     }
   });
 
   const options = Object.assign({}, DEFAULT_OPTIONS, args || {});
   const {html, state} = prerender(options.locale);
+  options.direction = state.App.textDirection;
 
   fs.writeFileSync(HTML_FILE_PATH, templateHTML(options));
   fs.writeFileSync(PRERENDERED_HTML_FILE_PATH, templateHTML(options, html));

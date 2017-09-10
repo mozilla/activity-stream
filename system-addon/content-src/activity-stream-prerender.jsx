@@ -17,7 +17,7 @@ const EMPTY_LOCALE = "en-PRERENDER";
  * @param  {type} strings All the strings for the page
  * @return {obj}         A store
  */
-function prerenderStore(locale, strings) {
+function prerenderStore(locale = "", strings) {
   const store = initStore(reducers, INITIAL_STATE);
   store.dispatch({type: at.LOCALE_UPDATED, data: {locale, strings}});
   store.dispatch({type: at.PREFS_INITIAL_VALUES, data: PrerenderData.initialPrefs});
