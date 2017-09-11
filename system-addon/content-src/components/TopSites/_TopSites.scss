@@ -6,6 +6,9 @@
   $screenshot-size: cover;
   $rich-icon-size: 96px;
   $edit-menu-button-size: 25px;
+  $default-icon-wrapper-size: 42px;
+  $default-icon-size: 32px;
+  $default-icon-offset: 6px;
 
   list-style: none;
   margin: 0;
@@ -129,18 +132,31 @@
       }
     }
 
-    .rich-icon {
+    // Some common styles for all icons (rich and default) in top sites
+    .top-site-icon {
       position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
       border-radius: $top-sites-border-radius;
       box-shadow: inset $inner-box-shadow;
       background-position: center center;
-      background-size: $rich-icon-size;
-      background-color: $background-primary;
       background-repeat: no-repeat;
+      background-color: $background-primary;
+    }
+
+    .rich-icon {
+      top: 0;
+      offset-inline-start: 0;
+      height: 100%;
+      width: 100%;
+      background-size: $rich-icon-size;
+    }
+
+    .default-icon {
+      z-index: 1;
+      top: -$default-icon-offset;
+      offset-inline-start: -$default-icon-offset;
+      height: $default-icon-wrapper-size;
+      width: $default-icon-wrapper-size;
+      background-size: $default-icon-size;
     }
 
     .title {

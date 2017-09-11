@@ -3,7 +3,7 @@ const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 
-const {TOP_SITES_SOURCE, TOP_SITES_CONTEXT_MENU_OPTIONS, MIN_FAVICON_SIZE} = require("./TopSitesConstants");
+const {TOP_SITES_SOURCE, TOP_SITES_CONTEXT_MENU_OPTIONS, MIN_RICH_FAVICON_SIZE, MIN_CORNER_FAVICON_SIZE} = require("./TopSitesConstants");
 
 const TopSiteLink = props => {
   const {link} = props;
@@ -11,21 +11,32 @@ const TopSiteLink = props => {
   const {tippyTopIcon, faviconSize} = link;
   let imageClassName;
   let imageStyle;
-  if (tippyTopIcon || faviconSize >= MIN_FAVICON_SIZE) {
-    imageClassName = "rich-icon";
+  let showSmallFavicon = false;
+  let smallFaviconStyle;
+  if (tippyTopIcon || faviconSize >= MIN_RICH_FAVICON_SIZE) {
+    // styles and class names for top sites with rich icons
+    imageClassName = "top-site-icon rich-icon";
     imageStyle = {
       backgroundColor: link.backgroundColor,
       backgroundImage: `url(${tippyTopIcon || link.favicon})`
     };
   } else {
+    // styles and class names for top sites with screenshot + small icon in top left corner
     imageClassName = `screenshot${link.screenshot ? " active" : ""}`;
     imageStyle = {backgroundImage: link.screenshot ? `url(${link.screenshot})` : "none"};
+
+    // only show a favicon in top left if it's greater than 32x32
+    if (faviconSize >= MIN_CORNER_FAVICON_SIZE) {
+      showSmallFavicon = true;
+      smallFaviconStyle = {backgroundImage:  `url(${link.favicon})`};
+    }
   }
   return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
    <a href={link.url} onClick={props.onClick}>
      <div className="tile" aria-hidden={true}>
          <span className="letter-fallback">{props.title[0]}</span>
          <div className={imageClassName} style={imageStyle} />
+         {showSmallFavicon && <div className="top-site-icon default-icon" style={smallFaviconStyle} /> }
      </div>
      <div className={`title ${link.isPinned ? "pinned" : ""}`}>
        {link.isPinned && <div className="icon icon-pin-small" />}
