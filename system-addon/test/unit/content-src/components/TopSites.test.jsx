@@ -274,9 +274,27 @@ describe("<TopSiteLink>", () => {
     link.backgroundColor = "#FFFFFF";
     const wrapper = shallow(<TopSiteLink link={link} />);
     assert.equal(wrapper.find(".screenshot").length, 0);
-    const tippyTop = wrapper.find(".tippy-top-icon");
+    const tippyTop = wrapper.find(".rich-icon");
     assert.propertyVal(tippyTop.props().style, "backgroundImage", "url(foo.png)");
     assert.propertyVal(tippyTop.props().style, "backgroundColor", "#FFFFFF");
+  });
+  it("should render a rich icon if provided", () => {
+    link.favicon = "foo.png";
+    link.faviconSize = 196;
+    link.backgroundColor = "#FFFFFF";
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    assert.equal(wrapper.find(".screenshot").length, 0);
+    const richIcon = wrapper.find(".rich-icon");
+    assert.propertyVal(richIcon.props().style, "backgroundImage", "url(foo.png)");
+    assert.propertyVal(richIcon.props().style, "backgroundColor", "#FFFFFF");
+  });
+  it("should not render a rich icon if it is smaller than 96x96", () => {
+    link.favicon = "foo.png";
+    link.faviconSize = 48;
+    link.backgroundColor = "#FFFFFF";
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    assert.equal(wrapper.find(".screenshot").length, 1);
+    assert.equal(wrapper.find(".rich-icon").length, 0);
   });
   it("should apply just the default class name to the outer link if props.className is falsey", () => {
     const wrapper = shallow(<TopSiteLink className={false} />);

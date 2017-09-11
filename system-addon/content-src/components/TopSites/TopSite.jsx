@@ -3,19 +3,19 @@ const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 
-const {TOP_SITES_SOURCE, TOP_SITES_CONTEXT_MENU_OPTIONS} = require("./TopSitesConstants");
+const {TOP_SITES_SOURCE, TOP_SITES_CONTEXT_MENU_OPTIONS, MIN_FAVICON_SIZE} = require("./TopSitesConstants");
 
 const TopSiteLink = props => {
   const {link} = props;
   const topSiteOuterClassName = `top-site-outer${props.className ? ` ${props.className}` : ""}`;
-  const {tippyTopIcon} = link;
+  const {tippyTopIcon, faviconSize} = link;
   let imageClassName;
   let imageStyle;
-  if (tippyTopIcon) {
-    imageClassName = "tippy-top-icon";
+  if (tippyTopIcon || faviconSize >= MIN_FAVICON_SIZE) {
+    imageClassName = "rich-icon";
     imageStyle = {
       backgroundColor: link.backgroundColor,
-      backgroundImage: `url(${tippyTopIcon})`
+      backgroundImage: `url(${tippyTopIcon || link.favicon})`
     };
   } else {
     imageClassName = `screenshot${link.screenshot ? " active" : ""}`;
