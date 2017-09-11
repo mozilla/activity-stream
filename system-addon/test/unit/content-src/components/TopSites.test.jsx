@@ -264,26 +264,53 @@ describe("<TopSiteLink>", () => {
     assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
     assert.isTrue(screenshotEl.hasClass("active"));
   });
+  it("should not render a small icon with the screenshot if the icon is smaller than 32x32", () => {
+    link.favicon = "too-small-icon.png";
+    link.faviconSize = 16;
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    const screenshotEl = wrapper.find(".screenshot");
+    const defaultIconEl = wrapper.find(".default-icon");
+
+    assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
+    assert.isTrue(screenshotEl.hasClass("active"));
+    assert.lengthOf(defaultIconEl, 0);
+    assert.lengthOf(wrapper.find(".rich-icon"), 0);
+  });
+  it("should render a small icon with the screenshot if the icon is bigger than 32x32", () => {
+    link.favicon = "small-icon.png";
+    link.faviconSize = 32;
+
+    const wrapper = shallow(<TopSiteLink link={link} />);
+    const screenshotEl = wrapper.find(".screenshot");
+    const defaultIconEl = wrapper.find(".default-icon");
+
+    assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
+    assert.isTrue(screenshotEl.hasClass("active"));
+    assert.propertyVal(defaultIconEl.props().style, "backgroundImage", `url(${link.favicon})`);
+    assert.lengthOf(wrapper.find(".rich-icon"), 0);
+  });
   it("should not add the .active class to the screenshot element if no screenshot prop is provided", () => {
     link.screenshot = null;
     const wrapper = shallow(<TopSiteLink link={link} />);
     assert.isFalse(wrapper.find(".screenshot").hasClass("active"));
   });
-  it("should render the tippy top icon if provided", () => {
+  it("should render the tippy top icon if provided and not a small icon", () => {
     link.tippyTopIcon = "foo.png";
     link.backgroundColor = "#FFFFFF";
     const wrapper = shallow(<TopSiteLink link={link} />);
-    assert.equal(wrapper.find(".screenshot").length, 0);
+    assert.lengthOf(wrapper.find(".screenshot"), 0);
+    assert.lengthOf(wrapper.find(".default-icon"), 0);
     const tippyTop = wrapper.find(".rich-icon");
     assert.propertyVal(tippyTop.props().style, "backgroundImage", "url(foo.png)");
     assert.propertyVal(tippyTop.props().style, "backgroundColor", "#FFFFFF");
   });
-  it("should render a rich icon if provided", () => {
+  it("should render a rich icon if provided and not a small icon", () => {
     link.favicon = "foo.png";
     link.faviconSize = 196;
     link.backgroundColor = "#FFFFFF";
     const wrapper = shallow(<TopSiteLink link={link} />);
-    assert.equal(wrapper.find(".screenshot").length, 0);
+    assert.lengthOf(wrapper.find(".screenshot"), 0);
+    assert.lengthOf(wrapper.find(".default-icon"), 0);
     const richIcon = wrapper.find(".rich-icon");
     assert.propertyVal(richIcon.props().style, "backgroundImage", "url(foo.png)");
     assert.propertyVal(richIcon.props().style, "backgroundColor", "#FFFFFF");
