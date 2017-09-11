@@ -3,6 +3,9 @@ const DATABASE_VERSION = 1;
 const SNIPPETS_OBJECTSTORE_NAME = "snippets";
 const SNIPPETS_UPDATE_INTERVAL_MS = 14400000; // 4 hours.
 
+const SNIPPETS_ENABLED_EVENT = "Snippets:Enabled";
+const SNIPPETS_DISABLED_EVENT = "Snippets:Disabled";
+
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
 /**
@@ -283,6 +286,14 @@ class SnippetsProvider {
     } catch (e) {
       this._showDefaultSnippets(e);
     }
+
+    window.dispatchEvent(new Event(SNIPPETS_ENABLED_EVENT));
+    this.initialized = true;
+  }
+
+  uninit() {
+    window.dispatchEvent(new Event(SNIPPETS_DISABLED_EVENT));
+    this.initialized = false;
   }
 }
 
@@ -292,19 +303,30 @@ class SnippetsProvider {
  *                         Snippet data.
  *
  * @param  {obj} store   The redux store
- * @return {obj}        Returns the snippets instance and unsubscribe function
+ * @return {obj}         Returns the snippets instance and unsubscribe function
  */
 function addSnippetsSubscriber(store) {
   const snippets = new SnippetsProvider(store.dispatch);
-  const unsubscribe = store.subscribe(() => {
+
+  let initializing = false;
+
+  store.subscribe(async () => {
     const state = store.getState();
-    if (state.Snippets.initialized) {
-      if (state.Snippets.onboardingFinished) {
-        snippets.init({appData: state.Snippets});
+    // state.Snippets.initialized:  Should snippets be initialised?
+    // snippets.initialized:        Is SnippetsProvider currently initialised?
+    if (state.Snippets.initialized && !snippets.initialized &&
+      state.Snippets.onboardingFinished) {
+      // Don't call init multiple times
+      if (!initializing) {
+        initializing = true;
+        await snippets.init({appData: state.Snippets});
+        initializing = false;
       }
-      unsubscribe();
+    } else if (state.Snippets.initialized === false && snippets.initialized) {
+      snippets.uninit();
     }
   });
+
   // These values are returned for testing purposes
   return snippets;
 }

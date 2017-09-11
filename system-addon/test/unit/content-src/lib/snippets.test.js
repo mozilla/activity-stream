@@ -176,6 +176,23 @@ describe("SnippetsProvider", () => {
       assert.equal(snippets.snippetsMap.get("appData.foo"), 123);
       assert.equal(snippets.snippetsMap.get("appData.bar"), "hello");
     });
+    it("should dispatch a Snippets:Enabled DOM event", async () => {
+      const spy = sinon.spy();
+      window.addEventListener("Snippets:Enabled", spy);
+      await snippets.init({connect: false});
+      assert.calledOnce(spy);
+      window.removeEventListener("Snippets:Enabled", spy);
+    });
+  });
+  describe("#uninit", () => {
+    it("should dispatch a Snippets:Disabled DOM event", () => {
+      const spy = sinon.spy();
+      window.addEventListener("Snippets:Disabled", spy);
+      snippets = new SnippetsProvider();
+      snippets.uninit();
+      assert.calledOnce(spy);
+      window.removeEventListener("Snippets:Disabled", spy);
+    });
   });
   describe("#_refreshSnippets", () => {
     let clock;
@@ -285,7 +302,8 @@ describe("addSnippetsSubscriber", () => {
 
     snippets = addSnippetsSubscriber(store);
 
-    sandbox.stub(snippets, "init");
+    sandbox.stub(snippets, "init").resolves();
+    sandbox.stub(snippets, "uninit");
   });
   afterEach(async () => {
     sandbox.restore();
@@ -307,5 +325,11 @@ describe("addSnippetsSubscriber", () => {
   it("should not initialize SnippetsProvider if .initialize is true and .onboardingFinished is false", () => {
     store.dispatch({type: at.SNIPPETS_DATA, data: {onboardingFinished: false}});
     assert.notCalled(snippets.init);
+  });
+  it("should uninitialize SnippetsProvider if SnippetsProvider has been initialized and .initialize is false", async () => {
+    await store.dispatch({type: at.SNIPPETS_DATA, data: {onboardingFinished: true}});
+    snippets.initialized = true;
+    await store.dispatch({type: at.SNIPPETS_RESET});
+    assert.calledOnce(snippets.uninit);
   });
 });
