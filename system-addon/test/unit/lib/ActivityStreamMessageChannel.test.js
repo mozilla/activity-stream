@@ -82,21 +82,32 @@ describe("ActivityStreamMessageChannel", () => {
       });
       it("should simluate init for existing ports", () => {
         sinon.stub(mm, "onActionFromContent");
-        RPmessagePorts.push({loaded: false, portID: "inited"});
-        RPmessagePorts.push({loaded: true, portID: "loaded"});
+        RPmessagePorts.push({
+          loaded: false,
+          portID: "inited"
+        });
+        RPmessagePorts.push({
+          browser: {currentURI: "about:loaded"},
+          loaded: true,
+          portID: "loaded"
+        });
 
         mm.createChannel();
 
         assert.calledWith(mm.onActionFromContent.firstCall, {type: at.NEW_TAB_INIT}, "inited");
         assert.calledWith(mm.onActionFromContent.secondCall, {type: at.NEW_TAB_INIT}, "loaded");
       });
-      it("should simluate load for loaded ports", () => {
+      it("should simulate load for loaded ports", () => {
         sinon.stub(mm, "onActionFromContent");
-        RPmessagePorts.push({loaded: true, portID: "foo"});
+        RPmessagePorts.push({
+          browser: {currentURI: {spec: "about:monkeys"}},
+          loaded: true,
+          portID: "foo"
+        });
 
         mm.createChannel();
 
-        assert.calledWith(mm.onActionFromContent, {type: at.NEW_TAB_LOAD}, "foo");
+        assert.calledWith(mm.onActionFromContent, {type: at.NEW_TAB_LOAD, data: {uri: "about:monkeys"}}, "foo");
       });
     });
     describe("#destroyChannel", () => {
@@ -154,10 +165,16 @@ describe("ActivityStreamMessageChannel", () => {
     });
     describe("#onNewTabLoad", () => {
       it("should dispatch a NEW_TAB_LOAD action", () => {
-        const t = {portID: "foo"};
+        const t = {
+          portID: "foo",
+          browser: {currentURI: {spec: "about:monkeys"}}
+        };
         sinon.stub(mm, "onActionFromContent");
+
         mm.onNewTabLoad({target: t});
-        assert.calledWith(mm.onActionFromContent, {type: at.NEW_TAB_LOAD}, "foo");
+
+        assert.calledWith(mm.onActionFromContent,
+          {type: at.NEW_TAB_LOAD, data: {uri: "about:monkeys"}}, "foo");
       });
     });
     describe("#onNewTabUnload", () => {

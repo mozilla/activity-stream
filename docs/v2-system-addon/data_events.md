@@ -32,7 +32,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action_position": 1,
 
   // Basic metadata
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
