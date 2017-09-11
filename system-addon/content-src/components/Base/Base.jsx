@@ -8,6 +8,7 @@ const ManualMigration = require("content-src/components/ManualMigration/ManualMi
 const PreferencesPane = require("content-src/components/PreferencesPane/PreferencesPane");
 const Sections = require("content-src/components/Sections/Sections");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+const {PrerenderData} = require("common/PrerenderData.jsm");
 
 // Add the locale data for pluralization and relative-time formatting for now,
 // this just uses english locale data. We can make this more sophisticated if
@@ -52,6 +53,10 @@ class Base extends React.Component {
     const {locale, strings, initialized} = props.App;
     const prefs = props.Prefs.values;
 
+    const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
+
+    const outerClassName = `outer-wrapper${shouldBeFixedToTop ? " fixed-to-top" : ""}`;
+
     if (!props.isPrerendered && !initialized) {
       return null;
     }
@@ -60,7 +65,7 @@ class Base extends React.Component {
     // all elements on a locale change (such as after preloading).
     // See https://github.com/yahoo/react-intl/issues/695 for more info.
     return (<IntlProvider key="STATIC" locale={locale} messages={strings}>
-        <div className="outer-wrapper">
+        <div className={outerClassName}>
           <main>
             {prefs.showSearch && <Search />}
             {!prefs.migrationExpired && <ManualMigration />}
