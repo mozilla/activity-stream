@@ -75,6 +75,7 @@
 
   &.icon-trending {
     background-image: url('#{$image-path}glyph-trending-16.svg');
+    transform: translateY(2px); /* trending bolt is visually top heavy */
   }
 
   &.icon-now {
