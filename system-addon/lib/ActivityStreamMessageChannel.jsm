@@ -136,8 +136,8 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
     this.channel.addMessageListener(this.incomingMessageName, this.onMessage);
 
     // Some pages might have already loaded, so we won't get the usual message
-    for (const {loaded, portID} of this.channel.messagePorts) {
-      const simulatedMsg = {target: {portID}};
+    for (const {browser, loaded, portID} of this.channel.messagePorts) {
+      const simulatedMsg = {target: {browser, portID}};
       this.onNewTabInit(simulatedMsg);
       if (loaded) {
         this.onNewTabLoad(simulatedMsg);
@@ -177,7 +177,12 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
    * @param  {obj} msg The messsage from a page that was just loaded
    */
   onNewTabLoad(msg) {
-    this.onActionFromContent({type: at.NEW_TAB_LOAD}, msg.target.portID);
+    this.onActionFromContent({
+      type: at.NEW_TAB_LOAD,
+      // setting uri at NEW_TAB_INIT turned out to be racy, so we do it here,
+      // when we'll definitely have the page URI.
+      data: {uri: msg.target.browser.currentURI.spec}
+    }, msg.target.portID);
   }
 
   /**

@@ -5,6 +5,7 @@
 const {interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Console.jsm");
 Cu.importGlobalProperties(["fetch"]);
 
 XPCOMUtils.defineLazyModuleGetter(this, "AppConstants",
@@ -124,6 +125,7 @@ class PingCentre {
     if (this.logging) {
       // performance related pings cause a lot of logging, so we mute them
       if (data.action !== "activity_stream_performance") {
+        console.log(`TELEMETRY PING: ${JSON.stringify(payload)}\n`);
         Services.console.logStringMessage(`TELEMETRY PING: ${JSON.stringify(payload)}\n`);
       }
     }

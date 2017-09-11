@@ -195,7 +195,8 @@ this.TelemetryFeed = class TelemetryFeed {
   addSession(id) {
     const session = {
       session_id: String(gUUIDGenerator.generateUUID()),
-      page: "about:newtab", // TODO: Handle about:home here
+      // "unknown" will be overwritten when appropriate
+      page: "unknown",
       // "unexpected" will be overwritten when appropriate
       perf: {load_trigger_type: "unexpected"}
     };
@@ -243,8 +244,8 @@ this.TelemetryFeed = class TelemetryFeed {
     if (portID) {
       const session = this.sessions.get(portID) || this.addSession(portID);
       Object.assign(ping, {
-        session_id: session.session_id,
-        page: session.page
+        page: session.page,
+        session_id: session.session_id
       });
     }
     return ping;
@@ -357,6 +358,9 @@ this.TelemetryFeed = class TelemetryFeed {
       case at.NEW_TAB_INIT:
         this.addSession(au.getPortIdOfSender(action));
         break;
+      case at.NEW_TAB_LOAD:
+        this.saveSessionPage(au.getPortIdOfSender(action), action.data.uri);
+        break;
       case at.NEW_TAB_UNLOAD:
         this.endSession(au.getPortIdOfSender(action));
         break;
@@ -381,9 +385,23 @@ this.TelemetryFeed = class TelemetryFeed {
         this.sendEvent(this.createPerformanceEvent(action));
         break;
       case at.UNINIT:
-        this.uninit();
+        this.uninit(); 
         break;
     }
+  }
+
+  /**
+   * Assign the given data to the session page property for the given port.
+   *
+   * @param {String} port  The session with which this is associated
+   * @param {String} data  A valid session.page value from pings.js
+   */
+  saveSessionPage(port, data) {
+    // XXX should use try/catch and send a bad state indicator if this
+    // get blows up.
+    let session = this.sessions.get(port);
+
+    session.page = data;
   }
 
   /**
@@ -407,7 +425,7 @@ this.TelemetryFeed = class TelemetryFeed {
     // Partial workaround for #3118; avoids the worst incorrect associations of
     // times with browsers, by associating the load trigger with the visibility
     // event as the user is most likely associating the trigger to the tab just
-    // shown. This helps avoid associateing with a preloaded browser as those
+    // shown. This helps avoid associating with a preloaded browser as those
     // don't get the event until shown. Better fix for more cases forthcoming.
     if (data.visibility_event_rcvd_ts) {
       this.setLoadTriggerInfo(port);
