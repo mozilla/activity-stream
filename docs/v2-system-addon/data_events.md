@@ -32,7 +32,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action_position": 1,
 
   // Basic metadata
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown" ],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -52,7 +52,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -68,10 +68,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "CLICK",
   "source": "TOP_SITES",
   "action_position": 2,
-  
+
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -87,10 +87,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "DELETE",
   "source": "TOP_SITES",
   "action_position": 2,
-  
+
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -106,10 +106,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "BLOCK",
   "source": "TOP_SITES",
   "action_position": 2,
-  
+
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -144,10 +144,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "BOOKMARK_DELETE",
   "source": "TOP_SITES",
   "action_position": 2,
-  
+
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -163,10 +163,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "OPEN_NEW_WINDOW",
   "source": "TOP_SITES",
   "action_position": 2,
-  
+
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -182,10 +182,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "OPEN_PRIVATE_WINDOW",
   "source": "TOP_SITES",
   "action_position": 2,
-  
+
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -199,10 +199,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   "event": "OPEN_NEWTAB_PREFS",
-  
+
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -216,10 +216,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   "event": "CLOSE_NEWTAB_PREFS",
-  
+
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -243,7 +243,7 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "session_duration": 4199,
   "user_prefs": 7
 }
@@ -308,7 +308,7 @@ This reports all the Pocket recommended articles (a list of `id`s) when the user
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
-  "page": "about:newtab",
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "user_prefs": 7,
   "tiles": [{"id": 10000}, {"id": 10001}, {"id": 10002}]
 }
@@ -328,7 +328,7 @@ This reports the user's interaction with those Pocket tiles.
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
-  "page": "about:newtab",
+  "page": ["about:newtab" | "about:home" | "unknown"],
   "user_prefs": 7,
 
   // "pos" is the 0-based index to record the tile's position in the Pocket section.
