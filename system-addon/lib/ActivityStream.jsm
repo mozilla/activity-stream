@@ -66,6 +66,10 @@ const PREFS_CONFIG = new Map([
       personalized: false
     })
   }],
+  ["filterAdult", {
+    title: "Remove adult pages from sites, highlights, etc.",
+    value: true
+  }],
   ["migrationExpired", {
     title: "Boolean flag that decides whether to show the migration message or not.",
     value: false
