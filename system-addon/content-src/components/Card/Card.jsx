@@ -56,14 +56,18 @@ class Card extends React.Component {
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     // Display "now" as "trending" until we have new strings #3402
     const {icon, intlID} = cardContextTypes[link.type === "now" ? "trending" : link.type] || {};
+    const hasImage = link.image || link.hasImage;
+    const imageStyle = {backgroundImage: link.image ? `url(${link.image})` : "none"};
 
     return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}${props.placeholder ? " placeholder" : ""}`}>
       <a href={link.url} onClick={!props.placeholder && this.onLinkClick}>
         <div className="card">
-          {link.image && <div className="card-preview-image" style={{backgroundImage: `url(${link.image})`}} />}
-          <div className={`card-details${link.image ? "" : " no-image"}`}>
+          {hasImage && <div className="card-preview-image-outer">
+            <div className={`card-preview-image${link.image ? " loaded" : ""}`} style={imageStyle} />
+          </div>}
+          <div className={`card-details${hasImage ? "" : " no-image"}`}>
             {link.hostname && <div className="card-host-name">{link.hostname}</div>}
-            <div className={`card-text${link.image ? "" : " no-image"}${link.hostname ? "" : " no-host-name"}${icon ? "" : " no-context"}`}>
+            <div className={`card-text${hasImage ? "" : " no-image"}${link.hostname ? "" : " no-host-name"}${icon ? "" : " no-context"}`}>
               <h4 className="card-title" dir="auto">{link.title}</h4>
               <p className="card-description" dir="auto">{link.description}</p>
             </div>

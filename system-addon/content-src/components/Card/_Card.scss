@@ -49,14 +49,37 @@
     }
   }
 
-  .card-preview-image {
+  .card-preview-image-outer {
     position: relative;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background: linear-gradient(135deg, $grey-40, $grey-30);
     height: $card-preview-image-height;
-    border-bottom: $border-secondary;
     border-radius: $border-radius $border-radius 0 0;
+    overflow: hidden;
+
+    &:dir(rtl) {
+      background: linear-gradient(225deg, $grey-40, $grey-30);
+    }
+
+    &::after {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      bottom: 0;
+      content: " ";
+      position: absolute;
+      width: 100%;
+    }
+
+    .card-preview-image {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: opacity 1s;
+      opacity: 0;
+      &.loaded {
+        opacity: 1;
+      }
+    }
   }
 
   .card-details {
