@@ -290,6 +290,9 @@ perf: {
   // topsites has yet to receive screenshots updates from the add-on code,
   // and is therefore just showing placeholder screenshots.
   "topsites_first_painted_ts": 5,
+  
+  // When is topsites data available. Recorded if this happens after topsites render.
+  "topsites_data_ready_ts": 10
 }
 ```
 
