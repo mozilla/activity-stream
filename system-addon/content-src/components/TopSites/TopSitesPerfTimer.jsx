@@ -27,8 +27,9 @@ class TopSitesPerfTimer extends React.PureComponent {
     // Just for test dependency injection:
     this.perfSvc = this.props.perfSvc || perfSvc;
 
-    this._sendPaintedEvent = this._sendPaintedEvent.bind(this);
+    this._record = this._record.bind(this);
     this._timestampHandled = false;
+    this._reportMissingData = false;
   }
 
   componentDidMount() {
@@ -69,8 +70,12 @@ class TopSitesPerfTimer extends React.PureComponent {
     // componentDidMount), the paint(s) we care about will be later (eg
     // in a subsequent componentDidUpdate).
     if (!this.props.TopSites.initialized) {
-      // XXX should send bad event
-      return;
+      // Remember to report back when data is available.
+      this._reportMissingData = true;
+    } else if (this._reportMissingData) {
+      this._reportMissingData = false;
+      // Report that data is available later than first render call.
+      this._afterFramePaint(() => this._record("topsites_data_ready_ts"));
     }
 
     // If we've already handled a timestamp, don't do it again
@@ -85,19 +90,19 @@ class TopSitesPerfTimer extends React.PureComponent {
     // handle handle it.
     this._timestampHandled = true;
 
-    this._afterFramePaint(this._sendPaintedEvent);
+    this._afterFramePaint(() => this._record("topsites_first_painted_ts"));
   }
 
-  _sendPaintedEvent() {
-    this.perfSvc.mark("topsites_first_painted_ts");
+  _record(key) {
+    this.perfSvc.mark(key);
 
     try {
-      let topsites_first_painted_ts = this.perfSvc
-        .getMostRecentAbsMarkStartByName("topsites_first_painted_ts");
+      let data = {};
+      data[key] = this.perfSvc.getMostRecentAbsMarkStartByName(key);
 
       this.props.dispatch(ac.SendToMain({
         type: at.SAVE_SESSION_PERF_DATA,
-        data: {topsites_first_painted_ts}
+        data
       }));
     } catch (ex) {
       // If this failed, it's likely because the `privacy.resistFingerprinting`
