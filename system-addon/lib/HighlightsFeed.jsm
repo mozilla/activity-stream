@@ -41,6 +41,7 @@ this.HighlightsFeed = class HighlightsFeed {
 
   postInit() {
     SectionsManager.enableSection(SECTION_ID);
+    this.fetchHighlights(true);
   }
 
   uninit() {
@@ -48,6 +49,18 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 
   async fetchHighlights(broadcast = false) {
+    // We need TopSites to have been initialised for deduping
+    if (!this.store.getState().TopSites.initialized) {
+      await new Promise(resolve => {
+        const unsubscribe = this.store.subscribe(() => {
+          if (this.store.getState().TopSites.initialized) {
+            unsubscribe();
+            resolve();
+          }
+        });
+      });
+    }
+
     // Request more than the expected length to allow for items being removed by
     // deduping against Top Sites or multiple history from the same domain, etc.
     const manyPages = await NewTabUtils.activityStreamLinks.getHighlights({numItems: MANY_EXTRA_LENGTH});
