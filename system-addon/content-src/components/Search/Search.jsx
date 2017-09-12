@@ -3,7 +3,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {FormattedMessage, injectIntl} = require("react-intl");
-const {actionCreators: ac} = require("common/Actions.jsm");
+const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {IS_NEWTAB} = require("content-src/lib/constants");
 
 class Search extends React.Component {
@@ -47,6 +47,14 @@ class Search extends React.Component {
       window.gContentSearchController = new ContentSearchUIController(input, input.parentNode,
         healthReportKey, searchSource);
       addEventListener("ContentSearchClient", this);
+
+      // Focus the search box if we are on about:home
+      if (!IS_NEWTAB) {
+        input.focus();
+        // Tell the addon side that search box is focused in case the browser
+        // needs to be focused too.
+        this.props.dispatch(ac.SendToMain({type: at.SEARCH_BOX_FOCUSED}));
+      }
     } else {
       window.gContentSearchController = null;
       removeEventListener("ContentSearchClient", this);

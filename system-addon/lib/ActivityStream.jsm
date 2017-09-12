@@ -114,6 +114,10 @@ const PREFS_CONFIG = new Map([
   ["telemetry.ping.endpoint", {
     title: "Telemetry server endpoint",
     value: "https://tiles.services.mozilla.com/v4/links/activity-stream"
+  }],
+  ["aboutHome.autoFocus", {
+    title: "Focus the about:home search box on load",
+    value: true
   }]
 ]);
 
