@@ -19,6 +19,10 @@ function addLocaleDataForReactIntl({locale, textDirection}) {
 }
 
 class Base extends React.Component {
+  componentWillMount() {
+    this.sendNewTabRehydrated(this.props.App);
+  }
+
   componentDidMount() {
     // Request state AFTER the first render to ensure we don't cause the
     // prerendered DOM to be unmounted. Otherwise, NEW_TAB_STATE_REQUEST is
@@ -33,7 +37,10 @@ class Base extends React.Component {
       document.getElementById("favicon").href += "#";
     }, {once: true});
   }
+
   componentWillUpdate({App}) {
+    this.sendNewTabRehydrated(App);
+
     // Early loads might not have locale yet, so wait until we do
     if (App.locale && App.locale !== this.props.App.locale) {
       addLocaleDataForReactIntl(App);
@@ -44,6 +51,16 @@ class Base extends React.Component {
   updateTitle({strings}) {
     if (strings) {
       document.title = strings.newtab_page_title;
+    }
+  }
+
+  // The NEW_TAB_REHYDRATED event is used to inform feeds that their
+  // data has been consumed e.g. for counting the number of tabs that
+  // have rendered that data.
+  sendNewTabRehydrated(App) {
+    if (App && App.initialized && !this.renderNotified) {
+      this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_REHYDRATED, data: {}}));
+      this.renderNotified = true;
     }
   }
 
@@ -75,3 +92,4 @@ class Base extends React.Component {
 }
 
 module.exports = connect(state => ({App: state.App, Prefs: state.Prefs}))(Base);
+module.exports._unconnected = Base;
