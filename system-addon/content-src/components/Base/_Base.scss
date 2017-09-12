@@ -1,8 +1,12 @@
 .outer-wrapper {
   display: flex;
-  flex-grow: 1;
   padding: $section-spacing $base-gutter $base-gutter;
   height: 100%;
+  flex-grow: 1;
+
+  &.fixed-to-top {
+    height: auto;
+  }
 }
 
 main {
