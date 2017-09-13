@@ -21,7 +21,7 @@ const TopSites = props => {
           intl={props.intl} />)}
         {placeholderCount > 0 && [...Array(placeholderCount)].map((_, i) => <TopSitePlaceholder key={i} />)}
       </ul>
-      {realTopSites.length > 0 && <TopSitesEdit {...props} />}
+      <TopSitesEdit {...props} />
     </section>
   </TopSitesPerfTimer>);
 };
