@@ -62,6 +62,7 @@ const PREFS_CONFIG = new Map([
       stories_referrer: "https://getpocket.com/recommendations",
       info_link: "https://www.mozilla.org/privacy/firefox/#pocketstories",
       topics_endpoint: `https://getpocket.cdn.mozilla.net/v3/firefox/trending-topics?version=2&consumer_key=$apiKey&locale_lang=${args.locale}`,
+      show_spocs: false,
       personalized: false
     })
   }],

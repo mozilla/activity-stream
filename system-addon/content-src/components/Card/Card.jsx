@@ -71,10 +71,12 @@ class Card extends React.Component {
               <h4 className="card-title" dir="auto">{link.title}</h4>
               <p className="card-description" dir="auto">{link.description}</p>
             </div>
-            {icon && <div className="card-context">
-              <span className={`card-context-icon icon icon-${icon}`} />
-              <div className="card-context-label"><FormattedMessage id={intlID} defaultMessage="Visited" /></div>
-            </div>}
+            <div className="card-context">
+              {icon && !link.context && <span className={`card-context-icon icon icon-${icon}`} />}
+              {link.icon && link.context && <span className="card-context-icon icon" style={{backgroundImage: `url('${link.icon}')`}} />}
+              {intlID && !link.context && <div className="card-context-label"><FormattedMessage id={intlID} defaultMessage="Visited" /></div>}
+              {link.context && <div className="card-context-label">{link.context}</div>}
+            </div>
           </div>
         </div>
       </a>
