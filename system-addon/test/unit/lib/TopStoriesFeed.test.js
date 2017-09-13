@@ -498,5 +498,17 @@ describe("Top Stories Feed", () => {
       instance.updateSettings(fakeSettings);
       assert.isUndefined(instance.affinityProvider.status);
     });
+    it("should send performance telemetry when updating domain affinities", () => {
+      instance.init();
+      instance.personalized = true;
+      const fakeSettings = {timeSegments: {}, parameterSets: {}};
+
+      clock.tick(DOMAIN_AFFINITY_UPDATE_TIME);
+      instance.updateSettings(fakeSettings);
+      assert.calledOnce(instance.store.dispatch);
+      let action = instance.store.dispatch.firstCall.args[0];
+      assert.equal(action.type, at.TELEMETRY_PERFORMANCE_EVENT);
+      assert.equal(action.data.event, "topstories.domain.affinity.calculation.ms");
+    });
   });
 });
