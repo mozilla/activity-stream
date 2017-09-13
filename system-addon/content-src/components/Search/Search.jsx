@@ -78,13 +78,13 @@ class Search extends React.Component {
         ref={this.onInputMount}
         title={this.props.intl.formatMessage({id: "search_web_placeholder"})}
         type="search" />
-        <button
-          id="searchSubmit"
-          className="search-button"
-          onClick={this.onClick}
-          title={this.props.intl.formatMessage({id: "search_button"})}>
-          <span className="sr-only"><FormattedMessage id="search_button" /></span>
-        </button>
+      <button
+        id="searchSubmit"
+        className="search-button"
+        onClick={this.onClick}
+        title={this.props.intl.formatMessage({id: "search_button"})}>
+        <span className="sr-only"><FormattedMessage id="search_button" /></span>
+      </button>
     </div>);
   }
 }
