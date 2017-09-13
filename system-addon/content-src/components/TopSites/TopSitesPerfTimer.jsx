@@ -27,7 +27,8 @@ class TopSitesPerfTimer extends React.PureComponent {
     // Just for test dependency injection:
     this.perfSvc = this.props.perfSvc || perfSvc;
 
-    this._record = this._record.bind(this);
+    this._sendPaintedEvent = this._sendPaintedEvent.bind(this);
+    this._sendBadStateEvent = this._sendBadStateEvent.bind(this);
     this._timestampHandled = false;
     this._reportMissingData = false;
   }
@@ -75,7 +76,7 @@ class TopSitesPerfTimer extends React.PureComponent {
     } else if (this._reportMissingData) {
       this._reportMissingData = false;
       // Report that data is available later than first render call.
-      this._afterFramePaint(() => this._record("topsites_data_ready_ts"));
+      this._afterFramePaint(() => this._sendBadStateEvent("topsites_data_ready_ts"));
     }
 
     // If we've already handled a timestamp, don't do it again
@@ -90,19 +91,38 @@ class TopSitesPerfTimer extends React.PureComponent {
     // handle handle it.
     this._timestampHandled = true;
 
-    this._afterFramePaint(() => this._record("topsites_first_painted_ts"));
+    this._afterFramePaint(this._sendPaintedEvent);
   }
 
-  _record(key) {
+  _sendBadStateEvent(key) {
     this.perfSvc.mark(key);
 
     try {
-      let data = {};
-      data[key] = this.perfSvc.getMostRecentAbsMarkStartByName(key);
+      const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName("topsites_data_ready_ts") -
+                             this.perfSvc.getMostRecentAbsMarkStartByName("topsites_first_painted_ts"), 10);
+      this.props.dispatch(ac.SendToMain({
+        type: at.TELEMETRY_UNDESIRED_EVENT,
+        data: {
+          event: "topsites_missing_data",
+          value
+        }
+      }));
+    } catch (ex) {
+      // If this failed, it's likely because the `privacy.resistFingerprinting`
+      // pref is true.
+    }
+  }
+
+  _sendPaintedEvent() {
+    this.perfSvc.mark("topsites_first_painted_ts");
+
+    try {
+      let topsites_first_painted_ts = this.perfSvc
+        .getMostRecentAbsMarkStartByName("topsites_first_painted_ts");
 
       this.props.dispatch(ac.SendToMain({
         type: at.SAVE_SESSION_PERF_DATA,
-        data
+        data: {topsites_first_painted_ts}
       }));
     } catch (ex) {
       // If this failed, it's likely because the `privacy.resistFingerprinting`

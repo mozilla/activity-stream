@@ -6,6 +6,7 @@ const {PlaceholderCard} = Card;
 const Topics = require("content-src/components/Topics/Topics");
 const {actionCreators: ac} = require("common/Actions.jsm");
 const CollapsibleSection = require("content-src/components/CollapsibleSection/CollapsibleSection");
+const SectionsPerfTimer = require("./SectionsPerfTimer");
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -143,24 +144,37 @@ class Section extends React.PureComponent {
     // <section> <-- HTML5 element
     return (
       <CollapsibleSection className="section" icon={icon} title={getFormattedMessage(title)} infoOption={infoOption} prefName={`section.${id}.collapsed`} Prefs={this.props.Prefs} dispatch={this.props.dispatch}>
-        {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
-          {realRows.map((link, index) => link &&
-            <Card key={index} index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions}
-              eventSource={eventSource} shouldSendImpressionStats={this.props.shouldSendImpressionStats} />)}
-          {placeholders > 0 && [...new Array(placeholders)].map((_, i) => <PlaceholderCard key={i} />)}
-        </ul>)}
-        {shouldShowEmptyState &&
-          <div className="section-empty-state">
-            <div className="empty-state">
-              {emptyState.icon && emptyState.icon.startsWith("moz-extension://") ?
-                <img className="empty-state-icon icon" style={{"background-image": `url('${emptyState.icon}')`}} /> :
-                <img className={`empty-state-icon icon icon-${emptyState.icon}`} />}
-              <p className="empty-state-message">
-                {getFormattedMessage(emptyState.message)}
-              </p>
+        <SectionsPerfTimer {...this.props}>
+          <section className="section">
+            <div className="section-top-bar">
+              <h3 className="section-title">
+                {icon && icon.startsWith("moz-extension://") ?
+                  <span className="icon icon-small-spacer" style={{ "background-image": `url('${icon}')` }} /> :
+                  <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />}
+                {getFormattedMessage(title)}
+              </h3>
+              {infoOption && <InfoIntl infoOption={infoOption} dispatch={dispatch} />}
             </div>
-          </div>}
-        {shouldShowTopics && <Topics topics={this.props.topics} read_more_endpoint={this.props.read_more_endpoint} />}
+            {!shouldShowEmptyState && (<ul className="section-list" style={{ padding: 0 }}>
+              {realRows.map((link, index) => link &&
+                <Card key={index} index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions}
+                  eventSource={eventSource} shouldSendImpressionStats={this.props.shouldSendImpressionStats} />)}
+              {placeholders > 0 && [...new Array(placeholders)].map((_, i) => <PlaceholderCard key={i} />)}
+            </ul>)}
+            {shouldShowEmptyState &&
+              <div className="section-empty-state">
+                <div className="empty-state">
+                  {emptyState.icon && emptyState.icon.startsWith("moz-extension://") ?
+                    <img className="empty-state-icon icon" style={{ "background-image": `url('${emptyState.icon}')` }} /> :
+                    <img className={`empty-state-icon icon icon-${emptyState.icon}`} />}
+                  <p className="empty-state-message">
+                    {getFormattedMessage(emptyState.message)}
+                  </p>
+                </div>
+              </div>}
+            {shouldShowTopics && <Topics topics={this.props.topics} read_more_endpoint={this.props.read_more_endpoint} />}
+          </section>
+        </SectionsPerfTimer>
       </CollapsibleSection>);
   }
 }
