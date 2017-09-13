@@ -135,6 +135,40 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "click|block|pocket": 0
 }
 ```
+# Example Activity Stream `undesired_event` Logs
+
+```js
+{
+  "topic": "activity-stream",
+  "client_id": "8095a611-4ee4-b94d-b7b6-37923a0faa69",
+  "shield_id": "",
+  "release_channel": "default",
+  "addon_version": "0.0.0",
+  "locale": "en-US",
+  "user_prefs": 3,
+  "session_id": "{ca150256-a6ca-4e43-a375-28ce5fa3bffc}",
+  "page": "about:newtab",
+  "value": 5,
+  "event": "topsites_missing_data",
+  "action": "activity_stream_undesired_event"
+}
+```
+```js
+{
+  "topic": "activity-stream",
+  "client_id": "8095a611-4ee4-b94d-b7b6-37923a0faa69",
+  "shield_id": "",
+  "release_channel": "default",
+  "addon_version": "0.0.0",
+  "locale": "en-US",
+  "user_prefs": 3,
+  "session_id": "{ca150256-a6ca-4e43-a375-28ce5fa3bffc}",
+  "page": "about:newtab",
+  "value": 10,
+  "event": "highlights_missing_data",
+  "action": "activity_stream_undesired_event"
+}
+```
 
 
 | KEY | DESCRIPTION | &nbsp; |
@@ -168,11 +202,12 @@ and losing focus. | :one:
 | `value` | [Required] An integer that represents the measured performance value. Can store counts, times in milliseconds, and should always be a positive integer.| :one:
 | `ver` | [Auto populated by Onyx] The version of the Onyx API the ping was sent to. | :one:
 | `highlights_size` | [Optional] The size of the Highlights set. | :one:
+| `highlights_missing_data`| [Optional] Difference between data availability timestamp and first call to component render function. | :one:
 | `topsites_first_painted_ts` | [Optional][Service Counter][Server Alert for too many omissions] Timestamp of when the Top Sites element finished painting (possibly with only placeholder screenshots) | :one:
 | `topsites_size` | [Optional] The size of the Topsites set. | :one:
 | `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
-| `topsites_data_ready_ts`| [Optional] Timestamp of when data is available if this happens after component rendering | :one:
+| `topsites_missing_data`| [Optional] Difference between data availability timestamp and first call to component render function. | :one:
 | `user_prefs` | [optional] The encoded integer of user's preferences. | :one: & :four:
 | `visibility_event_rcvd_ts` | [Optional][Server Counter][Server Alert for too many omissions] DOMHighResTimeStamp of when the page itself receives an event that document.visibilityState == visible. | :one:
 | `tiles` | [Required] A list of tile objects for the Pocket articles. Each tile object mush have a ID, and optionally a "pos" property to indicate the tile position | :one:

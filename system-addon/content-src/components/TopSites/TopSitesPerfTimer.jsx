@@ -73,7 +73,6 @@ class TopSitesPerfTimer extends React.PureComponent {
     if (!this.props.TopSites.initialized) {
       // Remember to report back when data is available.
       this._reportMissingData = true;
-      return;
     } else if (this._reportMissingData) {
       this._reportMissingData = false;
       // Report that data is available later than first render call.
@@ -99,6 +98,7 @@ class TopSitesPerfTimer extends React.PureComponent {
     this.perfSvc.mark("topsites_data_ready_ts");
 
     try {
+      // value has to be Int32.
       const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName("topsites_data_ready_ts") -
                              this.perfSvc.getMostRecentAbsMarkStartByName("topsites_first_painted_ts"), 10);
       this.props.dispatch(ac.SendToMain({

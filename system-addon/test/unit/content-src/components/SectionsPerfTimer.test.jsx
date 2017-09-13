@@ -39,6 +39,13 @@ describe("<SectionsPerfTimer>", () => {
     assert.ok(wrapper.contains(<InnerEl />));
   });
 
+  it("should have the correct defaults", () => {
+    const instance = wrapper.instance();
+
+    assert.isFalse(instance._reportMissingData);
+    assert.isFalse(instance._timestampHandled);
+  });
+
   describe("#_componentDidMount", () => {
     it("should call _maybeSendPaintedEvent", () => {
       const instance = wrapper.instance();
@@ -62,7 +69,7 @@ describe("<SectionsPerfTimer>", () => {
   });
 
   describe("#_maybeSendPaintedEvent", () => {
-    it("should call _afterFramePaint if props.initialized is true and set _timestampHandled", () => {
+    it("should call _afterFramePaint if props.initialized is true", () => {
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
 
@@ -72,7 +79,6 @@ describe("<SectionsPerfTimer>", () => {
       assert.isTrue(instance._timestampHandled);
     });
     it("should not call _afterFramePaint if props.id is not in RECORDED_SECTIONS", () => {
-      sandbox.stub(DEFAULT_PROPS, "initialized").value(true);
       sandbox.stub(DEFAULT_PROPS, "id").value("topstories");
       wrapper = shallow(<SectionsPerfTimer {...DEFAULT_PROPS}><InnerEl /></SectionsPerfTimer>);
       const instance = wrapper.instance();
@@ -82,17 +88,6 @@ describe("<SectionsPerfTimer>", () => {
 
       assert.notCalled(stub);
     });
-    it("should not call _afterFramePaint if props.initialized is false", () => {
-      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
-      wrapper = shallow(<SectionsPerfTimer {...DEFAULT_PROPS}><InnerEl /></SectionsPerfTimer>);
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
-
-      instance._maybeSendPaintedEvent();
-
-      assert.notCalled(stub);
-    });
-
     it("should not call _afterFramePaint if this._timestampHandled is true", () => {
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
@@ -103,38 +98,29 @@ describe("<SectionsPerfTimer>", () => {
       assert.notCalled(stub);
     });
 
-    it("should set this._timestampHandled=true when called with initialized === true", () => {
+    it("should set this._timestampHandled=true if false", () => {
       const instance = wrapper.instance();
       sandbox.stub(instance, "_afterFramePaint");
-      instance._timestampHandled = false;
+
+      assert.isFalse(instance._timestampHandled);
 
       instance._maybeSendPaintedEvent();
 
       assert.isTrue(instance._timestampHandled);
     });
-    it("should not set this._timestampHandled=true when called with initialized === false", () => {
-      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
-      wrapper = shallow(<SectionsPerfTimer {...DEFAULT_PROPS}><InnerEl /></SectionsPerfTimer>);
-      const instance = wrapper.instance();
-      sandbox.stub(instance, "_afterFramePaint");
-      instance._timestampHandled = false;
-
-      instance._maybeSendPaintedEvent();
-
-      assert.isFalse(instance._timestampHandled);
-    });
-
     it("should set this._reportMissingData=true when called with initialized === false", () => {
       sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
       wrapper = shallow(<SectionsPerfTimer {...DEFAULT_PROPS}><InnerEl /></SectionsPerfTimer>);
       const instance = wrapper.instance();
+
+      assert.isFalse(instance._reportMissingData);
 
       instance._maybeSendPaintedEvent();
 
       assert.isTrue(instance._reportMissingData);
     });
 
-    it("should call _afterFramePaint if props.initialized and _reportMissingData is true", () => {
+    it("should call _afterFramePaint if initialized and _reportMissingData is true", () => {
       sandbox.stub(DEFAULT_PROPS, "initialized").value(true);
       const instance = wrapper.instance();
       instance._reportMissingData = true;

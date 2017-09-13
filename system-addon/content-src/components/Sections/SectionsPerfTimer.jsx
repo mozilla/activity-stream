@@ -2,6 +2,8 @@ const React = require("react");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {perfService: perfSvc} = require("common/PerfService.jsm");
 
+// Currently record only a fixed set of sections. This will prevent data
+// from custom sections from showing up or from topstories.
 const RECORDED_SECTIONS = ["highlights"];
 
 class SectionsPerfTimer extends React.Component {
@@ -23,6 +25,26 @@ class SectionsPerfTimer extends React.Component {
     this._maybeSendPaintedEvent();
   }
 
+  /**
+   * Call the given callback after the upcoming frame paints.
+   *
+   * @note Both setTimeout and requestAnimationFrame are throttled when the page
+   * is hidden, so this callback may get called up to a second or so after the
+   * requestAnimationFrame "paint" for hidden tabs.
+   *
+   * Newtabs hidden while loading will presumably be fairly rare (other than
+   * preloaded tabs, which we will be filtering out on the server side), so such
+   * cases should get lost in the noise.
+   *
+   * If we decide that it's important to find out when something that's hidden
+   * has "painted", however, another option is to post a message to this window.
+   * That should happen even faster than setTimeout, and, at least as of this
+   * writing, it's not throttled in hidden windows in Firefox.
+   *
+   * @param {Function} callback
+   *
+   * @returns void
+   */
   _afterFramePaint(callback) {
     requestAnimationFrame(() => setTimeout(callback, 0));
   }
@@ -35,7 +57,6 @@ class SectionsPerfTimer extends React.Component {
     if (!this.props.initialized) {
       // Remember to report back when data is available.
       this._reportMissingData = true;
-      return;
     } else if (this._reportMissingData) {
       const dataReadyKey = `${this.props.id}_data_ready_ts`;
       this._reportMissingData = false;
@@ -43,6 +64,7 @@ class SectionsPerfTimer extends React.Component {
       this._afterFramePaint(() => this._sendBadStateEvent(dataReadyKey));
     }
 
+    // Only record first call to render.
     if (this._timestampHandled) {
       return;
     }
@@ -58,6 +80,7 @@ class SectionsPerfTimer extends React.Component {
 
     try {
       const sectionFirstPaintKey = `${this.props.id}_first_painted_ts`;
+      // value has to be Int32.
       const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName(key) -
                              this.perfSvc.getMostRecentAbsMarkStartByName(sectionFirstPaintKey), 10);
       this.props.dispatch(ac.SendToMain({

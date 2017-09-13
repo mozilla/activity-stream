@@ -48,6 +48,13 @@ describe("<TopSitesPerfTimer>", () => {
     assert.ok(wrapper.contains(<InnerEl />));
   });
 
+  it("should have the correct defaults", () => {
+    const instance = wrapper.instance();
+
+    assert.isFalse(instance._timestampHandled);
+    assert.isFalse(instance._reportMissingData);
+  });
+
   describe("#_componentDidMount", () => {
     it("should call _maybeSendPaintedEvent", () => {
       const instance = wrapper.instance();
@@ -80,16 +87,6 @@ describe("<TopSitesPerfTimer>", () => {
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, instance._sendPaintedEvent);
     });
-    it("should not call _afterFramePaint if props.TopSites.initialized is false", () => {
-      sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(false);
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
-
-      instance._maybeSendPaintedEvent();
-
-      assert.notCalled(stub);
-    });
-
     it("should not call _afterFramePaint if this._timestampHandled is true", () => {
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
@@ -100,28 +97,16 @@ describe("<TopSitesPerfTimer>", () => {
       assert.notCalled(stub);
     });
 
-    it("should set this._timestampHandled=true when called with Topsites.initialized === true", () => {
+    it("should set this._timestampHandled=true", () => {
       const instance = wrapper.instance();
       sandbox.stub(instance, "_afterFramePaint");
-      instance._timestampHandled = false;
+
+      assert.isFalse(instance._timestampHandled);
 
       instance._maybeSendPaintedEvent();
 
       assert.isTrue(instance._timestampHandled);
     });
-    it("should not set this._timestampHandled=true when called with Topsites.initialized === false", () => {
-      let props = {};
-      Object.assign(props, DEFAULT_PROPS, {TopSites: {initialized: false}});
-      wrapper = shallow(<TopSitesPerfTimer {...props}><InnerEl /></TopSitesPerfTimer>);
-      const instance = wrapper.instance();
-      sandbox.stub(instance, "_afterFramePaint");
-      instance._timestampHandled = false;
-
-      instance._maybeSendPaintedEvent();
-
-      assert.isFalse(instance._timestampHandled);
-    });
-
     it("should set this._reportMissingData=true when called with Topsites.initialized === false", () => {
       sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(false);
       const instance = wrapper.instance();
