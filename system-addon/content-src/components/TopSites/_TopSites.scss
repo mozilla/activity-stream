@@ -229,6 +229,17 @@
           background-color: $background-secondary;
         }
 
+        // These are specific styles for the icons we have picked,
+        // they may need to be adjusted if the icons change
+        &:first-child:dir(ltr),
+        &:last-child:dir(rtl) {
+          width: $edit-menu-button-size + 5px;
+        }
+        &:last-child:dir(ltr),
+        &:first-child:dir(rtl) {
+          width: $edit-menu-button-size + 3px;
+        }
+
         &:last-child:dir(ltr) {
           border-right: 0;
         }
