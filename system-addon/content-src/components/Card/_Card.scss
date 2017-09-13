@@ -39,7 +39,7 @@
     }
   }
 
-  &:hover, &:focus, &.active {
+  &:-moz-any(:hover, :focus, .active):not(.placeholder) {
     outline: none;
     @include fade-in-card;
     @include context-menu-button-hover;
