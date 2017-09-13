@@ -13,6 +13,7 @@ const TopSiteLink = props => {
   let imageStyle;
   let showSmallFavicon = false;
   let smallFaviconStyle;
+  let smallFaviconFallback;
   if (tippyTopIcon || faviconSize >= MIN_RICH_FAVICON_SIZE) {
     // styles and class names for top sites with rich icons
     imageClassName = "top-site-icon rich-icon";
@@ -25,18 +26,25 @@ const TopSiteLink = props => {
     imageClassName = `screenshot${link.screenshot ? " active" : ""}`;
     imageStyle = {backgroundImage: link.screenshot ? `url(${link.screenshot})` : "none"};
 
-    // only show a favicon in top left if it's greater than 32x32
+    // only show a favicon in top left if it's greater than 16x16
     if (faviconSize >= MIN_CORNER_FAVICON_SIZE) {
       showSmallFavicon = true;
       smallFaviconStyle = {backgroundImage:  `url(${link.favicon})`};
+    } else if (link.screenshot) {
+      // Don't show a small favicon if there is no screenshot, because that
+      // would result in two fallback icons
+      showSmallFavicon = true;
+      smallFaviconFallback = true;
     }
   }
   return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
    <a href={link.url} onClick={props.onClick}>
      <div className="tile" aria-hidden={true}>
-         <span className="letter-fallback">{props.title[0]}</span>
-         <div className={imageClassName} style={imageStyle} />
-         {showSmallFavicon && <div className="top-site-icon default-icon" style={smallFaviconStyle} /> }
+        <span className="letter-fallback">{props.title[0]}</span>
+        <div className={imageClassName} style={imageStyle} />
+          {showSmallFavicon && <div className="top-site-icon default-icon" style={smallFaviconStyle}>
+          {smallFaviconFallback && props.title[0]}
+        </div>}
      </div>
      <div className={`title ${link.isPinned ? "pinned" : ""}`}>
        {link.isPinned && <div className="icon icon-pin-small" />}
