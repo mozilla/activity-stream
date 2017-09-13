@@ -234,6 +234,10 @@ class SnippetsProvider {
       throw new Error("No remote snippets were found in gSnippetsMap.");
     }
 
+    if (typeof payload !== "string") {
+      throw new Error("Snippet payload was incorrectly formatted");
+    }
+
     // Note that injecting snippets can throw if they're invalid XML.
     snippetsEl.innerHTML = payload;
 
