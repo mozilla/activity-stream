@@ -10,12 +10,12 @@ Cu.import("resource://gre/modules/NewTabUtils.jsm");
 Cu.importGlobalProperties(["fetch"]);
 
 const {actionTypes: at, actionCreators: ac} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
-
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {SectionsManager} = Cu.import("resource://activity-stream/lib/SectionsManager.jsm", {});
-
 const {UserDomainAffinityProvider} = Cu.import("resource://activity-stream/lib/UserDomainAffinityProvider.jsm", {});
+
+XPCOMUtils.defineLazyModuleGetter(this, "perfService", "resource://activity-stream/common/PerfService.jsm");
 
 const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
@@ -143,10 +143,16 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.spocsPerNewTabs = settings.spocsPerNewTabs;
 
     if (!this.affinityProvider || (Date.now() - this.affinityLastUpdated >= DOMAIN_AFFINITY_UPDATE_TIME)) {
+      const start = perfService.absNow();
       this.affinityProvider = new UserDomainAffinityProvider(
         settings.timeSegments,
         settings.domainAffinityParameterSets,
         this.maxHistoryQueryResults);
+
+      this.store.dispatch(ac.PerfEvent({
+        event: "topstories.domain.affinity.calculation.ms",
+        value: Math.round(perfService.absNow() - start)
+      }));
       this.affinityLastUpdated = Date.now();
     }
   }
