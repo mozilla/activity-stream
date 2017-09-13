@@ -18,6 +18,7 @@ describe("Highlights Feed", () => {
   let clock;
   let fakeScreenshot;
   let fakeNewTabUtils;
+  let filterAdultStub;
   let sectionsManagerStub;
   let shortURLStub;
 
@@ -34,9 +35,11 @@ describe("Highlights Feed", () => {
       sections: new Map([["highlights", {}]])
     };
     fakeScreenshot = {getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_IMAGE))};
+    filterAdultStub = sinon.stub().returns([]);
     shortURLStub = sinon.stub().callsFake(site => site.url.match(/\/([^/]+)/)[1]);
     globals.set("NewTabUtils", fakeNewTabUtils);
     ({HighlightsFeed, HIGHLIGHTS_UPDATE_TIME, SECTION_ID} = injector({
+      "lib/FilterAdult.jsm": {filterAdult: filterAdultStub},
       "lib/ShortURL.jsm": {shortURL: shortURLStub},
       "lib/SectionsManager.jsm": {SectionsManager: sectionsManagerStub},
       "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
@@ -45,7 +48,14 @@ describe("Highlights Feed", () => {
     feed = new HighlightsFeed();
     feed.store = {
       dispatch: sinon.spy(),
-      getState() { return {TopSites: {initialized: true, rows: Array(12).fill(null).map((v, i) => ({url: `http://www.topsite${i}.com`}))}}; },
+      getState() { return this.state; },
+      state: {
+        Prefs: {values: {filterAdult: false}},
+        TopSites: {
+          initialized: true,
+          rows: Array(12).fill(null).map((v, i) => ({url: `http://www.topsite${i}.com`}))
+        }
+      },
       subscribe: sinon.stub().callsFake(cb => { cb(); return () => {}; })
     };
     links = FAKE_LINKS;
@@ -163,6 +173,20 @@ describe("Highlights Feed", () => {
       feed.fetchImage = () => {};
       await feed.fetchHighlights();
       assert.equal(feed.imageCache.size, 0);
+    });
+    it("should not filter out adult pages when pref is false", async() => {
+      await feed.fetchHighlights();
+
+      assert.notCalled(filterAdultStub);
+    });
+    it("should filter out adult pages when pref is true", async() => {
+      feed.store.state.Prefs.values.filterAdult = true;
+
+      await feed.fetchHighlights();
+
+      // The stub filters out everything
+      assert.calledOnce(filterAdultStub);
+      assert.equal(feed.highlights.length, 0);
     });
   });
   describe("#fetchImage", () => {
