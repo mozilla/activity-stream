@@ -283,6 +283,13 @@ describe("SnippetsProvider", () => {
       const error = snippets._showDefaultSnippets.firstCall.args[0];
       assert.match(error.message, "No remote snippets were found");
     });
+    it("should call _showDefaultSnippets if the payload is not a string", async() => {
+      global.gSnippetsMap.set("snippets", true);
+      await snippets.init({connect: false});
+
+      const error = snippets._showDefaultSnippets.firstCall.args[0];
+      assert.match(error.message, "Snippet payload was incorrectly formatted");
+    });
     it("should not call _showDefaultSnippets if the payload and element are ok", async() => {
       global.gSnippetsMap.set("snippets", "foo123");
       await snippets.init({connect: false});
