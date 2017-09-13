@@ -121,6 +121,27 @@ describe("<TopSitesPerfTimer>", () => {
 
       assert.isFalse(instance._timestampHandled);
     });
+
+    it("should set this._reportMissingData=true when called with Topsites.initialized === false", () => {
+      sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(false);
+      const instance = wrapper.instance();
+
+      instance._maybeSendPaintedEvent();
+
+      assert.isTrue(instance._reportMissingData);
+    });
+
+    it("should call _afterFramePaint if props.TopSites.initialized and _reportMissingData is true", () => {
+      sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(true);
+      const instance = wrapper.instance();
+      instance._reportMissingData = true;
+      instance._timestampHandled = true;
+      const stub = sandbox.stub(instance, "_afterFramePaint");
+
+      instance._maybeSendPaintedEvent();
+
+      assert.calledOnce(stub);
+    });
   });
 
   describe("#_afterFramePaint", () => {
@@ -174,6 +195,48 @@ describe("<TopSitesPerfTimer>", () => {
       wrapper.instance()._sendPaintedEvent();
 
       assert.notCalled(spy);
+    });
+  });
+
+  describe("#_sendBadStateEvent", () => {
+    it("should call perfSvc.mark", () => {
+      sandbox.spy(perfSvc, "mark");
+
+      wrapper.instance()._sendBadStateEvent();
+
+      assert.calledOnce(perfSvc.mark);
+      assert.calledWithExactly(perfSvc.mark, "topsites_data_ready_ts");
+    });
+
+    it("should call compute the delta from first render to data ready", () => {
+      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName");
+
+      wrapper.instance()._sendBadStateEvent();
+
+      assert.calledTwice(perfSvc.getMostRecentAbsMarkStartByName);
+      assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, "topsites_data_ready_ts");
+      assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, "topsites_first_painted_ts");
+    });
+
+    it("should call dispatch TELEMETRY_UNDESIRED_EVENT", () => {
+      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
+        .withArgs("topsites_first_painted_ts").returns(0.5)
+        .withArgs("topsites_data_ready_ts")
+        .returns(3.2);
+
+      const dispatch = sandbox.spy(DEFAULT_PROPS, "dispatch");
+      wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS}><InnerEl /></TopSitesPerfTimer>);
+
+      wrapper.instance()._sendBadStateEvent();
+
+      assert.calledOnce(dispatch);
+      assert.calledWithExactly(dispatch, ac.SendToMain({
+        type: at.TELEMETRY_UNDESIRED_EVENT,
+        data: {
+          event: "topsites_missing_data",
+          value: 2 // Test that parseInt is called by checking the value.
+        }
+      }));
     });
   });
 });

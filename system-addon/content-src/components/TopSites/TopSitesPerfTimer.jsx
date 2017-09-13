@@ -73,10 +73,11 @@ class TopSitesPerfTimer extends React.PureComponent {
     if (!this.props.TopSites.initialized) {
       // Remember to report back when data is available.
       this._reportMissingData = true;
+      return;
     } else if (this._reportMissingData) {
       this._reportMissingData = false;
       // Report that data is available later than first render call.
-      this._afterFramePaint(() => this._sendBadStateEvent("topsites_data_ready_ts"));
+      this._afterFramePaint(() => this._sendBadStateEvent());
     }
 
     // If we've already handled a timestamp, don't do it again
@@ -94,8 +95,8 @@ class TopSitesPerfTimer extends React.PureComponent {
     this._afterFramePaint(this._sendPaintedEvent);
   }
 
-  _sendBadStateEvent(key) {
-    this.perfSvc.mark(key);
+  _sendBadStateEvent() {
+    this.perfSvc.mark("topsites_data_ready_ts");
 
     try {
       const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName("topsites_data_ready_ts") -

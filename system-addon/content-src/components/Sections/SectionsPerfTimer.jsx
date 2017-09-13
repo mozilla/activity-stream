@@ -35,6 +35,7 @@ class SectionsPerfTimer extends React.Component {
     if (!this.props.initialized) {
       // Remember to report back when data is available.
       this._reportMissingData = true;
+      return;
     } else if (this._reportMissingData) {
       const dataReadyKey = `${this.props.id}_data_ready_ts`;
       this._reportMissingData = false;
