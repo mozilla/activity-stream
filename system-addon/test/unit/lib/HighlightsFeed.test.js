@@ -43,7 +43,11 @@ describe("Highlights Feed", () => {
       "common/Dedupe.jsm": {Dedupe}
     }));
     feed = new HighlightsFeed();
-    feed.store = {dispatch: sinon.spy(), getState() { return {TopSites: {rows: Array(12).fill(null).map((v, i) => ({url: `http://www.topsite${i}.com`}))}}; }};
+    feed.store = {
+      dispatch: sinon.spy(),
+      getState() { return {TopSites: {initialized: true, rows: Array(12).fill(null).map((v, i) => ({url: `http://www.topsite${i}.com`}))}}; },
+      subscribe: sinon.stub().callsFake(cb => { cb(); return () => {}; })
+    };
     links = FAKE_LINKS;
     clock = sinon.useFakeTimers();
   });
@@ -65,15 +69,34 @@ describe("Highlights Feed", () => {
       assert.calledOnce(sectionsManagerStub.enableSection);
       assert.calledWith(sectionsManagerStub.enableSection, SECTION_ID);
     });
-    it("should *not* fetch highlights on init to avoid loading Places too early", () => {
+    it("should fetch highlights on postInit", () => {
       feed.fetchHighlights = sinon.spy();
-
-      feed.onAction({type: at.INIT});
-
-      assert.notCalled(feed.fetchHighlights);
+      feed.postInit();
+      assert.calledOnce(feed.fetchHighlights);
     });
   });
   describe("#fetchHighlights", () => {
+    it("should wait for TopSites to be initialised", async () => {
+      feed.store.getState = () => ({TopSites: {initialized: false}});
+      // Initially TopSites is uninitialised and fetchHighlights should wait
+      feed.fetchHighlights();
+      assert.calledOnce(feed.store.subscribe);
+      assert.notCalled(fakeNewTabUtils.activityStreamLinks.getHighlights);
+
+      // Initialisation causes the subscribe callback to be called and
+      // fetchHighlights should continue
+      feed.store.getState = () => ({TopSites: {initialized: true}});
+      const subscribeCallback = feed.store.subscribe.firstCall.args[0];
+      await subscribeCallback();
+      assert.calledOnce(fakeNewTabUtils.activityStreamLinks.getHighlights);
+
+      // If TopSites is initialised in the first place it shouldn't wait
+      feed.store.subscribe.reset();
+      fakeNewTabUtils.activityStreamLinks.getHighlights.reset();
+      feed.fetchHighlights();
+      assert.notCalled(feed.store.subscribe);
+      assert.calledOnce(fakeNewTabUtils.activityStreamLinks.getHighlights);
+    });
     it("should add hostname and hasImage to each link", async () => {
       links = [{url: "https://mozilla.org"}];
       await feed.fetchHighlights();
