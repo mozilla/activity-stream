@@ -209,15 +209,14 @@ describe("<TopSites>", () => {
     assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
     assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
   });
-  it("should render TopSitesEdit if there are top sites", () => {
-    const rows = [{url: "https://foo.com"}];
-    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
+  it("should always render TopSitesEdit", () => {
+    let rows = [{url: "https://foo.com"}];
+    let wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
     assert.lengthOf(wrapper.find(TopSitesEditConnected), 1);
-  });
-  it("should not render TopSitesEdit if there are no sites", () => {
-    const rows = [];
-    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
-    assert.lengthOf(wrapper.find(TopSitesEditConnected), 0);
+
+    rows = [];
+    wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
+    assert.lengthOf(wrapper.find(TopSitesEditConnected), 1);
   });
 });
 
