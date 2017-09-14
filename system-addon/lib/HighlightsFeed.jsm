@@ -12,7 +12,6 @@ const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {SectionsManager} = Cu.import("resource://activity-stream/lib/SectionsManager.jsm", {});
 const {TOP_SITES_SHOWMORE_LENGTH} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
-const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "filterAdult",
   "resource://activity-stream/lib/FilterAdult.jsm");
@@ -29,8 +28,9 @@ const HIGHLIGHTS_MAX_LENGTH = 9;
 const HIGHLIGHTS_UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const MANY_EXTRA_LENGTH = HIGHLIGHTS_MAX_LENGTH * 5 + TOP_SITES_SHOWMORE_LENGTH;
 const SECTION_ID = "highlights";
-const PROFILE_CREATION_PREF = "profileCreationTimestamp";
-const BOOKMARKS_THRESHOLD = 3 * 1e6; // 3 seconds to microseconds.
+const BOOKMARKS_THRESHOLD = 3000; // 3 seconds to milliseconds.
+// Some default seconds ago for Activity Stream recent requests
+const ACTIVITY_STREAM_DEFAULT_RECENT = 5 * 24 * 60 * 60;
 
 this.HighlightsFeed = class HighlightsFeed {
   constructor() {
@@ -47,6 +47,7 @@ this.HighlightsFeed = class HighlightsFeed {
           }
         }
       });
+    this._bookmarksThreshold = 0;
   }
 
   _dedupeKey(site) {
@@ -67,20 +68,20 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 
   /**
-   * Get timestamp used to filter out default bookmarks.
-   * dateAdded for bookmarks is in microseconds, we need to
-   * return the same format.
+   * Timeframe used to select recent bookmarks, in seconds.
+   * Looks back 5 days while also taking into account new profiles
+   * not to include default bookmarks.
    */
-  async _getProfileCreationTimestamp() {
-    let profileAge = this._prefs.get(PROFILE_CREATION_PREF) * 1e6;
-    if (!profileAge) {
-      profileAge = await (new ProfileAge()).created; // Value in milliseconds.
-      // Convert to seconds so we can store in prefs.
-      this._prefs.set(PROFILE_CREATION_PREF, profileAge / 1000);
-      return profileAge * 1000; // Convert to microseconds
+  async _getBookmarksThreshold() {
+    if (this._bookmarksThreshold === 0) {
+      // Value in milliseconds.
+      const profileAge = await (new ProfileAge()).created;
+      const defaultsThreshold = Date.now() - profileAge - BOOKMARKS_THRESHOLD;
+      this._bookmarksThreshold = Math.min(ACTIVITY_STREAM_DEFAULT_RECENT,
+        defaultsThreshold / 1000);
     }
 
-    return profileAge;
+    return this._bookmarksThreshold;
   }
 
   async fetchHighlights(broadcast = false) {
@@ -101,11 +102,12 @@ this.HighlightsFeed = class HighlightsFeed {
       });
     }
 
-    const profileCreationTimestamp = await this._getProfileCreationTimestamp();
-
     // Request more than the expected length to allow for items being removed by
     // deduping against Top Sites or multiple history from the same domain, etc.
-    const manyPages = await this.linksCache.request({numItems: MANY_EXTRA_LENGTH});
+    const manyPages = await NewTabUtils.activityStreamLinks.getHighlights({
+      numItems: MANY_EXTRA_LENGTH,
+      bookmarkSecondsAgo: await this._getBookmarksThreshold()
+    });
 
     // Remove adult highlights if we need to
     const checkedAdult = this.store.getState().Prefs.values.filterAdult ?

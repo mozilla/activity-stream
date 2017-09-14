@@ -261,9 +261,7 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
           if (item.url === action.data.url) {
             const {bookmarkGuid, bookmarkTitle, dateAdded} = action.data;
             Object.assign(item, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: dateAdded});
-            if (!item.type || item.type === "history") {
-              item.type = "bookmark";
-            }
+            item.type = "bookmark";
           }
           return item;
         })

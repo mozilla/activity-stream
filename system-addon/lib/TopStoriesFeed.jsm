@@ -16,6 +16,8 @@ const {SectionsManager} = Cu.import("resource://activity-stream/lib/SectionsMana
 const {UserDomainAffinityProvider} = Cu.import("resource://activity-stream/lib/UserDomainAffinityProvider.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "perfService", "resource://activity-stream/common/PerfService.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
+  "resource://gre/modules/PlacesUtils.jsm");
 
 const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
@@ -253,6 +255,28 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.newTabsSinceSpoc++;
   }
 
+  /**
+   * Update bookmark title, description and image with metadata from Pocket.
+   * @param url Used to identify if the bookmark was a topstory.
+   */
+  updateBookmarkMetadata(url) {
+    if (!this.stories) {
+      return;
+    }
+
+    const story = this.stories.find(s => s.url === url);
+    if (!story) {
+      return;
+    }
+
+    PlacesUtils.history.update({
+      url: story.url,
+      title: story.title,
+      description: story.description,
+      previewImageURL: story.image
+    });
+  }
+
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -268,6 +292,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
         break;
       case at.UNINIT:
         this.uninit();
+        break;
+      case at.PLACES_BOOKMARK_ADDED:
+        this.updateBookmarkMetadata(action.data.url);
         break;
       case at.NEW_TAB_REHYDRATED:
         this.maybeAddSpoc(action.meta.fromTarget);

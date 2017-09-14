@@ -15,6 +15,7 @@ describe("Top Stories Feed", () => {
   let globals;
   let sectionsManagerStub;
   let shortURLStub;
+  let historyUpdateStub;
 
   const FAKE_OPTIONS = {
     "stories_endpoint": "https://somedomain.org/stories?key=$apiKey",
@@ -32,7 +33,8 @@ describe("Top Stories Feed", () => {
 
     globals = new GlobalOverrider();
     globals.set("Services", {locale: {getRequestedLocale: () => "en-CA"}});
-    globals.set("PlacesUtils", {history: {}});
+    historyUpdateStub = sinon.stub();
+    globals.set("PlacesUtils", {history: {update: historyUpdateStub}});
     clock = sinon.useFakeTimers();
     shortURLStub = sinon.stub().callsFake(site => site.url);
     sectionsManagerStub = {
@@ -119,6 +121,45 @@ describe("Top Stories Feed", () => {
       instance.init();
 
       assert.called(Components.utils.reportError);
+    });
+  });
+  describe("#updateBookmarkMetadata", () => {
+    let stories;
+
+    beforeEach(() => {
+      stories = [{url: "foo", title: "title", description: "description", image: "image"}];
+      instance.stories = stories;
+    });
+    it("should call updateBookmarkMetadata on PLACES_BOOKMARK_ADDED", () => {
+      const stub = sinon.stub(instance, "updateBookmarkMetadata");
+
+      instance.onAction({type: at.PLACES_BOOKMARK_ADDED, data: {url: "url"}});
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, "url");
+    });
+    it("should not call history.update if there are no stories", () => {
+      instance.stories = null;
+
+      instance.onAction({type: at.PLACES_BOOKMARK_ADDED, data: {url: "foo"}});
+
+      assert.notCalled(historyUpdateStub);
+    });
+    it("should not call history.update if no stories match the url", () => {
+      instance.onAction({type: at.PLACES_BOOKMARK_ADDED, data: {url: "bar"}});
+
+      assert.notCalled(historyUpdateStub);
+    });
+    it("should call history.update if there is a match", () => {
+      instance.onAction({type: at.PLACES_BOOKMARK_ADDED, data: {url: "foo"}});
+
+      assert.calledOnce(historyUpdateStub);
+      assert.calledWithExactly(historyUpdateStub, {
+        url: stories[0].url,
+        title: stories[0].title,
+        description: stories[0].description,
+        previewImageURL: stories[0].image
+      });
     });
   });
   describe("#uninit", () => {
