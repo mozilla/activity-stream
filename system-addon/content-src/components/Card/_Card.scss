@@ -109,6 +109,10 @@
     &.no-image.no-host-name.no-context {
       max-height: 12*$card-text-line-height + $card-title-margin;
     }
+    &:not(.no-description) .card-title {
+      max-height: 3*$card-text-line-height;
+      overflow: hidden;
+    }
   }
 
   .card-host-name {
