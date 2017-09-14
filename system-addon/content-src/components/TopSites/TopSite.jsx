@@ -59,7 +59,7 @@ TopSiteLink.defaultProps = {
   link: {}
 };
 
-class TopSite extends React.Component {
+class TopSite extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {showContextMenu: false, activeTile: null};

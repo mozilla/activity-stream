@@ -5,7 +5,7 @@ const {actionCreators: ac} = require("common/Actions.jsm");
 const linkMenuOptions = require("content-src/lib/link-menu-options");
 const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"];
 
-class LinkMenu extends React.Component {
+class LinkMenu extends React.PureComponent {
   getOptions() {
     const props = this.props;
     const {site, index, source} = props;

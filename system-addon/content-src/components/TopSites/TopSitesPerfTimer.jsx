@@ -19,9 +19,9 @@ const {perfService: perfSvc} = require("common/PerfService.jsm");
  * even split out into a higher-order component to wrap whatever.
  *
  * @class TopSitesPerfTimer
- * @extends {React.Component}
+ * @extends {React.PureComponent}
  */
-class TopSitesPerfTimer extends React.Component {
+class TopSitesPerfTimer extends React.PureComponent {
   constructor(props) {
     super(props);
     // Just for test dependency injection:

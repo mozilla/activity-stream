@@ -8,7 +8,7 @@ const {TopSite, TopSitePlaceholder} = require("./TopSite");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 const {TOP_SITES_SOURCE} = require("./TopSitesConstants");
 
-class TopSitesEdit extends React.Component {
+class TopSitesEdit extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

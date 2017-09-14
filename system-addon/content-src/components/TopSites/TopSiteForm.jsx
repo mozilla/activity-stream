@@ -4,7 +4,7 @@ const {FormattedMessage} = require("react-intl");
 
 const {TOP_SITES_SOURCE} = require("./TopSitesConstants");
 
-class TopSiteForm extends React.Component {
+class TopSiteForm extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

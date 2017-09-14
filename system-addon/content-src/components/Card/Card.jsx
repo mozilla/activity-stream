@@ -13,7 +13,7 @@ const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
  * this class. Each card will then get a context menu which reflects the actions that
  * can be done on this Card.
  */
-class Card extends React.Component {
+class Card extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {showContextMenu: false, activeCard: null};
