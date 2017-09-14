@@ -65,7 +65,7 @@ module.exports = {
       type: at.DIALOG_OPEN,
       data: {
         onConfirm: [
-          ac.SendToMain({type: at.DELETE_HISTORY_URL, data: site.url}),
+          ac.SendToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, forceBlock: site.bookmarkGuid}}),
           ac.UserEvent({event: "DELETE"})
         ],
         body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],

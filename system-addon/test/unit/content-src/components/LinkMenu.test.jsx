@@ -101,7 +101,7 @@ describe("<LinkMenu>", () => {
       menu_action_open_new_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_open_private_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_dismiss: FAKE_SITE.url,
-      menu_action_delete: FAKE_SITE.url,
+      menu_action_delete: {url: FAKE_SITE.url, forceBlock: FAKE_SITE.bookmarkGuid},
       menu_action_pin: {site: {url: FAKE_SITE.url}, index: FAKE_INDEX},
       menu_action_unpin: {site: {url: FAKE_SITE.url}},
       menu_action_save_to_pocket: {site: {url: FAKE_SITE.url, title: FAKE_SITE.title}}
@@ -125,6 +125,8 @@ describe("<LinkMenu>", () => {
 
         // option.action has correct data
         // (delete is a special case as it dispatches a nested DIALOG_OPEN-type action)
+        // in the case of this FAKE_SITE, we send a bookmarkGuid therefore we also want
+        // to block this if we delete it
         if (option.id === "menu_action_delete") {
           assert.deepEqual(option.action.data.onConfirm[0].data, expectedActionData[option.id]);
         } else {
