@@ -432,8 +432,8 @@ describe("Top Sites Feed", () => {
       fakeNewTabUtils.pinnedLinks.links = [pinnedSite1, pinnedSite2];
       feed.store = {getState() { return {TopSites: {rows: sinon.spy()}}; }};
       let result = feed._getPinnedWithData([frecentSite]);
-      assert.deepEqual(result[0], pinnedSite1);
-      assert.deepEqual(result[1], Object.assign({}, frecentSite, pinnedSite2));
+      assert.include(result[0], pinnedSite1);
+      assert.include(result[1], Object.assign({}, frecentSite, pinnedSite2));
       assert.notCalled(feed.store.getState().TopSites.rows);
     });
     it("should fetch an icon on TOP_SITES_PIN and TOP_SITES_ADD for new urls", () => {
