@@ -2,7 +2,7 @@
   $top-sites-size: $grid-unit;
   $top-sites-border-radius: 6px;
   $top-sites-title-height: 30px;
-  $top-sites-vertical-space: 18px;
+  $top-sites-vertical-space: 8px;
   $screenshot-size: cover;
   $rich-icon-size: 96px;
   $edit-menu-button-size: 25px;
@@ -12,9 +12,11 @@
 
   list-style: none;
   margin: 0;
+  // Take back the margin from the bottom row of vertical spacing as well as the
+  // extra whitespace below the title text as it's vertically centered.
+  margin-bottom: -($top-sites-vertical-space + $top-sites-title-height/3);
   padding: 0;
   margin-inline-end: -$base-gutter;
-  margin-bottom: -$top-sites-vertical-space;
 
   // Two columns
   @media (max-width: $break-point-small) {
