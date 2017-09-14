@@ -67,7 +67,12 @@ class Card extends React.Component {
           </div>}
           <div className={`card-details${hasImage ? "" : " no-image"}`}>
             {link.hostname && <div className="card-host-name">{link.hostname}</div>}
-            <div className={`card-text${hasImage ? "" : " no-image"}${link.hostname ? "" : " no-host-name"}${icon ? "" : " no-context"}`}>
+            <div className={["card-text",
+              icon ? "" : "no-context",
+              link.description ? "" : "no-description",
+              link.hostname ? "" : "no-host-name",
+              hasImage ? "" : "no-image"
+            ].join(" ")}>
               <h4 className="card-title" dir="auto">{link.title}</h4>
               <p className="card-description" dir="auto">{link.description}</p>
             </div>
