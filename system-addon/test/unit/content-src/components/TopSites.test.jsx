@@ -263,17 +263,27 @@ describe("<TopSiteLink>", () => {
     assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
     assert.isTrue(screenshotEl.hasClass("active"));
   });
-  it("should not render a small icon with the screenshot if the icon is smaller than 32x32", () => {
+  it("should render a small icon with fallback letter with the screenshot if the icon is smaller than 16x16", () => {
     link.favicon = "too-small-icon.png";
-    link.faviconSize = 16;
-    const wrapper = shallow(<TopSiteLink link={link} />);
+    link.faviconSize = 10;
+    const wrapper = shallow(<TopSiteLink link={link} title="foo" />);
     const screenshotEl = wrapper.find(".screenshot");
     const defaultIconEl = wrapper.find(".default-icon");
 
     assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
     assert.isTrue(screenshotEl.hasClass("active"));
-    assert.lengthOf(defaultIconEl, 0);
-    assert.lengthOf(wrapper.find(".rich-icon"), 0);
+    assert.lengthOf(defaultIconEl, 1);
+    assert.equal(defaultIconEl.text(), "f");
+  });
+  it("should render a small icon with fallback letter with the screenshot if the icon is missing", () => {
+    const wrapper = shallow(<TopSiteLink link={link} title="foo" />);
+    const screenshotEl = wrapper.find(".screenshot");
+    const defaultIconEl = wrapper.find(".default-icon");
+
+    assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
+    assert.isTrue(screenshotEl.hasClass("active"));
+    assert.lengthOf(defaultIconEl, 1);
+    assert.equal(defaultIconEl.text(), "f");
   });
   it("should render a small icon with the screenshot if the icon is bigger than 32x32", () => {
     link.favicon = "small-icon.png";

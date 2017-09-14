@@ -20,6 +20,9 @@
       height: 16px;
       width: 16px;
       display: inline-block;
+
+      // Specific styling for the particuar icon. r=abenson
+      margin-bottom: -2px;
     }
 
     .info-option-icon[aria-expanded="true"] {
@@ -47,11 +50,12 @@
       border-radius: $border-radius;
       font-size: 13px;
       line-height: 120%;
-      margin-inline-end: -1px;
+      margin-inline-end: -13px;
       offset-inline-end: 0;
       top: 20px;
       width: 320px;
       padding: 24px;
+      box-shadow: $shadow-secondary;
       -moz-user-select: none;
     }
 

@@ -5,5 +5,5 @@ module.exports = {
   // minimum size necessary to show a rich icon instead of a screenshot
   MIN_RICH_FAVICON_SIZE: 96,
   // minimum size necessary to show any icon in the top left corner with a screenshot
-  MIN_CORNER_FAVICON_SIZE: 32
+  MIN_CORNER_FAVICON_SIZE: 16
 };

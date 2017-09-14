@@ -3,13 +3,21 @@
   $search-height: 36px;
   $search-input-left-label-width: 35px;
   $search-button-width: 36px;
-  $search-glyph-image: url('#{$image-path}glyph-search-16.svg');
-  $search-glyph-size: 20px;
+  $search-glyph-image: url('chrome://browser/skin/find.svg');
+  $glyph-forward: url('chrome://browser/skin/forward.svg');
+  $search-glyph-size: 16px;
+  $search-glyph-fill: rgba($grey-90, 0.4);
+  // This is positioned so it is visually (not metrically) centered. r=abenson
+  $search-glyph-left-position: 12px;
   $search-shadow-outline: 0 0 0 2px $input-primary;
 
   @mixin search-input {
     border: 0;
     box-shadow: $shadow-secondary;
+
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-secondary;
+    border-radius: 3px;
 
     &:focus {
       border-color: $input-primary;
@@ -33,6 +41,7 @@
     padding-inline-end: $search-button-width;
     padding-inline-start: $search-input-left-label-width;
     width: 100%;
+    font-size: 15px;
 
     &:focus + .search-button {
       z-index: 1;
@@ -44,8 +53,8 @@
   }
 
   .search-label {
-    background: $search-glyph-image no-repeat center center / $search-glyph-size;
-    fill: $fill-secondary;
+    background: $search-glyph-image no-repeat $search-glyph-left-position center / $search-glyph-size;
+    fill: $search-glyph-fill;
     -moz-context-properties: fill;
     position: absolute;
     offset-inline-start: 0;
@@ -55,11 +64,11 @@
   }
 
   .search-button {
-    background: url('chrome://browser/skin/forward.svg') no-repeat center center;
+    background: $glyph-forward no-repeat center center;
     border-radius: 0 $border-radius $border-radius 0;
     border: 0;
     width: $search-button-width;
-    fill: $fill-secondary;
+    fill: $search-glyph-fill;
     -moz-context-properties: fill;
     background-size: 16px 16px;
     height: 100%;

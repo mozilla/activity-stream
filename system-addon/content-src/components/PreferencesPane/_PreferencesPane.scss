@@ -4,7 +4,7 @@
   $prefs-width: 400px;
 
   color: $text-conditional;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 21px;
 
   .sidebar {
@@ -31,7 +31,7 @@
     }
 
     h1 {
-      font-size: 24px;
+      font-size: 21px;
       margin: 0;
       padding-top: $prefs-spacing;
     }
@@ -40,7 +40,7 @@
   hr {
     border: 0;
     border-bottom: $border-secondary;
-    margin: 28px 0;
+    margin: 20px 0;
   }
 
   .prefs-modal-inner-wrapper {
@@ -66,7 +66,7 @@
       }
 
       > label {
-        font-size: 17px;
+        font-size: 16px;
         font-weight: bold;
         line-height: 19px;
       }
@@ -85,7 +85,7 @@
         background-position-y: 2.5px;
         background-repeat: no-repeat;
         display: inline-block;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: normal;
         height: auto;
         line-height: 21px;
