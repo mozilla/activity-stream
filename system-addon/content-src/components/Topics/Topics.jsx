@@ -1,14 +1,14 @@
 const React = require("react");
 const {FormattedMessage} = require("react-intl");
 
-class Topic extends React.Component {
+class Topic extends React.PureComponent {
   render() {
     const {url, name} = this.props;
     return (<li><a key={name} className="topic-link" href={url}>{name}</a></li>);
   }
 }
 
-class Topics extends React.Component {
+class Topics extends React.PureComponent {
   render() {
     const {topics, read_more_endpoint} = this.props;
     return (

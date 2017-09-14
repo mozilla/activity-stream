@@ -6,7 +6,7 @@ const {FormattedMessage, injectIntl} = require("react-intl");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {IS_NEWTAB} = require("content-src/lib/constants");
 
-class Search extends React.Component {
+class Search extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);

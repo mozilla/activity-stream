@@ -10,7 +10,7 @@ const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 const CARDS_PER_ROW = 3;
 
-class Section extends React.Component {
+class Section extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onInfoEnter = this.onInfoEnter.bind(this);
@@ -208,7 +208,7 @@ Section.defaultProps = {
 
 const SectionIntl = injectIntl(Section);
 
-class Sections extends React.Component {
+class Sections extends React.PureComponent {
   render() {
     const sections = this.props.Sections;
     return (

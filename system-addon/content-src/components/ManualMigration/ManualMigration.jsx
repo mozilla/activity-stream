@@ -11,7 +11,7 @@ const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
  * 3.  After 3 active days
  * 4.  User clicks "Cancel" on the import wizard (currently not implemented).
  */
-class ManualMigration extends React.Component {
+class ManualMigration extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onLaunchTour = this.onLaunchTour.bind(this);

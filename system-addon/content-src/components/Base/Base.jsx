@@ -19,7 +19,7 @@ function addLocaleDataForReactIntl({locale, textDirection}) {
   document.documentElement.dir = textDirection;
 }
 
-class Base extends React.Component {
+class Base extends React.PureComponent {
   componentWillMount() {
     this.sendNewTabRehydrated(this.props.App);
   }

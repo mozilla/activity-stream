@@ -19,7 +19,7 @@ const PreferencesInput = props => (
   </section>
 );
 
-class PreferencesPane extends React.Component {
+class PreferencesPane extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {visible: false};

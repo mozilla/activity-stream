@@ -1,6 +1,6 @@
 const React = require("react");
 
-class ContextMenu extends React.Component {
+class ContextMenu extends React.PureComponent {
   constructor(props) {
     super(props);
     this.hideContext = this.hideContext.bind(this);
@@ -36,7 +36,7 @@ class ContextMenu extends React.Component {
   }
 }
 
-class ContextMenuItem extends React.Component {
+class ContextMenuItem extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
