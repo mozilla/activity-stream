@@ -80,6 +80,10 @@
       margin-inline-start: 30px;
       padding: $options-spacing;
 
+      &.disabled {
+        opacity: 0.5;
+      }
+
       label {
         background-position-x: 35px;
         background-position-y: 2.5px;
@@ -126,8 +130,8 @@
     position: absolute;
   }
 
-  [type='checkbox']:not(:checked) + label,
-  [type='checkbox']:checked + label {
+  [type='checkbox']:not(:disabled):not(:checked) + label,
+  [type='checkbox']:not(:disabled):checked + label {
     cursor: pointer;
     padding: 0 30px;
     position: relative;
@@ -171,13 +175,13 @@
   }
 
   // hover
-  [type='checkbox'] + label:hover::before {
+  [type='checkbox']:not(:disabled) + label:hover::before {
     border: 1px solid $input-primary;
   }
 
   // accessibility
-  [type='checkbox']:checked:focus + label::before,
-  [type='checkbox']:not(:checked):focus + label::before {
+  [type='checkbox']:not(:disabled):checked:focus + label::before,
+  [type='checkbox']:not(:disabled):not(:checked):focus + label::before {
     border: 1px dotted $input-primary;
   }
 }
