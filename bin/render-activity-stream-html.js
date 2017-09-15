@@ -30,7 +30,18 @@ const DEFAULT_OPTIONS = {
  */
 function templateHTML(options, html) {
   const isPrerendered = !!html;
-  const scriptForPrerendering = `\n<script src="${options.baseUrl}data/content/activity-stream-initial-state.js"></script>`;
+  const scripts = [
+    "chrome://browser/content/contentSearchUI.js",
+    `${options.baseUrl}vendor/react.js`,
+    `${options.baseUrl}vendor/react-dom.js`,
+    `${options.baseUrl}vendor/react-intl.js`,
+    `${options.baseUrl}vendor/redux.js`,
+    `${options.baseUrl}vendor/react-redux.js`,
+    `${options.baseUrl}data/content/activity-stream.bundle.js`
+  ];
+  if (isPrerendered) {
+    scripts.unshift(`${options.baseUrl}data/content/activity-stream-initial-state.js`);
+  }
   return `<!doctype html>
 <html lang="${options.locale}" dir="${options.direction}">
   <head>
@@ -45,14 +56,18 @@ function templateHTML(options, html) {
     <div id="root">${isPrerendered ? html : ""}</div>
     <div id="snippets-container">
       <div id="snippets"></div>
-    </div>${isPrerendered ? `${scriptForPrerendering}` : ""}
-    <script src="chrome://browser/content/contentSearchUI.js"></script>
-    <script src="${options.baseUrl}vendor/react.js"></script>
-    <script src="${options.baseUrl}vendor/react-dom.js"></script>
-    <script src="${options.baseUrl}vendor/react-intl.js"></script>
-    <script src="${options.baseUrl}vendor/redux.js"></script>
-    <script src="${options.baseUrl}vendor/react-redux.js"></script>
-    <script src="${options.baseUrl}data/content/activity-stream.bundle.js"></script>
+    </div>
+    <script>
+// Don't directly load the following scripts as part of html to let the page
+// finish loading to render the content sooner.
+for (const src of ${JSON.stringify(scripts, null, 2)}) {
+  // These dynamically inserted scripts by default are async, but we need them
+  // to load in the desired order (i.e., bundle last).
+  const script = document.body.appendChild(document.createElement("script"));
+  script.async = false;
+  script.src = src;
+}
+    </script>
   </body>
 </html>
 `;
