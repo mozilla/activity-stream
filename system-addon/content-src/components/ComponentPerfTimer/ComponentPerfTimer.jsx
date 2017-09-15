@@ -4,15 +4,16 @@ const {perfService: perfSvc} = require("common/PerfService.jsm");
 
 // Currently record only a fixed set of sections. This will prevent data
 // from custom sections from showing up or from topstories.
-const RECORDED_SECTIONS = ["highlights"];
+const RECORDED_SECTIONS = ["highlights", "topsites"];
 
-class SectionsPerfTimer extends React.Component {
+class ComponentPerfTimer extends React.Component {
   constructor(props) {
     super(props);
     // Just for test dependency injection:
     this.perfSvc = this.props.perfSvc || perfSvc;
 
     this._sendBadStateEvent = this._sendBadStateEvent.bind(this);
+    this._sendPaintedEvent = this._sendPaintedEvent.bind(this);
     this._reportMissingData = false;
     this._timestampHandled = false;
   }
@@ -50,7 +51,7 @@ class SectionsPerfTimer extends React.Component {
   }
 
   _maybeSendPaintedEvent() {
-    if (RECORDED_SECTIONS.indexOf(this.props.id) === -1) {
+    if (!RECORDED_SECTIONS.includes(this.props.id)) {
       return;
     }
 
@@ -58,10 +59,9 @@ class SectionsPerfTimer extends React.Component {
       // Remember to report back when data is available.
       this._reportMissingData = true;
     } else if (this._reportMissingData) {
-      const dataReadyKey = `${this.props.id}_data_ready_ts`;
       this._reportMissingData = false;
       // Report that data is available later than first render call.
-      this._afterFramePaint(() => this._sendBadStateEvent(dataReadyKey));
+      this._afterFramePaint(this._sendBadStateEvent);
     }
 
     // Only record first call to render.
@@ -70,19 +70,19 @@ class SectionsPerfTimer extends React.Component {
     }
 
     this._timestampHandled = true;
-
-    const firstPaintKey = `${this.props.id}_first_painted_ts`;
-    this._afterFramePaint(() => this.perfSvc.mark(firstPaintKey));
+    this._afterFramePaint(this._sendPaintedEvent);
   }
 
-  _sendBadStateEvent(key) {
-    this.perfSvc.mark(key);
+  _sendBadStateEvent() {
+    const dataReadyKey = `${this.props.id}_data_ready_ts`;
+    this.perfSvc.mark(dataReadyKey);
 
     try {
-      const sectionFirstPaintKey = `${this.props.id}_first_painted_ts`;
+      const firstPaintKey = `${this.props.id}_first_painted_ts`;
       // value has to be Int32.
-      const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName(key) -
-                             this.perfSvc.getMostRecentAbsMarkStartByName(sectionFirstPaintKey), 10);
+      const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName(dataReadyKey) -
+                             this.perfSvc.getMostRecentAbsMarkStartByName(firstPaintKey), 10);
+      console.log("send bad state event", this.props.id);
       this.props.dispatch(ac.SendToMain({
         type: at.TELEMETRY_UNDESIRED_EVENT,
         data: {
@@ -96,9 +96,33 @@ class SectionsPerfTimer extends React.Component {
     }
   }
 
+  _sendPaintedEvent() {
+    const key = `${this.props.id}_first_painted_ts`;
+    this.perfSvc.mark(key);
+
+    // Record first_painted event but only send if topsites.
+    if (this.props.id !== "topsites") {
+      return;
+    }
+
+    try {
+      const data = {};
+      data[key] = this.perfSvc.getMostRecentAbsMarkStartByName(key);
+
+      this.props.dispatch(ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data
+      }));
+    } catch (ex) {
+      // If this failed, it's likely because the `privacy.resistFingerprinting`
+      // pref is true.  We should at least not blow up, and should continue
+      // to set this._timestampHandled to avoid going through this again.
+    }
+  }
+
   render() {
     return this.props.children;
   }
 }
 
-module.exports = SectionsPerfTimer;
+module.exports = ComponentPerfTimer;

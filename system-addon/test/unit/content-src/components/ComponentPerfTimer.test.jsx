@@ -2,7 +2,7 @@ const React = require("react");
 const {shallow} = require("enzyme");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const createMockRaf = require("mock-raf");
-const SectionsPerfTimer = require("content-src/components/Sections/SectionsPerfTimer");
+const ComponentPerfTimer = require("content-src/components/ComponentPerfTimer/ComponentPerfTimer");
 
 const perfSvc = {
   mark() {},
@@ -18,7 +18,7 @@ let DEFAULT_PROPS = {
   perfSvc
 };
 
-describe("<SectionsPerfTimer>", () => {
+describe("<ComponentPerfTimer>", () => {
   let mockRaf;
   let sandbox;
   let wrapper;
@@ -29,7 +29,7 @@ describe("<SectionsPerfTimer>", () => {
     mockRaf = createMockRaf();
     sandbox = sinon.sandbox.create();
     sandbox.stub(window, "requestAnimationFrame").callsFake(mockRaf.raf);
-    wrapper = shallow(<SectionsPerfTimer {...DEFAULT_PROPS}><InnerEl /></SectionsPerfTimer>);
+    wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
   });
   afterEach(() => {
     sandbox.restore();
@@ -76,11 +76,12 @@ describe("<SectionsPerfTimer>", () => {
       instance._maybeSendPaintedEvent();
 
       assert.calledOnce(stub);
+      assert.calledWithExactly(stub, instance._sendPaintedEvent);
       assert.isTrue(instance._timestampHandled);
     });
     it("should not call _afterFramePaint if props.id is not in RECORDED_SECTIONS", () => {
       sandbox.stub(DEFAULT_PROPS, "id").value("topstories");
-      wrapper = shallow(<SectionsPerfTimer {...DEFAULT_PROPS}><InnerEl /></SectionsPerfTimer>);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
 
@@ -110,7 +111,7 @@ describe("<SectionsPerfTimer>", () => {
     });
     it("should set this._reportMissingData=true when called with initialized === false", () => {
       sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
-      wrapper = shallow(<SectionsPerfTimer {...DEFAULT_PROPS}><InnerEl /></SectionsPerfTimer>);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
       const instance = wrapper.instance();
 
       assert.isFalse(instance._reportMissingData);
@@ -123,13 +124,15 @@ describe("<SectionsPerfTimer>", () => {
     it("should call _afterFramePaint if initialized and _reportMissingData is true", () => {
       sandbox.stub(DEFAULT_PROPS, "initialized").value(true);
       const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_afterFramePaint");
       instance._reportMissingData = true;
       instance._timestampHandled = true;
-      const stub = sandbox.stub(instance, "_afterFramePaint");
 
       instance._maybeSendPaintedEvent();
 
       assert.calledOnce(stub);
+      assert.calledWithExactly(stub, instance._sendBadStateEvent);
+      assert.isFalse(instance._reportMissingData);
     });
   });
 
@@ -153,11 +156,12 @@ describe("<SectionsPerfTimer>", () => {
   describe("#_sendBadStateEvent", () => {
     it("should call perfSvc.mark", () => {
       sandbox.spy(perfSvc, "mark");
+      const key = `${DEFAULT_PROPS.id}_data_ready_ts`; 
 
-      wrapper.instance()._sendBadStateEvent("foo");
+      wrapper.instance()._sendBadStateEvent();
 
       assert.calledOnce(perfSvc.mark);
-      assert.calledWithExactly(perfSvc.mark, "foo");
+      assert.calledWithExactly(perfSvc.mark, key);
     });
 
     it("should call compute the delta from first render to data ready", () => {
@@ -177,7 +181,7 @@ describe("<SectionsPerfTimer>", () => {
         .returns(3.2);
 
       const dispatch = sandbox.spy(DEFAULT_PROPS, "dispatch");
-      wrapper = shallow(<SectionsPerfTimer {...DEFAULT_PROPS}><InnerEl /></SectionsPerfTimer>);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
 
       wrapper.instance()._sendBadStateEvent(`${DEFAULT_PROPS.id}_data_ready_ts`);
 
@@ -188,6 +192,52 @@ describe("<SectionsPerfTimer>", () => {
           event: `${DEFAULT_PROPS.id}_missing_data`,
           value: 2 // Test that parseInt is called by checking the value.
         }
+      }));
+    });
+  });
+  describe("#_sendPaintedEvent", () => {
+    it("should call mark with the correct id", () => {
+      sandbox.stub(perfSvc, "mark");
+      sandbox.stub(DEFAULT_PROPS, "id").value("fake_id");
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.calledOnce(perfSvc.mark);
+      assert.calledWithExactly(perfSvc.mark, "fake_id_first_painted_ts");
+    });
+    it("should not call getMostRecentAbsMarkStartByName if id!=topsites", () => {
+      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName");
+      sandbox.stub(DEFAULT_PROPS, "id").value("fake_id");
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.notCalled(perfSvc.getMostRecentAbsMarkStartByName);
+    });
+    it("should call getMostRecentAbsMarkStartByName for topsites", () => {
+      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName");
+      sandbox.stub(DEFAULT_PROPS, "id").value("topsites");
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.calledOnce(perfSvc.getMostRecentAbsMarkStartByName);
+      assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName,
+                               "topsites_first_painted_ts");
+    });
+    it("should dispatch SAVE_SESSION_PERF_DATA", () => {
+      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName").returns(42);
+      sandbox.stub(DEFAULT_PROPS, "id").value("topsites");
+      const dispatch = sandbox.spy(DEFAULT_PROPS, "dispatch");
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+
+      wrapper.instance()._sendPaintedEvent();
+
+      assert.calledOnce(dispatch);
+      assert.calledWithExactly(dispatch, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {"topsites_first_painted_ts": 42}
       }));
     });
   });

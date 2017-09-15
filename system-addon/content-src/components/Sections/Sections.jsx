@@ -6,7 +6,7 @@ const {PlaceholderCard} = Card;
 const Topics = require("content-src/components/Topics/Topics");
 const {actionCreators: ac} = require("common/Actions.jsm");
 const CollapsibleSection = require("content-src/components/CollapsibleSection/CollapsibleSection");
-const SectionsPerfTimer = require("./SectionsPerfTimer");
+const ComponentPerfTimer = require("content-src/components/ComponentPerfTimer/ComponentPerfTimer");
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -144,8 +144,8 @@ class Section extends React.PureComponent {
     // <section> <-- HTML5 element
     return (
       <CollapsibleSection className="section" icon={icon} title={getFormattedMessage(title)} infoOption={infoOption} prefName={`section.${id}.collapsed`} Prefs={this.props.Prefs} dispatch={this.props.dispatch}>
-        <SectionsPerfTimer {...this.props}>
-          <section className="section">
+        <ComponentPerfTimer {...this.props}>
+          <section className="sections">
             <div className="section-top-bar">
               <h3 className="section-title">
                 {icon && icon.startsWith("moz-extension://") ?
@@ -174,7 +174,7 @@ class Section extends React.PureComponent {
               </div>}
             {shouldShowTopics && <Topics topics={this.props.topics} read_more_endpoint={this.props.read_more_endpoint} />}
           </section>
-        </SectionsPerfTimer>
+        </ComponentPerfTimer>
       </CollapsibleSection>);
   }
 }
