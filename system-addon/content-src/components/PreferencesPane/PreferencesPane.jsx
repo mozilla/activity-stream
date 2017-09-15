@@ -9,7 +9,7 @@ const getFormattedMessage = message =>
 
 const PreferencesInput = props => (
   <section>
-    <input type="checkbox" id={props.prefName} name={props.prefName} checked={props.value} onChange={props.onChange} className={props.className} />
+    <input type="checkbox" id={props.prefName} name={props.prefName} checked={props.value} disabled={props.disabled} onChange={props.onChange} className={props.className} />
     <label htmlFor={props.prefName} className={props.labelClassName}>
       {getFormattedMessage(props.titleString)}
     </label>
@@ -91,8 +91,9 @@ class PreferencesPane extends React.PureComponent {
               <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handlePrefChange}
                 titleString={{id: "settings_pane_topsites_header"}} descString={{id: "settings_pane_topsites_body"}} />
 
-              <div className="options">
-                <PreferencesInput className="showMoreTopSites" prefName="topSitesCount" value={prefs.topSitesCount !== TOP_SITES_DEFAULT_LENGTH} onChange={this.handlePrefChange}
+              <div className={`options${prefs.showTopSites ? "" : " disabled"}`}>
+                <PreferencesInput className="showMoreTopSites" prefName="topSitesCount" disabled={!prefs.showTopSites}
+                  value={prefs.topSitesCount !== TOP_SITES_DEFAULT_LENGTH} onChange={this.handlePrefChange}
                   titleString={{id: "settings_pane_topsites_options_showmore"}} labelClassName="icon icon-topsites" />
               </div>
 
