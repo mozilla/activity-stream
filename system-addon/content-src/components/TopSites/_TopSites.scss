@@ -154,9 +154,9 @@
 
     .default-icon {
       z-index: 1;
-      top: -$default-icon-offset;
-      offset-inline-start: -$default-icon-offset;
+      bottom: -$default-icon-offset;
       height: $default-icon-wrapper-size;
+      offset-inline-end: -$default-icon-offset;
       width: $default-icon-wrapper-size;
       background-size: $default-icon-size;
 
