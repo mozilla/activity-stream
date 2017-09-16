@@ -68,7 +68,7 @@ describe("Top Sites Feed", () => {
       dispatch: sinon.spy(),
       getState() { return this.state; },
       state: {
-        Prefs: {values: {filterAdult: false}},
+        Prefs: {values: {filterAdult: false, topSitesCount: 6}},
         TopSites: {rows: Array(12).fill("site")}
       }
     };
@@ -211,6 +211,13 @@ describe("Top Sites Feed", () => {
       assert.doesNotThrow(() => {
         feed.getLinksWithDefaults(action);
       });
+    });
+    it("should get more if the user has asked for more", async () => {
+      feed.store.state.Prefs.values.topSitesCount = TOP_SITES_SHOWMORE_LENGTH + 1;
+
+      const result = await feed.getLinksWithDefaults();
+
+      assert.propertyVal(result, "length", feed.store.state.Prefs.values.topSitesCount);
     });
     describe("deduping", () => {
       beforeEach(() => {
