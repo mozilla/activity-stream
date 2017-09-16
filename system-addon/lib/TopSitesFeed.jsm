@@ -56,7 +56,10 @@ this.TopSitesFeed = class TopSitesFeed {
     this.store.dispatch(ac.BroadcastToContent(action));
   }
   async getLinksWithDefaults(action) {
-    let frecent = await NewTabUtils.activityStreamLinks.getTopSites();
+    // Get at least SHOWMORE amount so toggling between 1 and 2 rows has sites
+    const numItems = Math.max(this.store.getState().Prefs.values.topSitesCount,
+      TOP_SITES_SHOWMORE_LENGTH);
+    let frecent = await NewTabUtils.activityStreamLinks.getTopSites({numItems});
     const notBlockedDefaultSites = DEFAULT_TOP_SITES.filter(site => !NewTabUtils.blockedLinks.isBlocked({url: site.url}));
     const defaultUrls = notBlockedDefaultSites.map(site => site.url);
     let pinned = this._getPinnedWithData(frecent);
@@ -86,7 +89,7 @@ this.TopSitesFeed = class TopSitesFeed {
       filterAdult(dedupedUnpinned) : dedupedUnpinned;
 
     // Insert the original pinned sites into the deduped frecent and defaults
-    return insertPinned(checkedAdult, pinned).slice(0, TOP_SITES_SHOWMORE_LENGTH);
+    return insertPinned(checkedAdult, pinned).slice(0, numItems);
   }
   async refresh(target = null) {
     if (!this._tippyTopProvider.initialized) {
