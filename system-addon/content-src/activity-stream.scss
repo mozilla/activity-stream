@@ -110,6 +110,11 @@ a {
   }
 }
 
+// Make sure snippets show up above other UI elements
+#snippets-container {
+  z-index: 1;
+}
+
 // Components
 @import './components/Base/Base';
 @import './components/TopSites/TopSites';
