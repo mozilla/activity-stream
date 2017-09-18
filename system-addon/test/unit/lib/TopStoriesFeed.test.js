@@ -553,5 +553,21 @@ describe("Top Stories Feed", () => {
       instance.onAction({type: at.SECTION_UPDATE, data: {id: "randomsection"}});
       assert.notCalled(instance.dedupeFromHighlights);
     });
+    it("should should call SectionManager.updateSection() if updateUI=true", () => {
+      instance.init();
+      instance.stories = [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}];
+      sectionsManagerStub.sections.set("highlights", {enabled: true, rows: [{url: "https://site1.com/foo"}]});
+      instance.dedupeFromHighlights(true);
+      assert.deepEqual(instance.stories, [{url: "https://site2.com/bar"}]);
+      assert.calledOnce(sectionsManagerStub.updateSection);
+    });
+    it("should should NOT call SectionManager.updateSection() if updateUI=false", () => {
+      instance.init();
+      instance.stories = [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}];
+      sectionsManagerStub.sections.set("highlights", {enabled: true, rows: [{url: "https://site1.com/foo"}]});
+      instance.dedupeFromHighlights(false);
+      assert.deepEqual(instance.stories, [{url: "https://site2.com/bar"}]);
+      assert.notCalled(sectionsManagerStub.updateSection);
+    });
   });
 });

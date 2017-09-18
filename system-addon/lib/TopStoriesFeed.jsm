@@ -7,7 +7,6 @@ const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/NewTabUtils.jsm");
-Cu.import("resource://gre/modules/Console.jsm");
 Cu.importGlobalProperties(["fetch"]);
 
 const {actionTypes: at, actionCreators: ac} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
@@ -33,11 +32,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.spocsPerNewTabs = 0;
     this.newTabsSinceSpoc = 0;
     this.contentUpdateQueue = [];
-    this.dedupe = new Dedupe(this._dedupeKey);
-  }
-
-  _dedupeKey(site) {
-    return site && site.url;
+    this.dedupe = new Dedupe(site => site && site.url);
   }
 
   init() {
@@ -80,7 +75,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       const body = await response.json();
       this.updateSettings(body.settings);
       this.stories = this.rotate(this.transform(body.recommendations));
-      this.dedupeFromHighlights();
+      this.dedupeFromHighlights(false);
       this.spocs = this.show_spocs && this.transform(body.spocs).filter(s => s.score >= s.min_score);
 
       this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: this.stories});
@@ -92,12 +87,17 @@ this.TopStoriesFeed = class TopStoriesFeed {
     }
   }
 
-  dedupeFromHighlights() {
+  dedupeFromHighlights(updateUI = false) {
     const highlightsSection = SectionsManager.sections.get("highlights");
     if (this.stories && highlightsSection && highlightsSection.enabled && highlightsSection.rows) {
       const highlights = highlightsSection.rows;
       const [, dedupedStories] = this.dedupe.group(highlights, this.stories);
-      this.stories = dedupedStories;
+      if (this.stories.length !== dedupedStories.length) {
+        this.stories = dedupedStories;
+        if (updateUI) {
+          this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: this.stories});
+        }
+      }
     }
   }
 
@@ -291,7 +291,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         break;
       case at.SECTION_UPDATE:
         if (action.data.id === "highlights") {
-          this.dedupeFromHighlights();
+          this.dedupeFromHighlights(true);
         }
         break;
     }
