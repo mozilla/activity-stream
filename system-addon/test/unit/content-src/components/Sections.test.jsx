@@ -189,6 +189,7 @@ describe("<Section>", () => {
       maxRows: 1,
       rows: [{guid: 1}, {guid: 2}],
       infoOption: {id: "foo"},
+      shouldSendImpressionStats: true,
 
       document: {
         visibilityState: "visible",
@@ -216,6 +217,12 @@ describe("<Section>", () => {
       assert.equal(action.data.source, "TOP_STORIES");
       assert.isFalse(action.data.incognito);
       assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}]);
+    });
+    it("should not send impression stats if not configured", () => {
+      const dispatch = sinon.spy();
+      const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {shouldSendImpressionStats: false, dispatch});
+      renderSection(props);
+      assert.notCalled(dispatch);
     });
     it("should not send client id if section is personalized", () => {
       FAKE_TOPSTORIES_SECTION_PROPS.options.personalized = true;
