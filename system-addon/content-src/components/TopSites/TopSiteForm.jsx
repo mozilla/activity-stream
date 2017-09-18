@@ -8,20 +8,20 @@ class TopSiteForm extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      label: props.label || "",
+      title: props.title || "",
       url: props.url || "",
       validationError: false
     };
-    this.onLabelChange = this.onLabelChange.bind(this);
+    this.onTitleChange = this.onTitleChange.bind(this);
     this.onUrlChange = this.onUrlChange.bind(this);
     this.onCancelButtonClick = this.onCancelButtonClick.bind(this);
     this.onAddButtonClick = this.onAddButtonClick.bind(this);
     this.onSaveButtonClick = this.onSaveButtonClick.bind(this);
     this.onUrlInputMount = this.onUrlInputMount.bind(this);
   }
-  onLabelChange(event) {
+  onTitleChange(event) {
     this.resetValidation();
-    this.setState({"label": event.target.value});
+    this.setState({"title": event.target.value});
   }
   onUrlChange(event) {
     this.resetValidation();
@@ -35,8 +35,8 @@ class TopSiteForm extends React.PureComponent {
     ev.preventDefault();
     if (this.validateForm()) {
       let site = {url: this.cleanUrl()};
-      if (this.state.label !== "") {
-        site.label = this.state.label;
+      if (this.state.title !== "") {
+        site.title = this.state.title;
       }
       this.props.dispatch(ac.SendToMain({
         type: at.TOP_SITES_ADD,
@@ -53,8 +53,8 @@ class TopSiteForm extends React.PureComponent {
     ev.preventDefault();
     if (this.validateForm()) {
       let site = {url: this.cleanUrl()};
-      if (this.state.label !== "") {
-        site.label = this.state.label;
+      if (this.state.title !== "") {
+        site.title = this.state.title;
       }
       this.props.dispatch(ac.SendToMain({
         type: at.TOP_SITES_PIN,
@@ -112,8 +112,8 @@ class TopSiteForm extends React.PureComponent {
             <div className="field title">
               <input
                 type="text"
-                value={this.state.label}
-                onChange={this.onLabelChange}
+                value={this.state.title}
+                onChange={this.onTitleChange}
                 placeholder={this.props.intl.formatMessage({id: "topsites_form_title_placeholder"})} />
             </div>
             <div className={`field url${this.state.validationError ? " invalid" : ""}`}>
@@ -152,7 +152,7 @@ class TopSiteForm extends React.PureComponent {
 }
 
 TopSiteForm.defaultProps = {
-  label: "",
+  title: "",
   url: "",
   index: 0,
   editMode: false // by default we are in "Add New Top Site" mode
