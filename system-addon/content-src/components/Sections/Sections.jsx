@@ -63,7 +63,7 @@ class Section extends React.PureComponent {
   sendImpressionStatsOrAddListener() {
     const {props} = this;
 
-    if (!props.dispatch) {
+    if (!props.shouldSendImpressionStats || !props.dispatch) {
       return;
     }
 
