@@ -361,7 +361,14 @@ describe("<TopSite>", () => {
 
     assert.equal(wrapper.find(TopSiteLink).props().title, "foobar");
   });
+  it("should render the title of a pinned link", () => {
+    link.isPinned = true;
+    link.title = "title";
 
+    const wrapper = shallow(<TopSite link={link} />);
+
+    assert.equal(wrapper.find(TopSiteLink).props().title, "title");
+  });
   it("should have .active class, on top-site-outer if context menu is open", () => {
     const wrapper = shallow(<TopSite link={link} index={1} />);
     wrapper.setState({showContextMenu: true, activeTile: 1});
@@ -647,13 +654,13 @@ describe("<TopSiteForm>", () => {
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should call onClose and dispatch with right args if URL is valid", () => {
-      wrapper.setState({"url": "valid.com", "label": "a label"});
+      wrapper.setState({"url": "valid.com", "title": "a title"});
       wrapper.find(".add").simulate("click");
       assert.calledOnce(wrapper.instance().props.onClose);
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {site: {label: "a label", url: "http://valid.com"}},
+          data: {site: {title: "a title", url: "http://valid.com"}},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
           type: at.TOP_SITES_ADD
         }
@@ -667,8 +674,8 @@ describe("<TopSiteForm>", () => {
         }
       );
     });
-    it("should not pass empty string label in dispatch data", () => {
-      wrapper.setState({"url": "valid.com", "label": ""});
+    it("should not pass empty string title in dispatch data", () => {
+      wrapper.setState({"url": "valid.com", "title": ""});
       wrapper.find(".add").simulate("click");
       assert.calledWith(
         wrapper.instance().props.dispatch,
@@ -682,7 +689,7 @@ describe("<TopSiteForm>", () => {
   });
 
   describe("#editMode", () => {
-    beforeEach(() => setup({editMode: true, url: "https://foo.bar", label: "baz", index: 7}));
+    beforeEach(() => setup({editMode: true, url: "https://foo.bar", title: "baz", index: 7}));
 
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
@@ -719,7 +726,7 @@ describe("<TopSiteForm>", () => {
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {site: {label: "baz", url: "https://foo.bar"}, index: 7},
+          data: {site: {title: "baz", url: "https://foo.bar"}, index: 7},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
           type: at.TOP_SITES_PIN
         }
@@ -733,8 +740,8 @@ describe("<TopSiteForm>", () => {
         }
       );
     });
-    it("should not pass empty string label in dispatch data", () => {
-      wrapper.setState({"label": ""});
+    it("should not pass empty string title in dispatch data", () => {
+      wrapper.setState({"title": ""});
       wrapper.find(".save").simulate("click");
       assert.calledWith(
         wrapper.instance().props.dispatch,

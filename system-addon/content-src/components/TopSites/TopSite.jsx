@@ -135,7 +135,8 @@ class TopSite extends React.PureComponent {
     const {props} = this;
     const {link} = props;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === props.index;
-    const title = link.label || link.hostname;
+    // Use the link's title only if it's pinned, so by default use the hostname
+    const title = (link.isPinned && link.title) || link.hostname;
     return (<TopSiteLink {...props} onClick={this.onLinkClick} className={isContextMenuOpen ? "active" : ""} title={title}>
         {!props.editMode &&
           <div>

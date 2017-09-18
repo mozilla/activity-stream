@@ -124,7 +124,7 @@ class TopSitesEdit extends React.PureComponent {
           <div className="modal-overlay" onClick={this.onModalOverlayClick} />
           <div className="modal">
             <TopSiteForm
-              label={this.props.TopSites.rows[this.state.editIndex].label || this.props.TopSites.rows[this.state.editIndex].hostname}
+              title={this.props.TopSites.rows[this.state.editIndex].title || this.props.TopSites.rows[this.state.editIndex].hostname}
               url={this.props.TopSites.rows[this.state.editIndex].url}
               index={this.state.editIndex}
               editMode={true}
