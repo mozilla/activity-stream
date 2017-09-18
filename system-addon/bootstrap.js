@@ -141,6 +141,22 @@ function onBrowserReady() {
   }
 
   // Do a one time migration of Tiles about:newtab prefs that have been modified
+  migratePref("browser.newtabpage.enabled", enabled => {
+    // The only modified value should be false, but check to be safe
+    if (!enabled) {
+      // Pretend the user turned off all sections for now until there's a sticky
+      // pref (maybe "browser.newtabpage.enabled") that UI can control #3020
+      for (const pref of [
+        "browser.newtabpage.activity-stream.showSearch",
+        "browser.newtabpage.activity-stream.showTopSites",
+        "browser.newtabpage.activity-stream.feeds.section.topstories",
+        "browser.newtabpage.activity-stream.feeds.section.highlights",
+        "browser.newtabpage.activity-stream.feeds.snippets"
+      ]) {
+        Services.prefs.setBoolPref(pref, false);
+      }
+    }
+  });
   migratePref("browser.newtabpage.rows", rows => {
     // Just disable top sites if rows are not desired
     if (rows <= 0) {
