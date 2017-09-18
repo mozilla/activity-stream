@@ -396,7 +396,7 @@ describe("<TopSite>", () => {
     const wrapper = shallow(<TopSite link={link} />);
     const linkMenuProps = wrapper.find(LinkMenu).props();
     assert.deepEqual(linkMenuProps.options,
-      ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"]);
+      ["CheckPinTopSite", "EditTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"]);
   });
 
   describe("#trackClick", () => {
@@ -525,6 +525,52 @@ describe("<TopSitesEdit>", () => {
   }
 
   beforeEach(() => setup());
+
+  describe("#TopSites.editForm.visible=true", () => {
+    let dispatchStub;
+    let sandbox;
+
+    beforeEach(() => {
+      sandbox = sinon.sandbox.create();
+      dispatchStub = sandbox.stub(DEFAULT_PROPS, "dispatch");
+      setup({
+        TopSites: {
+          rows: [{url: "foo", label: "label"}],
+          editForm: {
+            visible: true,
+            site: {url: "foo"}
+          }
+        }
+      });
+    });
+
+    afterEach(() => { sandbox.restore(); });
+
+    it("should render TopSitesForm", () => {
+      assert.ok(wrapper.find(TopSiteForm).length === 1);
+    });
+
+    it("should provide the correct props to TopSiteForm", () => {
+      const comp = wrapper.find(TopSiteForm);
+      assert.equal(comp.props().index, 0);
+      assert.equal(comp.props().label, "label");
+      assert.equal(comp.props().url, "foo");
+    });
+
+    it("should dispatch TOP_SITES_CANCEL_EDIT", () => {
+      wrapper.instance().onModalOverlayClick();
+
+      assert.calledTwice(dispatchStub);
+      assert.calledWith(dispatchStub, {type: at.TOP_SITES_CANCEL_EDIT});
+    });
+
+    it("should dispatch TOP_SITES_CANCEL_EDIT", () => {
+      wrapper.instance().onFormClose();
+
+      assert.calledOnce(dispatchStub);
+      assert.calledWithExactly(dispatchStub, {type: at.TOP_SITES_CANCEL_EDIT});
+    });
+  });
 
   it("should render the component", () => {
     assert.ok(wrapper.find(TopSitesEdit));

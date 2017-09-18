@@ -72,6 +72,15 @@ describe("<LinkMenu>", () => {
     const options = wrapper.find(ContextMenu).props().options;
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_bookmark")));
   });
+  it("should show Edit option", () => {
+    const props = {url: "foo", label: "label"};
+    wrapper = shallowWithIntl(<LinkMenu site={props} source={"TOP_SITES"} options={["EditTopSite"]} dispatch={() => {}} />);
+    const options = wrapper.find(ContextMenu).props().options;
+    const option = options.find(o => (o.id && o.id === "edit_topsites_button_text"));
+    assert.isDefined(option);
+    assert.equal(option.action.data.url, props.url);
+    assert.equal(option.action.data.label, props.label);
+  });
   it("should call intl.formatMessage with the correct string ids", () => {
     const FAKE_OPTIONS = ["AddBookmark", "OpenInNewWindow"];
     const intlProvider = new IntlProvider({locale: "en", messages});
