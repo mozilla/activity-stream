@@ -46,3 +46,11 @@ main {
     vertical-align: middle;
   }
 }
+
+.body-wrapper {
+  opacity: 0;
+  transition: opacity 0.1s ease-in-out;
+  &.on {
+    opacity: 1;
+  }
+}

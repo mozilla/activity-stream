@@ -85,9 +85,11 @@ class Base extends React.PureComponent {
         <div className={outerClassName}>
           <main>
             {prefs.showSearch && <Search />}
-            {!prefs.migrationExpired && <ManualMigration />}
-            {prefs.showTopSites && <TopSites />}
-            <Sections />
+            <div className={`body-wrapper${(initialized ? " on" : "")}`}>
+              {!prefs.migrationExpired && <ManualMigration />}
+              {prefs.showTopSites && <TopSites />}
+              <Sections />
+            </div>
             <ConfirmDialog />
           </main>
           {initialized && <PreferencesPane />}
