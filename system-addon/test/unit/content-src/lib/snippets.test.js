@@ -103,10 +103,17 @@ describe("SnippetsMap", () => {
     });
   });
   describe("#showFirefoxAccounts", () => {
-    it("should dispatch the right action", () => {
+    it("should dispatch the a SHOW_FIREFOX_ACCOUNTS action", () => {
       snippetsMap.showFirefoxAccounts();
       assert.calledOnce(dispatch);
       assert.equal(dispatch.firstCall.args[0].type, at.SHOW_FIREFOX_ACCOUNTS);
+    });
+  });
+  describe("#disableOnboarding", () => {
+    it("should dispatch a DISABLE_ONBOARDING action", () => {
+      snippetsMap.disableOnboarding();
+      assert.calledOnce(dispatch);
+      assert.equal(dispatch.firstCall.args[0].type, at.DISABLE_ONBOARDING);
     });
   });
 });
@@ -136,7 +143,7 @@ describe("SnippetsProvider", () => {
       snippets = new SnippetsProvider();
       sandbox.stub(snippets, "_refreshSnippets").returns(Promise.resolve());
       sandbox.stub(snippets, "_showRemoteSnippets");
-      sandbox.stub(snippets, "_showDefaultSnippets");
+      sandbox.stub(snippets, "_noSnippetFallback");
     });
     it("should connect to the database by default", () => {
       sandbox.stub(global.gSnippetsMap, "connect").returns(Promise.resolve());
@@ -165,11 +172,11 @@ describe("SnippetsProvider", () => {
       assert.calledOnce(snippets._refreshSnippets);
       assert.calledOnce(snippets._showRemoteSnippets);
     });
-    it("should call _showDefaultSnippets if _showRemoteSnippets throws an error", async () => {
+    it("should call _noSnippetFallback if _showRemoteSnippets throws an error", async () => {
       snippets._showRemoteSnippets.callsFake(() => { throw new Error("error"); });
       await snippets.init({connect: false});
 
-      assert.calledOnce(snippets._showDefaultSnippets);
+      assert.calledOnce(snippets._noSnippetFallback);
     });
     it("should set each item in .appData in gSnippetsMap as appData.{item}", async () => {
       await snippets.init({connect: false, appData: {foo: 123, bar: "hello"}});
@@ -183,8 +190,22 @@ describe("SnippetsProvider", () => {
       assert.calledOnce(spy);
       window.removeEventListener("Snippets:Enabled", spy);
     });
+    it("should show the onboarding element if it exists", async () => {
+      const fakeEl = {style: {display: "none"}};
+      sandbox.stub(global.document, "getElementById").returns(fakeEl);
+      snippets = new SnippetsProvider();
+
+      await snippets.init({connect: false});
+
+      assert.equal(fakeEl.style.display, "");
+    });
   });
   describe("#uninit", () => {
+    let fakeEl;
+    beforeEach(() => {
+      fakeEl = {style: {}};
+      sandbox.stub(global.document, "getElementById").returns(fakeEl);
+    });
     it("should dispatch a Snippets:Disabled DOM event", () => {
       const spy = sinon.spy();
       window.addEventListener("Snippets:Disabled", spy);
@@ -192,6 +213,11 @@ describe("SnippetsProvider", () => {
       snippets.uninit();
       assert.calledOnce(spy);
       window.removeEventListener("Snippets:Disabled", spy);
+    });
+    it("should hide the onboarding element if it exists", () => {
+      snippets = new SnippetsProvider();
+      snippets.uninit();
+      assert.equal(fakeEl.style.display, "none");
     });
   });
   describe("#_refreshSnippets", () => {
@@ -263,37 +289,37 @@ describe("SnippetsProvider", () => {
     beforeEach(() => {
       snippets = new SnippetsProvider();
       sandbox.stub(snippets, "_refreshSnippets").returns(Promise.resolve());
-      sandbox.stub(snippets, "_showDefaultSnippets");
+      sandbox.stub(snippets, "_noSnippetFallback");
       let fakeEl = {style: {}, getElementsByTagName() { return [{parentNode: {replaceChild() {}}}]; }};
       sandbox.stub(global.document, "getElementById").returns(fakeEl);
     });
-    it("should call _showDefaultSnippets if no snippets element exists", async() => {
+    it("should call _noSnippetFallback if no snippets element exists", async() => {
       global.gSnippetsMap.set("snippets", "foo123");
       global.document.getElementById.returns(null);
       await snippets.init({connect: false});
 
-      assert.calledOnce(snippets._showDefaultSnippets);
-      const error = snippets._showDefaultSnippets.firstCall.args[0];
+      assert.calledOnce(snippets._noSnippetFallback);
+      const error = snippets._noSnippetFallback.firstCall.args[0];
       assert.match(error.message, "No element was found");
     });
-    it("should call _showDefaultSnippets if no payload is found", async() => {
+    it("should call _noSnippetFallback if no payload is found", async() => {
       global.gSnippetsMap.set("snippets", "");
       await snippets.init({connect: false});
 
-      const error = snippets._showDefaultSnippets.firstCall.args[0];
+      const error = snippets._noSnippetFallback.firstCall.args[0];
       assert.match(error.message, "No remote snippets were found");
     });
-    it("should call _showDefaultSnippets if the payload is not a string", async() => {
+    it("should call _noSnippetFallback if the payload is not a string", async() => {
       global.gSnippetsMap.set("snippets", true);
       await snippets.init({connect: false});
 
-      const error = snippets._showDefaultSnippets.firstCall.args[0];
+      const error = snippets._noSnippetFallback.firstCall.args[0];
       assert.match(error.message, "Snippet payload was incorrectly formatted");
     });
-    it("should not call _showDefaultSnippets if the payload and element are ok", async() => {
+    it("should not call _noSnippetFallback if the payload and element are ok", async() => {
       global.gSnippetsMap.set("snippets", "foo123");
       await snippets.init({connect: false});
-      assert.notCalled(snippets._showDefaultSnippets);
+      assert.notCalled(snippets._noSnippetFallback);
     });
   });
 });
@@ -302,11 +328,14 @@ describe("addSnippetsSubscriber", () => {
   let store;
   let sandbox;
   let snippets;
+  function setSnippetEnabledPref(value) {
+    store.dispatch({type: at.PREF_CHANGED, data: {name: "feeds.snippets", value}});
+  }
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     store = createStore(combineReducers(reducers));
     sandbox.spy(store, "subscribe");
-
+    setSnippetEnabledPref(true);
     snippets = addSnippetsSubscriber(store);
 
     sandbox.stub(snippets, "init").resolves();
@@ -319,24 +348,25 @@ describe("addSnippetsSubscriber", () => {
     }
     delete global.gSnippetsMap;
   });
-  it("should not initialize SnippetsProvider if .initialized is false", () => {
+  it("should initialize feeds.snippets pref is true and SnippetsProvider if .initialize is true", () => {
+    store.dispatch({type: at.SNIPPETS_DATA, data: {}});
+    assert.calledOnce(snippets.init);
+  });
+  it("should not initialize if feeds.snippets pref is true and .initialize is false", () => {
     store.dispatch({type: "FOO"});
 
     assert.calledOnce(store.subscribe);
     assert.notCalled(snippets.init);
   });
-  it("should initialize SnippetsProvider if .initialize and .onboardingFinished are true ", () => {
-    store.dispatch({type: at.SNIPPETS_DATA, data: {onboardingFinished: true}});
-    assert.calledOnce(snippets.init);
-  });
-  it("should not initialize SnippetsProvider if .initialize is true and .onboardingFinished is false", () => {
-    store.dispatch({type: at.SNIPPETS_DATA, data: {onboardingFinished: false}});
+  it("should not initialize if feeds.snippets pref is false", () => {
+    setSnippetEnabledPref(false);
+    store.dispatch({type: at.SNIPPETS_DATA, data: {}});
     assert.notCalled(snippets.init);
   });
-  it("should uninitialize SnippetsProvider if SnippetsProvider has been initialized and .initialize is false", async () => {
-    await store.dispatch({type: at.SNIPPETS_DATA, data: {onboardingFinished: true}});
+  it("should uninitialize SnippetsProvider if SnippetsProvider has been initialized and feeds.snippets pref is false", async () => {
+    await store.dispatch({type: at.SNIPPETS_DATA, data: {}});
     snippets.initialized = true;
-    await store.dispatch({type: at.SNIPPETS_RESET});
+    setSnippetEnabledPref(false);
     assert.calledOnce(snippets.uninit);
   });
 });
