@@ -14,6 +14,7 @@ const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.js
 const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {SectionsManager} = Cu.import("resource://activity-stream/lib/SectionsManager.jsm", {});
 const {UserDomainAffinityProvider} = Cu.import("resource://activity-stream/lib/UserDomainAffinityProvider.jsm", {});
+const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "perfService", "resource://activity-stream/common/PerfService.jsm");
 
@@ -31,6 +32,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.spocsPerNewTabs = 0;
     this.newTabsSinceSpoc = 0;
     this.contentUpdateQueue = [];
+    this.dedupe = new Dedupe(site => site && site.url);
   }
 
   init() {
@@ -73,6 +75,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       const body = await response.json();
       this.updateSettings(body.settings);
       this.stories = this.rotate(this.transform(body.recommendations));
+      this.dedupeFromHighlights(false);
       this.spocs = this.show_spocs && this.transform(body.spocs).filter(s => s.score >= s.min_score);
 
       this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: this.stories});
@@ -81,6 +84,20 @@ this.TopStoriesFeed = class TopStoriesFeed {
       this.contentUpdateQueue = this.contentUpdateQueue.filter(update => update());
     } catch (error) {
       Cu.reportError(`Failed to fetch content: ${error.message}`);
+    }
+  }
+
+  dedupeFromHighlights(updateUI = false) {
+    const highlightsSection = SectionsManager.sections.get("highlights");
+    if (this.stories && highlightsSection && highlightsSection.enabled && highlightsSection.rows) {
+      const highlights = highlightsSection.rows;
+      const [, dedupedStories] = this.dedupe.group(highlights, this.stories);
+      if (this.stories.length !== dedupedStories.length) {
+        this.stories = dedupedStories;
+        if (updateUI) {
+          this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: this.stories});
+        }
+      }
     }
   }
 
@@ -271,6 +288,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
         break;
       case at.NEW_TAB_REHYDRATED:
         this.maybeAddSpoc(action.meta.fromTarget);
+        break;
+      case at.SECTION_UPDATE:
+        if (action.data.id === "highlights") {
+          this.dedupeFromHighlights(true);
+        }
         break;
     }
   }

@@ -520,4 +520,54 @@ describe("Top Stories Feed", () => {
       assert.equal(action.data.event, "topstories.domain.affinity.calculation.ms");
     });
   });
+  describe("#dedupe", () => {
+    it("should dedupe stories from highlights", () => {
+      instance.init();
+      instance.stories = [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}];
+      sectionsManagerStub.sections.set("highlights", {enabled: true, rows: [{url: "https://site1.com/foo"}]});
+      instance.dedupeFromHighlights();
+      assert.deepEqual(instance.stories, [{url: "https://site2.com/bar"}]);
+    });
+    it("should NOT dedupe stories from highlights if highlights are disabled", () => {
+      instance.init();
+      instance.stories = [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}];
+      sectionsManagerStub.sections.set("highlights", {enabled: false, rows: [{url: "https://site1.com/foo"}]});
+      instance.dedupeFromHighlights();
+      assert.deepEqual(instance.stories, [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}]);
+    });
+    it("should NOT dedupe stories from highlights if there is no highlights section registered", () => {
+      instance.init();
+      instance.stories = [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}];
+      instance.dedupeFromHighlights();
+      assert.deepEqual(instance.stories, [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}]);
+    });
+    it("should dedupe stories from highlights on SECTION_UPDATE", () => {
+      instance.init();
+      instance.dedupeFromHighlights = sinon.spy();
+      instance.onAction({type: at.SECTION_UPDATE, data: {id: "highlights"}});
+      assert.calledOnce(instance.dedupeFromHighlights);
+    });
+    it("should NOT dedupe stories from highlights on SECTION_UPDATE a non highlights section", () => {
+      instance.init();
+      instance.dedupeFromHighlights = sinon.spy();
+      instance.onAction({type: at.SECTION_UPDATE, data: {id: "randomsection"}});
+      assert.notCalled(instance.dedupeFromHighlights);
+    });
+    it("should should call SectionManager.updateSection() if updateUI=true", () => {
+      instance.init();
+      instance.stories = [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}];
+      sectionsManagerStub.sections.set("highlights", {enabled: true, rows: [{url: "https://site1.com/foo"}]});
+      instance.dedupeFromHighlights(true);
+      assert.deepEqual(instance.stories, [{url: "https://site2.com/bar"}]);
+      assert.calledOnce(sectionsManagerStub.updateSection);
+    });
+    it("should should NOT call SectionManager.updateSection() if updateUI=false", () => {
+      instance.init();
+      instance.stories = [{url: "https://site1.com/foo"}, {url: "https://site2.com/bar"}];
+      sectionsManagerStub.sections.set("highlights", {enabled: true, rows: [{url: "https://site1.com/foo"}]});
+      instance.dedupeFromHighlights(false);
+      assert.deepEqual(instance.stories, [{url: "https://site2.com/bar"}]);
+      assert.notCalled(sectionsManagerStub.updateSection);
+    });
+  });
 });
