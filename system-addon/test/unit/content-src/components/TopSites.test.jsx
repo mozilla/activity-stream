@@ -1,5 +1,4 @@
 const React = require("react");
-const createMockRaf = require("mock-raf");
 const {shallow} = require("enzyme");
 const {mountWithIntl} = require("test/unit/utils");
 
@@ -9,7 +8,7 @@ const {_unconnected: TopSitesEdit} = TopSitesEditConnected;
 const {TopSite, TopSiteLink, TopSitePlaceholder} = require("content-src/components/TopSites/TopSite");
 const {_unconnected: TopSites} = require("content-src/components/TopSites/TopSites");
 
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+const {actionTypes: at} = require("common/Actions.jsm");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 

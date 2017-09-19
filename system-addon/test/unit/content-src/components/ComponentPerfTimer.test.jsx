@@ -44,6 +44,7 @@ describe("<ComponentPerfTimer>", () => {
 
     assert.isFalse(instance._reportMissingData);
     assert.isFalse(instance._timestampHandled);
+    assert.isFalse(instance._recordedFirstRender);
   });
 
   describe("#_componentDidMount", () => {
@@ -69,13 +70,18 @@ describe("<ComponentPerfTimer>", () => {
   });
 
   describe("#_maybeSendPaintedEvent", () => {
-    it("should call _afterFramePaint if props.initialized is true", () => {
+    it("should call _sendPaintedEvent if props.initialized is true", () => {
+      sandbox.stub(DEFAULT_PROPS, "initialized").value(true);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
 
+      assert.isFalse(instance._timestampHandled);
+
       instance._maybeSendPaintedEvent();
 
-      assert.calledOnce(stub);
+      // Also calls _recordFirstRender.
+      assert.calledTwice(stub);
       assert.calledWithExactly(stub, instance._sendPaintedEvent);
       assert.isTrue(instance._timestampHandled);
     });
@@ -89,25 +95,23 @@ describe("<ComponentPerfTimer>", () => {
 
       assert.notCalled(stub);
     });
-    it("should not call _afterFramePaint if this._timestampHandled is true", () => {
+    it("should not call _sendPaintedEvent if this._timestampHandled is true", () => {
       const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
+      const spy = sinon.spy(instance, "_afterFramePaint");
       instance._timestampHandled = true;
 
       instance._maybeSendPaintedEvent();
-
-      assert.notCalled(stub);
+      spy.neverCalledWith(instance._sendPaintedEvent);
     });
-
-    it("should set this._timestampHandled=true if false", () => {
+    it("should not call _sendPaintedEvent if component not initialized", () => {
+      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
       const instance = wrapper.instance();
-      sandbox.stub(instance, "_afterFramePaint");
-
-      assert.isFalse(instance._timestampHandled);
+      const spy = sinon.spy(instance, "_afterFramePaint");
 
       instance._maybeSendPaintedEvent();
 
-      assert.isTrue(instance._timestampHandled);
+      spy.neverCalledWith(instance._sendPaintedEvent);
     });
     it("should set this._reportMissingData=true when called with initialized === false", () => {
       sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
@@ -121,18 +125,40 @@ describe("<ComponentPerfTimer>", () => {
       assert.isTrue(instance._reportMissingData);
     });
 
-    it("should call _afterFramePaint if initialized and _reportMissingData is true", () => {
-      sandbox.stub(DEFAULT_PROPS, "initialized").value(true);
+    it("should call _sendBadStateEvent if initialized & other metrics have been recorded", () => {
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
       instance._reportMissingData = true;
       instance._timestampHandled = true;
+      instance._recordedFirstRender = true;
 
       instance._maybeSendPaintedEvent();
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, instance._sendBadStateEvent);
       assert.isFalse(instance._reportMissingData);
+    });
+
+    it("should set _recordedFirstRender", () => {
+      const instance = wrapper.instance();
+
+      assert.isFalse(instance._recordedFirstRender);
+
+      instance._maybeSendPaintedEvent();
+
+      assert.isTrue(instance._recordedFirstRender);
+    });
+
+    it("should call _afterFramePaint with _recordFirstRender", () => {
+      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_afterFramePaint");
+
+      instance._maybeSendPaintedEvent();
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, instance._recordFirstRender);
     });
   });
 
@@ -156,7 +182,7 @@ describe("<ComponentPerfTimer>", () => {
   describe("#_sendBadStateEvent", () => {
     it("should call perfSvc.mark", () => {
       sandbox.spy(perfSvc, "mark");
-      const key = `${DEFAULT_PROPS.id}_data_ready_ts`; 
+      const key = `${DEFAULT_PROPS.id}_data_ready_ts`;
 
       wrapper.instance()._sendBadStateEvent();
 
@@ -171,19 +197,19 @@ describe("<ComponentPerfTimer>", () => {
 
       assert.calledTwice(perfSvc.getMostRecentAbsMarkStartByName);
       assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, `${DEFAULT_PROPS.id}_data_ready_ts`);
-      assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, `${DEFAULT_PROPS.id}_first_painted_ts`);
+      assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, `${DEFAULT_PROPS.id}_first_render_ts`);
     });
 
     it("should call dispatch TELEMETRY_UNDESIRED_EVENT", () => {
       sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
-        .withArgs("highlights_first_painted_ts").returns(0.5)
+        .withArgs("highlights_first_render_ts").returns(0.5)
         .withArgs("highlights_data_ready_ts")
         .returns(3.2);
 
       const dispatch = sandbox.spy(DEFAULT_PROPS, "dispatch");
       wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
 
-      wrapper.instance()._sendBadStateEvent(`${DEFAULT_PROPS.id}_data_ready_ts`);
+      wrapper.instance()._sendBadStateEvent();
 
       assert.calledOnce(dispatch);
       assert.calledWithExactly(dispatch, ac.SendToMain({
@@ -195,6 +221,19 @@ describe("<ComponentPerfTimer>", () => {
       }));
     });
   });
+
+  describe("#_recordFirstRender", () => {
+    it("should record *_first_render_ts event", () => {
+      sandbox.stub(perfSvc, "mark");
+      const instance = wrapper.instance();
+
+      instance._recordFirstRender();
+
+      assert.calledOnce(perfSvc.mark);
+      assert.calledWithExactly(perfSvc.mark, `${DEFAULT_PROPS.id}_first_render_ts`);
+    });
+  });
+
   describe("#_sendPaintedEvent", () => {
     it("should call mark with the correct id", () => {
       sandbox.stub(perfSvc, "mark");

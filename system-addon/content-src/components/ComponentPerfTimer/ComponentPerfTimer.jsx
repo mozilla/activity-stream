@@ -14,8 +14,10 @@ class ComponentPerfTimer extends React.Component {
 
     this._sendBadStateEvent = this._sendBadStateEvent.bind(this);
     this._sendPaintedEvent = this._sendPaintedEvent.bind(this);
+    this._recordFirstRender = this._recordFirstRender.bind(this);
     this._reportMissingData = false;
     this._timestampHandled = false;
+    this._recordedFirstRender = false;
   }
 
   componentDidMount() {
@@ -64,8 +66,14 @@ class ComponentPerfTimer extends React.Component {
       this._afterFramePaint(this._sendBadStateEvent);
     }
 
+    // Record first call to render separate from first paint.
+    if (!this._recordedFirstRender) {
+      this._recordedFirstRender = true;
+      this._afterFramePaint(this._recordFirstRender);
+    }
+
     // Only record first call to render.
-    if (this._timestampHandled) {
+    if (this._timestampHandled || !this.props.initialized) {
       return;
     }
 
@@ -73,16 +81,24 @@ class ComponentPerfTimer extends React.Component {
     this._afterFramePaint(this._sendPaintedEvent);
   }
 
+  /**
+   * Record first call to render. Used to compute time for missing data
+   * telemetry.
+   */
+  _recordFirstRender() {
+    const key = `${this.props.id}_first_render_ts`;
+    this.perfSvc.mark(key);
+  }
+
   _sendBadStateEvent() {
     const dataReadyKey = `${this.props.id}_data_ready_ts`;
     this.perfSvc.mark(dataReadyKey);
 
     try {
-      const firstPaintKey = `${this.props.id}_first_painted_ts`;
+      const firstPaintKey = `${this.props.id}_first_render_ts`;
       // value has to be Int32.
       const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName(dataReadyKey) -
                              this.perfSvc.getMostRecentAbsMarkStartByName(firstPaintKey), 10);
-      console.log("send bad state event", this.props.id);
       this.props.dispatch(ac.SendToMain({
         type: at.TELEMETRY_UNDESIRED_EVENT,
         data: {
