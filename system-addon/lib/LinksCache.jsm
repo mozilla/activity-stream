@@ -18,13 +18,14 @@ this.LinksCache = class LinksCache {
    * Create a links cache for a given object property.
    *
    * @param {object} linkObject Object containing the link property
-   * @param {string} linkProperty Name on object to access
+   * @param {string} linkProperty Name of property on object to access
    * @param {function} migrator Optional callback receiving the old and new link
-   * @param {function} shouldRefresh Optional callback receiving the old and new options
+   *                            to allow custom migrating data from old to new.
+   * @param {function} shouldRefresh Optional callback receiving the old and new
+   *                                 options to refresh even when not expired.
    */
   constructor(linkObject, linkProperty, migrator = () => {}, shouldRefresh = () => {}) {
     this.clear();
-    this.expire();
     // Allow getting links from both methods and array properties
     this.linkGetter = options => {
       const ret = linkObject[linkProperty];
@@ -40,14 +41,14 @@ this.LinksCache = class LinksCache {
   clear() {
     this.cache = Promise.resolve([]);
     this.lastOptions = {};
+    this.expire();
   }
 
   /**
    * Force the next request to update the cache.
    */
   expire() {
-    // Pretend the we expired at some negative time (tests start at T=0)
-    this.lastUpdate = 0 - EXPIRATION_TIME - 1;
+    delete this.lastUpdate;
   }
 
   /**
@@ -59,7 +60,8 @@ this.LinksCache = class LinksCache {
   async request(options = {}) {
     // Update the cache if the data has been expired
     const now = Date.now();
-    if (now > this.lastUpdate + EXPIRATION_TIME ||
+    if (this.lastUpdate === undefined ||
+        now > this.lastUpdate + EXPIRATION_TIME ||
         // Allow custom rules around refreshing based on options
         this.shouldRefresh(this.lastOptions, options)) {
       // Update request state early so concurrent requests can refer to it
