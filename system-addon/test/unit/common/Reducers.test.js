@@ -475,6 +475,13 @@ describe("Reducers", () => {
       const result = insertPinned(links, pinned);
       assert.equal(links.length, result.length);
     });
+    it("should not modify the original data", () => {
+      const pinned = [{url: "http://example.com"}];
+
+      insertPinned(links, pinned);
+
+      assert.equal(typeof pinned[0].isPinned, "undefined");
+    });
   });
   describe("Snippets", () => {
     it("should return INITIAL_STATE by default", () => {

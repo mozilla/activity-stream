@@ -84,7 +84,7 @@ function insertPinned(links, pinned) {
   // Then insert them in their specified location
   pinned.forEach((val, index) => {
     if (!val) { return; }
-    let link = Object.assign(val, {isPinned: true, pinIndex: index});
+    let link = Object.assign({}, val, {isPinned: true, pinIndex: index});
     if (index > newLinks.length) {
       newLinks[index] = link;
     } else {

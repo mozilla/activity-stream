@@ -87,8 +87,19 @@ this.LinksCache = class LinksCache {
           if (newLink) {
             const oldLink = toMigrate.get(newLink.url);
             if (oldLink) {
-              this.migrator(toMigrate.get(newLink.url), newLink);
+              this.migrator(oldLink, newLink);
             }
+
+            // Add a method that can be copied to cloned links that will update
+            // the original cached link's property with the current one
+            newLink.updateCache = function(prop) {
+              if (prop) {
+                newLink[prop] = this[prop];
+              } else {
+                // Provide a way for a link to clean itself up
+                delete this.updateCache;
+              }
+            };
           }
         }
 
