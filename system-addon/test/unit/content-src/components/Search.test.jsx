@@ -70,19 +70,9 @@ describe("<Search>", () => {
 
     wrapper.find(".search-button").simulate("click");
 
-    assert.calledTwice(dispatch);
-    const action = dispatch.secondCall.args[0];
+    assert.calledOnce(dispatch);
+    const action = dispatch.firstCall.args[0];
     assert.isUserEventAction(action);
     assert.propertyVal(action.data, "event", "SEARCH");
-  });
-  it("should dispatch a SEARCH_BOX_FOCUSED action on mount", () => {
-    const dispatch = sinon.spy();
-    mountWithIntl(<Search {...DEFAULT_PROPS} dispatch={dispatch} />);
-
-    assert.calledOnce(dispatch);
-    assert.calledWith(dispatch, {
-      meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
-      type: "SEARCH_BOX_FOCUSED"
-    });
   });
 });
