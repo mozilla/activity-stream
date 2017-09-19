@@ -344,6 +344,14 @@ this.TelemetryFeed = class TelemetryFeed {
     }
   }
 
+  handleUserEvent(action) {
+    this.sendEvent(this.createUserEvent(action));
+  }
+
+  handleUndesiredEvent(action) {
+    this.sendEvent(this.createUndesiredEvent(action));
+  }
+
   resetImpressionStats() {
     for (const key of Object.keys(this._impressionStats)) {
       this._impressionStats[key].clear();
@@ -374,10 +382,10 @@ this.TelemetryFeed = class TelemetryFeed {
         this.handleImpressionStats(action);
         break;
       case at.TELEMETRY_UNDESIRED_EVENT:
-        this.sendEvent(this.createUndesiredEvent(action));
+        this.handleUndesiredEvent(action);
         break;
       case at.TELEMETRY_USER_EVENT:
-        this.sendEvent(this.createUserEvent(action));
+        this.handleUserEvent(action);
         break;
       case at.TELEMETRY_PERFORMANCE_EVENT:
         this.sendEvent(this.createPerformanceEvent(action));
