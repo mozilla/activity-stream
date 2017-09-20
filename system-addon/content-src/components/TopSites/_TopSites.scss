@@ -323,6 +323,11 @@
       position: relative;
     }
 
+    .url input:not(:placeholder-shown):dir(rtl) {
+      direction: ltr;
+      text-align: right;
+    }
+
     .section-title {
       margin-bottom: 5px;
       margin-inline-start: 205px;
