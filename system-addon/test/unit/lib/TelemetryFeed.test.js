@@ -430,7 +430,7 @@ describe("TelemetryFeed", () => {
       assert.include(instance.sessions.get("port123").perf, data);
     });
 
-    it("should call setLoadTriggerInfo if data has visibility_event_rcvd_ts", () => {
+    it("should call setLoadTriggerInfo if data has visibility_event_rcvd_ts and ", () => {
       sandbox.stub(instance, "setLoadTriggerInfo");
       instance.addSession("port123");
       const data = {visibility_event_rcvd_ts: 444455};
@@ -447,6 +447,16 @@ describe("TelemetryFeed", () => {
       instance.addSession("port123");
 
       instance.saveSessionPerfData("port123", {monkeys_ts: 444455});
+
+      assert.notCalled(instance.setLoadTriggerInfo);
+    });
+
+    it("should not call setLoadTriggerInfo when url is about:home", () => {
+      sandbox.stub(instance, "setLoadTriggerInfo");
+      instance.addSession("port123", "about:home");
+      const data = {visibility_event_rcvd_ts: 444455};
+
+      instance.saveSessionPerfData("port123", data);
 
       assert.notCalled(instance.setLoadTriggerInfo);
     });

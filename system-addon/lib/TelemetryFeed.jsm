@@ -208,9 +208,7 @@ this.TelemetryFeed = class TelemetryFeed {
       // or someone who has changed their default home page preference to
       // something else and later clicks the toolbar.  It will also be
       // incorrectly unset if someone changes their "Home Page" preference to
-      // about:newtab.  load_trigger_type will be incorrectly set to
-      // "menu_plus_or_keyboard" in the case where someone opens a new tab,
-      // and then clicks the home button.
+      // about:newtab.
       //
       // That said, the ratio of these mistakes to correct cases should
       // be very small, and these issues should follow away as we implement
@@ -461,7 +459,11 @@ this.TelemetryFeed = class TelemetryFeed {
     // browser as those don't get the event until shown. Better fix for more
     // cases forthcoming.
     //
-    if (data.visibility_event_rcvd_ts) {
+    // XXX the about:home check (and the corresponding test) should go away
+    // once the load trigger stuff in add_session is refactored into
+    // setLoadTriggerInfo.
+    //
+    if (data.visibility_event_rcvd_ts && session.page !== "about:home") {
       this.setLoadTriggerInfo(port);
     }
 
