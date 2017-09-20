@@ -92,12 +92,12 @@ this.LinksCache = class LinksCache {
 
             // Add a method that can be copied to cloned links that will update
             // the original cached link's property with the current one
-            newLink.updateCache = function(prop) {
-              if (prop) {
-                newLink[prop] = this[prop];
+            newLink.__updateCache = function(prop) {
+              const val = this[prop];
+              if (val === undefined) {
+                delete newLink[prop];
               } else {
-                // Provide a way for a link to clean itself up
-                delete this.updateCache;
+                newLink[prop] = val;
               }
             };
           }

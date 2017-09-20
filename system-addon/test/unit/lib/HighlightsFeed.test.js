@@ -1,5 +1,6 @@
 "use strict";
 const injector = require("inject!lib/HighlightsFeed.jsm");
+const {Screenshots} = require("lib/Screenshots.jsm");
 const {GlobalOverrider} = require("test/unit/utils");
 const {actionTypes: at} = require("common/Actions.jsm");
 const {Dedupe} = require("common/Dedupe.jsm");
@@ -39,7 +40,10 @@ describe("Highlights Feed", () => {
       updateSectionCard: sinon.spy(),
       sections: new Map([["highlights", {}]])
     };
-    fakeScreenshot = {getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_IMAGE))};
+    fakeScreenshot = {
+      getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_IMAGE)),
+      maybeGetAndSetScreenshot: Screenshots.maybeGetAndSetScreenshot
+    };
     filterAdultStub = sinon.stub().returns([]);
     shortURLStub = sinon.stub().callsFake(site => site.url.match(/\/([^/]+)/)[1]);
     globals.set("NewTabUtils", fakeNewTabUtils);
@@ -200,6 +204,12 @@ describe("Highlights Feed", () => {
       // The stub filters out everything
       assert.calledOnce(filterAdultStub);
       assert.equal(highlights.length, 0);
+    });
+    it("should not expose internal link properties", async() => {
+      const highlights = await fetchHighlights();
+
+      const internal = Object.keys(highlights[0]).filter(key => key.startsWith("__"));
+      assert.equal(internal.join(""), "");
     });
   });
   describe("#fetchImage", () => {

@@ -35,7 +35,7 @@ this.HighlightsFeed = class HighlightsFeed {
     this.linksCache = new LinksCache(NewTabUtils.activityStreamLinks,
       "getHighlights", (oldLink, newLink) => {
         // Migrate any pending images or images to the new link
-        for (const property of ["fetchingImage", "image"]) {
+        for (const property of ["__fetchingScreenshot", "image"]) {
           const oldValue = oldLink[property];
           if (oldValue) {
             newLink[property] = oldValue;
@@ -117,6 +117,10 @@ this.HighlightsFeed = class HighlightsFeed {
       highlights.push(page);
       hosts.add(hostname);
 
+      // Remove any internal properties
+      delete page.__fetchingScreenshot;
+      delete page.__updateCache;
+
       // Skip the rest if we have enough items
       if (highlights.length === HIGHLIGHTS_MAX_LENGTH) {
         break;
@@ -135,19 +139,9 @@ this.HighlightsFeed = class HighlightsFeed {
   async fetchImage(page) {
     // Request a screenshot if we don't already have one pending
     const {preview_image_url: imageUrl, url} = page;
-    if (!page.fetchingImage) {
-      page.fetchingImage = new Promise(async resolve => {
-        const image = await Screenshots.getScreenshotForURL(imageUrl || url);
-        SectionsManager.updateSectionCard(SECTION_ID, url, {image}, true);
-        resolve(image);
-      });
-    }
-
-    // Update the page so the image is in the cache
-    const image = await page.fetchingImage;
-    if (image) {
-      page.image = image;
-    }
+    Screenshots.maybeGetAndSetScreenshot(page, imageUrl || url, "image", image => {
+      SectionsManager.updateSectionCard(SECTION_ID, url, {image}, true);
+    });
   }
 
   onAction(action) {

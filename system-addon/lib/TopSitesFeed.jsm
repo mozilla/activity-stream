@@ -58,18 +58,12 @@ this.TopSitesFeed = class TopSitesFeed {
       }
     }
   }
-  async getScreenshot(url) {
-    let screenshot = await Screenshots.getScreenshotForURL(url);
-    const action = {type: at.SCREENSHOT_UPDATED, data: {url, screenshot}};
-    this.store.dispatch(ac.BroadcastToContent(action));
-    return screenshot;
-  }
 
   /**
    * Migrate cached link data by copying over screenshots.
    */
   _linkMigrator(oldLink, newLink) {
-    for (const property of ["fetchingScreenshot", "screenshot"]) {
+    for (const property of ["__fetchingScreenshot", "screenshot"]) {
       const oldValue = oldLink[property];
       if (oldValue) {
         newLink[property] = oldValue;
@@ -120,10 +114,9 @@ this.TopSitesFeed = class TopSitesFeed {
       if (link) {
         this._fetchIcon(link);
 
-        // At this point, there's no need to expose the cache details to others
-        if (link.updateCache) {
-          link.updateCache();
-        }
+        // Remove any internal properties
+        delete link.__fetchingScreenshot;
+        delete link.__updateCache;
       }
     }
 
@@ -157,31 +150,18 @@ this.TopSitesFeed = class TopSitesFeed {
    * Get an image for the link preferring tippy top, rich favicon, screenshots.
    */
   async _fetchIcon(link) {
-    // Update the link's cache if it can be updated
-    const updateCache = prop => link.updateCache && link.updateCache(prop);
-
     // Check for tippy top icon or a rich icon.
     this._tippyTopProvider.processSite(link);
     if (!link.tippyTopIcon &&
         (!link.favicon || link.faviconSize < MIN_FAVICON_SIZE) &&
         !link.screenshot) {
-      // Request a screenshot if we don't already have one pending
-      if (!link.fetchingScreenshot) {
-        try {
-          link.fetchingScreenshot = this.getScreenshot(link.url);
-          updateCache("fetchingScreenshot");
-        } catch (e) {
-          // Failed to get the screenshot promise, so nothing else to do
-          return;
-        }
-      }
-
-      // Update the link so the screenshot is in the cache
-      const screenshot = await link.fetchingScreenshot;
-      if (screenshot) {
-        link.screenshot = screenshot;
-        updateCache("screenshot");
-      }
+      const {url} = link;
+      Screenshots.maybeGetAndSetScreenshot(link, url, "screenshot", screenshot => {
+        this.store.dispatch(ac.BroadcastToContent({
+          data: {screenshot, url},
+          type: at.SCREENSHOT_UPDATED
+        }));
+      });
     }
   }
 
