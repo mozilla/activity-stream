@@ -7,6 +7,8 @@ const action = {meta: {fromTarget: {}}};
 const {actionTypes: at} = require("common/Actions.jsm");
 const {insertPinned, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 
+const FAKE_FAVICON = "data987";
+const FAKE_FAVICON_SIZE = 128;
 const FAKE_FRECENCY = 200;
 const FAKE_LINKS = new Array(TOP_SITES_SHOWMORE_LENGTH).fill(null).map((v, i) => ({
   frecency: FAKE_FRECENCY,
@@ -42,6 +44,14 @@ describe("Top Sites Feed", () => {
         isBlocked: () => false
       },
       activityStreamLinks: {getTopSites: sandbox.spy(() => Promise.resolve(links))},
+      activityStreamProvider: {
+        _addFavicons: sandbox.spy(l => Promise.resolve(l.map(link => {
+          link.favicon = FAKE_FAVICON;
+          link.faviconSize = FAKE_FAVICON_SIZE;
+          return link;
+        }))),
+        _faviconBytesToDataURI: sandbox.spy()
+      },
       pinnedLinks: {
         links: [],
         isPinned: () => false,
@@ -231,6 +241,8 @@ describe("Top Sites Feed", () => {
         assert.calledTwice(global.NewTabUtils.activityStreamLinks.getTopSites);
       });
       it("should migrate frecent screenshot data without getting screenshots again", async () => {
+        // Don't add favicons so we fall back to screenshots
+        fakeNewTabUtils.activityStreamProvider._addFavicons = sandbox.stub();
         await feed.getLinksWithDefaults();
         const {callCount} = fakeScreenshot.getScreenshotForURL;
         feed.frecentCache.expire();
@@ -241,16 +253,17 @@ describe("Top Sites Feed", () => {
         assert.callCount(fakeScreenshot.getScreenshotForURL, callCount);
         assert.propertyVal(result[0], "screenshot", FAKE_SCREENSHOT);
       });
-      it("should migrate pinned screenshot data without getting screenshots again", async () => {
+      it("should migrate pinned favicon data without getting favicons again", async () => {
         fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/"}];
         await feed.getLinksWithDefaults();
-        const {callCount} = fakeScreenshot.getScreenshotForURL;
+        const {callCount} = fakeNewTabUtils.activityStreamProvider._addFavicons;
         feed.pinnedCache.expire();
 
         const result = await feed.getLinksWithDefaults();
 
-        assert.callCount(fakeScreenshot.getScreenshotForURL, callCount);
-        assert.propertyVal(result[0], "screenshot", FAKE_SCREENSHOT);
+        assert.callCount(fakeNewTabUtils.activityStreamProvider._addFavicons, callCount);
+        assert.propertyVal(result[0], "favicon", FAKE_FAVICON);
+        assert.propertyVal(result[0], "faviconSize", FAKE_FAVICON_SIZE);
       });
       it("should not expose internal link properties", async() => {
         const result = await feed.getLinksWithDefaults();

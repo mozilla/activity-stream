@@ -33,11 +33,11 @@ this.TopSitesFeed = class TopSitesFeed {
     this._tippyTopProvider = new TippyTopProvider();
     this.dedupe = new Dedupe(this._dedupeKey);
     this.frecentCache = new LinksCache(NewTabUtils.activityStreamLinks,
-      "getTopSites", this._linkMigrator, (oldOptions, newOptions) =>
+      "getTopSites", this.getLinkMigrator(), (oldOptions, newOptions) =>
         // Refresh if no old options or requesting more items
         !(oldOptions.numItems >= newOptions.numItems));
     this.pinnedCache = new LinksCache(NewTabUtils.pinnedLinks,
-      "links", this._linkMigrator);
+      "links", this.getLinkMigrator(["favicon", "faviconSize"]));
   }
   _dedupeKey(site) {
     return site && site.hostname;
@@ -60,15 +60,20 @@ this.TopSitesFeed = class TopSitesFeed {
   }
 
   /**
-   * Migrate cached link data by copying over screenshots.
+   * Make a cached link data migrator by copying over screenshots and others.
+   *
+   * @param others {array} Optional extra properties to copy
    */
-  _linkMigrator(oldLink, newLink) {
-    for (const property of ["__fetchingScreenshot", "screenshot"]) {
-      const oldValue = oldLink[property];
-      if (oldValue) {
-        newLink[property] = oldValue;
+  getLinkMigrator(others = []) {
+    const properties = ["__fetchingScreenshot", "screenshot", ...others];
+    return (oldLink, newLink) => {
+      for (const property of properties) {
+        const oldValue = oldLink[property];
+        if (oldValue) {
+          newLink[property] = oldValue;
+        }
       }
-    }
+    };
   }
   async getLinksWithDefaults(action) {
     // Get at least SHOWMORE amount so toggling between 1 and 2 rows has sites
@@ -84,18 +89,33 @@ this.TopSitesFeed = class TopSitesFeed {
       !NewTabUtils.blockedLinks.isBlocked({url: link.url}));
 
     // Get pinned links augmented with desired properties
-    const pinned = (await this.pinnedCache.request()).map(link => {
+    const plainPinned = await this.pinnedCache.request();
+    const pinned = await Promise.all(plainPinned.map(async link => {
       if (!link) {
         return link;
       }
 
       // Copy all properties from a frecent link and add more
       const finder = other => other.url === link.url;
-      return Object.assign({}, frecent.find(finder) || {}, link, {
+      const copy = Object.assign({}, frecent.find(finder) || {}, link, {
         hostname: shortURL(link),
         isDefault: !!notBlockedDefaultSites.find(finder)
       });
-    });
+
+      // Add in favicons if we don't already have it
+      if (!copy.favicon) {
+        try {
+          NewTabUtils.activityStreamProvider._faviconBytesToDataURI(await
+            NewTabUtils.activityStreamProvider._addFavicons([copy]));
+          copy.__updateCache("favicon");
+          copy.__updateCache("faviconSize");
+        } catch (e) {
+          // Some issue with favicon, so just continue without one
+        }
+      }
+
+      return copy;
+    }));
 
     // Remove any duplicates from frecent and default sites
     const [, dedupedFrecent, dedupedDefaults] = this.dedupe.group(
