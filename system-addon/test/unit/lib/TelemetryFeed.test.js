@@ -430,7 +430,7 @@ describe("TelemetryFeed", () => {
       assert.include(instance.sessions.get("port123").perf, data);
     });
 
-    it("should call setLoadTriggerInfo if data has visibility_event_rcvd_ts and ", () => {
+    it("should call setLoadTriggerInfo if data has visibility_event_rcvd_ts", () => {
       sandbox.stub(instance, "setLoadTriggerInfo");
       instance.addSession("port123");
       const data = {visibility_event_rcvd_ts: 444455};
