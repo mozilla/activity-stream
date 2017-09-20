@@ -140,17 +140,18 @@ const SectionsManager = {
     }
   },
   dedupeRows(id, options) {
+    const newOptions = Object.assign({}, options);
     const dedupeFrom = this.sections.get(id).dedupeFrom;
     if (dedupeFrom && dedupeFrom.length > 0 && options.rows) {
       for (const sectionId of dedupeFrom) {
         const section = this.sections.get(sectionId);
         if (section && section.rows) {
           const [, newRows] = this.dedupe.group(section.rows, options.rows);
-          options.rows = newRows;
+          newOptions.rows = newRows;
         }
       }
     }
-    return options;
+    return newOptions;
   },
 
   /**
