@@ -38,6 +38,7 @@ class TopSitesEdit extends React.PureComponent {
       source: TOP_SITES_SOURCE,
       event: "TOP_SITES_EDIT_CLOSE"
     }));
+    this.props.dispatch({type: at.TOP_SITES_CANCEL_EDIT});
   }
   onShowMoreLessClick() {
     const prefIsSetToDefault = this.props.TopSitesCount === TOP_SITES_DEFAULT_LENGTH;
@@ -59,6 +60,7 @@ class TopSitesEdit extends React.PureComponent {
   }
   onFormClose() {
     this.setState({showAddForm: false, showEditForm: false});
+    this.props.dispatch({type: at.TOP_SITES_CANCEL_EDIT});
   }
   onEdit(index) {
     this.setState({showEditForm: true, editIndex: index});
@@ -70,6 +72,13 @@ class TopSitesEdit extends React.PureComponent {
   render() {
     const realTopSites = this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
     const placeholderCount = this.props.TopSitesCount - realTopSites.length;
+    const showEditForm = (this.props.TopSites.editForm && this.props.TopSites.editForm.visible) ||
+                         (this.state.showEditModal && this.state.showEditForm);
+    let editIndex = this.state.editIndex;
+    if (showEditForm && this.props.TopSites.editForm.visible) {
+      const targetURL = this.props.TopSites.editForm.site.url;
+      editIndex = this.props.TopSites.rows.findIndex(s => s.url === targetURL);
+    }
     return (<div className="edit-topsites-wrapper">
       <div className="edit-topsites-button">
         <button
@@ -119,14 +128,14 @@ class TopSitesEdit extends React.PureComponent {
           </div>
         </div>
       }
-      {this.state.showEditModal && this.state.showEditForm &&
+      {showEditForm &&
         <div className="edit-topsites">
           <div className="modal-overlay" onClick={this.onModalOverlayClick} />
           <div className="modal">
             <TopSiteForm
-              label={this.props.TopSites.rows[this.state.editIndex].label || this.props.TopSites.rows[this.state.editIndex].hostname}
-              url={this.props.TopSites.rows[this.state.editIndex].url}
-              index={this.state.editIndex}
+              label={this.props.TopSites.rows[editIndex].label || this.props.TopSites.rows[editIndex].hostname}
+              url={this.props.TopSites.rows[editIndex].url}
+              index={editIndex}
               editMode={true}
               onClose={this.onFormClose}
               dispatch={this.props.dispatch}

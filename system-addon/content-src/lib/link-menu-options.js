@@ -106,6 +106,14 @@ module.exports = {
       tiles: [{id: site.guid, pos: index}]
     }),
     userEvent: "SAVE_TO_POCKET"
+  }),
+  EditTopSite: site => ({
+    id: "edit_topsites_button_text",
+    icon: "edit",
+    action: {
+      type: at.TOP_SITES_EDIT,
+      data: {url: site.url, label: site.label}
+    }
   })
 };
 
