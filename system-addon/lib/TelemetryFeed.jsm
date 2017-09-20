@@ -8,8 +8,6 @@
 const {interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-// XXX removeme and console.log call before landing
-Cu.import("resource://gre/modules/Console.jsm");
 
 const {actionTypes: at, actionUtils: au} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
@@ -363,7 +361,6 @@ this.TelemetryFeed = class TelemetryFeed {
 
   async sendEvent(event_object) {
     if (this.telemetryEnabled) {
-      console.log(`sendEvent: ${JSON.stringify(event_object)}`);
       this.pingCentre.sendPing(event_object);
     }
   }
