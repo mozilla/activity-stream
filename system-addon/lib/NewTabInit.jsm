@@ -38,8 +38,11 @@ this.NewTabInit = class NewTabInit {
         }
         break;
       case at.NEW_TAB_INIT:
-        if (action.data.url === "about:home" && this.store.getState().Prefs.values["aboutHome.autoFocus"]) {
-          action.data.browser.focus();
+        if (action.data.url === "about:home") {
+          const prefs = this.store.getState().Prefs.values;
+          if (prefs["aboutHome.autoFocus"] && prefs.showSearch) {
+            action.data.browser.focus();
+          }
         }
         break;
     }
