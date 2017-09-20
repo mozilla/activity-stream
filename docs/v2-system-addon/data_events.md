@@ -353,8 +353,28 @@ This reports the duration of the domain affinity calculation in milliseconds.
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "user_prefs": 7
+  "user_prefs": 7,
   "event": "topstories.domain.affinity.calculation.ms",
   "value": 43
+}
+```
+
+## Undesired event pings
+
+There pings record the undesired events happen in the addon for further investigation.
+
+### Addon initialization failure
+
+This reports when the addon fails to initialize
+
+```js
+{
+  "action": "activity_stream_undesired_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "ADDON_INIT_FAILED",
+  "value": -1
 }
 ```
