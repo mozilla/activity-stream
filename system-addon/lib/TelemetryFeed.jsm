@@ -194,9 +194,8 @@ this.TelemetryFeed = class TelemetryFeed {
    * @return {obj}    Session object
    */
   addSession(id, url) {
-    // XXX refactor to use saveSessionPerfData?
-    // XXX file bug on newtab -> home button -> close tab not sending
-    //     about:home telemetry (test if this is related to this patch or not)
+    // XXX refactor to use setLoadTriggerInfo or saveSessionPerfData
+
     // "unexpected" will be overwritten when appropriate
     let load_trigger_type = "unexpected";
     let load_trigger_ts;
@@ -209,8 +208,13 @@ this.TelemetryFeed = class TelemetryFeed {
       // or someone who has changed their default home page preference to
       // something else and later clicks the toolbar.  It will also be
       // incorrectly unset if someone changes their "Home Page" preference to
-      // about:newtab.  The ratio of these mistakes to correct cases should
-      // be very small.
+      // about:newtab.  load_trigger_type will be incorrectly set to
+      // "menu_plus_or_keyboard" in the case where someone opens a new tab,
+      // and then clicks the home button.
+      //
+      // That said, the ratio of these mistakes to correct cases should
+      // be very small, and these issues should follow away as we implement
+      // the remaining load_trigger_type values for about:home in issue 3556.
       //
       // XXX file a bug to implement remaining about:home cases so this
       // problem will go away and link to it here.
