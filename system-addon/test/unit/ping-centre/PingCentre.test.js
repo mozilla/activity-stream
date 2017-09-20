@@ -19,6 +19,7 @@ const prefInitHook = function() {
 
 const FAKE_TELEMETRY_ID = "foo123";
 const FAKE_UPDATE_CHANNEL = "beta";
+const FAKE_LOCALE = "en-US";
 const FAKE_AS_ENDPOINT_PREF = "some.as.endpoint.pref";
 const FAKE_ACTIVE_EXPERIMENTS = {
   "pref-flip-quantum-css-style-r1-1381147": {"branch": "stylo"},
@@ -42,6 +43,8 @@ describe("PingCentre", () => {
 
     sandbox.stub(global.Services.prefs, "getBranch")
         .returns(new FakePrefs({initHook: prefInitHook}));
+    sandbox.stub(global.Services.locale, "getAppLocalesAsLangTags")
+        .returns([FAKE_LOCALE]);
     globals.set("fetch", fetchStub);
     globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
     globals.set("TelemetryEnvironment",
@@ -277,12 +280,13 @@ describe("PingCentre", () => {
 
       const EXPECTED_SHIELD_STRING =
         "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
-      const EXPECTED_RESULT = Object.assign({
+      let EXPECTED_RESULT = Object.assign({
+        locale: FAKE_LOCALE,
         topic: "activity-stream",
         client_id: FAKE_TELEMETRY_ID,
-        shield_id: EXPECTED_SHIELD_STRING,
         release_channel: FAKE_UPDATE_CHANNEL
       }, fakePingJSON);
+      EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
 
       assert.calledOnce(fetchStub);
       assert.calledWithExactly(fetchStub, fakeEndpointUrl,
