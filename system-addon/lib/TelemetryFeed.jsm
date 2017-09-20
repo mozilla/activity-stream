@@ -460,7 +460,7 @@ this.TelemetryFeed = class TelemetryFeed {
     // cases forthcoming.
     //
     // XXX the about:home check (and the corresponding test) should go away
-    // once the load trigger stuff in add_session is refactored into
+    // once the load_trigger stuff in addSession is refactored into
     // setLoadTriggerInfo.
     //
     if (data.visibility_event_rcvd_ts && session.page !== "about:home") {
