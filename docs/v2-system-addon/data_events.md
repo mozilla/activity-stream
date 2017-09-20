@@ -277,6 +277,7 @@ perf: {
 
   // What was the perceived trigger of the load action:
   "load_trigger_type": [
+    "first_window_opened" | // home only
     "menu_plus_or_keyboard" | // newtab only
     "unexpected" // sessions lacking actual start times
   ],
