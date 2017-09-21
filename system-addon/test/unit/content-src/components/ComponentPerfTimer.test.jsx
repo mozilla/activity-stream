@@ -234,15 +234,24 @@ describe("<ComponentPerfTimer>", () => {
   });
 
   describe("#_sendPaintedEvent", () => {
-    it("should call mark with the correct id", () => {
+    it("should not call mark with the wrong id", () => {
       sandbox.stub(perfSvc, "mark");
       sandbox.stub(DEFAULT_PROPS, "id").value("fake_id");
       wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
 
       wrapper.instance()._sendPaintedEvent();
 
+      assert.notCalled(perfSvc.mark);
+    });
+    it("should call mark with the correct topsites", () => {
+      sandbox.stub(perfSvc, "mark");
+      sandbox.stub(DEFAULT_PROPS, "id").value("topsites");
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+
+      wrapper.instance()._sendPaintedEvent();
+
       assert.calledOnce(perfSvc.mark);
-      assert.calledWithExactly(perfSvc.mark, "fake_id_first_painted_ts");
+      assert.calledWithExactly(perfSvc.mark, "topsites_first_painted_ts");
     });
     it("should not call getMostRecentAbsMarkStartByName if id!=topsites", () => {
       sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName");

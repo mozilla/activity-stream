@@ -380,7 +380,7 @@ This reports when the addon fails to initialize
 }
 ```
 
-### Bad state
+### Late data initialization
 
 This reports how long it took to get data ready to be displayed.
 From the moment the component first receives default state of `initialized: false`

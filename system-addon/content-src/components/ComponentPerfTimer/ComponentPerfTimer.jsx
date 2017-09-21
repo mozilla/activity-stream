@@ -73,6 +73,7 @@ class ComponentPerfTimer extends React.Component {
     // Used as t0 for recording how long component took to initialize.
     if (!this._recordedFirstUpdate) {
       this._recordedFirstUpdate = true;
+      // topsites_first_update_ts, highlights_first_update_ts.
       const key = `${this.props.id}_first_update_ts`;
       this.perfSvc.mark(key);
     }
@@ -89,6 +90,7 @@ class ComponentPerfTimer extends React.Component {
   }
 
   _sendBadStateEvent() {
+    // highlights_data_ready_ts, topsites_data_ready_ts.
     const dataReadyKey = `${this.props.id}_data_ready_ts`;
     this.perfSvc.mark(dataReadyKey);
 
@@ -100,6 +102,7 @@ class ComponentPerfTimer extends React.Component {
       this.props.dispatch(ac.SendToMain({
         type: at.TELEMETRY_UNDESIRED_EVENT,
         data: {
+          // highlights_data_late_by_ms, topsites_data_late_by_ms.
           event: `${this.props.id}_data_late_by_ms`,
           value
         }
@@ -111,13 +114,14 @@ class ComponentPerfTimer extends React.Component {
   }
 
   _sendPaintedEvent() {
-    const key = `${this.props.id}_first_painted_ts`;
-    this.perfSvc.mark(key);
-
     // Record first_painted event but only send if topsites.
     if (this.props.id !== "topsites") {
       return;
     }
+
+    // topsites_first_painted_ts.
+    const key = `${this.props.id}_first_painted_ts`;
+    this.perfSvc.mark(key);
 
     try {
       const data = {};
