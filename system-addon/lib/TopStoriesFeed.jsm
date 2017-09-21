@@ -25,9 +25,6 @@ const SECTION_ID = "topstories";
 
 this.TopStoriesFeed = class TopStoriesFeed {
   constructor() {
-    this.storiesLastUpdated = 0;
-    this.topicsLastUpdated = 0;
-    this.affinityLastUpdated = 0;
     this.spocsPerNewTabs = 0;
     this.newTabsSinceSpoc = 0;
     this.contentUpdateQueue = [];
@@ -46,6 +43,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.personalized = options.personalized;
         this.show_spocs = options.show_spocs;
         this.maxHistoryQueryResults = options.maxHistoryQueryResults;
+        this.storiesLastUpdated = 0;
+        this.topicsLastUpdated = 0;
+        this.affinityLastUpdated = 0;
 
         this.fetchStories();
         this.fetchTopics();
@@ -271,6 +271,12 @@ this.TopStoriesFeed = class TopStoriesFeed {
         break;
       case at.NEW_TAB_REHYDRATED:
         this.maybeAddSpoc(action.meta.fromTarget);
+        break;
+      case at.SECTION_OPTIONS_CHANGED:
+        if (action.data === SECTION_ID) {
+          this.uninit();
+          this.init();
+        }
         break;
     }
   }

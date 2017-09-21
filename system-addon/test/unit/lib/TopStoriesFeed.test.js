@@ -519,5 +519,24 @@ describe("Top Stories Feed", () => {
       assert.equal(action.type, at.TELEMETRY_PERFORMANCE_EVENT);
       assert.equal(action.data.event, "topstories.domain.affinity.calculation.ms");
     });
+    it("should re-init on options change", () => {
+      instance.storiesLastUpdated = 1;
+      instance.topicsLastUpdated = 1;
+      instance.affinityLastUpdated = 1;
+
+      instance.onAction({type: at.SECTION_OPTIONS_CHANGED, data: "foo"});
+      assert.notCalled(sectionsManagerStub.disableSection);
+      assert.notCalled(sectionsManagerStub.enableSection);
+      assert.equal(instance.storiesLastUpdated, 1);
+      assert.equal(instance.topicsLastUpdated, 1);
+      assert.equal(instance.affinityLastUpdated, 1);
+
+      instance.onAction({type: at.SECTION_OPTIONS_CHANGED, data: "topstories"});
+      assert.calledOnce(sectionsManagerStub.disableSection);
+      assert.calledOnce(sectionsManagerStub.enableSection);
+      assert.equal(instance.storiesLastUpdated, 0);
+      assert.equal(instance.topicsLastUpdated, 0);
+      assert.equal(instance.affinityLastUpdated, 0);
+    });
   });
 });
