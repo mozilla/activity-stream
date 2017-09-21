@@ -154,10 +154,6 @@ class Section extends React.PureComponent {
       "tabIndex": 0
     };
 
-    if (id === "topstories") {
-      console.log(rows);
-    }
-
     const sectionInfoTitle = intl.formatMessage({id: "section_info_option"});
 
     const realRows = rows.slice(0, maxCards);

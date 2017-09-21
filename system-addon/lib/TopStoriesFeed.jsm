@@ -296,6 +296,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
       case at.PLACES_BOOKMARK_ADDED:
         this.updateBookmarkMetadata(action.data.url);
         break;
+      case at.PLACES_BOOKMARK_REMOVED:
+        this.fetchStories();
+        break;
       case at.NEW_TAB_REHYDRATED:
         this.maybeAddSpoc(action.meta.fromTarget);
         break;
