@@ -44,7 +44,7 @@ describe("<ComponentPerfTimer>", () => {
 
     assert.isFalse(instance._reportMissingData);
     assert.isFalse(instance._timestampHandled);
-    assert.isFalse(instance._recordedFirstRender);
+    assert.isFalse(instance._recordedFirstUpdate);
   });
 
   describe("#_componentDidMount", () => {
@@ -56,16 +56,85 @@ describe("<ComponentPerfTimer>", () => {
 
       assert.calledOnce(stub);
     });
+
+    it("should not call _maybeSendPaintedEvent if id not in RECORDED_SECTIONS", () => {
+      sandbox.stub(DEFAULT_PROPS, "id").value("topstories");
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_maybeSendPaintedEvent");
+
+      instance.componentDidMount();
+
+      assert.notCalled(stub);
+    });
   });
 
   describe("#_componentDidUpdate", () => {
     it("should call _maybeSendPaintedEvent", () => {
       const instance = wrapper.instance();
+      const maybeSendPaintStub = sandbox.stub(instance, "_maybeSendPaintedEvent");
+      const maybeSendBadStateStub = sandbox.stub(instance, "_maybeSendBadStateEvent");
+
+      instance.componentDidUpdate();
+
+      assert.calledOnce(maybeSendPaintStub);
+      assert.calledOnce(maybeSendBadStateStub);
+    });
+
+    it("should not call _maybeSendPaintedEvent if id not in RECORDED_SECTIONS", () => {
+      sandbox.stub(DEFAULT_PROPS, "id").value("topstories");
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+      const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_maybeSendPaintedEvent");
 
       instance.componentDidUpdate();
 
+      assert.notCalled(stub);
+    });
+  });
+
+  describe("#_maybeSendBadStateEvent", () => {
+    it("should set this._reportMissingData=true when called with initialized === false", () => {
+      const instance = wrapper.instance();
+
+      assert.isFalse(instance._reportMissingData);
+
+      instance._maybeSendBadStateEvent({initialized: false});
+
+      assert.isTrue(instance._reportMissingData);
+    });
+
+    it("should call _sendBadStateEvent if initialized & other metrics have been recorded", () => {
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(instance, "_sendBadStateEvent");
+      instance._reportMissingData = true;
+      instance._timestampHandled = true;
+      instance._recordedFirstUpdate = true;
+
+      instance._maybeSendBadStateEvent({initialized: true});
+
       assert.calledOnce(stub);
+      assert.isFalse(instance._reportMissingData);
+    });
+
+    it("should set _recordedFirstUpdate", () => {
+      const instance = wrapper.instance();
+
+      assert.isFalse(instance._recordedFirstUpdate);
+
+      instance._maybeSendBadStateEvent({initialized: false});
+
+      assert.isTrue(instance._recordedFirstUpdate);
+    });
+
+    it("should mark first_update_ts", () => {
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(perfSvc, "mark");
+
+      instance._maybeSendBadStateEvent({initialized: false});
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, `${DEFAULT_PROPS.id}_first_update_ts`);
     });
   });
 
@@ -80,20 +149,9 @@ describe("<ComponentPerfTimer>", () => {
 
       instance._maybeSendPaintedEvent();
 
-      // Also calls _recordFirstRender.
-      assert.calledTwice(stub);
+      assert.calledOnce(stub);
       assert.calledWithExactly(stub, instance._sendPaintedEvent);
       assert.isTrue(instance._timestampHandled);
-    });
-    it("should not call _afterFramePaint if props.id is not in RECORDED_SECTIONS", () => {
-      sandbox.stub(DEFAULT_PROPS, "id").value("topstories");
-      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
-
-      instance._maybeSendPaintedEvent();
-
-      assert.notCalled(stub);
     });
     it("should not call _sendPaintedEvent if this._timestampHandled is true", () => {
       const instance = wrapper.instance();
@@ -112,53 +170,6 @@ describe("<ComponentPerfTimer>", () => {
       instance._maybeSendPaintedEvent();
 
       spy.neverCalledWith(instance._sendPaintedEvent);
-    });
-    it("should set this._reportMissingData=true when called with initialized === false", () => {
-      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
-      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
-      const instance = wrapper.instance();
-
-      assert.isFalse(instance._reportMissingData);
-
-      instance._maybeSendPaintedEvent();
-
-      assert.isTrue(instance._reportMissingData);
-    });
-
-    it("should call _sendBadStateEvent if initialized & other metrics have been recorded", () => {
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
-      instance._reportMissingData = true;
-      instance._timestampHandled = true;
-      instance._recordedFirstRender = true;
-
-      instance._maybeSendPaintedEvent();
-
-      assert.calledOnce(stub);
-      assert.calledWithExactly(stub, instance._sendBadStateEvent);
-      assert.isFalse(instance._reportMissingData);
-    });
-
-    it("should set _recordedFirstRender", () => {
-      const instance = wrapper.instance();
-
-      assert.isFalse(instance._recordedFirstRender);
-
-      instance._maybeSendPaintedEvent();
-
-      assert.isTrue(instance._recordedFirstRender);
-    });
-
-    it("should call _afterFramePaint with _recordFirstRender", () => {
-      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
-      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
-
-      instance._maybeSendPaintedEvent();
-
-      assert.calledOnce(stub);
-      assert.calledWithExactly(stub, instance._recordFirstRender);
     });
   });
 
@@ -197,12 +208,12 @@ describe("<ComponentPerfTimer>", () => {
 
       assert.calledTwice(perfSvc.getMostRecentAbsMarkStartByName);
       assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, `${DEFAULT_PROPS.id}_data_ready_ts`);
-      assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, `${DEFAULT_PROPS.id}_first_render_ts`);
+      assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, `${DEFAULT_PROPS.id}_first_update_ts`);
     });
 
     it("should call dispatch TELEMETRY_UNDESIRED_EVENT", () => {
       sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
-        .withArgs("highlights_first_render_ts").returns(0.5)
+        .withArgs("highlights_first_update_ts").returns(0.5)
         .withArgs("highlights_data_ready_ts")
         .returns(3.2);
 
@@ -215,22 +226,10 @@ describe("<ComponentPerfTimer>", () => {
       assert.calledWithExactly(dispatch, ac.SendToMain({
         type: at.TELEMETRY_UNDESIRED_EVENT,
         data: {
-          event: `${DEFAULT_PROPS.id}_missing_data`,
+          event: `${DEFAULT_PROPS.id}_data_late_by_ms`,
           value: 2 // Test that parseInt is called by checking the value.
         }
       }));
-    });
-  });
-
-  describe("#_recordFirstRender", () => {
-    it("should record *_first_render_ts event", () => {
-      sandbox.stub(perfSvc, "mark");
-      const instance = wrapper.instance();
-
-      instance._recordFirstRender();
-
-      assert.calledOnce(perfSvc.mark);
-      assert.calledWithExactly(perfSvc.mark, `${DEFAULT_PROPS.id}_first_render_ts`);
     });
   });
 

@@ -379,3 +379,38 @@ This reports when the addon fails to initialize
   "value": -1
 }
 ```
+
+### Bad state
+
+This reports how long it took to get data ready to be displayed.
+From the moment the component first receives default state of `initialized: false`
+until this becomes `true`.
+
+```js
+{
+  "client_id": "8095a611-4ee4-b94d-b7b6-37923a0faa69",
+  "release_channel": "default",
+  "addon_version": "0.0.0",
+  "locale": "en-US",
+  "user_prefs": 3,
+  "session_id": "{ca150256-a6ca-4e43-a375-28ce5fa3bffc}",
+  "page": "about:newtab",
+  "value": 5,
+  "event": "topsites_data_late_by_ms",
+  "action": "activity_stream_undesired_event"
+}
+```
+```js
+{
+  "client_id": "8095a611-4ee4-b94d-b7b6-37923a0faa69",
+  "release_channel": "default",
+  "addon_version": "0.0.0",
+  "locale": "en-US",
+  "user_prefs": 3,
+  "session_id": "{ca150256-a6ca-4e43-a375-28ce5fa3bffc}",
+  "page": "about:newtab",
+  "value": 10,
+  "event": "highlights_data_late_by_ms",
+  "action": "activity_stream_undesired_event"
+}
+```

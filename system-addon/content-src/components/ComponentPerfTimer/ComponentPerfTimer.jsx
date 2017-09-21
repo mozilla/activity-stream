@@ -14,18 +14,26 @@ class ComponentPerfTimer extends React.Component {
 
     this._sendBadStateEvent = this._sendBadStateEvent.bind(this);
     this._sendPaintedEvent = this._sendPaintedEvent.bind(this);
-    this._recordFirstRender = this._recordFirstRender.bind(this);
     this._reportMissingData = false;
     this._timestampHandled = false;
-    this._recordedFirstRender = false;
+    this._recordedFirstUpdate = false;
   }
 
   componentDidMount() {
+    if (!RECORDED_SECTIONS.includes(this.props.id)) {
+      return;
+    }
+
     this._maybeSendPaintedEvent();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    if (!RECORDED_SECTIONS.includes(this.props.id)) {
+      return;
+    }
+
     this._maybeSendPaintedEvent();
+    this._maybeSendBadStateEvent(prevProps);
   }
 
   /**
@@ -52,26 +60,25 @@ class ComponentPerfTimer extends React.Component {
     requestAnimationFrame(() => setTimeout(callback, 0));
   }
 
-  _maybeSendPaintedEvent() {
-    if (!RECORDED_SECTIONS.includes(this.props.id)) {
-      return;
-    }
-
-    if (!this.props.initialized) {
+  _maybeSendBadStateEvent(prevProps) {
+    if (!prevProps.initialized) {
       // Remember to report back when data is available.
       this._reportMissingData = true;
     } else if (this._reportMissingData) {
       this._reportMissingData = false;
       // Report that data is available later than first render call.
-      this._afterFramePaint(this._sendBadStateEvent);
+      this._sendBadStateEvent();
     }
 
-    // Record first call to render separate from first paint.
-    if (!this._recordedFirstRender) {
-      this._recordedFirstRender = true;
-      this._afterFramePaint(this._recordFirstRender);
+    // Used as t0 for recording how long component took to initialize.
+    if (!this._recordedFirstUpdate) {
+      this._recordedFirstUpdate = true;
+      const key = `${this.props.id}_first_update_ts`;
+      this.perfSvc.mark(key);
     }
+  }
 
+  _maybeSendPaintedEvent() {
     // Only record first call to render.
     if (this._timestampHandled || !this.props.initialized) {
       return;
@@ -81,28 +88,19 @@ class ComponentPerfTimer extends React.Component {
     this._afterFramePaint(this._sendPaintedEvent);
   }
 
-  /**
-   * Record first call to render. Used to compute time for missing data
-   * telemetry.
-   */
-  _recordFirstRender() {
-    const key = `${this.props.id}_first_render_ts`;
-    this.perfSvc.mark(key);
-  }
-
   _sendBadStateEvent() {
     const dataReadyKey = `${this.props.id}_data_ready_ts`;
     this.perfSvc.mark(dataReadyKey);
 
     try {
-      const firstPaintKey = `${this.props.id}_first_render_ts`;
+      const firstUpdateKey = `${this.props.id}_first_update_ts`;
       // value has to be Int32.
       const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName(dataReadyKey) -
-                             this.perfSvc.getMostRecentAbsMarkStartByName(firstPaintKey), 10);
+                             this.perfSvc.getMostRecentAbsMarkStartByName(firstUpdateKey), 10);
       this.props.dispatch(ac.SendToMain({
         type: at.TELEMETRY_UNDESIRED_EVENT,
         data: {
-          event: `${this.props.id}_missing_data`,
+          event: `${this.props.id}_data_late_by_ms`,
           value
         }
       }));
