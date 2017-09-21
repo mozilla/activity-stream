@@ -66,7 +66,7 @@ class ComponentPerfTimer extends React.Component {
       this._reportMissingData = true;
     } else if (this._reportMissingData) {
       this._reportMissingData = false;
-      // Report that data is available later than first render call.
+      // Report how long it took for component to become initialized.
       this._sendBadStateEvent();
     }
 
@@ -80,11 +80,16 @@ class ComponentPerfTimer extends React.Component {
   }
 
   _maybeSendPaintedEvent() {
-    // Only record first call to render.
+    // If we've already handled a timestamp, don't do it again.
     if (this._timestampHandled || !this.props.initialized) {
       return;
     }
 
+    // And if we haven't, we're doing so now, so remember that. Even if
+    // something goes wrong in the callback, we can't try again, as we'd be
+    // sending back the wrong data, and we have to do it here, so that other
+    // calls to this method while waiting for the next frame won't also try to
+    // handle handle it.
     this._timestampHandled = true;
     this._afterFramePaint(this._sendPaintedEvent);
   }
