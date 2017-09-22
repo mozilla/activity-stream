@@ -54,7 +54,12 @@ main {
 
 .body-wrapper {
   opacity: 0;
-  transition: opacity 0.1s ease-in-out;
+  // The fade duration and delay below were specifically picked to avoid talos
+  // regressing tart, which measures tab opening animation performance. Tabs
+  // currently have a 100ms width transition that competes with this transition.
+  // When webrender/Quantum turns on, overlapping transitions are no problem.
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1401682#c4
+  transition: opacity 75ms ease-in-out 125ms;
   &.on {
     opacity: 1;
   }
