@@ -26,7 +26,7 @@ class LinkMenu extends React.PureComponent {
               action_position: index
             }));
           }
-          if (impression) {
+          if (impression && props.shouldSendImpressionStats) {
             props.dispatch(impression);
           }
         };

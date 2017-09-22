@@ -20,6 +20,7 @@ let DEFAULT_PROPS = {
     guid: 1
   },
   eventSource: "TOP_STORIES",
+  shouldSendImpressionStats: true,
   contextMenuOptions: ["Separator"]
 };
 

@@ -199,7 +199,8 @@ class Section extends React.PureComponent {
         </div>
         {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
           {realRows.map((link, index) => link &&
-            <Card key={index} index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions} eventSource={eventSource} />)}
+            <Card key={index} index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions}
+              eventSource={eventSource} shouldSendImpressionStats={this.props.shouldSendImpressionStats} />)}
           {placeholders > 0 && [...new Array(placeholders)].map((_, i) => <PlaceholderCard key={i} />)}
         </ul>)}
         {shouldShowEmptyState &&

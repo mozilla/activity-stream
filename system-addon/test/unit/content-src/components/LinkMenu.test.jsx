@@ -116,7 +116,7 @@ describe("<LinkMenu>", () => {
       menu_action_save_to_pocket: {site: {url: FAKE_SITE.url, title: FAKE_SITE.title}}
     };
 
-    const options = shallowWithIntl(<LinkMenu site={FAKE_SITE} dispatch={dispatch} index={FAKE_INDEX} options={propOptions} source={FAKE_SOURCE} />)
+    const options = shallowWithIntl(<LinkMenu site={FAKE_SITE} dispatch={dispatch} index={FAKE_INDEX} options={propOptions} source={FAKE_SOURCE} shouldSendImpressionStats={true} />)
       .find(ContextMenu).props().options;
     afterEach(() => dispatch.reset());
     options.filter(o => o.type !== "separator").forEach(option => {
@@ -154,6 +154,20 @@ describe("<LinkMenu>", () => {
           option.onClick();
           const action = dispatch.thirdCall.args[0];
           assert.deepEqual(action, option.impression);
+        }
+      });
+    });
+    it(`should not send impression stats if not configured`, () => {
+      const fakeOptions = shallowWithIntl(<LinkMenu site={FAKE_SITE} dispatch={dispatch} index={FAKE_INDEX} options={propOptions} source={FAKE_SOURCE} shouldSendImpressionStats={false} />)
+        .find(ContextMenu).props().options;
+
+      fakeOptions.filter(o => o.type !== "separator").forEach(option => {
+        if (option.impression) {
+          option.onClick();
+          assert.calledTwice(dispatch);
+          assert.notEqual(dispatch.firstCall.args[0], option.impression);
+          assert.notEqual(dispatch.secondCall.args[0], option.impression);
+          dispatch.reset();
         }
       });
     });
