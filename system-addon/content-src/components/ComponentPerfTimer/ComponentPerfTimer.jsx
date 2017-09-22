@@ -16,7 +16,7 @@ class ComponentPerfTimer extends React.Component {
     this._sendPaintedEvent = this._sendPaintedEvent.bind(this);
     this._reportMissingData = false;
     this._timestampHandled = false;
-    this._recordedFirstUpdate = false;
+    this._recordedFirstRender = false;
   }
 
   componentDidMount() {
@@ -27,13 +27,12 @@ class ComponentPerfTimer extends React.Component {
     this._maybeSendPaintedEvent();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     if (!RECORDED_SECTIONS.includes(this.props.id)) {
       return;
     }
 
     this._maybeSendPaintedEvent();
-    this._maybeSendBadStateEvent(prevProps);
   }
 
   /**
@@ -60,8 +59,8 @@ class ComponentPerfTimer extends React.Component {
     requestAnimationFrame(() => setTimeout(callback, 0));
   }
 
-  _maybeSendBadStateEvent(prevProps) {
-    if (!prevProps.initialized) {
+  _maybeSendBadStateEvent() {
+    if (!this.props.initialized) {
       // Remember to report back when data is available.
       this._reportMissingData = true;
     } else if (this._reportMissingData) {
@@ -71,10 +70,10 @@ class ComponentPerfTimer extends React.Component {
     }
 
     // Used as t0 for recording how long component took to initialize.
-    if (!this._recordedFirstUpdate) {
-      this._recordedFirstUpdate = true;
-      // topsites_first_update_ts, highlights_first_update_ts.
-      const key = `${this.props.id}_first_update_ts`;
+    if (!this._recordedFirstRender) {
+      this._recordedFirstRender = true;
+      // topsites_first_render_ts, highlights_first_render_ts.
+      const key = `${this.props.id}_first_render_ts`;
       this.perfSvc.mark(key);
     }
   }
@@ -100,10 +99,10 @@ class ComponentPerfTimer extends React.Component {
     this.perfSvc.mark(dataReadyKey);
 
     try {
-      const firstUpdateKey = `${this.props.id}_first_update_ts`;
+      const firstRenderKey = `${this.props.id}_first_render_ts`;
       // value has to be Int32.
       const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName(dataReadyKey) -
-                             this.perfSvc.getMostRecentAbsMarkStartByName(firstUpdateKey), 10);
+                             this.perfSvc.getMostRecentAbsMarkStartByName(firstRenderKey), 10);
       this.props.dispatch(ac.SendToMain({
         type: at.TELEMETRY_UNDESIRED_EVENT,
         data: {
@@ -144,6 +143,9 @@ class ComponentPerfTimer extends React.Component {
   }
 
   render() {
+    if (RECORDED_SECTIONS.includes(this.props.id)) {
+      this._maybeSendBadStateEvent();
+    }
     return this.props.children;
   }
 }
