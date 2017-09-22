@@ -293,6 +293,18 @@ describe("<Section>", () => {
 
       assert.notCalled(props.dispatch);
     });
+    it("should not send an impression if props are updated but GUIDs are the same", () => {
+      const props = {dispatch: sinon.spy()};
+      wrapper = renderSection(props);
+      props.dispatch.reset();
+
+      wrapper.setProps(Object.assign({},
+        FAKE_TOPSTORIES_SECTION_PROPS,
+        {rows: [{guid: 1}, {guid: 2}]}
+      ));
+
+      assert.notCalled(props.dispatch);
+    });
     it("should only send the latest impression on a visibility change", () => {
       const listeners = new Set();
       const props = {
