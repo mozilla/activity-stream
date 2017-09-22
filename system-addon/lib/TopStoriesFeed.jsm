@@ -255,28 +255,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.newTabsSinceSpoc++;
   }
 
-  /**
-   * Update bookmark title, description and image with metadata from Pocket.
-   * @param url Used to identify if the bookmark was a topstory.
-   */
-  updateBookmarkMetadata(url) {
-    if (!this.stories) {
-      return;
-    }
-
-    const story = this.stories.find(s => s.url === url);
-    if (!story) {
-      return;
-    }
-
-    PlacesUtils.history.update({
-      url: story.url,
-      title: story.title,
-      description: story.description,
-      previewImageURL: story.image
-    });
-  }
-
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -293,11 +271,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
       case at.UNINIT:
         this.uninit();
         break;
-      case at.PLACES_BOOKMARK_ADDED:
-        this.updateBookmarkMetadata(action.data.url);
-        break;
+      case at.NEW_TAB_LOAD:
       case at.PLACES_BOOKMARK_REMOVED:
-        this.fetchStories();
+        this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: this.stories});
         break;
       case at.NEW_TAB_REHYDRATED:
         this.maybeAddSpoc(action.meta.fromTarget);

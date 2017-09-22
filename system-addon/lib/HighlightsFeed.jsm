@@ -47,7 +47,7 @@ this.HighlightsFeed = class HighlightsFeed {
           }
         }
       });
-    this._bookmarksThreshold = 0;
+    this._profileAge = 0;
   }
 
   _dedupeKey(site) {
@@ -73,15 +73,12 @@ this.HighlightsFeed = class HighlightsFeed {
    * not to include default bookmarks.
    */
   async _getBookmarksThreshold() {
-    if (this._bookmarksThreshold === 0) {
+    if (this._profileAge === 0) {
       // Value in milliseconds.
-      const profileAge = await (new ProfileAge()).created;
-      const defaultsThreshold = Date.now() - profileAge - BOOKMARKS_THRESHOLD;
-      this._bookmarksThreshold = Math.min(ACTIVITY_STREAM_DEFAULT_RECENT,
-        defaultsThreshold / 1000);
+      this._profileAge = await (new ProfileAge()).created;
     }
-
-    return this._bookmarksThreshold;
+    const defaultsThreshold = Date.now() - this._profileAge - BOOKMARKS_THRESHOLD;
+    return Math.min(ACTIVITY_STREAM_DEFAULT_RECENT, defaultsThreshold / 1000);
   }
 
   async fetchHighlights(broadcast = false) {
