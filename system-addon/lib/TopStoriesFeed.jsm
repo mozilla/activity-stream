@@ -278,6 +278,19 @@ this.TopStoriesFeed = class TopStoriesFeed {
           this.init();
         }
         break;
+      case at.PLACES_LINK_BLOCKED:
+        if (this.spocs) {
+          this.spocs = this.spocs.filter(s => s.url !== action.data.url);
+        }
+
+        if (this.stories) {
+          const prevStoriesLength = this.stories.length;
+          this.stories = this.stories.filter(s => s.url !== action.data.url);
+          if (prevStoriesLength !== this.stories.length) {
+            SectionsManager.updateSection(SECTION_ID, {rows: this.stories}, true);
+          }
+        }
+        break;
     }
   }
 };

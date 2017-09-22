@@ -538,5 +538,15 @@ describe("Top Stories Feed", () => {
       assert.equal(instance.topicsLastUpdated, 0);
       assert.equal(instance.affinityLastUpdated, 0);
     });
+    it("should filter recs and spocs when link is blocked", () => {
+      instance.stories = [{"url": "not_blocked"}, {"url": "blocked"}];
+      instance.spocs = [{"url": "not_blocked"}, {"url": "blocked"}];
+      instance.onAction({type: at.PLACES_LINK_BLOCKED, data: {url: "blocked"}});
+
+      assert.deepEqual(instance.stories, [{"url": "not_blocked"}]);
+      assert.deepEqual(instance.spocs, [{"url": "not_blocked"}]);
+      assert.calledOnce(sectionsManagerStub.updateSection);
+      assert.calledWith(sectionsManagerStub.updateSection, SECTION_ID, {rows: instance.stories});
+    });
   });
 });

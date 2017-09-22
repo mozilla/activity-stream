@@ -50,11 +50,16 @@ class Section extends React.PureComponent {
   _dispatchImpressionStats() {
     const {props} = this;
     const maxCards = 3 * props.maxRows;
-    props.dispatch(ac.ImpressionStats({
-      source: props.eventSource,
-      tiles: props.rows.slice(0, maxCards).map(link => ({id: link.guid})),
-      incognito: props.options && props.options.personalized
-    }));
+    const cards = props.rows.slice(0, maxCards);
+
+    if (this.needsImpressionStats(cards)) {
+      props.dispatch(ac.ImpressionStats({
+        source: props.eventSource,
+        tiles: cards.map(link => ({id: link.guid})),
+        incognito: props.options && props.options.personalized
+      }));
+      this.impressionCardGuids = cards.map(link => link.guid);
+    }
   }
 
   // This sends an event when a user sees a set of new content. If content
@@ -103,6 +108,20 @@ class Section extends React.PureComponent {
     ) {
       this.sendImpressionStatsOrAddListener();
     }
+  }
+
+  needsImpressionStats(cards) {
+    if (!this.impressionCardGuids || (this.impressionCardGuids.length !== cards.length)) {
+      return true;
+    }
+
+    for (let i = 0; i < cards.length; i++) {
+      if (cards[i].guid !== this.impressionCardGuids[i]) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   numberOfPlaceholders(items) {
