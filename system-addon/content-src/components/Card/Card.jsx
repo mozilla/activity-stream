@@ -40,18 +40,20 @@ class Card extends React.PureComponent {
       source: this.props.eventSource,
       action_position: this.props.index
     }));
-    this.props.dispatch(ac.ImpressionStats({
-      source: this.props.eventSource,
-      click: 0,
-      incognito: true,
-      tiles: [{id: this.props.link.guid, pos: this.props.index}]
-    }));
+    if (this.props.shouldSendImpressionStats) {
+      this.props.dispatch(ac.ImpressionStats({
+        source: this.props.eventSource,
+        click: 0,
+        incognito: true,
+        tiles: [{id: this.props.link.guid, pos: this.props.index}]
+      }));
+    }
   }
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});
   }
   render() {
-    const {index, link, dispatch, contextMenuOptions, eventSource} = this.props;
+    const {index, link, dispatch, contextMenuOptions, eventSource, shouldSendImpressionStats} = this.props;
     const {props} = this;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     // Display "now" as "trending" until we have new strings #3402
@@ -96,7 +98,8 @@ class Card extends React.PureComponent {
         onUpdate={this.onMenuUpdate}
         options={link.contextMenuOptions || contextMenuOptions}
         site={link}
-        visible={isContextMenuOpen} />}
+        visible={isContextMenuOpen}
+        shouldSendImpressionStats={shouldSendImpressionStats} />}
    </li>);
   }
 }
