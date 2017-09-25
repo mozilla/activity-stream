@@ -1,5 +1,6 @@
 .search-wrapper {
-  $search-border-radius: 4px;
+  $search-border-radius: 3px;
+  $search-focus-color: $blue-50;
   $search-height: 36px;
   $search-input-left-label-width: 35px;
   $search-button-width: 36px;
@@ -9,22 +10,6 @@
   $search-glyph-fill: rgba($grey-90, 0.4);
   // This is positioned so it is visually (not metrically) centered. r=abenson
   $search-glyph-left-position: 12px;
-  $search-shadow-outline: 0 0 0 2px $input-primary;
-
-  @mixin search-input {
-    border: 0;
-    box-shadow: $shadow-secondary;
-
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    box-shadow: $shadow-secondary;
-    border-radius: 3px;
-
-    &:focus {
-      border-color: $input-primary;
-      box-shadow: $search-shadow-outline;
-      z-index: 1;
-    }
-  }
 
   cursor: default;
   display: flex;
@@ -34,22 +19,21 @@
   height: $search-height;
 
   input {
-    @include search-input;
+    border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: $search-border-radius;
+    box-shadow: $shadow-secondary;
     color: inherit;
     padding: 0;
     padding-inline-end: $search-button-width;
     padding-inline-start: $search-input-left-label-width;
     width: 100%;
     font-size: 15px;
+  }
 
-    &:focus + .search-button {
-      z-index: 1;
-      background-color: $input-primary;
-      background-image: url('chrome://browser/skin/forward.svg');
-      fill: $white;
-      -moz-context-properties: fill;
-    }
+  &:active input,
+  input:focus {
+    border-color: $search-focus-color;
+    box-shadow: 0 0 0 2px $search-focus-color;
   }
 
   .search-label {
@@ -60,7 +44,6 @@
     offset-inline-start: 0;
     height: 100%;
     width: $search-input-left-label-width;
-    z-index: 2;
   }
 
   .search-button {
@@ -75,11 +58,14 @@
     offset-inline-end: 0;
     position: absolute;
 
+    &:focus,
     &:hover {
-      z-index: 1;
-      background-color: $input-primary;
-      fill: $white;
+      background-color: rgba($grey-90, 0.1);
       cursor: pointer;
+    }
+
+    &:active {
+      background-color: rgba($grey-90, 0.15);
     }
 
     &:dir(rtl) {
