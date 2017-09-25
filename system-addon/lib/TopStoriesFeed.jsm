@@ -269,10 +269,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
       case at.UNINIT:
         this.uninit();
         break;
-      case at.NEW_TAB_LOAD:
-      case at.PLACES_BOOKMARK_REMOVED:
-        this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: this.stories});
-        break;
       case at.NEW_TAB_REHYDRATED:
         this.maybeAddSpoc(action.meta.fromTarget);
         break;

@@ -550,12 +550,5 @@ describe("Top Stories Feed", () => {
       assert.calledOnce(sectionsManagerStub.updateSection);
       assert.calledWith(sectionsManagerStub.updateSection, SECTION_ID, {rows: instance.stories});
     });
-    it("should dispatch an update event on NEW_TAB_LOAD", () => {
-      const stub = sinon.stub(instance, "dispatchUpdateEvent");
-
-      instance.onAction({type: at.NEW_TAB_LOAD});
-
-      assert.calledOnce(stub);
-    });
   });
 });
