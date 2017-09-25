@@ -101,7 +101,7 @@ this.HighlightsFeed = class HighlightsFeed {
 
     // Request more than the expected length to allow for items being removed by
     // deduping against Top Sites or multiple history from the same domain, etc.
-    const manyPages = await NewTabUtils.activityStreamLinks.getHighlights({
+    const manyPages = await this.linksCache.request({
       numItems: MANY_EXTRA_LENGTH,
       bookmarkSecondsAgo: await this._getBookmarksThreshold()
     });
