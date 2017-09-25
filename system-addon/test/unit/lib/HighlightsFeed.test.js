@@ -262,46 +262,24 @@ describe("Highlights Feed", () => {
   });
   describe("#_getBookmarksThreshold", () => {
     it("should have the correct default", () => {
-      assert.equal(feed._bookmarksThreshold, 0);
+      assert.equal(feed._profileAge, 0);
     });
-    it("should not call ProfileAge if _bookmarksThreshold is set", async () => {
-      feed._bookmarksThreshold = 10;
+    it("should not call ProfileAge if _profileAge is set", async () => {
+      feed._profileAge = 10;
 
       await feed._getBookmarksThreshold();
 
       assert.notCalled(profileAgeCreatedStub);
     });
-    it("should call ProfileAge if _bookmaskThreshold is not set", async () => {
+    it("should call ProfileAge if _profileAge is not set", async () => {
       await feed._getBookmarksThreshold();
 
       assert.calledOnce(profileAgeCreatedStub);
     });
-    it("should set _bookmarksThreshold", async () => {
+    it("should set _profileAge", async () => {
       await feed._getBookmarksThreshold();
 
-      assert.notEqual(feed._bookmarkThreshold, 0);
-    });
-  });
-  describe("#_getBookmarksThreshold", () => {
-    it("should have the correct default", () => {
-      assert.equal(feed._bookmarksThreshold, 0);
-    });
-    it("should not call ProfileAge if _bookmarksThreshold is set", async () => {
-      feed._bookmarksThreshold = 10;
-
-      await feed._getBookmarksThreshold();
-
-      assert.notCalled(profileAgeCreatedStub);
-    });
-    it("should call ProfileAge if _bookmaskThreshold is not set", async () => {
-      await feed._getBookmarksThreshold();
-
-      assert.calledOnce(profileAgeCreatedStub);
-    });
-    it("should set _bookmarksThreshold", async () => {
-      await feed._getBookmarksThreshold();
-
-      assert.notEqual(feed._bookmarkThreshold, 0);
+      assert.notEqual(feed._profileAge, 0);
     });
   });
   describe("#uninit", () => {

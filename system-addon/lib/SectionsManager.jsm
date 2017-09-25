@@ -162,7 +162,7 @@ const SectionsManager = {
    * Update bookmark title, description and image with existing metadata.
    * @param url Used to identify the bookmark between existing cards.
    */
-  updateBookmarkMetadata({url, title}) {
+  updateBookmarkMetadata({url}) {
     this.sections.forEach(section => {
       if (section.rows) {
         section.rows.forEach(card => {

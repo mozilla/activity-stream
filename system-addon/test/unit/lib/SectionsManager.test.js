@@ -12,11 +12,14 @@ const FAKE_CARD_OPTIONS = {title: "Some fake title"};
 describe("SectionsManager", () => {
   let globals;
   let fakeServices;
+  let fakePlacesUtils;
 
   beforeEach(() => {
     globals = new GlobalOverrider();
     fakeServices = {prefs: {getBoolPref: sinon.spy(), addObserver: sinon.spy(), removeObserver: sinon.spy()}};
+    fakePlacesUtils = {history: {update: sinon.stub()}};
     globals.set("Services", fakeServices);
+    globals.set("PlacesUtils", fakePlacesUtils);
   });
 
   afterEach(() => {
@@ -226,6 +229,27 @@ describe("SectionsManager", () => {
       assert.deepEqual(SectionsManager.sections.get("topstories").rows, [{url: "https://topstory.com/ghi"}]);
     });
   });
+  describe("#updateBookmarkMetadata", () => {
+    it("should search the card that matches the bookmarked url and send a history event update", () => {
+      const rows = [{
+        url: "foo.com",
+        title: "foo",
+        description: "about foo",
+        image: "fakeimage"
+      }];
+      SectionsManager.addSection(FAKE_ID, Object.assign({}, FAKE_OPTIONS, {rows}));
+
+      SectionsManager.updateBookmarkMetadata({url: "foo.com"});
+
+      assert.calledOnce(fakePlacesUtils.history.update);
+      assert.calledWithExactly(fakePlacesUtils.history.update, {
+        url: "foo.com",
+        title: "foo",
+        description: "about foo",
+        previewImageURL: "fakeimage"
+      });
+    });
+  });
 });
 
 describe("SectionsFeed", () => {
@@ -425,6 +449,14 @@ describe("SectionsFeed", () => {
       for (const action of disallowedActions) {
         assert.neverCalledWith(spy, "ACTION_DISPATCHED", action);
       }
+    });
+    it("should call updateBookmarkMetadata on PLACES_BOOKMARK_ADDED", () => {
+      const stub = sinon.stub(SectionsManager, "updateBookmarkMetadata");
+
+      feed.onAction({type: "PLACES_BOOKMARK_ADDED", data: "foo"});
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, "foo");
     });
   });
 });
