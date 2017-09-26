@@ -163,22 +163,38 @@ describe("<Section>", () => {
       assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
     });
 
-    it("should render topics component for non-empty topics", () => {
-      let TOP_STORIES_SECTION = {
-        id: "topstories",
-        title: "TopStories",
-        rows: [{guid: 1, link: "http://localhost", isDefault: true}],
-        topics: [],
-        read_more_endpoint: "http://localhost/read-more",
-        maxRows: 1,
-        eventSource: "TOP_STORIES"
-      };
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
-      assert.lengthOf(wrapper.find(".topic"), 0);
+    describe("should render topics component", () => {
+      let TOP_STORIES_SECTION;
+      beforeEach(() => {
+        TOP_STORIES_SECTION = {
+          id: "topstories",
+          title: "TopStories",
+          rows: [{guid: 1, link: "http://localhost", isDefault: true}],
+          topics: [],
+          read_more_endpoint: "http://localhost/read-more",
+          maxRows: 1,
+          eventSource: "TOP_STORIES"
+        };
+      });
+      it("should not render for empty topics", () => {
+        wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
 
-      TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
-      assert.lengthOf(wrapper.find(".topic"), 1);
+        assert.lengthOf(wrapper.find(".topic"), 0);
+      });
+      it("should render for non-empty topics", () => {
+        TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
+
+        wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+
+        assert.lengthOf(wrapper.find(".topic"), 1);
+      });
+      it("should render for uninitialized topics", () => {
+        delete TOP_STORIES_SECTION.topics;
+
+        wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+
+        assert.lengthOf(wrapper.find(".topic"), 1);
+      });
     });
   });
 

@@ -142,9 +142,11 @@ class Section extends React.PureComponent {
       contextMenuOptions, intl, initialized
     } = this.props;
     const maxCards = CARDS_PER_ROW * maxRows;
+
+    // Show topics only for top stories and if it's not initialized yet (so
+    // content doesn't shift when it is loaded) or has loaded with topics
     const shouldShowTopics = (id === "topstories" &&
-      this.props.topics &&
-      this.props.topics.length > 0);
+      (!this.props.topics || this.props.topics.length > 0));
 
     const infoOptionIconA11yAttrs = {
       "aria-haspopup": "true",
