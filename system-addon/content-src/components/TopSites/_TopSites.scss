@@ -343,10 +343,6 @@
         &:focus {
           border: $input-border-active;
         }
-
-        &::placeholder {
-          font-style: italic;
-        }
       }
     }
 
