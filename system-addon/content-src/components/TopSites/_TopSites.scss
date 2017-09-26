@@ -315,10 +315,11 @@
 
 .topsite-form {
   .form-wrapper {
+    margin: auto;
+    max-width: 350px;
     padding: 15px 0;
 
     .field {
-      margin-inline-start: 205px;
       position: relative;
     }
 
@@ -329,7 +330,6 @@
 
     .section-title {
       margin-bottom: 5px;
-      margin-inline-start: 205px;
     }
 
     input {
@@ -338,7 +338,7 @@
         border-radius: 2px;
         margin: 5px 0;
         padding: 7px;
-        width: 350px;
+        width: 100%;
 
         &:focus {
           border: $input-border-active;
