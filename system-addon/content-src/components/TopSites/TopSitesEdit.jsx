@@ -93,7 +93,9 @@ class TopSitesEdit extends React.PureComponent {
           <div className="modal-overlay" onClick={this.onModalOverlayClick} />
           <div className="modal">
             <section className="edit-topsites-inner-wrapper">
-              <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
+              <div className="section-top-bar">
+                <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
+              </div>
               <ul className="top-sites-list">
                 {realTopSites.map((link, index) => link && <TopSite
                   key={link.guid || link.url}
