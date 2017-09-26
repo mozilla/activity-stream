@@ -4,7 +4,8 @@ const {injectIntl, FormattedMessage} = require("react-intl");
 const Card = require("content-src/components/Card/Card");
 const {PlaceholderCard} = Card;
 const Topics = require("content-src/components/Topics/Topics");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
+const {actionCreators: ac} = require("common/Actions.jsm");
+const CollapsibleSection = require("content-src/components/CollapsibleSection/CollapsibleSection");
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -13,86 +14,6 @@ const CARDS_PER_ROW = 3;
 function getFormattedMessage(message) {
   return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
 }
-
-class Info extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.onInfoEnter = this.onInfoEnter.bind(this);
-    this.onInfoLeave = this.onInfoLeave.bind(this);
-    this.onManageClick = this.onManageClick.bind(this);
-    this.state = {infoActive: false};
-  }
-
-  /**
-   * Take a truthy value to conditionally change the infoActive state.
-   */
-  _setInfoState(nextActive) {
-    const infoActive = !!nextActive;
-    if (infoActive !== this.state.infoActive) {
-      this.setState({infoActive});
-    }
-  }
-  onInfoEnter() {
-    // We're getting focus or hover, so info state should be true if not yet.
-    this._setInfoState(true);
-  }
-  onInfoLeave(event) {
-    // We currently have an active (true) info state, so keep it true only if we
-    // have a related event target that is contained "within" the current target
-    // (section-info-option) as itself or a descendant. Set to false otherwise.
-    this._setInfoState(event && event.relatedTarget && (
-      event.relatedTarget === event.currentTarget ||
-      (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
-        Node.DOCUMENT_POSITION_CONTAINS)));
-  }
-  onManageClick() {
-    this.props.dispatch({type: at.SETTINGS_OPEN});
-    this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
-  }
-  render() {
-    const {infoOption, intl} = this.props;
-    const infoOptionIconA11yAttrs = {
-      "aria-haspopup": "true",
-      "aria-controls": "info-option",
-      "aria-expanded": this.state.infoActive ? "true" : "false",
-      "role": "note",
-      "tabIndex": 0
-    };
-    const sectionInfoTitle = intl.formatMessage({id: "section_info_option"});
-
-    return (
-      <span className="section-info-option"
-        onBlur={this.onInfoLeave}
-        onFocus={this.onInfoEnter}
-        onMouseOut={this.onInfoLeave}
-        onMouseOver={this.onInfoEnter}>
-        <img className="info-option-icon" title={sectionInfoTitle}
-          {...infoOptionIconA11yAttrs} />
-        <div className="info-option">
-          {infoOption.header &&
-            <div className="info-option-header" role="heading">
-              {getFormattedMessage(infoOption.header)}
-            </div>}
-          <p className="info-option-body">
-            {infoOption.body && getFormattedMessage(infoOption.body)}
-            {infoOption.link &&
-              <a href={infoOption.link.href} target="_blank" rel="noopener noreferrer" className="info-option-link">
-                {getFormattedMessage(infoOption.link.title || infoOption.link)}
-              </a>
-            }
-          </p>
-          <div className="info-option-manage">
-            <button onClick={this.onManageClick}>
-              <FormattedMessage id="settings_pane_header" />
-            </button>
-          </div>
-        </div>
-      </span>
-    );
-  }
-}
-
-const InfoIntl = injectIntl(Info);
 
 class Section extends React.PureComponent {
   _dispatchImpressionStats() {
@@ -129,10 +50,14 @@ class Section extends React.PureComponent {
         props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
       }
 
-      // When the page becoems visible, send the impression stats ping.
+      // When the page becoems visible, send the impression stats ping if the section isn't collapsed.
       this._onVisibilityChange = () => {
         if (props.document.visibilityState === VISIBLE) {
-          this._dispatchImpressionStats();
+          const {id, Prefs} = this.props;
+          const isCollapsed = Prefs.values[`section.${id}.collapsed`];
+          if (!isCollapsed) {
+            this._dispatchImpressionStats();
+          }
           props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
         }
       };
@@ -141,18 +66,29 @@ class Section extends React.PureComponent {
   }
 
   componentDidMount() {
-    if (this.props.rows.length) {
+    const {id, rows, Prefs} = this.props;
+    const isCollapsed = Prefs.values[`section.${id}.collapsed`];
+    if (rows.length && !isCollapsed) {
       this.sendImpressionStatsOrAddListener();
     }
   }
 
   componentDidUpdate(prevProps) {
     const {props} = this;
+    const {id, Prefs} = props;
+    const isCollapsedPref = `section.${id}.collapsed`;
+    const isCollapsed = Prefs.values[isCollapsedPref];
+    const wasCollapsed = prevProps.Prefs.values[isCollapsedPref];
     if (
       // Don't send impression stats for the empty state
       props.rows.length &&
-      // We only want to send impression stats if the content of the cards has changed
-      props.rows !== prevProps.rows
+      (
+        // We only want to send impression stats if the content of the cards has changed
+        // and the section is not collapsed...
+        (props.rows !== prevProps.rows && !isCollapsed) ||
+        // or if we are expanding a section that was collapsed.
+        (wasCollapsed && !isCollapsed)
+      )
     ) {
       this.sendImpressionStatsOrAddListener();
     }
@@ -205,16 +141,8 @@ class Section extends React.PureComponent {
 
     // <Section> <-- React component
     // <section> <-- HTML5 element
-    return (<section className="section">
-        <div className="section-top-bar">
-          <h3 className="section-title">
-            {icon && icon.startsWith("moz-extension://") ?
-              <span className="icon icon-small-spacer" style={{"background-image": `url('${icon}')`}} /> :
-              <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />}
-            {getFormattedMessage(title)}
-          </h3>
-          {infoOption && <InfoIntl infoOption={infoOption} dispatch={dispatch} />}
-        </div>
+    return (
+      <CollapsibleSection className="section" icon={icon} title={getFormattedMessage(title)} infoOption={infoOption} prefName={`section.${id}.collapsed`} Prefs={this.props.Prefs} dispatch={this.props.dispatch}>
         {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
           {realRows.map((link, index) => link &&
             <Card key={index} index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions}
@@ -233,7 +161,7 @@ class Section extends React.PureComponent {
             </div>
           </div>}
         {shouldShowTopics && <Topics topics={this.props.topics} read_more_endpoint={this.props.read_more_endpoint} />}
-      </section>);
+      </CollapsibleSection>);
   }
 }
 
@@ -253,15 +181,13 @@ class Sections extends React.PureComponent {
       <div className="sections-list">
         {sections
           .filter(section => section.enabled)
-          .map(section => <SectionIntl key={section.id} {...section} dispatch={this.props.dispatch} />)}
+          .map(section => <SectionIntl key={section.id} {...section} Prefs={this.props.Prefs} dispatch={this.props.dispatch} />)}
       </div>
     );
   }
 }
 
-module.exports = connect(state => ({Sections: state.Sections}))(Sections);
+module.exports = connect(state => ({Sections: state.Sections, Prefs: state.Prefs}))(Sections);
 module.exports._unconnected = Sections;
 module.exports.SectionIntl = SectionIntl;
 module.exports._unconnectedSection = Section;
-module.exports.Info = Info;
-module.exports.InfoIntl = InfoIntl;

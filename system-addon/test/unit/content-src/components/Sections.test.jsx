@@ -1,67 +1,10 @@
 const React = require("react");
 const {shallow} = require("enzyme");
 const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
-const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl, Info} =
+const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl} =
   require("content-src/components/Sections/Sections");
 const {PlaceholderCard} = require("content-src/components/Card/Card");
 const {actionTypes: at} = require("common/Actions.jsm");
-
-describe("<Info>", () => {
-  let wrapper;
-  let FAKE_INFO_OPTION;
-
-  beforeEach(() => {
-    FAKE_INFO_OPTION = {
-      header: {id: "fake_header"},
-      body: {id: "fake_body"}
-    };
-    wrapper = shallow(<Info infoOption={FAKE_INFO_OPTION} intl={{formatMessage: s => s}} />);
-  });
-
-  it("should render info-option-icon with a tabindex", () => {
-    // Because this is a shallow render, we need to use the casing
-    // that react understands (tabIndex), rather than the one used by
-    // the browser itself (tabindex).
-    assert.lengthOf(wrapper.find(".info-option-icon[tabIndex]"), 1);
-  });
-
-  it("should render info-option-icon with a role of 'note'", () => {
-    assert.lengthOf(wrapper.find('.info-option-icon[role="note"]'), 1);
-  });
-
-  it("should render info-option-icon with a title attribute", () => {
-    assert.lengthOf(wrapper.find(".info-option-icon[title]"), 1);
-  });
-
-  it("should render info-option-icon with aria-haspopup", () => {
-    assert.lengthOf(wrapper.find('.info-option-icon[aria-haspopup="true"]'),
-      1);
-  });
-
-  it('should render info-option-icon with aria-controls="info-option"', () => {
-    assert.lengthOf(
-      wrapper.find('.info-option-icon[aria-controls="info-option"]'), 1);
-  });
-
-  it('should render info-option-icon aria-expanded["false"] by default', () => {
-    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'),
-      1);
-  });
-
-  it("should render info-option-icon w/aria-expanded when moused over", () => {
-    wrapper.find(".section-info-option").simulate("mouseover");
-
-    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="true"]'), 1);
-  });
-
-  it('should render info-option-icon w/aria-expanded["false"] when moused out', () => {
-    wrapper.find(".section-info-option").simulate("mouseover");
-
-    wrapper.find(".section-info-option").simulate("mouseout");
-
-    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
-  });
-});
 
 describe("<Sections>", () => {
   let wrapper;
@@ -104,18 +47,6 @@ describe("<Section>", () => {
       }
     };
     wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-  });
-
-  describe("icon", () => {
-    it("should use the icon prop value as the url if it starts with `moz-extension://`", () => {
-      Object.assign(FAKE_SECTION, {icon: "moz-extension://some/extension/path"});
-      wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
-      const props = wrapper.find(".icon").first().props();
-      assert.equal(props.style["background-image"], `url('${FAKE_SECTION.icon}')`);
-    });
-    it("should use the icon `webextension` if no other is provided", () => {
-      assert.ok(wrapper.find(".icon").first().hasClass("icon-webextension"));
-    });
   });
 
   describe("placeholders", () => {
@@ -175,8 +106,9 @@ describe("<Section>", () => {
     });
   });
 
-  describe("should render topics component", () => {
+  describe("topics component", () => {
     let TOP_STORIES_SECTION;
+    let FAKE_PREFS;
     beforeEach(() => {
       TOP_STORIES_SECTION = {
         id: "topstories",
@@ -187,23 +119,24 @@ describe("<Section>", () => {
         maxRows: 1,
         eventSource: "TOP_STORIES"
       };
+      FAKE_PREFS = {values: {"section.topstories.collapsed": false}};
     });
     it("should not render for empty topics", () => {
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} Prefs={FAKE_PREFS} />);
 
       assert.lengthOf(wrapper.find(".topic"), 0);
     });
     it("should render for non-empty topics", () => {
       TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
 
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} Prefs={FAKE_PREFS} />);
 
       assert.lengthOf(wrapper.find(".topic"), 1);
     });
     it("should render for uninitialized topics", () => {
       delete TOP_STORIES_SECTION.topics;
 
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} Prefs={FAKE_PREFS} />);
 
       assert.lengthOf(wrapper.find(".topic"), 1);
     });
@@ -226,11 +159,12 @@ describe("<Section>", () => {
       eventSource: "TOP_STORIES",
       options: {personalized: false}
     };
+    const FAKE_PREFS = {values: {"section.TopStories.collapsed": false}};
 
     function renderSection(props = {}) {
       return shallowWithIntl(<Section
         {...FAKE_TOPSTORIES_SECTION_PROPS}
-        {...props} />, {lifecycleExperimental: true});
+        {...props} Prefs={FAKE_PREFS} />, {lifecycleExperimental: true});
     }
 
     it("should send impression with the right stats when the page loads", () => {
@@ -248,6 +182,12 @@ describe("<Section>", () => {
     it("should not send impression stats if not configured", () => {
       const dispatch = sinon.spy();
       const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {shouldSendImpressionStats: false, dispatch});
+      renderSection(props);
+      assert.notCalled(dispatch);
+    });
+    it("should not send impression stats if the section is collapsed", () => {
+      const dispatch = sinon.spy();
+      const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {Prefs: {values: {"section.topstories.collapsed": true}}});
       renderSection(props);
       assert.notCalled(dispatch);
     });
@@ -319,6 +259,33 @@ describe("<Section>", () => {
       ));
 
       assert.notCalled(props.dispatch);
+    });
+    it("should not send an impression if props are updated and props.rows are the same but section is collapsed", () => {
+      const props = {dispatch: sinon.spy()};
+      wrapper = renderSection(props);
+      props.dispatch.reset();
+
+      // New rows and collapsed
+      wrapper.setProps(Object.assign({},
+        FAKE_TOPSTORIES_SECTION_PROPS,
+        {
+          rows: [{guid: 123}],
+          Prefs: {values: {"section.TopStories.collapsed": true}}
+        }
+      ));
+
+      assert.notCalled(props.dispatch);
+
+      // Expand the section. Now the impression stats should be sent
+      wrapper.setProps(Object.assign({},
+        FAKE_TOPSTORIES_SECTION_PROPS,
+        {
+          rows: [{guid: 123}],
+          Prefs: {values: {"section.TopStories.collapsed": false}}
+        }
+      ));
+
+      assert.calledOnce(props.dispatch);
     });
     it("should not send an impression if props are updated but GUIDs are the same", () => {
       const props = {dispatch: sinon.spy()};
