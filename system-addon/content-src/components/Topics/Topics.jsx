@@ -14,7 +14,7 @@ class Topics extends React.PureComponent {
     return (
       <div className="topic">
         <span><FormattedMessage id="pocket_read_more" /></span>
-        <ul>{topics.map(t => <Topic key={t.name} url={t.url} name={t.name} />)}</ul>
+        <ul>{topics && topics.map(t => <Topic key={t.name} url={t.url} name={t.name} />)}</ul>
 
         {read_more_endpoint && <a className="topic-read-more" href={read_more_endpoint}>
           <FormattedMessage id="pocket_read_even_more" />
