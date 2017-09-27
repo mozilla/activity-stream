@@ -204,14 +204,14 @@ describe("PingCentre", () => {
       });
     });
 
-    function testExperimentString(experimentString, activeExperiments) {
+    function testExperimentString(experimentString, activeExperiments, filter) {
       for (let experimentID in activeExperiments) {
         if (activeExperiments[experimentID] &&
             activeExperiments[experimentID].branch) {
           const EXPECTED_SUBSTRING =
             `${experimentID}:${activeExperiments[experimentID].branch}`;
 
-          if (tSender._filter && !experimentID.includes(tSender._filter)) {
+          if (filter && !experimentID.includes(filter)) {
             assert.isFalse(experimentString.includes(EXPECTED_SUBSTRING));
             continue;
           }
@@ -226,12 +226,11 @@ describe("PingCentre", () => {
 
       tSender = new PingCentre({
         topic: "activity-stream",
-        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
-        filter: FILTER
+        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF
       });
 
-      let expString = tSender._createExperimentsString(FAKE_ACTIVE_EXPERIMENTS);
-      testExperimentString(expString, FAKE_ACTIVE_EXPERIMENTS);
+      let expString = tSender._createExperimentsString(FAKE_ACTIVE_EXPERIMENTS, FILTER);
+      testExperimentString(expString, FAKE_ACTIVE_EXPERIMENTS, FILTER);
     });
 
     it("should generate the correct experiment string", () => {
