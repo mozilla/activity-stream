@@ -50,15 +50,11 @@
   }
 
   .card-preview-image-outer {
+    background-color: $background-primary;
     position: relative;
-    background: linear-gradient(135deg, $grey-40, $grey-30);
     height: $card-preview-image-height;
     border-radius: $border-radius $border-radius 0 0;
     overflow: hidden;
-
-    &:dir(rtl) {
-      background: linear-gradient(225deg, $grey-40, $grey-30);
-    }
 
     &::after {
       border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -74,8 +70,8 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      transition: opacity 1s;
       opacity: 0;
+      transition: opacity 1s $photon-easing;
       &.loaded {
         opacity: 1;
       }
