@@ -11,6 +11,9 @@ $grey-90: #0C0C0D;
 $teal-70: #008EA4;
 $red-60: #D70022;
 
+// Photon transitions from http://design.firefox.com/photon/motion/duration-and-easing.html
+$photon-easing: cubic-bezier(.07, .95, 0, 1);
+
 // Aliases and derived styles based on Photon colors for common usage
 $background-primary: $grey-10;
 $background-secondary: $grey-20;

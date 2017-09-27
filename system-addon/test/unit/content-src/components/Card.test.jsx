@@ -40,8 +40,11 @@ describe("<Card>", () => {
     assert.equal(wrapper.find(".card-preview-image").props().style.backgroundImage, `url(${DEFAULT_PROPS.link.image})`))
   );
   it("should not show an image if there isn't one", () => {
-    delete DEFAULT_PROPS.link.image;
-    wrapper = mountWithIntl(<Card {...DEFAULT_PROPS} />);
+    const link = Object.assign({}, DEFAULT_PROPS.link);
+    delete link.image;
+
+    wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link})} />);
+
     assert.lengthOf(wrapper.find(".card-preview-image"), 0);
   });
   it("should have a link menu", () => assert.ok(wrapper.find(LinkMenu)));
@@ -64,10 +67,13 @@ describe("<Card>", () => {
     assert.equal(index, DEFAULT_PROPS.index);
   });
   it("should pass through the correct menu options to LinkMenu if overridden by individual card", () => {
-    DEFAULT_PROPS.link.contextMenuOptions = ["CheckBookmark"];
-    wrapper = mountWithIntl(<Card {...DEFAULT_PROPS} />);
+    const link = Object.assign({}, DEFAULT_PROPS.link);
+    link.contextMenuOptions = ["CheckBookmark"];
+
+    wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link})} />);
+
     const {options} = wrapper.find(LinkMenu).props();
-    assert.equal(options, DEFAULT_PROPS.link.contextMenuOptions);
+    assert.equal(options, link.contextMenuOptions);
   });
   it("should have a context based on type", () => {
     wrapper = shallow(<Card {...DEFAULT_PROPS} />);
@@ -99,7 +105,50 @@ describe("<Card>", () => {
     button.simulate("click", {preventDefault: () => {}});
     assert.isTrue(wrapper.find(".card-outer").hasClass("active"));
   });
+  it("should have a loaded preview image when the image is loaded", () => {
+    assert.isFalse(wrapper.find(".card-preview-image").hasClass("loaded"));
 
+    wrapper.setState({imageLoaded: true});
+
+    assert.isTrue(wrapper.find(".card-preview-image").hasClass("loaded"));
+  });
+  describe("image loading", () => {
+    let link;
+    let triggerImage = {};
+    let uniqueLink = 0;
+    beforeEach(() => {
+      global.Image.prototype = {
+        addEventListener(event, callback) {
+          triggerImage[event] = () => Promise.resolve(callback());
+        }
+      };
+
+      link = Object.assign({}, DEFAULT_PROPS.link);
+      link.image += uniqueLink++;
+      wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link})} />);
+    });
+    it("should start not loaded", () => {
+      assert.isFalse(wrapper.state("imageLoaded"));
+    });
+    it("should be loaded after load", async () => {
+      await triggerImage.load();
+
+      assert.isTrue(wrapper.state("imageLoaded"));
+    });
+    it("should be not be loaded after error ", async () => {
+      await triggerImage.error();
+
+      assert.isFalse(wrapper.state("imageLoaded"));
+    });
+    it("should be not be loaded if image changes", async () => {
+      await triggerImage.load();
+      const otherLink = Object.assign({}, link, {image: "https://other/image"});
+
+      wrapper.setProps(Object.assign({}, DEFAULT_PROPS, {link: otherLink}));
+
+      assert.isFalse(wrapper.state("imageLoaded"));
+    });
+  });
   describe("placeholder=true", () => {
     beforeEach(() => {
       wrapper = mountWithIntl(<Card placeholder={true} />);

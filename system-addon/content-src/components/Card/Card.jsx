@@ -4,6 +4,9 @@ const {FormattedMessage} = require("react-intl");
 const cardContextTypes = require("./types");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
+// Keep track of pending image loads to only request once
+const gImageLoading = new Map();
+
 /**
  * Card component.
  * Cards are found within a Section component and contain information about a link such
@@ -16,11 +19,47 @@ const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 class Card extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {showContextMenu: false, activeCard: null};
+    this.state = {
+      activeCard: null,
+      imageLoaded: false,
+      showContextMenu: false
+    };
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
     this.onLinkClick = this.onLinkClick.bind(this);
   }
+
+  /**
+   * Helper to conditionally load an image and update state when it loads.
+   */
+  async maybeLoadImage() {
+    // No need to load if it's already loaded or no image
+    const {image} = this.props.link;
+    if (!this.state.imageLoaded && image) {
+      // Initialize a promise to share a load across multiple card updates
+      if (!gImageLoading.has(image)) {
+        const loaderPromise = new Promise((resolve, reject) => {
+          const loader = new Image();
+          loader.addEventListener("load", resolve);
+          loader.addEventListener("error", reject);
+          loader.src = image;
+        });
+
+        // Save and remove the promise only while it's pending
+        gImageLoading.set(image, loaderPromise);
+        loaderPromise.catch(ex => ex).then(() => gImageLoading.delete(image)).catch();
+      }
+
+      // Wait for the image whether just started loading or reused promise
+      await gImageLoading.get(image);
+
+      // Only update state if we're still waiting to load the original image
+      if (this.props.link.image === image && !this.state.imageLoaded) {
+        this.setState({imageLoaded: true});
+      }
+    }
+  }
+
   onMenuButtonClick(event) {
     event.preventDefault();
     this.setState({
@@ -52,6 +91,18 @@ class Card extends React.PureComponent {
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});
   }
+  componentDidMount() {
+    this.maybeLoadImage();
+  }
+  componentDidUpdate() {
+    this.maybeLoadImage();
+  }
+  componentWillReceiveProps(nextProps) {
+    // Clear the image state if changing images
+    if (nextProps.link.image !== this.props.link.image) {
+      this.setState({imageLoaded: false});
+    }
+  }
   render() {
     const {index, link, dispatch, contextMenuOptions, eventSource, shouldSendImpressionStats} = this.props;
     const {props} = this;
@@ -65,7 +116,7 @@ class Card extends React.PureComponent {
       <a href={link.url} onClick={!props.placeholder && this.onLinkClick}>
         <div className="card">
           {hasImage && <div className="card-preview-image-outer">
-            <div className={`card-preview-image${link.image ? " loaded" : ""}`} style={imageStyle} />
+            <div className={`card-preview-image${this.state.imageLoaded ? " loaded" : ""}`} style={imageStyle} />
           </div>}
           <div className={`card-details${hasImage ? "" : " no-image"}`}>
             {link.hostname && <div className="card-host-name">{link.hostname}</div>}
