@@ -36,6 +36,10 @@ a Promise that resolves when the blockList has been written to indexedDB.
 `.showFirefoxAccounts()`: (func) A function that opens the Firefox Accounts signup page
 (specifically `about:accounts?action=signup&entrypoint=snippets`)
 
+`.disableOnboarding()`: (func) A function that disables onboarding for future new tabs (until Firefox restarts).
+You should ensure `gSnippetsMap.get("appData.onboardingFinished")` is false before calling this. Note that this
+does not hide onboarding notifications on the **current** page, since that would be a disruptive user experience.
+
 ### Expected values in gSnippetsMap
 
 Note that names and functionality of values in v4 snippets have been preserved

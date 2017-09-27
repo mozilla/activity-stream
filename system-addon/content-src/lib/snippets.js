@@ -60,6 +60,10 @@ class SnippetsMap extends Map {
     await this.set("blockList", blockList);
   }
 
+  disableOnboarding() {
+    this._dispatch(ac.SendToMain({type: at.DISABLE_ONBOARDING}));
+  }
+
   showFirefoxAccounts() {
     this._dispatch(ac.SendToMain({type: at.SHOW_FIREFOX_ACCOUNTS}));
   }
@@ -203,7 +207,6 @@ class SnippetsProvider {
     if (needsUpdate && this.appData.snippetsURL) {
       this.snippetsMap.set("snippets-last-update", Date.now());
       try {
-        // TODO: timeout?
         const response = await fetch(this.appData.snippetsURL);
         if (response.status === 200) {
           const payload = await response.text();
@@ -217,8 +220,16 @@ class SnippetsProvider {
     }
   }
 
-  _showDefaultSnippets() {
+  _noSnippetFallback() {
     // TODO
+  }
+
+  _forceOnboardingVisibility(shouldBeVisible) {
+    const onboardingEl = document.getElementById("onboarding-notification-bar");
+
+    if (onboardingEl) {
+      onboardingEl.style.display = shouldBeVisible ? "" : "none";
+    }
   }
 
   _showRemoteSnippets() {
@@ -288,15 +299,18 @@ class SnippetsProvider {
     try {
       this._showRemoteSnippets();
     } catch (e) {
-      this._showDefaultSnippets(e);
+      this._noSnippetFallback(e);
     }
 
     window.dispatchEvent(new Event(SNIPPETS_ENABLED_EVENT));
+
+    this._forceOnboardingVisibility(true);
     this.initialized = true;
   }
 
   uninit() {
     window.dispatchEvent(new Event(SNIPPETS_DISABLED_EVENT));
+    this._forceOnboardingVisibility(false);
     this.initialized = false;
   }
 }
@@ -316,17 +330,19 @@ function addSnippetsSubscriber(store) {
 
   store.subscribe(async () => {
     const state = store.getState();
-    // state.Snippets.initialized:  Should snippets be initialised?
-    // snippets.initialized:        Is SnippetsProvider currently initialised?
-    if (state.Snippets.initialized && !snippets.initialized &&
-      state.Snippets.onboardingFinished) {
-      // Don't call init multiple times
-      if (!initializing) {
-        initializing = true;
-        await snippets.init({appData: state.Snippets});
-        initializing = false;
-      }
-    } else if (state.Snippets.initialized === false && snippets.initialized) {
+    // state.Prefs.values["feeds.snippets"]:  Should snippets be shown?
+    // state.Snippets.initialized             Is the snippets data initialized?
+    // snippets.initialized:                  Is SnippetsProvider currently initialised?
+    if (state.Prefs.values["feeds.snippets"] &&
+      state.Snippets.initialized &&
+     !snippets.initialized &&
+     // Don't call init multiple times
+     !initializing
+    ) {
+      initializing = true;
+      await snippets.init({appData: state.Snippets});
+      initializing = false;
+    } else if (state.Prefs.values["feeds.snippets"] === false && snippets.initialized) {
       snippets.uninit();
     }
   });
