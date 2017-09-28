@@ -232,8 +232,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
         // Create a new array with a spoc inserted at index 2
         // For now we're using the top scored spoc until we can support viewability based rotation
-        const pos = SectionsManager.sections.get(SECTION_ID).order;
-        let rows = this.store.getState().Sections[pos].rows.slice(0, this.stories.length);
+        const position = SectionsManager.sections.get(SECTION_ID).order;
+        let rows = this.store.getState().Sections[position].rows.slice(0, this.stories.length);
         rows.splice(2, 0, this.spocs[0]);
 
         // Send a content update to the target tab
