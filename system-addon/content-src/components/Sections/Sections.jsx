@@ -4,17 +4,22 @@ const {injectIntl, FormattedMessage} = require("react-intl");
 const Card = require("content-src/components/Card/Card");
 const {PlaceholderCard} = Card;
 const Topics = require("content-src/components/Topics/Topics");
-const {actionCreators: ac} = require("common/Actions.jsm");
+const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 const CARDS_PER_ROW = 3;
 
-class Section extends React.PureComponent {
+function getFormattedMessage(message) {
+  return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
+}
+
+class Info extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onInfoEnter = this.onInfoEnter.bind(this);
     this.onInfoLeave = this.onInfoLeave.bind(this);
+    this.onManageClick = this.onManageClick.bind(this);
     this.state = {infoActive: false};
   }
 
@@ -27,12 +32,10 @@ class Section extends React.PureComponent {
       this.setState({infoActive});
     }
   }
-
   onInfoEnter() {
     // We're getting focus or hover, so info state should be true if not yet.
     this._setInfoState(true);
   }
-
   onInfoLeave(event) {
     // We currently have an active (true) info state, so keep it true only if we
     // have a related event target that is contained "within" the current target
@@ -42,11 +45,56 @@ class Section extends React.PureComponent {
       (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
         Node.DOCUMENT_POSITION_CONTAINS)));
   }
-
-  getFormattedMessage(message) {
-    return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
+  onManageClick() {
+    this.props.dispatch({type: at.SETTINGS_OPEN});
+    this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
   }
+  render() {
+    const {infoOption, intl} = this.props;
+    const infoOptionIconA11yAttrs = {
+      "aria-haspopup": "true",
+      "aria-controls": "info-option",
+      "aria-expanded": this.state.infoActive ? "true" : "false",
+      "role": "note",
+      "tabIndex": 0
+    };
+    const sectionInfoTitle = intl.formatMessage({id: "section_info_option"});
 
+    return (
+      <span className="section-info-option"
+        onBlur={this.onInfoLeave}
+        onFocus={this.onInfoEnter}
+        onMouseOut={this.onInfoLeave}
+        onMouseOver={this.onInfoEnter}>
+        <img className="info-option-icon" title={sectionInfoTitle}
+          {...infoOptionIconA11yAttrs} />
+        <div className="info-option">
+          {infoOption.header &&
+            <div className="info-option-header" role="heading">
+              {getFormattedMessage(infoOption.header)}
+            </div>}
+          <p className="info-option-body">
+            {infoOption.body && getFormattedMessage(infoOption.body)}
+            {infoOption.link &&
+              <a href={infoOption.link.href} target="_blank" rel="noopener noreferrer" className="info-option-link">
+                {getFormattedMessage(infoOption.link.title || infoOption.link)}
+              </a>
+            }
+          </p>
+          <div className="info-option-manage">
+            <button onClick={this.onManageClick}>
+              <FormattedMessage id="settings_pane_header" />
+            </button>
+          </div>
+        </div>
+      </span>
+    );
+  }
+}
+
+const InfoIntl = injectIntl(Info);
+
+class Section extends React.PureComponent {
   _dispatchImpressionStats() {
     const {props} = this;
     const maxCards = 3 * props.maxRows;
@@ -139,7 +187,7 @@ class Section extends React.PureComponent {
     const {
       id, eventSource, title, icon, rows,
       infoOption, emptyState, dispatch, maxRows,
-      contextMenuOptions, intl, initialized
+      contextMenuOptions, initialized
     } = this.props;
     const maxCards = CARDS_PER_ROW * maxRows;
 
@@ -147,16 +195,6 @@ class Section extends React.PureComponent {
     // content doesn't shift when it is loaded) or has loaded with topics
     const shouldShowTopics = (id === "topstories" &&
       (!this.props.topics || this.props.topics.length > 0));
-
-    const infoOptionIconA11yAttrs = {
-      "aria-haspopup": "true",
-      "aria-controls": "info-option",
-      "aria-expanded": this.state.infoActive ? "true" : "false",
-      "role": "note",
-      "tabIndex": 0
-    };
-
-    const sectionInfoTitle = intl.formatMessage({id: "section_info_option"});
 
     const realRows = rows.slice(0, maxCards);
     const placeholders = this.numberOfPlaceholders(realRows.length);
@@ -167,37 +205,15 @@ class Section extends React.PureComponent {
 
     // <Section> <-- React component
     // <section> <-- HTML5 element
-    return (<section>
+    return (<section className="section">
         <div className="section-top-bar">
           <h3 className="section-title">
             {icon && icon.startsWith("moz-extension://") ?
               <span className="icon icon-small-spacer" style={{"background-image": `url('${icon}')`}} /> :
               <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />}
-            {this.getFormattedMessage(title)}
+            {getFormattedMessage(title)}
           </h3>
-          {infoOption &&
-          <span className="section-info-option"
-            onBlur={this.onInfoLeave}
-            onFocus={this.onInfoEnter}
-            onMouseOut={this.onInfoLeave}
-            onMouseOver={this.onInfoEnter}>
-            <img className="info-option-icon" title={sectionInfoTitle}
-              {...infoOptionIconA11yAttrs} />
-            <div className="info-option">
-              {infoOption.header &&
-                <div className="info-option-header" role="heading">
-                  {this.getFormattedMessage(infoOption.header)}
-                </div>}
-              {infoOption.body &&
-                <p className="info-option-body">
-                  {this.getFormattedMessage(infoOption.body)}
-                </p>}
-              {infoOption.link &&
-                <a href={infoOption.link.href} target="_blank" rel="noopener noreferrer" className="info-option-link">
-                  {this.getFormattedMessage(infoOption.link.title || infoOption.link)}
-                </a>}
-            </div>
-          </span>}
+          {infoOption && <InfoIntl infoOption={infoOption} dispatch={dispatch} />}
         </div>
         {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
           {realRows.map((link, index) => link &&
@@ -212,7 +228,7 @@ class Section extends React.PureComponent {
                 <img className="empty-state-icon icon" style={{"background-image": `url('${emptyState.icon}')`}} /> :
                 <img className={`empty-state-icon icon icon-${emptyState.icon}`} />}
               <p className="empty-state-message">
-                {this.getFormattedMessage(emptyState.message)}
+                {getFormattedMessage(emptyState.message)}
               </p>
             </div>
           </div>}
@@ -247,3 +263,5 @@ module.exports = connect(state => ({Sections: state.Sections}))(Sections);
 module.exports._unconnected = Sections;
 module.exports.SectionIntl = SectionIntl;
 module.exports._unconnectedSection = Section;
+module.exports.Info = Info;
+module.exports.InfoIntl = InfoIntl;

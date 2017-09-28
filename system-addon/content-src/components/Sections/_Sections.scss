@@ -1,80 +1,124 @@
-.sections-list {
-  .section-top-bar {
-    position: relative;
+.section-top-bar {
+  position: relative;
 
-    .section-info-option {
-      offset-inline-end: 0;
-      position: absolute;
-      top: 0;
-    }
-
-    .info-option-icon {
-      background-image: url('#{$image-path}glyph-info-option-12.svg');
-      background-size: 12px 12px;
-      background-repeat: no-repeat;
-      background-position: center;
-      fill: $fill-secondary;
-      -moz-context-properties: fill;
-      height: 16px;
-      width: 16px;
-      display: inline-block;
-
-      // Specific styling for the particuar icon. r=abenson
-      margin-bottom: -2px;
-    }
-
-    .info-option-icon[aria-expanded="true"] {
-      fill: $fill-primary;
-    }
-
-    .section-info-option .info-option {
-      visibility: hidden;
-      opacity: 0;
-      transition: visibility 0.2s, opacity 0.2s ease-out;
-      transition-delay: 0.5s;
-    }
-
-    .info-option-icon[aria-expanded="true"] + .info-option {
-      visibility: visible;
-      opacity: 1;
-      transition: visibility 0.2s, opacity 0.2s ease-out;
-    }
-
-    .info-option {
-      z-index: 9999;
-      position: absolute;
-      background: $white;
-      border: $border-secondary;
-      border-radius: $border-radius;
-      font-size: 13px;
-      line-height: 120%;
-      margin-inline-end: -13px;
-      offset-inline-end: 0;
-      top: 20px;
-      width: 320px;
-      padding: 24px;
-      box-shadow: $shadow-secondary;
-      -moz-user-select: none;
-    }
-
-    .info-option-header {
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .info-option-body {
-      margin: 0;
-      margin-top: 12px;
-    }
-
-    .info-option-link {
-      display: block;
-      margin-top: 12px;
-      color: $link-primary;
-    }
-
+  .section-info-option {
+    offset-inline-end: 0;
+    position: absolute;
+    top: 0;
   }
 
+  .info-option-icon {
+    background-image: url('#{$image-path}glyph-info-option-12.svg');
+    background-size: 12px 12px;
+    background-repeat: no-repeat;
+    background-position: center;
+    fill: $fill-secondary;
+    -moz-context-properties: fill;
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+
+    // Specific styling for the particuar icon. r=abenson
+    margin-bottom: -2px;
+
+    opacity: 0;
+    transition: opacity 0.2s $photon-easing;
+
+    &:focus, &:active {
+      opacity: 1;
+    }
+  }
+
+  .info-option-icon[aria-expanded="true"] {
+    fill: $fill-primary;
+  }
+
+  .section-info-option .info-option {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.2s, opacity 0.2s $photon-easing;
+
+    &::before {
+      content: "";
+      display: block;
+      height: 32px;
+      left: 50%;
+      position: absolute;
+      right: 0;
+      top: -32px;
+    }
+  }
+
+  .info-option-icon[aria-expanded="true"] + .info-option {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0.2s, opacity 0.2s $photon-easing;
+  }
+
+  .info-option {
+    z-index: 9999;
+    position: absolute;
+    background: $white;
+    border: $border-secondary;
+    border-radius: $border-radius;
+    font-size: 13px;
+    line-height: 120%;
+    margin-inline-end: -9px;
+    offset-inline-end: 0;
+    top: 20px;
+    width: 320px;
+    padding: 24px;
+    box-shadow: $shadow-secondary;
+    -moz-user-select: none;
+  }
+
+  .info-option-header {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .info-option-body {
+    margin: 0;
+    margin-top: 12px;
+  }
+
+  .info-option-link {
+    color: $link-primary;
+    margin-left: 7px;
+  }
+
+  .info-option-manage {
+    margin-top: 24px;
+
+    button {
+      background: none;
+      border: none;
+      color: $link-primary;
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+
+      &::after {
+        background-image: url('#{$image-path}topic-show-more-12.svg');
+        background-repeat: no-repeat;
+        content: '';
+        -moz-context-properties: fill;
+        display: inline-block;
+        fill: $link-primary;
+        height: 16px;
+        margin-inline-start: 5px;
+        margin-top: 1px;
+        vertical-align: middle;
+        width: 12px;
+      }
+
+      &:dir(rtl)::after  {
+        transform: scaleX(-1);
+      }
+    }
+  }
+}
+.sections-list {
   .section-list {
     margin: 0;
     display: grid;
@@ -129,9 +173,12 @@
         color: $text-secondary;
         text-align: center;
       }
-
     }
-
   }
+}
 
+section.section:hover {
+  .info-option-icon {
+    opacity: 1;
+  }
 }
