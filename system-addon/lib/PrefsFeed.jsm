@@ -81,6 +81,7 @@ this.PrefsFeed = class PrefsFeed {
         break;
       case at.UNINIT:
         this.removeListeners();
+        this.setOnboardingDisabledDefault(false);
         break;
       case at.SET_PREF:
         this._prefs.set(action.data.name, action.data.value);
