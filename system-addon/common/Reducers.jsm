@@ -260,10 +260,12 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
           // find the item within the rows that is attempted to be bookmarked
           if (item.url === action.data.url) {
             const {bookmarkGuid, bookmarkTitle, dateAdded} = action.data;
-            Object.assign(item, {bookmarkGuid, bookmarkTitle, bookmarkDateCreated: dateAdded});
-            if (!item.type || item.type === "history") {
-              item.type = "bookmark";
-            }
+            return Object.assign({}, item, {
+              bookmarkGuid,
+              bookmarkTitle,
+              bookmarkDateCreated: dateAdded,
+              type: "bookmark"
+            });
           }
           return item;
         })

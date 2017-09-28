@@ -6,8 +6,12 @@
 const {utils: Cu} = Components;
 Cu.import("resource://gre/modules/EventEmitter.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
+
+XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
+  "resource://gre/modules/PlacesUtils.jsm");
 
 /*
  * Generators for built in sections, keyed by the pref name for their feed.
@@ -155,6 +159,27 @@ const SectionsManager = {
   },
 
   /**
+   * Update bookmark title, description and image with existing metadata.
+   * @param url Used to identify the bookmark between existing cards.
+   */
+  updateBookmarkMetadata({url}) {
+    this.sections.forEach(section => {
+      if (section.rows) {
+        section.rows.forEach(card => {
+          if (card.url === url && card.description && card.image && card.title) {
+            PlacesUtils.history.update({
+              url: card.url,
+              title: card.title,
+              description: card.description,
+              previewImageURL: card.image
+            });
+          }
+        });
+      }
+    });
+  },
+
+  /**
    * Sets the section's context menu options. These are all available context menu
    * options minus the ones that are tied to a pref (see CONTEXT_MENU_PREFS) set
    * to false.
@@ -288,6 +313,9 @@ class SectionsFeed {
         }
         break;
       }
+      case at.PLACES_BOOKMARK_ADDED:
+        SectionsManager.updateBookmarkMetadata(action.data);
+        break;
       case at.SECTION_DISABLE:
         SectionsManager.disableSection(action.data);
         break;

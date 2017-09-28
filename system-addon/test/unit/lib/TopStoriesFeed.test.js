@@ -15,6 +15,7 @@ describe("Top Stories Feed", () => {
   let globals;
   let sectionsManagerStub;
   let shortURLStub;
+  let historyUpdateStub;
 
   const FAKE_OPTIONS = {
     "stories_endpoint": "https://somedomain.org/stories?key=$apiKey",
@@ -32,7 +33,8 @@ describe("Top Stories Feed", () => {
 
     globals = new GlobalOverrider();
     globals.set("Services", {locale: {getRequestedLocale: () => "en-CA"}});
-    globals.set("PlacesUtils", {history: {}});
+    historyUpdateStub = sinon.stub();
+    globals.set("PlacesUtils", {history: {update: historyUpdateStub}});
     clock = sinon.useFakeTimers();
     shortURLStub = sinon.stub().callsFake(site => site.url);
     sectionsManagerStub = {
