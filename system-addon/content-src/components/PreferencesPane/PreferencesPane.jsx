@@ -22,22 +22,28 @@ const PreferencesInput = props => (
 class PreferencesPane extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {visible: false};
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.handlePrefChange = this.handlePrefChange.bind(this);
     this.handleSectionChange = this.handleSectionChange.bind(this);
     this.togglePane = this.togglePane.bind(this);
     this.onWrapperMount = this.onWrapperMount.bind(this);
   }
-  componentDidMount() {
-    document.addEventListener("click", this.handleClickOutside);
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.PreferencesPane.visible !== this.props.PreferencesPane.visible) {
+      // While the sidebar is open, listen for all document clicks.
+      if (this.isSidebarOpen()) {
+        document.addEventListener("click", this.handleClickOutside);
+      } else {
+        document.removeEventListener("click", this.handleClickOutside);
+      }
+    }
   }
-  componentWillUnmount() {
-    document.removeEventListener("click", this.handleClickOutside);
+  isSidebarOpen() {
+    return this.props.PreferencesPane.visible;
   }
   handleClickOutside(event) {
     // if we are showing the sidebar and there is a click outside, close it.
-    if (this.state.visible && !this.wrapper.contains(event.target)) {
+    if (this.isSidebarOpen() && !this.wrapper.contains(event.target)) {
       this.togglePane();
     }
   }
@@ -57,9 +63,13 @@ class PreferencesPane extends React.PureComponent {
     this.props.dispatch(ac.SendToMain({type, data: id}));
   }
   togglePane() {
-    this.setState({visible: !this.state.visible});
-    const event = this.state.visible ? "CLOSE_NEWTAB_PREFS" : "OPEN_NEWTAB_PREFS";
-    this.props.dispatch(ac.UserEvent({event}));
+    if (this.isSidebarOpen()) {
+      this.props.dispatch({type: at.SETTINGS_CLOSE});
+      this.props.dispatch(ac.UserEvent({event: "CLOSE_NEWTAB_PREFS"}));
+    } else {
+      this.props.dispatch({type: at.SETTINGS_OPEN});
+      this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
+    }
   }
   onWrapperMount(wrapper) {
     this.wrapper = wrapper;
@@ -68,7 +78,7 @@ class PreferencesPane extends React.PureComponent {
     const props = this.props;
     const prefs = props.Prefs.values;
     const sections = props.Sections;
-    const isVisible = this.state.visible;
+    const isVisible = this.isSidebarOpen();
     return (
       <div className="prefs-pane-wrapper" ref={this.onWrapperMount}>
         <div className="prefs-pane-button">
@@ -123,6 +133,6 @@ class PreferencesPane extends React.PureComponent {
   }
 }
 
-module.exports = connect(state => ({Prefs: state.Prefs, Sections: state.Sections}))(injectIntl(PreferencesPane));
+module.exports = connect(state => ({Prefs: state.Prefs, PreferencesPane: state.PreferencesPane, Sections: state.Sections}))(injectIntl(PreferencesPane));
 module.exports.PreferencesPane = PreferencesPane;
 module.exports.PreferencesInput = PreferencesInput;

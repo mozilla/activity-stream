@@ -263,8 +263,15 @@
 .edit-topsites-wrapper {
   .edit-topsites-button {
     position: absolute;
-    offset-inline-end: 0;
+    offset-inline-end: 21px;
     top: -2px;
+
+    opacity: 0;
+    transition: opacity 0.2s $photon-easing;
+
+    &:focus, &:active {
+      opacity: 1;
+    }
 
     button {
       background: none;
@@ -310,6 +317,12 @@
     span {
       padding-inline-start: 3px;
     }
+  }
+}
+
+section.top-sites:hover {
+  .edit-topsites-button {
+    opacity: 1;
   }
 }
 

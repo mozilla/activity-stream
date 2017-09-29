@@ -3,7 +3,7 @@ const {shallow} = require("enzyme");
 const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
 const {FormattedMessage} = require("react-intl");
 const {PreferencesPane, PreferencesInput} = require("content-src/components/PreferencesPane/PreferencesPane");
-const {actionCreators: ac} = require("common/Actions.jsm");
+const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
 describe("<PreferencesInput>", () => {
   const testStrings = {
@@ -47,49 +47,67 @@ describe("<PreferencesPane>", () => {
     {id: "section2", shouldHidePref: false, enabled: false, pref: {titleString: "section2"}},
     {id: "section3", shouldHidePref: true, enabled: true, pref: {titleString: {id: "section3"}}}
   ];
-  beforeEach(() => {
+  const fakePreferencesPane = {visible: false};
+
+  function setup(props = {}) {
     dispatch = sinon.spy();
-    wrapper = shallowWithIntl(<PreferencesPane dispatch={dispatch} Prefs={fakePrefs} Sections={fakeSections} />);
-  });
+    const defaultProps = {
+      dispatch,
+      Prefs: fakePrefs,
+      Sections: fakeSections,
+      PreferencesPane: fakePreferencesPane
+    };
+    const customProps = Object.assign({}, defaultProps, props);
+    wrapper = shallowWithIntl(<PreferencesPane {...customProps} />);
+  }
+  beforeEach(() => setup());
+
   it("should hide the sidebar and show a settings icon by default", () => {
     assert.isTrue(wrapper.find(".sidebar").hasClass("hidden"));
     assert.isTrue(wrapper.find(".prefs-button").hasClass("icon-settings"));
   });
-  it("should show the sidebar and show a dismiss icon if state.visible is true", () => {
-    wrapper.setState({visible: true});
+  it("should show the sidebar and show a dismiss icon if PreferencesPane.visible is true", () => {
+    setup({PreferencesPane: {visible: true}});
 
     assert.isFalse(wrapper.find(".sidebar").hasClass("hidden"));
     assert.isTrue(wrapper.find(".prefs-button").hasClass("icon-dismiss"));
   });
-  it("should toggle state.visible when the top corner button is clicked and send the right telemetry", () => {
+  it("should dispatch SETTINGS_OPEN action when the top corner button is clicked and send the right telemetry", () => {
     const button = wrapper.find(".prefs-button");
-    assert.isFalse(wrapper.state("visible"));
+    assert.isFalse(wrapper.instance().isSidebarOpen());
 
     button.simulate("click", {});
-    assert.isTrue(wrapper.state("visible"));
+    assert.calledWith(dispatch, {type: at.SETTINGS_OPEN});
     assert.calledWith(dispatch, ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
-
-    dispatch.reset();
+  });
+  it("should dispatch SETTINGS_CLOSE action when the top corner button is clicked and send the right telemetry", () => {
+    setup({PreferencesPane: {visible: true}});
+    const button = wrapper.find(".prefs-button");
+    assert.isTrue(wrapper.instance().isSidebarOpen());
 
     button.simulate("click", {});
-    assert.isFalse(wrapper.state("visible"));
+    assert.calledWith(dispatch, {type: at.SETTINGS_CLOSE});
     assert.calledWith(dispatch, ac.UserEvent({event: "CLOSE_NEWTAB_PREFS"}));
   });
-  it("the sidebar should be closed when done button is clicked", () => {
-    wrapper.setState({visible: true});
+  it("should dispatch SETTINGS_CLOSE when done button is clicked", () => {
+    setup({PreferencesPane: {visible: true}});
     assert.isFalse(wrapper.find(".sidebar").hasClass("hidden"));
 
     wrapper.find("button.done").simulate("click");
-    assert.isTrue(wrapper.find(".sidebar").hasClass("hidden"));
+    assert.calledWith(dispatch, {type: at.SETTINGS_CLOSE});
   });
-  it("the sidebar should be closed when anything outside the component is clicked", () => {
-    dispatch = sinon.spy();
-    wrapper = mountWithIntl(<PreferencesPane dispatch={dispatch} Prefs={fakePrefs} Sections={fakeSections} />);
-    wrapper.setState({visible: true});
+  it("should dispatch SETTINGS_CLOSE when anything outside the component is clicked", () => {
+    const props = {
+      dispatch,
+      Prefs: fakePrefs,
+      Sections: fakeSections,
+      PreferencesPane: {visible: true}
+    };
+    wrapper = mountWithIntl(<PreferencesPane {...props} />);
     assert.isFalse(wrapper.find(".sidebar").hasClass("hidden"));
 
     wrapper.instance().handleClickOutside({target: document.createElement("div")});
-    assert.isTrue(wrapper.find(".sidebar").hasClass("hidden"));
+    assert.calledWith(dispatch, {type: at.SETTINGS_CLOSE});
   });
   it("should dispatch a SetPref action when a non-section PreferencesInput is clicked", () => {
     const showSearchWrapper = wrapper.find(".showSearch");

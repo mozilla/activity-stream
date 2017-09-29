@@ -5,14 +5,20 @@ const {FormattedMessage} = require("react-intl");
 const TopSitesPerfTimer = require("./TopSitesPerfTimer");
 const TopSitesEdit = require("./TopSitesEdit");
 const {TopSite, TopSitePlaceholder} = require("./TopSite");
+const {InfoIntl} = require("content-src/components/Sections/Sections");
 
 const TopSites = props => {
   const realTopSites = props.TopSites.rows.slice(0, props.TopSitesCount);
   const placeholderCount = props.TopSitesCount - realTopSites.length;
+  const infoOption = {
+    header: {id: "settings_pane_topsites_header"},
+    body: {id: "settings_pane_topsites_body"}
+  };
   return (<TopSitesPerfTimer>
-    <section className="top-sites">
+    <section className="section top-sites">
       <div className="section-top-bar">
         <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
+        <InfoIntl infoOption={infoOption} dispatch={props.dispatch} />
       </div>
       <ul className="top-sites-list">
         {realTopSites.map((link, index) => link && <TopSite

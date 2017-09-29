@@ -1,10 +1,67 @@
 const React = require("react");
 const {shallow} = require("enzyme");
 const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
-const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl} =
+const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl, Info} =
   require("content-src/components/Sections/Sections");
 const {PlaceholderCard} = require("content-src/components/Card/Card");
 const {actionTypes: at} = require("common/Actions.jsm");
+
+describe("<Info>", () => {
+  let wrapper;
+  let FAKE_INFO_OPTION;
+
+  beforeEach(() => {
+    FAKE_INFO_OPTION = {
+      header: {id: "fake_header"},
+      body: {id: "fake_body"}
+    };
+    wrapper = shallow(<Info infoOption={FAKE_INFO_OPTION} intl={{formatMessage: s => s}} />);
+  });
+
+  it("should render info-option-icon with a tabindex", () => {
+    // Because this is a shallow render, we need to use the casing
+    // that react understands (tabIndex), rather than the one used by
+    // the browser itself (tabindex).
+    assert.lengthOf(wrapper.find(".info-option-icon[tabIndex]"), 1);
+  });
+
+  it("should render info-option-icon with a role of 'note'", () => {
+    assert.lengthOf(wrapper.find('.info-option-icon[role="note"]'), 1);
+  });
+
+  it("should render info-option-icon with a title attribute", () => {
+    assert.lengthOf(wrapper.find(".info-option-icon[title]"), 1);
+  });
+
+  it("should render info-option-icon with aria-haspopup", () => {
+    assert.lengthOf(wrapper.find('.info-option-icon[aria-haspopup="true"]'),
+      1);
+  });
+
+  it('should render info-option-icon with aria-controls="info-option"', () => {
+    assert.lengthOf(
+      wrapper.find('.info-option-icon[aria-controls="info-option"]'), 1);
+  });
+
+  it('should render info-option-icon aria-expanded["false"] by default', () => {
+    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'),
+      1);
+  });
+
+  it("should render info-option-icon w/aria-expanded when moused over", () => {
+    wrapper.find(".section-info-option").simulate("mouseover");
+
+    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="true"]'), 1);
+  });
+
+  it('should render info-option-icon w/aria-expanded["false"] when moused out', () => {
+    wrapper.find(".section-info-option").simulate("mouseover");
+
+    wrapper.find(".section-info-option").simulate("mouseout");
+
+    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
+  });
+});
 
 describe("<Sections>", () => {
   let wrapper;
@@ -118,83 +175,37 @@ describe("<Section>", () => {
     });
   });
 
-  describe("info option", () => {
-    it("should render info-option-icon with a tabindex", () => {
-      // Because this is a shallow render, we need to use the casing
-      // that react understands (tabIndex), rather than the one used by
-      // the browser itself (tabindex).
-      assert.lengthOf(wrapper.find(".info-option-icon[tabIndex]"), 1);
+  describe("should render topics component", () => {
+    let TOP_STORIES_SECTION;
+    beforeEach(() => {
+      TOP_STORIES_SECTION = {
+        id: "topstories",
+        title: "TopStories",
+        rows: [{guid: 1, link: "http://localhost", isDefault: true}],
+        topics: [],
+        read_more_endpoint: "http://localhost/read-more",
+        maxRows: 1,
+        eventSource: "TOP_STORIES"
+      };
     });
+    it("should not render for empty topics", () => {
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
 
-    it("should render info-option-icon with a role of 'note'", () => {
-      assert.lengthOf(wrapper.find('.info-option-icon[role="note"]'), 1);
+      assert.lengthOf(wrapper.find(".topic"), 0);
     });
+    it("should render for non-empty topics", () => {
+      TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
 
-    it("should render info-option-icon with a title attribute", () => {
-      assert.lengthOf(wrapper.find(".info-option-icon[title]"), 1);
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+
+      assert.lengthOf(wrapper.find(".topic"), 1);
     });
+    it("should render for uninitialized topics", () => {
+      delete TOP_STORIES_SECTION.topics;
 
-    it("should render info-option-icon with aria-haspopup", () => {
-      assert.lengthOf(wrapper.find('.info-option-icon[aria-haspopup="true"]'),
-        1);
-    });
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
 
-    it('should render info-option-icon with aria-controls="info-option"', () => {
-      assert.lengthOf(
-        wrapper.find('.info-option-icon[aria-controls="info-option"]'), 1);
-    });
-
-    it('should render info-option-icon aria-expanded["false"] by default', () => {
-      assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'),
-        1);
-    });
-
-    it("should render info-option-icon w/aria-expanded when moused over", () => {
-      wrapper.find(".section-info-option").simulate("mouseover");
-
-      assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="true"]'), 1);
-    });
-
-    it('should render info-option-icon w/aria-expanded["false"] when moused out', () => {
-      wrapper.find(".section-info-option").simulate("mouseover");
-
-      wrapper.find(".section-info-option").simulate("mouseout");
-
-      assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
-    });
-
-    describe("should render topics component", () => {
-      let TOP_STORIES_SECTION;
-      beforeEach(() => {
-        TOP_STORIES_SECTION = {
-          id: "topstories",
-          title: "TopStories",
-          rows: [{guid: 1, link: "http://localhost", isDefault: true}],
-          topics: [],
-          read_more_endpoint: "http://localhost/read-more",
-          maxRows: 1,
-          eventSource: "TOP_STORIES"
-        };
-      });
-      it("should not render for empty topics", () => {
-        wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
-
-        assert.lengthOf(wrapper.find(".topic"), 0);
-      });
-      it("should render for non-empty topics", () => {
-        TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
-
-        wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
-
-        assert.lengthOf(wrapper.find(".topic"), 1);
-      });
-      it("should render for uninitialized topics", () => {
-        delete TOP_STORIES_SECTION.topics;
-
-        wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
-
-        assert.lengthOf(wrapper.find(".topic"), 1);
-      });
+      assert.lengthOf(wrapper.find(".topic"), 1);
     });
   });
 
