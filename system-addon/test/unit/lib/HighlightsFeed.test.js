@@ -22,6 +22,7 @@ describe("Highlights Feed", () => {
   let filterAdultStub;
   let sectionsManagerStub;
   let shortURLStub;
+  let profileAgeCreatedStub;
 
   const fetchHighlights = async() => {
     await feed.fetchHighlights();
@@ -46,7 +47,14 @@ describe("Highlights Feed", () => {
     };
     filterAdultStub = sinon.stub().returns([]);
     shortURLStub = sinon.stub().callsFake(site => site.url.match(/\/([^/]+)/)[1]);
+
+    const fakeProfileAgePromise = {};
+    const fakeProfileAge = function() { return fakeProfileAgePromise; };
+    profileAgeCreatedStub = sinon.stub().callsFake(() => Promise.resolve(42));
+    sinon.stub(fakeProfileAgePromise, "created").get(profileAgeCreatedStub);
+
     globals.set("NewTabUtils", fakeNewTabUtils);
+    globals.set("ProfileAge", fakeProfileAge);
     ({HighlightsFeed, HIGHLIGHTS_UPDATE_TIME, SECTION_ID} = injector({
       "lib/FilterAdult.jsm": {filterAdult: filterAdultStub},
       "lib/ShortURL.jsm": {shortURL: shortURLStub},
@@ -109,6 +117,7 @@ describe("Highlights Feed", () => {
       const subscribeCallback = feed.store.subscribe.firstCall.args[0];
       await subscribeCallback();
       await firstFetch;
+      await feed._getBookmarksThreshold();
       assert.calledOnce(fakeNewTabUtils.activityStreamLinks.getHighlights);
 
       // If TopSites is initialised in the first place it shouldn't wait
@@ -117,6 +126,7 @@ describe("Highlights Feed", () => {
       fakeNewTabUtils.activityStreamLinks.getHighlights.reset();
       await feed.fetchHighlights();
       assert.notCalled(feed.store.subscribe);
+      await feed._getBookmarksThreshold();
       assert.calledOnce(fakeNewTabUtils.activityStreamLinks.getHighlights);
     });
     it("should add hostname and hasImage to each link", async () => {
@@ -248,6 +258,28 @@ describe("Highlights Feed", () => {
       await feed.fetchImage(card);
 
       assert.propertyVal(card, "image", FAKE_IMAGE);
+    });
+  });
+  describe("#_getBookmarksThreshold", () => {
+    it("should have the correct default", () => {
+      assert.equal(feed._profileAge, 0);
+    });
+    it("should not call ProfileAge if _profileAge is set", async () => {
+      feed._profileAge = 10;
+
+      await feed._getBookmarksThreshold();
+
+      assert.notCalled(profileAgeCreatedStub);
+    });
+    it("should call ProfileAge if _profileAge is not set", async () => {
+      await feed._getBookmarksThreshold();
+
+      assert.calledOnce(profileAgeCreatedStub);
+    });
+    it("should set _profileAge", async () => {
+      await feed._getBookmarksThreshold();
+
+      assert.notEqual(feed._profileAge, 0);
     });
   });
   describe("#uninit", () => {
