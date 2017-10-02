@@ -42,6 +42,7 @@ describe("<ComponentPerfTimer>", () => {
   describe("#constructor", () => {
     beforeEach(() => {
       sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
+      sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
       wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
     });
 
@@ -51,6 +52,22 @@ describe("<ComponentPerfTimer>", () => {
       assert.isFalse(instance._reportMissingData);
       assert.isFalse(instance._timestampHandled);
       assert.isFalse(instance._recordedFirstRender);
+    });
+  });
+
+  describe("#render", () => {
+    beforeEach(() => {
+      sandbox.stub(DEFAULT_PROPS, "id").value("fake_section");
+      sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
+      sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+    });
+
+    it("should not call telemetry on sections that we don't want to record", () => {
+      const instance = wrapper.instance();
+
+      assert.notCalled(instance._maybeSendBadStateEvent);
+      assert.notCalled(instance._recordFirstRenderTs);
     });
   });
 
@@ -98,10 +115,45 @@ describe("<ComponentPerfTimer>", () => {
     });
   });
 
+  describe("_recordFirstRenderTs", () => {
+    let recordFirstRenderStub;
+    beforeEach(() => {
+      sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
+      recordFirstRenderStub = sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
+    });
+
+    it("should set _recordedFirstRender", () => {
+      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+      const instance = wrapper.instance();
+
+      assert.isFalse(instance._recordedFirstRender);
+
+      recordFirstRenderStub.callThrough();
+      instance._recordFirstRenderTs();
+
+      assert.isTrue(instance._recordedFirstRender);
+    });
+
+    it("should mark first_render_ts", () => {
+      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+      const instance = wrapper.instance();
+      const stub = sandbox.stub(perfSvc, "mark");
+
+      recordFirstRenderStub.callThrough();
+      instance._recordFirstRenderTs();
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, `${DEFAULT_PROPS.id}_first_render_ts`);
+    });
+  });
+
   describe("#_maybeSendBadStateEvent", () => {
     let sendBadStateStub;
     beforeEach(() => {
       sendBadStateStub = sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
+      sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
     });
 
     it("should set this._reportMissingData=true when called with initialized === false", () => {
@@ -129,32 +181,6 @@ describe("<ComponentPerfTimer>", () => {
 
       assert.calledOnce(stub);
       assert.isFalse(instance._reportMissingData);
-    });
-
-    it("should set _recordedFirstRender", () => {
-      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
-      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
-      const instance = wrapper.instance();
-
-      assert.isFalse(instance._recordedFirstRender);
-
-      sendBadStateStub.callThrough();
-      instance._maybeSendBadStateEvent();
-
-      assert.isTrue(instance._recordedFirstRender);
-    });
-
-    it("should mark first_render_ts", () => {
-      sandbox.stub(DEFAULT_PROPS, "initialized").value(false);
-      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(perfSvc, "mark");
-
-      sendBadStateStub.callThrough();
-      instance._maybeSendBadStateEvent();
-
-      assert.calledOnce(stub);
-      assert.calledWithExactly(stub, `${DEFAULT_PROPS.id}_first_render_ts`);
     });
   });
 
@@ -256,6 +282,7 @@ describe("<ComponentPerfTimer>", () => {
   describe("#_sendPaintedEvent", () => {
     beforeEach(() => {
       sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
+      sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
     });
 
     it("should not call mark with the wrong id", () => {
