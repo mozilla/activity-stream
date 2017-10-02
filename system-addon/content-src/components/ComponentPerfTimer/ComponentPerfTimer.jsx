@@ -68,14 +68,6 @@ class ComponentPerfTimer extends React.Component {
       // Report how long it took for component to become initialized.
       this._sendBadStateEvent();
     }
-
-    // Used as t0 for recording how long component took to initialize.
-    if (!this._recordedFirstRender) {
-      this._recordedFirstRender = true;
-      // topsites_first_render_ts, highlights_first_render_ts.
-      const key = `${this.props.id}_first_render_ts`;
-      this.perfSvc.mark(key);
-    }
   }
 
   _maybeSendPaintedEvent() {
@@ -88,9 +80,19 @@ class ComponentPerfTimer extends React.Component {
     // something goes wrong in the callback, we can't try again, as we'd be
     // sending back the wrong data, and we have to do it here, so that other
     // calls to this method while waiting for the next frame won't also try to
-    // handle handle it.
+    // handle it.
     this._timestampHandled = true;
     this._afterFramePaint(this._sendPaintedEvent);
+  }
+
+  _recordFirstRenderTs() {
+    // Used as t0 for recording how long component took to initialize.
+    if (!this._recordedFirstRender) {
+      this._recordedFirstRender = true;
+      // topsites_first_render_ts, highlights_first_render_ts.
+      const key = `${this.props.id}_first_render_ts`;
+      this.perfSvc.mark(key);
+    }
   }
 
   _sendBadStateEvent() {
@@ -144,6 +146,7 @@ class ComponentPerfTimer extends React.Component {
 
   render() {
     if (RECORDED_SECTIONS.includes(this.props.id)) {
+      this._recordFirstRenderTs();
       this._maybeSendBadStateEvent();
     }
     return this.props.children;
