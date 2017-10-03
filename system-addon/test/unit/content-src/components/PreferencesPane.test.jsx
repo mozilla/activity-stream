@@ -45,7 +45,26 @@ describe("<PreferencesPane>", () => {
   const fakeSections = [
     {id: "section1", shouldHidePref: false, enabled: true, pref: {titleString: "section1", feed: "section1_feed"}},
     {id: "section2", shouldHidePref: false, enabled: false, pref: {titleString: "section2"}},
-    {id: "section3", shouldHidePref: true, enabled: true, pref: {titleString: {id: "section3"}}}
+    {id: "section3", shouldHidePref: true, enabled: true, pref: {titleString: {id: "section3"}}},
+    {
+      id: "section4",
+      shouldHidePref: false,
+      enabled: true,
+      pref: {
+        titleString: {id: "section4"},
+        nestedPrefs: [
+          {
+            name: "nestedPref1",
+            titleString: {id: "Some nested pref", values: {}},
+            icon: "icon-info"
+          }, {
+            name: "nestedPref2",
+            titleString: {id: "Some other nested pref", values: {}},
+            icon: "icon-info"
+          }
+        ]
+      }
+    }
   ];
   const fakePreferencesPane = {visible: false};
 
@@ -117,10 +136,11 @@ describe("<PreferencesPane>", () => {
   });
   it("should show PreferencesInputs for a section if and only if shouldHidePref is false", () => {
     const sectionsWrapper = wrapper.find(".showSection");
-    assert.equal(sectionsWrapper.length, 2);
+    assert.equal(sectionsWrapper.length, 3);
     assert.ok(sectionsWrapper.containsMatchingElement(<PreferencesInput prefName="section1_feed" />));
     assert.ok(sectionsWrapper.containsMatchingElement(<PreferencesInput prefName="section2" />));
     assert.notOk(sectionsWrapper.containsMatchingElement(<PreferencesInput prefName="section3" />));
+    assert.ok(sectionsWrapper.containsMatchingElement(<PreferencesInput prefName="section4" />));
   });
   it("should set the value prop of a section PreferencesInput to equal section.enabled", () => {
     const section1 = wrapper.findWhere(prefInput => prefInput.props().prefName === "section1_feed");
@@ -139,5 +159,16 @@ describe("<PreferencesPane>", () => {
     showMoreTopSitesWrapper.simulate("change", {target: {name: "topSitesCount", checked: true}});
     assert.calledOnce(dispatch);
     assert.calledWith(dispatch, ac.SetPref("topSitesCount", 12));
+  });
+  it("should render nested PreferencesInput for nested Section pref", () => {
+    const nestedPrefsWrapper = wrapper.find(".options");
+    assert.ok(nestedPrefsWrapper.containsMatchingElement(<PreferencesInput prefName="nestedPref1" />));
+    assert.ok(nestedPrefsWrapper.containsMatchingElement(<PreferencesInput prefName="nestedPref2" />));
+  });
+  it("should dispatch a SetPref action when a nested PreferencesInput is clicked", () => {
+    const section1 = wrapper.findWhere(prefInput => prefInput.props().prefName === "nestedPref1");
+    section1.simulate("change", {target: {name: "nestedPref1", checked: false}});
+    assert.calledOnce(dispatch);
+    assert.calledWith(dispatch, ac.SetPref("nestedPref1", false));
   });
 });

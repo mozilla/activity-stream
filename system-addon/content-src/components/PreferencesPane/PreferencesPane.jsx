@@ -110,10 +110,20 @@ class PreferencesPane extends React.PureComponent {
               {sections
                 .filter(section => !section.shouldHidePref)
                 .map(({id, title, enabled, pref}) =>
-                  <PreferencesInput key={id} className="showSection" prefName={(pref && pref.feed) || id}
-                    value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
-                    titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />)}
+                  <div key={id}>
+                    <PreferencesInput className="showSection" prefName={(pref && pref.feed) || id}
+                      value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
+                      titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />
 
+                        {pref.nestedPrefs && pref.nestedPrefs.map(nestedPref =>
+                          <div key={pref.nestedPrefs.name} className={`options${enabled ? "" : " disabled"}`}>
+                            <PreferencesInput prefName={nestedPref.name} disabled={!enabled} value={prefs[nestedPref.name]}
+                              onChange={this.handlePrefChange} titleString={nestedPref.titleString}
+                              labelClassName={`icon ${nestedPref.icon}`} />
+                          </div>
+                        )}
+                  </div>
+                )}
               <hr />
 
               <PreferencesInput className="showSnippets" prefName="feeds.snippets"
