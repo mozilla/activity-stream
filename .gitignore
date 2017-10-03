@@ -10,8 +10,7 @@ firefox/
 *.update.rdf
 system-addon/data/content/activity-stream.bundle.js
 system-addon/data/content/activity-stream.css
-system-addon/data/content/activity-stream.html
-system-addon/data/content/activity-stream-prerendered.html
+system-addon/data/content/*.html
 system-addon/data/content/activity-stream-initial-state.js
 system-addon/data/locales.json
 bin/prerender.js
