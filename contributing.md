@@ -1,14 +1,19 @@
-# Contributing to the Activity Stream  Firefox add-on
+# Contributing to Activity Stream
 
-Activity Stream is an experiment to enhance the functionality of Firefox's about:newtab page.  We welcome new 'streamers' to contribute to the project!
+Activity Stream is an enhancement to the functionality of Firefox's about:newtab page.  We welcome new 'streamers' to contribute to the project!
 
-- IRC: `#activity-stream` on `irc.mozilla.org`
+## Where to ask questions
+
+- Most of the core dev team can be found on the `#activity-stream` channel on `irc.mozilla.org`.
+  You can also direct message the core team (`dmose`, `emtwo`, `jkerim`, `k88hudson`, `Mardak`, `nanj`, `r1cky`, `ursula`, `andreio`)
+  or our manager (`tspurway`)
+- Slack channel (staff only): #activitystream
 - Mailing List: [activity-stream-dev](https://groups.google.com/a/mozilla.com/d/forum/activity-stream-dev)
+- File issues/questions on Github: https://github.com/mozilla/activity-stream/issues. We typically triage new issues every Monday.
 
 ## Architecture ##
 
-Activity Stream is a Firefox add-on.  It uses the Firefox [Add-on SDK](https://developer.mozilla.org/en-US/Add-ons/SDK) and
-is written in JavaScript.  One of the cool things about Activity Stream is that the 
+Activity Stream is a Firefox system add-on. One of the cool things about Activity Stream is that the
 [content side of the add-on](https://developer.mozilla.org/en-US/Add-ons/SDK/Guides/Content_Scripts)
 is written using [ReactJS](https://facebook.github.io/react/).  This makes it an awesome project for React hackers to contribute to!
 
@@ -21,34 +26,26 @@ a bug, or have a feature idea that you you'd like to see in Activity Stream, fol
 - If you can reproduce the bug, give a step-by-step recipe
 - Include [stack traces from the console(s)](https://developer.mozilla.org/en-US/docs/Mozilla/Debugging/Debugging_JavaScript) where appropriate
 - Screenshots welcome!
-- When in doubt, take a look at some [existing issues](https://github.com/mozilla/activity-stream/issues) and emulate 
-
+- When in doubt, take a look at some [existing issues](https://github.com/mozilla/activity-stream/issues) and emulate
 
 ## Take a Ticket, Hack some Code ##
 
-If you want to write some code, you need to first take a look at the current [Milestone](#milestones-iterations-national-parks-of-canada)
-to get an idea what we are currently working on, and to determine the projects [priorities](#priorities-comments).  You can then grab a ticket, hack some code,
-open up a [Pull Request](#pull-requests), get your code [reviewed](#code-reviews), and see your code merged into 
-the Activity Stream codebase.
-
-## Milestones, Iterations, National Parks of Canada ##
-
-All work on Activity Stream is broken into two week iterations, which we map into a GitHub [Milestone](https://github.com/mozilla/activity-stream/milestones).  At the beginning of the iteration, we prioritize and estimate tickets
-into the milestone, attempting to figure out how much progress we can make during the iteration.  
-
-## Priorities, Comments ##
-
-All tickets that have been [triaged](#triage) will have a priority tag of either `P1`, `P2`, or `P3`, which are highest to lowest
-priorities of tickets in Activity Stream.  We love ticket tags and you might also see `Blocked`, `Critical` or `Chemspill` tags, which
-indicate our level of anxiety about that particular ticket.  
-
 If you are new to the repo, you might want to pay close attention to [`Good first bug`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+first+bug%22),
- [`Bug`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen%20is%3Aissue%20label%3ABug%20), 
- [`Chore`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen+is%3Aissue+label%3AChore) and 
+ [`Bug`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen%20is%3Aissue%20label%3ABug%20),
+ [`Chore`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen+is%3Aissue+label%3AChore) and
  [`Polish`](https://github.com/mozilla/activity-stream/issues?q=is%3Aopen+is%3Aissue+label%3APolish) tags, as these are
 typically a great way to get started.  You might see a bug that is not yet assigned to anyone, or start a conversation with
 an engineer in the ticket itself, expressing your interest in taking the bug.  If you take the bug, someone will set
 the ticket to [`Assigned to Contributor`](https://github.com/mozilla/activity-stream/issues?utf8=%E2%9C%93&q=is%3Aopen%20is%3Aissue%20label%3A%22Assigned%20to%20contributor%22%20), which is a way we can be pro-active about helping you succeed in fixing the bug.
+
+When you have some code written, you can open up a [Pull Request](#pull-requests), get your code [reviewed](#code-reviews), and see your code merged into the Activity Stream codebase.
+
+If you are thinking about contributing on a longer-term basis, check out the section on [milestones](#milestones) and [priorities](#priorities)
+to get a sense of how we plan and prioritize work.
+
+## Setting up your development environment
+
+Check out [this guide](docs/v2-system-addon/1.GETTING_STARTED.md) on how to install dependencies, get set up, and run tests.
 
 ## Pull Requests ##
 
@@ -72,34 +69,12 @@ module owners will be along and will either:
 Typically, you will iterate on the PR, making changes and pushing your changes to new commits on the PR.  When the reviewer is
  satisfied that your code is good-to-go, you will get the coveted `R+` comment, and your code can be merged.  If you have
  commit permission, you can go ahead and merge the code to `master`, otherwise, it will be done for you.
- 
+
 Our project prides itself on it's respectful, patient and positive attitude when it comes to reviewing contributor's code, and as such,
 we expect contributors to be respectful, patient and positive in their communications as well.  Let's be friends and learn
 from each other for a free and awesome web!
 
 [Mozilla Committing Rules and Responsibilities](https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Committing_Rules_and_Responsibilities)
-
-## Unit Tests ##
-
-We have a [detailed write-up](https://github.com/mozilla/activity-stream/blob/master/content-test/addon-tests-how-to.md) on
-Activity Stream unit testing.  This is an important read, as there are **significant** JavaScript differences when
-writing Firefox add-on code that must be taken into consideration.
-
-Our build process will run unit tests and code coverage tools automatically.  Make sure to put your tests in
-`content-test` directory, that all tests pass, and that you are
-not responsible for unduly decreasing the overall code coverage percentage.
-
-To run tests from the command line:
-
-`npm run test`
-
-
-## Triage ##
-
-The project team meets weekly (in a closed meeting, for the time being), to discuss project priorities, to triage new tickets, and to
-redistribute the work amongst team members.  Any contributors tickets or PRs are carefully considered, prioritized, and if needed, 
-assigned a reviewer.  The project's GitHub [Milestone page](https://github.com/mozilla/activity-stream/milestones) is the best
-place to look for up-to-date information on project priorities and current workload.
 
 ## Git Commit Guidelines ##
 
@@ -140,8 +115,24 @@ It should include the motivation for the change and contrast this with previous 
 The footer should contain any information about **Breaking Changes** and is also the place to
 reference GitHub issues that this commit **Closes**.
 
+## Milestones ##
+
+All work on Activity Stream is broken into two week iterations, which we map into a GitHub [Milestone](https://github.com/mozilla/activity-stream/milestones).  At the beginning of the iteration, we prioritize and estimate tickets
+into the milestone, attempting to figure out how much progress we can make during the iteration.  
+
+## Priorities ##
+
+All tickets that have been [triaged](#triage) will have a priority tag of either `P1`, `P2`, `P3`, or `P4` which are highest to lowest
+priorities of tickets in Activity Stream. We love ticket tags and you might also see `Blocked`, `Critical` or `Chemspill` tags, which
+indicate our level of anxiety about that particular ticket.  
+
+## Triage ##
+
+The project team meets weekly (in a closed meeting, for the time being), to discuss project priorities, to triage new tickets, and to
+redistribute the work amongst team members.  Any contributors tickets or PRs are carefully considered, prioritized, and if needed,
+assigned a reviewer.  The project's GitHub [Milestone page](https://github.com/mozilla/activity-stream/milestones) is the best
+place to look for up-to-date information on project priorities and current workload.
 
 ## License
 
 MPL 2.0
-
