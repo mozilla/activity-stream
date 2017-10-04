@@ -16,6 +16,8 @@ const PreferencesInput = props => (
     {props.descString && <p className="prefs-input-description">
       {getFormattedMessage(props.descString)}
     </p>}
+    {React.Children.map(props.children,
+      child => <div className={`options${child.props.disabled ? " disabled" : ""}`}>{child}</div>)}
   </section>
 );
 
@@ -93,36 +95,57 @@ class PreferencesPane extends React.PureComponent {
               <h1><FormattedMessage id="settings_pane_header" /></h1>
               <p><FormattedMessage id="settings_pane_body2" /></p>
 
-              <PreferencesInput className="showSearch" prefName="showSearch" value={prefs.showSearch} onChange={this.handlePrefChange}
-                titleString={{id: "settings_pane_search_header"}} descString={{id: "settings_pane_search_body"}} />
+              <PreferencesInput
+                className="showSearch"
+                prefName="showSearch"
+                value={prefs.showSearch}
+                onChange={this.handlePrefChange}
+                titleString={{id: "settings_pane_search_header"}}
+                descString={{id: "settings_pane_search_body"}} />
 
               <hr />
 
-              <PreferencesInput className="showTopSites" prefName="showTopSites" value={prefs.showTopSites} onChange={this.handlePrefChange}
-                titleString={{id: "settings_pane_topsites_header"}} descString={{id: "settings_pane_topsites_body"}} />
+              <PreferencesInput
+                className="showTopSites"
+                prefName="showTopSites"
+                value={prefs.showTopSites}
+                onChange={this.handlePrefChange}
+                titleString={{id: "settings_pane_topsites_header"}}
+                descString={{id: "settings_pane_topsites_body"}}>
 
-              <div className={`options${prefs.showTopSites ? "" : " disabled"}`}>
-                <PreferencesInput className="showMoreTopSites" prefName="topSitesCount" disabled={!prefs.showTopSites}
-                  value={prefs.topSitesCount !== TOP_SITES_DEFAULT_LENGTH} onChange={this.handlePrefChange}
-                  titleString={{id: "settings_pane_topsites_options_showmore"}} labelClassName="icon icon-topsites" />
-              </div>
+                <PreferencesInput
+                  className="showMoreTopSites"
+                  prefName="topSitesCount"
+                  disabled={!prefs.showTopSites}
+                  value={prefs.topSitesCount !== TOP_SITES_DEFAULT_LENGTH}
+                  onChange={this.handlePrefChange}
+                  titleString={{id: "settings_pane_topsites_options_showmore"}}
+                  labelClassName="icon icon-topsites" />
+              </PreferencesInput>
 
               {sections
                 .filter(section => !section.shouldHidePref)
                 .map(({id, title, enabled, pref}) =>
-                  <div key={id}>
-                    <PreferencesInput className="showSection" prefName={(pref && pref.feed) || id}
-                      value={enabled} onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
-                      titleString={(pref && pref.titleString) || title} descString={pref && pref.descString} />
+                  <PreferencesInput
+                    key={id}
+                    className="showSection"
+                    prefName={(pref && pref.feed) || id}
+                    value={enabled}
+                    onChange={(pref && pref.feed) ? this.handlePrefChange : this.handleSectionChange}
+                    titleString={(pref && pref.titleString) || title}
+                    descString={pref && pref.descString}>
 
-                        {pref.nestedPrefs && pref.nestedPrefs.map(nestedPref =>
-                          <div key={pref.nestedPrefs.name} className={`options${enabled ? "" : " disabled"}`}>
-                            <PreferencesInput prefName={nestedPref.name} disabled={!enabled} value={prefs[nestedPref.name]}
-                              onChange={this.handlePrefChange} titleString={nestedPref.titleString}
-                              labelClassName={`icon ${nestedPref.icon}`} />
-                          </div>
-                        )}
-                  </div>
+                    {pref.nestedPrefs && pref.nestedPrefs.map(nestedPref =>
+                      <PreferencesInput
+                        key={nestedPref.name}
+                        prefName={nestedPref.name}
+                        disabled={!enabled}
+                        value={prefs[nestedPref.name]}
+                        onChange={this.handlePrefChange}
+                        titleString={nestedPref.titleString}
+                        labelClassName={`icon ${nestedPref.icon}`} />
+                    )}
+                   </PreferencesInput>
                 )}
               <hr />
 
