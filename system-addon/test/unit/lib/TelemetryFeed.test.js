@@ -160,6 +160,26 @@ describe("TelemetryFeed", () => {
       assert.propertyVal(instance.sessions.get("foo").perf,
                          "topsites_data_late_by_ms", 10);
     });
+    it("should be a valid ping with the topsites_icon_stats perf", () => {
+      // Add a session
+      const portID = "foo";
+      const session = instance.addSession(portID, "about:home");
+      instance.saveSessionPerfData("foo", {
+        topsites_icon_stats: {
+          "screenshot_with_icon": 2,
+          "screenshot": 1,
+          "tippytop": 2,
+          "rich_icon": 1,
+          "no_image": 0
+        }
+      });
+
+      // Create a ping referencing the session
+      const ping = instance.createSessionEndEvent(session);
+      assert.validate(ping, SessionPing);
+      assert.propertyVal(instance.sessions.get("foo").perf.topsites_icon_stats,
+        "screenshot_with_icon", 2);
+    });
   });
 
   describe("#browserOpenNewtabStart", () => {

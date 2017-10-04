@@ -118,6 +118,15 @@ const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
     topsites_first_painted_ts: Joi.number().positive()
       .notes(["server counter", "server counter alert"]),
 
+    // Information about the quality of TopSites images and icons.
+    topsites_icon_stats: Joi.object().keys({
+      rich_icon: Joi.number(),
+      screenshot: Joi.number(),
+      screenshot_with_icon: Joi.number(),
+      tippytop: Joi.number(),
+      no_image: Joi.number()
+    }),
+
     // When the page itself receives an event that document.visibilityState
     // == visible.
     //

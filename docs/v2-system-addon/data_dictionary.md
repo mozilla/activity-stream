@@ -171,9 +171,11 @@ and losing focus. | :one:
 | `highlights_data_late_by_ms` | [Optional] Time in ms it took for Highlights to become initialized | :one:
 | `topsites_data_late_by_ms` | [Optional] Time in ms it took for TopSites to become initialized | :one:
 | `topsites_first_painted_ts` | [Optional][Service Counter][Server Alert for too many omissions] Timestamp of when the Top Sites element finished painting (possibly with only placeholder screenshots) | :one:
-| `topsites_size` | [Optional] The size of the Topsites set. | :one:
-| `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
-| `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
+| `screenshot_with_icon` | [Optional] Number of topsites that display a screenshot and a favicon. | :one:
+| `screenshot` | [Optional] Number of topsites that display only a screenshot. | :one:
+| `tippytop` | [Optional] Number of topsites that display a tippytop icon. | :one:
+| `rich_icon` | [Optional] Number of topsites that display a high quality favicon. | :one:
+| `no_image` | [Optional] Number of topsites that have no screenshot. | :one:
 | `visibility_event_rcvd_ts` | [Optional][Server Counter][Server Alert for too many omissions] DOMHighResTimeStamp of when the page itself receives an event that document.visibilityState == visible. | :one:
 | `tiles` | [Required] A list of tile objects for the Pocket articles. Each tile object mush have a ID, and optionally a "pos" property to indicate the tile position | :one:
 | `click` | [Optional] An integer to record the 0-based index when user clicks on a Pocket tile. | :one:

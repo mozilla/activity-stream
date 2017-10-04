@@ -291,6 +291,16 @@ perf: {
   // and is therefore just showing placeholder screenshots.
   "topsites_first_painted_ts": 5,
 
+  // The 5 different types of TopSites icons and how many of each kind did the
+  // user see.
+  "topsites_icon_stats": {
+    "screenshot_with_icon": 2,
+    "screenshot": 1,
+    "tippytop": 2,
+    "rich_icon": 1,
+    "no_image": 0
+  }
+
   // How much longer the data took, in milliseconds, to be ready for display
   // than it would have been in the ideal case. The user currently sees placeholder
   // cards instead of real cards for approximately this length of time. This is
