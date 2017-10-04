@@ -1,4 +1,4 @@
-// Photon colors from http://design.firefox.com/photon/visual/color.html
+// Photon colors from http://design.firefox.com/photon/visuals/color.html
 $blue-50: #0A84FF;
 $blue-60: #0060DF;
 $grey-10: #F9F9FA;
@@ -11,6 +11,17 @@ $grey-90: #0C0C0D;
 $teal-70: #008EA4;
 $red-60: #D70022;
 
+// Photon opacity from http://design.firefox.com/photon/visuals/color.html#opacity
+$grey-90-10: rgba($grey-90, 0.1);
+$grey-90-20: rgba($grey-90, 0.2);
+$grey-90-30: rgba($grey-90, 0.3);
+$grey-90-40: rgba($grey-90, 0.4);
+$grey-90-50: rgba($grey-90, 0.5);
+$grey-90-60: rgba($grey-90, 0.6);
+$grey-90-70: rgba($grey-90, 0.7);
+$grey-90-80: rgba($grey-90, 0.8);
+$grey-90-90: rgba($grey-90, 0.9);
+
 // Photon transitions from http://design.firefox.com/photon/motion/duration-and-easing.html
 $photon-easing: cubic-bezier(.07, .95, 0, 1);
 
@@ -19,20 +30,20 @@ $background-primary: $grey-10;
 $background-secondary: $grey-20;
 $border-primary: 1px solid $grey-40;
 $border-secondary: 1px solid $grey-30;
-$fill-primary: rgba($grey-90, 0.8);
-$fill-secondary: rgba($grey-90, 0.6);
+$fill-primary: $grey-90-80;
+$fill-secondary: $grey-90-60;
 $fill-tertiary: $grey-30;
 $input-primary: $blue-60;
 $input-secondary: $grey-10;
 $link-primary: $blue-60;
 $link-secondary: $teal-70;
 $shadow-primary: 0 0 0 5px $grey-30;
-$shadow-secondary: 0 1px 4px 0 rgba($grey-90, 0.1);
+$shadow-secondary: 0 1px 4px 0 $grey-90-10;
 $text-primary: $grey-90;
 $text-conditional: $grey-60;
 $text-secondary: $grey-50;
-$input-border: solid 1px rgba($grey-90, 0.20);
-$input-border-active: solid 1px rgba($grey-90, 0.40);
+$input-border: solid 1px $grey-90-20;
+$input-border-active: solid 1px $grey-90-40;
 $input-error-border: solid 1px $red-60;
 $input-error-boxshadow: 0 0 0 2px rgba($red-60, 0.35);
 
@@ -66,7 +77,7 @@ $card-text-line-height: 19px;
 $topic-margin-top: 12px;
 
 $context-menu-button-size: 27px;
-$context-menu-button-boxshadow: 0 2px rgba($grey-90, 0.1);
+$context-menu-button-boxshadow: 0 2px $grey-90-10;
 $context-menu-border-color: rgba(0, 0, 0, 0.2);
 $context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px $context-menu-border-color;
 $context-menu-font-size: 14px;

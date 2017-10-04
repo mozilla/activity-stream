@@ -7,7 +7,7 @@
   $search-glyph-image: url('chrome://browser/skin/search-glass.svg');
   $glyph-forward: url('chrome://browser/skin/forward.svg');
   $search-glyph-size: 16px;
-  $search-glyph-fill: rgba($grey-90, 0.4);
+  $search-glyph-fill: $grey-90-40;
   // This is positioned so it is visually (not metrically) centered. r=abenson
   $search-glyph-left-position: 12px;
 
@@ -60,12 +60,12 @@
 
     &:focus,
     &:hover {
-      background-color: rgba($grey-90, 0.1);
+      background-color: $grey-90-10;
       cursor: pointer;
     }
 
     &:active {
-      background-color: rgba($grey-90, 0.15);
+      background-color: $grey-90-20;
     }
 
     &:dir(rtl) {
