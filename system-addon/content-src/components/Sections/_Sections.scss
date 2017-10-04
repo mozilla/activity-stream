@@ -1,4 +1,5 @@
 .section-top-bar {
+  $info-active-color: $grey-90-10;
   position: relative;
 
   .section-info-option {
@@ -30,22 +31,46 @@
   }
 
   .info-option-icon[aria-expanded="true"] {
+    background-color: $info-active-color;
+    border-radius: 1px; // The shadow below makes this the desired larger radius
+    box-shadow: 0 0 0 5px $info-active-color;
     fill: $fill-primary;
   }
 
   .section-info-option .info-option {
+    $arrow-height: 10px;
+    $arrow-offset-end: 7px;
+    $arrow-width: 18px;
     visibility: hidden;
     opacity: 0;
     transition: visibility 0.2s, opacity 0.2s $photon-easing;
 
+    &::after,
     &::before {
       content: "";
-      display: block;
-      height: 32px;
-      left: 50%;
+      offset-inline-end: 0;
       position: absolute;
-      right: 0;
-      top: -32px;
+    }
+
+    &::before {
+      $before-height: 32px;
+      background-image: url(chrome://global/skin/arrow/panelarrow-vertical-themed.svg), url(chrome://global/skin/arrow/panelarrow-vertical@2x.png);
+      background-position: calc(100% - #{$arrow-offset-end}) bottom;
+      background-repeat: no-repeat;
+      background-size: $arrow-width $arrow-height;
+      height: $before-height;
+      top: -$before-height;
+      width: 43px;
+    }
+
+    &:dir(rtl)::before {
+      background-position-x: $arrow-offset-end;
+    }
+
+    &::after {
+      height: $arrow-height;
+      offset-inline-start: 0;
+      top: -$arrow-height;
     }
   }
 
@@ -65,7 +90,7 @@
     line-height: 120%;
     margin-inline-end: -9px;
     offset-inline-end: 0;
-    top: 20px;
+    top: 26px;
     width: 320px;
     padding: 24px;
     box-shadow: $shadow-secondary;
