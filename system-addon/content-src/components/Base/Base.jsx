@@ -30,6 +30,7 @@ class Base extends React.PureComponent {
     // dispatched right after the store is ready.
     if (this.props.isPrerendered) {
       this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
+      this.props.dispatch(ac.SendToMain({type: at.PAGE_PRERENDERED}));
     }
 
     // Also wait for the preloaded page to show, so the tab's title and favicon updates

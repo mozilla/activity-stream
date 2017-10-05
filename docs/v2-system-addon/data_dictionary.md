@@ -178,6 +178,8 @@ and losing focus. | :one:
 | `block` | [Optional] An integer to record the 0-based index when user blocks a Pocket tile. | :one:
 | `pocket` | [Optional] An integer to record the 0-based index when user saves a Pocket tile to Pocket. | :one:
 | `user_prefs` | [Required] The encoded integer of user's preferences. | :one: & :four:
+| `is_prerendered` | [Required] A boolean to signify whether the page is prerendered or not | :one:
+| `is_preloaded` | [Required] A boolean to signify whether the page is preloaded or not | :one:
 
 **Where:**
 
