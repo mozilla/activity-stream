@@ -14,6 +14,7 @@ const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.js
 const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {SectionsManager} = Cu.import("resource://activity-stream/lib/SectionsManager.jsm", {});
 const {UserDomainAffinityProvider} = Cu.import("resource://activity-stream/lib/UserDomainAffinityProvider.jsm", {});
+const {PersistentCache} = Cu.import("resource://activity-stream/lib/PersistentCache.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "perfService", "resource://activity-stream/common/PerfService.jsm");
 
@@ -23,11 +24,15 @@ const DOMAIN_AFFINITY_UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
 const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
 const SECTION_ID = "topstories";
 
+// The filename where stories and topics are stored locally
+const POCKET_DATA_FILE = "pocketData.json";
+
 this.TopStoriesFeed = class TopStoriesFeed {
   constructor() {
     this.spocsPerNewTabs = 0;
     this.newTabsSinceSpoc = 0;
     this.contentUpdateQueue = [];
+    this.pocketCache = new PersistentCache(POCKET_DATA_FILE);
   }
 
   init() {
@@ -47,6 +52,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.topicsLastUpdated = 0;
         this.affinityLastUpdated = 0;
 
+        this.loadCachedData();
         this.fetchStories();
         this.fetchTopics();
       } catch (e) {
@@ -76,11 +82,29 @@ this.TopStoriesFeed = class TopStoriesFeed {
       this.spocs = this.show_spocs && this.transform(body.spocs).filter(s => s.score >= s.min_score);
 
       this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: this.stories});
-      this.storiesLastUpdated = Date.now();
+      body._timestamp = this.storiesLastUpdated = Date.now();
       // This is filtered so an update function can return true to retry on the next run
       this.contentUpdateQueue = this.contentUpdateQueue.filter(update => update());
+
+      this.pocketCache.set("stories", body);
     } catch (error) {
       Cu.reportError(`Failed to fetch content: ${error.message}`);
+    }
+  }
+
+  async loadCachedData() {
+    const data = await this.pocketCache.get();
+    let stories = data.stories && data.stories.recommendations;
+    let topics = data.topics && data.topics.topics;
+    if (stories && stories.length > 0 && this.storiesLastUpdated === 0) {
+      this.updateSettings(data.stories.settings);
+      const rows = this.transform(stories);
+      this.dispatchUpdateEvent(this.storiesLastUpdated, {rows});
+      this.storiesLastUpdated = data.stories._timestamp;
+    }
+    if (topics && topics.length > 0 && this.topicsLastUpdated === 0) {
+      this.dispatchUpdateEvent(this.topicsLastUpdated, {topics, read_more_endpoint: this.read_more_endpoint});
+      this.topicsLastUpdated = data.topics._timestamp;
     }
   }
 
@@ -117,10 +141,12 @@ this.TopStoriesFeed = class TopStoriesFeed {
       if (!response.ok) {
         throw new Error(`Topics endpoint returned unexpected status: ${response.status}`);
       }
-      const {topics} = await response.json();
+      const body = await response.json();
+      const {topics} = body;
       if (topics) {
         this.dispatchUpdateEvent(this.topicsLastUpdated, {topics, read_more_endpoint: this.read_more_endpoint});
-        this.topicsLastUpdated = Date.now();
+        body._timestamp = this.topicsLastUpdated = Date.now();
+        this.pocketCache.set("topics", body);
       }
     } catch (error) {
       Cu.reportError(`Failed to fetch topics: ${error.message}`);
