@@ -38,15 +38,7 @@ this.HighlightsFeed = class HighlightsFeed {
     this.highlightsLength = 0;
     this.dedupe = new Dedupe(this._dedupeKey);
     this.linksCache = new LinksCache(NewTabUtils.activityStreamLinks,
-      "getHighlights", (oldLink, newLink) => {
-        // Migrate any pending images or images to the new link
-        for (const property of ["__fetchingScreenshot", "image"]) {
-          const oldValue = oldLink[property];
-          if (oldValue) {
-            newLink[property] = oldValue;
-          }
-        }
-      });
+      "getHighlights", ["image"]);
     this._profileAge = 0;
   }
 
@@ -140,9 +132,8 @@ this.HighlightsFeed = class HighlightsFeed {
       highlights.push(page);
       hosts.add(hostname);
 
-      // Remove any internal properties
-      delete page.__fetchingScreenshot;
-      delete page.__updateCache;
+      // Remove internal properties that might be updated after dispatch
+      delete page.__sharedCache;
 
       // Skip the rest if we have enough items
       if (highlights.length === HIGHLIGHTS_MAX_LENGTH) {
@@ -162,7 +153,7 @@ this.HighlightsFeed = class HighlightsFeed {
   async fetchImage(page) {
     // Request a screenshot if we don't already have one pending
     const {preview_image_url: imageUrl, url} = page;
-    Screenshots.maybeGetAndSetScreenshot(page, imageUrl || url, "image", image => {
+    Screenshots.maybeCacheScreenshot(page, imageUrl || url, "image", image => {
       SectionsManager.updateSectionCard(SECTION_ID, url, {image}, true);
     });
   }
