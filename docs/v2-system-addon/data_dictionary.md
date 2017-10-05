@@ -210,5 +210,6 @@ This encoding mapping was defined in `system-addon/lib/TelemetryFeed.jsm`
 | `showTopStories` | 4 |
 | `showHighlights` | 8 |
 | `showSnippets`   | 16 |
+| `showSponsored`  | 32 |
 
 Each item above could be combined with other items through bitwise OR operation
