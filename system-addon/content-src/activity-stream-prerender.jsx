@@ -36,14 +36,7 @@ function prerender(_locale) {
     strings = allStrings[locale];
   } else {
     Object.keys(allStrings["en-US"]).forEach(key => {
-      if (key === "search_web_placeholder") {
-        // TODO: This is a special case to allow us to render a placeholder string
-        // for search, which is needed for certain Quantum perf tests. We will
-        // remove this when issue #3370 is resolved.
-        strings[key] = allStrings["en-US"][key];
-      } else {
-        strings[key] = " ";
-      }
+      strings[key] = " ";
     });
   }
 
