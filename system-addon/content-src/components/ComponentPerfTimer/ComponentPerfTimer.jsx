@@ -85,7 +85,11 @@ class ComponentPerfTimer extends React.Component {
     this._afterFramePaint(this._sendPaintedEvent);
   }
 
-  _recordFirstRenderTs() {
+  /**
+   * Triggered by call to render. Only first call goes through due to
+   * `_recordedFirstRender`.
+   */
+  _ensureFirstRenderTsRecorded() {
     // Used as t0 for recording how long component took to initialize.
     if (!this._recordedFirstRender) {
       this._recordedFirstRender = true;
@@ -95,6 +99,11 @@ class ComponentPerfTimer extends React.Component {
     }
   }
 
+  /**
+   * Creates `TELEMETRY_UNDESIRED_EVENT` with timestamp in ms
+   * of how much longer the data took to be ready for display than it would
+   * have been the ideal case.
+   */
   _sendBadStateEvent() {
     // highlights_data_ready_ts, topsites_data_ready_ts.
     const dataReadyKey = `${this.props.id}_data_ready_ts`;
@@ -146,7 +155,7 @@ class ComponentPerfTimer extends React.Component {
 
   render() {
     if (RECORDED_SECTIONS.includes(this.props.id)) {
-      this._recordFirstRenderTs();
+      this._ensureFirstRenderTsRecorded();
       this._maybeSendBadStateEvent();
     }
     return this.props.children;

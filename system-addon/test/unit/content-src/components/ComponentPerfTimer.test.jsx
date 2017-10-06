@@ -42,7 +42,7 @@ describe("<ComponentPerfTimer>", () => {
   describe("#constructor", () => {
     beforeEach(() => {
       sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
-      sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
+      sandbox.stub(ComponentPerfTimer.prototype, "_ensureFirstRenderTsRecorded");
       wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
     });
 
@@ -59,7 +59,7 @@ describe("<ComponentPerfTimer>", () => {
     beforeEach(() => {
       sandbox.stub(DEFAULT_PROPS, "id").value("fake_section");
       sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
-      sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
+      sandbox.stub(ComponentPerfTimer.prototype, "_ensureFirstRenderTsRecorded");
       wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
     });
 
@@ -67,7 +67,7 @@ describe("<ComponentPerfTimer>", () => {
       const instance = wrapper.instance();
 
       assert.notCalled(instance._maybeSendBadStateEvent);
-      assert.notCalled(instance._recordFirstRenderTs);
+      assert.notCalled(instance._ensureFirstRenderTsRecorded);
     });
   });
 
@@ -115,11 +115,11 @@ describe("<ComponentPerfTimer>", () => {
     });
   });
 
-  describe("_recordFirstRenderTs", () => {
+  describe("_ensureFirstRenderTsRecorded", () => {
     let recordFirstRenderStub;
     beforeEach(() => {
       sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
-      recordFirstRenderStub = sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
+      recordFirstRenderStub = sandbox.stub(ComponentPerfTimer.prototype, "_ensureFirstRenderTsRecorded");
     });
 
     it("should set _recordedFirstRender", () => {
@@ -130,7 +130,7 @@ describe("<ComponentPerfTimer>", () => {
       assert.isFalse(instance._recordedFirstRender);
 
       recordFirstRenderStub.callThrough();
-      instance._recordFirstRenderTs();
+      instance._ensureFirstRenderTsRecorded();
 
       assert.isTrue(instance._recordedFirstRender);
     });
@@ -142,7 +142,7 @@ describe("<ComponentPerfTimer>", () => {
       const stub = sandbox.stub(perfSvc, "mark");
 
       recordFirstRenderStub.callThrough();
-      instance._recordFirstRenderTs();
+      instance._ensureFirstRenderTsRecorded();
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, `${DEFAULT_PROPS.id}_first_render_ts`);
@@ -153,7 +153,7 @@ describe("<ComponentPerfTimer>", () => {
     let sendBadStateStub;
     beforeEach(() => {
       sendBadStateStub = sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
-      sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
+      sandbox.stub(ComponentPerfTimer.prototype, "_ensureFirstRenderTsRecorded");
     });
 
     it("should set this._reportMissingData=true when called with initialized === false", () => {
@@ -282,7 +282,7 @@ describe("<ComponentPerfTimer>", () => {
   describe("#_sendPaintedEvent", () => {
     beforeEach(() => {
       sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
-      sandbox.stub(ComponentPerfTimer.prototype, "_recordFirstRenderTs");
+      sandbox.stub(ComponentPerfTimer.prototype, "_ensureFirstRenderTsRecorded");
     });
 
     it("should not call mark with the wrong id", () => {
