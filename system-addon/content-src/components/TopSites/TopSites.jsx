@@ -5,7 +5,7 @@ const {FormattedMessage} = require("react-intl");
 const TopSitesPerfTimer = require("./TopSitesPerfTimer");
 const TopSitesEdit = require("./TopSitesEdit");
 const {TopSite, TopSitePlaceholder} = require("./TopSite");
-const {InfoIntl} = require("content-src/components/Sections/Sections");
+const CollapsibleSection = require("content-src/components/CollapsibleSection/CollapsibleSection");
 
 const TopSites = props => {
   const realTopSites = props.TopSites.rows.slice(0, props.TopSitesCount);
@@ -15,11 +15,7 @@ const TopSites = props => {
     body: {id: "settings_pane_topsites_body"}
   };
   return (<TopSitesPerfTimer>
-    <section className="section top-sites">
-      <div className="section-top-bar">
-        <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
-        <InfoIntl infoOption={infoOption} dispatch={props.dispatch} />
-      </div>
+    <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} infoOption={infoOption} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
       <ul className="top-sites-list">
         {realTopSites.map((link, index) => link && <TopSite
           key={link.guid || link.url}
@@ -30,9 +26,9 @@ const TopSites = props => {
         {placeholderCount > 0 && [...Array(placeholderCount)].map((_, i) => <TopSitePlaceholder key={i} />)}
       </ul>
       <TopSitesEdit {...props} />
-    </section>
+    </CollapsibleSection>
   </TopSitesPerfTimer>);
 };
 
-module.exports = connect(state => ({TopSites: state.TopSites, TopSitesCount: state.Prefs.values.topSitesCount}))(TopSites);
+module.exports = connect(state => ({TopSites: state.TopSites, Prefs: state.Prefs, TopSitesCount: state.Prefs.values.topSitesCount}))(TopSites);
 module.exports._unconnected = TopSites;

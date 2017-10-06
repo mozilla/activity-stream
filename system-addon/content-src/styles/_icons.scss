@@ -104,4 +104,23 @@
   &.icon-highlights {
     background-image: url('#{$image-path}glyph-highlights-16.svg');
   }
+
+  &.icon-arrowhead-down {
+    background-image: url('#{$image-path}glyph-arrowhead-down-12.svg');
+    background-size: $smaller-icon-size;
+    height: $smaller-icon-size;
+    width: $smaller-icon-size;
+  }
+
+  &.icon-arrowhead-forward {
+    background-image: url('#{$image-path}glyph-arrowhead-down-12.svg');
+    background-size: $smaller-icon-size;
+    height: $smaller-icon-size;
+    transform: rotate(270deg);
+    width: $smaller-icon-size;
+
+    &:dir(rtl) {
+      transform: rotate(90deg);
+    }
+  }
 }
