@@ -21,16 +21,11 @@ XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Screenshots",
   "resource://activity-stream/lib/Screenshots.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "ProfileAge",
-  "resource://gre/modules/ProfileAge.jsm");
 
 const HIGHLIGHTS_MAX_LENGTH = 9;
 const HIGHLIGHTS_UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const MANY_EXTRA_LENGTH = HIGHLIGHTS_MAX_LENGTH * 5 + TOP_SITES_SHOWMORE_LENGTH;
 const SECTION_ID = "highlights";
-const BOOKMARKS_THRESHOLD = 4000; // 3 seconds to milliseconds.
-// Some default seconds ago for Activity Stream recent requests
-const ACTIVITY_STREAM_DEFAULT_RECENT = 5 * 24 * 60 * 60;
 
 this.HighlightsFeed = class HighlightsFeed {
   constructor() {
@@ -39,7 +34,6 @@ this.HighlightsFeed = class HighlightsFeed {
     this.dedupe = new Dedupe(this._dedupeKey);
     this.linksCache = new LinksCache(NewTabUtils.activityStreamLinks,
       "getHighlights", ["image"]);
-    this._profileAge = 0;
   }
 
   _dedupeKey(site) {
@@ -57,20 +51,6 @@ this.HighlightsFeed = class HighlightsFeed {
 
   uninit() {
     SectionsManager.disableSection(SECTION_ID);
-  }
-
-  /**
-   * Timeframe used to select recent bookmarks, in seconds.
-   * Looks back 5 days while also taking into account new profiles
-   * not to include default bookmarks.
-   */
-  async _getBookmarksThreshold() {
-    if (this._profileAge === 0) {
-      // Value in milliseconds.
-      this._profileAge = await (new ProfileAge()).created;
-    }
-    const defaultsThreshold = Date.now() - this._profileAge - BOOKMARKS_THRESHOLD;
-    return Math.min(ACTIVITY_STREAM_DEFAULT_RECENT, defaultsThreshold / 1000);
   }
 
   async fetchHighlights(broadcast = false) {
@@ -93,10 +73,7 @@ this.HighlightsFeed = class HighlightsFeed {
 
     // Request more than the expected length to allow for items being removed by
     // deduping against Top Sites or multiple history from the same domain, etc.
-    const manyPages = await this.linksCache.request({
-      numItems: MANY_EXTRA_LENGTH,
-      bookmarkSecondsAgo: await this._getBookmarksThreshold()
-    });
+    const manyPages = await this.linksCache.request({numItems: MANY_EXTRA_LENGTH});
 
     // Remove adult highlights if we need to
     const checkedAdult = this.store.getState().Prefs.values.filterAdult ?
@@ -180,9 +157,6 @@ this.HighlightsFeed = class HighlightsFeed {
         break;
       case at.PLACES_BOOKMARK_ADDED:
       case at.PLACES_BOOKMARK_REMOVED:
-        this.linksCache.expire();
-        this.fetchHighlights(false);
-        break;
       case at.TOP_SITES_UPDATED:
         this.fetchHighlights(false);
         break;
