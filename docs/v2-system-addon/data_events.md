@@ -382,9 +382,7 @@ This reports when the addon fails to initialize
 
 ### Late data initialization
 
-This reports how long it took to get data ready to be displayed.
-From the moment the component first receives default state of `initialized: false`
-until this becomes `true`.
+How much longer the data took, in milliseconds, to be ready for display than it would have been in the ideal case.  The user currently sees placeholder cards instead of real cards for approximately this length of time.  This is sent when the first call of the component's `render()` method happens with `this.props.initialized` set to `false`, and the value is the amount of time in ms until `render()` is called with `this.props.initialized` set to `true`.
 
 ```js
 {
