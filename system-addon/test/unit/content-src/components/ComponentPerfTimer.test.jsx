@@ -272,6 +272,7 @@ describe("<ComponentPerfTimer>", () => {
       assert.calledWithExactly(dispatch, ac.SendToMain({
         type: at.TELEMETRY_UNDESIRED_EVENT,
         data: {
+          source: DEFAULT_PROPS.id.toUpperCase(),
           event: `${DEFAULT_PROPS.id}_data_late_by_ms`,
           value: 2 // Test that parseInt is called by checking the value.
         }

@@ -117,6 +117,7 @@ class ComponentPerfTimer extends React.Component {
       this.props.dispatch(ac.SendToMain({
         type: at.TELEMETRY_UNDESIRED_EVENT,
         data: {
+          source: this.props.id.toUpperCase(),
           // highlights_data_late_by_ms, topsites_data_late_by_ms.
           event: `${this.props.id}_data_late_by_ms`,
           value
