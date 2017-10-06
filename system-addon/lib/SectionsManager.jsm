@@ -19,7 +19,12 @@ const BUILT_IN_SECTIONS = {
     id: "topstories",
     pref: {
       titleString: {id: "header_recommended_by", values: {provider: options.provider_name}},
-      descString: {id: options.provider_description || "pocket_feedback_body"}
+      descString: {id: options.provider_description || "pocket_feedback_body"},
+      nestedPrefs: options.show_spocs ? [{
+        name: "showSponsored",
+        titleString: {id: "settings_pane_topstories_options_sponsored"},
+        icon: "icon-info"
+      }] : []
     },
     shouldHidePref: options.hidden,
     eventSource: "TOP_STORIES",

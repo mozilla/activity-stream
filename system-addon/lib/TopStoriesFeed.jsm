@@ -218,7 +218,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
   }
 
   maybeAddSpoc(target) {
-    if (!this.show_spocs) {
+    if (!this.show_spocs || !this.store.getState().Prefs.values.showSponsored) {
       return;
     }
 

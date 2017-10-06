@@ -52,7 +52,7 @@ describe("Top Stories Feed", () => {
     }));
 
     instance = new TopStoriesFeed();
-    instance.store = {getState() { return {}; }, dispatch: sinon.spy()};
+    instance.store = {getState() { return {Prefs: {values: {showSponsored: true}}}; }, dispatch: sinon.spy()};
     instance.storiesLastUpdated = 0;
     instance.topicsLastUpdated = 0;
     instance.affinityProvider = {calculateItemRelevanceScore: s => 1};
@@ -387,6 +387,8 @@ describe("Top Stories Feed", () => {
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchStories();
 
+      instance.store.getState = () => ({Sections: [{rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
+
       instance.onAction({type: at.NEW_TAB_REHYDRATED, meta: {fromTarget: {}}});
       assert.calledOnce(instance.store.dispatch);
       let action = instance.store.dispatch.firstCall.args[0];
@@ -423,6 +425,7 @@ describe("Top Stories Feed", () => {
       instance.personalized = true;
       instance.show_spocs = true;
       instance.stories_endpoint = "stories-endpoint";
+      instance.store.getState = () => ({Sections: [{rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
 
       instance.onAction({type: at.NEW_TAB_REHYDRATED, meta: {fromTarget: {}}});
@@ -446,8 +449,30 @@ describe("Top Stories Feed", () => {
         "spocs": [{"id": "spoc1"}, {"id": "spoc2"}]
       };
 
+      instance.personalized = true;
       instance.show_spocs = false;
       instance.stories_endpoint = "stories-endpoint";
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
+      await instance.fetchStories();
+
+      instance.onAction({type: at.NEW_TAB_REHYDRATED, meta: {fromTarget: {}}});
+      assert.notCalled(instance.store.dispatch);
+    });
+    it("should not insert spoc if user opted out", async () => {
+      let fetchStub = globals.sandbox.stub();
+      globals.set("fetch", fetchStub);
+      globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
+
+      const response = {
+        "settings": {"spocsPerNewTabs": 2},
+        "recommendations": [{"id": "rec1"}, {"id": "rec2"}, {"id": "rec3"}],
+        "spocs": [{"id": "spoc1"}, {"id": "spoc2"}]
+      };
+
+      instance.personalized = true;
+      instance.show_spocs = true;
+      instance.stories_endpoint = "stories-endpoint";
+      instance.store.getState = () => ({Sections: [{rows: response.recommendations}], Prefs: {values: {showSponsored: false}}});
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchStories();
 
