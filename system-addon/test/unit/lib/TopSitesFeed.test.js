@@ -3,7 +3,6 @@ const injector = require("inject!lib/TopSitesFeed.jsm");
 const {Screenshots} = require("lib/Screenshots.jsm");
 const {UPDATE_TIME} = require("lib/TopSitesFeed.jsm");
 const {FakePrefs, GlobalOverrider} = require("test/unit/utils");
-const action = {meta: {fromTarget: {}}};
 const {actionTypes: at} = require("common/Actions.jsm");
 const {insertPinned, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 
@@ -218,7 +217,7 @@ describe("Top Sites Feed", () => {
       it("should not throw if NewTabUtils returns null", () => {
         links = null;
         assert.doesNotThrow(() => {
-          feed.getLinksWithDefaults(action);
+          feed.getLinksWithDefaults();
         });
       });
       it("should get more if the user has asked for more", async () => {
@@ -367,7 +366,7 @@ describe("Top Sites Feed", () => {
     it("should call _fetchIcon for each link", async () => {
       sinon.spy(feed, "_fetchIcon");
 
-      const results = await feed.getLinksWithDefaults(action);
+      const results = await feed.getLinksWithDefaults();
 
       assert.callCount(feed._fetchIcon, results.length);
       results.forEach(link => {
@@ -381,11 +380,27 @@ describe("Top Sites Feed", () => {
     });
     it("should initialise _tippyTopProvider if it's not already initialised", async () => {
       feed._tippyTopProvider.initialized = false;
-      await feed.refresh(action);
+      await feed.refresh();
       assert.ok(feed._tippyTopProvider.initialized);
     });
+    it("should broadcast with no target", async () => {
+      sinon.stub(feed, "getLinksWithDefaults").returns(Promise.resolve([]));
+
+      await feed.refresh();
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.notProperty(feed.store.dispatch.firstCall.args[0].meta, "toTarget");
+    });
+    it("should respond to a specific target", async () => {
+      sinon.stub(feed, "getLinksWithDefaults").returns(Promise.resolve([]));
+
+      await feed.refresh({meta: {fromTarget: {}}});
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.property(feed.store.dispatch.firstCall.args[0].meta, "toTarget");
+    });
     it("should dispatch an action with the links returned", async () => {
-      await feed.refresh(action);
+      await feed.refresh();
       const reference = links.map(site => Object.assign({}, site, {hostname: shortURLStub(site)}));
 
       assert.calledOnce(feed.store.dispatch);
@@ -395,7 +410,7 @@ describe("Top Sites Feed", () => {
     it("should handle empty slots in the resulting top sites array", async () => {
       links = [FAKE_LINKS[0]];
       fakeNewTabUtils.pinnedLinks.links = [null, null, FAKE_LINKS[1], null, null, null, null, null, FAKE_LINKS[2]];
-      await feed.refresh(action);
+      await feed.refresh();
       assert.calledOnce(feed.store.dispatch);
     });
   });
