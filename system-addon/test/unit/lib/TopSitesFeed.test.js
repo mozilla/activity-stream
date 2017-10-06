@@ -627,4 +627,33 @@ describe("Top Sites Feed", () => {
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, site, 2);
     });
   });
+  describe("integration", () => {
+    let resolvers = [];
+    beforeEach(() => {
+      feed.store.dispatch = sandbox.stub().callsFake(() => {
+        resolvers.shift()();
+      });
+      fakeScreenshot.getScreenshotForURL = sandbox.spy();
+    });
+
+    const forDispatch = action => new Promise(resolve => {
+      resolvers.push(resolve);
+      feed.onAction(action);
+    });
+
+    it("should add a pinned site and remove it", async () => {
+      const url = "pin.me";
+      fakeNewTabUtils.pinnedLinks.pin = sandbox.stub().callsFake(link => {
+        fakeNewTabUtils.pinnedLinks.links.push(link);
+      });
+
+      await forDispatch({type: at.TOP_SITES_ADD, data: {site: {url}}});
+      fakeNewTabUtils.pinnedLinks.links.pop();
+      await forDispatch({type: at.PLACES_LINK_BLOCKED});
+
+      assert.calledTwice(feed.store.dispatch);
+      assert.equal(feed.store.dispatch.firstCall.args[0].data[0].url, url);
+      assert.equal(feed.store.dispatch.secondCall.args[0].data[0].url, FAKE_LINKS[0].url);
+    });
+  });
 });
