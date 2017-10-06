@@ -172,7 +172,6 @@ and losing focus. | :one:
 | `topsites_size` | [Optional] The size of the Topsites set. | :one:
 | `topsites_screenshot` | [Optional] The size of the Topsites set with screenshot metadata. | :one:
 | `topsites_tippytop` | [Optional] The size of the Topsites set with TippyTop metadata. | :one:
-| `user_prefs` | [optional] The encoded integer of user's preferences. | :one: & :four:
 | `visibility_event_rcvd_ts` | [Optional][Server Counter][Server Alert for too many omissions] DOMHighResTimeStamp of when the page itself receives an event that document.visibilityState == visible. | :one:
 | `tiles` | [Required] A list of tile objects for the Pocket articles. Each tile object mush have a ID, and optionally a "pos" property to indicate the tile position | :one:
 | `click` | [Optional] An integer to record the 0-based index when user clicks on a Pocket tile. | :one:

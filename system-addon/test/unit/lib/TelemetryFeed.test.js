@@ -291,7 +291,7 @@ describe("TelemetryFeed", () => {
             data: {
               source: "HIGHLIGHTS",
               event: `highlights_data_late_by_ms`,
-              value: 2 // Test that parseInt is called by checking the value.
+              value: 2
             }
           };
           const ping = instance.createUndesiredEvent(data);
