@@ -39,6 +39,8 @@
     color: $link-secondary;
 
     @media (min-width: $break-point-large) {
+      // This is floating to accomodate a very large number of topics and/or
+      // very long topic names due to l10n.
       float: right;
 
       &:dir(rtl) {
@@ -62,5 +64,13 @@
     &:dir(rtl)::after  {
       transform: scaleX(-1);
     }
+  }
+
+  // This is a clearfix to for the topics-read-more link which is floating and causes
+  // some jank when we set overflow:hidden for the animation.
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
   }
 }
