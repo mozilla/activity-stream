@@ -60,6 +60,9 @@ class ComponentPerfTimer extends React.Component {
   }
 
   _maybeSendBadStateEvent() {
+    // Follow up bugs:
+    // https://github.com/mozilla/activity-stream/issues/3688
+    // https://github.com/mozilla/activity-stream/issues/3691
     if (!this.props.initialized) {
       // Remember to report back when data is available.
       this._reportMissingData = true;
