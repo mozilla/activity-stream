@@ -116,7 +116,7 @@
     background-image: url('#{$image-path}glyph-arrowhead-down-12.svg');
     background-size: $smaller-icon-size;
     height: $smaller-icon-size;
-    transform: rotate(270deg);
+    transform: rotate(-90deg);
     width: $smaller-icon-size;
 
     &:dir(rtl) {

@@ -3,16 +3,14 @@
 
     .click-target {
       cursor: pointer;
+      vertical-align: top;
     }
 
-    .icon {
-      &.icon-arrowhead-down {
-        margin: -3px 0 0 8px;
-      }
-
-      &.icon-arrowhead-forward {
-        margin: -2px 0 0 8px;
-      }
+    .icon-arrowhead-down,
+    .icon-arrowhead-forward {
+      margin-top: -1px;
+      margin-inline-start: 8px;
+      transition: transform 0.5s $photon-easing;
     }
   }
 
