@@ -387,7 +387,7 @@ describe("Top Stories Feed", () => {
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchStories();
 
-      instance.store.getState = () => ({Sections: [{rows: response.recommendations}]});
+      instance.store.getState = () => ({Sections: [{rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
 
       instance.onAction({type: at.NEW_TAB_REHYDRATED, meta: {fromTarget: {}}});
       assert.calledOnce(instance.store.dispatch);
