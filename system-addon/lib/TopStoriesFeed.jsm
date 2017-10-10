@@ -23,13 +23,17 @@ const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
 const DOMAIN_AFFINITY_UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
 const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
 const SECTION_ID = "topstories";
+const SPOC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.spoc.impressions";
+const MAX_LIFETIME_CAP = 100; // Guard against misconfiguration on the server
 
 this.TopStoriesFeed = class TopStoriesFeed {
   constructor() {
     this.spocsPerNewTabs = 0;
     this.newTabsSinceSpoc = 0;
+    this.spocCampaignMap = new Map();
     this.contentUpdateQueue = [];
     this.cache = new PersistentCache(SECTION_ID, true);
+    this._prefs = new Prefs();
   }
 
   init() {
@@ -76,7 +80,12 @@ this.TopStoriesFeed = class TopStoriesFeed {
       const body = await response.json();
       this.updateSettings(body.settings);
       this.stories = this.rotate(this.transform(body.recommendations));
-      this.spocs = this.show_spocs && this.transform(body.spocs).filter(s => s.score >= s.min_score);
+
+      if (this.show_spocs && body.spocs) {
+        this.spocCampaignMap = new Map(body.spocs.map(s => [s.id, `${s.campaign_id}`]));
+        this.spocs = this.transform(body.spocs).filter(s => s.score >= s.min_score);
+        this.cleanUpCampaignImpressionPref();
+      }
 
       this.dispatchUpdateEvent(this.storiesLastUpdated, {rows: this.stories});
       body._timestamp = this.storiesLastUpdated = Date.now();
@@ -124,7 +133,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
         "referrer": this.stories_referrer,
         "url": s.url,
         "min_score": s.min_score || 0,
-        "score": this.personalized ? this.affinityProvider.calculateItemRelevanceScore(s) : 1
+        "score": this.personalized ? this.affinityProvider.calculateItemRelevanceScore(s) : 1,
+        "spoc_meta": this.show_spocs ? {campaign_id: s.campaign_id, caps: s.caps} : {}
       }))
       .sort(this.personalized ? this.compareScore : (a, b) => 0);
   }
@@ -218,7 +228,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       return apiKeyPref;
     }
 
-    return new Prefs().get(apiKeyPref) || Services.prefs.getCharPref(apiKeyPref);
+    return this._prefs.get(apiKeyPref) || Services.prefs.getCharPref(apiKeyPref);
   }
 
   produceFinalEndpointUrl(url, apiKey) {
@@ -240,8 +250,12 @@ this.TopStoriesFeed = class TopStoriesFeed {
     return url;
   }
 
+  shouldShowSpocs() {
+    return this.show_spocs && this.store.getState().Prefs.values.showSponsored;
+  }
+
   maybeAddSpoc(target) {
-    if (!this.show_spocs || !this.store.getState().Prefs.values.showSponsored) {
+    if (!this.shouldShowSpocs()) {
       return;
     }
 
@@ -253,11 +267,19 @@ this.TopStoriesFeed = class TopStoriesFeed {
           return false;
         }
 
+        // Filter spocs based on frequency caps
+        const impressions = this.readCampaignImpressionsPref();
+        const spocs = this.spocs.filter(s => this.isBelowFrequencyCap(impressions, s));
+
+        if (!spocs.length) {
+          // There's currently no spoc left to display
+          return false;
+        }
+
         // Create a new array with a spoc inserted at index 2
-        // For now we're using the top scored spoc until we can support viewability based rotation
         const position = SectionsManager.sections.get(SECTION_ID).order;
         let rows = this.store.getState().Sections[position].rows.slice(0, this.stories.length);
-        rows.splice(2, 0, this.spocs[0]);
+        rows.splice(2, 0, spocs[0]);
 
         // Send a content update to the target tab
         const action = {type: at.SECTION_UPDATE, meta: {skipMain: true}, data: Object.assign({rows}, {id: SECTION_ID})};
@@ -275,6 +297,81 @@ this.TopStoriesFeed = class TopStoriesFeed {
       this.newTabsSinceSpoc = 0;
     }
     this.newTabsSinceSpoc++;
+  }
+
+  // Frequency caps are based on campaigns, which may include multiple spocs.
+  // We currently support two types of frequency caps:
+  // - lifetime: Indicates how many times spocs from a campaign can be shown in total
+  // - period: Indicates how many times spocs from a campaign can be shown within a period
+  //
+  // So, for example, the feed configuration below defines that for campaign 1 no more
+  // than 5 spocs can be show in total, and no more than 2 per hour.
+  // "campaign_id": 1,
+  // "caps": {
+  //  "lifetime": 5,
+  //  "campaign": {
+  //    "count": 2,
+  //    "period": 3600
+  //  }
+  // }
+  isBelowFrequencyCap(impressions, spoc) {
+    const campaignImpressions = impressions[spoc.spoc_meta.campaign_id];
+    if (!campaignImpressions) {
+      return true;
+    }
+
+    const lifeTimeCap = Math.min(spoc.spoc_meta.caps && spoc.spoc_meta.caps.lifetime, MAX_LIFETIME_CAP);
+    const lifeTimeCapExceeded = campaignImpressions.length >= lifeTimeCap;
+    if (lifeTimeCapExceeded) {
+      return false;
+    }
+
+    const campaignCap = (spoc.spoc_meta.caps && spoc.spoc_meta.caps.campaign) || {};
+    const campaignCapExceeded = campaignImpressions
+      .filter(i => (Date.now() - i) < (campaignCap.period * 1000)).length >= campaignCap.count;
+    return !campaignCapExceeded;
+  }
+
+  // Clean up campaign impression pref by removing all campaigns that are no
+  // longer part of the response, and are therefore considered inactive.
+  cleanUpCampaignImpressionPref() {
+    const impressions = this.readCampaignImpressionsPref();
+    const campaignIds = new Set(this.spocCampaignMap.values());
+    let changed = false;
+
+    Object
+      .keys(impressions)
+      .forEach(cId => {
+        if (!campaignIds.has(cId)) {
+          changed = true;
+          delete impressions[cId];
+        }
+      });
+
+    if (changed) {
+      this.writeCampaignImpressionsPref(impressions);
+    }
+  }
+
+  // Sets a pref mapping campaign IDs to timestamp arrays.
+  // The timestamps represent impressions which we use to calculate frequency caps.
+  recordCampaignImpression(campaignId) {
+    let impressions = this.readCampaignImpressionsPref();
+
+    const timeStamps = impressions[campaignId] || [];
+    timeStamps.push(Date.now());
+    impressions = Object.assign(impressions, {[campaignId]: timeStamps});
+
+    this.writeCampaignImpressionsPref(impressions);
+  }
+
+  readCampaignImpressionsPref() {
+    const prefVal = this._prefs.get(SPOC_IMPRESSION_TRACKING_PREF);
+    return prefVal ? JSON.parse(prefVal) : {};
+  }
+
+  writeCampaignImpressionsPref(impressions) {
+    this._prefs.set(SPOC_IMPRESSION_TRACKING_PREF, JSON.stringify(impressions));
   }
 
   onAction(action) {
@@ -307,6 +404,18 @@ this.TopStoriesFeed = class TopStoriesFeed {
           this.spocs = this.spocs.filter(s => s.url !== action.data.url);
         }
         break;
+      case at.TELEMETRY_IMPRESSION_STATS: {
+        const payload = action.data;
+        const viewImpression = !("click" in payload || "block" in payload || "pocket" in payload);
+        if (this.shouldShowSpocs() && payload.tiles && viewImpression) {
+          payload.tiles.forEach(t => {
+            if (this.spocCampaignMap.has(t.id)) {
+              this.recordCampaignImpression(this.spocCampaignMap.get(t.id));
+            }
+          });
+        }
+        break;
+      }
     }
   }
 };
@@ -314,4 +423,5 @@ this.TopStoriesFeed = class TopStoriesFeed {
 this.STORIES_UPDATE_TIME = STORIES_UPDATE_TIME;
 this.TOPICS_UPDATE_TIME = TOPICS_UPDATE_TIME;
 this.SECTION_ID = SECTION_ID;
-this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "DOMAIN_AFFINITY_UPDATE_TIME", "SECTION_ID"];
+this.SPOC_IMPRESSION_TRACKING_PREF = SPOC_IMPRESSION_TRACKING_PREF;
+this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "DOMAIN_AFFINITY_UPDATE_TIME", "SECTION_ID", "SPOC_IMPRESSION_TRACKING_PREF"];
