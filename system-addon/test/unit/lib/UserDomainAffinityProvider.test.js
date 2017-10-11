@@ -138,11 +138,10 @@ describe("User Domain Affinity Provider", () => {
       const itemScore = instance.calculateItemRelevanceScore(testItem);
       assert.equal(expectedItemScore, itemScore);
     });
-    it("should calculate relevance score of 1 if item has no domain affinities", () => {
-      const testItem = {};
-      const expectedItemScore = 1;
+    it("should calculate relevance score equal to item_score if item has no domain affinities", () => {
+      const testItem = {item_score: 0.985};
       const itemScore = instance.calculateItemRelevanceScore(testItem);
-      assert.equal(expectedItemScore, itemScore);
+      assert.equal(testItem.item_score, itemScore);
     });
     it("should calculate scores with factor", () => {
       assert.equal(1, instance.calculateScore(2, 1, 0.5));
