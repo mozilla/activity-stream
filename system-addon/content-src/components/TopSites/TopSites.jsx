@@ -2,10 +2,10 @@ const React = require("react");
 const {connect} = require("react-redux");
 const {FormattedMessage} = require("react-intl");
 
-const TopSitesPerfTimer = require("./TopSitesPerfTimer");
 const TopSitesEdit = require("./TopSitesEdit");
 const {TopSite, TopSitePlaceholder} = require("./TopSite");
 const CollapsibleSection = require("content-src/components/CollapsibleSection/CollapsibleSection");
+const ComponentPerfTimer = require("content-src/components/ComponentPerfTimer/ComponentPerfTimer");
 
 const TopSites = props => {
   const realTopSites = props.TopSites.rows.slice(0, props.TopSitesCount);
@@ -14,7 +14,7 @@ const TopSites = props => {
     header: {id: "settings_pane_topsites_header"},
     body: {id: "settings_pane_topsites_body"}
   };
-  return (<TopSitesPerfTimer>
+  return (<ComponentPerfTimer id="topsites" initialized={props.TopSites.initialized} dispatch={props.dispatch}>
     <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} infoOption={infoOption} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
       <ul className="top-sites-list">
         {realTopSites.map((link, index) => link && <TopSite
@@ -27,7 +27,7 @@ const TopSites = props => {
       </ul>
       <TopSitesEdit {...props} />
     </CollapsibleSection>
-  </TopSitesPerfTimer>);
+  </ComponentPerfTimer>);
 };
 
 module.exports = connect(state => ({TopSites: state.TopSites, Prefs: state.Prefs, TopSitesCount: state.Prefs.values.topSitesCount}))(TopSites);

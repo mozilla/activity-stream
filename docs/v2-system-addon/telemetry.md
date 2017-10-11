@@ -2,7 +2,7 @@
 
 Adding telemetry generally involves a few steps:
 
-1. - [ ] File a "user story issue" about who wants what question answered.  This will be used to track server-side data handling implementation (ETL, dashboard implementation...).
+1. - [ ] File a "user story issue" [in ping-centre](https://github.com/mozilla/ping-centre) about who wants what question answered.  This will be used to track server-side data handling implementation (ETL, dashboard implementation...).
 
     > As an engineer, I see the distribution of times between triggering a new tab load by tab menu entry, plus button or keyboard shortcut and when the visibility event is fired on that page, so that I can understand how long it takes before the page becomes visible and how close to instantaneous that feels.
 

@@ -1,16 +1,14 @@
 const React = require("react");
-const createMockRaf = require("mock-raf");
 const {shallow} = require("enzyme");
 const {mountWithIntl} = require("test/unit/utils");
 
-const {_unconnected: TopSitesPerfTimer} = require("content-src/components/TopSites/TopSitesPerfTimer");
 const TopSiteForm = require("content-src/components/TopSites/TopSiteForm");
 const TopSitesEditConnected = require("content-src/components/TopSites/TopSitesEdit");
 const {_unconnected: TopSitesEdit} = TopSitesEditConnected;
 const {TopSite, TopSiteLink, TopSitePlaceholder} = require("content-src/components/TopSites/TopSite");
 const {_unconnected: TopSites} = require("content-src/components/TopSites/TopSites");
 
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+const {actionTypes: at} = require("common/Actions.jsm");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 
@@ -26,157 +24,6 @@ const DEFAULT_PROPS = {
   intl: {formatMessage: x => x},
   perfSvc
 };
-
-describe("<TopSitesPerfTimer>", () => {
-  let mockRaf;
-  let sandbox;
-  let wrapper;
-
-  const InnerEl = () => (<div>Inner Element</div>);
-
-  beforeEach(() => {
-    mockRaf = createMockRaf();
-    sandbox = sinon.sandbox.create();
-    sandbox.stub(window, "requestAnimationFrame").callsFake(mockRaf.raf);
-    wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS}><InnerEl /></TopSitesPerfTimer>);
-  });
-  afterEach(() => {
-    sandbox.restore();
-  });
-
-  it("should render props.children", () => {
-    assert.ok(wrapper.contains(<InnerEl />));
-  });
-
-  describe("#_componentDidMount", () => {
-    it("should call _maybeSendPaintedEvent", () => {
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_maybeSendPaintedEvent");
-
-      instance.componentDidMount();
-
-      assert.calledOnce(stub);
-    });
-  });
-
-  describe("#_componentDidUpdate", () => {
-    it("should call _maybeSendPaintedEvent", () => {
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_maybeSendPaintedEvent");
-
-      instance.componentDidUpdate();
-
-      assert.calledOnce(stub);
-    });
-  });
-
-  describe("#_maybeSendPaintedEvent", () => {
-    it("should call _afterFramePaint if props.TopSites.initialized is true", () => {
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
-
-      instance._maybeSendPaintedEvent();
-
-      assert.calledOnce(stub);
-      assert.calledWithExactly(stub, instance._sendPaintedEvent);
-    });
-    it("should not call _afterFramePaint if props.TopSites.initialized is false", () => {
-      sandbox.stub(DEFAULT_PROPS.TopSites, "initialized").value(false);
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
-
-      instance._maybeSendPaintedEvent();
-
-      assert.notCalled(stub);
-    });
-
-    it("should not call _afterFramePaint if this._timestampHandled is true", () => {
-      const instance = wrapper.instance();
-      const stub = sandbox.stub(instance, "_afterFramePaint");
-      instance._timestampHandled = true;
-
-      instance._maybeSendPaintedEvent();
-
-      assert.notCalled(stub);
-    });
-
-    it("should set this._timestampHandled=true when called with Topsites.initialized === true", () => {
-      const instance = wrapper.instance();
-      sandbox.stub(instance, "_afterFramePaint");
-      instance._timestampHandled = false;
-
-      instance._maybeSendPaintedEvent();
-
-      assert.isTrue(instance._timestampHandled);
-    });
-    it("should not set this._timestampHandled=true when called with Topsites.initialized === false", () => {
-      let props = {};
-      Object.assign(props, DEFAULT_PROPS, {TopSites: {initialized: false}});
-      wrapper = shallow(<TopSitesPerfTimer {...props}><InnerEl /></TopSitesPerfTimer>);
-      const instance = wrapper.instance();
-      sandbox.stub(instance, "_afterFramePaint");
-      instance._timestampHandled = false;
-
-      instance._maybeSendPaintedEvent();
-
-      assert.isFalse(instance._timestampHandled);
-    });
-  });
-
-  describe("#_afterFramePaint", () => {
-    it("should call callback after the requestAnimationFrame callback returns", done => {
-      // Setting the callback to done is the test that it does finally get
-      // called at the correct time, after the event loop ticks again.
-      // If it doesn't get called, this test will time out.
-      this.callback = () => done();
-      sandbox.spy(this, "callback");
-
-      const instance = wrapper.instance();
-
-      instance._afterFramePaint(this.callback);
-
-      assert.notCalled(this.callback);
-      mockRaf.step({count: 1});
-    });
-  });
-
-  describe("#_sendPaintedEvent", () => {
-    it("should call perfSvc.mark with 'topsites_first_painted_ts'", () => {
-      sandbox.spy(perfSvc, "mark");
-
-      wrapper.instance()._sendPaintedEvent();
-
-      assert.calledOnce(perfSvc.mark);
-      assert.calledWithExactly(perfSvc.mark, "topsites_first_painted_ts");
-    });
-
-    it("should send a SAVE_SESSION_PERF_DATA message with the result of perfSvc.getMostRecentAbsMarkStartByName", () => {
-      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
-        .withArgs("topsites_first_painted_ts").returns(777);
-      const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
-      wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS}><InnerEl /></TopSitesPerfTimer>);
-
-      wrapper.instance()._sendPaintedEvent();
-
-      assert.calledOnce(spy);
-      assert.calledWithExactly(spy, ac.SendToMain({
-        type: at.SAVE_SESSION_PERF_DATA,
-        data: {topsites_first_painted_ts: 777}
-      }));
-    });
-
-    it("shouldn't dispatch if getMostRecentAbsMarkStartByName throws", () => {
-      sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
-        .withArgs("topsites_first_painted_ts").throws();
-      const spy = sandbox.spy(DEFAULT_PROPS, "dispatch");
-      wrapper = shallow(<TopSitesPerfTimer {...DEFAULT_PROPS}><InnerEl /></TopSitesPerfTimer>);
-
-      wrapper.instance()._sendPaintedEvent();
-
-      assert.notCalled(spy);
-    });
-  });
-});
 
 describe("<TopSites>", () => {
   it("should render a TopSites element", () => {

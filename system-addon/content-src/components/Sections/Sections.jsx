@@ -6,6 +6,7 @@ const {PlaceholderCard} = Card;
 const Topics = require("content-src/components/Topics/Topics");
 const {actionCreators: ac} = require("common/Actions.jsm");
 const CollapsibleSection = require("content-src/components/CollapsibleSection/CollapsibleSection");
+const ComponentPerfTimer = require("content-src/components/ComponentPerfTimer/ComponentPerfTimer");
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -141,7 +142,7 @@ class Section extends React.PureComponent {
 
     // <Section> <-- React component
     // <section> <-- HTML5 element
-    return (
+    return (<ComponentPerfTimer {...this.props}>
       <CollapsibleSection className="section" icon={icon} title={getFormattedMessage(title)} infoOption={infoOption} prefName={`section.${id}.collapsed`} Prefs={this.props.Prefs} dispatch={this.props.dispatch}>
         {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
           {realRows.map((link, index) => link &&
@@ -161,7 +162,8 @@ class Section extends React.PureComponent {
             </div>
           </div>}
         {shouldShowTopics && <Topics topics={this.props.topics} read_more_endpoint={this.props.read_more_endpoint} />}
-      </CollapsibleSection>);
+      </CollapsibleSection>
+    </ComponentPerfTimer>);
   }
 }
 
