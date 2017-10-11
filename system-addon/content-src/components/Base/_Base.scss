@@ -53,18 +53,20 @@ main {
 }
 
 .body-wrapper {
-  opacity: 0;
-  // The fade duration and delay below were specifically picked to avoid talos
-  // regressing tart, which measures tab opening animation performance. Tabs
-  // currently have a 100ms width transition that competes with this transition.
-  // When webrender/Quantum turns on, overlapping transitions are no problem.
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=1401682#c4
-  transition: opacity 75ms ease-in-out;
-  @-moz-document url(about:newtab) {
-    transition-delay: 125ms;
+  // Hide certain elements so the page structure is fixed, e.g., placeholders,
+  // while avoiding flashes of changing content, e.g., icons and text
+  $selectors-to-hide: '
+    .section-title,
+    .sections-list .section:last-of-type
+  ';
+
+  #{$selectors-to-hide} {
+    opacity: 0;
   }
 
   &.on {
-    opacity: 1;
+    #{$selectors-to-hide} {
+      opacity: 1;
+    }
   }
 }
