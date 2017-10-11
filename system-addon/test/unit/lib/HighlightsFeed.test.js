@@ -46,6 +46,7 @@ describe("Highlights Feed", () => {
     };
     filterAdultStub = sinon.stub().returns([]);
     shortURLStub = sinon.stub().callsFake(site => site.url.match(/\/([^/]+)/)[1]);
+
     globals.set("NewTabUtils", fakeNewTabUtils);
     ({HighlightsFeed, HIGHLIGHTS_UPDATE_TIME, SECTION_ID} = injector({
       "lib/FilterAdult.jsm": {filterAdult: filterAdultStub},
