@@ -378,6 +378,16 @@ describe("Top Sites Feed", () => {
     beforeEach(() => {
       sandbox.stub(feed, "_fetchIcon");
     });
+    it("should prevent concurrent calls", () => {
+      sandbox.stub(feed, "getLinksWithDefaults").returns(new Promise(resolve => setTimeout(resolve, 1000)));
+      feed._tippyTopProvider.initialized = true;
+
+      feed.refresh();
+      feed.refresh();
+      feed.refresh();
+
+      assert.calledOnce(feed.getLinksWithDefaults);
+    });
     it("should initialise _tippyTopProvider if it's not already initialised", async () => {
       feed._tippyTopProvider.initialized = false;
       await feed.refresh();

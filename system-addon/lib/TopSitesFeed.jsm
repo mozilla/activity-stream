@@ -234,13 +234,9 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.INIT:
         this.refresh();
         break;
-      case at.NEW_TAB_LOAD:
-        if (
-          // When a new tab is opened, if the last time we refreshed the data
-          // is greater than 15 minutes, refresh the data.
-          (Date.now() - this.lastUpdated >= UPDATE_TIME)
-        ) {
-          this.refresh(action.meta.fromTarget);
+      case at.SYSTEM_TICK:
+        if (Date.now() - this.lastUpdated >= UPDATE_TIME) {
+          this.refresh();
         }
         break;
       // All these actions mean we need new top sites

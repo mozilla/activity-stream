@@ -284,20 +284,6 @@ describe("Highlights Feed", () => {
       feed.onAction({type: at.NEW_TAB_LOAD});
       assert.calledOnce(feed.fetchHighlights);
     });
-    it("should fetch highlights on NEW_TAB_LOAD if grid is empty", async () => {
-      links = [];
-      await feed.fetchHighlights();
-      feed.fetchHighlights = sinon.spy();
-      feed.onAction({type: at.NEW_TAB_LOAD});
-      assert.calledOnce(feed.fetchHighlights);
-    });
-    it("should fetch highlights on NEW_TAB_LOAD if grid isn't full", async () => {
-      links = new Array(8).fill(null).map((v, i) => ({url: `http://www.site${i}.com`}));
-      await feed.fetchHighlights();
-      feed.fetchHighlights = sinon.spy();
-      feed.onAction({type: at.NEW_TAB_LOAD});
-      assert.calledOnce(feed.fetchHighlights);
-    });
     it("should fetch highlights on MIGRATION_COMPLETED", async () => {
       await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
@@ -340,12 +326,37 @@ describe("Highlights Feed", () => {
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, false);
     });
-    it("should fetch highlights on TOP_SITES_UPDATED", async () => {
-      await feed.fetchHighlights();
-      feed.fetchHighlights = sinon.spy();
-      feed.onAction({type: at.TOP_SITES_UPDATED});
+    it("should fetch expire the cache on PLACES_BOOKMARK_REMOVED", async () => {
+      sandbox.stub(feed.linksCache, "expire");
+
+      feed.onAction({type: at.PLACES_BOOKMARK_REMOVED});
+
+      assert.calledOnce(feed.linksCache.expire);
+    });
+    it("should not fetch highlights on TOP_SITES_UPDATED (no dedupe)", () => {
+      sandbox.stub(feed, "fetchHighlights");
+      sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
+      feed.store.state.Sections = [{rows: [{url: "bar.com"}]}];
+      feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "foo.com"}]});
+
+      assert.notCalled(feed.fetchHighlights);
+    });
+    it("should not fetch highlights on TOP_SITES_UPDATED (will dedupe)", () => {
+      sandbox.stub(feed, "fetchHighlights");
+      sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
+      feed.store.state.Sections = [{rows: [{url: "bar.com"}]}];
+      feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "bar.com"}]});
+
       assert.calledOnce(feed.fetchHighlights);
-      assert.calledWith(feed.fetchHighlights, false);
+      assert.calledWithExactly(feed.fetchHighlights, false);
+    });
+    it("should prevent concurrent calls to fetchHighlights", () => {
+      sandbox.stub(feed.linksCache, "request").returns(new Promise(resolve => setTimeout(resolve, 1000)));
+      feed.fetchHighlights();
+      feed.fetchHighlights();
+      feed.fetchHighlights();
+
+      assert.calledOnce(feed.linksCache.request);
     });
   });
 });

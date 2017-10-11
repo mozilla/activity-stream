@@ -62,14 +62,7 @@ this.HighlightsFeed = class HighlightsFeed {
 
     // We need TopSites to have been initialised for deduping
     if (!this.store.getState().TopSites.initialized) {
-      await new Promise(resolve => {
-        const unsubscribe = this.store.subscribe(() => {
-          if (this.store.getState().TopSites.initialized) {
-            unsubscribe();
-            resolve();
-          }
-        });
-      });
+      return;
     }
 
     // Request more than the expected length to allow for items being removed by
@@ -125,6 +118,24 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 
   /**
+   * Compare TopSites and Highlights for urls that might exist in both sections.
+   * If true we need to dedupe Highlights.
+   * @param links new TopSites state
+   */
+  _highlightsWillDedupe(links) {
+    const highlightsIndex = SectionsManager.sections.get(SECTION_ID).order;
+    const rows = this.store.getState().Sections[highlightsIndex].rows;
+    // No data available, we need to fetch and dedupe results.
+    if (!rows.length) {
+      return true;
+    }
+
+    const [, deduped] = this.dedupe.group(this.store.getState().TopSites.rows, rows);
+
+    return deduped.length < rows.length;
+  }
+
+  /**
    * Fetch an image for a given highlight and update the card with it. If no
    * image is available then fallback to fetching a screenshot.
    */
@@ -141,13 +152,10 @@ this.HighlightsFeed = class HighlightsFeed {
       case at.INIT:
         this.init();
         break;
-      case at.NEW_TAB_LOAD:
-        if (this.highlightsLength < HIGHLIGHTS_MAX_LENGTH) {
-          // If we haven't filled the highlights grid yet, fetch again.
-          this.fetchHighlights(true);
-        } else if (Date.now() - this.highlightsLastUpdated >= HIGHLIGHTS_UPDATE_TIME) {
+      case at.SYSTEM_TICK:
+        if (Date.now() - this.highlightsLastUpdated >= HIGHLIGHTS_UPDATE_TIME) {
           // If the last time we refreshed the data is greater than 15 minutes, fetch again.
-          this.fetchHighlights(false);
+          this.fetchHighlights(true);
         }
         break;
       case at.MIGRATION_COMPLETED:
@@ -162,7 +170,9 @@ this.HighlightsFeed = class HighlightsFeed {
         this.fetchHighlights(false);
         break;
       case at.TOP_SITES_UPDATED:
-        this.fetchHighlights(false);
+        if (this._highlightsWillDedupe(action.data)) {
+          this.fetchHighlights(true);
+        }
         break;
       case at.UNINIT:
         this.uninit();
