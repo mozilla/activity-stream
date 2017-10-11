@@ -161,6 +161,17 @@ describe("Highlights Feed", () => {
       assert.equal(highlights.length, 1);
       assert.equal(highlights[0].url, links[0].url);
     });
+    it("should include bookmark but not history already in Top Sites", async () => {
+      links = [
+        {url: "http://www.topsite0.com", type: "bookmark"},
+        {url: "http://www.topsite1.com", type: "history"}
+      ];
+
+      const highlights = await fetchHighlights();
+
+      assert.equal(highlights.length, 1);
+      assert.equal(highlights[0].url, links[0].url);
+    });
     it("should not include history of same hostname as a bookmark", async () => {
       links = [
         {url: "https://site.com/bookmark", type: "bookmark"},

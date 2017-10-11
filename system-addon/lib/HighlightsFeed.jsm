@@ -37,7 +37,8 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 
   _dedupeKey(site) {
-    return site && site.url;
+    // Treat bookmarks as un-dedupable, otherwise show one of a url
+    return site && (site.type === "bookmark" ? {} : site.url);
   }
 
   init() {
