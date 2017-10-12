@@ -85,7 +85,8 @@
       }
 
       label {
-        background-position-x: 35px;
+        $icon-offset-start: 35px;
+        background-position-x: $icon-offset-start;
         background-position-y: 2.5px;
         background-repeat: no-repeat;
         display: inline-block;
@@ -96,7 +97,7 @@
         width: 100%;
 
         &:dir(rtl) {
-          background-position-x: 217px;
+          background-position-x: calc(100% - #{$icon-offset-start});
         }
       }
       [type='checkbox']:not(:checked) + label,
