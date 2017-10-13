@@ -5,14 +5,14 @@
 
 scripts:
   # Run the activity-stream mochitests
-  mochitest: (cd ../mozilla-central && ./mach mochitest browser/extensions/activity-stream/test/functional/mochitest )
+  mochitest: (cd $npm_package_config_mc_dir && ./mach mochitest browser/extensions/activity-stream/test/functional/mochitest )
 
   # Run the activity-stream mochitests with the browser toolbox debugger.
   # Often handy in combination with adding a "debugger" statement in your
   # mochitest somewhere.
-  mochitest-debug: (cd ../mozilla-central && ./mach mochitest --jsdebugger browser/extensions/activity-stream/test/functional/mochitest )
+  mochitest-debug: (cd $npm_package_config_mc_dir && ./mach mochitest --jsdebugger browser/extensions/activity-stream/test/functional/mochitest )
 
-  cleanmc: rimraf ../mozilla-central/browser/extensions/activity-stream
+  cleanmc: rimraf $npm_package_config_mc_dir/browser/extensions/activity-stream
 
   tippymc:
     pre: rimraf system-addon/data/content/tippytop
@@ -27,10 +27,10 @@ scripts:
     html: webpack --config webpack.prerender.config.js && node ./bin/render-activity-stream-html.js
     locales: pontoon-to-json --src locales --dest system-addon/data
     # Copy over all of the system-addon directory
-    copy: cpx "system-addon/**/{,.}*" ../mozilla-central/browser/extensions/activity-stream
-    version: node ./bin/update-version.js ../mozilla-central/browser/extensions/activity-stream
-    copyPingCentre: cpx "system-addon/ping-centre/PingCentre.jsm" ../mozilla-central/browser/modules
-    rmcontentsrc: rimraf "../mozilla-central/browser/extensions/activity-stream/{,test/unit/}{content-src,ping-centre}"
+    copy: cpx "system-addon/**/{,.}*" $npm_package_config_mc_dir/browser/extensions/activity-stream
+    version: node ./bin/update-version.js $npm_package_config_mc_dir/browser/extensions/activity-stream
+    copyPingCentre: cpx "system-addon/ping-centre/PingCentre.jsm" $npm_package_config_mc_dir/browser/modules
+    rmcontentsrc: rimraf "$npm_package_config_mc_dir/browser/extensions/activity-stream/{,test/unit/}{content-src,ping-centre}"
 
 # packagemc: Build stand-alone system add-on xpi
   packagemc:
@@ -51,7 +51,7 @@ scripts:
     css: =>buildmc:css && =>buildmc:css -- -w
 
   # importmc: Import changes from mc to github repo
-  importmc: cpx "../mozilla-central/browser/extensions/activity-stream/**/*" system-addon/
+  importmc: cpx "$npm_package_config_mc_dir/browser/extensions/activity-stream/**/*" system-addon/
 
   testmc:
     lint: =>lint
