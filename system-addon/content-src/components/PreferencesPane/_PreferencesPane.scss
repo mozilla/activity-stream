@@ -97,7 +97,7 @@
         width: 100%;
 
         &:dir(rtl) {
-          background-position-x: calc(100% - #{$icon-offset-start});
+          background-position-x: right $icon-offset-start;
         }
       }
       [type='checkbox']:not(:checked) + label,
