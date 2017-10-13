@@ -96,28 +96,24 @@ describe("Highlights Feed", () => {
     });
   });
   describe("#fetchHighlights", () => {
-    it("should wait for TopSites to be initialised", async () => {
+    it("should return early if if are not TopSites initialised", async () => {
+      sandbox.spy(feed.linksCache, "request");
       feed.store.state.TopSites.initialized = false;
-      // Initially TopSites is uninitialised and fetchHighlights should wait
-      const firstFetch = feed.fetchHighlights();
 
-      assert.calledOnce(feed.store.subscribe);
+      // Initially TopSites is uninitialised and fetchHighlights should return.
+      await feed.fetchHighlights();
+
       assert.notCalled(fakeNewTabUtils.activityStreamLinks.getHighlights);
-
-      // Initialisation causes the subscribe callback to be called and
+      assert.notCalled(feed.linksCache.request);
+    });
+    it("should fetch Highlights if TopSites are initialised", async () => {
+      sandbox.spy(feed.linksCache, "request");
       // fetchHighlights should continue
       feed.store.state.TopSites.initialized = true;
-      const subscribeCallback = feed.store.subscribe.firstCall.args[0];
-      await subscribeCallback();
-      await firstFetch;
-      assert.calledOnce(fakeNewTabUtils.activityStreamLinks.getHighlights);
 
-      // If TopSites is initialised in the first place it shouldn't wait
-      feed.linksCache.expire();
-      feed.store.subscribe.reset();
-      fakeNewTabUtils.activityStreamLinks.getHighlights.reset();
       await feed.fetchHighlights();
-      assert.notCalled(feed.store.subscribe);
+
+      assert.calledOnce(feed.linksCache.request);
       assert.calledOnce(fakeNewTabUtils.activityStreamLinks.getHighlights);
     });
     it("should add hostname and hasImage to each link", async () => {
@@ -274,14 +270,14 @@ describe("Highlights Feed", () => {
     });
   });
   describe("#onAction", () => {
-    it("should fetch highlights on NEW_TAB_LOAD after update interval", async () => {
+    it("should fetch highlights on SYSTEM_TICK after update interval", async () => {
       await feed.fetchHighlights();
       feed.fetchHighlights = sinon.spy();
-      feed.onAction({type: at.NEW_TAB_LOAD});
+      feed.onAction({type: at.SYSTEM_TICK});
       assert.notCalled(feed.fetchHighlights);
 
       clock.tick(HIGHLIGHTS_UPDATE_TIME);
-      feed.onAction({type: at.NEW_TAB_LOAD});
+      feed.onAction({type: at.SYSTEM_TICK});
       assert.calledOnce(feed.fetchHighlights);
     });
     it("should fetch highlights on MIGRATION_COMPLETED", async () => {
@@ -341,22 +337,23 @@ describe("Highlights Feed", () => {
 
       assert.notCalled(feed.fetchHighlights);
     });
-    it("should not fetch highlights on TOP_SITES_UPDATED (will dedupe)", () => {
+    it("should fetch highlights on TOP_SITES_UPDATED (will dedupe)", () => {
       sandbox.stub(feed, "fetchHighlights");
       sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
       feed.store.state.Sections = [{rows: [{url: "bar.com"}]}];
       feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "bar.com"}]});
 
       assert.calledOnce(feed.fetchHighlights);
-      assert.calledWithExactly(feed.fetchHighlights, false);
+      assert.calledWithExactly(feed.fetchHighlights, true);
     });
-    it("should prevent concurrent calls to fetchHighlights", () => {
-      sandbox.stub(feed.linksCache, "request").returns(new Promise(resolve => setTimeout(resolve, 1000)));
-      feed.fetchHighlights();
-      feed.fetchHighlights();
-      feed.fetchHighlights();
+    it("should fetch highlights on TOP_SITES_UPDATED (not initialized)", () => {
+      sandbox.stub(feed, "fetchHighlights");
+      sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
+      feed.store.state.Sections = [{rows: []}];
+      feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "bar.com"}]});
 
-      assert.calledOnce(feed.linksCache.request);
+      assert.calledOnce(feed.fetchHighlights);
+      assert.calledWithExactly(feed.fetchHighlights, true);
     });
   });
 });

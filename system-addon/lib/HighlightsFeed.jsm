@@ -130,7 +130,7 @@ this.HighlightsFeed = class HighlightsFeed {
       return true;
     }
 
-    const [, deduped] = this.dedupe.group(this.store.getState().TopSites.rows, rows);
+    const [, deduped] = this.dedupe.group(links, rows);
 
     return deduped.length < rows.length;
   }

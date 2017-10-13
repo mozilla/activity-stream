@@ -378,16 +378,6 @@ describe("Top Sites Feed", () => {
     beforeEach(() => {
       sandbox.stub(feed, "_fetchIcon");
     });
-    it("should prevent concurrent calls", () => {
-      sandbox.stub(feed, "getLinksWithDefaults").returns(new Promise(resolve => setTimeout(resolve, 1000)));
-      feed._tippyTopProvider.initialized = true;
-
-      feed.refresh();
-      feed.refresh();
-      feed.refresh();
-
-      assert.calledOnce(feed.getLinksWithDefaults);
-    });
     it("should initialise _tippyTopProvider if it's not already initialised", async () => {
       feed._tippyTopProvider.initialized = false;
       await feed.refresh();
@@ -480,26 +470,15 @@ describe("Top Sites Feed", () => {
     });
   });
   describe("#onAction", () => {
-    const newTabAction = {type: at.NEW_TAB_LOAD, meta: {fromTarget: "target"}};
-    it("should not call refresh if there are enough sites on NEW_TAB_LOAD", () => {
+    it("should refresh on SYSTEM_TICK after update interval", async () => {
       feed.lastUpdated = Date.now();
-      sinon.stub(feed, "refresh");
-      feed.onAction(newTabAction);
+      sandbox.stub(feed, "refresh");
+      feed.onAction({type: at.SYSTEM_TICK});
       assert.notCalled(feed.refresh);
-    });
-    it("should call refresh if .lastUpdated is too old on NEW_TAB_LOAD", () => {
-      feed.lastUpdated = 0;
+
       clock.tick(UPDATE_TIME);
-      sinon.stub(feed, "refresh");
-      feed.onAction(newTabAction);
-      assert.calledWith(feed.refresh, newTabAction.meta.fromTarget);
-    });
-    it("should not call refresh if .lastUpdated is less than update time on NEW_TAB_LOAD", () => {
-      feed.lastUpdated = 0;
-      clock.tick(UPDATE_TIME - 1);
-      sinon.stub(feed, "refresh");
-      feed.onAction(newTabAction);
-      assert.notCalled(feed.refresh);
+      feed.onAction({type: at.SYSTEM_TICK});
+      assert.calledOnce(feed.refresh);
     });
     it("should call with correct parameters on TOP_SITES_PIN", () => {
       const pinAction = {
