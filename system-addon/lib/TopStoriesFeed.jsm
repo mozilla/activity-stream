@@ -29,7 +29,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.spocsPerNewTabs = 0;
     this.newTabsSinceSpoc = 0;
     this.contentUpdateQueue = [];
-    this.cache = new PersistentCache(SECTION_ID);
+    this.cache = new PersistentCache(SECTION_ID, true);
   }
 
   init() {

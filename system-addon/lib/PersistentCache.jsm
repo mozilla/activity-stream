@@ -22,6 +22,7 @@ this.PersistentCache = class PersistentCache {
    */
   constructor(name, preload = false) {
     this.name = name;
+    this._filename = `activity-stream.${name}.json`;
     if (preload) {
       this._load();
     }
@@ -56,9 +57,8 @@ this.PersistentCache = class PersistentCache {
   _load() {
     return this._cache || (this._cache = new Promise(async resolve => {
       let data = {};
-      const filename = `${this.name}.json`;
       try {
-        const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, filename);
+        const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, this._filename);
         const fileExists = await OS.File.exists(filepath);
         if (fileExists) {
           const binaryData = await OS.File.read(filepath);
@@ -66,7 +66,7 @@ this.PersistentCache = class PersistentCache {
           data = JSON.parse(json);
         }
       } catch (error) {
-        Cu.reportError(`Failed to load ${filename}: ${error.message}`);
+        Cu.reportError(`Failed to load ${this._filename}: ${error.message}`);
       }
       resolve(data);
     }));
@@ -76,8 +76,7 @@ this.PersistentCache = class PersistentCache {
    * Persist the cache to file.
    */
   _persist(data) {
-    const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, `${this.name}.json`);
-    this._cache = new Promise(resolve => resolve(data));
+    const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, this._filename);
     OS.File.writeAtomic(filepath, JSON.stringify(data), {tmpPath: `${filepath}.tmp`});
   }
 };
