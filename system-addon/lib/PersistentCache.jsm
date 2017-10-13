@@ -9,24 +9,22 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
 XPCOMUtils.defineLazyGetter(this, "gTextDecoder", () => new TextDecoder());
 
-// Map of filenames to the latest data in them.
-XPCOMUtils.defineLazyGetter(this, "gInMemoryCache", () => new Map());
-// A list of cache files that has already been loaded.
-XPCOMUtils.defineLazyGetter(this, "gFilesLoaded", () => []);
-
 /**
- * A disk based persistent cache.
+ * A file (disk) based persistent cache of a JSON serializable object.
  */
 this.PersistentCache = class PersistentCache {
 
   /**
-   * Create a cache object based on a filename.
+   * Create a cache object based on a name.
    *
-   * @param {string} filename Name of the file to use to persist the cache to disk.
+   * @param {string} name Name of the cache. It will be used to create the filename.
+   * @param {boolean} preload (optional). Whether the cache should be preloaded from file. Defaults to false.
    */
-  constructor(filename) {
-    this.filename = filename;
-    gInMemoryCache.set(this.filename, {});
+  constructor(name, preload = false) {
+    this.name = name;
+    if (preload) {
+      this._load();
+    }
   }
 
   /**
@@ -35,56 +33,51 @@ this.PersistentCache = class PersistentCache {
    * @param {string} key The cache key.
    * @param {object} value The data to be cached.
    */
-  set(key, value) {
-    gInMemoryCache.get(this.filename)[key] = value;
-    this.saveToFile();
+  async set(key, value) {
+    const data = await this._load();
+    data[key] = value;
+    this._persist(data);
   }
 
   /**
    * Get a value from the cache.
    *
-   * @param {string} key The cache key.
+   * @param {string} key (optional) The cache key. If not provided, we return the full cache.
    * @returns {object} The cached data.
    */
   async get(key) {
-    if (!gFilesLoaded.includes(this.filename)) {
-      await this.loadFromFile();
-    }
-    if (key) {
-      return gInMemoryCache.get(this.filename)[key];
-    }
-    return gInMemoryCache.get(this.filename);
+    const data = await this._load();
+    return key ? data[key] : data;
   }
 
   /**
-   * Load the cache into memory from the file.
+   * Load the cache into memory if it isn't already.
    */
-  async loadFromFile() {
-    let data = {};
-    // let timestamp = 0;
-    try {
-      const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, this.filename);
-      const fileExists = await OS.File.exists(filepath);
-      if (fileExists) {
-        const binaryData = await OS.File.read(filepath);
-        const json = gTextDecoder.decode(binaryData);
-        data = JSON.parse(json);
+  _load() {
+    return this._cache || (this._cache = new Promise(async resolve => {
+      let data = {};
+      const filename = `${this.name}.json`;
+      try {
+        const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, filename);
+        const fileExists = await OS.File.exists(filepath);
+        if (fileExists) {
+          const binaryData = await OS.File.read(filepath);
+          const json = gTextDecoder.decode(binaryData);
+          data = JSON.parse(json);
+        }
+      } catch (error) {
+        Cu.reportError(`Failed to load ${filename}: ${error.message}`);
       }
-    } catch (error) {
-      Cu.reportError(`Failed to load ${this.filename}: ${error.message}`);
-    }
-    // If there is anything already in the in memory cache, we should keep it.
-    data = Object.assign(data, gInMemoryCache.get(this.filename));
-    gInMemoryCache.set(this.filename, data);
-    gFilesLoaded.push(this.filename);
+      resolve(data);
+    }));
   }
 
   /**
-   * Save the cache in memory to file.
+   * Persist the cache to file.
    */
-  saveToFile() {
-    const data = gInMemoryCache.get(this.filename);
-    const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, this.filename);
+  _persist(data) {
+    const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, `${this.name}.json`);
+    this._cache = new Promise(resolve => resolve(data));
     OS.File.writeAtomic(filepath, JSON.stringify(data), {tmpPath: `${filepath}.tmp`});
   }
 };

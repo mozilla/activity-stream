@@ -24,15 +24,12 @@ const DOMAIN_AFFINITY_UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
 const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
 const SECTION_ID = "topstories";
 
-// The filename where stories and topics are stored locally
-const POCKET_DATA_FILE = "pocketData.json";
-
 this.TopStoriesFeed = class TopStoriesFeed {
   constructor() {
     this.spocsPerNewTabs = 0;
     this.newTabsSinceSpoc = 0;
     this.contentUpdateQueue = [];
-    this.pocketCache = new PersistentCache(POCKET_DATA_FILE);
+    this.cache = new PersistentCache(SECTION_ID);
   }
 
   init() {
@@ -86,14 +83,14 @@ this.TopStoriesFeed = class TopStoriesFeed {
       // This is filtered so an update function can return true to retry on the next run
       this.contentUpdateQueue = this.contentUpdateQueue.filter(update => update());
 
-      this.pocketCache.set("stories", body);
+      this.cache.set("stories", body);
     } catch (error) {
       Cu.reportError(`Failed to fetch content: ${error.message}`);
     }
   }
 
   async loadCachedData() {
-    const data = await this.pocketCache.get();
+    const data = await this.cache.get();
     let stories = data.stories && data.stories.recommendations;
     let topics = data.topics && data.topics.topics;
     if (stories && stories.length > 0 && this.storiesLastUpdated === 0) {
@@ -146,7 +143,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       if (topics) {
         this.dispatchUpdateEvent(this.topicsLastUpdated, {topics, read_more_endpoint: this.read_more_endpoint});
         body._timestamp = this.topicsLastUpdated = Date.now();
-        this.pocketCache.set("topics", body);
+        this.cache.set("topics", body);
       }
     } catch (error) {
       Cu.reportError(`Failed to fetch topics: ${error.message}`);

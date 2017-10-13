@@ -168,7 +168,7 @@ describe("Top Stories Feed", () => {
 
       instance.stories_endpoint = "stories-endpoint";
       instance.stories_referrer = "referrer";
-      instance.pocketCache.set = sinon.spy();
+      instance.cache.set = sinon.spy();
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchStories();
 
@@ -177,8 +177,8 @@ describe("Top Stories Feed", () => {
       assert.calledWithExactly(fetchStub, instance.stories_endpoint);
       assert.calledOnce(sectionsManagerStub.updateSection);
       assert.calledWith(sectionsManagerStub.updateSection, SECTION_ID, {rows: stories});
-      assert.calledOnce(instance.pocketCache.set);
-      assert.calledWith(instance.pocketCache.set, "stories", Object.assign({}, response, {_timestamp: 0}));
+      assert.calledOnce(instance.cache.set);
+      assert.calledWith(instance.cache.set, "stories", Object.assign({}, response, {_timestamp: 0}));
     });
     it("should call SectionsManager.updateSection", () => {
       instance.dispatchUpdateEvent(123, {});
@@ -249,7 +249,7 @@ describe("Top Stories Feed", () => {
       }];
 
       instance.topics_endpoint = "topics-endpoint";
-      instance.pocketCache.set = sinon.spy();
+      instance.cache.set = sinon.spy();
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchTopics();
 
@@ -257,8 +257,8 @@ describe("Top Stories Feed", () => {
       assert.calledWithExactly(fetchStub, instance.topics_endpoint);
       assert.calledOnce(sectionsManagerStub.updateSection);
       assert.calledWithMatch(sectionsManagerStub.updateSection, SECTION_ID, {topics});
-      assert.calledOnce(instance.pocketCache.set);
-      assert.calledWith(instance.pocketCache.set, "topics", Object.assign({}, response, {_timestamp: 0}));
+      assert.calledOnce(instance.cache.set);
+      assert.calledWith(instance.cache.set, "topics", Object.assign({}, response, {_timestamp: 0}));
     });
     it("should report error for unexpected topics response", async () => {
       let fetchStub = globals.sandbox.stub();
@@ -617,7 +617,7 @@ describe("Top Stories Feed", () => {
         "_timestamp": 123,
         "topics": [{"name": "topic1", "url": "url-topic1"}, {"name": "topic2", "url": "url-topic2"}]
       };
-      instance.pocketCache.get = () => ({stories, topics});
+      instance.cache.get = () => ({stories, topics});
       instance.stories_referrer = "referrer";
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
 
@@ -627,7 +627,7 @@ describe("Top Stories Feed", () => {
       assert.calledWith(sectionsManagerStub.updateSection, SECTION_ID, {rows: transformedStores});
     });
     it("should NOT update section if there is no cached data", async () => {
-      instance.pocketCache.get = () => ({});
+      instance.cache.get = () => ({});
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
       await instance.loadCachedData();
       assert.notCalled(sectionsManagerStub.updateSection);

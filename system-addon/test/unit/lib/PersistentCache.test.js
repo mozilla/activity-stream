@@ -24,8 +24,6 @@ describe("PersistentCache", () => {
     fakeTextDecoder = {decode: () => "{\"foo\": \"bar\"}"};
     globals.set("OS", fakeOS);
     globals.set("gTextDecoder", fakeTextDecoder);
-    globals.set("gInMemoryCache", new Map());
-    globals.set("gFilesLoaded", []);
 
     cache = new PersistentCache(filename);
   });
@@ -44,7 +42,7 @@ describe("PersistentCache", () => {
     });
     it("doesnt try to read the file if it was already loaded", async () => {
       fakeOS.File.read = sinon.spy();
-      await cache.loadFromFile();
+      await cache._load();
       fakeOS.File.read.reset();
       await cache.get("foo");
       assert.notCalled(fakeOS.File.read);
@@ -64,17 +62,35 @@ describe("PersistentCache", () => {
   });
 
   describe("#set", () => {
+    it("tries to read the file on the first set", async () => {
+      fakeOS.File.read = sinon.spy();
+      await cache.set("foo", {x: 42});
+      assert.calledOnce(fakeOS.File.read);
+    });
+    it("doesnt try to read the file if it was already loaded", async () => {
+      fakeOS.File.read = sinon.spy();
+      cache = new PersistentCache(filename, true);
+      await cache._load();
+      fakeOS.File.read.reset();
+      await cache.set("foo", {x: 42});
+      assert.notCalled(fakeOS.File.read);
+    });
+    it("tries to read the file on the first set", async () => {
+      fakeOS.File.read = sinon.spy();
+      await cache.set("foo", {x: 42});
+      assert.calledOnce(fakeOS.File.read);
+    });
     it("sets a string value", async () => {
       const key = "testkey";
       const value = "testvalue";
-      cache.set(key, value);
+      await cache.set(key, value);
       const cachedValue = await cache.get(key);
       assert.equal(cachedValue, value);
     });
     it("sets an object value", async () => {
       const key = "testkey";
       const value = {x: 1, y: 2, z: 3};
-      cache.set(key, value);
+      await cache.set(key, value);
       const cachedValue = await cache.get(key);
       assert.deepEqual(cachedValue, value);
     });
@@ -82,7 +98,7 @@ describe("PersistentCache", () => {
       const key = "testkey";
       const value = {x: 1, y: 2, z: 3};
       fakeOS.File.exists = async () => false;
-      cache.set(key, value);
+      await cache.set(key, value);
       assert.calledOnce(fakeOS.File.writeAtomic);
       assert.calledWith(fakeOS.File.writeAtomic, filename, `{"testkey":{"x":1,"y":2,"z":3}}`, {tmpPath: `${filename}.tmp`});
     });
