@@ -80,10 +80,15 @@ module.exports = {
     "id-blacklist": 0,
     "id-length": 0,
     "id-match": 0,
-    "indent": [2, 2, {"SwitchCase": 1}],
+    // XXX Switch back to indent once mozilla-central has decided what it is using.
+    "indent-legacy": ["error", 2, {"SwitchCase": 1}],
     "init-declarations": 0,
     "jsx-quotes": [2, "prefer-double"],
-    "lines-around-comment": [2, {"beforeBlockComment": true, "allowObjectStart": true}],
+    "lines-around-comment": ["error", {
+      "allowClassStart": true,
+      "allowObjectStart": true,
+      "beforeBlockComment": true
+    }],
     "max-depth": [2, 4],
     "max-len": 0,
     "max-lines": 0,
@@ -202,6 +207,12 @@ module.exports = {
     "semi-spacing": [2, {"before": false, "after": true}],
     "sort-imports": 2,
     "sort-vars": 2,
+    // Override this until eslint-plugin-mozilla gets updated.
+    "space-before-function-paren": ["error", {
+      "anonymous": "never",
+      "asyncArrow": "always",
+      "named": "never"
+    }],
     "space-in-parens": [2, "never"],
     "strict": 0,
     "template-curly-spacing": [2, "never"],

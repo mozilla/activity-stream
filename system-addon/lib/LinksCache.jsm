@@ -19,7 +19,6 @@ const EXPIRATION_TIME = 4.5 * 60 * 1000; // 4.5 minutes
  * links to the new links with the same url.
  */
 this.LinksCache = class LinksCache {
-
   /**
    * Create a links cache for a given object property.
    *
