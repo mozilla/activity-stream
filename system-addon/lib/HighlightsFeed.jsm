@@ -55,14 +55,16 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 
   async fetchHighlights(broadcast = false) {
+    // We need TopSites to have been initialised for deduping.
+    // We can return early because we will get another chance to initialize
+    // on TOP_SITES_UPDATED.
+    if (!this.store.getState().TopSites.initialized) {
+      return;
+    }
+
     // We broadcast when we want to force an update, so get fresh links
     if (broadcast) {
       this.linksCache.expire();
-    }
-
-    // We need TopSites to have been initialised for deduping
-    if (!this.store.getState().TopSites.initialized) {
-      return;
     }
 
     // Request more than the expected length to allow for items being removed by
@@ -171,7 +173,9 @@ this.HighlightsFeed = class HighlightsFeed {
         break;
       case at.TOP_SITES_UPDATED:
         if (this._highlightsWillDedupe(action.data)) {
-          this.fetchHighlights(true);
+          // Only broadcast on the first TOP_SITES_UPDATED call which
+          // initializes HighlightsFeed with data.
+          this.fetchHighlights(false || this.highlightsLastUpdated === 0);
         }
         break;
       case at.UNINIT:

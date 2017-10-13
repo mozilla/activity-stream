@@ -339,15 +339,17 @@ describe("Highlights Feed", () => {
     });
     it("should fetch highlights on TOP_SITES_UPDATED (will dedupe)", () => {
       sandbox.stub(feed, "fetchHighlights");
+      feed.highlightsLastUpdated = 1;
       sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
       feed.store.state.Sections = [{rows: [{url: "bar.com"}]}];
       feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "bar.com"}]});
 
       assert.calledOnce(feed.fetchHighlights);
-      assert.calledWithExactly(feed.fetchHighlights, true);
+      assert.calledWithExactly(feed.fetchHighlights, false);
     });
     it("should fetch highlights on TOP_SITES_UPDATED (not initialized)", () => {
       sandbox.stub(feed, "fetchHighlights");
+      feed.highlightsLastUpdated = 0;
       sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
       feed.store.state.Sections = [{rows: []}];
       feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "bar.com"}]});
