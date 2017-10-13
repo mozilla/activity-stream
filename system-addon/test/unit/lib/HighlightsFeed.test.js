@@ -196,12 +196,12 @@ describe("Highlights Feed", () => {
 
       assert.equal(highlights[0].type, "bookmark");
     });
-    it("should not filter out adult pages when pref is false", async() => {
+    it("should not filter out adult pages when pref is false", async () => {
       await feed.fetchHighlights();
 
       assert.notCalled(filterAdultStub);
     });
-    it("should filter out adult pages when pref is true", async() => {
+    it("should filter out adult pages when pref is true", async () => {
       feed.store.state.Prefs.values.filterAdult = true;
 
       const highlights = await fetchHighlights();
@@ -210,7 +210,7 @@ describe("Highlights Feed", () => {
       assert.calledOnce(filterAdultStub);
       assert.equal(highlights.length, 0);
     });
-    it("should not expose internal link properties", async() => {
+    it("should not expose internal link properties", async () => {
       const highlights = await fetchHighlights();
 
       const internal = Object.keys(highlights[0]).filter(key => key.startsWith("__"));
