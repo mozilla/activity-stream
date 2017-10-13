@@ -71,7 +71,7 @@
       &::before {
         $before-height: 32px;
         background-image: url(chrome://global/skin/arrow/panelarrow-vertical-themed.svg), url(chrome://global/skin/arrow/panelarrow-vertical@2x.png);
-        background-position: calc(100% - #{$arrow-offset-end}) bottom;
+        background-position: right $arrow-offset-end bottom;
         background-repeat: no-repeat;
         background-size: $arrow-width $arrow-height;
         height: $before-height;
