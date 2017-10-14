@@ -22,22 +22,28 @@ const {actionTypes, actionCreators: ac} = require("common/Actions.jsm");
  *   confirm_button_string_id: "menu_action_delete"
  * },
  */
-const ConfirmDialog = React.createClass({
+class ConfirmDialog extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this._handleCancelBtn = this._handleCancelBtn.bind(this);
+    this._handleConfirmBtn = this._handleConfirmBtn.bind(this);
+  }
+
   getDefaultProps() {
     return {
       visible: false,
       data: {}
     };
-  },
+  }
 
   _handleCancelBtn() {
     this.props.dispatch({type: actionTypes.DIALOG_CANCEL});
     this.props.dispatch(ac.UserEvent({event: actionTypes.DIALOG_CANCEL}));
-  },
+  }
 
   _handleConfirmBtn() {
     this.props.data.onConfirm.forEach(this.props.dispatch);
-  },
+  }
 
   _renderModalMessage() {
     const message_body = this.props.data.body_string_id;
@@ -49,7 +55,7 @@ const ConfirmDialog = React.createClass({
     return (<span>
       {message_body.map(msg => <p key={msg}><FormattedMessage id={msg} /></p>)}
     </span>);
-  },
+  }
 
   render() {
     if (!this.props.visible) {
@@ -73,7 +79,7 @@ const ConfirmDialog = React.createClass({
       </div>
     </div>);
   }
-});
+}
 
 module.exports = connect(state => state.Dialog)(ConfirmDialog);
 module.exports._unconnected = ConfirmDialog;
