@@ -49,15 +49,14 @@
     }
 
     &::after {
-      background-image: url('#{$image-path}topic-show-more-12.svg');
-      background-repeat: no-repeat;
+      background: url('#{$image-path}topic-show-more-12.svg') no-repeat center center;
       content: '';
       -moz-context-properties: fill;
       display: inline-block;
       fill: $link-secondary;
       height: 16px;
       margin-inline-start: 5px;
-      vertical-align: middle;
+      vertical-align: top;
       width: 12px;
     }
 
