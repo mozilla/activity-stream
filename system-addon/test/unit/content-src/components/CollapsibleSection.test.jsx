@@ -8,6 +8,11 @@ const DEFAULT_PROPS = {
   prefName: "collapseSection",
   Prefs: {values: {collapseSection: false}},
   infoOption: {},
+  document: {
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    visibilityState: "visible"
+  },
   dispatch: () => {}
 };
 
@@ -41,6 +46,18 @@ describe("CollapsibleSection", () => {
     }
     setup({dispatch});
     wrapper.find(".click-target").simulate("click");
+  });
+
+  it("should enable animations if the tab is visible", () => {
+    wrapper.instance().enableOrDisableAnimation();
+    assert.ok(wrapper.instance().state.enableAnimation);
+  });
+
+  it("should disable animations if the tab is in the background", () => {
+    const doc = Object.assign({}, DEFAULT_PROPS.document, {visibilityState: "hidden"});
+    setup({document: doc});
+    wrapper.instance().enableOrDisableAnimation();
+    assert.isFalse(wrapper.instance().state.enableAnimation);
   });
 
   describe("icon", () => {

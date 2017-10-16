@@ -10,7 +10,6 @@
     .icon-arrowhead-forward {
       margin-top: -1px;
       margin-inline-start: 8px;
-      transition: transform 0.5s $photon-easing;
     }
   }
 
@@ -173,10 +172,22 @@
     $horizontal-padding: 7px;
     margin: 0 (-$horizontal-padding);
     padding: 0 $horizontal-padding;
-    transition: max-height 0.5s cubic-bezier(0.07, 0.95, 0, 1);
 
     &.animating {
       overflow: hidden;
+    }
+  }
+
+  &.animation-enabled {
+    .section-title {
+      .icon-arrowhead-down,
+      .icon-arrowhead-forward {
+        transition: transform 0.5s $photon-easing;
+      }
+    }
+
+    .section-body {
+      transition: max-height 0.5s $photon-easing;
     }
   }
 

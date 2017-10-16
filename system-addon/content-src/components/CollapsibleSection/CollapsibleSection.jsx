@@ -2,6 +2,9 @@ const React = require("react");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const {injectIntl, FormattedMessage} = require("react-intl");
 
+const VISIBLE = "visible";
+const VISIBILITY_CHANGE_EVENT = "visibilitychange";
+
 function getFormattedMessage(message) {
   return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
 }
@@ -93,9 +96,23 @@ class CollapsibleSection extends React.PureComponent {
     this.onInfoLeave = this.onInfoLeave.bind(this);
     this.onHeaderClick = this.onHeaderClick.bind(this);
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
-    this.state = {isAnimating: false, infoActive: false};
+    this.enableOrDisableAnimation = this.enableOrDisableAnimation.bind(this);
+    this.state = {enableAnimation: true, isAnimating: false, infoActive: false};
   }
 
+  componentWillMount() {
+    this.props.document.addEventListener(VISIBILITY_CHANGE_EVENT, this.enableOrDisableAnimation);
+  }
+  componentWillUnmount() {
+    this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this.enableOrDisableAnimation);
+  }
+  enableOrDisableAnimation() {
+    // Only animate the collapse/expand for visible tabs.
+    const visible = this.props.document.visibilityState === VISIBLE;
+    if (this.state.enableAnimation !== visible) {
+      this.setState({enableAnimation: visible});
+    }
+  }
   _setInfoState(nextActive) {
     // Take a truthy value to conditionally change the infoActive state.
     const infoActive = !!nextActive;
@@ -132,11 +149,11 @@ class CollapsibleSection extends React.PureComponent {
   }
   render() {
     const isCollapsed = this.props.Prefs.values[this.props.prefName];
-    const {isAnimating} = this.state;
+    const {enableAnimation, isAnimating} = this.state;
     const infoOption = this.props.infoOption;
 
     return (
-      <section className={`collapsible-section ${this.props.className}${isCollapsed ? " collapsed" : ""}`}>
+      <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${isCollapsed ? " collapsed" : ""}`}>
         <div className="section-top-bar">
           <h3 className="section-title">
             <span className="click-target" onClick={this.onHeaderClick}>
@@ -155,7 +172,14 @@ class CollapsibleSection extends React.PureComponent {
   }
 }
 
-CollapsibleSection.defaultProps = {Prefs: {values: {}}};
+CollapsibleSection.defaultProps = {
+  document: global.document || {
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    visibilityState: "hidden"
+  },
+  Prefs: {values: {}}
+};
 
 module.exports = injectIntl(CollapsibleSection);
 module.exports._unconnected = CollapsibleSection;
