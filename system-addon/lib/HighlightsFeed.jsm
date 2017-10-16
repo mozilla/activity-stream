@@ -120,14 +120,13 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 
   /**
-   * Compare TopSites and Highlights for urls that might exist in both sections.
-   * If true we need to dedupe Highlights.
+   * Dedupe TopSites vs Highlights to decide if Highlights should update.
    * @param links new TopSites state
    */
-  _highlightsWillDedupe(links) {
+  _shouldFetchHighlights(links) {
     const highlightsIndex = SectionsManager.sections.get(SECTION_ID).order;
     const rows = this.store.getState().Sections[highlightsIndex].rows;
-    // No data available, we need to fetch and dedupe results.
+    // If nothing to dedupe, we need to fetch and dedupe results.
     if (!rows.length) {
       return true;
     }
@@ -172,7 +171,7 @@ this.HighlightsFeed = class HighlightsFeed {
         this.fetchHighlights(false);
         break;
       case at.TOP_SITES_UPDATED:
-        if (this._highlightsWillDedupe(action.data)) {
+        if (this._shouldFetchHighlights(action.data)) {
           // Only broadcast on the first TOP_SITES_UPDATED call which
           // initializes HighlightsFeed with data.
           this.fetchHighlights(false || this.highlightsLastUpdated === 0);
