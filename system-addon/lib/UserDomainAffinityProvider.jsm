@@ -271,7 +271,7 @@ this.UserDomainAffinityProvider = class UserDomainAffinityProvider {
   calculateItemRelevanceScore(item) {
     const params = this.parameterSets[item.parameter_set];
     if (!item.domain_affinities || !params) {
-      return 1;
+      return item.item_score;
     }
 
     const scores = Object
