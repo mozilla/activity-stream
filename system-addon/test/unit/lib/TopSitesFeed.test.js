@@ -3,7 +3,7 @@ const injector = require("inject!lib/TopSitesFeed.jsm");
 const {Screenshots} = require("lib/Screenshots.jsm");
 const {UPDATE_TIME} = require("lib/TopSitesFeed.jsm");
 const {FakePrefs, GlobalOverrider} = require("test/unit/utils");
-const {actionTypes: at} = require("common/Actions.jsm");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const {insertPinned, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 
 const FAKE_FAVICON = "data987";
@@ -413,6 +413,16 @@ describe("Top Sites Feed", () => {
       await feed.refresh();
       assert.calledOnce(feed.store.dispatch);
     });
+    it("should dispatch sendToMain when broadcast is false", async () => {
+      sandbox.stub(feed, "getLinksWithDefaults").returns([]);
+      await feed.refresh(null, false);
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWithExactly(feed.store.dispatch, ac.SendToMain({
+        type: at.TOP_SITES_UPDATED,
+        data: []
+      }));
+    });
   });
   describe("#_fetchIcon", () => {
     it("should reuse screenshot on the link", () => {
@@ -479,6 +489,15 @@ describe("Top Sites Feed", () => {
       clock.tick(UPDATE_TIME);
       feed.onAction({type: at.SYSTEM_TICK});
       assert.calledOnce(feed.refresh);
+    });
+    it("should call refresh on SYSTEM_TICK with correct params", () => {
+      feed.lastUpdated = 0;
+      sandbox.stub(feed, "refresh");
+      clock.tick(UPDATE_TIME); // Move the clock forward.
+      feed.onAction({type: at.SYSTEM_TICK});
+
+      assert.calledOnce(feed.refresh);
+      assert.calledWithExactly(feed.refresh, null, false);
     });
     it("should call with correct parameters on TOP_SITES_PIN", () => {
       const pinAction = {
