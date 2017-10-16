@@ -257,7 +257,7 @@ describe("<ComponentPerfTimer>", () => {
       assert.calledWithExactly(perfSvc.getMostRecentAbsMarkStartByName, `${DEFAULT_PROPS.id}_first_render_ts`);
     });
 
-    it("should call dispatch TELEMETRY_UNDESIRED_EVENT", () => {
+    it("should call dispatch SAVE_SESSION_PERF_DATA", () => {
       sandbox.stub(perfSvc, "getMostRecentAbsMarkStartByName")
         .withArgs("highlights_first_render_ts").returns(0.5)
         .withArgs("highlights_data_ready_ts")
@@ -270,12 +270,8 @@ describe("<ComponentPerfTimer>", () => {
 
       assert.calledOnce(dispatch);
       assert.calledWithExactly(dispatch, ac.SendToMain({
-        type: at.TELEMETRY_UNDESIRED_EVENT,
-        data: {
-          source: DEFAULT_PROPS.id.toUpperCase(),
-          event: `${DEFAULT_PROPS.id}_data_late_by_ms`,
-          value: 2 // Test that parseInt is called by checking the value.
-        }
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {[`${DEFAULT_PROPS.id}_data_late_by_ms`]: 2}
       }));
     });
   });

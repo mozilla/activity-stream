@@ -61,7 +61,6 @@ class ComponentPerfTimer extends React.Component {
 
   _maybeSendBadStateEvent() {
     // Follow up bugs:
-    // https://github.com/mozilla/activity-stream/issues/3688
     // https://github.com/mozilla/activity-stream/issues/3691
     if (!this.props.initialized) {
       // Remember to report back when data is available.
@@ -119,13 +118,9 @@ class ComponentPerfTimer extends React.Component {
       const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName(dataReadyKey) -
                              this.perfSvc.getMostRecentAbsMarkStartByName(firstRenderKey), 10);
       this.props.dispatch(ac.SendToMain({
-        type: at.TELEMETRY_UNDESIRED_EVENT,
-        data: {
-          source: this.props.id.toUpperCase(),
-          // highlights_data_late_by_ms, topsites_data_late_by_ms.
-          event: `${this.props.id}_data_late_by_ms`,
-          value
-        }
+        type: at.SAVE_SESSION_PERF_DATA,
+        // highlights_data_late_by_ms, topsites_data_late_by_ms.
+        data: {[`${this.props.id}_data_late_by_ms`]: value}
       }));
     } catch (ex) {
       // If this failed, it's likely because the `privacy.resistFingerprinting`
