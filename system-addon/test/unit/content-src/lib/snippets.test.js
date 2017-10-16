@@ -328,14 +328,18 @@ describe("addSnippetsSubscriber", () => {
   let store;
   let sandbox;
   let snippets;
-  function setSnippetEnabledPref(value) {
+  function setSnippetFeedPref(value) {
     store.dispatch({type: at.PREF_CHANGED, data: {name: "feeds.snippets", value}});
+  }
+  function setShowSnippetsPref(value) {
+    store.dispatch({type: at.PREF_CHANGED, data: {name: "showSnippets", value}});
   }
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     store = createStore(combineReducers(reducers));
     sandbox.spy(store, "subscribe");
-    setSnippetEnabledPref(true);
+    setSnippetFeedPref(true);
+    setShowSnippetsPref(true);
     snippets = addSnippetsSubscriber(store);
 
     sandbox.stub(snippets, "init").resolves();
@@ -348,7 +352,7 @@ describe("addSnippetsSubscriber", () => {
     }
     delete global.gSnippetsMap;
   });
-  it("should initialize feeds.snippets pref is true and SnippetsProvider if .initialize is true", () => {
+  it("should initialize feeds.snippets and showSnippets prefs are true and SnippetsProvider if .initialize is true", () => {
     store.dispatch({type: at.SNIPPETS_DATA, data: {}});
     assert.calledOnce(snippets.init);
   });
@@ -359,14 +363,25 @@ describe("addSnippetsSubscriber", () => {
     assert.notCalled(snippets.init);
   });
   it("should not initialize if feeds.snippets pref is false", () => {
-    setSnippetEnabledPref(false);
+    setSnippetFeedPref(false);
+    store.dispatch({type: at.SNIPPETS_DATA, data: {}});
+    assert.notCalled(snippets.init);
+  });
+  it("should not initialize if showSnippets pref is false", () => {
+    setShowSnippetsPref(false);
     store.dispatch({type: at.SNIPPETS_DATA, data: {}});
     assert.notCalled(snippets.init);
   });
   it("should uninitialize SnippetsProvider if SnippetsProvider has been initialized and feeds.snippets pref is false", async () => {
     await store.dispatch({type: at.SNIPPETS_DATA, data: {}});
     snippets.initialized = true;
-    setSnippetEnabledPref(false);
+    setSnippetFeedPref(false);
+    assert.calledOnce(snippets.uninit);
+  });
+  it("should uninitialize SnippetsProvider if SnippetsProvider has been initialized and showSnippets pref is false", async () => {
+    await store.dispatch({type: at.SNIPPETS_DATA, data: {}});
+    snippets.initialized = true;
+    setShowSnippetsPref(false);
     assert.calledOnce(snippets.uninit);
   });
 });
