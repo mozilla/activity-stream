@@ -80,35 +80,35 @@ describe("ActivityStreamMessageChannel", () => {
         mm.createChannel();
         assert.notCalled(global.AboutNewTab.override);
       });
-      describe("#dispatchInitLoadEvent", () => {
-        beforeEach(() => {
-          sinon.stub(mm, "onActionFromContent");
-          mm.createChannel();
+    });
+    describe("#simulateMessagesForExistingTabs", () => {
+      beforeEach(() => {
+        sinon.stub(mm, "onActionFromContent");
+        mm.createChannel();
+      });
+      it("should simulate init for existing ports", () => {
+        RPmessagePorts.push({
+          url: "about:monkeys",
+          loaded: false,
+          portID: "inited"
         });
-        it("should simulate init for existing ports", () => {
-          RPmessagePorts.push({
-            url: "about:monkeys",
-            loaded: false,
-            portID: "inited"
-          });
-          RPmessagePorts.push({
-            url: "about:sheep",
-            loaded: true,
-            portID: "loaded"
-          });
-
-          mm.dispatchInitLoadEvent();
-
-          assert.calledWith(mm.onActionFromContent.firstCall, {type: at.NEW_TAB_INIT, data: RPmessagePorts[0]});
-          assert.calledWith(mm.onActionFromContent.secondCall, {type: at.NEW_TAB_INIT, data: RPmessagePorts[1]});
+        RPmessagePorts.push({
+          url: "about:sheep",
+          loaded: true,
+          portID: "loaded"
         });
-        it("should simluate load for loaded ports", () => {
-          RPmessagePorts.push({loaded: true, portID: "foo"});
 
-          mm.dispatchInitLoadEvent();
+        mm.simulateMessagesForExistingTabs();
 
-          assert.calledWith(mm.onActionFromContent, {type: at.NEW_TAB_LOAD}, "foo");
-        });
+        assert.calledWith(mm.onActionFromContent.firstCall, {type: at.NEW_TAB_INIT, data: RPmessagePorts[0]});
+        assert.calledWith(mm.onActionFromContent.secondCall, {type: at.NEW_TAB_INIT, data: RPmessagePorts[1]});
+      });
+      it("should simluate load for loaded ports", () => {
+        RPmessagePorts.push({loaded: true, portID: "foo"});
+
+        mm.simulateMessagesForExistingTabs();
+
+        assert.calledWith(mm.onActionFromContent, {type: at.NEW_TAB_LOAD}, "foo");
       });
     });
     describe("#destroyChannel", () => {

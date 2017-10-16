@@ -139,7 +139,7 @@ this.Store = class Store {
       this.dispatch(initAction);
     }
 
-    this._messageChannel.dispatchInitLoadEvent();
+    this._messageChannel.simulateMessagesForExistingTabs();
   }
 
   /**
