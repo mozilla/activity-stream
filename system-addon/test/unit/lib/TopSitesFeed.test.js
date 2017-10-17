@@ -391,14 +391,6 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.store.dispatch);
       assert.notProperty(feed.store.dispatch.firstCall.args[0].meta, "toTarget");
     });
-    it("should respond to a specific target", async () => {
-      sinon.stub(feed, "getLinksWithDefaults").returns(Promise.resolve([]));
-
-      await feed.refresh({meta: {fromTarget: {}}});
-
-      assert.calledOnce(feed.store.dispatch);
-      assert.property(feed.store.dispatch.firstCall.args[0].meta, "toTarget");
-    });
     it("should dispatch an action with the links returned", async () => {
       await feed.refresh();
       const reference = links.map(site => Object.assign({}, site, {hostname: shortURLStub(site)}));
@@ -497,7 +489,7 @@ describe("Top Sites Feed", () => {
       feed.onAction({type: at.SYSTEM_TICK});
 
       assert.calledOnce(feed.refresh);
-      assert.calledWithExactly(feed.refresh, null, false);
+      assert.calledWithExactly(feed.refresh, false);
     });
     it("should call with correct parameters on TOP_SITES_PIN", () => {
       const pinAction = {

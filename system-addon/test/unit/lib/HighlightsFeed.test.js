@@ -329,33 +329,21 @@ describe("Highlights Feed", () => {
 
       assert.calledOnce(feed.linksCache.expire);
     });
-    it("should not fetch highlights on TOP_SITES_UPDATED (no dedupe)", () => {
-      sandbox.stub(feed, "fetchHighlights");
-      sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
-      feed.store.state.Sections = [{rows: [{url: "bar.com"}]}];
-      feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "foo.com"}]});
-
-      assert.notCalled(feed.fetchHighlights);
-    });
-    it("should fetch highlights on TOP_SITES_UPDATED (will dedupe)", () => {
-      sandbox.stub(feed, "fetchHighlights");
-      feed.highlightsLastUpdated = 1;
-      sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
-      feed.store.state.Sections = [{rows: [{url: "bar.com"}]}];
-      feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "bar.com"}]});
-
-      assert.calledOnce(feed.fetchHighlights);
-      assert.calledWithExactly(feed.fetchHighlights, false);
-    });
-    it("should fetch highlights on TOP_SITES_UPDATED (not initialized)", () => {
+    it("should broadcast fetchHighlights on initialization", () => {
       sandbox.stub(feed, "fetchHighlights");
       feed.highlightsLastUpdated = 0;
-      sectionsManagerStub.sections = new Map([["highlights", {order: 0}]]);
-      feed.store.state.Sections = [{rows: []}];
-      feed.onAction({type: at.TOP_SITES_UPDATED, data: [{url: "bar.com"}]});
+      feed.onAction({type: at.TOP_SITES_UPDATED});
 
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWithExactly(feed.fetchHighlights, true);
+    });
+    it("should not broadcast fetchHighlights if feed is initialized", () => {
+      sandbox.stub(feed, "fetchHighlights");
+      feed.highlightsLastUpdated = 1;
+      feed.onAction({type: at.TOP_SITES_UPDATED});
+
+      assert.calledOnce(feed.fetchHighlights);
+      assert.calledWithExactly(feed.fetchHighlights, false);
     });
   });
 });
