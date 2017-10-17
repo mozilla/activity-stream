@@ -128,21 +128,15 @@ this.TopSitesFeed = class TopSitesFeed {
 
   /**
    * Refresh the top sites data for content
-   *
-   * @param target Optional port/channel to receive the update. If not provided,
-   *               the update will be broadcasted.
    */
-  async refresh(target = null, dispatch = true) {
+  async refresh(broadcast = true) {
     if (!this._tippyTopProvider.initialized) {
       await this._tippyTopProvider.init();
     }
 
     const links = await this.getLinksWithDefaults();
     const newAction = {type: at.TOP_SITES_UPDATED, data: links};
-    if (target) {
-      // Send an update to content so the preloaded tab can get the updated content
-      this.store.dispatch(ac.SendToContent(newAction, target));
-    } else if (dispatch) {
+    if (broadcast) {
       // Broadcast an update to all open content pages
       this.store.dispatch(ac.BroadcastToContent(newAction));
     } else {
@@ -240,7 +234,7 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.SYSTEM_TICK:
         if (Date.now() - this.lastUpdated >= UPDATE_TIME) {
           // No update target, no broadcast.
-          this.refresh(null, false);
+          this.refresh(false);
         }
         break;
       // All these actions mean we need new top sites
