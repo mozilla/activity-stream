@@ -290,6 +290,15 @@ perf: {
   // topsites has yet to receive screenshots updates from the add-on code,
   // and is therefore just showing placeholder screenshots.
   "topsites_first_painted_ts": 5,
+
+  // How much longer the data took, in milliseconds, to be ready for display
+  // than it would have been in the ideal case. The user currently sees placeholder
+  // cards instead of real cards for approximately this length of time. This is
+  // sent when the first call of the component's `render()` method happens with
+  // `this.props.initialized` set to `false`, and the value is the amount of
+  // time in ms until `render()` is called with `this.props.initialized` set to `true`.
+  "highlights_data_late_by_ms": 67,
+  "topsites_data_late_by_ms": 35
 }
 ```
 
@@ -377,38 +386,5 @@ This reports when the addon fails to initialize
   "user_prefs": 7,
   "event": "ADDON_INIT_FAILED",
   "value": -1
-}
-```
-
-### Late data initialization
-
-How much longer the data took, in milliseconds, to be ready for display than it would have been in the ideal case.  The user currently sees placeholder cards instead of real cards for approximately this length of time.  This is sent when the first call of the component's `render()` method happens with `this.props.initialized` set to `false`, and the value is the amount of time in ms until `render()` is called with `this.props.initialized` set to `true`.
-
-```js
-{
-  "client_id": "8095a611-4ee4-b94d-b7b6-37923a0faa69",
-  "release_channel": "default",
-  "addon_version": "0.0.0",
-  "locale": "en-US",
-  "user_prefs": 3,
-  "session_id": "{ca150256-a6ca-4e43-a375-28ce5fa3bffc}",
-  "page": "about:newtab",
-  "value": 5,
-  "event": "topsites_data_late_by_ms",
-  "action": "activity_stream_undesired_event"
-}
-```
-```js
-{
-  "client_id": "8095a611-4ee4-b94d-b7b6-37923a0faa69",
-  "release_channel": "default",
-  "addon_version": "0.0.0",
-  "locale": "en-US",
-  "user_prefs": 3,
-  "session_id": "{ca150256-a6ca-4e43-a375-28ce5fa3bffc}",
-  "page": "about:newtab",
-  "value": 10,
-  "event": "highlights_data_late_by_ms",
-  "action": "activity_stream_undesired_event"
 }
 ```
