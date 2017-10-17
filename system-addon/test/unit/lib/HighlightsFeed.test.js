@@ -340,7 +340,7 @@ describe("Highlights Feed", () => {
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWith(feed.fetchHighlights, {broadcast: false});
     });
-    it("should fetch expire the cache on PLACES_BOOKMARK_REMOVED", async () => {
+    it("should expire the cache on PLACES_BOOKMARK_REMOVED", async () => {
       sandbox.stub(feed.linksCache, "expire");
 
       feed.onAction({type: at.PLACES_BOOKMARK_REMOVED});
