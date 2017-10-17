@@ -5,7 +5,10 @@
 
 this.EXPORTED_SYMBOLS = ["LinksCache"];
 
-const EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes
+// This should be slightly less than SYSTEM_TICK_INTERVAL as timers are
+// not precise enough causing skips in the refresh interval.
+// https://github.com/mozilla/activity-stream/pull/3695#discussion_r144678214
+const EXPIRATION_TIME = 4.5 * 60 * 1000; // 4.5 minutes
 
 /**
  * Cache link results from a provided object property and refresh after some

@@ -21,7 +21,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
 XPCOMUtils.defineLazyModuleGetter(this, "Screenshots",
   "resource://activity-stream/lib/Screenshots.jsm");
 
-const UPDATE_TIME = 15 * 60 * 1000; // 15 minutes
 const DEFAULT_SITES_PREF = "default.sites";
 const DEFAULT_TOP_SITES = [];
 const FRECENCY_THRESHOLD = 100 + 1; // 1 visit (skip first-run/one-time pages)
@@ -29,7 +28,6 @@ const MIN_FAVICON_SIZE = 96;
 
 this.TopSitesFeed = class TopSitesFeed {
   constructor() {
-    this.lastUpdated = 0;
     this._tippyTopProvider = new TippyTopProvider();
     this.dedupe = new Dedupe(this._dedupeKey);
     this.frecentCache = new LinksCache(NewTabUtils.activityStreamLinks,
@@ -129,21 +127,20 @@ this.TopSitesFeed = class TopSitesFeed {
   /**
    * Refresh the top sites data for content
    */
-  async refresh(broadcast = true) {
+  async refresh(options = {}) {
     if (!this._tippyTopProvider.initialized) {
       await this._tippyTopProvider.init();
     }
 
     const links = await this.getLinksWithDefaults();
     const newAction = {type: at.TOP_SITES_UPDATED, data: links};
-    if (broadcast) {
+    if (options.broadcast) {
       // Broadcast an update to all open content pages
       this.store.dispatch(ac.BroadcastToContent(newAction));
     } else {
       // Don't broadcast only update the state.
       this.store.dispatch(ac.SendToMain(newAction));
     }
-    this.lastUpdated = Date.now();
   }
 
   /**
@@ -172,7 +169,7 @@ this.TopSitesFeed = class TopSitesFeed {
     this.pinnedCache.expire();
 
     // Refresh to update pinned sites with screenshots, trigger deduping, etc.
-    this.refresh();
+    this.refresh({broadcast: true});
   }
 
   /**
@@ -229,25 +226,22 @@ this.TopSitesFeed = class TopSitesFeed {
   async onAction(action) {
     switch (action.type) {
       case at.INIT:
-        this.refresh();
+        this.refresh({broadcast: true});
         break;
       case at.SYSTEM_TICK:
-        if (Date.now() - this.lastUpdated >= UPDATE_TIME) {
-          // No update target, no broadcast.
-          this.refresh(false);
-        }
+        this.refresh({broadcast: false});
         break;
       // All these actions mean we need new top sites
       case at.MIGRATION_COMPLETED:
       case at.PLACES_HISTORY_CLEARED:
       case at.PLACES_LINKS_DELETED:
         this.frecentCache.expire();
-        this.refresh();
+        this.refresh({broadcast: true});
         break;
       case at.PLACES_LINK_BLOCKED:
         this.frecentCache.expire();
         this.pinnedCache.expire();
-        this.refresh();
+        this.refresh({broadcast: true});
         break;
       case at.PREF_CHANGED:
         if (action.data.name === DEFAULT_SITES_PREF) {
@@ -270,6 +264,5 @@ this.TopSitesFeed = class TopSitesFeed {
   }
 };
 
-this.UPDATE_TIME = UPDATE_TIME;
 this.DEFAULT_TOP_SITES = DEFAULT_TOP_SITES;
-this.EXPORTED_SYMBOLS = ["TopSitesFeed", "UPDATE_TIME", "DEFAULT_TOP_SITES"];
+this.EXPORTED_SYMBOLS = ["TopSitesFeed", "DEFAULT_TOP_SITES"];
