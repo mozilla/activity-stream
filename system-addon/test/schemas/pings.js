@@ -89,6 +89,9 @@ const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
   session_duration: Joi.number().integer(),
   action: Joi.valid("activity_stream_session").required(),
   perf: Joi.object().keys({
+    // How long it took in ms for data to be ready for display.
+    highlights_data_late_by_ms: Joi.number().positive(),
+
     // Timestamp of the action perceived by the user to trigger the load
     // of this page.
     //
@@ -104,6 +107,9 @@ const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
     load_trigger_type: Joi.valid(["first_window_opened",
       "menu_plus_or_keyboard", "unexpected"])
       .notes(["server counter", "server counter alert"]).required(),
+
+    // How long it took in ms for data to be ready for display.
+    topsites_data_late_by_ms: Joi.number().positive(),
 
     // When did the topsites element finish painting?  Note that, at least for
     // the first tab to be loaded, and maybe some others, this will be before
