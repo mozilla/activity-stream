@@ -93,14 +93,9 @@ class CollapsibleSection extends React.PureComponent {
     this.onInfoLeave = this.onInfoLeave.bind(this);
     this.onHeaderClick = this.onHeaderClick.bind(this);
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
-    this.state = {enableAnimation: false, isAnimating: false, infoActive: false};
+    this.state = {isAnimating: false, infoActive: false};
   }
-  componentDidUpdate(prevProps, prevState) {
-    // Enable animations once we get prefs loaded in to avoid animations running during loading.
-    if (prevProps.Prefs.values[this.props.prefName] === undefined && this.props.Prefs.values[this.props.prefName] !== undefined) {
-      setTimeout(() => this.setState({enableAnimation: true}), 0);
-    }
-  }
+
   _setInfoState(nextActive) {
     // Take a truthy value to conditionally change the infoActive state.
     const infoActive = !!nextActive;
@@ -137,7 +132,7 @@ class CollapsibleSection extends React.PureComponent {
   }
   render() {
     const isCollapsed = this.props.Prefs.values[this.props.prefName];
-    const {enableAnimation, isAnimating} = this.state;
+    const {isAnimating} = this.state;
     const infoOption = this.props.infoOption;
 
     return (
@@ -152,7 +147,7 @@ class CollapsibleSection extends React.PureComponent {
           </h3>
           {infoOption && <InfoIntl infoOption={infoOption} dispatch={this.props.dispatch} />}
         </div>
-        <div className={`section-body${enableAnimation ? " animation-enabled" : ""}${isAnimating ? " animating" : ""}`} onTransitionEnd={this.onTransitionEnd}>
+        <div className={`section-body${isAnimating ? " animating" : ""}`} onTransitionEnd={this.onTransitionEnd}>
           {this.props.children}
         </div>
       </section>
