@@ -256,6 +256,13 @@ this.actionUtils = {
     }
     return false;
   },
+  isFromMain(action) {
+    if (!action.meta) {
+      return false;
+    }
+    return action.meta.from === MAIN_MESSAGE_TYPE &&
+      action.meta.to === CONTENT_MESSAGE_TYPE;
+  },
   getPortIdOfSender(action) {
     return (action.meta && action.meta.fromTarget) || null;
   },
