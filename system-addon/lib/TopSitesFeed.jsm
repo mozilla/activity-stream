@@ -125,7 +125,8 @@ this.TopSitesFeed = class TopSitesFeed {
   }
 
   /**
-   * Refresh the top sites data for content
+   * Refresh the top sites data for content.
+   * @param {bool} options.broadcast Should the update be broadcasted.
    */
   async refresh(options = {}) {
     if (!this._tippyTopProvider.initialized) {

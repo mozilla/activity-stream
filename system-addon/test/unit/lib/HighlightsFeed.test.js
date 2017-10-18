@@ -347,7 +347,7 @@ describe("Highlights Feed", () => {
 
       assert.calledOnce(feed.linksCache.expire);
     });
-    it("should not call fetchHighlights with broadcast on initialization", () => {
+    it("should call fetchHighlights with broadcast false on TOP_SITES_UPDATED", () => {
       sandbox.stub(feed, "fetchHighlights");
       feed.onAction({type: at.TOP_SITES_UPDATED});
 

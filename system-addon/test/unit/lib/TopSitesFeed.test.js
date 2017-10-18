@@ -479,13 +479,6 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.refresh);
       assert.calledWithExactly(feed.refresh, {broadcast: false});
     });
-    it("should call refresh on SYSTEM_TICK with correct params", () => {
-      sandbox.stub(feed, "refresh");
-      feed.onAction({type: at.SYSTEM_TICK});
-
-      assert.calledOnce(feed.refresh);
-      assert.calledWithExactly(feed.refresh, {broadcast: false});
-    });
     it("should call with correct parameters on TOP_SITES_PIN", () => {
       const pinAction = {
         type: at.TOP_SITES_PIN,

@@ -51,6 +51,10 @@ this.HighlightsFeed = class HighlightsFeed {
     SectionsManager.disableSection(SECTION_ID);
   }
 
+  /**
+   * Refresh the highlights data for content.
+   * @param {bool} options.broadcast Should the update be broadcasted.
+   */
   async fetchHighlights(options = {}) {
     // We need TopSites for deduping, so wait for TOP_SITES_UPDATED.
     if (!this.store.getState().TopSites.initialized) {
@@ -110,8 +114,8 @@ this.HighlightsFeed = class HighlightsFeed {
     }
 
     const sectionIndex = SectionsManager.sections.get(SECTION_ID).order;
-    const initialized = this.store.getState().Sections[sectionIndex].initialized;
-    // Broadcast when required or if it is the first fetch.
+    const {initialized} = this.store.getState().Sections[sectionIndex];
+    // Broadcast when required or if it is the first update.
     const shouldBroadcast = options.broadcast || !initialized;
 
     SectionsManager.updateSection(SECTION_ID, {rows: highlights}, shouldBroadcast);
