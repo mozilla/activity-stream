@@ -151,21 +151,23 @@ const SectionsManager = {
     }
   },
 
+  /**
+   * Save Top Story metadata to places db.
+   */
   updateBookmarkMetadata({url}) {
-    this.sections.forEach(section => {
-      if (section.rows) {
-        section.rows.forEach(card => {
-          if (card.url === url && card.description && card.title && card.image) {
-            PlacesUtils.history.update({
-              url: card.url,
-              title: card.title,
-              description: card.description,
-              previewImageURL: card.image
-            });
-          }
-        });
-      }
-    });
+    const {rows} = this.sections.get("topstories");
+    if (rows) {
+      rows.forEach(card => {
+        if (card.url === url && card.description && card.title && card.image) {
+          PlacesUtils.history.update({
+            url: card.url,
+            title: card.title,
+            description: card.description,
+            previewImageURL: card.image
+          });
+        }
+      });
+    }
   },
 
   /**
