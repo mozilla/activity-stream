@@ -15,3 +15,5 @@ Adding telemetry generally involves a few steps:
 1. - [ ] Request `data-review` of your documentation changes from a [data steward](https://wiki.mozilla.org/Firefox/Data_Collection) to ensure suitability for collection controlled by the opt-out `datareporting.healthreport.uploadEnabled` pref. We've been working with François Marier (@fmarier), so he's a good candidate as he's likely to have the most context.
 1. - [ ] Implement as usual...
 1. - [ ] After landing the implementation, check with Nan (@ncloudioj) to make sure the pings are making it to the database
+1. - [ ] Update the [ping-centre](https://github.com/mozilla/ping-centre/issues) user story issue for the dashboard, stating that the data should now be available for implementation, and removing any `blocked` tag if appropriate.
+
