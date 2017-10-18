@@ -299,6 +299,13 @@ perf: {
   // time in ms until `render()` is called with `this.props.initialized` set to `true`.
   "highlights_data_late_by_ms": 67,
   "topsites_data_late_by_ms": 35
+
+  // Whether the page is preloaded or not.
+  "is_preloaded": [true|false],
+
+
+  // Whether the page is prerendered or not.
+  "is_prerendered": [true|false]
 }
 ```
 

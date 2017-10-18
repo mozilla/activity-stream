@@ -125,7 +125,13 @@ const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
     // visibility_event doesn't fire.  (It's not clear whether this
     // can happen in practice, but if it does, we'd like to know about it).
     visibility_event_rcvd_ts: Joi.number().positive()
-      .notes(["server counter", "server counter alert"])
+      .notes(["server counter", "server counter alert"]),
+
+    // The boolean to signify whether the page is preloaded or not.
+    is_preloaded: Joi.bool().required(),
+
+    // The boolean to signify whether the page is prerendered or not.
+    is_prerendered: Joi.bool().required()
   }).required()
 }));
 
