@@ -290,6 +290,13 @@ perf: {
   // topsites has yet to receive screenshots updates from the add-on code,
   // and is therefore just showing placeholder screenshots.
   "topsites_first_painted_ts": 5,
+
+  // Whether the page is preloaded or not.
+  "is_preloaded": [true|false],
+
+
+  // Whether the page is prerendered or not.
+  "is_prerendered": [true|false]
 }
 ```
 
