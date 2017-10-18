@@ -210,22 +210,28 @@ describe("SectionsManager", () => {
     });
   });
   describe("#updateBookmarkMetadata", () => {
-    let rows;
     beforeEach(() => {
-      rows = [{
+      let rows = [{
         url: "bar",
         title: "title",
         description: "description",
         image: "image"
       }];
-      SectionsManager.addSection(FAKE_ID, {rows});
+      SectionsManager.addSection("topstories", {rows});
+      // Simulate 2 sections.
+      rows = [{
+        url: "foo",
+        title: "title",
+        description: "description",
+        image: "image"
+      }];
+      SectionsManager.addSection("highlights", {rows});
     });
-    it("shouldn't call PlacesUtils if no story", () => {
+    it("shouldn't call PlacesUtils if URL is not in topstories", () => {
       SectionsManager.updateBookmarkMetadata({url: "foo"});
 
       assert.notCalled(fakePlacesUtils.history.update);
     });
-
     it("should call PlacesUtils", () => {
       SectionsManager.updateBookmarkMetadata({url: "bar"});
 
