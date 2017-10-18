@@ -145,6 +145,21 @@ describe("TelemetryFeed", () => {
       const ping = instance.createSessionEndEvent(session);
       assert.validate(ping, SessionPing);
     });
+    it("should be a valid ping with the data_late_by_ms perf", () => {
+      // Add a session
+      const portID = "foo";
+      const session = instance.addSession(portID, "about:home");
+      instance.saveSessionPerfData("foo", {topsites_data_late_by_ms: 10});
+      instance.saveSessionPerfData("foo", {highlights_data_late_by_ms: 20});
+
+      // Create a ping referencing the session
+      const ping = instance.createSessionEndEvent(session);
+      assert.validate(ping, SessionPing);
+      assert.propertyVal(instance.sessions.get("foo").perf,
+                         "highlights_data_late_by_ms", 20);
+      assert.propertyVal(instance.sessions.get("foo").perf,
+                         "topsites_data_late_by_ms", 10);
+    });
   });
 
   describe("#browserOpenNewtabStart", () => {
