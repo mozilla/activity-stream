@@ -138,6 +138,9 @@ this.Store = class Store {
     if (initAction) {
       this.dispatch(initAction);
     }
+
+    // Dispatch NEW_TAB_INIT/NEW_TAB_LOAD events after INIT event.
+    this._messageChannel.simulateMessagesForExistingTabs();
   }
 
   /**

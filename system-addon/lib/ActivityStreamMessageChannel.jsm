@@ -138,7 +138,9 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
     this.channel.addMessageListener("RemotePage:Load", this.onNewTabLoad);
     this.channel.addMessageListener("RemotePage:Unload", this.onNewTabUnload);
     this.channel.addMessageListener(this.incomingMessageName, this.onMessage);
+  }
 
+  simulateMessagesForExistingTabs() {
     // Some pages might have already loaded, so we won't get the usual message
     for (const target of this.channel.messagePorts) {
       const simulatedMsg = {target};
