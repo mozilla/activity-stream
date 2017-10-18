@@ -21,7 +21,7 @@ module.exports = {
     icon: "bookmark-hollow",
     action: ac.SendToMain({
       type: at.BOOKMARK_URL,
-      data: {url: site.url, title: site.title}
+      data: {url: site.url, title: site.title, type: site.type}
     }),
     userEvent: "BOOKMARK_ADD"
   }),

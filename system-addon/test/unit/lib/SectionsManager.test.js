@@ -17,7 +17,7 @@ describe("SectionsManager", () => {
   beforeEach(() => {
     globals = new GlobalOverrider();
     fakeServices = {prefs: {getBoolPref: sinon.spy(), addObserver: sinon.spy(), removeObserver: sinon.spy()}};
-    fakePlacesUtils = {history: {update: sinon.stub()}};
+    fakePlacesUtils = {history: {update: sinon.stub(), insert: sinon.stub()}};
     globals.set("Services", fakeServices);
     globals.set("PlacesUtils", fakePlacesUtils);
   });
@@ -238,6 +238,31 @@ describe("SectionsManager", () => {
       });
     });
   });
+  describe("#addBookmarkVisit", () => {
+    it("should add a visit for Top Stories", () => {
+      SectionsManager.addBookmarkVisit({
+        url: "foo.com",
+        title: "Foo",
+        type: "now"
+      });
+
+      assert.calledOnce(fakePlacesUtils.history.insert);
+      assert.propertyVal(fakePlacesUtils.history.insert.firstCall.args[0], "url", "foo.com");
+      assert.propertyVal(fakePlacesUtils.history.insert.firstCall.args[0], "title", "Foo");
+    });
+    it("should ignore bookmarks that are not Top Stories", () => {
+      const site = {type: "history"};
+      SectionsManager.addBookmarkVisit(site);
+
+      assert.notCalled(fakePlacesUtils.history.insert);
+    });
+    it("should ignore bookmarks without a type", () => {
+      const site = {url: "foo.com"};
+      SectionsManager.addBookmarkVisit(site);
+
+      assert.notCalled(fakePlacesUtils.history.insert);
+    });
+  });
 });
 
 describe("SectionsFeed", () => {
@@ -444,6 +469,14 @@ describe("SectionsFeed", () => {
       feed.onAction({type: "PLACES_BOOKMARK_ADDED", data: {}});
 
       assert.calledOnce(stub);
+    });
+    it("should call addBookmarkVisit on BOOKMARK_URL", () => {
+      const stub = sinon.stub(SectionsManager, "addBookmarkVisit");
+      const data = {url: "foo", type: "now"};
+      feed.onAction({type: "BOOKMARK_URL", data});
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, data);
     });
   });
 });

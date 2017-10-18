@@ -169,6 +169,20 @@ const SectionsManager = {
   },
 
   /**
+   * When we bookmark a TopStory we need to add a visit to that URL
+   * to ensure it gets picked up in Highlights.
+   *
+   * @param {string} site.url
+   * @param {string} site.title
+   * @param {string} site.type Required to determine if it is a Top Story.
+   */
+  addBookmarkVisit({url, title, type}) {
+    if (type && (type === "trending" || type === "now")) {
+      PlacesUtils.history.insert({url, title, visits: [new Date()]});
+    }
+  },
+
+  /**
    * Sets the section's context menu options. These are all available context menu
    * options minus the ones that are tied to a pref (see CONTEXT_MENU_PREFS) set
    * to false.
@@ -304,6 +318,9 @@ class SectionsFeed {
       }
       case at.PLACES_BOOKMARK_ADDED:
         SectionsManager.updateBookmarkMetadata(action.data);
+        break;
+      case at.BOOKMARK_URL:
+        SectionsManager.addBookmarkVisit(action.data);
         break;
       case at.SECTION_DISABLE:
         SectionsManager.disableSection(action.data);

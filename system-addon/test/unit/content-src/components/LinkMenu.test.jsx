@@ -101,12 +101,12 @@ describe("<LinkMenu>", () => {
   describe(".onClick", () => {
     const FAKE_INDEX = 3;
     const FAKE_SOURCE = "TOP_SITES";
-    const FAKE_SITE = {url: "https://foo.com", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo"};
+    const FAKE_SITE = {url: "https://foo.com", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "history"};
     const dispatch = sinon.stub();
     const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket"];
     const expectedActionData = {
       menu_action_remove_bookmark: FAKE_SITE.bookmarkGuid,
-      menu_action_bookmark: {url: FAKE_SITE.url, title: FAKE_SITE.title},
+      menu_action_bookmark: {url: FAKE_SITE.url, title: FAKE_SITE.title, type: FAKE_SITE.type},
       menu_action_open_new_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_open_private_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_dismiss: FAKE_SITE.url,
