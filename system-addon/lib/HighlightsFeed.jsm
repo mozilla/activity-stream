@@ -21,6 +21,8 @@ XPCOMUtils.defineLazyModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "Screenshots",
   "resource://activity-stream/lib/Screenshots.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PageThumbs",
+  "resource://gre/modules/PageThumbs.jsm");
 
 const HIGHLIGHTS_MAX_LENGTH = 9;
 const MANY_EXTRA_LENGTH = HIGHLIGHTS_MAX_LENGTH * 5 + TOP_SITES_SHOWMORE_LENGTH;
@@ -31,6 +33,7 @@ this.HighlightsFeed = class HighlightsFeed {
     this.dedupe = new Dedupe(this._dedupeKey);
     this.linksCache = new LinksCache(NewTabUtils.activityStreamLinks,
       "getHighlights", ["image"]);
+    PageThumbs.addExpirationFilter(this);
   }
 
   _dedupeKey(site) {
@@ -49,6 +52,18 @@ this.HighlightsFeed = class HighlightsFeed {
 
   uninit() {
     SectionsManager.disableSection(SECTION_ID);
+    PageThumbs.removeExpirationFilter(this);
+  }
+
+  filterForThumbnailExpiration(callback) {
+    const sectionIndex = SectionsManager.sections.get(SECTION_ID).order;
+    const {initialized, rows} = this.store.getState().Sections[sectionIndex];
+
+    if (initialized) {
+      callback(rows.map(site => site.url));
+    } else {
+      callback([]);
+    }
   }
 
   /**
