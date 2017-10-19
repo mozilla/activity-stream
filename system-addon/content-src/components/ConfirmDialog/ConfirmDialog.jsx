@@ -29,13 +29,6 @@ class ConfirmDialog extends React.PureComponent {
     this._handleConfirmBtn = this._handleConfirmBtn.bind(this);
   }
 
-  getDefaultProps() {
-    return {
-      visible: false,
-      data: {}
-    };
-  }
-
   _handleCancelBtn() {
     this.props.dispatch({type: actionTypes.DIALOG_CANCEL});
     this.props.dispatch(ac.UserEvent({event: actionTypes.DIALOG_CANCEL}));
