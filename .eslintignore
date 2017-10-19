@@ -3,6 +3,7 @@ dist/
 firefox/
 logs/
 stats.json
+system-addon/prerendered/
 system-addon/vendor/
 system-addon/data/
 bin/prerender.js

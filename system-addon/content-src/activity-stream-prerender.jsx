@@ -5,19 +5,16 @@ const {Provider} = require("react-redux");
 const initStore = require("content-src/lib/init-store");
 const {reducers, INITIAL_STATE} = require("common/Reducers.jsm");
 const {actionTypes: at} = require("common/Actions.jsm");
-const allStrings = require("../data/locales.json");
 const {PrerenderData} = require("common/PrerenderData.jsm");
-
-const EMPTY_LOCALE = "en-PRERENDER";
 
 /**
  * prerenderStore - Generate a store with the initial state required for a prerendered page
  *
- * @param  {str} locale  The locale to start with. This is probably en-PRERENDER.
+ * @param  {str} locale  The locale to start with.
  * @param  {type} strings All the strings for the page
  * @return {obj}         A store
  */
-function prerenderStore(locale = "", strings) {
+function prerenderStore(locale, strings) {
   const store = initStore(reducers, INITIAL_STATE);
   store.dispatch({type: at.LOCALE_UPDATED, data: {locale, strings}});
   store.dispatch({type: at.PREFS_INITIAL_VALUES, data: PrerenderData.initialPrefs});
@@ -25,21 +22,7 @@ function prerenderStore(locale = "", strings) {
   return store;
 }
 
-function prerender(_locale) {
-  const locale = _locale || EMPTY_LOCALE;
-  let strings = {};
-
-  if (locale !== EMPTY_LOCALE) {
-    if (!allStrings[locale]) {
-      throw new Error(`Tried to get strings for ${locale} but none were found.`);
-    }
-    strings = allStrings[locale];
-  } else {
-    Object.keys(allStrings["en-US"]).forEach(key => {
-      strings[key] = " ";
-    });
-  }
-
+function prerender(locale, strings) {
   const store = prerenderStore(locale, strings);
 
   return {

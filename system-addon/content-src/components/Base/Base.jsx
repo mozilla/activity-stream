@@ -15,13 +15,19 @@ const {PrerenderData} = require("common/PrerenderData.jsm");
 // more features are needed.
 function addLocaleDataForReactIntl({locale, textDirection}) {
   addLocaleData([{locale, parentLocale: "en"}]);
-  document.documentElement.lang = locale;
-  document.documentElement.dir = textDirection;
+  if (global.document) {
+    global.document.documentElement.lang = locale;
+    global.document.documentElement.dir = textDirection;
+  }
 }
 
 class Base extends React.PureComponent {
   componentWillMount() {
-    this.sendNewTabRehydrated(this.props.App);
+    const {App} = this.props;
+    this.sendNewTabRehydrated(App);
+    if (App.locale) {
+      addLocaleDataForReactIntl(App);
+    }
   }
 
   componentDidMount() {
