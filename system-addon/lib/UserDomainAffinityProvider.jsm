@@ -301,7 +301,6 @@ this.UserDomainAffinityProvider = class UserDomainAffinityProvider {
     // An itemScoreFactor of 0 results in the combined domain score and ignores the item score
     return params.itemScoreFactor * (item.item_score - normalizedCombinedDomainScore) + normalizedCombinedDomainScore;
   }
-
 };
 
 this.EXPORTED_SYMBOLS = ["UserDomainAffinityProvider"];

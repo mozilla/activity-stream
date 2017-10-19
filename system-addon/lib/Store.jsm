@@ -18,7 +18,6 @@ const {redux} = Cu.import("resource://activity-stream/vendor/Redux.jsm", {});
  *         can listen for any action that is dispatched through the store.
  */
 this.Store = class Store {
-
   /**
    * constructor - The redux store and message manager are created here,
    *               but no listeners are added until "init" is called.

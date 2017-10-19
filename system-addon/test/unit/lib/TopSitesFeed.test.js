@@ -144,12 +144,12 @@ describe("Top Sites Feed", () => {
         assert.deepEqual(result, reference);
         assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
       });
-      it("should not filter out adult sites when pref is false", async() => {
+      it("should not filter out adult sites when pref is false", async () => {
         await feed.getLinksWithDefaults();
 
         assert.notCalled(filterAdultStub);
       });
-      it("should filter out non-pinned adult sites when pref is true", async() => {
+      it("should filter out non-pinned adult sites when pref is true", async () => {
         feed.store.state.Prefs.values.filterAdult = true;
         fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/"}];
 
@@ -263,7 +263,7 @@ describe("Top Sites Feed", () => {
         assert.propertyVal(result[0], "favicon", FAKE_FAVICON);
         assert.propertyVal(result[0], "faviconSize", FAKE_FAVICON_SIZE);
       });
-      it("should not expose internal link properties", async() => {
+      it("should not expose internal link properties", async () => {
         const result = await feed.getLinksWithDefaults();
 
         const internal = Object.keys(result[0]).filter(key => key.startsWith("__"));

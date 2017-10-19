@@ -19,7 +19,7 @@ describe("SnippetsMap", () => {
     await snippetsMap.clear();
   });
   describe("#set", () => {
-    it("should set a value without connecting a db", async() => {
+    it("should set a value without connecting a db", async () => {
       await snippetsMap.set("foo", 123);
       assert.equal(snippetsMap.get("foo"), 123);
     });
@@ -34,7 +34,7 @@ describe("SnippetsMap", () => {
     });
   });
   describe("#delete", () => {
-    it("should delete a value without connecting a db", async() => {
+    it("should delete a value without connecting a db", async () => {
       snippetsMap.set("foo", 123);
       assert.isTrue(snippetsMap.has("foo"));
 
@@ -56,7 +56,7 @@ describe("SnippetsMap", () => {
     });
   });
   describe("#clear", () => {
-    it("should clear all items without connecting a db", async() => {
+    it("should clear all items without connecting a db", async () => {
       snippetsMap.set("foo", 123);
       snippetsMap.set("bar", 123);
       assert.propertyVal(snippetsMap, "size", 2);
@@ -293,7 +293,7 @@ describe("SnippetsProvider", () => {
       let fakeEl = {style: {}, getElementsByTagName() { return [{parentNode: {replaceChild() {}}}]; }};
       sandbox.stub(global.document, "getElementById").returns(fakeEl);
     });
-    it("should call _noSnippetFallback if no snippets element exists", async() => {
+    it("should call _noSnippetFallback if no snippets element exists", async () => {
       global.gSnippetsMap.set("snippets", "foo123");
       global.document.getElementById.returns(null);
       await snippets.init({connect: false});
@@ -302,21 +302,21 @@ describe("SnippetsProvider", () => {
       const error = snippets._noSnippetFallback.firstCall.args[0];
       assert.match(error.message, "No element was found");
     });
-    it("should call _noSnippetFallback if no payload is found", async() => {
+    it("should call _noSnippetFallback if no payload is found", async () => {
       global.gSnippetsMap.set("snippets", "");
       await snippets.init({connect: false});
 
       const error = snippets._noSnippetFallback.firstCall.args[0];
       assert.match(error.message, "No remote snippets were found");
     });
-    it("should call _noSnippetFallback if the payload is not a string", async() => {
+    it("should call _noSnippetFallback if the payload is not a string", async () => {
       global.gSnippetsMap.set("snippets", true);
       await snippets.init({connect: false});
 
       const error = snippets._noSnippetFallback.firstCall.args[0];
       assert.match(error.message, "Snippet payload was incorrectly formatted");
     });
-    it("should not call _noSnippetFallback if the payload and element are ok", async() => {
+    it("should not call _noSnippetFallback if the payload and element are ok", async () => {
       global.gSnippetsMap.set("snippets", "foo123");
       await snippets.init({connect: false});
       assert.notCalled(snippets._noSnippetFallback);
