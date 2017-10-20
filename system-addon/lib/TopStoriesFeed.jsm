@@ -20,7 +20,6 @@ XPCOMUtils.defineLazyModuleGetter(this, "perfService", "resource://activity-stre
 
 const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
-const DOMAIN_AFFINITY_UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
 const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
 const SECTION_ID = "topstories";
 const SPOC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.spoc.impressions";
@@ -51,11 +50,12 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.maxHistoryQueryResults = options.maxHistoryQueryResults;
         this.storiesLastUpdated = 0;
         this.topicsLastUpdated = 0;
-        this.affinityLastUpdated = 0;
 
         this.loadCachedData();
         this.fetchStories();
         this.fetchTopics();
+
+        Services.obs.addObserver(this, "idle-daily");
       } catch (e) {
         Cu.reportError(`Problem initializing top stories feed: ${e.message}`);
       }
@@ -63,7 +63,16 @@ this.TopStoriesFeed = class TopStoriesFeed {
     SectionsManager.onceInitialized(initFeed);
   }
 
+  observe(subject, topic, data) {
+    switch (topic) {
+      case "idle-daily":
+        this.updateDomainAffinityScores();
+        break;
+    }
+  }
+
   uninit() {
+    Services.obs.removeObserver(this, "idle-daily");
     SectionsManager.disableSection(SECTION_ID);
   }
 
@@ -102,6 +111,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
     const data = await this.cache.get();
     let stories = data.stories && data.stories.recommendations;
     let topics = data.topics && data.topics.topics;
+    let affinities = data.domainAffinities;
+    if (this.personalized && affinities && affinities.scores) {
+      this.affinityProvider = new UserDomainAffinityProvider(affinities.timeSegments,
+        affinities.parameterSets, affinities.maxHistoryQueryResults, affinities.version, affinities.scores);
+    }
     if (stories && stories.length > 0 && this.storiesLastUpdated === 0) {
       this.updateSettings(data.stories.settings);
       const rows = this.transform(stories);
@@ -133,7 +147,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         "referrer": this.stories_referrer,
         "url": s.url,
         "min_score": s.min_score || 0,
-        "score": this.personalized ? this.affinityProvider.calculateItemRelevanceScore(s) : 1,
+        "score": this.personalized && this.affinityProvider ? this.affinityProvider.calculateItemRelevanceScore(s) : s.item_score || 1,
         "spoc_meta": this.show_spocs ? {campaign_id: s.campaign_id, caps: s.caps} : {}
       }))
       .sort(this.personalized ? this.compareScore : (a, b) => 0);
@@ -174,20 +188,39 @@ this.TopStoriesFeed = class TopStoriesFeed {
     }
 
     this.spocsPerNewTabs = settings.spocsPerNewTabs;
+    this.timeSegments = settings.timeSegments;
+    this.domainAffinityParameterSets = settings.domainAffinityParameterSets;
+    this.version = settings.version;
 
-    if (!this.affinityProvider || (Date.now() - this.affinityLastUpdated >= DOMAIN_AFFINITY_UPDATE_TIME)) {
-      const start = perfService.absNow();
-      this.affinityProvider = new UserDomainAffinityProvider(
-        settings.timeSegments,
-        settings.domainAffinityParameterSets,
-        this.maxHistoryQueryResults);
-
-      this.store.dispatch(ac.PerfEvent({
-        event: "topstories.domain.affinity.calculation.ms",
-        value: Math.round(perfService.absNow() - start)
-      }));
-      this.affinityLastUpdated = Date.now();
+    if (this.affinityProvider && (this.affinityProvider.version !== this.version)) {
+      this.resetDomainAffinityScores();
     }
+  }
+
+  updateDomainAffinityScores() {
+    if (!this.personalized || !this.domainAffinityParameterSets) {
+      return;
+    }
+
+    const start = perfService.absNow();
+
+    this.affinityProvider = new UserDomainAffinityProvider(
+      this.timeSegments,
+      this.domainAffinityParameterSets,
+      this.maxHistoryQueryResults,
+      this.version);
+
+    this.store.dispatch(ac.PerfEvent({
+      event: "topstories.domain.affinity.calculation.ms",
+      value: Math.round(perfService.absNow() - start)
+    }));
+
+    this.cache.set("domainAffinities", this.affinityProvider.getAffinities());
+  }
+
+  resetDomainAffinityScores() {
+    delete this.affinityProvider;
+    this.cache.set("domainAffinities", {});
   }
 
   // If personalization is turned on we have to rotate stories on the client.
@@ -404,6 +437,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
           this.spocs = this.spocs.filter(s => s.url !== action.data.url);
         }
         break;
+      case at.PLACES_HISTORY_CLEARED:
+        if (this.personalized) {
+          this.resetDomainAffinityScores();
+        }
+        break;
       case at.TELEMETRY_IMPRESSION_STATS: {
         const payload = action.data;
         const viewImpression = !("click" in payload || "block" in payload || "pocket" in payload);
@@ -424,4 +462,4 @@ this.STORIES_UPDATE_TIME = STORIES_UPDATE_TIME;
 this.TOPICS_UPDATE_TIME = TOPICS_UPDATE_TIME;
 this.SECTION_ID = SECTION_ID;
 this.SPOC_IMPRESSION_TRACKING_PREF = SPOC_IMPRESSION_TRACKING_PREF;
-this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "DOMAIN_AFFINITY_UPDATE_TIME", "SECTION_ID", "SPOC_IMPRESSION_TRACKING_PREF"];
+this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "SECTION_ID", "SPOC_IMPRESSION_TRACKING_PREF"];

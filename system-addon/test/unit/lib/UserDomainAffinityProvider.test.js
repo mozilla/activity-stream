@@ -111,6 +111,24 @@ describe("User Domain Affinity Provider", () => {
       const scores = instance.calculateAllUserDomainAffinityScores();
       assert.deepEqual(expectedScores, scores);
     });
+    it("should return domain affinities", () => {
+      const scores = {
+        "a.com": {
+          "paramSet1": 1,
+          "paramSet2": 0.9
+        }
+      };
+      instance = new UserDomainAffinityProvider(TIME_SEGMENTS, PARAMETER_SETS, 100, "v1", scores);
+
+      const expectedAffinities = {
+        "timeSegments": TIME_SEGMENTS,
+        "parameterSets": PARAMETER_SETS,
+        "maxHistoryQueryResults": 100,
+        "scores": scores,
+        "version": "v1"
+      };
+      assert.deepEqual(instance.getAffinities(), expectedAffinities);
+    });
   });
   describe("#score", () => {
     it("should calculate item relevance score", () => {
