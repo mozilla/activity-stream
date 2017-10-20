@@ -57,7 +57,8 @@ main {
   // while avoiding flashes of changing content, e.g., icons and text
   $selectors-to-hide: '
     .section-title,
-    .sections-list .section:last-of-type
+    .sections-list .section:last-of-type,
+    .topic
   ';
 
   #{$selectors-to-hide} {
