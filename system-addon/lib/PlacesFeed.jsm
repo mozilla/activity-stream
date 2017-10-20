@@ -247,6 +247,18 @@ class PlacesFeed {
     win.openLinkIn(action.data.url, "window", params);
   }
 
+  /**
+   * Currently used when bookmarking a TopStory to ensure it gets picked up in
+   * the Highlights section.
+   * If used in other cases, should ensure URLs actually have 0 visits.
+   *
+   * @param {string} site.url
+   * @param {string} site.title
+   */
+  addURLVisit({url, title}) {
+    PlacesUtils.history.insert({url, title, visits: [new Date()]});
+  }
+
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -261,6 +273,9 @@ class PlacesFeed {
         break;
       case at.BOOKMARK_URL:
         NewTabUtils.activityStreamLinks.addBookmark(action.data, action._target.browser);
+        break;
+      case at.ADD_URL_VISIT:
+        this.addURLVisit(action.data);
         break;
       case at.DELETE_BOOKMARK_BY_ID:
         NewTabUtils.activityStreamLinks.deleteBookmark(action.data);

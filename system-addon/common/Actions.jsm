@@ -24,6 +24,7 @@ this.globalImportContext = globalImportContext;
 // }
 const actionTypes = {};
 for (const type of [
+  "ADD_URL_VISIT",
   "BLOCK_URL",
   "BOOKMARK_URL",
   "DELETE_BOOKMARK_BY_ID",

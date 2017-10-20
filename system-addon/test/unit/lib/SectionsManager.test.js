@@ -2,6 +2,7 @@
 const {SectionsFeed, SectionsManager} = require("lib/SectionsManager.jsm");
 const {EventEmitter, GlobalOverrider} = require("test/unit/utils");
 const {MAIN_MESSAGE_TYPE, CONTENT_MESSAGE_TYPE} = require("common/Actions.jsm");
+const {actionCreators: ac} = require("common/Actions.jsm");
 
 const FAKE_ID = "FAKE_ID";
 const FAKE_OPTIONS = {icon: "FAKE_ICON", title: "FAKE_TITLE"};
@@ -244,31 +245,6 @@ describe("SectionsManager", () => {
       });
     });
   });
-  describe("#addBookmarkVisit", () => {
-    it("should add a visit for Top Stories", () => {
-      SectionsManager.addBookmarkVisit({
-        url: "foo.com",
-        title: "Foo",
-        type: "now"
-      });
-
-      assert.calledOnce(fakePlacesUtils.history.insert);
-      assert.propertyVal(fakePlacesUtils.history.insert.firstCall.args[0], "url", "foo.com");
-      assert.propertyVal(fakePlacesUtils.history.insert.firstCall.args[0], "title", "Foo");
-    });
-    it("should ignore bookmarks that are not Top Stories", () => {
-      const site = {type: "history"};
-      SectionsManager.addBookmarkVisit(site);
-
-      assert.notCalled(fakePlacesUtils.history.insert);
-    });
-    it("should ignore bookmarks without a type", () => {
-      const site = {url: "foo.com"};
-      SectionsManager.addBookmarkVisit(site);
-
-      assert.notCalled(fakePlacesUtils.history.insert);
-    });
-  });
 });
 
 describe("SectionsFeed", () => {
@@ -290,12 +266,13 @@ describe("SectionsFeed", () => {
     it("should bind appropriate listeners", () => {
       sinon.spy(SectionsManager, "on");
       feed.init();
-      assert.callCount(SectionsManager.on, 4);
+      assert.callCount(SectionsManager.on, 5);
       for (const [event, listener] of [
         [SectionsManager.ADD_SECTION, feed.onAddSection],
         [SectionsManager.REMOVE_SECTION, feed.onRemoveSection],
         [SectionsManager.UPDATE_SECTION, feed.onUpdateSection],
-        [SectionsManager.UPDATE_SECTION_CARD, feed.onUpdateSectionCard]
+        [SectionsManager.UPDATE_SECTION_CARD, feed.onUpdateSectionCard],
+        [SectionsManager.DISPATCH_TO_MAIN, feed.onDispatchToMain]
       ]) {
         assert.calledWith(SectionsManager.on, event, listener);
       }
@@ -318,12 +295,13 @@ describe("SectionsFeed", () => {
       sinon.spy(SectionsManager, "off");
       feed.init();
       feed.uninit();
-      assert.callCount(SectionsManager.off, 4);
+      assert.callCount(SectionsManager.off, 5);
       for (const [event, listener] of [
         [SectionsManager.ADD_SECTION, feed.onAddSection],
         [SectionsManager.REMOVE_SECTION, feed.onRemoveSection],
         [SectionsManager.UPDATE_SECTION, feed.onUpdateSection],
-        [SectionsManager.UPDATE_SECTION_CARD, feed.onUpdateSectionCard]
+        [SectionsManager.UPDATE_SECTION_CARD, feed.onUpdateSectionCard],
+        [SectionsManager.DISPATCH_TO_MAIN, feed.onDispatchToMain]
       ]) {
         assert.calledWith(SectionsManager.off, event, listener);
       }
@@ -335,6 +313,18 @@ describe("SectionsFeed", () => {
       feed.uninit();
       assert.calledOnce(spy);
       assert.notOk(SectionsManager.initialized);
+    });
+  });
+  describe("#dispatchToMain", () => {
+    it("should dispatch SendToMain", () => {
+      const action = {
+        type: "ADD_URL_VISIT",
+        data: "foo"
+      };
+      feed.onDispatchToMain("DISPATCH_TO_MAIN", action);
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWith(feed.store.dispatch, ac.SendToMain(action));
     });
   });
   describe("#onAddSection", () => {
@@ -475,14 +465,6 @@ describe("SectionsFeed", () => {
       feed.onAction({type: "PLACES_BOOKMARK_ADDED", data: {}});
 
       assert.calledOnce(stub);
-    });
-    it("should call addBookmarkVisit on BOOKMARK_URL", () => {
-      const stub = sinon.stub(SectionsManager, "addBookmarkVisit");
-      const data = {url: "foo", type: "now"};
-      feed.onAction({type: "BOOKMARK_URL", data});
-
-      assert.calledOnce(stub);
-      assert.calledWithExactly(stub, data);
     });
   });
 });
