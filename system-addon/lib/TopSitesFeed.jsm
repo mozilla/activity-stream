@@ -66,13 +66,8 @@ this.TopSitesFeed = class TopSitesFeed {
   }
 
   filterForThumbnailExpiration(callback) {
-    const {initialized, rows} = this.store.getState().TopSites;
-
-    if (initialized) {
-      callback(rows.map(site => site.url));
-    } else {
-      callback([]);
-    }
+    const {rows} = this.store.getState().TopSites;
+    callback(rows.map(site => site.url));
   }
 
   async getLinksWithDefaults(action) {

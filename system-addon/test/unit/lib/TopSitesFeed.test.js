@@ -137,23 +137,13 @@ describe("Top Sites Feed", () => {
   describe("#filterForThumbnailExpiration", () => {
     it("should pass rows.urls to the callback provided", () => {
       const rows = [{url: "foo.com"}, {"url": "bar.com"}];
-      feed.store.state.TopSites = {rows, initialized: true};
+      feed.store.state.TopSites = {rows};
       const stub = sinon.stub();
 
       feed.filterForThumbnailExpiration(stub);
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, rows.map(r => r.url));
-    });
-    it("should pass an empty array if not initialized", () => {
-      const rows = [{url: "foo.com"}, {"url": "bar.com"}];
-      feed.store.state.TopSites = {rows, initialized: false};
-      const stub = sinon.stub();
-
-      feed.filterForThumbnailExpiration(stub);
-
-      assert.calledOnce(stub);
-      assert.calledWithExactly(stub, []);
     });
   });
   describe("#getLinksWithDefaults", () => {
