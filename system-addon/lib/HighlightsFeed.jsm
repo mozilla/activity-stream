@@ -57,10 +57,14 @@ this.HighlightsFeed = class HighlightsFeed {
 
   filterForThumbnailExpiration(callback) {
     const sectionIndex = SectionsManager.sections.get(SECTION_ID).order;
-    const {initialized, rows} = this.store.getState().Sections[sectionIndex];
+    if (this.store.getState().Sections[sectionIndex]) {
+      const {initialized, rows} = this.store.getState().Sections[sectionIndex];
 
-    if (initialized) {
-      callback(rows.map(site => site.url));
+      if (initialized) {
+        callback(rows.map(site => site.url));
+      } else {
+        callback([]);
+      }
     } else {
       callback([]);
     }
