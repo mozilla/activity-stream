@@ -248,9 +248,7 @@ class PlacesFeed {
   }
 
   /**
-   * Currently used when bookmarking a TopStory to ensure it gets picked up in
-   * the Highlights section.
-   * If used in other cases, should ensure URLs actually have 0 visits.
+   * Add a visit to the provided URL with the current timestamp.
    *
    * @param {string} site.url
    * @param {string} site.title
