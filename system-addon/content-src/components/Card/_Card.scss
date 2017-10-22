@@ -1,4 +1,5 @@
 .card-outer {
+  @include context-menu-button;
   background: $white;
   display: inline-block;
   margin-inline-end: $base-gutter;
@@ -6,12 +7,12 @@
   border-radius: $border-radius;
   height: $card-height;
   position: relative;
-  @include context-menu-button;
 
   &.placeholder {
     background: transparent;
+
     .card {
-      box-shadow:  inset $inner-box-shadow;
+      box-shadow: inset $inner-box-shadow;
     }
   }
 
@@ -29,10 +30,11 @@
     position: absolute;
     width: $card-width;
 
-    &.active, &:focus {
+    &:-moz-any(.active, :focus) {
       .card {
         @include fade-in-card;
       }
+
       .card-title {
         color: $link-primary;
       }
@@ -40,9 +42,9 @@
   }
 
   &:-moz-any(:hover, :focus, .active):not(.placeholder) {
-    outline: none;
     @include fade-in-card;
     @include context-menu-button-hover;
+    outline: none;
 
     .card-title {
       color: $link-primary;
@@ -57,9 +59,9 @@
     overflow: hidden;
 
     &::after {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid $black-5;
       bottom: 0;
-      content: " ";
+      content: '';
       position: absolute;
       width: 100%;
     }
@@ -72,6 +74,7 @@
       background-repeat: no-repeat;
       opacity: 0;
       transition: opacity 1s $photon-easing;
+
       &.loaded {
         opacity: 1;
       }
@@ -88,25 +91,32 @@
 
   .card-text {
     overflow: hidden;
-    max-height: 4*$card-text-line-height + $card-title-margin;
+    max-height: 4 * $card-text-line-height + $card-title-margin;
 
     &.no-image {
-      max-height: 10*$card-text-line-height + $card-title-margin;
+      max-height: 10 * $card-text-line-height + $card-title-margin;
     }
-    &.no-host-name, &.no-context {
-      max-height: 5*$card-text-line-height + $card-title-margin;
+
+    &.no-host-name,
+    &.no-context {
+      max-height: 5 * $card-text-line-height + $card-title-margin;
     }
-    &.no-image.no-host-name, &.no-image.no-context {
-      max-height: 11*$card-text-line-height + $card-title-margin;
+
+    &.no-image.no-host-name,
+    &.no-image.no-context {
+      max-height: 11 * $card-text-line-height + $card-title-margin;
     }
+
     &.no-host-name.no-context {
-      max-height: 6*$card-text-line-height + $card-title-margin;
+      max-height: 6 * $card-text-line-height + $card-title-margin;
     }
+
     &.no-image.no-host-name.no-context {
-      max-height: 12*$card-text-line-height + $card-title-margin;
+      max-height: 12 * $card-text-line-height + $card-title-margin;
     }
+
     &:not(.no-description) .card-title {
-      max-height: 3*$card-text-line-height;
+      max-height: 3 * $card-text-line-height;
       overflow: hidden;
     }
   }

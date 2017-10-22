@@ -100,10 +100,12 @@
           background-position-x: right $icon-offset-start;
         }
       }
+
       [type='checkbox']:not(:checked) + label,
       [type='checkbox']:checked + label {
         padding-inline-start: 63px;
       }
+
       section {
         margin: 0;
       }

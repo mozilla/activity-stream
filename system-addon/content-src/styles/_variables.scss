@@ -22,8 +22,16 @@ $grey-90-70: rgba($grey-90, 0.7);
 $grey-90-80: rgba($grey-90, 0.8);
 $grey-90-90: rgba($grey-90, 0.9);
 
+$black: #000;
+$black-5: rgba($black, 0.05);
+$black-10: rgba($black, 0.1);
+$black-15: rgba($black, 0.15);
+$black-20: rgba($black, 0.2);
+$black-25: rgba($black, 0.25);
+$black-30: rgba($black, 0.3);
+
 // Photon transitions from http://design.firefox.com/photon/motion/duration-and-easing.html
-$photon-easing: cubic-bezier(.07, .95, 0, 1);
+$photon-easing: cubic-bezier(0.07, 0.95, 0, 1);
 
 // Aliases and derived styles based on Photon colors for common usage
 $background-primary: $grey-10;
@@ -79,14 +87,14 @@ $topic-margin-top: 12px;
 
 $context-menu-button-size: 27px;
 $context-menu-button-boxshadow: 0 2px $grey-90-10;
-$context-menu-border-color: rgba(0, 0, 0, 0.2);
-$context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px $context-menu-border-color;
+$context-menu-border-color: $black-20;
+$context-menu-shadow: 0 5px 10px $black-30, 0 0 0 1px $context-menu-border-color;
 $context-menu-font-size: 14px;
 $context-menu-border-radius: 5px;
 $context-menu-outer-padding: 5px;
 $context-menu-item-padding: 3px 12px;
 
-$inner-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+$inner-box-shadow: 0 0 0 1px $black-10;
 
 $image-path: '../data/content/assets/';
 
@@ -123,7 +131,7 @@ $snippets-container-height: 120px;
     transition-property: transform, opacity;
     transition-duration: 200ms;
 
-    &:focus, &:active {
+    &:-moz-any(:active, :focus) {
       transform: scale(1);
       opacity: 1;
     }

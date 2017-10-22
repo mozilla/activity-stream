@@ -22,10 +22,9 @@
   height: $search-height;
 
   input {
-    border: none;
+    border: 0;
     border-radius: $search-border-radius;
-    box-shadow: $shadow-secondary,
-      0 0 0 1px rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-secondary, 0 0 0 1px $black-15;
     color: inherit;
     padding: 0;
     padding-inline-end: $search-button-width;
@@ -35,8 +34,7 @@
   }
 
   &:hover input {
-    box-shadow: $shadow-secondary,
-      0 0 0 1px rgba(0, 0, 0, 0.25);
+    box-shadow: $shadow-secondary, 0 0 0 1px $black-25;
   }
 
   &:active input,
@@ -82,7 +80,7 @@
   }
 
   // Adjust the style of the contentSearchUI-generated table
-  .contentSearchSuggestionTable {
+  .contentSearchSuggestionTable { // sass-lint:disable-line class-name-format
     border: 0;
     transform: translateY(2px);
   }
