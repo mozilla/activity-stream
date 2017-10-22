@@ -18,47 +18,47 @@
   }
 
   &.icon-bookmark-added {
-   background-image: url('chrome://browser/skin/bookmark.svg');
- }
+    background-image: url('chrome://browser/skin/bookmark.svg');
+  }
 
- &.icon-bookmark-hollow {
-   background-image: url('chrome://browser/skin/bookmark-hollow.svg');
- }
+  &.icon-bookmark-hollow {
+    background-image: url('chrome://browser/skin/bookmark-hollow.svg');
+  }
 
- &.icon-delete {
-   background-image: url('#{$image-path}glyph-delete-16.svg');
- }
+  &.icon-delete {
+    background-image: url('#{$image-path}glyph-delete-16.svg');
+  }
 
- &.icon-modal-delete {
-   background-image: url('#{$image-path}glyph-modal-delete-32.svg');
-   width: $larger-icon-size;
-   height: $larger-icon-size;
-   background-size: $larger-icon-size;
- }
+  &.icon-modal-delete {
+    background-image: url('#{$image-path}glyph-modal-delete-32.svg');
+    background-size: $larger-icon-size;
+    height: $larger-icon-size;
+    width: $larger-icon-size;
+  }
 
- &.icon-dismiss {
-   background-image: url('#{$image-path}glyph-dismiss-16.svg');
- }
+  &.icon-dismiss {
+    background-image: url('#{$image-path}glyph-dismiss-16.svg');
+  }
 
- &.icon-info {
-   background-image: url('#{$image-path}glyph-info-16.svg');
- }
+  &.icon-info {
+    background-image: url('#{$image-path}glyph-info-16.svg');
+  }
 
- &.icon-import {
-   background-image: url('#{$image-path}glyph-import-16.svg');
- }
+  &.icon-import {
+    background-image: url('#{$image-path}glyph-import-16.svg');
+  }
 
- &.icon-new-window {
-   background-image: url('#{$image-path}glyph-newWindow-16.svg');
- }
+  &.icon-new-window {
+    background-image: url('#{$image-path}glyph-newWindow-16.svg');
+  }
 
- &.icon-new-window-private {
-   background-image: url('chrome://browser/skin/privateBrowsing.svg');
- }
+  &.icon-new-window-private {
+    background-image: url('chrome://browser/skin/privateBrowsing.svg');
+  }
 
- &.icon-settings {
-   background-image: url('chrome://browser/skin/settings.svg');
- }
+  &.icon-settings {
+    background-image: url('chrome://browser/skin/settings.svg');
+  }
 
   &.icon-pin {
     background-image: url('#{$image-path}glyph-pin-16.svg');
@@ -76,13 +76,13 @@
     background-image: url('#{$image-path}glyph-pocket-16.svg');
   }
 
-  &.icon-historyItem {
+  &.icon-historyItem { // sass-lint:disable-line class-name-format
     background-image: url('#{$image-path}glyph-historyItem-16.svg');
   }
 
   &.icon-trending {
     background-image: url('#{$image-path}glyph-trending-16.svg');
-    transform: translateY(2px); /* trending bolt is visually top heavy */
+    transform: translateY(2px); // trending bolt is visually top heavy
   }
 
   &.icon-now {

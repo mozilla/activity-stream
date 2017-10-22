@@ -68,7 +68,7 @@
   // This is a clearfix to for the topics-read-more link which is floating and causes
   // some jank when we set overflow:hidden for the animation.
   &::after {
-    content: "";
+    content: '';
     display: table;
     clear: both;
   }

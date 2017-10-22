@@ -4,7 +4,7 @@
 
 html,
 body,
-#root {
+#root { // sass-lint:disable-line no-ids
   height: 100%;
 }
 
@@ -79,7 +79,7 @@ a {
   display: flex;
   flex-direction: row;
   margin: 0;
-  padding: 15px 25px 0 25px;
+  padding: 15px 25px 0;
   justify-content: flex-start;
   flex-wrap: wrap;
 
@@ -114,7 +114,7 @@ a {
 }
 
 // Make sure snippets show up above other UI elements
-#snippets-container {
+#snippets-container { // sass-lint:disable-line no-ids
   z-index: 1;
 }
 

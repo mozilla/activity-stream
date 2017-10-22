@@ -1,11 +1,11 @@
 .confirmation-dialog {
   .modal {
+    box-shadow: 0 2px 2px 0 $black-10;
     position: fixed;
     width: 400px;
     top: 20%;
     left: 50%;
     margin-left: -200px;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.08);
   }
 
   section {
@@ -24,9 +24,9 @@
   }
 
   .actions {
-    padding: 0px 16px 0 16px;
-    border: none;
+    border: 0;
     flex-wrap: nowrap;
+    padding: 0 16px;
     display: flex;
 
     button {
@@ -39,6 +39,7 @@
       }
     }
   }
+
   .icon {
     margin-inline-end: 16px;
   }

@@ -41,16 +41,26 @@
       opacity: 0;
       transition: opacity 0.2s $photon-easing;
 
-      &:focus, &:active {
+      &[aria-expanded='true'] {
+        background-color: $info-active-color;
+        border-radius: 1px; // The shadow below makes this the desired larger radius
+        box-shadow: 0 0 0 5px $info-active-color;
+        fill: $fill-primary;
+
+        + .info-option {
+          opacity: 1;
+          transition: visibility 0.2s, opacity 0.2s $photon-easing;
+          visibility: visible;
+        }
+      }
+
+      &:not([aria-expanded='true']) + .info-option {
+        pointer-events: none;
+      }
+
+      &:-moz-any(:active, :focus) {
         opacity: 1;
       }
-    }
-
-    .info-option-icon[aria-expanded="true"] {
-      background-color: $info-active-color;
-      border-radius: 1px; // The shadow below makes this the desired larger radius
-      box-shadow: 0 0 0 5px $info-active-color;
-      fill: $fill-primary;
     }
 
     .section-info-option .info-option {
@@ -60,7 +70,7 @@
 
       &::after,
       &::before {
-        content: "";
+        content: '';
         offset-inline-end: 0;
         position: absolute;
       }
@@ -85,16 +95,6 @@
         offset-inline-start: 0;
         top: -$os-infopanel-arrow-height;
       }
-    }
-
-    .info-option-icon[aria-expanded="true"] + .info-option {
-      visibility: visible;
-      opacity: 1;
-      transition: visibility 0.2s, opacity 0.2s $photon-easing;
-    }
-
-    .info-option-icon:not([aria-expanded="true"]) + .info-option {
-      pointer-events: none;
     }
 
     .info-option {
@@ -133,8 +133,8 @@
       margin-top: 24px;
 
       button {
-        background: none;
-        border: none;
+        background: 0;
+        border: 0;
         color: $link-primary;
         cursor: pointer;
         margin: 0;
