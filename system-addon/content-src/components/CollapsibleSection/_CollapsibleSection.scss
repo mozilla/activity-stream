@@ -100,16 +100,6 @@
       }
     }
 
-    // .info-option-icon[aria-expanded='true'] + .info-option {
-    //   visibility: visible;
-    //   opacity: 1;
-    //   transition: visibility 0.2s, opacity 0.2s $photon-easing;
-    // }
-
-    // .info-option-icon:not([aria-expanded='true']) + .info-option {
-    //   pointer-events: none;
-    // }
-
     .info-option {
       z-index: 9999;
       position: absolute;
