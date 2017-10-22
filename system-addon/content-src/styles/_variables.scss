@@ -122,7 +122,8 @@ $snippets-container-height: 120px;
     transition-property: transform, opacity;
     transition-duration: 200ms;
 
-    &:focus, &:active {
+    &:focus,
+    &:active {
       transform: scale(1);
       opacity: 1;
     }

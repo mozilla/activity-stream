@@ -20,6 +20,9 @@ rules:
   no-duplicate-properties: 2
   no-ids: 0
   no-important: 0
+  no-misspelled-properties:
+  - 1
+  - extra-properties: ['-moz-context-properties']
   no-qualifying-elements: 0
   no-vendor-prefixes: 0
   no-warn: 1

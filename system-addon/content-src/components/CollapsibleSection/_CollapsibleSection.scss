@@ -40,12 +40,13 @@
       opacity: 0;
       transition: opacity 0.2s $photon-easing;
 
-      &:focus, &:active {
+      &:focus,
+      &:active {
         opacity: 1;
       }
     }
 
-    .info-option-icon[aria-expanded="true"] {
+    .info-option-icon[aria-expanded='true'] {
       background-color: $info-active-color;
       border-radius: 1px; // The shadow below makes this the desired larger radius
       box-shadow: 0 0 0 5px $info-active-color;
@@ -62,14 +63,14 @@
 
       &::after,
       &::before {
-        content: "";
+        content: '';
         offset-inline-end: 0;
         position: absolute;
       }
 
       &::before {
         $before-height: 32px;
-        background-image: url(chrome://global/skin/arrow/panelarrow-vertical-themed.svg), url(chrome://global/skin/arrow/panelarrow-vertical@2x.png);
+        background-image: url('chrome://global/skin/arrow/panelarrow-vertical-themed.svg'), url('chrome://global/skin/arrow/panelarrow-vertical@2x.png');
         background-position: right $arrow-offset-end bottom;
         background-repeat: no-repeat;
         background-size: $arrow-width $arrow-height;
@@ -89,13 +90,13 @@
       }
     }
 
-    .info-option-icon[aria-expanded="true"] + .info-option {
+    .info-option-icon[aria-expanded='true'] + .info-option {
       visibility: visible;
       opacity: 1;
       transition: visibility 0.2s, opacity 0.2s $photon-easing;
     }
 
-    .info-option-icon:not([aria-expanded="true"]) + .info-option {
+    .info-option-icon:not([aria-expanded='true']) + .info-option {
       pointer-events: none;
     }
 
@@ -135,8 +136,8 @@
       margin-top: 24px;
 
       button {
-        background: none;
-        border: none;
+        background: 0;
+        border: 0;
         color: $link-primary;
         cursor: pointer;
         margin: 0;

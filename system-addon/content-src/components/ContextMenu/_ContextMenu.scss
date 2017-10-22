@@ -23,6 +23,7 @@
         margin: $context-menu-outer-padding 0;
         border-bottom: 1px solid $context-menu-border-color;
       }
+
       > a {
         outline: none;
         cursor: pointer;
@@ -33,7 +34,8 @@
         display: flex;
         align-items: center;
 
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           background: $input-primary;
           color: $white;
 
@@ -45,7 +47,8 @@
             fill: $white;
           }
 
-          &:hover, &:focus {
+          &:hover,
+          &:focus {
             color: $white;
           }
         }
