@@ -92,6 +92,12 @@
       .tile {
         @include fade-in;
       }
+
+      .edit-menu {
+        transform: scale(1);
+        opacity: 1;
+      }
+
       @include context-menu-button-hover;
     }
 
@@ -256,15 +262,6 @@
         &:first-child:dir(rtl) {
           border-right: 0;
         }
-      }
-    }
-
-    &:hover,
-    &:focus,
-    &.active {
-      .edit-menu {
-        transform: scale(1);
-        opacity: 1;
       }
     }
   }

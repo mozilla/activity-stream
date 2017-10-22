@@ -40,17 +40,27 @@
       opacity: 0;
       transition: opacity 0.2s $photon-easing;
 
+      &[aria-expanded='true'] {
+        background-color: $info-active-color;
+        border-radius: 1px; // The shadow below makes this the desired larger radius
+        box-shadow: 0 0 0 5px $info-active-color;
+        fill: $fill-primary;
+      }
+
+      &[aria-expanded='true'] + .info-option {
+        visibility: visible;
+        opacity: 1;
+        transition: visibility 0.2s, opacity 0.2s $photon-easing;
+      }
+
+      &:not([aria-expanded='true']) + .info-option {
+        pointer-events: none;
+      }
+
       &:focus,
       &:active {
         opacity: 1;
       }
-    }
-
-    .info-option-icon[aria-expanded='true'] {
-      background-color: $info-active-color;
-      border-radius: 1px; // The shadow below makes this the desired larger radius
-      box-shadow: 0 0 0 5px $info-active-color;
-      fill: $fill-primary;
     }
 
     .section-info-option .info-option {
@@ -90,15 +100,15 @@
       }
     }
 
-    .info-option-icon[aria-expanded='true'] + .info-option {
-      visibility: visible;
-      opacity: 1;
-      transition: visibility 0.2s, opacity 0.2s $photon-easing;
-    }
+    // .info-option-icon[aria-expanded='true'] + .info-option {
+    //   visibility: visible;
+    //   opacity: 1;
+    //   transition: visibility 0.2s, opacity 0.2s $photon-easing;
+    // }
 
-    .info-option-icon:not([aria-expanded='true']) + .info-option {
-      pointer-events: none;
-    }
+    // .info-option-icon:not([aria-expanded='true']) + .info-option {
+    //   pointer-events: none;
+    // }
 
     .info-option {
       z-index: 9999;
