@@ -61,7 +61,17 @@ this.HighlightsFeed = class HighlightsFeed {
       const {initialized, rows} = this.store.getState().Sections[sectionIndex];
 
       if (initialized) {
-        callback(rows.map(site => site.url));
+        const linksToKeep = rows.reduce((acc, site) => {
+          // Screenshots will search for preview_image_url or fallback to URL,
+          // so we prevent both from being expired.
+          // https://github.com/mozilla/activity-stream/blob/95b4c35393b7192d680d1291b6960200be5e7570/system-addon/lib/HighlightsFeed.jsm#L131
+          acc.push(site.url);
+          if (site.preview_image_url) {
+            acc.push(site.preview_image_url);
+          }
+          return acc;
+        }, []);
+        callback(linksToKeep);
       } else {
         callback([]);
       }
