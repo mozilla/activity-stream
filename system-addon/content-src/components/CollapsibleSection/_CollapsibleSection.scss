@@ -47,7 +47,7 @@
         fill: $fill-primary;
       }
 
-      &[aria-expanded='true'] + .info-option {
+      .info-option {
         visibility: visible;
         opacity: 1;
         transition: visibility 0.2s, opacity 0.2s $photon-easing;
