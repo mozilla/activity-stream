@@ -60,9 +60,8 @@ this.HighlightsFeed = class HighlightsFeed {
     const state = this.store.getState().Sections[sectionIndex];
 
     callback(state && state.initialized ? state.rows.reduce((acc, site) => {
-      // Screenshots will search for preview_image_url or fallback to URL,
-      // so we prevent both from being expired.
-      // https://github.com/mozilla/activity-stream/blob/95b4c35393b7192d680d1291b6960200be5e7570/system-addon/lib/HighlightsFeed.jsm#L131
+      // Screenshots call in `fetchImage` will search for preview_image_url or
+      // fallback to URL, so we prevent both from being expired.
       acc.push(site.url);
       if (site.preview_image_url) {
         acc.push(site.preview_image_url);
