@@ -57,27 +57,18 @@ this.HighlightsFeed = class HighlightsFeed {
 
   filterForThumbnailExpiration(callback) {
     const sectionIndex = SectionsManager.sections.get(SECTION_ID).order;
-    if (this.store.getState().Sections[sectionIndex]) {
-      const {initialized, rows} = this.store.getState().Sections[sectionIndex];
+    const state = this.store.getState().Sections[sectionIndex];
 
-      if (initialized) {
-        const linksToKeep = rows.reduce((acc, site) => {
-          // Screenshots will search for preview_image_url or fallback to URL,
-          // so we prevent both from being expired.
-          // https://github.com/mozilla/activity-stream/blob/95b4c35393b7192d680d1291b6960200be5e7570/system-addon/lib/HighlightsFeed.jsm#L131
-          acc.push(site.url);
-          if (site.preview_image_url) {
-            acc.push(site.preview_image_url);
-          }
-          return acc;
-        }, []);
-        callback(linksToKeep);
-      } else {
-        callback([]);
+    callback(state && state.initialized ? state.rows.reduce((acc, site) => {
+      // Screenshots will search for preview_image_url or fallback to URL,
+      // so we prevent both from being expired.
+      // https://github.com/mozilla/activity-stream/blob/95b4c35393b7192d680d1291b6960200be5e7570/system-addon/lib/HighlightsFeed.jsm#L131
+      acc.push(site.url);
+      if (site.preview_image_url) {
+        acc.push(site.preview_image_url);
       }
-    } else {
-      callback([]);
-    }
+      return acc;
+    }, []) : []);
   }
 
   /**
