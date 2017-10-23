@@ -107,6 +107,16 @@ describe("Highlights Feed", () => {
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, rows.map(r => r.url));
     });
+    it("should include preview_image_url (if present) in the callback results", () => {
+      const rows = [{url: "foo.com"}, {"url": "bar.com", "preview_image_url": "bar.jpg"}];
+      feed.store.state.Sections = [{rows, initialized: true}];
+      const stub = sinon.stub();
+
+      feed.filterForThumbnailExpiration(stub);
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, ["foo.com", "bar.com", "bar.jpg"]);
+    });
     it("should pass an empty array if not initialized", () => {
       const rows = [{url: "foo.com"}, {"url": "bar.com"}];
       feed.store.state.Sections = [{rows, initialized: false}];
