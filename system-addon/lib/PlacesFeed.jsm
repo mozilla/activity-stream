@@ -108,9 +108,11 @@ class BookmarksObserver extends Observer {
     const type = args[3];
     const source = args[9];
     const uri = args[4];
+    // Skips items that are not bookmarks (like folders), about:* pages or
+    // default bookmarks, added when the profile is created.
     if (type !== PlacesUtils.bookmarks.TYPE_BOOKMARK ||
         source === PlacesUtils.bookmarks.SOURCES.IMPORT_REPLACE ||
-        (uri && (uri.scheme !== "http" && uri.scheme !== "https"))) {
+        (uri.scheme !== "http" && uri.scheme !== "https")) {
       return;
     }
     const bookmarkTitle = args[5];
