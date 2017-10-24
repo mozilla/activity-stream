@@ -10,23 +10,25 @@ const {PrerenderData} = require("common/PrerenderData.jsm");
 /**
  * prerenderStore - Generate a store with the initial state required for a prerendered page
  *
- * @param  {str} locale  The locale to start with.
- * @param  {type} strings All the strings for the page
  * @return {obj}         A store
  */
-function prerenderStore(locale, strings) {
+function prerenderStore() {
   const store = initStore(reducers, INITIAL_STATE);
-  store.dispatch({type: at.LOCALE_UPDATED, data: {locale, strings}});
   store.dispatch({type: at.PREFS_INITIAL_VALUES, data: PrerenderData.initialPrefs});
   PrerenderData.initialSections.forEach(data => store.dispatch({type: at.SECTION_REGISTER, data}));
   return store;
 }
 
 function prerender(locale, strings) {
-  const store = prerenderStore(locale, strings);
+  const store = prerenderStore();
 
   return {
-    html: ReactDOM.renderToString(<Provider store={store}><Base isPrerendered={true} /></Provider>),
+    html: ReactDOM.renderToString(<Provider store={store}>
+      <Base
+        isPrerendered={true}
+        locale={locale}
+        strings={strings} />
+    </Provider>),
     state: store.getState(),
     store
   };

@@ -259,7 +259,7 @@ this.TelemetryFeed = class TelemetryFeed {
     const appInfo = this.store.getState().App;
     const ping = {
       addon_version: appInfo.version,
-      locale: appInfo.locale,
+      locale: Services.locale.getRequestedLocale(),
       user_prefs: this.userPreferences
     };
 

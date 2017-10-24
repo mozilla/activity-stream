@@ -14,12 +14,10 @@ const DEFAULT_OPTIONS = {
 
 // This locales list is to find any similar locales that we can reuse strings
 // instead of falling back to the default, e.g., use bn-BD strings for bn-IN.
-// From https://hg.mozilla.org/l10n-central/
-// console.log(`const CENTRAL_LOCALES = ${JSON.stringify([...document.querySelectorAll("a.list:not([href*='x-testing']")].map(a => a.textContent.trim()), null, 2)};`)
+// https://hg.mozilla.org/mozilla-central/file/tip/browser/locales/l10n.toml
 const CENTRAL_LOCALES = [
   "ach",
   "af",
-  "ak",
   "an",
   "ar",
   "as",
@@ -30,12 +28,10 @@ const CENTRAL_LOCALES = [
   "bn-BD",
   "bn-IN",
   "br",
-  "brx",
   "bs",
   "ca",
   "cak",
   "cs",
-  "csb",
   "cy",
   "da",
   "de",
@@ -64,7 +60,6 @@ const CENTRAL_LOCALES = [
   "hi-IN",
   "hr",
   "hsb",
-  "hto",
   "hu",
   "hy-AM",
   "ia",
@@ -79,10 +74,6 @@ const CENTRAL_LOCALES = [
   "km",
   "kn",
   "ko",
-  "kok",
-  "ks",
-  "ku",
-  "lg",
   "lij",
   "lo",
   "lt",
@@ -91,7 +82,6 @@ const CENTRAL_LOCALES = [
   "mai",
   "mk",
   "ml",
-  "mn",
   "mr",
   "ms",
   "my",
@@ -99,54 +89,37 @@ const CENTRAL_LOCALES = [
   "ne-NP",
   "nl",
   "nn-NO",
-  "nr",
-  "nso",
-  "oc",
   "or",
   "pa-IN",
-  "pbb",
   "pl",
   "pt-BR",
   "pt-PT",
-  "qvi",
   "rm",
   "ro",
   "ru",
-  "rw",
-  "sah",
-  "sat",
   "si",
   "sk",
   "sl",
   "son",
   "sq",
   "sr",
-  "ss",
-  "st",
   "sv-SE",
-  "sw",
   "ta",
-  "ta-LK",
   "te",
   "th",
   "tl",
-  "tn",
   "tr",
-  "trs",
-  "ts",
-  "tsz",
   "uk",
   "ur",
   "uz",
-  "ve",
   "vi",
-  "wo",
   "xh",
-  "zam",
   "zh-CN",
-  "zh-TW",
-  "zu"
+  "zh-TW"
 ];
+
+// Locales that should be displayed RTL
+const RTL_LIST = ["ar", "he", "fa", "ur"];
 
 /**
  * Get the language part of the locale.
@@ -174,13 +147,19 @@ function getStrings(locale, allStrings) {
 }
 
 /**
+ * Get the text direction of the locale.
+ */
+function getTextDirection(locale) {
+  return RTL_LIST.indexOf(locale.split("-")[0]) >= 0 ? "rtl" : "ltr";
+}
+
+/**
  * templateHTML - Generates HTML for activity stream, given some options and
  * prerendered HTML if necessary.
  *
  * @param  {obj} options
  *         {str} options.locale         The locale to render in lang="" attribute
  *         {str} options.direction      The language direction to render in dir="" attribute
- *         {str} options.title          The title for the <title> element
  *         {str} options.baseUrl        The base URL for all local assets
  *         {bool} options.debug         Should we use dev versions of JS libraries?
  * @param  {str} html    The prerendered HTML created with React.renderToString (optional)
@@ -196,17 +175,17 @@ function templateHTML(options, html) {
     `${options.baseUrl}vendor/react-intl.js`,
     `${options.baseUrl}vendor/redux.js`,
     `${options.baseUrl}vendor/react-redux.js`,
+    `${options.baseUrl}prerendered/${options.locale}/activity-stream-strings.js`,
     `${options.baseUrl}data/content/activity-stream.bundle.js`
   ];
   if (isPrerendered) {
-    scripts.unshift(`${options.baseUrl}prerendered/${options.locale}/activity-stream-initial-state.js`);
+    scripts.unshift(`${options.baseUrl}prerendered/static/activity-stream-initial-state.js`);
   }
   return `<!doctype html>
 <html lang="${options.locale}" dir="${options.direction}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Security-Policy-Report-Only" content="script-src 'unsafe-inline'; img-src http: https: data: blob:; style-src 'unsafe-inline'; child-src 'none'; object-src 'none'; report-uri https://tiles.services.mozilla.com/v4/links/activity-stream/csp">
-    <title>${options.title}</title>
     <link rel="icon" type="image/png" id="favicon" href="chrome://branding/content/icon32.png"/>
     <link rel="stylesheet" href="chrome://browser/content/contentSearchUI.css" />
     <link rel="stylesheet" href="${options.baseUrl}css/activity-stream.css" />
@@ -241,12 +220,13 @@ for (const src of ${JSON.stringify(scripts, null, 2)}) {
  * Note that this may no longer be necessary in React 16 and we should review whether
  * it is still necessary.
  *
- * @param  {obj} state  The
- * @return {str}        The js file as a string
+ * @param  {string} name The name of the global to expose
+ * @param  {obj}    data The data to expose as a window global
+ * @return {str}         The js file as a string
  */
-function templateJs(state) {
+function templateJs(name, state) {
   return `// Note - this is a generated file.
-  window.gActivityStreamPrerenderedState = ${JSON.stringify(state, null, 2)};
+window.${name} = ${JSON.stringify(state, null, 2)};
 `;
 }
 
@@ -267,14 +247,15 @@ function writeFiles(name, destPath, filesMap, {html, state}, options) {
   console.log("\x1b[32m", `✓ ${name}`, "\x1b[0m");
 }
 
-const DEBUG_FILES = new Map([
+const STATIC_FILES = new Map([
   ["activity-stream-debug.html", ({options}) => templateHTML(options)],
+  ["activity-stream-initial-state.js", ({state}) => templateJs("gActivityStreamPrerenderedState", state)],
   ["activity-stream-prerendered-debug.html", ({html, options}) => templateHTML(options, html)]
 ]);
 
 const LOCALIZED_FILES = new Map([
-  ["activity-stream-initial-state.js", ({state}) => templateJs(state)],
   ["activity-stream-prerendered.html", ({html, options}) => templateHTML(options, html)],
+  ["activity-stream-strings.js", ({options: {strings}}) => templateJs("gActivityStreamStrings", strings)],
   ["activity-stream.html", ({options}) => templateHTML(options)]
 ]);
 
@@ -304,46 +285,54 @@ function main() { // eslint-disable-line max-statements
 
   // Save default locale's strings to compare against other locales' strings
   let defaultStrings;
-  const hasOnlyDefaultStrings = strings => defaultStrings &&
-    !Object.keys(strings).some(key => strings[key] !== defaultStrings[key]);
+  let langStrings;
+  const isSubset = (strings, existing) => existing &&
+    Object.keys(strings).every(key => strings[key] === existing[key]);
 
   // Process the default locale first then all the ones from mozilla-central
   const localizedLocales = [];
   const skippedLocales = [];
   for (const locale of [DEFAULT_LOCALE, ...CENTRAL_LOCALES, ...extraLocales]) {
+    // Skip the locale if it would have resulted in duplicate packaged files
     const strings = getStrings(locale, allStrings);
-    if (hasOnlyDefaultStrings(strings)) {
+    if (isSubset(strings, defaultStrings) || isSubset(strings, langStrings)) {
       skippedLocales.push(locale);
       continue;
     }
 
     const prerenderData  = prerender(locale, strings);
-    const {App} = prerenderData.state;
     const options = Object.assign({}, baseOptions, {
-      direction: App.textDirection,
+      direction: getTextDirection(locale),
       locale,
-      title: App.strings.newtab_page_title
+      strings
     });
 
     // Put locale-specific files in their own directory
-    const localePath = path.join(prerenderedPath, locale);
+    const localePath = path.join(prerenderedPath, "locales", locale);
     mkdir("-p", localePath);
     writeFiles(locale, localePath, LOCALIZED_FILES, prerenderData, options);
 
-    // Only write debug files for the default locale
+    // Only write static files once for the default locale
     if (locale === DEFAULT_LOCALE) {
-      writeFiles(`${locale} (debug)`, localePath, DEBUG_FILES, prerenderData,
+      const staticPath = path.join(prerenderedPath, "static");
+      mkdir("-p", staticPath);
+      writeFiles(`${locale} (static)`, staticPath, STATIC_FILES, prerenderData,
         Object.assign({}, options, {debug: true}));
 
       // Save the default strings to compare against other locales' strings
       defaultStrings = strings;
     }
 
+    // Save the language's strings to maybe reuse for the next similar locales
+    if (getLanguage(locale) === locale) {
+      langStrings = strings;
+    }
+
     localizedLocales.push(locale);
   }
 
   if (skippedLocales.length) {
-    console.log("\x1b[33m", `Skipped the following locales because they use the same strings as ${DEFAULT_LOCALE}: ${skippedLocales.join(", ")}`, "\x1b[0m");
+    console.log("\x1b[33m", `Skipped the following locales because they use the same strings as ${DEFAULT_LOCALE} or its language locale: ${skippedLocales.join(", ")}`, "\x1b[0m");
   }
   if (extraLocales.length) {
     console.log("\x1b[31m", `✗ These locales were not in CENTRAL_LOCALES, but probably should be: ${extraLocales.join(", ")}`, "\x1b[0m");

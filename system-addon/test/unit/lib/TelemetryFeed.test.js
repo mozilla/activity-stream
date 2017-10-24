@@ -21,7 +21,7 @@ describe("TelemetryFeed", () => {
   let browser = {getAttribute() { return "true"; }};
   let store = {
     dispatch() {},
-    getState() { return {App: {version: "1.0.0", locale: "en-US"}}; }
+    getState() { return {App: {version: "1.0.0"}}; }
   };
   let instance;
   let clock;
