@@ -1,16 +1,20 @@
 const DetectUserSessionStart = require("content-src/lib/detect-user-session-start");
-const {actionTypes: at} = require("common/Actions.jsm");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
 describe("detectUserSessionStart", () => {
+  let store;
   class PerfService {
     getMostRecentAbsMarkStartByName() { return 1234; }
     mark() {}
   }
 
+  beforeEach(() => {
+    store = {dispatch: () => {}};
+  });
   describe("#sendEventOrAddListener", () => {
     it("should call ._sendEvent immediately if the document is visible", () => {
       const mockDocument = {visibilityState: "visible"};
-      const instance = new DetectUserSessionStart({document: mockDocument});
+      const instance = new DetectUserSessionStart(store, {document: mockDocument});
       sinon.stub(instance, "_sendEvent");
 
       instance.sendEventOrAddListener();
@@ -19,7 +23,7 @@ describe("detectUserSessionStart", () => {
     });
     it("should add an event listener on visibility changes the document is not visible", () => {
       const mockDocument = {visibilityState: "hidden", addEventListener: sinon.spy()};
-      const instance = new DetectUserSessionStart({document: mockDocument});
+      const instance = new DetectUserSessionStart(store, {document: mockDocument});
       sinon.stub(instance, "_sendEvent");
 
       instance.sendEventOrAddListener();
@@ -29,39 +33,33 @@ describe("detectUserSessionStart", () => {
     });
   });
   describe("#_sendEvent", () => {
-    it("should send an async message with the SAVE_SESSION_PERF_DATA", () => {
-      const sendAsyncMessage = sinon.spy();
-      const instance = new DetectUserSessionStart({sendAsyncMessage});
+    it("should dispatch an action with the SAVE_SESSION_PERF_DATA", () => {
+      const dispatch = sinon.spy(store, "dispatch");
+      const instance = new DetectUserSessionStart(store);
 
       instance._sendEvent();
 
-      assert.calledWith(sendAsyncMessage, "ActivityStream:ContentToMain", {
+      assert.calledWith(dispatch, ac.SendToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {visibility_event_rcvd_ts: sinon.match.number}
-      });
+      }));
     });
 
     it("shouldn't send a message if getMostRecentAbsMarkStartByName throws", () => {
       let perfService = new PerfService();
       sinon.stub(perfService, "getMostRecentAbsMarkStartByName").throws();
-      const sendAsyncMessage = sinon.spy();
-      const instance = new DetectUserSessionStart({
-        perfService,
-        sendAsyncMessage
-      });
+      const dispatch = sinon.spy(store, "dispatch");
+      const instance = new DetectUserSessionStart(store, {perfService});
 
       instance._sendEvent();
 
-      assert.notCalled(sendAsyncMessage);
+      assert.notCalled(dispatch);
     });
 
     it('should call perfService.mark("visibility_event_rcvd_ts")', () => {
       let perfService = new PerfService();
       sinon.stub(perfService, "mark");
-      const instance = new DetectUserSessionStart({
-        perfService,
-        sendAsyncMessage: () => {}
-      });
+      const instance = new DetectUserSessionStart(store, {perfService});
 
       instance._sendEvent();
 
@@ -71,7 +69,7 @@ describe("detectUserSessionStart", () => {
 
   describe("_onVisibilityChange", () => {
     it("should not send an event if visiblity is not visible", () => {
-      const instance = new DetectUserSessionStart({document: {visibilityState: "hidden"}});
+      const instance = new DetectUserSessionStart(store, {document: {visibilityState: "hidden"}});
       sinon.stub(instance, "_sendEvent");
 
       instance._onVisibilityChange();
@@ -80,7 +78,7 @@ describe("detectUserSessionStart", () => {
     });
     it("should send an event and remove the event listener if visibility is visible", () => {
       const mockDocument = {visibilityState: "visible", removeEventListener: sinon.spy()};
-      const instance = new DetectUserSessionStart({document: mockDocument});
+      const instance = new DetectUserSessionStart(store, {document: mockDocument});
       sinon.stub(instance, "_sendEvent");
 
       instance._onVisibilityChange();

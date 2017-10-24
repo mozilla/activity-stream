@@ -8,9 +8,9 @@ const DetectUserSessionStart = require("content-src/lib/detect-user-session-star
 const {addSnippetsSubscriber} = require("content-src/lib/snippets");
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 
-new DetectUserSessionStart().sendEventOrAddListener();
-
 const store = initStore(reducers, global.gActivityStreamPrerenderedState);
+
+new DetectUserSessionStart(store).sendEventOrAddListener();
 
 // If we are starting in a prerendered state, we must wait until the first render
 // to request state rehydration (see Base.jsx). If we are NOT in a prerendered state,
