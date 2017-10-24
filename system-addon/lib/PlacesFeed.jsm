@@ -109,7 +109,7 @@ class BookmarksObserver extends Observer {
     const source = args[9];
     const uri = args[4];
     if (type !== PlacesUtils.bookmarks.TYPE_BOOKMARK ||
-        source !== PlacesUtils.bookmarks.SOURCES.DEFAULT ||
+        source === PlacesUtils.bookmarks.SOURCES.IMPORT_REPLACE ||
         (uri && (uri.scheme !== "http" && uri.scheme !== "https"))) {
       return;
     }

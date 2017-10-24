@@ -276,7 +276,7 @@ describe("PlacesFeed", () => {
 
         assert.notCalled(dispatch);
       });
-      it("should not dispatch a PLACES_BOOKMARK_ADDED action - not DEFAULT source", async () => {
+      it("should not dispatch a PLACES_BOOKMARK_ADDED action - has IMPORT_REPLACE source", async () => {
         // Yes, onItemAdded has at least 8 arguments. See function definition for docs.
         const args = [null, null, null, TYPE_BOOKMARK,
           {spec: FAKE_BOOKMARK.url, scheme: "http"}, FAKE_BOOKMARK.bookmarkTitle,
