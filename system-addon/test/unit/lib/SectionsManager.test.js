@@ -210,7 +210,11 @@ describe("SectionsManager", () => {
     });
   });
   describe("#updateBookmarkMetadata", () => {
+    let clock;
+
     beforeEach(() => {
+      clock = sinon.useFakeTimers();
+
       let rows = [{
         url: "bar",
         title: "title",
@@ -227,12 +231,17 @@ describe("SectionsManager", () => {
       }];
       SectionsManager.addSection("highlights", {rows});
     });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
     it("shouldn't call PlacesUtils if URL is not in topstories", () => {
       SectionsManager.updateBookmarkMetadata({url: "foo"});
 
       assert.notCalled(fakePlacesUtils.history.update);
     });
-    it("should call PlacesUtils", () => {
+    it("should call PlacesUtils.history.update", () => {
       SectionsManager.updateBookmarkMetadata({url: "bar"});
 
       assert.calledOnce(fakePlacesUtils.history.update);
@@ -241,6 +250,16 @@ describe("SectionsManager", () => {
         title: "title",
         description: "description",
         previewImageURL: "image"
+      });
+    });
+    it("should call PlacesUtils.history.insert", () => {
+      SectionsManager.updateBookmarkMetadata({url: "bar"});
+
+      assert.calledOnce(fakePlacesUtils.history.insert);
+      assert.calledWithExactly(fakePlacesUtils.history.insert, {
+        url: "bar",
+        title: "title",
+        visits: [new Date()]
       });
     });
   });
