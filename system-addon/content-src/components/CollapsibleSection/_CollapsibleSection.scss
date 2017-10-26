@@ -196,9 +196,13 @@
       max-height: 0;
       overflow: hidden;
     }
+
+    .section-info-option {
+      pointer-events: none;
+    }
   }
 
-  &:hover {
+  &:not(.collapsed):hover {
     .info-option-icon {
       opacity: 1;
     }

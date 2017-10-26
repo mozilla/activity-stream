@@ -267,6 +267,7 @@
     offset-inline-end: 24px;
     opacity: 0;
     padding: 0 10px;
+    pointer-events: none;
     position: absolute;
     top: 2px;
     transition: opacity 0.2s $photon-easing;
@@ -327,9 +328,10 @@
   }
 }
 
-section.top-sites:hover {
+section.top-sites:not(.collapsed):hover {
   .edit-topsites-button {
     opacity: 1;
+    pointer-events: auto;
   }
 }
 
