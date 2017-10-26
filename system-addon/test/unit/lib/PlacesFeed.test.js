@@ -29,7 +29,11 @@ describe("PlacesFeed", () => {
       }
     });
     globals.set("PlacesUtils", {
-      history: {addObserver: sandbox.spy(), removeObserver: sandbox.spy()},
+      history: {
+        addObserver: sandbox.spy(),
+        removeObserver: sandbox.spy(),
+        insert: sandbox.stub()
+      },
       bookmarks: {
         TYPE_BOOKMARK,
         addObserver: sandbox.spy(),
@@ -76,7 +80,6 @@ describe("PlacesFeed", () => {
     assert.calledOnce(feed.store.dispatch);
     assert.equal(feed.store.dispatch.firstCall.args[0].type, action.type);
   });
-
   describe("#onAction", () => {
     it("should add bookmark, history, blocked observers on INIT", () => {
       feed.onAction({type: at.INIT});

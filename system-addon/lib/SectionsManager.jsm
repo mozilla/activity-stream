@@ -151,8 +151,15 @@ const SectionsManager = {
     }
   },
 
+  /**
+   * Save metadata to places db and add a visit for that URL.
+   */
   updateBookmarkMetadata({url}) {
-    this.sections.forEach(section => {
+    this.sections.forEach((section, id) => {
+      if (id === "highlights") {
+        // Skip Highlights cards, we already have that metadata.
+        return;
+      }
       if (section.rows) {
         section.rows.forEach(card => {
           if (card.url === url && card.description && card.title && card.image) {
@@ -161,6 +168,12 @@ const SectionsManager = {
               title: card.title,
               description: card.description,
               previewImageURL: card.image
+            });
+            // Highlights query skips bookmarks with no visits.
+            PlacesUtils.history.insert({
+              url,
+              title: card.title,
+              visits: [{}]
             });
           }
         });
