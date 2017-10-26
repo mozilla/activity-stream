@@ -247,16 +247,6 @@ class PlacesFeed {
     win.openLinkIn(action.data.url, "window", params);
   }
 
-  /**
-   * Add a visit to the provided URL with the current timestamp.
-   *
-   * @param {string} site.url
-   * @param {string} site.title
-   */
-  addURLVisit({url, title}) {
-    PlacesUtils.history.insert({url, title, visits: [new Date()]});
-  }
-
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -271,9 +261,6 @@ class PlacesFeed {
         break;
       case at.BOOKMARK_URL:
         NewTabUtils.activityStreamLinks.addBookmark(action.data, action._target.browser);
-        break;
-      case at.ADD_URL_VISIT:
-        this.addURLVisit(action.data);
         break;
       case at.DELETE_BOOKMARK_BY_ID:
         NewTabUtils.activityStreamLinks.deleteBookmark(action.data);

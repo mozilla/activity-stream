@@ -2,7 +2,6 @@
 const {SectionsFeed, SectionsManager} = require("lib/SectionsManager.jsm");
 const {EventEmitter, GlobalOverrider} = require("test/unit/utils");
 const {MAIN_MESSAGE_TYPE, CONTENT_MESSAGE_TYPE} = require("common/Actions.jsm");
-const {actionCreators: ac} = require("common/Actions.jsm");
 
 const FAKE_ID = "FAKE_ID";
 const FAKE_OPTIONS = {icon: "FAKE_ICON", title: "FAKE_TITLE"};
@@ -266,13 +265,12 @@ describe("SectionsFeed", () => {
     it("should bind appropriate listeners", () => {
       sinon.spy(SectionsManager, "on");
       feed.init();
-      assert.callCount(SectionsManager.on, 5);
+      assert.callCount(SectionsManager.on, 4);
       for (const [event, listener] of [
         [SectionsManager.ADD_SECTION, feed.onAddSection],
         [SectionsManager.REMOVE_SECTION, feed.onRemoveSection],
         [SectionsManager.UPDATE_SECTION, feed.onUpdateSection],
-        [SectionsManager.UPDATE_SECTION_CARD, feed.onUpdateSectionCard],
-        [SectionsManager.DISPATCH_TO_MAIN, feed.onDispatchToMain]
+        [SectionsManager.UPDATE_SECTION_CARD, feed.onUpdateSectionCard]
       ]) {
         assert.calledWith(SectionsManager.on, event, listener);
       }
@@ -295,13 +293,12 @@ describe("SectionsFeed", () => {
       sinon.spy(SectionsManager, "off");
       feed.init();
       feed.uninit();
-      assert.callCount(SectionsManager.off, 5);
+      assert.callCount(SectionsManager.off, 4);
       for (const [event, listener] of [
         [SectionsManager.ADD_SECTION, feed.onAddSection],
         [SectionsManager.REMOVE_SECTION, feed.onRemoveSection],
         [SectionsManager.UPDATE_SECTION, feed.onUpdateSection],
-        [SectionsManager.UPDATE_SECTION_CARD, feed.onUpdateSectionCard],
-        [SectionsManager.DISPATCH_TO_MAIN, feed.onDispatchToMain]
+        [SectionsManager.UPDATE_SECTION_CARD, feed.onUpdateSectionCard]
       ]) {
         assert.calledWith(SectionsManager.off, event, listener);
       }
@@ -313,18 +310,6 @@ describe("SectionsFeed", () => {
       feed.uninit();
       assert.calledOnce(spy);
       assert.notOk(SectionsManager.initialized);
-    });
-  });
-  describe("#dispatchToMain", () => {
-    it("should dispatch SendToMain", () => {
-      const action = {
-        type: "ADD_URL_VISIT",
-        data: "foo"
-      };
-      feed.onDispatchToMain("DISPATCH_TO_MAIN", action);
-
-      assert.calledOnce(feed.store.dispatch);
-      assert.calledWith(feed.store.dispatch, ac.SendToMain(action));
     });
   });
   describe("#onAddSection", () => {

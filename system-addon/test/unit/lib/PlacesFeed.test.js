@@ -80,18 +80,6 @@ describe("PlacesFeed", () => {
     assert.calledOnce(feed.store.dispatch);
     assert.equal(feed.store.dispatch.firstCall.args[0].type, action.type);
   });
-  describe("#addURLVisit", () => {
-    it("should add a visit for that URL", () => {
-      feed.addURLVisit({
-        url: "foo.com",
-        title: "Foo"
-      });
-
-      assert.calledOnce(global.PlacesUtils.history.insert);
-      assert.propertyVal(global.PlacesUtils.history.insert.firstCall.args[0], "url", "foo.com");
-      assert.propertyVal(global.PlacesUtils.history.insert.firstCall.args[0], "title", "Foo");
-    });
-  });
   describe("#onAction", () => {
     it("should add bookmark, history, blocked observers on INIT", () => {
       feed.onAction({type: at.INIT});
@@ -177,14 +165,6 @@ describe("PlacesFeed", () => {
     it("should save to Pocket on SAVE_TO_POCKET", () => {
       feed.onAction({type: at.SAVE_TO_POCKET, data: {site: {url: "raspberry.com", title: "raspberry"}}, _target: {browser: {}}});
       assert.calledWith(global.Pocket.savePage, {}, "raspberry.com", "raspberry");
-    });
-    it("should call addURLVisit on ADD_URL_VISIT", () => {
-      const stub = sinon.stub(feed, "addURLVisit");
-      const data = {url: "foo", type: "now"};
-      feed.onAction({type: "ADD_URL_VISIT", data});
-
-      assert.calledOnce(stub);
-      assert.calledWithExactly(stub, data);
     });
   });
 

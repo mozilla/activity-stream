@@ -7,7 +7,6 @@ const {utils: Cu} = Components;
 Cu.import("resource://gre/modules/EventEmitter.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Console.jsm");
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 
 XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
@@ -153,7 +152,7 @@ const SectionsManager = {
   },
 
   /**
-   * Save Top Story metadata to places db.
+   * Save metadata to places db and add a visit for that URL.
    */
   updateBookmarkMetadata({url}) {
     this.sections.forEach((section, id) => {
@@ -170,12 +169,10 @@ const SectionsManager = {
               description: card.description,
               previewImageURL: card.image
             });
-            this.emit(this.DISPATCH_TO_MAIN, {
-              type: at.ADD_URL_VISIT,
-              data: {
-                url: card.url,
-                title: card.title
-              }
+            PlacesUtils.history.insert({
+              url,
+              title: card.title,
+              visits: [new Date()]
             });
           }
         });
@@ -233,7 +230,6 @@ const SectionsManager = {
 for (const action of [
   "ACTION_DISPATCHED",
   "ADD_SECTION",
-  "DISPATCH_TO_MAIN",
   "REMOVE_SECTION",
   "ENABLE_SECTION",
   "DISABLE_SECTION",
@@ -254,12 +250,10 @@ class SectionsFeed {
     this.onRemoveSection = this.onRemoveSection.bind(this);
     this.onUpdateSection = this.onUpdateSection.bind(this);
     this.onUpdateSectionCard = this.onUpdateSectionCard.bind(this);
-    this.onDispatchToMain = this.onDispatchToMain.bind(this);
   }
 
   init() {
     SectionsManager.on(SectionsManager.ADD_SECTION, this.onAddSection);
-    SectionsManager.on(SectionsManager.DISPATCH_TO_MAIN, this.onDispatchToMain);
     SectionsManager.on(SectionsManager.REMOVE_SECTION, this.onRemoveSection);
     SectionsManager.on(SectionsManager.UPDATE_SECTION, this.onUpdateSection);
     SectionsManager.on(SectionsManager.UPDATE_SECTION_CARD, this.onUpdateSectionCard);
@@ -272,14 +266,9 @@ class SectionsFeed {
     SectionsManager.uninit();
     SectionsManager.emit(SectionsManager.UNINIT);
     SectionsManager.off(SectionsManager.ADD_SECTION, this.onAddSection);
-    SectionsManager.off(SectionsManager.DISPATCH_TO_MAIN, this.onDispatchToMain);
     SectionsManager.off(SectionsManager.REMOVE_SECTION, this.onRemoveSection);
     SectionsManager.off(SectionsManager.UPDATE_SECTION, this.onUpdateSection);
     SectionsManager.off(SectionsManager.UPDATE_SECTION_CARD, this.onUpdateSectionCard);
-  }
-
-  onDispatchToMain(event, action) {
-    this.store.dispatch(ac.SendToMain(action));
   }
 
   onAddSection(event, id, options) {
