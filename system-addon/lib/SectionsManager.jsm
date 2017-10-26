@@ -169,8 +169,7 @@ const SectionsManager = {
               description: card.description,
               previewImageURL: card.image
             });
-            // Add a history visit for URLs originating from other sources,
-            // like TopStories. Ensures the bookmark will appear in Highlights. 
+            // Highlights query skips bookmarks with no visits.
             PlacesUtils.history.insert({
               url,
               title: card.title,
