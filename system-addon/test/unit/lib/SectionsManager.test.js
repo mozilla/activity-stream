@@ -210,11 +210,7 @@ describe("SectionsManager", () => {
     });
   });
   describe("#updateBookmarkMetadata", () => {
-    let clock;
-
     beforeEach(() => {
-      clock = sinon.useFakeTimers();
-
       let rows = [{
         url: "bar",
         title: "title",
@@ -230,10 +226,6 @@ describe("SectionsManager", () => {
         image: "image"
       }];
       SectionsManager.addSection("highlights", {rows});
-    });
-
-    afterEach(() => {
-      clock.restore();
     });
 
     it("shouldn't call PlacesUtils if URL is not in topstories", () => {
@@ -259,7 +251,7 @@ describe("SectionsManager", () => {
       assert.calledWithExactly(fakePlacesUtils.history.insert, {
         url: "bar",
         title: "title",
-        visits: [new Date()]
+        visits: [{}]
       });
     });
   });

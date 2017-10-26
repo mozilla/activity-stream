@@ -172,7 +172,7 @@ const SectionsManager = {
             PlacesUtils.history.insert({
               url,
               title: card.title,
-              visits: [new Date()]
+              visits: [{}]
             });
           }
         });
