@@ -1,13 +1,15 @@
-const {_unconnected: CollapsibleSection, Info} = require("content-src/components/CollapsibleSection/CollapsibleSection");
-const {actionTypes: at} = require("common/Actions.jsm");
+const {_unconnected: CollapsibleSection, Info, Disclaimer} = require("content-src/components/CollapsibleSection/CollapsibleSection");
+const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 const React = require("react");
-const {shallowWithIntl} = require("test/unit/utils");
+const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
 const DEFAULT_PROPS = {
+  id: "cool",
   className: "cool-section",
   title: "Cool Section",
   prefName: "collapseSection",
   Prefs: {values: {collapseSection: false}},
   infoOption: {},
+  disclaimer: {text: {id: "text"}, link: {id: "link"}, button: {id: "button"}},
   document: {
     addEventListener: () => {},
     removeEventListener: () => {},
@@ -21,7 +23,7 @@ describe("CollapsibleSection", () => {
 
   function setup(props = {}) {
     const customProps = Object.assign({}, DEFAULT_PROPS, props);
-    wrapper = shallowWithIntl(<CollapsibleSection {...customProps}>foo</CollapsibleSection>);
+    wrapper = mountWithIntl(<CollapsibleSection {...customProps}>foo</CollapsibleSection>);
   }
 
   beforeEach(() => setup());
@@ -34,6 +36,16 @@ describe("CollapsibleSection", () => {
     setup({Prefs: {values: {collapseSection: true}}});
     assert.ok(wrapper.instance().props.Prefs.values.collapseSection);
     assert.ok(wrapper.find(".collapsible-section").first().hasClass("collapsed"));
+  });
+
+  it("should render disclaimer if not acknowledged", () => {
+    setup({Prefs: {values: {"section.cool.showDisclaimer": true}}});
+    assert.lengthOf(wrapper.find(".section-disclaimer"), 1);
+  });
+
+  it("should not render disclaimer if acknowledged", () => {
+    setup({Prefs: {values: {"section.cool.showDisclaimer": false}}});
+    assert.lengthOf(wrapper.find(".section-disclaimer"), 0);
   });
 
   it("should fire a pref change event when section title is clicked", done => {
@@ -132,5 +144,35 @@ describe("<Info>", () => {
     wrapper.find(".section-info-option").simulate("mouseout");
 
     assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
+  });
+});
+
+describe("<Disclaimer>", () => {
+  let wrapper;
+  const DISCLAIMER_PROPS = {
+    disclaimer: {text: {id: "text"}, link: {id: "link"}, button: {id: "button"}},
+    disclaimerPref: "section.test.showDisclaimer",
+    eventSource: "test"
+  };
+
+  function setup(props = {}) {
+    const customProps = Object.assign({}, DISCLAIMER_PROPS, props);
+    wrapper = shallowWithIntl(<Disclaimer {...customProps}>foo</Disclaimer>);
+  }
+
+  beforeEach(() => setup());
+
+  it("should render disclaimer", () => {
+    assert.lengthOf(wrapper.find(".section-disclaimer"), 1);
+  });
+
+  it("should send telemetry and set pref to acknowledge disclaimer when button is clicked", () => {
+    const dispatch = sinon.spy();
+    setup({dispatch});
+
+    wrapper.find(".section-disclaimer").childAt(1).simulate("click");
+    assert.calledTwice(dispatch);
+    assert.calledWith(dispatch.firstCall, ac.SetPref("section.test.showDisclaimer", false));
+    assert.calledWith(dispatch.secondCall, ac.UserEvent({event: "SECTION_DISCLAIMER_ACKNOWLEDGED", source: "test"}));
   });
 });

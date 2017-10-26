@@ -89,6 +89,40 @@ class Info extends React.PureComponent {
 
 const InfoIntl = injectIntl(Info);
 
+class Disclaimer extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onAcknowledge = this.onAcknowledge.bind(this);
+  }
+
+  onAcknowledge() {
+    this.props.dispatch(ac.SetPref(this.props.disclaimerPref, false));
+    this.props.dispatch(ac.UserEvent({event: "SECTION_DISCLAIMER_ACKNOWLEDGED", source: this.props.eventSource}));
+  }
+
+  render() {
+    const disclaimer = this.props.disclaimer;
+    return (
+      <div className="section-disclaimer">
+          <div className="section-disclaimer-text">
+            {getFormattedMessage(disclaimer.text)}
+            {disclaimer.link &&
+              <a href={disclaimer.link.href} target="_blank" rel="noopener noreferrer">
+                {getFormattedMessage(disclaimer.link.title || disclaimer.link)}
+              </a>
+            }
+          </div>
+
+          <button onClick={this.onAcknowledge}>
+            {getFormattedMessage(disclaimer.button)}
+          </button>
+      </div>
+    );
+  }
+}
+
+const DisclaimerIntl = injectIntl(Disclaimer);
+
 class CollapsibleSection extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -150,7 +184,9 @@ class CollapsibleSection extends React.PureComponent {
   render() {
     const isCollapsed = this.props.Prefs.values[this.props.prefName];
     const {enableAnimation, isAnimating} = this.state;
-    const infoOption = this.props.infoOption;
+    const {id, infoOption, eventSource, disclaimer} = this.props;
+    const disclaimerPref = `section.${id}.showDisclaimer`;
+    const needsDisclaimer = disclaimer && this.props.Prefs.values[disclaimerPref];
 
     return (
       <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${isCollapsed ? " collapsed" : ""}`}>
@@ -165,6 +201,7 @@ class CollapsibleSection extends React.PureComponent {
           {infoOption && <InfoIntl infoOption={infoOption} dispatch={this.props.dispatch} />}
         </div>
         <div className={`section-body${isAnimating ? " animating" : ""}`} onTransitionEnd={this.onTransitionEnd}>
+          {needsDisclaimer && <DisclaimerIntl disclaimerPref={disclaimerPref} disclaimer={disclaimer} eventSource={eventSource} dispatch={this.props.dispatch} />}
           {this.props.children}
         </div>
       </section>
@@ -185,3 +222,5 @@ module.exports = injectIntl(CollapsibleSection);
 module.exports._unconnected = CollapsibleSection;
 module.exports.Info = Info;
 module.exports.InfoIntl = InfoIntl;
+module.exports.Disclaimer = Disclaimer;
+module.exports.DisclaimerIntl = DisclaimerIntl;

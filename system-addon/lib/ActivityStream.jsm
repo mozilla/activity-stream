@@ -64,6 +64,7 @@ const PREFS_CONFIG = new Map([
       stories_endpoint: `https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=2&consumer_key=$apiKey&locale_lang=${args.locale}`,
       stories_referrer: "https://getpocket.com/recommendations",
       info_link: "https://www.mozilla.org/privacy/firefox/#pocketstories",
+      disclaimer_link: "https://getpocket.cdn.mozilla.net/firefox/new_tab_learn_more",
       topics_endpoint: `https://getpocket.cdn.mozilla.net/v3/firefox/trending-topics?version=2&consumer_key=$apiKey&locale_lang=${args.locale}`,
       show_spocs: false,
       personalized: false
@@ -109,18 +110,6 @@ const PREFS_CONFIG = new Map([
     title: "Number of Top Sites to display",
     value: 6
   }],
-  ["impressionStats.clicked", {
-    title: "GUIDs of clicked Top stories items",
-    value: "[]"
-  }],
-  ["impressionStats.blocked", {
-    title: "GUIDs of blocked Top stories items",
-    value: "[]"
-  }],
-  ["impressionStats.pocketed", {
-    title: "GUIDs of pocketed Top stories items",
-    value: "[]"
-  }],
   ["telemetry", {
     title: "Enable system error and usage data collection",
     value: true,
@@ -137,6 +126,10 @@ const PREFS_CONFIG = new Map([
   ["section.topstories.collapsed", {
     title: "Collapse the Top Stories section",
     value: false
+  }],
+  ["section.topstories.showDisclaimer", {
+    title: "Boolean flag that decides whether or not to show the topstories disclaimer.",
+    value: true
   }]
 ]);
 

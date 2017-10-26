@@ -69,6 +69,9 @@ const TileSchema = Joi.object().keys({
 
 const ImpressionStatsPing = Joi.object().keys(Object.assign({}, baseKeys, {
   source: Joi.string().required(),
+  impression_id: Joi.string().required(),
+  client_id: Joi.valid("n/a").required(),
+  session_id: Joi.valid("n/a").required(),
   action: Joi.valid("activity_stream_impression_stats").required(),
   tiles: Joi.array().items(TileSchema).required(),
   click: Joi.number().integer(),

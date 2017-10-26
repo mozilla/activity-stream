@@ -176,7 +176,6 @@ describe("<Section>", () => {
       const action = dispatch.firstCall.args[0];
       assert.equal(action.type, at.TELEMETRY_IMPRESSION_STATS);
       assert.equal(action.data.source, "TOP_STORIES");
-      assert.isFalse(action.data.incognito);
       assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}]);
     });
     it("should not send impression stats if not configured", () => {
@@ -190,19 +189,6 @@ describe("<Section>", () => {
       const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {Prefs: {values: {"section.topstories.collapsed": true}}});
       renderSection(props);
       assert.notCalled(dispatch);
-    });
-    it("should not send client id if section is personalized", () => {
-      FAKE_TOPSTORIES_SECTION_PROPS.options.personalized = true;
-      const dispatch = sinon.spy();
-      renderSection({dispatch});
-
-      assert.calledOnce(dispatch);
-
-      const action = dispatch.firstCall.args[0];
-      assert.equal(action.type, at.TELEMETRY_IMPRESSION_STATS);
-      assert.equal(action.data.source, "TOP_STORIES");
-      assert.isTrue(action.data.incognito);
-      assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}]);
     });
     it("should send 1 impression when the page becomes visibile after loading", () => {
       const props = {

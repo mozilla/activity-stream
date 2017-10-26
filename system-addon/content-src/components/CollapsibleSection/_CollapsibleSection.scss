@@ -4,6 +4,7 @@
     .click-target {
       cursor: pointer;
       vertical-align: top;
+      white-space: nowrap;
     }
 
     .icon-arrowhead-down,
@@ -163,10 +164,61 @@
     }
   }
 
+  .section-disclaimer {
+    color: $grey-60;
+    font-size: 13px;
+    margin-bottom: 16px;
+
+    .section-disclaimer-text {
+      display: inline-block;
+
+      @media (min-width: $break-point-small) {
+        width: $card-width;
+      }
+
+      @media (min-width: $break-point-medium) {
+        width: $card-width * 1.5;
+      }
+
+      @media (min-width: $break-point-large) {
+        width: $card-width * 3 - $base-gutter;
+      }
+    }
+
+    a {
+      color: $link-secondary;
+      padding-left: 3px;
+    }
+
+    button {
+      margin-top: 2px;
+      offset-inline-end: 0;
+      height: 26px;
+
+      background: $grey-10;
+      border: 1px solid $grey-40;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover:not(.dismiss) {
+        box-shadow: $shadow-primary;
+        transition: box-shadow 150ms;
+      }
+
+      @media (min-width: $wrapper-default-width) {
+        position: relative;
+      }
+
+      @media (min-width: $break-point-small) {
+        position: absolute;
+      }
+    }
+  }
+
   .section-body {
     // max-height needs to be set to a value larger than it will ever reasonably get.
     // We then transition on max-height, since we can't transition height to/from auto.
-    max-height: 900px;
+    max-height: 1100px;
 
     // This is so the top sites favicon and card dropshadows don't get clipped during animation:
     $horizontal-padding: 7px;
@@ -195,6 +247,10 @@
     .section-body {
       max-height: 0;
       overflow: hidden;
+    }
+
+    .section-disclaimer {
+      position: relative;
     }
 
     .section-info-option {
