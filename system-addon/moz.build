@@ -10,6 +10,8 @@ with Files("**"):
 DEFINES['MOZ_APP_VERSION'] = CONFIG['MOZ_APP_VERSION']
 DEFINES['MOZ_APP_MAXVERSION'] = CONFIG['MOZ_APP_MAXVERSION']
 
+DIRS += ['locales']
+
 FINAL_TARGET_FILES.features['activity-stream@mozilla.org'] += [
   'bootstrap.js',
 ]
