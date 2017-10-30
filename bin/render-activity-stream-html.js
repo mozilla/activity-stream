@@ -9,7 +9,8 @@ const prerender = require("./prerender");
 const DEFAULT_LOCALE = "en-US";
 const DEFAULT_OPTIONS = {
   addonPath: "../system-addon",
-  baseUrl: "resource://activity-stream/"
+  baseUrl: "resource://activity-stream/",
+  localeBase: "chrome://activity-stream/locale/"
 };
 
 // This locales list is to find any similar locales that we can reuse strings
@@ -181,7 +182,8 @@ function getStrings(locale, allStrings) {
  *         {str} options.locale         The locale to render in lang="" attribute
  *         {str} options.direction      The language direction to render in dir="" attribute
  *         {str} options.title          The title for the <title> element
- *         {str} options.baseUrl        The base URL for all local assets
+ *         {str} options.baseUrl        The base URL for non-localized assets
+ *         {str} options.localeBase     The base URL for localized assets
  *         {bool} options.debug         Should we use dev versions of JS libraries?
  * @param  {str} html    The prerendered HTML created with React.renderToString (optional)
  * @return {str}         An HTML document as a string
@@ -199,7 +201,7 @@ function templateHTML(options, html) {
     `${options.baseUrl}data/content/activity-stream.bundle.js`
   ];
   if (isPrerendered) {
-    scripts.unshift(`${options.baseUrl}data/content/activity-stream-initial-state.js`);
+    scripts.unshift(`${options.localeBase}activity-stream-initial-state.js`);
   }
   return `<!doctype html>
 <html lang="${options.locale}" dir="${options.direction}">
@@ -350,30 +352,32 @@ function main() { // eslint-disable-line max-statements
   }
 
   // Prepare lines that we'll need for updating jar.mn
+  const condLocales = [];
   const defineLines = [];
-  const ifLines = [];
-  const elseLines = ["#else"];
   for (const locale of localizedLocales) {
-    let targetLines;
-    if (locale === DEFAULT_LOCALE) {
-      targetLines = elseLines;
-    } else {
+    if (locale !== DEFAULT_LOCALE) {
       // Preprocessor can't do "-" in conditions (SYNTAX_ERR) so indirection!
       const condLocale = locale.replace(/-/g, "_");
       if (condLocale !== locale) {
         defineLines.push(`#define ${condLocale} ${locale}`);
       }
-      ifLines.push(`#${ifLines.length ? "elif" : "if"} AB_CD == ${condLocale}`);
-      targetLines = ifLines;
+      condLocales.push(condLocale);
     }
-    for (const file of LOCALIZED_FILES.keys()) {
-      targetLines.push(`  content/data/content/${file} (./prerendered/${locale}/${file})`);
-    }
+  }
+
+  // Create the jar file mapping for each localized file
+  const ifLines = [`#if ${condLocales.map(l => `AB_CD == ${l}`).join(" || ")}`];
+  const elseLines = ["#else"];
+  const formatJarEntry = (file, locale) =>
+    `  locale/@AB_CD@/${file} (../prerendered/${locale}/${file})`;
+  for (const file of LOCALIZED_FILES.keys()) {
+    ifLines.push(formatJarEntry(file, "@AB_CD@"));
+    elseLines.push(formatJarEntry(file, DEFAULT_LOCALE));
   }
 
   // Replace existing render-generated lines in jar.mn
   const scriptName = path.basename(__filename);
-  const jarFile = path.join(addonPath, "jar.mn");
+  const jarFile = path.join(addonPath, "locales", "jar.mn");
   const jarLines = fs.readFileSync(jarFile, "utf8").split("\n");
   const startLine = jarLines.findIndex(line => line.includes(scriptName));
   const endLine = jarLines.indexOf("#endif", startLine);
