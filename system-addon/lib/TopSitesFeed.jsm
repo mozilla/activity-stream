@@ -161,11 +161,17 @@ this.TopSitesFeed = class TopSitesFeed {
    * Get an image for the link preferring tippy top, rich favicon, screenshots.
    */
   async _fetchIcon(link) {
-    // Check for tippy top icon or a rich icon.
+    // Check for tippy top icon and rich icon.
     this._tippyTopProvider.processSite(link);
-    if (!link.tippyTopIcon &&
-        (!link.favicon || link.faviconSize < MIN_FAVICON_SIZE) &&
-        !link.screenshot) {
+    let hasTippyTop = !!link.tippyTopIcon;
+    let hasRichIcon = link.favicon && link.faviconSize >= MIN_FAVICON_SIZE;
+
+    if (!hasTippyTop && !hasRichIcon) {
+      this._requestRichIcon(link.url);
+    }
+
+    // Request a screenshot if needed.
+    if (!hasTippyTop && !hasRichIcon && !link.screenshot) {
       const {url} = link;
       await Screenshots.maybeCacheScreenshot(link, url, "screenshot",
         screenshot => this.store.dispatch(ac.BroadcastToContent({
@@ -173,6 +179,13 @@ this.TopSitesFeed = class TopSitesFeed {
           type: at.SCREENSHOT_UPDATED
         })));
     }
+  }
+
+  _requestRichIcon(url) {
+    this.store.dispatch({
+      type: at.RICH_ICON_MISSING,
+      data: {url}
+    });
   }
 
   /**
