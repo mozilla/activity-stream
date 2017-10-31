@@ -358,6 +358,13 @@ describe("addSnippetsSubscriber", () => {
     assert.calledOnce(store.subscribe);
     assert.notCalled(snippets.init);
   });
+  it("should not initialize if disableSnippets pref is true", () => {
+    store.dispatch({type: at.PREF_CHANGED, data: {name: "disableSnippets", value: true}});
+    store.dispatch({type: at.SNIPPETS_DATA, data: {}});
+
+    assert.calledOnce(store.subscribe);
+    assert.notCalled(snippets.init);
+  });
   it("should not initialize if feeds.snippets pref is false", () => {
     setSnippetEnabledPref(false);
     store.dispatch({type: at.SNIPPETS_DATA, data: {}});
@@ -367,6 +374,12 @@ describe("addSnippetsSubscriber", () => {
     await store.dispatch({type: at.SNIPPETS_DATA, data: {}});
     snippets.initialized = true;
     setSnippetEnabledPref(false);
+    assert.calledOnce(snippets.uninit);
+  });
+  it("should uninitialize SnippetsProvider if SnippetsProvider has been initialized and disableSnippets pref is true", async () => {
+    await store.dispatch({type: at.SNIPPETS_DATA, data: {}});
+    snippets.initialized = true;
+    store.dispatch({type: at.PREF_CHANGED, data: {name: "disableSnippets", value: true}});
     assert.calledOnce(snippets.uninit);
   });
 });
