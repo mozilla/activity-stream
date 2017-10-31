@@ -5,6 +5,8 @@ describe("NewTabInit", () => {
   let instance;
   let store;
   let STATE;
+  const requestFromTab = portID => instance.onAction(ac.SendToMain(
+    {type: at.NEW_TAB_STATE_REQUEST}, portID));
   beforeEach(() => {
     STATE = {};
     store = {getState: sinon.stub().returns(STATE), dispatch: sinon.stub()};
@@ -14,7 +16,7 @@ describe("NewTabInit", () => {
   it("should reply with a copy of the state immediately if localization is ready", () => {
     STATE.App = {strings: {}};
 
-    instance.onAction(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}, 123));
+    requestFromTab(123);
 
     const resp = ac.SendToContent({type: at.NEW_TAB_INITIAL_STATE, data: STATE}, 123);
     assert.calledWith(store.dispatch, resp);
@@ -22,7 +24,7 @@ describe("NewTabInit", () => {
   it("should not reply immediately if localization is not ready", () => {
     STATE.App = {strings: null};
 
-    instance.onAction(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}, 123));
+    requestFromTab(123);
 
     assert.notCalled(store.dispatch);
   });
@@ -30,9 +32,9 @@ describe("NewTabInit", () => {
     STATE.App = {strings: null};
 
     // Send requests before strings are ready
-    instance.onAction(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}, "foo"));
-    instance.onAction(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}, "bar"));
-    instance.onAction(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}, "baz"));
+    requestFromTab("foo");
+    requestFromTab("bar");
+    requestFromTab("baz");
     assert.notCalled(store.dispatch);
 
     // Update strings
@@ -47,9 +49,9 @@ describe("NewTabInit", () => {
   });
   it("should clear targets from the queue once they have been sent", () => {
     STATE.App = {strings: null};
-    instance.onAction(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}, "foo"));
-    instance.onAction(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}, "bar"));
-    instance.onAction(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}, "baz"));
+    requestFromTab("foo");
+    requestFromTab("bar");
+    requestFromTab("baz");
 
     STATE.App = {strings: {}};
     instance.onAction({type: at.LOCALE_UPDATED});
@@ -101,6 +103,51 @@ describe("NewTabInit", () => {
       instance.onAction(action);
 
       assert.notCalled(action.data.browser.focus);
+    });
+  });
+  describe("early / simulated new tabs", () => {
+    const simulateTabInit = portID => instance.onAction({
+      type: at.NEW_TAB_INIT,
+      data: {portID, simulated: true}
+    });
+    beforeEach(() => {
+      STATE.App = {strings: {}};
+      simulateTabInit("foo");
+    });
+    it("should dispatch if not replied yet", () => {
+      requestFromTab("foo");
+
+      assert.calledWith(store.dispatch, ac.SendToContent({type: at.NEW_TAB_INITIAL_STATE, data: STATE}, "foo"));
+    });
+    it("should dispatch once for multiple requests", () => {
+      requestFromTab("foo");
+      requestFromTab("foo");
+      requestFromTab("foo");
+
+      assert.calledOnce(store.dispatch);
+    });
+    describe("multiple tabs", () => {
+      beforeEach(() => {
+        simulateTabInit("bar");
+      });
+      it("should dispatch once to each tab", () => {
+        requestFromTab("foo");
+        requestFromTab("bar");
+        assert.calledTwice(store.dispatch);
+        requestFromTab("foo");
+        requestFromTab("bar");
+
+        assert.calledTwice(store.dispatch);
+      });
+      it("should clean up when tabs close", () => {
+        assert.propertyVal(instance._repliedEarlyTabs, "size", 2);
+        instance.onAction(ac.SendToMain({type: at.NEW_TAB_UNLOAD}, "foo"));
+        assert.propertyVal(instance._repliedEarlyTabs, "size", 1);
+        instance.onAction(ac.SendToMain({type: at.NEW_TAB_UNLOAD}, "foo"));
+        assert.propertyVal(instance._repliedEarlyTabs, "size", 1);
+        instance.onAction(ac.SendToMain({type: at.NEW_TAB_UNLOAD}, "bar"));
+        assert.propertyVal(instance._repliedEarlyTabs, "size", 0);
+      });
     });
   });
 });
