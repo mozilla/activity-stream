@@ -128,6 +128,16 @@ describe("<PreferencesPane>", () => {
     assert.equal(section1.props().value, true);
     assert.equal(section2.props().value, false);
   });
+  it("should show the snippets preference if disableSnippets is false", () => {
+    setup({Prefs: {values: {disableSnippets: false}}});
+    const section = wrapper.findWhere(prefInput => prefInput.props().prefName === "feeds.snippets");
+    assert.lengthOf(section, 1);
+  });
+  it("should hide the snippets preference if disableSnippets is true", () => {
+    setup({Prefs: {values: {disableSnippets: true}}});
+    const section = wrapper.findWhere(prefInput => prefInput.props().prefName === "feeds.snippets");
+    assert.lengthOf(section, 0);
+  });
   it("should dispatch a SetPref with the right value for topSitesCount when unchecked", () => {
     const showMoreTopSitesWrapper = wrapper.find(".showMoreTopSites");
     showMoreTopSitesWrapper.simulate("change", {target: {name: "topSitesCount", checked: false}});
