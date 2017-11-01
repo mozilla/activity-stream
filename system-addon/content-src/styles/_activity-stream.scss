@@ -79,8 +79,9 @@ a {
   display: flex;
   flex-direction: row;
   margin: 0;
-  padding: 15px 25px;
+  padding: 15px 25px 0 25px;
   justify-content: flex-start;
+  flex-wrap: wrap;
 
   button {
     background: $input-secondary;
@@ -89,6 +90,7 @@ a {
     color: inherit;
     cursor: pointer;
     padding: 10px 30px;
+    margin-bottom: 15px;
     white-space: nowrap;
 
     &:hover:not(.dismiss) {
