@@ -8,9 +8,10 @@ const {_unconnected: TopSitesEdit} = TopSitesEditConnected;
 const {TopSite, TopSiteLink, TopSitePlaceholder} = require("content-src/components/TopSites/TopSite");
 const {_unconnected: TopSites} = require("content-src/components/TopSites/TopSites");
 
-const {actionTypes: at} = require("common/Actions.jsm");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
 const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
+const {MIN_RICH_FAVICON_SIZE, MIN_CORNER_FAVICON_SIZE} = require("content-src/components/TopSites/TopSitesConstants");
 
 const perfSvc = {
   mark() {},
@@ -26,6 +27,16 @@ const DEFAULT_PROPS = {
 };
 
 describe("<TopSites>", () => {
+  let sandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   it("should render a TopSites element", () => {
     const wrapper = shallow(<TopSites {...DEFAULT_PROPS} />);
     assert.ok(wrapper.exists());
@@ -64,6 +75,143 @@ describe("<TopSites>", () => {
     rows = [];
     wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
     assert.lengthOf(wrapper.find(TopSitesEditConnected), 1);
+  });
+  describe("#countTopSitesIconsTypes", () => {
+    let wrapper;
+
+    beforeEach(() => {
+      sandbox.stub(DEFAULT_PROPS, "dispatch");
+      wrapper = shallow(<TopSites {...DEFAULT_PROPS} />);
+    });
+    it("should dispatch session perf data on mount", () => {
+      wrapper.instance().componentDidMount(DEFAULT_PROPS);
+
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 0,
+            "screenshot": 0,
+            "tippytop": 0,
+            "rich_icon": 0,
+            "no_image": 0
+          }
+        }
+      }));
+    });
+    it("should dispatch session perf data on update", () => {
+      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 0,
+            "screenshot": 0,
+            "tippytop": 0,
+            "rich_icon": 0,
+            "no_image": 0
+          }
+        }
+      }));
+    });
+    it("should correctly count TopSite images - just screenshot", () => {
+      const rows = [{screenshot: true}];
+      sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
+      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 0,
+            "screenshot": 1,
+            "tippytop": 0,
+            "rich_icon": 0,
+            "no_image": 0
+          }
+        }
+      }));
+    });
+    it("should correctly count TopSite images - screenshot + favicon", () => {
+      const rows = [{screenshot: true, faviconSize: MIN_CORNER_FAVICON_SIZE}];
+      sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
+      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 1,
+            "screenshot": 0,
+            "tippytop": 0,
+            "rich_icon": 0,
+            "no_image": 0
+          }
+        }
+      }));
+    });
+    it("should correctly count TopSite images - rich_icon", () => {
+      const rows = [{faviconSize: MIN_RICH_FAVICON_SIZE}];
+      sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
+      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 0,
+            "screenshot": 0,
+            "tippytop": 0,
+            "rich_icon": 1,
+            "no_image": 0
+          }
+        }
+      }));
+    });
+    it("should correctly count TopSite images - tippytop", () => {
+      const rows = [{tippyTopIcon: "foo"}];
+      sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
+      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 0,
+            "screenshot": 0,
+            "tippytop": 1,
+            "rich_icon": 0,
+            "no_image": 0
+          }
+        }
+      }));
+    });
+    it("should correctly count TopSite images - no image", () => {
+      const rows = [{}];
+      sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
+      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 0,
+            "screenshot": 0,
+            "tippytop": 0,
+            "rich_icon": 0,
+            "no_image": 1
+          }
+        }
+      }));
+    });
   });
 });
 
