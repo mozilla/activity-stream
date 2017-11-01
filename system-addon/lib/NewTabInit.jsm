@@ -14,10 +14,22 @@ const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-str
 this.NewTabInit = class NewTabInit {
   constructor() {
     this._queue = new Set();
+    this._repliedEarlyTabs = new Map();
   }
   reply(target) {
+    // Skip this reply if we already replied to an early tab
+    if (this._repliedEarlyTabs.get(target)) {
+      return;
+    }
+
     const action = {type: at.NEW_TAB_INITIAL_STATE, data: this.store.getState()};
     this.store.dispatch(ac.SendToContent(action, target));
+
+    // Remember that this early tab has already gotten a rehydration response in
+    // case it thought we lost its initial REQUEST and asked again
+    if (this._repliedEarlyTabs.has(target)) {
+      this._repliedEarlyTabs.set(target, true);
+    }
   }
   onAction(action) {
     switch (action.type) {
@@ -38,12 +50,21 @@ this.NewTabInit = class NewTabInit {
         }
         break;
       case at.NEW_TAB_INIT:
+        // Initialize data for early tabs that might REQUEST twice
+        if (action.data.simulated) {
+          this._repliedEarlyTabs.set(action.data.portID, false);
+        }
+
         if (action.data.url === "about:home") {
           const prefs = this.store.getState().Prefs.values;
           if (prefs["aboutHome.autoFocus"] && prefs.showSearch) {
             action.data.browser.focus();
           }
         }
+        break;
+      case at.NEW_TAB_UNLOAD:
+        // Clean up for any tab (no-op if not an early tab)
+        this._repliedEarlyTabs.delete(action.meta.fromTarget);
         break;
     }
   }
