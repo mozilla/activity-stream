@@ -1,6 +1,6 @@
-@import './styles/normalize';
-@import './styles/variables';
-@import './styles/icons';
+@import './normalize';
+@import './variables';
+@import './icons';
 
 html,
 body,
@@ -117,14 +117,14 @@ a {
 }
 
 // Components
-@import './components/Base/Base';
-@import './components/TopSites/TopSites';
-@import './components/Sections/Sections';
-@import './components/Topics/Topics';
-@import './components/Search/Search';
-@import './components/ContextMenu/ContextMenu';
-@import './components/PreferencesPane/PreferencesPane';
-@import './components/ConfirmDialog/ConfirmDialog';
-@import './components/Card/Card';
-@import './components/ManualMigration/ManualMigration';
-@import './components/CollapsibleSection/CollapsibleSection';
+@import '../components/Base/Base';
+@import '../components/TopSites/TopSites';
+@import '../components/Sections/Sections';
+@import '../components/Topics/Topics';
+@import '../components/Search/Search';
+@import '../components/ContextMenu/ContextMenu';
+@import '../components/PreferencesPane/PreferencesPane';
+@import '../components/ConfirmDialog/ConfirmDialog';
+@import '../components/Card/Card';
+@import '../components/ManualMigration/ManualMigration';
+@import '../components/CollapsibleSection/CollapsibleSection';

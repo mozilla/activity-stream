@@ -17,6 +17,13 @@
   content/vendor/redux.js (./vendor/redux.js)
   content/vendor/react-redux.js (./vendor/react-redux.js)
   content/data/ (./data/*)
+#ifdef XP_MACOSX
+  content/css/activity-stream.css (./css/activity-stream-mac.css)
+#elifdef XP_WIN
+  content/css/activity-stream.css (./css/activity-stream-windows.css)
+#else
+  content/css/activity-stream.css (./css/activity-stream-linux.css)
+#endif
 #ifndef RELEASE_OR_BETA
   content/data/content/activity-stream-debug.html (./prerendered/en-US/activity-stream-debug.html)
   content/data/content/activity-stream-prerendered-debug.html (./prerendered/en-US/activity-stream-prerendered-debug.html)
