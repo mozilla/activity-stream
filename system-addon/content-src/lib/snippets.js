@@ -334,6 +334,7 @@ function addSnippetsSubscriber(store) {
     // state.Snippets.initialized             Is the snippets data initialized?
     // snippets.initialized:                  Is SnippetsProvider currently initialised?
     if (state.Prefs.values["feeds.snippets"] &&
+      state.Prefs.values.showSnippets &&
       state.Snippets.initialized &&
      !snippets.initialized &&
      // Don't call init multiple times
@@ -342,7 +343,8 @@ function addSnippetsSubscriber(store) {
       initializing = true;
       await snippets.init({appData: state.Snippets});
       initializing = false;
-    } else if (state.Prefs.values["feeds.snippets"] === false && snippets.initialized) {
+    } else if ((state.Prefs.values["feeds.snippets"] === false ||
+      state.Prefs.values.showSnippets === false) && snippets.initialized) {
       snippets.uninit();
     }
   });

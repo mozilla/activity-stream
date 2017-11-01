@@ -147,12 +147,11 @@ class PreferencesPane extends React.PureComponent {
                     )}
                    </PreferencesInput>)
                 )}
-              <hr />
-
-              <PreferencesInput className="showSnippets" prefName="feeds.snippets"
-                value={prefs["feeds.snippets"]} onChange={this.handlePrefChange}
+              {prefs["feeds.snippets"] && <hr />}
+              {prefs["feeds.snippets"] && <PreferencesInput className="showSnippets" prefName="showSnippets"
+                value={prefs.showSnippets} onChange={this.handlePrefChange}
                 titleString={{id: "settings_pane_snippets_header"}}
-                descString={{id: "settings_pane_snippets_body"}} />
+                descString={{id: "settings_pane_snippets_body"}} />}
 
             </div>
             <section className="actions">

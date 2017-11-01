@@ -97,6 +97,10 @@ const PREFS_CONFIG = new Map([
     title: "Show the Search bar",
     value: true
   }],
+  ["showSnippets", {
+    title: "Show snippets in Activity Stream",
+    value: true
+  }],
   ["showTopSites", {
     title: "Show the Top Sites section",
     value: true
