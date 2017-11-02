@@ -49,6 +49,36 @@ describe("Screenshots", () => {
     });
   });
 
+  describe("#maybeCacheScreenshot", () => {
+    let link;
+    beforeEach(() => {
+      link = {__sharedCache: {updateLink: sinon.stub()}};
+    });
+    it("should call getScreenshotForURL", () => {
+      sandbox.stub(Screenshots, "getScreenshotForURL");
+      Screenshots.maybeCacheScreenshot(link, "mozilla.com", "image", sinon.stub());
+
+      assert.calledOnce(Screenshots.getScreenshotForURL);
+      assert.calledWithExactly(Screenshots.getScreenshotForURL, "mozilla.com");
+    });
+    it("should not call getScreenshotForURL twice if a fetch is in progress", () => {
+      sandbox.stub(Screenshots, "getScreenshotForURL").callsFake(() => new Promise(resolve => setTimeout(resolve, 0)));
+      Screenshots.maybeCacheScreenshot(link, "mozilla.com", "image", sinon.stub());
+      Screenshots.maybeCacheScreenshot(link, "mozilla.org", "image", sinon.stub());
+
+      assert.calledOnce(Screenshots.getScreenshotForURL);
+      assert.calledWithExactly(Screenshots.getScreenshotForURL, "mozilla.com");
+    });
+    it("should not call getScreenshotsForURL if property !== undefined", () => {
+      sandbox.stub(Screenshots, "getScreenshotForURL");
+      link.image = null;
+
+      Screenshots.maybeCacheScreenshot(link, "mozilla.com", "image", sinon.stub());
+
+      assert.notCalled(Screenshots.getScreenshotForURL);
+    });
+  });
+
   describe("#_bytesToString", () => {
     it("should convert no bytes to empty string", () => {
       assert.equal(Screenshots._bytesToString([]), "");
