@@ -1,7 +1,7 @@
 .search-wrapper {
   $search-border-radius: 3px;
   $search-focus-color: $blue-50;
-  $search-height: 36px;
+  $search-height: 35px;
   $search-input-left-label-width: 35px;
   $search-button-width: 36px;
   $search-glyph-image: url('chrome://browser/skin/search-glass.svg');
@@ -14,14 +14,18 @@
   cursor: default;
   display: flex;
   position: relative;
-  margin: 0 0 $section-spacing;
+  // The extra 1px is to account for the box-shadow being outside of the element
+  // instead of inside. It needs to be like that to not overlap the inner background
+  // color of the hover state of the submit button.
+  margin: 1px 1px $section-spacing;
   width: 100%;
   height: $search-height;
 
   input {
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: none;
     border-radius: $search-border-radius;
-    box-shadow: $shadow-secondary;
+    box-shadow: $shadow-secondary,
+      0 0 0 1px rgba(0, 0, 0, 0.15);
     color: inherit;
     padding: 0;
     padding-inline-end: $search-button-width;
@@ -30,10 +34,14 @@
     font-size: 15px;
   }
 
+  &:hover input {
+    box-shadow: $shadow-secondary,
+      0 0 0 1px rgba(0, 0, 0, 0.25);
+  }
+
   &:active input,
   input:focus {
-    border-color: $search-focus-color;
-    box-shadow: 0 0 0 2px $search-focus-color;
+    box-shadow: 0 0 0 3px $search-focus-color;
   }
 
   .search-label {
