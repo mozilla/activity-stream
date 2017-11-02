@@ -228,6 +228,24 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 }
 ```
 
+#### Acknowledging a section disclaimer
+
+```js
+{
+  "event": "SECTION_DISCLAIMER_ACKNOWLEDGED",
+  "source": "TOP_STORIES",
+
+  // Basic metadata
+  "action": "activity_stream_event",
+  "page": ["about:newtab" | "about:home" | "unknown"],
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "user_prefs": 7
+}
+```
+
 ## Session end pings
 
 When a session ends, the browser will send a `"activity_stream_session"` ping to our metrics servers. This ping contains the length of the session, a unique reason for why the session ended, and some additional metadata.

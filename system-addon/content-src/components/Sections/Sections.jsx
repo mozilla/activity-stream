@@ -25,8 +25,7 @@ class Section extends React.PureComponent {
     if (this.needsImpressionStats(cards)) {
       props.dispatch(ac.ImpressionStats({
         source: props.eventSource,
-        tiles: cards.map(link => ({id: link.guid})),
-        incognito: props.options && props.options.personalized
+        tiles: cards.map(link => ({id: link.guid}))
       }));
       this.impressionCardGuids = cards.map(link => link.guid);
     }
@@ -124,7 +123,7 @@ class Section extends React.PureComponent {
     const {
       id, eventSource, title, icon, rows,
       infoOption, emptyState, dispatch, maxRows,
-      contextMenuOptions, initialized
+      contextMenuOptions, initialized, disclaimer
     } = this.props;
     const maxCards = CARDS_PER_ROW * maxRows;
 
@@ -143,7 +142,15 @@ class Section extends React.PureComponent {
     // <Section> <-- React component
     // <section> <-- HTML5 element
     return (<ComponentPerfTimer {...this.props}>
-      <CollapsibleSection className="section" icon={icon} title={getFormattedMessage(title)} infoOption={infoOption} prefName={`section.${id}.collapsed`} Prefs={this.props.Prefs} dispatch={this.props.dispatch}>
+      <CollapsibleSection className="section" icon={icon} title={getFormattedMessage(title)}
+        infoOption={infoOption}
+        id={id}
+        eventSource={eventSource}
+        disclaimer={disclaimer}
+        prefName={`section.${id}.collapsed`}
+        Prefs={this.props.Prefs}
+        dispatch={this.props.dispatch}>
+
         {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
           {realRows.map((link, index) => link &&
             <Card key={index} index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions}

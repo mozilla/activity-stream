@@ -106,8 +106,9 @@ Schema definitions/validations that can be used for tests can be found in `syste
 ```js
 {
   "action": "activity_stream_impression_stats",
-  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
-  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "client_id": "n/a",
+  "session_id": "n/a",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
@@ -122,6 +123,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "action": "activity_stream_impression_stats",
   "client_id": "n/a",
   "session_id": "n/a",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
@@ -148,6 +150,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `event_id` | [Required] An identifier shared by multiple performance pings that describe ane entire request flow. | :one:
 | `event` | [Required] The type of event. Any user defined string ("click", "share", "delete", "more_items") | :one:
 | `highlight_type` | [Optional] Either ["bookmarks", "recommendation", "history"]. | :one:
+| `impression_id` | [Optional] The unique impression identifier for a specific client. | :one:
 | `ip` | [Auto populated by Onyx] The IP address of the client. | :two:
 | `locale` | [Auto populated by Onyx] The browser chrome's language (eg. en-US). | :two:
 | `load_trigger_ts` | [Optional][Server Counter][Server Alert for too many omissions]  DOMHighResTimeStamp of the action perceived by the user to trigger the load of this page. | :one:
@@ -170,6 +173,7 @@ and losing focus. | :one:
 | `highlights_size` | [Optional] The size of the Highlights set. | :one:
 | `highlights_data_late_by_ms` | [Optional] Time in ms it took for Highlights to become initialized | :one:
 | `topsites_data_late_by_ms` | [Optional] Time in ms it took for TopSites to become initialized | :one:
+| `topstories.domain.affinity.calculation.ms` | [Optional] Time in ms it took for domain affinities to be calculated | :one:
 | `topsites_first_painted_ts` | [Optional][Service Counter][Server Alert for too many omissions] Timestamp of when the Top Sites element finished painting (possibly with only placeholder screenshots) | :one:
 | `screenshot_with_icon` | [Optional] Number of topsites that display a screenshot and a favicon. | :one:
 | `screenshot` | [Optional] Number of topsites that display only a screenshot. | :one:

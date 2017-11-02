@@ -53,7 +53,6 @@ module.exports = {
     impression: ac.ImpressionStats({
       source: eventSource,
       block: 0,
-      incognito: true,
       tiles: [{id: site.guid, pos: index}]
     }),
     userEvent: "BLOCK"
@@ -102,7 +101,6 @@ module.exports = {
     impression: ac.ImpressionStats({
       source: eventSource,
       pocket: 0,
-      incognito: true,
       tiles: [{id: site.guid, pos: index}]
     }),
     userEvent: "SAVE_TO_POCKET"
