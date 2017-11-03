@@ -209,7 +209,7 @@ function templateHTML(options, html) {
     <title>${options.title}</title>
     <link rel="icon" type="image/png" id="favicon" href="chrome://branding/content/icon32.png"/>
     <link rel="stylesheet" href="chrome://browser/content/contentSearchUI.css" />
-    <link rel="stylesheet" href="${options.baseUrl}data/content/activity-stream.css" />
+    <link rel="stylesheet" href="${options.baseUrl}css/activity-stream.css" />
   </head>
   <body class="activity-stream">
     <div id="root">${isPrerendered ? html : ""}</div>

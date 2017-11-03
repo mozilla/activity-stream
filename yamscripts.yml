@@ -24,7 +24,7 @@ scripts:
     pre: =>cleanmc
     locales: pontoon-to-json --src locales --dest system-addon/data
     webpack: webpack --config webpack.system-addon.config.js
-    css: node-sass system-addon/content-src/activity-stream.scss -o system-addon/data/content
+    css: node-sass system-addon/content-src/styles -o system-addon/css
     html: rimraf system-addon/prerendered && webpack --config webpack.prerender.config.js && node ./bin/render-activity-stream-html.js
     # Copy over all of the system-addon directory
     copy: cpx "system-addon/**/{,.}*" $npm_package_config_mc_dir/browser/extensions/activity-stream
