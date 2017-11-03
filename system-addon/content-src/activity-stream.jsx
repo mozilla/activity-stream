@@ -19,6 +19,11 @@ if (!global.gActivityStreamPrerenderedState) {
   store.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
 }
 
-ReactDOM.render(<Provider store={store}><Base isPrerendered={!!global.gActivityStreamPrerenderedState} /></Provider>, document.getElementById("root"));
+ReactDOM.render(<Provider store={store}>
+  <Base
+    isPrerendered={!!global.gActivityStreamPrerenderedState}
+    locale={global.document.documentElement.lang}
+    strings={global.gActivityStreamStrings} />
+</Provider>, document.getElementById("root"));
 
 addSnippetsSubscriber(store);

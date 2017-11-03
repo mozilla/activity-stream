@@ -1,7 +1,6 @@
 /* globals ContentSearchUIController */
 "use strict";
 const React = require("react");
-const {connect} = require("react-redux");
 const {FormattedMessage, injectIntl} = require("react-intl");
 const {actionCreators: ac} = require("common/Actions.jsm");
 const {IS_NEWTAB} = require("content-src/lib/constants");
@@ -86,6 +85,5 @@ class Search extends React.PureComponent {
   }
 }
 
-// initialized is passed to props so that Search will rerender when it receives strings
-module.exports = connect(state => ({locale: state.App.locale}))(injectIntl(Search));
+module.exports = injectIntl(Search);
 module.exports._unconnected = Search;

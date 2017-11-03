@@ -10,7 +10,6 @@ Cu.import("resource://gre/modules/Services.jsm");
 // common case to avoid the overhead of wrapping and detecting lazy loading.
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {DefaultPrefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
-const {LocalizationFeed} = Cu.import("resource://activity-stream/lib/LocalizationFeed.jsm", {});
 const {ManualMigration} = Cu.import("resource://activity-stream/lib/ManualMigration.jsm", {});
 const {NewTabInit} = Cu.import("resource://activity-stream/lib/NewTabInit.jsm", {});
 const {SectionsFeed} = Cu.import("resource://activity-stream/lib/SectionsManager.jsm", {});
@@ -139,12 +138,6 @@ const PREFS_CONFIG = new Map([
 
 // Array of each feed's FEEDS_CONFIG factory and values to add to PREFS_CONFIG
 const FEEDS_DATA = [
-  {
-    name: "localization",
-    factory: () => new LocalizationFeed(),
-    title: "Initialize strings and detect locale for Activity Stream",
-    value: true
-  },
   {
     name: "migration",
     factory: () => new ManualMigration(),

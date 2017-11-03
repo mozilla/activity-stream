@@ -13,7 +13,6 @@ const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-str
  */
 this.NewTabInit = class NewTabInit {
   constructor() {
-    this._queue = new Set();
     this._repliedEarlyTabs = new Map();
   }
   reply(target) {
@@ -34,20 +33,7 @@ this.NewTabInit = class NewTabInit {
   onAction(action) {
     switch (action.type) {
       case at.NEW_TAB_STATE_REQUEST:
-        // If localization hasn't been loaded yet, we should wait for it.
-        if (!this.store.getState().App.strings) {
-          this._queue.add(action.meta.fromTarget);
-          return;
-        }
         this.reply(action.meta.fromTarget);
-        break;
-      case at.LOCALE_UPDATED:
-        // If the queue is full because we were waiting for strings,
-        // dispatch them now.
-        if (this._queue.size > 0 && this.store.getState().App.strings) {
-          this._queue.forEach(target => this.reply(target));
-          this._queue.clear();
-        }
         break;
       case at.NEW_TAB_INIT:
         // Initialize data for early tabs that might REQUEST twice

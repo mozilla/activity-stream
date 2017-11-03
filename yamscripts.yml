@@ -30,7 +30,7 @@ scripts:
     copy: cpx "system-addon/**/{,.}*" $npm_package_config_mc_dir/browser/extensions/activity-stream
     version: node ./bin/update-version.js $npm_package_config_mc_dir/browser/extensions/activity-stream
     copyPingCentre: cpx "system-addon/ping-centre/PingCentre.jsm" $npm_package_config_mc_dir/browser/modules
-    rmcontentsrc: rimraf "$npm_package_config_mc_dir/browser/extensions/activity-stream/{,test/unit/}{content-src,ping-centre}"
+    rmextra: rimraf "$npm_package_config_mc_dir/browser/extensions/activity-stream/{{,test/unit/}{content-src,ping-centre},data/locales.json}"
 
 # packagemc: Build stand-alone system add-on xpi
   packagemc:

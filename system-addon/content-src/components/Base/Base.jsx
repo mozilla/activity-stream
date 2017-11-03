@@ -13,21 +13,15 @@ const {PrerenderData} = require("common/PrerenderData.jsm");
 // Add the locale data for pluralization and relative-time formatting for now,
 // this just uses english locale data. We can make this more sophisticated if
 // more features are needed.
-function addLocaleDataForReactIntl({locale, textDirection}) {
+function addLocaleDataForReactIntl(locale) {
   addLocaleData([{locale, parentLocale: "en"}]);
-  if (global.document) {
-    global.document.documentElement.lang = locale;
-    global.document.documentElement.dir = textDirection;
-  }
 }
 
 class Base extends React.PureComponent {
   componentWillMount() {
-    const {App} = this.props;
+    const {App, locale} = this.props;
     this.sendNewTabRehydrated(App);
-    if (App.locale) {
-      addLocaleDataForReactIntl(App);
-    }
+    addLocaleDataForReactIntl(locale);
   }
 
   componentDidMount() {
@@ -39,27 +33,14 @@ class Base extends React.PureComponent {
       this.props.dispatch(ac.SendToMain({type: at.PAGE_PRERENDERED}));
     }
 
-    // Also wait for the preloaded page to show, so the tab's title and favicon updates
+    // Also wait for the preloaded page to show, so the tab's favicon updates
     addEventListener("visibilitychange", () => {
-      this.updateTitle(this.props.App);
       document.getElementById("favicon").href += "#";
     }, {once: true});
   }
 
   componentWillUpdate({App}) {
     this.sendNewTabRehydrated(App);
-
-    // Early loads might not have locale yet, so wait until we do
-    if (App.locale && App.locale !== this.props.App.locale) {
-      addLocaleDataForReactIntl(App);
-      this.updateTitle(App);
-    }
-  }
-
-  updateTitle({strings}) {
-    if (strings) {
-      document.title = strings.newtab_page_title;
-    }
   }
 
   // The NEW_TAB_REHYDRATED event is used to inform feeds that their
@@ -74,7 +55,8 @@ class Base extends React.PureComponent {
 
   render() {
     const props = this.props;
-    const {locale, strings, initialized} = props.App;
+    const {App, locale, strings} = props;
+    const {initialized} = App;
     const prefs = props.Prefs.values;
 
     const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
@@ -85,10 +67,7 @@ class Base extends React.PureComponent {
       return null;
     }
 
-    // Note: the key on IntlProvider must be static in order to not blow away
-    // all elements on a locale change (such as after preloading).
-    // See https://github.com/yahoo/react-intl/issues/695 for more info.
-    return (<IntlProvider key="STATIC" locale={locale} messages={strings}>
+    return (<IntlProvider locale={locale} messages={strings}>
         <div className={outerClassName}>
           <main>
             {prefs.showSearch && <Search />}
