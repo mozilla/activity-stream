@@ -62,7 +62,7 @@ describe("Screenshots", () => {
       assert.calledWithExactly(Screenshots.getScreenshotForURL, "mozilla.com");
     });
     it("should not call getScreenshotForURL twice if a fetch is in progress", () => {
-      sandbox.stub(Screenshots, "getScreenshotForURL").callsFake(() => new Promise(() => {}));
+      sandbox.stub(Screenshots, "getScreenshotForURL").returns(new Promise(() => {}));
       Screenshots.maybeCacheScreenshot(link, "mozilla.com", "image", sinon.stub());
       Screenshots.maybeCacheScreenshot(link, "mozilla.org", "image", sinon.stub());
 
