@@ -52,7 +52,7 @@ describe("Screenshots", () => {
   describe("#maybeCacheScreenshot", () => {
     let link;
     beforeEach(() => {
-      link = {__sharedCache: {updateLink: sinon.stub()}};
+      link = {__sharedCache: {updateLink: (prop, val) => { link[prop] = val; }}};
     });
     it("should call getScreenshotForURL", () => {
       sandbox.stub(Screenshots, "getScreenshotForURL");
@@ -62,20 +62,20 @@ describe("Screenshots", () => {
       assert.calledWithExactly(Screenshots.getScreenshotForURL, "mozilla.com");
     });
     it("should not call getScreenshotForURL twice if a fetch is in progress", () => {
-      sandbox.stub(Screenshots, "getScreenshotForURL").callsFake(() => new Promise(resolve => setTimeout(resolve, 0)));
+      sandbox.stub(Screenshots, "getScreenshotForURL").callsFake(() => new Promise(() => {}));
       Screenshots.maybeCacheScreenshot(link, "mozilla.com", "image", sinon.stub());
       Screenshots.maybeCacheScreenshot(link, "mozilla.org", "image", sinon.stub());
 
       assert.calledOnce(Screenshots.getScreenshotForURL);
       assert.calledWithExactly(Screenshots.getScreenshotForURL, "mozilla.com");
     });
-    it("should not call getScreenshotsForURL if property !== undefined", () => {
-      sandbox.stub(Screenshots, "getScreenshotForURL");
-      link.image = null;
+    it("should not call getScreenshotsForURL if property !== undefined", async () => {
+      sandbox.stub(Screenshots, "getScreenshotForURL").returns(Promise.resolve(null));
+      await Screenshots.maybeCacheScreenshot(link, "mozilla.com", "image", sinon.stub());
+      await Screenshots.maybeCacheScreenshot(link, "mozilla.org", "image", sinon.stub());
 
-      Screenshots.maybeCacheScreenshot(link, "mozilla.com", "image", sinon.stub());
-
-      assert.notCalled(Screenshots.getScreenshotForURL);
+      assert.calledOnce(Screenshots.getScreenshotForURL);
+      assert.calledWithExactly(Screenshots.getScreenshotForURL, "mozilla.com");
     });
   });
 
