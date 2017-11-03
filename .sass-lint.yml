@@ -16,13 +16,18 @@ rules:
   leading-zero: [2, {include: true}]
   mixins-before-declarations: [2, {exclude: [breakpoint, mq]}]
   nesting-depth: [2, {max-depth: 4}]
+  no-color-literals: 0
   no-debug: 1
   no-duplicate-properties: 2
   no-ids: 0
   no-important: 0
+  no-misspelled-properties:
+  - 1
+  - extra-properties: ['-moz-context-properties']
   no-qualifying-elements: 0
   no-vendor-prefixes: 0
   no-warn: 1
+  no-url-domains: 0
   placeholder-in-extend: 2
   property-sort-order: 0
   # property-sort-order: [1, {ignore-custom-properties: true}]

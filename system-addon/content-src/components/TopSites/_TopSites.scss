@@ -14,7 +14,7 @@
   margin: 0;
   // Take back the margin from the bottom row of vertical spacing as well as the
   // extra whitespace below the title text as it's vertically centered.
-  margin-bottom: -($top-sites-vertical-space + $top-sites-title-height/3);
+  margin-bottom: -($top-sites-vertical-space + $top-sites-title-height / 3);
   padding: 0;
   margin-inline-end: -$base-gutter;
 
@@ -23,6 +23,7 @@
     :nth-child(2n+1) {
       @include context-menu-open-middle;
     }
+
     :nth-child(2n) {
       @include context-menu-open-left;
     }
@@ -30,7 +31,8 @@
 
   // Three columns
   @media (min-width: $break-point-small) and (max-width: $break-point-medium) {
-    :nth-child(3n+2), :nth-child(3n) {
+    :nth-child(3n+2),
+    :nth-child(3n) {
       @include context-menu-open-left;
     }
   }
@@ -48,7 +50,7 @@
   }
 
   // Six columns
-  @media (min-width: $break-point-large) and (max-width: $break-point-large + 2*$card-width) {
+  @media (min-width: $break-point-large) and (max-width: $break-point-large + 2 * $card-width) {
     :nth-child(6n) {
       @include context-menu-open-left;
     }
@@ -74,7 +76,8 @@
       color: inherit;
       outline: none;
 
-      &.active, &:focus {
+      &.active,
+      &:focus {
         .tile {
           @include fade-in;
         }
@@ -83,10 +86,18 @@
 
     @include context-menu-button;
 
-    &:hover, &:focus, &.active {
+    &:hover,
+    &:focus,
+    &.active {
       .tile {
         @include fade-in;
       }
+
+      .edit-menu {
+        transform: scale(1);
+        opacity: 1;
+      }
+
       @include context-menu-button-hover;
     }
 
@@ -111,6 +122,7 @@
       .tile {
         box-shadow: inset $inner-box-shadow;
       }
+
       .screenshot {
         display: none;
       }
@@ -129,6 +141,7 @@
       background-position: top left;
       transition: opacity 1s;
       opacity: 0;
+
       &.active {
         opacity: 1;
       }
@@ -236,6 +249,7 @@
         &:last-child:dir(rtl) {
           width: $edit-menu-button-size + 5px;
         }
+
         &:last-child:dir(ltr),
         &:first-child:dir(rtl) {
           width: $edit-menu-button-size + 3px;
@@ -248,13 +262,6 @@
         &:first-child:dir(rtl) {
           border-right: 0;
         }
-      }
-    }
-
-    &:hover, &:focus, &.active {
-      .edit-menu {
-        transform: scale(1);
-        opacity: 1;
       }
     }
   }
@@ -277,7 +284,8 @@
       border-right: 0;
     }
 
-    &:focus, &:active {
+    &:focus,
+    &:active {
       opacity: 1;
     }
 
@@ -422,6 +430,7 @@ section.top-sites:not(.collapsed):hover {
     opacity: 0;
     transform: translateY(15px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
