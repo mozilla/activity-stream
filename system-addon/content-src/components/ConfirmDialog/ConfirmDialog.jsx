@@ -59,11 +59,12 @@ class ConfirmDialog extends React.PureComponent {
       <div className="modal-overlay" onClick={this._handleCancelBtn} />
       <div className="modal">
         <section className="modal-message">
+          {this.props.data.icon && <span className={`icon icon-spacer icon-${this.props.data.icon}`} />}
           {this._renderModalMessage()}
         </section>
         <section className="actions">
           <button onClick={this._handleCancelBtn}>
-            <FormattedMessage id="topsites_form_cancel_button" />
+            <FormattedMessage id={this.props.data.cancel_button_string_id} />
           </button>
           <button className="done" onClick={this._handleConfirmBtn}>
             <FormattedMessage id={this.props.data.confirm_button_string_id} />

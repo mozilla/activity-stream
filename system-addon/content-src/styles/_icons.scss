@@ -29,6 +29,13 @@
    background-image: url('#{$image-path}glyph-delete-16.svg');
  }
 
+ &.icon-modal-delete {
+   background-image: url('#{$image-path}glyph-modal-delete-32.svg');
+   width: $larger-icon-size;
+   height: $larger-icon-size;
+   background-size: $larger-icon-size;
+ }
+
  &.icon-dismiss {
    background-image: url('#{$image-path}glyph-dismiss-16.svg');
  }
