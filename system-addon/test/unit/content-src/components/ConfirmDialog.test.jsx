@@ -28,6 +28,17 @@ describe("<ConfirmDialog>", () => {
 
     assert.lengthOf(wrapper.find(".confirmation-dialog"), 0);
   });
+  it("should display an icon if we provide one in props", () => {
+    const iconName = "modal-icon";
+    // If there is no icon in the props, we shouldn't display an icon
+    assert.lengthOf(wrapper.find(`.icon-${iconName}`), 0);
+
+    ConfirmDialogProps.data.icon = iconName;
+    wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
+
+    // But if we do provide an icon - we should show it
+    assert.lengthOf(wrapper.find(`.icon-${iconName}`), 1);
+  });
   describe("intl message check", () => {
     it("should render the message body sent via props", () => {
       ConfirmDialogProps.data = {body_string_id: ["foo", "bar"]};

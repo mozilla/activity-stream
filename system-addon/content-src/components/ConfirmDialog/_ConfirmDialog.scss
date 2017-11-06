@@ -13,20 +13,34 @@
   }
 
   .modal-message {
-    padding: 24px;
+    padding: 16px;
+    padding-bottom: 0;
+    display: flex;
+
+    p {
+      margin: 0;
+      margin-bottom: 16px;
+    }
   }
 
   .actions {
-    justify-content: flex-end;
+    padding: 0px 16px 0 16px;
+    border: none;
+    flex-wrap: nowrap;
+    display: flex;
 
     button {
       margin-inline-end: 16px;
+      width: 50%;
 
       &.done {
         margin-inline-start: 0;
         margin-inline-end: 0;
       }
     }
+  }
+  .icon {
+    margin-inline-end: 16px;
   }
 }
 
@@ -44,7 +58,7 @@
 .modal {
   background: $white;
   border: $border-secondary;
-  border-radius: $border-radius;
-  font-size: 14px;
+  border-radius: 5px;
+  font-size: 15px;
   z-index: 11002;
 }

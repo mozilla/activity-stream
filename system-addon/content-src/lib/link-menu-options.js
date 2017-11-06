@@ -68,7 +68,9 @@ module.exports = {
           ac.UserEvent({event: "DELETE"})
         ],
         body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],
-        confirm_button_string_id: "menu_action_delete"
+        confirm_button_string_id: "menu_action_delete",
+        cancel_button_string_id: "topsites_form_cancel_button",
+        icon: "modal-delete"
       }
     },
     userEvent: "DIALOG_OPEN"
