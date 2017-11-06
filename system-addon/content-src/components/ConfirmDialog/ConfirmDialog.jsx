@@ -58,7 +58,7 @@ class ConfirmDialog extends React.PureComponent {
     return (<div className="confirmation-dialog">
       <div className="modal-overlay" onClick={this._handleCancelBtn} />
       <div className="modal">
-        <section className="modal-message">
+        <section className="modal-message modal-delete">
           {this._renderModalMessage()}
         </section>
         <section className="actions">

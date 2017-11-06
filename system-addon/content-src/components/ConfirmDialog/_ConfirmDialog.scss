@@ -13,17 +13,39 @@
   }
 
   .modal-message {
-    padding: 24px;
+    padding: 16px;
+    padding-bottom: 0;
+    display: flex;
+
+    &:before {
+      display: block;
+      content: "";
+      width: 32px;
+      height: 32px;
+      margin-inline-end: 16px;
+    }
+
+    &.modal-dismiss:before {
+      background-image: url('#{$image-path}glyph-delete-32.svg');
+    }
+
+    p {
+      margin: 0;
+      margin-bottom: 16px;
+    }
   }
 
   .actions {
-    justify-content: flex-end;
+    padding: 16px 16px 0 16px;
+    border-top: none;
+    flex-wrap: nowrap;
+    display: flex;
 
     button {
-      margin-inline-end: 16px;
+      width: 50%;
 
       &.done {
-        margin-inline-start: 0;
+        margin-inline-start: 16px;
         margin-inline-end: 0;
       }
     }
