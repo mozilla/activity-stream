@@ -1,6 +1,6 @@
 "use strict";
 
-async function add_bookmarks(count) {
+async function add_highlights_bookmark(count) {
   const bookmarks = new Array(count).fill(null).map((entry, i) => ({
     parentGuid: PlacesUtils.bookmarks.unfiledGuid,
     title: "foo",
@@ -17,15 +17,12 @@ async function add_bookmarks(count) {
   }
 }
 
-add_task(async function setup() {
-  await setUpActivityStreamTest();
-});
-
+// Test populating highlights section with bookmarks.
 add_task(async function getHighlights() {
   const count = 2;
 
   await setUpActivityStreamTest();
-  await add_bookmarks(count);
+  await add_highlights_bookmark(count);
 
   let selector = ".card-outer:not(.placeholder)";
   let message = "found cards";
@@ -38,11 +35,12 @@ add_task(async function getHighlights() {
   await check_highlights_elements(selector, count, message);
 });
 
+// Test highlights context menu.
 add_task(async function highlights_context_menu() {
   const count = 1;
 
   await setUpActivityStreamTest();
-  await add_bookmarks(count);
+  await add_highlights_bookmark(count);
 
   let selector = ".card-outer:not(.placeholder)";
   let message = "found cards";
