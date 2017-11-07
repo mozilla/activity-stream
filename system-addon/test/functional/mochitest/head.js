@@ -112,33 +112,6 @@ function test_newtab(testInfo) { // eslint-disable-line no-unused-vars
   add_task(testTask);
 }
 
-async function simulate_context_menu_click(menu_item, expected_element, message) { // eslint-disable-line no-unused-vars
-  const target = ".context-menu-button";
-  const item = `${target} .context-menu-item:nth-child(${menu_item})`;
-  // simulate a newtab open as a user would
-  let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, "about:newtab", false);
-
-  // wait until the browser loads
-  Services.prefs.setBoolPref("browser.newtabpage.activity-stream.showTopSites", false);
-  Services.prefs.setBoolPref("browser.newtabpage.activity-stream.showTopSites", true);
-
-  await new Promise(resolve => setTimeout(resolve, 30000));
-
-  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(target), "wait for target");
-
-  // The expected element should be missing or hidden.
-  ok(content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, message);
-
-  EventUtils.sendMouseEvent({type: "click"}, content.document.querySelector(target), gBrowser.contentWindow);
-  EventUtils.sendMouseEvent({type: "click"}, content.document.querySelector(item), gBrowser.contentWindow);
-
-  // The expected element should now be visible.
-  ok(!content.document.querySelector(expected_element).hidden, message);
-
-  // avoid leakage
-  await BrowserTestUtils.removeTab(tab);
-}
-
 async function check_highlights_elements(selector, length, message) { // eslint-disable-line no-unused-vars
   // simulate a newtab open as a user would
   BrowserOpenTab();
@@ -155,28 +128,6 @@ async function check_highlights_elements(selector, length, message) { // eslint-
   let found = await ContentTask.spawn(browser, selector, arg =>
     content.document.querySelectorAll(arg).length);
   ok(found === length, `there should be ${length} of ${selector} found ${found}`);
-
-  // avoid leakage
-  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
-}
-
-async function check_topsites() { // eslint-disable-line no-unused-vars
-  const selector = ".top-sites-list";
-  // simulate a newtab open as a user would
-  BrowserOpenTab();
-
-  // wait until the browser loads
-  let browser = gBrowser.selectedBrowser;
-  await waitForPreloaded(browser);
-
-  Services.prefs.setBoolPref("browser.newtabpage.activity-stream.showTopSites", false);
-  Services.prefs.setBoolPref("browser.newtabpage.activity-stream.showTopSites", true);
-
-  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(selector), "wait for element");
-
-  let found = await ContentTask.spawn(browser, selector, arg =>
-    content.document.querySelectorAll(arg) !== null);
-  ok(found, "topsites list not found");
 
   // avoid leakage
   await BrowserTestUtils.removeTab(gBrowser.selectedTab);
