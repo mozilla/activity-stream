@@ -1,45 +1,5 @@
 "use strict";
 
-async function simulate_context_menu_click(menu_item, expected_element, count, message) {
-  const target = ".context-menu-button";
-  const item = `.context-menu-list .context-menu-item:nth-child(${menu_item}) a`;
-
-  // simulate a newtab open as a user would
-  BrowserOpenTab();
-
-  // wait until the browser loads
-  let browser = gBrowser.selectedBrowser;
-  await waitForPreloaded(browser);
-
-  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(target), "wait for target");
-
-  if (count === 0) {
-    // There should be an element we want to hide.
-    ok(content.document.querySelector(expected_element) !== null || !content.document.querySelector(expected_element).hidden, message);
-  } else {
-    // The expected element should be missing or hidden.
-    ok(content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, message);
-  }
-
-  EventUtils.sendMouseEvent({type: "click"}, content.document.querySelector(target), gBrowser.contentWindow);
-  ok(!content.document.querySelector(item).hidden, `menu item (${item}) should be visible`);
-  EventUtils.sendMouseEvent({type: "click"}, content.document.querySelector(item), gBrowser.contentWindow);
-
-  if (count !== 0) {
-    // Need to wait for actions triggered by the click event to happen.
-    await BrowserTestUtils.waitForCondition(() => content.document.querySelector(expected_element), "wait for expected");
-    // The expected element should now be visible.
-    ok(!content.document.querySelector(expected_element).hidden, message);
-  } else {
-    // Need to wait for actions triggered by the click event to happen.
-    await BrowserTestUtils.waitForCondition(() => content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, "wait for expected");
-  }
-  ok(content.document.querySelectorAll(expected_element).length === count, message);
-
-  // avoid leakage
-  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
-}
-
 // Check TopSites edit modal shows up.
 add_task(async function topsites_edit() {
   await setUpActivityStreamTest();
