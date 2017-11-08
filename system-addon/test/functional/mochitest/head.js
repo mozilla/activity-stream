@@ -19,15 +19,10 @@ const ACTIVITY_STREAM_PREF = "browser.newtabpage.activity-stream.enabled";
 pushPrefs([ACTIVITY_STREAM_PREF, true]);
 gBrowser.removePreloadedBrowser();
 
-function setUpActivityStreamTest() { // eslint-disable-line no-unused-vars
+function clearHistoryAndBookmarks() { // eslint-disable-line no-unused-vars
   return (async function() {
     await PlacesTestUtils.clearHistory();
     await PlacesUtils.bookmarks.eraseEverything();
-    let faviconExpiredPromise = new Promise(resolve => {
-      Services.obs.addObserver(resolve, "places-favicons-expired");
-    });
-    PlacesUtils.favicons.expireAllFavicons();
-    await faviconExpiredPromise;
   })();
 }
 

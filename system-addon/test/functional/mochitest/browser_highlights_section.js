@@ -2,7 +2,7 @@
 
 add_task(async function setup() {
   registerCleanupFunction(async () => {
-    await setUpActivityStreamTest();
+    await clearHistoryAndBookmarks();
   });
 });
 
@@ -27,7 +27,7 @@ async function add_highlights_bookmark(count) {
 add_task(async function getHighlights() {
   const count = 2;
 
-  await setUpActivityStreamTest();
+  await clearHistoryAndBookmarks();
   await add_highlights_bookmark(count);
 
   let selector = "[data-mochitest='highlights-card']";
@@ -51,7 +51,7 @@ add_task(async function getHighlights() {
 add_task(async function highlights_context_menu() {
   const count = 1;
 
-  await setUpActivityStreamTest();
+  await clearHistoryAndBookmarks();
   await add_highlights_bookmark(count);
 
   let selector = "[data-mochitest='highlights-card']";
