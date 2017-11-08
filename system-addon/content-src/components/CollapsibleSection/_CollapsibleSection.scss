@@ -168,6 +168,7 @@
     color: $grey-60;
     font-size: 13px;
     margin-bottom: 16px;
+    position: relative;
 
     .section-disclaimer-text {
       display: inline-block;
@@ -177,11 +178,11 @@
       }
 
       @media (min-width: $break-point-medium) {
-        width: $card-width * 1.5;
+        width: 340px;
       }
 
       @media (min-width: $break-point-large) {
-        width: $card-width * 3 - $base-gutter;
+        width: 610px;
       }
     }
 
@@ -193,7 +194,8 @@
     button {
       margin-top: 2px;
       offset-inline-end: 0;
-      height: 26px;
+      min-height: 26px;
+      max-width: 130px;
 
       background: $grey-10;
       border: 1px solid $grey-40;
@@ -203,10 +205,6 @@
       &:hover:not(.dismiss) {
         box-shadow: $shadow-primary;
         transition: box-shadow 150ms;
-      }
-
-      @media (min-width: $wrapper-default-width) {
-        position: relative;
       }
 
       @media (min-width: $break-point-small) {
@@ -247,10 +245,6 @@
     .section-body {
       max-height: 0;
       overflow: hidden;
-    }
-
-    .section-disclaimer {
-      position: relative;
     }
 
     .section-info-option {
