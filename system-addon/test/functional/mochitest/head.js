@@ -123,7 +123,7 @@ async function check_highlights_elements(selector, length, message) { // eslint-
   Services.prefs.setBoolPref("browser.newtabpage.activity-stream.feeds.section.highlights", false);
   Services.prefs.setBoolPref("browser.newtabpage.activity-stream.feeds.section.highlights", true);
 
-  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(selector), "wait for element");
+  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(selector), `No elements matching ${selector} were found`);
 
   let found = await ContentTask.spawn(browser, selector, arg =>
     content.document.querySelectorAll(arg).length);
@@ -141,7 +141,7 @@ async function simulate_click(target, expected_element, message) { // eslint-dis
   let browser = gBrowser.selectedBrowser;
   await waitForPreloaded(browser);
 
-  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(target), "wait for target");
+  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(target), `No elements matching ${target} were found`);
 
   // The element should be missing or hidden.
   ok(content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, message);
@@ -166,7 +166,7 @@ async function simulate_context_menu_click(menu_item, expected_element, count, m
   let browser = gBrowser.selectedBrowser;
   await waitForPreloaded(browser);
 
-  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(target), "wait for target");
+  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(target), `No elements matching ${target} found`);
 
   if (count === 0) {
     // There should be an element we want to hide.
@@ -182,12 +182,12 @@ async function simulate_context_menu_click(menu_item, expected_element, count, m
 
   if (count !== 0) {
     // Need to wait for actions triggered by the click event to happen.
-    await BrowserTestUtils.waitForCondition(() => content.document.querySelector(expected_element), "wait for expected");
+    await BrowserTestUtils.waitForCondition(() => content.document.querySelector(expected_element), `No elements matching ${expected_element} found`);
     // The expected element should now be visible.
     ok(!content.document.querySelector(expected_element).hidden, message);
   } else {
     // Need to wait for actions triggered by the click event to happen.
-    await BrowserTestUtils.waitForCondition(() => content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, "wait for expected");
+    await BrowserTestUtils.waitForCondition(() => content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, `No elements matching ${expected_element} found`);
   }
   ok(content.document.querySelectorAll(expected_element).length === count, message);
 
