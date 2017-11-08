@@ -16,6 +16,14 @@ add_task(async function topsites_edit() {
   await simulate_click(".edit-topsites-button button", ".edit-topsites", "should find edit topsites modal");
 });
 
+// Check TopSites edit modal triggers an overlay.
+add_task(async function topsites_edit_modal() {
+  await clearHistoryAndBookmarks();
+
+  // it should display an overlay when opening the edit modal.
+  await simulate_click(".edit-topsites-button button", ".modal-overlay", "should find an overlay");
+});
+
 // Test pin/unpin context menu options.
 add_task(async function topsites_pin_unpin() {
   // The pref for TopSites is empty by default.
