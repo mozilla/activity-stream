@@ -30,13 +30,17 @@ add_task(async function getHighlights() {
   await setUpActivityStreamTest();
   await add_highlights_bookmark(count);
 
-  let selector = ".card-outer:not(.placeholder)";
+  let selector = "[data-mochitest='highlights-card']";
+  let selectorPlaceholder = "[data-mochitest='highlights-card-placeholder']";
   let message = "found cards";
 
   // it should display two highlights cards instead of placeholders.
   await check_highlights_elements(selector, count, message);
 
-  selector = ".card-context-icon.icon-bookmark-added";
+  // it should display a placeholder card.
+  await check_highlights_elements(selectorPlaceholder, 1, "found placeholder");
+
+  selector = "[data-mochitest='bookmark-added']";
   message = "found bookmarks";
 
   // it should display two highlights cards with bookmark indicators.
@@ -50,8 +54,8 @@ add_task(async function highlights_context_menu() {
   await setUpActivityStreamTest();
   await add_highlights_bookmark(count);
 
-  let selector = ".card-outer:not(.placeholder)";
-  let message = "found cards";
+  let selector = "[data-mochitest='highlights-card']";
+  let message = "found card";
 
   // it should display two highlights cards.
   await check_highlights_elements(selector, count, message);
