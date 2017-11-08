@@ -77,7 +77,7 @@ describe("CollapsibleSection", () => {
       const icon = "moz-extension://some/extension/path";
       setup({icon});
       const props = wrapper.find(".icon").first().props();
-      assert.equal(props.style["background-image"], `url('${icon}')`);
+      assert.equal(props.style.backgroundImage, `url('${icon}')`);
     });
     it("should use set the icon-* class if a string that doesn't start with `moz-extension://` is provided", () => {
       setup({icon: "cool"});
