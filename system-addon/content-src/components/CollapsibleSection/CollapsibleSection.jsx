@@ -177,7 +177,7 @@ class CollapsibleSection extends React.PureComponent {
   renderIcon() {
     const icon = this.props.icon;
     if (icon && icon.startsWith("moz-extension://")) {
-      return <span className="icon icon-small-spacer" style={{"background-image": `url('${icon}')`}} />;
+      return <span className="icon icon-small-spacer" style={{backgroundImage: `url('${icon}')`}} />;
     }
     return <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />;
   }
