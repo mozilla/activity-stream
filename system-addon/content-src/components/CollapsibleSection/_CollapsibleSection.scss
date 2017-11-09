@@ -214,10 +214,6 @@
   }
 
   .section-body {
-    // max-height needs to be set to a value larger than it will ever reasonably get.
-    // We then transition on max-height, since we can't transition height to/from auto.
-    max-height: 1100px;
-
     // This is so the top sites favicon and card dropshadows don't get clipped during animation:
     $horizontal-padding: 7px;
     margin: 0 (-$horizontal-padding);
@@ -225,6 +221,7 @@
 
     &.animating {
       overflow: hidden;
+      pointer-events: none;
     }
   }
 
