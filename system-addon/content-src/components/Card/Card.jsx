@@ -110,8 +110,9 @@ class Card extends React.PureComponent {
     const {icon, intlID} = cardContextTypes[link.type === "now" ? "trending" : link.type] || {};
     const hasImage = link.image || link.hasImage;
     const imageStyle = {backgroundImage: link.image ? `url(${link.image})` : "none"};
+    const mochitestSelector = `highlights-card${props.placeholder ? "-placeholder" : ""}`;
 
-    return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}${props.placeholder ? " placeholder" : ""}`}>
+    return (<li data-mochitest={mochitestSelector} className={`card-outer${isContextMenuOpen ? " active" : ""}${props.placeholder ? " placeholder" : ""}`}>
       <a href={link.url} onClick={!props.placeholder && this.onLinkClick}>
         <div className="card">
           {hasImage && <div className="card-preview-image-outer">
@@ -129,7 +130,7 @@ class Card extends React.PureComponent {
               <p className="card-description" dir="auto">{link.description}</p>
             </div>
             <div className="card-context">
-              {icon && !link.context && <span className={`card-context-icon icon icon-${icon}`} />}
+              {icon && !link.context && <span data-mochitest={icon} className={`card-context-icon icon icon-${icon}`} />}
               {link.icon && link.context && <span className="card-context-icon icon" style={{backgroundImage: `url('${link.icon}')`}} />}
               {intlID && !link.context && <div className="card-context-label"><FormattedMessage id={intlID} defaultMessage="Visited" /></div>}
               {link.context && <div className="card-context-label">{link.context}</div>}

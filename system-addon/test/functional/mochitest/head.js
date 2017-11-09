@@ -1,5 +1,11 @@
 "use strict";
 
+XPCOMUtils.defineLazyModuleGetter(this, "PlacesTestUtils",
+  "resource://testing-common/PlacesTestUtils.jsm");
+
+const EventUtils = {}; // eslint-disable-line no-unused-vars
+Services.scriptloader.loadSubScript("chrome://mochikit/content/tests/SimpleTest/EventUtils.js", EventUtils);
+
 function popPrefs() {
   return SpecialPowers.popPrefEnv();
 }
@@ -12,6 +18,13 @@ function pushPrefs(...prefs) {
 const ACTIVITY_STREAM_PREF = "browser.newtabpage.activity-stream.enabled";
 pushPrefs([ACTIVITY_STREAM_PREF, true]);
 gBrowser.removePreloadedBrowser();
+
+function clearHistoryAndBookmarks() { // eslint-disable-line no-unused-vars
+  return (async function() {
+    await PlacesTestUtils.clearHistory();
+    await PlacesUtils.bookmarks.eraseEverything();
+  })();
+}
 
 /**
  * Helper to wait for potentially preloaded browsers to "load" where a preloaded
@@ -92,4 +105,87 @@ function test_newtab(testInfo) { // eslint-disable-line no-unused-vars
   // Copy the name of the content task to identify the test
   Object.defineProperty(testTask, "name", {value: contentTask.name});
   add_task(testTask);
+}
+
+async function check_highlights_elements(selector, length, message) { // eslint-disable-line no-unused-vars
+  // simulate a newtab open as a user would
+  BrowserOpenTab();
+
+  // wait until the browser loads
+  let browser = gBrowser.selectedBrowser;
+  await waitForPreloaded(browser);
+
+  Services.prefs.setBoolPref("browser.newtabpage.activity-stream.feeds.section.highlights", false);
+  Services.prefs.setBoolPref("browser.newtabpage.activity-stream.feeds.section.highlights", true);
+
+  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(selector), `No elements matching ${selector} were found`);
+
+  let found = await ContentTask.spawn(browser, selector, arg =>
+    content.document.querySelectorAll(arg).length);
+  ok(found === length, `there should be ${length} of ${selector} found ${found}`);
+
+  // avoid leakage
+  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
+}
+
+async function simulate_click(target, expected_element, message) { // eslint-disable-line no-unused-vars
+  // simulate a newtab open as a user would
+  BrowserOpenTab();
+
+  // wait until the browser loads
+  let browser = gBrowser.selectedBrowser;
+  await waitForPreloaded(browser);
+
+  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(target), `No elements matching ${target} were found`);
+
+  // The element should be missing or hidden.
+  ok(content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, message);
+
+  EventUtils.sendMouseEvent({type: "click"}, content.document.querySelector(target), gBrowser.contentWindow);
+
+  // The element should now be visible.
+  ok(!content.document.querySelector(expected_element).hidden, message);
+
+  // avoid leakage
+  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
+}
+
+async function simulate_context_menu_click(menu_item, expected_element, count, message) { // eslint-disable-line no-unused-vars
+  const target = ".context-menu-button";
+  const item = `.context-menu-list .context-menu-item:nth-child(${menu_item}) a`;
+
+  // simulate a newtab open as a user would
+  BrowserOpenTab();
+
+  // wait until the browser loads
+  let browser = gBrowser.selectedBrowser;
+  await waitForPreloaded(browser);
+
+  await BrowserTestUtils.waitForCondition(() => content.document.querySelector(target), `No elements matching ${target} found`);
+
+  if (count === 0) {
+    // There should be an element we want to hide.
+    ok(content.document.querySelector(expected_element) !== null || !content.document.querySelector(expected_element).hidden, message);
+  } else {
+    // The expected element should be missing or hidden.
+    ok(content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, message);
+  }
+
+  EventUtils.sendMouseEvent({type: "click"}, content.document.querySelector(target), gBrowser.contentWindow);
+  ok(!content.document.querySelector(item).hidden, `menu item (${item}) should be visible`);
+  EventUtils.sendMouseEvent({type: "click"}, content.document.querySelector(item), gBrowser.contentWindow);
+
+  if (count !== 0) {
+    // Need to wait for actions triggered by the click event to happen.
+    await BrowserTestUtils.waitForCondition(() => content.document.querySelector(expected_element), `No elements matching ${expected_element} found`);
+    // The expected element should now be visible.
+    ok(!content.document.querySelector(expected_element).hidden, message);
+  } else {
+    // Need to wait for actions triggered by the click event to happen.
+    await BrowserTestUtils.waitForCondition(() => content.document.querySelector(expected_element) === null || content.document.querySelector(expected_element).hidden, `No elements matching ${expected_element} found`);
+  }
+  ok(content.document.querySelectorAll(expected_element).length === count, message);
+
+  // avoid leakage
+  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
 }
