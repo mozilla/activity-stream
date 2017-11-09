@@ -12,7 +12,11 @@ describe("<ConfirmDialog>", () => {
     dispatch = sinon.stub();
     ConfirmDialogProps = {
       visible: true,
-      data: {onConfirm: []}
+      data: {
+        onConfirm: [],
+        cancel_button_string_id: "manual_migration_cancel_button",
+        confirm_button_string_id: "manual_migration_import_button"
+      }
     };
     wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
   });
@@ -41,7 +45,7 @@ describe("<ConfirmDialog>", () => {
   });
   describe("intl message check", () => {
     it("should render the message body sent via props", () => {
-      ConfirmDialogProps.data = {body_string_id: ["foo", "bar"]};
+      Object.assign(ConfirmDialogProps.data, {body_string_id: ["foo", "bar"]});
       wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
 
       let msgs = wrapper.find(".modal-message").find(FormattedMessage);
@@ -50,7 +54,7 @@ describe("<ConfirmDialog>", () => {
       msgs.forEach((fm, i) => assert.equal(fm.props().id, ConfirmDialogProps.data.body_string_id[i]));
     });
     it("should render the correct primary button text", () => {
-      ConfirmDialogProps.data = {confirm_button_string_id: "primary_foo"};
+      Object.assign(ConfirmDialogProps.data, {confirm_button_string_id: "primary_foo"});
       wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
 
       let doneLabel = wrapper.find(".actions").childAt(1).find(FormattedMessage);
@@ -104,13 +108,13 @@ describe("<ConfirmDialog>", () => {
       assert.calledWith(dispatch, ac.UserEvent({event: at.DIALOG_CANCEL}));
     });
     it("should emit UserEvent on primary button", () => {
-      ConfirmDialogProps.data = {
+      Object.assign(ConfirmDialogProps.data, {
         body_string_id: ["foo", "bar"],
         onConfirm: [
           ac.SendToMain({type: at.DELETE_URL, data: "foo.bar"}),
           ac.UserEvent({event: "DELETE"})
         ]
-      };
+      });
       wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
       let doneButton = wrapper.find(".actions").childAt(1);
 
@@ -124,13 +128,13 @@ describe("<ConfirmDialog>", () => {
       assert.calledWith(dispatch, ConfirmDialogProps.data.onConfirm[1]);
     });
     it("should emit SendToMain on primary button", () => {
-      ConfirmDialogProps.data = {
+      Object.assign(ConfirmDialogProps.data, {
         body_string_id: ["foo", "bar"],
         onConfirm: [
           ac.SendToMain({type: at.DELETE_URL, data: "foo.bar"}),
           ac.UserEvent({event: "DELETE"})
         ]
-      };
+      });
       wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
       let doneButton = wrapper.find(".actions").childAt(1);
 
