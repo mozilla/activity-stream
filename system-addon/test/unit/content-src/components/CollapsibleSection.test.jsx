@@ -88,6 +88,34 @@ describe("CollapsibleSection", () => {
       assert.ok(wrapper.find(".icon").first().hasClass("icon-webextension"));
     });
   });
+
+  describe("maxHeight", () => {
+    const maxHeight = "123px";
+    const setState = state => wrapper.setState(Object.assign({maxHeight}, state || {}));
+    const checkHeight = val => assert.equal(wrapper.find(".section-body").node.style.maxHeight, val);
+
+    it("should have no max-height normally to avoid unexpected cropping", () => {
+      setState();
+
+      checkHeight("");
+    });
+    it("should have a max-height when animating open to a target height", () => {
+      setState({isAnimating: true});
+
+      checkHeight(maxHeight);
+    });
+    it("should not have a max-height when already collapsed", () => {
+      setup({Prefs: {values: {collapseSection: true}}});
+
+      checkHeight("");
+    });
+    it("should not have a max-height when animating closed to a css-set 0", () => {
+      setup({Prefs: {values: {collapseSection: true}}});
+      setState({isAnimating: true});
+
+      checkHeight("");
+    });
+  });
 });
 
 describe("<Info>", () => {
