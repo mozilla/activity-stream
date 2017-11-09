@@ -236,6 +236,11 @@ describe("<TopSiteLink>", () => {
 
     assert.equal(titleEl.text(), "foobar");
   });
+  it("should have only the title as the text of the link", () => {
+    const wrapper = shallow(<TopSiteLink link={link} title="foobar" />);
+
+    assert.equal(wrapper.find("a").text(), "foobar");
+  });
   it("should render the pin icon for pinned links", () => {
     link.isPinned = true;
     link.pinnedIndex = 7;
@@ -249,7 +254,7 @@ describe("<TopSiteLink>", () => {
   });
   it("should render the first letter of the title as a fallback for missing screenshots", () => {
     const wrapper = shallow(<TopSiteLink link={link} title={"foo"} />);
-    assert.equal(wrapper.find(".letter-fallback").text(), "f");
+    assert.equal(wrapper.find(".tile").prop("data-fallback"), "f");
   });
   it("should render a screenshot with the .active class, if it is provided", () => {
     const wrapper = shallow(<TopSiteLink link={link} />);
@@ -268,7 +273,7 @@ describe("<TopSiteLink>", () => {
     assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
     assert.isTrue(screenshotEl.hasClass("active"));
     assert.lengthOf(defaultIconEl, 1);
-    assert.equal(defaultIconEl.text(), "f");
+    assert.equal(defaultIconEl.prop("data-fallback"), "f");
   });
   it("should render a small icon with fallback letter with the screenshot if the icon is missing", () => {
     const wrapper = shallow(<TopSiteLink link={link} title="foo" />);
@@ -278,7 +283,7 @@ describe("<TopSiteLink>", () => {
     assert.propertyVal(screenshotEl.props().style, "backgroundImage", "url(foo.jpg)");
     assert.isTrue(screenshotEl.hasClass("active"));
     assert.lengthOf(defaultIconEl, 1);
-    assert.equal(defaultIconEl.text(), "f");
+    assert.equal(defaultIconEl.prop("data-fallback"), "f");
   });
   it("should render a small icon with the screenshot if the icon is bigger than 32x32", () => {
     link.favicon = "small-icon.png";
