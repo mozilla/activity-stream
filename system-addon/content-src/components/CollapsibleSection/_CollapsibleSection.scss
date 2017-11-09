@@ -55,8 +55,6 @@
 
     .section-info-option .info-option {
       $arrow-height: 10px;
-      $arrow-offset-end: 7px;
-      $arrow-width: 18px;
       visibility: hidden;
       opacity: 0;
       transition: visibility 0.2s, opacity 0.2s $photon-easing;
@@ -70,17 +68,17 @@
 
       &::before {
         $before-height: 32px;
-        background-image: url(chrome://global/skin/arrow/panelarrow-vertical-themed.svg), url(chrome://global/skin/arrow/panelarrow-vertical@2x.png);
-        background-position: right $arrow-offset-end bottom;
+        background-image: url($os-section-info-option-image);
+        background-position: right $os-arrow-offset-end bottom;
         background-repeat: no-repeat;
-        background-size: $arrow-width $arrow-height;
+        background-size: $os-arrow-width $arrow-height;
         height: $before-height;
         top: -$before-height;
         width: 43px;
       }
 
       &:dir(rtl)::before {
-        background-position-x: $arrow-offset-end;
+        background-position-x: $os-arrow-offset-end;
       }
 
       &::after {

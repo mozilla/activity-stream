@@ -1,2 +1,7 @@
-/* This is the mac variant */
+$os-arrow-offset-end: 7px;
+$os-arrow-width: 18px;
+$os-search-focus-shadow-radius: 3px;
+$os-section-info-option-image: 'chrome://global/skin/arrow/panelarrow-vertical@2x.png';
+
+/* This is the osx variant */
 @import './activity-stream';

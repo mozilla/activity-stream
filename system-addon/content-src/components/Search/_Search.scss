@@ -32,6 +32,11 @@
     padding-inline-start: $search-input-left-label-width;
     width: 100%;
     font-size: 15px;
+
+    // Search border should only have a 1-pixel blue border, so no box-shadow is needed.
+    &:focus {
+      box-shadow: 0 0 0 $os-search-focus-shadow-radius $blue-50;
+    }
   }
 
   &:hover input {
