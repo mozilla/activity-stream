@@ -6,9 +6,10 @@ const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
 const {TOP_SITES_SOURCE, TOP_SITES_CONTEXT_MENU_OPTIONS, MIN_RICH_FAVICON_SIZE, MIN_CORNER_FAVICON_SIZE} = require("./TopSitesConstants");
 
 const TopSiteLink = props => {
-  const {link} = props;
+  const {link, title} = props;
   const topSiteOuterClassName = `top-site-outer${props.className ? ` ${props.className}` : ""}`;
   const {tippyTopIcon, faviconSize} = link;
+  const letterFallback = title[0];
   let imageClassName;
   let imageStyle;
   let showSmallFavicon = false;
@@ -39,16 +40,16 @@ const TopSiteLink = props => {
   }
   return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
    <a href={link.url} onClick={props.onClick}>
-     <div className="tile" aria-hidden={true}>
-        <span className="letter-fallback">{props.title[0]}</span>
+      <div className="tile" aria-hidden={true} data-fallback={letterFallback}>
         <div className={imageClassName} style={imageStyle} />
-          {showSmallFavicon && <div className="top-site-icon default-icon" style={smallFaviconStyle}>
-          {smallFaviconFallback && props.title[0]}
-        </div>}
+        {showSmallFavicon && <div
+          className="top-site-icon default-icon"
+          data-fallback={smallFaviconFallback && letterFallback}
+          style={smallFaviconStyle} />}
      </div>
      <div className={`title ${link.isPinned ? "pinned" : ""}`}>
        {link.isPinned && <div className="icon icon-pin-small" />}
-       <span dir="auto">{props.title}</span>
+        <span dir="auto">{title}</span>
      </div>
    </a>
    {props.children}
