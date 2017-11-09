@@ -31,9 +31,9 @@ add_task(async function topsites_pin_unpin() {
   await clearHistoryAndBookmarks();
 
   // it should pin the website when we click the first option of the topsite context menu.
-  await simulate_context_menu_click(1, ".icon-pin-small", 1, "should find a pinned website");
+  await simulate_context_menu_click(1, "[data-mochitest='topsite-pinned']", 1, "should find a pinned website");
   // it should unpin the website when we click the first option of the topsite context menu.
   // topsite became pinned after the previous call.
   // Also used to clear pinned websites cache. Bug https://github.com/mozilla/activity-stream/issues/3800.
-  await simulate_context_menu_click(1, ".icon-pin-small", 0, "should find no pinned website");
+  await simulate_context_menu_click(1, "[data-mochitest='topsite-pinned']", 0, "should find no pinned website");
 });

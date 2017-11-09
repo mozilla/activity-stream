@@ -14,6 +14,7 @@ const TopSiteLink = props => {
   let showSmallFavicon = false;
   let smallFaviconStyle;
   let smallFaviconFallback;
+  let mochitestSelector = link.isPinned ? "topsite-pinned" : "topsite";
   if (tippyTopIcon || faviconSize >= MIN_RICH_FAVICON_SIZE) {
     // styles and class names for top sites with rich icons
     imageClassName = "top-site-icon rich-icon";
@@ -37,7 +38,7 @@ const TopSiteLink = props => {
       smallFaviconFallback = true;
     }
   }
-  return (<li className={topSiteOuterClassName} key={link.guid || link.url}>
+  return (<li data-mochitest={mochitestSelector} className={topSiteOuterClassName} key={link.guid || link.url}>
    <a href={link.url} onClick={props.onClick}>
      <div className="tile" aria-hidden={true}>
         <span className="letter-fallback">{props.title[0]}</span>
