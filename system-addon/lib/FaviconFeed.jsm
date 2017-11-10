@@ -96,6 +96,10 @@ this.FaviconFeed = class FaviconFeed {
     return this._sitesByDomain || (this._sitesByDomain = new Promise(async resolve => {
       await this.loadCachedData();
       await this.maybeRefresh();
+      if (this._sitesByDomain instanceof Promise) {
+        // If _sitesByDomain is still a Promise, no data was loaded from cache or fetch.
+        this._sitesByDomain = {};
+      }
       resolve(this._sitesByDomain);
     }));
   }
