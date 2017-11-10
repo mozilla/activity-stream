@@ -10,6 +10,7 @@ describe("Top Stories Feed", () => {
   let TOPICS_UPDATE_TIME;
   let SECTION_ID;
   let SPOC_IMPRESSION_TRACKING_PREF;
+  let REC_IMPRESSION_TRACKING_PREF;
   let MIN_DOMAIN_AFFINITIES_UPDATE_TIME;
   let instance;
   let clock;
@@ -64,6 +65,7 @@ describe("Top Stories Feed", () => {
       TOPICS_UPDATE_TIME,
       SECTION_ID,
       SPOC_IMPRESSION_TRACKING_PREF,
+      REC_IMPRESSION_TRACKING_PREF,
       MIN_DOMAIN_AFFINITIES_UPDATE_TIME
     } = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
@@ -339,43 +341,87 @@ describe("Top Stories Feed", () => {
       assert.deepEqual(items, [{"score": 0.2}, {"score": 0.1}]);
     });
     it("should rotate items if personalization is preffed on", () => {
-      let items = [{"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}];
-
+      let items = [{"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}, {"guid": "g5"}, {"guid": "g6"}];
       instance.personalized = true;
 
+      // No impressions should leave items unchanged
       let rotated = instance.rotate(items);
-      assert.deepEqual(new Map([["g1", 0]]), instance.topItems);
       assert.deepEqual(items, rotated);
 
+      // Recent impression should leave items unchanged
+      instance._prefs.get = pref => (pref === REC_IMPRESSION_TRACKING_PREF) && JSON.stringify({"g1": 1, "g2": 1, "g3": 1});
       rotated = instance.rotate(items);
-      assert.deepEqual(new Map([["g1", 1]]), instance.topItems);
       assert.deepEqual(items, rotated);
 
+      // Impression older than expiration time should rotate items
+      clock.tick(5400 * 60 * 60 * 1000 + 1);
       rotated = instance.rotate(items);
-      assert.deepEqual(new Map([["g1", 2], ["g2", 0]]), instance.topItems);
-      assert.deepEqual([{"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}, {"guid": "g1"}], rotated);
+      assert.deepEqual([{"guid": "g4"}, {"guid": "g5"}, {"guid": "g6"}, {"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}], rotated);
 
-      // Simulate g1 on top again which should again be rotated to the end
-      rotated = instance.rotate([{"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}]);
-      assert.deepEqual(new Map([["g1", 3], ["g2", 1]]), instance.topItems);
-      assert.deepEqual([{"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}, {"guid": "g1"}], rotated);
+      instance._prefs.get = pref => (pref === REC_IMPRESSION_TRACKING_PREF) &&
+        JSON.stringify({"g1": 1, "g2": 1, "g3": 1, "g4": 5400 * 60 * 60 * 1001});
+      clock.tick(5400 * 60 * 60 * 1000);
+      rotated = instance.rotate(items);
+      assert.deepEqual([{"guid": "g5"}, {"guid": "g6"}, {"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}], rotated);
     });
     it("should not rotate items if personalization is preffed off", () => {
       let items = [{"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}];
 
       instance.personalized = false;
 
-      instance.topItems = new Map([["g1", 1]]);
-      const rotated = instance.rotate(items);
+      instance._prefs.get = pref => (pref === REC_IMPRESSION_TRACKING_PREF) && JSON.stringify({"g1": 1, "g2": 1, "g3": 1});
+      clock.tick(5400 * 60 * 60 * 1000 + 1);
+      let rotated = instance.rotate(items);
       assert.deepEqual(items, rotated);
     });
-    it("should stop rotating if all items have been on top", () => {
-      let items = [{"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}];
-      instance.topItems = new Map([["g1", 2], ["g2", 2], ["g3", 2], ["g4", 2]]);
+    it("should record top story impressions", async () => {
+      instance._prefs = {get: pref => undefined, set: sinon.spy()};
       instance.personalized = true;
 
-      const rotated = instance.rotate(items);
-      assert.deepEqual(items, rotated);
+      clock.tick(1);
+      let expectedPrefValue = JSON.stringify({1: 1, 2: 1, 3: 1});
+      instance.onAction({type: at.TELEMETRY_IMPRESSION_STATS, data: {tiles: [{id: 1}, {id: 2}, {id: 3}]}});
+      assert.calledWith(instance._prefs.set.firstCall, REC_IMPRESSION_TRACKING_PREF, expectedPrefValue);
+
+      // Only need to record first impression, so impression pref shouldn't change
+      instance._prefs.get = pref => expectedPrefValue;
+      clock.tick(1);
+      instance.onAction({type: at.TELEMETRY_IMPRESSION_STATS, data: {tiles: [{id: 1}, {id: 2}, {id: 3}]}});
+      assert.calledOnce(instance._prefs.set);
+
+      // New first impressions should be added
+      clock.tick(1);
+      let expectedPrefValueTwo = JSON.stringify({1: 1, 2: 1, 3: 1, 4: 3, 5: 3, 6: 3});
+      instance.onAction({type: at.TELEMETRY_IMPRESSION_STATS, data: {tiles: [{id: 4}, {id: 5}, {id: 6}]}});
+      assert.calledWith(instance._prefs.set.secondCall, REC_IMPRESSION_TRACKING_PREF, expectedPrefValueTwo);
+    });
+    it("should not record top story impressions for non-view impressions", async () => {
+      instance._prefs = {get: pref => undefined, set: sinon.spy()};
+      instance.personalized = true;
+
+      instance.onAction({type: at.TELEMETRY_IMPRESSION_STATS, data: {click: 0, tiles: [{id: 1}]}});
+      assert.notCalled(instance._prefs.set);
+
+      instance.onAction({type: at.TELEMETRY_IMPRESSION_STATS, data: {block: 0, tiles: [{id: 1}]}});
+      assert.notCalled(instance._prefs.set);
+
+      instance.onAction({type: at.TELEMETRY_IMPRESSION_STATS, data: {pocket: 0, tiles: [{id: 1}]}});
+      assert.notCalled(instance._prefs.set);
+    });
+    it("should clean up top story impressions", async () => {
+      instance._prefs = {get: pref => JSON.stringify({1: 1, 2: 1, 3: 1}), set: sinon.spy()};
+
+      let fetchStub = globals.sandbox.stub();
+      globals.set("fetch", fetchStub);
+      globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
+
+      instance.stories_endpoint = "stories-endpoint";
+      const response = {"recommendations": [{"id": 3}, {"id": 4}, {"id": 5}]};
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
+      await instance.fetchStories();
+
+      // Should remove impressions for rec 1 and 2 as no longer in the feed
+      assert.calledWith(instance._prefs.set.firstCall, REC_IMPRESSION_TRACKING_PREF, JSON.stringify({3: 1}));
     });
   });
   describe("#spocs", () => {
@@ -581,12 +627,12 @@ describe("Top Stories Feed", () => {
 
       // simulate impressions for campaign 5 and 6
       instance.onAction({type: at.TELEMETRY_IMPRESSION_STATS, data: {tiles: [{id: 3}, {id: 2}, {id: 1}]}});
-      instance._prefs.get = pref => JSON.stringify({5: [0]});
+      instance._prefs.get = pref => (pref === SPOC_IMPRESSION_TRACKING_PREF) && JSON.stringify({5: [0]});
       instance.onAction({type: at.TELEMETRY_IMPRESSION_STATS, data: {tiles: [{id: 3}, {id: 2}, {id: 4}]}});
 
       let expectedPrefValue = JSON.stringify({5: [0], 6: [0]});
       assert.calledWith(instance._prefs.set.secondCall, SPOC_IMPRESSION_TRACKING_PREF, expectedPrefValue);
-      instance._prefs.get = pref => expectedPrefValue;
+      instance._prefs.get = pref => (pref === SPOC_IMPRESSION_TRACKING_PREF) && expectedPrefValue;
 
       // remove campaign 5 from response
       const updatedResponse = {
