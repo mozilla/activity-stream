@@ -73,6 +73,12 @@ describe("FaviconFeed", () => {
       assert.notCalled(feed.loadCachedData);
       assert.notCalled(feed.maybeRefresh);
     });
+    it("should resolve to empty object if there is no cache and fetch fails", async () => {
+      feed.loadCachedData = sinon.spy(() => ([]));
+      feed.maybeRefresh = sinon.spy(() => ([]));
+      await feed.getSitesByDomain();
+      assert.deepEqual(feed._sitesByDomain, {});
+    });
   });
 
   describe("#loadCachedData", () => {
