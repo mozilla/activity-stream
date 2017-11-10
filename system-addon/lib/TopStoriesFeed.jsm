@@ -21,6 +21,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "perfService", "resource://activity-stre
 const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
 const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
+const MIN_DOMAIN_AFFINITIES_UPDATE_TIME = 12 * 60 * 60 * 1000; // 12 hours
 const SECTION_ID = "topstories";
 const SPOC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.spoc.impressions";
 const MAX_LIFETIME_CAP = 100; // Guard against misconfiguration on the server
@@ -50,6 +51,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.maxHistoryQueryResults = options.maxHistoryQueryResults;
         this.storiesLastUpdated = 0;
         this.topicsLastUpdated = 0;
+        this.domainAffinitiesLastUpdated = 0;
 
         this.loadCachedData();
         this.fetchStories();
@@ -115,6 +117,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     if (this.personalized && affinities && affinities.scores) {
       this.affinityProvider = new UserDomainAffinityProvider(affinities.timeSegments,
         affinities.parameterSets, affinities.maxHistoryQueryResults, affinities.version, affinities.scores);
+      this.domainAffinitiesLastUpdated = affinities._timestamp;
     }
     if (stories && stories.length > 0 && this.storiesLastUpdated === 0) {
       this.updateSettings(data.stories.settings);
@@ -198,7 +201,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
   }
 
   updateDomainAffinityScores() {
-    if (!this.personalized || !this.domainAffinityParameterSets) {
+    if (!this.personalized || !this.domainAffinityParameterSets ||
+      Date.now() - this.domainAffinitiesLastUpdated < MIN_DOMAIN_AFFINITIES_UPDATE_TIME) {
       return;
     }
 
@@ -215,7 +219,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
       value: Math.round(perfService.absNow() - start)
     }));
 
-    this.cache.set("domainAffinities", this.affinityProvider.getAffinities());
+    const affinities = this.affinityProvider.getAffinities();
+    affinities._timestamp = this.domainAffinitiesLastUpdated = Date.now();
+    this.cache.set("domainAffinities", affinities);
   }
 
   resetDomainAffinityScores() {
@@ -462,4 +468,5 @@ this.STORIES_UPDATE_TIME = STORIES_UPDATE_TIME;
 this.TOPICS_UPDATE_TIME = TOPICS_UPDATE_TIME;
 this.SECTION_ID = SECTION_ID;
 this.SPOC_IMPRESSION_TRACKING_PREF = SPOC_IMPRESSION_TRACKING_PREF;
-this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "SECTION_ID", "SPOC_IMPRESSION_TRACKING_PREF"];
+this.MIN_DOMAIN_AFFINITIES_UPDATE_TIME = MIN_DOMAIN_AFFINITIES_UPDATE_TIME;
+this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "SECTION_ID", "SPOC_IMPRESSION_TRACKING_PREF", "MIN_DOMAIN_AFFINITIES_UPDATE_TIME"];

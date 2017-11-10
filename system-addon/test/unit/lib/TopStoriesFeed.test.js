@@ -10,6 +10,7 @@ describe("Top Stories Feed", () => {
   let TOPICS_UPDATE_TIME;
   let SECTION_ID;
   let SPOC_IMPRESSION_TRACKING_PREF;
+  let MIN_DOMAIN_AFFINITIES_UPDATE_TIME;
   let instance;
   let clock;
   let globals;
@@ -62,7 +63,8 @@ describe("Top Stories Feed", () => {
       STORIES_UPDATE_TIME,
       TOPICS_UPDATE_TIME,
       SECTION_ID,
-      SPOC_IMPRESSION_TRACKING_PREF
+      SPOC_IMPRESSION_TRACKING_PREF,
+      MIN_DOMAIN_AFFINITIES_UPDATE_TIME
     } = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
       "lib/ShortURL.jsm": {shortURL: shortURLStub},
@@ -712,14 +714,29 @@ describe("Top Stories Feed", () => {
 
       instance.personalized = true;
       instance.updateSettings({timeSegments: {}, domainAffinityParameterSets: {}});
+      clock.tick(MIN_DOMAIN_AFFINITIES_UPDATE_TIME);
       instance.observe("", "idle-daily");
       assert.isDefined(instance.affinityProvider);
       assert.calledOnce(instance.cache.set);
-      assert.calledWith(instance.cache.set, "domainAffinities", instance.affinityProvider.getAffinities());
+      assert.calledWith(instance.cache.set, "domainAffinities",
+        Object.assign({}, instance.affinityProvider.getAffinities(), {"_timestamp": MIN_DOMAIN_AFFINITIES_UPDATE_TIME}));
+    });
+    it("should not update domain affinities too often", () => {
+      instance.init();
+      instance.affinityProvider = undefined;
+      instance.cache.set = sinon.spy();
+
+      instance.personalized = true;
+      instance.updateSettings({timeSegments: {}, domainAffinityParameterSets: {}});
+      clock.tick(MIN_DOMAIN_AFFINITIES_UPDATE_TIME);
+      instance.domainAffinitiesLastUpdated = Date.now();
+      instance.observe("", "idle-daily");
+      assert.isUndefined(instance.affinityProvider);
     });
     it("should send performance telemetry when updating domain affinities", () => {
       instance.init();
       instance.personalized = true;
+      clock.tick(MIN_DOMAIN_AFFINITIES_UPDATE_TIME);
       instance.updateSettings({timeSegments: {}, domainAffinityParameterSets: {}});
       instance.observe("", "idle-daily");
 
@@ -755,6 +772,7 @@ describe("Top Stories Feed", () => {
       instance.personalized = true;
       instance.resetDomainAffinityScores = sinon.spy();
       instance.updateSettings({timeSegments: {}, domainAffinityParameterSets: {}, version: "1"});
+      clock.tick(MIN_DOMAIN_AFFINITIES_UPDATE_TIME);
       instance.observe("", "idle-daily");
       assert.notCalled(instance.resetDomainAffinityScores);
 
