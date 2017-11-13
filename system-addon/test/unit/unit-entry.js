@@ -4,12 +4,12 @@ const {chaiAssertions} = require("test/schemas/pings");
 // Cause React warnings to make tests that trigger them fail
 const origConsoleError = console.error; // eslint-disable-line no-console
 console.error = function(msg, ...args) { // eslint-disable-line no-console
+  // eslint-disable-next-line no-console
+  origConsoleError.apply(console, [msg, ...args]);
+
   if (/(Invalid prop|Failed prop type|Check the render method)/.test(msg)) {
     throw new Error(msg);
   }
-
-  // eslint-disable-next-line no-console
-  origConsoleError.apply(console, [msg, ...args]);
 };
 
 const req = require.context(".", true, /\.test\.jsx?$/);
