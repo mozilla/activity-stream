@@ -18,26 +18,30 @@ XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils",
 XPCOMUtils.defineLazyModuleGetter(this, "Services",
   "resource://gre/modules/Services.jsm");
 
-const TIPPYTOP_UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
+const FIVE_MINUTES = 5 * 60 * 1000;
+const ONE_DAY = 24 * 60 * 60 * 1000;
+const TIPPYTOP_UPDATE_TIME = ONE_DAY;
+const TIPPYTOP_RETRY_DELAY = FIVE_MINUTES;
 
 this.FaviconFeed = class FaviconFeed {
   constructor() {
-    this.tippyTopLastUpdated = 0;
+    this.tippyTopNextUpdate = 0;
     this.cache = new PersistentCache("tippytop", true);
     this.prefs = new Prefs();
     this._sitesByDomain = null;
+    this.numRetries = 0;
   }
 
   async loadCachedData() {
     const data = await this.cache.get("sites");
-    if (data && data._timestamp) {
+    if (data && "_timestamp" in data) {
       this._sitesByDomain = data;
-      this.tippyTopLastUpdated = data._timestamp;
+      this.tippyTopNextUpdate = data._timestamp + TIPPYTOP_UPDATE_TIME;
     }
   }
 
   async maybeRefresh() {
-    if (Date.now() - this.tippyTopLastUpdated >= TIPPYTOP_UPDATE_TIME) {
+    if (Date.now() >= this.tippyTopNextUpdate) {
       await this.refresh();
     }
   }
@@ -48,18 +52,22 @@ this.FaviconFeed = class FaviconFeed {
       headers.set("If-None-Match", this._sitesByDomain._etag);
     }
     let {data, etag, status} = await this.loadFromURL(this.prefs.get("tippyTop.service.endpoint"), headers);
-    if (status === 304) {
-      // Not modified, we are done. No need to dispatch actions or update cache. We'll check again in 24+ hours.
-      this.tippyTopLastUpdated = Date.now();
-      return;
+    let failedUpdate = false;
+    if (status === 200) {
+      this._sitesByDomain = this._sitesArrayToObjectByDomain(data);
+      this._sitesByDomain._etag = etag;
+    } else if (status !== 304) {
+      failedUpdate = true;
     }
-    if (status === 200 && data) {
-      let sitesByDomain = this._sitesArrayToObjectByDomain(data);
-      sitesByDomain._etag = etag;
-      this.tippyTopLastUpdated = sitesByDomain._timestamp = Date.now();
-      this.cache.set("sites", sitesByDomain);
-      this._sitesByDomain = sitesByDomain;
+    let delay = TIPPYTOP_UPDATE_TIME;
+    if (failedUpdate) {
+      delay = Math.min(TIPPYTOP_UPDATE_TIME, TIPPYTOP_RETRY_DELAY * Math.pow(2, this.numRetries++));
+    } else {
+      this._sitesByDomain._timestamp = Date.now();
+      this.cache.set("sites", this._sitesByDomain);
+      this.numRetries = 0;
     }
+    this.tippyTopNextUpdate = Date.now() + delay;
   }
 
   async loadFromURL(url, headers) {

@@ -8,9 +8,11 @@ describe("FaviconFeed", () => {
   let feed;
   let globals;
   let sandbox;
+  let clock;
 
   beforeEach(() => {
     FakePrefs.prototype.prefs["tippyTop.service.endpoint"] = "https://foo.com/";
+    clock = sinon.useFakeTimers();
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     globals.set("PlacesUtils", {
@@ -47,6 +49,7 @@ describe("FaviconFeed", () => {
     };
   });
   afterEach(() => {
+    clock.restore();
     globals.restore();
   });
 
@@ -91,7 +94,7 @@ describe("FaviconFeed", () => {
       feed.cache.get = () => cachedData;
       await feed.loadCachedData();
       assert.deepEqual(feed._sitesByDomain, cachedData);
-      assert.equal(feed.tippyTopLastUpdated, cachedData._timestamp);
+      assert.equal(feed.tippyTopNextUpdate, cachedData._timestamp + 24 * 60 * 60 * 1000);
       assert.equal(feed._sitesByDomain._etag, cachedData._etag);
     });
     it("should NOT set _sitesByDomain if there is no cached data", async () => {
@@ -102,15 +105,15 @@ describe("FaviconFeed", () => {
   });
 
   describe("#maybeRefresh", () => {
-    it("should refresh if last update was over a day back", () => {
+    it("should refresh if next update is due", () => {
       feed.refresh = sinon.spy();
-      feed.tippyTopLastUpdated = Date.now() - 25 * 60 * 60 * 1000;
+      feed.tippyTopNextUpdate = Date.now();
       feed.maybeRefresh();
       assert.calledOnce(feed.refresh);
     });
-    it("should NOT refresh if last update was within last day", () => {
+    it("should NOT refresh if next update is in future", () => {
       feed.refresh = sinon.spy();
-      feed.tippyTopLastUpdated = Date.now() - 23 * 60 * 60 * 1000;
+      feed.tippyTopNextUpdate = Date.now() + 6000;
       feed.maybeRefresh();
       assert.notCalled(feed.refresh);
     });
@@ -132,19 +135,19 @@ describe("FaviconFeed", () => {
         etag: "etag1234567890",
         status: 200
       };
+      const expectedData = {
+        "facebook.com": {"url": "https://facebook.com", "image_url": "https://facebook.com/icon.png"},
+        "mozilla.org": {"url": "https://mozilla.org", "image_url": "https://mozilla.org/icon.png"},
+        "_etag": "etag1234567890",
+        "_timestamp": Date.now()
+      };
       feed.loadFromURL = sinon.spy(url => data);
       feed.cache.set = sinon.spy();
       await feed.refresh();
       assert.equal(feed._sitesByDomain._etag, data.etag);
-      assert.deepEqual(feed._sitesByDomain["facebook.com"], {
-        image_url: "https://facebook.com/icon.png",
-        url: "https://facebook.com"
-      });
-      assert.deepEqual(feed._sitesByDomain["mozilla.org"], {
-        image_url: "https://mozilla.org/icon.png",
-        url: "https://mozilla.org"
-      });
+      assert.deepEqual(feed._sitesByDomain, expectedData);
       assert.calledOnce(feed.cache.set);
+      assert.calledWith(feed.cache.set, "sites", expectedData);
     });
     it("should pass If-None-Match if we have a last known etag", async () => {
       feed.loadFromURL = sinon.spy(url => ({data: [], status: 304}));
@@ -157,11 +160,38 @@ describe("FaviconFeed", () => {
     it("should not set _sitesByDomain if the remote manifest is not modified since last fetch", async () => {
       const data = {"mozilla.org": {"url": "https://mozilla.org", "image_url": "https://mozilla.org/icon.png"}};
       feed._sitesByDomain = data;
+      feed._sitesByDomain._timestamp = Date.now() - 1000;
       feed.loadFromURL = sinon.spy(url => ({data: [], status: 304}));
       feed.cache.set = sinon.spy();
       await feed.refresh();
       assert.deepEqual(feed._sitesByDomain, data);
-      assert.notCalled(feed.cache.set);
+      assert.calledOnce(feed.cache.set);
+      assert.calledWith(feed.cache.set, "sites", Object.assign({_timestamp: Date.now()}, data));
+    });
+    it("should handle server errors by retrying with exponential backoff", async () => {
+      const expectedDelay = 5 * 60 * 1000;
+      feed.loadFromURL = sinon.spy(url => ({data: [], status: 500}));
+      await feed.refresh();
+      assert.equal(1, feed.numRetries);
+      assert.equal(expectedDelay, feed.tippyTopNextUpdate);
+      await feed.refresh();
+      assert.equal(2, feed.numRetries);
+      assert.equal(2 * expectedDelay, feed.tippyTopNextUpdate);
+      await feed.refresh();
+      assert.equal(3, feed.numRetries);
+      assert.equal(2 * 2 * expectedDelay, feed.tippyTopNextUpdate);
+      await feed.refresh();
+      assert.equal(4, feed.numRetries);
+      assert.equal(2 * 2 * 2 * expectedDelay, feed.tippyTopNextUpdate);
+      // Verify the delay maxes out at 24 hours.
+      feed.numRetries = 100;
+      await feed.refresh();
+      assert.equal(24 * 60 * 60 * 1000, feed.tippyTopNextUpdate);
+      // Verify the numRetries gets reset on a successful fetch.
+      feed.loadFromURL = sinon.spy(url => ({data: [], status: 200}));
+      await feed.refresh();
+      assert.equal(0, feed.numRetries);
+      assert.equal(24 * 60 * 60 * 1000, feed.tippyTopNextUpdate);
     });
   });
 
