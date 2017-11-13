@@ -116,6 +116,8 @@
     font-size: 10px;
     padding-bottom: 4px;
     text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .card-title {
