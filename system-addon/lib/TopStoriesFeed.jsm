@@ -22,6 +22,7 @@ const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
 const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
 const MIN_DOMAIN_AFFINITIES_UPDATE_TIME = 12 * 60 * 60 * 1000; // 12 hours
+const DEFAULT_RECS_EXPIRE_TIME = 60 * 60 * 1000; // 1 hour
 const SECTION_ID = "topstories";
 const SPOC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.spoc.impressions";
 const REC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.rec.impressions";
@@ -232,15 +233,15 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.cache.set("domainAffinities", {});
   }
 
-  // If personalization is turned on we have to rotate stories on the client.
-  // Items only be on top for the time configured in settings.
-  // Once an item is expired it will be sorted to the back.
+  // If personalization is turned on, we have to rotate stories on the client so that
+  // active stories are at the front of the list, followed by stories that have expired
+  // impressions i.e. have been displayed for longer than recsExpireTime.
   rotate(items) {
     if (!this.personalized || items.length <= 3) {
       return items;
     }
 
-    const maxImpressionAge = (this.recsExpireTime || 5400) * 60 * 1000;
+    const maxImpressionAge = Math.max(this.recsExpireTime * 1000 || DEFAULT_RECS_EXPIRE_TIME, DEFAULT_RECS_EXPIRE_TIME);
     const impressions = this.readImpressionsPref(REC_IMPRESSION_TRACKING_PREF);
     const expired = [];
     const active = [];
@@ -377,14 +378,21 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.cleanUpImpressionPref(id => !activeStories.has(id), REC_IMPRESSION_TRACKING_PREF);
   }
 
-  cleanUpImpressionPref(expired, pref) {
+  /**
+   * Cleans up the provided impression pref (spocs or recs).
+   *
+   * @param isExpired predicate (boolean-valued function) that returns whether or not
+   * the impression for the given key is expired.
+   * @param pref the impression pref to clean up.
+   */
+  cleanUpImpressionPref(isExpired, pref) {
     const impressions = this.readImpressionsPref(pref);
     let changed = false;
 
     Object
       .keys(impressions)
       .forEach(id => {
-        if (expired(id)) {
+        if (isExpired(id)) {
           changed = true;
           delete impressions[id];
         }
@@ -482,7 +490,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
             });
           }
           if (this.personalized) {
-            const topRecs = payload.tiles.filter(t => !this.spocCampaignMap.has(t.id)).map(t => t.id);
+            const topRecs = payload.tiles
+              .filter(t => !this.spocCampaignMap.has(t.id))
+              .map(t => t.id);
             this.recordTopRecImpressions(topRecs);
           }
         }
@@ -498,4 +508,5 @@ this.SECTION_ID = SECTION_ID;
 this.SPOC_IMPRESSION_TRACKING_PREF = SPOC_IMPRESSION_TRACKING_PREF;
 this.REC_IMPRESSION_TRACKING_PREF = REC_IMPRESSION_TRACKING_PREF;
 this.MIN_DOMAIN_AFFINITIES_UPDATE_TIME = MIN_DOMAIN_AFFINITIES_UPDATE_TIME;
-this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "SECTION_ID", "SPOC_IMPRESSION_TRACKING_PREF", "MIN_DOMAIN_AFFINITIES_UPDATE_TIME", "REC_IMPRESSION_TRACKING_PREF"];
+this.DEFAULT_RECS_EXPIRE_TIME = DEFAULT_RECS_EXPIRE_TIME;
+this.EXPORTED_SYMBOLS = ["TopStoriesFeed", "STORIES_UPDATE_TIME", "TOPICS_UPDATE_TIME", "SECTION_ID", "SPOC_IMPRESSION_TRACKING_PREF", "MIN_DOMAIN_AFFINITIES_UPDATE_TIME", "REC_IMPRESSION_TRACKING_PREF", "DEFAULT_RECS_EXPIRE_TIME"];
