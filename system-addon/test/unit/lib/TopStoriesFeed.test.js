@@ -12,6 +12,7 @@ describe("Top Stories Feed", () => {
   let SPOC_IMPRESSION_TRACKING_PREF;
   let REC_IMPRESSION_TRACKING_PREF;
   let MIN_DOMAIN_AFFINITIES_UPDATE_TIME;
+  let DEFAULT_RECS_EXPIRE_TIME;
   let instance;
   let clock;
   let globals;
@@ -66,7 +67,8 @@ describe("Top Stories Feed", () => {
       SECTION_ID,
       SPOC_IMPRESSION_TRACKING_PREF,
       REC_IMPRESSION_TRACKING_PREF,
-      MIN_DOMAIN_AFFINITIES_UPDATE_TIME
+      MIN_DOMAIN_AFFINITIES_UPDATE_TIME,
+      DEFAULT_RECS_EXPIRE_TIME
     } = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
       "lib/ShortURL.jsm": {shortURL: shortURLStub},
@@ -354,13 +356,13 @@ describe("Top Stories Feed", () => {
       assert.deepEqual(items, rotated);
 
       // Impression older than expiration time should rotate items
-      clock.tick(5400 * 60 * 60 * 1000 + 1);
+      clock.tick(DEFAULT_RECS_EXPIRE_TIME + 1);
       rotated = instance.rotate(items);
       assert.deepEqual([{"guid": "g4"}, {"guid": "g5"}, {"guid": "g6"}, {"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}], rotated);
 
       instance._prefs.get = pref => (pref === REC_IMPRESSION_TRACKING_PREF) &&
-        JSON.stringify({"g1": 1, "g2": 1, "g3": 1, "g4": 5400 * 60 * 60 * 1001});
-      clock.tick(5400 * 60 * 60 * 1000);
+        JSON.stringify({"g1": 1, "g2": 1, "g3": 1, "g4": DEFAULT_RECS_EXPIRE_TIME + 1});
+      clock.tick(DEFAULT_RECS_EXPIRE_TIME);
       rotated = instance.rotate(items);
       assert.deepEqual([{"guid": "g5"}, {"guid": "g6"}, {"guid": "g1"}, {"guid": "g2"}, {"guid": "g3"}, {"guid": "g4"}], rotated);
     });
@@ -370,7 +372,7 @@ describe("Top Stories Feed", () => {
       instance.personalized = false;
 
       instance._prefs.get = pref => (pref === REC_IMPRESSION_TRACKING_PREF) && JSON.stringify({"g1": 1, "g2": 1, "g3": 1});
-      clock.tick(5400 * 60 * 60 * 1000 + 1);
+      clock.tick(DEFAULT_RECS_EXPIRE_TIME + 1);
       let rotated = instance.rotate(items);
       assert.deepEqual(items, rotated);
     });
