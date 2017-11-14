@@ -23,6 +23,7 @@ chai.use(chaiAssertions);
 let overrider = new GlobalOverrider();
 
 overrider.set({
+  AppConstants: {MOZILLA_OFFICIAL: true},
   Components: {
     classes: {},
     interfaces: {},
