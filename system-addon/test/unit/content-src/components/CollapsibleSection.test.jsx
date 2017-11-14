@@ -9,7 +9,7 @@ const DEFAULT_PROPS = {
   prefName: "collapseSection",
   Prefs: {values: {collapseSection: false}},
   infoOption: {},
-  disclaimer: {text: {id: "text"}, link: {id: "link"}, button: {id: "button"}},
+  disclaimer: {text: {id: "default_label_loading"}, link: {id: "menu_action_email_link"}, button: {id: "search_button"}},
   document: {
     addEventListener: () => {},
     removeEventListener: () => {},
