@@ -34,6 +34,7 @@
 .manual-migration-actions {
   border: none;
   display: block;
+  flex-wrap: nowrap;
 
   @media (min-width: $break-point-medium) {
     display: flex;
