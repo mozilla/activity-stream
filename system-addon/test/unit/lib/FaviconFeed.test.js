@@ -195,31 +195,6 @@ describe("FaviconFeed", () => {
     });
   });
 
-  describe("#getBestDomain", () => {
-    const getBest = url => feed.getBestDomain(url, ["mozilla.org", "xyz.mozilla.org"]);
-    it("should return empty if no match", () => {
-      assert.equal(getBest("https://facebook.com/"), "");
-    });
-    it("should return an exact match", () => {
-      assert.equal(getBest("https://mozilla.org/"), "mozilla.org");
-    });
-    it("should not care about protocol", () => {
-      assert.equal(getBest("http://mozilla.org/"), "mozilla.org");
-    });
-    it("should not care about www.", () => {
-      assert.equal(getBest("https://www.mozilla.org/"), "mozilla.org");
-    });
-    it("should fall back to higher domain matches", () => {
-      assert.equal(getBest("https://bugzilla.mozilla.org/"), "mozilla.org");
-    });
-    it("should prefer an exact match over top level match", () => {
-      assert.equal(getBest("https://xyz.mozilla.org/"), "xyz.mozilla.org");
-    });
-    it("should fall back to best match", () => {
-      assert.equal(getBest("https://foo.xyz.mozilla.org/"), "xyz.mozilla.org");
-    });
-  });
-
   describe("#fetchIcon", () => {
     it("should setAndFetchFaviconForPage if the url is in the TippyTop data", async () => {
       let url = "https://mozilla.org";

@@ -112,25 +112,10 @@ this.FaviconFeed = class FaviconFeed {
     }));
   }
 
-  /**
-   * Get a domain from an available list of domains preferring exact matches.
-   * @param {string} url The url to extract a domain from
-   * @param {array} domains An array of strings of acceptable domains
-   * @returns A domain or empty string if no match
-   */
-  getBestDomain(url, domains) {
-    let domain = getDomain(url);
-    while (domain && !domains.includes(domain)) {
-      // Remove the first subdomain part if there's no exact match
-      domain = domain.split(".").slice(1).join(".");
-    }
-    return domain;
-  }
-
   async fetchIcon(url) {
     const sitesByDomain = await this.getSitesByDomain();
-    const domain = this.getBestDomain(url, Object.keys(sitesByDomain));
-    if (domain) {
+    const domain = getDomain(url);
+    if (domain in sitesByDomain) {
       let iconUri = Services.io.newURI(sitesByDomain[domain].image_url);
       // The #tippytop is to be able to identify them for telemetry.
       iconUri.ref = "tippytop";
