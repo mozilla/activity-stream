@@ -41,7 +41,10 @@ function countTopSitesIconsTypes(topSites) {
 }
 
 class TopSites extends React.PureComponent {
-  componentDidUpdate() {
+  /**
+   * Dispatch session statistics about the quality of TopSites icons.
+   */
+  _storeTopSitesIconStats() {
     const realTopSites = this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
 
     const topSitesIconsStats = countTopSitesIconsTypes(realTopSites);
@@ -52,15 +55,12 @@ class TopSites extends React.PureComponent {
     }));
   }
 
-  componentDidMount() {
-    const realTopSites = this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
+  componentDidUpdate() {
+    this._storeTopSitesIconStats();
+  }
 
-    const topSitesIconsStats = countTopSitesIconsTypes(realTopSites);
-    // Dispatch telemetry event with the count of TopSites images types.
-    this.props.dispatch(ac.SendToMain({
-      type: at.SAVE_SESSION_PERF_DATA,
-      data: {topsites_icon_stats: topSitesIconsStats}
-    }));
+  componentDidMount() {
+    this._storeTopSitesIconStats();
   }
 
   render() {
