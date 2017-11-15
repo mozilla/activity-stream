@@ -137,7 +137,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["tippyTop.service.endpoint", {
     title: "Tippy Top service manifest url",
-    value: "https://s3.amazonaws.com/activitystream-dev-default-resources-s3bucket-1qw8m6s29v3dq/tippytop/icons.json"
+    value: "https://activity-stream-icons.services.mozilla.com/v1/icons.json.br"
   }]
 ]);
 
