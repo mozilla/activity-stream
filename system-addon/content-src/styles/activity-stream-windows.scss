@@ -1,7 +1,9 @@
 /* This is the windows variant */
-@import './activity-stream';
 
-// Search border should only have a 1-pixel blue border, so no box-shadow is needed.
-.search-wrapper input:focus {
-  box-shadow: 0 0 0 1px $blue-50;
-}
+$os-infopanel-arrow-height: 10px;
+$os-infopanel-arrow-offset-end: 6px;
+$os-infopanel-arrow-url: 'chrome://global/skin/arrow/panelarrow-vertical-themed.svg';
+$os-infopanel-arrow-width: 20px;
+$os-search-focus-shadow-radius: 1px;
+
+@import './activity-stream';
