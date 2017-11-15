@@ -66,7 +66,7 @@ const PREFS_CONFIG = new Map([
       disclaimer_link: "https://getpocket.cdn.mozilla.net/firefox/new_tab_learn_more",
       topics_endpoint: `https://getpocket.cdn.mozilla.net/v3/firefox/trending-topics?version=2&consumer_key=$apiKey&locale_lang=${args.locale}`,
       show_spocs: false,
-      personalized: false
+      personalized: true
     })
   }],
   ["showSponsored", {
