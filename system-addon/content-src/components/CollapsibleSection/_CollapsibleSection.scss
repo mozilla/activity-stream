@@ -67,23 +67,23 @@
 
       &::before {
         $before-height: 32px;
-        background-image: url($os-arrow-panel-url);
-        background-position: right $os-arrow-offset-end bottom;
+        background-image: url($os-infopanel-arrow-url);
+        background-position: right $os-infopanel-arrow-offset-end bottom;
         background-repeat: no-repeat;
-        background-size: $os-arrow-width $os-arrow-height;
+        background-size: $os-infopanel-arrow-width $os-infopanel-arrow-height;
         height: $before-height;
         top: -$before-height;
         width: 43px;
       }
 
       &:dir(rtl)::before {
-        background-position-x: $os-arrow-offset-end;
+        background-position-x: $os-infopanel-arrow-offset-end;
       }
 
       &::after {
-        height: $os-arrow-height;
+        height: $os-infopanel-arrow-height;
         offset-inline-start: 0;
-        top: -$os-arrow-height;
+        top: -$os-infopanel-arrow-height;
       }
     }
 
