@@ -44,7 +44,7 @@ class TopSites extends React.PureComponent {
   /**
    * Dispatch session statistics about the quality of TopSites icons.
    */
-  _storeTopSitesIconStats() {
+  _dispatchTopSitesIconStats() {
     const realTopSites = this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
 
     const topSitesIconsStats = countTopSitesIconsTypes(realTopSites);
@@ -56,11 +56,11 @@ class TopSites extends React.PureComponent {
   }
 
   componentDidUpdate() {
-    this._storeTopSitesIconStats();
+    this._dispatchTopSitesIconStats();
   }
 
   componentDidMount() {
-    this._storeTopSitesIconStats();
+    this._dispatchTopSitesIconStats();
   }
 
   render() {

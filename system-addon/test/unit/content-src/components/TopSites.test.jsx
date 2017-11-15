@@ -76,30 +76,30 @@ describe("<TopSites>", () => {
     wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
     assert.lengthOf(wrapper.find(TopSitesEditConnected), 1);
   });
-  describe("#_storeTopSitesIconStats", () => {
+  describe("#_dispatchTopSitesIconStats", () => {
     let wrapper;
-    let storeStatsSpy;
+    let dispatchStatsSpy;
 
     beforeEach(() => {
       sandbox.stub(DEFAULT_PROPS, "dispatch");
       wrapper = shallow(<TopSites {...DEFAULT_PROPS} />);
-      storeStatsSpy = sandbox.spy(wrapper.instance(), "_storeTopSitesIconStats");
+      dispatchStatsSpy = sandbox.spy(wrapper.instance(), "_dispatchTopSitesIconStats");
     });
     afterEach(() => {
       sandbox.restore();
     });
-    it("should call _storeTopSitesIconStats on componentDidMount", () => {
-      wrapper.instance().componentDidMount(DEFAULT_PROPS);
+    it("should call _dispatchTopSitesIconStats on componentDidMount", () => {
+      wrapper.instance().componentDidMount();
 
-      assert.calledOnce(storeStatsSpy);
+      assert.calledOnce(dispatchStatsSpy);
     });
-    it("should call _storeTopSitesIconStats on componentDidUpdate", () => {
-      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+    it("should call _dispatchTopSitesIconStats on componentDidUpdate", () => {
+      wrapper.instance().componentDidUpdate();
 
-      assert.calledOnce(storeStatsSpy);
+      assert.calledOnce(dispatchStatsSpy);
     });
     it("should dispatch SAVE_SESSION_PERF_DATA", () => {
-      wrapper.instance()._storeTopSitesIconStats(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -118,7 +118,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - just screenshot", () => {
       const rows = [{screenshot: true}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance()._storeTopSitesIconStats(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -137,7 +137,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - screenshot + favicon", () => {
       const rows = [{screenshot: true, faviconSize: MIN_CORNER_FAVICON_SIZE}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance()._storeTopSitesIconStats(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -156,7 +156,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - rich_icon", () => {
       const rows = [{faviconSize: MIN_RICH_FAVICON_SIZE}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance()._storeTopSitesIconStats(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -175,7 +175,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - tippytop", () => {
       const rows = [{tippyTopIcon: "foo"}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance()._storeTopSitesIconStats(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -194,7 +194,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - no image", () => {
       const rows = [{}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance()._storeTopSitesIconStats(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
