@@ -175,7 +175,7 @@ describe("<TopSites>", () => {
       }));
     });
     it("should correctly count TopSite images - tippytop", () => {
-      const rows = [{tippyTopIcon: "foo"}];
+      const rows = [{tippyTopIcon: "foo"}, {faviconRef: "tippytop"}, {faviconRef: "foobar"}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
       wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
 
@@ -186,9 +186,9 @@ describe("<TopSites>", () => {
           topsites_icon_stats: {
             "screenshot_with_icon": 0,
             "screenshot": 0,
-            "tippytop": 1,
+            "tippytop": 2,
             "rich_icon": 0,
-            "no_image": 0
+            "no_image": 1
           }
         }
       }));

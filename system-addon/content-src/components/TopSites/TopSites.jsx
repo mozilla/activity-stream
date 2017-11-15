@@ -16,7 +16,7 @@ const {MIN_RICH_FAVICON_SIZE, MIN_CORNER_FAVICON_SIZE} = require("./TopSitesCons
  */
 function countTopSitesIconsTypes(topSites) {
   const countTopSitesTypes = (acc, link) => {
-    if (link.tippyTopIcon) {
+    if (link.tippyTopIcon || link.faviconRef === "tippytop") {
       acc.tippytop++;
     } else if (link.faviconSize >= MIN_RICH_FAVICON_SIZE) {
       acc.rich_icon++;
