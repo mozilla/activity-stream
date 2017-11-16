@@ -27,12 +27,10 @@ describe("FaviconFeed", () => {
       ok: true,
       status: 200,
       json: () => Promise.resolve([{
-        "title": "facebook",
-        "url": "https://www.facebook.com/",
+        "domains": ["facebook.com"],
         "image_url": "https://www.facebook.com/icon.png"
       }, {
-        "title": "gmail",
-        "urls": ["https://www.gmail.com/", "https://mail.google.com"],
+        "domains": ["gmail.com", "mail.google.com"],
         "image_url": "https://iconserver.com/gmail.png"
       }])
     });
@@ -61,7 +59,7 @@ describe("FaviconFeed", () => {
     it("should loadCachedData and maybeRefresh if _sitesByDomain isn't set", async () => {
       feed.loadCachedData = sinon.spy(() => ([]));
       feed.maybeRefresh = sinon.spy(() => {
-        feed._sitesByDomain = {"mozilla.org": {"url": "https://mozilla.org", "image_url": "https://mozilla.org/icon.png"}};
+        feed._sitesByDomain = {"mozilla.org": {"image_url": "https://mozilla.org/icon.png"}};
         return [];
       });
       await feed.getSitesByDomain();
@@ -69,7 +67,7 @@ describe("FaviconFeed", () => {
       assert.calledOnce(feed.maybeRefresh);
     });
     it("should NOT loadCachedData and maybeRefresh if _sitesByDomain is already set", async () => {
-      feed._sitesByDomain = {"mozilla.org": {"url": "https://mozilla.org", "image_url": "https://mozilla.org/icon.png"}};
+      feed._sitesByDomain = {"mozilla.org": {"image_url": "https://mozilla.org/icon.png"}};
       feed.loadCachedData = sinon.spy(() => ([]));
       feed.maybeRefresh = sinon.spy(() => ([]));
       await feed.getSitesByDomain();
@@ -87,7 +85,7 @@ describe("FaviconFeed", () => {
   describe("#loadCachedData", () => {
     it("should set _sitesByDomain if there is cached data", async () => {
       const cachedData = {
-        "mozilla.org": {"url": "https://mozilla.org", "image_url": "https://mozilla.org/icon.png"},
+        "mozilla.org": {"image_url": "https://mozilla.org/icon.png"},
         "_timestamp": Date.now(),
         "_etag": "foobaretag1234567890"
       };
@@ -129,15 +127,15 @@ describe("FaviconFeed", () => {
     it("should set _sitesByDomain if new sites are returned from loadFromURL", async () => {
       const data = {
         data: [
-          {"url": "https://mozilla.org", "image_url": "https://mozilla.org/icon.png"},
-          {"url": "https://facebook.com", "image_url": "https://facebook.com/icon.png"}
+          {"domains": ["mozilla.org"], "image_url": "https://mozilla.org/icon.png"},
+          {"domains": ["facebook.com"], "image_url": "https://facebook.com/icon.png"}
         ],
         etag: "etag1234567890",
         status: 200
       };
       const expectedData = {
-        "facebook.com": {"url": "https://facebook.com", "image_url": "https://facebook.com/icon.png"},
-        "mozilla.org": {"url": "https://mozilla.org", "image_url": "https://mozilla.org/icon.png"},
+        "facebook.com": {"image_url": "https://facebook.com/icon.png"},
+        "mozilla.org": {"image_url": "https://mozilla.org/icon.png"},
         "_etag": "etag1234567890",
         "_timestamp": Date.now()
       };
@@ -158,7 +156,7 @@ describe("FaviconFeed", () => {
       assert.equal(headers.get("If-None-Match"), feed._sitesByDomain._etag);
     });
     it("should not set _sitesByDomain if the remote manifest is not modified since last fetch", async () => {
-      const data = {"mozilla.org": {"url": "https://mozilla.org", "image_url": "https://mozilla.org/icon.png"}};
+      const data = {"mozilla.org": {"image_url": "https://mozilla.org/icon.png"}};
       feed._sitesByDomain = data;
       feed._sitesByDomain._timestamp = Date.now() - 1000;
       feed.loadFromURL = sinon.spy(url => ({data: [], status: 304}));
