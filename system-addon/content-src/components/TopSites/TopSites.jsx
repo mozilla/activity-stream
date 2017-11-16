@@ -45,14 +45,19 @@ class TopSites extends React.PureComponent {
    * Dispatch session statistics about the quality of TopSites icons.
    */
   _dispatchTopSitesIconStats() {
-    const realTopSites = this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
-
-    const topSitesIconsStats = countTopSitesIconsTypes(realTopSites);
+    const topSitesIconsStats = countTopSitesIconsTypes(this._getTopSites());
     // Dispatch telemetry event with the count of TopSites images types.
     this.props.dispatch(ac.SendToMain({
       type: at.SAVE_SESSION_PERF_DATA,
       data: {topsites_icon_stats: topSitesIconsStats}
     }));
+  }
+
+  /**
+   * Return the TopSites to display based on prefs.
+   */
+  _getTopSites() {
+    return this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
   }
 
   componentDidUpdate() {
@@ -65,9 +70,9 @@ class TopSites extends React.PureComponent {
 
   render() {
     const props = this.props;
-    const realTopSites = props.TopSites.rows.slice(0, props.TopSitesCount);
+    const topSites = this._getTopSites();
 
-    const placeholderCount = props.TopSitesCount - realTopSites.length;
+    const placeholderCount = props.TopSitesCount - topSites.length;
     const infoOption = {
       header: {id: "settings_pane_topsites_header"},
       body: {id: "settings_pane_topsites_body"}
@@ -75,7 +80,7 @@ class TopSites extends React.PureComponent {
     return (<ComponentPerfTimer id="topsites" initialized={props.TopSites.initialized} dispatch={props.dispatch}>
       <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} infoOption={infoOption} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
         <ul className="top-sites-list">
-          {realTopSites.map((link, index) => link && <TopSite
+          {topSites.map((link, index) => link && <TopSite
             key={link.guid || link.url}
             dispatch={props.dispatch}
             link={link}
