@@ -92,8 +92,8 @@ this.FaviconFeed = class FaviconFeed {
     for (const site of sites) {
       // The tippy top manifest can have a url property (string) or a
       // urls property (array of strings)
-      for (const url of site.url ? [site.url] : site.urls || []) {
-        sitesByDomain[getDomain(url)] = site;
+      for (const domain of site.domains || []) {
+        sitesByDomain[domain] = {image_url: site.image_url};
       }
     }
     return sitesByDomain;
