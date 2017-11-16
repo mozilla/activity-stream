@@ -76,32 +76,30 @@ describe("<TopSites>", () => {
     wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
     assert.lengthOf(wrapper.find(TopSitesEditConnected), 1);
   });
-  describe("#countTopSitesIconsTypes", () => {
+  describe("#_dispatchTopSitesIconStats", () => {
     let wrapper;
+    let dispatchStatsSpy;
 
     beforeEach(() => {
       sandbox.stub(DEFAULT_PROPS, "dispatch");
       wrapper = shallow(<TopSites {...DEFAULT_PROPS} />);
+      dispatchStatsSpy = sandbox.spy(wrapper.instance(), "_dispatchTopSitesIconStats");
     });
-    it("should dispatch session perf data on mount", () => {
-      wrapper.instance().componentDidMount(DEFAULT_PROPS);
+    afterEach(() => {
+      sandbox.restore();
+    });
+    it("should call _dispatchTopSitesIconStats on componentDidMount", () => {
+      wrapper.instance().componentDidMount();
 
-      assert.calledOnce(DEFAULT_PROPS.dispatch);
-      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
-        type: at.SAVE_SESSION_PERF_DATA,
-        data: {
-          topsites_icon_stats: {
-            "screenshot_with_icon": 0,
-            "screenshot": 0,
-            "tippytop": 0,
-            "rich_icon": 0,
-            "no_image": 0
-          }
-        }
-      }));
+      assert.calledOnce(dispatchStatsSpy);
     });
-    it("should dispatch session perf data on update", () => {
-      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+    it("should call _dispatchTopSitesIconStats on componentDidUpdate", () => {
+      wrapper.instance().componentDidUpdate();
+
+      assert.calledOnce(dispatchStatsSpy);
+    });
+    it("should dispatch SAVE_SESSION_PERF_DATA", () => {
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -120,7 +118,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - just screenshot", () => {
       const rows = [{screenshot: true}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -139,7 +137,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - screenshot + favicon", () => {
       const rows = [{screenshot: true, faviconSize: MIN_CORNER_FAVICON_SIZE}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -158,7 +156,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - rich_icon", () => {
       const rows = [{faviconSize: MIN_RICH_FAVICON_SIZE}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -177,7 +175,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - tippytop", () => {
       const rows = [{tippyTopIcon: "foo"}, {faviconRef: "tippytop"}, {faviconRef: "foobar"}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
@@ -196,7 +194,7 @@ describe("<TopSites>", () => {
     it("should correctly count TopSite images - no image", () => {
       const rows = [{}];
       sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
-      wrapper.instance().componentDidUpdate(DEFAULT_PROPS);
+      wrapper.instance()._dispatchTopSitesIconStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
       assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
