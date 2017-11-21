@@ -1,8 +1,8 @@
 .topic {
-  font-size: 12px;
   color: $text-secondary;
-  margin-top: $topic-margin-top;
+  font-size: 12px;
   line-height: 1.6;
+  margin-top: $topic-margin-top;
 
   @media (min-width: $break-point-large) {
     line-height: 16px;
@@ -68,8 +68,8 @@
   // This is a clearfix to for the topics-read-more link which is floating and causes
   // some jank when we set overflow:hidden for the animation.
   &::after {
+    clear: both;
     content: '';
     display: table;
-    clear: both;
   }
 }

@@ -1,13 +1,13 @@
 .icon {
-  display: inline-block;
-  width: $icon-size;
-  height: $icon-size;
-  background-size: $icon-size;
   background-position: center center;
   background-repeat: no-repeat;
-  vertical-align: middle;
-  fill: $fill-primary;
+  background-size: $icon-size;
   -moz-context-properties: fill;
+  display: inline-block;
+  fill: $fill-primary;
+  height: $icon-size;
+  vertical-align: middle;
+  width: $icon-size;
 
   &.icon-spacer {
     margin-inline-end: 8px;

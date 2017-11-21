@@ -1,9 +1,9 @@
 .sections-list {
   .section-list {
-    margin: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, $card-width);
     grid-gap: $base-gutter;
+    grid-template-columns: repeat(auto-fit, $card-width);
+    margin: 0;
 
     @media (max-width: $break-point-medium) {
       @include context-menu-open-left;
@@ -23,32 +23,32 @@
   }
 
   .section-empty-state {
-    width: 100%;
-    height: $card-height;
-    display: flex;
     border: $border-secondary;
     border-radius: $border-radius;
+    display: flex;
+    height: $card-height;
+    width: 100%;
 
     .empty-state {
       margin: auto;
       max-width: 350px;
 
       .empty-state-icon {
-        background-size: 50px 50px;
-        background-repeat: no-repeat;
         background-position: center;
-        fill: $fill-secondary;
+        background-repeat: no-repeat;
+        background-size: 50px 50px;
         -moz-context-properties: fill;
-        height: 50px;
-        width: 50px;
-        margin: 0 auto;
         display: block;
+        fill: $fill-secondary;
+        height: 50px;
+        margin: 0 auto;
+        width: 50px;
       }
 
       .empty-state-message {
-        margin-bottom: 0;
-        font-size: 13px;
         color: $text-secondary;
+        font-size: 13px;
+        margin-bottom: 0;
         text-align: center;
       }
     }

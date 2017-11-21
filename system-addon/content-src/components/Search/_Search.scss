@@ -13,24 +13,24 @@
 
   cursor: default;
   display: flex;
-  position: relative;
+  height: $search-height;
   // The extra 1px is to account for the box-shadow being outside of the element
   // instead of inside. It needs to be like that to not overlap the inner background
   // color of the hover state of the submit button.
   margin: 1px 1px $section-spacing;
+  position: relative;
   width: 100%;
-  height: $search-height;
 
   input {
     border: 0;
     border-radius: $search-border-radius;
     box-shadow: $shadow-secondary, 0 0 0 1px $black-15;
     color: inherit;
+    font-size: 15px;
     padding: 0;
     padding-inline-end: $search-button-width;
     padding-inline-start: $search-input-left-label-width;
     width: 100%;
-    font-size: 15px;
   }
 
   &:hover input {
@@ -44,25 +44,25 @@
 
   .search-label {
     background: $search-glyph-image no-repeat $search-glyph-left-position center / $search-glyph-size;
-    fill: $search-glyph-fill;
     -moz-context-properties: fill;
-    position: absolute;
-    offset-inline-start: 0;
+    fill: $search-glyph-fill;
     height: 100%;
+    offset-inline-start: 0;
+    position: absolute;
     width: $search-input-left-label-width;
   }
 
   .search-button {
     background: $glyph-forward no-repeat center center;
-    border-radius: 0 $border-radius $border-radius 0;
-    border: 0;
-    width: $search-button-width;
-    fill: $search-glyph-fill;
-    -moz-context-properties: fill;
     background-size: 16px 16px;
+    border: 0;
+    border-radius: 0 $border-radius $border-radius 0;
+    -moz-context-properties: fill;
+    fill: $search-glyph-fill;
     height: 100%;
     offset-inline-end: 0;
     position: absolute;
+    width: $search-button-width;
 
     &:focus,
     &:hover {

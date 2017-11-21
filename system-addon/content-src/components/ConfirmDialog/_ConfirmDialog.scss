@@ -1,11 +1,11 @@
 .confirmation-dialog {
   .modal {
     box-shadow: 0 2px 2px 0 $black-10;
-    position: fixed;
-    width: 400px;
-    top: 20%;
     left: 50%;
     margin-left: -200px;
+    position: fixed;
+    top: 20%;
+    width: 400px;
   }
 
   section {
@@ -13,9 +13,9 @@
   }
 
   .modal-message {
+    display: flex;
     padding: 16px;
     padding-bottom: 0;
-    display: flex;
 
     p {
       margin: 0;
@@ -25,17 +25,17 @@
 
   .actions {
     border: 0;
+    display: flex;
     flex-wrap: nowrap;
     padding: 0 16px;
-    display: flex;
 
     button {
       margin-inline-end: 16px;
       width: 50%;
 
       &.done {
-        margin-inline-start: 0;
         margin-inline-end: 0;
+        margin-inline-start: 0;
       }
     }
   }

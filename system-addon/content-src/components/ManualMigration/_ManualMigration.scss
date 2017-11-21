@@ -23,10 +23,10 @@
   .icon {
     display: none;
     @media (min-width: $break-point-medium) {
+      align-self: center;
       display: block;
       fill: $fill-secondary;
       margin-inline-end: 6px;
-      align-self: center;
     }
   }
 }
