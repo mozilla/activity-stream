@@ -6,16 +6,20 @@ const {
 } = require("content-src/lib/snippets.js");
 const {createStore, combineReducers} = require("redux");
 const {reducers} = require("common/Reducers.jsm");
-const {actionTypes: at} = require("common/Actions.jsm");
+const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+const {INCOMING_MESSAGE_NAME} = require("content-src/lib/init-store");
+const {GlobalOverrider} = require("test/unit/utils");
 
 describe("SnippetsMap", () => {
   let snippetsMap;
   let dispatch;
+  let sandbox = sinon.sandbox.create();
   beforeEach(() => {
-    dispatch = sinon.spy();
+    dispatch = sandbox.spy();
     snippetsMap = new SnippetsMap(dispatch);
   });
   afterEach(async () => {
+    sandbox.restore();
     await snippetsMap.clear();
   });
   describe("#set", () => {
@@ -95,11 +99,29 @@ describe("SnippetsMap", () => {
       snippetsMap.blockSnippetById(123);
       assert.deepEqual(snippetsMap.blockList, [123]);
     });
+    it("should dispatch a SNIPPETS_BLOCKLIST_UPDATED event", () => {
+      snippetsMap.set("blockList", [123, 456]);
+
+      snippetsMap.blockSnippetById(789);
+
+      assert.calledOnce(dispatch);
+      assert.calledWith(dispatch, ac.SendToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: [123, 456, 789]}));
+    });
     it("should not add ids that are already blocked", () => {
       snippetsMap.blockSnippetById(123);
       snippetsMap.blockSnippetById(123);
       snippetsMap.blockSnippetById(456);
       assert.deepEqual(snippetsMap.blockList, [123, 456]);
+    });
+    it("should not call snippetsMap.set or dispatch an event for ids that are already blocked", async () => {
+      snippetsMap.set("blockList", [123, 456]);
+      // spy is added after so the first .set doesn't count
+      sandbox.spy(snippetsMap, "set");
+
+      await snippetsMap.blockSnippetById(123);
+
+      assert.notCalled(dispatch);
+      assert.notCalled(snippetsMap.set);
     });
   });
   describe("#showFirefoxAccounts", () => {
@@ -121,15 +143,20 @@ describe("SnippetsMap", () => {
 describe("SnippetsProvider", () => {
   let sandbox;
   let snippets;
+  let globals;
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     sandbox.stub(window, "fetch").returns(Promise.resolve(""));
+    globals = new GlobalOverrider();
+    globals.set("addMessageListener", sandbox.spy());
+    globals.set("removeMessageListener", sandbox.spy());
   });
   afterEach(async () => {
     if (global.gSnippetsMap) {
       await global.gSnippetsMap.clear();
     }
     delete global.gSnippetsMap;
+    globals.restore();
     sandbox.restore();
   });
   it("should create a gSnippetsMap with a dispatch function", () => {
@@ -199,6 +226,10 @@ describe("SnippetsProvider", () => {
 
       assert.equal(fakeEl.style.display, "");
     });
+    it("should add a message listener for incoming messages", async () => {
+      await snippets.init({connect: false});
+      assert.calledWith(global.addMessageListener, INCOMING_MESSAGE_NAME, snippets._onAction);
+    });
   });
   describe("#uninit", () => {
     let fakeEl;
@@ -218,6 +249,11 @@ describe("SnippetsProvider", () => {
       snippets = new SnippetsProvider();
       snippets.uninit();
       assert.equal(fakeEl.style.display, "none");
+    });
+    it("should remove the message listener for incoming messages", () => {
+      snippets = new SnippetsProvider();
+      snippets.uninit();
+      assert.calledWith(global.removeMessageListener, INCOMING_MESSAGE_NAME, snippets._onAction);
     });
   });
   describe("#_refreshSnippets", () => {
@@ -320,6 +356,35 @@ describe("SnippetsProvider", () => {
       global.gSnippetsMap.set("snippets", "foo123");
       await snippets.init({connect: false});
       assert.notCalled(snippets._noSnippetFallback);
+    });
+  });
+  describe("blocking", () => {
+    let containerEl;
+    beforeEach(() => {
+      snippets = new SnippetsProvider();
+      containerEl = {style: {}};
+      sandbox.stub(global.document, "getElementById").returns(containerEl);
+    });
+    it("should set the blockList and hide the element if an incoming SNIPPET_BLOCKED message is received", async () => {
+      const newBlockList = ["foo", "bar"];
+      assert.deepEqual(global.gSnippetsMap.blockList, []);
+      await snippets.init({connect: false});
+      const action = {type: at.SNIPPET_BLOCKED, data: newBlockList};
+
+      snippets._onAction({name: INCOMING_MESSAGE_NAME, data: action});
+
+      assert.equal(global.gSnippetsMap.blockList, newBlockList);
+      assert.calledWith(global.document.getElementById, "snippets-container");
+      assert.equal(containerEl.style.display, "none");
+    });
+    it("should not do anything if the incoming message is not a SNIPPET_BLOCKED action", async () => {
+      await snippets.init({connect: false});
+      const prevValue = containerEl.style.display;
+      const action = {type: "FOO", data: ["foo"]};
+
+      snippets._onAction({name: INCOMING_MESSAGE_NAME, data: action});
+      assert.deepEqual(global.gSnippetsMap.blockList, []);
+      assert.equal(containerEl.style.display, prevValue);
     });
   });
 });

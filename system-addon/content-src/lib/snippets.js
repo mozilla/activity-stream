@@ -56,8 +56,9 @@ class SnippetsMap extends Map {
     let blockList = this.blockList;
     if (!blockList.includes(id)) {
       blockList.push(id);
+      this._dispatch(ac.SendToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList}));
+      await this.set("blockList", blockList);
     }
-    await this.set("blockList", blockList);
   }
 
   disableOnboarding() {
@@ -149,7 +150,7 @@ class SnippetsMap extends Map {
       let cursorRequest;
       try {
         cursorRequest = db.transaction(SNIPPETS_OBJECTSTORE_NAME)
-                          .objectStore(SNIPPETS_OBJECTSTORE_NAME).openCursor();
+          .objectStore(SNIPPETS_OBJECTSTORE_NAME).openCursor();
       } catch (err) {
         // istanbul ignore next
         reject(err);
@@ -185,6 +186,7 @@ class SnippetsProvider {
     // Initialize the Snippets Map and attaches it to a global so that
     // the snippet payload can interact with it.
     global.gSnippetsMap = new SnippetsMap(dispatch);
+    this._onAction = this._onAction.bind(this);
   }
 
   get snippetsMap() {
@@ -261,6 +263,13 @@ class SnippetsProvider {
     }
   }
 
+  _onAction(msg) {
+    if (msg.data.type === at.SNIPPET_BLOCKED) {
+      this.snippetsMap.set("blockList", msg.data.data);
+      document.getElementById("snippets-container").style.display = "none";
+    }
+  }
+
   /**
    * init - Fetch the snippet payload and show snippets
    *
@@ -276,6 +285,11 @@ class SnippetsProvider {
       elementId: "snippets",
       connect: true
     }, options);
+
+    // Add listener so we know when snippets are blocked on other pages
+    if (global.addMessageListener) {
+      global.addMessageListener("ActivityStream:MainToContent", this._onAction);
+    }
 
     // TODO: Requires enabling indexedDB on newtab
     // Restore the snippets map from indexedDB
@@ -311,6 +325,9 @@ class SnippetsProvider {
   uninit() {
     window.dispatchEvent(new Event(SNIPPETS_DISABLED_EVENT));
     this._forceOnboardingVisibility(false);
+    if (global.removeMessageListener) {
+      global.removeMessageListener("ActivityStream:MainToContent", this._onAction);
+    }
     this.initialized = false;
   }
 }
@@ -336,16 +353,16 @@ function addSnippetsSubscriber(store) {
     if (state.Prefs.values["feeds.snippets"] &&
       !state.Prefs.values.disableSnippets &&
       state.Snippets.initialized &&
-     !snippets.initialized &&
-     // Don't call init multiple times
-     !initializing
+      !snippets.initialized &&
+      // Don't call init multiple times
+      !initializing
     ) {
       initializing = true;
       await snippets.init({appData: state.Snippets});
       initializing = false;
     } else if (
       (state.Prefs.values["feeds.snippets"] === false ||
-      state.Prefs.values.disableSnippets === true) &&
+        state.Prefs.values.disableSnippets === true) &&
       snippets.initialized
     ) {
       snippets.uninit();
