@@ -14,11 +14,6 @@ scripts:
 
   cleanmc: rimraf $npm_package_config_mc_dir/browser/extensions/activity-stream
 
-  tippymc:
-    pre: rimraf system-addon/data/content/tippytop
-    manifest: cpx "node_modules/tippy-top-sites/top_sites.json" system-addon/data/content/tippytop
-    images: cpx "node_modules/tippy-top-sites/images/**/*" system-addon/data/content/tippytop/images
-
 # buildmc: Export the bootstraped add-on to mozilla central
   buildmc:
     pre: =>cleanmc

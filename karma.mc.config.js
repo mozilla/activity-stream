@@ -17,15 +17,25 @@ const PATHS = {
 };
 
 const preprocessors = {};
-preprocessors[PATHS.testFilesPattern] = ["webpack", "sourcemap"];
+preprocessors[PATHS.testFilesPattern] = [
+  "sourcemap", // require("karma-sourcemap-loader")
+  "webpack" // require("karma-webpack")
+];
 
 module.exports = function(config) {
   const isTDD = config.tdd;
   config.set({
     singleRun: !isTDD,
-    browsers: ["Firefox"],
-    frameworks: ["mocha", "sinon", "chai"],
-    reporters: ["mocha", "coverage"],
+    browsers: ["Firefox"], // require("karma-firefox-launcher")
+    frameworks: [
+      "chai", // require("chai") require("karma-chai")
+      "mocha", // require("mocha") require("karma-mocha")
+      "sinon" // require("sinon") require("karma-sinon")
+    ],
+    reporters: [
+      "coverage", // require("karma-coverage")
+      "mocha" // require("karma-mocha-reporter")
+    ],
     coverageReporter: {
       dir: PATHS.coverageReportingPath,
       // This will make karma fail if coverage reporting is less than the minimums here
@@ -71,13 +81,13 @@ module.exports = function(config) {
             test: /\.jsm$/,
             exclude: [/node_modules/],
             use: [{
-              loader: "babel-loader",
+              loader: "babel-loader", // require("babel-core")
               options: {
                 plugins: [
                   // Converts .jsm files into common-js modules
-                  ["jsm-to-commonjs", {basePath: PATHS.resourcePathRegEx, replace: true}],
-                  ["transform-async-to-module-method", {module: "co-task", method: "async"}],
-                  "transform-es2015-modules-commonjs"
+                  ["jsm-to-commonjs", {basePath: PATHS.resourcePathRegEx, replace: true}], // require("babel-plugin-jsm-to-commonjs")
+                  ["transform-async-to-module-method", {module: "co-task", method: "async"}], // require("babel-plugin-transform-async-to-module-method")
+                  "transform-es2015-modules-commonjs" // require("babel-plugin-transform-es2015-modules-commonjs")
                 ]
               }
             }]
@@ -99,7 +109,7 @@ module.exports = function(config) {
             test: /\.jsx$/,
             exclude: /node_modules/,
             loader: "babel-loader",
-            options: {presets: ["react"]}
+            options: {presets: ["react"]} // require("babel-preset-react")
           },
           {
             enforce: "post",
