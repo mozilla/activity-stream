@@ -112,53 +112,53 @@ $snippets-container-height: 120px;
 
 @mixin context-menu-button {
   .context-menu-button {
-    cursor: pointer;
-    position: absolute;
-    top: -($context-menu-button-size / 2);
-    offset-inline-end: -($context-menu-button-size / 2);
-    width: $context-menu-button-size;
-    height: $context-menu-button-size;
+    background-clip: padding-box;
     background-color: $white;
     background-image: url('chrome://browser/skin/page-action.svg');
     background-position: 55%;
-    background-clip: padding-box;
     border: $border-primary;
     border-radius: 100%;
     box-shadow: $context-menu-button-boxshadow;
+    cursor: pointer;
     fill: $fill-primary;
-    transform: scale(0.25);
+    height: $context-menu-button-size;
+    offset-inline-end: -($context-menu-button-size / 2);
     opacity: 0;
-    transition-property: transform, opacity;
+    position: absolute;
+    top: -($context-menu-button-size / 2);
+    transform: scale(0.25);
     transition-duration: 200ms;
+    transition-property: transform, opacity;
+    width: $context-menu-button-size;
 
     &:-moz-any(:active, :focus) {
-      transform: scale(1);
       opacity: 1;
+      transform: scale(1);
     }
   }
 }
 
 @mixin context-menu-button-hover {
   .context-menu-button {
-    transform: scale(1);
     opacity: 1;
+    transform: scale(1);
   }
 }
 
 @mixin context-menu-open-middle {
   .context-menu {
-    margin-inline-start: auto;
     margin-inline-end: auto;
-    offset-inline-start: -$base-gutter;
+    margin-inline-start: auto;
     offset-inline-end: auto;
+    offset-inline-start: -$base-gutter;
   }
 }
 
 @mixin context-menu-open-left {
   .context-menu {
-    margin-inline-start: auto;
     margin-inline-end: 5px;
-    offset-inline-start: auto;
+    margin-inline-start: auto;
     offset-inline-end: 0;
+    offset-inline-start: auto;
   }
 }

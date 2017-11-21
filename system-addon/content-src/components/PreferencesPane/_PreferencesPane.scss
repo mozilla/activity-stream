@@ -157,14 +157,14 @@
   [type='checkbox']:checked + label::after {
     background: url('chrome://global/skin/in-content/check.svg') no-repeat center center; // sass-lint:disable-line no-url-domains
     content: '';
+    -moz-context-properties: fill, stroke;
+    fill: $input-primary;
     height: 21px;
     offset-inline-start: 0;
     position: absolute;
+    stroke: none;
     top: 0;
     width: 21px;
-    -moz-context-properties: fill, stroke;
-    fill: $input-primary;
-    stroke: none;
   }
 
   // checkmark changes
@@ -194,9 +194,9 @@
     border: 0;
     cursor: pointer;
     fill: $fill-secondary;
+    offset-inline-end: 15px;
     padding: 15px;
     position: fixed;
-    offset-inline-end: 15px;
     top: 15px;
     z-index: 12001;
 

@@ -1,38 +1,38 @@
 .context-menu {
-  display: block;
-  position: absolute;
-  font-size: $context-menu-font-size;
-  box-shadow: $context-menu-shadow;
-  top: ($context-menu-button-size / 4);
-  offset-inline-start: 100%;
-  margin-inline-start: 5px;
-  z-index: 10000;
   background: $background-primary;
   border-radius: $context-menu-border-radius;
+  box-shadow: $context-menu-shadow;
+  display: block;
+  font-size: $context-menu-font-size;
+  margin-inline-start: 5px;
+  offset-inline-start: 100%;
+  position: absolute;
+  top: ($context-menu-button-size / 4);
+  z-index: 10000;
 
   > ul {
+    list-style: none;
     margin: 0;
     padding: $context-menu-outer-padding 0;
-    list-style: none;
 
     > li {
       margin: 0;
       width: 100%;
 
       &.separator {
-        margin: $context-menu-outer-padding 0;
         border-bottom: 1px solid $context-menu-border-color;
+        margin: $context-menu-outer-padding 0;
       }
 
       > a {
-        outline: none;
-        cursor: pointer;
-        color: inherit;
-        white-space: nowrap;
-        padding: $context-menu-item-padding;
-        line-height: 16px;
-        display: flex;
         align-items: center;
+        color: inherit;
+        cursor: pointer;
+        display: flex;
+        line-height: 16px;
+        outline: none;
+        padding: $context-menu-item-padding;
+        white-space: nowrap;
 
         &:-moz-any(:focus, :hover) {
           background: $input-primary;
