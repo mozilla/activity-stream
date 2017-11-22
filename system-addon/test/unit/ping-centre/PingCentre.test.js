@@ -25,6 +25,8 @@ const FAKE_ACTIVE_EXPERIMENTS = {
   "pref-flip-quantum-css-style-r1-1381147": {"branch": "stylo"},
   "nightly-nothing-burger-1-pref": {"branch": "Control"}
 };
+const FAKE_PROFILE_CREATION_DATE = 16587;
+const FAKE_BROWSER_SEARCH_REGION = "US";
 
 describe("PingCentre", () => {
   let globals;
@@ -43,12 +45,18 @@ describe("PingCentre", () => {
 
     sandbox.stub(global.Services.prefs, "getBranch")
         .returns(new FakePrefs({initHook: prefInitHook}));
+    sandbox.stub(global.Services.prefs, "prefHasUserValue")
+        .returns(true);
+    sandbox.stub(global.Services.prefs, "getStringPref")
+        .returns(FAKE_BROWSER_SEARCH_REGION);
     sandbox.stub(global.Services.locale, "getAppLocalesAsLangTags")
         .returns([FAKE_LOCALE]);
     globals.set("fetch", fetchStub);
     globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
-    globals.set("TelemetryEnvironment",
-      {getActiveExperiments: sandbox.spy(() => FAKE_ACTIVE_EXPERIMENTS)});
+    globals.set("TelemetryEnvironment", {
+      getActiveExperiments: sandbox.spy(() => FAKE_ACTIVE_EXPERIMENTS),
+      currentEnvironment: {profile: {creationDate: FAKE_PROFILE_CREATION_DATE}}
+    });
     globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: FAKE_UPDATE_CHANNEL});
     sandbox.spy(global.Components.utils, "reportError");
   });
@@ -286,6 +294,8 @@ describe("PingCentre", () => {
         release_channel: FAKE_UPDATE_CHANNEL
       }, fakePingJSON);
       EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
+      EXPECTED_RESULT.profile_creation_date = FAKE_PROFILE_CREATION_DATE;
+      EXPECTED_RESULT.region = FAKE_BROWSER_SEARCH_REGION;
 
       assert.calledOnce(fetchStub);
       assert.calledWithExactly(fetchStub, fakeEndpointUrl,

@@ -21,6 +21,7 @@ const LOGGING_PREF = `${PREF_BRANCH}log`;
 const PRODUCTION_ENDPOINT_PREF = `${PREF_BRANCH}production.endpoint`;
 
 const FHR_UPLOAD_ENABLED_PREF = "datareporting.healthreport.uploadEnabled";
+const BROWSER_SEARCH_REGION_PREF = "browser.search.region";
 
 /**
  * Observe various notifications and send them to a telemetry endpoint.
@@ -112,6 +113,8 @@ class PingCentre {
 
     let clientID = data.client_id || await this.telemetryClientId;
     let locale = data.locale || Services.locale.getAppLocalesAsLangTags().pop();
+    let profileCreationDate = TelemetryEnvironment.currentEnvironment.profile.resetDate ||
+      TelemetryEnvironment.currentEnvironment.profile.creationDate;
     const payload = Object.assign({
       locale,
       topic: this._topic,
@@ -121,6 +124,12 @@ class PingCentre {
     }, data);
     if (experimentsString) {
       payload.shield_id = experimentsString;
+    }
+    if (profileCreationDate) {
+      payload.profile_creation_date = profileCreationDate;
+    }
+    if (Services.prefs.prefHasUserValue(BROWSER_SEARCH_REGION_PREF)) {
+      payload.region = Services.prefs.getStringPref(BROWSER_SEARCH_REGION_PREF);
     }
 
     if (this.logging) {
