@@ -21,6 +21,8 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "page": ["about:newtab" | "about:home" | "unknown"],
   "session_duration": 1635,
   "session_id": "{12dasd-213asda-213dkakj}",
+  "region": "US",
+  "profile_creation_date": 14786,
   "user_prefs": 7
 
   // These fields are generated on the server
@@ -189,6 +191,8 @@ and losing focus. | :one:
 | `user_prefs` | [Required] The encoded integer of user's preferences. | :one: & :four:
 | `is_prerendered` | [Required] A boolean to signify whether the page is prerendered or not | :one:
 | `is_preloaded` | [Required] A boolean to signify whether the page is preloaded or not | :one:
+| `region` | [Optional] An string maps to pref "browser.search.region", which is essentially the two letter ISO 3166-1 country code populated by the Firefox search service. Note that: 1). it reports "OTHER" for those regions with smaller Firefox user base (less than 10000) so that users cannot be uniquely identified; 2). it reports "UNSET" if this pref is missing; 3). it reports "EMPTY" if the value of this pref is an empty string. | :one:
+| `profile_creation_date` | [Optional] An integer to record the age of the Firefox profile as the total number of days since the UNIX epoch. | :one:
 
 **Where:**
 
