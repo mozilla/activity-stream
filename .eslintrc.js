@@ -17,13 +17,13 @@ module.exports = {
     "sinon": true
   },
   "plugins": [
-    "json",
-    "promise",
-    "react"
+    "json", // require("eslint-plugin-json")
+    "promise", // require("eslint-plugin-promise")
+    "react" // require("eslint-plugin-react")
   ],
   "extends": [
     "eslint:recommended",
-    "plugin:mozilla/recommended"
+    "plugin:mozilla/recommended" // require("eslint-plugin-mozilla")
   ],
   "rules": {
     "promise/param-names": 2,

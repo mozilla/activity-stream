@@ -1,5 +1,5 @@
 // Note: this is based on https://github.com/plasticine/inject-loader,
-// patched to make instanbul work properly
+// patched to make istanbul work properly
 
 const loaderUtils = require("loader-utils");
 const QUOTE_REGEX_STRING = "['|\"]{1}";
