@@ -1,7 +1,7 @@
 const {GlobalOverrider, FakePrefs, FakePerformance, EventEmitter} = require("test/unit/utils");
 const {chaiAssertions} = require("test/schemas/pings");
 
-const Adapter = require("enzyme-adapter-react-15.4");
+const Adapter = require("enzyme-adapter-react-15");
 const enzyme = require("enzyme");
 enzyme.configure({adapter: new Adapter()});
 
