@@ -65,19 +65,20 @@ class PreferencesPane extends React.PureComponent {
     this.props.dispatch(ac.SendToMain({type, data: id}));
   }
   togglePane() {
-    // Select body element
-    var body = document.getElementsByTagName("body")[0];
-    if (this.isSidebarOpen()) {
-      this.props.dispatch({type: at.SETTINGS_CLOSE});
-      this.props.dispatch(ac.UserEvent({event: "CLOSE_NEWTAB_PREFS"}));
-      // add scroll bar to body
-      body.style.overflow = "scroll";
-    } else {
-      this.props.dispatch({type: at.SETTINGS_OPEN});
-      this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
-      // hide scroll bar from body
-      body.style.overflow = "hidden";
-    }
+      // Select body element
+      let body = document.getElementsByTagName("body")[0];
+
+      if (this.isSidebarOpen()) {
+        this.props.dispatch({type: at.SETTINGS_CLOSE});
+        this.props.dispatch(ac.UserEvent({event: "CLOSE_NEWTAB_PREFS"}));
+        // add scroll bar to body
+        body.style.overflow = "scroll";
+      } else {
+        this.props.dispatch({type: at.SETTINGS_OPEN});
+        this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
+        // hide scroll bar from body
+        body.style.overflow = "hidden";
+      }
   }
   onWrapperMount(wrapper) {
     this.wrapper = wrapper;
