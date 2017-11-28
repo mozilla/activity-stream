@@ -47,11 +47,6 @@ class Search extends React.PureComponent {
       window.gContentSearchController = new ContentSearchUIController(input, input.parentNode,
         healthReportKey, searchSource);
       addEventListener("ContentSearchClient", this);
-
-      // Focus the search box if we are on about:home
-      if (!IS_NEWTAB) {
-        input.focus();
-      }
     } else {
       window.gContentSearchController = null;
       removeEventListener("ContentSearchClient", this);
