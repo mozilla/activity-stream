@@ -14,15 +14,16 @@
   margin: 0;
   // Take back the margin from the bottom row of vertical spacing as well as the
   // extra whitespace below the title text as it's vertically centered.
-  margin-bottom: -($top-sites-vertical-space + $top-sites-title-height/3);
-  padding: 0;
+  margin-bottom: -($top-sites-vertical-space + $top-sites-title-height / 3);
   margin-inline-end: -$base-gutter;
+  padding: 0;
 
   // Two columns
   @media (max-width: $break-point-small) {
     :nth-child(2n+1) {
       @include context-menu-open-middle;
     }
+
     :nth-child(2n) {
       @include context-menu-open-left;
     }
@@ -30,7 +31,8 @@
 
   // Three columns
   @media (min-width: $break-point-small) and (max-width: $break-point-medium) {
-    :nth-child(3n+2), :nth-child(3n) {
+    :nth-child(3n+2),
+    :nth-child(3n) {
       @include context-menu-open-left;
     }
   }
@@ -48,7 +50,7 @@
   }
 
   // Six columns
-  @media (min-width: $break-point-large) and (max-width: $break-point-large + 2*$card-width) {
+  @media (min-width: $break-point-large) and (max-width: $break-point-large + 2 * $card-width) {
     :nth-child(6n) {
       @include context-menu-open-left;
     }
@@ -70,11 +72,11 @@
     position: relative;
 
     > a {
-      display: block;
       color: inherit;
+      display: block;
       outline: none;
 
-      &.active, &:focus {
+      &:-moz-any(.active, :focus) {
         .tile {
           @include fade-in;
         }
@@ -83,28 +85,34 @@
 
     @include context-menu-button;
 
-    &:hover, &:focus, &.active {
+    &:-moz-any(.active, :focus, :hover) {
       .tile {
         @include fade-in;
       }
+
+      .edit-menu {
+        opacity: 1;
+        transform: scale(1);
+      }
+
       @include context-menu-button-hover;
     }
 
-    .tile {
-      position: relative;
-      height: $top-sites-size;
-      width: $top-sites-size;
+    .tile { // sass-lint:disable-block property-sort-order
       border-radius: $top-sites-border-radius;
       box-shadow: inset $inner-box-shadow, $shadow-secondary;
+      height: $top-sites-size;
+      position: relative;
+      width: $top-sites-size;
 
       // For letter fallback
-      color: $text-secondary;
-      font-weight: 200;
-      font-size: 32px;
-      text-transform: uppercase;
-      display: flex;
       align-items: center;
+      color: $text-secondary;
+      display: flex;
+      font-size: 32px;
+      font-weight: 200;
       justify-content: center;
+      text-transform: uppercase;
 
       &::before {
         content: attr(data-fallback);
@@ -115,24 +123,26 @@
       .tile {
         box-shadow: inset $inner-box-shadow;
       }
+
       .screenshot {
         display: none;
       }
     }
 
     .screenshot {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
       background-color: $white;
+      background-position: top left;
+      background-size: $screenshot-size;
       border-radius: $top-sites-border-radius;
       box-shadow: inset $inner-box-shadow;
-      background-size: $screenshot-size;
-      background-position: top left;
-      transition: opacity 1s;
+      height: 100%;
+      left: 0;
       opacity: 0;
+      position: absolute;
+      top: 0;
+      transition: opacity 1s;
+      width: 100%;
+
       &.active {
         opacity: 1;
       }
@@ -140,34 +150,34 @@
 
     // Some common styles for all icons (rich and default) in top sites
     .top-site-icon {
-      position: absolute;
-      border-radius: $top-sites-border-radius;
-      box-shadow: inset $inner-box-shadow;
+      background-color: $background-primary;
       background-position: center center;
       background-repeat: no-repeat;
-      background-color: $background-primary;
+      border-radius: $top-sites-border-radius;
+      box-shadow: inset $inner-box-shadow;
+      position: absolute;
     }
 
     .rich-icon {
-      top: 0;
-      offset-inline-start: 0;
-      height: 100%;
-      width: 100%;
       background-size: $rich-icon-size;
+      height: 100%;
+      offset-inline-start: 0;
+      top: 0;
+      width: 100%;
     }
 
-    .default-icon {
+    .default-icon { // sass-lint:disable block property-sort-order
+      background-size: $default-icon-size;
       bottom: -$default-icon-offset;
       height: $default-icon-wrapper-size;
       offset-inline-end: -$default-icon-offset;
       width: $default-icon-wrapper-size;
-      background-size: $default-icon-size;
 
       // for corner letter fallback
-      display: flex;
       align-items: center;
-      justify-content: center;
+      display: flex;
       font-size: 20px;
+      justify-content: center;
 
       &[data-fallback]::before {
         content: attr(data-fallback);
@@ -220,8 +230,7 @@
       transition-duration: 200ms;
       z-index: 1000;
 
-      &:focus,
-      &:active {
+      &:-moz-any(:active, :focus) {
         transform: scale(1);
         opacity: 1;
       }
@@ -244,6 +253,7 @@
         &:last-child:dir(rtl) {
           width: $edit-menu-button-size + 5px;
         }
+
         &:last-child:dir(ltr),
         &:first-child:dir(rtl) {
           width: $edit-menu-button-size + 3px;
@@ -256,13 +266,6 @@
         &:first-child:dir(rtl) {
           border-right: 0;
         }
-      }
-    }
-
-    &:hover, &:focus, &.active {
-      .edit-menu {
-        transform: scale(1);
-        opacity: 1;
       }
     }
   }
@@ -285,7 +288,7 @@
       border-right: 0;
     }
 
-    &:focus, &:active {
+    &:-moz-any(:active, :focus) {
       opacity: 1;
     }
 
@@ -336,7 +339,7 @@
   }
 }
 
-section.top-sites:not(.collapsed):hover {
+.top-sites:not(.collapsed):hover {
   .edit-topsites-button {
     opacity: 1;
     pointer-events: auto;
@@ -430,6 +433,7 @@ section.top-sites:not(.collapsed):hover {
     opacity: 0;
     transform: translateY(15px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
