@@ -53,7 +53,7 @@
     "react-addons-test-utils": "15.3.2",
     "react-intl": "2.2.3",
     "rimraf": "2.5.4",
-    "sass-lint": "1.10.1",
+    "sass-lint": "1.12.1",
     "shelljs": "0.7.6",
     "simple-git": "1.65.0",
     "sinon": "3.2.0",
