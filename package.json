@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "babel-core": "6.26.0",
-    "babel-loader": "7.1.1",
+    "babel-loader": "7.1.2",
     "babel-plugin-jsm-to-commonjs": "0.2.0",
     "babel-plugin-transform-async-to-module-method": "6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "6.24.1",
