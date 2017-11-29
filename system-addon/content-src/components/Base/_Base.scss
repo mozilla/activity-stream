@@ -1,8 +1,8 @@
 .outer-wrapper {
   display: flex;
-  padding: $section-spacing $base-gutter $base-gutter;
-  height: 100%;
   flex-grow: 1;
+  height: 100%;
+  padding: $section-spacing $base-gutter $base-gutter;
 
   &.fixed-to-top {
     height: auto;
@@ -11,11 +11,10 @@
 
 main {
   margin: auto;
-  width: $wrapper-default-width;
-
   // Offset the snippets container so things at the bottom of the page are still
   // visible when snippets / onboarding are visible. Adjust for other spacing.
   padding-bottom: $snippets-container-height - $section-spacing - $base-gutter;
+  width: $wrapper-default-width;
 
   @media (min-width: $break-point-small) {
     width: $wrapper-max-width-small;

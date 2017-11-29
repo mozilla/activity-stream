@@ -23,16 +23,16 @@
   .icon {
     display: none;
     @media (min-width: $break-point-medium) {
+      align-self: center;
       display: block;
       fill: $fill-secondary;
       margin-inline-end: 6px;
-      align-self: center;
     }
   }
 }
 
 .manual-migration-actions {
-  border: none;
+  border: 0;
   display: block;
   flex-wrap: nowrap;
 
