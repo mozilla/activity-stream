@@ -42,7 +42,7 @@
     "karma-mocha-reporter": "2.2.5",
     "karma-sinon": "1.0.5",
     "karma-sourcemap-loader": "0.3.7",
-    "karma-webpack": "2.0.4",
+    "karma-webpack": "2.0.6",
     "loader-utils": "0.2.16",
     "minimist": "1.2.0",
     "mocha": "3.5.0",
