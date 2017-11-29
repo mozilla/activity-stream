@@ -26,6 +26,7 @@ module.exports = {
     "plugin:mozilla/recommended" // require("eslint-plugin-mozilla")
   ],
   "rules": {
+    "mozilla/use-services": 2,
     "promise/param-names": 2,
     "promise/catch-or-return": 2,
 

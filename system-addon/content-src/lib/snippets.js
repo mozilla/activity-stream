@@ -252,6 +252,7 @@ class SnippetsProvider {
     }
 
     // Note that injecting snippets can throw if they're invalid XML.
+    // eslint-disable-next-line no-unsanitized/property
     snippetsEl.innerHTML = payload;
 
     // Scripts injected by innerHTML are inactive, so we have to relocate them
