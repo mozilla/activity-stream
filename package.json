@@ -17,7 +17,7 @@
     "babel-loader": "7.1.2",
     "babel-plugin-jsm-to-commonjs": "0.2.0",
     "babel-plugin-transform-async-to-module-method": "6.24.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "6.26.0",
     "babel-preset-react": "6.16.0",
     "chai": "3.5.0",
     "co-task": "1.0.0",
