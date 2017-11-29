@@ -22,8 +22,16 @@ $grey-90-70: rgba($grey-90, 0.7);
 $grey-90-80: rgba($grey-90, 0.8);
 $grey-90-90: rgba($grey-90, 0.9);
 
+$black: #000;
+$black-5: rgba($black, 0.05);
+$black-10: rgba($black, 0.1);
+$black-15: rgba($black, 0.15);
+$black-20: rgba($black, 0.2);
+$black-25: rgba($black, 0.25);
+$black-30: rgba($black, 0.3);
+
 // Photon transitions from http://design.firefox.com/photon/motion/duration-and-easing.html
-$photon-easing: cubic-bezier(.07, .95, 0, 1);
+$photon-easing: cubic-bezier(0.07, 0.95, 0, 1);
 
 // Aliases and derived styles based on Photon colors for common usage
 $background-primary: $grey-10;
@@ -79,14 +87,14 @@ $topic-margin-top: 12px;
 
 $context-menu-button-size: 27px;
 $context-menu-button-boxshadow: 0 2px $grey-90-10;
-$context-menu-border-color: rgba(0, 0, 0, 0.2);
-$context-menu-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px $context-menu-border-color;
+$context-menu-border-color: $black-20;
+$context-menu-shadow: 0 5px 10px $black-30, 0 0 0 1px $context-menu-border-color;
 $context-menu-font-size: 14px;
 $context-menu-border-radius: 5px;
 $context-menu-outer-padding: 5px;
 $context-menu-item-padding: 3px 12px;
 
-$inner-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+$inner-box-shadow: 0 0 0 1px $black-10;
 
 $image-path: '../data/content/assets/';
 
@@ -104,53 +112,53 @@ $snippets-container-height: 120px;
 
 @mixin context-menu-button {
   .context-menu-button {
-    cursor: pointer;
-    position: absolute;
-    top: -($context-menu-button-size / 2);
-    offset-inline-end: -($context-menu-button-size / 2);
-    width: $context-menu-button-size;
-    height: $context-menu-button-size;
+    background-clip: padding-box;
     background-color: $white;
     background-image: url('chrome://browser/skin/page-action.svg');
     background-position: 55%;
-    background-clip: padding-box;
     border: $border-primary;
     border-radius: 100%;
     box-shadow: $context-menu-button-boxshadow;
+    cursor: pointer;
     fill: $fill-primary;
-    transform: scale(0.25);
+    height: $context-menu-button-size;
+    offset-inline-end: -($context-menu-button-size / 2);
     opacity: 0;
-    transition-property: transform, opacity;
+    position: absolute;
+    top: -($context-menu-button-size / 2);
+    transform: scale(0.25);
     transition-duration: 200ms;
+    transition-property: transform, opacity;
+    width: $context-menu-button-size;
 
-    &:focus, &:active {
-      transform: scale(1);
+    &:-moz-any(:active, :focus) {
       opacity: 1;
+      transform: scale(1);
     }
   }
 }
 
 @mixin context-menu-button-hover {
   .context-menu-button {
-    transform: scale(1);
     opacity: 1;
+    transform: scale(1);
   }
 }
 
 @mixin context-menu-open-middle {
   .context-menu {
-    margin-inline-start: auto;
     margin-inline-end: auto;
-    offset-inline-start: -$base-gutter;
+    margin-inline-start: auto;
     offset-inline-end: auto;
+    offset-inline-start: -$base-gutter;
   }
 }
 
 @mixin context-menu-open-left {
   .context-menu {
-    margin-inline-start: auto;
     margin-inline-end: 5px;
-    offset-inline-start: auto;
+    margin-inline-start: auto;
     offset-inline-end: 0;
+    offset-inline-start: auto;
   }
 }

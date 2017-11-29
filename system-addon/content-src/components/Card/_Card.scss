@@ -1,38 +1,40 @@
 .card-outer {
-  background: $white;
-  display: inline-block;
-  margin-inline-end: $base-gutter;
-  width: $card-width;
-  border-radius: $border-radius;
-  height: $card-height;
-  position: relative;
   @include context-menu-button;
+  background: $white;
+  border-radius: $border-radius;
+  display: inline-block;
+  height: $card-height;
+  margin-inline-end: $base-gutter;
+  position: relative;
+  width: $card-width;
 
   &.placeholder {
     background: transparent;
+
     .card {
-      box-shadow:  inset $inner-box-shadow;
+      box-shadow: inset $inner-box-shadow;
     }
   }
 
   .card {
-    height: 100%;
     border-radius: $border-radius;
     box-shadow: $shadow-secondary;
+    height: 100%;
   }
 
   > a {
-    display: block;
     color: inherit;
+    display: block;
     height: 100%;
     outline: none;
     position: absolute;
     width: $card-width;
 
-    &.active, &:focus {
+    &:-moz-any(.active, :focus) {
       .card {
         @include fade-in-card;
       }
+
       .card-title {
         color: $link-primary;
       }
@@ -40,9 +42,9 @@
   }
 
   &:-moz-any(:hover, :focus, .active):not(.placeholder) {
-    outline: none;
     @include fade-in-card;
     @include context-menu-button-hover;
+    outline: none;
 
     .card-title {
       color: $link-primary;
@@ -51,27 +53,28 @@
 
   .card-preview-image-outer {
     background-color: $background-primary;
-    position: relative;
-    height: $card-preview-image-height;
     border-radius: $border-radius $border-radius 0 0;
+    height: $card-preview-image-height;
     overflow: hidden;
+    position: relative;
 
     &::after {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid $black-5;
       bottom: 0;
-      content: " ";
+      content: '';
       position: absolute;
       width: 100%;
     }
 
     .card-preview-image {
-      width: 100%;
-      height: 100%;
-      background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      background-size: cover;
+      height: 100%;
       opacity: 0;
       transition: opacity 1s $photon-easing;
+      width: 100%;
+
       &.loaded {
         opacity: 1;
       }
@@ -87,26 +90,33 @@
   }
 
   .card-text {
+    max-height: 4 * $card-text-line-height + $card-title-margin;
     overflow: hidden;
-    max-height: 4*$card-text-line-height + $card-title-margin;
 
     &.no-image {
-      max-height: 10*$card-text-line-height + $card-title-margin;
+      max-height: 10 * $card-text-line-height + $card-title-margin;
     }
-    &.no-host-name, &.no-context {
-      max-height: 5*$card-text-line-height + $card-title-margin;
+
+    &.no-host-name,
+    &.no-context {
+      max-height: 5 * $card-text-line-height + $card-title-margin;
     }
-    &.no-image.no-host-name, &.no-image.no-context {
-      max-height: 11*$card-text-line-height + $card-title-margin;
+
+    &.no-image.no-host-name,
+    &.no-image.no-context {
+      max-height: 11 * $card-text-line-height + $card-title-margin;
     }
+
     &.no-host-name.no-context {
-      max-height: 6*$card-text-line-height + $card-title-margin;
+      max-height: 6 * $card-text-line-height + $card-title-margin;
     }
+
     &.no-image.no-host-name.no-context {
-      max-height: 12*$card-text-line-height + $card-title-margin;
+      max-height: 12 * $card-text-line-height + $card-title-margin;
     }
+
     &:not(.no-description) .card-title {
-      max-height: 3*$card-text-line-height;
+      max-height: 3 * $card-text-line-height;
       overflow: hidden;
     }
   }
@@ -114,36 +124,36 @@
   .card-host-name {
     color: $text-secondary;
     font-size: 10px;
-    padding-bottom: 4px;
-    text-transform: uppercase;
     overflow: hidden;
+    padding-bottom: 4px;
     text-overflow: ellipsis;
+    text-transform: uppercase;
   }
 
   .card-title {
-    margin: 0 0 $card-title-margin;
     font-size: 14px;
-    word-wrap: break-word;
     line-height: $card-text-line-height;
+    margin: 0 0 $card-title-margin;
+    word-wrap: break-word;
   }
 
   .card-description {
     font-size: 12px;
-    margin: 0;
-    word-wrap: break-word;
-    overflow: hidden;
     line-height: $card-text-line-height;
+    margin: 0;
+    overflow: hidden;
+    word-wrap: break-word;
   }
 
   .card-context {
+    bottom: 0;
+    color: $text-secondary;
+    display: flex;
+    font-size: 11px;
+    left: 0;
     padding: 12px 16px 12px 14px;
     position: absolute;
-    bottom: 0;
-    left: 0;
     right: 0;
-    color: $text-secondary;
-    font-size: 11px;
-    display: flex;
   }
 
   .card-context-icon {
