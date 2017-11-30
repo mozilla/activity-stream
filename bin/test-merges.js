@@ -98,7 +98,7 @@ function getPRMergeCommitId(prNumber) {
     owner: AS_REPO_OWNER,
     repo: AS_REPO_NAME,
     issue_number: prNumber
-  }).then(data => {
+  }).then(({data}) => {
     if (data.incomplete_results) {
       // XXX should handle this case theoretically, but since we'll be running
       // regularly from cron, it seems unlikely that we'll even hit 30 new
@@ -309,7 +309,7 @@ function pushPR(pr) {
 }
 
 function main() {
-  findNewlyMergedPRs().then(data => {
+  findNewlyMergedPRs().then(({data}) => {
     if (data.incomplete_results) {
       throw new Error("data.incomplete_results is true, aborting");
     }
