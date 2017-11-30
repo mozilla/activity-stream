@@ -43,7 +43,7 @@ describe("<ComponentPerfTimer>", () => {
     beforeEach(() => {
       sandbox.stub(ComponentPerfTimer.prototype, "_maybeSendBadStateEvent");
       sandbox.stub(ComponentPerfTimer.prototype, "_ensureFirstRenderTsRecorded");
-      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>, {disableLifecycleMethods: true});
     });
 
     it("should have the correct defaults", () => {
@@ -187,7 +187,9 @@ describe("<ComponentPerfTimer>", () => {
   describe("#_maybeSendPaintedEvent", () => {
     it("should call _sendPaintedEvent if props.initialized is true", () => {
       sandbox.stub(DEFAULT_PROPS, "initialized").value(true);
-      wrapper = shallow(<ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>);
+      wrapper = shallow(
+        <ComponentPerfTimer {...DEFAULT_PROPS}><InnerEl /></ComponentPerfTimer>,
+        {disableLifecycleMethods: true});
       const instance = wrapper.instance();
       const stub = sandbox.stub(instance, "_afterFramePaint");
 
@@ -197,7 +199,7 @@ describe("<ComponentPerfTimer>", () => {
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, instance._sendPaintedEvent);
-      assert.isTrue(instance._timestampHandled);
+      assert.isTrue(wrapper.instance()._timestampHandled);
     });
     it("should not call _sendPaintedEvent if this._timestampHandled is true", () => {
       const instance = wrapper.instance();

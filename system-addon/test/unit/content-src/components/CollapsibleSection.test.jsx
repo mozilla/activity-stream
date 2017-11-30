@@ -92,7 +92,7 @@ describe("CollapsibleSection", () => {
   describe("maxHeight", () => {
     const maxHeight = "123px";
     const setState = state => wrapper.setState(Object.assign({maxHeight}, state || {}));
-    const checkHeight = val => assert.equal(wrapper.find(".section-body").node.style.maxHeight, val);
+    const checkHeight = val => assert.equal(wrapper.find(".section-body").instance().style.maxHeight, val);
 
     it("should have no max-height normally to avoid unexpected cropping", () => {
       setState();
