@@ -16,10 +16,12 @@ const PATHS = {
   coverageReportingPath: "logs/coverage/system-addon"
 };
 
+// When tweaking here, be sure to review the docs about the execution ordering
+// semantics of the preprocessors array, as they are somewhat odd.
 const preprocessors = {};
 preprocessors[PATHS.testFilesPattern] = [
-  "sourcemap", // require("karma-sourcemap-loader")
-  "webpack" // require("karma-webpack")
+  "webpack", // require("karma-webpack")
+  "sourcemap" // require("karma-sourcemap-loader")
 ];
 
 module.exports = function(config) {
