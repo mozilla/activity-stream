@@ -32,11 +32,6 @@ class Base extends React.PureComponent {
       this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
       this.props.dispatch(ac.SendToMain({type: at.PAGE_PRERENDERED}));
     }
-
-    // Also wait for the preloaded page to show, so the tab's favicon updates
-    addEventListener("visibilitychange", () => {
-      document.getElementById("favicon").href += "#";
-    }, {once: true});
   }
 
   componentWillUpdate({App}) {

@@ -186,7 +186,6 @@ function templateHTML(options, html) {
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Security-Policy-Report-Only" content="script-src 'unsafe-inline'; img-src http: https: data: blob:; style-src 'unsafe-inline'; child-src 'none'; object-src 'none'; report-uri https://tiles.services.mozilla.com/v4/links/activity-stream/csp">
-    <link rel="icon" type="image/png" id="favicon" href="chrome://branding/content/icon32.png"/>
     <link rel="stylesheet" href="chrome://browser/content/contentSearchUI.css" />
     <link rel="stylesheet" href="${options.baseUrl}css/activity-stream.css" />
   </head>
