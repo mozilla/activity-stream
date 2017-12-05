@@ -677,7 +677,7 @@ describe("<TopSiteForm>", () => {
         {
           data: {site: {label: "a label", url: "http://valid.com"}},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
-          type: at.TOP_SITES_ADD
+          type: at.TOP_SITES_INSERT
         }
       );
       assert.calledWith(
@@ -697,7 +697,7 @@ describe("<TopSiteForm>", () => {
         {
           data: {site: {url: "http://valid.com"}},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
-          type: at.TOP_SITES_ADD
+          type: at.TOP_SITES_INSERT
         }
       );
     });
@@ -840,5 +840,107 @@ describe("<TopSiteList>", () => {
     const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={topSitesCount} />);
     assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
     assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
+  });
+  it("should update state onDragStart and clear it onDragEnd", () => {
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} />);
+    const instance = wrapper.instance();
+    const index = 7;
+    const link = {url: "https://foo.com"};
+    const title = "foo";
+    instance.onDragEvent({type: "dragstart"}, index, link, title);
+    assert.equal(instance.state.draggedIndex, index);
+    assert.equal(instance.state.draggedSite, link);
+    assert.equal(instance.state.draggedTitle, title);
+    instance.onDragEvent({type: "dragend"});
+    assert.deepEqual(instance.state, instance.DEFAULT_STATE);
+  });
+  it("should clear state when new props arrive after a drop", () => {
+    const site1 = {url: "https://foo.com"};
+    const site2 = {url: "https://bar.com"};
+    const rows = [site1, site2];
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} />);
+    const instance = wrapper.instance();
+    instance.setState({
+      draggedIndex: 1,
+      draggedSite: site2,
+      draggedTitle: "bar",
+      topSitesPreview: []
+    });
+    wrapper.setProps({TopSites: {rows: [site2, site1]}});
+    assert.deepEqual(instance.state, instance.DEFAULT_STATE);
+  });
+  it("should dispatch events on drop", () => {
+    const dispatch = sinon.spy();
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} dispatch={dispatch} />);
+    const instance = wrapper.instance();
+    const index = 7;
+    const link = {url: "https://foo.com"};
+    const title = "foo";
+    instance.onDragEvent({type: "dragstart"}, index, link, title);
+    dispatch.reset();
+    instance.onDragEvent({type: "drop"}, 3);
+    assert.calledTwice(dispatch);
+    assert.calledWith(dispatch, {
+      data: {index: 3, site: {label: "foo", url: "https://foo.com"}},
+      meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+      type: "TOP_SITES_INSERT"
+    });
+    assert.calledWith(dispatch, {
+      data: {action_position: 3, event: "DROP", source: "TOP_SITES"},
+      meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+      type: "TELEMETRY_USER_EVENT"
+    });
+  });
+  it("should make a topSitesPreview onDragEnter and clear it onDragLeave", () => {
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} />);
+    const instance = wrapper.instance();
+    const site = {url: "https://foo.com"};
+    instance.setState({
+      draggedIndex: 4,
+      draggedSite: site,
+      draggedTitle: "foo"
+    });
+    site.isPinned = true;
+    instance.onDragEvent({type: "dragenter"}, 2);
+    assert.ok(instance.state.topSitesPreview);
+    assert.deepEqual(instance.state.topSitesPreview[2], site);
+    instance.onDragEvent({type: "dragleave"});
+    assert.isNull(instance.state.topSitesPreview);
+  });
+  it("should _makeTopSitesPreview correctly", () => {
+    const site1 = {url: "https://foo.com"};
+    const site2 = {url: "https://bar.com"};
+    const site3 = {url: "https://baz.com"};
+    const rows = [site1, site2, site3];
+    let wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} />);
+    let instance = wrapper.instance();
+    instance.setState({
+      draggedIndex: 0,
+      draggedSite: site1,
+      draggedTitle: "foo"
+    });
+    site1.isPinned = true;
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1]);
+    assert.deepEqual(instance._makeTopSitesPreview(3), [site2, site3, null, site1]);
+    site2.isPinned = true;
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site3, site1, site2]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site3, site2, site1]);
+    site3.isPinned = true;
+    assert.deepEqual(instance._makeTopSitesPreview(1), [null, site1, site2, site3]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [null, site2, site1, site3]);
+    site2.isPinned = false;
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, null, site1, site3]);
+    site3.isPinned = false;
+    site1.isPinned = false;
+    instance.setState({
+      draggedIndex: 1,
+      draggedSite: site2,
+      draggedTitle: "bar"
+    });
+    site2.isPinned = true;
+    assert.deepEqual(instance._makeTopSitesPreview(0), [site2, site1, site3]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site1, site3, site2]);
   });
 });
