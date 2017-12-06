@@ -3,7 +3,8 @@ module.exports = {
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
-    }
+    },
+    "sourceType": "module"
   },
   "env": {
     "mocha": true,
@@ -19,7 +20,8 @@ module.exports = {
   "plugins": [
     "json", // require("eslint-plugin-json")
     "promise", // require("eslint-plugin-promise")
-    "react" // require("eslint-plugin-react")
+    "react", // require("eslint-plugin-react")
+    "import" // require("eslint-plugin-import")
   ],
   "extends": [
     "eslint:recommended",
@@ -206,7 +208,7 @@ module.exports = {
     "require-yield": 2,
     "semi": [2, "always"],
     "semi-spacing": [2, {"before": false, "after": true}],
-    "sort-imports": 2,
+    "sort-imports": [2, {"ignoreCase": true}],
     "sort-vars": 2,
     // Override this until eslint-plugin-mozilla gets updated.
     "space-before-function-paren": ["error", {

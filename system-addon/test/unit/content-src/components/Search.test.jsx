@@ -1,6 +1,6 @@
-const React = require("react");
-const {GlobalOverrider, mountWithIntl, shallowWithIntl} = require("test/unit/utils");
-const {_unconnected: Search} = require("content-src/components/Search/Search");
+import {GlobalOverrider, mountWithIntl, shallowWithIntl} from "test/unit/utils";
+import React from "react";
+import {_Search as Search} from "content-src/components/Search/Search";
 
 const DEFAULT_PROPS = {dispatch() {}};
 

@@ -1,13 +1,12 @@
-const React = require("react");
-const {connect} = require("react-redux");
-const {FormattedMessage} = require("react-intl");
-
-const TopSitesEdit = require("./TopSitesEdit");
-const {TopSiteList} = require("./TopSite");
-const CollapsibleSection = require("content-src/components/CollapsibleSection/CollapsibleSection");
-const ComponentPerfTimer = require("content-src/components/ComponentPerfTimer/ComponentPerfTimer");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
-const {MIN_RICH_FAVICON_SIZE, MIN_CORNER_FAVICON_SIZE} = require("./TopSitesConstants");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "./TopSitesConstants";
+import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
+import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/ComponentPerfTimer";
+import {connect} from "react-redux";
+import {FormattedMessage} from "react-intl";
+import React from "react";
+import {TopSiteList} from "./TopSite";
+import {TopSitesEdit} from "./TopSitesEdit";
 
 /**
  * Iterates through TopSites and counts types of images.
@@ -40,7 +39,7 @@ function countTopSitesIconsTypes(topSites) {
   });
 }
 
-class TopSites extends React.PureComponent {
+export class _TopSites extends React.PureComponent {
   /**
    * Dispatch session statistics about the quality of TopSites icons.
    */
@@ -83,5 +82,8 @@ class TopSites extends React.PureComponent {
   }
 }
 
-module.exports = connect(state => ({TopSites: state.TopSites, Prefs: state.Prefs, TopSitesCount: state.Prefs.values.topSitesCount}))(TopSites);
-module.exports._unconnected = TopSites;
+export const TopSites = connect(state => ({
+  TopSites: state.TopSites,
+  Prefs: state.Prefs,
+  TopSitesCount: state.Prefs.values.topSitesCount
+}))(_TopSites);

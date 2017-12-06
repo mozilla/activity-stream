@@ -1,8 +1,8 @@
-const React = require("react");
-const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
-const {FormattedMessage} = require("react-intl");
-const cardContextTypes = require("./types");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {cardContextTypes} from "./types";
+import {FormattedMessage} from "react-intl";
+import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
+import React from "react";
 
 // Keep track of pending image loads to only request once
 const gImageLoading = new Map();
@@ -16,7 +16,7 @@ const gImageLoading = new Map();
  * this class. Each card will then get a context menu which reflects the actions that
  * can be done on this Card.
  */
-class Card extends React.PureComponent {
+export class Card extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -155,7 +155,4 @@ class Card extends React.PureComponent {
 }
 Card.defaultProps = {link: {}};
 
-const PlaceholderCard = () => <Card placeholder={true} />;
-
-module.exports = Card;
-module.exports.PlaceholderCard = PlaceholderCard;
+export const PlaceholderCard = () => <Card placeholder={true} />;

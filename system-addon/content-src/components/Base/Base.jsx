@@ -1,14 +1,14 @@
-const React = require("react");
-const {connect} = require("react-redux");
-const {addLocaleData, IntlProvider} = require("react-intl");
-const TopSites = require("content-src/components/TopSites/TopSites");
-const Search = require("content-src/components/Search/Search");
-const ConfirmDialog = require("content-src/components/ConfirmDialog/ConfirmDialog");
-const ManualMigration = require("content-src/components/ManualMigration/ManualMigration");
-const PreferencesPane = require("content-src/components/PreferencesPane/PreferencesPane");
-const Sections = require("content-src/components/Sections/Sections");
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
-const {PrerenderData} = require("common/PrerenderData.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {addLocaleData, IntlProvider} from "react-intl";
+import {ConfirmDialog} from "content-src/components/ConfirmDialog/ConfirmDialog";
+import {connect} from "react-redux";
+import {ManualMigration} from "content-src/components/ManualMigration/ManualMigration";
+import {PreferencesPane} from "content-src/components/PreferencesPane/PreferencesPane";
+import {PrerenderData} from "common/PrerenderData.jsm";
+import React from "react";
+import {Search} from "content-src/components/Search/Search";
+import {Sections} from "content-src/components/Sections/Sections";
+import {TopSites} from "content-src/components/TopSites/TopSites";
 
 // Add the locale data for pluralization and relative-time formatting for now,
 // this just uses english locale data. We can make this more sophisticated if
@@ -17,7 +17,7 @@ function addLocaleDataForReactIntl(locale) {
   addLocaleData([{locale, parentLocale: "en"}]);
 }
 
-class Base extends React.PureComponent {
+export class _Base extends React.PureComponent {
   componentWillMount() {
     const {App, locale} = this.props;
     this.sendNewTabRehydrated(App);
@@ -79,5 +79,4 @@ class Base extends React.PureComponent {
   }
 }
 
-module.exports = connect(state => ({App: state.App, Prefs: state.Prefs}))(Base);
-module.exports._unconnected = Base;
+export const Base = connect(state => ({App: state.App, Prefs: state.Prefs}))(_Base);

@@ -1,11 +1,11 @@
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 
 /**
  * List of functions that return items that can be included as menu options in a
  * LinkMenu. All functions take the site as the first parameter, and optionally
  * the index of the site.
  */
-module.exports = {
+export const LinkMenuOptions = {
   Separator: () => ({type: "separator"}),
   RemoveBookmark: site => ({
     id: "menu_action_remove_bookmark",
@@ -114,8 +114,7 @@ module.exports = {
       type: at.TOP_SITES_EDIT,
       data: {url: site.url, label: site.label}
     }
-  })
+  }),
+  CheckBookmark: site => (site.bookmarkGuid ? LinkMenuOptions.RemoveBookmark(site) : LinkMenuOptions.AddBookmark(site)),
+  CheckPinTopSite: (site, index) => (site.isPinned ? LinkMenuOptions.UnpinTopSite(site) : LinkMenuOptions.PinTopSite(site, index))
 };
-
-module.exports.CheckBookmark = site => (site.bookmarkGuid ? module.exports.RemoveBookmark(site) : module.exports.AddBookmark(site));
-module.exports.CheckPinTopSite = (site, index) => (site.isPinned ? module.exports.UnpinTopSite(site) : module.exports.PinTopSite(site, index));

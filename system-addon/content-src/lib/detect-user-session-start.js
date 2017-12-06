@@ -1,10 +1,10 @@
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
-const {perfService: perfSvc} = require("common/PerfService.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {perfService as perfSvc} from "common/PerfService.jsm";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 
-module.exports = class DetectUserSessionStart {
+export class DetectUserSessionStart {
   constructor(store, options = {}) {
     this._store = store;
     // Overrides for testing
@@ -62,4 +62,4 @@ module.exports = class DetectUserSessionStart {
       this.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
     }
   }
-};
+}

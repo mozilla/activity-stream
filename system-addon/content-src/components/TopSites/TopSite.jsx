@@ -1,11 +1,14 @@
-const React = require("react");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {
+  MIN_CORNER_FAVICON_SIZE,
+  MIN_RICH_FAVICON_SIZE,
+  TOP_SITES_CONTEXT_MENU_OPTIONS,
+  TOP_SITES_SOURCE
+} from "./TopSitesConstants";
+import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
+import React from "react";
 
-const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
-
-const {TOP_SITES_SOURCE, TOP_SITES_CONTEXT_MENU_OPTIONS, MIN_RICH_FAVICON_SIZE, MIN_CORNER_FAVICON_SIZE} = require("./TopSitesConstants");
-
-const TopSiteLink = props => {
+export const TopSiteLink = props => {
   const {link, title} = props;
   const topSiteOuterClassName = `top-site-outer${props.className ? ` ${props.className}` : ""}`;
   const {tippyTopIcon, faviconSize} = link;
@@ -60,7 +63,7 @@ TopSiteLink.defaultProps = {
   link: {}
 };
 
-class TopSite extends React.PureComponent {
+export class TopSite extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {showContextMenu: false, activeTile: null};
@@ -174,9 +177,9 @@ class TopSite extends React.PureComponent {
 }
 TopSite.defaultProps = {link: {}};
 
-const TopSitePlaceholder = () => <TopSiteLink className="placeholder" />;
+export const TopSitePlaceholder = () => <TopSiteLink className="placeholder" />;
 
-const TopSiteList = props => {
+export const TopSiteList = props => {
   const topSites = props.TopSites.rows.slice(0, props.TopSitesCount);
   const topSitesUI = [];
   for (let i = 0, l = props.TopSitesCount; i < l; i++) {
@@ -193,8 +196,3 @@ const TopSiteList = props => {
     {topSitesUI}
   </ul>);
 };
-
-module.exports.TopSite = TopSite;
-module.exports.TopSiteLink = TopSiteLink;
-module.exports.TopSitePlaceholder = TopSitePlaceholder;
-module.exports.TopSiteList = TopSiteList;

@@ -1,11 +1,12 @@
-const React = require("react");
-const {injectIntl} = require("react-intl");
-const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
-const {actionCreators: ac} = require("common/Actions.jsm");
-const linkMenuOptions = require("content-src/lib/link-menu-options");
+import {actionCreators as ac} from "common/Actions.jsm";
+import {ContextMenu} from "content-src/components/ContextMenu/ContextMenu";
+import {injectIntl} from "react-intl";
+import {LinkMenuOptions} from "content-src/lib/link-menu-options";
+import React from "react";
+
 const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"];
 
-class LinkMenu extends React.PureComponent {
+export class _LinkMenu extends React.PureComponent {
   getOptions() {
     const props = this.props;
     const {site, index, source} = props;
@@ -13,7 +14,7 @@ class LinkMenu extends React.PureComponent {
     // Handle special case of default site
     const propOptions = !site.isDefault ? props.options : DEFAULT_SITE_MENU_OPTIONS;
 
-    const options = propOptions.map(o => linkMenuOptions[o](site, index, source)).map(option => {
+    const options = propOptions.map(o => LinkMenuOptions[o](site, index, source)).map(option => {
       const {action, impression, id, type, userEvent} = option;
       if (!type && id) {
         option.label = props.intl.formatMessage(option);
@@ -49,5 +50,4 @@ class LinkMenu extends React.PureComponent {
   }
 }
 
-module.exports = injectIntl(LinkMenu);
-module.exports._unconnected = LinkMenu;
+export const LinkMenu = injectIntl(_LinkMenu);

@@ -1,12 +1,12 @@
-const React = require("react");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
-const {perfService: perfSvc} = require("common/PerfService.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {perfService as perfSvc} from "common/PerfService.jsm";
+import React from "react";
 
 // Currently record only a fixed set of sections. This will prevent data
 // from custom sections from showing up or from topstories.
 const RECORDED_SECTIONS = ["highlights", "topsites"];
 
-class ComponentPerfTimer extends React.Component {
+export class ComponentPerfTimer extends React.Component {
   constructor(props) {
     super(props);
     // Just for test dependency injection:
@@ -161,5 +161,3 @@ class ComponentPerfTimer extends React.Component {
     return this.props.children;
   }
 }
-
-module.exports = ComponentPerfTimer;

@@ -1,14 +1,14 @@
-const {
-  SnippetsMap,
-  SnippetsProvider,
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {
+  addSnippetsSubscriber,
   SNIPPETS_UPDATE_INTERVAL_MS,
-  addSnippetsSubscriber
-} = require("content-src/lib/snippets.js");
-const {createStore, combineReducers} = require("redux");
-const {reducers} = require("common/Reducers.jsm");
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
-const {INCOMING_MESSAGE_NAME} = require("content-src/lib/init-store");
-const {GlobalOverrider} = require("test/unit/utils");
+  SnippetsMap,
+  SnippetsProvider
+} from "content-src/lib/snippets.js";
+import {combineReducers, createStore} from "redux";
+import {GlobalOverrider} from "test/unit/utils";
+import {INCOMING_MESSAGE_NAME} from "content-src/lib/init-store";
+import {reducers} from "common/Reducers.jsm";
 
 describe("SnippetsMap", () => {
   let snippetsMap;

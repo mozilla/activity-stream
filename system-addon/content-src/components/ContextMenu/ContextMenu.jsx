@@ -1,6 +1,6 @@
-const React = require("react");
+import React from "react";
 
-class ContextMenu extends React.PureComponent {
+export class ContextMenu extends React.PureComponent {
   constructor(props) {
     super(props);
     this.hideContext = this.hideContext.bind(this);
@@ -36,7 +36,7 @@ class ContextMenu extends React.PureComponent {
   }
 }
 
-class ContextMenuItem extends React.PureComponent {
+export class ContextMenuItem extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
@@ -74,7 +74,3 @@ class ContextMenuItem extends React.PureComponent {
       </li>);
   }
 }
-
-module.exports = ContextMenu;
-module.exports.ContextMenu = ContextMenu;
-module.exports.ContextMenuItem = ContextMenuItem;

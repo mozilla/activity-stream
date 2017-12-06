@@ -1,5 +1,5 @@
-const DetectUserSessionStart = require("content-src/lib/detect-user-session-start");
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {DetectUserSessionStart} from "content-src/lib/detect-user-session-start";
 
 describe("detectUserSessionStart", () => {
   let store;

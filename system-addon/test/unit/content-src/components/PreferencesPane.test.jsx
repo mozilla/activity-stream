@@ -1,9 +1,10 @@
-const React = require("react");
-const {shallow} = require("enzyme");
-const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
-const {FormattedMessage} = require("react-intl");
-const {PreferencesPane, PreferencesInput} = require("content-src/components/PreferencesPane/PreferencesPane");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
+import {PreferencesInput, _PreferencesPane as PreferencesPane} from "content-src/components/PreferencesPane/PreferencesPane";
+
+import {FormattedMessage} from "react-intl";
+import React from "react";
+import {shallow} from "enzyme";
 
 describe("<PreferencesInput>", () => {
   const testStrings = {

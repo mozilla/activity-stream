@@ -1,6 +1,7 @@
-const React = require("react");
-const {shallow, mount} = require("enzyme");
-const {ContextMenu, ContextMenuItem} = require("content-src/components/ContextMenu/ContextMenu");
+import {ContextMenu, ContextMenuItem} from "content-src/components/ContextMenu/ContextMenu";
+import {mount, shallow} from "enzyme";
+import React from "react";
+
 const DEFAULT_PROPS = {
   onUpdate: () => {},
   visible: false,

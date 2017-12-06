@@ -1,6 +1,6 @@
-const React = require("react");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
-const {injectIntl, FormattedMessage} = require("react-intl");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {FormattedMessage, injectIntl} from "react-intl";
+import React from "react";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -12,7 +12,7 @@ function getCollapsed(props) {
   return props.Prefs.values[props.prefName];
 }
 
-class Info extends React.PureComponent {
+export class Info extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onInfoEnter = this.onInfoEnter.bind(this);
@@ -90,9 +90,9 @@ class Info extends React.PureComponent {
   }
 }
 
-const InfoIntl = injectIntl(Info);
+export const InfoIntl = injectIntl(Info);
 
-class Disclaimer extends React.PureComponent {
+export class Disclaimer extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onAcknowledge = this.onAcknowledge.bind(this);
@@ -124,9 +124,9 @@ class Disclaimer extends React.PureComponent {
   }
 }
 
-const DisclaimerIntl = injectIntl(Disclaimer);
+export const DisclaimerIntl = injectIntl(Disclaimer);
 
-class CollapsibleSection extends React.PureComponent {
+export class _CollapsibleSection extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onBodyMount = this.onBodyMount.bind(this);
@@ -237,7 +237,7 @@ class CollapsibleSection extends React.PureComponent {
   }
 }
 
-CollapsibleSection.defaultProps = {
+_CollapsibleSection.defaultProps = {
   document: global.document || {
     addEventListener: () => {},
     removeEventListener: () => {},
@@ -246,9 +246,4 @@ CollapsibleSection.defaultProps = {
   Prefs: {values: {}}
 };
 
-module.exports = injectIntl(CollapsibleSection);
-module.exports._unconnected = CollapsibleSection;
-module.exports.Info = Info;
-module.exports.InfoIntl = InfoIntl;
-module.exports.Disclaimer = Disclaimer;
-module.exports.DisclaimerIntl = DisclaimerIntl;
+export const CollapsibleSection = injectIntl(_CollapsibleSection);

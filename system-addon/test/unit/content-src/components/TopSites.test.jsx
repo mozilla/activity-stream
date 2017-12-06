@@ -1,17 +1,14 @@
-const React = require("react");
-const {shallow} = require("enzyme");
-const {mountWithIntl} = require("test/unit/utils");
-
-const TopSiteForm = require("content-src/components/TopSites/TopSiteForm");
-const TopSitesEditConnected = require("content-src/components/TopSites/TopSitesEdit");
-const {_unconnected: TopSitesEdit} = TopSitesEditConnected;
-const {TopSite, TopSiteLink, TopSitePlaceholder, TopSiteList} = require("content-src/components/TopSites/TopSite");
-const {_unconnected: TopSites} = require("content-src/components/TopSites/TopSites");
-
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
-const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
-const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
-const {MIN_RICH_FAVICON_SIZE, MIN_CORNER_FAVICON_SIZE} = require("content-src/components/TopSites/TopSitesConstants");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "content-src/components/TopSites/TopSitesConstants";
+import {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} from "common/Reducers.jsm";
+import {TopSite, TopSiteLink, TopSiteList, TopSitePlaceholder} from "content-src/components/TopSites/TopSite";
+import {_TopSitesEdit as TopSitesEdit, TopSitesEdit as TopSitesEditConnected} from "content-src/components/TopSites/TopSitesEdit";
+import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
+import {mountWithIntl} from "test/unit/utils";
+import React from "react";
+import {shallow} from "enzyme";
+import {TopSiteForm} from "content-src/components/TopSites/TopSiteForm";
+import {_TopSites as TopSites} from "content-src/components/TopSites/TopSites";
 
 const perfSvc = {
   mark() {},

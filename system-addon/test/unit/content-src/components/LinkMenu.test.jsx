@@ -1,10 +1,11 @@
-const React = require("react");
-const {shallow} = require("enzyme");
-const {shallowWithIntl} = require("test/unit/utils");
-const {_unconnected: LinkMenu} = require("content-src/components/LinkMenu/LinkMenu");
-const ContextMenu = require("content-src/components/ContextMenu/ContextMenu");
-const {IntlProvider} = require("react-intl");
-const messages = require("data/locales.json")["en-US"];
+import {ContextMenu} from "content-src/components/ContextMenu/ContextMenu";
+import {IntlProvider} from "react-intl";
+import {_LinkMenu as LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
+import React from "react";
+import {shallow} from "enzyme";
+import {shallowWithIntl} from "test/unit/utils";
+
+const messages = require("data/locales.json")["en-US"]; // eslint-disable-line import/no-commonjs
 
 describe("<LinkMenu>", () => {
   let wrapper;

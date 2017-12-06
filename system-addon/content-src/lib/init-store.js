@@ -1,12 +1,12 @@
 /* eslint-env mozilla/frame-script */
 
-const {createStore, combineReducers, applyMiddleware} = require("redux");
-const {actionTypes: at, actionCreators: ac, actionUtils: au} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at, actionUtils as au} from "common/Actions.jsm";
+import {applyMiddleware, combineReducers, createStore} from "redux";
 
-const MERGE_STORE_ACTION = "NEW_TAB_INITIAL_STATE";
-const OUTGOING_MESSAGE_NAME = "ActivityStream:ContentToMain";
-const INCOMING_MESSAGE_NAME = "ActivityStream:MainToContent";
-const EARLY_QUEUED_ACTIONS = [at.SAVE_SESSION_PERF_DATA, at.PAGE_PRERENDERED];
+export const MERGE_STORE_ACTION = "NEW_TAB_INITIAL_STATE";
+export const OUTGOING_MESSAGE_NAME = "ActivityStream:ContentToMain";
+export const INCOMING_MESSAGE_NAME = "ActivityStream:MainToContent";
+export const EARLY_QUEUED_ACTIONS = [at.SAVE_SESSION_PERF_DATA, at.PAGE_PRERENDERED];
 
 /**
  * A higher-order function which returns a reducer that, on MERGE_STORE action,
@@ -44,7 +44,7 @@ const messageMiddleware = store => next => action => {
   next(action);
 };
 
-const rehydrationMiddleware = store => next => action => {
+export const rehydrationMiddleware = store => next => action => {
   if (store._didRehydrate) {
     return next(action);
   }
@@ -84,7 +84,7 @@ const rehydrationMiddleware = store => next => action => {
  * that it gets sent before the main is ready to receive it. Conversely, any
  * actions allowed early are accepted to be ignorable or re-sendable.
  */
-const queueEarlyMessageMiddleware = store => next => action => {
+export const queueEarlyMessageMiddleware = store => next => action => {
   if (store._receivedFromMain) {
     next(action);
   } else if (au.isFromMain(action)) {
@@ -111,7 +111,7 @@ const queueEarlyMessageMiddleware = store => next => action => {
  * @param  {object} intialState (optional) The initial state of the store, if desired
  * @return {object}          A redux store
  */
-module.exports = function initStore(reducers, initialState) {
+export function initStore(reducers, initialState) {
   const store = createStore(
     mergeStateReducer(combineReducers(reducers)),
     initialState,
@@ -133,11 +133,4 @@ module.exports = function initStore(reducers, initialState) {
   }
 
   return store;
-};
-
-module.exports.rehydrationMiddleware = rehydrationMiddleware;
-module.exports.queueEarlyMessageMiddleware = queueEarlyMessageMiddleware;
-module.exports.MERGE_STORE_ACTION = MERGE_STORE_ACTION;
-module.exports.OUTGOING_MESSAGE_NAME = OUTGOING_MESSAGE_NAME;
-module.exports.INCOMING_MESSAGE_NAME = INCOMING_MESSAGE_NAME;
-module.exports.EARLY_QUEUED_ACTIONS = EARLY_QUEUED_ACTIONS;
+}

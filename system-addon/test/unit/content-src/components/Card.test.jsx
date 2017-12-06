@@ -1,11 +1,10 @@
-const React = require("react");
-const {shallow} = require("enzyme");
-const {mountWithIntl} = require("test/unit/utils");
-const Card = require("content-src/components/Card/Card");
-const {PlaceholderCard} = Card;
-const LinkMenu = require("content-src/components/LinkMenu/LinkMenu");
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
-const cardContextTypes = require("content-src/components/Card/types");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {Card, PlaceholderCard} from "content-src/components/Card/Card";
+import {cardContextTypes} from "content-src/components/Card/types";
+import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
+import {mountWithIntl} from "test/unit/utils";
+import React from "react";
+import {shallow} from "enzyme";
 
 let DEFAULT_PROPS = {
   dispatch: sinon.stub(),
