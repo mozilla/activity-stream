@@ -48,7 +48,7 @@ describe("<TopSites>", () => {
 
     const links = wrapper.find(TopSite);
 
-    rows.forEach((row, i) => assert.equal(links.nodes[i].props.link.url, row.url));
+    rows.forEach((row, i) => assert.equal(links.get(i).props.link.url, row.url));
   });
   it("should slice the TopSite rows to the TopSitesCount pref", () => {
     const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}, {url: "https://baz.com"}, {url: "https://bam.com"}, {url: "https://zoom.com"}, {url: "https://woo.com"}, {url: "https://eh.com"}];
@@ -82,7 +82,7 @@ describe("<TopSites>", () => {
 
     beforeEach(() => {
       sandbox.stub(DEFAULT_PROPS, "dispatch");
-      wrapper = shallow(<TopSites {...DEFAULT_PROPS} />);
+      wrapper = shallow(<TopSites {...DEFAULT_PROPS} />, {disableLifecycleMethods: true});
       dispatchStatsSpy = sandbox.spy(wrapper.instance(), "_dispatchTopSitesIconStats");
     });
     afterEach(() => {

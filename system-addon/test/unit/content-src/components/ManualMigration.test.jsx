@@ -12,12 +12,12 @@ describe("<ManualMigration>", () => {
     wrapper = shallowWithIntl(<ManualMigration dispatch={dispatch} />);
   });
   it("should render the component", () => {
-    assert.isNotNull(wrapper.getNode());
+    assert.isNotNull(wrapper.getElement());
   });
   it("should render correct intl string", () => {
     const fm = wrapper.find("p").find(FormattedMessage);
 
-    assert.isNotNull(fm.getNode());
+    assert.isNotNull(fm.getElement());
     assert.equal(fm.props().id, "manual_migration_explanation2");
   });
   describe("actions", () => {
@@ -27,13 +27,13 @@ describe("<ManualMigration>", () => {
     it("should render correct intl string", () => {
       const fm = wrapper.find(".actions").childAt(0).find(FormattedMessage);
 
-      assert.isNotNull(fm.getNode());
+      assert.isNotNull(fm.getElement());
       assert.equal(fm.props().id, "manual_migration_cancel_button");
     });
     it("should render correct intl string", () => {
       const fm = wrapper.find(".actions").childAt(1).find(FormattedMessage);
 
-      assert.isNotNull(fm.getNode());
+      assert.isNotNull(fm.getElement());
       assert.equal(fm.props().id, "manual_migration_import_button");
     });
     it("cancel btn should dispatch correct events", () => {

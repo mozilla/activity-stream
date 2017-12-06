@@ -51,10 +51,9 @@ describe("<Card>", () => {
   it("should have a link menu button", () => assert.ok(wrapper.find(".context-menu-button")));
   it("should render a link menu when button is clicked", () => {
     const button = wrapper.find(".context-menu-button");
-    const linkMenu = wrapper.find(LinkMenu);
-    assert.equal(linkMenu.props().visible, false);
+    assert.equal(wrapper.find(LinkMenu).props().visible, false);
     button.simulate("click", {preventDefault: () => {}});
-    assert.equal(linkMenu.props().visible, true);
+    assert.equal(wrapper.find(LinkMenu).props().visible, true);
   });
   it("should pass dispatch, source, visible, onUpdate, site, options, and index to LinkMenu", () => {
     const {dispatch, source, visible, onUpdate, site, options, index} = wrapper.find(LinkMenu).props();

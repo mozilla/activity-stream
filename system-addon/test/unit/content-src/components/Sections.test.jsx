@@ -34,6 +34,7 @@ describe("<Sections>", () => {
 describe("<Section>", () => {
   let wrapper;
   let FAKE_SECTION;
+  let FAKE_PREFS;
 
   beforeEach(() => {
     FAKE_SECTION = {
@@ -46,14 +47,17 @@ describe("<Section>", () => {
         message: "Some message"
       }
     };
-    wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+    FAKE_PREFS = {values: {"section.foo_bar_1.collapsed": false}};
+
+    wrapper = shallowWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
   });
 
   describe("placeholders", () => {
     const CARDS_PER_ROW = 3;
     const fakeSite = {link: "http://localhost"};
     function renderWithSites(rows) {
-      return shallowWithIntl(<Section {...FAKE_SECTION} rows={rows} maxRows={2} />);
+      return shallowWithIntl(
+        <Section {...FAKE_SECTION} rows={rows} maxRows={2} Prefs={FAKE_PREFS} />);
     }
 
     it("should return 1 row of placeholders if realRows is 0", () => {
@@ -86,7 +90,8 @@ describe("<Section>", () => {
         rows: [],
         emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
       });
-      wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+      wrapper = shallowWithIntl(
+        <Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
     });
     it("should be shown when rows is empty and initialized is true", () => {
       assert.ok(wrapper.find(".empty-state").exists());
@@ -97,7 +102,8 @@ describe("<Section>", () => {
         rows: [],
         emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
       });
-      wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+      wrapper = shallowWithIntl(
+        <Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
       assert.isFalse(wrapper.find(".empty-state").exists());
     });
     it("should use the icon prop as the icon url if it starts with `moz-extension://`", () => {
@@ -108,7 +114,6 @@ describe("<Section>", () => {
 
   describe("topics component", () => {
     let TOP_STORIES_SECTION;
-    let FAKE_PREFS;
     beforeEach(() => {
       TOP_STORIES_SECTION = {
         id: "topstories",
@@ -159,12 +164,12 @@ describe("<Section>", () => {
       eventSource: "TOP_STORIES",
       options: {personalized: false}
     };
-    const FAKE_PREFS = {values: {"section.TopStories.collapsed": false}};
+    FAKE_PREFS = {values: {"section.TopStories.collapsed": false}};
 
     function renderSection(props = {}) {
       return shallowWithIntl(<Section
         {...FAKE_TOPSTORIES_SECTION_PROPS}
-        {...props} Prefs={FAKE_PREFS} />, {lifecycleExperimental: true});
+        {...props} Prefs={FAKE_PREFS} />);
     }
 
     it("should send impression with the right stats when the page loads", () => {
