@@ -5,7 +5,7 @@ const {mountWithIntl} = require("test/unit/utils");
 const TopSiteForm = require("content-src/components/TopSites/TopSiteForm");
 const TopSitesEditConnected = require("content-src/components/TopSites/TopSitesEdit");
 const {_unconnected: TopSitesEdit} = TopSitesEditConnected;
-const {TopSite, TopSiteLink, TopSitePlaceholder} = require("content-src/components/TopSites/TopSite");
+const {TopSite, TopSiteLink, TopSitePlaceholder, TopSiteList} = require("content-src/components/TopSites/TopSite");
 const {_unconnected: TopSites} = require("content-src/components/TopSites/TopSites");
 
 const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
@@ -40,32 +40,6 @@ describe("<TopSites>", () => {
   it("should render a TopSites element", () => {
     const wrapper = shallow(<TopSites {...DEFAULT_PROPS} />);
     assert.ok(wrapper.exists());
-  });
-  it("should render a TopSite for each link with the right url", () => {
-    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
-
-    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
-
-    const links = wrapper.find(TopSite);
-
-    rows.forEach((row, i) => assert.equal(links.get(i).props.link.url, row.url));
-  });
-  it("should slice the TopSite rows to the TopSitesCount pref", () => {
-    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}, {url: "https://baz.com"}, {url: "https://bam.com"}, {url: "https://zoom.com"}, {url: "https://woo.com"}, {url: "https://eh.com"}];
-
-    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={TOP_SITES_DEFAULT_LENGTH} />);
-
-    const links = wrapper.find(TopSite);
-    assert.lengthOf(links, TOP_SITES_DEFAULT_LENGTH);
-  });
-  it("should fill with placeholders if TopSites rows is less than TopSitesCount", () => {
-    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
-    const topSitesCount = 5;
-
-    const wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={topSitesCount} />);
-
-    assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
-    assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
   });
   it("should always render TopSitesEdit", () => {
     let rows = [{url: "https://foo.com"}];
@@ -596,25 +570,6 @@ describe("<TopSitesEdit>", () => {
     wrapper.find(".modal-overlay").simulate("click");
     assert.equal(0, wrapper.find(".modal").length);
   });
-  it("should render a TopSite for each link with the right url", () => {
-    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
-    setup({TopSites: {rows}});
-
-    // Open the modal then check the links.
-    wrapper.find(".edit").simulate("click");
-    const links = wrapper.find(TopSite);
-    assert.lengthOf(links, 2);
-    links.forEach((link, i) => assert.equal(link.props().link.url, rows[i].url));
-  });
-  it("should fill with placeholders if TopSites rows is less than TopSitesCount", () => {
-    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
-
-    setup({TopSites: {rows}, TopSitesCount: 5});
-    wrapper.find(".edit").simulate("click");
-
-    assert.lengthOf(wrapper.find(TopSite), 2, "top sites");
-    assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
-  });
   it("should show the 'Show more' button by default", () => {
     wrapper.find(".edit").simulate("click");
     assert.equal(1, wrapper.find(".show-more").length);
@@ -827,5 +782,40 @@ describe("<TopSiteForm>", () => {
       wrapper.setState({"url": "https://firefox.com"});
       assert.equal("https://firefox.com", wrapper.instance().cleanUrl());
     });
+  });
+});
+
+describe("<TopSiteList>", () => {
+  it("should render a TopSiteList element", () => {
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} />);
+    assert.ok(wrapper.exists());
+  });
+  it("should render a TopSite for each link with the right url", () => {
+    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} />);
+    const links = wrapper.find(TopSite);
+    assert.lengthOf(links, 2);
+    rows.forEach((row, i) => assert.equal(links.get(i).props.link.url, row.url));
+  });
+  it("should slice the TopSite rows to the TopSitesCount pref", () => {
+    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}, {url: "https://baz.com"}, {url: "https://bam.com"}, {url: "https://zoom.com"}, {url: "https://woo.com"}, {url: "https://eh.com"}];
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={TOP_SITES_DEFAULT_LENGTH} />);
+    const links = wrapper.find(TopSite);
+    assert.lengthOf(links, TOP_SITES_DEFAULT_LENGTH);
+  });
+  it("should fill with placeholders if TopSites rows is less than TopSitesCount", () => {
+    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
+    const topSitesCount = 5;
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={topSitesCount} />);
+    assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
+    assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
+  });
+  it("should fill any holes in TopSites with placeholders", () => {
+    const rows = [{url: "https://foo.com"}];
+    rows[3] = {url: "https://bar.com"};
+    const topSitesCount = 5;
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={topSitesCount} />);
+    assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
+    assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
   });
 });

@@ -3,7 +3,7 @@ const {connect} = require("react-redux");
 const {FormattedMessage} = require("react-intl");
 
 const TopSitesEdit = require("./TopSitesEdit");
-const {TopSite, TopSitePlaceholder} = require("./TopSite");
+const {TopSiteList} = require("./TopSite");
 const CollapsibleSection = require("content-src/components/CollapsibleSection/CollapsibleSection");
 const ComponentPerfTimer = require("content-src/components/ComponentPerfTimer/ComponentPerfTimer");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
@@ -70,24 +70,13 @@ class TopSites extends React.PureComponent {
 
   render() {
     const props = this.props;
-    const topSites = this._getTopSites();
-
-    const placeholderCount = props.TopSitesCount - topSites.length;
     const infoOption = {
       header: {id: "settings_pane_topsites_header"},
       body: {id: "settings_pane_topsites_body"}
     };
     return (<ComponentPerfTimer id="topsites" initialized={props.TopSites.initialized} dispatch={props.dispatch}>
       <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} infoOption={infoOption} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
-        <ul className="top-sites-list">
-          {topSites.map((link, index) => link && <TopSite
-            key={link.guid || link.url}
-            dispatch={props.dispatch}
-            link={link}
-            index={index}
-            intl={props.intl} />)}
-          {placeholderCount > 0 && [...Array(placeholderCount)].map((_, i) => <TopSitePlaceholder key={i} />)}
-        </ul>
+        <TopSiteList TopSites={props.TopSites} TopSitesCount={props.TopSitesCount} dispatch={props.dispatch} intl={props.intl} />
         <TopSitesEdit {...props} />
       </CollapsibleSection>
     </ComponentPerfTimer>);
