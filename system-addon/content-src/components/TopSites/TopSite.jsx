@@ -180,6 +180,30 @@ TopSite.defaultProps = {
 
 const TopSitePlaceholder = () => <TopSiteLink className="placeholder" />;
 
+const TopSiteList = props => {
+  const topSites = props.TopSites.rows.slice(0, props.TopSitesCount);
+  const topSitesUI = [];
+  for (let i = 0, l = props.TopSitesCount; i < l; i++) {
+    const link = topSites[i];
+    topSitesUI.push(!link ? <TopSitePlaceholder key={i} /> : <TopSite
+      key={link.guid || link.url}
+      dispatch={props.dispatch}
+      link={link}
+      index={i}
+      intl={props.intl}
+      onEdit={props.onEdit}
+      editMode={props.editMode} />);
+  }
+  return (<ul className="top-sites-list">
+    {topSitesUI}
+  </ul>);
+};
+TopSiteList.defaultProps = {
+  editMode: false,
+  onEdit() {}
+};
+
 module.exports.TopSite = TopSite;
 module.exports.TopSiteLink = TopSiteLink;
 module.exports.TopSitePlaceholder = TopSitePlaceholder;
+module.exports.TopSiteList = TopSiteList;

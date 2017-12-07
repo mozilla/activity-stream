@@ -3,7 +3,7 @@ const {FormattedMessage, injectIntl} = require("react-intl");
 const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
 
 const TopSiteForm = require("./TopSiteForm");
-const {TopSite, TopSitePlaceholder} = require("./TopSite");
+const {TopSiteList} = require("./TopSite");
 
 const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
 const {TOP_SITES_SOURCE} = require("./TopSitesConstants");
@@ -70,8 +70,6 @@ class TopSitesEdit extends React.PureComponent {
     }));
   }
   render() {
-    const realTopSites = this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
-    const placeholderCount = this.props.TopSitesCount - realTopSites.length;
     const showEditForm = (this.props.TopSites.editForm && this.props.TopSites.editForm.visible) ||
                          (this.state.showEditModal && this.state.showEditForm);
     let editIndex = this.state.editIndex;
@@ -96,17 +94,7 @@ class TopSitesEdit extends React.PureComponent {
               <div className="section-top-bar">
                 <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
               </div>
-              <ul className="top-sites-list">
-                {realTopSites.map((link, index) => link && <TopSite
-                  key={link.guid || link.url}
-                  dispatch={this.props.dispatch}
-                  link={link}
-                  index={index}
-                  intl={this.props.intl}
-                  onEdit={this.onEdit}
-                  editMode={true} />)}
-                  {placeholderCount > 0 && [...Array(placeholderCount)].map((_, i) => <TopSitePlaceholder key={i} />)}
-              </ul>
+              <TopSiteList TopSites={this.props.TopSites} TopSitesCount={this.props.TopSitesCount} editMode={true} onEdit={this.onEdit} dispatch={this.props.dispatch} intl={this.props.intl} />
             </section>
             <section className="actions">
               <button className="add" onClick={this.onAddButtonClick}>
