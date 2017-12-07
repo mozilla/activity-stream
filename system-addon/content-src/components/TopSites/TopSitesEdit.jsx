@@ -94,7 +94,7 @@ class TopSitesEdit extends React.PureComponent {
               <div className="section-top-bar">
                 <h3 className="section-title"><span className={`icon icon-small-spacer icon-topsites`} /><FormattedMessage id="header_top_sites" /></h3>
               </div>
-              <TopSiteList TopSites={this.props.TopSites} TopSitesCount={this.props.TopSitesCount} editMode={true} onEdit={this.onEdit} dispatch={this.props.dispatch} intl={this.props.intl} />
+              <TopSiteList TopSites={this.props.TopSites} TopSitesCount={this.props.TopSitesCount} onEdit={this.onEdit} dispatch={this.props.dispatch} intl={this.props.intl} />
             </section>
             <section className="actions">
               <button className="add" onClick={this.onAddButtonClick}>

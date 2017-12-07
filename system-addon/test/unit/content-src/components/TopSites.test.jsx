@@ -398,7 +398,7 @@ describe("<TopSite>", () => {
   describe("#editMode", () => {
     let wrapper;
     const defaultProps = {
-      editMode: true,
+      onEdit() {},
       link: {url: "https://foo.com", screenshot: "foo.jpg", hostname: "foo"},
       index: 7,
       dispatch() {},
