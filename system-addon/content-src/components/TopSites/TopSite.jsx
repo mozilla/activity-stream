@@ -85,7 +85,7 @@ class TopSite extends React.PureComponent {
     }));
   }
   onLinkClick(ev) {
-    if (this.props.editMode) {
+    if (this.props.onEdit) {
       // Ignore clicks if we are in the edit modal.
       ev.preventDefault();
       return;
@@ -138,7 +138,7 @@ class TopSite extends React.PureComponent {
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === props.index;
     const title = link.label || link.hostname;
     return (<TopSiteLink {...props} onClick={this.onLinkClick} className={isContextMenuOpen ? "active" : ""} title={title}>
-        {!props.editMode &&
+        {!props.onEdit &&
           <div>
             <button className="context-menu-button icon" onClick={this.onMenuButtonClick}>
               <span className="sr-only">{`Open context menu for ${title}`}</span>
@@ -153,7 +153,7 @@ class TopSite extends React.PureComponent {
               visible={isContextMenuOpen} />
           </div>
         }
-        {props.editMode &&
+        {props.onEdit &&
           <div className="edit-menu">
             <button
               className={`icon icon-${link.isPinned ? "unpin" : "pin"}`}
@@ -172,11 +172,7 @@ class TopSite extends React.PureComponent {
     </TopSiteLink>);
   }
 }
-TopSite.defaultProps = {
-  editMode: false,
-  link: {},
-  onEdit() {}
-};
+TopSite.defaultProps = {link: {}};
 
 const TopSitePlaceholder = () => <TopSiteLink className="placeholder" />;
 
@@ -191,16 +187,11 @@ const TopSiteList = props => {
       link={link}
       index={i}
       intl={props.intl}
-      onEdit={props.onEdit}
-      editMode={props.editMode} />);
+      onEdit={props.onEdit} />);
   }
   return (<ul className="top-sites-list">
     {topSitesUI}
   </ul>);
-};
-TopSiteList.defaultProps = {
-  editMode: false,
-  onEdit() {}
 };
 
 module.exports.TopSite = TopSite;
