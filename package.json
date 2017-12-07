@@ -7,6 +7,7 @@
     "url": "https://github.com/mozilla/activity-stream/issues"
   },
   "dependencies": {
+    "prop-types": "15.6.0",
     "react": "15.3.2",
     "react-dom": "15.3.2",
     "react-intl": "2.4.0",
