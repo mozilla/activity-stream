@@ -35,6 +35,7 @@ module.exports = {
     ]
   },
   externals: {
+    "prop-types": "PropTypes",
     "react": "React",
     "react-dom": "ReactDOM",
     "react-intl": "ReactIntl",

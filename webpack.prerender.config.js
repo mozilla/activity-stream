@@ -19,6 +19,7 @@ module.exports = Object.assign({}, webpackConfig, {
     libraryTarget: "commonjs2"
   },
   externals: {
+    "prop-types": "commonjs prop-types",
     "react": "commonjs react",
     "react-dom": "commonjs react-dom"
   },
