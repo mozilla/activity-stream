@@ -1,25 +1,25 @@
-const React = require("react");
-const ReactDOM = require("react-dom/server");
-const Base = require("content-src/components/Base/Base");
-const {Provider} = require("react-redux");
-const initStore = require("content-src/lib/init-store");
-const {reducers, INITIAL_STATE} = require("common/Reducers.jsm");
-const {actionTypes: at} = require("common/Actions.jsm");
-const {PrerenderData} = require("common/PrerenderData.jsm");
+import {INITIAL_STATE, reducers} from "common/Reducers.jsm";
+import {actionTypes as at} from "common/Actions.jsm";
+import {Base} from "content-src/components/Base/Base";
+import {initStore} from "content-src/lib/init-store";
+import {PrerenderData} from "common/PrerenderData.jsm";
+import {Provider} from "react-redux";
+import React from "react";
+import ReactDOM from "react-dom/server";
 
 /**
  * prerenderStore - Generate a store with the initial state required for a prerendered page
  *
  * @return {obj}         A store
  */
-function prerenderStore() {
+export function prerenderStore() {
   const store = initStore(reducers, INITIAL_STATE);
   store.dispatch({type: at.PREFS_INITIAL_VALUES, data: PrerenderData.initialPrefs});
   PrerenderData.initialSections.forEach(data => store.dispatch({type: at.SECTION_REGISTER, data}));
   return store;
 }
 
-function prerender(locale, strings) {
+export function prerender(locale, strings) {
   const store = prerenderStore();
 
   return {
@@ -33,6 +33,3 @@ function prerender(locale, strings) {
     store
   };
 }
-
-module.exports = prerender;
-module.exports.prerenderStore = prerenderStore;

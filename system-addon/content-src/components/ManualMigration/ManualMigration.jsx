@@ -1,7 +1,7 @@
-const React = require("react");
-const {connect} = require("react-redux");
-const {FormattedMessage} = require("react-intl");
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {connect} from "react-redux";
+import {FormattedMessage} from "react-intl";
+import React from "react";
 
 /**
  * Manual migration component used to start the profile import wizard.
@@ -11,7 +11,7 @@ const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
  * 3.  After 3 active days
  * 4.  User clicks "Cancel" on the import wizard (currently not implemented).
  */
-class ManualMigration extends React.PureComponent {
+export class _ManualMigration extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onLaunchTour = this.onLaunchTour.bind(this);
@@ -45,5 +45,4 @@ class ManualMigration extends React.PureComponent {
   }
 }
 
-module.exports = connect()(ManualMigration);
-module.exports._unconnected = ManualMigration;
+export const ManualMigration = connect()(_ManualMigration);

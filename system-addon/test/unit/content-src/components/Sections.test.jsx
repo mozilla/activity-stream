@@ -1,10 +1,9 @@
-const React = require("react");
-const {shallow} = require("enzyme");
-const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
-const {_unconnected: Sections, _unconnectedSection: Section, SectionIntl} =
-  require("content-src/components/Sections/Sections");
-const {PlaceholderCard} = require("content-src/components/Card/Card");
-const {actionTypes: at} = require("common/Actions.jsm");
+import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
+import {Section, SectionIntl, _Sections as Sections} from "content-src/components/Sections/Sections";
+import {actionTypes as at} from "common/Actions.jsm";
+import {PlaceholderCard} from "content-src/components/Card/Card";
+import React from "react";
+import {shallow} from "enzyme";
 
 describe("<Sections>", () => {
   let wrapper;

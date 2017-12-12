@@ -1,12 +1,13 @@
 /* globals ContentSearchUIController */
 "use strict";
-const React = require("react");
-const {connect} = require("react-redux");
-const {FormattedMessage, injectIntl} = require("react-intl");
-const {actionCreators: ac} = require("common/Actions.jsm");
-const {IS_NEWTAB} = require("content-src/lib/constants");
 
-class Search extends React.PureComponent {
+import {FormattedMessage, injectIntl} from "react-intl";
+import {actionCreators as ac} from "common/Actions.jsm";
+import {connect} from "react-redux";
+import {IS_NEWTAB} from "content-src/lib/constants";
+import React from "react";
+
+export class _Search extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
@@ -81,5 +82,4 @@ class Search extends React.PureComponent {
   }
 }
 
-module.exports = connect()(injectIntl(Search));
-module.exports._unconnected = Search;
+export const Search = connect()(injectIntl(_Search));

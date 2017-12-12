@@ -1,12 +1,12 @@
 const DATABASE_NAME = "snippets_db";
 const DATABASE_VERSION = 1;
 const SNIPPETS_OBJECTSTORE_NAME = "snippets";
-const SNIPPETS_UPDATE_INTERVAL_MS = 14400000; // 4 hours.
+export const SNIPPETS_UPDATE_INTERVAL_MS = 14400000; // 4 hours.
 
 const SNIPPETS_ENABLED_EVENT = "Snippets:Enabled";
 const SNIPPETS_DISABLED_EVENT = "Snippets:Disabled";
 
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 
 /**
  * SnippetsMap - A utility for cacheing values related to the snippet. It has
@@ -16,7 +16,7 @@ const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
  *               previously cached data, if necessary.
  *
  */
-class SnippetsMap extends Map {
+export class SnippetsMap extends Map {
   constructor(dispatch) {
     super();
     this._db = null;
@@ -181,7 +181,7 @@ class SnippetsMap extends Map {
  *                    remote location, or else default snippets if the remote
  *                    snippets cannot be retrieved.
  */
-class SnippetsProvider {
+export class SnippetsProvider {
   constructor(dispatch) {
     // Initialize the Snippets Map and attaches it to a global so that
     // the snippet payload can interact with it.
@@ -341,7 +341,7 @@ class SnippetsProvider {
  * @param  {obj} store   The redux store
  * @return {obj}         Returns the snippets instance and unsubscribe function
  */
-function addSnippetsSubscriber(store) {
+export function addSnippetsSubscriber(store) {
   const snippets = new SnippetsProvider(store.dispatch);
 
   let initializing = false;
@@ -373,10 +373,3 @@ function addSnippetsSubscriber(store) {
   // These values are returned for testing purposes
   return snippets;
 }
-
-module.exports = {
-  addSnippetsSubscriber,
-  SnippetsMap,
-  SnippetsProvider,
-  SNIPPETS_UPDATE_INTERVAL_MS
-};

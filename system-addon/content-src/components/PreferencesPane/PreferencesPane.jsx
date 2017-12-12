@@ -1,13 +1,13 @@
-const React = require("react");
-const {connect} = require("react-redux");
-const {injectIntl, FormattedMessage} = require("react-intl");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
-const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {FormattedMessage, injectIntl} from "react-intl";
+import {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} from "common/Reducers.jsm";
+import {connect} from "react-redux";
+import React from "react";
 
 const getFormattedMessage = message =>
   (typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />);
 
-const PreferencesInput = props => (
+export const PreferencesInput = props => (
   <section>
     <input type="checkbox" id={props.prefName} name={props.prefName} checked={props.value} disabled={props.disabled} onChange={props.onChange} className={props.className} />
     <label htmlFor={props.prefName} className={props.labelClassName}>
@@ -21,7 +21,7 @@ const PreferencesInput = props => (
   </section>
 );
 
-class PreferencesPane extends React.PureComponent {
+export class _PreferencesPane extends React.PureComponent {
   constructor(props) {
     super(props);
     this.handleClickOutside = this.handleClickOutside.bind(this);
@@ -166,6 +166,8 @@ class PreferencesPane extends React.PureComponent {
   }
 }
 
-module.exports = connect(state => ({Prefs: state.Prefs, PreferencesPane: state.PreferencesPane, Sections: state.Sections}))(injectIntl(PreferencesPane));
-module.exports.PreferencesPane = PreferencesPane;
-module.exports.PreferencesInput = PreferencesInput;
+export const PreferencesPane = connect(state => ({
+  Prefs: state.Prefs,
+  PreferencesPane: state.PreferencesPane,
+  Sections: state.Sections
+}))(injectIntl(_PreferencesPane));

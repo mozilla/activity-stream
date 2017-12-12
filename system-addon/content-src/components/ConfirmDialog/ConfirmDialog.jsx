@@ -1,7 +1,7 @@
-const React = require("react");
-const {connect} = require("react-redux");
-const {FormattedMessage} = require("react-intl");
-const {actionTypes, actionCreators: ac} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes} from "common/Actions.jsm";
+import {connect} from "react-redux";
+import {FormattedMessage} from "react-intl";
+import React from "react";
 
 /**
  * ConfirmDialog component.
@@ -22,7 +22,7 @@ const {actionTypes, actionCreators: ac} = require("common/Actions.jsm");
  *   confirm_button_string_id: "menu_action_delete"
  * },
  */
-class ConfirmDialog extends React.PureComponent {
+export class _ConfirmDialog extends React.PureComponent {
   constructor(props) {
     super(props);
     this._handleCancelBtn = this._handleCancelBtn.bind(this);
@@ -75,6 +75,4 @@ class ConfirmDialog extends React.PureComponent {
   }
 }
 
-module.exports = connect(state => state.Dialog)(ConfirmDialog);
-module.exports._unconnected = ConfirmDialog;
-module.exports.Dialog = ConfirmDialog;
+export const ConfirmDialog = connect(state => state.Dialog)(_ConfirmDialog);

@@ -1,7 +1,7 @@
-const React = require("react");
-const {shallow} = require("enzyme");
-const {shallowWithIntl} = require("test/unit/utils");
-const {_unconnected: Topics, Topic} = require("content-src/components/Topics/Topics");
+import {Topic, Topics} from "content-src/components/Topics/Topics";
+import React from "react";
+import {shallow} from "enzyme";
+import {shallowWithIntl} from "test/unit/utils";
 
 describe("<Topics>", () => {
   it("should render a Topics element", () => {

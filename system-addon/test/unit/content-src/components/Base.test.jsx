@@ -1,6 +1,6 @@
-const React = require("react");
-const {shallow} = require("enzyme");
-const {_unconnected: Base} = require("content-src/components/Base/Base");
+import {_Base as Base} from "content-src/components/Base/Base";
+import React from "react";
+import {shallow} from "enzyme";
 
 describe("<Base>", () => {
   let DEFAULT_PROPS = {store: {getState: () => {}}, App: {initialized: true}, Prefs: {values: {}}, dispatch: () => {}};

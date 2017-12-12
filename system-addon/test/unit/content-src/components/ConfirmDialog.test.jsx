@@ -1,8 +1,8 @@
-const React = require("react");
-const {shallowWithIntl} = require("test/unit/utils");
-const {_unconnected: ConfirmDialog} = require("content-src/components/ConfirmDialog/ConfirmDialog");
-const {actionTypes: at, actionCreators: ac} = require("common/Actions.jsm");
-const {FormattedMessage} = require("react-intl");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {_ConfirmDialog as ConfirmDialog} from "content-src/components/ConfirmDialog/ConfirmDialog";
+import {FormattedMessage} from "react-intl";
+import React from "react";
+import {shallowWithIntl} from "test/unit/utils";
 
 describe("<ConfirmDialog>", () => {
   let wrapper;

@@ -1,10 +1,9 @@
-const React = require("react");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
-const {FormattedMessage} = require("react-intl");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {FormattedMessage} from "react-intl";
+import React from "react";
+import {TOP_SITES_SOURCE} from "./TopSitesConstants";
 
-const {TOP_SITES_SOURCE} = require("./TopSitesConstants");
-
-class TopSiteForm extends React.PureComponent {
+export class TopSiteForm extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -157,5 +156,3 @@ TopSiteForm.defaultProps = {
   index: 0,
   editMode: false // by default we are in "Add New Top Site" mode
 };
-
-module.exports = TopSiteForm;

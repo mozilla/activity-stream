@@ -1,7 +1,8 @@
-const {_unconnected: CollapsibleSection, Info, Disclaimer} = require("content-src/components/CollapsibleSection/CollapsibleSection");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
-const React = require("react");
-const {shallowWithIntl, mountWithIntl} = require("test/unit/utils");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {_CollapsibleSection as CollapsibleSection, Disclaimer, Info} from "content-src/components/CollapsibleSection/CollapsibleSection";
+import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
+import React from "react";
+
 const DEFAULT_PROPS = {
   id: "cool",
   className: "cool-section",

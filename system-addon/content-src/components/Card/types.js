@@ -1,4 +1,4 @@
-module.exports = {
+export const cardContextTypes = {
   history: {
     intlID: "type_label_visited",
     icon: "historyItem"

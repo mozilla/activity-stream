@@ -1,14 +1,14 @@
-const React = require("react");
-const {FormattedMessage} = require("react-intl");
+import {FormattedMessage} from "react-intl";
+import React from "react";
 
-class Topic extends React.PureComponent {
+export class Topic extends React.PureComponent {
   render() {
     const {url, name} = this.props;
     return (<li><a key={name} className="topic-link" href={url}>{name}</a></li>);
   }
 }
 
-class Topics extends React.PureComponent {
+export class Topics extends React.PureComponent {
   render() {
     const {topics, read_more_endpoint} = this.props;
     return (
@@ -23,7 +23,3 @@ class Topics extends React.PureComponent {
     );
   }
 }
-
-module.exports = Topics;
-module.exports._unconnected = Topics;
-module.exports.Topic = Topic;

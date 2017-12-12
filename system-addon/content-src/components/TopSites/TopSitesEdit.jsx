@@ -1,14 +1,12 @@
-const React = require("react");
-const {FormattedMessage, injectIntl} = require("react-intl");
-const {actionCreators: ac, actionTypes: at} = require("common/Actions.jsm");
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {FormattedMessage, injectIntl} from "react-intl";
+import {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} from "common/Reducers.jsm";
+import React from "react";
+import {TOP_SITES_SOURCE} from "./TopSitesConstants";
+import {TopSiteForm} from "./TopSiteForm";
+import {TopSiteList} from "./TopSite";
 
-const TopSiteForm = require("./TopSiteForm");
-const {TopSiteList} = require("./TopSite");
-
-const {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} = require("common/Reducers.jsm");
-const {TOP_SITES_SOURCE} = require("./TopSitesConstants");
-
-class TopSitesEdit extends React.PureComponent {
+export class _TopSitesEdit extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -137,5 +135,4 @@ class TopSitesEdit extends React.PureComponent {
   }
 }
 
-module.exports = injectIntl(TopSitesEdit);
-module.exports._unconnected = TopSitesEdit;
+export const TopSitesEdit = injectIntl(_TopSitesEdit);

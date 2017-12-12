@@ -1,8 +1,8 @@
 // Any copyright is dedicated to the Public Domain.
 // http://creativecommons.org/publicdomain/zero/1.0/
 
-const {GlobalOverrider, FakePrefs} = require("test/unit/utils");
-const {PingCentre, PingCentreConstants} = require("ping-centre/PingCentre.jsm");
+import {FakePrefs, GlobalOverrider} from "test/unit/utils";
+import {PingCentre, PingCentreConstants} from "ping-centre/PingCentre.jsm";
 const {
   PRODUCTION_ENDPOINT_PREF, FHR_UPLOAD_ENABLED_PREF, TELEMETRY_PREF,
   LOGGING_PREF
