@@ -26,9 +26,16 @@ preprocessors[PATHS.testFilesPattern] = [
 
 module.exports = function(config) {
   const isTDD = config.tdd;
+  const browsers = isTDD ? ["Firefox"] : ["FirefoxHeadless"];
   config.set({
     singleRun: !isTDD,
-    browsers: ["Firefox"], // require("karma-firefox-launcher")
+    browsers, // require("karma-firefox-launcher")
+    customLaunchers: {
+      FirefoxHeadless: {
+        base: "Firefox",
+        flags: ["--headless"]
+      }
+    },
     frameworks: [
       "chai", // require("chai") require("karma-chai")
       "mocha", // require("mocha") require("karma-mocha")
