@@ -41,14 +41,16 @@ function countTopSitesIconsTypes(topSites) {
 
 export class _TopSites extends React.PureComponent {
   /**
-   * Dispatch session statistics about the quality of TopSites icons.
+   * Dispatch session statistics about the quality of TopSites icons and pinned count.
    */
-  _dispatchTopSitesIconStats() {
-    const topSitesIconsStats = countTopSitesIconsTypes(this._getTopSites());
+  _dispatchTopSitesStats() {
+    const topSites = this._getTopSites();
+    const topSitesIconsStats = countTopSitesIconsTypes(topSites);
+    const topSitesPinned = topSites.filter(site => !!site.isPinned).length;
     // Dispatch telemetry event with the count of TopSites images types.
     this.props.dispatch(ac.SendToMain({
       type: at.SAVE_SESSION_PERF_DATA,
-      data: {topsites_icon_stats: topSitesIconsStats}
+      data: {topsites_icon_stats: topSitesIconsStats, topsites_pinned: topSitesPinned}
     }));
   }
 
@@ -60,11 +62,11 @@ export class _TopSites extends React.PureComponent {
   }
 
   componentDidUpdate() {
-    this._dispatchTopSitesIconStats();
+    this._dispatchTopSitesStats();
   }
 
   componentDidMount() {
-    this._dispatchTopSitesIconStats();
+    this._dispatchTopSitesStats();
   }
 
   render() {

@@ -180,6 +180,7 @@ and losing focus. | :one:
 | `tippytop` | [Optional] Number of topsites that display a tippytop icon. | :one:
 | `rich_icon` | [Optional] Number of topsites that display a high quality favicon. | :one:
 | `no_image` | [Optional] Number of topsites that have no screenshot. | :one:
+| `topsites_pinned` | [Optional] Number of topsites that are pinned. | :one:
 | `visibility_event_rcvd_ts` | [Optional][Server Counter][Server Alert for too many omissions] DOMHighResTimeStamp of when the page itself receives an event that document.visibilityState == visible. | :one:
 | `tiles` | [Required] A list of tile objects for the Pocket articles. Each tile object mush have a ID, and optionally a "pos" property to indicate the tile position | :one:
 | `click` | [Optional] An integer to record the 0-based index when user clicks on a Pocket tile. | :one:
@@ -204,10 +205,7 @@ but will likely be added in future versions:
 {
   "total_bookmarks": 19,
   "total_history_size": 9,
-  "highlights_size": 20,
-  "topsites_size": 6,
-  "topsites_screenshot": 1,
-  "topsites_tippytop": 3,
+  "highlights_size": 20
 }
 ```
 

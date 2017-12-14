@@ -130,6 +130,9 @@ export const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
       no_image: Joi.number()
     }),
 
+    // The count of pinned Top Sites.
+    topsites_pinned: Joi.number(),
+
     // When the page itself receives an event that document.visibilityState
     // == visible.
     //
