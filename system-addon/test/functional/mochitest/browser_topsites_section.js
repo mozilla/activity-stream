@@ -20,6 +20,8 @@ test_newtab({
   async before({pushPrefs}) {
     // The pref for TopSites is empty by default.
     await pushPrefs(["browser.newtabpage.activity-stream.default.sites", "https://www.youtube.com/,https://www.facebook.com/,https://www.amazon.com/,https://www.reddit.com/,https://www.wikipedia.org/,https://twitter.com/"]);
+    await pushPrefs(["browser.newtabpage.activity-stream.enabled", false]);
+    await pushPrefs(["browser.newtabpage.activity-stream.enabled", true]);
   },
   // it should pin the website when we click the first option of the topsite context menu.
   test: async function topsites_pin_unpin() {

@@ -50,7 +50,7 @@ this.TopSitesFeed = class TopSitesFeed {
   _dedupeKey(site) {
     return site && site.hostname;
   }
-  refreshDefaults(sites, options = {}) {
+  refreshDefaults(sites) {
     // Clear out the array of any previous defaults
     DEFAULT_TOP_SITES.length = 0;
 
@@ -63,11 +63,6 @@ this.TopSitesFeed = class TopSitesFeed {
         };
         site.hostname = shortURL(site);
         DEFAULT_TOP_SITES.push(site);
-      }
-
-      // Update Top Sites if the pref for default sites changes
-      if (options.broadcast) {
-        this.refresh({broadcast: true});
       }
     }
   }
@@ -286,7 +281,7 @@ this.TopSitesFeed = class TopSitesFeed {
         break;
       case at.PREF_CHANGED:
         if (action.data.name === DEFAULT_SITES_PREF) {
-          this.refreshDefaults(action.data.value, {broadcast: true});
+          this.refreshDefaults(action.data.value);
         }
         break;
       case at.PREFS_INITIAL_VALUES:
