@@ -317,7 +317,10 @@ perf: {
     "tippytop": 2,
     "rich_icon": 1,
     "no_image": 0
-  }
+  },
+
+  // The number of Top Sites that are pinned.
+  "topsites_pinned": 3,
 
   // How much longer the data took, in milliseconds, to be ready for display
   // than it would have been in the ideal case. The user currently sees placeholder
@@ -326,11 +329,10 @@ perf: {
   // `this.props.initialized` set to `false`, and the value is the amount of
   // time in ms until `render()` is called with `this.props.initialized` set to `true`.
   "highlights_data_late_by_ms": 67,
-  "topsites_data_late_by_ms": 35
+  "topsites_data_late_by_ms": 35,
 
   // Whether the page is preloaded or not.
   "is_preloaded": [true|false],
-
 
   // Whether the page is prerendered or not.
   "is_prerendered": [true|false]
