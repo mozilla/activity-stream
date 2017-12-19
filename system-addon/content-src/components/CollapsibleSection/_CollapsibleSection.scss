@@ -74,7 +74,7 @@
 
       &::before {
         $before-height: 32px;
-        background-image: url($os-infopanel-arrow-url);
+        background-image: url(chrome://global/skin/arrow/panelarrow-vertical.svg);
         background-position: right $os-infopanel-arrow-offset-end bottom;
         background-repeat: no-repeat;
         background-size: $os-infopanel-arrow-width $os-infopanel-arrow-height;
