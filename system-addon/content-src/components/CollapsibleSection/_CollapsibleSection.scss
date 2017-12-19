@@ -80,8 +80,8 @@
         background-size: $os-infopanel-arrow-width $os-infopanel-arrow-height;
         -moz-context-properties: fill, stroke;
         fill: $white;
-        stroke: $border-secondary;
         height: $before-height;
+        stroke: $border-secondary;
         top: -$before-height;
         width: 43px;
       }
