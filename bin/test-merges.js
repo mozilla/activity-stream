@@ -319,7 +319,7 @@ function main() {
       return;
     }
 
-    function*executePush() {
+    function* executePush() {
       for (let pr of data.items) {
         yield pushPR(pr);
       }
