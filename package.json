@@ -29,7 +29,7 @@
     "eslint": "4.12.0",
     "eslint-plugin-import": "2.8.0",
     "eslint-plugin-json": "1.2.0",
-    "eslint-plugin-mozilla": "0.4.9",
+    "eslint-plugin-mozilla": "0.4.10",
     "eslint-plugin-no-unsanitized": "2.0.1",
     "eslint-plugin-promise": "3.6.0",
     "eslint-plugin-react": "7.5.1",
