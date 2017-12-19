@@ -7,15 +7,7 @@ module.exports = {
     "sourceType": "module"
   },
   "env": {
-    "mocha": true,
-    "node": true,
-  },
-  "globals": {
-    "__CONFIG__": true,
-    "platform_exports": true,
-    "platform_require": true,
-    "assert": true,
-    "sinon": true
+    "node": true
   },
   "plugins": [
     "json", // require("eslint-plugin-json")
