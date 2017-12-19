@@ -78,6 +78,9 @@
         background-position: right $os-infopanel-arrow-offset-end bottom;
         background-repeat: no-repeat;
         background-size: $os-infopanel-arrow-width $os-infopanel-arrow-height;
+        -moz-context-properties: fill, stroke;
+        fill: #FFF;
+        stroke: #D7D7DB;
         height: $before-height;
         top: -$before-height;
         width: 43px;
