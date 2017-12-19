@@ -55,7 +55,6 @@
     "node-sass": "4.7.2",
     "npm-run-all": "4.1.2",
     "pontoon-to-json": "2.0.0",
-    "react-intl": "2.2.3",
     "react-test-renderer": "16.2.0",
     "rimraf": "2.6.2",
     "sass-lint": "1.12.1",
