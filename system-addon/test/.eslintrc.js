@@ -4,8 +4,8 @@ module.exports = {
   },
   "globals": {
     "assert": true,
-    "sinon": true,
-    "chai": true
+    "chai": true,
+    "sinon": true
   },
   "rules": {
     "import/no-commonjs": 2,

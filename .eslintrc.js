@@ -10,18 +10,18 @@ module.exports = {
     "node": true
   },
   "plugins": [
+    "import", // require("eslint-plugin-import")
     "json", // require("eslint-plugin-json")
     "promise", // require("eslint-plugin-promise")
-    "react", // require("eslint-plugin-react")
-    "import" // require("eslint-plugin-import")
+    "react" // require("eslint-plugin-react")
   ],
   "extends": [
     "eslint:recommended",
     "plugin:mozilla/recommended" // require("eslint-plugin-mozilla")
   ],
   "rules": {
-    "promise/param-names": 2,
     "promise/catch-or-return": 2,
+    "promise/param-names": 2,
 
     "react/jsx-boolean-value": [2, "always"],
     "react/jsx-closing-bracket-location": [2, "after-props"],
