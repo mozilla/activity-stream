@@ -1,4 +1,6 @@
 const path = require("path");
+const webpack = require("webpack");
+
 const absolute = relPath => path.join(__dirname, "system-addon", relPath);
 
 const resourcePathRegEx = /^resource:\/\/activity-stream\//;
@@ -9,6 +11,7 @@ module.exports = {
     path: absolute("data/content"),
     filename: "activity-stream.bundle.js"
   },
+  plugins: [new webpack.optimize.ModuleConcatenationPlugin()],
   module: {
     rules: [
       {
