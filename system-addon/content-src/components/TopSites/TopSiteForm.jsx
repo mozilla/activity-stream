@@ -38,7 +38,7 @@ export class TopSiteForm extends React.PureComponent {
         site.label = this.state.label;
       }
       this.props.dispatch(ac.SendToMain({
-        type: at.TOP_SITES_ADD,
+        type: at.TOP_SITES_INSERT,
         data: {site}
       }));
       this.props.dispatch(ac.UserEvent({
