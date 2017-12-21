@@ -5,6 +5,7 @@ import {
   TOP_SITES_CONTEXT_MENU_OPTIONS,
   TOP_SITES_SOURCE
 } from "./TopSitesConstants";
+import {injectIntl} from "react-intl";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 
@@ -241,9 +242,30 @@ TopSite.defaultProps = {
   onDragStart() {}
 };
 
-export const TopSitePlaceholder = props => <TopSiteLink className="placeholder" isDraggable={false} {...props} />;
+export class TopSitePlaceholder extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onEditButtonClick = this.onEditButtonClick.bind(this);
+  }
+  onEditButtonClick() {
+    this.props.dispatch({
+      type: at.TOP_SITES_EDIT,
+      data: {index: this.props.index}
+    });
+  }
+  render() {
+    return (<TopSiteLink className="placeholder" isDraggable={false} {...this.props}>
+      <div className="edit-menu">
+        <button
+          className="icon icon-edit"
+          title={this.props.intl.formatMessage({id: "edit_topsites_edit_button"})}
+          onClick={this.onEditButtonClick} />
+      </div>
+    </TopSiteLink>);
+  }
+}
 
-export class TopSiteList extends React.PureComponent {
+export class _TopSiteList extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = this.DEFAULT_STATE = {
@@ -364,17 +386,28 @@ export class TopSiteList extends React.PureComponent {
     const topSitesUI = [];
     for (let i = 0, l = props.TopSitesCount; i < l; i++) {
       const link = topSites[i];
-      topSitesUI.push(!link ? <TopSitePlaceholder key={i} index={i} onDragEvent={this.onDragEvent} /> : <TopSite
-        key={i}
-        dispatch={props.dispatch}
-        link={link}
-        index={i}
-        intl={props.intl}
-        onEdit={props.onEdit}
-        onDragEvent={this.onDragEvent} />);
+      topSitesUI.push(!link ? (
+        <TopSitePlaceholder
+          key={i}
+          index={i}
+          onDragEvent={this.onDragEvent}
+          dispatch={props.dispatch}
+          intl={props.intl} />
+      ) : (
+        <TopSite
+          key={i}
+          dispatch={props.dispatch}
+          link={link}
+          index={i}
+          intl={props.intl}
+          onEdit={props.onEdit}
+          onDragEvent={this.onDragEvent} />
+      ));
     }
     return (<ul className="top-sites-list">
       {topSitesUI}
     </ul>);
   }
 }
+
+export const TopSiteList = injectIntl(_TopSiteList);
