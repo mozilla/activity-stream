@@ -131,6 +131,13 @@
       .screenshot {
         display: none;
       }
+
+      .edit-menu:last-child {
+        button {
+          background-size: 13px;
+          width: 23px;
+        }
+      }
     }
 
     .screenshot {

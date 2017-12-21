@@ -1,7 +1,7 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "content-src/components/TopSites/TopSitesConstants";
 import {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} from "common/Reducers.jsm";
-import {TopSite, TopSiteLink, TopSiteList, TopSitePlaceholder} from "content-src/components/TopSites/TopSite";
+import {TopSite, TopSiteLink, _TopSiteList as TopSiteList, TopSitePlaceholder} from "content-src/components/TopSites/TopSite";
 import {_TopSitesEdit as TopSitesEdit, TopSitesEdit as TopSitesEditConnected} from "content-src/components/TopSites/TopSitesEdit";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import {mountWithIntl} from "test/unit/utils";
