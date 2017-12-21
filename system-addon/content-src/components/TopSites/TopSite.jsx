@@ -250,7 +250,7 @@ export class TopSitePlaceholder extends React.PureComponent {
   onEditButtonClick() {
     this.props.dispatch({
       type: at.TOP_SITES_EDIT,
-      data: {url: "", label: "", index: this.props.index}
+      data: {index: this.props.index}
     });
   }
   render() {

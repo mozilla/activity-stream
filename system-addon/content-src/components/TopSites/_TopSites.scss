@@ -123,23 +123,6 @@
       }
     }
 
-    &.placeholder {
-      .tile {
-        box-shadow: inset $inner-box-shadow;
-      }
-
-      .screenshot {
-        display: none;
-      }
-
-      .edit-menu:last-child {
-        button {
-          background-size: 13px;
-          width: 23px;
-        }
-      }
-    }
-
     .screenshot {
       background-color: $white;
       background-position: top left;
@@ -276,6 +259,23 @@
 
         &:first-child:dir(rtl) {
           border-right: 0;
+        }
+      }
+    }
+
+    &.placeholder {
+      .tile {
+        box-shadow: inset $inner-box-shadow;
+      }
+
+      .screenshot {
+        display: none;
+      }
+
+      .edit-menu:last-child {
+        button {
+          background-size: 13px;
+          width: 23px;
         }
       }
     }
