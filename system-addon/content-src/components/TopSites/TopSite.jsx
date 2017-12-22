@@ -384,24 +384,27 @@ export class _TopSiteList extends React.PureComponent {
     const {props} = this;
     const topSites = this.state.topSitesPreview || this._getTopSites();
     const topSitesUI = [];
+    const commonProps = {
+      onDragEvent: this.onDragEvent,
+      dispatch: props.dispatch,
+      intl: props.intl
+    };
     for (let i = 0, l = props.TopSitesCount; i < l; i++) {
       const link = topSites[i];
+      const slotProps = {
+        key: i,
+        index: i
+      };
       topSitesUI.push(!link ? (
         <TopSitePlaceholder
-          key={i}
-          index={i}
-          onDragEvent={this.onDragEvent}
-          dispatch={props.dispatch}
-          intl={props.intl} />
+          {...slotProps}
+          {...commonProps} />
       ) : (
         <TopSite
-          key={i}
-          dispatch={props.dispatch}
           link={link}
-          index={i}
-          intl={props.intl}
           onEdit={props.onEdit}
-          onDragEvent={this.onDragEvent} />
+          {...slotProps}
+          {...commonProps} />
       ));
     }
     return (<ul className="top-sites-list">

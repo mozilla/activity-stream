@@ -533,7 +533,7 @@ describe("<TopSitesEdit>", () => {
           rows: [{url: "foo", label: "label"}],
           editForm: {
             visible: true,
-            site: {url: "foo"}
+            index: 4
           }
         }
       });
@@ -547,9 +547,7 @@ describe("<TopSitesEdit>", () => {
 
     it("should provide the correct props to TopSiteForm", () => {
       const comp = wrapper.find(TopSiteForm);
-      assert.equal(comp.props().index, 0);
-      assert.equal(comp.props().label, "label");
-      assert.equal(comp.props().url, "foo");
+      assert.equal(comp.props().index, 4);
     });
 
     it("should dispatch TOP_SITES_CANCEL_EDIT", () => {
