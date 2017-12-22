@@ -4,7 +4,7 @@ import {injectIntl} from "react-intl";
 import {LinkMenuOptions} from "content-src/lib/link-menu-options";
 import React from "react";
 
-const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"];
+const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "EditTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"];
 
 export class _LinkMenu extends React.PureComponent {
   getOptions() {
