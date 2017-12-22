@@ -41,13 +41,15 @@ describe("<LinkMenu>", () => {
   it("should show the correct options for default sites", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: "", isDefault: true}} options={["CheckBookmark"]} source={"TOP_SITES"} dispatch={() => {}} />);
     const options = wrapper.find(ContextMenu).props().options;
-    assert.ok(options.length === 6);
-    assert.ok(["menu_action_pin", "menu_action_unpin"].includes(options[0].id));
-    assert.ok(options[1].type === "separator");
-    assert.ok(options[2].id === "menu_action_open_new_window");
-    assert.ok(options[3].id === "menu_action_open_private_window");
-    assert.ok(options[4].type === "separator");
-    assert.ok(options[5].id === "menu_action_dismiss");
+    let i = 0;
+    assert.propertyVal(options[i++], "id", "menu_action_pin");
+    assert.propertyVal(options[i++], "id", "edit_topsites_button_text");
+    assert.propertyVal(options[i++], "type", "separator");
+    assert.propertyVal(options[i++], "id", "menu_action_open_new_window");
+    assert.propertyVal(options[i++], "id", "menu_action_open_private_window");
+    assert.propertyVal(options[i++], "type", "separator");
+    assert.propertyVal(options[i++], "id", "menu_action_dismiss");
+    assert.propertyVal(options, "length", i);
     // Double check that delete options are not included for default top sites
     options.filter(o => o.type !== "separator").forEach(o => {
       assert.notInclude(["menu_action_delete"], o.id);
