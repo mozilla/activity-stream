@@ -68,25 +68,13 @@ export class _TopSitesEdit extends React.PureComponent {
     }));
   }
   render() {
-    const showEditForm = (this.props.TopSites.editForm && this.props.TopSites.editForm.visible) ||
-                         (this.state.showEditModal && this.state.showEditForm);
+    const {editForm} = this.props.TopSites;
+    const showEditForm = (editForm && editForm.visible) || (this.state.showEditModal && this.state.showEditForm);
     let editIndex = this.state.editIndex;
-    if (showEditForm && this.props.TopSites.editForm.visible) {
-      const targetURL = this.props.TopSites.editForm.site.url;
-      editIndex = this.props.TopSites.rows.findIndex(s => s && s.url === targetURL);
+    if (editIndex < 0 && editForm) {
+      editIndex = editForm.index;
     }
-    let editLabel;
-    let editUrl;
-    if (showEditForm) {
-      if (editIndex >= 0) {
-        editLabel = this.props.TopSites.rows[editIndex].label;
-        editUrl = this.props.TopSites.rows[editIndex].url;
-      } else {
-        editIndex =  this.props.TopSites.editForm.site.index;
-        editLabel = "";
-        editUrl = "";
-      }
-    }
+    const editSite = this.props.TopSites.rows[editIndex] || {};
     return (<div className="edit-topsites-wrapper">
       <div className="edit-topsites-button">
         <button
@@ -133,8 +121,8 @@ export class _TopSitesEdit extends React.PureComponent {
           <div className="modal-overlay" onClick={this.onModalOverlayClick} />
           <div className="modal">
             <TopSiteForm
-              label={editLabel}
-              url={editUrl}
+              label={editSite.label || editSite.hostname || ""}
+              url={editSite.url || ""}
               index={editIndex}
               editMode={true}
               onClose={this.onFormClose}

@@ -107,12 +107,12 @@ export const LinkMenuOptions = {
     }),
     userEvent: "SAVE_TO_POCKET"
   }),
-  EditTopSite: site => ({
+  EditTopSite: (site, index) => ({
     id: "edit_topsites_button_text",
     icon: "edit",
     action: {
       type: at.TOP_SITES_EDIT,
-      data: {url: site.url, label: site.label}
+      data: {index}
     }
   }),
   CheckBookmark: site => (site.bookmarkGuid ? LinkMenuOptions.RemoveBookmark(site) : LinkMenuOptions.AddBookmark(site)),
