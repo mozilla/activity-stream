@@ -67,6 +67,7 @@ this.PrerenderData = new _PrerenderData({
   validation: [
     "showTopSites",
     "showSearch",
+    "topSitesCount",
     "collapseTopSites",
     "section.highlights.collapsed",
     "section.topstories.collapsed",
