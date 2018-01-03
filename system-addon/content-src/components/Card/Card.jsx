@@ -128,7 +128,7 @@ export class Card extends React.PureComponent {
     const imageStyle = {backgroundImage: link.image ? `url(${link.image})` : "none"};
 
     return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}${props.placeholder ? " placeholder" : ""}`}>
-      <a href={link.url} onClick={!props.placeholder && this.onLinkClick}>
+      <a href={link.url} onClick={!props.placeholder ? this.onLinkClick : undefined}>
         <div className="card">
           {hasImage && <div className="card-preview-image-outer">
             <div className={`card-preview-image${this.state.imageLoaded ? " loaded" : ""}`} style={imageStyle} />
