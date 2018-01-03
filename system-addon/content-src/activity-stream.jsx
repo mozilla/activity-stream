@@ -19,7 +19,7 @@ if (!global.gActivityStreamPrerenderedState) {
   store.dispatch(ac.AlsoToMain({type: at.NEW_TAB_STATE_REQUEST}));
 }
 
-ReactDOM.render(<Provider store={store}>
+ReactDOM.hydrate(<Provider store={store}>
   <Base
     isPrerendered={!!global.gActivityStreamPrerenderedState}
     locale={global.document.documentElement.lang}
