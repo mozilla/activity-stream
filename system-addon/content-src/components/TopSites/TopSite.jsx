@@ -255,12 +255,9 @@ export class TopSitePlaceholder extends React.PureComponent {
   }
   render() {
     return (<TopSiteLink className="placeholder" isDraggable={false} {...this.props}>
-      <div className="edit-menu">
-        <button
-          className="icon icon-edit"
-          title={this.props.intl.formatMessage({id: "edit_topsites_edit_button"})}
-          onClick={this.onEditButtonClick} />
-      </div>
+      <button className="context-menu-button edit-button icon"
+       title={this.props.intl.formatMessage({id: "edit_topsites_edit_button"})}
+       onClick={this.onEditButtonClick} />
     </TopSiteLink>);
   }
 }
