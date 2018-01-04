@@ -1,10 +1,13 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {GlobalOverrider} from "test/unit/utils";
-import injector from "inject!lib/ManualMigration.jsm";
+import {ManualMigration} from "lib/ManualMigration.jsm";
+
+const FAKE_MIGRATION_EXPIRED = false;
+const FAKE_MIGRATION_LAST_SHOWN_DATE = 999;
+const FAKE_MIGRATION_REMAINING_DAYS = 4;
 
 describe("ManualMigration", () => {
   let dispatch;
-  let store;
   let instance;
   let globals;
 
@@ -25,9 +28,6 @@ describe("ManualMigration", () => {
         removeObserver: sinon.stub()
       }
     };
-    fakePrefs = function() {};
-    fakePrefs.get = sinon.stub();
-    fakePrefs.set = sinon.stub();
 
     fakeProfileAge = function() {};
     fakeProfileAge.prototype = {
@@ -38,17 +38,17 @@ describe("ManualMigration", () => {
       }
     };
 
-    const {ManualMigration} = injector({"lib/ActivityStreamPrefs.jsm": {Prefs: fakePrefs}});
-
     globals = new GlobalOverrider();
     globals.set("Services", fakeServices);
     globals.set("MigrationUtils", fakeMigrationUtils);
     globals.set("ProfileAge", fakeProfileAge);
 
-    dispatch = sinon.stub();
-    store = {dispatch};
     instance = new ManualMigration();
-    instance.store = store;
+    instance.store = {
+      dispatch: sinon.stub(),
+      getState() { return this.state; },
+      state: {Prefs: {values: [{"migrationExpired": FAKE_MIGRATION_EXPIRED}, {"migrationLastShownDate": FAKE_MIGRATION_LAST_SHOWN_DATE}, {"migrationRemainingDays": FAKE_MIGRATION_REMAINING_DAYS}]}}
+    };
   });
 
   afterEach(() => {
@@ -125,6 +125,8 @@ describe("ManualMigration", () => {
 
         const migrationSpy = sinon.spy(instance, "isMigrationMessageExpired");
         fakePrefs.get.returns(today);
+        // instance.store.getState().migrationExpired;
+
         const ret = await instance.isMigrationMessageExpired();
 
         assert.calledOnce(migrationSpy);
