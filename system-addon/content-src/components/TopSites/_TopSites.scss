@@ -208,6 +208,10 @@
       }
     }
 
+    .edit-button {
+      background-image: url('#{$image-path}glyph-edit-16.svg');
+    }
+
     .edit-menu {
       background: $white;
       border: $border-primary;
