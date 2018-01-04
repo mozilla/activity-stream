@@ -5,7 +5,6 @@
 
 const {utils: Cu} = Components;
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
-const {Prefs} = Cu.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 const MIGRATION_ENDED_EVENT = "Migration:Ended";
 const MS_PER_DAY = 86400000;
 
@@ -18,7 +17,24 @@ XPCOMUtils.defineLazyModuleGetter(this, "ProfileAge", "resource://gre/modules/Pr
 this.ManualMigration = class ManualMigration {
   constructor() {
     Services.obs.addObserver(this, MIGRATION_ENDED_EVENT);
-    this._prefs = new Prefs();
+  }
+
+  get getMigrationLastShownDate() {
+    return this.store.getState().Prefs.values.migrationLastShownDate;
+  }
+
+  set setMigrationLastShownDate(newDate) {
+    this.store.dispatch(ac.SetPref("migrationLastShownDate", newDate));
+    // this.store.getState().Prefs.values.migrationLastShownDate = newDate;
+  }
+
+  get getMigrationRemainingDays() {
+    return this.store.getState().Prefs.values.migrationRemainingDays;
+  }
+
+  set setMigrationRemainingDays(newDate) {
+    this.store.dispatch(ac.SetPref("migrationRemainingDays", newDate));
+    // this.store.getState().Prefs.values.migrationRemainingDays = newDate;
   }
 
   uninit() {
@@ -35,16 +51,16 @@ this.ManualMigration = class ManualMigration {
       return true;
     }
 
-    let migrationLastShownDate = new Date(this._prefs.get("migrationLastShownDate") * 1000);
+    let migrationLastShownDate = new Date(this.getMigrationLastShownDate * 1000);
     let today = new Date();
     // Round down to midnight.
     today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     if (migrationLastShownDate < today) {
-      let migrationRemainingDays = this._prefs.get("migrationRemainingDays") - 1;
+      let migrationRemainingDays = this.getMigrationRemainingDays - 1;
 
-      this._prefs.set("migrationRemainingDays", migrationRemainingDays);
+      this.setMigrationRemainingDays(migrationRemainingDays);
       // .valueOf returns a value that is too large to store so we need to divide by 1000.
-      this._prefs.set("migrationLastShownDate", today.valueOf() / 1000);
+      this.setMigrationLastShownDate(today.valueOf() / 1000);
 
       if (migrationRemainingDays <= 0) {
         return true;
