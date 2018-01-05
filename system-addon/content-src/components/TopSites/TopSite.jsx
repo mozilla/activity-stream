@@ -19,13 +19,10 @@ export class TopSiteLink extends React.PureComponent {
    * Helper to determine whether the drop zone should allow a drop. We only allow
    * dropping top sites for now.
    */
-  _allowDrop(e, index) {
-    let draggedIndex = parseInt(e.dataTransfer.getData("text/topsite-index"), 10);
-    if (!isNaN(draggedIndex) && draggedIndex !== index) {
-      return true;
-    }
-    return false;
+  _allowDrop(e) {
+    return e.dataTransfer.types.includes("text/topsite-index");
   }
+
   onDragEvent(event) {
     switch (event.type) {
       case "dragstart":
@@ -37,11 +34,10 @@ export class TopSiteLink extends React.PureComponent {
       case "dragend":
         this.props.onDragEvent(event);
         break;
-      case "dragover":
       case "dragenter":
-      case "dragleave":
+      case "dragover":
       case "drop":
-        if (this._allowDrop(event, this.props.index)) {
+        if (this._allowDrop(event)) {
           event.preventDefault();
           this.props.onDragEvent(event, this.props.index);
         }
@@ -89,7 +85,7 @@ export class TopSiteLink extends React.PureComponent {
         onDragEnd: this.onDragEvent
       };
     }
-    return (<li className={topSiteOuterClassName} key={link.guid || link.url} onDrop={this.onDragEvent} onDragOver={this.onDragEvent} onDragEnter={this.onDragEvent} onDragLeave={this.onDragEvent} {...draggableProps}>
+    return (<li className={topSiteOuterClassName} onDrop={this.onDragEvent} onDragOver={this.onDragEvent} onDragEnter={this.onDragEvent} onDragLeave={this.onDragEvent} {...draggableProps}>
       <div className="top-site-inner">
          <a href={link.url} onClick={onClick}>
             <div className="tile" aria-hidden={true} data-fallback={letterFallback}>
@@ -306,19 +302,20 @@ export class _TopSiteList extends React.PureComponent {
         this.setState(this.DEFAULT_STATE);
         break;
       case "dragenter":
-        this.setState({topSitesPreview: this._makeTopSitesPreview(index)});
-        break;
-      case "dragleave":
-        this.setState({topSitesPreview: null});
+        if (index === this.state.draggedIndex) {
+          this.setState({topSitesPreview: null});
+        } else {
+          this.setState({topSitesPreview: this._makeTopSitesPreview(index)});
+        }
         break;
       case "drop":
-        this.props.dispatch(ac.SendToMain({
-          type: at.TOP_SITES_INSERT,
-          data: {site: {url: this.state.draggedSite.url, label: this.state.draggedTitle}, index}
-        }));
-        this.userEvent("DROP", index);
-        break;
-      default:
+        if (index !== this.state.draggedIndex) {
+          this.props.dispatch(ac.SendToMain({
+            type: at.TOP_SITES_INSERT,
+            data: {site: {url: this.state.draggedSite.url, label: this.state.draggedTitle}, index}
+          }));
+          this.userEvent("DROP", index);
+        }
         break;
     }
   }
@@ -386,10 +383,11 @@ export class _TopSiteList extends React.PureComponent {
       dispatch: props.dispatch,
       intl: props.intl
     };
+    let holeIndex = 0;
     for (let i = 0, l = props.TopSitesCount; i < l; i++) {
       const link = topSites[i];
       const slotProps = {
-        key: i,
+        key: link ? link.url : holeIndex++,
         index: i
       };
       topSitesUI.push(!link ? (
