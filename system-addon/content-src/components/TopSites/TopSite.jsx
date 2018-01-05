@@ -383,6 +383,10 @@ export class _TopSiteList extends React.PureComponent {
       dispatch: props.dispatch,
       intl: props.intl
     };
+    // We assign a key to each placeholder slot. We need it to be independent
+    // of the slot index (i below) so that the keys used stay the same during
+    // drag and drop reordering and the underlying DOM nodes are reused.
+    // This mostly (only?) affects linux so be sure to test on linux before changing.
     let holeIndex = 0;
     for (let i = 0, l = props.TopSitesCount; i < l; i++) {
       const link = topSites[i];
