@@ -889,7 +889,7 @@ describe("<TopSiteList>", () => {
       type: "TELEMETRY_USER_EVENT"
     });
   });
-  it("should make a topSitesPreview onDragEnter and clear it onDragLeave", () => {
+  it("should make a topSitesPreview onDragEnter", () => {
     const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} />);
     const instance = wrapper.instance();
     const site = {url: "https://foo.com"};
@@ -902,8 +902,6 @@ describe("<TopSiteList>", () => {
     instance.onDragEvent({type: "dragenter"}, 2);
     assert.ok(instance.state.topSitesPreview);
     assert.deepEqual(instance.state.topSitesPreview[2], site);
-    instance.onDragEvent({type: "dragleave"});
-    assert.isNull(instance.state.topSitesPreview);
   });
   it("should _makeTopSitesPreview correctly", () => {
     const site1 = {url: "https://foo.com"};
