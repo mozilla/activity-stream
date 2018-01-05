@@ -339,7 +339,7 @@ function main() { // eslint-disable-line max-statements
   }
 
   // Provide some help to copy/paste locales if tests are failing
-  console.log(`\nIf aboutNewTabService tests are failing for unexpected locales, make sure its list is updated:\nconst ACTIVITY_STREAM_LOCALES = new Set("${localizedLocales.join(" ")}".split(" "));`);
+  console.log(`\nIf aboutNewTabService tests are failing for unexpected locales, make sure its list is updated:\nconst ACTIVITY_STREAM_LOCALES = "${localizedLocales.join(" ")}".split(" ");`);
 }
 
 main();
