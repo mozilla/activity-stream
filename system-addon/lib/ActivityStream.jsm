@@ -134,6 +134,11 @@ const PREFS_CONFIG = new Map([
   ["tippyTop.service.endpoint", {
     title: "Tippy Top service manifest url",
     value: "https://activity-stream-icons.services.mozilla.com/v1/icons.json.br"
+  }],
+  ["debug", {
+    title: "Enable debug mode",
+    value: false,
+    value_local_dev: true
   }]
 ]);
 
