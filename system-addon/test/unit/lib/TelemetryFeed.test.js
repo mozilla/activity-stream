@@ -25,6 +25,7 @@ describe("TelemetryFeed", () => {
   let instance;
   let clock;
   class PingCentre {sendPing() {} uninit() {}}
+  class UTEventReporting {sendUserEvent() {} sendSessionEndEvent() {} uninit() {}}
   class PerfService {
     getMostRecentAbsMarkStartByName() { return 1234; }
     mark() {}
@@ -37,7 +38,10 @@ describe("TelemetryFeed", () => {
     USER_PREFS_ENCODING,
     PREF_IMPRESSION_ID,
     TELEMETRY_PREF
-  } = injector({"common/PerfService.jsm": {perfService}});
+  } = injector({
+    "common/PerfService.jsm": {perfService},
+    "lib/UTEventReporting.jsm": {UTEventReporting}
+  });
 
   beforeEach(() => {
     globals = new GlobalOverrider();
@@ -46,6 +50,7 @@ describe("TelemetryFeed", () => {
     sandbox.spy(global.Components.utils, "reportError");
     globals.set("gUUIDGenerator", {generateUUID: () => FAKE_UUID});
     globals.set("PingCentre", PingCentre);
+    globals.set("UTEventReporting", UTEventReporting);
     instance = new TelemetryFeed();
     instance.store = store;
   });
@@ -57,6 +62,9 @@ describe("TelemetryFeed", () => {
   describe("#init", () => {
     it("should add .pingCentre, a PingCentre instance", () => {
       assert.instanceOf(instance.pingCentre, PingCentre);
+    });
+    it("should add .utEvents, a UTEventReporting instance", () => {
+      assert.instanceOf(instance.utEvents, UTEventReporting);
     });
     it("should make this.browserOpenNewtabStart() observe browser-open-newtab-start", () => {
       sandbox.spy(Services.obs, "addObserver");
@@ -233,13 +241,17 @@ describe("TelemetryFeed", () => {
     it("should call createSessionSendEvent and sendEvent with the sesssion", () => {
       sandbox.stub(instance, "sendEvent");
       sandbox.stub(instance, "createSessionEndEvent");
+      sandbox.stub(instance.utEvents, "sendSessionEndEvent");
       const session = instance.addSession("foo");
 
       instance.endSession("foo");
 
       // Did we call sendEvent with the result of createSessionEndEvent?
       assert.calledWith(instance.createSessionEndEvent, session);
-      assert.calledWith(instance.sendEvent, instance.createSessionEndEvent.firstCall.returnValue);
+
+      let sessionEndEvent = instance.createSessionEndEvent.firstCall.returnValue;
+      assert.calledWith(instance.sendEvent, sessionEndEvent);
+      assert.calledWith(instance.utEvents.sendSessionEndEvent, sessionEndEvent);
     });
   });
   describe("ping creators", () => {
@@ -524,6 +536,13 @@ describe("TelemetryFeed", () => {
 
       assert.calledOnce(stub);
     });
+    it("should call .utEvents.uninit", () => {
+      const stub = sandbox.stub(instance.utEvents, "uninit");
+
+      instance.uninit();
+
+      assert.calledOnce(stub);
+    });
     it("should remove the a-s telemetry pref listener", () => {
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
       instance = new TelemetryFeed();
@@ -623,12 +642,14 @@ describe("TelemetryFeed", () => {
     it("should send an event on a TELEMETRY_USER_EVENT action", () => {
       const sendEvent = sandbox.stub(instance, "sendEvent");
       const eventCreator = sandbox.stub(instance, "createUserEvent");
+      const sendUserEvent = sandbox.stub(instance.utEvents, "sendUserEvent");
       const action = {type: at.TELEMETRY_USER_EVENT};
 
       instance.onAction(action);
 
       assert.calledWith(eventCreator, action);
       assert.calledWith(sendEvent, eventCreator.returnValue);
+      assert.calledWith(sendUserEvent, eventCreator.returnValue);
     });
     it("should send an event on a TELEMETRY_PERFORMANCE_EVENT action", () => {
       const sendEvent = sandbox.stub(instance, "sendEvent");
