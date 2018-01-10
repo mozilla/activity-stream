@@ -209,6 +209,10 @@
     }
   }
 
+  .section-body-fallback {
+    height: $card-height;
+  }
+
   .section-body {
     // This is so the top sites favicon and card dropshadows don't get clipped during animation:
     $horizontal-padding: 7px;
