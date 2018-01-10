@@ -26,8 +26,8 @@ test_newtab({
   },
   // it should pin the website when we click the first option of the topsite context menu.
   test: async function topsites_pin_unpin() {
-    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".context-menu-button"),
-      "Topsite context menu not found");
+    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".top-site-icon"),
+      "Topsite tippytop icon not found");
     // There are only topsites on the page, the selector with find the first topsite menu button.
     const topsiteContextBtn = content.document.querySelector(".context-menu-button");
     topsiteContextBtn.click();
