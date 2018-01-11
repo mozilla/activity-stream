@@ -158,6 +158,32 @@ describe("ActivityStreamMessageChannel", () => {
         assert.equal(mm.getTargetById("bar"), null);
       });
     });
+    describe("#getPreloadedBrowser", () => {
+      it("should get a preloaded browser if it exists", () => {
+        const port = {
+          browser: {
+            getAttribute() {
+              return "preloaded";
+            }
+          }
+        };
+        mm.createChannel();
+        mm.channel.messagePorts.push(port);
+        assert.equal(mm.getPreloadedBrowser(), port);
+      });
+      it("should return null if there is no preloaded browser", () => {
+        const port = {
+          browser: {
+            getAttribute() {
+              return "consumed";
+            }
+          }
+        };
+        mm.createChannel();
+        mm.channel.messagePorts.push(port);
+        assert.equal(mm.getPreloadedBrowser(), null);
+      });
+    });
     describe("#onNewTabInit", () => {
       it("should dispatch a NEW_TAB_INIT action", () => {
         const t = {portID: "foo", url: "about:monkeys"};
@@ -241,6 +267,38 @@ describe("ActivityStreamMessageChannel", () => {
         assert.calledWith(mm.channel.sendAsyncMessage, DEFAULT_OPTIONS.outgoingMessageName, action);
       });
     });
+    describe("#preloaded browser", () => {
+      it("should send the message to the preloaded browser there's data and a preloaded browser exists", () => {
+        const port = {
+          browser: {
+            getAttribute() {
+              return "preloaded";
+            }
+          },
+          sendAsyncMessage: sinon.spy()
+        };
+        mm.createChannel();
+        mm.channel.messagePorts.push(port);
+        const action = ac.SendToPreloaded({type: "HELLO", data: 10});
+        mm.sendToPreloaded(action);
+        assert.calledWith(port.sendAsyncMessage, DEFAULT_OPTIONS.outgoingMessageName, action);
+      });
+      it("should not send the message to the preloaded browser there's no data and a preloaded browser does not exists", () => {
+        const port = {
+          browser: {
+            getAttribute() {
+              return "consumed";
+            }
+          },
+          sendAsyncMessage: sinon.spy()
+        };
+        mm.createChannel();
+        mm.channel.messagePorts.push(port);
+        const action = ac.SendToPreloaded({type: "HELLO"});
+        mm.sendToPreloaded(action);
+        assert.notCalled(port.sendAsyncMessage);
+      });
+    });
   });
   describe("Handling actions", () => {
     describe("#onActionFromContent", () => {
@@ -293,9 +351,19 @@ describe("ActivityStreamMessageChannel", () => {
 
         assert.calledWith(mm.broadcast, action);
       });
+      it("should call .sendToPreloaded if the action is SendToPreloaded", () => {
+        sinon.stub(mm, "sendToPreloaded");
+        const action = ac.SendToPreloaded({type: "FOO"});
+
+        mm.createChannel();
+        store.dispatch(action);
+
+        assert.calledWith(mm.sendToPreloaded, action);
+      });
       it("should dispatch other actions normally", () => {
         sinon.stub(mm, "send");
         sinon.stub(mm, "broadcast");
+        sinon.stub(mm, "sendToPreloaded");
 
         mm.createChannel();
         store.dispatch({type: "ADD", data: 1});
@@ -303,6 +371,7 @@ describe("ActivityStreamMessageChannel", () => {
         assert.equal(store.getState(), 1);
         assert.notCalled(mm.send);
         assert.notCalled(mm.broadcast);
+        assert.notCalled(mm.sendToPreloaded);
       });
     });
   });

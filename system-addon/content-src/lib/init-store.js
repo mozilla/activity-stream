@@ -67,7 +67,7 @@ export const rehydrationMiddleware = store => next => action => {
     return next(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
   }
 
-  if (au.isBroadcastToContent(action) || au.isSendToContent(action)) {
+  if (au.isBroadcastToContent(action) || au.isSendToContent(action) || au.isSendToPreloaded(action)) {
     // Note that actions received before didRehydrate will not be dispatched
     // because this could negatively affect preloading and the the state
     // will be replaced by rehydration anyway.
