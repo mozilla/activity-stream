@@ -128,33 +128,37 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
   }
 
   /**
-   * sendToPreloaded - Sends an action to the preloaded browser, if any
+   * sendToPreloaded - Sends an action to each preloaded browser, if any
    *
    * @param  {obj} action A redux action
    */
   sendToPreloaded(action) {
-    const preloadedBrowser = this.getPreloadedBrowser();
-    if (preloadedBrowser && action.data) {
-      try {
-        preloadedBrowser.sendAsyncMessage(this.outgoingMessageName, action);
-      } catch (e) {
-        // The preloaded page has already been consumed, so just ignore.
+    const preloadedBrowsers = this.getPreloadedBrowser();
+    if (preloadedBrowsers && action.data) {
+      for (let preloadedBrowser of preloadedBrowsers) {
+        try {
+          preloadedBrowser.sendAsyncMessage(this.outgoingMessageName, action);
+        } catch (e) {
+          // The preloaded page is no longer available, so just ignore.
+        }
       }
     }
   }
 
   /**
-   * getPreloadedBrowser - Retrieve the port of a preloaded browser, if it exists
+   * getPreloadedBrowser - Retrieve the port of any preloaded browsers
    *
-   * @return {string|null} The unique id of the target, if it exists.
+   * @return {Array|null} An array of ports belonging to the preloaded browsers, or null
+   *                      if there aren't any preloaded browsers
    */
   getPreloadedBrowser() {
+    let preloadedPorts = [];
     for (let port of this.channel.messagePorts) {
       if (port.browser.getAttribute("preloadedState") === "preloaded") {
-        return port;
+        preloadedPorts.push(port);
       }
     }
-    return null;
+    return preloadedPorts.length ? preloadedPorts : null;
   }
 
   /**

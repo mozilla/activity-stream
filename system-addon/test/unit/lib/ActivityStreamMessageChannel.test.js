@@ -169,7 +169,20 @@ describe("ActivityStreamMessageChannel", () => {
         };
         mm.createChannel();
         mm.channel.messagePorts.push(port);
-        assert.equal(mm.getPreloadedBrowser(), port);
+        assert.equal(mm.getPreloadedBrowser()[0], port);
+      });
+      it("should get all the preloaded browsers across windows if they exist", () => {
+        const port = {
+          browser: {
+            getAttribute() {
+              return "preloaded";
+            }
+          }
+        };
+        mm.createChannel();
+        mm.channel.messagePorts.push(port);
+        mm.channel.messagePorts.push(port);
+        assert.equal(mm.getPreloadedBrowser().length, 2);
       });
       it("should return null if there is no preloaded browser", () => {
         const port = {
@@ -268,7 +281,7 @@ describe("ActivityStreamMessageChannel", () => {
       });
     });
     describe("#preloaded browser", () => {
-      it("should send the message to the preloaded browser there's data and a preloaded browser exists", () => {
+      it("should send the message to the preloaded browser if there's data and a preloaded browser exists", () => {
         const port = {
           browser: {
             getAttribute() {
@@ -283,7 +296,22 @@ describe("ActivityStreamMessageChannel", () => {
         mm.sendToPreloaded(action);
         assert.calledWith(port.sendAsyncMessage, DEFAULT_OPTIONS.outgoingMessageName, action);
       });
-      it("should not send the message to the preloaded browser there's no data and a preloaded browser does not exists", () => {
+      it("should send the message to all the preloaded browsers if there's data and they exist", () => {
+        const port = {
+          browser: {
+            getAttribute() {
+              return "preloaded";
+            }
+          },
+          sendAsyncMessage: sinon.spy()
+        };
+        mm.createChannel();
+        mm.channel.messagePorts.push(port);
+        mm.channel.messagePorts.push(port);
+        mm.sendToPreloaded(ac.SendToPreloaded({type: "HELLO", data: 10}));
+        assert.calledTwice(port.sendAsyncMessage);
+      });
+      it("should not send the message to the preloaded browser if there's no data and a preloaded browser does not exists", () => {
         const port = {
           browser: {
             getAttribute() {
