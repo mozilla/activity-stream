@@ -68,6 +68,8 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
         this.send(action);
       } else if (au.isBroadcastToContent(action)) {
         this.broadcast(action);
+      } else if (au.isSendToPreloaded(action)) {
+        this.sendToPreloaded(action);
       }
 
       if (!skipMain) {
@@ -119,6 +121,36 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
   getTargetById(id) {
     for (let port of this.channel.messagePorts) {
       if (port.portID === id) {
+        return port;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * sendToPreloaded - Sends an action to the preloaded browser, if any
+   *
+   * @param  {obj} action A redux action
+   */
+  sendToPreloaded(action) {
+    const preloadedBrowser = this.getPreloadedBrowser();
+    if (preloadedBrowser && action.data) {
+      try {
+        preloadedBrowser.sendAsyncMessage(this.outgoingMessageName, action);
+      } catch (e) {
+        // The preloaded page has already been consumed, so just ignore.
+      }
+    }
+  }
+
+  /**
+   * getPreloadedBrowser - Retrieve the port of a preloaded browser, if it exists
+   *
+   * @return {string|null} The unique id of the target, if it exists.
+   */
+  getPreloadedBrowser() {
+    for (let port of this.channel.messagePorts) {
+      if (port.browser.getAttribute("preloadedState") === "preloaded") {
         return port;
       }
     }
