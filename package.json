@@ -17,7 +17,7 @@
   "devDependencies": {
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
-    "babel-plugin-jsm-to-commonjs": "0.2.0",
+    "babel-plugin-jsm-to-esmodules": "0.2.2",
     "babel-plugin-transform-async-to-module-method": "6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "6.26.0",
     "babel-preset-react": "6.24.1",
@@ -88,7 +88,7 @@
     "buildmc": "npm-run-all buildmc:*",
     "prebuildmc": "npm run cleanmc",
     "buildmc:locales": "pontoon-to-json --src locales --dest system-addon/data",
-    "buildmc:webpack": "webpack --config webpack.system-addon.config.js",
+    "buildmc:webpack": "webpack --config webpack.system-addon.config.js --display-optimization-bailout",
     "buildmc:css": "node-sass system-addon/content-src/styles -o system-addon/css",
     "buildmc:html": "rimraf system-addon/prerendered && webpack --config webpack.prerender.config.js && node ./bin/render-activity-stream-html.js",
     "buildmc:copy": "cpx \"system-addon/**/{,.}*\" $npm_package_config_mc_dir/browser/extensions/activity-stream",

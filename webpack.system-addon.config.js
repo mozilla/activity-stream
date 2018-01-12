@@ -25,7 +25,7 @@ module.exports = {
         exclude: /node_modules/,
         loader: "babel-loader",
         // Converts .jsm files into common-js modules
-        options: {plugins: [["jsm-to-commonjs", {basePath: resourcePathRegEx, replace: true}]]}
+        options: {plugins: [["jsm-to-esmodules", {basePath: resourcePathRegEx, replace: true}]]}
       }
     ]
   },
