@@ -45,10 +45,6 @@ describe("PingCentre", () => {
 
     sandbox.stub(global.Services.prefs, "getBranch")
         .returns(new FakePrefs({initHook: prefInitHook}));
-    sandbox.stub(global.Services.prefs, "prefHasUserValue")
-        .returns(true);
-    sandbox.stub(global.Services.prefs, "getStringPref")
-        .returns(FAKE_BROWSER_SEARCH_REGION);
     sandbox.stub(global.Services.locale, "getAppLocalesAsLangTags")
         .returns([FAKE_LOCALE]);
     globals.set("fetch", fetchStub);
@@ -255,17 +251,75 @@ describe("PingCentre", () => {
     });
   });
 
+  describe("#_getRegion", () => {
+    let prefStub;
+    let getStub;
+
+    beforeEach(() => {
+      tSender = new PingCentre({
+        topic: "activity-stream",
+        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF
+      });
+    });
+
+    afterEach(() => {
+      prefStub.restore();
+      getStub.restore();
+    });
+
+    it("should return UNSET if the region pref is missing", () => {
+      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue").returns(false);
+      getStub = sinon.stub(global.Services.prefs, "getStringPref").returns("");
+      let region = tSender._getRegion();
+      assert.equal(region, "UNSET");
+    });
+
+    it("should return EMPTY if the region pref is empty", () => {
+      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      getStub = sinon.stub(global.Services.prefs, "getStringPref").returns("");
+      let region = tSender._getRegion();
+      assert.equal(region, "EMPTY");
+    });
+
+    it("should return OTHER if the region is not in the region whitelist", () => {
+      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      getStub = sinon.stub(global.Services.prefs, "getStringPref").returns("SOME_REGION");
+      let region = tSender._getRegion();
+      assert.equal(region, "OTHER");
+    });
+
+    it("should return REGION if the region is in the region whitelist", () => {
+      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      getStub = sinon.stub(global.Services.prefs, "getStringPref").returns(FAKE_BROWSER_SEARCH_REGION);
+      let region = tSender._getRegion();
+      assert.equal(region, FAKE_BROWSER_SEARCH_REGION);
+    });
+  });
+
   describe("#sendPing()", () => {
+    let prefStub;
+    let getStub;
+
     beforeEach(() => {
       FakePrefs.prototype.prefs = {};
       FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
       FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
       FakePrefs.prototype.prefs[FAKE_AS_ENDPOINT_PREF] = fakeEndpointUrl;
 
+      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue")
+          .returns(true);
+      getStub = sinon.stub(global.Services.prefs, "getStringPref")
+          .returns(FAKE_BROWSER_SEARCH_REGION);
+
       tSender = new PingCentre({
         topic: "activity-stream",
         overrideEndpointPref: FAKE_AS_ENDPOINT_PREF
       });
+    });
+
+    afterEach(() => {
+      prefStub.restore();
+      getStub.restore();
     });
 
     it("should not send if the PingCentre is disabled", async () => {
