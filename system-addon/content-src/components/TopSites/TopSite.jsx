@@ -300,7 +300,7 @@ export class _TopSiteList extends React.PureComponent {
         if (index !== this.state.draggedIndex) {
           this.props.dispatch(ac.SendToMain({
             type: at.TOP_SITES_INSERT,
-            data: {site: {url: this.state.draggedSite.url, label: this.state.draggedTitle}, index}
+            data: {site: {url: this.state.draggedSite.url, label: this.state.draggedTitle}, index, draggedFromIndex: this.state.draggedIndex}
           }));
           this.userEvent("DROP", index);
         }
@@ -308,7 +308,10 @@ export class _TopSiteList extends React.PureComponent {
     }
   }
   _getTopSites() {
-    return this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
+    // Make a copy of the sites to truncate or extend to desired length
+    let topSites = this.props.TopSites.rows.slice();
+    topSites.length = this.props.TopSitesCount;
+    return topSites;
   }
 
   /**
@@ -316,51 +319,41 @@ export class _TopSiteList extends React.PureComponent {
    * dragged site at the specified index.
    */
   _makeTopSitesPreview(index) {
-    const preview = this._getTopSites();
-    this._fillOrLeaveHole(preview, this.state.draggedIndex);
-    this._insertSite(preview, Object.assign({}, this.state.draggedSite, {isPinned: true}), index);
+    const topSites = this._getTopSites();
+    topSites[this.state.draggedIndex] = null;
+    const pinnedOnly = topSites.map(site => ((site && site.isPinned) ? site : null));
+    const unpinned = topSites.filter(site => site && !site.isPinned);
+    const siteToInsert = Object.assign({}, this.state.draggedSite, {isPinned: true});
+    if (!pinnedOnly[index]) {
+      pinnedOnly[index] = siteToInsert;
+    } else {
+      // Find the hole to shift the pinned site(s) towards. We shift towards the
+      // hole left by the site being dragged.
+      let holeIndex = index;
+      const indexStep = index > this.state.draggedIndex ? -1 : 1;
+      while (pinnedOnly[holeIndex]) {
+        holeIndex += indexStep;
+      }
+
+      // Shift towards the hole.
+      const shiftingStep = index > this.state.draggedIndex ? 1 : -1;
+      while (holeIndex !== index) {
+        const nextIndex = holeIndex + shiftingStep;
+        pinnedOnly[holeIndex] = pinnedOnly[nextIndex];
+        holeIndex = nextIndex;
+      }
+      pinnedOnly[index] = siteToInsert;
+    }
+
+    // Fill in the remaining holes with unpinned sites.
+    const preview = pinnedOnly;
+    for (let i = 0; i < preview.length; i++) {
+      if (!preview[i]) {
+        preview[i] = unpinned.shift() || null;
+      }
+    }
+
     return preview;
-  }
-
-  /**
-   * Fill in the slot at the specified index with a non pinned site further down the
-   * list, if any. Otherwise leave an empty slot.
-   */
-  _fillOrLeaveHole(sites, index) {
-    let slotIndex = index;
-    sites[slotIndex] = null;
-    for (let i = slotIndex + 1; i < sites.length; i++) {
-      const site = sites[i];
-      if (site && !site.isPinned) {
-        sites[i] = null;
-        sites[slotIndex] = site;
-        // Update the index to fill to be the spot we just grabbed a site from
-        slotIndex = i;
-      }
-    }
-  }
-
-  /**
-   * Insert the given site in the slot at the specified index. If the slot is occupied,
-   * move it appropriately.
-   */
-  _insertSite(sites, site, index) {
-    const replacedSite = sites[index];
-    if (replacedSite && index < this.props.TopSitesCount - 1) {
-      if (replacedSite.isPinned) {
-        // If the replaced site is pinned, it goes into the next slot no matter what.
-        this._insertSite(sites, replacedSite, index + 1);
-      } else {
-        // If the replaced site isn't pinned, it goes into the next slot that doesn't havea pinned site;
-        for (let i = index + 1, l = sites.length; i < l; i++) {
-          if (!sites[i] || !sites[i].isPinned) {
-            this._insertSite(sites, replacedSite, i);
-            break;
-          }
-        }
-      }
-    }
-    sites[index] = site;
   }
   onActivate(index) {
     this.setState({activeIndex: index});
@@ -379,7 +372,7 @@ export class _TopSiteList extends React.PureComponent {
     // drag and drop reordering and the underlying DOM nodes are reused.
     // This mostly (only?) affects linux so be sure to test on linux before changing.
     let holeIndex = 0;
-    for (let i = 0, l = props.TopSitesCount; i < l; i++) {
+    for (let i = 0, l = topSites.length; i < l; i++) {
       const link = topSites[i];
       const slotProps = {
         key: link ? link.url : holeIndex++,
