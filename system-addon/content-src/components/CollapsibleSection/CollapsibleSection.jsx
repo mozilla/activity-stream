@@ -9,7 +9,7 @@ function getFormattedMessage(message) {
   return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
 }
 function getCollapsed(props) {
-  return props.Prefs.values[props.prefName];
+  return (props.prefName in props.Prefs.values) ? props.Prefs.values[props.prefName] : false;
 }
 
 export class Info extends React.PureComponent {
@@ -206,6 +206,7 @@ export class _CollapsibleSection extends React.PureComponent {
     return <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />;
   }
   render() {
+    const isCollapsible = this.props.prefName in this.props.Prefs.values;
     const isCollapsed = getCollapsed(this.props);
     const {enableAnimation, isAnimating, maxHeight} = this.state;
     const {id, infoOption, eventSource, disclaimer} = this.props;
@@ -216,10 +217,10 @@ export class _CollapsibleSection extends React.PureComponent {
       <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${isCollapsed ? " collapsed" : ""}`}>
         <div className="section-top-bar">
           <h3 className="section-title">
-            <span className="click-target" onClick={this.onHeaderClick}>
+            <span className="click-target" onClick={isCollapsible && this.onHeaderClick}>
               {this.renderIcon()}
               {this.props.title}
-            <span className={`icon ${isCollapsed ? "icon-arrowhead-forward" : "icon-arrowhead-down"}`} />
+            {isCollapsible && <span className={`collapsible-arrow icon ${isCollapsed ? "icon-arrowhead-forward" : "icon-arrowhead-down"}`} />}
             </span>
           </h3>
           {infoOption && <InfoIntl infoOption={infoOption} dispatch={this.props.dispatch} />}

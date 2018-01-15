@@ -73,6 +73,27 @@ describe("CollapsibleSection", () => {
     assert.isFalse(wrapper.instance().state.enableAnimation);
   });
 
+  describe("without collapsible pref", () => {
+    it("should render the section uncollapsed", () => {
+      setup({Prefs: {values: {}}});
+      assert.isFalse(wrapper.find(".collapsible-section").first().hasClass("collapsed"));
+    });
+
+    it("should not render the arrow if no collapsible pref exists for the section", () => {
+      setup({Prefs: {values: {}}});
+      assert.lengthOf(wrapper.find(".click-target .collapsible-arrow"), 0);
+    });
+
+    it("should not trigger a dispatch when the section title is clicked ", () => {
+      const dispatch = sinon.stub();
+      setup({Prefs: {values: {}}, dispatch});
+
+      wrapper.find(".click-target").simulate("click");
+
+      assert.notCalled(dispatch);
+    });
+  });
+
   describe("icon", () => {
     it("should use the icon prop value as the url if it starts with `moz-extension://`", () => {
       const icon = "moz-extension://some/extension/path";
