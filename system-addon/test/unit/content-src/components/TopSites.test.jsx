@@ -335,6 +335,61 @@ describe("<TopSiteLink>", () => {
     const wrapper = shallow(<TopSiteLink className="foo bar" />);
     assert.ok(wrapper.find("li").hasClass("top-site-outer foo bar"));
   });
+  describe("#onDragEvent", () => {
+    let simulate;
+    let wrapper;
+    beforeEach(() => {
+      wrapper = shallow(<TopSiteLink isDraggable={true} onDragEvent={() => {}} />);
+      simulate = type => {
+        const event = {
+          dataTransfer: {setData() {}, types: {includes() {}}},
+          preventDefault() {
+            this.prevented = true;
+          },
+          target: {blur() {}},
+          type
+        };
+        wrapper.simulate(type, event);
+        return event;
+      };
+    });
+    it("should allow clicks without dragging", () => {
+      simulate("mousedown");
+      simulate("mouseup");
+
+      const event = simulate("click");
+
+      assert.notOk(event.prevented);
+    });
+    it("should prevent clicks after dragging", () => {
+      simulate("mousedown");
+      simulate("dragstart");
+      simulate("dragenter");
+      simulate("drop");
+      simulate("dragend");
+      simulate("mouseup");
+
+      const event = simulate("click");
+
+      assert.ok(event.prevented);
+    });
+    it("should allow clicks after dragging then clicking", () => {
+      simulate("mousedown");
+      simulate("dragstart");
+      simulate("dragenter");
+      simulate("drop");
+      simulate("dragend");
+      simulate("mouseup");
+      simulate("click");
+
+      simulate("mousedown");
+      simulate("mouseup");
+
+      const event = simulate("click");
+
+      assert.notOk(event.prevented);
+    });
+  });
 });
 
 describe("<TopSite>", () => {
