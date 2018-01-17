@@ -879,7 +879,7 @@ describe("<TopSiteList>", () => {
     instance.onDragEvent({type: "drop"}, 3);
     assert.calledTwice(dispatch);
     assert.calledWith(dispatch, {
-      data: {index: 3, site: {label: "foo", url: "https://foo.com"}},
+      data: {draggedFromIndex: 7, index: 3, site: {label: "foo", url: "https://foo.com"}},
       meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
       type: "TOP_SITES_INSERT"
     });
@@ -916,18 +916,18 @@ describe("<TopSiteList>", () => {
       draggedTitle: "foo"
     });
     site1.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1]);
-    assert.deepEqual(instance._makeTopSitesPreview(3), [site2, site3, null, site1]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(3), [site2, site3, null, site1, null, null]);
     site2.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site3, site1, site2]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site3, site2, site1]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site3, site2, site1, null, null, null]);
     site3.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [null, site1, site2, site3]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [null, site2, site1, site3]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null]);
     site2.isPinned = false;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, null, site1, site3]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null]);
     site3.isPinned = false;
     site1.isPinned = false;
     instance.setState({
@@ -936,7 +936,7 @@ describe("<TopSiteList>", () => {
       draggedTitle: "bar"
     });
     site2.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(0), [site2, site1, site3]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site1, site3, site2]);
+    assert.deepEqual(instance._makeTopSitesPreview(0), [site2, site1, site3, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site1, site3, site2, null, null, null]);
   });
 });
