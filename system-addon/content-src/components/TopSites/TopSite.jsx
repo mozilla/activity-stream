@@ -114,20 +114,13 @@ TopSiteLink.defaultProps = {
 export class TopSite extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {showContextMenu: false, activeTile: null};
+    this.state = {showContextMenu: false};
     this.onLinkClick = this.onLinkClick.bind(this);
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
     this.onDismissButtonClick = this.onDismissButtonClick.bind(this);
     this.onPinButtonClick = this.onPinButtonClick.bind(this);
     this.onEditButtonClick = this.onEditButtonClick.bind(this);
-    this.onDragEvent = this.onDragEvent.bind(this);
-  }
-  toggleContextMenu(event, index) {
-    this.setState({
-      activeTile: index,
-      showContextMenu: true
-    });
   }
   userEvent(event) {
     this.props.dispatch(ac.UserEvent({
@@ -146,7 +139,8 @@ export class TopSite extends React.PureComponent {
   }
   onMenuButtonClick(event) {
     event.preventDefault();
-    this.toggleContextMenu(event, this.props.index);
+    this.props.onActivate(this.props.index);
+    this.setState({showContextMenu: true});
   }
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});
@@ -184,21 +178,12 @@ export class TopSite extends React.PureComponent {
   onEditButtonClick() {
     this.props.onEdit(this.props.index);
   }
-  onDragEvent(event, index, link, title) {
-    if (event.type === "dragstart") {
-      this.setState({
-        activeTile: null,
-        showContextMenu: false
-      });
-    }
-    this.props.onDragEvent(event, index, link, title);
-  }
   render() {
     const {props} = this;
     const {link} = props;
-    const isContextMenuOpen = this.state.showContextMenu && this.state.activeTile === props.index;
+    const isContextMenuOpen = this.state.showContextMenu && props.activeIndex === props.index;
     const title = link.label || link.hostname;
-    return (<TopSiteLink {...props} onClick={this.onLinkClick} onDragEvent={this.onDragEvent} className={isContextMenuOpen ? "active" : ""} title={title}>
+    return (<TopSiteLink {...props} onClick={this.onLinkClick} onDragEvent={this.props.onDragEvent} className={isContextMenuOpen ? "active" : ""} title={title}>
         {!props.onEdit &&
           <div>
             <button className="context-menu-button icon" onClick={this.onMenuButtonClick}>
@@ -235,7 +220,7 @@ export class TopSite extends React.PureComponent {
 }
 TopSite.defaultProps = {
   link: {},
-  onDragStart() {}
+  onActivate() {}
 };
 
 export class TopSitePlaceholder extends React.PureComponent {
@@ -265,9 +250,11 @@ export class _TopSiteList extends React.PureComponent {
       draggedIndex: null,
       draggedSite: null,
       draggedTitle: null,
-      topSitesPreview: null
+      topSitesPreview: null,
+      activeIndex: null
     };
     this.onDragEvent = this.onDragEvent.bind(this);
+    this.onActivate = this.onActivate.bind(this);
   }
   componentWillUpdate(nextProps) {
     if (this.state.draggedSite) {
@@ -294,7 +281,8 @@ export class _TopSiteList extends React.PureComponent {
         this.setState({
           draggedIndex: index,
           draggedSite: link,
-          draggedTitle: title
+          draggedTitle: title,
+          activeIndex: null
         });
         this.userEvent("DRAG", index);
         break;
@@ -374,6 +362,9 @@ export class _TopSiteList extends React.PureComponent {
     }
     sites[index] = site;
   }
+  onActivate(index) {
+    this.setState({activeIndex: index});
+  }
   render() {
     const {props} = this;
     const topSites = this.state.topSitesPreview || this._getTopSites();
@@ -402,6 +393,8 @@ export class _TopSiteList extends React.PureComponent {
         <TopSite
           link={link}
           onEdit={props.onEdit}
+          activeIndex={this.state.activeIndex}
+          onActivate={this.onActivate}
           {...slotProps}
           {...commonProps} />
       ));
