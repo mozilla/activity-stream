@@ -358,8 +358,8 @@ describe("<TopSite>", () => {
   });
 
   it("should have .active class, on top-site-outer if context menu is open", () => {
-    const wrapper = shallow(<TopSite link={link} index={1} />);
-    wrapper.setState({showContextMenu: true, activeTile: 1});
+    const wrapper = shallow(<TopSite link={link} index={1} activeIndex={1} />);
+    wrapper.setState({showContextMenu: true});
 
     assert.equal(wrapper.find(TopSiteLink).props().className, "active");
   });
