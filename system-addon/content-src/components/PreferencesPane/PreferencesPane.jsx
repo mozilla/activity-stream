@@ -135,7 +135,7 @@ export class _PreferencesPane extends React.PureComponent {
                     titleString={(pref && pref.titleString) || title}
                     descString={pref && pref.descString}>
 
-                    {pref.nestedPrefs && pref.nestedPrefs.map(nestedPref =>
+                    {pref && pref.nestedPrefs && pref.nestedPrefs.map(nestedPref =>
                       (<PreferencesInput
                         key={nestedPref.name}
                         prefName={nestedPref.name}
