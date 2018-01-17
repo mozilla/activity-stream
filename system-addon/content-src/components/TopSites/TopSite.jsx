@@ -302,6 +302,13 @@ export class _TopSiteList extends React.PureComponent {
             type: at.TOP_SITES_INSERT,
             data: {site: {url: this.state.draggedSite.url, label: this.state.draggedTitle}, index}
           }));
+
+          // Optimistically updates the UI so we don't get a flash of the old state. See Bug 1430130
+          this.props.dispatch({
+            type: at.TOP_SITES_UPDATED,
+            data: this.state.topSitesPreview
+          });
+
           this.userEvent("DROP", index);
         }
         break;
@@ -328,11 +335,11 @@ export class _TopSiteList extends React.PureComponent {
    */
   _fillOrLeaveHole(sites, index) {
     let slotIndex = index;
-    sites[slotIndex] = null;
+    delete sites[slotIndex];
     for (let i = slotIndex + 1; i < sites.length; i++) {
       const site = sites[i];
       if (site && !site.isPinned) {
-        sites[i] = null;
+        delete sites[i];
         sites[slotIndex] = site;
         // Update the index to fill to be the spot we just grabbed a site from
         slotIndex = i;
