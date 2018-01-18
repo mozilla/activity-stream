@@ -25,7 +25,14 @@ export class TopSiteLink extends React.PureComponent {
 
   onDragEvent(event) {
     switch (event.type) {
+      case "click":
+        // Stop any link clicks if we started any dragging
+        if (this.dragged) {
+          event.preventDefault();
+        }
+        break;
       case "dragstart":
+        this.dragged = true;
         event.dataTransfer.effectAllowed = "move";
         event.dataTransfer.setData("text/topsite-index", this.props.index);
         event.target.blur();
@@ -41,6 +48,10 @@ export class TopSiteLink extends React.PureComponent {
           event.preventDefault();
           this.props.onDragEvent(event, this.props.index);
         }
+        break;
+      case "mousedown":
+        // Reset at the first mouse event of a potential drag
+        this.dragged = false;
         break;
     }
   }
@@ -80,9 +91,10 @@ export class TopSiteLink extends React.PureComponent {
     let draggableProps = {};
     if (isDraggable) {
       draggableProps = {
-        draggable: true,
+        onClick: this.onDragEvent,
+        onDragEnd: this.onDragEvent,
         onDragStart: this.onDragEvent,
-        onDragEnd: this.onDragEvent
+        onMouseDown: this.onDragEvent
       };
     }
     return (<li className={topSiteOuterClassName} onDrop={this.onDragEvent} onDragOver={this.onDragEvent} onDragEnter={this.onDragEvent} onDragLeave={this.onDragEvent} {...draggableProps}>
