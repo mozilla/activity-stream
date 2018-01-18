@@ -415,7 +415,7 @@ export class _TopSiteList extends React.PureComponent {
           {...commonProps} />
       ));
     }
-    return (<ul className="top-sites-list">
+    return (<ul className={`top-sites-list${this.state.draggedSite ? " dnd-active" : ""}`}>
       {topSitesUI}
     </ul>);
   }

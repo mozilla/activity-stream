@@ -89,19 +89,6 @@
 
     @include context-menu-button;
 
-    &:-moz-any(.active, :focus, :hover) {
-      .tile {
-        @include fade-in;
-      }
-
-      .edit-menu {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      @include context-menu-button-hover;
-    }
-
     .tile { // sass-lint:disable-block property-sort-order
       border-radius: $top-sites-border-radius;
       box-shadow: inset $inner-box-shadow, $shadow-secondary;
@@ -282,6 +269,21 @@
           width: 23px;
         }
       }
+    }
+  }
+
+  &:not(.dnd-active) {
+    .top-site-outer:-moz-any(.active, :focus, :hover) {
+      .tile {
+        @include fade-in;
+      }
+
+      .edit-menu {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      @include context-menu-button-hover;
     }
   }
 }
