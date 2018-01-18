@@ -31,6 +31,9 @@
 
     button {
       margin-inline-end: 16px;
+      padding-inline-end: 18px;
+      padding-inline-start: 18px;
+      white-space: normal;
       width: 50%;
 
       &.done {
