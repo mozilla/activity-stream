@@ -1,10 +1,10 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "content-src/components/TopSites/TopSitesConstants";
+import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
 import {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} from "common/Reducers.jsm";
 import {TopSite, TopSiteLink, _TopSiteList as TopSiteList, TopSitePlaceholder} from "content-src/components/TopSites/TopSite";
 import {_TopSitesEdit as TopSitesEdit, TopSitesEdit as TopSitesEditConnected} from "content-src/components/TopSites/TopSitesEdit";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
-import {mountWithIntl} from "test/unit/utils";
 import React from "react";
 import {shallow} from "enzyme";
 import {TopSiteForm} from "content-src/components/TopSites/TopSiteForm";
@@ -886,6 +886,14 @@ describe("<TopSiteList>", () => {
     assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
     assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
   });
+  it("should pass through the onEdit prop to <TopSitesPlaceholder>s", () => {
+    function onEditCallback() {}
+    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
+    const topSitesCount = 5;
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} onEdit={onEditCallback} TopSites={{rows}} TopSitesCount={topSitesCount} />);
+    assert.equal(wrapper.find(TopSitePlaceholder).first().props().onEdit,
+      onEditCallback);
+  });
   it("should fill any holes in TopSites with placeholders", () => {
     const rows = [{url: "https://foo.com"}];
     rows[3] = {url: "https://bar.com"};
@@ -993,5 +1001,29 @@ describe("<TopSiteList>", () => {
     site2.isPinned = true;
     assert.deepEqual(instance._makeTopSitesPreview(0), [site2, site1, site3, null, null, null]);
     assert.deepEqual(instance._makeTopSitesPreview(2), [site1, site3, site2, null, null, null]);
+  });
+});
+
+describe("TopSitePlaceholder", () => {
+  it("should call this.props.onEdit(this.props.index) when edit-button is clicked", () => {
+    const onEdit = sinon.spy();
+    const wrapper = shallowWithIntl(<TopSitePlaceholder onEdit={onEdit} index={7} />);
+
+    wrapper.find(".edit-button").first().simulate("click");
+
+    assert.calledOnce(onEdit);
+    assert.calledWithExactly(onEdit, 7);
+  });
+
+  it("should dispatch a TOP_SITES_EDIT action when edit-button is clicked and this.props.onEdit is unset", () => {
+    const dispatch = sinon.spy();
+    const wrapper =
+      shallowWithIntl(<TopSitePlaceholder dispatch={dispatch} index={7} />);
+
+    wrapper.find(".edit-button").first().simulate("click");
+
+    assert.calledOnce(dispatch);
+    assert.calledWithExactly(dispatch,
+      {type: at.TOP_SITES_EDIT, data: {index: 7}});
   });
 });
