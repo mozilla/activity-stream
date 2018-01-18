@@ -18,6 +18,10 @@ XPCOMUtils.defineLazyServiceGetter(this, "MIMEService",
   "@mozilla.org/mime;1", "nsIMIMEService");
 XPCOMUtils.defineLazyModuleGetter(this, "OS",
   "resource://gre/modules/osfile.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "Services",
+  "resource://gre/modules/Services.jsm");
 
 const GREY_10 = "#F9F9FA";
 
@@ -73,6 +77,11 @@ this.Screenshots = {
    @ @param onScreenshot {function} Callback for when the screenshot loads
    */
   async maybeCacheScreenshot(link, url, property, onScreenshot) {
+    const win = Services.wm.getMostRecentWindow(null);
+    const isPrivate = PrivateBrowsingUtils.isWindowPrivate(win);
+    if (isPrivate) {
+      return;
+    }
     // Nothing to do if we already have a pending screenshot or
     // if a previous request failed and returned null.
     const cache = link.__sharedCache;
