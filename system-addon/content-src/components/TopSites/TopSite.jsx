@@ -241,10 +241,7 @@ export class TopSitePlaceholder extends React.PureComponent {
     this.onEditButtonClick = this.onEditButtonClick.bind(this);
   }
   onEditButtonClick() {
-    this.props.dispatch({
-      type: at.TOP_SITES_EDIT,
-      data: {index: this.props.index}
-    });
+    this.props.onEdit(this.props.index);
   }
   render() {
     return (<TopSiteLink className="placeholder" isDraggable={false} {...this.props}>
@@ -392,6 +389,7 @@ export class _TopSiteList extends React.PureComponent {
       };
       topSitesUI.push(!link ? (
         <TopSitePlaceholder
+          onEdit={props.onEdit}
           {...slotProps}
           {...commonProps} />
       ) : (
