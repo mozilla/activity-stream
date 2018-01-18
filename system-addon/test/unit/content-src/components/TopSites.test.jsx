@@ -1014,4 +1014,16 @@ describe("TopSitePlaceholder", () => {
     assert.calledOnce(onEdit);
     assert.calledWithExactly(onEdit, 7);
   });
+
+  it("should dispatch a TOP_SITES_EDIT action when edit-button is clicked and this.props.onEdit is unset", () => {
+    const dispatch = sinon.spy();
+    const wrapper =
+      mountWithIntl(<TopSitePlaceholder dispatch={dispatch} index={7} />);
+
+    wrapper.find(".edit-button").first().simulate("click");
+
+    assert.calledOnce(dispatch);
+    assert.calledWithExactly(dispatch,
+      {type: at.TOP_SITES_EDIT, data: {index: 7}});
+  });
 });

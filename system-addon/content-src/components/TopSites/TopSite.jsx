@@ -240,9 +240,17 @@ export class TopSitePlaceholder extends React.PureComponent {
     super(props);
     this.onEditButtonClick = this.onEditButtonClick.bind(this);
   }
+
   onEditButtonClick() {
-    this.props.onEdit(this.props.index);
+    if (this.props.onEdit) {
+      this.props.onEdit(this.props.index);
+      return;
+    }
+
+    this.props.dispatch(
+      {type: at.TOP_SITES_EDIT, data: {index: this.props.index}});
   }
+
   render() {
     return (<TopSiteLink className="placeholder" isDraggable={false} {...this.props}>
       <button className="context-menu-button edit-button icon"
