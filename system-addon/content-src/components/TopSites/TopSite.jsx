@@ -290,6 +290,7 @@ export class _TopSiteList extends React.PureComponent {
   onDragEvent(event, index, link, title) {
     switch (event.type) {
       case "dragstart":
+        this.dropped = false;
         this.setState({
           draggedIndex: index,
           draggedSite: link,
@@ -299,7 +300,10 @@ export class _TopSiteList extends React.PureComponent {
         this.userEvent("DRAG", index);
         break;
       case "dragend":
-        this.setState(this.DEFAULT_STATE);
+        if (!this.dropped) {
+          // If there was no drop event, reset the state to the default.
+          this.setState(this.DEFAULT_STATE);
+        }
         break;
       case "dragenter":
         if (index === this.state.draggedIndex) {
@@ -310,6 +314,7 @@ export class _TopSiteList extends React.PureComponent {
         break;
       case "drop":
         if (index !== this.state.draggedIndex) {
+          this.dropped = true;
           this.props.dispatch(ac.SendToMain({
             type: at.TOP_SITES_INSERT,
             data: {site: {url: this.state.draggedSite.url, label: this.state.draggedTitle}, index, draggedFromIndex: this.state.draggedIndex}
