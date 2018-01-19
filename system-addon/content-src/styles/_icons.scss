@@ -49,6 +49,7 @@
   }
 
   &.icon-new-window {
+    @include flip-icon;
     background-image: url('#{$image-path}glyph-newWindow-16.svg');
   }
 
@@ -61,10 +62,12 @@
   }
 
   &.icon-pin {
+    @include flip-icon;
     background-image: url('#{$image-path}glyph-pin-16.svg');
   }
 
   &.icon-unpin {
+    @include flip-icon;
     background-image: url('#{$image-path}glyph-unpin-16.svg');
   }
 
@@ -94,6 +97,7 @@
   }
 
   &.icon-pin-small {
+    @include flip-icon;
     background-image: url('#{$image-path}glyph-pin-12.svg');
     background-size: $smaller-icon-size;
     height: $smaller-icon-size;
