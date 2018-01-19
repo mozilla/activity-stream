@@ -68,6 +68,22 @@ this.Screenshots = {
   },
 
   /**
+   * Checks if all the open windows are private browsing windows. If so, we do not
+   * want to collect screenshots. If there exists at least 1 non-private window,
+   * we are ok to collect screenshots.
+   */
+  _shouldGetScreenshots() {
+    const windows = Services.wm.getEnumerator("navigator:browser");
+    while (windows.hasMoreElements()) {
+      if (!PrivateBrowsingUtils.isWindowPrivate(windows.getNext())) {
+        // As soon as we encounter 1 non-private window, screenshots are fair game.
+        return true;
+      }
+    }
+    return false;
+  },
+
+  /**
    * Conditionally get a screenshot for a link if there's no existing pending
    * screenshot. Updates the cached link's desired property with the result.
    *
@@ -77,9 +93,8 @@ this.Screenshots = {
    @ @param onScreenshot {function} Callback for when the screenshot loads
    */
   async maybeCacheScreenshot(link, url, property, onScreenshot) {
-    const win = Services.wm.getMostRecentWindow(null);
-    const isPrivate = PrivateBrowsingUtils.isWindowPrivate(win);
-    if (isPrivate) {
+    // If there are only private windows open, do not collect screenshots
+    if (!this._shouldGetScreenshots()) {
       return;
     }
     // Nothing to do if we already have a pending screenshot or

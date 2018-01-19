@@ -60,7 +60,8 @@ describe("Top Sites Feed", () => {
     };
     fakeScreenshot = {
       getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT)),
-      maybeCacheScreenshot: Screenshots.maybeCacheScreenshot
+      maybeCacheScreenshot: Screenshots.maybeCacheScreenshot,
+      _shouldGetScreenshots: sinon.stub().returns(true)
     };
     filterAdultStub = sinon.stub().returns([]);
     shortURLStub = sinon.stub().callsFake(site => site.url);
