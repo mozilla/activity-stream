@@ -42,6 +42,7 @@ export class _LinkMenu extends React.PureComponent {
     options[options.length - 1].last = true;
     return options;
   }
+
   render() {
     return (<ContextMenu
       visible={this.props.visible}

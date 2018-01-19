@@ -23,6 +23,7 @@ export class _TopSitesEdit extends React.PureComponent {
     this.onEdit = this.onEdit.bind(this);
     this.dispatchEditModalUserEvent = this.dispatchEditModalUserEvent.bind(this);
   }
+
   dispatchEditModalUserEvent() {
     const event = this.state.showEditModal ? "TOP_SITES_EDIT_OPEN" : "TOP_SITES_EDIT_CLOSE";
     this.props.dispatch(ac.UserEvent({
@@ -30,12 +31,14 @@ export class _TopSitesEdit extends React.PureComponent {
       event
     }));
   }
+
   onEditButtonClick() {
     function toggleEditModal(prevState) {
       return {showEditModal: !prevState.showEditModal};
     }
     this.setState(toggleEditModal, this.dispatchEditModalUserEvent);
   }
+
   onModalOverlayClick() {
     this.setState({showEditModal: false, showAddForm: false, showEditForm: false});
     this.props.dispatch(ac.UserEvent({
@@ -44,6 +47,7 @@ export class _TopSitesEdit extends React.PureComponent {
     }));
     this.props.dispatch({type: at.TOP_SITES_CANCEL_EDIT});
   }
+
   onShowMoreLessClick() {
     const prefIsSetToDefault = this.props.TopSitesCount === TOP_SITES_DEFAULT_LENGTH;
     this.props.dispatch(ac.SendToMain({
@@ -55,6 +59,7 @@ export class _TopSitesEdit extends React.PureComponent {
       event: prefIsSetToDefault ? "TOP_SITES_EDIT_SHOW_MORE" : "TOP_SITES_EDIT_SHOW_LESS"
     }));
   }
+
   onAddButtonClick() {
     this.setState({showAddForm: true});
     this.props.dispatch(ac.UserEvent({
@@ -62,10 +67,12 @@ export class _TopSitesEdit extends React.PureComponent {
       event: "TOP_SITES_ADD_FORM_OPEN"
     }));
   }
+
   onFormClose() {
     this.setState({showAddForm: false, showEditForm: false});
     this.props.dispatch({type: at.TOP_SITES_CANCEL_EDIT});
   }
+
   onEdit(index) {
     this.setState({showEditForm: true, editIndex: index});
     this.props.dispatch(ac.UserEvent({
@@ -73,6 +80,7 @@ export class _TopSitesEdit extends React.PureComponent {
       event: "TOP_SITES_EDIT_FORM_OPEN"
     }));
   }
+
   render() {
     const {editForm} = this.props.TopSites;
     const showEditForm = (editForm && editForm.visible) || (this.state.showEditModal && this.state.showEditForm);

@@ -50,6 +50,7 @@ this.TopSitesFeed = class TopSitesFeed {
   _dedupeKey(site) {
     return site && site.hostname;
   }
+
   refreshDefaults(sites) {
     // Clear out the array of any previous defaults
     DEFAULT_TOP_SITES.length = 0;

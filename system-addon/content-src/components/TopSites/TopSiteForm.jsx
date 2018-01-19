@@ -18,18 +18,22 @@ export class TopSiteForm extends React.PureComponent {
     this.onSaveButtonClick = this.onSaveButtonClick.bind(this);
     this.onUrlInputMount = this.onUrlInputMount.bind(this);
   }
+
   onLabelChange(event) {
     this.resetValidation();
     this.setState({"label": event.target.value});
   }
+
   onUrlChange(event) {
     this.resetValidation();
     this.setState({"url": event.target.value});
   }
+
   onCancelButtonClick(ev) {
     ev.preventDefault();
     this.props.onClose();
   }
+
   onAddButtonClick(ev) {
     ev.preventDefault();
     if (this.validateForm()) {
@@ -48,6 +52,7 @@ export class TopSiteForm extends React.PureComponent {
       this.props.onClose();
     }
   }
+
   onSaveButtonClick(ev) {
     ev.preventDefault();
     if (this.validateForm()) {
@@ -67,6 +72,7 @@ export class TopSiteForm extends React.PureComponent {
       this.props.onClose();
     }
   }
+
   cleanUrl() {
     let url = this.state.url;
     // If we are missing a protocol, prepend http://
@@ -75,11 +81,13 @@ export class TopSiteForm extends React.PureComponent {
     }
     return url;
   }
+
   resetValidation() {
     if (this.state.validationError) {
       this.setState({validationError: false});
     }
   }
+
   validateUrl() {
     try {
       return !!new URL(this.cleanUrl());
@@ -87,6 +95,7 @@ export class TopSiteForm extends React.PureComponent {
       return false;
     }
   }
+
   validateForm() {
     this.resetValidation();
     // Only the URL is required and must be valid.
@@ -97,9 +106,11 @@ export class TopSiteForm extends React.PureComponent {
     }
     return true;
   }
+
   onUrlInputMount(input) {
     this.inputUrl = input;
   }
+
   render() {
     return (
       <form className="topsite-form">

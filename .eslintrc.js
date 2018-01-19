@@ -82,6 +82,7 @@ module.exports = {
       "allowObjectStart": true,
       "beforeBlockComment": true
     }],
+    "lines-between-class-members": 2,
     "max-depth": [2, 4],
     "max-len": 0,
     "max-lines": 0,

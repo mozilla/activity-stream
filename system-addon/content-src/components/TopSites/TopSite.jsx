@@ -55,6 +55,7 @@ export class TopSiteLink extends React.PureComponent {
         break;
     }
   }
+
   render() {
     const {children, className, isDraggable, link, onClick, title} = this.props;
     const topSiteOuterClassName = `top-site-outer${className ? ` ${className}` : ""}`;
@@ -134,6 +135,7 @@ export class TopSite extends React.PureComponent {
     this.onPinButtonClick = this.onPinButtonClick.bind(this);
     this.onEditButtonClick = this.onEditButtonClick.bind(this);
   }
+
   userEvent(event) {
     this.props.dispatch(ac.UserEvent({
       event,
@@ -141,6 +143,7 @@ export class TopSite extends React.PureComponent {
       action_position: this.props.index
     }));
   }
+
   onLinkClick(ev) {
     if (this.props.onEdit) {
       // Ignore clicks if we are in the edit modal.
@@ -149,14 +152,17 @@ export class TopSite extends React.PureComponent {
     }
     this.userEvent("CLICK");
   }
+
   onMenuButtonClick(event) {
     event.preventDefault();
     this.props.onActivate(this.props.index);
     this.setState({showContextMenu: true});
   }
+
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});
   }
+
   onDismissButtonClick() {
     const {link} = this.props;
     if (link.isPinned) {
@@ -171,6 +177,7 @@ export class TopSite extends React.PureComponent {
     }));
     this.userEvent("BLOCK");
   }
+
   onPinButtonClick() {
     const {link, index} = this.props;
     if (link.isPinned) {
@@ -187,9 +194,11 @@ export class TopSite extends React.PureComponent {
       this.userEvent("PIN");
     }
   }
+
   onEditButtonClick() {
     this.props.onEdit(this.props.index);
   }
+
   render() {
     const {props} = this;
     const {link} = props;
@@ -273,6 +282,7 @@ export class _TopSiteList extends React.PureComponent {
     this.onDragEvent = this.onDragEvent.bind(this);
     this.onActivate = this.onActivate.bind(this);
   }
+
   componentWillUpdate(nextProps) {
     if (this.state.draggedSite) {
       const prevTopSites = this.props.TopSites && this.props.TopSites.rows;
@@ -285,6 +295,7 @@ export class _TopSiteList extends React.PureComponent {
       }
     }
   }
+
   userEvent(event, index) {
     this.props.dispatch(ac.UserEvent({
       event,
@@ -292,6 +303,7 @@ export class _TopSiteList extends React.PureComponent {
       action_position: index
     }));
   }
+
   onDragEvent(event, index, link, title) {
     switch (event.type) {
       case "dragstart":
@@ -329,6 +341,7 @@ export class _TopSiteList extends React.PureComponent {
         break;
     }
   }
+
   _getTopSites() {
     // Make a copy of the sites to truncate or extend to desired length
     let topSites = this.props.TopSites.rows.slice();
@@ -377,9 +390,11 @@ export class _TopSiteList extends React.PureComponent {
 
     return preview;
   }
+
   onActivate(index) {
     this.setState({activeIndex: index});
   }
+
   render() {
     const {props} = this;
     const topSites = this.state.topSitesPreview || this._getTopSites();

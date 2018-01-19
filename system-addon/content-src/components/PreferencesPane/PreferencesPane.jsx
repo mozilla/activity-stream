@@ -30,6 +30,7 @@ export class _PreferencesPane extends React.PureComponent {
     this.togglePane = this.togglePane.bind(this);
     this.onWrapperMount = this.onWrapperMount.bind(this);
   }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.PreferencesPane.visible !== this.props.PreferencesPane.visible) {
       // While the sidebar is open, listen for all document clicks.
@@ -40,15 +41,18 @@ export class _PreferencesPane extends React.PureComponent {
       }
     }
   }
+
   isSidebarOpen() {
     return this.props.PreferencesPane.visible;
   }
+
   handleClickOutside(event) {
     // if we are showing the sidebar and there is a click outside, close it.
     if (this.isSidebarOpen() && !this.wrapper.contains(event.target)) {
       this.togglePane();
     }
   }
+
   handlePrefChange(event) {
     const target = event.target;
     const {name, checked} = target;
@@ -58,12 +62,14 @@ export class _PreferencesPane extends React.PureComponent {
     }
     this.props.dispatch(ac.SetPref(name, value));
   }
+
   handleSectionChange(event) {
     const target = event.target;
     const id = target.name;
     const type = target.checked ? at.SECTION_ENABLE : at.SECTION_DISABLE;
     this.props.dispatch(ac.SendToMain({type, data: id}));
   }
+
   togglePane() {
     if (this.isSidebarOpen()) {
       this.props.dispatch({type: at.SETTINGS_CLOSE});
@@ -73,9 +79,11 @@ export class _PreferencesPane extends React.PureComponent {
       this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
     }
   }
+
   onWrapperMount(wrapper) {
     this.wrapper = wrapper;
   }
+
   render() {
     const props = this.props;
     const prefs = props.Prefs.values;

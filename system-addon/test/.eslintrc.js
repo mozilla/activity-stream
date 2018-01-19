@@ -10,6 +10,7 @@ module.exports = {
   "rules": {
     "func-name-matching": 0,
     "import/no-commonjs": 2,
+    "lines-between-class-members": 0,
     "react/jsx-no-bind": 0
   }
 };

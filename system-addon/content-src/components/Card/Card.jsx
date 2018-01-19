@@ -67,6 +67,7 @@ export class Card extends React.PureComponent {
       showContextMenu: true
     });
   }
+
   onLinkClick(event) {
     event.preventDefault();
     const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
@@ -87,21 +88,26 @@ export class Card extends React.PureComponent {
       }));
     }
   }
+
   onMenuUpdate(showContextMenu) {
     this.setState({showContextMenu});
   }
+
   componentDidMount() {
     this.maybeLoadImage();
   }
+
   componentDidUpdate() {
     this.maybeLoadImage();
   }
+
   componentWillReceiveProps(nextProps) {
     // Clear the image state if changing images
     if (nextProps.link.image !== this.props.link.image) {
       this.setState({imageLoaded: false});
     }
   }
+
   render() {
     const {index, link, dispatch, contextMenuOptions, eventSource, shouldSendImpressionStats} = this.props;
     const {props} = this;

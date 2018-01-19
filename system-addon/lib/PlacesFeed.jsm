@@ -71,12 +71,19 @@ class HistoryObserver extends Observer {
 
   // Empty functions to make xpconnect happy
   onBeginUpdateBatch() {}
+
   onEndUpdateBatch() {}
+
   onVisits() {}
+
   onTitleChanged() {}
+
   onFrecencyChanged() {}
+
   onManyFrecenciesChanged() {}
+
   onPageChanged() {}
+
   onDeleteVisits() {}
 }
 
@@ -193,8 +200,11 @@ class BookmarksObserver extends Observer {
 
   // Empty functions to make xpconnect happy
   onBeginUpdateBatch() {}
+
   onEndUpdateBatch() {}
+
   onItemVisited() {}
+
   onItemMoved() {}
 }
 
