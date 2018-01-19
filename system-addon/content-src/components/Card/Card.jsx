@@ -119,7 +119,8 @@ export class Card extends React.PureComponent {
           </div>}
           <div className={`card-details${hasImage ? "" : " no-image"}`}>
             {link.hostname && <div className="card-host-name">{link.hostname}</div>}
-            <div className={["card-text",
+            <div className={[
+              "card-text",
               icon ? "" : "no-context",
               link.description ? "" : "no-description",
               link.hostname ? "" : "no-host-name",

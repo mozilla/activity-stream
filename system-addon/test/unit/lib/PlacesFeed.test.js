@@ -244,11 +244,7 @@ describe("PlacesFeed", () => {
         // Yes, onItemAdded has at least 8 arguments. See function definition for docs.
         const args = [null, null, null, TYPE_BOOKMARK,
           {spec: FAKE_BOOKMARK.url, scheme: "http"}, FAKE_BOOKMARK.bookmarkTitle,
-          FAKE_BOOKMARK.dateAdded,
-          FAKE_BOOKMARK.bookmarkGuid,
-          "",
-          SOURCES.DEFAULT
-        ];
+          FAKE_BOOKMARK.dateAdded, FAKE_BOOKMARK.bookmarkGuid, "", SOURCES.DEFAULT];
         await observer.onItemAdded(...args);
 
         assert.calledWith(dispatch, {type: at.PLACES_BOOKMARK_ADDED, data: FAKE_BOOKMARK});
@@ -257,11 +253,7 @@ describe("PlacesFeed", () => {
         // Yes, onItemAdded has at least 8 arguments. See function definition for docs.
         const args = [null, null, null, TYPE_BOOKMARK,
           {spec: FAKE_BOOKMARK.url, scheme: "https"}, FAKE_BOOKMARK.bookmarkTitle,
-          FAKE_BOOKMARK.dateAdded,
-          FAKE_BOOKMARK.bookmarkGuid,
-          "",
-          SOURCES.DEFAULT
-        ];
+          FAKE_BOOKMARK.dateAdded, FAKE_BOOKMARK.bookmarkGuid, "", SOURCES.DEFAULT];
         await observer.onItemAdded(...args);
 
         assert.calledWith(dispatch, {type: at.PLACES_BOOKMARK_ADDED, data: FAKE_BOOKMARK});
@@ -270,11 +262,7 @@ describe("PlacesFeed", () => {
         // Yes, onItemAdded has at least 8 arguments. See function definition for docs.
         const args = [null, null, null, TYPE_BOOKMARK,
           {spec: FAKE_BOOKMARK.url, scheme: "places"}, FAKE_BOOKMARK.bookmarkTitle,
-          FAKE_BOOKMARK.dateAdded,
-          FAKE_BOOKMARK.bookmarkGuid,
-          "",
-          SOURCES.DEFAULT
-        ];
+          FAKE_BOOKMARK.dateAdded, FAKE_BOOKMARK.bookmarkGuid, "", SOURCES.DEFAULT];
         await observer.onItemAdded(...args);
 
         assert.notCalled(dispatch);
@@ -283,11 +271,7 @@ describe("PlacesFeed", () => {
         // Yes, onItemAdded has at least 8 arguments. See function definition for docs.
         const args = [null, null, null, TYPE_BOOKMARK,
           {spec: FAKE_BOOKMARK.url, scheme: "http"}, FAKE_BOOKMARK.bookmarkTitle,
-          FAKE_BOOKMARK.dateAdded,
-          FAKE_BOOKMARK.bookmarkGuid,
-          "",
-          SOURCES.IMPORT_REPLACE
-        ];
+          FAKE_BOOKMARK.dateAdded, FAKE_BOOKMARK.bookmarkGuid, "", SOURCES.IMPORT_REPLACE];
         await observer.onItemAdded(...args);
 
         assert.notCalled(dispatch);

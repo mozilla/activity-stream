@@ -50,6 +50,7 @@ module.exports = {
     "react/self-closing-comp": 2,
 
     "accessor-pairs": [2, {"setWithoutGet": true, "getWithoutSet": false}],
+    "array-bracket-newline": [2, "consistent"],
     "array-bracket-spacing": [2, "never"],
     "array-callback-return": 2,
     "arrow-body-style": [2, "as-needed"],
