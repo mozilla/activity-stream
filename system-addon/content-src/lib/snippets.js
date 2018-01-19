@@ -53,7 +53,7 @@ export class SnippetsMap extends Map {
     if (!id) {
       return;
     }
-    let blockList = this.blockList;
+    const {blockList} = this;
     if (!blockList.includes(id)) {
       blockList.push(id);
       this._dispatch(ac.SendToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList}));

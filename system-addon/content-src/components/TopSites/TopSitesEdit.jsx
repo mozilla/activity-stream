@@ -84,7 +84,7 @@ export class _TopSitesEdit extends React.PureComponent {
   render() {
     const {editForm} = this.props.TopSites;
     const showEditForm = (editForm && editForm.visible) || (this.state.showEditModal && this.state.showEditForm);
-    let editIndex = this.state.editIndex;
+    let {editIndex} = this.state;
     if (editIndex < 0 && editForm) {
       editIndex = editForm.index;
     }

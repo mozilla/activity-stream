@@ -108,7 +108,7 @@ export class Disclaimer extends React.PureComponent {
   }
 
   render() {
-    const disclaimer = this.props.disclaimer;
+    const {disclaimer} = this.props;
     return (
       <div className="section-disclaimer">
           <div className="section-disclaimer-text">
@@ -213,7 +213,7 @@ export class _CollapsibleSection extends React.PureComponent {
   }
 
   renderIcon() {
-    const icon = this.props.icon;
+    const {icon} = this.props;
     if (icon && icon.startsWith("moz-extension://")) {
       return <span className="icon icon-small-spacer" style={{backgroundImage: `url('${icon}')`}} />;
     }

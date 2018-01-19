@@ -14,7 +14,7 @@ describe("<Base>", () => {
     const dispatch = sinon.spy();
     shallow(<Base {...Object.assign({}, DEFAULT_PROPS, {dispatch})} />);
     assert.calledOnce(dispatch);
-    const action = dispatch.firstCall.args[0];
+    const [action] = dispatch.firstCall.args;
     assert.equal("NEW_TAB_REHYDRATED", action.type);
   });
 });

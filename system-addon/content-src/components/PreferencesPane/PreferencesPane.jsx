@@ -53,9 +53,7 @@ export class _PreferencesPane extends React.PureComponent {
     }
   }
 
-  handlePrefChange(event) {
-    const target = event.target;
-    const {name, checked} = target;
+  handlePrefChange({target: {name, checked}}) {
     let value = checked;
     if (name === "topSitesCount") {
       value = checked ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH;
@@ -63,8 +61,7 @@ export class _PreferencesPane extends React.PureComponent {
     this.props.dispatch(ac.SetPref(name, value));
   }
 
-  handleSectionChange(event) {
-    const target = event.target;
+  handleSectionChange({target}) {
     const id = target.name;
     const type = target.checked ? at.SECTION_ENABLE : at.SECTION_DISABLE;
     this.props.dispatch(ac.SendToMain({type, data: id}));
@@ -85,7 +82,7 @@ export class _PreferencesPane extends React.PureComponent {
   }
 
   render() {
-    const props = this.props;
+    const {props} = this;
     const prefs = props.Prefs.values;
     const sections = props.Sections;
     const isVisible = this.isSidebarOpen();

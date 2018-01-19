@@ -60,7 +60,7 @@ export class TopSiteLink extends React.PureComponent {
     const {children, className, isDraggable, link, onClick, title} = this.props;
     const topSiteOuterClassName = `top-site-outer${className ? ` ${className}` : ""}`;
     const {tippyTopIcon, faviconSize} = link;
-    const letterFallback = title[0];
+    const [letterFallback] = title;
     let imageClassName;
     let imageStyle;
     let showSmallFavicon = false;

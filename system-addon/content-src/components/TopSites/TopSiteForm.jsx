@@ -74,7 +74,7 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   cleanUrl() {
-    let url = this.state.url;
+    let {url} = this.state;
     // If we are missing a protocol, prepend http://
     if (!url.startsWith("http:") && !url.startsWith("https:")) {
       url = `http://${url}`;

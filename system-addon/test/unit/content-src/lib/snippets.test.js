@@ -335,21 +335,21 @@ describe("SnippetsProvider", () => {
       await snippets.init({connect: false});
 
       assert.calledOnce(snippets._noSnippetFallback);
-      const error = snippets._noSnippetFallback.firstCall.args[0];
+      const [error] = snippets._noSnippetFallback.firstCall.args;
       assert.match(error.message, "No element was found");
     });
     it("should call _noSnippetFallback if no payload is found", async () => {
       global.gSnippetsMap.set("snippets", "");
       await snippets.init({connect: false});
 
-      const error = snippets._noSnippetFallback.firstCall.args[0];
+      const [error] = snippets._noSnippetFallback.firstCall.args;
       assert.match(error.message, "No remote snippets were found");
     });
     it("should call _noSnippetFallback if the payload is not a string", async () => {
       global.gSnippetsMap.set("snippets", true);
       await snippets.init({connect: false});
 
-      const error = snippets._noSnippetFallback.firstCall.args[0];
+      const [error] = snippets._noSnippetFallback.firstCall.args;
       assert.match(error.message, "Snippet payload was incorrectly formatted");
     });
     it("should not call _noSnippetFallback if the payload and element are ok", async () => {

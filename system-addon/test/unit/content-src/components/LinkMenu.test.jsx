@@ -21,8 +21,8 @@ describe("<LinkMenu>", () => {
     ["visible", "onUpdate", "options"].forEach(prop => assert.property(contextMenuProps, prop));
   });
   it("should give ContextMenu the correct tabbable options length for a11y", () => {
-    const options = wrapper.find(ContextMenu).props().options;
-    const firstItem = options[0];
+    const {options} = wrapper.find(ContextMenu).props();
+    const [firstItem] = options;
     const lastItem = options[options.length - 1];
 
     // first item should have {first: true}
@@ -40,7 +40,7 @@ describe("<LinkMenu>", () => {
   });
   it("should show the correct options for default sites", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: "", isDefault: true}} options={["CheckBookmark"]} source={"TOP_SITES"} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
+    const {options} = wrapper.find(ContextMenu).props();
     let i = 0;
     assert.propertyVal(options[i++], "id", "menu_action_pin");
     assert.propertyVal(options[i++], "id", "edit_topsites_button_text");
@@ -57,29 +57,29 @@ describe("<LinkMenu>", () => {
   });
   it("should show Unpin option for a pinned site if CheckPinTopSite in options list", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: "", isPinned: true}} source={"TOP_SITES"} options={["CheckPinTopSite"]} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
+    const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_unpin")));
   });
   it("should show Pin option for an unpinned site if CheckPinTopSite in options list", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: "", isPinned: false}} source={"TOP_SITES"} options={["CheckPinTopSite"]} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
+    const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_pin")));
   });
   it("should show Unbookmark option for a bookmarked site if CheckBookmark in options list", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: "", bookmarkGuid: 1234}} source={"TOP_SITES"} options={["CheckBookmark"]} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
+    const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_remove_bookmark")));
   });
   it("should show Bookmark option for an unbookmarked site if CheckBookmark in options list", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: "", bookmarkGuid: 0}} source={"TOP_SITES"} options={["CheckBookmark"]} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
+    const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_bookmark")));
   });
   it("should show Edit option", () => {
     const props = {url: "foo", label: "label"};
     const index = 5;
     wrapper = shallowWithIntl(<LinkMenu site={props} index={5} source={"TOP_SITES"} options={["EditTopSite"]} dispatch={() => {}} />);
-    const options = wrapper.find(ContextMenu).props().options;
+    const {options} = wrapper.find(ContextMenu).props();
     const option = options.find(o => (o.id && o.id === "edit_topsites_button_text"));
     assert.isDefined(option);
     assert.equal(option.action.data.index, index);
@@ -119,8 +119,8 @@ describe("<LinkMenu>", () => {
       menu_action_save_to_pocket: {site: {url: FAKE_SITE.url, title: FAKE_SITE.title}}
     };
 
-    const options = shallowWithIntl(<LinkMenu site={FAKE_SITE} dispatch={dispatch} index={FAKE_INDEX} options={propOptions} source={FAKE_SOURCE} shouldSendImpressionStats={true} />)
-      .find(ContextMenu).props().options;
+    const {options} = shallowWithIntl(<LinkMenu site={FAKE_SITE} dispatch={dispatch} index={FAKE_INDEX} options={propOptions} source={FAKE_SOURCE} shouldSendImpressionStats={true} />)
+      .find(ContextMenu).props();
     afterEach(() => dispatch.reset());
     options.filter(o => o.type !== "separator").forEach(option => {
       it(`should fire a ${option.action.type} action for ${option.id} with the expected data`, () => {
@@ -147,7 +147,7 @@ describe("<LinkMenu>", () => {
       });
       it(`should fire a UserEvent action for ${option.id}`, () => {
         option.onClick();
-        const action = dispatch.secondCall.args[0];
+        const [action] = dispatch.secondCall.args;
         assert.isUserEventAction(action);
         assert.propertyVal(action.data, "source", FAKE_SOURCE);
         assert.propertyVal(action.data, "action_position", FAKE_INDEX);
@@ -155,7 +155,7 @@ describe("<LinkMenu>", () => {
       it(`should send impression stats for ${option.id}`, () => {
         if (option.impression) {
           option.onClick();
-          const action = dispatch.thirdCall.args[0];
+          const [action] = dispatch.thirdCall.args;
           assert.deepEqual(action, option.impression);
         }
       });

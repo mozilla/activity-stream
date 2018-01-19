@@ -42,7 +42,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     const initFeed = () => {
       SectionsManager.enableSection(SECTION_ID);
       try {
-        const options = SectionsManager.sections.get(SECTION_ID).options;
+        const {options} = SectionsManager.sections.get(SECTION_ID);
         const apiKey = this.getApiKeyFromPref(options.api_key_pref);
         this.stories_endpoint = this.produceFinalEndpointUrl(options.stories_endpoint, apiKey);
         this.topics_endpoint = this.produceFinalEndpointUrl(options.topics_endpoint, apiKey);

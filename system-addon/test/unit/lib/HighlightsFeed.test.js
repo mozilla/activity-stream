@@ -179,7 +179,7 @@ describe("Highlights Feed", () => {
       await feed.fetchHighlights();
 
       assert.calledOnce(feed.fetchImage);
-      const arg = feed.fetchImage.firstCall.args[0];
+      const [arg] = feed.fetchImage.firstCall.args;
       assert.propertyVal(arg, "url", links[0].url);
       assert.propertyVal(arg, "preview_image_url", links[0].preview_image_url);
     });

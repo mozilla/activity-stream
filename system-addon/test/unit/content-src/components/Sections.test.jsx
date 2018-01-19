@@ -177,7 +177,7 @@ describe("<Section>", () => {
 
       assert.calledOnce(dispatch);
 
-      const action = dispatch.firstCall.args[0];
+      const [action] = dispatch.firstCall.args;
       assert.equal(action.type, at.TELEMETRY_IMPRESSION_STATS);
       assert.equal(action.data.source, "TOP_STORIES");
       assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}]);
@@ -213,7 +213,7 @@ describe("<Section>", () => {
       assert.notCalled(props.dispatch);
 
       // Simulate a visibilityChange event
-      const listener = props.document.addEventListener.firstCall.args[1];
+      const [, listener] = props.document.addEventListener.firstCall.args;
       props.document.visibilityState = "visible";
       listener();
 
@@ -318,7 +318,7 @@ describe("<Section>", () => {
 
       // Make sure we only sent the latest event
       assert.calledOnce(props.dispatch);
-      const action = props.dispatch.firstCall.args[0];
+      const [action] = props.dispatch.firstCall.args;
       assert.deepEqual(action.data.tiles, [{id: 2432}]);
     });
   });

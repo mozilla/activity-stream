@@ -49,7 +49,7 @@ export class _Base extends React.PureComponent {
   }
 
   render() {
-    const props = this.props;
+    const {props} = this;
     const {App, locale, strings} = props;
     const {initialized} = App;
     const prefs = props.Prefs.values;

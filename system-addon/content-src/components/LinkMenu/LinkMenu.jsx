@@ -8,7 +8,7 @@ const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "EditTopSite", "Separator"
 
 export class _LinkMenu extends React.PureComponent {
   getOptions() {
-    const props = this.props;
+    const {props} = this;
     const {site, index, source} = props;
 
     // Handle special case of default site

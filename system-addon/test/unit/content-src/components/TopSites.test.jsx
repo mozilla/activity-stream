@@ -464,7 +464,7 @@ describe("<TopSite>", () => {
 
       wrapper.find(TopSiteLink).simulate("click", {});
 
-      const action = dispatch.firstCall.args[0];
+      const [action] = dispatch.firstCall.args;
       assert.isUserEventAction(action);
 
       assert.propertyVal(action.data, "event", "CLICK");

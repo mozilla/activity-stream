@@ -70,7 +70,7 @@ export class _TopSites extends React.PureComponent {
   }
 
   render() {
-    const props = this.props;
+    const {props} = this;
     const infoOption = {
       header: {id: "settings_pane_topsites_header"},
       body: {id: "settings_pane_topsites_body"}
