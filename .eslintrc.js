@@ -64,6 +64,7 @@ module.exports = {
     "default-case": 0,
     "dot-location": [2, "property"],
     "eqeqeq": 2,
+    "func-name-matching": 2,
     "func-names": 0,
     "func-style": 0,
     "global-require": 0,
