@@ -119,6 +119,7 @@ module.exports = {
     "no-magic-numbers": 0,
     "no-mixed-operators": [2, {"allowSamePrecedence": true, "groups": [["&", "|", "^", "~", "<<", ">>", ">>>"], ["==", "!=", "===", "!==", ">", ">=", "<", "<="], ["&&", "||"], ["in", "instanceof"]]}],
     "no-mixed-requires": 2,
+    "no-multi-assign": 2,
     "no-multi-str": 2,
     "no-multiple-empty-lines": [2, {"max": 1, "maxBOF": 0, "maxEOF": 0}],
     "no-negated-condition": 0,

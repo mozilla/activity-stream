@@ -270,15 +270,19 @@ export class TopSitePlaceholder extends React.PureComponent {
 }
 
 export class _TopSiteList extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = this.DEFAULT_STATE = {
+  static get DEFAULT_STATE() {
+    return {
+      activeIndex: null,
       draggedIndex: null,
       draggedSite: null,
       draggedTitle: null,
-      topSitesPreview: null,
-      activeIndex: null
+      topSitesPreview: null
     };
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = _TopSiteList.DEFAULT_STATE;
     this.onDragEvent = this.onDragEvent.bind(this);
     this.onActivate = this.onActivate.bind(this);
   }
@@ -291,7 +295,7 @@ export class _TopSiteList extends React.PureComponent {
         prevTopSites[this.state.draggedIndex].url === this.state.draggedSite.url &&
         (!newTopSites[this.state.draggedIndex] || newTopSites[this.state.draggedIndex].url !== this.state.draggedSite.url)) {
         // We got the new order from the redux store via props. We can clear state now.
-        this.setState(this.DEFAULT_STATE);
+        this.setState(_TopSiteList.DEFAULT_STATE);
       }
     }
   }
@@ -319,7 +323,7 @@ export class _TopSiteList extends React.PureComponent {
       case "dragend":
         if (!this.dropped) {
           // If there was no drop event, reset the state to the default.
-          this.setState(this.DEFAULT_STATE);
+          this.setState(_TopSiteList.DEFAULT_STATE);
         }
         break;
       case "dragenter":

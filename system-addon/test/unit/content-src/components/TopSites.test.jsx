@@ -913,7 +913,7 @@ describe("<TopSiteList>", () => {
     assert.equal(instance.state.draggedSite, link);
     assert.equal(instance.state.draggedTitle, title);
     instance.onDragEvent({type: "dragend"});
-    assert.deepEqual(instance.state, instance.DEFAULT_STATE);
+    assert.deepEqual(instance.state, TopSiteList.DEFAULT_STATE);
   });
   it("should clear state when new props arrive after a drop", () => {
     const site1 = {url: "https://foo.com"};
@@ -928,7 +928,7 @@ describe("<TopSiteList>", () => {
       topSitesPreview: []
     });
     wrapper.setProps({TopSites: {rows: [site2, site1]}});
-    assert.deepEqual(instance.state, instance.DEFAULT_STATE);
+    assert.deepEqual(instance.state, TopSiteList.DEFAULT_STATE);
   });
   it("should dispatch events on drop", () => {
     const dispatch = sinon.spy();
