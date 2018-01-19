@@ -314,7 +314,7 @@ describe("SnippetsProvider", () => {
     });
     it("should catch fetch errors gracefully", async () => {
       sandbox.stub(global.console, "error");
-      global.fetch.returns(Promise.reject({status: 400}));
+      global.fetch.returns(Promise.reject(new Error({status: 400})));
 
       await snippets.init({connect: false, appData: {version: 5, snippetsURL: "foo.com"}});
 

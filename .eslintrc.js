@@ -171,6 +171,7 @@ module.exports = {
     "prefer-arrow-callback": ["error", {"allowNamedFunctions": true}],
     "prefer-const": 0, // TODO: Change to `1`?
     "prefer-destructuring": [2, {"AssignmentExpression": {"array": true}, "VariableDeclarator": {"array": true, "object": true}}],
+    "prefer-promise-reject-errors": 2,
     "prefer-reflect": 0,
     "prefer-rest-params": 2,
     "prefer-spread": 2,
