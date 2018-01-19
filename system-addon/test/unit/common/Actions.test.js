@@ -196,6 +196,22 @@ describe("ActionCreators", () => {
       assert.isFalse(au.isSendToMain(action), "isSendToMain");
     });
   });
+  describe("WebExtEvent", () => {
+    it("should set the provided type", () => {
+      const action = ac.WebExtEvent(at.WEBEXT_CLICK, {source: "MyExtension", url: "foo.com"});
+      assert.equal(action.type, at.WEBEXT_CLICK);
+    });
+    it("should set the provided data", () => {
+      const data = {source: "MyExtension", url: "foo.com"};
+      const action = ac.WebExtEvent(at.WEBEXT_CLICK, data);
+      assert.equal(action.data, data);
+    });
+    it("should throw if the 'source' property is missing", () => {
+      assert.throws(() => {
+        ac.WebExtEvent(at.WEBEXT_CLICK, {});
+      });
+    });
+  });
 });
 
 describe("ActionUtils", () => {

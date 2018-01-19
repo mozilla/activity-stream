@@ -82,7 +82,7 @@ const BUILT_IN_SECTIONS = {
 };
 
 const SectionsManager = {
-  ACTIONS_TO_PROXY: ["SYSTEM_TICK", "NEW_TAB_LOAD"],
+  ACTIONS_TO_PROXY: ["WEBEXT_CLICK", "WEBEXT_DISMISS"],
   CONTEXT_MENU_PREFS: {"SaveToPocket": "extensions.pocket.enabled"},
   initialized: false,
   sections: new Map(),
@@ -223,6 +223,13 @@ const SectionsManager = {
       this.emit(this.UPDATE_SECTION_CARD, id, url, options, shouldBroadcast);
     }
   },
+  removeSectionCard(sectionId, url) {
+    if (!this.sections.has(sectionId)) {
+      return;
+    }
+    const rows = this.sections.get(sectionId).rows.filter(row => row.url !== url);
+    this.updateSection(sectionId, {rows}, true);
+  },
   onceInitialized(callback) {
     if (this.initialized) {
       callback();
@@ -326,6 +333,11 @@ class SectionsFeed {
       }
       case at.PLACES_BOOKMARK_ADDED:
         SectionsManager.updateBookmarkMetadata(action.data);
+        break;
+      case at.WEBEXT_DISMISS:
+        if (action.data) {
+          SectionsManager.removeSectionCard(action.data.source, action.data.url);
+        }
         break;
       case at.SECTION_DISABLE:
         SectionsManager.disableSection(action.data);

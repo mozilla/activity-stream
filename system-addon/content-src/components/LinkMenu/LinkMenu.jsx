@@ -15,9 +15,9 @@ export class _LinkMenu extends React.PureComponent {
     const propOptions = !site.isDefault ? props.options : DEFAULT_SITE_MENU_OPTIONS;
 
     const options = propOptions.map(o => LinkMenuOptions[o](site, index, source)).map(option => {
-      const {action, impression, id, type, userEvent} = option;
+      const {action, impression, id, string_id, type, userEvent} = option;
       if (!type && id) {
-        option.label = props.intl.formatMessage(option);
+        option.label = props.intl.formatMessage({id: string_id || id});
         option.onClick = () => {
           props.dispatch(action);
           if (userEvent) {

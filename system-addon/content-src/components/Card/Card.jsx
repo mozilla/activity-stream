@@ -75,17 +75,27 @@ export class Card extends React.PureComponent {
       type: at.OPEN_LINK,
       data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
     }));
-    this.props.dispatch(ac.UserEvent({
-      event: "CLICK",
-      source: this.props.eventSource,
-      action_position: this.props.index
-    }));
-    if (this.props.shouldSendImpressionStats) {
-      this.props.dispatch(ac.ImpressionStats({
+
+    if (this.props.isWebExtension) {
+      this.props.dispatch(ac.WebExtEvent(at.WEBEXT_CLICK, {
         source: this.props.eventSource,
-        click: 0,
-        tiles: [{id: this.props.link.guid, pos: this.props.index}]
+        url: this.props.link.url,
+        action_position: this.props.index
       }));
+    } else {
+      this.props.dispatch(ac.UserEvent({
+        event: "CLICK",
+        source: this.props.eventSource,
+        action_position: this.props.index
+      }));
+
+      if (this.props.shouldSendImpressionStats) {
+        this.props.dispatch(ac.ImpressionStats({
+          source: this.props.eventSource,
+          click: 0,
+          tiles: [{id: this.props.link.guid, pos: this.props.index}]
+        }));
+      }
     }
   }
 

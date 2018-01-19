@@ -195,6 +195,17 @@ describe("<Card>", () => {
         tiles: [{id: DEFAULT_PROPS.link.guid, pos: DEFAULT_PROPS.index}]
       }));
     });
+    it("should notify Web Extensions with WEBEXT_CLICK if props.isWebExtension is true", () => {
+      wrapper = mountWithIntl(<Card {...DEFAULT_PROPS} isWebExtension={true} eventSource={"MyExtension"} index={3} />);
+      const card = wrapper.find(".card");
+      const event = {preventDefault() {}};
+      card.simulate("click", event);
+      assert.calledWith(DEFAULT_PROPS.dispatch, ac.WebExtEvent(at.WEBEXT_CLICK, {
+        source: "MyExtension",
+        url: DEFAULT_PROPS.link.url,
+        action_position: 3
+      }));
+    });
   });
 });
 
