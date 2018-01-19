@@ -178,6 +178,7 @@ module.exports = {
     "prefer-template": 2,
     "quote-props": [2, "consistent"],
     "radix": [2, "always"],
+    "require-await": 2,
     "require-jsdoc": 0,
     "semi-spacing": [2, {"before": false, "after": true}],
     "sort-imports": [2, {"ignoreCase": true}],
