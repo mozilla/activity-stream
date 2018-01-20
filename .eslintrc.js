@@ -38,6 +38,7 @@ module.exports = {
     "react/jsx-uses-react": 2,
     "react/jsx-uses-vars": 2,
     "react/jsx-wrap-multilines": 2,
+    "react/no-access-state-in-setstate": 2,
     "react/no-danger": 2,
     "react/no-deprecated": 2,
     "react/no-did-mount-set-state": 2,

@@ -21,14 +21,20 @@ export class _TopSitesEdit extends React.PureComponent {
     this.onAddButtonClick = this.onAddButtonClick.bind(this);
     this.onFormClose = this.onFormClose.bind(this);
     this.onEdit = this.onEdit.bind(this);
+    this.dispatchEditModalUserEvent = this.dispatchEditModalUserEvent.bind(this);
   }
-  onEditButtonClick() {
-    this.setState({showEditModal: !this.state.showEditModal});
+  dispatchEditModalUserEvent() {
     const event = this.state.showEditModal ? "TOP_SITES_EDIT_OPEN" : "TOP_SITES_EDIT_CLOSE";
     this.props.dispatch(ac.UserEvent({
       source: TOP_SITES_SOURCE,
       event
     }));
+  }
+  onEditButtonClick() {
+    function toggleEditModal(prevState) {
+      return {showEditModal: !prevState.showEditModal};
+    }
+    this.setState(toggleEditModal, this.dispatchEditModalUserEvent);
   }
   onModalOverlayClick() {
     this.setState({showEditModal: false, showAddForm: false, showEditForm: false});
