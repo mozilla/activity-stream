@@ -162,3 +162,9 @@ $snippets-container-height: 120px;
     offset-inline-start: auto;
   }
 }
+
+@mixin flip-icon {
+  &:dir(rtl) {
+    transform: scaleX(-1);
+  }
+}
