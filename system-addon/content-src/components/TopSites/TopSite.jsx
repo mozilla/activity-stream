@@ -1,11 +1,11 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {FormattedMessage, injectIntl} from "react-intl";
 import {
   MIN_CORNER_FAVICON_SIZE,
   MIN_RICH_FAVICON_SIZE,
   TOP_SITES_CONTEXT_MENU_OPTIONS,
   TOP_SITES_SOURCE
 } from "./TopSitesConstants";
-import {injectIntl} from "react-intl";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 
@@ -131,9 +131,6 @@ export class TopSite extends React.PureComponent {
     this.onLinkClick = this.onLinkClick.bind(this);
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
-    this.onDismissButtonClick = this.onDismissButtonClick.bind(this);
-    this.onPinButtonClick = this.onPinButtonClick.bind(this);
-    this.onEditButtonClick = this.onEditButtonClick.bind(this);
   }
 
   userEvent(event) {
@@ -145,11 +142,6 @@ export class TopSite extends React.PureComponent {
   }
 
   onLinkClick(ev) {
-    if (this.props.onEdit) {
-      // Ignore clicks if we are in the edit modal.
-      ev.preventDefault();
-      return;
-    }
     this.userEvent("CLICK");
   }
 
@@ -163,79 +155,27 @@ export class TopSite extends React.PureComponent {
     this.setState({showContextMenu});
   }
 
-  onDismissButtonClick() {
-    const {link} = this.props;
-    if (link.isPinned) {
-      this.props.dispatch(ac.SendToMain({
-        type: at.TOP_SITES_UNPIN,
-        data: {site: {url: link.url}}
-      }));
-    }
-    this.props.dispatch(ac.SendToMain({
-      type: at.BLOCK_URL,
-      data: link.url
-    }));
-    this.userEvent("BLOCK");
-  }
-
-  onPinButtonClick() {
-    const {link, index} = this.props;
-    if (link.isPinned) {
-      this.props.dispatch(ac.SendToMain({
-        type: at.TOP_SITES_UNPIN,
-        data: {site: {url: link.url}}
-      }));
-      this.userEvent("UNPIN");
-    } else {
-      this.props.dispatch(ac.SendToMain({
-        type: at.TOP_SITES_PIN,
-        data: {site: {url: link.url}, index}
-      }));
-      this.userEvent("PIN");
-    }
-  }
-
-  onEditButtonClick() {
-    this.props.onEdit(this.props.index);
-  }
-
   render() {
     const {props} = this;
     const {link} = props;
     const isContextMenuOpen = this.state.showContextMenu && props.activeIndex === props.index;
     const title = link.label || link.hostname;
     return (<TopSiteLink {...props} onClick={this.onLinkClick} onDragEvent={this.props.onDragEvent} className={isContextMenuOpen ? "active" : ""} title={title}>
-        {!props.onEdit &&
-          <div>
-            <button className="context-menu-button icon" onClick={this.onMenuButtonClick}>
-              <span className="sr-only">{`Open context menu for ${title}`}</span>
-            </button>
-            <LinkMenu
-              dispatch={props.dispatch}
-              index={props.index}
-              onUpdate={this.onMenuUpdate}
-              options={TOP_SITES_CONTEXT_MENU_OPTIONS}
-              site={link}
-              source={TOP_SITES_SOURCE}
-              visible={isContextMenuOpen} />
-          </div>
-        }
-        {props.onEdit &&
-          <div className="edit-menu">
-            <button
-              className={`icon icon-${link.isPinned ? "unpin" : "pin"}`}
-              title={this.props.intl.formatMessage({id: `edit_topsites_${link.isPinned ? "unpin" : "pin"}_button`})}
-              onClick={this.onPinButtonClick} />
-            <button
-              className="icon icon-edit"
-              title={this.props.intl.formatMessage({id: "edit_topsites_edit_button"})}
-              onClick={this.onEditButtonClick} />
-            <button
-              className="icon icon-dismiss"
-              title={this.props.intl.formatMessage({id: "edit_topsites_dismiss_button"})}
-              onClick={this.onDismissButtonClick} />
-          </div>
-        }
+        <div>
+          <button className="context-menu-button icon" onClick={this.onMenuButtonClick}>
+            <span className="sr-only">
+              <FormattedMessage id="context_menu_button_sr" values={{title}} />
+            </span>
+          </button>
+          <LinkMenu
+            dispatch={props.dispatch}
+            index={props.index}
+            onUpdate={this.onMenuUpdate}
+            options={TOP_SITES_CONTEXT_MENU_OPTIONS}
+            site={link}
+            source={TOP_SITES_SOURCE}
+            visible={isContextMenuOpen} />
+        </div>
     </TopSiteLink>);
   }
 }

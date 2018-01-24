@@ -1,12 +1,12 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "./TopSitesConstants";
+import {FormattedMessage, injectIntl} from "react-intl";
+import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE, TOP_SITES_SOURCE} from "./TopSitesConstants";
 import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/ComponentPerfTimer";
 import {connect} from "react-redux";
-import {FormattedMessage} from "react-intl";
 import React from "react";
+import {TopSiteForm} from "./TopSiteForm";
 import {TopSiteList} from "./TopSite";
-import {TopSitesEdit} from "./TopSitesEdit";
 
 /**
  * Iterates through TopSites and counts types of images.
@@ -40,6 +40,21 @@ function countTopSitesIconsTypes(topSites) {
 }
 
 export class _TopSites extends React.PureComponent {
+  static get DEFAULT_STATE() {
+    return {
+      showAddForm: false,
+      showEditForm: false,
+      editIndex: -1 // Index of top site being edited
+    };
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = _TopSites.DEFAULT_STATE;
+    this.onAddButtonClick = this.onAddButtonClick.bind(this);
+    this.onFormClose = this.onFormClose.bind(this);
+  }
+
   /**
    * Dispatch session statistics about the quality of TopSites icons and pinned count.
    */
@@ -69,16 +84,73 @@ export class _TopSites extends React.PureComponent {
     this._dispatchTopSitesStats();
   }
 
+  onAddButtonClick() {
+    this.setState({showAddForm: true});
+    this.props.dispatch(ac.UserEvent({
+      source: TOP_SITES_SOURCE,
+      event: "TOP_SITES_ADD_FORM_OPEN"
+    }));
+  }
+
+  onFormClose() {
+    this.setState(_TopSites.DEFAULT_STATE);
+    this.props.dispatch(ac.UserEvent({
+      source: TOP_SITES_SOURCE,
+      event: "TOP_SITES_EDIT_CLOSE"
+    }));
+    this.props.dispatch({type: at.TOP_SITES_CANCEL_EDIT});
+  }
+
   render() {
     const {props} = this;
     const infoOption = {
       header: {id: "settings_pane_topsites_header"},
       body: {id: "settings_pane_topsites_body"}
     };
+    const {showAddForm} = this.state;
+    const {editForm} = this.props.TopSites;
+    const showEditForm = (editForm && editForm.visible) || this.state.showEditForm;
+    let {editIndex} = this.state;
+    if (editIndex < 0 && editForm) {
+      editIndex = editForm.index;
+    }
+    const editSite = this.props.TopSites.rows[editIndex] || {};
     return (<ComponentPerfTimer id="topsites" initialized={props.TopSites.initialized} dispatch={props.dispatch}>
       <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} infoOption={infoOption} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
         <TopSiteList TopSites={props.TopSites} TopSitesCount={props.TopSitesCount} dispatch={props.dispatch} intl={props.intl} />
-        <TopSitesEdit {...props} />
+        <div className="edit-topsites-wrapper">
+          <div className="add-topsites-button">
+            <button
+              className="add"
+              title={this.props.intl.formatMessage({id: "edit_topsites_add_button_label"})}
+              onClick={this.onAddButtonClick}>
+              <FormattedMessage id="edit_topsites_add_button" />
+            </button>
+          </div>
+          {showAddForm &&
+            <div className="edit-topsites">
+              <div className="modal-overlay" onClick={this.onFormClose} />
+              <div className="modal">
+                <TopSiteForm onClose={this.onFormClose} dispatch={this.props.dispatch} intl={this.props.intl} />
+              </div>
+            </div>
+          }
+          {showEditForm &&
+            <div className="edit-topsites">
+              <div className="modal-overlay" onClick={this.onFormClose} />
+              <div className="modal">
+                <TopSiteForm
+                  label={editSite.label || editSite.hostname || ""}
+                  url={editSite.url || ""}
+                  index={editIndex}
+                  editMode={true}
+                  onClose={this.onFormClose}
+                  dispatch={this.props.dispatch}
+                  intl={this.props.intl} />
+              </div>
+            </div>
+          }
+        </div>
       </CollapsibleSection>
     </ComponentPerfTimer>);
   }
@@ -88,4 +160,4 @@ export const TopSites = connect(state => ({
   TopSites: state.TopSites,
   Prefs: state.Prefs,
   TopSitesCount: state.Prefs.values.topSitesCount
-}))(_TopSites);
+}))(injectIntl(_TopSites));
