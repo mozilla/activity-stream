@@ -695,6 +695,7 @@ describe("Top Sites Feed", () => {
       pinnedLinks = await feed.pinnedCache.request();
       assert.propertyVal(pinnedLinks[0], "screenshot", "foo");
 
+      // Force cache expiration in order to trigger a migration of objects
       feed.pinnedCache.expire();
       pinnedLinks[0].__sharedCache.updateLink("screenshot", "bar");
 
