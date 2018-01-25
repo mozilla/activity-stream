@@ -684,6 +684,23 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, site, 2);
     });
+    it("should properly update LinksCache object properties between migrations", async () => {
+      fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/"}];
+
+      let pinnedLinks = await feed.pinnedCache.request();
+      assert.equal(pinnedLinks.length, 1);
+      feed.pinnedCache.expire();
+      pinnedLinks[0].__sharedCache.updateLink("screenshot", "foo");
+
+      pinnedLinks = await feed.pinnedCache.request();
+      assert.propertyVal(pinnedLinks[0], "screenshot", "foo");
+
+      feed.pinnedCache.expire();
+      pinnedLinks[0].__sharedCache.updateLink("screenshot", "bar");
+
+      pinnedLinks = await feed.pinnedCache.request();
+      assert.propertyVal(pinnedLinks[0], "screenshot", "bar");
+    });
   });
   describe("#drop", () => {
     it("should pin site in specified slot that is free", () => {
