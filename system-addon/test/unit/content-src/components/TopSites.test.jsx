@@ -1,12 +1,11 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "content-src/components/TopSites/TopSitesConstants";
 import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
-import {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} from "common/Reducers.jsm";
 import {TopSite, TopSiteLink, _TopSiteList as TopSiteList, TopSitePlaceholder} from "content-src/components/TopSites/TopSite";
-import {_TopSitesEdit as TopSitesEdit, TopSitesEdit as TopSitesEditConnected} from "content-src/components/TopSites/TopSitesEdit";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 import {shallow} from "enzyme";
+import {TOP_SITES_DEFAULT_LENGTH} from "common/Reducers.jsm";
 import {TopSiteForm} from "content-src/components/TopSites/TopSiteForm";
 import {_TopSites as TopSites} from "content-src/components/TopSites/TopSites";
 
@@ -37,15 +36,6 @@ describe("<TopSites>", () => {
   it("should render a TopSites element", () => {
     const wrapper = shallow(<TopSites {...DEFAULT_PROPS} />);
     assert.ok(wrapper.exists());
-  });
-  it("should always render TopSitesEdit", () => {
-    let rows = [{url: "https://foo.com"}];
-    let wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
-    assert.lengthOf(wrapper.find(TopSitesEditConnected), 1);
-
-    rows = [];
-    wrapper = shallow(<TopSites {...DEFAULT_PROPS} TopSites={{rows}} />);
-    assert.lengthOf(wrapper.find(TopSitesEditConnected), 1);
   });
   describe("#_dispatchTopSitesStats", () => {
     let wrapper;
@@ -471,213 +461,6 @@ describe("<TopSite>", () => {
       assert.propertyVal(action.data, "source", "TOP_SITES");
       assert.propertyVal(action.data, "action_position", 3);
     });
-  });
-
-  describe("#editMode", () => {
-    let wrapper;
-    const defaultProps = {
-      onEdit() {},
-      link: {url: "https://foo.com", screenshot: "foo.jpg", hostname: "foo"},
-      index: 7,
-      dispatch() {},
-      intl: {formatMessage: x => x}
-    };
-
-    function setup(props = {}) {
-      const customProps = Object.assign({}, defaultProps, props);
-      wrapper = shallow(<TopSite {...customProps} />);
-    }
-
-    beforeEach(() => setup());
-
-    it("should render the component", () => {
-      assert.ok(wrapper.exists());
-    });
-    it("should render 3 buttons by default", () => {
-      assert.equal(3, wrapper.find(".edit-menu button").length);
-      assert.equal(1, wrapper.find(".icon-pin").length);
-      assert.equal(1, wrapper.find(".icon-dismiss").length);
-      assert.equal(1, wrapper.find(".icon-edit").length);
-    });
-    it("should render 3 button for a default site too", () => {
-      setup({link: Object.assign({}, defaultProps.link, {isDefault: true})});
-      assert.equal(3, wrapper.find(".edit-menu button").length);
-      assert.equal(1, wrapper.find(".icon-pin").length);
-      assert.equal(1, wrapper.find(".icon-dismiss").length);
-      assert.equal(1, wrapper.find(".icon-edit").length);
-    });
-    it("should render the pin button if site isn't pinned", () => {
-      assert.equal(1, wrapper.find(".icon-pin").length);
-      assert.equal(0, wrapper.find(".icon-unpin").length);
-    });
-    it("should render the unpin button if site is pinned", () => {
-      setup({link: Object.assign({}, defaultProps.link, {isPinned: true})});
-      assert.equal(0, wrapper.find(".icon-pin").length);
-      assert.equal(1, wrapper.find(".icon-unpin").length);
-    });
-    it("should fire a dismiss action when the dismiss button is clicked", done => {
-      function dispatch(a) {
-        if (a.type === at.BLOCK_URL) {
-          assert.equal(a.data, defaultProps.link.url);
-          done();
-        }
-      }
-      setup({dispatch});
-      wrapper.find(".icon-dismiss").simulate("click");
-    });
-    it("should fire a pin action when the pin button is clicked", done => {
-      function dispatch(a) {
-        if (a.type === at.TOP_SITES_PIN) {
-          assert.equal(a.data.site.url, defaultProps.link.url);
-          assert.equal(a.data.index, 7);
-          done();
-        }
-      }
-      setup({index: 7, dispatch});
-      wrapper.find(".icon-pin").simulate("click");
-    });
-    it("should fire an unpin action when the pin button is clicked", done => {
-      function dispatch(a) {
-        if (a.type === at.TOP_SITES_UNPIN) {
-          assert.equal(a.data.site.url, defaultProps.link.url);
-          done();
-        }
-      }
-      setup({link: Object.assign({}, defaultProps.link, {isPinned: true}), dispatch});
-      wrapper.find(".icon-unpin").simulate("click");
-    });
-    it("should fire an unpin action when a pinned site is dismissed", done => {
-      function dispatch(a) {
-        if (a.type === at.TOP_SITES_UNPIN) {
-          assert.equal(a.data.site.url, defaultProps.link.url);
-          done();
-        }
-      }
-      setup({link: Object.assign({}, defaultProps.link, {isPinned: true}), dispatch});
-      wrapper.find(".icon-dismiss").simulate("click");
-    });
-    it("should call onEdit prop when the edit button is clicked", done => {
-      function onEdit(index) {
-        assert.equal(index, defaultProps.index);
-        done();
-      }
-      setup({onEdit});
-      wrapper.find(".icon-edit").simulate("click");
-    });
-  });
-});
-
-describe("<TopSitesEdit>", () => {
-  let wrapper;
-  function setup(props = {}) {
-    const customProps = Object.assign({}, DEFAULT_PROPS, props);
-    wrapper = shallow(<TopSitesEdit {...customProps} />);
-  }
-
-  beforeEach(() => setup());
-
-  describe("#TopSites.editForm.visible=true", () => {
-    let dispatchStub;
-    let sandbox;
-
-    beforeEach(() => {
-      sandbox = sinon.sandbox.create();
-      dispatchStub = sandbox.stub(DEFAULT_PROPS, "dispatch");
-      setup({
-        TopSites: {
-          rows: [{url: "foo", label: "label"}],
-          editForm: {
-            visible: true,
-            index: 4
-          }
-        }
-      });
-    });
-
-    afterEach(() => { sandbox.restore(); });
-
-    it("should render TopSitesForm", () => {
-      assert.ok(wrapper.find(TopSiteForm).length === 1);
-    });
-
-    it("should provide the correct props to TopSiteForm", () => {
-      const comp = wrapper.find(TopSiteForm);
-      assert.equal(comp.props().index, 4);
-    });
-
-    it("should dispatch TOP_SITES_CANCEL_EDIT", () => {
-      wrapper.instance().onModalOverlayClick();
-
-      assert.calledTwice(dispatchStub);
-      assert.calledWith(dispatchStub, {type: at.TOP_SITES_CANCEL_EDIT});
-    });
-
-    it("should dispatch TOP_SITES_CANCEL_EDIT", () => {
-      wrapper.instance().onFormClose();
-
-      assert.calledOnce(dispatchStub);
-      assert.calledWithExactly(dispatchStub, {type: at.TOP_SITES_CANCEL_EDIT});
-    });
-  });
-
-  it("should render the component", () => {
-    assert.ok(wrapper.find(TopSitesEdit));
-  });
-  it("the modal should not be rendered by default", () => {
-    assert.equal(0, wrapper.find(".modal").length);
-  });
-  it("the modal should be rendered when edit button is clicked", () => {
-    wrapper.find(".edit").simulate("click");
-    assert.equal(1, wrapper.find(".modal").length);
-  });
-  it("the modal should be closed when done button is clicked", () => {
-    // Open the modal first.
-    wrapper.find(".edit").simulate("click");
-    assert.equal(1, wrapper.find(".modal").length);
-    // Then click Done button to close it.
-    wrapper.find(".done").simulate("click");
-    assert.equal(0, wrapper.find(".modal").length);
-  });
-  it("the modal should be closed when this overlay is clicked", () => {
-    // Open the modal first.
-    wrapper.find(".edit").simulate("click");
-    assert.equal(1, wrapper.find(".modal").length);
-    // Then click Done button to close it.
-    wrapper.find(".modal-overlay").simulate("click");
-    assert.equal(0, wrapper.find(".modal").length);
-  });
-  it("should show the 'Show more' button by default", () => {
-    wrapper.find(".edit").simulate("click");
-    assert.equal(1, wrapper.find(".show-more").length);
-    assert.equal(0, wrapper.find(".show-less").length);
-  });
-  it("should show the 'Show less' button if we are showing more already", () => {
-    setup({TopSitesCount: TOP_SITES_SHOWMORE_LENGTH});
-    wrapper.find(".edit").simulate("click");
-    assert.equal(0, wrapper.find(".show-more").length);
-    assert.equal(1, wrapper.find(".show-less").length);
-  });
-  it("should fire a SET_PREF action when the 'Show more' button is clicked", done => {
-    function dispatch(a) {
-      if (a.type === at.SET_PREF) {
-        assert.deepEqual(a.data, {name: "topSitesCount", value: TOP_SITES_SHOWMORE_LENGTH});
-        done();
-      }
-    }
-    setup({dispatch});
-    wrapper.find(".edit").simulate("click");
-    wrapper.find(".show-more").simulate("click");
-  });
-  it("should fire a SET_PREF action when the 'Show less' button is clicked", done => {
-    function dispatch(a) {
-      if (a.type === at.SET_PREF) {
-        assert.deepEqual(a.data, {name: "topSitesCount", value: TOP_SITES_DEFAULT_LENGTH});
-        done();
-      }
-    }
-    setup({TopSitesCount: TOP_SITES_SHOWMORE_LENGTH, dispatch});
-    wrapper.find(".edit").simulate("click");
-    wrapper.find(".show-less").simulate("click");
   });
 });
 

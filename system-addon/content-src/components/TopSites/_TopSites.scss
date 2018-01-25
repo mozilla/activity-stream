@@ -5,7 +5,6 @@
   $top-sites-vertical-space: 8px;
   $screenshot-size: cover;
   $rich-icon-size: 96px;
-  $edit-menu-button-size: 25px;
   $default-icon-wrapper-size: 42px;
   $default-icon-size: 32px;
   $default-icon-offset: 6px;
@@ -199,61 +198,6 @@
       background-image: url('#{$image-path}glyph-edit-16.svg');
     }
 
-    .edit-menu {
-      background: $white;
-      border: $border-primary;
-      border-radius: $edit-menu-button-size / 2;
-      box-shadow: $context-menu-button-boxshadow;
-      height: $edit-menu-button-size;
-      position: absolute;
-      offset-inline-end: -($edit-menu-button-size / 2);
-      opacity: 0;
-      overflow: hidden;
-      top: -($edit-menu-button-size / 2);
-      transform: scale(0.25);
-      transition-property: transform, opacity;
-      transition-duration: 200ms;
-      z-index: 1000;
-
-      &:-moz-any(:active, :focus) {
-        transform: scale(1);
-        opacity: 1;
-      }
-
-      button {
-        border: 0;
-        border-right: $border-primary;
-        background-color: $white;
-        cursor: pointer;
-        height: 100%;
-        width: $edit-menu-button-size;
-
-        &:hover {
-          background-color: $background-secondary;
-        }
-
-        // These are specific styles for the icons we have picked,
-        // they may need to be adjusted if the icons change
-        &:first-child:dir(ltr),
-        &:last-child:dir(rtl) {
-          width: $edit-menu-button-size + 5px;
-        }
-
-        &:last-child:dir(ltr),
-        &:first-child:dir(rtl) {
-          width: $edit-menu-button-size + 3px;
-        }
-
-        &:last-child:dir(ltr) {
-          border-right: 0;
-        }
-
-        &:first-child:dir(rtl) {
-          border-right: 0;
-        }
-      }
-    }
-
     &.placeholder {
       .tile {
         box-shadow: inset $inner-box-shadow;
@@ -261,13 +205,6 @@
 
       .screenshot {
         display: none;
-      }
-
-      .edit-menu:last-child {
-        button {
-          background-size: 13px;
-          width: 23px;
-        }
       }
     }
   }
@@ -278,18 +215,13 @@
         @include fade-in;
       }
 
-      .edit-menu {
-        opacity: 1;
-        transform: scale(1);
-      }
-
       @include context-menu-button-hover;
     }
   }
 }
 
 .edit-topsites-wrapper {
-  .edit-topsites-button {
+  .add-topsites-button {
     border-right: $border-secondary;
     line-height: 13px;
     offset-inline-end: 24px;
@@ -336,28 +268,10 @@
     margin: 0;
     padding: 15px 30px;
   }
-
-  .show-more,
-  .show-less {
-    background-position: left 10px center;
-    background-repeat: no-repeat;
-    height: auto;
-    margin-inline-start: 10px;
-    padding-inline-end: 15px;
-    width: auto;
-
-    &:dir(rtl) {
-      background-position: right 10px center;
-    }
-
-    span {
-      padding-inline-start: 3px;
-    }
-  }
 }
 
 .top-sites:not(.collapsed):hover {
-  .edit-topsites-button {
+  .add-topsites-button {
     opacity: 1;
     pointer-events: auto;
   }
