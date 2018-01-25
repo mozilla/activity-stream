@@ -5,12 +5,15 @@ export class ContextMenu extends React.PureComponent {
     super(props);
     this.hideContext = this.hideContext.bind(this);
   }
+
   hideContext() {
     this.props.onUpdate(false);
   }
+
   componentWillMount() {
     this.hideContext();
   }
+
   componentDidUpdate(prevProps) {
     if (this.props.visible && !prevProps.visible) {
       setTimeout(() => {
@@ -21,9 +24,11 @@ export class ContextMenu extends React.PureComponent {
       window.removeEventListener("click", this.hideContext);
     }
   }
+
   componentWillUnmount() {
     window.removeEventListener("click", this.hideContext);
   }
+
   render() {
     return (<span hidden={!this.props.visible} className="context-menu">
       <ul role="menu" className="context-menu-list">
@@ -42,10 +47,12 @@ export class ContextMenuItem extends React.PureComponent {
     this.onClick = this.onClick.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
   }
+
   onClick() {
     this.props.hideContext();
     this.props.option.onClick();
   }
+
   onKeyDown(event) {
     const {option} = this.props;
     switch (event.key) {
@@ -63,6 +70,7 @@ export class ContextMenuItem extends React.PureComponent {
         break;
     }
   }
+
   render() {
     const {option} = this.props;
     return (

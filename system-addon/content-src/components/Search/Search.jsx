@@ -20,12 +20,15 @@ export class _Search extends React.PureComponent {
       this.props.dispatch(ac.UserEvent({event: "SEARCH"}));
     }
   }
+
   onClick(event) {
     window.gContentSearchController.search(event);
   }
+
   componentWillUnmount() {
     delete window.gContentSearchController;
   }
+
   onInputMount(input) {
     if (input) {
       // The "healthReportKey" and needs to be "newtab" or "abouthome" so that

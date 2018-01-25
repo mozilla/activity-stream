@@ -14,7 +14,7 @@ if (args.length < 1) {
 }
 
 // Use the first script argument as the source of localized strings
-const stringsPath = args[0];
+const [stringsPath] = args;
 const stringsRepo = require("simple-git")(stringsPath);
 
 // Update strings repository to the latest version

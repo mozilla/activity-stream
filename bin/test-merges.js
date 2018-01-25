@@ -43,7 +43,7 @@ const TREEHERDER_PREFIX = "https://treeherder.mozilla.org/#/jobs?repo=pine&revis
 //
 // mozilla-central - the hg repo for firefox. Will be created if it doesn't
 // already exist.
-const AS_PINE_TEST_DIR = process.env.AS_PINE_TEST_DIR;
+const {AS_PINE_TEST_DIR} = process.env;
 
 const TESTING_LOCAL_MC = path.join(AS_PINE_TEST_DIR, "mozilla-central");
 
@@ -221,7 +221,7 @@ function pushToHgProjectBranch() {
         }
 
         // Grab the last linked revision from the push output
-        const rev = stdout.split(/(?:\/rev\/|changeset=)/).slice(-1)[0].split("\n")[0];
+        const [rev] = stdout.split(/(?:\/rev\/|changeset=)/).slice(-1)[0].split("\n");
         resolve(`[Treeherder: ${rev}](${TREEHERDER_PREFIX}${rev})`);
       }
     );

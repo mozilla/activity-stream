@@ -30,10 +30,12 @@ export class Info extends React.PureComponent {
       this.setState({infoActive});
     }
   }
+
   onInfoEnter() {
     // We're getting focus or hover, so info state should be true if not yet.
     this._setInfoState(true);
   }
+
   onInfoLeave(event) {
     // We currently have an active (true) info state, so keep it true only if we
     // have a related event target that is contained "within" the current target
@@ -43,10 +45,12 @@ export class Info extends React.PureComponent {
       (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
         Node.DOCUMENT_POSITION_CONTAINS)));
   }
+
   onManageClick() {
     this.props.dispatch({type: at.SETTINGS_OPEN});
     this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
   }
+
   render() {
     const {infoOption, intl} = this.props;
     const infoOptionIconA11yAttrs = {
@@ -104,7 +108,7 @@ export class Disclaimer extends React.PureComponent {
   }
 
   render() {
-    const disclaimer = this.props.disclaimer;
+    const {disclaimer} = this.props;
     return (
       <div className="section-disclaimer">
           <div className="section-disclaimer-text">
@@ -141,6 +145,7 @@ export class _CollapsibleSection extends React.PureComponent {
   componentWillMount() {
     this.props.document.addEventListener(VISIBILITY_CHANGE_EVENT, this.enableOrDisableAnimation);
   }
+
   componentWillUpdate(nextProps) {
     // Check if we're about to go from expanded to collapsed
     if (!getCollapsed(this.props) && getCollapsed(nextProps)) {
@@ -151,9 +156,11 @@ export class _CollapsibleSection extends React.PureComponent {
       this.sectionBody.scrollHeight; // eslint-disable-line no-unused-expressions
     }
   }
+
   componentWillUnmount() {
     this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this.enableOrDisableAnimation);
   }
+
   enableOrDisableAnimation() {
     // Only animate the collapse/expand for visible tabs.
     const visible = this.props.document.visibilityState === VISIBLE;
@@ -161,6 +168,7 @@ export class _CollapsibleSection extends React.PureComponent {
       this.setState({enableAnimation: visible});
     }
   }
+
   _setInfoState(nextActive) {
     // Take a truthy value to conditionally change the infoActive state.
     const infoActive = !!nextActive;
@@ -168,13 +176,16 @@ export class _CollapsibleSection extends React.PureComponent {
       this.setState({infoActive});
     }
   }
+
   onBodyMount(node) {
     this.sectionBody = node;
   }
+
   onInfoEnter() {
     // We're getting focus or hover, so info state should be true if not yet.
     this._setInfoState(true);
   }
+
   onInfoLeave(event) {
     // We currently have an active (true) info state, so keep it true only if we
     // have a related event target that is contained "within" the current target
@@ -184,6 +195,7 @@ export class _CollapsibleSection extends React.PureComponent {
       (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
         Node.DOCUMENT_POSITION_CONTAINS)));
   }
+
   onHeaderClick() {
     // Get the current height of the body so max-height transitions can work
     this.setState({
@@ -192,19 +204,22 @@ export class _CollapsibleSection extends React.PureComponent {
     });
     this.props.dispatch(ac.SetPref(this.props.prefName, !getCollapsed(this.props)));
   }
+
   onTransitionEnd(event) {
     // Only update the animating state for our own transition (not a child's)
     if (event.target === event.currentTarget) {
       this.setState({isAnimating: false});
     }
   }
+
   renderIcon() {
-    const icon = this.props.icon;
+    const {icon} = this.props;
     if (icon && icon.startsWith("moz-extension://")) {
       return <span className="icon icon-small-spacer" style={{backgroundImage: `url('${icon}')`}} />;
     }
     return <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />;
   }
+
   render() {
     const isCollapsible = this.props.prefName in this.props.Prefs.values;
     const isCollapsed = getCollapsed(this.props);

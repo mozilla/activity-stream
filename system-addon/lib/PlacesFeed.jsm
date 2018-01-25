@@ -71,12 +71,19 @@ class HistoryObserver extends Observer {
 
   // Empty functions to make xpconnect happy
   onBeginUpdateBatch() {}
+
   onEndUpdateBatch() {}
+
   onVisits() {}
+
   onTitleChanged() {}
+
   onFrecencyChanged() {}
+
   onManyFrecenciesChanged() {}
+
   onPageChanged() {}
+
   onDeleteVisits() {}
 }
 
@@ -104,10 +111,7 @@ class BookmarksObserver extends Observer {
    * @param  {int} source    Used to distinguish bookmarks made by different
    *                         actions: sync, bookmarks import, other.
    */
-  onItemAdded(...args) {
-    const type = args[3];
-    const source = args[9];
-    const uri = args[4];
+  onItemAdded(id, folderId, index, type, uri, bookmarkTitle, dateAdded, bookmarkGuid, parentGuid, source) { // eslint-disable-line max-params
     // Skips items that are not bookmarks (like folders), about:* pages or
     // default bookmarks, added when the profile is created.
     if (type !== PlacesUtils.bookmarks.TYPE_BOOKMARK ||
@@ -115,9 +119,6 @@ class BookmarksObserver extends Observer {
         (uri.scheme !== "http" && uri.scheme !== "https")) {
       return;
     }
-    const bookmarkTitle = args[5];
-    const dateAdded = args[6];
-    const bookmarkGuid = args[7];
     this.dispatch({
       type: at.PLACES_BOOKMARK_ADDED,
       data: {
@@ -193,8 +194,11 @@ class BookmarksObserver extends Observer {
 
   // Empty functions to make xpconnect happy
   onBeginUpdateBatch() {}
+
   onEndUpdateBatch() {}
+
   onItemVisited() {}
+
   onItemMoved() {}
 }
 

@@ -73,7 +73,7 @@ describe("<Search>", () => {
     wrapper.find(".search-button").simulate("click");
 
     assert.calledOnce(dispatch);
-    const action = dispatch.firstCall.args[0];
+    const [action] = dispatch.firstCall.args;
     assert.isUserEventAction(action);
     assert.propertyVal(action.data, "event", "SEARCH");
   });
