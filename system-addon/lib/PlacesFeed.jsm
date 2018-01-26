@@ -243,12 +243,21 @@ class PlacesFeed {
     }
   }
 
-  openNewWindow(action, isPrivate = false) {
+  /**
+   * Open a link in a desired destination defaulting to action's event.
+   */
+  openLink(action, where = "", isPrivate = false) {
+    const params = {private: isPrivate};
+
+    // Always include the referrer (even for http links) if we have one
+    const {event, referrer} = action.data;
+    if (referrer) {
+      params.referrerPolicy = Ci.nsIHttpChannel.REFERRER_POLICY_UNSAFE_URL;
+      params.referrerURI = Services.io.newURI(referrer);
+    }
+
     const win = action._target.browser.ownerGlobal;
-    const privateParam = {private: isPrivate};
-    const params = (action.data.referrer) ?
-      Object.assign(privateParam, {referrerURI: Services.io.newURI(action.data.referrer)}) : privateParam;
-    win.openLinkIn(action.data.url, "window", params);
+    win.openLinkIn(action.data.url, where || win.whereToOpenLink(event), params);
   }
 
   onAction(action) {
@@ -278,22 +287,16 @@ class PlacesFeed {
         break;
       }
       case at.OPEN_NEW_WINDOW:
-        this.openNewWindow(action);
+        this.openLink(action, "window");
         break;
       case at.OPEN_PRIVATE_WINDOW:
-        this.openNewWindow(action, true);
+        this.openLink(action, "window", true);
         break;
       case at.SAVE_TO_POCKET:
         Pocket.savePage(action._target.browser, action.data.site.url, action.data.site.title);
         break;
       case at.OPEN_LINK: {
-        const win = action._target.browser.ownerGlobal;
-        const where = win.whereToOpenLink(action.data.event);
-        if (action.data.referrer) {
-          win.openLinkIn(action.data.url, where, {referrerURI: Services.io.newURI(action.data.referrer)});
-        } else {
-          win.openLinkIn(action.data.url, where, {});
-        }
+        this.openLink(action);
         break;
       }
     }
