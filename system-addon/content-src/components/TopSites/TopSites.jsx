@@ -122,7 +122,7 @@ export class _TopSites extends React.PureComponent {
           <div className="add-topsites-button">
             <button
               className="add"
-              title={this.props.intl.formatMessage({id: "edit_topsites_add_button_label"})}
+              title={this.props.intl.formatMessage({id: "edit_topsites_add_button_tooltip"})}
               onClick={this.onAddButtonClick}>
               <FormattedMessage id="edit_topsites_add_button" />
             </button>
