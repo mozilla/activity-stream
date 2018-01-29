@@ -90,7 +90,10 @@ overrider.set({
       getVisibleEngines: () => [{identifier: "google"}, {identifier: "bing"}],
       defaultEngine: {identifier: "google"}
     },
-    scriptSecurityManager: {getSystemPrincipal() {}}
+    scriptSecurityManager: {
+      createNullPrincipal() {},
+      getSystemPrincipal() {}
+    }
   },
   XPCOMUtils: {
     defineLazyGetter(_1, _2, f) { f(); },
