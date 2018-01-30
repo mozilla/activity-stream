@@ -39,6 +39,10 @@ overrider.set({
     },
     isSuccessCode: () => true
   },
+  ChromeUtils: {
+    defineModuleGetter() {},
+    import() {}
+  },
   // eslint-disable-next-line object-shorthand
   ContentSearchUIController: function() {}, // NB: This is a function/constructor
   dump() {},
