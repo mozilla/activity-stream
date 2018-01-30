@@ -106,13 +106,14 @@ describe("<LinkMenu>", () => {
     const FAKE_SOURCE = "TOP_SITES";
     const FAKE_SITE = {url: "https://foo.com", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "history"};
     const dispatch = sinon.stub();
-    const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket"];
+    const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket", "WebExtDismiss"];
     const expectedActionData = {
       menu_action_remove_bookmark: FAKE_SITE.bookmarkGuid,
       menu_action_bookmark: {url: FAKE_SITE.url, title: FAKE_SITE.title, type: FAKE_SITE.type},
       menu_action_open_new_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_open_private_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_dismiss: FAKE_SITE.url,
+      menu_action_webext_dismiss: {source: "TOP_SITES", url: FAKE_SITE.url, action_position: 3},
       menu_action_delete: {url: FAKE_SITE.url, forceBlock: FAKE_SITE.bookmarkGuid},
       menu_action_pin: {site: {url: FAKE_SITE.url}, index: FAKE_INDEX},
       menu_action_unpin: {site: {url: FAKE_SITE.url}},
@@ -126,10 +127,12 @@ describe("<LinkMenu>", () => {
       it(`should fire a ${option.action.type} action for ${option.id} with the expected data`, () => {
         option.onClick();
 
-        if (option.impression) {
+        if (option.impression && option.userEvent) {
           assert.calledThrice(dispatch);
-        } else {
+        } else if (option.impression || option.userEvent) {
           assert.calledTwice(dispatch);
+        } else {
+          assert.calledOnce(dispatch);
         }
 
         // option.action is dispatched
@@ -145,12 +148,14 @@ describe("<LinkMenu>", () => {
           assert.deepEqual(option.action.data, expectedActionData[option.id]);
         }
       });
-      it(`should fire a UserEvent action for ${option.id}`, () => {
-        option.onClick();
-        const [action] = dispatch.secondCall.args;
-        assert.isUserEventAction(action);
-        assert.propertyVal(action.data, "source", FAKE_SOURCE);
-        assert.propertyVal(action.data, "action_position", FAKE_INDEX);
+      it(`should fire a UserEvent action for ${option.id} if configured`, () => {
+        if (option.userEvent) {
+          option.onClick();
+          const [action] = dispatch.secondCall.args;
+          assert.isUserEventAction(action);
+          assert.propertyVal(action.data, "source", FAKE_SOURCE);
+          assert.propertyVal(action.data, "action_position", FAKE_INDEX);
+        }
       });
       it(`should send impression stats for ${option.id}`, () => {
         if (option.impression) {

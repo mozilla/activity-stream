@@ -85,7 +85,9 @@ for (const type of [
   "TOP_SITES_PIN",
   "TOP_SITES_UNPIN",
   "TOP_SITES_UPDATED",
-  "UNINIT"
+  "UNINIT",
+  "WEBEXT_CLICK",
+  "WEBEXT_DISMISS"
 ]) {
   actionTypes[type] = type;
 }
@@ -233,6 +235,14 @@ function SetPref(name, value, importContext = globalImportContext) {
   return importContext === UI_CODE ? SendToMain(action) : action;
 }
 
+function WebExtEvent(type, data, importContext = globalImportContext) {
+  if (!data || !data.source) {
+    throw new Error("WebExtEvent actions should include a property \"source\", the id of the webextension that should receive the event.");
+  }
+  const action = {type, data};
+  return importContext === UI_CODE ? SendToMain(action) : action;
+}
+
 this.actionTypes = actionTypes;
 
 this.actionCreators = {
@@ -244,7 +254,8 @@ this.actionCreators = {
   SendToContent,
   SendToMain,
   SendToPreloaded,
-  SetPref
+  SetPref,
+  WebExtEvent
 };
 
 // These are helpers to test for certain kinds of actions

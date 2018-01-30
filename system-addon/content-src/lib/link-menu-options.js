@@ -57,6 +57,19 @@ export const LinkMenuOptions = {
     }),
     userEvent: "BLOCK"
   }),
+
+  // This is an option for web extentions which will result in remove items from
+  // memory and notify the web extenion, rather than using the built-in block list.
+  WebExtDismiss: (site, index, eventSource) => ({
+    id: "menu_action_webext_dismiss",
+    string_id: "menu_action_dismiss",
+    icon: "dismiss",
+    action: ac.WebExtEvent(at.WEBEXT_DISMISS, {
+      source: eventSource,
+      url: site.url,
+      action_position: index
+    })
+  }),
   DeleteUrl: site => ({
     id: "menu_action_delete",
     icon: "delete",
