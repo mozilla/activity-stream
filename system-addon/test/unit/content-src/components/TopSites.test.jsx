@@ -539,8 +539,8 @@ describe("<TopSiteForm>", () => {
     });
   });
 
-  describe("#editMode", () => {
-    beforeEach(() => setup({editMode: true, url: "https://foo.bar", label: "baz", index: 7}));
+  describe("edit existing Topsite", () => {
+    beforeEach(() => setup({url: "https://foo.bar", label: "baz", index: 7}));
 
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
@@ -669,14 +669,6 @@ describe("<TopSiteList>", () => {
     assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
     assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
   });
-  it("should pass through the onEdit prop to <TopSitesPlaceholder>s", () => {
-    function onEditCallback() {}
-    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
-    const topSitesCount = 5;
-    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} onEdit={onEditCallback} TopSites={{rows}} TopSitesCount={topSitesCount} />);
-    assert.equal(wrapper.find(TopSitePlaceholder).first().props().onEdit,
-      onEditCallback);
-  });
   it("should fill any holes in TopSites with placeholders", () => {
     const rows = [{url: "https://foo.com"}];
     rows[3] = {url: "https://bar.com"};
@@ -788,17 +780,7 @@ describe("<TopSiteList>", () => {
 });
 
 describe("TopSitePlaceholder", () => {
-  it("should call this.props.onEdit(this.props.index) when edit-button is clicked", () => {
-    const onEdit = sinon.spy();
-    const wrapper = shallowWithIntl(<TopSitePlaceholder onEdit={onEdit} index={7} />);
-
-    wrapper.find(".edit-button").first().simulate("click");
-
-    assert.calledOnce(onEdit);
-    assert.calledWithExactly(onEdit, 7);
-  });
-
-  it("should dispatch a TOP_SITES_EDIT action when edit-button is clicked and this.props.onEdit is unset", () => {
+  it("should dispatch a TOP_SITES_EDIT action when edit-button is clicked", () => {
     const dispatch = sinon.spy();
     const wrapper =
       shallowWithIntl(<TopSitePlaceholder dispatch={dispatch} index={7} />);

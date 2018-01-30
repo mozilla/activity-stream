@@ -191,11 +191,6 @@ export class TopSitePlaceholder extends React.PureComponent {
   }
 
   onEditButtonClick() {
-    if (this.props.onEdit) {
-      this.props.onEdit(this.props.index);
-      return;
-    }
-
     this.props.dispatch(
       {type: at.TOP_SITES_EDIT, data: {index: this.props.index}});
   }
@@ -361,13 +356,11 @@ export class _TopSiteList extends React.PureComponent {
       };
       topSitesUI.push(!link ? (
         <TopSitePlaceholder
-          onEdit={props.onEdit}
           {...slotProps}
           {...commonProps} />
       ) : (
         <TopSite
           link={link}
-          onEdit={props.onEdit}
           activeIndex={this.state.activeIndex}
           onActivate={this.onActivate}
           {...slotProps}

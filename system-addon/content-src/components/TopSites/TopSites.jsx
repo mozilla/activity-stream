@@ -43,7 +43,6 @@ export class _TopSites extends React.PureComponent {
   static get DEFAULT_STATE() {
     return {
       showAddForm: false,
-      showEditForm: false,
       editIndex: -1 // Index of top site being edited
     };
   }
@@ -109,7 +108,6 @@ export class _TopSites extends React.PureComponent {
     };
     const {showAddForm} = this.state;
     const {editForm} = this.props.TopSites;
-    const showEditForm = (editForm && editForm.visible) || this.state.showEditForm;
     let {editIndex} = this.state;
     if (editIndex < 0 && editForm) {
       editIndex = editForm.index;
@@ -127,28 +125,19 @@ export class _TopSites extends React.PureComponent {
               <FormattedMessage id="edit_topsites_add_button" />
             </button>
           </div>
-          {showAddForm &&
-            <div className="edit-topsites">
-              <div className="modal-overlay" onClick={this.onFormClose} />
-              <div className="modal">
-                <TopSiteForm onClose={this.onFormClose} dispatch={this.props.dispatch} intl={this.props.intl} />
-              </div>
+          {(showAddForm || editIndex >= 0) &&
+          <div className="edit-topsites">
+            <div className="modal-overlay" onClick={this.onFormClose} />
+            <div className="modal">
+              <TopSiteForm
+                label={editSite.label || editSite.hostname || ""}
+                url={editSite.url || ""}
+                index={editIndex}
+                onClose={this.onFormClose}
+                dispatch={this.props.dispatch}
+                intl={this.props.intl} />
             </div>
-          }
-          {showEditForm &&
-            <div className="edit-topsites">
-              <div className="modal-overlay" onClick={this.onFormClose} />
-              <div className="modal">
-                <TopSiteForm
-                  label={editSite.label || editSite.hostname || ""}
-                  url={editSite.url || ""}
-                  index={editIndex}
-                  editMode={true}
-                  onClose={this.onFormClose}
-                  dispatch={this.props.dispatch}
-                  intl={this.props.intl} />
-              </div>
-            </div>
+          </div>
           }
         </div>
       </CollapsibleSection>

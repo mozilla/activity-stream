@@ -112,12 +112,14 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   render() {
+    const editMode = this.props.index >= 0;
+
     return (
       <form className="topsite-form">
         <section className="edit-topsites-inner-wrapper">
           <div className="form-wrapper">
             <h3 className="section-title">
-              <FormattedMessage id={this.props.editMode ? "topsites_form_edit_header" : "topsites_form_add_header"} />
+              <FormattedMessage id={editMode ? "topsites_form_edit_header" : "topsites_form_add_header"} />
             </h3>
             <div className="field title">
               <input
@@ -145,12 +147,12 @@ export class TopSiteForm extends React.PureComponent {
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
-          {this.props.editMode &&
+          {editMode &&
             <button className="done save" type="submit" onClick={this.onSaveButtonClick}>
               <FormattedMessage id="topsites_form_save_button" />
             </button>
           }
-          {!this.props.editMode &&
+          {!editMode &&
             <button className="done add" type="submit" onClick={this.onAddButtonClick}>
               <FormattedMessage id="topsites_form_add_button" />
             </button>
@@ -164,6 +166,5 @@ export class TopSiteForm extends React.PureComponent {
 TopSiteForm.defaultProps = {
   label: "",
   url: "",
-  index: 0,
-  editMode: false // by default we are in "Add New Top Site" mode
+  index: -1
 };
