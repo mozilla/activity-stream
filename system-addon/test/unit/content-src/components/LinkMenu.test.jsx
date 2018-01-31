@@ -75,6 +75,41 @@ describe("<LinkMenu>", () => {
     const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_bookmark")));
   });
+  it("should show Save to Pocket option for an unsaved Pocket item if CheckSavedToPocket in options list", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", bookmarkGuid: 0}} source={"HIGHLIGHTS"} options={["CheckSavedToPocket"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_save_to_pocket")));
+  });
+  it("should show Delete from Pocket option for a saved Pocket item if CheckSavedToPocket in options list", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", pocket_id: 1234}} source={"HIGHLIGHTS"} options={["CheckSavedToPocket"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_delete_pocket")));
+  });
+  it("should show Archive from Pocket option for a saved Pocket item if CheckBookmarkOrArchive", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", pocket_id: 1234}} source={"HIGHLIGHTS"} options={["CheckBookmarkOrArchive"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_archive_pocket")));
+  });
+  it("should show Bookmark option for an unbookmarked site if CheckBookmarkOrArchive in options list and no pocket_id", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: ""}} source={"HIGHLIGHTS"} options={["CheckBookmarkOrArchive"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_bookmark")));
+  });
+  it("should show Unbookmark option for a bookmarked site if CheckBookmarkOrArchive in options list and no pocket_id", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", bookmarkGuid: 1234}} source={"HIGHLIGHTS"} options={["CheckBookmarkOrArchive"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_remove_bookmark")));
+  });
+  it("should show Delete from History option for a site that is visited but not from Pocket if CheckDeleteHistoryOrEmpty", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: history}} source={"HIGHLIGHTS"} options={["CheckDeleteHistoryOrEmpty"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_delete")));
+  });
+  it("should not show a Delete from History option for a site that is Pocket'ed if CheckDeleteHistoryOrEmpty", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", pocket_id: 1234}} source={"HIGHLIGHTS"} options={["CheckDeleteHistoryOrEmpty"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isUndefined(options.find(o => (o.id && o.id === "menu_action_delete")));
+  });
   it("should show Edit option", () => {
     const props = {url: "foo", label: "label"};
     const index = 5;
@@ -104,20 +139,22 @@ describe("<LinkMenu>", () => {
   describe(".onClick", () => {
     const FAKE_INDEX = 3;
     const FAKE_SOURCE = "TOP_SITES";
-    const FAKE_SITE = {url: "https://foo.com", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "history"};
+    const FAKE_SITE = {url: "https://foo.com", pocket_id: "1234", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "history"};
     const dispatch = sinon.stub();
-    const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket", "WebExtDismiss"];
+    const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket", "DeleteFromPocket", "ArchiveFromPocket", "WebExtDismiss"];
     const expectedActionData = {
       menu_action_remove_bookmark: FAKE_SITE.bookmarkGuid,
       menu_action_bookmark: {url: FAKE_SITE.url, title: FAKE_SITE.title, type: FAKE_SITE.type},
       menu_action_open_new_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_open_private_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
-      menu_action_dismiss: FAKE_SITE.url,
+      menu_action_dismiss: {url: FAKE_SITE.url, pocket_id: FAKE_SITE.pocket_id},
       menu_action_webext_dismiss: {source: "TOP_SITES", url: FAKE_SITE.url, action_position: 3},
-      menu_action_delete: {url: FAKE_SITE.url, forceBlock: FAKE_SITE.bookmarkGuid},
+      menu_action_delete: {url: FAKE_SITE.url, pocket_id: FAKE_SITE.pocket_id, forceBlock: FAKE_SITE.bookmarkGuid},
       menu_action_pin: {site: {url: FAKE_SITE.url}, index: FAKE_INDEX},
       menu_action_unpin: {site: {url: FAKE_SITE.url}},
-      menu_action_save_to_pocket: {site: {url: FAKE_SITE.url, title: FAKE_SITE.title}}
+      menu_action_save_to_pocket: {site: {url: FAKE_SITE.url, title: FAKE_SITE.title}},
+      menu_action_delete_pocket: {pocket_id: "1234"},
+      menu_action_archive_pocket: {pocket_id: "1234"}
     };
 
     const {options} = shallowWithIntl(<LinkMenu site={FAKE_SITE} dispatch={dispatch} index={FAKE_INDEX} options={propOptions} source={FAKE_SOURCE} shouldSendImpressionStats={true} />)
