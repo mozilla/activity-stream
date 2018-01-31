@@ -8,7 +8,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 const {actionCreators: ac, actionTypes: at} = Cu.import("resource://activity-stream/common/Actions.jsm", {});
 const {TippyTopProvider} = Cu.import("resource://activity-stream/lib/TippyTopProvider.jsm", {});
-const {insertPinned, TOP_SITES_SHOWMORE_LENGTH} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
+const {insertPinned, TOP_SITES_DEFAULT_ROWS, TOP_SITES_MAX_SITES_PER_ROW} = Cu.import("resource://activity-stream/common/Reducers.jsm", {});
 const {Dedupe} = Cu.import("resource://activity-stream/common/Dedupe.jsm", {});
 const {shortURL} = Cu.import("resource://activity-stream/lib/ShortURL.jsm", {});
 
@@ -74,9 +74,8 @@ this.TopSitesFeed = class TopSitesFeed {
   }
 
   async getLinksWithDefaults(action) {
-    // Get at least SHOWMORE amount so toggling between 1 and 2 rows has sites
-    const numItems = Math.max(this.store.getState().Prefs.values.topSitesCount,
-      TOP_SITES_SHOWMORE_LENGTH);
+    // Get at least TOP_SITES_DEFAULT_ROWS (2) amount so toggling between 1 and 2 rows has sites
+    const numItems = Math.max(this.store.getState().Prefs.values.topSitesRows, TOP_SITES_DEFAULT_ROWS) * TOP_SITES_MAX_SITES_PER_ROW;
     const frecent = (await this.frecentCache.request({
       numItems,
       topsiteFrecency: FRECENCY_THRESHOLD
@@ -246,7 +245,7 @@ this.TopSitesFeed = class TopSitesFeed {
     // Don't insert any pins past the end of the visible top sites. Otherwise,
     // we can end up with a bunch of pinned sites that can never be unpinned again
     // from the UI.
-    const {topSitesCount} = this.store.getState().Prefs.values;
+    const topSitesCount = this.store.getState().Prefs.values.topSitesRows * TOP_SITES_MAX_SITES_PER_ROW;
     if (index >= topSitesCount) {
       return;
     }
@@ -289,7 +288,7 @@ this.TopSitesFeed = class TopSitesFeed {
     // pinned in the slot (unless it's the last slot, then it replaces).
     this._insertPin(
       action.data.site, action.data.index || 0,
-      action.data.draggedFromIndex !== undefined ? action.data.draggedFromIndex : this.store.getState().Prefs.values.topSitesCount);
+      action.data.draggedFromIndex !== undefined ? action.data.draggedFromIndex : this.store.getState().Prefs.values.topSitesRows * TOP_SITES_MAX_SITES_PER_ROW);
     this._broadcastPinnedSitesUpdated();
   }
 

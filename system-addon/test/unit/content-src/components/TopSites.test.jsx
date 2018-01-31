@@ -1,11 +1,11 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "content-src/components/TopSites/TopSitesConstants";
 import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
+import {TOP_SITES_DEFAULT_ROWS, TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
 import {TopSite, TopSiteLink, _TopSiteList as TopSiteList, TopSitePlaceholder} from "content-src/components/TopSites/TopSite";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 import {shallow} from "enzyme";
-import {TOP_SITES_DEFAULT_LENGTH} from "common/Reducers.jsm";
 import {TopSiteForm} from "content-src/components/TopSites/TopSiteForm";
 import {_TopSites as TopSites} from "content-src/components/TopSites/TopSites";
 
@@ -16,7 +16,7 @@ const perfSvc = {
 
 const DEFAULT_PROPS = {
   TopSites: {initialized: true, rows: []},
-  TopSitesCount: TOP_SITES_DEFAULT_LENGTH,
+  TopSitesRows: TOP_SITES_DEFAULT_ROWS,
   dispatch() {},
   intl: {formatMessage: x => x},
   perfSvc
@@ -666,26 +666,27 @@ describe("<TopSiteList>", () => {
     assert.lengthOf(links, 2);
     rows.forEach((row, i) => assert.equal(links.get(i).props.link.url, row.url));
   });
-  it("should slice the TopSite rows to the TopSitesCount pref", () => {
-    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}, {url: "https://baz.com"}, {url: "https://bam.com"}, {url: "https://zoom.com"}, {url: "https://woo.com"}, {url: "https://eh.com"}];
-    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={TOP_SITES_DEFAULT_LENGTH} />);
+  it("should slice the TopSite rows to the TopSitesRows pref", () => {
+    const rows = [];
+    for (let i = 0; i < TOP_SITES_DEFAULT_ROWS * TOP_SITES_MAX_SITES_PER_ROW + 3; i++) {
+      rows.push({url: `https://foo${i}.com`});
+    }
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesRows={TOP_SITES_DEFAULT_ROWS} />);
     const links = wrapper.find(TopSite);
-    assert.lengthOf(links, TOP_SITES_DEFAULT_LENGTH);
+    assert.lengthOf(links, TOP_SITES_DEFAULT_ROWS * TOP_SITES_MAX_SITES_PER_ROW);
   });
-  it("should fill with placeholders if TopSites rows is less than TopSitesCount", () => {
+  it("should fill with placeholders if TopSites rows is less than TopSitesRows", () => {
     const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
-    const topSitesCount = 5;
-    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={topSitesCount} />);
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesRows={1} />);
     assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
-    assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
+    assert.lengthOf(wrapper.find(TopSitePlaceholder), TOP_SITES_MAX_SITES_PER_ROW - 2, "placeholders");
   });
   it("should fill any holes in TopSites with placeholders", () => {
     const rows = [{url: "https://foo.com"}];
     rows[3] = {url: "https://bar.com"};
-    const topSitesCount = 5;
-    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={topSitesCount} />);
+    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesRows={1} />);
     assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
-    assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
+    assert.lengthOf(wrapper.find(TopSitePlaceholder), TOP_SITES_MAX_SITES_PER_ROW - 2, "placeholders");
   });
   it("should update state onDragStart and clear it onDragEnd", () => {
     const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} />);
@@ -756,7 +757,7 @@ describe("<TopSiteList>", () => {
     const site2 = {url: "https://bar.com"};
     const site3 = {url: "https://baz.com"};
     const rows = [site1, site2, site3];
-    let wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} />);
+    let wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesRows={1} />);
     let instance = wrapper.instance();
     instance.setState({
       draggedIndex: 0,

@@ -165,17 +165,17 @@ describe("<PreferencesPane>", () => {
     const section = wrapper.findWhere(prefInput => prefInput.props().prefName === "feeds.snippets");
     assert.lengthOf(section, 0);
   });
-  it("should dispatch a SetPref with the right value for topSitesCount when unchecked", () => {
+  it("should dispatch a SetPref with the right value for topSitesRows when unchecked", () => {
     const showMoreTopSitesWrapper = wrapper.find(".showMoreTopSites");
-    showMoreTopSitesWrapper.simulate("change", {target: {name: "topSitesCount", checked: false}});
+    showMoreTopSitesWrapper.simulate("change", {target: {name: "topSitesRows", checked: false}});
     assert.calledOnce(dispatch);
-    assert.calledWith(dispatch, ac.SetPref("topSitesCount", 6));
+    assert.calledWith(dispatch, ac.SetPref("topSitesRows", 1));
   });
-  it("should dispatch a SetPref with the right value for topSitesCount when checked", () => {
+  it("should dispatch a SetPref with the right value for topSitesRows when checked", () => {
     const showMoreTopSitesWrapper = wrapper.find(".showMoreTopSites");
-    showMoreTopSitesWrapper.simulate("change", {target: {name: "topSitesCount", checked: true}});
+    showMoreTopSitesWrapper.simulate("change", {target: {name: "topSitesRows", checked: true}});
     assert.calledOnce(dispatch);
-    assert.calledWith(dispatch, ac.SetPref("topSitesCount", 12));
+    assert.calledWith(dispatch, ac.SetPref("topSitesRows", 2));
   });
   it("should render nested PreferencesInput for nested Section pref", () => {
     const nestedPrefsWrapper = wrapper.find(".showSection");

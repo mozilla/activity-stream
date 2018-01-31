@@ -6,8 +6,8 @@
 const {actionTypes: at} = Components.utils.import("resource://activity-stream/common/Actions.jsm", {});
 const {Dedupe} = Components.utils.import("resource://activity-stream/common/Dedupe.jsm", {});
 
-const TOP_SITES_DEFAULT_LENGTH = 6;
-const TOP_SITES_SHOWMORE_LENGTH = 12;
+const TOP_SITES_DEFAULT_ROWS = 2;
+const TOP_SITES_MAX_SITES_PER_ROW = 6;
 
 const dedupe = new Dedupe(site => site && site.url);
 
@@ -323,10 +323,10 @@ function PreferencesPane(prevState = INITIAL_STATE.PreferencesPane, action) {
 }
 
 this.INITIAL_STATE = INITIAL_STATE;
-this.TOP_SITES_DEFAULT_LENGTH = TOP_SITES_DEFAULT_LENGTH;
-this.TOP_SITES_SHOWMORE_LENGTH = TOP_SITES_SHOWMORE_LENGTH;
+this.TOP_SITES_DEFAULT_ROWS = TOP_SITES_DEFAULT_ROWS;
+this.TOP_SITES_MAX_SITES_PER_ROW = TOP_SITES_MAX_SITES_PER_ROW;
 
 this.reducers = {TopSites, App, Snippets, Prefs, Dialog, Sections, PreferencesPane};
 this.insertPinned = insertPinned;
 
-this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned", "TOP_SITES_DEFAULT_LENGTH", "TOP_SITES_SHOWMORE_LENGTH"];
+this.EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned", "TOP_SITES_DEFAULT_ROWS", "TOP_SITES_MAX_SITES_PER_ROW"];
