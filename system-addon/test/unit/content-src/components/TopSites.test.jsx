@@ -483,6 +483,9 @@ describe("<TopSiteForm>", () => {
     it("should have the correct header", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_header").length, 1);
     });
+    it("should have the correct button text", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);
+    });
     it("should have an Add button", () => {
       assert.equal(1, wrapper.find(".add").length);
       // and it shouldn't have a save button.
@@ -550,6 +553,14 @@ describe("<TopSiteForm>", () => {
     });
     it("should have the correct header", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_edit_header").length, 1);
+    });
+    it("should have the correct button text", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 1);
+    });
+    it("should have the correct button text (if editing a placeholder)", () => {
+      wrapper.setProps({url: null, index: 7});
+
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);
     });
     it("should have a Save button", () => {
       assert.equal(1, wrapper.find(".save").length);

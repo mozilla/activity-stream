@@ -149,7 +149,7 @@ export class TopSiteForm extends React.PureComponent {
           </button>
           {editMode &&
             <button className="done save" type="submit" onClick={this.onSaveButtonClick}>
-              <FormattedMessage id="topsites_form_save_button" />
+              <FormattedMessage id={this.props.url ? "topsites_form_save_button" : "topsites_form_add_button"} />
             </button>
           }
           {!editMode &&
