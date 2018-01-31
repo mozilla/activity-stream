@@ -480,6 +480,9 @@ describe("<TopSiteForm>", () => {
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
     });
+    it("should have the correct header", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_header").length, 1);
+    });
     it("should have an Add button", () => {
       assert.equal(1, wrapper.find(".add").length);
       // and it shouldn't have a save button.
@@ -544,6 +547,9 @@ describe("<TopSiteForm>", () => {
 
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
+    });
+    it("should have the correct header", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_edit_header").length, 1);
     });
     it("should have a Save button", () => {
       assert.equal(1, wrapper.find(".save").length);

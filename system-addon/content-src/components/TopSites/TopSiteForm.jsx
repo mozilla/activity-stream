@@ -119,7 +119,7 @@ export class TopSiteForm extends React.PureComponent {
         <section className="edit-topsites-inner-wrapper">
           <div className="form-wrapper">
             <h3 className="section-title">
-              <FormattedMessage id={editMode ? "topsites_form_edit_header" : "topsites_form_add_header"} />
+              <FormattedMessage id={this.props.url ? "topsites_form_edit_header" : "topsites_form_add_header"} />
             </h3>
             <div className="field title">
               <input
