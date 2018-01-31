@@ -44,16 +44,16 @@ export class TopSiteForm extends React.PureComponent {
 
       // When provided an index we edit a specific TopSite entry
       if (this.props.index >= 0) {
-        this.onSaveButtonClick(site);
+        this.editTopSite(site);
       } else {
-        this.onAddButtonClick(site);
+        this.insertTopSite(site);
       }
 
       this.props.onClose();
     }
   }
 
-  onAddButtonClick(site) {
+  insertTopSite(site) {
     this.props.dispatch(ac.SendToMain({
       type: at.TOP_SITES_INSERT,
       data: {site}
@@ -64,7 +64,7 @@ export class TopSiteForm extends React.PureComponent {
     }));
   }
 
-  onSaveButtonClick(site) {
+  editTopSite(site) {
     this.props.dispatch(ac.SendToMain({
       type: at.TOP_SITES_PIN,
       data: {site, index: this.props.index}
