@@ -126,18 +126,18 @@ export class _TopSites extends React.PureComponent {
             </button>
           </div>
           {(showAddForm || editIndex >= 0) &&
-          <div className="edit-topsites">
-            <div className="modal-overlay" onClick={this.onFormClose} />
-            <div className="modal">
-              <TopSiteForm
-                label={editSite.label || editSite.hostname || ""}
-                url={editSite.url || ""}
-                index={editIndex}
-                onClose={this.onFormClose}
-                dispatch={this.props.dispatch}
-                intl={this.props.intl} />
+            <div className="edit-topsites">
+              <div className="modal-overlay" onClick={this.onFormClose} />
+              <div className="modal">
+                <TopSiteForm
+                  label={editSite.label || editSite.hostname || ""}
+                  url={editSite.url || ""}
+                  index={editIndex}
+                  onClose={this.onFormClose}
+                  dispatch={this.props.dispatch}
+                  intl={this.props.intl} />
+              </div>
             </div>
-          </div>
           }
         </div>
       </CollapsibleSection>

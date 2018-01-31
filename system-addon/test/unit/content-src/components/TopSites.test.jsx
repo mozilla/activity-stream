@@ -484,12 +484,8 @@ describe("<TopSiteForm>", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_header").length, 1);
     });
     it("should have the correct button text", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 0);
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);
-    });
-    it("should have an Add button", () => {
-      assert.equal(1, wrapper.find(".add").length);
-      // and it shouldn't have a save button.
-      assert.equal(0, wrapper.find(".save").length);
     });
     it("should call onClose if Cancel button is clicked", () => {
       wrapper.find(".cancel").simulate("click");
@@ -497,7 +493,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should show error and not call onClose or dispatch if URL is empty", () => {
       assert.equal(0, wrapper.find(".error-tooltip").length);
-      wrapper.find(".add").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
@@ -505,14 +501,14 @@ describe("<TopSiteForm>", () => {
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
       wrapper.setState({"url": "not valid"});
       assert.equal(0, wrapper.find(".error-tooltip").length);
-      wrapper.find(".add").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should call onClose and dispatch with right args if URL is valid", () => {
       wrapper.setState({"url": "valid.com", "label": "a label"});
-      wrapper.find(".add").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.calledOnce(wrapper.instance().props.onClose);
       assert.calledWith(
         wrapper.instance().props.dispatch,
@@ -533,7 +529,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should not pass empty string label in dispatch data", () => {
       wrapper.setState({"url": "valid.com", "label": ""});
-      wrapper.find(".add").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
@@ -555,17 +551,14 @@ describe("<TopSiteForm>", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_edit_header").length, 1);
     });
     it("should have the correct button text", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 0);
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 1);
     });
     it("should have the correct button text (if editing a placeholder)", () => {
       wrapper.setProps({url: null, index: 7});
 
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 0);
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);
-    });
-    it("should have a Save button", () => {
-      assert.equal(1, wrapper.find(".save").length);
-      // and it shouldn't have a add button.
-      assert.equal(0, wrapper.find(".edit").length);
     });
     it("should call onClose if Cancel button is clicked", () => {
       wrapper.find(".cancel").simulate("click");
@@ -574,7 +567,7 @@ describe("<TopSiteForm>", () => {
     it("should show error and not call onClose or dispatch if URL is empty", () => {
       wrapper.setState({"url": ""});
       assert.equal(0, wrapper.find(".error-tooltip").length);
-      wrapper.find(".save").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
@@ -582,13 +575,13 @@ describe("<TopSiteForm>", () => {
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
       wrapper.setState({"url": "not valid"});
       assert.equal(0, wrapper.find(".error-tooltip").length);
-      wrapper.find(".save").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should call onClose and dispatch with right args if URL is valid", () => {
-      wrapper.find(".save").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.calledOnce(wrapper.instance().props.onClose);
       assert.calledTwice(wrapper.instance().props.dispatch);
       assert.calledWith(
@@ -610,7 +603,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should not pass empty string label in dispatch data", () => {
       wrapper.setState({"label": ""});
-      wrapper.find(".save").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
