@@ -14,8 +14,7 @@ export class TopSiteForm extends React.PureComponent {
     this.onLabelChange = this.onLabelChange.bind(this);
     this.onUrlChange = this.onUrlChange.bind(this);
     this.onCancelButtonClick = this.onCancelButtonClick.bind(this);
-    this.onAddButtonClick = this.onAddButtonClick.bind(this);
-    this.onSaveButtonClick = this.onSaveButtonClick.bind(this);
+    this.onDoneButtonClick = this.onDoneButtonClick.bind(this);
     this.onUrlInputMount = this.onUrlInputMount.bind(this);
   }
 
@@ -34,43 +33,47 @@ export class TopSiteForm extends React.PureComponent {
     this.props.onClose();
   }
 
-  onAddButtonClick(ev) {
+  onDoneButtonClick(ev) {
     ev.preventDefault();
+
     if (this.validateForm()) {
-      let site = {url: this.cleanUrl()};
+      const site = {url: this.cleanUrl()};
       if (this.state.label !== "") {
         site.label = this.state.label;
       }
-      this.props.dispatch(ac.SendToMain({
-        type: at.TOP_SITES_INSERT,
-        data: {site}
-      }));
-      this.props.dispatch(ac.UserEvent({
-        source: TOP_SITES_SOURCE,
-        event: "TOP_SITES_ADD"
-      }));
+
+      // When provided an index we edit a specific TopSite entry
+      if (this.props.index >= 0) {
+        this.editTopSite(site);
+      } else {
+        this.insertTopSite(site);
+      }
+
       this.props.onClose();
     }
   }
 
-  onSaveButtonClick(ev) {
-    ev.preventDefault();
-    if (this.validateForm()) {
-      let site = {url: this.cleanUrl()};
-      if (this.state.label !== "") {
-        site.label = this.state.label;
-      }
-      this.props.dispatch(ac.SendToMain({
-        type: at.TOP_SITES_PIN,
-        data: {site, index: this.props.index}
-      }));
-      this.props.dispatch(ac.UserEvent({
-        source: TOP_SITES_SOURCE,
-        event: "TOP_SITES_EDIT",
-        action_position: this.props.index
-      }));
-      this.props.onClose();
-    }
+  insertTopSite(site) {
+    this.props.dispatch(ac.SendToMain({
+      type: at.TOP_SITES_INSERT,
+      data: {site}
+    }));
+    this.props.dispatch(ac.UserEvent({
+      source: TOP_SITES_SOURCE,
+      event: "TOP_SITES_ADD"
+    }));
+  }
+
+  editTopSite(site) {
+    this.props.dispatch(ac.SendToMain({
+      type: at.TOP_SITES_PIN,
+      data: {site, index: this.props.index}
+    }));
+    this.props.dispatch(ac.UserEvent({
+      source: TOP_SITES_SOURCE,
+      event: "TOP_SITES_EDIT",
+      action_position: this.props.index
+    }));
   }
 
   cleanUrl() {
@@ -112,12 +115,15 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   render() {
+    // For UI purposes, editing without an existing link is "add"
+    const showAsAdd = !this.props.url;
+
     return (
       <form className="topsite-form">
         <section className="edit-topsites-inner-wrapper">
           <div className="form-wrapper">
             <h3 className="section-title">
-              <FormattedMessage id={this.props.editMode ? "topsites_form_edit_header" : "topsites_form_add_header"} />
+              <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
             </h3>
             <div className="field title">
               <input
@@ -145,16 +151,9 @@ export class TopSiteForm extends React.PureComponent {
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
-          {this.props.editMode &&
-            <button className="done save" type="submit" onClick={this.onSaveButtonClick}>
-              <FormattedMessage id="topsites_form_save_button" />
-            </button>
-          }
-          {!this.props.editMode &&
-            <button className="done add" type="submit" onClick={this.onAddButtonClick}>
-              <FormattedMessage id="topsites_form_add_button" />
-            </button>
-          }
+          <button className="done" type="submit" onClick={this.onDoneButtonClick}>
+            <FormattedMessage id={showAsAdd ? "topsites_form_add_button" : "topsites_form_save_button"} />
+          </button>
         </section>
       </form>
     );
@@ -164,6 +163,5 @@ export class TopSiteForm extends React.PureComponent {
 TopSiteForm.defaultProps = {
   label: "",
   url: "",
-  index: 0,
-  editMode: false // by default we are in "Add New Top Site" mode
+  index: -1
 };

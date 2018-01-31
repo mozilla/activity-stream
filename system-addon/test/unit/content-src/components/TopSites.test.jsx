@@ -480,10 +480,12 @@ describe("<TopSiteForm>", () => {
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
     });
-    it("should have an Add button", () => {
-      assert.equal(1, wrapper.find(".add").length);
-      // and it shouldn't have a save button.
-      assert.equal(0, wrapper.find(".save").length);
+    it("should have the correct header", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_header").length, 1);
+    });
+    it("should have the correct button text", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 0);
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);
     });
     it("should call onClose if Cancel button is clicked", () => {
       wrapper.find(".cancel").simulate("click");
@@ -491,7 +493,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should show error and not call onClose or dispatch if URL is empty", () => {
       assert.equal(0, wrapper.find(".error-tooltip").length);
-      wrapper.find(".add").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
@@ -499,14 +501,14 @@ describe("<TopSiteForm>", () => {
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
       wrapper.setState({"url": "not valid"});
       assert.equal(0, wrapper.find(".error-tooltip").length);
-      wrapper.find(".add").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should call onClose and dispatch with right args if URL is valid", () => {
       wrapper.setState({"url": "valid.com", "label": "a label"});
-      wrapper.find(".add").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.calledOnce(wrapper.instance().props.onClose);
       assert.calledWith(
         wrapper.instance().props.dispatch,
@@ -527,7 +529,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should not pass empty string label in dispatch data", () => {
       wrapper.setState({"url": "valid.com", "label": ""});
-      wrapper.find(".add").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
@@ -539,16 +541,24 @@ describe("<TopSiteForm>", () => {
     });
   });
 
-  describe("#editMode", () => {
-    beforeEach(() => setup({editMode: true, url: "https://foo.bar", label: "baz", index: 7}));
+  describe("edit existing Topsite", () => {
+    beforeEach(() => setup({url: "https://foo.bar", label: "baz", index: 7}));
 
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
     });
-    it("should have a Save button", () => {
-      assert.equal(1, wrapper.find(".save").length);
-      // and it shouldn't have a add button.
-      assert.equal(0, wrapper.find(".edit").length);
+    it("should have the correct header", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_edit_header").length, 1);
+    });
+    it("should have the correct button text", () => {
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 0);
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 1);
+    });
+    it("should have the correct button text (if editing a placeholder)", () => {
+      wrapper.setProps({url: null, index: 7});
+
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 0);
+      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);
     });
     it("should call onClose if Cancel button is clicked", () => {
       wrapper.find(".cancel").simulate("click");
@@ -557,7 +567,7 @@ describe("<TopSiteForm>", () => {
     it("should show error and not call onClose or dispatch if URL is empty", () => {
       wrapper.setState({"url": ""});
       assert.equal(0, wrapper.find(".error-tooltip").length);
-      wrapper.find(".save").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
@@ -565,13 +575,13 @@ describe("<TopSiteForm>", () => {
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
       wrapper.setState({"url": "not valid"});
       assert.equal(0, wrapper.find(".error-tooltip").length);
-      wrapper.find(".save").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.equal(1, wrapper.find(".error-tooltip").length);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should call onClose and dispatch with right args if URL is valid", () => {
-      wrapper.find(".save").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.calledOnce(wrapper.instance().props.onClose);
       assert.calledTwice(wrapper.instance().props.dispatch);
       assert.calledWith(
@@ -593,7 +603,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should not pass empty string label in dispatch data", () => {
       wrapper.setState({"label": ""});
-      wrapper.find(".save").simulate("click");
+      wrapper.find(".done").simulate("click");
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
@@ -668,14 +678,6 @@ describe("<TopSiteList>", () => {
     const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesCount={topSitesCount} />);
     assert.lengthOf(wrapper.find(TopSite), 2, "topSites");
     assert.lengthOf(wrapper.find(TopSitePlaceholder), 3, "placeholders");
-  });
-  it("should pass through the onEdit prop to <TopSitesPlaceholder>s", () => {
-    function onEditCallback() {}
-    const rows = [{url: "https://foo.com"}, {url: "https://bar.com"}];
-    const topSitesCount = 5;
-    const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} onEdit={onEditCallback} TopSites={{rows}} TopSitesCount={topSitesCount} />);
-    assert.equal(wrapper.find(TopSitePlaceholder).first().props().onEdit,
-      onEditCallback);
   });
   it("should fill any holes in TopSites with placeholders", () => {
     const rows = [{url: "https://foo.com"}];
@@ -788,17 +790,7 @@ describe("<TopSiteList>", () => {
 });
 
 describe("TopSitePlaceholder", () => {
-  it("should call this.props.onEdit(this.props.index) when edit-button is clicked", () => {
-    const onEdit = sinon.spy();
-    const wrapper = shallowWithIntl(<TopSitePlaceholder onEdit={onEdit} index={7} />);
-
-    wrapper.find(".edit-button").first().simulate("click");
-
-    assert.calledOnce(onEdit);
-    assert.calledWithExactly(onEdit, 7);
-  });
-
-  it("should dispatch a TOP_SITES_EDIT action when edit-button is clicked and this.props.onEdit is unset", () => {
+  it("should dispatch a TOP_SITES_EDIT action when edit-button is clicked", () => {
     const dispatch = sinon.spy();
     const wrapper =
       shallowWithIntl(<TopSitePlaceholder dispatch={dispatch} index={7} />);
