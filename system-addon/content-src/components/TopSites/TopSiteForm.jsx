@@ -42,6 +42,7 @@ export class TopSiteForm extends React.PureComponent {
         site.label = this.state.label;
       }
 
+      // When provided an index we edit a specific TopSite entry
       if (this.props.index >= 0) {
         this.onSaveButtonClick(site);
       } else {
@@ -114,12 +115,15 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   render() {
+    // For UI purposes, editing without an existing link is "add"
+    const showAsAdd = !this.props.url;
+
     return (
       <form className="topsite-form">
         <section className="edit-topsites-inner-wrapper">
           <div className="form-wrapper">
             <h3 className="section-title">
-              <FormattedMessage id={this.props.url ? "topsites_form_edit_header" : "topsites_form_add_header"} />
+              <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
             </h3>
             <div className="field title">
               <input
@@ -148,7 +152,7 @@ export class TopSiteForm extends React.PureComponent {
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
           <button className="done" type="submit" onClick={this.onDoneButtonClick}>
-            <FormattedMessage id={this.props.url ? "topsites_form_save_button" : "topsites_form_add_button"} />
+            <FormattedMessage id={showAsAdd ? "topsites_form_add_button" : "topsites_form_save_button"} />
           </button>
         </section>
       </form>
