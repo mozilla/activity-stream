@@ -120,7 +120,9 @@ export class ComponentPerfTimer extends React.Component {
       this.props.dispatch(ac.SendToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         // highlights_data_late_by_ms, topsites_data_late_by_ms.
-        data: {[`${this.props.id}_data_late_by_ms`]: value}
+        data: {[`${this.props.id}_data_late_by_ms`]: value},
+        // we don't want to trigger a redux update since this is triggered by render
+        meta: {skipLocal: true}
       }));
     } catch (ex) {
       // If this failed, it's likely because the `privacy.resistFingerprinting`
@@ -144,7 +146,9 @@ export class ComponentPerfTimer extends React.Component {
 
       this.props.dispatch(ac.SendToMain({
         type: at.SAVE_SESSION_PERF_DATA,
-        data
+        data,
+        // we don't want to trigger a redux update since this is triggered by render
+        meta: {skipLocal: true}
       }));
     } catch (ex) {
       // If this failed, it's likely because the `privacy.resistFingerprinting`

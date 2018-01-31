@@ -38,10 +38,13 @@ function mergeStateReducer(mainReducer) {
  * messageMiddleware - Middleware that looks for SentToMain type actions, and sends them if necessary
  */
 const messageMiddleware = store => next => action => {
+  const skipLocal = action.meta && action.meta.skipLocal;
   if (au.isSendToMain(action)) {
     sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
   }
-  next(action);
+  if (!skipLocal) {
+    next(action);
+  }
 };
 
 export const rehydrationMiddleware = store => next => action => {

@@ -274,7 +274,8 @@ describe("<ComponentPerfTimer>", () => {
       assert.calledOnce(dispatch);
       assert.calledWithExactly(dispatch, ac.SendToMain({
         type: at.SAVE_SESSION_PERF_DATA,
-        data: {[`${DEFAULT_PROPS.id}_data_late_by_ms`]: 2}
+        data: {[`${DEFAULT_PROPS.id}_data_late_by_ms`]: 2},
+        meta: {skipLocal: true}
       }));
     });
   });
@@ -335,7 +336,8 @@ describe("<ComponentPerfTimer>", () => {
       assert.calledOnce(dispatch);
       assert.calledWithExactly(dispatch, ac.SendToMain({
         type: at.SAVE_SESSION_PERF_DATA,
-        data: {"topsites_first_painted_ts": 42}
+        data: {"topsites_first_painted_ts": 42},
+        meta: {skipLocal: true}
       }));
     });
   });

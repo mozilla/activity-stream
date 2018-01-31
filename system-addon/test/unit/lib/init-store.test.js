@@ -64,6 +64,13 @@ describe("initStore", () => {
     store.dispatch(action);
     assert.calledWith(global.sendAsyncMessage, OUTGOING_MESSAGE_NAME, action);
   });
+  it("should not call next if meta.skipLocal is true", () => {
+    const action = ac.SendToMain({type: "FOO", meta: {skipLocal: true}});
+    const spy = globals.sandbox.spy();
+    store.subscribe(spy);
+    store.dispatch(action);
+    assert.notCalled(spy);
+  });
   it("should not send out other types of actions", () => {
     store.dispatch({type: "FOO"});
     assert.notCalled(global.sendAsyncMessage);
