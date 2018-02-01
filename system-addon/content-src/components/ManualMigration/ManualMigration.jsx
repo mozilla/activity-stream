@@ -19,12 +19,12 @@ export class _ManualMigration extends React.PureComponent {
   }
 
   onLaunchTour() {
-    this.props.dispatch(ac.SendToMain({type: at.MIGRATION_START}));
+    this.props.dispatch(ac.AlsoToMain({type: at.MIGRATION_START}));
     this.props.dispatch(ac.UserEvent({event: at.MIGRATION_START}));
   }
 
   onCancelTour() {
-    this.props.dispatch(ac.SendToMain({type: at.MIGRATION_CANCEL}));
+    this.props.dispatch(ac.AlsoToMain({type: at.MIGRATION_CANCEL}));
     this.props.dispatch(ac.UserEvent({event: at.MIGRATION_CANCEL}));
   }
 

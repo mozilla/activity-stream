@@ -117,12 +117,10 @@ export class ComponentPerfTimer extends React.Component {
       // value has to be Int32.
       const value = parseInt(this.perfSvc.getMostRecentAbsMarkStartByName(dataReadyKey) -
                              this.perfSvc.getMostRecentAbsMarkStartByName(firstRenderKey), 10);
-      this.props.dispatch(ac.SendToMain({
+      this.props.dispatch(ac.OnlyToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         // highlights_data_late_by_ms, topsites_data_late_by_ms.
-        data: {[`${this.props.id}_data_late_by_ms`]: value},
-        // we don't want to trigger a redux update since this is triggered by render
-        meta: {skipLocal: true}
+        data: {[`${this.props.id}_data_late_by_ms`]: value}
       }));
     } catch (ex) {
       // If this failed, it's likely because the `privacy.resistFingerprinting`
@@ -144,11 +142,9 @@ export class ComponentPerfTimer extends React.Component {
       const data = {};
       data[key] = this.perfSvc.getMostRecentAbsMarkStartByName(key);
 
-      this.props.dispatch(ac.SendToMain({
+      this.props.dispatch(ac.OnlyToMain({
         type: at.SAVE_SESSION_PERF_DATA,
-        data,
-        // we don't want to trigger a redux update since this is triggered by render
-        meta: {skipLocal: true}
+        data
       }));
     } catch (ex) {
       // If this failed, it's likely because the `privacy.resistFingerprinting`

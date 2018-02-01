@@ -272,7 +272,7 @@ export class _TopSiteList extends React.PureComponent {
       case "drop":
         if (index !== this.state.draggedIndex) {
           this.dropped = true;
-          this.props.dispatch(ac.SendToMain({
+          this.props.dispatch(ac.AlsoToMain({
             type: at.TOP_SITES_INSERT,
             data: {site: {url: this.state.draggedSite.url, label: this.state.draggedTitle}, index, draggedFromIndex: this.state.draggedIndex}
           }));

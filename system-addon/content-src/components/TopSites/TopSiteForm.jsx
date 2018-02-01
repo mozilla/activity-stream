@@ -44,7 +44,7 @@ export class TopSiteForm extends React.PureComponent {
         site.label = this.state.label;
       }
 
-      this.props.dispatch(ac.SendToMain({
+      this.props.dispatch(ac.AlsoToMain({
         type: at.TOP_SITES_PIN,
         data: {site, index}
       }));

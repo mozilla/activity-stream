@@ -29,8 +29,8 @@ export class _Base extends React.PureComponent {
     // prerendered DOM to be unmounted. Otherwise, NEW_TAB_STATE_REQUEST is
     // dispatched right after the store is ready.
     if (this.props.isPrerendered) {
-      this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
-      this.props.dispatch(ac.SendToMain({type: at.PAGE_PRERENDERED}));
+      this.props.dispatch(ac.AlsoToMain({type: at.NEW_TAB_STATE_REQUEST}));
+      this.props.dispatch(ac.AlsoToMain({type: at.PAGE_PRERENDERED}));
     }
   }
 
@@ -43,7 +43,7 @@ export class _Base extends React.PureComponent {
   // have rendered that data.
   sendNewTabRehydrated(App) {
     if (App && App.initialized && !this.renderNotified) {
-      this.props.dispatch(ac.SendToMain({type: at.NEW_TAB_REHYDRATED, data: {}}));
+      this.props.dispatch(ac.AlsoToMain({type: at.NEW_TAB_REHYDRATED, data: {}}));
       this.renderNotified = true;
     }
   }

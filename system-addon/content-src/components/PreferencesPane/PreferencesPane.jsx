@@ -63,7 +63,7 @@ export class _PreferencesPane extends React.PureComponent {
   handleSectionChange({target}) {
     const id = target.name;
     const type = target.checked ? at.SECTION_ENABLE : at.SECTION_DISABLE;
-    this.props.dispatch(ac.SendToMain({type, data: id}));
+    this.props.dispatch(ac.AlsoToMain({type, data: id}));
   }
 
   togglePane() {

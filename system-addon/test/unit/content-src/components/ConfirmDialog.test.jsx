@@ -63,13 +63,13 @@ describe("<ConfirmDialog>", () => {
     });
   });
   describe("click events", () => {
-    it("should emit SendToMain DIALOG_CANCEL when you click the overlay", () => {
+    it("should emit AlsoToMain DIALOG_CANCEL when you click the overlay", () => {
       let overlay = wrapper.find(".modal-overlay");
 
       assert.ok(overlay);
       overlay.simulate("click");
 
-      // Two events are emitted: UserEvent+SendToMain.
+      // Two events are emitted: UserEvent+AlsoToMain.
       assert.calledTwice(dispatch);
       assert.propertyVal(dispatch.firstCall.args[0], "type", at.DIALOG_CANCEL);
       assert.calledWith(dispatch, {type: at.DIALOG_CANCEL});
@@ -80,18 +80,18 @@ describe("<ConfirmDialog>", () => {
       assert.ok(overlay);
       overlay.simulate("click");
 
-      // Two events are emitted: UserEvent+SendToMain.
+      // Two events are emitted: UserEvent+AlsoToMain.
       assert.calledTwice(dispatch);
       assert.isUserEventAction(dispatch.secondCall.args[0]);
       assert.calledWith(dispatch, ac.UserEvent({event: at.DIALOG_CANCEL}));
     });
-    it("should emit SendToMain DIALOG_CANCEL on cancel", () => {
+    it("should emit AlsoToMain DIALOG_CANCEL on cancel", () => {
       let cancelButton = wrapper.find(".actions").childAt(0);
 
       assert.ok(cancelButton);
       cancelButton.simulate("click");
 
-      // Two events are emitted: UserEvent+SendToMain.
+      // Two events are emitted: UserEvent+AlsoToMain.
       assert.calledTwice(dispatch);
       assert.propertyVal(dispatch.firstCall.args[0], "type", at.DIALOG_CANCEL);
       assert.calledWith(dispatch, {type: at.DIALOG_CANCEL});
@@ -102,7 +102,7 @@ describe("<ConfirmDialog>", () => {
       assert.ok(cancelButton);
       cancelButton.simulate("click");
 
-      // Two events are emitted: UserEvent+SendToMain.
+      // Two events are emitted: UserEvent+AlsoToMain.
       assert.calledTwice(dispatch);
       assert.isUserEventAction(dispatch.secondCall.args[0]);
       assert.calledWith(dispatch, ac.UserEvent({event: at.DIALOG_CANCEL}));
@@ -111,7 +111,7 @@ describe("<ConfirmDialog>", () => {
       Object.assign(ConfirmDialogProps.data, {
         body_string_id: ["foo", "bar"],
         onConfirm: [
-          ac.SendToMain({type: at.DELETE_URL, data: "foo.bar"}),
+          ac.AlsoToMain({type: at.DELETE_URL, data: "foo.bar"}),
           ac.UserEvent({event: "DELETE"})
         ]
       });
@@ -121,17 +121,17 @@ describe("<ConfirmDialog>", () => {
       assert.ok(doneButton);
       doneButton.simulate("click");
 
-      // Two events are emitted: UserEvent+SendToMain.
+      // Two events are emitted: UserEvent+AlsoToMain.
       assert.isUserEventAction(dispatch.secondCall.args[0]);
 
       assert.calledTwice(dispatch);
       assert.calledWith(dispatch, ConfirmDialogProps.data.onConfirm[1]);
     });
-    it("should emit SendToMain on primary button", () => {
+    it("should emit AlsoToMain on primary button", () => {
       Object.assign(ConfirmDialogProps.data, {
         body_string_id: ["foo", "bar"],
         onConfirm: [
-          ac.SendToMain({type: at.DELETE_URL, data: "foo.bar"}),
+          ac.AlsoToMain({type: at.DELETE_URL, data: "foo.bar"}),
           ac.UserEvent({event: "DELETE"})
         ]
       });
@@ -141,7 +141,7 @@ describe("<ConfirmDialog>", () => {
       assert.ok(doneButton);
       doneButton.simulate("click");
 
-      // Two events are emitted: UserEvent+SendToMain.
+      // Two events are emitted: UserEvent+AlsoToMain.
       assert.calledTwice(dispatch);
       assert.calledWith(dispatch, ConfirmDialogProps.data.onConfirm[0]);
     });

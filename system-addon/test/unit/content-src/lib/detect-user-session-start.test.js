@@ -39,7 +39,7 @@ describe("detectUserSessionStart", () => {
 
       instance._sendEvent();
 
-      assert.calledWith(dispatch, ac.SendToMain({
+      assert.calledWith(dispatch, ac.AlsoToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {visibility_event_rcvd_ts: sinon.match.number}
       }));

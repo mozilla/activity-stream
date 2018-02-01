@@ -176,7 +176,7 @@ describe("<Card>", () => {
       card.simulate("click", Object.assign({}, event, {preventDefault: () => {}}));
       assert.calledThrice(DEFAULT_PROPS.dispatch);
 
-      // first dispatch call is the SendToMain message which will open a link in a window, and send some event data
+      // first dispatch call is the AlsoToMain message which will open a link in a window, and send some event data
       assert.equal(DEFAULT_PROPS.dispatch.firstCall.args[0].type, at.OPEN_LINK);
       assert.deepEqual(DEFAULT_PROPS.dispatch.firstCall.args[0].data.event, event);
 

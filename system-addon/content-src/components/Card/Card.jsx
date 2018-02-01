@@ -71,7 +71,7 @@ export class Card extends React.PureComponent {
   onLinkClick(event) {
     event.preventDefault();
     const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
-    this.props.dispatch(ac.SendToMain({
+    this.props.dispatch(ac.AlsoToMain({
       type: at.OPEN_LINK,
       data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
     }));

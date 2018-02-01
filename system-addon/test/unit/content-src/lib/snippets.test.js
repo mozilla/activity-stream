@@ -105,7 +105,7 @@ describe("SnippetsMap", () => {
       snippetsMap.blockSnippetById(789);
 
       assert.calledOnce(dispatch);
-      assert.calledWith(dispatch, ac.SendToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: [123, 456, 789]}));
+      assert.calledWith(dispatch, ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: [123, 456, 789]}));
     });
     it("should not add ids that are already blocked", () => {
       snippetsMap.blockSnippetById(123);

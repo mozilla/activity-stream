@@ -56,17 +56,17 @@ export class SnippetsMap extends Map {
     const {blockList} = this;
     if (!blockList.includes(id)) {
       blockList.push(id);
-      this._dispatch(ac.SendToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList}));
+      this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList}));
       await this.set("blockList", blockList);
     }
   }
 
   disableOnboarding() {
-    this._dispatch(ac.SendToMain({type: at.DISABLE_ONBOARDING}));
+    this._dispatch(ac.AlsoToMain({type: at.DISABLE_ONBOARDING}));
   }
 
   showFirefoxAccounts() {
-    this._dispatch(ac.SendToMain({type: at.SHOW_FIREFOX_ACCOUNTS}));
+    this._dispatch(ac.AlsoToMain({type: at.SHOW_FIREFOX_ACCOUNTS}));
   }
 
   /**
