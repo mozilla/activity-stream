@@ -555,7 +555,7 @@ describe("<TopSiteForm>", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 1);
     });
     it("should have the correct button text (if editing a placeholder)", () => {
-      wrapper.setState({url: null});
+      wrapper.setProps({TopSite: null});
 
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 0);
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);

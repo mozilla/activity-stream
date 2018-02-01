@@ -98,7 +98,7 @@ export class TopSiteForm extends React.PureComponent {
 
   render() {
     // For UI purposes, editing without an existing link is "add"
-    const showAsAdd = !this.state.url;
+    const showAsAdd = !this.props.TopSite;
 
     return (
       <form className="topsite-form">
