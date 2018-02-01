@@ -1,6 +1,5 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {FormattedMessage, injectIntl} from "react-intl";
-import {TOP_SITES_DEFAULT_LENGTH, TOP_SITES_SHOWMORE_LENGTH} from "common/Reducers.jsm";
 import {connect} from "react-redux";
 import React from "react";
 
@@ -55,8 +54,8 @@ export class _PreferencesPane extends React.PureComponent {
 
   handlePrefChange({target: {name, checked}}) {
     let value = checked;
-    if (name === "topSitesCount") {
-      value = checked ? TOP_SITES_SHOWMORE_LENGTH : TOP_SITES_DEFAULT_LENGTH;
+    if (name === "topSitesRows") {
+      value = checked ? 2 : 1;
     }
     this.props.dispatch(ac.SetPref(name, value));
   }
@@ -120,9 +119,9 @@ export class _PreferencesPane extends React.PureComponent {
 
                 <PreferencesInput
                   className="showMoreTopSites"
-                  prefName="topSitesCount"
+                  prefName="topSitesRows"
                   disabled={!prefs.showTopSites}
-                  value={prefs.topSitesCount !== TOP_SITES_DEFAULT_LENGTH}
+                  value={prefs.topSitesRows === 2}
                   onChange={this.handlePrefChange}
                   titleString={{id: "settings_pane_topsites_options_showmore"}}
                   labelClassName="icon icon-topsites" />

@@ -8,6 +8,7 @@ import {
 } from "./TopSitesConstants";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
+import {TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
 
 export class TopSiteLink extends React.PureComponent {
   constructor(props) {
@@ -284,7 +285,7 @@ export class _TopSiteList extends React.PureComponent {
   _getTopSites() {
     // Make a copy of the sites to truncate or extend to desired length
     let topSites = this.props.TopSites.rows.slice();
-    topSites.length = this.props.TopSitesCount;
+    topSites.length = this.props.TopSitesRows * TOP_SITES_MAX_SITES_PER_ROW;
     return topSites;
   }
 

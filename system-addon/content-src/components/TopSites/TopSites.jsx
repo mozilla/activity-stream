@@ -5,6 +5,7 @@ import {CollapsibleSection} from "content-src/components/CollapsibleSection/Coll
 import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/ComponentPerfTimer";
 import {connect} from "react-redux";
 import React from "react";
+import {TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
 import {TopSiteForm} from "./TopSiteForm";
 import {TopSiteList} from "./TopSite";
 
@@ -72,7 +73,7 @@ export class _TopSites extends React.PureComponent {
    * Return the TopSites to display based on prefs.
    */
   _getTopSites() {
-    return this.props.TopSites.rows.slice(0, this.props.TopSitesCount);
+    return this.props.TopSites.rows.slice(0, this.props.TopSitesRows * TOP_SITES_MAX_SITES_PER_ROW);
   }
 
   componentDidUpdate() {
@@ -115,7 +116,7 @@ export class _TopSites extends React.PureComponent {
     const editSite = this.props.TopSites.rows[editIndex] || {};
     return (<ComponentPerfTimer id="topsites" initialized={props.TopSites.initialized} dispatch={props.dispatch}>
       <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} infoOption={infoOption} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
-        <TopSiteList TopSites={props.TopSites} TopSitesCount={props.TopSitesCount} dispatch={props.dispatch} intl={props.intl} />
+        <TopSiteList TopSites={props.TopSites} TopSitesRows={props.TopSitesRows} dispatch={props.dispatch} intl={props.intl} />
         <div className="edit-topsites-wrapper">
           <div className="add-topsites-button">
             <button
@@ -148,5 +149,5 @@ export class _TopSites extends React.PureComponent {
 export const TopSites = connect(state => ({
   TopSites: state.TopSites,
   Prefs: state.Prefs,
-  TopSitesCount: state.Prefs.values.topSitesCount
+  TopSitesRows: state.Prefs.values.topSitesRows
 }))(injectIntl(_TopSites));
