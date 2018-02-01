@@ -143,7 +143,6 @@ export class TopSiteForm extends React.PureComponent {
 }
 
 TopSiteForm.defaultProps = {
-  label: "",
-  url: "",
+  TopSite: null,
   index: -1
 };
