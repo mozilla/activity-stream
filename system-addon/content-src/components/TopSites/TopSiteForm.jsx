@@ -6,10 +6,10 @@ import {TOP_SITES_SOURCE} from "./TopSitesConstants";
 export class TopSiteForm extends React.PureComponent {
   constructor(props) {
     super(props);
-    const {TopSite} = props;
+    const {site} = props;
     this.state = {
-      label: TopSite ? (TopSite.label || TopSite.hostname) : "",
-      url: TopSite ? TopSite.url : "",
+      label: site ? (site.label || site.hostname) : "",
+      url: site ? site.url : "",
       validationError: false
     };
     this.onLabelChange = this.onLabelChange.bind(this);
@@ -39,7 +39,7 @@ export class TopSiteForm extends React.PureComponent {
 
     if (this.validateForm()) {
       const site = {url: this.cleanUrl()};
-      const index = this.props.index || -1;
+      const {index} = this.props;
       if (this.state.label !== "") {
         site.label = this.state.label;
       }
@@ -98,7 +98,7 @@ export class TopSiteForm extends React.PureComponent {
 
   render() {
     // For UI purposes, editing without an existing link is "add"
-    const showAsAdd = !this.props.TopSite;
+    const showAsAdd = !this.props.site;
 
     return (
       <form className="topsite-form">

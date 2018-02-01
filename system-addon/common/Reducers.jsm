@@ -24,8 +24,7 @@ const INITIAL_STATE = {
     initialized: false,
     // The history (and possibly default) links
     rows: [],
-    // Used in content only to dispatch action from
-    // context menu to TopSiteForm.
+    // Used in content only to dispatch action to TopSiteForm.
     editForm: null
   },
   Prefs: {
@@ -92,7 +91,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       }
       return Object.assign({}, prevState, {initialized: true, rows: action.data});
     case at.TOP_SITES_EDIT:
-      return Object.assign({}, prevState, {editForm: {visible: true, index: action.data.index}});
+      return Object.assign({}, prevState, {editForm: {index: action.data.index}});
     case at.TOP_SITES_CANCEL_EDIT:
       return Object.assign({}, prevState, {editForm: null});
     case at.SCREENSHOT_UPDATED:

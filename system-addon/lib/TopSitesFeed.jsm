@@ -290,15 +290,15 @@ this.TopSitesFeed = class TopSitesFeed {
    */
   insert(action) {
     let {index} = action.data;
-    // Negative index will prepend the TopSite in the first position
-    if (index === -1) {
+    // Treat invalid pin index values (e.g., -1, undefined) as insert in the first position
+    if (!(index > 0)) {
       index = 0;
     }
 
     // Inserting a top site pins it in the specified slot, pushing over any link already
     // pinned in the slot (unless it's the last slot, then it replaces).
     this._insertPin(
-      action.data.site, index || 0,
+      action.data.site, index,
       action.data.draggedFromIndex !== undefined ? action.data.draggedFromIndex : this.store.getState().Prefs.values.topSitesRows * TOP_SITES_MAX_SITES_PER_ROW);
     this._broadcastPinnedSitesUpdated();
   }

@@ -113,12 +113,12 @@ export class _TopSites extends React.PureComponent {
               <FormattedMessage id="edit_topsites_add_button" />
             </button>
           </div>
-          {(editForm && editForm.visible) &&
+          {editForm &&
             <div className="edit-topsites">
               <div className="modal-overlay" onClick={this.onFormClose} />
               <div className="modal">
                 <TopSiteForm
-                  TopSite={props.TopSites.rows[editForm.index]}
+                  site={props.TopSites.rows[editForm.index]}
                   index={editForm.index}
                   onClose={this.onFormClose}
                   dispatch={this.props.dispatch}
