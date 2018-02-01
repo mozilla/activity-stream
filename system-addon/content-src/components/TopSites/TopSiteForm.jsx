@@ -39,27 +39,23 @@ export class TopSiteForm extends React.PureComponent {
 
     if (this.validateForm()) {
       const site = {url: this.cleanUrl()};
+      const index = this.props.index || -1;
       if (this.state.label !== "") {
         site.label = this.state.label;
       }
 
-      this.updateTopSite(site);
+      this.props.dispatch(ac.SendToMain({
+        type: at.TOP_SITES_PIN,
+        data: {site, index}
+      }));
+      this.props.dispatch(ac.UserEvent({
+        source: TOP_SITES_SOURCE,
+        event: "TOP_SITES_EDIT",
+        action_position: index
+      }));
+
       this.props.onClose();
     }
-  }
-
-  updateTopSite(site) {
-    const index = this.props.index || -1;
-
-    this.props.dispatch(ac.SendToMain({
-      type: at.TOP_SITES_PIN,
-      data: {site, index}
-    }));
-    this.props.dispatch(ac.UserEvent({
-      source: TOP_SITES_SOURCE,
-      event: "TOP_SITES_EDIT",
-      action_position: index
-    }));
   }
 
   cleanUrl() {

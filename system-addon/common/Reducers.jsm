@@ -25,7 +25,7 @@ const INITIAL_STATE = {
     // The history (and possibly default) links
     rows: [],
     // Used in content only to dispatch action from
-    // context menu to TopSites.
+    // context menu to TopSiteForm.
     editForm: null
   },
   Prefs: {
