@@ -6,9 +6,10 @@ import {TOP_SITES_SOURCE} from "./TopSitesConstants";
 export class TopSiteForm extends React.PureComponent {
   constructor(props) {
     super(props);
+    const {TopSite} = props;
     this.state = {
-      label: props.label || "",
-      url: props.url || "",
+      label: TopSite ? (TopSite.label || TopSite.hostname) : "",
+      url: TopSite ? TopSite.url : "",
       validationError: false
     };
     this.onLabelChange = this.onLabelChange.bind(this);
@@ -42,37 +43,22 @@ export class TopSiteForm extends React.PureComponent {
         site.label = this.state.label;
       }
 
-      // When provided an index we edit a specific TopSite entry
-      if (this.props.index >= 0) {
-        this.editTopSite(site);
-      } else {
-        this.insertTopSite(site);
-      }
-
+      this.updateTopSite(site);
       this.props.onClose();
     }
   }
 
-  insertTopSite(site) {
-    this.props.dispatch(ac.SendToMain({
-      type: at.TOP_SITES_INSERT,
-      data: {site}
-    }));
-    this.props.dispatch(ac.UserEvent({
-      source: TOP_SITES_SOURCE,
-      event: "TOP_SITES_ADD"
-    }));
-  }
+  updateTopSite(site) {
+    const index = this.props.index || -1;
 
-  editTopSite(site) {
     this.props.dispatch(ac.SendToMain({
       type: at.TOP_SITES_PIN,
-      data: {site, index: this.props.index}
+      data: {site, index}
     }));
     this.props.dispatch(ac.UserEvent({
       source: TOP_SITES_SOURCE,
       event: "TOP_SITES_EDIT",
-      action_position: this.props.index
+      action_position: index
     }));
   }
 
@@ -116,7 +102,7 @@ export class TopSiteForm extends React.PureComponent {
 
   render() {
     // For UI purposes, editing without an existing link is "add"
-    const showAsAdd = !this.props.url;
+    const showAsAdd = !this.state.url;
 
     return (
       <form className="topsite-form">

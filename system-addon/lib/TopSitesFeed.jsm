@@ -225,8 +225,13 @@ this.TopSitesFeed = class TopSitesFeed {
    */
   pin(action) {
     const {site, index} = action.data;
-    this._pinSiteAt(site, index);
-    this._broadcastPinnedSitesUpdated();
+    // If valid index provided, pin at that position
+    if (index >= 0) {
+      this._pinSiteAt(site, index);
+      this._broadcastPinnedSitesUpdated();
+    } else {
+      this.insert(action);
+    }
   }
 
   /**
@@ -284,10 +289,16 @@ this.TopSitesFeed = class TopSitesFeed {
    * Handle an insert (drop/add) action of a site.
    */
   insert(action) {
+    let {index} = action.data;
+    // Negative index will prepend the TopSite in the first position
+    if (index === -1) {
+      index = 0;
+    }
+
     // Inserting a top site pins it in the specified slot, pushing over any link already
     // pinned in the slot (unless it's the last slot, then it replaces).
     this._insertPin(
-      action.data.site, action.data.index || 0,
+      action.data.site, index || 0,
       action.data.draggedFromIndex !== undefined ? action.data.draggedFromIndex : this.store.getState().Prefs.values.topSitesRows * TOP_SITES_MAX_SITES_PER_ROW);
     this._broadcastPinnedSitesUpdated();
   }

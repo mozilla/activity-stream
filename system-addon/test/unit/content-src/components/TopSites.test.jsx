@@ -513,15 +513,15 @@ describe("<TopSiteForm>", () => {
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {site: {label: "a label", url: "http://valid.com"}},
+          data: {site: {label: "a label", url: "http://valid.com"}, index: -1},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
-          type: at.TOP_SITES_INSERT
+          type: at.TOP_SITES_PIN
         }
       );
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {source: "TOP_SITES", event: "TOP_SITES_ADD"},
+          data: {action_position: -1, source: "TOP_SITES", event: "TOP_SITES_EDIT"},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
           type: at.TELEMETRY_USER_EVENT
         }
@@ -533,16 +533,16 @@ describe("<TopSiteForm>", () => {
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {site: {url: "http://valid.com"}},
+          data: {site: {url: "http://valid.com"}, index: -1},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
-          type: at.TOP_SITES_INSERT
+          type: at.TOP_SITES_PIN
         }
       );
     });
   });
 
   describe("edit existing Topsite", () => {
-    beforeEach(() => setup({url: "https://foo.bar", label: "baz", index: 7}));
+    beforeEach(() => setup({TopSite: {url: "https://foo.bar", label: "baz"}, index: 7}));
 
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
@@ -555,7 +555,7 @@ describe("<TopSiteForm>", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 1);
     });
     it("should have the correct button text (if editing a placeholder)", () => {
-      wrapper.setProps({url: null, index: 7});
+      wrapper.setState({url: null});
 
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 0);
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);

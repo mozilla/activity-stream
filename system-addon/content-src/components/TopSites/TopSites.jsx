@@ -41,16 +41,8 @@ function countTopSitesIconsTypes(topSites) {
 }
 
 export class _TopSites extends React.PureComponent {
-  static get DEFAULT_STATE() {
-    return {
-      showAddForm: false,
-      editIndex: -1 // Index of top site being edited
-    };
-  }
-
   constructor(props) {
     super(props);
-    this.state = _TopSites.DEFAULT_STATE;
     this.onAddButtonClick = this.onAddButtonClick.bind(this);
     this.onFormClose = this.onFormClose.bind(this);
   }
@@ -85,15 +77,15 @@ export class _TopSites extends React.PureComponent {
   }
 
   onAddButtonClick() {
-    this.setState({showAddForm: true});
     this.props.dispatch(ac.UserEvent({
       source: TOP_SITES_SOURCE,
       event: "TOP_SITES_ADD_FORM_OPEN"
     }));
+    // Negative index will prepend the TopSite at the beginning of the list
+    this.props.dispatch({type: at.TOP_SITES_EDIT, data: {index: -1}});
   }
 
   onFormClose() {
-    this.setState(_TopSites.DEFAULT_STATE);
     this.props.dispatch(ac.UserEvent({
       source: TOP_SITES_SOURCE,
       event: "TOP_SITES_EDIT_CLOSE"
@@ -107,13 +99,8 @@ export class _TopSites extends React.PureComponent {
       header: {id: "settings_pane_topsites_header"},
       body: {id: "settings_pane_topsites_body"}
     };
-    const {showAddForm} = this.state;
-    const {editForm} = this.props.TopSites;
-    let {editIndex} = this.state;
-    if (editIndex < 0 && editForm) {
-      editIndex = editForm.index;
-    }
-    const editSite = this.props.TopSites.rows[editIndex] || {};
+    const {editForm} = props.TopSites;
+
     return (<ComponentPerfTimer id="topsites" initialized={props.TopSites.initialized} dispatch={props.dispatch}>
       <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} infoOption={infoOption} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
         <TopSiteList TopSites={props.TopSites} TopSitesRows={props.TopSitesRows} dispatch={props.dispatch} intl={props.intl} />
@@ -126,14 +113,13 @@ export class _TopSites extends React.PureComponent {
               <FormattedMessage id="edit_topsites_add_button" />
             </button>
           </div>
-          {(showAddForm || editIndex >= 0) &&
+          {(editForm && editForm.visible) &&
             <div className="edit-topsites">
               <div className="modal-overlay" onClick={this.onFormClose} />
               <div className="modal">
                 <TopSiteForm
-                  label={editSite.label || editSite.hostname || ""}
-                  url={editSite.url || ""}
-                  index={editIndex}
+                  TopSite={props.TopSites.rows[editForm.index]}
+                  index={editForm.index}
                   onClose={this.onFormClose}
                   dispatch={this.props.dispatch}
                   intl={this.props.intl} />
