@@ -16,6 +16,7 @@ export class TopSiteForm extends React.PureComponent {
     };
     this.onLabelChange = this.onLabelChange.bind(this);
     this.onUrlChange = this.onUrlChange.bind(this);
+    this.onClearUrlClick = this.onClearUrlClick.bind(this);
     this.onCancelButtonClick = this.onCancelButtonClick.bind(this);
     this.onDoneButtonClick = this.onDoneButtonClick.bind(this);
   }
@@ -29,6 +30,10 @@ export class TopSiteForm extends React.PureComponent {
       url: event.target.value,
       validationError: false
     });
+  }
+
+  onClearUrlClick() {
+    this.setState({url: ""});
   }
 
   onCancelButtonClick(ev) {
@@ -107,6 +112,7 @@ export class TopSiteForm extends React.PureComponent {
               {...this.props} />
             <TopSiteFormInput onChange={this.onUrlChange}
               value={this.state.url}
+              onClear={this.onClearUrlClick}
               validationError={this.state.validationError}
               titleId="topsites_form_url_label"
               placeholderId="topsites_form_url_placeholder"

@@ -18,13 +18,10 @@ export class TopSiteFormInput extends React.PureComponent {
   }
 
   render() {
-    const showClearButton = !this.props.loading && this.props.value && this.props.onClear;
+    const showClearButton = this.props.value && this.props.onClear;
 
     return (<label><FormattedMessage id={this.props.titleId} />
       <div className={`field url${this.props.validationError ? " invalid" : ""}`}>
-        {this.props.loading && <div className="loading-container">
-            <div className="loading-animation" />
-          </div>}
         {showClearButton &&
           <div className="clear-input-value" onClick={this.props.onClear} />}
         <input type="text"
@@ -42,7 +39,6 @@ export class TopSiteFormInput extends React.PureComponent {
 }
 
 TopSiteFormInput.defaultProps = {
-  loading: false,
   showClearButton: false,
   value: "",
   validationError: false
