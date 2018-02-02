@@ -16,8 +16,8 @@ export class TopSiteForm extends React.PureComponent {
     };
     this.onLabelChange = this.onLabelChange.bind(this);
     this.onUrlChange = this.onUrlChange.bind(this);
-    this.onClearUrlClick = this.onClearUrlClick.bind(this);
     this.onCancelButtonClick = this.onCancelButtonClick.bind(this);
+    this.onClearUrlClick = this.onClearUrlClick.bind(this);
     this.onDoneButtonClick = this.onDoneButtonClick.bind(this);
   }
 
@@ -99,7 +99,7 @@ export class TopSiteForm extends React.PureComponent {
     return (
       <form className="topsite-form">
         <div className="form-input-container">
-          <TopSiteLink link={this.props.site || {}} title={this.state.label} />
+          <TopSiteLink link={this.props.site || {}} title={this.state.label} preventNavigation={true} />
           <div className="form-wrapper">
             <h3 className="section-title">
               <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />

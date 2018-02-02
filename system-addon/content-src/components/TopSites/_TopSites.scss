@@ -349,16 +349,19 @@ $half-base-gutter: $base-gutter / 2;
       .clear-input-value {
         position: absolute;
         top: 16px;
-        width: 16px;
+        width: 24px;
         height: 16px;
-        background-image: url('#{$image-path}searchfield-cancel.svg');
+        background: $white url('#{$image-path}searchfield-cancel.svg');
         cursor: pointer;
-        background-size: cover;
+        background-size: 16px;
+        background-repeat: no-repeat;
+        background-position: center;
+
         &:dir(rtl) {
-          left: 8px;
+          left: 4px;
         }
         &:dir(ltr) {
-          right: 8px;
+          right: 4px;
         }
       }
     }
