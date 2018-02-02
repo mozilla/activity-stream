@@ -709,8 +709,41 @@ describe("Top Sites Feed", () => {
       pinnedLinks = await feed.pinnedCache.request();
       assert.propertyVal(pinnedLinks[0], "screenshot", "bar");
     });
+    it("should call insert if index < 0", () => {
+      const site = {url: "foo.bar", label: "foo"};
+      const action = {data: {index: -1, site}};
+
+      sandbox.spy(feed, "insert");
+      feed.pin(action);
+
+      assert.calledOnce(feed.insert);
+      assert.calledWithExactly(feed.insert, action);
+    });
+    it("should not call insert if index == 0", () => {
+      const site = {url: "foo.bar", label: "foo"};
+      const action = {data: {index: 0, site}};
+
+      sandbox.spy(feed, "insert");
+      feed.pin(action);
+
+      assert.notCalled(feed.insert);
+    });
   });
   describe("#drop", () => {
+    it("should correctly handle different index values", () => {
+      let index = -1;
+      const site = {url: "foo.bar", label: "foo"};
+      const action = {data: {index, site}};
+
+      feed.insert(action);
+
+      assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, site, 0);
+
+      index = undefined;
+      feed.insert(action);
+
+      assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, site, 0);
+    });
     it("should pin site in specified slot that is free", () => {
       fakeNewTabUtils.pinnedLinks.links = [null, {url: "example.com"}];
       const site = {url: "foo.bar", label: "foo"};

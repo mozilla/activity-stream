@@ -24,12 +24,8 @@ const INITIAL_STATE = {
     initialized: false,
     // The history (and possibly default) links
     rows: [],
-    // Used in content only to dispatch action from
-    // context menu to TopSitesEdit.
-    editForm: {
-      visible: false,
-      index: -1
-    }
+    // Used in content only to dispatch action to TopSiteForm.
+    editForm: null
   },
   Prefs: {
     initialized: false,

@@ -246,6 +246,18 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 }
 ```
 
+#### Adding or editing a new TopSite
+
+```js
+{
+  "event": "TOP_SITES_EDIT",
+  "source": "TOP_SITES_SOURCE",
+  // "-1" Is used for prepending a new TopSite at the front of the list, while
+  // any other possible value is used for editing an existing TopSite slot.
+  "action_position": [-1 | "0..TOP_SITES_LENGTH"]
+}
+```
+
 ## Session end pings
 
 When a session ends, the browser will send a `"activity_stream_session"` ping to our metrics servers. This ping contains the length of the session, a unique reason for why the session ended, and some additional metadata.

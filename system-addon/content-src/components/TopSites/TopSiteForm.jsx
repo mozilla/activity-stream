@@ -6,9 +6,10 @@ import {TOP_SITES_SOURCE} from "./TopSitesConstants";
 export class TopSiteForm extends React.PureComponent {
   constructor(props) {
     super(props);
+    const {site} = props;
     this.state = {
-      label: props.label || "",
-      url: props.url || "",
+      label: site ? (site.label || site.hostname) : "",
+      url: site ? site.url : "",
       validationError: false
     };
     this.onLabelChange = this.onLabelChange.bind(this);
@@ -38,42 +39,23 @@ export class TopSiteForm extends React.PureComponent {
 
     if (this.validateForm()) {
       const site = {url: this.cleanUrl()};
+      const {index} = this.props;
       if (this.state.label !== "") {
         site.label = this.state.label;
       }
 
-      // When provided an index we edit a specific TopSite entry
-      if (this.props.index >= 0) {
-        this.editTopSite(site);
-      } else {
-        this.insertTopSite(site);
-      }
+      this.props.dispatch(ac.SendToMain({
+        type: at.TOP_SITES_PIN,
+        data: {site, index}
+      }));
+      this.props.dispatch(ac.UserEvent({
+        source: TOP_SITES_SOURCE,
+        event: "TOP_SITES_EDIT",
+        action_position: index
+      }));
 
       this.props.onClose();
     }
-  }
-
-  insertTopSite(site) {
-    this.props.dispatch(ac.SendToMain({
-      type: at.TOP_SITES_INSERT,
-      data: {site}
-    }));
-    this.props.dispatch(ac.UserEvent({
-      source: TOP_SITES_SOURCE,
-      event: "TOP_SITES_ADD"
-    }));
-  }
-
-  editTopSite(site) {
-    this.props.dispatch(ac.SendToMain({
-      type: at.TOP_SITES_PIN,
-      data: {site, index: this.props.index}
-    }));
-    this.props.dispatch(ac.UserEvent({
-      source: TOP_SITES_SOURCE,
-      event: "TOP_SITES_EDIT",
-      action_position: this.props.index
-    }));
   }
 
   cleanUrl() {
@@ -116,7 +98,7 @@ export class TopSiteForm extends React.PureComponent {
 
   render() {
     // For UI purposes, editing without an existing link is "add"
-    const showAsAdd = !this.props.url;
+    const showAsAdd = !this.props.site;
 
     return (
       <form className="topsite-form">
@@ -161,7 +143,6 @@ export class TopSiteForm extends React.PureComponent {
 }
 
 TopSiteForm.defaultProps = {
-  label: "",
-  url: "",
+  TopSite: null,
   index: -1
 };
