@@ -520,23 +520,6 @@ describe("<TopSiteForm>", () => {
     wrapper = mountWithIntl(<TopSiteForm {...customProps} />);
   }
 
-  describe("#TopSiteFormInput", () => {
-    // This ensures that the correct prop fn is provided to the TopSiteFormInput component
-    beforeEach(() => setup({site: {url: "http://foo"}}));
-
-    it("should pass the correct url validation to the FormInput comp", () => {
-      wrapper.setState({url: "foo"});
-      wrapper.find("input").forEach(n => n.simulate("blur"));
-
-      assert.equal(wrapper.find(".error-tooltip").length, 0);
-
-      wrapper.setState({url: ""});
-      wrapper.find("input").forEach(n => n.simulate("blur"));
-
-      assert.equal(wrapper.find(".error-tooltip").length, 1);
-    });
-  });
-
   describe("validateForm", () => {
     beforeEach(() => setup({site: {url: "http://foo"}}));
 
@@ -550,6 +533,7 @@ describe("<TopSiteForm>", () => {
       wrapper.setState({url: " "});
 
       assert.isFalse(wrapper.instance().validateForm());
+      assert.isTrue(wrapper.state().validationError);
     });
   });
 
@@ -571,17 +555,17 @@ describe("<TopSiteForm>", () => {
       assert.calledOnce(wrapper.instance().props.onClose);
     });
     it("should show error and not call onClose or dispatch if URL is empty", () => {
-      assert.equal(wrapper.state().validationError, false);
+      assert.isFalse(wrapper.state().validationError);
       wrapper.find(".done").simulate("click");
-      assert.equal(wrapper.state().validationError, true);
+      assert.isTrue(wrapper.state().validationError);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
       wrapper.setState({"url": "not valid"});
-      assert.equal(wrapper.state().validationError, false);
+      assert.isFalse(wrapper.state().validationError);
       wrapper.find(".done").simulate("click");
-      assert.equal(wrapper.state().validationError, true);
+      assert.isTrue(wrapper.state().validationError);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
@@ -645,17 +629,17 @@ describe("<TopSiteForm>", () => {
     });
     it("should show error and not call onClose or dispatch if URL is empty", () => {
       wrapper.setState({"url": ""});
-      assert.equal(wrapper.state().validationError, false);
+      assert.isFalse(wrapper.state().validationError);
       wrapper.find(".done").simulate("click");
-      assert.equal(wrapper.state().validationError, true);
+      assert.isTrue(wrapper.state().validationError);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
       wrapper.setState({"url": "not valid"});
-      assert.equal(wrapper.state().validationError, false);
+      assert.isFalse(wrapper.state().validationError);
       wrapper.find(".done").simulate("click");
-      assert.equal(wrapper.state().validationError, true);
+      assert.isTrue(wrapper.state().validationError);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
@@ -901,6 +885,7 @@ describe("#TopSiteFormInput", () => {
 
       wrapper = mountWithIntl(<TopSiteFormInput titleId="topsites_form_title_label"
         placeholderId="topsites_form_title_placeholder"
+        errorMessageId="topsites_form_url_validation"
         onChange={onChangeStub}
         value="foo" />);
     });
@@ -924,33 +909,6 @@ describe("#TopSiteFormInput", () => {
 
       assert.equal(wrapper.find(".clear-input-value").length, 1);
     });
-
-    it("should call validate & clean cbs on blur", () => {
-      const validateStub = sinon.stub().returns(true);
-      const cleanStub = sinon.stub().returns("clean");
-      wrapper.setProps({
-        validate: validateStub,
-        clean: cleanStub
-      });
-
-      wrapper.find("input").simulate("blur");
-
-      assert.calledOnce(cleanStub);
-      assert.calledWithExactly(cleanStub, "foo");
-      assert.calledOnce(validateStub);
-      assert.calledWithExactly(validateStub, "clean");
-    });
-
-    it("should set the error state if validation fails", () => {
-      wrapper.setProps({
-        validate: () => false,
-        errorMessageId: "topsites_form_url_validation"
-      });
-
-      wrapper.find("input").simulate("blur");
-
-      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_url_validation").length, 1);
-    });
   });
 
   describe("with error", () => {
@@ -967,12 +925,6 @@ describe("#TopSiteFormInput", () => {
 
     it("should render the error message", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_url_validation").length, 1);
-    });
-
-    it("should remove the error message on focus", () => {
-      wrapper.find("input").simulate("focus");
-
-      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_url_validation").length, 0);
     });
   });
 });
