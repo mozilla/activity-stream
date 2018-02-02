@@ -1,15 +1,15 @@
-.top-sites-list {
-  $top-sites-size: $grid-unit;
-  $top-sites-border-radius: 6px;
-  $top-sites-title-height: 30px;
-  $top-sites-vertical-space: 8px;
-  $screenshot-size: cover;
-  $rich-icon-size: 96px;
-  $default-icon-wrapper-size: 42px;
-  $default-icon-size: 32px;
-  $default-icon-offset: 6px;
-  $half-base-gutter: $base-gutter / 2;
+$top-sites-size: $grid-unit;
+$top-sites-border-radius: 6px;
+$top-sites-title-height: 30px;
+$top-sites-vertical-space: 8px;
+$screenshot-size: cover;
+$rich-icon-size: 96px;
+$default-icon-wrapper-size: 42px;
+$default-icon-size: 32px;
+$default-icon-offset: 6px;
+$half-base-gutter: $base-gutter / 2;
 
+.top-sites-list {
   list-style: none;
   margin: 0 (-$half-base-gutter);
   // Take back the margin from the bottom row of vertical spacing as well as the
@@ -65,146 +65,142 @@
     margin: 0 0 $top-sites-vertical-space;
   }
 
-  // container for drop zone
-  .top-site-outer {
-    padding: 0 $half-base-gutter;
-
-    // container for context menu
-    .top-site-inner {
-      position: relative;
-
-      > a {
-        color: inherit;
-        display: block;
-        outline: none;
-
-        &:-moz-any(.active, :focus) {
-          .tile {
-            @include fade-in;
-          }
-        }
-      }
-    }
-
-    @include context-menu-button;
-
-    .tile { // sass-lint:disable-block property-sort-order
-      border-radius: $top-sites-border-radius;
-      box-shadow: inset $inner-box-shadow, $shadow-secondary;
-      height: $top-sites-size;
-      position: relative;
-      width: $top-sites-size;
-
-      // For letter fallback
-      align-items: center;
-      color: $text-secondary;
-      display: flex;
-      font-size: 32px;
-      font-weight: 200;
-      justify-content: center;
-      text-transform: uppercase;
-
-      &::before {
-        content: attr(data-fallback);
-      }
-    }
-
-    .screenshot {
-      background-color: $white;
-      background-position: top left;
-      background-size: $screenshot-size;
-      border-radius: $top-sites-border-radius;
-      box-shadow: inset $inner-box-shadow;
-      height: 100%;
-      left: 0;
-      opacity: 0;
-      position: absolute;
-      top: 0;
-      transition: opacity 1s;
-      width: 100%;
-
-      &.active {
-        opacity: 1;
-      }
-    }
-
-    // Some common styles for all icons (rich and default) in top sites
-    .top-site-icon {
-      background-color: $background-primary;
-      background-position: center center;
-      background-repeat: no-repeat;
-      border-radius: $top-sites-border-radius;
-      box-shadow: inset $inner-box-shadow;
-      position: absolute;
-    }
-
-    .rich-icon {
-      background-size: $rich-icon-size;
-      height: 100%;
-      offset-inline-start: 0;
-      top: 0;
-      width: 100%;
-    }
-
-    .default-icon { // sass-lint:disable block property-sort-order
-      background-size: $default-icon-size;
-      bottom: -$default-icon-offset;
-      height: $default-icon-wrapper-size;
-      offset-inline-end: -$default-icon-offset;
-      width: $default-icon-wrapper-size;
-
-      // for corner letter fallback
-      align-items: center;
-      display: flex;
-      font-size: 20px;
-      justify-content: center;
-
-      &[data-fallback]::before {
-        content: attr(data-fallback);
-      }
-    }
-
-    .title {
-      font: message-box;
-      height: $top-sites-title-height;
-      line-height: $top-sites-title-height;
-      text-align: center;
-      width: $top-sites-size;
-      position: relative;
-
-      .icon {
-        fill: $fill-tertiary;
-        offset-inline-start: 0;
-        position: absolute;
-        top: 10px;
-      }
-
-      span {
-        height: $top-sites-title-height;
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      &.pinned {
-        span {
-          padding: 0 13px;
-        }
-      }
-    }
-
-    .edit-button {
-      background-image: url('#{$image-path}glyph-edit-16.svg');
-    }
-
-    &.placeholder {
+  &:not(.dnd-active) {
+    .top-site-outer:-moz-any(.active, :focus, :hover) {
       .tile {
-        box-shadow: inset $inner-box-shadow;
+        @include fade-in;
       }
 
-      .screenshot {
-        display: none;
+      @include context-menu-button-hover;
+    }
+  }
+}
+
+// container for drop zone
+.top-site-outer {
+  padding: 0 $half-base-gutter;
+
+  // container for context menu
+  .top-site-inner {
+    position: relative;
+
+    > a {
+      color: inherit;
+      display: block;
+      outline: none;
+
+      &:-moz-any(.active, :focus) {
+        .tile {
+          @include fade-in;
+        }
+      }
+    }
+  }
+
+  @include context-menu-button;
+
+  .tile { // sass-lint:disable-block property-sort-order
+    border-radius: $top-sites-border-radius;
+    box-shadow: inset $inner-box-shadow, $shadow-secondary;
+    height: $top-sites-size;
+    position: relative;
+    width: $top-sites-size;
+
+    // For letter fallback
+    align-items: center;
+    color: $text-secondary;
+    display: flex;
+    font-size: 32px;
+    font-weight: 200;
+    justify-content: center;
+    text-transform: uppercase;
+
+    &::before {
+      content: attr(data-fallback);
+    }
+  }
+
+  .screenshot {
+    background-color: $white;
+    background-position: top left;
+    background-size: $screenshot-size;
+    border-radius: $top-sites-border-radius;
+    box-shadow: inset $inner-box-shadow;
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    transition: opacity 1s;
+    width: 100%;
+
+    &.active {
+      opacity: 1;
+    }
+  }
+
+  // Some common styles for all icons (rich and default) in top sites
+  .top-site-icon {
+    background-color: $background-primary;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: $top-sites-border-radius;
+    box-shadow: inset $inner-box-shadow;
+    position: absolute;
+  }
+
+  .rich-icon {
+    background-size: $rich-icon-size;
+    height: 100%;
+    offset-inline-start: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .default-icon { // sass-lint:disable block property-sort-order
+    background-size: $default-icon-size;
+    bottom: -$default-icon-offset;
+    height: $default-icon-wrapper-size;
+    offset-inline-end: -$default-icon-offset;
+    width: $default-icon-wrapper-size;
+
+    // for corner letter fallback
+    align-items: center;
+    display: flex;
+    font-size: 20px;
+    justify-content: center;
+
+    &[data-fallback]::before {
+      content: attr(data-fallback);
+    }
+  }
+
+  .title {
+    font: message-box;
+    height: $top-sites-title-height;
+    line-height: $top-sites-title-height;
+    text-align: center;
+    width: $top-sites-size;
+    position: relative;
+
+    .icon {
+      fill: $fill-tertiary;
+      offset-inline-start: 0;
+      position: absolute;
+      top: 10px;
+    }
+
+    span {
+      height: $top-sites-title-height;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &.pinned {
+      span {
+        padding: 0 13px;
       }
     }
 
@@ -225,13 +221,17 @@
     }
   }
 
-  &:not(.dnd-active) {
-    .top-site-outer:-moz-any(.active, :focus, :hover) {
-      .tile {
-        @include fade-in;
-      }
+  .edit-button {
+    background-image: url('#{$image-path}glyph-edit-16.svg');
+  }
 
-      @include context-menu-button-hover;
+  &.placeholder {
+    .tile {
+      box-shadow: inset $inner-box-shadow;
+    }
+
+    .screenshot {
+      display: none;
     }
   }
 }
@@ -311,11 +311,6 @@
     width: calc(100% + 62px);
     box-shadow: $shadow-secondary;
   }
-
-  .edit-topsites-inner-wrapper {
-    margin: 0;
-    padding: 15px 30px;
-  }
 }
 
 .top-sites:not(.collapsed):hover {
@@ -326,10 +321,27 @@
 }
 
 .topsite-form {
+  .form-input-container {
+    display: flex;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 30px;
+
+    .top-site-outer {
+      flex: 1;
+      padding: 0 32px;
+      margin: 0;
+      list-style: none;
+    }
+  }
+
+  label {
+    font-size: 13px;
+  }
+
   .form-wrapper {
     margin: auto;
-    max-width: 350px;
-    padding: 15px 0;
+    width: 320px;
 
     .field {
       position: relative;
@@ -341,15 +353,16 @@
     }
 
     .section-title {
-      margin-bottom: 5px;
+      margin: 0 0 8px;
     }
 
     input {
       &[type='text'] {
         border: $input-border;
         border-radius: 2px;
-        margin: 5px 0;
-        padding: 7px;
+        margin: 8px 0;
+        padding: 0 8px 1px;
+        height: 32px;
         width: 100%;
 
         &:focus {

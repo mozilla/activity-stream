@@ -918,11 +918,11 @@ describe("#TopSiteFormInput", () => {
     });
 
     it("should render the clear button if cb is provided", () => {
-      assert.equal(wrapper.find(".clear-screenshot-input").length, 0);
+      assert.equal(wrapper.find(".clear-input-value").length, 0);
 
       wrapper.setProps({onClear: sinon.stub()});
 
-      assert.equal(wrapper.find(".clear-screenshot-input").length, 1);
+      assert.equal(wrapper.find(".clear-input-value").length, 1);
     });
 
     it("should call validate & clean cbs on blur", () => {

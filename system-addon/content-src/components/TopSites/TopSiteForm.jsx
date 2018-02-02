@@ -3,6 +3,7 @@ import {FormattedMessage} from "react-intl";
 import React from "react";
 import {TOP_SITES_SOURCE} from "./TopSitesConstants";
 import {TopSiteFormInput} from "./TopSiteFormInput";
+import {TopSiteLink} from "./TopSite";
 
 export class TopSiteForm extends React.PureComponent {
   constructor(props) {
@@ -17,7 +18,6 @@ export class TopSiteForm extends React.PureComponent {
     this.onUrlChange = this.onUrlChange.bind(this);
     this.onCancelButtonClick = this.onCancelButtonClick.bind(this);
     this.onDoneButtonClick = this.onDoneButtonClick.bind(this);
-    this.validateUrl = this.validateUrl.bind(this);
   }
 
   onLabelChange(event) {
@@ -25,7 +25,10 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   onUrlChange(event) {
-    this.setState({url: event.target.value});
+    this.setState({
+      url: event.target.value,
+      validationError: false
+    });
   }
 
   onCancelButtonClick(ev) {
@@ -65,12 +68,6 @@ export class TopSiteForm extends React.PureComponent {
     return url;
   }
 
-  resetValidation() {
-    if (this.state.validationError) {
-      this.setState({validationError: false});
-    }
-  }
-
   validateUrl(url) {
     try {
       return !!new URL(this.cleanUrl(url));
@@ -79,15 +76,12 @@ export class TopSiteForm extends React.PureComponent {
     }
   }
 
-  validateCustomScreenshotUrl(url) {
-    return url ? this.validateUrl(url) : true;
-  }
-
   validateForm() {
-    const validate = this.state.url && this.validateUrl(this.state.url) &&
-      this.validateCustomScreenshotUrl(this.state.customScreenshotUrl);
+    const validate = this.validateUrl(this.state.url);
     if (!validate) {
       this.setState({validationError: true});
+    } else {
+      this.setState({validationError: false});
     }
 
     return validate;
@@ -99,29 +93,27 @@ export class TopSiteForm extends React.PureComponent {
 
     return (
       <form className="topsite-form">
-        <section className="edit-topsites-inner-wrapper">
-            <div className="form-wrapper">
-              <h3 className="section-title">
-                <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
-              </h3>
-              <TopSiteFormInput onChange={this.onLabelChange}
-                value={this.state.label}
-                titleId="topsites_form_title_label"
-                placeholderId="topsites_form_title_placeholder"
-                errorMessageId="topsites_form_url_validation"
-                {...this.props} />
-              <TopSiteFormInput
-                clean={this.cleanUrl}
-                onChange={this.onUrlChange}
-                value={this.state.url}
-                validationError={this.state.validationError && !this.state.url}
-                validate={this.validateUrl}
-                titleId="topsites_form_url_label"
-                placeholderId="topsites_form_url_placeholder"
-                errorMessageId="topsites_form_url_validation"
-                {...this.props} />
-            </div>
-        </section>
+        <div className="form-input-container">
+          <TopSiteLink link={this.props.site || {}} title={this.state.label} />
+          <div className="form-wrapper">
+            <h3 className="section-title">
+              <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
+            </h3>
+            <TopSiteFormInput onChange={this.onLabelChange}
+              value={this.state.label}
+              titleId="topsites_form_title_label"
+              placeholderId="topsites_form_title_placeholder"
+              errorMessageId="topsites_form_url_validation"
+              {...this.props} />
+            <TopSiteFormInput onChange={this.onUrlChange}
+              value={this.state.url}
+              validationError={this.state.validationError}
+              titleId="topsites_form_url_label"
+              placeholderId="topsites_form_url_placeholder"
+              errorMessageId="topsites_form_url_validation"
+              {...this.props} />
+          </div>
+        </div>
         <section className="actions">
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
             <FormattedMessage id="topsites_form_cancel_button" />
