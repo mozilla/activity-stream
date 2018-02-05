@@ -10,7 +10,7 @@ export const LinkMenuOptions = {
   RemoveBookmark: site => ({
     id: "menu_action_remove_bookmark",
     icon: "bookmark-added",
-    action: ac.SendToMain({
+    action: ac.AlsoToMain({
       type: at.DELETE_BOOKMARK_BY_ID,
       data: site.bookmarkGuid
     }),
@@ -19,7 +19,7 @@ export const LinkMenuOptions = {
   AddBookmark: site => ({
     id: "menu_action_bookmark",
     icon: "bookmark-hollow",
-    action: ac.SendToMain({
+    action: ac.AlsoToMain({
       type: at.BOOKMARK_URL,
       data: {url: site.url, title: site.title, type: site.type}
     }),
@@ -28,7 +28,7 @@ export const LinkMenuOptions = {
   OpenInNewWindow: site => ({
     id: "menu_action_open_new_window",
     icon: "new-window",
-    action: ac.SendToMain({
+    action: ac.AlsoToMain({
       type: at.OPEN_NEW_WINDOW,
       data: {url: site.url, referrer: site.referrer}
     }),
@@ -37,7 +37,7 @@ export const LinkMenuOptions = {
   OpenInPrivateWindow: site => ({
     id: "menu_action_open_private_window",
     icon: "new-window-private",
-    action: ac.SendToMain({
+    action: ac.AlsoToMain({
       type: at.OPEN_PRIVATE_WINDOW,
       data: {url: site.url, referrer: site.referrer}
     }),
@@ -46,7 +46,7 @@ export const LinkMenuOptions = {
   BlockUrl: (site, index, eventSource) => ({
     id: "menu_action_dismiss",
     icon: "dismiss",
-    action: ac.SendToMain({
+    action: ac.AlsoToMain({
       type: at.BLOCK_URL,
       data: site.url
     }),
@@ -77,7 +77,7 @@ export const LinkMenuOptions = {
       type: at.DIALOG_OPEN,
       data: {
         onConfirm: [
-          ac.SendToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, forceBlock: site.bookmarkGuid}}),
+          ac.AlsoToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, forceBlock: site.bookmarkGuid}}),
           ac.UserEvent({event: "DELETE"})
         ],
         body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],
@@ -91,7 +91,7 @@ export const LinkMenuOptions = {
   PinTopSite: (site, index) => ({
     id: "menu_action_pin",
     icon: "pin",
-    action: ac.SendToMain({
+    action: ac.AlsoToMain({
       type: at.TOP_SITES_PIN,
       data: {site: {url: site.url}, index}
     }),
@@ -100,7 +100,7 @@ export const LinkMenuOptions = {
   UnpinTopSite: site => ({
     id: "menu_action_unpin",
     icon: "unpin",
-    action: ac.SendToMain({
+    action: ac.AlsoToMain({
       type: at.TOP_SITES_UNPIN,
       data: {site: {url: site.url}}
     }),
@@ -109,7 +109,7 @@ export const LinkMenuOptions = {
   SaveToPocket: (site, index, eventSource) => ({
     id: "menu_action_save_to_pocket",
     icon: "pocket",
-    action: ac.SendToMain({
+    action: ac.AlsoToMain({
       type: at.SAVE_TO_POCKET,
       data: {site: {url: site.url, title: site.title}}
     }),

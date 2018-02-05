@@ -158,7 +158,7 @@ this.TopSitesFeed = class TopSitesFeed {
       this.store.dispatch(ac.BroadcastToContent(newAction));
     } else {
       // Don't broadcast only update the state and update the preloaded tab.
-      this.store.dispatch(ac.SendToPreloaded(newAction));
+      this.store.dispatch(ac.AlsoToPreloaded(newAction));
     }
   }
 

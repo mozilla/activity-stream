@@ -42,7 +42,7 @@ describe("<ManualMigration>", () => {
       cancelBtn.simulate("click");
 
       assert.calledTwice(dispatch);
-      assert.calledWith(dispatch, ac.SendToMain({type: at.MIGRATION_CANCEL}));
+      assert.calledWith(dispatch, ac.AlsoToMain({type: at.MIGRATION_CANCEL}));
       assert.calledWith(dispatch, ac.UserEvent({event: at.MIGRATION_CANCEL}));
     });
     it("import btn should dispatch correct events", () => {
@@ -51,7 +51,7 @@ describe("<ManualMigration>", () => {
       cancelBtn.simulate("click");
 
       assert.calledTwice(dispatch);
-      assert.calledWith(dispatch, ac.SendToMain({type: at.MIGRATION_START}));
+      assert.calledWith(dispatch, ac.AlsoToMain({type: at.MIGRATION_START}));
       assert.calledWith(dispatch, ac.UserEvent({event: at.MIGRATION_START}));
     });
   });

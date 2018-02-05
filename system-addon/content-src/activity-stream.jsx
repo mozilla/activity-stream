@@ -16,7 +16,7 @@ new DetectUserSessionStart(store).sendEventOrAddListener();
 // to request state rehydration (see Base.jsx). If we are NOT in a prerendered state,
 // we can request it immedately.
 if (!global.gActivityStreamPrerenderedState) {
-  store.dispatch(ac.SendToMain({type: at.NEW_TAB_STATE_REQUEST}));
+  store.dispatch(ac.AlsoToMain({type: at.NEW_TAB_STATE_REQUEST}));
 }
 
 ReactDOM.render(<Provider store={store}>

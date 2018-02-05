@@ -63,7 +63,7 @@ describe("<TopSites>", () => {
       wrapper.instance()._dispatchTopSitesStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
-      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
@@ -83,7 +83,7 @@ describe("<TopSites>", () => {
       wrapper.instance()._dispatchTopSitesStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
-      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
@@ -103,7 +103,7 @@ describe("<TopSites>", () => {
       wrapper.instance()._dispatchTopSitesStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
-      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
@@ -123,7 +123,7 @@ describe("<TopSites>", () => {
       wrapper.instance()._dispatchTopSitesStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
-      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
@@ -143,7 +143,7 @@ describe("<TopSites>", () => {
       wrapper.instance()._dispatchTopSitesStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
-      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
@@ -163,7 +163,7 @@ describe("<TopSites>", () => {
       wrapper.instance()._dispatchTopSitesStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
-      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
@@ -183,7 +183,7 @@ describe("<TopSites>", () => {
       wrapper.instance()._dispatchTopSitesStats();
 
       assert.calledOnce(DEFAULT_PROPS.dispatch);
-      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.SendToMain({
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {

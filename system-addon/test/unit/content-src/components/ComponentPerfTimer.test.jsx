@@ -272,7 +272,7 @@ describe("<ComponentPerfTimer>", () => {
       wrapper.instance()._sendBadStateEvent();
 
       assert.calledOnce(dispatch);
-      assert.calledWithExactly(dispatch, ac.SendToMain({
+      assert.calledWithExactly(dispatch, ac.OnlyToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {[`${DEFAULT_PROPS.id}_data_late_by_ms`]: 2}
       }));
@@ -333,7 +333,7 @@ describe("<ComponentPerfTimer>", () => {
       wrapper.instance()._sendPaintedEvent();
 
       assert.calledOnce(dispatch);
-      assert.calledWithExactly(dispatch, ac.SendToMain({
+      assert.calledWithExactly(dispatch, ac.OnlyToMain({
         type: at.SAVE_SESSION_PERF_DATA,
         data: {"topsites_first_painted_ts": 42}
       }));

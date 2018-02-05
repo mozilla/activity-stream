@@ -12,7 +12,7 @@ import React from "react";
  * data: {
  *   // Any sort of data needed to be passed around by actions.
  *   payload: site.url,
- *   // Primary button SendToMain action.
+ *   // Primary button AlsoToMain action.
  *   action: "DELETE_HISTORY_URL",
  *   // Primary button USerEvent action.
  *   userEvent: "DELETE",
