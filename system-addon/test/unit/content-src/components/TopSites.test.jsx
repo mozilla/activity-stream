@@ -1,6 +1,6 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {GlobalOverrider, mountWithIntl, shallowWithIntl} from "test/unit/utils";
 import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "content-src/components/TopSites/TopSitesConstants";
-import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
 import {TOP_SITES_DEFAULT_ROWS, TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
 import {TopSite, TopSiteLink, _TopSiteList as TopSiteList, TopSitePlaceholder} from "content-src/components/TopSites/TopSite";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
@@ -38,15 +38,18 @@ describe("<TopSites>", () => {
     assert.ok(wrapper.exists());
   });
   describe("#_dispatchTopSitesStats", () => {
+    let globals;
     let wrapper;
     let dispatchStatsSpy;
 
     beforeEach(() => {
+      globals = new GlobalOverrider();
       sandbox.stub(DEFAULT_PROPS, "dispatch");
       wrapper = shallow(<TopSites {...DEFAULT_PROPS} />, {disableLifecycleMethods: true});
       dispatchStatsSpy = sandbox.spy(wrapper.instance(), "_dispatchTopSitesStats");
     });
     afterEach(() => {
+      globals.restore();
       sandbox.restore();
     });
     it("should call _dispatchTopSitesStats on componentDidMount", () => {
@@ -194,6 +197,47 @@ describe("<TopSites>", () => {
             "no_image": 3
           },
           topsites_pinned: 2
+        }
+      }));
+    });
+    it("should only count visible top sites on wide layout", () => {
+      globals.set("matchMedia", () => ({matches: true}));
+      const rows = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+      sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
+
+      wrapper.instance()._dispatchTopSitesStats();
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 0,
+            "screenshot": 0,
+            "tippytop": 0,
+            "rich_icon": 0,
+            "no_image": 8
+          },
+          topsites_pinned: 0
+        }
+      }));
+    });
+    it("should only count visible top sites on normal layout", () => {
+      globals.set("matchMedia", () => ({matches: false}));
+      const rows = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+      sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
+      wrapper.instance()._dispatchTopSitesStats();
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "screenshot_with_icon": 0,
+            "screenshot": 0,
+            "tippytop": 0,
+            "rich_icon": 0,
+            "no_image": 6
+          },
+          topsites_pinned: 0
         }
       }));
     });
@@ -406,7 +450,7 @@ describe("<TopSite>", () => {
     const wrapper = shallow(<TopSite link={link} index={1} activeIndex={1} />);
     wrapper.setState({showContextMenu: true});
 
-    assert.equal(wrapper.find(TopSiteLink).props().className, "active");
+    assert.equal(wrapper.find(TopSiteLink).props().className.trim(), "active");
   });
   it("should not add .active class, on top-site-outer if context menu is closed", () => {
     const wrapper = shallow(<TopSite link={link} index={1} />);
@@ -779,18 +823,18 @@ describe("<TopSiteList>", () => {
       draggedTitle: "foo"
     });
     site1.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(3), [site2, site3, null, site1, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(3), [site2, site3, null, site1, null, null, null, null]);
     site2.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site3, site2, site1, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site3, site2, site1, null, null, null, null, null]);
     site3.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null, null, null]);
     site2.isPinned = false;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null, null, null]);
     site3.isPinned = false;
     site1.isPinned = false;
     instance.setState({
@@ -799,8 +843,16 @@ describe("<TopSiteList>", () => {
       draggedTitle: "bar"
     });
     site2.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(0), [site2, site1, site3, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site1, site3, site2, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(0), [site2, site1, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site1, site3, site2, null, null, null, null, null]);
+  });
+  it("should add a className hide-for-narrow to sites after 6/row", () => {
+    const rows = [];
+    for (let i = 0; i < TOP_SITES_MAX_SITES_PER_ROW; i++) {
+      rows.push({url: `https://foo${i}.com`});
+    }
+    const wrapper = mountWithIntl(<TopSiteList {...DEFAULT_PROPS} TopSites={{rows}} TopSitesRows={1} />);
+    assert.lengthOf(wrapper.find("li.hide-for-narrow"), 2);
   });
 });
 

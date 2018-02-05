@@ -54,3 +54,19 @@
     }
   }
 }
+
+.wide-layout-enabled {
+  .sections-list {
+    .section-list {
+      @media (min-width: $break-point-widest) and (max-width: $break-point-widest + 2 * $card-width) {
+        :nth-child(3n) {
+          @include context-menu-open-left;
+        }
+      }
+
+      @media (min-width: $break-point-widest) {
+        grid-template-columns: repeat(auto-fit, $card-width-large);
+      }
+    }
+  }
+}

@@ -51,7 +51,7 @@ export class _TopSites extends React.PureComponent {
    * Dispatch session statistics about the quality of TopSites icons and pinned count.
    */
   _dispatchTopSitesStats() {
-    const topSites = this._getTopSites();
+    const topSites = this._getVisibleTopSites();
     const topSitesIconsStats = countTopSitesIconsTypes(topSites);
     const topSitesPinned = topSites.filter(site => !!site.isPinned).length;
     // Dispatch telemetry event with the count of TopSites images types.
@@ -62,10 +62,16 @@ export class _TopSites extends React.PureComponent {
   }
 
   /**
-   * Return the TopSites to display based on prefs.
+   * Return the TopSites that are visible based on prefs and window width.
    */
-  _getTopSites() {
-    return this.props.TopSites.rows.slice(0, this.props.TopSitesRows * TOP_SITES_MAX_SITES_PER_ROW);
+  _getVisibleTopSites() {
+    // We hide 2 sites per row when not in the wide layout.
+    let sitesPerRow = TOP_SITES_MAX_SITES_PER_ROW;
+    // $break-point-widest = 1072px (from _variables.scss)
+    if (!global.matchMedia(`(min-width: 1072px)`).matches) {
+      sitesPerRow -= 2;
+    }
+    return this.props.TopSites.rows.slice(0, this.props.TopSitesRows * sitesPerRow);
   }
 
   componentDidUpdate() {

@@ -34,6 +34,14 @@ main {
   }
 }
 
+.wide-layout-enabled {
+  main {
+    @media (min-width: $break-point-widest) {
+      width: $wrapper-max-width-widest;
+    }
+  }
+}
+
 .section-top-bar {
   height: 16px;
   margin-bottom: 16px;

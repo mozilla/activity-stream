@@ -161,7 +161,7 @@ export class TopSite extends React.PureComponent {
     const {link} = props;
     const isContextMenuOpen = this.state.showContextMenu && props.activeIndex === props.index;
     const title = link.label || link.hostname;
-    return (<TopSiteLink {...props} onClick={this.onLinkClick} onDragEvent={this.props.onDragEvent} className={isContextMenuOpen ? "active" : ""} title={title}>
+    return (<TopSiteLink {...props} onClick={this.onLinkClick} onDragEvent={this.props.onDragEvent} className={`${props.className || ""}${isContextMenuOpen ? " active" : ""}`} title={title}>
         <div>
           <button className="context-menu-button icon" onClick={this.onMenuButtonClick}>
             <span className="sr-only">
@@ -197,7 +197,7 @@ export class TopSitePlaceholder extends React.PureComponent {
   }
 
   render() {
-    return (<TopSiteLink className="placeholder" isDraggable={false} {...this.props}>
+    return (<TopSiteLink {...this.props} className={`placeholder ${this.props.className || ""}`} isDraggable={false}>
       <button className="context-menu-button edit-button icon"
        title={this.props.intl.formatMessage({id: "edit_topsites_edit_button"})}
        onClick={this.onEditButtonClick} />
@@ -349,12 +349,20 @@ export class _TopSiteList extends React.PureComponent {
     // drag and drop reordering and the underlying DOM nodes are reused.
     // This mostly (only?) affects linux so be sure to test on linux before changing.
     let holeIndex = 0;
+
+    // On narrow viewports, we only show 6 sites per row. We'll mark the rest as
+    // .hide-for-narrow to hide in CSS via @media query.
+    const maxNarrowVisibleIndex = props.TopSitesRows * 6;
+
     for (let i = 0, l = topSites.length; i < l; i++) {
       const link = topSites[i];
       const slotProps = {
         key: link ? link.url : holeIndex++,
         index: i
       };
+      if (i >= maxNarrowVisibleIndex) {
+        slotProps.className = "hide-for-narrow";
+      }
       topSitesUI.push(!link ? (
         <TopSitePlaceholder
           {...slotProps}

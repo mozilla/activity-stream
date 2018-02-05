@@ -6,7 +6,7 @@
   height: $card-height;
   margin-inline-end: $base-gutter;
   position: relative;
-  width: $card-width;
+  width: 100%;
 
   &.placeholder {
     background: transparent;
@@ -28,7 +28,7 @@
     height: 100%;
     outline: none;
     position: absolute;
-    width: $card-width;
+    width: 100%;
 
     &:-moz-any(.active, :focus) {
       .card {
@@ -167,5 +167,21 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+.wide-layout-enabled {
+  .card-outer {
+    @media (min-width: $break-point-widest) {
+      height: $card-height-large;
+
+      .card-preview-image-outer {
+        height: $card-preview-image-height-large;
+      }
+
+      .card-text {
+        max-height: 7 * $card-text-line-height + $card-title-margin;
+      }
+    }
   }
 }
