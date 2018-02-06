@@ -65,6 +65,10 @@ overrider.set({
       addObserver() {},
       removeObserver() {}
     },
+    telemetry: {
+      setEventRecordingEnabled: () => {},
+      recordEvent: eventDetails => {}
+    },
     console: {logStringMessage: () => {}},
     prefs: {
       addObserver() {},
