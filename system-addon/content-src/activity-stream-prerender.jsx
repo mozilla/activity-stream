@@ -5,7 +5,7 @@ import {initStore} from "content-src/lib/init-store";
 import {PrerenderData} from "common/PrerenderData.jsm";
 import {Provider} from "react-redux";
 import React from "react";
-import ReactDOM from "react-dom/server";
+import ReactDOMServer from "react-dom/server";
 
 /**
  * prerenderStore - Generate a store with the initial state required for a prerendered page
@@ -19,16 +19,26 @@ export function prerenderStore() {
   return store;
 }
 
-export function prerender(locale, strings) {
+export function prerender(locale, strings,
+                          renderToString = ReactDOMServer.renderToString) {
   const store = prerenderStore();
 
-  return {
-    html: ReactDOM.renderToString(<Provider store={store}>
+  const html = renderToString(
+    <Provider store={store}>
       <Base
         isPrerendered={true}
         locale={locale}
         strings={strings} />
-    </Provider>),
+    </Provider>);
+
+  // If this happens, it means pre-rendering is effectively disabled, so we
+  // need to sound the alarms:
+  if (!html || !html.length) {
+    throw new Error("no HTML returned");
+  }
+
+  return {
+    html,
     state: store.getState(),
     store
   };

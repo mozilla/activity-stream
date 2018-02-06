@@ -1,4 +1,4 @@
-import {_Base as Base, _BaseContent as BaseContent} from "content-src/components/Base/Base";
+import {_Base as Base, BaseContent} from "content-src/components/Base/Base";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
@@ -10,6 +10,12 @@ describe("<Base>", () => {
   it("should render Base component", () => {
     const wrapper = shallow(<Base {...DEFAULT_PROPS} />);
     assert.ok(wrapper.exists());
+  });
+
+  it("should render the BaseContent component, passing through all props", () => {
+    const wrapper = shallow(<Base {...DEFAULT_PROPS} />);
+
+    assert.deepEqual(wrapper.find(BaseContent).props(), DEFAULT_PROPS);
   });
 
   it("should fire NEW_TAB_REHYDRATED event", () => {
