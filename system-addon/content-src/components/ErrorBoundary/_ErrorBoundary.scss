@@ -1,0 +1,18 @@
+.as-error-fallback {
+  align-items: center;
+  border-radius: $border-radius;
+  box-shadow: inset $inner-box-shadow;
+  color: $text-conditional;
+  display: flex;
+  flex-direction: column;
+  font-size: $error-fallback-font-size;
+  justify-content: center;
+  justify-items: center;
+  line-height: $error-fallback-line-height;
+
+  a {
+    color: $text-conditional;
+    text-decoration: underline;
+  }
+}
+

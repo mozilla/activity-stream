@@ -1,5 +1,6 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {FormattedMessage, injectIntl} from "react-intl";
+import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
 
 const VISIBLE = "visible";
@@ -197,6 +198,13 @@ export class _CollapsibleSection extends React.PureComponent {
   }
 
   onHeaderClick() {
+    // If this.sectionBody is unset, it means that we're in some sort of error
+    // state, probably displaying the error fallback, so we won't be able to
+    // compute the height, and we don't want to persist the preference.
+    if (!this.sectionBody) {
+      return;
+    }
+
     // Get the current height of the body so max-height transitions can work
     this.setState({
       isAnimating: true,
@@ -240,14 +248,16 @@ export class _CollapsibleSection extends React.PureComponent {
           </h3>
           {infoOption && <InfoIntl infoOption={infoOption} dispatch={this.props.dispatch} />}
         </div>
-        <div
-          className={`section-body${isAnimating ? " animating" : ""}`}
-          onTransitionEnd={this.onTransitionEnd}
-          ref={this.onBodyMount}
-          style={isAnimating && !isCollapsed ? {maxHeight} : null}>
-          {needsDisclaimer && <DisclaimerIntl disclaimerPref={disclaimerPref} disclaimer={disclaimer} eventSource={eventSource} dispatch={this.props.dispatch} />}
-          {this.props.children}
-        </div>
+        <ErrorBoundary className="section-body-fallback">
+          <div
+            className={`section-body${isAnimating ? " animating" : ""}`}
+            onTransitionEnd={this.onTransitionEnd}
+            ref={this.onBodyMount}
+            style={isAnimating && !isCollapsed ? {maxHeight} : null}>
+            {needsDisclaimer && <DisclaimerIntl disclaimerPref={disclaimerPref} disclaimer={disclaimer} eventSource={eventSource} dispatch={this.props.dispatch} />}
+            {this.props.children}
+          </div>
+        </ErrorBoundary>
       </section>
     );
   }

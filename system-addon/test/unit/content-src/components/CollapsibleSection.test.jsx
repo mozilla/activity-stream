@@ -1,6 +1,7 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {_CollapsibleSection as CollapsibleSection, Disclaimer, Info} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
+import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
 
 const DEFAULT_PROPS = {
@@ -33,6 +34,12 @@ describe("CollapsibleSection", () => {
     assert.ok(wrapper.exists());
   });
 
+  it("should render an ErrorBoundary with class section-body-fallback", () => {
+    assert.equal(
+      wrapper.find(ErrorBoundary).first().prop("className"),
+      "section-body-fallback");
+  });
+
   it("should have collapsed class if 'prefName' pref is true", () => {
     setup({Prefs: {values: {collapseSection: true}}});
     assert.ok(wrapper.instance().props.Prefs.values.collapseSection);
@@ -59,6 +66,16 @@ describe("CollapsibleSection", () => {
     }
     setup({dispatch});
     wrapper.find(".click-target").simulate("click");
+  });
+
+  it("should not fire a pref change when section title is clicked if sectionBody is falsy", () => {
+    const dispatch = sinon.spy();
+    setup({dispatch});
+    delete wrapper.find(CollapsibleSection).instance().sectionBody;
+
+    wrapper.find(".click-target").simulate("click");
+
+    assert.notCalled(dispatch);
   });
 
   it("should enable animations if the tab is visible", () => {

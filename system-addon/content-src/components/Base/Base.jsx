@@ -2,6 +2,7 @@ import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {addLocaleData, IntlProvider} from "react-intl";
 import {ConfirmDialog} from "content-src/components/ConfirmDialog/ConfirmDialog";
 import {connect} from "react-redux";
+import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import {ManualMigration} from "content-src/components/ManualMigration/ManualMigration";
 import {PreferencesPane} from "content-src/components/PreferencesPane/PreferencesPane";
 import {PrerenderData} from "common/PrerenderData.jsm";
@@ -52,6 +53,24 @@ export class _Base extends React.PureComponent {
     const {props} = this;
     const {App, locale, strings} = props;
     const {initialized} = App;
+
+    if (!props.isPrerendered && !initialized) {
+      return null;
+    }
+
+    return (<IntlProvider locale={locale} messages={strings}>
+        <ErrorBoundary className="base-content-fallback">
+          <BaseContent props={this.props} />
+        </ErrorBoundary>
+      </IntlProvider>);
+  }
+}
+
+export class _BaseContent extends React.PureComponent {
+  render() {
+    const {props} = this;
+    const {App} = props;
+    const {initialized} = App;
     const prefs = props.Prefs.values;
 
     const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
@@ -62,10 +81,13 @@ export class _Base extends React.PureComponent {
       return null;
     }
 
-    return (<IntlProvider locale={locale} messages={strings}>
+    return (
         <div className={outerClassName}>
           <main>
-            {prefs.showSearch && <Search />}
+            {prefs.showSearch &&
+              <ErrorBoundary>
+                <Search />
+              </ErrorBoundary>}
             <div className={`body-wrapper${(initialized ? " on" : "")}`}>
               {!prefs.migrationExpired && <ManualMigration />}
               {prefs.showTopSites && <TopSites />}
@@ -73,10 +95,15 @@ export class _Base extends React.PureComponent {
             </div>
             <ConfirmDialog />
           </main>
-          {initialized && <PreferencesPane />}
-        </div>
-      </IntlProvider>);
+          {initialized &&
+            <div className="prefs-pane">
+              <ErrorBoundary className="sidebar"> <PreferencesPane /> </ErrorBoundary>
+            </div>
+          }
+        </div>);
   }
 }
+
+export const BaseContent = connect(state => ({App: state.App, Prefs: state.Prefs}))(_BaseContent);
 
 export const Base = connect(state => ({App: state.App, Prefs: state.Prefs}))(_Base);

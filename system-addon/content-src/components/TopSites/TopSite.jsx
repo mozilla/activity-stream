@@ -223,7 +223,7 @@ export class _TopSiteList extends React.PureComponent {
     this.onActivate = this.onActivate.bind(this);
   }
 
-  componentWillUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (this.state.draggedSite) {
       const prevTopSites = this.props.TopSites && this.props.TopSites.rows;
       const newTopSites = nextProps.TopSites && nextProps.TopSites.rows;

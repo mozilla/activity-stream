@@ -31,9 +31,7 @@ describe("<Search>", () => {
 
     const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} />);
 
-    assert.calledOnce(spy);
-    assert.equal(spy.firstCall.args[0], "ContentSearchClient");
-    assert.equal(spy.firstCall.args[1], wrapper.instance());
+    assert.calledOnce(spy.withArgs("ContentSearchClient", wrapper.instance()));
   });
   it("should stop listening for ContentSearchClient on unmount", () => {
     const spy = globals.set("removeEventListener", sandbox.spy());
@@ -43,9 +41,7 @@ describe("<Search>", () => {
 
     wrapper.unmount();
 
-    assert.calledOnce(spy);
-    assert.equal(spy.firstCall.args[0], "ContentSearchClient");
-    assert.equal(spy.firstCall.args[1], instance);
+    assert.calledOnce(spy.withArgs("ContentSearchClient", instance));
   });
   it("should add gContentSearchController as a global", () => {
     // current about:home tests need gContentSearchController to exist as a global

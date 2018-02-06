@@ -51,6 +51,11 @@ main {
   }
 }
 
+.base-content-fallback {
+  // Make the error message be centered against the viewport
+  height: 100vh;
+}
+
 .body-wrapper {
   // Hide certain elements so the page structure is fixed, e.g., placeholders,
   // while avoiding flashes of changing content, e.g., icons and text

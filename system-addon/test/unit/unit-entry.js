@@ -1,8 +1,7 @@
 import {EventEmitter, FakePerformance, FakePrefs, GlobalOverrider} from "test/unit/utils";
-import Adapter from "enzyme-adapter-react-15";
+import Adapter from "enzyme-adapter-react-16";
 import {chaiAssertions} from "test/schemas/pings";
 import enzyme from "enzyme";
-
 enzyme.configure({adapter: new Adapter()});
 
 // Cause React warnings to make tests that trigger them fail
