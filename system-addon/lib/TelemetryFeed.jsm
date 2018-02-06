@@ -16,7 +16,7 @@ ChromeUtils.defineModuleGetter(this, "perfService",
   "resource://activity-stream/common/PerfService.jsm");
 ChromeUtils.defineModuleGetter(this, "PingCentre",
   "resource:///modules/PingCentre.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "UTEventReporting",
+ChromeUtils.defineModuleGetter(this, "UTEventReporting",
   "resource://activity-stream/lib/UTEventReporting.jsm");
 
 XPCOMUtils.defineLazyServiceGetter(this, "gUUIDGenerator",

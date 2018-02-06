@@ -51,7 +51,8 @@ export const UTUserEventPing = Joi.array().items(
     "BOOKMARK_ADD",
     "PIN",
     "UNPIN",
-    "SAVE_TO_POCKET"]),
+    "SAVE_TO_POCKET"
+  ]),
   Joi.string().required(),
   eventsTelemetryExtraKeys
 );
