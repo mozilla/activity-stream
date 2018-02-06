@@ -60,13 +60,13 @@ export class _Base extends React.PureComponent {
 
     return (<IntlProvider locale={locale} messages={strings}>
         <ErrorBoundary className="base-content-fallback">
-          <BaseContent props={this.props} />
+          <BaseContent {...this.props} />
         </ErrorBoundary>
       </IntlProvider>);
   }
 }
 
-export class _BaseContent extends React.PureComponent {
+export class BaseContent extends React.PureComponent {
   render() {
     const {props} = this;
     const {App} = props;
@@ -76,10 +76,6 @@ export class _BaseContent extends React.PureComponent {
     const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
 
     const outerClassName = `outer-wrapper${shouldBeFixedToTop ? " fixed-to-top" : ""}`;
-
-    if (!props.isPrerendered && !initialized) {
-      return null;
-    }
 
     return (
         <div className={outerClassName}>
@@ -103,7 +99,5 @@ export class _BaseContent extends React.PureComponent {
         </div>);
   }
 }
-
-export const BaseContent = connect(state => ({App: state.App, Prefs: state.Prefs}))(_BaseContent);
 
 export const Base = connect(state => ({App: state.App, Prefs: state.Prefs}))(_Base);
