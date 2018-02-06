@@ -47,7 +47,7 @@ describe("TelemetryFeed", () => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     clock = sinon.useFakeTimers();
-    sandbox.spy(global.Components.utils, "reportError");
+    sandbox.spy(global.Cu, "reportError");
     globals.set("gUUIDGenerator", {generateUUID: () => FAKE_UUID});
     globals.set("PingCentre", PingCentre);
     globals.set("UTEventReporting", UTEventReporting);
@@ -559,7 +559,7 @@ describe("TelemetryFeed", () => {
 
       instance.uninit();
 
-      assert.called(global.Components.utils.reportError);
+      assert.called(global.Cu.reportError);
     });
     it("should make this.browserOpenNewtabStart() stop observing browser-open-newtab-start", async () => {
       await instance.init();
