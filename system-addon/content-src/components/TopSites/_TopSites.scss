@@ -220,6 +220,38 @@
   }
 }
 
+// Always hide .hide-for-narrow if wide layout is disabled
+.wide-layout-disabled {
+  .top-sites-list {
+    .hide-for-narrow {
+      display: none;
+    }
+  }
+}
+
+.wide-layout-enabled {
+  .top-sites-list {
+    // Eight columns
+    @media (min-width: $break-point-widest) and (max-width: $break-point-widest + 2 * $card-width) {
+      :nth-child(8n) {
+        @include context-menu-open-left;
+      }
+    }
+
+    @media (min-width: $break-point-widest) and (max-width: $break-point-widest + $card-width) {
+      :nth-child(8n+7) {
+        @include context-menu-open-left;
+      }
+    }
+
+    @media not all and (min-width: $break-point-widest) {
+      .hide-for-narrow {
+        display: none;
+      }
+    }
+  }
+}
+
 .edit-topsites-wrapper {
   .add-topsites-button {
     border-right: $border-secondary;

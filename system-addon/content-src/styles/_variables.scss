@@ -70,10 +70,15 @@ $wrapper-default-width: $grid-unit * 2 + $base-gutter * 1; // 2 top sites
 $wrapper-max-width-small: $grid-unit * 3 + $base-gutter * 2; // 3 top sites
 $wrapper-max-width-medium: $grid-unit * 4 + $base-gutter * 3; // 4 top sites
 $wrapper-max-width-large: $grid-unit * 6 + $base-gutter * 5; // 6 top sites
-$break-point-small: $wrapper-max-width-small + $base-gutter * 2;
-$break-point-medium: $wrapper-max-width-medium + $base-gutter * 2;
-$break-point-large: $wrapper-max-width-large + $base-gutter * 2;
-$wrapper-card-outer: 768px;
+$wrapper-max-width-widest: $grid-unit * 8 + $base-gutter * 7; // 8 top sites
+// For the breakpoints, we need to add space for the scrollbar to avoid weird
+// layout issues when the scrollbar is visible. 16px is wide enough to cover all
+// OSes and keeps it simpler than a per-OS value.
+$scrollbar-width: 16px;
+$break-point-small: $wrapper-max-width-small + $base-gutter * 2 + $scrollbar-width;
+$break-point-medium: $wrapper-max-width-medium + $base-gutter * 2 + $scrollbar-width;
+$break-point-large: $wrapper-max-width-large + $base-gutter * 2 + $scrollbar-width;
+$break-point-widest: $wrapper-max-width-widest + $base-gutter * 2 + $scrollbar-width;
 
 $section-title-font-size: 13px;
 
@@ -82,6 +87,10 @@ $card-height: 266px;
 $card-preview-image-height: 122px;
 $card-title-margin: 2px;
 $card-text-line-height: 19px;
+// Larger cards for wider screens:
+$card-width-large: 309px;
+$card-height-large: 370px;
+$card-preview-image-height-large: 155px;
 
 $topic-margin-top: 12px;
 
