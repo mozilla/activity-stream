@@ -7,10 +7,10 @@
 const Task = require("co-task");
 const process = require("process");
 const path = require("path");
-const GitHubApi = require("github");
+const GitHubApi = require("@octokit/rest");
 const shelljs = require("shelljs");
 const child_process = require("child_process");
-const github = new GitHubApi({debug: false});
+const github = new GitHubApi();
 
 // some of our API requests need to be authenticated
 let token = process.env.AS_PINE_TOKEN;
