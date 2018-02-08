@@ -805,10 +805,10 @@ describe("<TopSiteList>", () => {
       draggedSite: site,
       draggedTitle: "foo"
     });
-    site.isPinned = true;
+    const draggedSite = Object.assign({}, site, {isPinned: true, isDragged: true});
     instance.onDragEvent({type: "dragenter"}, 2);
     assert.ok(instance.state.topSitesPreview);
-    assert.deepEqual(instance.state.topSitesPreview[2], site);
+    assert.deepEqual(instance.state.topSitesPreview[2], draggedSite);
   });
   it("should _makeTopSitesPreview correctly", () => {
     const site1 = {url: "https://foo.com"};
@@ -822,29 +822,28 @@ describe("<TopSiteList>", () => {
       draggedSite: site1,
       draggedTitle: "foo"
     });
-    site1.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(3), [site2, site3, null, site1, null, null, null, null]);
+    let draggedSite = Object.assign({}, site1, {isPinned: true, isDragged: true});
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, draggedSite, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, draggedSite, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(3), [site2, site3, null, draggedSite, null, null, null, null]);
     site2.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site3, site2, site1, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, draggedSite, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site3, site2, draggedSite, null, null, null, null, null]);
     site3.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, draggedSite, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, draggedSite, null, null, null, null, null]);
     site2.isPinned = false;
-    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, site1, site3, null, null, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, site1, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(1), [site2, draggedSite, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site2, site3, draggedSite, null, null, null, null, null]);
     site3.isPinned = false;
-    site1.isPinned = false;
     instance.setState({
       draggedIndex: 1,
       draggedSite: site2,
       draggedTitle: "bar"
     });
-    site2.isPinned = true;
-    assert.deepEqual(instance._makeTopSitesPreview(0), [site2, site1, site3, null, null, null, null, null]);
-    assert.deepEqual(instance._makeTopSitesPreview(2), [site1, site3, site2, null, null, null, null, null]);
+    draggedSite = Object.assign({}, site2, {isPinned: true, isDragged: true});
+    assert.deepEqual(instance._makeTopSitesPreview(0), [draggedSite, site1, site3, null, null, null, null, null]);
+    assert.deepEqual(instance._makeTopSitesPreview(2), [site1, site3, draggedSite, null, null, null, null, null]);
   });
   it("should add a className hide-for-narrow to sites after 6/row", () => {
     const rows = [];
