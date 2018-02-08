@@ -11,7 +11,7 @@ module.exports = {
     path: absolute("data/content"),
     filename: "activity-stream.bundle.js"
   },
-  devtool: "sourcemaps",
+  devtool: "source-map",
   plugins: [new webpack.optimize.ModuleConcatenationPlugin()],
   module: {
     rules: [
