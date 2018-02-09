@@ -54,7 +54,7 @@ describe("PingCentre", () => {
       currentEnvironment: {profile: {creationDate: FAKE_PROFILE_CREATION_DATE}}
     });
     globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: FAKE_UPDATE_CHANNEL});
-    sandbox.spy(global.Components.utils, "reportError");
+    sandbox.spy(global.Cu, "reportError");
   });
 
   afterEach(() => {
@@ -361,7 +361,7 @@ describe("PingCentre", () => {
 
       await tSender.sendPing(fakePingJSON);
 
-      assert.called(Components.utils.reportError);
+      assert.called(Cu.reportError);
     });
 
     it("should log an error using Cu.reportError if fetch rejects", async () => {
@@ -369,7 +369,7 @@ describe("PingCentre", () => {
 
       await tSender.sendPing(fakePingJSON);
 
-      assert.called(Components.utils.reportError);
+      assert.called(Cu.reportError);
     });
 
     it("should log if logging is on && if action is not activity_stream_performance", async () => {
@@ -433,7 +433,7 @@ describe("PingCentre", () => {
 
       tSender.uninit();
 
-      assert.called(global.Components.utils.reportError);
+      assert.called(global.Cu.reportError);
     });
   });
 
