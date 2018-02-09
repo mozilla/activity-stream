@@ -150,7 +150,7 @@ function getStrings(locale, allStrings) {
  * Get the text direction of the locale.
  */
 function getTextDirection(locale) {
-  return RTL_LIST.indexOf(locale.split("-")[0]) >= 0 ? "rtl" : "ltr";
+  return RTL_LIST.includes(locale.split("-")[0]) ? "rtl" : "ltr";
 }
 
 /**
