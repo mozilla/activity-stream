@@ -207,6 +207,21 @@
         display: none;
       }
     }
+
+    &.dragged {
+      .tile {
+        background: $grey-20;
+        box-shadow: none;
+
+        * {
+          display: none;
+        }
+      }
+
+      .title {
+        visibility: hidden;
+      }
+    }
   }
 
   &:not(.dnd-active) {

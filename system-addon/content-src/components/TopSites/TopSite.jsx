@@ -59,7 +59,7 @@ export class TopSiteLink extends React.PureComponent {
 
   render() {
     const {children, className, isDraggable, link, onClick, title} = this.props;
-    const topSiteOuterClassName = `top-site-outer${className ? ` ${className}` : ""}`;
+    const topSiteOuterClassName = `top-site-outer${className ? ` ${className}` : ""}${link.isDragged ? " dragged" : ""}`;
     const {tippyTopIcon, faviconSize} = link;
     const [letterFallback] = title;
     let imageClassName;
@@ -298,7 +298,7 @@ export class _TopSiteList extends React.PureComponent {
     topSites[this.state.draggedIndex] = null;
     const pinnedOnly = topSites.map(site => ((site && site.isPinned) ? site : null));
     const unpinned = topSites.filter(site => site && !site.isPinned);
-    const siteToInsert = Object.assign({}, this.state.draggedSite, {isPinned: true});
+    const siteToInsert = Object.assign({}, this.state.draggedSite, {isPinned: true, isDragged: true});
     if (!pinnedOnly[index]) {
       pinnedOnly[index] = siteToInsert;
     } else {
