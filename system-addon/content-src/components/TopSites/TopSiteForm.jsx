@@ -99,7 +99,6 @@ export class TopSiteForm extends React.PureComponent {
     return (
       <form className="topsite-form">
         <div className="form-input-container">
-          <TopSiteLink link={this.props.site || {}} title={this.state.label} preventNavigation={true} />
           <div className="form-wrapper">
             <h3 className="section-title">
               <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
@@ -119,6 +118,7 @@ export class TopSiteForm extends React.PureComponent {
               errorMessageId="topsites_form_url_validation"
               {...this.props} />
           </div>
+          <TopSiteLink link={this.props.site || {}} title={this.state.label} preventNavigation={true} />
         </div>
         <section className="actions">
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>

@@ -323,14 +323,15 @@ $half-base-gutter: $base-gutter / 2;
 .topsite-form {
   .form-input-container {
     display: flex;
-    max-width: 480px;
+    max-width: 492px;
     margin: 0 auto;
     padding: 32px;
 
     .top-site-outer {
-      flex: 1;
-      padding: 0 32px;
-      margin: 0;
+      width: 96px;
+      padding: 0;
+      margin: 64px 0 0;
+      margin-inline-start: 32px;
       list-style: none;
 
       a {
@@ -344,7 +345,6 @@ $half-base-gutter: $base-gutter / 2;
   }
 
   .form-wrapper {
-    margin: auto;
     width: 300px;
 
     .field {
@@ -377,7 +377,12 @@ $half-base-gutter: $base-gutter / 2;
     }
 
     .section-title {
-      margin: 0 0 8px;
+      text-transform: none;
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 19px;
+      color: $grey-60;
+      margin: 0 0 16px;
     }
 
     input {
