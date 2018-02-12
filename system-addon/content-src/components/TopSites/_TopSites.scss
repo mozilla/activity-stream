@@ -213,7 +213,8 @@
         background: $grey-20;
         box-shadow: none;
 
-        * {
+        *,
+        &::before {
           display: none;
         }
       }
