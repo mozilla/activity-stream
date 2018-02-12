@@ -121,7 +121,7 @@ export class Section extends React.PureComponent {
   render() {
     const {
       id, eventSource, title, icon, rows,
-      infoOption, emptyState, dispatch, maxRows,
+      emptyState, dispatch, maxRows,
       contextMenuOptions, initialized, disclaimer
     } = this.props;
     const maxCards = CARDS_PER_ROW * maxRows;
@@ -142,7 +142,6 @@ export class Section extends React.PureComponent {
     // <section> <-- HTML5 element
     return (<ComponentPerfTimer {...this.props}>
       <CollapsibleSection className="section" icon={icon} title={getFormattedMessage(title)}
-        infoOption={infoOption}
         id={id}
         eventSource={eventSource}
         disclaimer={disclaimer}

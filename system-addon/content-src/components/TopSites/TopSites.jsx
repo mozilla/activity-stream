@@ -43,7 +43,6 @@ function countTopSitesIconsTypes(topSites) {
 export class _TopSites extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.onAddButtonClick = this.onAddButtonClick.bind(this);
     this.onFormClose = this.onFormClose.bind(this);
   }
 
@@ -82,15 +81,6 @@ export class _TopSites extends React.PureComponent {
     this._dispatchTopSitesStats();
   }
 
-  onAddButtonClick() {
-    this.props.dispatch(ac.UserEvent({
-      source: TOP_SITES_SOURCE,
-      event: "TOP_SITES_ADD_FORM_OPEN"
-    }));
-    // Negative index will prepend the TopSite at the beginning of the list
-    this.props.dispatch({type: at.TOP_SITES_EDIT, data: {index: -1}});
-  }
-
   onFormClose() {
     this.props.dispatch(ac.UserEvent({
       source: TOP_SITES_SOURCE,
@@ -101,24 +91,12 @@ export class _TopSites extends React.PureComponent {
 
   render() {
     const {props} = this;
-    const infoOption = {
-      header: {id: "settings_pane_topsites_header"},
-      body: {id: "settings_pane_topsites_body"}
-    };
     const {editForm} = props.TopSites;
 
     return (<ComponentPerfTimer id="topsites" initialized={props.TopSites.initialized} dispatch={props.dispatch}>
-      <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} infoOption={infoOption} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
+      <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
         <TopSiteList TopSites={props.TopSites} TopSitesRows={props.TopSitesRows} dispatch={props.dispatch} intl={props.intl} />
         <div className="edit-topsites-wrapper">
-          <div className="add-topsites-button">
-            <button
-              className="add"
-              title={this.props.intl.formatMessage({id: "edit_topsites_add_button_tooltip"})}
-              onClick={this.onAddButtonClick}>
-              <FormattedMessage id="edit_topsites_add_button" />
-            </button>
-          </div>
           {editForm &&
             <div className="edit-topsites">
               <div className="modal-overlay" onClick={this.onFormClose} />

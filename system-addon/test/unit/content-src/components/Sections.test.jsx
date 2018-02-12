@@ -40,7 +40,6 @@ describe("<Section>", () => {
       id: `foo_bar_1`,
       title: `Foo Bar 1`,
       rows: [{link: "http://localhost", index: 0}],
-      infoOption: {},
       emptyState: {
         icon: "check",
         message: "Some message"
@@ -152,7 +151,6 @@ describe("<Section>", () => {
       title: "Foo Bar 1",
       maxRows: 1,
       rows: [{guid: 1}, {guid: 2}],
-      infoOption: {id: "foo"},
       shouldSendImpressionStats: true,
 
       document: {
@@ -242,10 +240,10 @@ describe("<Section>", () => {
       wrapper = renderSection(props);
       props.dispatch.reset();
 
-      // Only update the infoOption prop
+      // Only update the disclaimer prop
       wrapper.setProps(Object.assign({},
         FAKE_TOPSTORIES_SECTION_PROPS,
-        {infoOption: {id: "bar"}}
+        {disclaimer: {id: "bar"}}
       ));
 
       assert.notCalled(props.dispatch);

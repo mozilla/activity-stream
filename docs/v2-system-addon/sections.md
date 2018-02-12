@@ -33,7 +33,6 @@ contextMenuOptions | Array of strings | The menu options to provide in the card 
 shouldHidePref | Boolean | If true, will the section preference in the preferences pane will not be shown.
 pref | Object | Configures the section preference to show in the preferences pane. Has properties `titleString` and `descString`.
 emptyState | Object | Configures the empty state of the section. Has properties `message` and `icon`.
-infoOption | Object | Configures the info option. Has properties `header`, `body`, and `link`.
 
 ## Section feeds
 

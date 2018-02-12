@@ -51,7 +51,6 @@ const PREFS_CONFIG = new Map([
       api_key_pref: "extensions.pocket.oAuthConsumerKey",
       // Use the opposite value as what default value the feed would have used
       hidden: !PREFS_CONFIG.get("feeds.section.topstories").getValue(args),
-      provider_header: "pocket_feedback_header",
       provider_description: "pocket_description",
       provider_icon: "pocket",
       provider_name: "Pocket",

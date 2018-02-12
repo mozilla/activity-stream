@@ -1,5 +1,5 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {_CollapsibleSection as CollapsibleSection, Disclaimer, Info} from "content-src/components/CollapsibleSection/CollapsibleSection";
+import {_CollapsibleSection as CollapsibleSection, Disclaimer} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
@@ -10,7 +10,6 @@ const DEFAULT_PROPS = {
   title: "Cool Section",
   prefName: "collapseSection",
   Prefs: {values: {collapseSection: false}},
-  infoOption: {},
   disclaimer: {text: {id: "default_label_loading"}, link: {id: "menu_action_email_link"}, button: {id: "search_button"}},
   document: {
     addEventListener: () => {},
@@ -154,63 +153,6 @@ describe("CollapsibleSection", () => {
 
       checkHeight("");
     });
-  });
-});
-
-describe("<Info>", () => {
-  let wrapper;
-  let FAKE_INFO_OPTION;
-
-  beforeEach(() => {
-    FAKE_INFO_OPTION = {
-      header: {id: "fake_header"},
-      body: {id: "fake_body"}
-    };
-    wrapper = shallowWithIntl(<Info infoOption={FAKE_INFO_OPTION} />);
-  });
-
-  it("should render info-option-icon with a tabindex", () => {
-    // Because this is a shallow render, we need to use the casing
-    // that react understands (tabIndex), rather than the one used by
-    // the browser itself (tabindex).
-    assert.lengthOf(wrapper.find(".info-option-icon[tabIndex]"), 1);
-  });
-
-  it("should render info-option-icon with a role of 'note'", () => {
-    assert.lengthOf(wrapper.find('.info-option-icon[role="note"]'), 1);
-  });
-
-  it("should render info-option-icon with a title attribute", () => {
-    assert.lengthOf(wrapper.find(".info-option-icon[title]"), 1);
-  });
-
-  it("should render info-option-icon with aria-haspopup", () => {
-    assert.lengthOf(wrapper.find('.info-option-icon[aria-haspopup="true"]'),
-      1);
-  });
-
-  it('should render info-option-icon with aria-controls="info-option"', () => {
-    assert.lengthOf(
-      wrapper.find('.info-option-icon[aria-controls="info-option"]'), 1);
-  });
-
-  it('should render info-option-icon aria-expanded["false"] by default', () => {
-    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'),
-      1);
-  });
-
-  it("should render info-option-icon w/aria-expanded when moused over", () => {
-    wrapper.find(".section-info-option").simulate("mouseover");
-
-    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="true"]'), 1);
-  });
-
-  it('should render info-option-icon w/aria-expanded["false"] when moused out', () => {
-    wrapper.find(".section-info-option").simulate("mouseover");
-
-    wrapper.find(".section-info-option").simulate("mouseout");
-
-    assert.lengthOf(wrapper.find('.info-option-icon[aria-expanded="false"]'), 1);
   });
 });
 

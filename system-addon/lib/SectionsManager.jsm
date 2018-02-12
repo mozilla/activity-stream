@@ -20,7 +20,7 @@ const BUILT_IN_SECTIONS = {
     id: "topstories",
     pref: {
       titleString: {id: "header_recommended_by", values: {provider: options.provider_name}},
-      descString: {id: options.provider_description || "pocket_feedback_body"},
+      descString: {id: options.provider_description || "pocket_description"},
       nestedPrefs: options.show_spocs ? [{
         name: "showSponsored",
         titleString: {id: "settings_pane_topstories_options_sponsored"},
@@ -42,11 +42,6 @@ const BUILT_IN_SECTIONS = {
     },
     maxRows: 1,
     availableContextMenuOptions: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
-    infoOption: {
-      header: {id: options.provider_header || "pocket_feedback_header"},
-      body: {id: options.provider_description || "pocket_feedback_body"},
-      link: {href: options.info_link, id: "section_info_privacy_notice"}
-    },
     emptyState: {
       message: {id: "topstories_empty_state", values: {provider: options.provider_name}},
       icon: "check"
@@ -67,10 +62,6 @@ const BUILT_IN_SECTIONS = {
     title: {id: "header_highlights"},
     maxRows: 3,
     availableContextMenuOptions: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"],
-    infoOption: {
-      header: {id: "settings_pane_highlights_header"},
-      body: {id: "settings_pane_highlights_body2"}
-    },
     emptyState: {
       message: {id: "highlights_empty_state"},
       icon: "highlights"

@@ -269,54 +269,12 @@ $half-base-gutter: $base-gutter / 2;
 }
 
 .edit-topsites-wrapper {
-  .add-topsites-button {
-    border-right: $border-secondary;
-    line-height: 13px;
-    offset-inline-end: 24px;
-    opacity: 0;
-    padding: 0 10px;
-    pointer-events: none;
-    position: absolute;
-    top: 2px;
-    transition: opacity 0.2s $photon-easing;
-
-    &:dir(rtl) {
-      border-left: $border-secondary;
-      border-right: 0;
-    }
-
-    &:-moz-any(:active, :focus) {
-      opacity: 1;
-    }
-
-    button {
-      background: none;
-      border: 0;
-      color: $text-secondary;
-      cursor: pointer;
-      font-size: 12px;
-      padding: 0;
-
-      &:focus {
-        background: $background-secondary;
-        border-bottom: dotted 1px $text-secondary;
-      }
-    }
-  }
-
   .modal {
     offset-inline-start: -31px;
     position: absolute;
     top: -29px;
     width: calc(100% + 62px);
     box-shadow: $shadow-secondary;
-  }
-}
-
-.top-sites:not(.collapsed):hover {
-  .add-topsites-button {
-    opacity: 1;
-    pointer-events: auto;
   }
 }
 
