@@ -99,26 +99,27 @@ export class TopSiteForm extends React.PureComponent {
     return (
       <form className="topsite-form">
         <div className="form-input-container">
-          <div className="form-wrapper">
-            <h3 className="section-title">
-              <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
-            </h3>
-            <TopSiteFormInput onChange={this.onLabelChange}
-              value={this.state.label}
-              titleId="topsites_form_title_label"
-              placeholderId="topsites_form_title_placeholder"
-              errorMessageId="topsites_form_url_validation"
-              {...this.props} />
-            <TopSiteFormInput onChange={this.onUrlChange}
-              value={this.state.url}
-              onClear={this.onClearUrlClick}
-              validationError={this.state.validationError}
-              titleId="topsites_form_url_label"
-              placeholderId="topsites_form_url_placeholder"
-              errorMessageId="topsites_form_url_validation"
-              {...this.props} />
+          <h3 className="section-title">
+            <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
+          </h3>
+          <div className="fields-and-preview">
+            <div className="form-wrapper">
+              <TopSiteFormInput onChange={this.onLabelChange}
+                value={this.state.label}
+                titleId="topsites_form_title_label"
+                placeholderId="topsites_form_title_placeholder"
+                intl={this.props.intl} />
+              <TopSiteFormInput onChange={this.onUrlChange}
+                value={this.state.url}
+                onClear={this.onClearUrlClick}
+                validationError={this.state.validationError}
+                titleId="topsites_form_url_label"
+                placeholderId="topsites_form_url_placeholder"
+                errorMessageId="topsites_form_url_validation"
+                intl={this.props.intl} />
+            </div>
+            <TopSiteLink link={this.props.site || {}} title={this.state.label} />
           </div>
-          <TopSiteLink link={this.props.site || {}} title={this.state.label} preventNavigation={true} />
         </div>
         <section className="actions">
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
