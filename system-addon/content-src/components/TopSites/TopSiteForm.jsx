@@ -33,7 +33,10 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   onClearUrlClick() {
-    this.setState({url: ""});
+    this.setState({
+      url: "",
+      validationError: false
+    });
   }
 
   onCancelButtonClick(ev) {
