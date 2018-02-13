@@ -203,22 +203,6 @@ $half-base-gutter: $base-gutter / 2;
         padding: 0 13px;
       }
     }
-
-    &.dragged {
-      .tile {
-        background: $grey-20;
-        box-shadow: none;
-
-        *,
-        &::before {
-          display: none;
-        }
-      }
-
-      .title {
-        visibility: hidden;
-      }
-    }
   }
 
   .edit-button {
@@ -232,6 +216,21 @@ $half-base-gutter: $base-gutter / 2;
 
     .screenshot {
       display: none;
+    }
+  }
+
+  &.dragged {
+    .tile {
+      background: $grey-20;
+      box-shadow: none;
+
+      * {
+        display: none;
+      }
+    }
+
+    .title {
+      visibility: hidden;
     }
   }
 }
