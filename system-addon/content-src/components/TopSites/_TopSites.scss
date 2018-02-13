@@ -320,18 +320,22 @@ $half-base-gutter: $base-gutter / 2;
 }
 
 .topsite-form {
+  $form-width: 300px;
+  $form-spacing: 32px;
+
   .form-input-container {
-    display: flex;
-    max-width: 492px;
+    max-width: $form-width + 3 * $form-spacing + $rich-icon-size;
     margin: 0 auto;
-    padding: 32px;
+    padding: $form-spacing $form-spacing 40px;
 
     .top-site-outer {
-      width: 96px;
       padding: 0;
-      margin: 64px 0 0;
-      margin-inline-start: 32px;
+      margin: 24px 0 0;
+      margin-inline-start: $form-spacing;
       list-style: none;
+      pointer-events: none;
+      cursor: default;
+    }
 
     .section-title {
       text-transform: none;
@@ -342,12 +346,16 @@ $half-base-gutter: $base-gutter / 2;
     }
   }
 
+  .fields-and-preview {
+    display: flex;
+  }
+
   label {
-    font-size: 13px;
+    font-size: $section-title-font-size;
   }
 
   .form-wrapper {
-    width: 300px;
+    width: 100%;
 
     .field {
       position: relative;
