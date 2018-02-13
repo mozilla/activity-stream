@@ -81,11 +81,18 @@ export class BaseContent extends React.PureComponent {
         <div className={outerClassName}>
           <main>
             {prefs.showSearch &&
-              <ErrorBoundary>
-                <Search />
-              </ErrorBoundary>}
+              <div className="non-collapsible-section">
+                <ErrorBoundary>
+                  <Search />
+                </ErrorBoundary>
+              </div>
+            }
             <div className={`body-wrapper${(initialized ? " on" : "")}`}>
-              {!prefs.migrationExpired && <ManualMigration />}
+              {!prefs.migrationExpired &&
+                <div className="non-collapsible-section">
+                  <ManualMigration />
+                </div>
+                }
               {prefs.showTopSites && <TopSites />}
               <Sections />
             </div>

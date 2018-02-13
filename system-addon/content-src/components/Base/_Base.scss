@@ -2,7 +2,7 @@
   display: flex;
   flex-grow: 1;
   height: 100%;
-  padding: $section-spacing $base-gutter $base-gutter;
+  padding: ($section-spacing + $section-vertical-padding) $base-gutter $base-gutter;
 
   &.fixed-to-top {
     height: auto;
@@ -82,4 +82,8 @@ main {
       opacity: 1;
     }
   }
+}
+
+.non-collapsible-section {
+  padding: 0 $section-horizontal-padding;
 }

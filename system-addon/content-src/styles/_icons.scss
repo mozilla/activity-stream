@@ -139,4 +139,16 @@
       transform: rotate(90deg);
     }
   }
+
+  &.icon-add {
+    background-image: url('#{$image-path}glyph-add-16.svg');
+  }
+
+  &.icon-minimize {
+    background-image: url('#{$image-path}glyph-minimize-16.svg');
+  }
+
+  &.icon-maximize {
+    background-image: url('#{$image-path}glyph-maximize-16.svg');
+  }
 }

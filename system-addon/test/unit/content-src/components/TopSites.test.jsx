@@ -6,6 +6,7 @@ import {TopSite, TopSiteLink, _TopSiteList as TopSiteList, TopSitePlaceholder} f
 import {FormattedMessage} from "react-intl";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
+import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
 import {shallow} from "enzyme";
 import {TopSiteForm} from "content-src/components/TopSites/TopSiteForm";
 import {TopSiteFormInput} from "content-src/components/TopSites/TopSiteFormInput";
@@ -38,6 +39,27 @@ describe("<TopSites>", () => {
   it("should render a TopSites element", () => {
     const wrapper = shallow(<TopSites {...DEFAULT_PROPS} />);
     assert.ok(wrapper.exists());
+  });
+  describe("context menu", () => {
+    it("should render a context menu button", () => {
+      const wrapper = mountWithIntl(<TopSites {...DEFAULT_PROPS} />);
+      assert.equal(wrapper.find(".section-top-bar .context-menu-button").length, 1);
+    });
+    it("should render a section menu when button is clicked", () => {
+      const wrapper = mountWithIntl(<TopSites {...DEFAULT_PROPS} />);
+      const button = wrapper.find(".section-top-bar .context-menu-button");
+      button.simulate("click", {preventDefault: () => {}});
+      assert.isTrue(wrapper.find(SectionMenu).props().visible);
+    });
+    it("should not render a section menu by default", () => {
+      const wrapper = mountWithIntl(<TopSites {...DEFAULT_PROPS} />);
+      assert.isFalse(wrapper.find(SectionMenu).props().visible);
+    });
+    it("should pass through the correct menu extraOptions to SectionMenu", () => {
+      const wrapper = mountWithIntl(<TopSites {...DEFAULT_PROPS} />);
+      const sectionMenuProps = wrapper.find(SectionMenu).props();
+      assert.deepEqual(sectionMenuProps.extraOptions, ["AddTopSite"]);
+    });
   });
   describe("#_dispatchTopSitesStats", () => {
     let globals;

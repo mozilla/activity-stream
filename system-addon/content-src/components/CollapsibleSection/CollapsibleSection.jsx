@@ -2,6 +2,7 @@ import {FormattedMessage, injectIntl} from "react-intl";
 import {actionCreators as ac} from "common/Actions.jsm";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
+import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -54,7 +55,11 @@ export class _CollapsibleSection extends React.PureComponent {
     this.onHeaderClick = this.onHeaderClick.bind(this);
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
     this.enableOrDisableAnimation = this.enableOrDisableAnimation.bind(this);
-    this.state = {enableAnimation: true, isAnimating: false};
+    this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
+    this.onMenuButtonMouseEnter = this.onMenuButtonMouseEnter.bind(this);
+    this.onMenuButtonMouseLeave = this.onMenuButtonMouseLeave.bind(this);
+    this.onMenuUpdate = this.onMenuUpdate.bind(this);
+    this.state = {enableAnimation: true, isAnimating: false, menuButtonHover: false, showContextMenu: false};
   }
 
   componentWillMount() {
@@ -119,24 +124,63 @@ export class _CollapsibleSection extends React.PureComponent {
     return <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />;
   }
 
+  onMenuButtonClick(event) {
+    event.preventDefault();
+    this.setState({showContextMenu: true});
+  }
+
+  onMenuButtonMouseEnter() {
+    this.setState({menuButtonHover: true});
+  }
+
+  onMenuButtonMouseLeave() {
+    this.setState({menuButtonHover: false});
+  }
+
+  onMenuUpdate(showContextMenu) {
+    this.setState({showContextMenu});
+  }
+
   render() {
     const isCollapsible = this.props.prefName in this.props.Prefs.values;
     const isCollapsed = getCollapsed(this.props);
-    const {enableAnimation, isAnimating, maxHeight} = this.state;
-    const {id, eventSource, disclaimer} = this.props;
+    const {enableAnimation, isAnimating, maxHeight, menuButtonHover, showContextMenu} = this.state;
+    const {id, eventSource, disclaimer, title, extraMenuOptions, prefName, showPrefName, privacyNoticeURL, dispatch} = this.props;
     const disclaimerPref = `section.${id}.showDisclaimer`;
     const needsDisclaimer = disclaimer && this.props.Prefs.values[disclaimerPref];
+    const active = menuButtonHover || showContextMenu;
 
     return (
-      <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${isCollapsed ? " collapsed" : ""}`}>
+      <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${isCollapsed ? " collapsed" : ""}${active ? " active" : ""}`}>
         <div className="section-top-bar">
           <h3 className="section-title">
             <span className="click-target" onClick={isCollapsible && this.onHeaderClick}>
               {this.renderIcon()}
-              {this.props.title}
+              {title}
             {isCollapsible && <span className={`collapsible-arrow icon ${isCollapsed ? "icon-arrowhead-forward" : "icon-arrowhead-down"}`} />}
             </span>
           </h3>
+          <div>
+            <button
+              className="context-menu-button icon"
+              onClick={this.onMenuButtonClick}
+              onMouseEnter={this.onMenuButtonMouseEnter}
+              onMouseLeave={this.onMenuButtonMouseLeave}>
+              <span className="sr-only">
+                <FormattedMessage id="section_context_menu_button_sr" />
+              </span>
+            </button>
+            <SectionMenu
+              extraOptions={extraMenuOptions}
+              eventSource={eventSource}
+              showPrefName={showPrefName}
+              collapsePrefName={prefName}
+              privacyNoticeURL={privacyNoticeURL}
+              isCollapsed={isCollapsed}
+              onUpdate={this.onMenuUpdate}
+              visible={showContextMenu}
+              dispatch={dispatch} />
+          </div>
         </div>
         <ErrorBoundary className="section-body-fallback">
           <div

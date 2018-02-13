@@ -16,7 +16,7 @@ are initially disabled, so aren't visible. The section's feed may use the
 methods provided by the `SectionsManager` to enable its section and update its
 properties.
 
-The section configuration in `BUILT_IN_SECTIONS` constists of a generator
+The section configuration in `BUILT_IN_SECTIONS` consists of a generator
 function keyed by the pref name for the section feed. The generator function
 takes an `options` argument as the only parameter, which is passed the object
 stored as serialised JSON in the pref `{feed_pref_name}.options`, or the empty
@@ -26,7 +26,7 @@ object which may have the following properties:
 Property | Type | Description
 --- | --- | ---
 id | String | Non-optional unique id.
-title | Localisation object | Has property `id`, the string localisation id, and optionaly a `values` object to fill in placeholders.
+title | Localisation object | Has property `id`, the string localisation id, and optionally a `values` object to fill in placeholders.
 icon | String | Icon id. New icons should be added in icons.scss.
 maxRows | Integer | Maximum number of rows of cards to display. Should be >= 1.
 contextMenuOptions | Array of strings | The menu options to provide in the card context menus.

@@ -1,9 +1,9 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {FormattedMessage, injectIntl} from "react-intl";
 import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE, TOP_SITES_SOURCE} from "./TopSitesConstants";
 import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/ComponentPerfTimer";
 import {connect} from "react-redux";
+import {injectIntl} from "react-intl";
 import React from "react";
 import {TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
 import {TopSiteForm} from "./TopSiteForm";
@@ -94,7 +94,16 @@ export class _TopSites extends React.PureComponent {
     const {editForm} = props.TopSites;
 
     return (<ComponentPerfTimer id="topsites" initialized={props.TopSites.initialized} dispatch={props.dispatch}>
-      <CollapsibleSection className="top-sites" icon="topsites" title={<FormattedMessage id="header_top_sites" />} prefName="collapseTopSites" Prefs={props.Prefs} dispatch={props.dispatch}>
+      <CollapsibleSection
+        className="top-sites"
+        icon="topsites"
+        title={props.intl.formatMessage({id: "header_top_sites"})}
+        extraMenuOptions={["AddTopSite"]}
+        prefName="collapseTopSites"
+        showPrefName="showTopSites"
+        eventSource={TOP_SITES_SOURCE}
+        Prefs={props.Prefs}
+        dispatch={props.dispatch}>
         <TopSiteList TopSites={props.TopSites} TopSitesRows={props.TopSitesRows} dispatch={props.dispatch} intl={props.intl} />
         <div className="edit-topsites-wrapper">
           {editForm &&

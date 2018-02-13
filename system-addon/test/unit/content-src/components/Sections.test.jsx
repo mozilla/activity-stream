@@ -3,6 +3,7 @@ import {Section, SectionIntl, _Sections as Sections} from "content-src/component
 import {actionTypes as at} from "common/Actions.jsm";
 import {PlaceholderCard} from "content-src/components/Card/Card";
 import React from "react";
+import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
 import {shallow} from "enzyme";
 
 describe("<Sections>", () => {
@@ -48,6 +49,23 @@ describe("<Section>", () => {
     FAKE_PREFS = {values: {"section.foo_bar_1.collapsed": false}};
 
     wrapper = shallowWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+  });
+
+  describe("context menu", () => {
+    it("should render a context menu button", () => {
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      assert.equal(wrapper.find(".section-top-bar .context-menu-button").length, 1);
+    });
+    it("should render a section menu when button is clicked", () => {
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      const button = wrapper.find(".section-top-bar .context-menu-button");
+      button.simulate("click", {preventDefault: () => {}});
+      assert.isTrue(wrapper.find(SectionMenu).props().visible);
+    });
+    it("should not render a section menu by default", () => {
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      assert.isFalse(wrapper.find(SectionMenu).props().visible);
+    });
   });
 
   describe("placeholders", () => {
