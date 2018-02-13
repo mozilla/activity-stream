@@ -350,23 +350,29 @@ $half-base-gutter: $base-gutter / 2;
     .field {
       position: relative;
 
-      .clear-input-value {
+      .clear-input-value-container {
         position: absolute;
         top: 16px;
         width: 24px;
-        height: 16px;
-        background: $white url('#{$image-path}searchfield-cancel.svg');
-        cursor: pointer;
-        background-size: 16px;
-        background-repeat: no-repeat;
-        background-position: center;
+        background: $white;
+        pointer-events: none;
 
         &:dir(rtl) {
-          left: 4px;
+          offset-inline-start: 1px;
         }
 
         &:dir(ltr) {
-          right: 4px;
+          offset-inline-end: 1px;
+        }
+
+        .clear-input-value {
+          width: $icon-size;
+          height: $icon-size;
+          margin: 0 auto;
+          fill: $fill-secondary;
+          -moz-context-properties: fill;
+          background: url('#{$image-path}glyph-clear-text-field-16.svg');
+          pointer-events: auto;
         }
       }
     }
