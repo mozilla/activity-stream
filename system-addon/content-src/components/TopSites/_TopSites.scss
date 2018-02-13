@@ -454,6 +454,16 @@ $half-base-gutter: $base-gutter / 2;
       margin-inline-end: 0;
     }
   }
+
+  @media (max-width: $break-point-small) {
+    .fields-and-preview {
+      flex-direction: column;
+
+      .top-site-outer {
+        margin-inline-start: 0;
+      }
+    }
+  }
 }
 
 //used for tooltips below form element
