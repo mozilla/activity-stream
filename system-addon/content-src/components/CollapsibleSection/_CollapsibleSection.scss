@@ -162,6 +162,9 @@
   }
 
   .section-disclaimer {
+    $max-button-width: 130px;
+    $min-button-height: 26px;
+
     color: $grey-60;
     font-size: 13px;
     margin-bottom: 16px;
@@ -169,17 +172,11 @@
 
     .section-disclaimer-text {
       display: inline-block;
+      min-height: $min-button-height;
+      width: calc(100% - #{$max-button-width});
 
-      @media (min-width: $break-point-small) {
+      @media (max-width: $break-point-medium) {
         width: $card-width;
-      }
-
-      @media (min-width: $break-point-medium) {
-        width: 340px;
-      }
-
-      @media (min-width: $break-point-large) {
-        width: 610px;
       }
     }
 
@@ -194,8 +191,8 @@
       border-radius: 4px;
       cursor: pointer;
       margin-top: 2px;
-      max-width: 130px;
-      min-height: 26px;
+      max-width: $max-button-width;
+      min-height: $min-button-height;
       offset-inline-end: 0;
 
       &:hover:not(.dismiss) {
