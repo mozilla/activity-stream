@@ -1,5 +1,5 @@
 /** @license React v16.2.0
- * react.development.js
+ * react.development.js for activity-stream
  *
  * Copyright (c) 2013-present, Facebook, Inc.
  *
