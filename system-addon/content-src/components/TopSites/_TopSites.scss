@@ -61,7 +61,6 @@ $half-base-gutter: $base-gutter / 2;
   }
 
   li {
-    display: inline-block;
     margin: 0 0 $top-sites-vertical-space;
   }
 
@@ -79,6 +78,7 @@ $half-base-gutter: $base-gutter / 2;
 // container for drop zone
 .top-site-outer {
   padding: 0 $half-base-gutter;
+  display: inline-block;
 
   // container for context menu
   .top-site-inner {
@@ -332,7 +332,6 @@ $half-base-gutter: $base-gutter / 2;
       padding: 0;
       margin: 24px 0 0;
       margin-inline-start: $form-spacing;
-      list-style: none;
       pointer-events: none;
       cursor: default;
     }
