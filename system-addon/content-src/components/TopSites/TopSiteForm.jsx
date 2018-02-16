@@ -86,12 +86,7 @@ export class TopSiteForm extends React.PureComponent {
 
   validateForm() {
     const validate = this.validateUrl(this.state.url);
-    if (!validate) {
-      this.setState({validationError: true});
-    } else {
-      this.setState({validationError: false});
-    }
-
+    this.setState({validationError: !validate});
     return validate;
   }
 
