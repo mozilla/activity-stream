@@ -31,7 +31,7 @@ export class _ConfirmDialog extends React.PureComponent {
 
   _handleCancelBtn() {
     this.props.dispatch({type: actionTypes.DIALOG_CANCEL});
-    this.props.dispatch(ac.UserEvent({event: actionTypes.DIALOG_CANCEL}));
+    this.props.dispatch(ac.UserEvent({event: actionTypes.DIALOG_CANCEL, source: this.props.data.eventSource}));
   }
 
   _handleConfirmBtn() {

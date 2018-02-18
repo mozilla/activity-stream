@@ -80,6 +80,7 @@ export const LinkMenuOptions = {
           ac.AlsoToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, forceBlock: site.bookmarkGuid}}),
           ac.UserEvent({event: "DELETE", source: eventSource, action_position: index})
         ],
+        eventSource,
         body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],
         confirm_button_string_id: "menu_action_delete",
         cancel_button_string_id: "topsites_form_cancel_button",
