@@ -224,7 +224,8 @@ $half-base-gutter: $base-gutter / 2;
       background: $grey-20;
       box-shadow: none;
 
-      * {
+      *,
+      &::before {
         display: none;
       }
     }
