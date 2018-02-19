@@ -363,18 +363,12 @@ $half-base-gutter: $base-gutter / 2;
         top: 50%;
         offset-inline-end: 8px;
 
-        &:dir(ltr) {
-          offset-inline-end: 1px;
+        & + input:dir(ltr) {
+          padding-inline-end: 28px;
         }
 
-        .clear-input-value {
-          width: $icon-size;
-          height: $icon-size;
-          margin: 0 auto;
-          fill: $fill-secondary;
-          -moz-context-properties: fill;
-          background: url('#{$image-path}glyph-cancel-16.svg');
-          pointer-events: auto;
+        & + input:dir(rtl) {
+          padding-inline-start: 28px;
         }
       }
     }
