@@ -334,14 +334,11 @@ $half-base-gutter: $base-gutter / 2;
       margin: 24px 0 0;
       margin-inline-start: $form-spacing;
       pointer-events: none;
-      cursor: default;
     }
 
     .section-title {
       text-transform: none;
       font-size: 16px;
-      line-height: 19px;
-      color: $grey-60;
       margin: 0 0 16px;
     }
   }
