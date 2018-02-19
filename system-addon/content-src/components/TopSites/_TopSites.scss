@@ -359,16 +359,11 @@ $half-base-gutter: $base-gutter / 2;
     .field {
       position: relative;
 
-      .clear-input-value-container {
+      .icon-clear-input {
         position: absolute;
-        top: 16px;
-        width: 24px;
-        background: $white;
-        pointer-events: none;
-
-        &:dir(rtl) {
-          offset-inline-start: 1px;
-        }
+        transform: translateY(-50%);
+        top: 50%;
+        offset-inline-end: 8px;
 
         &:dir(ltr) {
           offset-inline-end: 1px;
