@@ -19,9 +19,10 @@ export class TopSiteFormInput extends React.PureComponent {
 
   render() {
     const showClearButton = this.props.value && this.props.onClear;
+    const {validationError, typeUrl} = this.props;
 
     return (<label><FormattedMessage id={this.props.titleId} />
-      <div className={`field url${this.props.validationError ? " invalid" : ""}`}>
+      <div className={`field ${typeUrl ? "url" : ""}${validationError ? " invalid" : ""}`}>
         {showClearButton &&
           <div className="icon icon-clear-input" onClick={this.props.onClear} />}
         <input type="text"
@@ -29,7 +30,7 @@ export class TopSiteFormInput extends React.PureComponent {
           ref={this.onMount}
           onChange={this.props.onChange}
           placeholder={this.props.intl.formatMessage({id: this.props.placeholderId})} />
-        {this.props.validationError &&
+        {validationError &&
           <aside className="error-tooltip">
             <FormattedMessage id={this.props.errorMessageId} />
           </aside>}

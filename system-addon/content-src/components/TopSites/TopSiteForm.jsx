@@ -112,6 +112,7 @@ export class TopSiteForm extends React.PureComponent {
                 onClear={this.onClearUrlClick}
                 validationError={this.state.validationError}
                 titleId="topsites_form_url_label"
+                typeUrl={true}
                 placeholderId="topsites_form_url_placeholder"
                 errorMessageId="topsites_form_url_validation"
                 intl={this.props.intl} />
