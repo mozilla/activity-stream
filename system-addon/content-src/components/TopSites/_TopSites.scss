@@ -364,11 +364,11 @@ $half-base-gutter: $base-gutter / 2;
         offset-inline-end: 8px;
 
         & + input:dir(ltr) {
-          padding-inline-end: 28px;
+          padding-right: 32px;
         }
 
         & + input:dir(rtl) {
-          padding-inline-start: 28px;
+          padding-left: 32px;
         }
       }
     }
