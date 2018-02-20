@@ -25,6 +25,11 @@
     background-image: url('chrome://browser/skin/bookmark-hollow.svg');
   }
 
+  &.icon-clear-input {
+    fill: $fill-secondary;
+    background-image: url('#{$image-path}glyph-cancel-16.svg');
+  }
+
   &.icon-delete {
     background-image: url('#{$image-path}glyph-delete-16.svg');
   }

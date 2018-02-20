@@ -2,6 +2,8 @@ import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {FormattedMessage} from "react-intl";
 import React from "react";
 import {TOP_SITES_SOURCE} from "./TopSitesConstants";
+import {TopSiteFormInput} from "./TopSiteFormInput";
+import {TopSiteLink} from "./TopSite";
 
 export class TopSiteForm extends React.PureComponent {
   constructor(props) {
@@ -15,18 +17,26 @@ export class TopSiteForm extends React.PureComponent {
     this.onLabelChange = this.onLabelChange.bind(this);
     this.onUrlChange = this.onUrlChange.bind(this);
     this.onCancelButtonClick = this.onCancelButtonClick.bind(this);
+    this.onClearUrlClick = this.onClearUrlClick.bind(this);
     this.onDoneButtonClick = this.onDoneButtonClick.bind(this);
-    this.onUrlInputMount = this.onUrlInputMount.bind(this);
   }
 
   onLabelChange(event) {
-    this.resetValidation();
     this.setState({"label": event.target.value});
   }
 
   onUrlChange(event) {
-    this.resetValidation();
-    this.setState({"url": event.target.value});
+    this.setState({
+      url: event.target.value,
+      validationError: false
+    });
+  }
+
+  onClearUrlClick() {
+    this.setState({
+      url: "",
+      validationError: false
+    });
   }
 
   onCancelButtonClick(ev) {
@@ -38,7 +48,7 @@ export class TopSiteForm extends React.PureComponent {
     ev.preventDefault();
 
     if (this.validateForm()) {
-      const site = {url: this.cleanUrl()};
+      const site = {url: this.cleanUrl(this.state.url)};
       const {index} = this.props;
       if (this.state.label !== "") {
         site.label = this.state.label;
@@ -58,42 +68,26 @@ export class TopSiteForm extends React.PureComponent {
     }
   }
 
-  cleanUrl() {
-    let {url} = this.state;
+  cleanUrl(url) {
     // If we are missing a protocol, prepend http://
     if (!url.startsWith("http:") && !url.startsWith("https:")) {
-      url = `http://${url}`;
+      return `http://${url}`;
     }
     return url;
   }
 
-  resetValidation() {
-    if (this.state.validationError) {
-      this.setState({validationError: false});
-    }
-  }
-
-  validateUrl() {
+  validateUrl(url) {
     try {
-      return !!new URL(this.cleanUrl());
+      return !!new URL(this.cleanUrl(url));
     } catch (e) {
       return false;
     }
   }
 
   validateForm() {
-    this.resetValidation();
-    // Only the URL is required and must be valid.
-    if (!this.state.url || !this.validateUrl()) {
-      this.setState({validationError: true});
-      this.inputUrl.focus();
-      return false;
-    }
-    return true;
-  }
-
-  onUrlInputMount(input) {
-    this.inputUrl = input;
+    const validate = this.validateUrl(this.state.url);
+    this.setState({validationError: !validate});
+    return validate;
   }
 
   render() {
@@ -102,33 +96,30 @@ export class TopSiteForm extends React.PureComponent {
 
     return (
       <form className="topsite-form">
-        <section className="edit-topsites-inner-wrapper">
-          <div className="form-wrapper">
-            <h3 className="section-title">
-              <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
-            </h3>
-            <div className="field title">
-              <input
-                type="text"
+        <div className="form-input-container">
+          <h3 className="section-title">
+            <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
+          </h3>
+          <div className="fields-and-preview">
+            <div className="form-wrapper">
+              <TopSiteFormInput onChange={this.onLabelChange}
                 value={this.state.label}
-                onChange={this.onLabelChange}
-                placeholder={this.props.intl.formatMessage({id: "topsites_form_title_placeholder"})} />
-            </div>
-            <div className={`field url${this.state.validationError ? " invalid" : ""}`}>
-              <input
-                type="text"
-                ref={this.onUrlInputMount}
+                titleId="topsites_form_title_label"
+                placeholderId="topsites_form_title_placeholder"
+                intl={this.props.intl} />
+              <TopSiteFormInput onChange={this.onUrlChange}
                 value={this.state.url}
-                onChange={this.onUrlChange}
-                placeholder={this.props.intl.formatMessage({id: "topsites_form_url_placeholder"})} />
-              {this.state.validationError &&
-                <aside className="error-tooltip">
-                  <FormattedMessage id="topsites_form_url_validation" />
-                </aside>
-              }
+                onClear={this.onClearUrlClick}
+                validationError={this.state.validationError}
+                titleId="topsites_form_url_label"
+                typeUrl={true}
+                placeholderId="topsites_form_url_placeholder"
+                errorMessageId="topsites_form_url_validation"
+                intl={this.props.intl} />
             </div>
+            <TopSiteLink link={this.props.site || {}} title={this.state.label} />
           </div>
-        </section>
+        </div>
         <section className="actions">
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
             <FormattedMessage id="topsites_form_cancel_button" />

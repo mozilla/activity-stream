@@ -1,15 +1,15 @@
-.top-sites-list {
-  $top-sites-size: $grid-unit;
-  $top-sites-border-radius: 6px;
-  $top-sites-title-height: 30px;
-  $top-sites-vertical-space: 8px;
-  $screenshot-size: cover;
-  $rich-icon-size: 96px;
-  $default-icon-wrapper-size: 42px;
-  $default-icon-size: 32px;
-  $default-icon-offset: 6px;
-  $half-base-gutter: $base-gutter / 2;
+$top-sites-size: $grid-unit;
+$top-sites-border-radius: 6px;
+$top-sites-title-height: 30px;
+$top-sites-vertical-space: 8px;
+$screenshot-size: cover;
+$rich-icon-size: 96px;
+$default-icon-wrapper-size: 42px;
+$default-icon-size: 32px;
+$default-icon-offset: 6px;
+$half-base-gutter: $base-gutter / 2;
 
+.top-sites-list {
   list-style: none;
   margin: 0 (-$half-base-gutter);
   // Take back the margin from the bottom row of vertical spacing as well as the
@@ -61,168 +61,7 @@
   }
 
   li {
-    display: inline-block;
     margin: 0 0 $top-sites-vertical-space;
-  }
-
-  // container for drop zone
-  .top-site-outer {
-    padding: 0 $half-base-gutter;
-
-    // container for context menu
-    .top-site-inner {
-      position: relative;
-
-      > a {
-        color: inherit;
-        display: block;
-        outline: none;
-
-        &:-moz-any(.active, :focus) {
-          .tile {
-            @include fade-in;
-          }
-        }
-      }
-    }
-
-    @include context-menu-button;
-
-    .tile { // sass-lint:disable-block property-sort-order
-      border-radius: $top-sites-border-radius;
-      box-shadow: inset $inner-box-shadow, $shadow-secondary;
-      height: $top-sites-size;
-      position: relative;
-      width: $top-sites-size;
-
-      // For letter fallback
-      align-items: center;
-      color: $text-secondary;
-      display: flex;
-      font-size: 32px;
-      font-weight: 200;
-      justify-content: center;
-      text-transform: uppercase;
-
-      &::before {
-        content: attr(data-fallback);
-      }
-    }
-
-    .screenshot {
-      background-color: $white;
-      background-position: top left;
-      background-size: $screenshot-size;
-      border-radius: $top-sites-border-radius;
-      box-shadow: inset $inner-box-shadow;
-      height: 100%;
-      left: 0;
-      opacity: 0;
-      position: absolute;
-      top: 0;
-      transition: opacity 1s;
-      width: 100%;
-
-      &.active {
-        opacity: 1;
-      }
-    }
-
-    // Some common styles for all icons (rich and default) in top sites
-    .top-site-icon {
-      background-color: $background-primary;
-      background-position: center center;
-      background-repeat: no-repeat;
-      border-radius: $top-sites-border-radius;
-      box-shadow: inset $inner-box-shadow;
-      position: absolute;
-    }
-
-    .rich-icon {
-      background-size: $rich-icon-size;
-      height: 100%;
-      offset-inline-start: 0;
-      top: 0;
-      width: 100%;
-    }
-
-    .default-icon { // sass-lint:disable block property-sort-order
-      background-size: $default-icon-size;
-      bottom: -$default-icon-offset;
-      height: $default-icon-wrapper-size;
-      offset-inline-end: -$default-icon-offset;
-      width: $default-icon-wrapper-size;
-
-      // for corner letter fallback
-      align-items: center;
-      display: flex;
-      font-size: 20px;
-      justify-content: center;
-
-      &[data-fallback]::before {
-        content: attr(data-fallback);
-      }
-    }
-
-    .title {
-      font: message-box;
-      height: $top-sites-title-height;
-      line-height: $top-sites-title-height;
-      text-align: center;
-      width: $top-sites-size;
-      position: relative;
-
-      .icon {
-        fill: $fill-tertiary;
-        offset-inline-start: 0;
-        position: absolute;
-        top: 10px;
-      }
-
-      span {
-        height: $top-sites-title-height;
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      &.pinned {
-        span {
-          padding: 0 13px;
-        }
-      }
-    }
-
-    .edit-button {
-      background-image: url('#{$image-path}glyph-edit-16.svg');
-    }
-
-    &.placeholder {
-      .tile {
-        box-shadow: inset $inner-box-shadow;
-      }
-
-      .screenshot {
-        display: none;
-      }
-    }
-
-    &.dragged {
-      .tile {
-        background: $grey-20;
-        box-shadow: none;
-
-        *,
-        &::before {
-          display: none;
-        }
-      }
-
-      .title {
-        visibility: hidden;
-      }
-    }
   }
 
   &:not(.dnd-active) {
@@ -232,6 +71,167 @@
       }
 
       @include context-menu-button-hover;
+    }
+  }
+}
+
+// container for drop zone
+.top-site-outer {
+  padding: 0 $half-base-gutter;
+  display: inline-block;
+
+  // container for context menu
+  .top-site-inner {
+    position: relative;
+
+    > a {
+      color: inherit;
+      display: block;
+      outline: none;
+
+      &:-moz-any(.active, :focus) {
+        .tile {
+          @include fade-in;
+        }
+      }
+    }
+  }
+
+  @include context-menu-button;
+
+  .tile { // sass-lint:disable-block property-sort-order
+    border-radius: $top-sites-border-radius;
+    box-shadow: inset $inner-box-shadow, $shadow-secondary;
+    height: $top-sites-size;
+    position: relative;
+    width: $top-sites-size;
+
+    // For letter fallback
+    align-items: center;
+    color: $text-secondary;
+    display: flex;
+    font-size: 32px;
+    font-weight: 200;
+    justify-content: center;
+    text-transform: uppercase;
+
+    &::before {
+      content: attr(data-fallback);
+    }
+  }
+
+  .screenshot {
+    background-color: $white;
+    background-position: top left;
+    background-size: $screenshot-size;
+    border-radius: $top-sites-border-radius;
+    box-shadow: inset $inner-box-shadow;
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    transition: opacity 1s;
+    width: 100%;
+
+    &.active {
+      opacity: 1;
+    }
+  }
+
+  // Some common styles for all icons (rich and default) in top sites
+  .top-site-icon {
+    background-color: $background-primary;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: $top-sites-border-radius;
+    box-shadow: inset $inner-box-shadow;
+    position: absolute;
+  }
+
+  .rich-icon {
+    background-size: $rich-icon-size;
+    height: 100%;
+    offset-inline-start: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .default-icon { // sass-lint:disable block property-sort-order
+    background-size: $default-icon-size;
+    bottom: -$default-icon-offset;
+    height: $default-icon-wrapper-size;
+    offset-inline-end: -$default-icon-offset;
+    width: $default-icon-wrapper-size;
+
+    // for corner letter fallback
+    align-items: center;
+    display: flex;
+    font-size: 20px;
+    justify-content: center;
+
+    &[data-fallback]::before {
+      content: attr(data-fallback);
+    }
+  }
+
+  .title {
+    font: message-box;
+    height: $top-sites-title-height;
+    line-height: $top-sites-title-height;
+    text-align: center;
+    width: $top-sites-size;
+    position: relative;
+
+    .icon {
+      fill: $fill-tertiary;
+      offset-inline-start: 0;
+      position: absolute;
+      top: 10px;
+    }
+
+    span {
+      height: $top-sites-title-height;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &.pinned {
+      span {
+        padding: 0 13px;
+      }
+    }
+  }
+
+  .edit-button {
+    background-image: url('#{$image-path}glyph-edit-16.svg');
+  }
+
+  &.placeholder {
+    .tile {
+      box-shadow: inset $inner-box-shadow;
+    }
+
+    .screenshot {
+      display: none;
+    }
+  }
+
+  &.dragged {
+    .tile {
+      background: $grey-20;
+      box-shadow: none;
+
+      *,
+      &::before {
+        display: none;
+      }
+    }
+
+    .title {
+      visibility: hidden;
     }
   }
 }
@@ -311,11 +311,6 @@
     width: calc(100% + 62px);
     box-shadow: $shadow-secondary;
   }
-
-  .edit-topsites-inner-wrapper {
-    margin: 0;
-    padding: 15px 30px;
-  }
 }
 
 .top-sites:not(.collapsed):hover {
@@ -326,13 +321,56 @@
 }
 
 .topsite-form {
+  $form-width: 300px;
+  $form-spacing: 32px;
+
+  .form-input-container {
+    max-width: $form-width + 3 * $form-spacing + $rich-icon-size;
+    margin: 0 auto;
+    padding: $form-spacing $form-spacing 40px;
+
+    .top-site-outer {
+      padding: 0;
+      margin: 24px 0 0;
+      margin-inline-start: $form-spacing;
+      pointer-events: none;
+    }
+
+    .section-title {
+      text-transform: none;
+      font-size: 16px;
+      margin: 0 0 16px;
+    }
+  }
+
+  .fields-and-preview {
+    display: flex;
+  }
+
+  label {
+    font-size: $section-title-font-size;
+  }
+
   .form-wrapper {
-    margin: auto;
-    max-width: 350px;
-    padding: 15px 0;
+    width: 100%;
 
     .field {
       position: relative;
+
+      .icon-clear-input {
+        position: absolute;
+        transform: translateY(-50%);
+        top: 50%;
+        offset-inline-end: 8px;
+
+        & + input:dir(ltr) {
+          padding-right: 32px;
+        }
+
+        & + input:dir(rtl) {
+          padding-left: 32px;
+        }
+      }
     }
 
     .url input:not(:placeholder-shown):dir(rtl) {
@@ -340,20 +378,18 @@
       text-align: right;
     }
 
-    .section-title {
-      margin-bottom: 5px;
-    }
-
     input {
       &[type='text'] {
         border: $input-border;
         border-radius: 2px;
-        margin: 5px 0;
-        padding: 7px;
+        margin: 8px 0;
+        padding: 0 8px;
+        height: 32px;
         width: 100%;
 
         &:focus {
           border: $input-border-active;
+          box-shadow: $input-focus-boxshadow;
         }
       }
     }
@@ -402,6 +438,16 @@
     button {
       margin-inline-start: 10px;
       margin-inline-end: 0;
+    }
+  }
+
+  @media (max-width: $break-point-small) {
+    .fields-and-preview {
+      flex-direction: column;
+
+      .top-site-outer {
+        margin-inline-start: 0;
+      }
     }
   }
 }
