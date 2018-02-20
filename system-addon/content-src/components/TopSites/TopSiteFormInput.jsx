@@ -8,7 +8,7 @@ export class TopSiteFormInput extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.validationError) {
+    if (nextProps.validationError && !this.props.validationError) {
       this.input.focus();
     }
   }
