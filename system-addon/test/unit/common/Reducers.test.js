@@ -44,6 +44,35 @@ describe("Reducers", () => {
       const nextState = TopSites(undefined, {type: at.TOP_SITES_CANCEL_EDIT});
       assert.isNull(nextState.editForm);
     });
+    it("should set screenshotRequestFailed to true on SCREENSHOT_FAILED", () => {
+      const action = {type: at.SCREENSHOT_FAILED};
+      const nextState = TopSites({}, action);
+      assert.isTrue(nextState.screenshotRequestFailed);
+    });
+    it("should set screenshotRequestFailed to false on SCREENSHOT_UPDATED", () => {
+      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
+      const action = {type: at.SCREENSHOT_UPDATED, data: {url: "bar.com", customScreenshot: "data:123"}};
+      const nextState = TopSites(oldState, action);
+      assert.isFalse(nextState.screenshotRequestFailed);
+    });
+    it("should add screenshotPreview on SCREENSHOT_UPDATED", () => {
+      const oldState = {};
+      const action = {type: at.SCREENSHOT_PREVIEW, data: {screenshotPreview: "data:123"}};
+      const nextState = TopSites(oldState, action);
+      assert.propertyVal(nextState, "screenshotPreview", "data:123");
+    });
+    it("should have not have screenshotRequestFailed", () => {
+      const oldState = {};
+      const action = {type: at.SCREENSHOT_PREVIEW, data: {screenshotPreview: "data:123"}};
+      const nextState = TopSites(oldState, action);
+      assert.propertyVal(nextState, "screenshotRequestFailed", false);
+    });
+    it("should add customScreenshot on SCREENSHOT_UPDATED", () => {
+      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
+      const action = {type: at.SCREENSHOT_UPDATED, data: {url: "bar.com", customScreenshot: "data:123"}};
+      const nextState = TopSites(oldState, action);
+      assert.deepEqual(nextState.rows, [{url: "foo.com"}, {url: "bar.com", customScreenshot: "data:123"}]);
+    });
     it("should add screenshots for SCREENSHOT_UPDATED", () => {
       const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
       const action = {type: at.SCREENSHOT_UPDATED, data: {url: "bar.com", screenshot: "data:123"}};
