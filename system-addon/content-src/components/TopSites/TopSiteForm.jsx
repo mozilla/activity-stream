@@ -12,13 +12,35 @@ export class TopSiteForm extends React.PureComponent {
     this.state = {
       label: site ? (site.label || site.hostname) : "",
       url: site ? site.url : "",
-      validationError: false
+      validationError: false,
+      customScreenshotUrl: site ? site.customScreenshotURL : "",
+      showCustomScreenshotForm: site ? site.customScreenshotURL : false,
+      screenshotRequestFailed: false,
+      screenshotPreview: null,
+      pendingScreenshotUpdate: false
     };
+    this.onClearScreenshotInput = this.onClearScreenshotInput.bind(this);
     this.onLabelChange = this.onLabelChange.bind(this);
     this.onUrlChange = this.onUrlChange.bind(this);
     this.onCancelButtonClick = this.onCancelButtonClick.bind(this);
     this.onClearUrlClick = this.onClearUrlClick.bind(this);
     this.onDoneButtonClick = this.onDoneButtonClick.bind(this);
+    this.onCustomScreenshotUrlChange = this.onCustomScreenshotUrlChange.bind(this);
+    this.onPreviewButtonClick = this.onPreviewButtonClick.bind(this);
+    this.onEnableScreenshotUrlForm = this.onEnableScreenshotUrlForm.bind(this);
+    this.validateUrl = this.validateUrl.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if ((nextProps.screenshotPreview && this.state.pendingScreenshotUpdate) ||
+        nextProps.screenshotRequestFailed) {
+      this.setState({
+        pendingScreenshotUpdate: false,
+        validationError: nextProps.screenshotRequestFailed,
+        screenshotRequestFailed: nextProps.screenshotRequestFailed,
+        screenshotPreview: nextProps.screenshotPreview
+      });
+    }
   }
 
   onLabelChange(event) {
@@ -39,6 +61,29 @@ export class TopSiteForm extends React.PureComponent {
     });
   }
 
+  onEnableScreenshotUrlForm() {
+    this.setState({showCustomScreenshotForm: true});
+  }
+
+  onCustomScreenshotUrlChange(event) {
+    this.setState({
+      customScreenshotUrl: event.target.value,
+      pendingScreenshotUpdate: false,
+      validationError: false,
+      screenshotRequestFailed: false,
+      screenshotPreview: null
+    });
+  }
+
+  onClearScreenshotInput() {
+    this.setState({
+      customScreenshotUrl: "",
+      validationError: false,
+      screenshotRequestFailed: false,
+      screenshotPreview: null
+    });
+  }
+
   onCancelButtonClick(ev) {
     ev.preventDefault();
     this.props.onClose();
@@ -54,6 +99,11 @@ export class TopSiteForm extends React.PureComponent {
         site.label = this.state.label;
       }
 
+      if (this.state.customScreenshotUrl) {
+        site.customScreenshotURL = this.cleanUrl(this.state.customScreenshotUrl);
+      } else if (this.props.site && this.props.site.customScreenshotURL) {
+        site.customScreenshotURL = null;
+      }
       this.props.dispatch(ac.AlsoToMain({
         type: at.TOP_SITES_PIN,
         data: {site, index}
@@ -65,6 +115,18 @@ export class TopSiteForm extends React.PureComponent {
       }));
 
       this.props.onClose();
+    }
+  }
+
+  onPreviewButtonClick(event) {
+    event.preventDefault();
+    if (this.validateForm()) {
+      this.setState({pendingScreenshotUpdate: true});
+
+      this.props.dispatch(ac.AlsoToMain({
+        type: at.SCREENSHOT_REQUEST,
+        data: {customScreenshotURL: this.cleanUrl(this.state.customScreenshotUrl)}
+      }));
     }
   }
 
@@ -84,15 +146,65 @@ export class TopSiteForm extends React.PureComponent {
     }
   }
 
+  validateCustomScreenshotUrl() {
+    const {customScreenshotUrl} = this.state;
+    return customScreenshotUrl ? this.validateUrl(customScreenshotUrl) : true;
+  }
+
   validateForm() {
-    const validate = this.validateUrl(this.state.url);
-    this.setState({validationError: !validate});
+    const validate = this.validateUrl(this.state.url) && this.validateCustomScreenshotUrl();
+
+    if (!validate) {
+      this.setState({validationError: true});
+    }
+
     return validate;
   }
 
+  _renderCustomScreenshotInput() {
+    const validationError = this.state.validationError &&
+      (this.state.screenshotRequestFailed || !this.validateCustomScreenshotUrl());
+    // Set focus on error if the url field is valid or when the input is first rendered on and is empty
+    const shouldFocus = (validationError && this.validateUrl(this.state.url)) || !this.state.customScreenshotUrl;
+
+    if (!this.state.showCustomScreenshotForm) {
+      return (<a href="" className="enable-custom-image-input" onClick={this.onEnableScreenshotUrlForm}>
+        <FormattedMessage id="topsites_form_image_enable_button" />
+      </a>);
+    }
+    return (<div className="custom-image-input-container">
+      <TopSiteFormInput
+        errorMessageId={this.props.screenshotRequestFailed ? "topsites_form_image_request_error" : "topsites_form_url_validation"}
+        loading={this.state.pendingScreenshotUpdate}
+        onChange={this.onCustomScreenshotUrlChange}
+        onClear={this.onClearScreenshotInput}
+        shouldFocus={shouldFocus}
+        typeUrl={true}
+        value={this.state.customScreenshotUrl}
+        validationError={validationError}
+        titleId="topsites_form_image_label"
+        placeholderId="topsites_form_image_placeholder"
+        intl={this.props.intl} />
+    </div>);
+  }
+
+  _getPreviewScreenshot() {
+    return Object.assign({}, this.props.site, {
+      screenshotPreview: this.state.screenshotPreview,
+      screenshotRequestFailed: this.state.screenshotRequestFailed
+    });
+  }
+
   render() {
+    const {customScreenshotUrl} = this.state;
+    const {site} = this.props;
     // For UI purposes, editing without an existing link is "add"
-    const showAsAdd = !this.props.site;
+    const showAsAdd = !site;
+    const changedCustomScreenshotUrl = site && customScreenshotUrl &&
+      (site.customScreenshotURL !== this.cleanUrl(customScreenshotUrl));
+    // Preview mode enables the preview button and prevents saving or adding a topsite.
+    const previewMode = (customScreenshotUrl && !this.state.screenshotPreview) &&
+                        (showAsAdd || changedCustomScreenshotUrl);
 
     return (
       <form className="topsite-form">
@@ -108,25 +220,34 @@ export class TopSiteForm extends React.PureComponent {
                 placeholderId="topsites_form_title_placeholder"
                 intl={this.props.intl} />
               <TopSiteFormInput onChange={this.onUrlChange}
+                shouldFocus={this.state.validationError && !this.validateUrl(this.state.url)}
                 value={this.state.url}
                 onClear={this.onClearUrlClick}
-                validationError={this.state.validationError}
+                validationError={this.state.validationError && !this.validateUrl(this.state.url)}
                 titleId="topsites_form_url_label"
                 typeUrl={true}
                 placeholderId="topsites_form_url_placeholder"
                 errorMessageId="topsites_form_url_validation"
                 intl={this.props.intl} />
+              {this._renderCustomScreenshotInput()}
             </div>
-            <TopSiteLink link={this.props.site || {}} title={this.state.label} />
+            <TopSiteLink link={this._getPreviewScreenshot()} title={this.state.label} />
           </div>
         </div>
         <section className="actions">
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
-          <button className="done" type="submit" onClick={this.onDoneButtonClick}>
-            <FormattedMessage id={showAsAdd ? "topsites_form_add_button" : "topsites_form_save_button"} />
-          </button>
+          {!previewMode &&
+              <button className="done" type="submit" onClick={this.onDoneButtonClick}>
+                <FormattedMessage id={showAsAdd ? "topsites_form_add_button" : "topsites_form_save_button"} />
+            </button>
+          }
+          {previewMode &&
+            <button className="done preview" type="submit" onClick={this.onPreviewButtonClick}>
+              <FormattedMessage id="topsites_form_image_button" />
+            </button>
+          }
         </section>
       </form>
     );
@@ -134,6 +255,6 @@ export class TopSiteForm extends React.PureComponent {
 }
 
 TopSiteForm.defaultProps = {
-  TopSite: null,
+  site: null,
   index: -1
 };
