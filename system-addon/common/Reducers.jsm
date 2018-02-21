@@ -90,18 +90,26 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       }
       return Object.assign({}, prevState, {initialized: true, rows: action.data});
     case at.TOP_SITES_EDIT:
-      return Object.assign({}, prevState, {editForm: {index: action.data.index}});
+      return Object.assign({}, prevState, {editForm: {index: action.data.index}, screenshotRequestFailed: false, screenshotPreview: null});
     case at.TOP_SITES_CANCEL_EDIT:
-      return Object.assign({}, prevState, {editForm: null});
+      return Object.assign({}, prevState, {editForm: null, screenshotRequestFailed: false});
+    case at.SCREENSHOT_FAILED:
+      return Object.assign({}, prevState, {screenshotRequestFailed: true});
+    case at.SCREENSHOT_PREVIEW:
+      return Object.assign({}, prevState, {screenshotRequestFailed: false, screenshotPreview: action.data.screenshotPreview});
     case at.SCREENSHOT_UPDATED:
       newRows = prevState.rows.map(row => {
         if (row && row.url === action.data.url) {
           hasMatch = true;
-          return Object.assign({}, row, {screenshot: action.data.screenshot});
+          const {screenshot, customScreenshot} = action.data;
+          if (screenshot) {
+            return Object.assign({}, row, {screenshot});
+          }
+          return Object.assign({}, row, {customScreenshot});
         }
         return row;
       });
-      return hasMatch ? Object.assign({}, prevState, {rows: newRows}) : prevState;
+      return hasMatch ? Object.assign({}, prevState, {rows: newRows, screenshotRequestFailed: false}) : prevState;
     case at.PLACES_BOOKMARK_ADDED:
       if (!action.data) {
         return prevState;
