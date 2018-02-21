@@ -144,6 +144,9 @@ describe("<LinkMenu>", () => {
         // to block this if we delete it
         if (option.id === "menu_action_delete") {
           assert.deepEqual(option.action.data.onConfirm[0].data, expectedActionData[option.id]);
+          // Test UserEvent send correct meta about item deleted
+          assert.propertyVal(option.action.data.onConfirm[1].data, "action_position", FAKE_INDEX);
+          assert.propertyVal(option.action.data.onConfirm[1].data, "source", FAKE_SOURCE);
         } else {
           assert.deepEqual(option.action.data, expectedActionData[option.id]);
         }

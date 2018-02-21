@@ -15,7 +15,8 @@ describe("<ConfirmDialog>", () => {
       data: {
         onConfirm: [],
         cancel_button_string_id: "manual_migration_cancel_button",
-        confirm_button_string_id: "manual_migration_import_button"
+        confirm_button_string_id: "manual_migration_import_button",
+        eventSource: "HIGHLIGHTS"
       }
     };
     wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
@@ -83,7 +84,7 @@ describe("<ConfirmDialog>", () => {
       // Two events are emitted: UserEvent+AlsoToMain.
       assert.calledTwice(dispatch);
       assert.isUserEventAction(dispatch.secondCall.args[0]);
-      assert.calledWith(dispatch, ac.UserEvent({event: at.DIALOG_CANCEL}));
+      assert.calledWith(dispatch, ac.UserEvent({event: at.DIALOG_CANCEL, source: "HIGHLIGHTS"}));
     });
     it("should emit AlsoToMain DIALOG_CANCEL on cancel", () => {
       let cancelButton = wrapper.find(".actions").childAt(0);
@@ -105,7 +106,7 @@ describe("<ConfirmDialog>", () => {
       // Two events are emitted: UserEvent+AlsoToMain.
       assert.calledTwice(dispatch);
       assert.isUserEventAction(dispatch.secondCall.args[0]);
-      assert.calledWith(dispatch, ac.UserEvent({event: at.DIALOG_CANCEL}));
+      assert.calledWith(dispatch, ac.UserEvent({event: at.DIALOG_CANCEL, source: "HIGHLIGHTS"}));
     });
     it("should emit UserEvent on primary button", () => {
       Object.assign(ConfirmDialogProps.data, {
