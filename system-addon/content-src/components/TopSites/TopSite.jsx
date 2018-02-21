@@ -67,7 +67,17 @@ export class TopSiteLink extends React.PureComponent {
     let showSmallFavicon = false;
     let smallFaviconStyle;
     let smallFaviconFallback;
-    if (tippyTopIcon || faviconSize >= MIN_RICH_FAVICON_SIZE) {
+    if (link.screenshotRequestFailed) {
+      showSmallFavicon = false;
+      smallFaviconFallback = false;
+    } else if (link.screenshotPreview || link.customScreenshot) {
+      // styles and class names for top sites with rich icons
+      imageClassName = "top-site-icon rich-icon";
+      imageStyle = {
+        backgroundColor: link.backgroundColor,
+        backgroundImage: `url(${link.screenshotPreview || link.customScreenshot})`
+      };
+    } else if (tippyTopIcon || faviconSize >= MIN_RICH_FAVICON_SIZE) {
       // styles and class names for top sites with rich icons
       imageClassName = "top-site-icon rich-icon";
       imageStyle = {
@@ -288,7 +298,15 @@ export class _TopSiteList extends React.PureComponent {
           this.dropped = true;
           this.props.dispatch(ac.AlsoToMain({
             type: at.TOP_SITES_INSERT,
-            data: {site: {url: this.state.draggedSite.url, label: this.state.draggedTitle}, index, draggedFromIndex: this.state.draggedIndex}
+            data: {
+              site: {
+                url: this.state.draggedSite.url,
+                label: this.state.draggedTitle,
+                customScreenshotURL: this.state.draggedSite.customScreenshotURL
+              },
+              index,
+              draggedFromIndex: this.state.draggedIndex
+            }
           }));
           this.userEvent("DROP", index);
         }
