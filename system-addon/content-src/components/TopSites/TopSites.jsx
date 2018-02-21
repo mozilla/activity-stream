@@ -37,6 +37,7 @@ function countTopSitesIconsTypes(topSites) {
   };
 
   return topSites.reduce(countTopSitesTypes, {
+    "custom_screenshot": 0,
     "screenshot_with_icon": 0,
     "screenshot": 0,
     "tippytop": 0,

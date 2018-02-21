@@ -97,6 +97,7 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 0,
             "screenshot": 0,
             "tippytop": 0,
@@ -117,8 +118,30 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 0,
             "screenshot": 1,
+            "tippytop": 0,
+            "rich_icon": 0,
+            "no_image": 0
+          },
+          topsites_pinned: 0
+        }
+      }));
+    });
+    it("should correctly count TopSite images - custom_screenshot", () => {
+      const rows = [{customScreenshotURL: true}];
+      sandbox.stub(DEFAULT_PROPS.TopSites, "rows").value(rows);
+      wrapper.instance()._dispatchTopSitesStats();
+
+      assert.calledOnce(DEFAULT_PROPS.dispatch);
+      assert.calledWithExactly(DEFAULT_PROPS.dispatch, ac.AlsoToMain({
+        type: at.SAVE_SESSION_PERF_DATA,
+        data: {
+          topsites_icon_stats: {
+            "custom_screenshot": 1,
+            "screenshot_with_icon": 0,
+            "screenshot": 0,
             "tippytop": 0,
             "rich_icon": 0,
             "no_image": 0
@@ -137,6 +160,7 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 1,
             "screenshot": 0,
             "tippytop": 0,
@@ -157,6 +181,7 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 0,
             "screenshot": 0,
             "tippytop": 0,
@@ -177,6 +202,7 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 0,
             "screenshot": 0,
             "tippytop": 2,
@@ -197,6 +223,7 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 0,
             "screenshot": 0,
             "tippytop": 0,
@@ -217,6 +244,7 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 0,
             "screenshot": 0,
             "tippytop": 0,
@@ -238,6 +266,7 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 0,
             "screenshot": 0,
             "tippytop": 0,
@@ -258,6 +287,7 @@ describe("<TopSites>", () => {
         type: at.SAVE_SESSION_PERF_DATA,
         data: {
           topsites_icon_stats: {
+            "custom_screenshot": 0,
             "screenshot_with_icon": 0,
             "screenshot": 0,
             "tippytop": 0,
