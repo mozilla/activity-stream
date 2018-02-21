@@ -8,7 +8,7 @@ export class TopSiteFormInput extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.validationError && !this.props.validationError) {
+    if (nextProps.shouldFocus && !this.props.shouldFocus) {
       this.input.focus();
     }
   }
@@ -29,7 +29,8 @@ export class TopSiteFormInput extends React.PureComponent {
           value={this.props.value}
           ref={this.onMount}
           onChange={this.props.onChange}
-          placeholder={this.props.intl.formatMessage({id: this.props.placeholderId})} />
+          placeholder={this.props.intl.formatMessage({id: this.props.placeholderId})}
+          autoFocus={this.props.shouldFocus} />
         {validationError &&
           <aside className="error-tooltip">
             <FormattedMessage id={this.props.errorMessageId} />
