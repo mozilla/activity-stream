@@ -21,6 +21,7 @@ if (!global.gActivityStreamPrerenderedState) {
 
 ReactDOM.hydrate(<Provider store={store}>
   <Base
+    isFirstrun={global.document.location.href === "about:welcome"}
     isPrerendered={!!global.gActivityStreamPrerenderedState}
     locale={global.document.documentElement.lang}
     strings={global.gActivityStreamStrings} />

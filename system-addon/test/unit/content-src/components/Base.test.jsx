@@ -3,6 +3,7 @@ import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary"
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
 import {shallow} from "enzyme";
+import {StartupOverlay} from "content-src/components/StartupOverlay/StartupOverlay";
 
 describe("<Base>", () => {
   let DEFAULT_PROPS = {store: {getState: () => {}}, App: {initialized: true}, Prefs: {values: {}}, Theme: {className: ""}, dispatch: () => {}};
@@ -53,5 +54,23 @@ describe("<BaseContent>", () => {
     const wrapper = shallow(<BaseContent {...searchEnabledProps} />);
 
     assert.isTrue(wrapper.find(Search).parent().is(ErrorBoundary));
+  });
+
+  it("should render a StartupOverlay when on about:welcome (props are sent as true)", () => {
+    const isFirstrunProps =
+      Object.assign({}, DEFAULT_PROPS, {isFirstrun: true});
+
+    const wrapper = shallow(<BaseContent {...isFirstrunProps} />);
+
+    assert.ok(wrapper.find(StartupOverlay).exists());
+  });
+
+  it("should not render a StartupOverlay when not on about:welcome (props are sent as false)", () => {
+    const notFirstrunProps =
+      Object.assign({}, DEFAULT_PROPS, {isFirstrun: false});
+
+    const wrapper = shallow(<BaseContent {...notFirstrunProps} />);
+
+    assert.ok(!wrapper.find(StartupOverlay).exists());
   });
 });

@@ -380,7 +380,8 @@ export function addSnippetsSubscriber(store) {
       state.Snippets.initialized &&
       !snippets.initialized &&
       // Don't call init multiple times
-      !initializing
+      !initializing &&
+      location.href !== "about:welcome"
     ) {
       initializing = true;
       await snippets.init({appData: state.Snippets});
