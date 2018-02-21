@@ -26,7 +26,7 @@ const DEFAULT_SITES_PREF = "default.sites";
 const DEFAULT_TOP_SITES = [];
 const FRECENCY_THRESHOLD = 100 + 1; // 1 visit (skip first-run/one-time pages)
 const MIN_FAVICON_SIZE = 96;
-const CACHED_LINK_PROPS_TO_MIGRATE = ["screenshot"];
+const CACHED_LINK_PROPS_TO_MIGRATE = ["screenshot", "customScreenshot"];
 const PINNED_FAVICON_PROPS_TO_MIGRATE = ["favicon", "faviconRef", "faviconSize"];
 
 this.TopSitesFeed = class TopSitesFeed {
@@ -69,7 +69,13 @@ this.TopSitesFeed = class TopSitesFeed {
 
   filterForThumbnailExpiration(callback) {
     const {rows} = this.store.getState().TopSites;
-    callback(rows.map(site => site.url));
+    callback(rows.reduce((acc, site) => {
+      acc.push(site.url);
+      if (site.customScreenshotURL) {
+        acc.push(site.customScreenshotURL);
+      }
+      return acc;
+    }, []));
   }
 
   async getLinksWithDefaults(action) {
@@ -100,7 +106,7 @@ this.TopSitesFeed = class TopSitesFeed {
         {isDefault: !!notBlockedDefaultSites.find(finder)}, link, {hostname: shortURL(link)});
 
       // Add in favicons if we don't already have it
-      if (!copy.favicon) {
+      if (!copy.favicon && !copy.customScreenshotURL) {
         try {
           NewTabUtils.activityStreamProvider._faviconBytesToDataURI(await
             NewTabUtils.activityStreamProvider._addFavicons([copy]));
@@ -131,7 +137,12 @@ this.TopSitesFeed = class TopSitesFeed {
     // Now, get a tippy top icon, a rich icon, or screenshot for every item
     for (const link of withPinned) {
       if (link) {
-        this._fetchIcon(link);
+        // If there is a custom screenshot this is the only image we display
+        if (link.customScreenshotURL && !link.customScreenshot) {
+          this._fetchCustomScreenshot(link);
+        } else {
+          this._fetchIcon(link);
+        }
 
         // Remove internal properties that might be updated after dispatch
         delete link.__sharedCache;
@@ -210,23 +221,43 @@ this.TopSitesFeed = class TopSitesFeed {
 
   /**
    * Pin a site at a specific position saving only the desired keys.
+   * @param customScreenshotURL {string} User set URL of preview image for site
+   * @param label {string} User set string of custom site name
    */
-  _pinSiteAt({label, url}, index) {
+  async _pinSiteAt({customScreenshotURL, label, url}, index) {
     const toPin = {url};
     if (label) {
       toPin.label = label;
     }
+    if (customScreenshotURL) {
+      toPin.customScreenshotURL = customScreenshotURL;
+    }
     NewTabUtils.pinnedLinks.pin(toPin, index);
+
+    await this._updateLinkCustomScreenshot({customScreenshotURL, url});
+  }
+
+  async _updateLinkCustomScreenshot(site) {
+    // If screenshot url changed or was removed we need to update the cached link obj
+    if (site.customScreenshotURL || site.customScreenshotURL === null) {
+      const pinned = await this.pinnedCache.request();
+      /* istanbul ignore next */
+      const link = pinned.find(pin => pin && pin.url === site.url);
+      /* istanbul ignore next */
+      if (link && link.customScreenshotURL !== site.customScreenshotURL) {
+        link.__sharedCache.updateLink("customScreenshot", undefined);
+      }
+    }
   }
 
   /**
    * Handle a pin action of a site to a position.
    */
-  pin(action) {
+  async pin(action) {
     const {site, index} = action.data;
     // If valid index provided, pin at that position
     if (index >= 0) {
-      this._pinSiteAt(site, index);
+      await this._pinSiteAt(site, index);
       this._broadcastPinnedSitesUpdated();
     } else {
       this.insert(action);
@@ -287,7 +318,7 @@ this.TopSitesFeed = class TopSitesFeed {
   /**
    * Handle an insert (drop/add) action of a site.
    */
-  insert(action) {
+  async insert(action) {
     let {index} = action.data;
     // Treat invalid pin index values (e.g., -1, undefined) as insert in the first position
     if (!(index > 0)) {
@@ -299,6 +330,8 @@ this.TopSitesFeed = class TopSitesFeed {
     this._insertPin(
       action.data.site, index,
       action.data.draggedFromIndex !== undefined ? action.data.draggedFromIndex : this.store.getState().Prefs.values.topSitesRows * TOP_SITES_MAX_SITES_PER_ROW);
+
+    await this._updateLinkCustomScreenshot(action.data.site);
     this._broadcastPinnedSitesUpdated();
   }
 
