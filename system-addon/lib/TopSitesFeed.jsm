@@ -201,6 +201,31 @@ this.TopSitesFeed = class TopSitesFeed {
     }
   }
 
+/**
+ * Fetch, cache and broadcast a custom screenshot for a specific topsite.
+ * @param link cached topsite object
+ */
+  async _fetchCustomScreenshot(link) {
+    await Screenshots.maybeCacheScreenshot(link, link.customScreenshotURL, "customScreenshot",
+      customScreenshot => this.store.dispatch(ac.BroadcastToContent({
+        data: {customScreenshot, url: link.url},
+        type: at.SCREENSHOT_UPDATED
+      })));
+  }
+
+  /**
+   * Dispatch screenshot preview to target or notify if request failed.
+   * @param customScreenshotURL {string} The URL used to capture the screenshot
+   * @param target {string} Id of content process where to dispatch the result
+   */
+  async getScreenshotPreview({customScreenshotURL}, target) {
+    const screenshotPreview = await Screenshots.getScreenshotForURL(customScreenshotURL);
+    this.store.dispatch(ac.OnlyToOneContent({
+      data: {screenshotPreview},
+      type: screenshotPreview ? at.SCREENSHOT_PREVIEW : at.SCREENSHOT_FAILED
+    }, target));
+  }
+
   _requestRichIcon(url) {
     this.store.dispatch({
       type: at.RICH_ICON_MISSING,
@@ -371,6 +396,9 @@ this.TopSitesFeed = class TopSitesFeed {
         break;
       case at.TOP_SITES_INSERT:
         this.insert(action);
+        break;
+      case at.SCREENSHOT_REQUEST:
+        this.getScreenshotPreview(action.data, action.meta.fromTarget);
         break;
       case at.UNINIT:
         this.uninit();
