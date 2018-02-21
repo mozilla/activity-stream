@@ -349,9 +349,10 @@ perf: {
   // and is therefore just showing placeholder screenshots.
   "topsites_first_painted_ts": 5,
 
-  // The 5 different types of TopSites icons and how many of each kind did the
+  // The 6 different types of TopSites icons and how many of each kind did the
   // user see.
   "topsites_icon_stats": {
+    "custom_screenshot": 0,
     "screenshot_with_icon": 2,
     "screenshot": 1,
     "tippytop": 2,

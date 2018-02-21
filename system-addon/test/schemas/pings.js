@@ -170,6 +170,7 @@ export const SessionPing = Joi.object().keys(Object.assign({}, baseKeys, {
 
     // Information about the quality of TopSites images and icons.
     topsites_icon_stats: Joi.object().keys({
+      custom_screenshot: Joi.number(),
       rich_icon: Joi.number(),
       screenshot: Joi.number(),
       screenshot_with_icon: Joi.number(),

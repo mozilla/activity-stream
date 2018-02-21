@@ -179,6 +179,7 @@ and losing focus. | :one:
 | `topsites_data_late_by_ms` | [Optional] Time in ms it took for TopSites to become initialized | :one:
 | `topstories.domain.affinity.calculation.ms` | [Optional] Time in ms it took for domain affinities to be calculated | :one:
 | `topsites_first_painted_ts` | [Optional][Service Counter][Server Alert for too many omissions] Timestamp of when the Top Sites element finished painting (possibly with only placeholder screenshots) | :one:
+| `custom_screenshot` | [Optional] Number of topsites that display a custom screenshot. | :one:
 | `screenshot_with_icon` | [Optional] Number of topsites that display a screenshot and a favicon. | :one:
 | `screenshot` | [Optional] Number of topsites that display only a screenshot. | :one:
 | `tippytop` | [Optional] Number of topsites that display a tippytop icon. | :one:
