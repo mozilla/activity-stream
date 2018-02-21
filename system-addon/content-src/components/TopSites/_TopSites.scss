@@ -337,20 +337,64 @@ $half-base-gutter: $base-gutter / 2;
         transform: translateY(-50%);
         top: 50%;
         offset-inline-end: 8px;
-
-        & + input:dir(ltr) {
-          padding-right: 32px;
-        }
-
-        & + input:dir(rtl) {
-          padding-left: 32px;
-        }
       }
     }
 
     .url input:not(:placeholder-shown):dir(rtl) {
       direction: ltr;
       text-align: right;
+    }
+
+    .url {
+      input:dir(ltr) {
+        padding-right: 32px;
+      }
+
+      input:dir(rtl) {
+        padding-left: 32px;
+      }
+    }
+
+    .enable-custom-image-input {
+      display: inline-block;
+      font-size: 13px;
+      margin-top: 12px;
+      text-decoration: underline;
+    }
+
+    .custom-image-input-container {
+      margin-top: 12px;
+
+      .loading-container {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        position: absolute;
+        transform: translateY(-50%);
+        top: 50%;
+        offset-inline-end: 8px;
+      }
+
+      .loading-animation {
+        @keyframes tab-throbber-animation {
+          100% { transform: translateX(-960px); }
+        }
+
+        @keyframes tab-throbber-animation-rtl {
+          100% { transform: translateX(960px); }
+        }
+
+        width: 960px;
+        height: 16px;
+        -moz-context-properties: fill;
+        fill: $teal-70;
+        background-image: url('chrome://browser/skin/tabbrowser/loading.svg');
+        animation: tab-throbber-animation 1.05s steps(60) infinite;
+
+        &:dir(rtl) {
+          animation-name: tab-throbber-animation-rtl;
+        }
+      }
     }
 
     input {
