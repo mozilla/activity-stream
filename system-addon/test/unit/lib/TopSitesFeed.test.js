@@ -743,11 +743,35 @@ describe("Top Sites Feed", () => {
     });
   });
   describe("#pin", () => {
-    it("should pin site in specified slot empty pinned list", () => {
-      const site = {url: "foo.bar", label: "foo"};
-      feed.pin({data: {index: 2, site}});
+    it("should pin site in specified slot empty pinned list", async () => {
+      const site = {url: "foo.bar", label: "foo", customScreenshotURL: "screenshot"};
+      await feed.pin({data: {index: 2, site}});
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, site, 2);
+    });
+    it("it should lookup the link object to update the custom screenshot", async () => {
+      const site = {url: "foo.bar", label: "foo", customScreenshotURL: "screenshot"};
+      sandbox.spy(feed.pinnedCache, "request");
+
+      await feed.pin({data: {index: 2, site}});
+
+      assert.calledOnce(feed.pinnedCache.request);
+    });
+    it("it should lookup the link object to update the custom screenshot", async () => {
+      const site = {url: "foo.bar", label: "foo", customScreenshotURL: null};
+      sandbox.spy(feed.pinnedCache, "request");
+
+      await feed.pin({data: {index: 2, site}});
+
+      assert.calledOnce(feed.pinnedCache.request);
+    });
+    it("it should not do a link object lookup if custom screenshot field is not set", async () => {
+      const site = {url: "foo.bar", label: "foo"};
+      sandbox.spy(feed.pinnedCache, "request");
+
+      await feed.pin({data: {index: 2, site}});
+
+      assert.notCalled(feed.pinnedCache.request);
     });
     it("should pin site in specified slot of pinned list that is free", () => {
       fakeNewTabUtils.pinnedLinks.links = [null, {url: "example.com"}];
