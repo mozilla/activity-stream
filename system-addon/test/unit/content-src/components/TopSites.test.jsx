@@ -1095,6 +1095,14 @@ describe("#TopSiteFormInput", () => {
 
       assert.equal(wrapper.find(".icon-clear-input").length, 1);
     });
+
+    it("should show the loading indicator", () => {
+      assert.equal(wrapper.find(".loading-container").length, 0);
+
+      wrapper.setProps({loading: true});
+
+      assert.equal(wrapper.find(".loading-container").length, 1);
+    });
   });
 
   describe("with error", () => {
