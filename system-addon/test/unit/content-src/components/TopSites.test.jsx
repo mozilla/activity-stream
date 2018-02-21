@@ -595,6 +595,99 @@ describe("<TopSiteForm>", () => {
       assert.isFalse(wrapper.instance().validateForm());
       assert.isTrue(wrapper.state().validationError);
     });
+
+    it("should return true for a correct custom screenshot URL", () => {
+      wrapper.setState({customScreenshotUrl: "foo"});
+
+      assert.isTrue(wrapper.instance().validateForm());
+    });
+
+    it("should return false for a incorrect custom screenshot URL", () => {
+      wrapper.setState({customScreenshotUrl: " "});
+
+      assert.isFalse(wrapper.instance().validateForm());
+    });
+
+    it("should return true for an empty custom screenshot URL", () => {
+      wrapper.setState({customScreenshotURL: ""});
+
+      assert.isTrue(wrapper.instance().validateForm());
+    });
+  });
+
+  describe("#previewButton", () => {
+    beforeEach(() => setup({site: {customScreenshotURL: "http://foo.com"}}));
+
+    it("should render the preview button on invalid urls", () => {
+      assert.equal(0, wrapper.find(".preview").length);
+
+      wrapper.setState({customScreenshotUrl: " "});
+
+      assert.equal(1, wrapper.find(".preview").length);
+    });
+
+    it("should render the preview button when input value updated", () => {
+      assert.equal(0, wrapper.find(".preview").length);
+
+      wrapper.setState({customScreenshotUrl: "http://baz.com", screenshotPreview: null});
+
+      assert.equal(1, wrapper.find(".preview").length);
+    });
+  });
+
+  describe("preview request", () => {
+    beforeEach(() => {
+      setup({site: {customScreenshotURL: "http://foo.com", url: "http://foo.com"}});
+    });
+
+    it("shouldn't dispatch a request for invalid urls", () => {
+      wrapper.setState({customScreenshotUrl: " ", url: "foo"});
+
+      wrapper.find(".preview").simulate("click");
+
+      assert.notCalled(wrapper.props().dispatch);
+    });
+
+    it("should dispatch a SCREENSHOT_REQUEST", () => {
+      wrapper.setState({customScreenshotUrl: "screenshot"});
+      wrapper.find(".preview").simulate("click");
+
+      assert.calledOnce(wrapper.props().dispatch);
+      assert.calledWithExactly(wrapper.props().dispatch, ac.AlsoToMain({
+        type: at.SCREENSHOT_REQUEST,
+        data: {customScreenshotURL: "http://screenshot"}
+      }));
+    });
+
+    it("should dispatch set pending state", () => {
+      wrapper.setState({customScreenshotUrl: "screenshot"});
+
+      wrapper.find(".preview").simulate("click");
+
+      assert.propertyVal(wrapper.state(), "pendingScreenshotUpdate", true);
+    });
+  });
+
+  describe("#TopSiteLink", () => {
+    it("should display a TopSiteLink preview", () => {
+      assert.equal(wrapper.find(TopSiteLink).length, 1);
+    });
+
+    it("should display the preview screenshot", () => {
+      wrapper.setProps({site: {tippyTopIcon: "bar"}});
+
+      assert.equal(wrapper.find(".top-site-icon").getDOMNode().style["background-image"], "url(\"bar\")");
+
+      wrapper.setProps({"screenshotPreview": "foo"});
+
+      assert.equal(wrapper.find(".top-site-icon").getDOMNode().style["background-image"], "url(\"foo\")");
+    });
+
+    it("should not render any icon on error", () => {
+      wrapper.setProps({screenshotRequestFailed: true});
+
+      assert.equal(wrapper.find(".top-site-icon").length, 0);
+    });
   });
 
   describe("#addMode", () => {
@@ -749,6 +842,39 @@ describe("<TopSiteForm>", () => {
           type: at.TOP_SITES_PIN
         }
       );
+    });
+    it("should render the save button if custom screenshot request finished", () => {
+      wrapper.setState({customScreenshotUrl: "foo", screenshotPreview: "custom"});
+      assert.equal(0, wrapper.find(".preview").length);
+      assert.equal(1, wrapper.find(".done").length);
+    });
+    it("should render the save button if custom screenshot url was cleared", () => {
+      wrapper.setState({customScreenshotUrl: ""});
+      wrapper.setProps({site: {customScreenshotURL: "foo"}});
+      assert.equal(0, wrapper.find(".preview").length);
+      assert.equal(1, wrapper.find(".done").length);
+    });
+  });
+
+  describe("#previewMode", () => {
+    beforeEach(() => setup());
+
+    it("should transition from save to preview", () => {
+      wrapper.setProps({site: {url: "https://foo.bar", customScreenshotURL: "baz"}, index: 7});
+
+      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_save_button").length, 1);
+
+      wrapper.setState({customScreenshotUrl: "foo"});
+
+      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_image_button").length, 1);
+    });
+
+    it("should transition from add to preview", () => {
+      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_add_button").length, 1);
+
+      wrapper.setState({customScreenshotUrl: "foo"});
+
+      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_image_button").length, 1);
     });
   });
 
