@@ -23,7 +23,10 @@ export class TopSiteFormInput extends React.PureComponent {
 
     return (<label><FormattedMessage id={this.props.titleId} />
       <div className={`field ${typeUrl ? "url" : ""}${validationError ? " invalid" : ""}`}>
-        {showClearButton &&
+        {this.props.loading && <div className="loading-container">
+          <div className="loading-animation" />
+        </div>}
+        {!this.props.loading && showClearButton &&
           <div className="icon icon-clear-input" onClick={this.props.onClear} />}
         <input type="text"
           value={this.props.value}
