@@ -121,6 +121,8 @@ export class _TopSites extends React.PureComponent {
               <div className="modal">
                 <TopSiteForm
                   site={props.TopSites.rows[editForm.index]}
+                  screenshotPreview={this.props.TopSites.screenshotPreview}
+                  screenshotRequestFailed={this.props.TopSites.screenshotRequestFailed}
                   index={editForm.index}
                   onClose={this.onFormClose}
                   dispatch={this.props.dispatch}
