@@ -60,7 +60,7 @@ describe("Top Sites Feed", () => {
     };
     fakeScreenshot = {
       getScreenshotForURL: sandbox.spy(() => Promise.resolve(FAKE_SCREENSHOT)),
-      maybeCacheScreenshot: Screenshots.maybeCacheScreenshot,
+      maybeCacheScreenshot: sandbox.spy(Screenshots.maybeCacheScreenshot),
       _shouldGetScreenshots: sinon.stub().returns(true)
     };
     filterAdultStub = sinon.stub().returns([]);
@@ -138,14 +138,14 @@ describe("Top Sites Feed", () => {
   });
   describe("#filterForThumbnailExpiration", () => {
     it("should pass rows.urls to the callback provided", () => {
-      const rows = [{url: "foo.com"}, {"url": "bar.com"}];
+      const rows = [{url: "foo.com"}, {"url": "bar.com", "customScreenshotURL": "custom"}];
       feed.store.state.TopSites = {rows};
       const stub = sinon.stub();
 
       feed.filterForThumbnailExpiration(stub);
 
       assert.calledOnce(stub);
-      assert.calledWithExactly(stub, rows.map(r => r.url));
+      assert.calledWithExactly(stub, ["foo.com", "bar.com", "custom"]);
     });
   });
   describe("#getLinksWithDefaults", () => {
@@ -154,9 +154,6 @@ describe("Top Sites Feed", () => {
     });
 
     describe("general", () => {
-      beforeEach(() => {
-        sandbox.stub(fakeScreenshot, "maybeCacheScreenshot");
-      });
       it("should get the links from NewTabUtils", async () => {
         const result = await feed.getLinksWithDefaults();
         const reference = links.map(site => Object.assign({}, site, {hostname: shortURLStub(site)}));
@@ -395,6 +392,15 @@ describe("Top Sites Feed", () => {
         assert.calledWith(feed._fetchIcon, link);
       });
     });
+    it("should call _fetchCustomScreenshot when customScreenshotURL is set", async () => {
+      links = [];
+      fakeNewTabUtils.pinnedLinks.links = [{url: "foo", customScreenshotURL: "custom"}];
+      sinon.stub(feed, "_fetchCustomScreenshot");
+
+      await feed.getLinksWithDefaults();
+
+      assert.calledOnce(feed._fetchCustomScreenshot);
+    });
   });
   describe("#refresh", () => {
     beforeEach(() => {
@@ -439,6 +445,33 @@ describe("Top Sites Feed", () => {
         type: at.TOP_SITES_UPDATED,
         data: []
       }));
+    });
+  });
+  describe("#getScreenshotPreview", () => {
+    it("should call getScreenshotForURL with correct parameters", async () => {
+      await feed.getScreenshotPreview({url: "foo.com", customScreenshotURL: "custom"}, 1234);
+
+      assert.calledOnce(fakeScreenshot.getScreenshotForURL);
+      assert.calledWithExactly(fakeScreenshot.getScreenshotForURL, "custom");
+    });
+    it("should dispatch SCREENSHOT_UPDATED if request is succesful", async () => {
+      await feed.getScreenshotPreview({customScreenshotURL: "custom"}, 1234);
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWithExactly(feed.store.dispatch, ac.OnlyToOneContent({
+        data: {screenshotPreview: FAKE_SCREENSHOT},
+        type: at.SCREENSHOT_PREVIEW
+      }, 1234));
+    });
+    it("should dispatch SCREENSHOT_FAILED if request fails", async () => {
+      fakeScreenshot.getScreenshotForURL = sandbox.stub().returns(Promise.resolve(null));
+      await feed.getScreenshotPreview({customScreenshotURL: "custom"}, 1234);
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWithExactly(feed.store.dispatch, ac.OnlyToOneContent({
+        data: {screenshotPreview: null},
+        type: at.SCREENSHOT_FAILED
+      }, 1234));
     });
   });
   describe("#_fetchIcon", () => {
@@ -510,7 +543,26 @@ describe("Top Sites Feed", () => {
       assert.notProperty(link, "tippyTopIcon");
     });
   });
+  describe("#_fetchCustomScreenshot", () => {
+    it("should call maybeCacheScreenshot", async () => {
+      const updateLink = sinon.stub();
+      const link = {customScreenshotURL: "custom", __sharedCache: {updateLink}};
+      await feed._fetchCustomScreenshot(link, "custom");
+
+      assert.calledOnce(fakeScreenshot.maybeCacheScreenshot);
+      assert.calledWithExactly(fakeScreenshot.maybeCacheScreenshot, link, link.customScreenshotURL,
+        "customScreenshot", sinon.match.func);
+    });
+  });
   describe("#onAction", () => {
+    it("should call getScreenshotPreview on SCREENSHOT_REQUEST", () => {
+      sandbox.stub(feed, "getScreenshotPreview");
+
+      feed.onAction({type: at.SCREENSHOT_REQUEST, data: "foo", meta: {fromTarget: 1234}});
+
+      assert.calledOnce(feed.getScreenshotPreview);
+      assert.calledWithExactly(feed.getScreenshotPreview, "foo", 1234);
+    });
     it("should refresh on SYSTEM_TICK", async () => {
       sandbox.stub(feed, "refresh");
 
