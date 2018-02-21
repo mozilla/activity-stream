@@ -703,24 +703,23 @@ describe("<TopSiteForm>", () => {
       assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_save_button").length, 0);
       assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_add_button").length, 1);
     });
+    it("should not render a preview button", () => {
+      assert.equal(0, wrapper.find(".custom-image-input-container").length);
+    });
     it("should call onClose if Cancel button is clicked", () => {
       wrapper.find(".cancel").simulate("click");
       assert.calledOnce(wrapper.instance().props.onClose);
     });
-    it("should show error and not call onClose or dispatch if URL is empty", () => {
-      assert.isFalse(wrapper.state().validationError);
+    it("should set validationError if url is empty", () => {
+      assert.equal(wrapper.state().validationError, false);
       wrapper.find(".done").simulate("click");
-      assert.isTrue(wrapper.state().validationError);
-      assert.notCalled(wrapper.instance().props.onClose);
-      assert.notCalled(wrapper.instance().props.dispatch);
+      assert.equal(wrapper.state().validationError, true);
     });
-    it("should show error and not call onClose or dispatch if URL is invalid", () => {
+    it("should set validationError if url is invalid", () => {
       wrapper.setState({"url": "not valid"});
-      assert.isFalse(wrapper.state().validationError);
+      assert.equal(wrapper.state().validationError, false);
       wrapper.find(".done").simulate("click");
-      assert.isTrue(wrapper.state().validationError);
-      assert.notCalled(wrapper.instance().props.onClose);
-      assert.notCalled(wrapper.instance().props.dispatch);
+      assert.equal(wrapper.state().validationError, true);
     });
     it("should call onClose and dispatch with right args if URL is valid", () => {
       wrapper.setState({"url": "valid.com", "label": "a label"});
@@ -755,10 +754,17 @@ describe("<TopSiteForm>", () => {
         }
       );
     });
+    it("should open the custom screenshot input", () => {
+      assert.isFalse(wrapper.state().showCustomScreenshotForm);
+
+      wrapper.find(".enable-custom-image-input").simulate("click");
+
+      assert.isTrue(wrapper.state().showCustomScreenshotForm);
+    });
   });
 
   describe("edit existing Topsite", () => {
-    beforeEach(() => setup({site: {url: "https://foo.bar", label: "baz"}, index: 0}));
+    beforeEach(() => setup({site: {url: "https://foo.bar", label: "baz", customScreenshotURL: "http://foo"}, index: 7}));
 
     it("should render the component", () => {
       assert.ok(wrapper.find(TopSiteForm));
@@ -770,29 +776,23 @@ describe("<TopSiteForm>", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 0);
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 1);
     });
-    it("should have the correct button text (if editing a placeholder)", () => {
-      wrapper.setProps({site: null});
-
-      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 0);
-      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 1);
-    });
     it("should call onClose if Cancel button is clicked", () => {
       wrapper.find(".cancel").simulate("click");
       assert.calledOnce(wrapper.instance().props.onClose);
     });
     it("should show error and not call onClose or dispatch if URL is empty", () => {
       wrapper.setState({"url": ""});
-      assert.isFalse(wrapper.state().validationError);
+      assert.equal(wrapper.state().validationError, false);
       wrapper.find(".done").simulate("click");
-      assert.isTrue(wrapper.state().validationError);
+      assert.equal(wrapper.state().validationError, true);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
       wrapper.setState({"url": "not valid"});
-      assert.isFalse(wrapper.state().validationError);
+      assert.equal(wrapper.state().validationError, false);
       wrapper.find(".done").simulate("click");
-      assert.isTrue(wrapper.state().validationError);
+      assert.equal(wrapper.state().validationError, true);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
@@ -803,7 +803,7 @@ describe("<TopSiteForm>", () => {
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {site: {label: "baz", url: "https://foo.bar"}, index: 0},
+          data: {site: {label: "baz", url: "https://foo.bar", customScreenshotURL: "http://foo"}, index: 7},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
           type: at.TOP_SITES_PIN
         }
@@ -811,9 +811,23 @@ describe("<TopSiteForm>", () => {
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {action_position: 0, source: "TOP_SITES", event: "TOP_SITES_EDIT"},
+          data: {action_position: 7, source: "TOP_SITES", event: "TOP_SITES_EDIT"},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
           type: at.TELEMETRY_USER_EVENT
+        }
+      );
+    });
+    it("should set customScreenshotURL to null if it was removed", () => {
+      wrapper.setState({customScreenshotUrl: ""});
+
+      wrapper.find(".done").simulate("click");
+
+      assert.calledWith(
+        wrapper.instance().props.dispatch,
+        {
+          data: {site: {label: "baz", url: "https://foo.bar", customScreenshotURL: null}, index: 7},
+          meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+          type: at.TOP_SITES_PIN
         }
       );
     });
@@ -825,7 +839,7 @@ describe("<TopSiteForm>", () => {
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {site: {label: "baz", url: "https://foo.bar"}, index: -1},
+          data: {site: {label: "baz", url: "https://foo.bar", customScreenshotURL: "http://foo"}, index: -1},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
           type: at.TOP_SITES_PIN
         }
@@ -837,7 +851,7 @@ describe("<TopSiteForm>", () => {
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
-          data: {site: {url: "https://foo.bar"}, index: 0},
+          data: {site: {url: "https://foo.bar", customScreenshotURL: "http://foo"}, index: 7},
           meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
           type: at.TOP_SITES_PIN
         }
@@ -971,14 +985,14 @@ describe("<TopSiteList>", () => {
     const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} dispatch={dispatch} />);
     const instance = wrapper.instance();
     const index = 7;
-    const link = {url: "https://foo.com"};
+    const link = {url: "https://foo.com", customScreenshotURL: "foo"};
     const title = "foo";
     instance.onDragEvent({type: "dragstart"}, index, link, title);
     dispatch.reset();
     instance.onDragEvent({type: "drop"}, 3);
     assert.calledTwice(dispatch);
     assert.calledWith(dispatch, {
-      data: {draggedFromIndex: 7, index: 3, site: {label: "foo", url: "https://foo.com"}},
+      data: {draggedFromIndex: 7, index: 3, site: {label: "foo", url: "https://foo.com", customScreenshotURL: "foo"}},
       meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
       type: "TOP_SITES_INSERT"
     });
