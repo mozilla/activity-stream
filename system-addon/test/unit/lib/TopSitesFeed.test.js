@@ -528,19 +528,35 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, pinAction.data.site, pinAction.data.index);
     });
-    it("should trigger refresh on TOP_SITES_PIN", () => {
-      sinon.stub(feed, "refresh");
+    it("should call pin on TOP_SITES_PIN", () => {
+      sinon.stub(feed, "pin");
       const pinExistingAction = {type: at.TOP_SITES_PIN, data: {site: FAKE_LINKS[4], index: 4}};
 
       feed.onAction(pinExistingAction);
 
+      assert.calledOnce(feed.pin);
+    });
+    it("should trigger refresh on TOP_SITES_PIN", async () => {
+      sinon.stub(feed, "refresh");
+      const pinExistingAction = {type: at.TOP_SITES_PIN, data: {site: FAKE_LINKS[4], index: 4}};
+
+      await feed.pin(pinExistingAction);
+
       assert.calledOnce(feed.refresh);
     });
-    it("should trigger refresh on TOP_SITES_INSERT", () => {
-      sinon.stub(feed, "refresh");
+    it("should call insert on TOP_SITES_INSERT", async () => {
+      sinon.stub(feed, "insert");
       const addAction = {type: at.TOP_SITES_INSERT, data: {site: {url: "foo.com"}}};
 
       feed.onAction(addAction);
+
+      assert.calledOnce(feed.insert);
+    });
+    it("should trigger refresh on TOP_SITES_INSERT", async () => {
+      sinon.stub(feed, "refresh");
+      const addAction = {type: at.TOP_SITES_INSERT, data: {site: {url: "foo.com"}}};
+
+      await feed.insert(addAction);
 
       assert.calledOnce(feed.refresh);
     });
