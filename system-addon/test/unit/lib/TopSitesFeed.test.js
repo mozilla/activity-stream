@@ -825,6 +825,34 @@ describe("Top Sites Feed", () => {
       assert.notCalled(feed.insert);
     });
   });
+  describe("updateLinkCustomScreenshot", () => {
+    it("should remove cached screenshot if custom url changes", async () => {
+      const stub = sandbox.stub();
+      sandbox.stub(feed.pinnedCache, "request").returns(Promise.resolve([{
+        url: "foo",
+        customScreenshotURL: "old_screenshot",
+        __sharedCache: {updateLink: stub}
+      }]));
+
+      await feed._updateLinkCustomScreenshot({url: "foo", customScreenshotURL: "new_screenshot"});
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, "customScreenshot", undefined);
+    });
+    it("should remove cached screenshot if custom url is removed", async () => {
+      const stub = sandbox.stub();
+      sandbox.stub(feed.pinnedCache, "request").returns(Promise.resolve([{
+        url: "foo",
+        customScreenshotURL: "old_screenshot",
+        __sharedCache: {updateLink: stub}
+      }]));
+
+      await feed._updateLinkCustomScreenshot({url: "foo", customScreenshotURL: "new_screenshot"});
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, "customScreenshot", undefined);
+    });
+  });
   describe("#drop", () => {
     it("should correctly handle different index values", () => {
       let index = -1;

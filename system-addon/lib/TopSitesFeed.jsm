@@ -266,9 +266,7 @@ this.TopSitesFeed = class TopSitesFeed {
     // If screenshot url changed or was removed we need to update the cached link obj
     if (site.customScreenshotURL || site.customScreenshotURL === null) {
       const pinned = await this.pinnedCache.request();
-      /* istanbul ignore next */
       const link = pinned.find(pin => pin && pin.url === site.url);
-      /* istanbul ignore next */
       if (link && link.customScreenshotURL !== site.customScreenshotURL) {
         link.__sharedCache.updateLink("customScreenshot", undefined);
       }
