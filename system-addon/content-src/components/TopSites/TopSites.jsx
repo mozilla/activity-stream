@@ -9,6 +9,22 @@ import {TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
 import {TopSiteForm} from "./TopSiteForm";
 import {TopSiteList} from "./TopSite";
 
+function topSiteIconType(link) {
+  if (link.tippyTopIcon || link.faviconRef === "tippytop") {
+    return "tippytop";
+  }
+  if (link.faviconSize >= MIN_RICH_FAVICON_SIZE) {
+    return "rich_icon";
+  }
+  if (link.screenshot && link.faviconSize >= MIN_CORNER_FAVICON_SIZE) {
+    return "screenshot_with_icon";
+  }
+  if (link.screenshot) {
+    return "screenshot";
+  }
+  return "no_image";
+}
+
 /**
  * Iterates through TopSites and counts types of images.
  * @param acc Accumulator for reducer.
@@ -16,18 +32,7 @@ import {TopSiteList} from "./TopSite";
  */
 function countTopSitesIconsTypes(topSites) {
   const countTopSitesTypes = (acc, link) => {
-    if (link.tippyTopIcon || link.faviconRef === "tippytop") {
-      acc.tippytop++;
-    } else if (link.faviconSize >= MIN_RICH_FAVICON_SIZE) {
-      acc.rich_icon++;
-    } else if (link.screenshot && link.faviconSize >= MIN_CORNER_FAVICON_SIZE) {
-      acc.screenshot_with_icon++;
-    } else if (link.screenshot) {
-      acc.screenshot++;
-    } else {
-      acc.no_image++;
-    }
-
+    acc[topSiteIconType(link)]++;
     return acc;
   };
 
