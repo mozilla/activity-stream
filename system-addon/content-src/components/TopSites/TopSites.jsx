@@ -109,7 +109,7 @@ export class _TopSites extends React.PureComponent {
         eventSource={TOP_SITES_SOURCE}
         Prefs={props.Prefs}
         dispatch={props.dispatch}>
-        <TopSiteList TopSites={props.TopSites} TopSitesRows={props.TopSitesRows} dispatch={props.dispatch} intl={props.intl} />
+        <TopSiteList TopSites={props.TopSites} TopSitesRows={props.TopSitesRows} dispatch={props.dispatch} intl={props.intl} topSiteIconType={topSiteIconType} />
         <div className="edit-topsites-wrapper">
           {editForm &&
             <div className="edit-topsites">

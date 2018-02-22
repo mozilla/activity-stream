@@ -356,7 +356,7 @@ export class _TopSiteList extends React.PureComponent {
     const maxNarrowVisibleIndex = props.TopSitesRows * 6;
 
     for (let i = 0, l = topSites.length; i < l; i++) {
-      const link = topSites[i];
+      const link = topSites[i] && Object.assign({}, topSites[i], {iconType: this.props.topSiteIconType(topSites[i])});
       const slotProps = {
         key: link ? link.url : holeIndex++,
         index: i
