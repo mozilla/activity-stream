@@ -138,7 +138,9 @@ export class TopSite extends React.PureComponent {
     this.props.dispatch(ac.UserEvent({
       event,
       source: TOP_SITES_SOURCE,
-      action_position: this.props.index
+      action_position: this.props.index,
+      is_pinned: this.props.link.isPinned,
+      icon_type: this.props.link.iconType
     }));
   }
 

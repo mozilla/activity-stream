@@ -25,7 +25,9 @@ export class _LinkMenu extends React.PureComponent {
             props.dispatch(ac.UserEvent({
               event: userEvent,
               source,
-              action_position: index
+              action_position: index,
+              is_pinned: site.isPinned,
+              icon_type: site.iconType
             }));
           }
           if (impression && props.shouldSendImpressionStats) {
