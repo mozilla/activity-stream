@@ -202,6 +202,7 @@ describe("<LinkMenu>", () => {
           assert.isUserEventAction(action);
           assert.propertyVal(action.data, "source", FAKE_SOURCE);
           assert.propertyVal(action.data, "action_position", FAKE_INDEX);
+          assert.propertyVal(action.data.value, "card_type", FAKE_SITE.type);
         }
       });
       it(`should send impression stats for ${option.id}`, () => {
