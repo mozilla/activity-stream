@@ -168,14 +168,15 @@ export class TopSite extends React.PureComponent {
               <FormattedMessage id="context_menu_button_sr" values={{title}} />
             </span>
           </button>
-          <LinkMenu
-            dispatch={props.dispatch}
-            index={props.index}
-            onUpdate={this.onMenuUpdate}
-            options={TOP_SITES_CONTEXT_MENU_OPTIONS}
-            site={link}
-            source={TOP_SITES_SOURCE}
-            visible={isContextMenuOpen} />
+          {isContextMenuOpen &&
+            <LinkMenu
+              dispatch={props.dispatch}
+              index={props.index}
+              onUpdate={this.onMenuUpdate}
+              options={TOP_SITES_CONTEXT_MENU_OPTIONS}
+              site={link}
+              source={TOP_SITES_SOURCE} />
+          }
         </div>
     </TopSiteLink>);
   }
