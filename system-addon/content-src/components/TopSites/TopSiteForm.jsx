@@ -127,6 +127,10 @@ export class TopSiteForm extends React.PureComponent {
         type: at.SCREENSHOT_REQUEST,
         data: {customScreenshotURL: this.cleanUrl(this.state.customScreenshotUrl)}
       }));
+      this.props.dispatch(ac.UserEvent({
+        source: TOP_SITES_SOURCE,
+        event: "SCREENSHOT_REQUEST"
+      }));
     }
   }
 

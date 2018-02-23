@@ -80,6 +80,7 @@ export const UserEventAction = Joi.object().keys({
       "SAVE_TO_POCKET",
       "SECTION_MENU_MOVE_UP",
       "SECTION_MENU_MOVE_DOWN",
+      "SCREENSHOT_REQUEST",
       "SECTION_MENU_REMOVE",
       "SECTION_MENU_COLLAPSE",
       "SECTION_MENU_EXPAND",
