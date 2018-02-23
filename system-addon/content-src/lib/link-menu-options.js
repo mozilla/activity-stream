@@ -7,6 +7,7 @@ import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
  */
 export const LinkMenuOptions = {
   Separator: () => ({type: "separator"}),
+  EmptyItem: () => ({type: "empty"}),
   RemoveBookmark: site => ({
     id: "menu_action_remove_bookmark",
     icon: "bookmark-added",
@@ -48,7 +49,7 @@ export const LinkMenuOptions = {
     icon: "dismiss",
     action: ac.AlsoToMain({
       type: at.BLOCK_URL,
-      data: site.url
+      data: {url: site.url, pocket_id: site.pocket_id}
     }),
     impression: ac.ImpressionStats({
       source: eventSource,
@@ -77,7 +78,7 @@ export const LinkMenuOptions = {
       type: at.DIALOG_OPEN,
       data: {
         onConfirm: [
-          ac.AlsoToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, forceBlock: site.bookmarkGuid}}),
+          ac.AlsoToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, pocket_id: site.pocket_id, forceBlock: site.bookmarkGuid}}),
           ac.UserEvent({event: "DELETE", source: eventSource, action_position: index})
         ],
         eventSource,
@@ -121,6 +122,24 @@ export const LinkMenuOptions = {
     }),
     userEvent: "SAVE_TO_POCKET"
   }),
+  DeleteFromPocket: site => ({
+    id: "menu_action_delete_pocket",
+    icon: "delete",
+    action: ac.AlsoToMain({
+      type: at.DELETE_FROM_POCKET,
+      data: {pocket_id: site.pocket_id}
+    }),
+    userEvent: "DELETE_FROM_POCKET"
+  }),
+  ArchiveFromPocket: site => ({
+    id: "menu_action_archive_pocket",
+    icon: "check",
+    action: ac.AlsoToMain({
+      type: at.ARCHIVE_FROM_POCKET,
+      data: {pocket_id: site.pocket_id}
+    }),
+    userEvent: "ARCHIVE_FROM_POCKET"
+  }),
   EditTopSite: (site, index) => ({
     id: "edit_topsites_button_text",
     icon: "edit",
@@ -130,5 +149,8 @@ export const LinkMenuOptions = {
     }
   }),
   CheckBookmark: site => (site.bookmarkGuid ? LinkMenuOptions.RemoveBookmark(site) : LinkMenuOptions.AddBookmark(site)),
-  CheckPinTopSite: (site, index) => (site.isPinned ? LinkMenuOptions.UnpinTopSite(site) : LinkMenuOptions.PinTopSite(site, index))
+  CheckPinTopSite: (site, index) => (site.isPinned ? LinkMenuOptions.UnpinTopSite(site) : LinkMenuOptions.PinTopSite(site, index)),
+  CheckSavedToPocket: (site, index) => (site.pocket_id ? LinkMenuOptions.DeleteFromPocket(site) : LinkMenuOptions.SaveToPocket(site, index)),
+  CheckBookmarkOrArchive: site => (site.pocket_id ? LinkMenuOptions.ArchiveFromPocket(site) : LinkMenuOptions.CheckBookmark(site)),
+  CheckDeleteHistoryOrEmpty: (site, index, eventSource) => (site.pocket_id ? LinkMenuOptions.EmptyItem() : LinkMenuOptions.DeleteUrl(site, index, eventSource))
 };

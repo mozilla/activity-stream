@@ -14,5 +14,9 @@ export const cardContextTypes = {
   now: {
     intlID: "type_label_now",
     icon: "now"
+  },
+  pocket: {
+    intlID: "type_label_pocket",
+    icon: "pocket-small"
   }
 };

@@ -121,6 +121,10 @@ const PREFS_CONFIG = new Map([
     title: "Collapse the Highlights section",
     value: false
   }],
+  ["section.highlights.includePocket", {
+    title: "Boolean flag that decides whether or not to show saved Pocket stories in highlights.",
+    value: true
+  }],
   ["section.topstories.collapsed", {
     title: "Collapse the Top Stories section",
     value: false

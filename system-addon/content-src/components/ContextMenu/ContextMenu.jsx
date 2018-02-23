@@ -34,7 +34,7 @@ export class ContextMenu extends React.PureComponent {
       <ul role="menu" className="context-menu-list">
         {this.props.options.map((option, i) => (option.type === "separator" ?
           (<li key={i} className="separator" />) :
-          (<ContextMenuItem key={i} option={option} hideContext={this.hideContext} />)
+          (option.type !== "empty" && <ContextMenuItem key={i} option={option} hideContext={this.hideContext} />)
         ))}
       </ul>
     </span>);

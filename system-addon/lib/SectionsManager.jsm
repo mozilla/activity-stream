@@ -42,7 +42,7 @@ const BUILT_IN_SECTIONS = {
     },
     privacyNoticeURL: options.privacy_notice_link || "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
     maxRows: 1,
-    availableLinkMenuOptions: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
+    availableLinkMenuOptions: ["CheckBookmarkOrArchive", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
     emptyState: {
       message: {id: "topstories_empty_state", values: {provider: options.provider_name}},
       icon: "check"
@@ -62,7 +62,7 @@ const BUILT_IN_SECTIONS = {
     icon: "highlights",
     title: {id: "header_highlights"},
     maxRows: 3,
-    availableLinkMenuOptions: ["CheckBookmark", "SaveToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"],
+    availableLinkMenuOptions: ["CheckBookmarkOrArchive", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "CheckDeleteHistoryOrEmpty"],
     emptyState: {
       message: {id: "highlights_empty_state"},
       icon: "highlights"

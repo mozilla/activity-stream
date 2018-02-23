@@ -83,7 +83,9 @@ export const UserEventAction = Joi.object().keys({
       "SECTION_MENU_EXPAND",
       "SECTION_MENU_MANAGE",
       "SECTION_MENU_ADD_TOPSITE",
-      "SECTION_MENU_PRIVACY_NOTICE"
+      "SECTION_MENU_PRIVACY_NOTICE",
+      "DELETE_FROM_POCKET",
+      "ARCHIVE_FROM_POCKET"
     ]).required(),
     source: Joi.valid(["TOP_SITES", "TOP_STORIES", "HIGHLIGHTS"]),
     action_position: Joi.number().integer()
