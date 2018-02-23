@@ -127,13 +127,17 @@
   }
 
   &.icon-arrowhead-down {
+    background-image: url('#{$image-path}glyph-arrowhead-down-16.svg');
+  }
+
+  &.icon-arrowhead-down-small {
     background-image: url('#{$image-path}glyph-arrowhead-down-12.svg');
     background-size: $smaller-icon-size;
     height: $smaller-icon-size;
     width: $smaller-icon-size;
   }
 
-  &.icon-arrowhead-forward {
+  &.icon-arrowhead-forward-small {
     background-image: url('#{$image-path}glyph-arrowhead-down-12.svg');
     background-size: $smaller-icon-size;
     height: $smaller-icon-size;
@@ -143,6 +147,11 @@
     &:dir(rtl) {
       transform: rotate(90deg);
     }
+  }
+
+  &.icon-arrowhead-up {
+    background-image: url('#{$image-path}glyph-arrowhead-down-16.svg');
+    transform: rotate(180deg);
   }
 
   &.icon-add {
