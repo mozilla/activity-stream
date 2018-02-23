@@ -38,6 +38,10 @@
         fill: $grey-90-80;
       }
     }
+
+    .context-menu {
+      top: 16px;
+    }
   }
 
   &:hover,
@@ -61,10 +65,6 @@
 
   @media (max-width: $break-point-widest + $card-width * 1.5) {
     @include context-menu-open-left;
-  }
-
-  .context-menu {
-    top: 16px;
   }
 
   .section-disclaimer {
