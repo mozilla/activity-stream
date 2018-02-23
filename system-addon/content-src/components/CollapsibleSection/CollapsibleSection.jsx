@@ -157,7 +157,7 @@ export class _CollapsibleSection extends React.PureComponent {
             <span className="click-target" onClick={isCollapsible && this.onHeaderClick}>
               {this.renderIcon()}
               {title}
-            {isCollapsible && <span className={`collapsible-arrow icon ${isCollapsed ? "icon-arrowhead-forward" : "icon-arrowhead-down"}`} />}
+            {isCollapsible && <span className={`collapsible-arrow icon ${isCollapsed ? "icon-arrowhead-forward-small" : "icon-arrowhead-down-small"}`} />}
             </span>
           </h3>
           <div>

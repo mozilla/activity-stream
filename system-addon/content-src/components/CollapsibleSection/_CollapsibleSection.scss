@@ -10,8 +10,7 @@
       white-space: nowrap;
     }
 
-    .icon-arrowhead-down,
-    .icon-arrowhead-forward {
+    .collapsible-arrow {
       margin-inline-start: 8px;
       margin-top: -1px;
     }
@@ -130,8 +129,7 @@
 
   &.animation-enabled {
     .section-title {
-      .icon-arrowhead-down,
-      .icon-arrowhead-forward {
+      .collapsible-arrow {
         transition: transform 0.5s $photon-easing;
       }
     }
