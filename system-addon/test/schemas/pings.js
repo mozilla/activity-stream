@@ -77,7 +77,13 @@ export const UserEventAction = Joi.object().keys({
       "BOOKMARK_ADD",
       "PIN",
       "UNPIN",
-      "SAVE_TO_POCKET"
+      "SAVE_TO_POCKET",
+      "SECTION_MENU_REMOVE",
+      "SECTION_MENU_COLLAPSE",
+      "SECTION_MENU_EXPAND",
+      "SECTION_MENU_MANAGE",
+      "SECTION_MENU_ADD_TOPSITE",
+      "SECTION_MENU_PRIVACY_NOTICE"
     ]).required(),
     source: Joi.valid(["TOP_SITES", "TOP_STORIES", "HIGHLIGHTS"]),
     action_position: Joi.number().integer()

@@ -3,6 +3,7 @@ import {Section, SectionIntl, _Sections as Sections} from "content-src/component
 import {actionTypes as at} from "common/Actions.jsm";
 import {PlaceholderCard} from "content-src/components/Card/Card";
 import React from "react";
+import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
 import {shallow} from "enzyme";
 
 describe("<Sections>", () => {
@@ -40,7 +41,6 @@ describe("<Section>", () => {
       id: `foo_bar_1`,
       title: `Foo Bar 1`,
       rows: [{link: "http://localhost", index: 0}],
-      infoOption: {},
       emptyState: {
         icon: "check",
         message: "Some message"
@@ -49,6 +49,23 @@ describe("<Section>", () => {
     FAKE_PREFS = {values: {"section.foo_bar_1.collapsed": false}};
 
     wrapper = shallowWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+  });
+
+  describe("context menu", () => {
+    it("should render a context menu button", () => {
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      assert.equal(wrapper.find(".section-top-bar .context-menu-button").length, 1);
+    });
+    it("should render a section menu when button is clicked", () => {
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      const button = wrapper.find(".section-top-bar .context-menu-button");
+      button.simulate("click", {preventDefault: () => {}});
+      assert.isTrue(wrapper.find(SectionMenu).props().visible);
+    });
+    it("should not render a section menu by default", () => {
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      assert.isFalse(wrapper.find(SectionMenu).props().visible);
+    });
   });
 
   describe("placeholders", () => {
@@ -152,7 +169,6 @@ describe("<Section>", () => {
       title: "Foo Bar 1",
       maxRows: 1,
       rows: [{guid: 1}, {guid: 2}],
-      infoOption: {id: "foo"},
       shouldSendImpressionStats: true,
 
       document: {
@@ -242,10 +258,10 @@ describe("<Section>", () => {
       wrapper = renderSection(props);
       props.dispatch.reset();
 
-      // Only update the infoOption prop
+      // Only update the disclaimer prop
       wrapper.setProps(Object.assign({},
         FAKE_TOPSTORIES_SECTION_PROPS,
-        {infoOption: {id: "bar"}}
+        {disclaimer: {id: "bar"}}
       ));
 
       assert.notCalled(props.dispatch);

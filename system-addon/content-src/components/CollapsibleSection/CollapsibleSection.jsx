@@ -1,7 +1,8 @@
-import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {FormattedMessage, injectIntl} from "react-intl";
+import {actionCreators as ac} from "common/Actions.jsm";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
+import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -12,90 +13,6 @@ function getFormattedMessage(message) {
 function getCollapsed(props) {
   return (props.prefName in props.Prefs.values) ? props.Prefs.values[props.prefName] : false;
 }
-
-export class Info extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.onInfoEnter = this.onInfoEnter.bind(this);
-    this.onInfoLeave = this.onInfoLeave.bind(this);
-    this.onManageClick = this.onManageClick.bind(this);
-    this.state = {infoActive: false};
-  }
-
-  /**
-   * Take a truthy value to conditionally change the infoActive state.
-   */
-  _setInfoState(nextActive) {
-    const infoActive = !!nextActive;
-    if (infoActive !== this.state.infoActive) {
-      this.setState({infoActive});
-    }
-  }
-
-  onInfoEnter() {
-    // We're getting focus or hover, so info state should be true if not yet.
-    this._setInfoState(true);
-  }
-
-  onInfoLeave(event) {
-    // We currently have an active (true) info state, so keep it true only if we
-    // have a related event target that is contained "within" the current target
-    // (section-info-option) as itself or a descendant. Set to false otherwise.
-    this._setInfoState(event && event.relatedTarget && (
-      event.relatedTarget === event.currentTarget ||
-      (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
-        Node.DOCUMENT_POSITION_CONTAINS)));
-  }
-
-  onManageClick() {
-    this.props.dispatch({type: at.SETTINGS_OPEN});
-    this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
-  }
-
-  render() {
-    const {infoOption, intl} = this.props;
-    const infoOptionIconA11yAttrs = {
-      "aria-haspopup": "true",
-      "aria-controls": "info-option",
-      "aria-expanded": this.state.infoActive ? "true" : "false",
-      "role": "note",
-      "tabIndex": 0
-    };
-    const sectionInfoTitle = intl.formatMessage({id: "section_info_option"});
-
-    return (
-      <span className="section-info-option"
-        onBlur={this.onInfoLeave}
-        onFocus={this.onInfoEnter}
-        onMouseOut={this.onInfoLeave}
-        onMouseOver={this.onInfoEnter}>
-        <img className="info-option-icon" title={sectionInfoTitle}
-          {...infoOptionIconA11yAttrs} />
-        <div className="info-option">
-          {infoOption.header &&
-            <div className="info-option-header" role="heading">
-              {getFormattedMessage(infoOption.header)}
-            </div>}
-          <p className="info-option-body">
-            {infoOption.body && getFormattedMessage(infoOption.body)}
-            {infoOption.link &&
-              <a href={infoOption.link.href} target="_blank" rel="noopener noreferrer" className="info-option-link">
-                {getFormattedMessage(infoOption.link.title || infoOption.link)}
-              </a>
-            }
-          </p>
-          <div className="info-option-manage">
-            <button onClick={this.onManageClick}>
-              <FormattedMessage id="settings_pane_header" />
-            </button>
-          </div>
-        </div>
-      </span>
-    );
-  }
-}
-
-export const InfoIntl = injectIntl(Info);
 
 export class Disclaimer extends React.PureComponent {
   constructor(props) {
@@ -135,12 +52,14 @@ export class _CollapsibleSection extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onBodyMount = this.onBodyMount.bind(this);
-    this.onInfoEnter = this.onInfoEnter.bind(this);
-    this.onInfoLeave = this.onInfoLeave.bind(this);
     this.onHeaderClick = this.onHeaderClick.bind(this);
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
     this.enableOrDisableAnimation = this.enableOrDisableAnimation.bind(this);
-    this.state = {enableAnimation: true, isAnimating: false, infoActive: false};
+    this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
+    this.onMenuButtonMouseEnter = this.onMenuButtonMouseEnter.bind(this);
+    this.onMenuButtonMouseLeave = this.onMenuButtonMouseLeave.bind(this);
+    this.onMenuUpdate = this.onMenuUpdate.bind(this);
+    this.state = {enableAnimation: true, isAnimating: false, menuButtonHover: false, showContextMenu: false};
   }
 
   componentWillMount() {
@@ -170,31 +89,8 @@ export class _CollapsibleSection extends React.PureComponent {
     }
   }
 
-  _setInfoState(nextActive) {
-    // Take a truthy value to conditionally change the infoActive state.
-    const infoActive = !!nextActive;
-    if (infoActive !== this.state.infoActive) {
-      this.setState({infoActive});
-    }
-  }
-
   onBodyMount(node) {
     this.sectionBody = node;
-  }
-
-  onInfoEnter() {
-    // We're getting focus or hover, so info state should be true if not yet.
-    this._setInfoState(true);
-  }
-
-  onInfoLeave(event) {
-    // We currently have an active (true) info state, so keep it true only if we
-    // have a related event target that is contained "within" the current target
-    // (section-info-option) as itself or a descendant. Set to false otherwise.
-    this._setInfoState(event && event.relatedTarget && (
-      event.relatedTarget === event.currentTarget ||
-      (event.relatedTarget.compareDocumentPosition(event.currentTarget) &
-        Node.DOCUMENT_POSITION_CONTAINS)));
   }
 
   onHeaderClick() {
@@ -228,25 +124,63 @@ export class _CollapsibleSection extends React.PureComponent {
     return <span className={`icon icon-small-spacer icon-${icon || "webextension"}`} />;
   }
 
+  onMenuButtonClick(event) {
+    event.preventDefault();
+    this.setState({showContextMenu: true});
+  }
+
+  onMenuButtonMouseEnter() {
+    this.setState({menuButtonHover: true});
+  }
+
+  onMenuButtonMouseLeave() {
+    this.setState({menuButtonHover: false});
+  }
+
+  onMenuUpdate(showContextMenu) {
+    this.setState({showContextMenu});
+  }
+
   render() {
     const isCollapsible = this.props.prefName in this.props.Prefs.values;
     const isCollapsed = getCollapsed(this.props);
-    const {enableAnimation, isAnimating, maxHeight} = this.state;
-    const {id, infoOption, eventSource, disclaimer} = this.props;
+    const {enableAnimation, isAnimating, maxHeight, menuButtonHover, showContextMenu} = this.state;
+    const {id, eventSource, disclaimer, title, extraMenuOptions, prefName, showPrefName, privacyNoticeURL, dispatch} = this.props;
     const disclaimerPref = `section.${id}.showDisclaimer`;
     const needsDisclaimer = disclaimer && this.props.Prefs.values[disclaimerPref];
+    const active = menuButtonHover || showContextMenu;
 
     return (
-      <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${isCollapsed ? " collapsed" : ""}`}>
+      <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${isCollapsed ? " collapsed" : ""}${active ? " active" : ""}`}>
         <div className="section-top-bar">
           <h3 className="section-title">
             <span className="click-target" onClick={isCollapsible && this.onHeaderClick}>
               {this.renderIcon()}
-              {this.props.title}
+              {title}
             {isCollapsible && <span className={`collapsible-arrow icon ${isCollapsed ? "icon-arrowhead-forward" : "icon-arrowhead-down"}`} />}
             </span>
           </h3>
-          {infoOption && <InfoIntl infoOption={infoOption} dispatch={this.props.dispatch} />}
+          <div>
+            <button
+              className="context-menu-button icon"
+              onClick={this.onMenuButtonClick}
+              onMouseEnter={this.onMenuButtonMouseEnter}
+              onMouseLeave={this.onMenuButtonMouseLeave}>
+              <span className="sr-only">
+                <FormattedMessage id="section_context_menu_button_sr" />
+              </span>
+            </button>
+            <SectionMenu
+              extraOptions={extraMenuOptions}
+              eventSource={eventSource}
+              showPrefName={showPrefName}
+              collapsePrefName={prefName}
+              privacyNoticeURL={privacyNoticeURL}
+              isCollapsed={isCollapsed}
+              onUpdate={this.onMenuUpdate}
+              visible={showContextMenu}
+              dispatch={dispatch} />
+          </div>
         </div>
         <ErrorBoundary className="section-body-fallback">
           <div
