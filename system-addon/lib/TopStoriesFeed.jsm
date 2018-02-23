@@ -311,7 +311,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         // Create a new array with a spoc inserted at index 2
         const position = SectionsManager.sections.get(SECTION_ID).order;
         let rows = this.store.getState().Sections[position].rows.slice(0, this.stories.length);
-        rows.splice(2, 0, spocs[0]);
+        rows.splice(2, 0, Object.assign(spocs[0], {pinned: true}));
 
         // Send a content update to the target tab
         const action = {type: at.SECTION_UPDATE, data: Object.assign({rows}, {id: SECTION_ID})};
