@@ -302,7 +302,7 @@ $half-base-gutter: $base-gutter / 2;
   .form-input-container {
     max-width: $form-width + 3 * $form-spacing + $rich-icon-size;
     margin: 0 auto;
-    padding: $form-spacing $form-spacing 40px;
+    padding: $form-spacing;
 
     .top-site-outer {
       padding: 0;
@@ -358,12 +358,12 @@ $half-base-gutter: $base-gutter / 2;
     .enable-custom-image-input {
       display: inline-block;
       font-size: 13px;
-      margin-top: 12px;
+      margin-top: 4px;
       text-decoration: underline;
     }
 
     .custom-image-input-container {
-      margin-top: 12px;
+      margin-top: 4px;
 
       .loading-container {
         width: 16px;
@@ -405,6 +405,7 @@ $half-base-gutter: $base-gutter / 2;
         padding: 0 8px;
         height: 32px;
         width: 100%;
+        font-size: 15px;
 
         &:focus {
           border: $input-border-active;
