@@ -1134,5 +1134,11 @@ describe("#TopSiteFormInput", () => {
     it("should render the error message", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_url_validation").length, 1);
     });
+
+    it("should reset the error state on value change", () => {
+      wrapper.find("input").simulate("change", {target: {value: "bar"}});
+
+      assert.isFalse(wrapper.state().validationError);
+    });
   });
 });
