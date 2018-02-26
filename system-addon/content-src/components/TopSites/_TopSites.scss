@@ -153,7 +153,7 @@ $half-base-gutter: $base-gutter / 2;
   }
 
   .rich-icon {
-    background-size: $rich-icon-size;
+    background-size: cover;
     height: 100%;
     offset-inline-start: 0;
     top: 0;
