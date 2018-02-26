@@ -89,8 +89,11 @@ export const UserEventAction = Joi.object().keys({
     ]).required(),
     source: Joi.valid(["TOP_SITES", "TOP_STORIES", "HIGHLIGHTS"]),
     action_position: Joi.number().integer(),
-    icon_type: Joi.valid(["tippytop", "rich_icon", "screenshot_with_icon", "screenshot", "no_image"]),
-    is_pinned: Joi.bool()
+    value: Joi.object().keys({
+      icon_type: Joi.valid(["tippytop", "rich_icon", "screenshot_with_icon", "screenshot", "no_image"]),
+      is_pinned: Joi.bool(),
+      card_type: Joi.valid(["bookmark", "history", "trending"])
+    })
   }).required(),
   meta: Joi.object().keys({
     to: Joi.valid(MAIN_MESSAGE_TYPE).required(),
