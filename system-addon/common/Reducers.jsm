@@ -207,6 +207,18 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
           // If the action is updating rows, we should consider initialized to be true.
           // This can be overridden if initialized is defined in the action.data
           const initialized = action.data.rows ? {initialized: true} : {};
+
+          if (action.data.rows && section.rows.find(card => card.pinned)) {
+            // Make sure that pinned cards stay at their current position
+            const rows = Array.from(action.data.rows);
+            section.rows.forEach((card, index) => {
+              if (card.pinned) {
+                rows.splice(index, 0, card);
+              }
+            });
+            return Object.assign({}, section, initialized, Object.assign({}, action.data, {rows}));
+          }
+
           return Object.assign({}, section, initialized, action.data);
         }
         return section;
