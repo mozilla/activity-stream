@@ -347,4 +347,4 @@ this.ActivityStream = class ActivityStream {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["ActivityStream", "PREFS_CONFIG"];
+const EXPORTED_SYMBOLS = ["ActivityStream", "PREFS_CONFIG"];

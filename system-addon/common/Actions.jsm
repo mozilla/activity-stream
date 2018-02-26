@@ -338,7 +338,7 @@ this.actionUtils = {
   _RouteMessage
 };
 
-this.EXPORTED_SYMBOLS = [
+const EXPORTED_SYMBOLS = [
   "actionTypes",
   "actionCreators",
   "actionUtils",

@@ -93,4 +93,4 @@ this.PrefsFeed = class PrefsFeed {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["PrefsFeed"];
+const EXPORTED_SYMBOLS = ["PrefsFeed"];

@@ -158,4 +158,4 @@ this.FaviconFeed = class FaviconFeed {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["FaviconFeed"];
+const EXPORTED_SYMBOLS = ["FaviconFeed"];

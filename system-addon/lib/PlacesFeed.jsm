@@ -326,4 +326,4 @@ this.PlacesFeed = PlacesFeed;
 PlacesFeed.HistoryObserver = HistoryObserver;
 PlacesFeed.BookmarksObserver = BookmarksObserver;
 
-this.EXPORTED_SYMBOLS = ["PlacesFeed"];
+const EXPORTED_SYMBOLS = ["PlacesFeed"];

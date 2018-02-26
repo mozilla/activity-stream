@@ -103,4 +103,4 @@ this.DefaultPrefs = class DefaultPrefs {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["DefaultPrefs", "Prefs"];
+const EXPORTED_SYMBOLS = ["DefaultPrefs", "Prefs"];

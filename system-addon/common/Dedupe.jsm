@@ -31,4 +31,4 @@ this.Dedupe = class Dedupe {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["Dedupe"];
+const EXPORTED_SYMBOLS = ["Dedupe"];

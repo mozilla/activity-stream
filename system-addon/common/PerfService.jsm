@@ -26,7 +26,7 @@ if (typeof Services !== "undefined") {
   };
 }
 
-this._PerfService = function _PerfService(options) {
+function _PerfService(options) {
   // For testing, so that we can use a fake Window.performance object with
   // known state.
   if (options && options.performanceObj) {
@@ -34,7 +34,7 @@ this._PerfService = function _PerfService(options) {
   } else {
     this._perf = usablePerfObj;
   }
-};
+}
 
 _PerfService.prototype = {
   /**
@@ -122,4 +122,4 @@ _PerfService.prototype = {
 };
 
 this.perfService = new _PerfService();
-this.EXPORTED_SYMBOLS = ["_PerfService", "perfService"];
+const EXPORTED_SYMBOLS = ["_PerfService", "perfService"];

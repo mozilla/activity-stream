@@ -96,4 +96,4 @@ this.ManualMigration = class ManualMigration {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["ManualMigration"];
+const EXPORTED_SYMBOLS = ["ManualMigration"];

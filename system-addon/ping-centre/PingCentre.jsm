@@ -195,4 +195,4 @@ this.PingCentreConstants = {
   TELEMETRY_PREF,
   LOGGING_PREF
 };
-this.EXPORTED_SYMBOLS = ["PingCentre", "PingCentreConstants"];
+const EXPORTED_SYMBOLS = ["PingCentre", "PingCentreConstants"];

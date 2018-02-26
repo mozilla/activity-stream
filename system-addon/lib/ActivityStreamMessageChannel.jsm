@@ -256,4 +256,4 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
 };
 
 this.DEFAULT_OPTIONS = DEFAULT_OPTIONS;
-this.EXPORTED_SYMBOLS = ["ActivityStreamMessageChannel", "DEFAULT_OPTIONS"];
+const EXPORTED_SYMBOLS = ["ActivityStreamMessageChannel", "DEFAULT_OPTIONS"];

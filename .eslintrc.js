@@ -19,6 +19,19 @@ module.exports = {
     "eslint:recommended",
     "plugin:mozilla/recommended" // require("eslint-plugin-mozilla")
   ],
+  "overrides": [{
+    // Use a configuration that's more appropriate for JSMs
+    "files": "**/*.jsm",
+    "parserOptions": {
+      "sourceType": "script"
+    },
+    "env": {
+      "node": false
+    },
+    "rules": {
+      "no-implicit-globals": 0
+    }
+  }],
   "rules": {
     "promise/catch-or-return": 2,
     "promise/param-names": 2,

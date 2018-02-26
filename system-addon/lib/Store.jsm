@@ -157,4 +157,4 @@ this.Store = class Store {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["Store"];
+const EXPORTED_SYMBOLS = ["Store"];
