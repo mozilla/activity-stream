@@ -208,8 +208,9 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
           // This can be overridden if initialized is defined in the action.data
           const initialized = action.data.rows ? {initialized: true} : {};
 
-          if (action.data.rows && section.rows.find(card => card.pinned)) {
-            // Make sure that pinned cards stay at their current position
+          // Make sure pinned cards stay at their current position when rows are updated.
+          // Disabling a section (SECTION_UPDATE with empty rows) does not retain pinned cards.
+          if (action.data.rows && action.data.rows.length > 0 && section.rows.find(card => card.pinned)) {
             const rows = Array.from(action.data.rows);
             section.rows.forEach((card, index) => {
               if (card.pinned) {

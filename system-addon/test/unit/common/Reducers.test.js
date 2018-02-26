@@ -302,9 +302,15 @@ describe("Reducers", () => {
       updatedSection = newState.find(section => section.id === "foo_bar_2");
       assert.deepEqual(updatedSection.rows, [PINNED_ROW]);
 
+      // Updating the section should retain pinned card at its index
       newState = Sections(newState, {type: at.SECTION_UPDATE, data: Object.assign({rows: [ROW]}, {id: "foo_bar_2"})});
       updatedSection = newState.find(section => section.id === "foo_bar_2");
       assert.deepEqual(updatedSection.rows, [PINNED_ROW, ROW]);
+
+      // Clearing/Resetting the section should clear pinned cards
+      newState = Sections(newState, {type: at.SECTION_UPDATE, data: Object.assign({rows: []}, {id: "foo_bar_2"})});
+      updatedSection = newState.find(section => section.id === "foo_bar_2");
+      assert.deepEqual(updatedSection.rows, []);
     });
     it("should have no effect on SECTION_UPDATE_CARD if the id or url doesn't exist", () => {
       const noIdAction = {type: at.SECTION_UPDATE_CARD, data: {id: "non-existent", url: "www.foo.bar", options: {title: "New title"}}};
