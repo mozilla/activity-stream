@@ -72,7 +72,7 @@ export const LinkMenuOptions = {
       action_position: index
     })
   }),
-  DeleteUrl: (site, index, eventSource) => ({
+  DeleteUrl: (site, index, eventSource, value) => ({
     id: "menu_action_delete",
     icon: "delete",
     action: {
@@ -80,7 +80,7 @@ export const LinkMenuOptions = {
       data: {
         onConfirm: [
           ac.AlsoToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, pocket_id: site.pocket_id, forceBlock: site.bookmarkGuid}}),
-          ac.UserEvent({event: "DELETE", source: eventSource, action_position: index})
+          ac.UserEvent({event: "DELETE", source: eventSource, action_position: index, value})
         ],
         eventSource,
         body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],

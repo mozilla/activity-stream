@@ -140,7 +140,7 @@ export class TopSite extends React.PureComponent {
       source: TOP_SITES_SOURCE,
       action_position: this.props.index,
       value: {
-        is_pinned: this.props.link.isPinned,
+        card_type: this.props.link.isPinned ? "pinned" : "not_pinned",
         icon_type: this.props.link.iconType
       }
     }));

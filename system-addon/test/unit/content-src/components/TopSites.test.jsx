@@ -534,7 +534,7 @@ describe("<TopSite>", () => {
       assert.propertyVal(action.data, "event", "CLICK");
       assert.propertyVal(action.data, "source", "TOP_SITES");
       assert.propertyVal(action.data, "action_position", 3);
-      assert.propertyVal(action.data.value, "is_pinned", false);
+      assert.propertyVal(action.data.value, "card_type", "not_pinned");
       assert.propertyVal(action.data.value, "icon_type", "rich_icon");
     });
   });

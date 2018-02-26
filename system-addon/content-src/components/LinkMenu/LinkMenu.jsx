@@ -22,18 +22,10 @@ export class _LinkMenu extends React.PureComponent {
         option.onClick = () => {
           props.dispatch(action);
           if (userEvent) {
-            const value = {};
-            if (site.iconType) { // It is a topsite
-              value.icon_type = site.iconType;
-              value.is_pinned = site.isPinned;
-            } else { // It is a card
-              value.card_type = site.type;
-            }
             props.dispatch(ac.UserEvent({
               event: userEvent,
               source,
-              action_position: index,
-              value
+              action_position: index
             }));
           }
           if (impression && props.shouldSendImpressionStats) {
