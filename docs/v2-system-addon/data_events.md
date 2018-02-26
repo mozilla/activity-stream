@@ -284,6 +284,15 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 }
 ```
 
+#### Requesting a custom screenshot preview
+
+```js
+{
+  "event": "SCREENSHOT_REQUEST",
+  "source": "TOP_SITES"
+}
+```
+
 ## Session end pings
 
 When a session ends, the browser will send a `"activity_stream_session"` ping to our metrics servers. This ping contains the length of the session, a unique reason for why the session ended, and some additional metadata.
