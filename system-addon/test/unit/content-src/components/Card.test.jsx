@@ -29,7 +29,14 @@ describe("<Card>", () => {
     wrapper = mountWithIntl(<Card {...DEFAULT_PROPS} />);
   });
   it("should render a Card component", () => assert.ok(wrapper.exists()));
-  it("should add the right url", () => assert.propertyVal(wrapper.find("a").props(), "href", DEFAULT_PROPS.link.url));
+  it("should add the right url", () => {
+    assert.propertyVal(wrapper.find("a").props(), "href", DEFAULT_PROPS.link.url);
+
+    // test that pocket cards get a special open_url href
+    const pocketLink = Object.assign({}, DEFAULT_PROPS.link, {open_url: "getpocket.com/foo", type: "pocket"});
+    wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link: pocketLink})} />);
+    assert.propertyVal(wrapper.find("a").props(), "href", pocketLink.open_url);
+  });
   it("should display a title", () => assert.equal(wrapper.find(".card-title").text(), DEFAULT_PROPS.link.title));
   it("should display a description", () => (
     assert.equal(wrapper.find(".card-description").text(), DEFAULT_PROPS.link.description))
