@@ -72,6 +72,7 @@ overrider.set({
       prefHasUserValue() {},
       removeObserver() {},
       getStringPref() {},
+      getIntPref() {},
       getBoolPref() {},
       getBranch() {},
       getDefaultBranch() {

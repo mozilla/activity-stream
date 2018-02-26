@@ -40,6 +40,9 @@ describe("SnippetsFeed", () => {
     sandbox.stub(global.Services.prefs, "prefHasUserValue")
       .withArgs("services.sync.username")
       .returns(true);
+    sandbox.stub(global.Services.prefs, "getIntPref")
+      .withArgs("devtools.selfxss.count")
+      .returns(5);
 
     const feed = new SnippetsFeed();
     feed.store = {dispatch: sandbox.stub()};
@@ -63,6 +66,7 @@ describe("SnippetsFeed", () => {
     assert.property(action.data, "selectedSearchEngine");
     assert.deepEqual(action.data.selectedSearchEngine, searchData);
     assert.propertyVal(action.data, "defaultBrowser", true);
+    assert.propertyVal(action.data, "isDevtoolsUser", true);
   });
   it("should call .init on an INIT action", () => {
     const feed = new SnippetsFeed();
@@ -122,5 +126,21 @@ describe("SnippetsFeed", () => {
     const browser = {loadURI: sinon.spy()};
     await feed.showFirefoxAccounts(browser);
     assert.calledWith(browser.loadURI, signUpUrl);
+  });
+  it("should return true for isDevtoolsUser is devtools.selfxss.count is 5", async () => {
+    sandbox.stub(global.Services.prefs, "getIntPref")
+      .withArgs("devtools.selfxss.count")
+      .returns(5);
+    const feed = new SnippetsFeed();
+    const result = feed.isDevtoolsUser();
+    assert.isTrue(result);
+  });
+  it("should return false for isDevtoolsUser is devtools.selfxss.count is less than 5", async () => {
+    sandbox.stub(global.Services.prefs, "getIntPref")
+      .withArgs("devtools.selfxss.count")
+      .returns(4);
+    const feed = new SnippetsFeed();
+    const result = feed.isDevtoolsUser();
+    assert.isFalse(result);
   });
 });
