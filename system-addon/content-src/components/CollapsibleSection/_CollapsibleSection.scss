@@ -23,7 +23,7 @@
       background: url('chrome://browser/skin/page-action.svg') no-repeat right center;
       border: 0;
       cursor: pointer;
-      fill: $grey-30;
+      fill: $grey-50;
       height: $context-menu-button-size;
       offset-inline-end: 0;
       opacity: 0;
@@ -34,7 +34,7 @@
       width: $context-menu-button-size;
 
       &:-moz-any(:active, :focus, :hover) {
-        fill: $grey-90-80;
+        fill: $grey-90;
       }
     }
 
@@ -57,11 +57,12 @@
   }
 
   &.active {
-    background: $grey-30-20;
+    background: $grey-20-60;
+    border-radius: 4px;
 
     .section-top-bar {
       .context-menu-button {
-        fill: $grey-90-80;
+        fill: $grey-90;
       }
     }
   }
