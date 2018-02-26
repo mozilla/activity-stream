@@ -68,6 +68,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "CLICK",
   "source": "TOP_SITES",
   "action_position": 2,
+  "value": {
+    "card_type": ["pinned" | "not_pinned"],
+    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
+  }
 
   // Basic metadata
   "action": "activity_stream_event",
@@ -87,6 +91,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "DELETE",
   "source": "TOP_SITES",
   "action_position": 2,
+  "value": {
+    "card_type": ["pinned" | "not_pinned"],
+    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
+  }
 
   // Basic metadata
   "action": "activity_stream_event",
@@ -106,6 +114,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "BLOCK",
   "source": "TOP_SITES",
   "action_position": 2,
+  "value": {
+    "card_type": ["pinned" | "not_pinned"],
+    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
+  }
 
   // Basic metadata
   "action": "activity_stream_event",
@@ -123,8 +135,11 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   "event": "BOOKMARK_ADD",
-  "source": "TOP_SITES",
+  "source": "HIGHLIGHTS",
   "action_position": 2,
+  "value": {
+    "card_type": ["history" | "trending"]
+  }
   
   // Basic metadata
   "action": "activity_stream_event",
@@ -142,8 +157,11 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 ```js
 {
   "event": "BOOKMARK_DELETE",
-  "source": "TOP_SITES",
+  "source": "HIGHLIGHTS",
   "action_position": 2,
+  "value": {
+    "card_type": "bookmark"
+  }
 
   // Basic metadata
   "action": "activity_stream_event",
@@ -163,6 +181,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "OPEN_NEW_WINDOW",
   "source": "TOP_SITES",
   "action_position": 2,
+  "value": {
+    "card_type": ["pinned" | "not_pinned"],
+    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
+  }
 
   // Basic metadata
   "action": "activity_stream_event",
@@ -182,6 +204,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "event": "OPEN_PRIVATE_WINDOW",
   "source": "TOP_SITES",
   "action_position": 2,
+  "value": {
+    "card_type": ["pinned" | "not_pinned"],
+    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
+  }
 
   // Basic metadata
   "action": "activity_stream_event",
