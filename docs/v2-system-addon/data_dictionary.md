@@ -147,7 +147,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `action` | [Required] Either `activity_stream_event`, `activity_stream_session`, or `activity_stream_performance`. | :one:
 | `addon_version` | [Required] The version of the Activity Stream addon. | :one:
 | `client_id` | [Required] An identifier for this client. | :one:
-| `card_type` | [Optional] ("bookmark", "history", "trending", "pinned") | :one:
+| `card_type` | [Optional] ("bookmark", "pocket", "trending", "pinned") | :one:
 | `date` | [Auto populated by Onyx] The date in YYYY-MM-DD format. | :three:
 | `experiment_id` | [Optional] The unique identifier for a specific experiment. | :one:
 | `event_id` | [Required] An identifier shared by multiple performance pings that describe ane entire request flow. | :one:

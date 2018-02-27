@@ -91,7 +91,7 @@ export const UserEventAction = Joi.object().keys({
     action_position: Joi.number().integer(),
     value: Joi.object().keys({
       icon_type: Joi.valid(["tippytop", "rich_icon", "screenshot_with_icon", "screenshot", "no_image"]),
-      card_type: Joi.valid(["bookmark", "history", "trending", "pinned", "not_pinned"])
+      card_type: Joi.valid(["bookmark", "trending", "pinned", "pocket"])
     })
   }).required(),
   meta: Joi.object().keys({

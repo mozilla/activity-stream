@@ -69,7 +69,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "source": "TOP_SITES",
   "action_position": 2,
   "value": {
-    "card_type": ["pinned" | "not_pinned"],
+    "card_type": "pinned",
     "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
   }
 
@@ -92,7 +92,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "source": "TOP_SITES",
   "action_position": 2,
   "value": {
-    "card_type": ["pinned" | "not_pinned"],
+    "card_type": "pinned",
     "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
   }
 
@@ -115,7 +115,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "source": "TOP_SITES",
   "action_position": 2,
   "value": {
-    "card_type": ["pinned" | "not_pinned"],
+    "card_type": "pinned",
     "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
   }
 
@@ -182,7 +182,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "source": "TOP_SITES",
   "action_position": 2,
   "value": {
-    "card_type": ["pinned" | "not_pinned"],
+    "card_type": "pinned",
     "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
   }
 
@@ -205,7 +205,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "source": "TOP_SITES",
   "action_position": 2,
   "value": {
-    "card_type": ["pinned" | "not_pinned"],
+    "card_type": "pinned",
     "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
   }
 
