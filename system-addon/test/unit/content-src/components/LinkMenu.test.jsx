@@ -159,6 +159,7 @@ describe("<LinkMenu>", () => {
 
     const {options} = shallowWithIntl(<LinkMenu
       site={FAKE_SITE}
+      siteInfo={{value: {card_type: FAKE_SITE.type}}}
       dispatch={dispatch}
       index={FAKE_INDEX}
       isPrivateBrowsingEnabled={true}
