@@ -36,6 +36,9 @@ describe("<Card>", () => {
   beforeEach(() => {
     wrapper = mountCardWithProps(DEFAULT_PROPS);
   });
+  afterEach(() => {
+    DEFAULT_PROPS.dispatch.reset();
+  });
   it("should render a Card component", () => assert.ok(wrapper.exists()));
   it("should add the right url", () => {
     assert.propertyVal(wrapper.find("a").props(), "href", DEFAULT_PROPS.link.url);
