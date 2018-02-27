@@ -49,6 +49,10 @@ this.SnippetsFeed = class SnippetsFeed {
     return null;
   }
 
+  isDevtoolsUser() {
+    return Services.prefs.getIntPref("devtools.selfxss.count") >= 5;
+  }
+
   async getProfileInfo() {
     const profileAge = new ProfileAge(null, null);
     const createdDate = await profileAge.created;
@@ -94,7 +98,8 @@ this.SnippetsFeed = class SnippetsFeed {
       onboardingFinished: Services.prefs.getBoolPref(ONBOARDING_FINISHED_PREF),
       fxaccount: Services.prefs.prefHasUserValue(FXA_USERNAME_PREF),
       selectedSearchEngine: await this.getSelectedSearchEngine(),
-      defaultBrowser: this.isDefaultBrowser()
+      defaultBrowser: this.isDefaultBrowser(),
+      isDevtoolsUser: this.isDevtoolsUser()
     };
     this._dispatchChanges(data);
   }

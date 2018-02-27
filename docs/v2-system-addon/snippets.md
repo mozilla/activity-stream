@@ -81,6 +81,8 @@ For example:
 If we could not determine the default browser, this value is `null`. Note that
 currently this value is only checked once when the browser is initialized.
 
+`appData.isDevtoolsUser`: (bool) Has the user ever used devtools?
+
 ## Events
 
 ActivityStream dispatches custom DOM events on the window to allow snippets
