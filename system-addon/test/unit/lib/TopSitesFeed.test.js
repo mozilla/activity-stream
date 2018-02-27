@@ -463,14 +463,14 @@ describe("Top Sites Feed", () => {
         type: at.SCREENSHOT_PREVIEW
       }, 1234));
     });
-    it("should dispatch SCREENSHOT_FAILED if request fails", async () => {
+    it("should dispatch PREVIEW_FAILED if request fails", async () => {
       fakeScreenshot.getScreenshotForURL = sandbox.stub().returns(Promise.resolve(null));
       await feed.getScreenshotPreview({customScreenshotURL: "custom"}, 1234);
 
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.OnlyToOneContent({
         data: {screenshotPreview: null},
-        type: at.SCREENSHOT_FAILED
+        type: at.PREVIEW_FAILED
       }, 1234));
     });
   });
@@ -555,10 +555,10 @@ describe("Top Sites Feed", () => {
     });
   });
   describe("#onAction", () => {
-    it("should call getScreenshotPreview on SCREENSHOT_REQUEST", () => {
+    it("should call getScreenshotPreview on PREVIEW_REQUEST", () => {
       sandbox.stub(feed, "getScreenshotPreview");
 
-      feed.onAction({type: at.SCREENSHOT_REQUEST, data: "foo", meta: {fromTarget: 1234}});
+      feed.onAction({type: at.PREVIEW_REQUEST, data: "foo", meta: {fromTarget: 1234}});
 
       assert.calledOnce(feed.getScreenshotPreview);
       assert.calledWithExactly(feed.getScreenshotPreview, "foo", 1234);

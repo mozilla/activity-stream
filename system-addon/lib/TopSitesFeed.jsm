@@ -222,7 +222,7 @@ this.TopSitesFeed = class TopSitesFeed {
     const screenshotPreview = await Screenshots.getScreenshotForURL(customScreenshotURL);
     this.store.dispatch(ac.OnlyToOneContent({
       data: {screenshotPreview},
-      type: screenshotPreview ? at.SCREENSHOT_PREVIEW : at.SCREENSHOT_FAILED
+      type: screenshotPreview ? at.SCREENSHOT_PREVIEW : at.PREVIEW_FAILED
     }, target));
   }
 
@@ -395,7 +395,7 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.TOP_SITES_INSERT:
         this.insert(action);
         break;
-      case at.SCREENSHOT_REQUEST:
+      case at.PREVIEW_REQUEST:
         this.getScreenshotPreview(action.data, action.meta.fromTarget);
         break;
       case at.UNINIT:

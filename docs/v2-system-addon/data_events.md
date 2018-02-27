@@ -288,7 +288,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
 ```js
 {
-  "event": "SCREENSHOT_REQUEST",
+  "event": "PREVIEW_REQUEST",
   "source": "TOP_SITES"
 }
 ```

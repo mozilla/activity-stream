@@ -44,8 +44,8 @@ describe("Reducers", () => {
       const nextState = TopSites(undefined, {type: at.TOP_SITES_CANCEL_EDIT});
       assert.isNull(nextState.editForm);
     });
-    it("should set screenshotRequestFailed to true on SCREENSHOT_FAILED", () => {
-      const action = {type: at.SCREENSHOT_FAILED};
+    it("should set screenshotRequestFailed to true on PREVIEW_FAILED", () => {
+      const action = {type: at.PREVIEW_FAILED};
       const nextState = TopSites({}, action);
       assert.isTrue(nextState.screenshotRequestFailed);
     });

@@ -93,7 +93,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       return Object.assign({}, prevState, {editForm: {index: action.data.index}, screenshotRequestFailed: false, screenshotPreview: null});
     case at.TOP_SITES_CANCEL_EDIT:
       return Object.assign({}, prevState, {editForm: null, screenshotRequestFailed: false});
-    case at.SCREENSHOT_FAILED:
+    case at.PREVIEW_FAILED:
       return Object.assign({}, prevState, {screenshotRequestFailed: true});
     case at.SCREENSHOT_PREVIEW:
       return Object.assign({}, prevState, {screenshotRequestFailed: false, screenshotPreview: action.data.screenshotPreview});

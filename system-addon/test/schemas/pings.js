@@ -76,6 +76,7 @@ export const UserEventAction = Joi.object().keys({
       "BOOKMARK_DELETE",
       "BOOKMARK_ADD",
       "PIN",
+      "PREVIEW_REQUEST",
       "UNPIN",
       "SAVE_TO_POCKET",
       "SECTION_MENU_MOVE_UP",

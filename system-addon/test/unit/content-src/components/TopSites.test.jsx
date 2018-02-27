@@ -648,17 +648,17 @@ describe("<TopSiteForm>", () => {
       assert.notCalled(wrapper.props().dispatch);
     });
 
-    it("should dispatch a SCREENSHOT_REQUEST", () => {
+    it("should dispatch a PREVIEW_REQUEST", () => {
       wrapper.setState({customScreenshotUrl: "screenshot"});
       wrapper.find(".preview").simulate("click");
 
       assert.calledTwice(wrapper.props().dispatch);
       assert.calledWith(wrapper.props().dispatch, ac.AlsoToMain({
-        type: at.SCREENSHOT_REQUEST,
+        type: at.PREVIEW_REQUEST,
         data: {customScreenshotURL: "http://screenshot"}
       }));
       assert.calledWith(wrapper.props().dispatch, ac.UserEvent({
-        event: "SCREENSHOT_REQUEST",
+        event: "PREVIEW_REQUEST",
         source: "TOP_SITES"
       }));
     });
