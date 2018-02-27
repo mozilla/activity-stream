@@ -138,7 +138,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "source": "HIGHLIGHTS",
   "action_position": 2,
   "value": {
-    "card_type": ["history" | "trending"]
+    "card_type": "trending"
   }
   
   // Basic metadata
