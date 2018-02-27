@@ -3,10 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 const {actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 
+ChromeUtils.defineModuleGetter(this, "AddonManager",
+  "resource://gre/modules/AddonManager.jsm");
 ChromeUtils.defineModuleGetter(this, "ShellService",
   "resource:///modules/ShellService.jsm");
 ChromeUtils.defineModuleGetter(this, "ProfileAge",
@@ -83,6 +84,27 @@ this.SnippetsFeed = class SnippetsFeed {
     });
   }
 
+  async getAddonInfo() {
+    const {addons, fullData} = await AddonManager.getActiveAddons(["extension", "service"]);
+    const info = {};
+    for (const addon of addons) {
+      info[addon.id] = {
+        version: addon.version,
+        type: addon.type,
+        isSystem: addon.isSystem,
+        isWebExtension: addon.isWebExtension
+      };
+      if (fullData) {
+        Object.assign(info[addon.id], {
+          name: addon.name,
+          userDisabled: addon.userDisabled,
+          installDate: addon.installDate
+        });
+      }
+    }
+    return info;
+  }
+
   _dispatchChanges(data) {
     this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPETS_DATA, data}));
   }
@@ -99,7 +121,8 @@ this.SnippetsFeed = class SnippetsFeed {
       fxaccount: Services.prefs.prefHasUserValue(FXA_USERNAME_PREF),
       selectedSearchEngine: await this.getSelectedSearchEngine(),
       defaultBrowser: this.isDefaultBrowser(),
-      isDevtoolsUser: this.isDevtoolsUser()
+      isDevtoolsUser: this.isDevtoolsUser(),
+      addonInfo: await this.getAddonInfo()
     };
     this._dispatchChanges(data);
   }

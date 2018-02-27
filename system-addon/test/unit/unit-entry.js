@@ -26,6 +26,11 @@ chai.use(chaiAssertions);
 let overrider = new GlobalOverrider();
 
 overrider.set({
+  AddonManager: {
+    getActiveAddons() {
+      return Promise.resolve({addons: [], fullData: false});
+    }
+  },
   AppConstants: {MOZILLA_OFFICIAL: true},
   ChromeUtils: {
     defineModuleGetter() {},

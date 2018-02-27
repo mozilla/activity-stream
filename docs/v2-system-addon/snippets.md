@@ -83,6 +83,26 @@ currently this value is only checked once when the browser is initialized.
 
 `appData.isDevtoolsUser`: (bool) Has the user ever used devtools?
 
+`appData.addonInfo`: (obj) An object containing info about installed addons.
+For example:
+
+```js
+{
+  // This is the ID of the addon
+  "someaddon@mozilla.org": {
+    type: "extension",
+    isSystem: false,
+    isWebExtension: true,
+    version: "29.0.0"
+
+    // The following properties may not be available when the browser starts up
+    name: "Firefox Screenshots",
+    userDisabled: false,
+    installDate: Date 2018-02-27T19:33:33.440Z,
+  }
+}
+```
+
 ## Events
 
 ActivityStream dispatches custom DOM events on the window to allow snippets

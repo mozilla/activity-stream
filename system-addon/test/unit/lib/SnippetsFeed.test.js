@@ -5,6 +5,26 @@ import {SnippetsFeed} from "lib/SnippetsFeed.jsm";
 const WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 const searchData = {searchEngineIdentifier: "google", engines: ["searchEngine-google", "searchEngine-bing"]};
 const signUpUrl = "https://accounts.firefox.com/signup?service=sync&context=fx_desktop_v3&entrypoint=snippets";
+const FAKE_ADDONS = {
+  foo: {
+    name: "Foo",
+    version: "0.1.0",
+    type: "foo",
+    isSystem: false,
+    isWebExtension: true,
+    userDisabled: false,
+    installDate: 1231921
+  },
+  bar: {
+    name: "Bar",
+    version: "0.2.0",
+    type: "bar",
+    isSystem: false,
+    isWebExtension: false,
+    userDisabled: false,
+    installDate: 1231921
+  }
+};
 
 let overrider = new GlobalOverrider();
 
@@ -43,6 +63,14 @@ describe("SnippetsFeed", () => {
     sandbox.stub(global.Services.prefs, "getIntPref")
       .withArgs("devtools.selfxss.count")
       .returns(5);
+    sandbox.stub(global.AddonManager, "getActiveAddons")
+      .returns(Promise.resolve({
+        addons: [
+          Object.assign({id: "foo"}, FAKE_ADDONS.foo),
+          Object.assign({id: "bar"}, FAKE_ADDONS.bar)
+        ],
+        fullData: true
+      }));
 
     const feed = new SnippetsFeed();
     feed.store = {dispatch: sandbox.stub()};
@@ -67,6 +95,7 @@ describe("SnippetsFeed", () => {
     assert.deepEqual(action.data.selectedSearchEngine, searchData);
     assert.propertyVal(action.data, "defaultBrowser", true);
     assert.propertyVal(action.data, "isDevtoolsUser", true);
+    assert.deepEqual(action.data.addonInfo, FAKE_ADDONS);
   });
   it("should call .init on an INIT action", () => {
     const feed = new SnippetsFeed();
