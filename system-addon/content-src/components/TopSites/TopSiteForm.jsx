@@ -36,7 +36,6 @@ export class TopSiteForm extends React.PureComponent {
         nextProps.screenshotRequestFailed) {
       this.setState({
         pendingScreenshotUpdate: false,
-        validationError: nextProps.screenshotRequestFailed,
         screenshotRequestFailed: nextProps.screenshotRequestFailed,
         screenshotPreview: nextProps.screenshotPreview
       });
@@ -201,15 +200,13 @@ export class TopSiteForm extends React.PureComponent {
 
   render() {
     const {customScreenshotUrl} = this.state;
-    const {site} = this.props;
     // For UI purposes, editing without an existing link is "add"
-    const showAsAdd = !site;
-    const changedCustomScreenshotUrl = site && customScreenshotUrl &&
-      (site.customScreenshotURL !== this.cleanUrl(customScreenshotUrl));
+    const showAsAdd = !this.props.site;
+    const changedCustomScreenshotUrl = customScreenshotUrl &&
+      (showAsAdd || (this.props.site.customScreenshotURL !== this.cleanUrl(customScreenshotUrl)));
     // Preview mode enables the preview button and prevents saving or adding a topsite.
-    const previewMode = (customScreenshotUrl && !this.state.screenshotPreview) &&
-                        (showAsAdd || changedCustomScreenshotUrl);
-
+    const previewMode = (changedCustomScreenshotUrl && !this.state.screenshotPreview) ||
+      this.state.screenshotRequestFailed;
     return (
       <form className="topsite-form">
         <div className="form-input-container">
