@@ -68,6 +68,18 @@ export class Card extends React.PureComponent {
     });
   }
 
+  /**
+   * Report to telemetry additional information about the item clicked.
+   * Filter out "history" type for being the default.
+   */
+  _getTelemetryInfo() {
+    if (this.props.link.type !== "history") {
+      return {value: {card_type: this.props.link.type}};
+    }
+
+    return null;
+  }
+
   onLinkClick(event) {
     event.preventDefault();
     const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
@@ -83,11 +95,11 @@ export class Card extends React.PureComponent {
         action_position: this.props.index
       }));
     } else {
-      this.props.dispatch(ac.UserEvent({
+      this.props.dispatch(ac.UserEvent(Object.assign({
         event: "CLICK",
         source: this.props.eventSource,
         action_position: this.props.index
-      }));
+      }, this._getTelemetryInfo())));
 
       if (this.props.shouldSendImpressionStats) {
         this.props.dispatch(ac.ImpressionStats({
@@ -166,6 +178,7 @@ export class Card extends React.PureComponent {
           onUpdate={this.onMenuUpdate}
           options={link.contextMenuOptions || contextMenuOptions}
           site={link}
+          siteInfo={this._getTelemetryInfo()}
           shouldSendImpressionStats={shouldSendImpressionStats} />
       }
    </li>);

@@ -72,7 +72,7 @@ export const LinkMenuOptions = {
       action_position: index
     })
   }),
-  DeleteUrl: (site, index, eventSource, value) => ({
+  DeleteUrl: (site, index, eventSource, siteInfo) => ({
     id: "menu_action_delete",
     icon: "delete",
     action: {
@@ -80,7 +80,11 @@ export const LinkMenuOptions = {
       data: {
         onConfirm: [
           ac.AlsoToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, pocket_id: site.pocket_id, forceBlock: site.bookmarkGuid}}),
-          ac.UserEvent({event: "DELETE", source: eventSource, action_position: index, value})
+          ac.UserEvent(Object.assign({
+            event: "DELETE",
+            source: eventSource,
+            action_position: index
+          }, siteInfo))
         ],
         eventSource,
         body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],
@@ -153,6 +157,6 @@ export const LinkMenuOptions = {
   CheckPinTopSite: (site, index) => (site.isPinned ? LinkMenuOptions.UnpinTopSite(site) : LinkMenuOptions.PinTopSite(site, index)),
   CheckSavedToPocket: (site, index) => (site.pocket_id ? LinkMenuOptions.DeleteFromPocket(site) : LinkMenuOptions.SaveToPocket(site, index)),
   CheckBookmarkOrArchive: site => (site.pocket_id ? LinkMenuOptions.ArchiveFromPocket(site) : LinkMenuOptions.CheckBookmark(site)),
-  CheckDeleteHistoryOrEmpty: (site, index, eventSource) => (site.pocket_id ? LinkMenuOptions.EmptyItem() : LinkMenuOptions.DeleteUrl(site, index, eventSource)),
+  CheckDeleteHistoryOrEmpty: (site, index, eventSource, isEnabled, siteInfo) => (site.pocket_id ? LinkMenuOptions.EmptyItem() : LinkMenuOptions.DeleteUrl(site, index, eventSource, siteInfo)),
   OpenInPrivateWindow: (site, index, eventSource, isEnabled) => (isEnabled ? _OpenInPrivateWindow(site) : LinkMenuOptions.EmptyItem())
 };

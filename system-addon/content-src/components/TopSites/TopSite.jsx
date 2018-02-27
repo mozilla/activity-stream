@@ -134,16 +134,24 @@ export class TopSite extends React.PureComponent {
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
   }
 
+  /**
+   * Report to telemetry additional information about the item clicked.
+   * Filter out "not_pinned" type for being the default.
+   */
+  _getTelemetryInfo() {
+    const value = {icon_type: this.props.link.iconType};
+    if (this.props.link.isPinned) {
+      value.card_type = "pinned";
+    }
+    return {value};
+  }
+
   userEvent(event) {
-    this.props.dispatch(ac.UserEvent({
+    this.props.dispatch(ac.UserEvent(Object.assign({
       event,
       source: TOP_SITES_SOURCE,
-      action_position: this.props.index,
-      value: {
-        card_type: this.props.link.isPinned ? "pinned" : "not_pinned",
-        icon_type: this.props.link.iconType
-      }
-    }));
+      action_position: this.props.index
+    }, this._getTelemetryInfo())));
   }
 
   onLinkClick(ev) {
@@ -179,6 +187,7 @@ export class TopSite extends React.PureComponent {
               onUpdate={this.onMenuUpdate}
               options={TOP_SITES_CONTEXT_MENU_OPTIONS}
               site={link}
+              siteInfo={this._getTelemetryInfo()}
               source={TOP_SITES_SOURCE} />
           }
         </div>

@@ -10,23 +10,24 @@ const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "EditTopSite", "Separator"
 export class _LinkMenu extends React.PureComponent {
   getOptions() {
     const {props} = this;
-    const {site, index, source, isPrivateBrowsingEnabled} = props;
+    const {site, index, source, isPrivateBrowsingEnabled, siteInfo} = props;
 
     // Handle special case of default site
     const propOptions = !site.isDefault ? props.options : DEFAULT_SITE_MENU_OPTIONS;
 
-    const options = propOptions.map(o => LinkMenuOptions[o](site, index, source, isPrivateBrowsingEnabled)).map(option => {
+    const options = propOptions.map(o => LinkMenuOptions[o](site, index, source, isPrivateBrowsingEnabled, siteInfo)).map(option => {
       const {action, impression, id, string_id, type, userEvent} = option;
       if (!type && id) {
         option.label = props.intl.formatMessage({id: string_id || id});
         option.onClick = () => {
           props.dispatch(action);
           if (userEvent) {
-            props.dispatch(ac.UserEvent({
+            const userEventData = Object.assign({
               event: userEvent,
               source,
               action_position: index
-            }));
+            }, siteInfo);
+            props.dispatch(ac.UserEvent(userEventData));
           }
           if (impression && props.shouldSendImpressionStats) {
             props.dispatch(impression);
