@@ -170,16 +170,17 @@ export class _CollapsibleSection extends React.PureComponent {
                 <FormattedMessage id="section_context_menu_button_sr" />
               </span>
             </button>
-            <SectionMenu
-              extraOptions={extraMenuOptions}
-              eventSource={eventSource}
-              showPrefName={showPrefName}
-              collapsePrefName={prefName}
-              privacyNoticeURL={privacyNoticeURL}
-              isCollapsed={isCollapsed}
-              onUpdate={this.onMenuUpdate}
-              visible={showContextMenu}
-              dispatch={dispatch} />
+            {showContextMenu &&
+              <SectionMenu
+                extraOptions={extraMenuOptions}
+                eventSource={eventSource}
+                showPrefName={showPrefName}
+                collapsePrefName={prefName}
+                privacyNoticeURL={privacyNoticeURL}
+                isCollapsed={isCollapsed}
+                onUpdate={this.onMenuUpdate}
+                dispatch={dispatch} />
+            }
           </div>
         </div>
         <ErrorBoundary className="section-body-fallback">

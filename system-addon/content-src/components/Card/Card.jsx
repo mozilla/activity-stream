@@ -158,15 +158,16 @@ export class Card extends React.PureComponent {
         onClick={this.onMenuButtonClick}>
         <span className="sr-only">{`Open context menu for ${link.title}`}</span>
       </button>}
-      {!props.placeholder && <LinkMenu
-        dispatch={dispatch}
-        index={index}
-        source={eventSource}
-        onUpdate={this.onMenuUpdate}
-        options={link.contextMenuOptions || contextMenuOptions}
-        site={link}
-        visible={isContextMenuOpen}
-        shouldSendImpressionStats={shouldSendImpressionStats} />}
+      {isContextMenuOpen &&
+        <LinkMenu
+          dispatch={dispatch}
+          index={index}
+          source={eventSource}
+          onUpdate={this.onMenuUpdate}
+          options={link.contextMenuOptions || contextMenuOptions}
+          site={link}
+          shouldSendImpressionStats={shouldSendImpressionStats} />
+      }
    </li>);
   }
 }

@@ -10,27 +10,18 @@ export class ContextMenu extends React.PureComponent {
     this.props.onUpdate(false);
   }
 
-  componentWillMount() {
-    this.hideContext();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.visible && !prevProps.visible) {
-      setTimeout(() => {
-        window.addEventListener("click", this.hideContext);
-      }, 0);
-    }
-    if (!this.props.visible && prevProps.visible) {
-      window.removeEventListener("click", this.hideContext);
-    }
+  componentDidMount() {
+    setTimeout(() => {
+      global.addEventListener("click", this.hideContext);
+    }, 0);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("click", this.hideContext);
+    global.removeEventListener("click", this.hideContext);
   }
 
   render() {
-    return (<span hidden={!this.props.visible} className="context-menu">
+    return (<span className="context-menu">
       <ul role="menu" className="context-menu-list">
         {this.props.options.map((option, i) => (option.type === "separator" ?
           (<li key={i} className="separator" />) :

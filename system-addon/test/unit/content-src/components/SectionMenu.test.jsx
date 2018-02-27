@@ -27,10 +27,10 @@ describe("<SectionMenu>", () => {
   it("should render a ContextMenu element", () => {
     assert.ok(wrapper.find(ContextMenu));
   });
-  it("should pass visible, onUpdate, and options to ContextMenu", () => {
+  it("should pass onUpdate, and options to ContextMenu", () => {
     assert.ok(wrapper.find(ContextMenu));
     const contextMenuProps = wrapper.find(ContextMenu).props();
-    ["visible", "onUpdate", "options"].forEach(prop => assert.property(contextMenuProps, prop));
+    ["onUpdate", "options"].forEach(prop => assert.property(contextMenuProps, prop));
   });
   it("should give ContextMenu the correct tabbable options length for a11y", () => {
     const {options} = wrapper.find(ContextMenu).props();

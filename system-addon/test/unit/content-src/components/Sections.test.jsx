@@ -59,12 +59,13 @@ describe("<Section>", () => {
     it("should render a section menu when button is clicked", () => {
       wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
       const button = wrapper.find(".section-top-bar .context-menu-button");
+      assert.equal(wrapper.find(SectionMenu).length, 0);
       button.simulate("click", {preventDefault: () => {}});
-      assert.isTrue(wrapper.find(SectionMenu).props().visible);
+      assert.equal(wrapper.find(SectionMenu).length, 1);
     });
     it("should not render a section menu by default", () => {
       wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
-      assert.isFalse(wrapper.find(SectionMenu).props().visible);
+      assert.equal(wrapper.find(SectionMenu).length, 0);
     });
   });
 

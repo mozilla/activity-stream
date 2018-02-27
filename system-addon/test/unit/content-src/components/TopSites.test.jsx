@@ -48,15 +48,17 @@ describe("<TopSites>", () => {
     it("should render a section menu when button is clicked", () => {
       const wrapper = mountWithIntl(<TopSites {...DEFAULT_PROPS} />);
       const button = wrapper.find(".section-top-bar .context-menu-button");
+      assert.equal(wrapper.find(SectionMenu).length, 0);
       button.simulate("click", {preventDefault: () => {}});
-      assert.isTrue(wrapper.find(SectionMenu).props().visible);
+      assert.equal(wrapper.find(SectionMenu).length, 1);
     });
     it("should not render a section menu by default", () => {
       const wrapper = mountWithIntl(<TopSites {...DEFAULT_PROPS} />);
-      assert.isFalse(wrapper.find(SectionMenu).props().visible);
+      assert.equal(wrapper.find(SectionMenu).length, 0);
     });
     it("should pass through the correct menu extraOptions to SectionMenu", () => {
       const wrapper = mountWithIntl(<TopSites {...DEFAULT_PROPS} />);
+      wrapper.find(".section-top-bar .context-menu-button").simulate("click", {preventDefault: () => {}});
       const sectionMenuProps = wrapper.find(SectionMenu).props();
       assert.deepEqual(sectionMenuProps.extraOptions, ["AddTopSite"]);
     });
@@ -488,20 +490,23 @@ describe("<TopSite>", () => {
   it("should render a link menu when button is clicked", () => {
     const wrapper = shallow(<TopSite link={link} />);
     let button = wrapper.find(".context-menu-button");
+    assert.equal(wrapper.find(LinkMenu).length, 0);
     button.simulate("click", {preventDefault: () => {}});
-    assert.isTrue(wrapper.find(LinkMenu).props().visible);
+    assert.equal(wrapper.find(LinkMenu).length, 1);
   });
   it("should not render a link menu by default", () => {
     const wrapper = shallow(<TopSite link={link} />);
-    assert.isFalse(wrapper.find(LinkMenu).props().visible);
+    assert.equal(wrapper.find(LinkMenu).length, 0);
   });
-  it("should pass visible, onUpdate, site, options, and index to LinkMenu", () => {
+  it("should pass onUpdate, site, options, and index to LinkMenu", () => {
     const wrapper = shallow(<TopSite link={link} />);
+    wrapper.find(".context-menu-button").simulate("click", {preventDefault: () => {}});
     const linkMenuProps = wrapper.find(LinkMenu).props();
-    ["visible", "onUpdate", "site", "index", "options"].forEach(prop => assert.property(linkMenuProps, prop));
+    ["onUpdate", "site", "index", "options"].forEach(prop => assert.property(linkMenuProps, prop));
   });
   it("should pass through the correct menu options to LinkMenu", () => {
     const wrapper = shallow(<TopSite link={link} />);
+    wrapper.find(".context-menu-button").simulate("click", {preventDefault: () => {}});
     const linkMenuProps = wrapper.find(LinkMenu).props();
     assert.deepEqual(linkMenuProps.options,
       ["CheckPinTopSite", "EditTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"]);

@@ -50,15 +50,15 @@ describe("<Card>", () => {
   it("should have a link menu button", () => assert.ok(wrapper.find(".context-menu-button")));
   it("should render a link menu when button is clicked", () => {
     const button = wrapper.find(".context-menu-button");
-    assert.equal(wrapper.find(LinkMenu).props().visible, false);
+    assert.equal(wrapper.find(LinkMenu).length, 0);
     button.simulate("click", {preventDefault: () => {}});
-    assert.equal(wrapper.find(LinkMenu).props().visible, true);
+    assert.equal(wrapper.find(LinkMenu).length, 1);
   });
-  it("should pass dispatch, source, visible, onUpdate, site, options, and index to LinkMenu", () => {
-    const {dispatch, source, visible, onUpdate, site, options, index} = wrapper.find(LinkMenu).props();
+  it("should pass dispatch, source, onUpdate, site, options, and index to LinkMenu", () => {
+    wrapper.find(".context-menu-button").simulate("click", {preventDefault: () => {}});
+    const {dispatch, source, onUpdate, site, options, index} = wrapper.find(LinkMenu).props();
     assert.equal(dispatch, DEFAULT_PROPS.dispatch);
     assert.equal(source, DEFAULT_PROPS.eventSource);
-    assert.equal(visible, false);
     assert.ok(onUpdate);
     assert.equal(site, DEFAULT_PROPS.link);
     assert.equal(options, DEFAULT_PROPS.contextMenuOptions);
@@ -69,7 +69,7 @@ describe("<Card>", () => {
     link.contextMenuOptions = ["CheckBookmark"];
 
     wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link})} />);
-
+    wrapper.find(".context-menu-button").simulate("click", {preventDefault: () => {}});
     const {options} = wrapper.find(LinkMenu).props();
     assert.equal(options, link.contextMenuOptions);
   });

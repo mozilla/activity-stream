@@ -4,20 +4,11 @@ import React from "react";
 
 const DEFAULT_PROPS = {
   onUpdate: () => {},
-  visible: false,
   options: [],
   tabbableOptionsLength: 0
 };
 
 describe("<ContextMenu>", () => {
-  it("shoud be hidden by default", () => {
-    const wrapper = shallow(<ContextMenu {...DEFAULT_PROPS} />);
-    assert.isTrue(wrapper.find(".context-menu").props().hidden);
-  });
-  it("should be visible if props.visible is true", () => {
-    const wrapper = shallow(<ContextMenu {...DEFAULT_PROPS} visible={true} />);
-    assert.isFalse(wrapper.find(".context-menu").props().hidden);
-  });
   it("should render all the options provided", () => {
     const options = [{label: "item1"}, {type: "separator"}, {label: "item2"}];
     const wrapper = shallow(<ContextMenu {...DEFAULT_PROPS} options={options} />);
@@ -44,9 +35,11 @@ describe("<ContextMenu>", () => {
     assert.equal(wrapper.find(".context-menu-item").props().role, "menuitem");
   });
   it("should call onUpdate with false when an option is clicked", () => {
-    const wrapper = mount(<ContextMenu {...DEFAULT_PROPS} onUpdate={sinon.spy()} options={[{label: "item1"}]} />);
-    wrapper.find(".context-menu-item").simulate("click");
-    const onUpdate = wrapper.prop("onUpdate");
+    const onUpdate = sinon.spy();
+    const onClick = sinon.spy();
+    const wrapper = mount(<ContextMenu {...DEFAULT_PROPS} onUpdate={onUpdate} options={[{label: "item1", onClick}]} />);
+    wrapper.find(".context-menu-item a").simulate("click");
     assert.calledOnce(onUpdate);
+    assert.calledOnce(onClick);
   });
 });

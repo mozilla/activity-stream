@@ -47,7 +47,6 @@ export class _SectionMenu extends React.PureComponent {
 
   render() {
     return (<ContextMenu
-      visible={this.props.visible}
       onUpdate={this.props.onUpdate}
       options={this.getOptions()} />);
   }
