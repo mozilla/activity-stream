@@ -96,7 +96,14 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
     case at.PREVIEW_FAILED:
       return Object.assign({}, prevState, {editForm: {screenshotRequestFailed: true}});
     case at.SCREENSHOT_PREVIEW:
-      return Object.assign({}, prevState, {editForm: {index: prevState.editForm.index, screenshotRequestFailed: false, screenshotPreview: action.data.screenshotPreview}});
+      return Object.assign({}, prevState, {
+        editForm: {
+          index: prevState.editForm.index,
+          screenshotRequestFailed: false,
+          screenshotPreview: action.data.screenshotPreview,
+          customScreenshotURL: action.data.customScreenshotURL
+        }
+      });
     case at.SCREENSHOT_UPDATED:
       newRows = prevState.rows.map(row => {
         if (row && row.url === action.data.url) {

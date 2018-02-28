@@ -32,8 +32,10 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    if ((nextProps.screenshotPreview && this.state.pendingScreenshotUpdate) ||
-        nextProps.screenshotRequestFailed) {
+    // Check the response URL against the current state of the form
+    const pendingRequest = this.state.customScreenshotUrl && this.state.pendingScreenshotUpdate &&
+      nextProps.customScreenshotURL === this.cleanUrl(this.state.customScreenshotUrl);
+    if (pendingRequest || nextProps.screenshotRequestFailed) {
       this.setState({
         pendingScreenshotUpdate: false,
         screenshotRequestFailed: nextProps.screenshotRequestFailed,

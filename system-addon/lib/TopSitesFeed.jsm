@@ -221,7 +221,7 @@ this.TopSitesFeed = class TopSitesFeed {
   async getScreenshotPreview({customScreenshotURL}, target) {
     const screenshotPreview = await Screenshots.getScreenshotForURL(customScreenshotURL);
     this.store.dispatch(ac.OnlyToOneContent({
-      data: {screenshotPreview},
+      data: {screenshotPreview, customScreenshotURL},
       type: screenshotPreview ? at.SCREENSHOT_PREVIEW : at.PREVIEW_FAILED
     }, target));
   }
@@ -259,7 +259,7 @@ this.TopSitesFeed = class TopSitesFeed {
     }
     NewTabUtils.pinnedLinks.pin(toPin, index);
 
-    await this._updateLinkCustomScreenshot({customScreenshotURL, url});
+    await this._updateLinkCustomScreenshot(toPin);
   }
 
   async _updateLinkCustomScreenshot(site) {
