@@ -101,6 +101,7 @@ export class TopSiteForm extends React.PureComponent {
       if (this.state.customScreenshotUrl) {
         site.customScreenshotURL = this.cleanUrl(this.state.customScreenshotUrl);
       } else if (this.props.site && this.props.site.customScreenshotURL) {
+        // Used to flag that previously cached screenshot should be removed
         site.customScreenshotURL = null;
       }
       this.props.dispatch(ac.AlsoToMain({
@@ -122,7 +123,7 @@ export class TopSiteForm extends React.PureComponent {
     if (this.validateForm()) {
       this.setState({pendingScreenshotUpdate: true});
 
-      this.props.dispatch(ac.AlsoToMain({
+      this.props.dispatch(ac.OnlyToMain({
         type: at.PREVIEW_REQUEST,
         data: {customScreenshotURL: this.cleanUrl(this.state.customScreenshotUrl)}
       }));
@@ -167,7 +168,7 @@ export class TopSiteForm extends React.PureComponent {
   _renderCustomScreenshotInput() {
     const validationError = this.state.validationError &&
       (this.state.screenshotRequestFailed || !this.validateCustomScreenshotUrl());
-    // Set focus on error if the url field is valid or when the input is first rendered on and is empty
+    // Set focus on error if the url field is valid or when the input is first rendered and is empty
     const shouldFocus = (validationError && this.validateUrl(this.state.url)) || !this.state.customScreenshotUrl;
 
     if (!this.state.showCustomScreenshotForm) {
@@ -241,16 +242,13 @@ export class TopSiteForm extends React.PureComponent {
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
-          {!previewMode &&
-              <button className="done" type="submit" onClick={this.onDoneButtonClick}>
-                <FormattedMessage id={showAsAdd ? "topsites_form_add_button" : "topsites_form_save_button"} />
-            </button>
-          }
-          {previewMode &&
+          {previewMode ?
             <button className="done preview" type="submit" onClick={this.onPreviewButtonClick}>
-              <FormattedMessage id="topsites_form_image_button" />
-            </button>
-          }
+              <FormattedMessage id="topsites_form_preview_button" />
+            </button> :
+            <button className="done" type="submit" onClick={this.onDoneButtonClick}>
+              <FormattedMessage id={showAsAdd ? "topsites_form_add_button" : "topsites_form_save_button"} />
+            </button>}
         </section>
       </form>
     );
