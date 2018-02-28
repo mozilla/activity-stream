@@ -177,7 +177,7 @@ export class TopSiteForm extends React.PureComponent {
     }
     return (<div className="custom-image-input-container">
       <TopSiteFormInput
-        errorMessageId={this.props.screenshotRequestFailed ? "topsites_form_image_request_error" : "topsites_form_url_validation"}
+        errorMessageId={this.props.screenshotRequestFailed ? "topsites_form_image_validation" : "topsites_form_url_validation"}
         loading={this.state.pendingScreenshotUpdate}
         onChange={this.onCustomScreenshotUrlChange}
         onClear={this.onClearScreenshotInput}
