@@ -14,12 +14,17 @@ describe("SnippetsMap", () => {
   let snippetsMap;
   let dispatch;
   let sandbox = sinon.sandbox.create();
+  let globals;
   beforeEach(() => {
     dispatch = sandbox.spy();
     snippetsMap = new SnippetsMap(dispatch);
+    globals = new GlobalOverrider();
+    globals.set("addMessageListener", sandbox.spy());
+    globals.set("removeMessageListener", sandbox.spy());
   });
   afterEach(async () => {
     sandbox.restore();
+    globals.restore();
     await snippetsMap.clear();
   });
   describe("#set", () => {
@@ -136,6 +141,24 @@ describe("SnippetsMap", () => {
       snippetsMap.disableOnboarding();
       assert.calledOnce(dispatch);
       assert.equal(dispatch.firstCall.args[0].type, at.DISABLE_ONBOARDING);
+    });
+  });
+  describe("#getTotalBookmarksCount", () => {
+    it("should dispatch a TOTAL_BOOKMARKS_REQUEST and resolve with the right data", async () => {
+      const bookmarksPromise = snippetsMap.getTotalBookmarksCount();
+
+      assert.calledOnce(dispatch);
+      assert.equal(dispatch.firstCall.args[0].type, at.TOTAL_BOOKMARKS_REQUEST);
+      assert.calledWith(global.addMessageListener, INCOMING_MESSAGE_NAME);
+
+      // Call listener
+      const [, listener] = global.addMessageListener.firstCall.args;
+      listener({data: {type: at.TOTAL_BOOKMARKS_RESPONSE, data: 42}});
+
+      const result = await bookmarksPromise;
+
+      assert.equal(result, 42);
+      assert.calledWith(global.removeMessageListener, INCOMING_MESSAGE_NAME, listener);
     });
   });
 });

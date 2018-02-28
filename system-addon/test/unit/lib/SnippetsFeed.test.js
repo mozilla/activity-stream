@@ -41,7 +41,8 @@ describe("SnippetsFeed", () => {
           this.reset = Promise.resolve(WEEK_IN_MS);
         }
       },
-      FxAccounts: {config: {promiseSignUpURI: sandbox.stub().returns(Promise.resolve(signUpUrl))}}
+      FxAccounts: {config: {promiseSignUpURI: sandbox.stub().returns(Promise.resolve(signUpUrl))}},
+      NewTabUtils: {activityStreamProvider: {getTotalBookmarksCount: () => Promise.resolve(42)}}
     });
   });
   afterEach(() => {
@@ -155,6 +156,35 @@ describe("SnippetsFeed", () => {
     const browser = {loadURI: sinon.spy()};
     await feed.showFirefoxAccounts(browser);
     assert.calledWith(browser.loadURI, signUpUrl);
+  });
+  it("should call .getTotalBookmarksCount when TOTAL_BOOKMARKS_REQUEST is received", async () => {
+    const feed = new SnippetsFeed();
+    const browser = {};
+    sandbox.spy(feed, "getTotalBookmarksCount");
+    feed.onAction({type: at.TOTAL_BOOKMARKS_REQUEST, _target: {browser}});
+    assert.calledWith(feed.getTotalBookmarksCount, browser);
+  });
+  it("should dispatch a TOTAL_BOOKMARKS_RESPONSE action when .getTotalBookmarksCount is called", async () => {
+    const feed = new SnippetsFeed();
+    feed.store = {dispatch: sandbox.stub()};
+    const browser = {};
+    const action = {type: at.TOTAL_BOOKMARKS_RESPONSE, data: 42};
+
+    await feed.getTotalBookmarksCount(browser);
+
+    assert.calledWith(feed.store.dispatch, ac.OnlyToOneContent(action, browser));
+  });
+  it("should still dispatch if .getTotalBookmarksCount results in an error", async () => {
+    sandbox.stub(global.NewTabUtils.activityStreamProvider, "getTotalBookmarksCount")
+      .throws(new Error("test error"));
+    const feed = new SnippetsFeed();
+    feed.store = {dispatch: sandbox.stub()};
+    const browser = {};
+    const action = {type: at.TOTAL_BOOKMARKS_RESPONSE, data: null};
+
+    await feed.getTotalBookmarksCount(browser);
+
+    assert.calledWith(feed.store.dispatch, ac.OnlyToOneContent(action, browser));
   });
   it("should return true for isDevtoolsUser is devtools.selfxss.count is 5", async () => {
     sandbox.stub(global.Services.prefs, "getIntPref")
