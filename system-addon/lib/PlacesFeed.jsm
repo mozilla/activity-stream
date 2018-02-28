@@ -12,6 +12,8 @@ ChromeUtils.defineModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
 ChromeUtils.defineModuleGetter(this, "PlacesUtils",
   "resource://gre/modules/PlacesUtils.jsm");
+ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm");
 
 const LINK_BLOCKED_EVENT = "newtab-linkBlocked";
 
@@ -257,7 +259,15 @@ class PlacesFeed {
     }
 
     const win = action._target.browser.ownerGlobal;
-    win.openLinkIn(action.data.url, where || win.whereToOpenLink(event), params);
+    // This is a temporary workaround until we can remove
+    // the "Open in Private Window" item from top sites
+    let url = action.data.url;
+    if (!PrivateBrowsingUtils.enabled) {
+      // This will say "private browsing has been disabled"
+      url = "about:privatebrowsing";
+      params.triggeringPrincipal = null;
+    }
+    win.openLinkIn(url, where || win.whereToOpenLink(event), params);
   }
 
   async saveToPocket(site, browser) {
@@ -307,7 +317,7 @@ class PlacesFeed {
         this.openLink(action, "window");
         break;
       case at.OPEN_PRIVATE_WINDOW:
-        this.openLink(action, "window", true);
+        this.openLink(action, "window", PrivateBrowsingUtils.enabled);
         break;
       case at.SAVE_TO_POCKET:
         this.saveToPocket(action.data.site, action._target.browser);
