@@ -69,6 +69,18 @@ export class SnippetsMap extends Map {
     this._dispatch(ac.AlsoToMain({type: at.SHOW_FIREFOX_ACCOUNTS}));
   }
 
+  getTotalBookmarksCount() {
+    return new Promise(resolve => {
+      this._dispatch(ac.OnlyToMain({type: at.TOTAL_BOOKMARKS_REQUEST}));
+      global.addMessageListener("ActivityStream:MainToContent", function onMessage({data: action}) {
+        if (action.type === at.TOTAL_BOOKMARKS_RESPONSE) {
+          resolve(action.data);
+          global.removeMessageListener("ActivityStream:MainToContent", onMessage);
+        }
+      });
+    });
+  }
+
   /**
    * connect - Attaches an indexedDB back-end to the Map so that any set values
    *           are also cached in a store. It also restores any existing values

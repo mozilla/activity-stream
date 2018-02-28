@@ -14,6 +14,8 @@ ChromeUtils.defineModuleGetter(this, "ProfileAge",
   "resource://gre/modules/ProfileAge.jsm");
 ChromeUtils.defineModuleGetter(this, "FxAccounts",
   "resource://gre/modules/FxAccounts.jsm");
+ChromeUtils.defineModuleGetter(this, "NewTabUtils",
+  "resource://gre/modules/NewTabUtils.jsm");
 
 // Url to fetch snippets, in the urlFormatter service format.
 const SNIPPETS_URL_PREF = "browser.aboutHomeSnippets.updateUrl";
@@ -28,11 +30,14 @@ const SEARCH_ENGINE_OBSERVER_TOPIC = "browser-search-engine-modified";
 // Should be bumped up if the snippets content format changes.
 const STARTPAGE_VERSION = 5;
 
-const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+const ONE_DAY = 24 * 60 * 60 * 1000;
+const ONE_WEEK = 7 * ONE_DAY;
 
 this.SnippetsFeed = class SnippetsFeed {
   constructor() {
     this._refresh = this._refresh.bind(this);
+    this._totalBookmarks = null;
+    this._totalBookmarksLastUpdated = null;
   }
 
   get snippetsURL() {
@@ -105,6 +110,18 @@ this.SnippetsFeed = class SnippetsFeed {
     return info;
   }
 
+  async getTotalBookmarksCount(target) {
+    if (!this._totalBookmarks || (Date.now() - this._totalBookmarksLastUpdated > ONE_DAY)) {
+      this._totalBookmarksLastUpdated = Date.now();
+      try {
+        this._totalBookmarks = await NewTabUtils.activityStreamProvider.getTotalBookmarksCount();
+      } catch (e) {
+        Cu.reportError(e);
+      }
+    }
+    this.store.dispatch(ac.OnlyToOneContent({type: at.TOTAL_BOOKMARKS_RESPONSE, data: this._totalBookmarks}, target));
+  }
+
   _dispatchChanges(data) {
     this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPETS_DATA, data}));
   }
@@ -171,6 +188,9 @@ this.SnippetsFeed = class SnippetsFeed {
         break;
       case at.SNIPPETS_BLOCKLIST_UPDATED:
         this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: action.data}));
+        break;
+      case at.TOTAL_BOOKMARKS_REQUEST:
+        this.getTotalBookmarksCount(action._target.browser);
         break;
     }
   }

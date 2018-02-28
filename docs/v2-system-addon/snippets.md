@@ -40,6 +40,10 @@ a Promise that resolves when the blockList has been written to indexedDB.
 You should ensure `gSnippetsMap.get("appData.onboardingFinished")` is false before calling this. Note that this
 does not hide onboarding notifications on the **current** page, since that would be a disruptive user experience.
 
+`.getTotalBookmarksCount()`: (func) An async function that resolves with an integer representing the number of
+bookmarks a user has (including default bookmarks). Note that is value is only updated once per day or when a
+a user restarts the browser.
+
 ### Expected values in gSnippetsMap
 
 Note that names and functionality of values in v4 snippets have been preserved
