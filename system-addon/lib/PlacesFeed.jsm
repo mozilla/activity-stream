@@ -261,7 +261,7 @@ class PlacesFeed {
     const win = action._target.browser.ownerGlobal;
     // This is a temporary workaround until we can remove
     // the "Open in Private Window" item from top sites
-    let url = action.data.url;
+    let {url} = action.data;
     if (!PrivateBrowsingUtils.enabled) {
       // This will say "private browsing has been disabled"
       url = "about:privatebrowsing";

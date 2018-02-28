@@ -191,14 +191,14 @@ const SectionsManager = {
    */
   updateLinkMenuOptions(options) {
     if (options.availableLinkMenuOptions) {
-     options.contextMenuOptions = options.availableLinkMenuOptions.filter(option => {
+      options.contextMenuOptions = options.availableLinkMenuOptions.filter(option => {
         let rv = !this.CONTEXT_MENU_PREFS[option] || Services.prefs.getBoolPref(this.CONTEXT_MENU_PREFS[option]);
         // Special-case the 'open in a private window' context menu
-        if (rv && option == "OpenInPrivateWindow") {
+        if (rv && option === "OpenInPrivateWindow") {
           return PrivateBrowsingUtils.enabled;
         }
         return rv;
-     });
+      });
     }
   },
 
