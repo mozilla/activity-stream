@@ -232,7 +232,9 @@ export class TopSiteForm extends React.PureComponent {
                 intl={this.props.intl} />
               {this._renderCustomScreenshotInput()}
             </div>
-            <TopSiteLink link={this._getPreviewScreenshot()} title={this.state.label} />
+            <TopSiteLink link={this._getPreviewScreenshot()}
+              defaultStyle={this.state.screenshotRequestFailed}
+              title={this.state.label} />
           </div>
         </div>
         <section className="actions">

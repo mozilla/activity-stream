@@ -58,7 +58,7 @@ export class TopSiteLink extends React.PureComponent {
   }
 
   render() {
-    const {children, className, isDraggable, link, onClick, title} = this.props;
+    const {children, className, defaultStyle, isDraggable, link, onClick, title} = this.props;
     const topSiteOuterClassName = `top-site-outer${className ? ` ${className}` : ""}${link.isDragged ? " dragged" : ""}`;
     const {tippyTopIcon, faviconSize} = link;
     const [letterFallback] = title;
@@ -67,8 +67,7 @@ export class TopSiteLink extends React.PureComponent {
     let showSmallFavicon = false;
     let smallFaviconStyle;
     let smallFaviconFallback;
-    if (link.screenshotRequestFailed) {
-      showSmallFavicon = false;
+    if (defaultStyle) { // Render the Topsite without any image or icon
       smallFaviconFallback = false;
     } else if (link.screenshotPreview || link.customScreenshot) {
       // styles and class names for top sites with rich icons
