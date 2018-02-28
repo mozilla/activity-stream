@@ -135,11 +135,11 @@ export class TopSite extends React.PureComponent {
   }
 
   /**
-   * Report to telemetry additional information about the item clicked.
-   * Filter out "not_pinned" type for being the default.
+   * Report to telemetry additional information about the item.
    */
   _getTelemetryInfo() {
     const value = {icon_type: this.props.link.iconType};
+    // Filter out "not_pinned" type for being the default
     if (this.props.link.isPinned) {
       value.card_type = "pinned";
     }

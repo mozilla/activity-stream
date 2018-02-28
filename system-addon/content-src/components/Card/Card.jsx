@@ -69,10 +69,10 @@ export class Card extends React.PureComponent {
   }
 
   /**
-   * Report to telemetry additional information about the item clicked.
-   * Filter out "history" type for being the default.
+   * Report to telemetry additional information about the item.
    */
   _getTelemetryInfo() {
+    // Filter out "history" type for being the default
     if (this.props.link.type !== "history") {
       return {value: {card_type: this.props.link.type}};
     }

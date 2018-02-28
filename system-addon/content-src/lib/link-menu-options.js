@@ -80,11 +80,7 @@ export const LinkMenuOptions = {
       data: {
         onConfirm: [
           ac.AlsoToMain({type: at.DELETE_HISTORY_URL, data: {url: site.url, pocket_id: site.pocket_id, forceBlock: site.bookmarkGuid}}),
-          ac.UserEvent(Object.assign({
-            event: "DELETE",
-            source: eventSource,
-            action_position: index
-          }, siteInfo))
+          ac.UserEvent(Object.assign({event: "DELETE", source: eventSource, action_position: index}, siteInfo))
         ],
         eventSource,
         body_string_id: ["confirm_history_delete_p1", "confirm_history_delete_notice_p2"],
