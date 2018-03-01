@@ -1,4 +1,5 @@
 import {actionCreators as ac} from "common/Actions.jsm";
+import {connect} from "react-redux";
 import {ContextMenu} from "content-src/components/ContextMenu/ContextMenu";
 import {injectIntl} from "react-intl";
 import {LinkMenuOptions} from "content-src/lib/link-menu-options";
@@ -9,12 +10,12 @@ const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "EditTopSite", "Separator"
 export class _LinkMenu extends React.PureComponent {
   getOptions() {
     const {props} = this;
-    const {site, index, source} = props;
+    const {site, index, source, isPrivateBrowsingEnabled} = props;
 
     // Handle special case of default site
     const propOptions = !site.isDefault ? props.options : DEFAULT_SITE_MENU_OPTIONS;
 
-    const options = propOptions.map(o => LinkMenuOptions[o](site, index, source)).map(option => {
+    const options = propOptions.map(o => LinkMenuOptions[o](site, index, source, isPrivateBrowsingEnabled)).map(option => {
       const {action, impression, id, string_id, type, userEvent} = option;
       if (!type && id) {
         option.label = props.intl.formatMessage({id: string_id || id});
@@ -50,4 +51,5 @@ export class _LinkMenu extends React.PureComponent {
   }
 }
 
-export const LinkMenu = injectIntl(_LinkMenu);
+const getState = state => ({isPrivateBrowsingEnabled: state.Prefs.values.isPrivateBrowsingEnabled});
+export const LinkMenu = connect(getState)(injectIntl(_LinkMenu));

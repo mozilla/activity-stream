@@ -1,5 +1,15 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 
+const _OpenInPrivateWindow = site => ({
+  id: "menu_action_open_private_window",
+  icon: "new-window-private",
+  action: ac.OnlyToMain({
+    type: at.OPEN_PRIVATE_WINDOW,
+    data: {url: site.url, referrer: site.referrer}
+  }),
+  userEvent: "OPEN_PRIVATE_WINDOW"
+});
+
 /**
  * List of functions that return items that can be included as menu options in a
  * LinkMenu. All functions take the site as the first parameter, and optionally
@@ -34,15 +44,6 @@ export const LinkMenuOptions = {
       data: {url: site.url, referrer: site.referrer}
     }),
     userEvent: "OPEN_NEW_WINDOW"
-  }),
-  OpenInPrivateWindow: site => ({
-    id: "menu_action_open_private_window",
-    icon: "new-window-private",
-    action: ac.AlsoToMain({
-      type: at.OPEN_PRIVATE_WINDOW,
-      data: {url: site.url, referrer: site.referrer}
-    }),
-    userEvent: "OPEN_PRIVATE_WINDOW"
   }),
   BlockUrl: (site, index, eventSource) => ({
     id: "menu_action_dismiss",
@@ -152,5 +153,6 @@ export const LinkMenuOptions = {
   CheckPinTopSite: (site, index) => (site.isPinned ? LinkMenuOptions.UnpinTopSite(site) : LinkMenuOptions.PinTopSite(site, index)),
   CheckSavedToPocket: (site, index) => (site.pocket_id ? LinkMenuOptions.DeleteFromPocket(site) : LinkMenuOptions.SaveToPocket(site, index)),
   CheckBookmarkOrArchive: site => (site.pocket_id ? LinkMenuOptions.ArchiveFromPocket(site) : LinkMenuOptions.CheckBookmark(site)),
-  CheckDeleteHistoryOrEmpty: (site, index, eventSource) => (site.pocket_id ? LinkMenuOptions.EmptyItem() : LinkMenuOptions.DeleteUrl(site, index, eventSource))
+  CheckDeleteHistoryOrEmpty: (site, index, eventSource) => (site.pocket_id ? LinkMenuOptions.EmptyItem() : LinkMenuOptions.DeleteUrl(site, index, eventSource)),
+  OpenInPrivateWindow: (site, index, eventSource, isEnabled) => (isEnabled ? _OpenInPrivateWindow(site) : LinkMenuOptions.EmptyItem())
 };

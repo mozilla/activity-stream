@@ -1,8 +1,11 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {Card, PlaceholderCard} from "content-src/components/Card/Card";
+import {combineReducers, createStore} from "redux";
+import {INITIAL_STATE, reducers} from "common/Reducers.jsm";
 import {cardContextTypes} from "content-src/components/Card/types";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import {mountWithIntl} from "test/unit/utils";
+import {Provider} from "react-redux";
 import React from "react";
 import {shallow} from "enzyme";
 
@@ -23,10 +26,15 @@ let DEFAULT_PROPS = {
   contextMenuOptions: ["Separator"]
 };
 
+function mountCardWithProps(props) {
+  const store = createStore(combineReducers(reducers), INITIAL_STATE);
+  return mountWithIntl(<Provider store={store}><Card {...props} /></Provider>);
+}
+
 describe("<Card>", () => {
   let wrapper;
   beforeEach(() => {
-    wrapper = mountWithIntl(<Card {...DEFAULT_PROPS} />);
+    wrapper = mountCardWithProps(DEFAULT_PROPS);
   });
   it("should render a Card component", () => assert.ok(wrapper.exists()));
   it("should add the right url", () => assert.propertyVal(wrapper.find("a").props(), "href", DEFAULT_PROPS.link.url));
@@ -42,7 +50,7 @@ describe("<Card>", () => {
     const link = Object.assign({}, DEFAULT_PROPS.link);
     delete link.image;
 
-    wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link})} />);
+    wrapper = mountCardWithProps(Object.assign({}, DEFAULT_PROPS, {link}));
 
     assert.lengthOf(wrapper.find(".card-preview-image"), 0);
   });
@@ -68,7 +76,7 @@ describe("<Card>", () => {
     const link = Object.assign({}, DEFAULT_PROPS.link);
     link.contextMenuOptions = ["CheckBookmark"];
 
-    wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link})} />);
+    wrapper = mountCardWithProps(Object.assign({}, DEFAULT_PROPS, {link}));
     wrapper.find(".context-menu-button").simulate("click", {preventDefault: () => {}});
     const {options} = wrapper.find(LinkMenu).props();
     assert.equal(options, link.contextMenuOptions);
@@ -103,13 +111,6 @@ describe("<Card>", () => {
     button.simulate("click", {preventDefault: () => {}});
     assert.isTrue(wrapper.find(".card-outer").hasClass("active"));
   });
-  it("should have a loaded preview image when the image is loaded", () => {
-    assert.isFalse(wrapper.find(".card-preview-image").hasClass("loaded"));
-
-    wrapper.setState({imageLoaded: true});
-
-    assert.isTrue(wrapper.find(".card-preview-image").hasClass("loaded"));
-  });
   describe("image loading", () => {
     let link;
     let triggerImage = {};
@@ -123,7 +124,14 @@ describe("<Card>", () => {
 
       link = Object.assign({}, DEFAULT_PROPS.link);
       link.image += uniqueLink++;
-      wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link})} />);
+      wrapper = shallow(<Card {...DEFAULT_PROPS} link={link} />);
+    });
+    it("should have a loaded preview image when the image is loaded", () => {
+      assert.isFalse(wrapper.find(".card-preview-image").hasClass("loaded"));
+
+      wrapper.setState({imageLoaded: true});
+
+      assert.isTrue(wrapper.find(".card-preview-image").hasClass("loaded"));
     });
     it("should start not loaded", () => {
       assert.isFalse(wrapper.state("imageLoaded"));
@@ -196,7 +204,7 @@ describe("<Card>", () => {
       }));
     });
     it("should notify Web Extensions with WEBEXT_CLICK if props.isWebExtension is true", () => {
-      wrapper = mountWithIntl(<Card {...DEFAULT_PROPS} isWebExtension={true} eventSource={"MyExtension"} index={3} />);
+      wrapper = mountCardWithProps(Object.assign({}, DEFAULT_PROPS, {isWebExtension: true, eventSource: "MyExtension", index: 3}));
       const card = wrapper.find(".card");
       const event = {preventDefault() {}};
       card.simulate("click", event);

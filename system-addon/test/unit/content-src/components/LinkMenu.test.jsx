@@ -39,7 +39,7 @@ describe("<LinkMenu>", () => {
     }
   });
   it("should show the correct options for default sites", () => {
-    wrapper = shallowWithIntl(<LinkMenu site={{url: "", isDefault: true}} options={["CheckBookmark"]} source={"TOP_SITES"} dispatch={() => {}} />);
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", isDefault: true}} options={["CheckBookmark"]} source={"TOP_SITES"} isPrivateBrowsingEnabled={true} dispatch={() => {}} />);
     const {options} = wrapper.find(ContextMenu).props();
     let i = 0;
     assert.propertyVal(options[i++], "id", "menu_action_pin");
@@ -157,7 +157,14 @@ describe("<LinkMenu>", () => {
       menu_action_archive_pocket: {pocket_id: "1234"}
     };
 
-    const {options} = shallowWithIntl(<LinkMenu site={FAKE_SITE} dispatch={dispatch} index={FAKE_INDEX} options={propOptions} source={FAKE_SOURCE} shouldSendImpressionStats={true} />)
+    const {options} = shallowWithIntl(<LinkMenu
+      site={FAKE_SITE}
+      dispatch={dispatch}
+      index={FAKE_INDEX}
+      isPrivateBrowsingEnabled={true}
+      options={propOptions}
+      source={FAKE_SOURCE}
+      shouldSendImpressionStats={true} />)
       .find(ContextMenu).props();
     afterEach(() => dispatch.reset());
     options.filter(o => o.type !== "separator").forEach(option => {
