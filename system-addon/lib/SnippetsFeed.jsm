@@ -196,4 +196,4 @@ this.SnippetsFeed = class SnippetsFeed {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["SnippetsFeed"];
+const EXPORTED_SYMBOLS = ["SnippetsFeed"];

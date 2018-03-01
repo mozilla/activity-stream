@@ -472,7 +472,7 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 };
 
-this.EXPORTED_SYMBOLS = [
+const EXPORTED_SYMBOLS = [
   "TelemetryFeed",
   "USER_PREFS_ENCODING",
   "PREF_IMPRESSION_ID",

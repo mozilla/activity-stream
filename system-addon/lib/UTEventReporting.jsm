@@ -56,4 +56,4 @@ this.UTEventReporting = class UTEventReporting {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["UTEventReporting"];
+const EXPORTED_SYMBOLS = ["UTEventReporting"];

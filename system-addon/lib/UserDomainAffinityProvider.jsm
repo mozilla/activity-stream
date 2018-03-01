@@ -326,4 +326,4 @@ this.UserDomainAffinityProvider = class UserDomainAffinityProvider {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["UserDomainAffinityProvider"];
+const EXPORTED_SYMBOLS = ["UserDomainAffinityProvider"];

@@ -49,4 +49,4 @@ this.NewTabInit = class NewTabInit {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["NewTabInit"];
+const EXPORTED_SYMBOLS = ["NewTabInit"];

@@ -224,4 +224,4 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["HighlightsFeed", "SECTION_ID", "MANY_EXTRA_LENGTH"];
+const EXPORTED_SYMBOLS = ["HighlightsFeed", "SECTION_ID", "MANY_EXTRA_LENGTH"];

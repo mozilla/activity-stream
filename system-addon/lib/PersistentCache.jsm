@@ -79,4 +79,4 @@ this.PersistentCache = class PersistentCache {
   }
 };
 
-this.EXPORTED_SYMBOLS = ["PersistentCache"];
+const EXPORTED_SYMBOLS = ["PersistentCache"];

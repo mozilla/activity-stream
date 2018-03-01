@@ -96,4 +96,4 @@ this.PrerenderData = new _PrerenderData({
 });
 
 this._PrerenderData = _PrerenderData;
-this.EXPORTED_SYMBOLS = ["PrerenderData", "_PrerenderData"];
+const EXPORTED_SYMBOLS = ["PrerenderData", "_PrerenderData"];

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-this.EXPORTED_SYMBOLS = ["LinksCache"];
+const EXPORTED_SYMBOLS = ["LinksCache"];
 
 // This should be slightly less than SYSTEM_TICK_INTERVAL as timer
 // comparisons are too exact while the async/await functionality will make the
