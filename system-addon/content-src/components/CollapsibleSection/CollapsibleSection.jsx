@@ -145,7 +145,7 @@ export class _CollapsibleSection extends React.PureComponent {
     const isCollapsible = this.props.prefName in this.props.Prefs.values;
     const isCollapsed = getCollapsed(this.props);
     const {enableAnimation, isAnimating, maxHeight, menuButtonHover, showContextMenu} = this.state;
-    const {id, eventSource, disclaimer, title, extraMenuOptions, prefName, showPrefName, privacyNoticeURL, dispatch} = this.props;
+    const {id, eventSource, disclaimer, title, extraMenuOptions, prefName, showPrefName, privacyNoticeURL, dispatch, isFirst, isLast} = this.props;
     const disclaimerPref = `section.${id}.showDisclaimer`;
     const needsDisclaimer = disclaimer && this.props.Prefs.values[disclaimerPref];
     const active = menuButtonHover || showContextMenu;
@@ -172,6 +172,7 @@ export class _CollapsibleSection extends React.PureComponent {
             </button>
             {showContextMenu &&
               <SectionMenu
+                id={id}
                 extraOptions={extraMenuOptions}
                 eventSource={eventSource}
                 showPrefName={showPrefName}
@@ -179,6 +180,8 @@ export class _CollapsibleSection extends React.PureComponent {
                 privacyNoticeURL={privacyNoticeURL}
                 isCollapsed={isCollapsed}
                 onUpdate={this.onMenuUpdate}
+                isFirst={isFirst}
+                isLast={isLast}
                 dispatch={dispatch} />
             }
           </div>

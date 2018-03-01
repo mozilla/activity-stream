@@ -1,5 +1,8 @@
 .collapsible-section {
   padding: $section-vertical-padding $section-horizontal-padding;
+  transition-delay: 100ms;
+  transition-duration: 100ms;
+  transition-property: background-color;
 
   .section-title {
     margin: 0;

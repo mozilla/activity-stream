@@ -4,7 +4,7 @@ import {injectIntl} from "react-intl";
 import React from "react";
 import {SectionMenuOptions} from "content-src/lib/section-menu-options";
 
-const DEFAULT_SECTION_MENU_OPTIONS = ["RemoveSection", "CheckCollapsed", "Separator", "ManageSection"];
+const DEFAULT_SECTION_MENU_OPTIONS = ["MoveUp", "MoveDown", "Separator", "RemoveSection", "CheckCollapsed", "Separator", "ManageSection"];
 
 export class _SectionMenu extends React.PureComponent {
   getOptions() {

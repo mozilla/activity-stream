@@ -8,8 +8,8 @@ import {shallowWithIntl} from "test/unit/utils";
 const messages = require("data/locales.json")["en-US"]; // eslint-disable-line import/no-commonjs
 
 const DEFAULT_PROPS = {
-  options: ["RemoveSection", "CheckCollapsed", "Separator", "ManageSection"],
   name: "Section Name",
+  id: "sectionId",
   source: "TOP_SITES",
   showPrefName: "showSection",
   collapsePrefName: "collapseSection",
@@ -54,6 +54,9 @@ describe("<SectionMenu>", () => {
     wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} />);
     const {options} = wrapper.find(ContextMenu).props();
     let i = 0;
+    assert.propertyVal(options[i++], "id", "section_menu_action_move_up");
+    assert.propertyVal(options[i++], "id", "section_menu_action_move_down");
+    assert.propertyVal(options[i++], "type", "separator");
     assert.propertyVal(options[i++], "id", "section_menu_action_remove_section");
     assert.propertyVal(options[i++], "id", "section_menu_action_collapse_section");
     assert.propertyVal(options[i++], "type", "separator");
@@ -61,12 +64,12 @@ describe("<SectionMenu>", () => {
     assert.propertyVal(options, "length", i);
   });
   it("should show Collapse option for an expanded section if CheckCollapsed in options list", () => {
-    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isCollapsed={false} options={["CheckCollapsed"]} />);
+    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isCollapsed={false} />);
     const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "section_menu_action_collapse_section")));
   });
   it("should show Expand option for a collapsed section if CheckCollapsed in options list", () => {
-    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isCollapsed={true} options={["CheckCollapsed"]} />);
+    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isCollapsed={true} />);
     const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "section_menu_action_expand_section")));
   });
@@ -79,6 +82,9 @@ describe("<SectionMenu>", () => {
     wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} privacyNoticeURL="https://mozilla.org/privacy" />);
     const {options} = wrapper.find(ContextMenu).props();
     let i = 0;
+    assert.propertyVal(options[i++], "id", "section_menu_action_move_up");
+    assert.propertyVal(options[i++], "id", "section_menu_action_move_down");
+    assert.propertyVal(options[i++], "type", "separator");
     assert.propertyVal(options[i++], "id", "section_menu_action_remove_section");
     assert.propertyVal(options[i++], "id", "section_menu_action_collapse_section");
     assert.propertyVal(options[i++], "type", "separator");
@@ -96,17 +102,31 @@ describe("<SectionMenu>", () => {
     shallow(React.cloneElement(node, {intl}), {context: {intl}});
 
     // Called once for each option in the menu
-    assert.equal(spy.callCount, 3);
+    assert.equal(spy.callCount, 5);
 
-    // Called with correct ids both times
-    assert.ok(spy.firstCall.calledWith(sinon.match({id: "section_menu_action_remove_section"})));
-    assert.ok(spy.secondCall.calledWith(sinon.match({id: "section_menu_action_collapse_section"})));
-    assert.ok(spy.thirdCall.calledWith(sinon.match({id: "section_menu_action_manage_section"})));
+    // Called with correct ids
+    assert.ok(spy.calledWith(sinon.match({id: "section_menu_action_move_up"})));
+    assert.ok(spy.calledWith(sinon.match({id: "section_menu_action_move_down"})));
+    assert.ok(spy.calledWith(sinon.match({id: "section_menu_action_remove_section"})));
+    assert.ok(spy.calledWith(sinon.match({id: "section_menu_action_collapse_section"})));
+    assert.ok(spy.calledWith(sinon.match({id: "section_menu_action_manage_section"})));
+  });
+  it("should disable Move Up on first section", () => {
+    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isFirst={true} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.ok(options[0].disabled);
+  });
+  it("should disable Move Down on last section", () => {
+    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isLast={true} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.ok(options[1].disabled);
   });
   describe(".onClick", () => {
     const dispatch = sinon.stub();
-    const propOptions = ["Separator", "RemoveSection", "CollapseSection", "ExpandSection", "ManageSection", "AddTopSite", "PrivacyNotice"];
+    const propOptions = ["Separator", "MoveUp", "MoveDown", "RemoveSection", "CollapseSection", "ExpandSection", "ManageSection", "AddTopSite", "PrivacyNotice"];
     const expectedActionData = {
+      section_menu_action_move_up: {id: "sectionId", direction: -1},
+      section_menu_action_move_down: {id: "sectionId", direction: +1},
       section_menu_action_remove_section: {name: "showSection", value: false},
       section_menu_action_collapse_section: {name: "collapseSection", value: true},
       section_menu_action_expand_section: {name: "collapseSection", value: false},

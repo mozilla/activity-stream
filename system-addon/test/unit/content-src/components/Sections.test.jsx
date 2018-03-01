@@ -5,6 +5,7 @@ import {PlaceholderCard} from "content-src/components/Card/Card";
 import React from "react";
 import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
 import {shallow} from "enzyme";
+import {TopSites} from "content-src/components/TopSites/TopSites";
 
 describe("<Sections>", () => {
   let wrapper;
@@ -16,7 +17,7 @@ describe("<Sections>", () => {
       enabled: !!(i % 2),
       rows: []
     }));
-    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} />);
+    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {sectionOrder: FAKE_SECTIONS.map(i => i.id).join(",")}}} />);
   });
   it("should render a Sections element", () => {
     assert.ok(wrapper.exists());
@@ -28,6 +29,26 @@ describe("<Sections>", () => {
       assert.equal(section.props().id, FAKE_SECTIONS[2 * i + 1].id);
       assert.equal(section.props().enabled, true);
     });
+  });
+  it("should render Top Sites if showTopSites pref is true", () => {
+    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {showTopSites: true, sectionOrder: "topsites,topstories,highlights"}}} />);
+    assert.equal(wrapper.find(TopSites).length, 1);
+  });
+  it("should NOT render Top Sites if showTopSites pref is false", () => {
+    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {showTopSites: false, sectionOrder: "topsites,topstories,highlights"}}} />);
+    assert.equal(wrapper.find(TopSites).length, 0);
+  });
+  it("should render the sections in the order specifed by sectionOrder pref", () => {
+    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {sectionOrder: "foo_bar_1,foo_bar_3"}}} />);
+    let sections = wrapper.find(SectionIntl);
+    assert.lengthOf(sections, 2);
+    assert.equal(sections.first().props().id, "foo_bar_1");
+    assert.equal(sections.last().props().id, "foo_bar_3");
+    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {sectionOrder: "foo_bar_3,foo_bar_1"}}} />);
+    sections = wrapper.find(SectionIntl);
+    assert.lengthOf(sections, 2);
+    assert.equal(sections.first().props().id, "foo_bar_3");
+    assert.equal(sections.last().props().id, "foo_bar_1");
   });
 });
 
