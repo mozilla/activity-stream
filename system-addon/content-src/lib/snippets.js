@@ -49,7 +49,7 @@ export class SnippetsMap extends Map {
    * @return {Promise}      Resolves when the id has been written to indexedDB,
    *                        or immediately if the snippetMap is not connected
    */
-  async blockSnippetById(id) {
+  blockSnippetById(id) {
     if (!id) {
       return;
     }
@@ -57,7 +57,7 @@ export class SnippetsMap extends Map {
     if (!blockList.includes(id)) {
       blockList.push(id);
       this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList}));
-      await this.set("blockList", blockList);
+      this.set("blockList", blockList);
     }
   }
 
@@ -177,7 +177,9 @@ export class SnippetsMap extends Map {
         let cursor = event.target.result;
         // Populate the cache from the persistent storage.
         if (cursor) {
-          this.set(cursor.key, cursor.value);
+          if (cursor.value !== "blockList") {
+            this.set(cursor.key, cursor.value);
+          }
           cursor.continue();
         } else {
           // We are done.
@@ -316,7 +318,11 @@ export class SnippetsProvider {
 
     // Cache app data values so they can be accessible from gSnippetsMap
     for (const key of Object.keys(this.appData)) {
-      this.snippetsMap.set(`appData.${key}`, this.appData[key]);
+      if (key === "blockList") {
+        this.snippetsMap.set("blockList", this.appData[key] || []);
+      } else {
+        this.snippetsMap.set(`appData.${key}`, this.appData[key]);
+      }
     }
 
     // Refresh snippets, if enough time has passed.
