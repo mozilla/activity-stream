@@ -257,7 +257,10 @@ class PlacesFeed {
     }
 
     const win = action._target.browser.ownerGlobal;
-    win.openLinkIn(action.data.url, where || win.whereToOpenLink(event), params);
+
+    // Pocket gives us a special reader URL to open their stories in
+    const urlToOpen = action.data.type === "pocket" ? action.data.open_url : action.data.url;
+    win.openLinkIn(urlToOpen, where || win.whereToOpenLink(event), params);
   }
 
   async saveToPocket(site, browser) {
@@ -267,7 +270,7 @@ class PlacesFeed {
       if (data) {
         this.store.dispatch(ac.BroadcastToContent({
           type: at.PLACES_SAVED_TO_POCKET,
-          data: {url, title, pocket_id: data.item.item_id}
+          data: {url, open_url: data.item.open_url, title, pocket_id: data.item.item_id}
         }));
       }
     } catch (err) {

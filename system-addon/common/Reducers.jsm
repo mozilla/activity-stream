@@ -286,6 +286,7 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
         rows: section.rows.map(item => {
           if (item.url === action.data.url) {
             return Object.assign({}, item, {
+              open_url: action.data.open_url,
               pocket_id: action.data.pocket_id,
               title: action.data.title,
               type: "pocket"
