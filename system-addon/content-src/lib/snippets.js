@@ -280,7 +280,7 @@ export class SnippetsProvider {
 
   _onAction(msg) {
     if (msg.data.type === at.SNIPPET_BLOCKED) {
-      this.snippetsMap.set("blockList", msg.data.data);
+      this.snippetsMap.set("blockList", msg.data.data.blockList);
       document.getElementById("snippets-container").style.display = "none";
     }
   }

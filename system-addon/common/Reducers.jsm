@@ -334,6 +334,8 @@ function Snippets(prevState = INITIAL_STATE.Snippets, action) {
   switch (action.type) {
     case at.SNIPPETS_DATA:
       return Object.assign({}, prevState, {initialized: true}, action.data);
+    case at.SNIPPET_BLOCKED:
+      return Object.assign({}, prevState, action.data);
     case at.SNIPPETS_RESET:
       return INITIAL_STATE.Snippets;
     default:

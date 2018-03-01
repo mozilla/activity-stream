@@ -200,8 +200,7 @@ this.SnippetsFeed = class SnippetsFeed {
         break;
       case at.SNIPPETS_BLOCKLIST_UPDATED:
         this._saveBlockList(action.data);
-        this._dispatchChanges({blockList: action.data});
-        this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: action.data}));
+        this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: {blockList: action.data}}));
         break;
       case at.TOTAL_BOOKMARKS_REQUEST:
         this.getTotalBookmarksCount(action._target.browser);
