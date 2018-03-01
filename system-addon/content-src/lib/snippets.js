@@ -35,6 +35,7 @@ export class SnippetsMap extends Map {
 
   clear() {
     super.clear();
+    this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: []}));
     return this._dbTransaction(db => db.clear());
   }
 
