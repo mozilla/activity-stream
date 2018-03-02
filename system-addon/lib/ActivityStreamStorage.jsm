@@ -29,7 +29,7 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
   }
 
   _openDatabase() {
-    return IndexedDB.open(this.dbName, {version: this.dbVersion, storage: "persistent"}, db => {
+    return IndexedDB.open(this.dbName, {version: this.dbVersion}, db => {
       db.createObjectStore(this.storeName);
     });
   }
