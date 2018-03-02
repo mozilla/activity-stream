@@ -50,7 +50,7 @@ export class SnippetsMap extends Map {
    * @return {Promise}      Resolves when the id has been written to indexedDB,
    *                        or immediately if the snippetMap is not connected
    */
-  blockSnippetById(id) {
+  async blockSnippetById(id) {
     if (!id) {
       return;
     }
@@ -58,7 +58,7 @@ export class SnippetsMap extends Map {
     if (!blockList.includes(id)) {
       blockList.push(id);
       this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList}));
-      this.set("blockList", blockList);
+      await this.set("blockList", blockList);
     }
   }
 
@@ -281,7 +281,7 @@ export class SnippetsProvider {
 
   _onAction(msg) {
     if (msg.data.type === at.SNIPPET_BLOCKED) {
-      this.snippetsMap.set("blockList", msg.data.data.blockList);
+      this.snippetsMap.set("blockList", msg.data.data);
       document.getElementById("snippets-container").style.display = "none";
     }
   }
