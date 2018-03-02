@@ -561,6 +561,11 @@ describe("Reducers", () => {
       const state = Snippets({initalized: true, foo: "bar"}, {type: at.SNIPPETS_RESET});
       assert.equal(state, INITIAL_STATE.Snippets);
     });
+    it("should set the new blocklist on SNIPPET_BLOCKED", () => {
+      const blockList = [1, 2, 3];
+      const state = Snippets({}, {type: at.SNIPPET_BLOCKED, data: blockList});
+      assert.equal(state.blockList, blockList);
+    });
   });
   describe("PreferencesPane", () => {
     it("should return INITIAL_STATE by default", () => {

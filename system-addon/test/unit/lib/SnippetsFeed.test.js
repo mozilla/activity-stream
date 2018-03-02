@@ -53,8 +53,6 @@ describe("SnippetsFeed", () => {
       ActivityStreamStorage: class ActivityStreamStorage {
         constructor() {
           this.init = sandbox.stub.callsFake(Promise.resolve());
-          this.get = sandbox.stub();
-          this.set = sandbox.stub();
         }
         init() {
           return Promise.resolve();
@@ -142,13 +140,14 @@ describe("SnippetsFeed", () => {
   });
   it("should broadcast a SNIPPET_BLOCKED when a SNIPPETS_BLOCKLIST_UPDATED is received", () => {
     const feed = new SnippetsFeed();
-    const saveBlockList = sandbox.stub(feed, "_saveBlockList");
+    const saveBlockList = sandbox.stub(feed._storage, "set");
     feed.store = {dispatch: sandbox.stub()};
     const blockList = ["foo", "bar", "baz"];
 
     feed.onAction({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList});
 
     assert.calledOnce(saveBlockList);
+    assert.calledWith(saveBlockList, "blockList", blockList);
     assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: blockList}));
   });
   it("should dispatch an update event when the Search observer is called", async () => {

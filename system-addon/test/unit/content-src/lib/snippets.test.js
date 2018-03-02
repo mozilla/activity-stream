@@ -254,6 +254,12 @@ describe("SnippetsProvider", () => {
       await snippets.init({connect: false});
       assert.calledWith(global.addMessageListener, INCOMING_MESSAGE_NAME, snippets._onAction);
     });
+    it("should set the blocklist based on init options", async () => {
+      const blockList = [1, 2, 3];
+      await snippets.init({appData: {blockList}});
+
+      assert.equal(snippets.snippetsMap.get("blockList"), blockList);
+    });
   });
   describe("#uninit", () => {
     let fakeEl;
