@@ -132,7 +132,7 @@ this.SnippetsFeed = class SnippetsFeed {
     this._storage.set("blockList", blockList);
   }
 
-  getBlockList() {
+  _getBlockList() {
     return this._storage.get("blockList");
   }
 
@@ -150,7 +150,7 @@ this.SnippetsFeed = class SnippetsFeed {
       defaultBrowser: this.isDefaultBrowser(),
       isDevtoolsUser: this.isDevtoolsUser(),
       addonInfo: await this.getAddonInfo(),
-      blockList: await this.getBlockList()
+      blockList: await this._getBlockList()
     };
     this._dispatchChanges(data);
   }

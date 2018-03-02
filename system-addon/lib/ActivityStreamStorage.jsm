@@ -6,7 +6,6 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
     this.dbVersion = 2;
     this.storeName = storeName;
 
-    this.initialized = false;
     this._db = null;
   }
 
@@ -37,7 +36,6 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
 
   async init() {
     this._db = await this._openDatabase();
-    this.initialized = true;
   }
 };
 

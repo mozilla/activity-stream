@@ -31,9 +31,16 @@ let overrider = new GlobalOverrider();
 describe("SnippetsFeed", () => {
   let sandbox;
   let clock;
+  let fakeDB;
   beforeEach(() => {
     clock = sinon.useFakeTimers();
     sandbox = sinon.sandbox.create();
+    fakeDB = {
+      objectStore: sandbox.stub().returns({
+        get: sandbox.stub().returns(Promise.resolve()),
+        set: sandbox.stub().returns(Promise.resolve())
+      })
+    };
     overrider.set({
       ProfileAge: class ProfileAge {
         constructor() {
@@ -42,7 +49,18 @@ describe("SnippetsFeed", () => {
         }
       },
       FxAccounts: {config: {promiseSignUpURI: sandbox.stub().returns(Promise.resolve(signUpUrl))}},
-      NewTabUtils: {activityStreamProvider: {getTotalBookmarksCount: () => Promise.resolve(42)}}
+      NewTabUtils: {activityStreamProvider: {getTotalBookmarksCount: () => Promise.resolve(42)}},
+      ActivityStreamStorage: class ActivityStreamStorage {
+        constructor() {
+          this.init = sandbox.stub.callsFake(Promise.resolve());
+          this.get = sandbox.stub();
+          this.set = sandbox.stub();
+        }
+        init() {
+          return Promise.resolve();
+        }
+      },
+      IndexedDB: {open: () => Promise.resolve(fakeDB)}
     });
   });
   afterEach(() => {
@@ -124,11 +142,13 @@ describe("SnippetsFeed", () => {
   });
   it("should broadcast a SNIPPET_BLOCKED when a SNIPPETS_BLOCKLIST_UPDATED is received", () => {
     const feed = new SnippetsFeed();
+    const saveBlockList = sandbox.stub(feed, "_saveBlockList");
     feed.store = {dispatch: sandbox.stub()};
     const blockList = ["foo", "bar", "baz"];
 
     feed.onAction({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList});
 
+    assert.calledOnce(saveBlockList);
     assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: blockList}));
   });
   it("should dispatch an update event when the Search observer is called", async () => {
