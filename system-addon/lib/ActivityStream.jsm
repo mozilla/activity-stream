@@ -118,7 +118,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["telemetry.ut.events", {
     title: "Enable Unified Telemetry event data collection",
-    value: !AppConstants.RELEASE_OR_BETA,
+    value: AppConstants.EARLY_BETA_OR_EARLIER,
     value_local_dev: false
   }],
   ["telemetry.ping.endpoint", {
