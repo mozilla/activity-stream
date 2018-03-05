@@ -10,6 +10,9 @@ import {TopSiteForm} from "./TopSiteForm";
 import {TopSiteList} from "./TopSite";
 
 function topSiteIconType(link) {
+  if (link.customScreenshotURL) {
+    return "custom_screenshot";
+  }
   if (link.tippyTopIcon || link.faviconRef === "tippytop") {
     return "tippytop";
   }
