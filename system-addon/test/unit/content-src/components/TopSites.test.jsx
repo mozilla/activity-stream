@@ -653,7 +653,7 @@ describe("<TopSiteForm>", () => {
       wrapper.find(".preview").simulate("click");
 
       assert.calledTwice(wrapper.props().dispatch);
-      assert.calledWith(wrapper.props().dispatch, ac.AlsoToMain({
+      assert.calledWith(wrapper.props().dispatch, ac.OnlyToMain({
         type: at.PREVIEW_REQUEST,
         data: {customScreenshotURL: "http://screenshot"}
       }));
@@ -682,7 +682,7 @@ describe("<TopSiteForm>", () => {
 
       assert.equal(wrapper.find(".top-site-icon").getDOMNode().style["background-image"], "url(\"bar\")");
 
-      wrapper.setProps({"screenshotPreview": "foo"});
+      wrapper.setState({"screenshotPreview": "foo"});
 
       assert.equal(wrapper.find(".top-site-icon").getDOMNode().style["background-image"], "url(\"foo\")");
     });

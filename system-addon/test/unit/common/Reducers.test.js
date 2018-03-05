@@ -47,25 +47,19 @@ describe("Reducers", () => {
     it("should set screenshotRequestFailed to true on PREVIEW_FAILED", () => {
       const action = {type: at.PREVIEW_FAILED};
       const nextState = TopSites({}, action);
-      assert.isTrue(nextState.screenshotRequestFailed);
+      assert.isTrue(nextState.editForm.screenshotRequestFailed);
     });
-    it("should set screenshotRequestFailed to false on SCREENSHOT_UPDATED", () => {
-      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
-      const action = {type: at.SCREENSHOT_UPDATED, data: {url: "bar.com", customScreenshot: "data:123"}};
-      const nextState = TopSites(oldState, action);
-      assert.isFalse(nextState.screenshotRequestFailed);
-    });
-    it("should add screenshotPreview on SCREENSHOT_UPDATED", () => {
+    it("should add screenshotPreview on SCREENSHOT_PREVIEW", () => {
       const oldState = {};
       const action = {type: at.SCREENSHOT_PREVIEW, data: {screenshotPreview: "data:123"}};
       const nextState = TopSites(oldState, action);
-      assert.propertyVal(nextState, "screenshotPreview", "data:123");
+      assert.propertyVal(nextState.editForm, "screenshotPreview", "data:123");
     });
-    it("should have not have screenshotRequestFailed", () => {
+    it("should remove screenshotRequestFailed SCREENSHOT_PREVIEW", () => {
       const oldState = {};
       const action = {type: at.SCREENSHOT_PREVIEW, data: {screenshotPreview: "data:123"}};
       const nextState = TopSites(oldState, action);
-      assert.propertyVal(nextState, "screenshotRequestFailed", false);
+      assert.propertyVal(nextState.editForm, "screenshotRequestFailed", false);
     });
     it("should add customScreenshot on SCREENSHOT_UPDATED", () => {
       const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};

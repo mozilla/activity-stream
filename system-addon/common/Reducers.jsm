@@ -98,7 +98,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
     case at.SCREENSHOT_PREVIEW:
       return Object.assign({}, prevState, {
         editForm: {
-          index: prevState.editForm.index,
+          index: prevState.editForm ? prevState.editForm.index : -1,
           screenshotRequestFailed: false,
           screenshotPreview: action.data.screenshotPreview,
           customScreenshotURL: action.data.customScreenshotURL

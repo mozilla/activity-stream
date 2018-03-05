@@ -259,7 +259,7 @@ this.TopSitesFeed = class TopSitesFeed {
     }
     NewTabUtils.pinnedLinks.pin(toPin, index);
 
-    await this._updateLinkCustomScreenshot(toPin);
+    await this._updateLinkCustomScreenshot({customScreenshotURL, url});
   }
 
   async _updateLinkCustomScreenshot(site) {

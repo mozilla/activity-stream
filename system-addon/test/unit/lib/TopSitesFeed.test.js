@@ -454,12 +454,12 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(fakeScreenshot.getScreenshotForURL);
       assert.calledWithExactly(fakeScreenshot.getScreenshotForURL, "custom");
     });
-    it("should dispatch SCREENSHOT_UPDATED if request is succesful", async () => {
+    it("should dispatch SCREENSHOT_PREVIEW if request is succesful", async () => {
       await feed.getScreenshotPreview({customScreenshotURL: "custom"}, 1234);
 
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.OnlyToOneContent({
-        data: {screenshotPreview: FAKE_SCREENSHOT},
+        data: {screenshotPreview: FAKE_SCREENSHOT, customScreenshotURL: "custom"},
         type: at.SCREENSHOT_PREVIEW
       }, 1234));
     });
@@ -469,7 +469,7 @@ describe("Top Sites Feed", () => {
 
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.OnlyToOneContent({
-        data: {screenshotPreview: null},
+        data: {screenshotPreview: null, customScreenshotURL: "custom"},
         type: at.PREVIEW_FAILED
       }, 1234));
     });
@@ -749,7 +749,7 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, site, 2);
     });
-    it("it should lookup the link object to update the custom screenshot", async () => {
+    it("should lookup the link object to update the custom screenshot", async () => {
       const site = {url: "foo.bar", label: "foo", customScreenshotURL: "screenshot"};
       sandbox.spy(feed.pinnedCache, "request");
 
@@ -757,7 +757,7 @@ describe("Top Sites Feed", () => {
 
       assert.calledOnce(feed.pinnedCache.request);
     });
-    it("it should lookup the link object to update the custom screenshot", async () => {
+    it("should lookup the link object to update the custom screenshot", async () => {
       const site = {url: "foo.bar", label: "foo", customScreenshotURL: null};
       sandbox.spy(feed.pinnedCache, "request");
 
@@ -765,7 +765,7 @@ describe("Top Sites Feed", () => {
 
       assert.calledOnce(feed.pinnedCache.request);
     });
-    it("it should not do a link object lookup if custom screenshot field is not set", async () => {
+    it("should not do a link object lookup if custom screenshot field is not set", async () => {
       const site = {url: "foo.bar", label: "foo"};
       sandbox.spy(feed.pinnedCache, "request");
 
