@@ -175,7 +175,7 @@ export class TopSiteForm extends React.PureComponent {
 
     if (!this.state.showCustomScreenshotForm) {
       return (<a href="" className="enable-custom-image-input" onClick={this.onEnableScreenshotUrlForm}>
-        <FormattedMessage id="topsites_form_image_enable_button" />
+        <FormattedMessage id="topsites_form_use_image_link" />
       </a>);
     }
     return (<div className="custom-image-input-container">
@@ -188,8 +188,8 @@ export class TopSiteForm extends React.PureComponent {
         typeUrl={true}
         value={this.state.customScreenshotUrl}
         validationError={validationError}
-        titleId="topsites_form_image_label"
-        placeholderId="topsites_form_image_placeholder"
+        titleId="topsites_form_image_url_label"
+        placeholderId="topsites_form_url_placeholder"
         intl={this.props.intl} />
     </div>);
   }

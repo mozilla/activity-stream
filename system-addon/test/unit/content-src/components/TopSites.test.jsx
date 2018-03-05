@@ -884,7 +884,7 @@ describe("<TopSiteForm>", () => {
 
       wrapper.setState({customScreenshotUrl: "foo"});
 
-      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_image_button").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_preview_button").length, 1);
     });
 
     it("should transition from add to preview", () => {
@@ -892,7 +892,7 @@ describe("<TopSiteForm>", () => {
 
       wrapper.setState({customScreenshotUrl: "foo"});
 
-      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_image_button").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_preview_button").length, 1);
     });
   });
 
