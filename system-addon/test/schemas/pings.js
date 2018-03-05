@@ -88,7 +88,11 @@ export const UserEventAction = Joi.object().keys({
       "ARCHIVE_FROM_POCKET"
     ]).required(),
     source: Joi.valid(["TOP_SITES", "TOP_STORIES", "HIGHLIGHTS"]),
-    action_position: Joi.number().integer()
+    action_position: Joi.number().integer(),
+    value: Joi.object().keys({
+      icon_type: Joi.valid(["tippytop", "rich_icon", "screenshot_with_icon", "screenshot", "no_image"]),
+      card_type: Joi.valid(["bookmark", "trending", "pinned", "pocket"])
+    })
   }).required(),
   meta: Joi.object().keys({
     to: Joi.valid(MAIN_MESSAGE_TYPE).required(),

@@ -134,12 +134,24 @@ export class TopSite extends React.PureComponent {
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
   }
 
+  /**
+   * Report to telemetry additional information about the item.
+   */
+  _getTelemetryInfo() {
+    const value = {icon_type: this.props.link.iconType};
+    // Filter out "not_pinned" type for being the default
+    if (this.props.link.isPinned) {
+      value.card_type = "pinned";
+    }
+    return {value};
+  }
+
   userEvent(event) {
-    this.props.dispatch(ac.UserEvent({
+    this.props.dispatch(ac.UserEvent(Object.assign({
       event,
       source: TOP_SITES_SOURCE,
       action_position: this.props.index
-    }));
+    }, this._getTelemetryInfo())));
   }
 
   onLinkClick(ev) {
@@ -175,6 +187,7 @@ export class TopSite extends React.PureComponent {
               onUpdate={this.onMenuUpdate}
               options={TOP_SITES_CONTEXT_MENU_OPTIONS}
               site={link}
+              siteInfo={this._getTelemetryInfo()}
               source={TOP_SITES_SOURCE} />
           }
         </div>
@@ -356,7 +369,7 @@ export class _TopSiteList extends React.PureComponent {
     const maxNarrowVisibleIndex = props.TopSitesRows * 6;
 
     for (let i = 0, l = topSites.length; i < l; i++) {
-      const link = topSites[i];
+      const link = topSites[i] && Object.assign({}, topSites[i], {iconType: this.props.topSiteIconType(topSites[i])});
       const slotProps = {
         key: link ? link.url : holeIndex++,
         index: i

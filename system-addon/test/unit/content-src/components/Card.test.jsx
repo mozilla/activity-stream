@@ -36,6 +36,9 @@ describe("<Card>", () => {
   beforeEach(() => {
     wrapper = mountCardWithProps(DEFAULT_PROPS);
   });
+  afterEach(() => {
+    DEFAULT_PROPS.dispatch.reset();
+  });
   it("should render a Card component", () => assert.ok(wrapper.exists()));
   it("should add the right url", () => {
     assert.propertyVal(wrapper.find("a").props(), "href", DEFAULT_PROPS.link.url);
@@ -208,6 +211,23 @@ describe("<Card>", () => {
         source: DEFAULT_PROPS.eventSource,
         click: 0,
         tiles: [{id: DEFAULT_PROPS.link.guid, pos: DEFAULT_PROPS.index}]
+      }));
+    });
+    it("should provide card_type to telemetry info if type is not history", () => {
+      const link = Object.assign({}, DEFAULT_PROPS.link);
+      link.type = "bookmark";
+      wrapper = mountWithIntl(<Card {...Object.assign({}, DEFAULT_PROPS, {link})} />);
+      const card = wrapper.find(".card");
+      const event = {altKey: "1", button: "2", ctrlKey: "3", metaKey: "4", shiftKey: "5"};
+
+      card.simulate("click", Object.assign({}, event, {preventDefault: () => {}}));
+
+      assert.isUserEventAction(DEFAULT_PROPS.dispatch.secondCall.args[0]);
+      assert.calledWith(DEFAULT_PROPS.dispatch.secondCall, ac.UserEvent({
+        event: "CLICK",
+        source: DEFAULT_PROPS.eventSource,
+        action_position: DEFAULT_PROPS.index,
+        value: {card_type: link.type}
       }));
     });
     it("should notify Web Extensions with WEBEXT_CLICK if props.isWebExtension is true", () => {

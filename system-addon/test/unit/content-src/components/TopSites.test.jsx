@@ -20,6 +20,7 @@ const perfSvc = {
 const DEFAULT_PROPS = {
   TopSites: {initialized: true, rows: []},
   TopSitesRows: TOP_SITES_DEFAULT_ROWS,
+  topSiteIconType: () => "no_image",
   dispatch() {},
   intl: {formatMessage: x => x},
   perfSvc
@@ -523,7 +524,7 @@ describe("<TopSite>", () => {
     });
     it("should dispatch a UserEventAction with the right data", () => {
       const dispatch = sinon.stub();
-      const wrapper = shallow(<TopSite link={link} index={3} dispatch={dispatch} />);
+      const wrapper = shallow(<TopSite link={Object.assign({}, link, {iconType: "rich_icon", isPinned: true})} index={3} dispatch={dispatch} />);
 
       wrapper.find(TopSiteLink).simulate("click", {});
 
@@ -533,6 +534,8 @@ describe("<TopSite>", () => {
       assert.propertyVal(action.data, "event", "CLICK");
       assert.propertyVal(action.data, "source", "TOP_SITES");
       assert.propertyVal(action.data, "action_position", 3);
+      assert.propertyVal(action.data.value, "card_type", "pinned");
+      assert.propertyVal(action.data.value, "icon_type", "rich_icon");
     });
   });
 });

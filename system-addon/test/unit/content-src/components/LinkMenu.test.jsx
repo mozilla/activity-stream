@@ -139,7 +139,7 @@ describe("<LinkMenu>", () => {
   describe(".onClick", () => {
     const FAKE_INDEX = 3;
     const FAKE_SOURCE = "TOP_SITES";
-    const FAKE_SITE = {url: "https://foo.com", pocket_id: "1234", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "history"};
+    const FAKE_SITE = {url: "https://foo.com", pocket_id: "1234", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "bookmark"};
     const dispatch = sinon.stub();
     const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket", "DeleteFromPocket", "ArchiveFromPocket", "WebExtDismiss"];
     const expectedActionData = {
@@ -159,6 +159,7 @@ describe("<LinkMenu>", () => {
 
     const {options} = shallowWithIntl(<LinkMenu
       site={FAKE_SITE}
+      siteInfo={{value: {card_type: FAKE_SITE.type}}}
       dispatch={dispatch}
       index={FAKE_INDEX}
       isPrivateBrowsingEnabled={true}
@@ -202,6 +203,7 @@ describe("<LinkMenu>", () => {
           assert.isUserEventAction(action);
           assert.propertyVal(action.data, "source", FAKE_SOURCE);
           assert.propertyVal(action.data, "action_position", FAKE_INDEX);
+          assert.propertyVal(action.data.value, "card_type", FAKE_SITE.type);
         }
       });
       it(`should send impression stats for ${option.id}`, () => {
