@@ -264,7 +264,7 @@ this.TopSitesFeed = class TopSitesFeed {
 
   async _clearLinkCustomScreenshot(site) {
     // If screenshot url changed or was removed we need to update the cached link obj
-    if (site.customScreenshotURL || site.customScreenshotURL === null) {
+    if (site.customScreenshotURL !== undefined) {
       const pinned = await this.pinnedCache.request();
       const link = pinned.find(pin => pin && pin.url === site.url);
       if (link && link.customScreenshotURL !== site.customScreenshotURL) {
