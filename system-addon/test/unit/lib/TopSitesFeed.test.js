@@ -825,7 +825,7 @@ describe("Top Sites Feed", () => {
       assert.notCalled(feed.insert);
     });
   });
-  describe("updateLinkCustomScreenshot", () => {
+  describe("clearLinkCustomScreenshot", () => {
     it("should remove cached screenshot if custom url changes", async () => {
       const stub = sandbox.stub();
       sandbox.stub(feed.pinnedCache, "request").returns(Promise.resolve([{
@@ -834,7 +834,7 @@ describe("Top Sites Feed", () => {
         __sharedCache: {updateLink: stub}
       }]));
 
-      await feed._updateLinkCustomScreenshot({url: "foo", customScreenshotURL: "new_screenshot"});
+      await feed._clearLinkCustomScreenshot({url: "foo", customScreenshotURL: "new_screenshot"});
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, "customScreenshot", undefined);
@@ -847,7 +847,7 @@ describe("Top Sites Feed", () => {
         __sharedCache: {updateLink: stub}
       }]));
 
-      await feed._updateLinkCustomScreenshot({url: "foo", customScreenshotURL: "new_screenshot"});
+      await feed._clearLinkCustomScreenshot({url: "foo", customScreenshotURL: "new_screenshot"});
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, "customScreenshot", undefined);

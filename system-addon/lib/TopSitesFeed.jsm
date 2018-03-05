@@ -259,10 +259,10 @@ this.TopSitesFeed = class TopSitesFeed {
     }
     NewTabUtils.pinnedLinks.pin(toPin, index);
 
-    await this._updateLinkCustomScreenshot({customScreenshotURL, url});
+    await this._clearLinkCustomScreenshot({customScreenshotURL, url});
   }
 
-  async _updateLinkCustomScreenshot(site) {
+  async _clearLinkCustomScreenshot(site) {
     // If screenshot url changed or was removed we need to update the cached link obj
     if (site.customScreenshotURL || site.customScreenshotURL === null) {
       const pinned = await this.pinnedCache.request();
@@ -354,7 +354,7 @@ this.TopSitesFeed = class TopSitesFeed {
       action.data.site, index,
       action.data.draggedFromIndex !== undefined ? action.data.draggedFromIndex : this.store.getState().Prefs.values.topSitesRows * TOP_SITES_MAX_SITES_PER_ROW);
 
-    await this._updateLinkCustomScreenshot(action.data.site);
+    await this._clearLinkCustomScreenshot(action.data.site);
     this._broadcastPinnedSitesUpdated();
   }
 
