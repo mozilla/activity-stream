@@ -61,12 +61,6 @@ describe("Reducers", () => {
       const nextState = TopSites(oldState, action);
       assert.propertyVal(nextState.editForm, "screenshotRequestFailed", false);
     });
-    it("should add customScreenshot on SCREENSHOT_UPDATED", () => {
-      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
-      const action = {type: at.SCREENSHOT_UPDATED, data: {url: "bar.com", customScreenshot: "data:123"}};
-      const nextState = TopSites(oldState, action);
-      assert.deepEqual(nextState.rows, [{url: "foo.com"}, {url: "bar.com", customScreenshot: "data:123"}]);
-    });
     it("should add screenshots for SCREENSHOT_UPDATED", () => {
       const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
       const action = {type: at.SCREENSHOT_UPDATED, data: {url: "bar.com", screenshot: "data:123"}};

@@ -392,14 +392,14 @@ describe("Top Sites Feed", () => {
         assert.calledWith(feed._fetchIcon, link);
       });
     });
-    it("should call _fetchCustomScreenshot when customScreenshotURL is set", async () => {
+    it("should call _fetchScreenshot when customScreenshotURL is set", async () => {
       links = [];
       fakeNewTabUtils.pinnedLinks.links = [{url: "foo", customScreenshotURL: "custom"}];
-      sinon.stub(feed, "_fetchCustomScreenshot");
+      sinon.stub(feed, "_fetchScreenshot");
 
       await feed.getLinksWithDefaults();
 
-      assert.calledOnce(feed._fetchCustomScreenshot);
+      assert.calledWith(feed._fetchScreenshot, sinon.match.object, "custom");
     });
   });
   describe("#refresh", () => {
@@ -543,15 +543,22 @@ describe("Top Sites Feed", () => {
       assert.notProperty(link, "tippyTopIcon");
     });
   });
-  describe("#_fetchCustomScreenshot", () => {
+  describe("#_fetchScreenshot", () => {
     it("should call maybeCacheScreenshot", async () => {
       const updateLink = sinon.stub();
       const link = {customScreenshotURL: "custom", __sharedCache: {updateLink}};
-      await feed._fetchCustomScreenshot(link, "custom");
+      await feed._fetchScreenshot(link, "custom");
 
       assert.calledOnce(fakeScreenshot.maybeCacheScreenshot);
       assert.calledWithExactly(fakeScreenshot.maybeCacheScreenshot, link, link.customScreenshotURL,
-        "customScreenshot", sinon.match.func);
+        "screenshot", sinon.match.func);
+    });
+    it("should not call maybeCacheScreenshot if screenshot is set", async () => {
+      const updateLink = sinon.stub();
+      const link = {customScreenshotURL: "custom", __sharedCache: {updateLink}, screenshot: true};
+      await feed._fetchScreenshot(link, "custom");
+
+      assert.notCalled(fakeScreenshot.maybeCacheScreenshot);
     });
   });
   describe("#onAction", () => {
@@ -837,7 +844,7 @@ describe("Top Sites Feed", () => {
       await feed._clearLinkCustomScreenshot({url: "foo", customScreenshotURL: "new_screenshot"});
 
       assert.calledOnce(stub);
-      assert.calledWithExactly(stub, "customScreenshot", undefined);
+      assert.calledWithExactly(stub, "screenshot", undefined);
     });
     it("should remove cached screenshot if custom url is removed", async () => {
       const stub = sandbox.stub();
@@ -850,7 +857,7 @@ describe("Top Sites Feed", () => {
       await feed._clearLinkCustomScreenshot({url: "foo", customScreenshotURL: "new_screenshot"});
 
       assert.calledOnce(stub);
-      assert.calledWithExactly(stub, "customScreenshot", undefined);
+      assert.calledWithExactly(stub, "screenshot", undefined);
     });
   });
   describe("#drop", () => {

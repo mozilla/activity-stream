@@ -108,11 +108,7 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       newRows = prevState.rows.map(row => {
         if (row && row.url === action.data.url) {
           hasMatch = true;
-          const {screenshot, customScreenshot} = action.data;
-          if (screenshot) {
-            return Object.assign({}, row, {screenshot});
-          }
-          return Object.assign({}, row, {customScreenshot});
+          return Object.assign({}, row, {screenshot: action.data.screenshot});
         }
         return row;
       });

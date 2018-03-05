@@ -69,12 +69,12 @@ export class TopSiteLink extends React.PureComponent {
     let smallFaviconFallback;
     if (defaultStyle) { // Render the Topsite without any image or icon
       smallFaviconFallback = false;
-    } else if (link.screenshotPreview || link.customScreenshot) {
+    } else if (link.screenshotPreview || link.customScreenshotURL) {
       // styles and class names for top sites with rich icons
       imageClassName = "top-site-icon rich-icon";
       imageStyle = {
         backgroundColor: link.backgroundColor,
-        backgroundImage: `url(${link.screenshotPreview || link.customScreenshot})`
+        backgroundImage: `url(${link.screenshotPreview || link.screenshot})`
       };
     } else if (tippyTopIcon || faviconSize >= MIN_RICH_FAVICON_SIZE) {
       // styles and class names for top sites with rich icons

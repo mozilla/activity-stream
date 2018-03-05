@@ -106,7 +106,7 @@ this.TopSitesFeed = class TopSitesFeed {
         {isDefault: !!notBlockedDefaultSites.find(finder)}, link, {hostname: shortURL(link)});
 
       // Add in favicons if we don't already have it
-      if (!copy.favicon && !copy.customScreenshotURL) {
+      if (!copy.favicon) {
         try {
           NewTabUtils.activityStreamProvider._faviconBytesToDataURI(await
             NewTabUtils.activityStreamProvider._addFavicons([copy]));
@@ -138,8 +138,8 @@ this.TopSitesFeed = class TopSitesFeed {
     for (const link of withPinned) {
       if (link) {
         // If there is a custom screenshot this is the only image we display
-        if (link.customScreenshotURL && !link.customScreenshot) {
-          this._fetchCustomScreenshot(link);
+        if (link.customScreenshotURL) {
+          this._fetchScreenshot(link, link.customScreenshotURL);
         } else {
           this._fetchIcon(link);
         }
@@ -191,24 +191,21 @@ this.TopSitesFeed = class TopSitesFeed {
     this._requestRichIcon(link.url);
 
     // Also request a screenshot if we don't have one yet
-    if (!link.screenshot) {
-      const {url} = link;
-      await Screenshots.maybeCacheScreenshot(link, url, "screenshot",
-        screenshot => this.store.dispatch(ac.BroadcastToContent({
-          data: {screenshot, url},
-          type: at.SCREENSHOT_UPDATED
-        })));
-    }
+    await this._fetchScreenshot(link, link.url);
   }
 
-/**
- * Fetch, cache and broadcast a custom screenshot for a specific topsite.
- * @param link cached topsite object
- */
-  async _fetchCustomScreenshot(link) {
-    await Screenshots.maybeCacheScreenshot(link, link.customScreenshotURL, "customScreenshot",
-      customScreenshot => this.store.dispatch(ac.BroadcastToContent({
-        data: {customScreenshot, url: link.url},
+  /**
+   * Fetch, cache and broadcast a screenshot for a specific topsite.
+   * @param link cached topsite object
+   * @param url where to fetch the image from
+   */
+  async _fetchScreenshot(link, url) {
+    if (link.screenshot) {
+      return;
+    }
+    await Screenshots.maybeCacheScreenshot(link, url, "screenshot",
+      screenshot => this.store.dispatch(ac.BroadcastToContent({
+        data: {screenshot, url: link.url},
         type: at.SCREENSHOT_UPDATED
       })));
   }
@@ -268,7 +265,7 @@ this.TopSitesFeed = class TopSitesFeed {
       const pinned = await this.pinnedCache.request();
       const link = pinned.find(pin => pin && pin.url === site.url);
       if (link && link.customScreenshotURL !== site.customScreenshotURL) {
-        link.__sharedCache.updateLink("customScreenshot", undefined);
+        link.__sharedCache.updateLink("screenshot", undefined);
       }
     }
   }
