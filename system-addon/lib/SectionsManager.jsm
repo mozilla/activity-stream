@@ -116,7 +116,7 @@ const SectionsManager = {
       options = JSON.parse(optionsPrefValue);
     } catch (e) {
       options = {};
-      Cu.reportError("Problem parsing options pref", e);
+      Cu.reportError(`Problem parsing options pref for ${feedPrefName}`);
     }
     const section = BUILT_IN_SECTIONS[feedPrefName](options);
     section.pref.feed = feedPrefName;
