@@ -35,7 +35,6 @@ export class SnippetsMap extends Map {
 
   clear() {
     super.clear();
-    this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: []}));
     return this._dbTransaction(db => db.clear());
   }
 
@@ -57,7 +56,7 @@ export class SnippetsMap extends Map {
     const {blockList} = this;
     if (!blockList.includes(id)) {
       blockList.push(id);
-      this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList}));
+      this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: id}));
       await this.set("blockList", blockList);
     }
   }
@@ -281,8 +280,10 @@ export class SnippetsProvider {
 
   _onAction(msg) {
     if (msg.data.type === at.SNIPPET_BLOCKED) {
-      this.snippetsMap.set("blockList", msg.data.data);
-      document.getElementById("snippets-container").style.display = "none";
+      if (!this.snippetsMap.blockList.includes(msg.data.data)) {
+        this.snippetsMap.set("blockList", this.snippetsMap.blockList.concat(msg.data.data));
+        document.getElementById("snippets-container").style.display = "none";
+      }
     }
   }
 

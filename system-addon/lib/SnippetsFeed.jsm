@@ -128,8 +128,9 @@ this.SnippetsFeed = class SnippetsFeed {
     this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPETS_DATA, data}));
   }
 
-  _saveBlockList(blockList) {
-    this._storage.set("blockList", blockList);
+  async _saveBlockedSnippet(snippetId) {
+    const blockList = await this._getBlockList() || [];
+    return this._storage.set("blockList", blockList.concat([snippetId]));
   }
 
   _getBlockList() {
@@ -150,7 +151,7 @@ this.SnippetsFeed = class SnippetsFeed {
       defaultBrowser: this.isDefaultBrowser(),
       isDevtoolsUser: this.isDevtoolsUser(),
       addonInfo: await this.getAddonInfo(),
-      blockList: await this._getBlockList()
+      blockList: await this._getBlockList() || []
     };
     this._dispatchChanges(data);
   }
@@ -199,7 +200,7 @@ this.SnippetsFeed = class SnippetsFeed {
         this.showFirefoxAccounts(action._target.browser);
         break;
       case at.SNIPPETS_BLOCKLIST_UPDATED:
-        this._saveBlockList(action.data);
+        this._saveBlockedSnippet(action.data);
         this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: action.data}));
         break;
       case at.TOTAL_BOOKMARKS_REQUEST:

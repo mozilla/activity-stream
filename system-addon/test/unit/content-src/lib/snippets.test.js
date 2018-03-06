@@ -105,12 +105,10 @@ describe("SnippetsMap", () => {
       assert.deepEqual(snippetsMap.blockList, [123]);
     });
     it("should dispatch a SNIPPETS_BLOCKLIST_UPDATED event", () => {
-      snippetsMap.set("blockList", [123, 456]);
-
       snippetsMap.blockSnippet(789);
 
       assert.calledOnce(dispatch);
-      assert.calledWith(dispatch, ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: [123, 456, 789]}));
+      assert.calledWith(dispatch, ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: 789}));
     });
     it("should not add ids that are already blocked", () => {
       snippetsMap.blockSnippet(123);
@@ -396,14 +394,13 @@ describe("SnippetsProvider", () => {
       sandbox.stub(global.document, "getElementById").returns(containerEl);
     });
     it("should set the blockList and hide the element if an incoming SNIPPET_BLOCKED message is received", async () => {
-      const newBlockList = ["foo", "bar"];
       assert.deepEqual(global.gSnippetsMap.blockList, []);
       await snippets.init({connect: false});
-      const action = {type: at.SNIPPET_BLOCKED, data: newBlockList};
+      const action = {type: at.SNIPPET_BLOCKED, data: "foo"};
 
       snippets._onAction({name: INCOMING_MESSAGE_NAME, data: action});
 
-      assert.equal(global.gSnippetsMap.blockList, newBlockList);
+      assert.deepEqual(global.gSnippetsMap.blockList, ["foo"]);
       assert.calledWith(global.document.getElementById, "snippets-container");
       assert.equal(containerEl.style.display, "none");
     });

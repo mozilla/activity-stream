@@ -138,17 +138,25 @@ describe("SnippetsFeed", () => {
 
     assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.SNIPPETS_RESET}));
   });
-  it("should broadcast a SNIPPET_BLOCKED when a SNIPPETS_BLOCKLIST_UPDATED is received", () => {
+  it("should update the blocklist on SNIPPETS_BLOCKLIST_UPDATED", async () => {
     const feed = new SnippetsFeed();
     const saveBlockList = sandbox.stub(feed._storage, "set");
+    sandbox.stub(feed._storage, "get").returns(["bar"]);
     feed.store = {dispatch: sandbox.stub()};
-    const blockList = ["foo", "bar", "baz"];
 
-    feed.onAction({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: blockList});
+    await feed._saveBlockedSnippet("foo");
 
     assert.calledOnce(saveBlockList);
-    assert.calledWith(saveBlockList, "blockList", blockList);
-    assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: blockList}));
+    assert.equal(saveBlockList.args[0][0], "blockList");
+    assert.deepEqual(saveBlockList.args[0][1], ["bar", "foo"]);
+  });
+  it("should broadcast a SNIPPET_BLOCKED when a SNIPPETS_BLOCKLIST_UPDATED is received", () => {
+    const feed = new SnippetsFeed();
+    feed.store = {dispatch: sandbox.stub()};
+
+    feed.onAction({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: "foo"});
+
+    assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: "foo"}));
   });
   it("should dispatch an update event when the Search observer is called", async () => {
     const feed = new SnippetsFeed();

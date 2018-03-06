@@ -562,9 +562,8 @@ describe("Reducers", () => {
       assert.equal(state, INITIAL_STATE.Snippets);
     });
     it("should set the new blocklist on SNIPPET_BLOCKED", () => {
-      const blockList = [1, 2, 3];
-      const state = Snippets({}, {type: at.SNIPPET_BLOCKED, data: blockList});
-      assert.equal(state.blockList, blockList);
+      const state = Snippets({blockList: []}, {type: at.SNIPPET_BLOCKED, data: 1});
+      assert.deepEqual(state.blockList, [1]);
     });
   });
   describe("PreferencesPane", () => {
