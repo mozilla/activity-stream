@@ -30,7 +30,7 @@ async function setFoo() {
 
 `.blockList`: (Array) An array of snippet IDs that have been blocked by the users, or an empty array if none have been blocked.
 
-`.blockSnippetById(id)`: (func) A function that adds an id to a blockList and returns
+`.blockSnippet(id)`: (func) A function that adds an id to a blockList and returns
 a Promise that resolves when the blockList has been written to indexedDB.
 
 `.showFirefoxAccounts()`: (func) A function that opens the Firefox Accounts signup page
