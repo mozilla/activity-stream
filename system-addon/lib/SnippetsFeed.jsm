@@ -137,6 +137,10 @@ this.SnippetsFeed = class SnippetsFeed {
     return this._storage.get("blockList");
   }
 
+  _clearBlockList() {
+    return this._storage.set("blockList", []);
+  }
+
   async _refresh() {
     const profileInfo = await this.getProfileInfo();
     const data = {
@@ -202,6 +206,9 @@ this.SnippetsFeed = class SnippetsFeed {
       case at.SNIPPETS_BLOCKLIST_UPDATED:
         this._saveBlockedSnippet(action.data);
         this.store.dispatch(ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: action.data}));
+        break;
+      case at.SNIPPETS_BLOCKLIST_CLEARED:
+        this._clearBlockList();
         break;
       case at.TOTAL_BOOKMARKS_REQUEST:
         this.getTotalBookmarksCount(action._target.browser);

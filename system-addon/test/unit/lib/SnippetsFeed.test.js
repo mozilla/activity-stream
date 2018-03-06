@@ -158,6 +158,23 @@ describe("SnippetsFeed", () => {
 
     assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.SNIPPET_BLOCKED, data: "foo"}));
   });
+  it("should call _clearBlockList on SNIPPETS_BLOCKLIST_CLEARED", () => {
+    const feed = new SnippetsFeed();
+    const stub = sandbox.stub(feed, "_clearBlockList");
+
+    feed.onAction({type: at.SNIPPETS_BLOCKLIST_CLEARED});
+
+    assert.calledOnce(stub);
+  });
+  it("should set blockList to [] on SNIPPETS_BLOCKLIST_CLEARED", async () => {
+    const feed = new SnippetsFeed();
+    const stub = sandbox.stub(feed._storage, "set");
+
+    await feed._clearBlockList();
+
+    assert.calledOnce(stub);
+    assert.calledWithExactly(stub, "blockList", []);
+  });
   it("should dispatch an update event when the Search observer is called", async () => {
     const feed = new SnippetsFeed();
     feed.store = {dispatch: sandbox.stub()};

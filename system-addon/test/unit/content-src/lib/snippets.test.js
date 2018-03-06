@@ -304,6 +304,12 @@ describe("SnippetsProvider", () => {
       await snippets.init({connect: false, appData: {version: 5, snippetsURL: "foo.com"}});
       assert.calledOnce(global.gSnippetsMap.clear);
     });
+    it("should send SNIPPETS_BLOCKLIST_CLEARED if the cached version is different than the current version or missing", async () => {
+      await snippets.init({connect: false, appData: {version: 5, snippetsURL: "foo.com"}});
+
+      assert.calledOnce(global.gSnippetsMap._dispatch);
+      assert.calledWithExactly(global.gSnippetsMap._dispatch, ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_CLEARED}));
+    });
     it("should not clear gSnippetsMap if the cached version the same as the current version", async () => {
       sandbox.spy(global.gSnippetsMap, "clear");
       await snippets.init({connect: false, appData: {version: 4, snippetsURL: "foo.com"}});
