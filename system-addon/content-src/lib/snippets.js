@@ -322,7 +322,7 @@ export class SnippetsProvider {
     // Cache app data values so they can be accessible from gSnippetsMap
     for (const key of Object.keys(this.appData)) {
       if (key === "blockList") {
-        this.snippetsMap.set("blockList", this.appData[key] || []);
+        this.snippetsMap.set("blockList", this.appData[key]);
       } else {
         this.snippetsMap.set(`appData.${key}`, this.appData[key]);
       }
