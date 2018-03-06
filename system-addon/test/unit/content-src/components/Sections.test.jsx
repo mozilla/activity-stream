@@ -241,6 +241,23 @@ describe("<Section>", () => {
       // Did we remove the event listener?
       assert.calledWith(props.document.removeEventListener, "visibilitychange", listener);
     });
+    it("should remove visibility change listener when section is removed", () => {
+      const props = {
+        dispatch: sinon.spy(),
+        document: {
+          visibilityState: "hidden",
+          addEventListener: sinon.spy(),
+          removeEventListener: sinon.spy()
+        }
+      };
+
+      const section = renderSection(props);
+      assert.calledWith(props.document.addEventListener, "visibilitychange");
+      const [, listener] = props.document.addEventListener.firstCall.args;
+
+      section.unmount();
+      assert.calledWith(props.document.removeEventListener, "visibilitychange", listener);
+    });
     it("should send an impression if props are updated and props.rows are different", () => {
       const props = {dispatch: sinon.spy()};
       wrapper = renderSection(props);

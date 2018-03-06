@@ -49,7 +49,7 @@ export class Section extends React.PureComponent {
         props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
       }
 
-      // When the page becoems visible, send the impression stats ping if the section isn't collapsed.
+      // When the page becomes visible, send the impression stats ping if the section isn't collapsed.
       this._onVisibilityChange = () => {
         if (props.document.visibilityState === VISIBLE) {
           const {id, Prefs} = this.props;
@@ -90,6 +90,12 @@ export class Section extends React.PureComponent {
       )
     ) {
       this.sendImpressionStatsOrAddListener();
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._onVisibilityChange) {
+      this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
     }
   }
 
