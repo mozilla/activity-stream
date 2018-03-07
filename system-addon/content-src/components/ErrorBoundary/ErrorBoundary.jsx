@@ -1,4 +1,5 @@
 import {FormattedMessage} from "react-intl";
+import Raven from "raven-js";
 import React from "react";
 
 export class ErrorBoundaryFallback extends React.PureComponent {
@@ -50,10 +51,13 @@ export class ErrorBoundary extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {hasError: false};
+    this.raven = props.fakeRaven || Raven;
   }
 
   componentDidCatch(error, info) {
     this.setState({hasError: true});
+    // XXX info contains the stack; clarify in comment
+    this.raven.captureException(error, {extra: info});
   }
 
   render() {

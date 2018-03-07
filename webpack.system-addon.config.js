@@ -40,6 +40,7 @@ module.exports = {
   },
   externals: {
     "prop-types": "PropTypes",
+    "raven-js": "Raven",
     "react": "React",
     "react-dom": "ReactDOM",
     "react-intl": "ReactIntl",

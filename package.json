@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "@octokit/rest": "14.0.8",
-    "@sentry/cli": "1.30.2",
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
     "babel-plugin-jsm-to-commonjs": "0.4.0",

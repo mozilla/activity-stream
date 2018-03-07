@@ -179,6 +179,7 @@ function templateHTML(options, html) {
     `${options.baseUrl}vendor/react-intl.js`,
     `${options.baseUrl}vendor/redux.js`,
     `${options.baseUrl}vendor/react-redux.js`,
+    `${options.baseUrl}vendor/raven.js`, // XXX move to head and activite in this file to catch even more errors?
     `${options.baseUrl}prerendered/${options.locale}/activity-stream-strings.js`,
     `${options.baseUrl}data/content/activity-stream.bundle.js`
   ];
@@ -189,7 +190,7 @@ function templateHTML(options, html) {
 <html lang="${options.locale}" dir="${options.direction}">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="Content-Security-Policy-Report-Only" content="script-src 'unsafe-inline'; img-src http: https: data: blob:; style-src 'unsafe-inline'; child-src 'none'; object-src 'none'; report-uri https://tiles.services.mozilla.com/v4/links/activity-stream/csp">
+    <meta http-equiv="Content-Security-Policy-Report-Only" content="script-src 'unsafe-inline'; img-src http: https: data: blob:; style-src 'unsafe-inline'; child-src 'none'; object-src 'none'; connect-src https://sentry.prod.mozaws.net; report-uri https://tiles.services.mozilla.com/v4/links/activity-stream/csp">
     <title>${options.strings.newtab_page_title}</title>
     <link rel="icon" type="image/png" href="chrome://branding/content/icon32.png"/>
     <link rel="stylesheet" href="chrome://browser/content/contentSearchUI.css" />

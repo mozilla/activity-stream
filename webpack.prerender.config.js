@@ -18,6 +18,10 @@ module.exports = Object.assign({}, webpackConfig, {
     filename: "prerender.js",
     libraryTarget: "commonjs2"
   },
+  // Presumably we don't need to add Raven here because we're not using it until
+  // activity-stream.jsx gets rendered.  If we decide to try to move the raven
+  // initialization into the prerendered page in order to capture errors even
+  // earlier in page startup, we probably will need to add it here.
   externals: {
     "prop-types": "commonjs prop-types",
     "react": "commonjs react",
