@@ -43,7 +43,7 @@ test_newtab({
     let titleInput = titleSection.querySelector(".field  input");
     Assert.equal(titleInput.value, "youtube", "Title input is correctly populated");
     titleInput.value = "test";
-    titleInput.dispatchEvent(new Event("input", { bubbles: true }));
+    titleInput.dispatchEvent(new Event("input", {bubbles: true}));
     Assert.equal(titleInput.value, "test", "Title input is successfully updated");
 
     let urlSection = topsiteFormInputContainer.querySelector(".fields-and-preview .form-wrapper label:nth-child(2)");
