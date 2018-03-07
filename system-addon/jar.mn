@@ -16,6 +16,7 @@
   content/vendor/prop-types.js (./vendor/prop-types.js)
   content/vendor/react-intl.js (./vendor/react-intl.js)
   content/vendor/redux.js (./vendor/redux.js)
+  content/vendor/raven.js (./vendor/raven.js)
   content/vendor/react-redux.js (./vendor/react-redux.js)
   content/data/content/assets/ (./data/content/assets/*)
   content/data/content/tippytop/ (./data/content/tippytop/*)
