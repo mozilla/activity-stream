@@ -35,6 +35,7 @@ export class SnippetsMap extends Map {
 
   clear() {
     super.clear();
+    this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_CLEARED}));
     return this._dbTransaction(db => db.clear());
   }
 
@@ -214,7 +215,6 @@ export class SnippetsProvider {
 
     if (cachedVersion !== this.appData.version) {
       this.snippetsMap.clear();
-      this.snippetsMap._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_CLEARED}));
     }
 
     // Has enough time passed for us to require an update?
