@@ -60,7 +60,7 @@ describe("<PreferencesPane>", () => {
             icon: "icon-info"
           }, {
             name: "nestedPref2",
-            titleString: {id: "welcome_title", values: {}},
+            titleString: {id: "newtab_page_title", values: {}},
             icon: "icon-info"
           }
         ]
