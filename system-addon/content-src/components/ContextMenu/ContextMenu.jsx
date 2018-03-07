@@ -4,6 +4,7 @@ export class ContextMenu extends React.PureComponent {
   constructor(props) {
     super(props);
     this.hideContext = this.hideContext.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
   hideContext() {
@@ -20,8 +21,15 @@ export class ContextMenu extends React.PureComponent {
     global.removeEventListener("click", this.hideContext);
   }
 
+  onClick(event) {
+    // Eat all clicks on the context menu so they don't bubble up to window.
+    // This prevents the context menu from closing when clicking disabled items
+    // or the separators.
+    event.stopPropagation();
+  }
+
   render() {
-    return (<span className="context-menu">
+    return (<span className="context-menu" onClick={this.onClick}>
       <ul role="menu" className="context-menu-list">
         {this.props.options.map((option, i) => (option.type === "separator" ?
           (<li key={i} className="separator" />) :
@@ -66,7 +74,7 @@ export class ContextMenuItem extends React.PureComponent {
     const {option} = this.props;
     return (
       <li role="menuitem" className="context-menu-item">
-        <a onClick={this.onClick} onKeyDown={this.onKeyDown} tabIndex="0">
+        <a onClick={this.onClick} onKeyDown={this.onKeyDown} tabIndex="0" className={option.disabled ? "disabled" : ""}>
           {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
           {option.label}
         </a>

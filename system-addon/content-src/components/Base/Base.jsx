@@ -9,7 +9,6 @@ import {PrerenderData} from "common/PrerenderData.jsm";
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
 import {Sections} from "content-src/components/Sections/Sections";
-import {TopSites} from "content-src/components/TopSites/TopSites";
 
 // Add the locale data for pluralization and relative-time formatting for now,
 // this just uses english locale data. We can make this more sophisticated if
@@ -93,7 +92,6 @@ export class BaseContent extends React.PureComponent {
                   <ManualMigration />
                 </div>
                 }
-              {prefs.showTopSites && <TopSites />}
               <Sections />
             </div>
             <ConfirmDialog />

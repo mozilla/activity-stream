@@ -78,6 +78,8 @@ export const UserEventAction = Joi.object().keys({
       "PIN",
       "UNPIN",
       "SAVE_TO_POCKET",
+      "SECTION_MENU_MOVE_UP",
+      "SECTION_MENU_MOVE_DOWN",
       "SECTION_MENU_REMOVE",
       "SECTION_MENU_COLLAPSE",
       "SECTION_MENU_EXPAND",

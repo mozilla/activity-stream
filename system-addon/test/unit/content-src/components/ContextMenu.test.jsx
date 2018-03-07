@@ -42,4 +42,14 @@ describe("<ContextMenu>", () => {
     assert.calledOnce(onUpdate);
     assert.calledOnce(onClick);
   });
+  it("should not have disabled className by default", () => {
+    const options = [{label: "item1", icon: "icon1"}, {type: "separator"}];
+    const wrapper = mount(<ContextMenu {...DEFAULT_PROPS} options={options} />);
+    assert.lengthOf(wrapper.find(".context-menu-item a.disabled"), 0);
+  });
+  it("should add disabled className to any disabled options", () => {
+    const options = [{label: "item1", icon: "icon1", disabled: true}, {type: "separator"}];
+    const wrapper = mount(<ContextMenu {...DEFAULT_PROPS} options={options} />);
+    assert.lengthOf(wrapper.find(".context-menu-item a.disabled"), 1);
+  });
 });

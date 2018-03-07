@@ -6,6 +6,7 @@ import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/Comp
 import {connect} from "react-redux";
 import React from "react";
 import {Topics} from "content-src/components/Topics/Topics";
+import {TopSites} from "content-src/components/TopSites/TopSites";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
@@ -129,7 +130,7 @@ export class Section extends React.PureComponent {
       id, eventSource, title, icon, rows,
       emptyState, dispatch, maxRows,
       contextMenuOptions, initialized, disclaimer,
-      pref, privacyNoticeURL
+      pref, privacyNoticeURL, isFirst, isLast
     } = this.props;
     const maxCards = CARDS_PER_ROW * maxRows;
 
@@ -157,6 +158,8 @@ export class Section extends React.PureComponent {
         showPrefName={(pref && pref.feed) || id}
         privacyNoticeURL={privacyNoticeURL}
         Prefs={this.props.Prefs}
+        isFirst={isFirst}
+        isLast={isLast}
         dispatch={this.props.dispatch}>
 
         {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
@@ -189,16 +192,38 @@ Section.defaultProps = {
   title: ""
 };
 
-export const SectionIntl = injectIntl(Section);
+export const SectionIntl = connect(state => ({Prefs: state.Prefs}))(injectIntl(Section));
 
 export class _Sections extends React.PureComponent {
+  renderSections() {
+    const sections = [];
+    const enabledSections = this.props.Sections.filter(section => section.enabled);
+    const {sectionOrder, showTopSites} = this.props.Prefs.values;
+    // Enabled sections doesn't include Top Sites, so we add it if enabled.
+    const expectedCount = enabledSections.length + ~~showTopSites;
+
+    for (const sectionId of sectionOrder.split(",")) {
+      const commonProps = {
+        key: sectionId,
+        isFirst: sections.length === 0,
+        isLast: sections.length === expectedCount - 1
+      };
+      if (sectionId === "topsites" && showTopSites) {
+        sections.push(<TopSites {...commonProps} />);
+      } else {
+        const section = enabledSections.find(s => s.id === sectionId);
+        if (section) {
+          sections.push(<SectionIntl {...section} {...commonProps} />);
+        }
+      }
+    }
+    return sections;
+  }
+
   render() {
-    const sections = this.props.Sections;
     return (
       <div className="sections-list">
-        {sections
-          .filter(section => section.enabled)
-          .map(section => <SectionIntl key={section.id} {...section} Prefs={this.props.Prefs} dispatch={this.props.dispatch} />)}
+        {this.renderSections()}
       </div>
     );
   }

@@ -102,12 +102,15 @@ export class _TopSites extends React.PureComponent {
       <CollapsibleSection
         className="top-sites"
         icon="topsites"
+        id="topsites"
         title={props.intl.formatMessage({id: "header_top_sites"})}
         extraMenuOptions={["AddTopSite"]}
         prefName="collapseTopSites"
         showPrefName="showTopSites"
         eventSource={TOP_SITES_SOURCE}
         Prefs={props.Prefs}
+        isFirst={props.isFirst}
+        isLast={props.isLast}
         dispatch={props.dispatch}>
         <TopSiteList TopSites={props.TopSites} TopSitesRows={props.TopSitesRows} dispatch={props.dispatch} intl={props.intl} topSiteIconType={topSiteIconType} />
         <div className="edit-topsites-wrapper">

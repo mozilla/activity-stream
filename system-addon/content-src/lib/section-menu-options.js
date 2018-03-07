@@ -6,6 +6,26 @@ import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
  */
 export const SectionMenuOptions = {
   Separator: () => ({type: "separator"}),
+  MoveUp: section => ({
+    id: "section_menu_action_move_up",
+    icon: "arrowhead-up",
+    action: ac.OnlyToMain({
+      type: at.SECTION_MOVE,
+      data: {id: section.id, direction: -1}
+    }),
+    userEvent: "SECTION_MENU_MOVE_UP",
+    disabled: !!section.isFirst
+  }),
+  MoveDown: section => ({
+    id: "section_menu_action_move_down",
+    icon: "arrowhead-down",
+    action: ac.OnlyToMain({
+      type: at.SECTION_MOVE,
+      data: {id: section.id, direction: +1}
+    }),
+    userEvent: "SECTION_MENU_MOVE_DOWN",
+    disabled: !!section.isLast
+  }),
   RemoveSection: section => ({
     id: "section_menu_action_remove_section",
     icon: "dismiss",

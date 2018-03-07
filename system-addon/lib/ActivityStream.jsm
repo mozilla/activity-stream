@@ -148,6 +148,10 @@ const PREFS_CONFIG = new Map([
   ["enableWideLayout", {
     title: "Enable the wider layout (8 topsites per row and larger pocket+highlight cards)",
     value: true
+  }],
+  ["sectionOrder", {
+    title: "The rendering order for the sections",
+    value: "topsites,topstories,highlights"
   }]
 ]);
 
