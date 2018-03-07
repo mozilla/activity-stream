@@ -25,7 +25,7 @@ test_newtab({
     contextMenuItems[4].querySelector("a").click();
 
     // Need to wait for dismiss action.
-    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".top-sites-list li:first-child a").getAttribute("href") == "https://www.facebook.com/",
+    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".top-sites-list li:first-child a").getAttribute("href") === "https://www.facebook.com/",
       "First topsite was dismissed");
 
     defaultTopSitesNumber = content.document.querySelector(".top-sites-list").querySelectorAll("[class=\"top-site-outer\"]").length;
