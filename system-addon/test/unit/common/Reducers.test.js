@@ -565,6 +565,10 @@ describe("Reducers", () => {
       const state = Snippets({blockList: []}, {type: at.SNIPPET_BLOCKED, data: 1});
       assert.deepEqual(state.blockList, [1]);
     });
+    it("should clear the blocklist on SNIPPETS_BLOCKLIST_CLEARED", () => {
+      const state = Snippets({blockList: [1, 2]}, {type: at.SNIPPETS_BLOCKLIST_CLEARED});
+      assert.deepEqual(state.blockList, []);
+    });
   });
   describe("PreferencesPane", () => {
     it("should return INITIAL_STATE by default", () => {

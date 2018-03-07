@@ -89,7 +89,7 @@ describe("SnippetsMap", () => {
       await snippetsMap.clear();
 
       assert.calledOnce(dispatch);
-      assert.calledWithExactly(dispatch, ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_CLEARED}));
+      assert.calledWithExactly(dispatch, ac.OnlyToMain({type: at.SNIPPETS_BLOCKLIST_CLEARED}));
     });
   });
   describe("#.blockList", () => {

@@ -35,7 +35,7 @@ export class SnippetsMap extends Map {
 
   clear() {
     super.clear();
-    this._dispatch(ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_CLEARED}));
+    this._dispatch(ac.OnlyToMain({type: at.SNIPPETS_BLOCKLIST_CLEARED}));
     return this._dbTransaction(db => db.clear());
   }
 
