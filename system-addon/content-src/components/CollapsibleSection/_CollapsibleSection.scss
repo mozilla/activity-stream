@@ -35,6 +35,7 @@
 
       &:-moz-any(:active, :focus, :hover) {
         fill: $grey-90;
+        opacity: 1;
       }
     }
 
