@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const {actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 
@@ -26,6 +26,7 @@ ChromeUtils.defineModuleGetter(this, "PageThumbs",
 const HIGHLIGHTS_MAX_LENGTH = 9;
 const MANY_EXTRA_LENGTH = HIGHLIGHTS_MAX_LENGTH * 5 + TOP_SITES_DEFAULT_ROWS * TOP_SITES_MAX_SITES_PER_ROW;
 const SECTION_ID = "highlights";
+const SYNC_BOOKMARKS_FINISHED_EVENT = "weave:engine:sync:applied";
 
 this.HighlightsFeed = class HighlightsFeed {
   constructor() {
@@ -41,6 +42,7 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 
   init() {
+    Services.obs.addObserver(this, SYNC_BOOKMARKS_FINISHED_EVENT);
     SectionsManager.onceInitialized(this.postInit.bind(this));
   }
 
@@ -52,6 +54,14 @@ this.HighlightsFeed = class HighlightsFeed {
   uninit() {
     SectionsManager.disableSection(SECTION_ID);
     PageThumbs.removeExpirationFilter(this);
+    Services.obs.removeObserver(this, SYNC_BOOKMARKS_FINISHED_EVENT);
+  }
+
+  observe(subject, topic, data) {
+    // When we receive a notification that a sync has happened for bookmarks, refresh highlights
+    if (topic === SYNC_BOOKMARKS_FINISHED_EVENT && data === "bookmarks") {
+      this.fetchHighlights({broadcast: true});
+    }
   }
 
   filterForThumbnailExpiration(callback) {
@@ -222,4 +232,4 @@ this.HighlightsFeed = class HighlightsFeed {
   }
 };
 
-const EXPORTED_SYMBOLS = ["HighlightsFeed", "SECTION_ID", "MANY_EXTRA_LENGTH"];
+const EXPORTED_SYMBOLS = ["HighlightsFeed", "SECTION_ID", "MANY_EXTRA_LENGTH", "SYNC_BOOKMARKS_FINISHED_EVENT"];
