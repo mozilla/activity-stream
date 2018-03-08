@@ -15,7 +15,7 @@ test_newtab({
 
     // Identify the first top site in the top sites list.
     let firstTopSite = content.document.querySelector(".top-sites-list li:first-child a").getAttribute("href");
-    Assert.equal(firstTopSite, "https://www.youtube.com/", "First top site in list is correct");
+    Assert.ok(firstTopSite && !firstTopSite.hidden, "Should find a visible topsite");
 
     // Identify the 'Edit' menu option.
     let contextMenuItems = content.openContextMenuAndGetOptions(".top-sites-list li:first-child");
@@ -25,13 +25,13 @@ test_newtab({
     contextMenuItems[1].querySelector("a").click();
 
     let topsiteForm = content.document.querySelector(".topsite-form");
-    ok(topsiteForm && !topsiteForm.hidden, "Should find a visible topsite form");
+    Assert.ok(topsiteForm && !topsiteForm.hidden, "Should find a visible topsite form");
 
     let topsiteFormInputContainer = topsiteForm.querySelector(".form-input-container");
-    ok(topsiteFormInputContainer && !topsiteFormInputContainer.hidden, "Should find a visible topsite form input container");
+    Assert.ok(topsiteFormInputContainer && !topsiteFormInputContainer.hidden, "Should find a visible topsite form input container");
 
     let topsiteFormActions = topsiteForm.querySelector(".actions");
-    ok(topsiteFormActions && !topsiteFormActions.hidden, "Should find a visible topsite form actions");
+    Assert.ok(topsiteFormActions && !topsiteFormActions.hidden, "Should find a visible topsite form actions");
 
     let formHeaderName = topsiteFormInputContainer.querySelector(".section-title span").textContent;
     Assert.equal(formHeaderName, "Edit Top Site", "Section's title is correct");
@@ -41,7 +41,9 @@ test_newtab({
     Assert.equal(title, "Title");
 
     let titleInput = titleSection.querySelector(".field  input");
-    Assert.equal(titleInput.value, "youtube", "Title input is correctly populated");
+    Assert.ok(titleInput.value, "Title input is populated");
+
+    // Updating the input value of the title with the word "test".
     titleInput.value = "test";
     titleInput.dispatchEvent(new Event("input", {bubbles: true}));
     Assert.equal(titleInput.value, "test", "Title input is successfully updated");
@@ -51,10 +53,10 @@ test_newtab({
     Assert.equal(url, "URL");
 
     let urlInput = urlSection.querySelector(".field  input");
-    Assert.equal(urlInput.value, "https://www.youtube.com/", "URL input is correctly populated");
+    Assert.equal(urlInput.value, firstTopSite, "URL input is correctly populated");
 
     let sectionPreview = topsiteFormInputContainer.querySelector(".fields-and-preview .top-site-outer .top-site-inner");
-    Assert.equal(sectionPreview.querySelector("a").getAttribute("href"), "https://www.youtube.com/", "href is correct for the preview section");
+    Assert.equal(sectionPreview.querySelector("a").getAttribute("href"), firstTopSite, "href is correct for the preview section");
     // Verify that top site's title dynamically updates in the preview section when it is updated from the form section.
     Assert.equal(sectionPreview.querySelector("div:nth-child(2) span").textContent, "test", "Title successfully updated in the preview section");
 
@@ -72,11 +74,11 @@ test_newtab({
       "No pinned icon found");
 
     let pinnedIcon = content.document.querySelectorAll(".icon-pin-small").length;
-    is(pinnedIcon, 1, "should find 1 pinned topsite");
+    Assert.equal(pinnedIcon, 1, "Should find 1 pinned topsite");
 
     // Need to check that the first site kept its position.
-    firstTopSite = content.document.querySelector(".top-sites-list li:first-child a").getAttribute("href");
-    Assert.equal(firstTopSite, "https://www.youtube.com/", "After pin topsite keeps its position in the topsite list");
+    let newFirstTopSite = content.document.querySelector(".top-sites-list li:first-child a").getAttribute("href");
+    Assert.equal(firstTopSite, newFirstTopSite, "After pin topsite keeps its position in the topsite list");
 
     // Verify that first's top site title is dynamically updated in the top sites list.
     let titleTopSiteList = content.document.querySelector(".title.pinned span").textContent;
