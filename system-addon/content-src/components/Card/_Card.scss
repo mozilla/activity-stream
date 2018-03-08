@@ -171,6 +171,8 @@
 }
 
 .wide-layout-enabled {
+  $line-height: 23px;
+
   .card-outer {
     @media (min-width: $break-point-widest) {
       height: $card-height-large;
@@ -179,8 +181,39 @@
         height: $card-preview-image-height-large;
       }
 
+      .card-details {
+        padding: 13px 16px 12px;
+      }
+
       .card-text {
-        max-height: 7 * $card-text-line-height + $card-title-margin;
+        max-height: 6 * $line-height + $card-title-margin;
+      }
+
+      .card-host-name {
+        font-size: 12px;
+        padding-bottom: 5px;
+      }
+
+      .card-title {
+        font-size: 17px;
+        line-height: $line-height;
+        margin-bottom: 0;
+      }
+
+      .card-text:not(.no-description) {
+        .card-title {
+          max-height: 3 * $line-height;
+        }
+      }
+
+      .card-description {
+        font-size: 15px;
+        line-height: $line-height;
+      }
+
+      .card-context {
+        bottom: 4px;
+        font-size: 14px;
       }
     }
   }
