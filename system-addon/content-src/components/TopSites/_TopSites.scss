@@ -273,11 +273,25 @@ $half-base-gutter: $base-gutter / 2;
 
 .edit-topsites-wrapper {
   .modal {
-    offset-inline-start: -31px;
-    position: absolute;
-    top: -29px;
-    width: calc(100% + 62px);
     box-shadow: $shadow-secondary;
+    left: 0;
+    margin: 0 auto;
+    position: fixed;
+    right: 0;
+    top: 40px;
+    width: $wrapper-default-width;
+
+    @media (min-width: $break-point-small) {
+      width: $wrapper-max-width-small;
+    }
+
+    @media (min-width: $break-point-medium) {
+      width: $wrapper-max-width-medium;
+    }
+
+    @media (min-width: $break-point-large) {
+      width: $wrapper-max-width-large;
+    }
   }
 }
 
