@@ -44,13 +44,13 @@ export class SnippetsMap extends Map {
   }
 
   /**
-   * blockSnippet - Blocks a snippet given an id
+   * blockSnippetById - Blocks a snippet given an id
    *
    * @param  {str|int} id   The id of the snippet
    * @return {Promise}      Resolves when the id has been written to indexedDB,
    *                        or immediately if the snippetMap is not connected
    */
-  async blockSnippet(id) {
+  async blockSnippetById(id) {
     if (!id) {
       return;
     }

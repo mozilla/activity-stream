@@ -97,29 +97,29 @@ describe("SnippetsMap", () => {
       assert.deepEqual(snippetsMap.blockList, []);
     });
     it("should return the blockList it is set", () => {
-      snippetsMap.blockSnippet(123);
+      snippetsMap.blockSnippetById(123);
       assert.deepEqual(snippetsMap.blockList, [123]);
     });
   });
-  describe("#blockSnippet(id)", () => {
+  describe("#blockSnippetById(id)", () => {
     it("should not modify the blockList if no id was passed in", () => {
-      snippetsMap.blockSnippet(null);
+      snippetsMap.blockSnippetById(null);
       assert.deepEqual(snippetsMap.blockList, []);
     });
     it("should add new ids to the blockList", () => {
-      snippetsMap.blockSnippet(123);
+      snippetsMap.blockSnippetById(123);
       assert.deepEqual(snippetsMap.blockList, [123]);
     });
     it("should dispatch a SNIPPETS_BLOCKLIST_UPDATED event", () => {
-      snippetsMap.blockSnippet(789);
+      snippetsMap.blockSnippetById(789);
 
       assert.calledOnce(dispatch);
       assert.calledWith(dispatch, ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: 789}));
     });
     it("should not add ids that are already blocked", () => {
-      snippetsMap.blockSnippet(123);
-      snippetsMap.blockSnippet(123);
-      snippetsMap.blockSnippet(456);
+      snippetsMap.blockSnippetById(123);
+      snippetsMap.blockSnippetById(123);
+      snippetsMap.blockSnippetById(456);
       assert.deepEqual(snippetsMap.blockList, [123, 456]);
     });
     it("should not call snippetsMap.set or dispatch an event for ids that are already blocked", async () => {
@@ -127,7 +127,7 @@ describe("SnippetsMap", () => {
       // spy is added after so the first .set doesn't count
       sandbox.spy(snippetsMap, "set");
 
-      await snippetsMap.blockSnippet(123);
+      await snippetsMap.blockSnippetById(123);
 
       assert.notCalled(dispatch);
       assert.notCalled(snippetsMap.set);
