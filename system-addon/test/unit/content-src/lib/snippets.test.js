@@ -37,7 +37,7 @@ describe("SnippetsMap", () => {
       await snippetsMap.set("foo", 123);
 
       // destroy the old snippetsMap, create a new one
-      snippetsMap = new SnippetsMap();
+      snippetsMap = new SnippetsMap(dispatch);
       await snippetsMap.connect();
       assert.equal(snippetsMap.get("foo"), 123);
     });
@@ -58,7 +58,7 @@ describe("SnippetsMap", () => {
       await snippetsMap.delete("foo");
 
       // destroy the old snippetsMap, create a new one
-      snippetsMap = new SnippetsMap();
+      snippetsMap = new SnippetsMap(dispatch);
       await snippetsMap.connect();
       assert.isFalse(snippetsMap.has("foo"));
       assert.isTrue(snippetsMap.has("bar"));
@@ -81,9 +81,15 @@ describe("SnippetsMap", () => {
       await snippetsMap.clear();
 
       // destroy the old snippetsMap, create a new one
-      snippetsMap = new SnippetsMap();
+      snippetsMap = new SnippetsMap(dispatch);
       await snippetsMap.connect();
       assert.propertyVal(snippetsMap, "size", 0);
+    });
+    it("should send SNIPPETS_BLOCKLIST_CLEARED", async () => {
+      await snippetsMap.clear();
+
+      assert.calledOnce(dispatch);
+      assert.calledWithExactly(dispatch, ac.OnlyToMain({type: at.SNIPPETS_BLOCKLIST_CLEARED}));
     });
   });
   describe("#.blockList", () => {
@@ -105,12 +111,10 @@ describe("SnippetsMap", () => {
       assert.deepEqual(snippetsMap.blockList, [123]);
     });
     it("should dispatch a SNIPPETS_BLOCKLIST_UPDATED event", () => {
-      snippetsMap.set("blockList", [123, 456]);
-
       snippetsMap.blockSnippetById(789);
 
       assert.calledOnce(dispatch);
-      assert.calledWith(dispatch, ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: [123, 456, 789]}));
+      assert.calledWith(dispatch, ac.AlsoToMain({type: at.SNIPPETS_BLOCKLIST_UPDATED, data: 789}));
     });
     it("should not add ids that are already blocked", () => {
       snippetsMap.blockSnippetById(123);
@@ -167,12 +171,14 @@ describe("SnippetsProvider", () => {
   let sandbox;
   let snippets;
   let globals;
+  let dispatch;
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     sandbox.stub(window, "fetch").returns(Promise.resolve(""));
     globals = new GlobalOverrider();
     globals.set("addMessageListener", sandbox.spy());
     globals.set("removeMessageListener", sandbox.spy());
+    dispatch = sandbox.stub();
   });
   afterEach(async () => {
     if (global.gSnippetsMap) {
@@ -183,14 +189,13 @@ describe("SnippetsProvider", () => {
     sandbox.restore();
   });
   it("should create a gSnippetsMap with a dispatch function", () => {
-    const dispatch = () => {};
     snippets = new SnippetsProvider(dispatch);
     assert.instanceOf(global.gSnippetsMap, SnippetsMap);
     assert.equal(global.gSnippetsMap._dispatch, dispatch);
   });
   describe("#init(options)", () => {
     beforeEach(() => {
-      snippets = new SnippetsProvider();
+      snippets = new SnippetsProvider(dispatch);
       sandbox.stub(snippets, "_refreshSnippets").returns(Promise.resolve());
       sandbox.stub(snippets, "_showRemoteSnippets");
       sandbox.stub(snippets, "_noSnippetFallback");
@@ -243,7 +248,7 @@ describe("SnippetsProvider", () => {
     it("should show the onboarding element if it exists", async () => {
       const fakeEl = {style: {display: "none"}};
       sandbox.stub(global.document, "getElementById").returns(fakeEl);
-      snippets = new SnippetsProvider();
+      snippets = new SnippetsProvider(dispatch);
 
       await snippets.init({connect: false});
 
@@ -252,6 +257,12 @@ describe("SnippetsProvider", () => {
     it("should add a message listener for incoming messages", async () => {
       await snippets.init({connect: false});
       assert.calledWith(global.addMessageListener, INCOMING_MESSAGE_NAME, snippets._onAction);
+    });
+    it("should set the blocklist based on init options", async () => {
+      const blockList = [1, 2, 3];
+      await snippets.init({appData: {blockList}});
+
+      assert.equal(snippets.snippetsMap.get("blockList"), blockList);
     });
   });
   describe("#uninit", () => {
@@ -263,18 +274,18 @@ describe("SnippetsProvider", () => {
     it("should dispatch a Snippets:Disabled DOM event", () => {
       const spy = sinon.spy();
       window.addEventListener("Snippets:Disabled", spy);
-      snippets = new SnippetsProvider();
+      snippets = new SnippetsProvider(dispatch);
       snippets.uninit();
       assert.calledOnce(spy);
       window.removeEventListener("Snippets:Disabled", spy);
     });
     it("should hide the onboarding element if it exists", () => {
-      snippets = new SnippetsProvider();
+      snippets = new SnippetsProvider(dispatch);
       snippets.uninit();
       assert.equal(fakeEl.style.display, "none");
     });
     it("should remove the message listener for incoming messages", () => {
-      snippets = new SnippetsProvider();
+      snippets = new SnippetsProvider(dispatch);
       snippets.uninit();
       assert.calledWith(global.removeMessageListener, INCOMING_MESSAGE_NAME, snippets._onAction);
     });
@@ -283,7 +294,7 @@ describe("SnippetsProvider", () => {
     let clock;
     beforeEach(() => {
       clock = sinon.useFakeTimers();
-      snippets = new SnippetsProvider();
+      snippets = new SnippetsProvider(dispatch);
       global.gSnippetsMap.set("snippets-cached-version", 4);
     });
     afterEach(() => {
@@ -346,7 +357,7 @@ describe("SnippetsProvider", () => {
   });
   describe("#_showRemoteSnippets", () => {
     beforeEach(() => {
-      snippets = new SnippetsProvider();
+      snippets = new SnippetsProvider(dispatch);
       sandbox.stub(snippets, "_refreshSnippets").returns(Promise.resolve());
       sandbox.stub(snippets, "_noSnippetFallback");
       let fakeEl = {style: {}, getElementsByTagName() { return [{parentNode: {replaceChild() {}}}]; }};
@@ -384,19 +395,18 @@ describe("SnippetsProvider", () => {
   describe("blocking", () => {
     let containerEl;
     beforeEach(() => {
-      snippets = new SnippetsProvider();
+      snippets = new SnippetsProvider(dispatch);
       containerEl = {style: {}};
       sandbox.stub(global.document, "getElementById").returns(containerEl);
     });
     it("should set the blockList and hide the element if an incoming SNIPPET_BLOCKED message is received", async () => {
-      const newBlockList = ["foo", "bar"];
       assert.deepEqual(global.gSnippetsMap.blockList, []);
       await snippets.init({connect: false});
-      const action = {type: at.SNIPPET_BLOCKED, data: newBlockList};
+      const action = {type: at.SNIPPET_BLOCKED, data: "foo"};
 
       snippets._onAction({name: INCOMING_MESSAGE_NAME, data: action});
 
-      assert.equal(global.gSnippetsMap.blockList, newBlockList);
+      assert.deepEqual(global.gSnippetsMap.blockList, ["foo"]);
       assert.calledWith(global.document.getElementById, "snippets-container");
       assert.equal(containerEl.style.display, "none");
     });
