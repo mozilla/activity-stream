@@ -390,6 +390,12 @@ describe("PlacesFeed", () => {
 
         assert.notCalled(dispatch);
       });
+      it("should not dispatch a PLACES_BOOKMARK_REMOVED action - has IMPORT_REPLACE source", async () => {
+        const args = [null, null, null, TYPE_BOOKMARK, {spec: "foo.com"}, "123foo", "", SOURCES.IMPORT_REPLACE];
+        await observer.onItemRemoved(...args);
+
+        assert.notCalled(dispatch);
+      });
       it("should dispatch a PLACES_BOOKMARK_REMOVED action with the right URL and bookmarkGuid", () => {
         observer.onItemRemoved(null, null, null, TYPE_BOOKMARK, {spec: "foo.com"}, "123foo", "", SOURCES.DEFAULT);
         assert.calledWith(dispatch, {type: at.PLACES_BOOKMARK_REMOVED, data: {bookmarkGuid: "123foo", url: "foo.com"}});

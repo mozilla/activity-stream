@@ -142,6 +142,7 @@ class BookmarksObserver extends Observer {
    */
   onItemRemoved(id, folderId, index, type, uri, guid, parentGuid, source) { // eslint-disable-line max-params
     if (type === PlacesUtils.bookmarks.TYPE_BOOKMARK &&
+        source !== PlacesUtils.bookmarks.SOURCES.IMPORT_REPLACE &&
         source !== PlacesUtils.bookmarks.SOURCES.SYNC) {
       this.dispatch({
         type: at.PLACES_BOOKMARK_REMOVED,
