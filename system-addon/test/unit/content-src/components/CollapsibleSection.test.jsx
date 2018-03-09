@@ -10,7 +10,7 @@ const DEFAULT_PROPS = {
   title: "Cool Section",
   prefName: "collapseSection",
   Prefs: {values: {collapseSection: false}},
-  disclaimer: {text: {id: "default_label_loading"}, link: {id: "menu_action_email_link"}, button: {id: "search_button"}},
+  disclaimer: {text: {id: "section_disclaimer_topstories_linktext"}, link: {id: "menu_action_remove_bookmark"}, button: {id: "search_button"}},
   document: {
     addEventListener: () => {},
     removeEventListener: () => {},
