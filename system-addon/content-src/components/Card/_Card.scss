@@ -1,6 +1,6 @@
 .card-outer {
   @include context-menu-button;
-  background: $white;
+  background: var(--newtab-card-background-color);
   border-radius: $border-radius;
   display: inline-block;
   height: $card-height;
@@ -36,7 +36,7 @@
       }
 
       .card-title {
-        color: $link-primary;
+        color: var(--newtab-link-primary-color);
       }
     }
   }
@@ -47,12 +47,12 @@
     outline: none;
 
     .card-title {
-      color: $link-primary;
+      color: var(--newtab-link-primary-color);
     }
   }
 
   .card-preview-image-outer {
-    background-color: $background-primary;
+    background-color: var(--newtab-background-color);
     border-radius: $border-radius $border-radius 0 0;
     height: $card-preview-image-height;
     overflow: hidden;
@@ -122,7 +122,7 @@
   }
 
   .card-host-name {
-    color: $text-secondary;
+    color: var(--newtab-text-secondary-color);
     font-size: 10px;
     overflow: hidden;
     padding-bottom: 4px;
@@ -147,7 +147,7 @@
 
   .card-context {
     bottom: 0;
-    color: $text-secondary;
+    color: var(--newtab-text-secondary-color);
     display: flex;
     font-size: 11px;
     left: 0;
@@ -157,7 +157,7 @@
   }
 
   .card-context-icon {
-    fill: $fill-secondary;
+    fill: var(--newtab-icon-secondary-color);
     height: 22px;
     margin-inline-end: 6px;
   }

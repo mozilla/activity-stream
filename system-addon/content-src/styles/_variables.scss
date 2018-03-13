@@ -1,4 +1,5 @@
 // Photon colors from http://design.firefox.com/photon/visuals/color.html
+$blue-40: #45A1FF;
 $blue-50: #0A84FF;
 $blue-60: #0060DF;
 $grey-10: #F9F9FA;
@@ -7,11 +8,18 @@ $grey-30: #D7D7DB;
 $grey-40: #B1B1B3;
 $grey-50: #737373;
 $grey-60: #4A4A4F;
+$grey-70: #38383D;
+$grey-80: #2A2A2E;
 $grey-90: #0C0C0D;
 $teal-70: #008EA4;
 $red-60: #D70022;
 
 // Photon opacity from http://design.firefox.com/photon/visuals/color.html#opacity
+$grey-10-20: rgba($grey-10, 0.2);
+$grey-10-40: rgba($grey-10, 0.4);
+$grey-10-60: rgba($grey-10, 0.6);
+$grey-10-80: rgba($grey-10, 0.8);
+$grey-20-60: rgba($grey-20, 0.6);
 $grey-90-10: rgba($grey-90, 0.1);
 $grey-90-20: rgba($grey-90, 0.2);
 $grey-90-30: rgba($grey-90, 0.3);
@@ -21,8 +29,6 @@ $grey-90-60: rgba($grey-90, 0.6);
 $grey-90-70: rgba($grey-90, 0.7);
 $grey-90-80: rgba($grey-90, 0.8);
 $grey-90-90: rgba($grey-90, 0.9);
-
-$grey-20-60: rgba($grey-20, 0.6);
 
 $black: #000;
 $black-5: rgba($black, 0.05);
@@ -35,32 +41,13 @@ $black-30: rgba($black, 0.3);
 // Photon transitions from http://design.firefox.com/photon/motion/duration-and-easing.html
 $photon-easing: cubic-bezier(0.07, 0.95, 0, 1);
 
-// Aliases and derived styles based on Photon colors for common usage
-$background-primary: $grey-10;
-$background-secondary: $grey-20;
-$border-primary: 1px solid $grey-40;
-$border-secondary: 1px solid $grey-30;
-$fill-primary: $grey-90-80;
-$fill-secondary: $grey-90-60;
-$fill-tertiary: $grey-30;
-$input-primary: $blue-60;
-$input-secondary: $grey-10;
-$link-primary: $blue-60;
-$link-secondary: $teal-70;
-$shadow-primary: 0 0 0 5px $grey-30;
-$shadow-secondary: 0 1px 4px 0 $grey-90-10;
-$text-primary: $grey-90;
-$text-conditional: $grey-60;
-$text-secondary: $grey-50;
-$input-border: solid 1px $grey-90-20;
-$input-border-active: solid 1px $blue-50;
-$input-error-border: solid 1px $red-60;
-$input-error-boxshadow: 0 0 0 1px $red-60, 0 0 0 4px rgba($red-60, 0.3);
-$input-focus-boxshadow: 0 0 0 1px $blue-50, 0 0 0 4px rgba($blue-50, 0.3);
-
+// Other colors
 $white: #FFF;
+$pocket-teal: #50BCB6;
+
 $border-radius: 3px;
 
+// Grid related styles
 $base-gutter: 32px;
 $section-horizontal-padding: 25px;
 $section-vertical-padding: 10px;
@@ -101,8 +88,7 @@ $topic-margin-top: 12px;
 
 $context-menu-button-size: 27px;
 $context-menu-button-boxshadow: 0 2px $grey-90-10;
-$context-menu-border-color: $black-20;
-$context-menu-shadow: 0 5px 10px $black-30, 0 0 0 1px $context-menu-border-color;
+$context-menu-shadow: 0 5px 10px $black-30, 0 0 0 1px $black-20;
 $context-menu-font-size: 14px;
 $context-menu-border-radius: 5px;
 $context-menu-outer-padding: 5px;
@@ -110,8 +96,6 @@ $context-menu-item-padding: 3px 12px;
 
 $error-fallback-font-size: 12px;
 $error-fallback-line-height: 1.5;
-
-$inner-box-shadow: 0 0 0 1px $black-10;
 
 $image-path: '../data/content/assets/';
 
@@ -130,14 +114,14 @@ $snippets-container-height: 120px;
 @mixin context-menu-button {
   .context-menu-button {
     background-clip: padding-box;
-    background-color: $white;
+    background-color: var(--newtab-contextmenu-button-color);
     background-image: url('chrome://browser/skin/page-action.svg');
     background-position: 55%;
     border: $border-primary;
     border-radius: 100%;
     box-shadow: $context-menu-button-boxshadow;
     cursor: pointer;
-    fill: $fill-primary;
+    fill: var(--newtab-icon-primary-color);
     height: $context-menu-button-size;
     offset-inline-end: -($context-menu-button-size / 2);
     opacity: 0;

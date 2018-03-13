@@ -39,14 +39,14 @@
         background-size: 50px 50px;
         -moz-context-properties: fill;
         display: block;
-        fill: $fill-secondary;
+        fill: var(--newtab-icon-secondary-color);
         height: 50px;
         margin: 0 auto;
         width: 50px;
       }
 
       .empty-state-message {
-        color: $text-secondary;
+        color: var(--newtab-text-primary-color);
         font-size: 13px;
         margin-bottom: 0;
         text-align: center;

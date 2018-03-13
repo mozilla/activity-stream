@@ -1,5 +1,5 @@
 .context-menu {
-  background: $background-primary;
+  background: var(--newtab-background-color);
   border-radius: $context-menu-border-radius;
   box-shadow: $context-menu-shadow;
   display: block;
@@ -20,7 +20,7 @@
       width: 100%;
 
       &.separator {
-        border-bottom: 1px solid $context-menu-border-color;
+        border-bottom: $border-secondary;
         margin: $context-menu-outer-padding 0;
       }
 
@@ -35,7 +35,7 @@
         white-space: nowrap;
 
         &:-moz-any(:focus, :hover) {
-          background: $input-primary;
+          background: var(--newtab-link-primary-color);
           color: $white;
 
           a {

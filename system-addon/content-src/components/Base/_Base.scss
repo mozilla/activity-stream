@@ -1,11 +1,17 @@
 .outer-wrapper {
+  background-color: var(--newtab-background-color);
+  color: var(--newtab-text-primary-color);
   display: flex;
   flex-grow: 1;
-  height: 100%;
+  min-height: 100vh;
   padding: ($section-spacing + $section-vertical-padding) $base-gutter $base-gutter;
 
   &.fixed-to-top {
-    height: auto;
+    display: block;
+  }
+
+  a {
+    color: var(--newtab-link-primary-color);
   }
 }
 
@@ -76,19 +82,16 @@ main {
     background-color: transparent;
     border: 0;
     cursor: pointer;
-    fill: $fill-secondary;
+    fill: var(--newtab-icon-primary-color);
     offset-inline-end: 15px;
     padding: 15px;
     position: fixed;
     top: 15px;
     z-index: 12001;
 
-    &:hover {
-      background-color: $background-secondary;
-    }
-
-    &:active {
-      background-color: $background-primary;
+    &:hover,
+    &:focus {
+      background-color: var(--newtab-element-active-color);
     }
   }
 }

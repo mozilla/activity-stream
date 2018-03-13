@@ -27,6 +27,7 @@ const {TopSitesFeed} = ChromeUtils.import("resource://activity-stream/lib/TopSit
 const {TopStoriesFeed} = ChromeUtils.import("resource://activity-stream/lib/TopStoriesFeed.jsm", {});
 const {HighlightsFeed} = ChromeUtils.import("resource://activity-stream/lib/HighlightsFeed.jsm", {});
 const {ActivityStreamStorage} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
+const {ThemeFeed} = ChromeUtils.import("resource://activity-stream/lib/ThemeFeed.jsm", {});
 
 const DEFAULT_SITES = new Map([
   // This first item is the global list fallback for any unexpected geos
@@ -173,6 +174,12 @@ const FEEDS_DATA = [
     name: "prefs",
     factory: () => new PrefsFeed(PREFS_CONFIG),
     title: "Preferences",
+    value: true
+  },
+  {
+    name: "theme",
+    factory: () => new ThemeFeed(),
+    title: "Theme",
     value: true
   },
   {

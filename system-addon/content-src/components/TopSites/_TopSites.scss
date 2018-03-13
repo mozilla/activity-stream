@@ -111,7 +111,7 @@ $half-base-gutter: $base-gutter / 2;
 
     // For letter fallback
     align-items: center;
-    color: $text-secondary;
+    color: var(--newtab-text-secondary-color);
     display: flex;
     font-size: 32px;
     font-weight: 200;
@@ -144,7 +144,7 @@ $half-base-gutter: $base-gutter / 2;
 
   // Some common styles for all icons (rich and default) in top sites
   .top-site-icon {
-    background-color: $background-primary;
+    background-color: var(--newtab-background-color);
     background-position: center center;
     background-repeat: no-repeat;
     border-radius: $top-sites-border-radius;
@@ -179,6 +179,7 @@ $half-base-gutter: $base-gutter / 2;
   }
 
   .title {
+    color: var(--newtab-topsites-label-color);
     font: message-box;
     height: $top-sites-title-height;
     line-height: $top-sites-title-height;
@@ -187,7 +188,7 @@ $half-base-gutter: $base-gutter / 2;
     position: relative;
 
     .icon {
-      fill: $fill-tertiary;
+      fill: var(--newtab-icon-tertiary-color);
       offset-inline-start: 0;
       position: absolute;
       top: 10px;
@@ -363,7 +364,6 @@ $half-base-gutter: $base-gutter / 2;
 
       &:hover {
         text-decoration: underline;
-        color: $blue-60;
       }
     }
 
@@ -406,6 +406,7 @@ $half-base-gutter: $base-gutter / 2;
 
     input {
       &[type='text'] {
+        background-color: var(--newtab-textbox-color);
         border: $input-border;
         border-radius: 2px;
         margin: 8px 0;

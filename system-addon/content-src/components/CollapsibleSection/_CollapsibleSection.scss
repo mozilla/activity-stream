@@ -11,9 +11,9 @@
     text-transform: uppercase;
 
     span {
-      color: $text-secondary;
+      color: var(--newtab-section-header-text-color);
       display: inline-block;
-      fill: $text-secondary;
+      fill: var(--newtab-section-header-text-color);
       vertical-align: middle;
     }
 
@@ -38,7 +38,7 @@
       background: url('chrome://browser/skin/page-action.svg') no-repeat right center;
       border: 0;
       cursor: pointer;
-      fill: $grey-50;
+      fill: var(--newtab-section-header-text-color);
       height: 100%;
       offset-inline-end: 0;
       opacity: 0;
@@ -73,12 +73,12 @@
   }
 
   &.active {
-    background: $grey-20-60;
+    background: var(--newtab-element-active-color);
     border-radius: 4px;
 
     .section-top-bar {
       .context-menu-button {
-        fill: $grey-90;
+        fill: var(--newtab-section-active-contextmenu-color);
       }
     }
   }
@@ -87,7 +87,7 @@
     $max-button-width: 130px;
     $min-button-height: 26px;
 
-    color: $grey-60;
+    color: var(--newtab-text-conditional-color);
     font-size: 13px;
     margin-bottom: 16px;
     position: relative;
@@ -103,12 +103,13 @@
     }
 
     a {
-      color: $link-secondary;
+      color: var(--newtab-link-secondary-color);
+      font-weight: bold;
       padding-left: 3px;
     }
 
     button {
-      background: $grey-10;
+      background: transparent;
       border: 1px solid $grey-40;
       border-radius: 4px;
       cursor: pointer;

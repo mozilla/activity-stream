@@ -1,5 +1,5 @@
 .topic {
-  color: $text-secondary;
+  color: var(--newtab-section-navigation-text-color);
   font-size: 12px;
   line-height: 1.6;
   margin-top: $topic-margin-top;
@@ -32,11 +32,11 @@
   }
 
   .topic-link {
-    color: $link-secondary;
+    color: var(--newtab-link-secondary-color);
   }
 
   .topic-read-more {
-    color: $link-secondary;
+    color: var(--newtab-link-secondary-color);
 
     @media (min-width: $break-point-large) {
       // This is floating to accomodate a very large number of topics and/or
@@ -53,7 +53,7 @@
       content: '';
       -moz-context-properties: fill;
       display: inline-block;
-      fill: $link-secondary;
+      fill: var(--newtab-link-secondary-color);
       height: 16px;
       margin-inline-start: 5px;
       vertical-align: top;

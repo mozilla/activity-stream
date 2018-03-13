@@ -4,7 +4,7 @@
   background-size: $icon-size;
   -moz-context-properties: fill;
   display: inline-block;
-  fill: $fill-primary;
+  fill: var(--newtab-icon-primary-color);
   height: $icon-size;
   vertical-align: middle;
   width: $icon-size;
@@ -26,7 +26,7 @@
   }
 
   &.icon-clear-input {
-    fill: $fill-secondary;
+    fill: var(--newtab-icon-secondary-color);
     background-image: url('#{$image-path}glyph-cancel-16.svg');
   }
 

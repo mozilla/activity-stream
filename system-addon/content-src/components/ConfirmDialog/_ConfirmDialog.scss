@@ -49,7 +49,7 @@
 }
 
 .modal-overlay {
-  background: $background-secondary;
+  background: var(--newtab-overlay-color);
   height: 100%;
   left: 0;
   opacity: 0.8;
@@ -60,7 +60,7 @@
 }
 
 .modal {
-  background: $white;
+  background: var(--newtab-modal-color);
   border: $border-secondary;
   border-radius: 5px;
   font-size: 15px;

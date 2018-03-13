@@ -2,7 +2,7 @@
   align-items: center;
   border-radius: $border-radius;
   box-shadow: inset $inner-box-shadow;
-  color: $text-conditional;
+  color: var(--newtab-text-conditional-color);
   display: flex;
   flex-direction: column;
   font-size: $error-fallback-font-size;
@@ -11,8 +11,7 @@
   line-height: $error-fallback-line-height;
 
   a {
-    color: $text-conditional;
+    color: var(--newtab-text-conditional-color);
     text-decoration: underline;
   }
 }
-

@@ -1,5 +1,5 @@
 .manual-migration-container {
-  color: $text-conditional;
+  color: var(--newtab-text-conditional-color);
   font-size: 13px;
   line-height: 15px;
   margin-bottom: $section-spacing;
@@ -25,7 +25,7 @@
     @media (min-width: $break-point-medium) {
       align-self: center;
       display: block;
-      fill: $fill-secondary;
+      fill: var(--newtab-icon-secondary-color);
       margin-inline-end: 6px;
     }
   }
