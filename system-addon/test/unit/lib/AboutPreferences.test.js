@@ -35,6 +35,11 @@ describe("AboutPreferences Feed", () => {
 
       assert.calledOnce(stub);
     });
+    it("should call .openPreferences on SETTINGS_OPEN", () => {
+      const action = {type: at.SETTINGS_OPEN, _target: {browser: {ownerGlobal: {openPreferences: sinon.spy()}}}};
+      instance.onAction(action);
+      assert.calledOnce(action._target.browser.ownerGlobal.openPreferences);
+    });
   });
   describe("#observe", () => {
     it("should watch for about:preferences loading", () => {

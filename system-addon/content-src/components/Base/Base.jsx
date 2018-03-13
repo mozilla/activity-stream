@@ -1,14 +1,19 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {addLocaleData, IntlProvider} from "react-intl";
+import {addLocaleData, injectIntl, IntlProvider} from "react-intl";
 import {ConfirmDialog} from "content-src/components/ConfirmDialog/ConfirmDialog";
 import {connect} from "react-redux";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import {ManualMigration} from "content-src/components/ManualMigration/ManualMigration";
-import {PreferencesPane} from "content-src/components/PreferencesPane/PreferencesPane";
 import {PrerenderData} from "common/PrerenderData.jsm";
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
 import {Sections} from "content-src/components/Sections/Sections";
+
+const PrefsButton = injectIntl(props => (
+  <div className="prefs-button">
+    <button className="icon icon-settings" onClick={props.onClick} title={props.intl.formatMessage({id: "settings_pane_button_label"})} />
+  </div>
+));
 
 // Add the locale data for pluralization and relative-time formatting for now,
 // this just uses english locale data. We can make this more sophisticated if
@@ -66,6 +71,16 @@ export class _Base extends React.PureComponent {
 }
 
 export class BaseContent extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.openPreferences = this.openPreferences.bind(this);
+  }
+
+  openPreferences() {
+    this.props.dispatch(ac.OnlyToMain({type: at.SETTINGS_OPEN}));
+    this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
+  }
+
   render() {
     const {props} = this;
     const {App} = props;
@@ -93,14 +108,10 @@ export class BaseContent extends React.PureComponent {
                 </div>
                 }
               <Sections />
+              <PrefsButton onClick={this.openPreferences} />
             </div>
             <ConfirmDialog />
           </main>
-          {initialized &&
-            <div className="prefs-pane">
-              <ErrorBoundary className="sidebar"> <PreferencesPane /> </ErrorBoundary>
-            </div>
-          }
         </div>);
   }
 }

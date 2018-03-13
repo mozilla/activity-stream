@@ -87,3 +87,25 @@ main {
 .non-collapsible-section {
   padding: 0 $section-horizontal-padding;
 }
+
+.prefs-button {
+  button {
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    fill: $fill-secondary;
+    offset-inline-end: 15px;
+    padding: 15px;
+    position: fixed;
+    top: 15px;
+    z-index: 12001;
+
+    &:hover {
+      background-color: $background-secondary;
+    }
+
+    &:active {
+      background-color: $background-primary;
+    }
+  }
+}
