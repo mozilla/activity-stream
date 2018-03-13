@@ -84,11 +84,6 @@
     background-image: url('#{$image-path}glyph-pocket-16.svg');
   }
 
-  &.icon-pocket-small {
-    background-image: url('#{$image-path}glyph-pocket-16.svg');
-    background-size: $smaller-icon-size;
-  }
-
   &.icon-historyItem { // sass-lint:disable-line class-name-format
     background-image: url('#{$image-path}glyph-historyItem-16.svg');
   }
