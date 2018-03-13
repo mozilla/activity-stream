@@ -10,9 +10,6 @@ const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://act
 
 ChromeUtils.defineModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 
-// We need to support both content sidebar and about:preferences for experiments
-let ABOUT_PREFERENCES = true;
-
 /*
  * Generators for built in sections, keyed by the pref name for their feed.
  * Built in sections may depend on options stored as serialised JSON in the pref
@@ -23,10 +20,10 @@ const BUILT_IN_SECTIONS = {
     id: "topstories",
     pref: {
       titleString: {id: "header_recommended_by", values: {provider: options.provider_name}},
-      descString: {id: ABOUT_PREFERENCES ? "prefs_topstories_description" : options.provider_description || "pocket_description"},
+      descString: {id: options.provider_description || "prefs_topstories_description"},
       nestedPrefs: options.show_spocs ? [{
         name: "showSponsored",
-        titleString: {id: ABOUT_PREFERENCES ? "prefs_topstories_show_sponsored_label" : "settings_pane_topstories_options_sponsored", values: {provider: options.provider_name}},
+        titleString: {id: "prefs_topstories_show_sponsored_label", values: {provider: options.provider_name}},
         icon: "icon-info"
       }] : []
     },
@@ -57,7 +54,7 @@ const BUILT_IN_SECTIONS = {
     id: "highlights",
     pref: {
       titleString: {id: "settings_pane_highlights_header"},
-      descString: {id: ABOUT_PREFERENCES ? "prefs_highlights_description" : "settings_pane_highlights_body2"}
+      descString: {id: "prefs_highlights_description"}
     },
     shouldHidePref:  false,
     eventSource: "HIGHLIGHTS",
@@ -79,7 +76,6 @@ const SectionsManager = {
   initialized: false,
   sections: new Map(),
   init(prefs = {}) {
-    ABOUT_PREFERENCES = prefs["feeds.aboutpreferences"];
     for (const feedPrefName of Object.keys(BUILT_IN_SECTIONS)) {
       const optionsPrefName = `${feedPrefName}.options`;
       this.addBuiltInSection(feedPrefName, prefs[optionsPrefName]);
