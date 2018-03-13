@@ -56,7 +56,7 @@ const CUSTOM_CSS = `
 `;
 
 this.AboutPreferences = class AboutPreferences {
-  constructor() {
+  init() {
     Services.obs.addObserver(this, PREFERENCES_LOADED_EVENT);
   }
 
@@ -66,6 +66,9 @@ this.AboutPreferences = class AboutPreferences {
 
   onAction(action) {
     switch (action.type) {
+      case at.INIT:
+        this.init();
+        break;
       case at.UNINIT:
         this.uninit();
         break;
@@ -109,7 +112,7 @@ this.AboutPreferences = class AboutPreferences {
 
     // Helper to get strings and format with values if necessary
     const formatString = id => {
-      if (typeof id === "string") {
+      if (typeof id !== "object") {
         return strings[id] || id;
       }
       let string = strings[id.id] || JSON.stringify(id);
@@ -231,4 +234,5 @@ this.AboutPreferences = class AboutPreferences {
   }
 };
 
-const EXPORTED_SYMBOLS = ["AboutPreferences"];
+this.PREFERENCES_LOADED_EVENT = PREFERENCES_LOADED_EVENT;
+const EXPORTED_SYMBOLS = ["AboutPreferences", "PREFERENCES_LOADED_EVENT"];
