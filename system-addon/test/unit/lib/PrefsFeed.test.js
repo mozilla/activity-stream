@@ -12,7 +12,10 @@ let overrider = new GlobalOverrider();
 describe("PrefsFeed", () => {
   let feed;
   let FAKE_PREFS;
+  let sandbox;
+  let getAllStub;
   beforeEach(() => {
+    sandbox = sinon.sandbox.create();
     FAKE_PREFS = new Map([["foo", 1], ["bar", 2]]);
     feed = new PrefsFeed(FAKE_PREFS);
     feed.store = {dispatch: sinon.spy()};
@@ -24,10 +27,23 @@ describe("PrefsFeed", () => {
       ignore: sinon.spy(),
       ignoreBranch: sinon.spy()
     };
-    overrider.set({PrivateBrowsingUtils: {enabled: true}});
+    getAllStub = sandbox.stub();
+    const fakeDB = {
+      objectStore: sandbox.stub().returns({
+        get: sandbox.stub().returns(Promise.resolve()),
+        set: sandbox.stub().returns(Promise.resolve()),
+        getAll: getAllStub
+      })
+    };
+    overrider.set({
+      PrivateBrowsingUtils: {enabled: true},
+      ActivityStreamStorage: function Fake() {},
+      IndexedDB: {open: () => Promise.resolve(fakeDB)}
+    });
   });
   afterEach(() => {
     overrider.restore();
+    sandbox.restore();
   });
   it("should set a pref when a SET_PREF action is received", () => {
     feed.onAction(ac.SetPref("foo", 2));
@@ -58,31 +74,51 @@ describe("PrefsFeed", () => {
   });
   describe("INIT prerendering", () => {
     it("should set a prerender pref on init", () => {
+      sandbox.stub(feed, "_setPrerenderPref");
+
       feed.onAction({type: at.INIT});
-      assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME);
+      assert.calledOnce(feed._setPrerenderPref);
     });
-    it("should set prerender pref to true if prefs match initial values", () => {
+    it("should set prerender pref to true if prefs match initial values", async () => {
       Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
-      feed.onAction({type: at.INIT});
+      getAllStub.returns([]);
+
+      await feed._setPrerenderPref();
+
       assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, true);
     });
-    it("should set prerender pref to false if a pref does not match its initial value", () => {
+    it("should set prerender pref to false if a pref does not match its initial value", async () => {
       Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
       FAKE_PREFS.set("showSearch", false);
-      feed.onAction({type: at.INIT});
+      getAllStub.returns([]);
+
+      await feed._setPrerenderPref();
+
+      assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, false);
+    });
+    it("should set prerender pref to true if indexedDB prefs are unchanged", async () => {
+      Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
+      getAllStub.returns([{collapsed: false}, {collapsed: false}]);
+
+      await feed._setPrerenderPref();
+
+      assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, true);
+    });
+    it("should set prerender pref to false if a indexedDB pref changed value", async () => {
+      Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
+      FAKE_PREFS.set("showSearch", false);
+      getAllStub.returns([{collapsed: false}, {collapsed: true}]);
+
+      await feed._setPrerenderPref();
+
       assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, false);
     });
   });
   describe("Onboarding", () => {
-    let sandbox;
     let defaultBranch;
     beforeEach(() => {
-      sandbox = sinon.sandbox.create();
       defaultBranch = {setBoolPref: sandbox.stub()};
       sandbox.stub(global.Services.prefs, "getDefaultBranch").returns(defaultBranch);
-    });
-    afterEach(() => {
-      sandbox.restore();
     });
     it("should set ONBOARDING_FINISHED_PREF to true if prefs.feeds.snippets if false", () => {
       FAKE_PREFS.set("feeds.snippets", false);
@@ -111,25 +147,73 @@ describe("PrefsFeed", () => {
       assert.calledWith(defaultBranch.setBoolPref, ONBOARDING_FINISHED_PREF, true);
     });
   });
+  describe("indexedDB changes", () => {
+    it("should call _setIndexedDBPref on COLLAPSE_SECTION", () => {
+      sandbox.stub(feed, "_setIndexedDBPref");
+
+      feed.onAction({type: at.COLLAPSE_SECTION, data: {}});
+
+      assert.calledOnce(feed._setIndexedDBPref);
+    });
+    it("should store the pref value", async () => {
+      sandbox.stub(feed._storage, "set").returns(Promise.resolve());
+      sandbox.stub(feed, "_setPrerenderPref");
+      await feed._setIndexedDBPref("topsites", "foo");
+
+      assert.calledOnce(feed._storage.set);
+      assert.calledWith(feed._storage.set, "topsites", "foo");
+    });
+    it("should call _setPrerenderPref", async () => {
+      sandbox.stub(feed._storage, "set").returns(Promise.resolve());
+      sandbox.stub(feed, "_setPrerenderPref");
+      await feed._setIndexedDBPref("topsites", "foo");
+
+      assert.calledOnce(feed._setPrerenderPref);
+    });
+  });
   describe("onPrefChanged prerendering", () => {
     it("should not change the prerender pref if the pref is not included in invalidatingPrefs", () => {
       feed.onPrefChanged("foo123", true);
       assert.notCalled(feed._prefs.set);
     });
     it("should set the prerender pref to false if a pref in invalidatingPrefs is changed from its original value", () => {
+      sandbox.stub(feed, "_setPrerenderPref");
       Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
 
       feed._prefs.set("showSearch", false);
       feed.onPrefChanged("showSearch", false);
-      assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, false);
+      assert.calledOnce(feed._setPrerenderPref);
     });
     it("should set the prerender pref back to true if the invalidatingPrefs are changed back to their original values", () => {
+      sandbox.stub(feed, "_setPrerenderPref");
       Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
       FAKE_PREFS.set("showSearch", false);
 
       feed._prefs.set("showSearch", true);
       feed.onPrefChanged("showSearch", true);
+      assert.calledOnce(feed._setPrerenderPref);
+    });
+    it("should set the prerendered pref to true", async () => {
+      Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
+      FAKE_PREFS.set("showSearch", false);
+      feed._prefs.set("showSearch", true);
+      feed.onPrefChanged("showSearch", true);
+      getAllStub.returns(Promise.resolve([]));
+
+      await feed._setPrerenderPref();
+
       assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, true);
+    });
+    it("should set the prerendered pref to false", async () => {
+      Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
+      FAKE_PREFS.set("showSearch", false);
+      feed._prefs.set("showSearch", false);
+      feed.onPrefChanged("showSearch", false);
+      getAllStub.returns(Promise.resolve([]));
+
+      await feed._setPrerenderPref();
+
+      assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, false);
     });
   });
 });

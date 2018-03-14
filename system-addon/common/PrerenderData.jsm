@@ -63,7 +63,8 @@ this.PrerenderData = new _PrerenderData({
     "feeds.section.topstories": true,
     "feeds.section.highlights": true,
     "enableWideLayout": true,
-    "sectionOrder": "topsites,topstories,highlights"
+    "sectionOrder": "topsites,topstories,highlights",
+    "collapsed": false
   },
   // Prefs listed as invalidating will prevent the prerendered version
   // of AS from being used if their value is something other than what is listed

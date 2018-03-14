@@ -128,8 +128,8 @@ describe("<SectionMenu>", () => {
       section_menu_action_move_up: {id: "sectionId", direction: -1},
       section_menu_action_move_down: {id: "sectionId", direction: +1},
       section_menu_action_remove_section: {name: "showSection", value: false},
-      section_menu_action_collapse_section: {id: DEFAULT_PROPS.id, value: true},
-      section_menu_action_expand_section: {id: DEFAULT_PROPS.id, value: false},
+      section_menu_action_collapse_section: {id: DEFAULT_PROPS.id, value: {collapsed: true}},
+      section_menu_action_expand_section: {id: DEFAULT_PROPS.id, value: {collapsed: false}},
       section_menu_action_manage_section: undefined,
       section_menu_action_add_topsite: {index: -1},
       section_menu_action_privacy_notice: {url: DEFAULT_PROPS.privacyNoticeURL}
