@@ -26,18 +26,26 @@ class _PrerenderData {
         return result;
       } else if (next && next.oneOf) {
         return result.concat(next.oneOf);
+      } else if (next && next.indexedDB) {
+        return result.concat(next.indexedDB);
       }
       throw new Error("Your validation configuration is not properly configured");
     }, []);
   }
 
-  arePrefsValid(getPref) {
+  arePrefsValid(getPref, indexedDBPrefs) {
     for (const prefs of this.validation) {
       // {oneOf: ["foo", "bar"]}
       if (prefs && prefs.oneOf && !prefs.oneOf.some(name => getPref(name) === this.initialPrefs[name])) {
         return false;
 
-      // "foo"
+        // {indexedDB: ["foo", "bar"]}
+      } else if (indexedDBPrefs && prefs && prefs.indexedDB) {
+        const anyModifiedPrefs = prefs.indexedDB.some(prefName => indexedDBPrefs.some(pref => pref && pref[prefName]));
+        if (anyModifiedPrefs) {
+          return false;
+        }
+        // "foo"
       } else if (getPref(prefs) !== this.initialPrefs[prefs]) {
         return false;
       }
@@ -52,9 +60,6 @@ this.PrerenderData = new _PrerenderData({
     "showTopSites": true,
     "showSearch": true,
     "topSitesRows": 1,
-    "collapseTopSites": false,
-    "section.highlights.collapsed": false,
-    "section.topstories.collapsed": false,
     "feeds.section.topstories": true,
     "feeds.section.highlights": true,
     "enableWideLayout": true,
@@ -70,14 +75,14 @@ this.PrerenderData = new _PrerenderData({
     "showTopSites",
     "showSearch",
     "topSitesRows",
-    "collapseTopSites",
-    "section.highlights.collapsed",
-    "section.topstories.collapsed",
     "enableWideLayout",
     "sectionOrder",
     // This means if either of these are set to their default values,
     // prerendering can be used.
-    {oneOf: ["feeds.section.topstories", "feeds.section.highlights"]}
+    {oneOf: ["feeds.section.topstories", "feeds.section.highlights"]},
+    // If any component has the following preference set to `true` it will
+    // invalidate the prerendered version.
+    {indexedDB: ["collapsed"]}
   ],
   initialSections: [
     {
