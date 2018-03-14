@@ -35,13 +35,13 @@ export const SectionMenuOptions = {
   CollapseSection: section => ({
     id: "section_menu_action_collapse_section",
     icon: "minimize",
-    action: ac.SetPref(section.collapsePrefName, true),
+    action: ac.OnlyToMain({type: at.COLLAPSE_SECTION, data: {id: section.id, value: true}}),
     userEvent: "SECTION_MENU_COLLAPSE"
   }),
   ExpandSection: section => ({
     id: "section_menu_action_expand_section",
     icon: "maximize",
-    action: ac.SetPref(section.collapsePrefName, false),
+    action: ac.OnlyToMain({type: at.COLLAPSE_SECTION, data: {id: section.id, value: false}}),
     userEvent: "SECTION_MENU_EXPAND"
   }),
   ManageSection: section => ({
@@ -65,5 +65,5 @@ export const SectionMenuOptions = {
     }),
     userEvent: "SECTION_MENU_PRIVACY_NOTICE"
   }),
-  CheckCollapsed: section => (section.isCollapsed ? SectionMenuOptions.ExpandSection(section) : SectionMenuOptions.CollapseSection(section))
+  CheckCollapsed: section => (section.collapsed ? SectionMenuOptions.ExpandSection(section) : SectionMenuOptions.CollapseSection(section))
 };
