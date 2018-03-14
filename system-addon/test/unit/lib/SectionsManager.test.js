@@ -91,20 +91,18 @@ describe("SectionsManager", () => {
   });
   describe("#toggleSection", () => {
     it("should update the collapsed value of the section", async () => {
-      sandbox.stub(SectionsManager._storage, "set").returns(Promise.resolve());
       sandbox.stub(SectionsManager, "updateSection");
       let topstories = SectionsManager.sections.get("topstories");
       assert.isFalse(topstories.collapsed);
 
-      await SectionsManager.toggleSection({id: "topstories", value: true});
+      await SectionsManager.toggleSection("topstories", {collapsed: true});
       topstories = SectionsManager.sections.get("topstories");
 
       assert.isTrue(SectionsManager.updateSection.args[0][1].collapsed);
-      assert.isTrue(SectionsManager._storage.set.args[0][1].collapsed);
     });
     it("should ignore invalid ids", async () => {
       sandbox.stub(SectionsManager, "updateSection");
-      await SectionsManager.toggleSection({id: "foo"});
+      await SectionsManager.toggleSection("foo", {collapsed: true});
 
       assert.notCalled(SectionsManager.updateSection);
     });
@@ -558,7 +556,7 @@ describe("SectionsFeed", () => {
     it("should call toggleSection on COLLAPSE_SECTION", () => {
       const stub = sinon.stub(SectionsManager, "toggleSection");
 
-      feed.onAction({type: "COLLAPSE_SECTION"});
+      feed.onAction({type: "COLLAPSE_SECTION", data: {}});
 
       assert.calledOnce(stub);
     });

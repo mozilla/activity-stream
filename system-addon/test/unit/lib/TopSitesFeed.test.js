@@ -456,19 +456,13 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.toggleSection);
     });
     it("should dispatch TOP_SITES_PREFS_UPDATED", async () => {
-      await feed.toggleSection(true);
+      await feed.toggleSection({collapsed: true});
 
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.BroadcastToContent({
         type: at.TOP_SITES_PREFS_UPDATED,
         data: {prefs: {collapsed: true}}
       }));
-    });
-    it("should store the prev value", async () => {
-      await feed.toggleSection(true);
-
-      assert.calledOnce(feed._storage.set);
-      assert.calledWithExactly(feed._storage.set, "topsites", {collapsed: true});
     });
   });
   describe("#_fetchIcon", () => {

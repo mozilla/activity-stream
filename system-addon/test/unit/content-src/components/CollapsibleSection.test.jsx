@@ -58,7 +58,7 @@ describe("CollapsibleSection", () => {
     function dispatch(a) {
       if (a.type === at.COLLAPSE_SECTION) {
         assert.equal(a.data.id, DEFAULT_PROPS.id);
-        assert.equal(a.data.value, true);
+        assert.equal(a.data.value.collapsed, true);
         done();
       }
     }
