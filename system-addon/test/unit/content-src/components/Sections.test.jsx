@@ -55,11 +55,11 @@ describe("<Sections>", () => {
 describe("<Section>", () => {
   let wrapper;
   let FAKE_SECTION;
-  let FAKE_PREFS;
 
   beforeEach(() => {
     FAKE_SECTION = {
       id: `foo_bar_1`,
+      collapsed: false,
       title: `Foo Bar 1`,
       rows: [{link: "http://localhost", index: 0}],
       emptyState: {
@@ -67,25 +67,24 @@ describe("<Section>", () => {
         message: "Some message"
       }
     };
-    FAKE_PREFS = {values: {"section.foo_bar_1.collapsed": false}};
 
-    wrapper = shallowWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+    wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
   });
 
   describe("context menu", () => {
     it("should render a context menu button", () => {
-      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} />);
       assert.equal(wrapper.find(".section-top-bar .context-menu-button").length, 1);
     });
     it("should render a section menu when button is clicked", () => {
-      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} />);
       const button = wrapper.find(".section-top-bar .context-menu-button");
       assert.equal(wrapper.find(SectionMenu).length, 0);
       button.simulate("click", {preventDefault: () => {}});
       assert.equal(wrapper.find(SectionMenu).length, 1);
     });
     it("should not render a section menu by default", () => {
-      wrapper = mountWithIntl(<Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+      wrapper = mountWithIntl(<Section {...FAKE_SECTION} />);
       assert.equal(wrapper.find(SectionMenu).length, 0);
     });
   });
@@ -95,7 +94,7 @@ describe("<Section>", () => {
     const fakeSite = {link: "http://localhost"};
     function renderWithSites(rows) {
       return shallowWithIntl(
-        <Section {...FAKE_SECTION} rows={rows} maxRows={2} Prefs={FAKE_PREFS} />);
+        <Section {...FAKE_SECTION} rows={rows} maxRows={2} />);
     }
 
     it("should return 1 row of placeholders if realRows is 0", () => {
@@ -129,7 +128,7 @@ describe("<Section>", () => {
         emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
       });
       wrapper = shallowWithIntl(
-        <Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+        <Section {...FAKE_SECTION} />);
     });
     it("should be shown when rows is empty and initialized is true", () => {
       assert.ok(wrapper.find(".empty-state").exists());
@@ -141,7 +140,7 @@ describe("<Section>", () => {
         emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
       });
       wrapper = shallowWithIntl(
-        <Section {...FAKE_SECTION} Prefs={FAKE_PREFS} />);
+        <Section {...FAKE_SECTION} />);
       assert.isFalse(wrapper.find(".empty-state").exists());
     });
     it("should use the icon prop as the icon url if it starts with `moz-extension://`", () => {
@@ -156,30 +155,30 @@ describe("<Section>", () => {
       TOP_STORIES_SECTION = {
         id: "topstories",
         title: "TopStories",
+        collapsed: false,
         rows: [{guid: 1, link: "http://localhost", isDefault: true}],
         topics: [],
         read_more_endpoint: "http://localhost/read-more",
         maxRows: 1,
         eventSource: "TOP_STORIES"
       };
-      FAKE_PREFS = {values: {"section.topstories.collapsed": false}};
     });
     it("should not render for empty topics", () => {
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} Prefs={FAKE_PREFS} />);
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
 
       assert.lengthOf(wrapper.find(".topic"), 0);
     });
     it("should render for non-empty topics", () => {
       TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
 
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} Prefs={FAKE_PREFS} />);
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
 
       assert.lengthOf(wrapper.find(".topic"), 1);
     });
     it("should render for uninitialized topics", () => {
       delete TOP_STORIES_SECTION.topics;
 
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} Prefs={FAKE_PREFS} />);
+      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
 
       assert.lengthOf(wrapper.find(".topic"), 1);
     });
@@ -189,6 +188,7 @@ describe("<Section>", () => {
     const FAKE_TOPSTORIES_SECTION_PROPS = {
       id: "TopStories",
       title: "Foo Bar 1",
+      collapsed: false,
       maxRows: 1,
       rows: [{guid: 1}, {guid: 2}],
       shouldSendImpressionStats: true,
@@ -201,12 +201,11 @@ describe("<Section>", () => {
       eventSource: "TOP_STORIES",
       options: {personalized: false}
     };
-    FAKE_PREFS = {values: {"section.TopStories.collapsed": false}};
 
     function renderSection(props = {}) {
       return shallowWithIntl(<Section
         {...FAKE_TOPSTORIES_SECTION_PROPS}
-        {...props} Prefs={FAKE_PREFS} />);
+        {...props} />);
     }
 
     it("should send impression with the right stats when the page loads", () => {
@@ -228,7 +227,7 @@ describe("<Section>", () => {
     });
     it("should not send impression stats if the section is collapsed", () => {
       const dispatch = sinon.spy();
-      const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {Prefs: {values: {"section.topstories.collapsed": true}}});
+      const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {collapsed: true});
       renderSection(props);
       assert.notCalled(dispatch);
     });
@@ -315,7 +314,7 @@ describe("<Section>", () => {
         FAKE_TOPSTORIES_SECTION_PROPS,
         {
           rows: [{guid: 123}],
-          Prefs: {values: {"section.TopStories.collapsed": true}}
+          collapsed: true
         }
       ));
 
@@ -326,7 +325,7 @@ describe("<Section>", () => {
         FAKE_TOPSTORIES_SECTION_PROPS,
         {
           rows: [{guid: 123}],
-          Prefs: {values: {"section.TopStories.collapsed": false}}
+          collapsed: false
         }
       ));
 

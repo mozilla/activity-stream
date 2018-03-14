@@ -9,8 +9,8 @@ const DEFAULT_PROPS = {
   className: "cool-section",
   title: "Cool Section",
   prefName: "collapseSection",
-  Prefs: {values: {collapseSection: false}},
   disclaimer: {text: {id: "section_disclaimer_topstories_linktext"}, link: {id: "menu_action_remove_bookmark"}, button: {id: "search_button"}},
+  collapsed: false,
   document: {
     addEventListener: () => {},
     removeEventListener: () => {},
@@ -40,8 +40,7 @@ describe("CollapsibleSection", () => {
   });
 
   it("should have collapsed class if 'prefName' pref is true", () => {
-    setup({Prefs: {values: {collapseSection: true}}});
-    assert.ok(wrapper.instance().props.Prefs.values.collapseSection);
+    setup({collapsed: true});
     assert.ok(wrapper.find(".collapsible-section").first().hasClass("collapsed"));
   });
 
@@ -57,8 +56,8 @@ describe("CollapsibleSection", () => {
 
   it("should fire a pref change event when section title is clicked", done => {
     function dispatch(a) {
-      if (a.type === at.SET_PREF) {
-        assert.equal(a.data.name, "collapseSection");
+      if (a.type === at.COLLAPSE_SECTION) {
+        assert.equal(a.data.id, DEFAULT_PROPS.id);
         assert.equal(a.data.value, true);
         done();
       }
@@ -90,20 +89,20 @@ describe("CollapsibleSection", () => {
   });
 
   describe("without collapsible pref", () => {
+    let dispatch;
+    beforeEach(() => {
+      dispatch = sinon.stub();
+      setup({collapsed: undefined, dispatch});
+    });
     it("should render the section uncollapsed", () => {
-      setup({Prefs: {values: {}}});
       assert.isFalse(wrapper.find(".collapsible-section").first().hasClass("collapsed"));
     });
 
     it("should not render the arrow if no collapsible pref exists for the section", () => {
-      setup({Prefs: {values: {}}});
       assert.lengthOf(wrapper.find(".click-target .collapsible-arrow"), 0);
     });
 
     it("should not trigger a dispatch when the section title is clicked ", () => {
-      const dispatch = sinon.stub();
-      setup({Prefs: {values: {}}, dispatch});
-
       wrapper.find(".click-target").simulate("click");
 
       assert.notCalled(dispatch);
@@ -143,12 +142,12 @@ describe("CollapsibleSection", () => {
       checkHeight(maxHeight);
     });
     it("should not have a max-height when already collapsed", () => {
-      setup({Prefs: {values: {collapseSection: true}}});
+      setup({collapsed: true});
 
       checkHeight("");
     });
     it("should not have a max-height when animating closed to a css-set 0", () => {
-      setup({Prefs: {values: {collapseSection: true}}});
+      setup({collapsed: true});
       setState({isAnimating: true});
 
       checkHeight("");

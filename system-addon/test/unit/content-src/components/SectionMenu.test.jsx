@@ -13,7 +13,7 @@ const DEFAULT_PROPS = {
   source: "TOP_SITES",
   showPrefName: "showSection",
   collapsePrefName: "collapseSection",
-  isCollapsed: false,
+  collapsed: false,
   onUpdate: () => {},
   visible: false,
   dispatch: () => {}
@@ -64,12 +64,12 @@ describe("<SectionMenu>", () => {
     assert.propertyVal(options, "length", i);
   });
   it("should show Collapse option for an expanded section if CheckCollapsed in options list", () => {
-    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isCollapsed={false} />);
+    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} collapsed={false} />);
     const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "section_menu_action_collapse_section")));
   });
   it("should show Expand option for a collapsed section if CheckCollapsed in options list", () => {
-    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isCollapsed={true} />);
+    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} collapsed={true} />);
     const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "section_menu_action_expand_section")));
   });
@@ -128,8 +128,8 @@ describe("<SectionMenu>", () => {
       section_menu_action_move_up: {id: "sectionId", direction: -1},
       section_menu_action_move_down: {id: "sectionId", direction: +1},
       section_menu_action_remove_section: {name: "showSection", value: false},
-      section_menu_action_collapse_section: {name: "collapseSection", value: true},
-      section_menu_action_expand_section: {name: "collapseSection", value: false},
+      section_menu_action_collapse_section: {id: DEFAULT_PROPS.id, value: true},
+      section_menu_action_expand_section: {id: DEFAULT_PROPS.id, value: false},
       section_menu_action_manage_section: undefined,
       section_menu_action_add_topsite: {index: -1},
       section_menu_action_privacy_notice: {url: DEFAULT_PROPS.privacyNoticeURL}
