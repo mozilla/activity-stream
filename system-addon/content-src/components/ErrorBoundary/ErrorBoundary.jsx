@@ -56,8 +56,14 @@ export class ErrorBoundary extends React.PureComponent {
 
   componentDidCatch(error, info) {
     this.setState({hasError: true});
-    // XXX info contains the stack; clarify in comment
-    this.raven.captureException(error, {extra: info});
+
+    // Note that of the extra info, we explicitly ONLY pass through the stack
+    // trace, since if future versions of React add other pieces of extra info
+    // to this callback, we don't want to just blindly send them as well.
+    this.raven.captureException(
+      error,
+      {extra: {componentStack: info.componentStack}}
+    );
   }
 
   render() {
