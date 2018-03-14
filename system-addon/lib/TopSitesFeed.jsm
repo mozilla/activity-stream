@@ -211,9 +211,8 @@ this.TopSitesFeed = class TopSitesFeed {
     });
   }
 
-  async toggleSection(value) {
-    this.store.dispatch(ac.BroadcastToContent({type: at.TOP_SITES_PREFS_UPDATED, data: {prefs: {collapsed: value}}}));
-    await this._storage.set(SECTION_ID, {collapsed: value});
+  toggleSection(collapsed) {
+    this.store.dispatch(ac.BroadcastToContent({type: at.TOP_SITES_PREFS_UPDATED, data: {prefs: collapsed}}));
   }
 
   /**

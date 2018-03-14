@@ -28,6 +28,10 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
     return this.getStore().get(key);
   }
 
+  getAll() {
+    return this.getStore().getAll();
+  }
+
   set(key, value) {
     return this.getStore().put(value, key);
   }
