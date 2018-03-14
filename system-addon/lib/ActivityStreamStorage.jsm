@@ -16,6 +16,10 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
     return this._db;
   }
 
+  get intialized() {
+    return this._db !== null;
+  }
+
   getStore() {
     return this.db.objectStore(this.storeName, "readwrite");
   }
@@ -30,7 +34,15 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
 
   _openDatabase() {
     return IndexedDB.open(this.dbName, {version: this.dbVersion}, db => {
-      db.createObjectStore(this.storeName);
+      if (Array.isArray(this.storeName)) {
+        this.storeName.forEach(store => {
+          if (!db.objectStoreNames.contains(store)) {
+            db.createObjectStore(store);
+          }
+        });
+      } else if (!db.objectStoreNames.contains(this.storeName)) {
+        db.createObjectStore(this.storeName);
+      }
     });
   }
 
