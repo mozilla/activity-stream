@@ -7,8 +7,13 @@ ChromeUtils.import("resource://gre/modules/EventEmitter.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
+const {ActivityStreamStorage} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
+
+function getDefaultOptions(options) {
+  return {collapsed: !!options.collapsed};
+}
 
 /*
  * Generators for built in sections, keyed by the pref name for their feed.
@@ -75,10 +80,12 @@ const SectionsManager = {
   CONTEXT_MENU_PREFS: {"SaveToPocket": "extensions.pocket.enabled"},
   initialized: false,
   sections: new Map(),
-  init(prefs = {}) {
+  async init(prefs = {}) {
+    await this.initStorage();
+
     for (const feedPrefName of Object.keys(BUILT_IN_SECTIONS)) {
       const optionsPrefName = `${feedPrefName}.options`;
-      this.addBuiltInSection(feedPrefName, prefs[optionsPrefName]);
+      await this.addBuiltInSection(feedPrefName, prefs[optionsPrefName]);
 
       this._dedupeConfiguration = [];
       this.sections.forEach(section => {
@@ -97,6 +104,10 @@ const SectionsManager = {
     this.initialized = true;
     this.emit(this.INIT);
   },
+  initStorage() {
+    this._storage = new ActivityStreamStorage("sectionPrefs");
+    return this._storage.init();
+  },
   observe(subject, topic, data) {
     switch (topic) {
       case "nsPref:changed":
@@ -108,7 +119,19 @@ const SectionsManager = {
         break;
     }
   },
-  addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
+  async toggleSection({id, value}) {
+    const sectionName = `feeds.section.${id}`;
+    if (!(sectionName in BUILT_IN_SECTIONS)) {
+      return;
+    }
+
+    const section = Object.assign({}, this.sections.get(id), {collapsed: value});
+    this.sections.set(id, section);
+    this.updateSection(id, section, true);
+
+    await this._storage.set(sectionName, {collapsed: value});
+  },
+  async addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
     let options;
     try {
       options = JSON.parse(optionsPrefValue);
@@ -116,7 +139,8 @@ const SectionsManager = {
       options = {};
       Cu.reportError(`Problem parsing options pref for ${feedPrefName}`);
     }
-    const section = BUILT_IN_SECTIONS[feedPrefName](options);
+    const storedPrefs = await this._storage.get(feedPrefName) || {};
+    const section = Object.assign({}, BUILT_IN_SECTIONS[feedPrefName](options), getDefaultOptions(storedPrefs));
     section.pref.feed = feedPrefName;
     this.addSection(section.id, Object.assign(section, {options}));
   },
@@ -370,6 +394,9 @@ class SectionsFeed {
         }
         break;
       }
+      case at.COLLAPSE_SECTION:
+        SectionsManager.toggleSection(action.data);
+        break;
       case at.PLACES_BOOKMARK_ADDED:
         SectionsManager.updateBookmarkMetadata(action.data);
         break;
