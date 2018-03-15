@@ -29,7 +29,7 @@ export const SectionMenuOptions = {
   RemoveSection: section => ({
     id: "section_menu_action_remove_section",
     icon: "dismiss",
-    action: ac.SetPref(section.showPrefName, false),
+    action: ac.OnlyToMain({type: at.UPDATE_SECTION_PREFS, data: {id: section.id, value: {disabled: true}}}),
     userEvent: "SECTION_MENU_REMOVE"
   }),
   CollapseSection: section => ({

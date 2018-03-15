@@ -87,11 +87,12 @@ this.PrefsFeed = class PrefsFeed {
   }
 
   async _setIndexedDBPref(id, value) {
-    const name = id === "topsites" ? id : `feeds.section.${id}`;
+    const prefName = id === "topsites" ? id : `feeds.section.${id}`;
     if (!this._storage.initialized) {
       await this._storage.init();
     }
-    await this._storage.set(name, value);
+    const prefs = await this._storage.get(id);
+    await this._storage.set(prefName, Object.assign({}, prefs, value));
     this._setPrerenderPref();
   }
 

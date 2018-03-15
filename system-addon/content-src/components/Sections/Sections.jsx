@@ -192,8 +192,9 @@ export const SectionIntl = connect(state => ({Prefs: state.Prefs}))(injectIntl(S
 export class _Sections extends React.PureComponent {
   renderSections() {
     const sections = [];
-    const enabledSections = this.props.Sections.filter(section => section.enabled);
-    const {sectionOrder, showTopSites} = this.props.Prefs.values;
+    const enabledSections = this.props.Sections.filter(section => section.pref && !section.pref.disabled);
+    const showTopSites = this.props.TopSites.pref && !this.props.TopSites.pref.disabled;
+    const {sectionOrder} = this.props.Prefs.values;
     // Enabled sections doesn't include Top Sites, so we add it if enabled.
     const expectedCount = enabledSections.length + ~~showTopSites;
 
@@ -224,4 +225,4 @@ export class _Sections extends React.PureComponent {
   }
 }
 
-export const Sections = connect(state => ({Sections: state.Sections, Prefs: state.Prefs}))(_Sections);
+export const Sections = connect(state => ({Sections: state.Sections, Prefs: state.Prefs, TopSites: state.TopSites}))(_Sections);

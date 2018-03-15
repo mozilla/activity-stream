@@ -207,8 +207,8 @@ this.TopSitesFeed = class TopSitesFeed {
     });
   }
 
-  updateSectionPrefs(collapsed) {
-    this.store.dispatch(ac.BroadcastToContent({type: at.TOP_SITES_PREFS_UPDATED, data: {pref: collapsed}}));
+  updateSectionPrefs(values) {
+    this.store.dispatch(ac.BroadcastToContent({type: at.TOP_SITES_PREFS_UPDATED, data: {pref: values}}));
   }
 
   /**

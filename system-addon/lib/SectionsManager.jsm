@@ -26,7 +26,8 @@ const BUILT_IN_SECTIONS = {
         name: "showSponsored",
         titleString: {id: "prefs_topstories_show_sponsored_label", values: {provider: options.provider_name}},
         icon: "icon-info"
-      }] : []
+      }] : [],
+      disabled: options.hidden
     },
     shouldHidePref: options.hidden,
     eventSource: "TOP_STORIES",
@@ -115,14 +116,12 @@ const SectionsManager = {
         break;
     }
   },
-  updateSectionPrefs(id, collapsed) {
-    const sectionName = `feeds.section.${id}`;
-    if (!(sectionName in BUILT_IN_SECTIONS)) {
+  updateSectionPrefs(id, value) {
+    if (!(`feeds.section.${id}` in BUILT_IN_SECTIONS)) {
       return;
     }
-
     const section = this.sections.get(id);
-    const updatedSection = Object.assign({}, section, {pref: Object.assign({}, section.pref, collapsed)});
+    const updatedSection = Object.assign({}, section, {pref: Object.assign({}, section.pref, value)});
     this.updateSection(id, updatedSection, true);
   },
   async addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
@@ -135,9 +134,9 @@ const SectionsManager = {
     }
     const storedPrefs = await this._storage.get(feedPrefName) || {};
     const defaultSection = BUILT_IN_SECTIONS[feedPrefName](options);
-    const section = Object.assign({}, defaultSection, {pref: Object.assign({}, defaultSection.pref, getDefaultOptions(storedPrefs))});
+    const section = Object.assign({}, defaultSection, {options}, {pref: Object.assign({}, getDefaultOptions(storedPrefs), defaultSection.pref)});
     section.pref.feed = feedPrefName;
-    this.addSection(section.id, Object.assign(section, {options}));
+    this.addSection(section.id, section);
   },
   addSection(id, options) {
     this.updateLinkMenuOptions(options);
@@ -155,9 +154,6 @@ const SectionsManager = {
   disableSection(id) {
     this.updateSection(id, {enabled: false, rows: [], initialized: false}, true);
     this.emit(this.DISABLE_SECTION, id);
-  },
-  updateSections() {
-    this.sections.forEach((section, id) => this.updateSection(id, section, true));
   },
   updateSection(id, options, shouldBroadcast) {
     this.updateLinkMenuOptions(options);
@@ -256,8 +252,6 @@ for (const action of [
   "ACTION_DISPATCHED",
   "ADD_SECTION",
   "REMOVE_SECTION",
-  "ENABLE_SECTION",
-  "DISABLE_SECTION",
   "UPDATE_SECTION",
   "UPDATE_SECTION_CARD",
   "INIT",
@@ -332,9 +326,9 @@ class SectionsFeed {
   }
 
   get enabledSectionIds() {
-    let sections = this.store.getState().Sections.filter(section => section.enabled).map(s => s.id);
+    let sections = this.store.getState().Sections.filter(section => !section.pref.disabled).map(s => s.id);
     // Top Sites is a special case. Append if show pref is on.
-    if (this.store.getState().Prefs.values.showTopSites) {
+    if (!this.store.getState().TopSites.pref.disabled) {
       sections.push("topsites");
     }
     return sections;
@@ -399,12 +393,6 @@ class SectionsFeed {
         if (action.data) {
           SectionsManager.removeSectionCard(action.data.source, action.data.url);
         }
-        break;
-      case at.SECTION_DISABLE:
-        SectionsManager.disableSection(action.data);
-        break;
-      case at.SECTION_ENABLE:
-        SectionsManager.enableSection(action.data);
         break;
       case at.SECTION_MOVE:
         this.moveSection(action.data.id, action.data.direction);
