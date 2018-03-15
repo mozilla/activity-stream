@@ -392,7 +392,7 @@ $half-base-gutter: $base-gutter / 2;
         width: 960px;
         height: 16px;
         -moz-context-properties: fill;
-        fill: $teal-70;
+        fill: $blue-50;
         background-image: url('chrome://browser/skin/tabbrowser/loading.svg');
         animation: tab-throbber-animation 1.05s steps(60) infinite;
 
@@ -415,6 +415,12 @@ $half-base-gutter: $base-gutter / 2;
         &:focus {
           border: $input-border-active;
           box-shadow: $input-focus-boxshadow;
+        }
+
+        &[disabled] {
+          border: $input-border;
+          box-shadow: none;
+          opacity: 0.4;
         }
       }
     }

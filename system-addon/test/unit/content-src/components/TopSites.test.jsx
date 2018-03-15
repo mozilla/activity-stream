@@ -1121,6 +1121,13 @@ describe("#TopSiteFormInput", () => {
 
       assert.equal(wrapper.find(".loading-container").length, 1);
     });
+    it("should disable the input when loading indicator is present", () => {
+      assert.isFalse(wrapper.find("input").getDOMNode().disabled);
+
+      wrapper.setProps({loading: true});
+
+      assert.isTrue(wrapper.find("input").getDOMNode().disabled);
+    });
   });
 
   describe("with error", () => {

@@ -44,7 +44,8 @@ export class TopSiteFormInput extends React.PureComponent {
           ref={this.onMount}
           onChange={this.onChange}
           placeholder={this.props.intl.formatMessage({id: this.props.placeholderId})}
-          autoFocus={this.props.shouldFocus} />
+          autoFocus={this.props.shouldFocus}
+          disabled={this.props.loading} />
         {validationError &&
           <aside className="error-tooltip">
             <FormattedMessage id={this.props.errorMessageId} />
