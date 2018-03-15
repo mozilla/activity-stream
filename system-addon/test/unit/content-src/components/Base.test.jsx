@@ -45,10 +45,4 @@ describe("<BaseContent>", () => {
 
     assert.isTrue(wrapper.find(Search).parent().is(ErrorBoundary));
   });
-
-  it("should render an ErrorBoundary with a class sidebar", () => {
-    const wrapper = shallow(<BaseContent {...DEFAULT_PROPS} />);
-
-    assert.isTrue(wrapper.find(".sidebar").first().is(ErrorBoundary));
-  });
 });

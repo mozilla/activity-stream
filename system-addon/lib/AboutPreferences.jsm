@@ -72,6 +72,9 @@ this.AboutPreferences = class AboutPreferences {
       case at.UNINIT:
         this.uninit();
         break;
+      case at.SETTINGS_OPEN:
+        action._target.browser.ownerGlobal.openPreferences("paneHome", {origin: "aboutHome"});
+        break;
     }
   }
 

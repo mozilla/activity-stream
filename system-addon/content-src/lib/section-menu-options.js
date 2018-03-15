@@ -47,7 +47,7 @@ export const SectionMenuOptions = {
   ManageSection: section => ({
     id: "section_menu_action_manage_section",
     icon: "settings",
-    action: {type: at.SETTINGS_OPEN},
+    action: ac.OnlyToMain({type: at.SETTINGS_OPEN}),
     userEvent: "SECTION_MENU_MANAGE"
   }),
   AddTopSite: section => ({
