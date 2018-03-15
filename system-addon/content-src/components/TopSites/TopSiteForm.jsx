@@ -195,10 +195,7 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   _getPreviewScreenshot() {
-    return Object.assign({}, this.props.site, {
-      screenshotPreview: this.state.screenshotPreview,
-      screenshotRequestFailed: this.state.screenshotRequestFailed
-    });
+    return Object.assign({}, this.props.site, {screenshotPreview: this.state.screenshotPreview});
   }
 
   render() {

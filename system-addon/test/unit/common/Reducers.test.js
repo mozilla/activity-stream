@@ -46,8 +46,13 @@ describe("Reducers", () => {
     });
     it("should set screenshotRequestFailed to true on PREVIEW_FAILED", () => {
       const action = {type: at.PREVIEW_FAILED};
-      const nextState = TopSites({}, action);
+      const nextState = TopSites({editForm: {index: 2}}, action);
       assert.isTrue(nextState.editForm.screenshotRequestFailed);
+    });
+    it("should set editIndex on PREVIEW_FAILED", () => {
+      const action = {type: at.PREVIEW_FAILED};
+      const nextState = TopSites({editForm: {index: 2}}, action);
+      assert.equal(nextState.editForm.index, 2);
     });
     it("should add screenshotPreview on SCREENSHOT_PREVIEW", () => {
       const oldState = {};
