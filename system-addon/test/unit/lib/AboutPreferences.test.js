@@ -133,7 +133,6 @@ describe("AboutPreferences Feed", () => {
     beforeEach(() => {
       node = {
         appendChild: sandbox.stub().returnsArg(0),
-        appendItem: sandbox.stub(),
         classList: {add: sandbox.stub()},
         cloneNode: sandbox.stub().returnsThis(),
         insertAdjacentElement: sandbox.stub().returnsArg(1),
@@ -238,7 +237,9 @@ describe("AboutPreferences Feed", () => {
 
         testRender();
 
-        assert.calledThrice(node.appendItem);
+        assert.calledWith(node.setAttribute, "value", 1);
+        assert.calledWith(node.setAttribute, "value", 2);
+        assert.calledWith(node.setAttribute, "value", 3);
       });
     });
     describe("nested prefs", () => {
