@@ -204,9 +204,12 @@ this.AboutPreferences = class AboutPreferences {
 
           // Add appropriate number of localized entries to the dropdown
           const menulist = createAppend("menulist", detailHbox);
+          const menupopup = createAppend("menupopup", menulist);
           for (let num = 1; num <= maxRows; num++) {
             const plurals = formatString({id: "prefs_section_rows_option", values: {num}});
-            menulist.appendItem(PluralForm.get(num, plurals), num);
+            const item = createAppend("menuitem", menupopup);
+            item.setAttribute("label", PluralForm.get(num, plurals));
+            item.setAttribute("value", num);
           }
           linkPref(menulist, rowsPref, "int");
         }
