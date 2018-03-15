@@ -340,11 +340,6 @@ $half-base-gutter: $base-gutter / 2;
       }
     }
 
-    .url input:not(:placeholder-shown):dir(rtl) {
-      direction: ltr;
-      text-align: right;
-    }
-
     .url {
       input:dir(ltr) {
         padding-right: 32px;
@@ -352,6 +347,11 @@ $half-base-gutter: $base-gutter / 2;
 
       input:dir(rtl) {
         padding-left: 32px;
+
+        &:not(:placeholder-shown) {
+          direction: ltr;
+          text-align: right;
+        }
       }
     }
 
