@@ -93,7 +93,7 @@ describe("SectionsManager", () => {
     it("should update the collapsed value of the section", async () => {
       sandbox.stub(SectionsManager, "updateSection");
       let topstories = SectionsManager.sections.get("topstories");
-      assert.isFalse(topstories.collapsed);
+      assert.isFalse(topstories.pref.collapsed);
 
       await SectionsManager.updateSectionPrefs("topstories", {collapsed: true});
       topstories = SectionsManager.sections.get("topstories");

@@ -3,6 +3,7 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {FakePrefs, GlobalOverrider} from "test/unit/utils";
 import {insertPinned, TOP_SITES_DEFAULT_ROWS, TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
+import {getDefaultOptions} from "lib/ActivityStreamStorage.jsm";
 import injector from "inject!lib/TopSitesFeed.jsm";
 import {Screenshots} from "lib/Screenshots.jsm";
 
@@ -81,7 +82,7 @@ describe("Top Sites Feed", () => {
       "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
       "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider},
       "lib/ShortURL.jsm": {shortURL: shortURLStub},
-      "lib/ActivityStreamStorage.jsm": {ActivityStreamStorage: function Fake() {}}
+      "lib/ActivityStreamStorage.jsm": {ActivityStreamStorage: function Fake() {}, getDefaultOptions}
     }));
     feed = new TopSitesFeed();
     feed._storage = {

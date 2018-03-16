@@ -7,13 +7,9 @@ ChromeUtils.import("resource://gre/modules/EventEmitter.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
-const {ActivityStreamStorage} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
+const {ActivityStreamStorage, getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
-
-function getDefaultOptions(options) {
-  return {collapsed: !!options.collapsed};
-}
 
 /*
  * Generators for built in sections, keyed by the pref name for their feed.
@@ -138,7 +134,8 @@ const SectionsManager = {
       Cu.reportError(`Problem parsing options pref for ${feedPrefName}`);
     }
     const storedPrefs = await this._storage.get(feedPrefName) || {};
-    const section = Object.assign({}, BUILT_IN_SECTIONS[feedPrefName](options), getDefaultOptions(storedPrefs));
+    const defaultSection = BUILT_IN_SECTIONS[feedPrefName](options);
+    const section = Object.assign({}, defaultSection, {pref: Object.assign({}, defaultSection.pref, getDefaultOptions(storedPrefs))});
     section.pref.feed = feedPrefName;
     this.addSection(section.id, Object.assign(section, {options}));
   },
