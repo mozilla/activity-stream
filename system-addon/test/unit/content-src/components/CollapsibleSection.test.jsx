@@ -56,7 +56,7 @@ describe("CollapsibleSection", () => {
 
   it("should fire a pref change event when section title is clicked", done => {
     function dispatch(a) {
-      if (a.type === at.COLLAPSE_SECTION) {
+      if (a.type === at.UPDATE_SECTION_PREFS) {
         assert.equal(a.data.id, DEFAULT_PROPS.id);
         assert.equal(a.data.value.collapsed, true);
         done();

@@ -419,7 +419,7 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.BroadcastToContent({
         type: at.TOP_SITES_UPDATED,
-        data: {links: [], prefs: {collapsed: false}}
+        data: {links: [], pref: {collapsed: false}}
       }));
     });
     it("should dispatch an action with the links returned", async () => {
@@ -443,25 +443,25 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.AlsoToPreloaded({
         type: at.TOP_SITES_UPDATED,
-        data: {links: [], prefs: {collapsed: false}}
+        data: {links: [], pref: {collapsed: false}}
       }));
     });
   });
-  describe("#toggleSection", () => {
-    it("should call toggleSection on COLLAPSE_SECTION", () => {
-      sandbox.stub(feed, "toggleSection");
+  describe("#updateSectionPrefs", () => {
+    it("should call updateSectionPrefs on UPDATE_SECTION_PREFS", () => {
+      sandbox.stub(feed, "updateSectionPrefs");
 
-      feed.onAction({type: at.COLLAPSE_SECTION, data: {id: "topsites"}});
+      feed.onAction({type: at.UPDATE_SECTION_PREFS, data: {id: "topsites"}});
 
-      assert.calledOnce(feed.toggleSection);
+      assert.calledOnce(feed.updateSectionPrefs);
     });
     it("should dispatch TOP_SITES_PREFS_UPDATED", async () => {
-      await feed.toggleSection({collapsed: true});
+      await feed.updateSectionPrefs({collapsed: true});
 
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.BroadcastToContent({
         type: at.TOP_SITES_PREFS_UPDATED,
-        data: {prefs: {collapsed: true}}
+        data: {pref: {collapsed: true}}
       }));
     });
   });

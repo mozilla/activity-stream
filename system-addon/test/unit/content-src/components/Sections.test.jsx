@@ -59,7 +59,7 @@ describe("<Section>", () => {
   beforeEach(() => {
     FAKE_SECTION = {
       id: `foo_bar_1`,
-      collapsed: false,
+      pref: {collapsed: false},
       title: `Foo Bar 1`,
       rows: [{link: "http://localhost", index: 0}],
       emptyState: {
@@ -155,7 +155,7 @@ describe("<Section>", () => {
       TOP_STORIES_SECTION = {
         id: "topstories",
         title: "TopStories",
-        collapsed: false,
+        pref: {collapsed: false},
         rows: [{guid: 1, link: "http://localhost", isDefault: true}],
         topics: [],
         read_more_endpoint: "http://localhost/read-more",
@@ -188,7 +188,7 @@ describe("<Section>", () => {
     const FAKE_TOPSTORIES_SECTION_PROPS = {
       id: "TopStories",
       title: "Foo Bar 1",
-      collapsed: false,
+      pref: {collapsed: false},
       maxRows: 1,
       rows: [{guid: 1}, {guid: 2}],
       shouldSendImpressionStats: true,
@@ -227,7 +227,7 @@ describe("<Section>", () => {
     });
     it("should not send impression stats if the section is collapsed", () => {
       const dispatch = sinon.spy();
-      const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {collapsed: true});
+      const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {pref: {collapsed: true}});
       renderSection(props);
       assert.notCalled(dispatch);
     });
@@ -314,7 +314,7 @@ describe("<Section>", () => {
         FAKE_TOPSTORIES_SECTION_PROPS,
         {
           rows: [{guid: 123}],
-          collapsed: true
+          pref: {collapsed: true}
         }
       ));
 
@@ -325,7 +325,7 @@ describe("<Section>", () => {
         FAKE_TOPSTORIES_SECTION_PROPS,
         {
           rows: [{guid: 123}],
-          collapsed: false
+          pref: {collapsed: false}
         }
       ));
 

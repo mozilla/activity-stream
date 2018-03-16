@@ -111,7 +111,7 @@ this.PrefsFeed = class PrefsFeed {
         this.setOnboardingDisabledDefault(true);
         break;
       // IndexedDB pref changes
-      case at.COLLAPSE_SECTION:
+      case at.UPDATE_SECTION_PREFS:
         this._setIndexedDBPref(action.data.id, action.data.value);
         break;
     }

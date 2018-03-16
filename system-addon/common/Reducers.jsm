@@ -89,9 +89,9 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       if (!action.data || !action.data.links) {
         return prevState;
       }
-      return Object.assign({}, prevState, {initialized: true, rows: action.data.links}, action.data.prefs ? {prefs: action.data.prefs} : {});
+      return Object.assign({}, prevState, {initialized: true, rows: action.data.links}, action.data.pref ? {pref: action.data.pref} : {});
     case at.TOP_SITES_PREFS_UPDATED:
-      return Object.assign({}, prevState, {prefs: action.data.prefs});
+      return Object.assign({}, prevState, {pref: action.data.pref});
     case at.TOP_SITES_EDIT:
       return Object.assign({}, prevState, {editForm: {index: action.data.index}});
     case at.TOP_SITES_CANCEL_EDIT:

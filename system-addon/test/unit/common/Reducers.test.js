@@ -36,9 +36,9 @@ describe("Reducers", () => {
       assert.equal(nextState, INITIAL_STATE.TopSites);
     });
     it("should initialize prefs on TOP_SITES_UPDATED", () => {
-      const nextState = TopSites(undefined, {type: at.TOP_SITES_UPDATED, data: {links: [], prefs: "foo"}});
+      const nextState = TopSites(undefined, {type: at.TOP_SITES_UPDATED, data: {links: [], pref: "foo"}});
 
-      assert.equal(nextState.prefs, "foo");
+      assert.equal(nextState.pref, "foo");
     });
     it("should pass prevState.prefs if not present in TOP_SITES_UPDATED", () => {
       const nextState = TopSites({prefs: "foo"}, {type: at.TOP_SITES_UPDATED, data: {links: []}});
@@ -118,9 +118,9 @@ describe("Reducers", () => {
       assert.equal(nextState, INITIAL_STATE.TopSites);
     });
     it("should update prefs on TOP_SITES_PREFS_UPDATED", () => {
-      const state = TopSites({}, {type: at.TOP_SITES_PREFS_UPDATED, data: {prefs: "foo"}});
+      const state = TopSites({}, {type: at.TOP_SITES_PREFS_UPDATED, data: {pref: "foo"}});
 
-      assert.equal(state.prefs, "foo");
+      assert.equal(state.pref, "foo");
     });
   });
   describe("Prefs", () => {
