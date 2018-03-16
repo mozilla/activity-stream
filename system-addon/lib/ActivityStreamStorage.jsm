@@ -55,4 +55,8 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
   }
 };
 
-const EXPORTED_SYMBOLS = ["ActivityStreamStorage"];
+function getDefaultOptions(options) {
+  return {collapsed: !!options.collapsed};
+}
+
+const EXPORTED_SYMBOLS = ["ActivityStreamStorage", "getDefaultOptions"];
