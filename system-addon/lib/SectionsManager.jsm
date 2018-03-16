@@ -119,15 +119,15 @@ const SectionsManager = {
         break;
     }
   },
-  toggleSection(id, collapsed) {
+  updateSectionPrefs(id, collapsed) {
     const sectionName = `feeds.section.${id}`;
     if (!(sectionName in BUILT_IN_SECTIONS)) {
       return;
     }
 
-    const section = Object.assign({}, this.sections.get(id), collapsed);
-    this.sections.set(id, section);
-    this.updateSection(id, section, true);
+    const section = this.sections.get(id);
+    const updatedSection = Object.assign({}, section, {pref: Object.assign({}, section.pref, collapsed)});
+    this.updateSection(id, updatedSection, true);
   },
   async addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
     let options;
@@ -392,8 +392,8 @@ class SectionsFeed {
         }
         break;
       }
-      case at.COLLAPSE_SECTION:
-        SectionsManager.toggleSection(action.data.id, action.data.value);
+      case at.UPDATE_SECTION_PREFS:
+        SectionsManager.updateSectionPrefs(action.data.id, action.data.value);
         break;
       case at.PLACES_BOOKMARK_ADDED:
         SectionsManager.updateBookmarkMetadata(action.data);

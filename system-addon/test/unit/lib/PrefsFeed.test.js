@@ -148,10 +148,10 @@ describe("PrefsFeed", () => {
     });
   });
   describe("indexedDB changes", () => {
-    it("should call _setIndexedDBPref on COLLAPSE_SECTION", () => {
+    it("should call _setIndexedDBPref on UPDATE_SECTION_PREFS", () => {
       sandbox.stub(feed, "_setIndexedDBPref");
 
-      feed.onAction({type: at.COLLAPSE_SECTION, data: {}});
+      feed.onAction({type: at.UPDATE_SECTION_PREFS, data: {}});
 
       assert.calledOnce(feed._setIndexedDBPref);
     });

@@ -163,7 +163,7 @@ this.TopSitesFeed = class TopSitesFeed {
     if (!this._storage.intialized) {
       await this._storage.init();
       const storedPrefs = await this._storage.get(SECTION_ID) || {};
-      newAction.data.prefs = getDefaultOptions(storedPrefs);
+      newAction.data.pref = getDefaultOptions(storedPrefs);
     }
 
     if (options.broadcast) {
@@ -211,8 +211,8 @@ this.TopSitesFeed = class TopSitesFeed {
     });
   }
 
-  toggleSection(collapsed) {
-    this.store.dispatch(ac.BroadcastToContent({type: at.TOP_SITES_PREFS_UPDATED, data: {prefs: collapsed}}));
+  updateSectionPrefs(collapsed) {
+    this.store.dispatch(ac.BroadcastToContent({type: at.TOP_SITES_PREFS_UPDATED, data: {pref: collapsed}}));
   }
 
   /**
@@ -345,9 +345,9 @@ this.TopSitesFeed = class TopSitesFeed {
           this.refreshDefaults(action.data.value);
         }
         break;
-      case at.COLLAPSE_SECTION:
+      case at.UPDATE_SECTION_PREFS:
         if (action.data.id === SECTION_ID) {
-          this.toggleSection(action.data.value);
+          this.updateSectionPrefs(action.data.value);
         }
         break;
       case at.PREFS_INITIAL_VALUES:

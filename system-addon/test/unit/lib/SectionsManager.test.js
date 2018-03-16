@@ -89,20 +89,20 @@ describe("SectionsManager", () => {
       assert.calledOnce(Cu.reportError);
     });
   });
-  describe("#toggleSection", () => {
+  describe("#updateSectionPrefs", () => {
     it("should update the collapsed value of the section", async () => {
       sandbox.stub(SectionsManager, "updateSection");
       let topstories = SectionsManager.sections.get("topstories");
       assert.isFalse(topstories.collapsed);
 
-      await SectionsManager.toggleSection("topstories", {collapsed: true});
+      await SectionsManager.updateSectionPrefs("topstories", {collapsed: true});
       topstories = SectionsManager.sections.get("topstories");
 
-      assert.isTrue(SectionsManager.updateSection.args[0][1].collapsed);
+      assert.isTrue(SectionsManager.updateSection.args[0][1].pref.collapsed);
     });
     it("should ignore invalid ids", async () => {
       sandbox.stub(SectionsManager, "updateSection");
-      await SectionsManager.toggleSection("foo", {collapsed: true});
+      await SectionsManager.updateSectionPrefs("foo", {collapsed: true});
 
       assert.notCalled(SectionsManager.updateSection);
     });
@@ -553,10 +553,10 @@ describe("SectionsFeed", () => {
 
       assert.calledOnce(stub);
     });
-    it("should call toggleSection on COLLAPSE_SECTION", () => {
-      const stub = sinon.stub(SectionsManager, "toggleSection");
+    it("should call updateSectionPrefs on UPDATE_SECTION_PREFS", () => {
+      const stub = sinon.stub(SectionsManager, "updateSectionPrefs");
 
-      feed.onAction({type: "COLLAPSE_SECTION", data: {}});
+      feed.onAction({type: "UPDATE_SECTION_PREFS", data: {}});
 
       assert.calledOnce(stub);
     });
