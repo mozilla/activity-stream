@@ -97,16 +97,43 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       return Object.assign({}, prevState, {
         editForm: {
           index: prevState.editForm.index,
-          screenshotRequestFailed: true
+          screenshotRequestFailed: true,
+          requestedScreenshotURL: null
         }
       });
     case at.SCREENSHOT_PREVIEW:
+      if (prevState.editForm &&
+        prevState.editForm.requestedScreenshotURL === action.data.customScreenshotURL) {
+        return Object.assign({}, prevState, {
+          editForm: {
+            index: prevState.editForm ? prevState.editForm.index : -1,
+            screenshotRequestFailed: false,
+            screenshotPreview: action.data.screenshotPreview,
+            customScreenshotURL: action.data.customScreenshotURL,
+            requestedScreenshotURL: null
+          }
+        });
+      }
+      return prevState;
+    case at.PREVIEW_REQUEST:
+      if (!prevState.editForm) {
+        return prevState;
+      }
       return Object.assign({}, prevState, {
         editForm: {
-          index: prevState.editForm ? prevState.editForm.index : -1,
+          index: prevState.editForm.index,
+          screenshotPreview: null,
           screenshotRequestFailed: false,
-          screenshotPreview: action.data.screenshotPreview,
-          customScreenshotURL: action.data.customScreenshotURL
+          requestedScreenshotURL: action.data.customScreenshotURL
+        }
+      });
+    case at.PREVIEW_REQUEST_CANCEL:
+      return Object.assign({}, prevState, {
+        editForm: {
+          index: prevState.editForm.index,
+          screenshotRequestFailed: false,
+          screenshotPreview: null,
+          requestedScreenshotURL: null
         }
       });
     case at.SCREENSHOT_UPDATED:

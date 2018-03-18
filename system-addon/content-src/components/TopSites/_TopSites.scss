@@ -359,6 +359,7 @@ $half-base-gutter: $base-gutter / 2;
       display: inline-block;
       font-size: 13px;
       margin-top: 4px;
+      cursor: pointer;
 
       &:hover {
         text-decoration: underline;
@@ -379,7 +380,7 @@ $half-base-gutter: $base-gutter / 2;
         offset-inline-end: 8px;
       }
 
-      // See Bug 1352119
+      // See https://searchfox.org/mozilla-central/rev/3abf6fa7e2a6d9a7bfb88796141b0f012e68c2db/browser/themes/shared/tabs.inc.css#191
       .loading-animation {
         @keyframes tab-throbber-animation {
           100% { transform: translateX(-960px); }

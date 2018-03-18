@@ -13,8 +13,8 @@ export class TopSiteFormInput extends React.PureComponent {
     if (nextProps.shouldFocus && !this.props.shouldFocus) {
       this.input.focus();
     }
-    if (nextProps.validationError && !this.props.validationError) {
-      this.setState({validationError: true});
+    if (nextProps.validationError !== this.props.validationError) {
+      this.setState({validationError: nextProps.validationError});
     }
   }
 

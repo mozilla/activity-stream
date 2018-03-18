@@ -60,6 +60,7 @@ for (const type of [
   "PREF_CHANGED",
   "PREVIEW_FAILED",
   "PREVIEW_REQUEST",
+  "PREVIEW_REQUEST_CANCEL",
   "RICH_ICON_MISSING",
   "SAVE_SESSION_PERF_DATA",
   "SAVE_TO_POCKET",
@@ -136,6 +137,18 @@ function AlsoToMain(action, fromTarget, skipLocal) {
     to: MAIN_MESSAGE_TYPE,
     fromTarget,
     skipLocal
+  });
+}
+
+/**
+ * OnlyToThisContent - Creates a message that will only be dispatched locally.
+ *
+ * @param {object} action Any redux action (required)
+ */
+function OnlyToThisContent(action) {
+  return _RouteMessage(action, {
+    from: CONTENT_MESSAGE_TYPE,
+    to: CONTENT_MESSAGE_TYPE
   });
 }
 
@@ -294,6 +307,7 @@ this.actionCreators = {
   OnlyToOneContent,
   AlsoToMain,
   OnlyToMain,
+  OnlyToThisContent,
   AlsoToPreloaded,
   SetPref,
   WebExtEvent
