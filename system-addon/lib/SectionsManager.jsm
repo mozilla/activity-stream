@@ -135,7 +135,9 @@ const SectionsManager = {
     }
     const storedPrefs = await this._storage.get(feedPrefName) || {};
     const defaultSection = BUILT_IN_SECTIONS[feedPrefName](options);
-    const section = Object.assign({}, defaultSection, {pref: Object.assign({}, defaultSection.pref, getDefaultOptions(storedPrefs))});
+    const shouldMigrate = !Object.keys(storedPrefs).length;
+    const section = Object.assign({}, defaultSection,
+      {pref: Object.assign({}, {shouldMigrate}, defaultSection.pref, getDefaultOptions(storedPrefs))});
     section.pref.feed = feedPrefName;
     this.addSection(section.id, Object.assign(section, {options}));
   },
@@ -298,7 +300,21 @@ class SectionsFeed {
 
   onAddSection(event, id, options) {
     if (options) {
-      this.store.dispatch(ac.BroadcastToContent({type: at.SECTION_REGISTER, data: Object.assign({id}, options)}));
+      let migratedOptions;
+      if (options.pref.shouldMigrate) {
+        const collapsed = this.store.getState().Prefs.initialized &&
+          this.store.getState().Prefs.values[`section.${id}.collapsed`];
+        this.store.dispatch(ac.OnlyToMain({
+          type: at.MIGRATE_PREFS,
+          data: {id, value: {collapsed}}
+        }));
+        migratedOptions = Object.assign({}, options, {pref: Object.assign({}, options.pref, {collapsed})});
+      }
+
+      this.store.dispatch(ac.BroadcastToContent({
+        type: at.SECTION_REGISTER,
+        data: Object.assign({id}, options.pref.shouldMigrate ? migratedOptions : options)
+      }));
 
       // Make sure the section is in sectionOrder pref. Otherwise, prepend it.
       const orderedSections = this.orderedSectionIds;

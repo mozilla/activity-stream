@@ -88,9 +88,6 @@ this.PrefsFeed = class PrefsFeed {
 
   async _setIndexedDBPref(id, value) {
     const name = id === "topsites" ? id : `feeds.section.${id}`;
-    if (!this._storage.initialized) {
-      await this._storage.init();
-    }
     await this._storage.set(name, value);
     this._setPrerenderPref();
   }
@@ -110,7 +107,7 @@ this.PrefsFeed = class PrefsFeed {
       case at.DISABLE_ONBOARDING:
         this.setOnboardingDisabledDefault(true);
         break;
-      // IndexedDB pref changes
+      case at.MIGRATE_PREFS:
       case at.UPDATE_SECTION_PREFS:
         this._setIndexedDBPref(action.data.id, action.data.value);
         break;

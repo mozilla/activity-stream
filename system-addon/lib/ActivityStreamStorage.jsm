@@ -1,6 +1,10 @@
 ChromeUtils.defineModuleGetter(this, "IndexedDB", "resource://gre/modules/IndexedDB.jsm");
 
 this.ActivityStreamStorage = class ActivityStreamStorage {
+  /**
+   * @param storeName String with the store name we want to access or
+   *                  array of strings to create all the required stores
+   */
   constructor(storeName) {
     this.dbName = "ActivityStream";
     this.dbVersion = 2;
