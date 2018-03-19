@@ -480,4 +480,11 @@ describe("addSnippetsSubscriber", () => {
     store.dispatch({type: at.PREF_CHANGED, data: {name: "disableSnippets", value: true}});
     assert.calledOnce(snippets.uninit);
   });
+  it("should not initialize snippets if messageCenterExperimentEnabled pref is true", () => {
+    store.dispatch({type: "FOO"});
+    store.dispatch({type: at.PREF_CHANGED, data: {name: "messageCenterExperimentEnabled", value: true}});
+
+    assert.calledOnce(store.subscribe);
+    assert.notCalled(snippets.init);
+  });
 });
