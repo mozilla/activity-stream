@@ -100,16 +100,6 @@ describe("<LinkMenu>", () => {
     const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_remove_bookmark")));
   });
-  it("should show Delete from History option for a site that is visited but not from Pocket if CheckDeleteHistoryOrEmpty", () => {
-    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: history}} source={"HIGHLIGHTS"} options={["CheckDeleteHistoryOrEmpty"]} dispatch={() => {}} />);
-    const {options} = wrapper.find(ContextMenu).props();
-    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_delete")));
-  });
-  it("should not show a Delete from History option for a site that is Pocket'ed if CheckDeleteHistoryOrEmpty", () => {
-    wrapper = shallowWithIntl(<LinkMenu site={{url: "", pocket_id: 1234}} source={"HIGHLIGHTS"} options={["CheckDeleteHistoryOrEmpty"]} dispatch={() => {}} />);
-    const {options} = wrapper.find(ContextMenu).props();
-    assert.isUndefined(options.find(o => (o.id && o.id === "menu_action_delete")));
-  });
   it("should show Edit option", () => {
     const props = {url: "foo", label: "label"};
     const index = 5;
