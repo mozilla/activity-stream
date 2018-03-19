@@ -13,8 +13,12 @@ export class TopSiteFormInput extends React.PureComponent {
     if (nextProps.shouldFocus && !this.props.shouldFocus) {
       this.input.focus();
     }
-    if (nextProps.validationError !== this.props.validationError) {
-      this.setState({validationError: nextProps.validationError});
+    if (nextProps.validationError && !this.props.validationError) {
+      this.setState({validationError: true});
+    }
+    // If the component is in an error state but the value was cleared by the parent
+    if (this.state.validationError && !nextProps.value) {
+      this.setState({validationError: false});
     }
   }
 
