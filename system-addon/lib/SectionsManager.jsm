@@ -116,12 +116,11 @@ const SectionsManager = {
     }
   },
   updateSectionPrefs(id, collapsed) {
-    const sectionName = `feeds.section.${id}`;
-    if (!(sectionName in BUILT_IN_SECTIONS)) {
+    const section = this.sections.get(id);
+    if (!section) {
       return;
     }
 
-    const section = this.sections.get(id);
     const updatedSection = Object.assign({}, section, {pref: Object.assign({}, section.pref, collapsed)});
     this.updateSection(id, updatedSection, true);
   },
