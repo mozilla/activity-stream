@@ -16,6 +16,10 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
     return this._db;
   }
 
+  get intialized() {
+    return this._db !== null;
+  }
+
   getStore() {
     return this.db.objectStore(this.storeName, "readwrite");
   }
@@ -24,13 +28,25 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
     return this.getStore().get(key);
   }
 
+  getAll() {
+    return this.getStore().getAll();
+  }
+
   set(key, value) {
     return this.getStore().put(value, key);
   }
 
   _openDatabase() {
     return IndexedDB.open(this.dbName, {version: this.dbVersion}, db => {
-      db.createObjectStore(this.storeName);
+      if (Array.isArray(this.storeName)) {
+        this.storeName.forEach(store => {
+          if (!db.objectStoreNames.contains(store)) {
+            db.createObjectStore(store);
+          }
+        });
+      } else if (!db.objectStoreNames.contains(this.storeName)) {
+        db.createObjectStore(this.storeName);
+      }
     });
   }
 
@@ -39,4 +55,11 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
   }
 };
 
-const EXPORTED_SYMBOLS = ["ActivityStreamStorage"];
+function getDefaultOptions(options) {
+  return {
+    collapsed: !!options.collapsed,
+    disabled: !!options.disabled
+  };
+}
+
+const EXPORTED_SYMBOLS = ["ActivityStreamStorage", "getDefaultOptions"];

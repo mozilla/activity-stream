@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+const {ActivityStreamStorage} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 const {PrerenderData} = ChromeUtils.import("resource://activity-stream/common/PrerenderData.jsm", {});
@@ -17,12 +18,17 @@ this.PrefsFeed = class PrefsFeed {
   constructor(prefMap) {
     this._prefMap = prefMap;
     this._prefs = new Prefs();
+    this._storage = new ActivityStreamStorage("sectionPrefs");
   }
 
   // If the any prefs are set to something other than what the prerendered version
   // of AS expects, we can't use it.
-  _setPrerenderPref(name) {
-    this._prefs.set("prerender", PrerenderData.arePrefsValid(pref => this._prefs.get(pref)));
+  async _setPrerenderPref() {
+    if (!this._storage.intialized) {
+      await this._storage.init();
+    }
+    const indexedDBPrefs = await this._storage.getAll();
+    this._prefs.set("prerender", PrerenderData.arePrefsValid(pref => this._prefs.get(pref), indexedDBPrefs));
   }
 
   _checkPrerender(name) {
@@ -80,6 +86,16 @@ this.PrefsFeed = class PrefsFeed {
     this._prefs.ignoreBranch(this);
   }
 
+  async _setIndexedDBPref(id, value) {
+    const prefName = id === "topsites" ? id : `feeds.section.${id}`;
+    if (!this._storage.initialized) {
+      await this._storage.init();
+    }
+    const prefs = await this._storage.get(id);
+    await this._storage.set(prefName, Object.assign({}, prefs, value));
+    this._setPrerenderPref();
+  }
+
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -94,6 +110,10 @@ this.PrefsFeed = class PrefsFeed {
         break;
       case at.DISABLE_ONBOARDING:
         this.setOnboardingDisabledDefault(true);
+        break;
+      // IndexedDB pref changes
+      case at.UPDATE_SECTION_PREFS:
+        this._setIndexedDBPref(action.data.id, action.data.value);
         break;
     }
   }

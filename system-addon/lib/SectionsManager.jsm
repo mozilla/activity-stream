@@ -7,6 +7,7 @@ ChromeUtils.import("resource://gre/modules/EventEmitter.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
+const {ActivityStreamStorage, getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 
@@ -25,7 +26,8 @@ const BUILT_IN_SECTIONS = {
         name: "showSponsored",
         titleString: {id: "prefs_topstories_show_sponsored_label", values: {provider: options.provider_name}},
         icon: "icon-info"
-      }] : []
+      }] : [],
+      disabled: options.hidden
     },
     shouldHidePref: options.hidden,
     eventSource: "TOP_STORIES",
@@ -75,10 +77,12 @@ const SectionsManager = {
   CONTEXT_MENU_PREFS: {"SaveToPocket": "extensions.pocket.enabled"},
   initialized: false,
   sections: new Map(),
-  init(prefs = {}) {
+  async init(prefs = {}) {
+    await this.initStorage();
+
     for (const feedPrefName of Object.keys(BUILT_IN_SECTIONS)) {
       const optionsPrefName = `${feedPrefName}.options`;
-      this.addBuiltInSection(feedPrefName, prefs[optionsPrefName]);
+      await this.addBuiltInSection(feedPrefName, prefs[optionsPrefName]);
 
       this._dedupeConfiguration = [];
       this.sections.forEach(section => {
@@ -97,6 +101,10 @@ const SectionsManager = {
     this.initialized = true;
     this.emit(this.INIT);
   },
+  initStorage() {
+    this._storage = new ActivityStreamStorage("sectionPrefs");
+    return this._storage.init();
+  },
   observe(subject, topic, data) {
     switch (topic) {
       case "nsPref:changed":
@@ -108,7 +116,15 @@ const SectionsManager = {
         break;
     }
   },
-  addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
+  updateSectionPrefs(id, value) {
+    if (!(`feeds.section.${id}` in BUILT_IN_SECTIONS)) {
+      return;
+    }
+    const section = this.sections.get(id);
+    const updatedSection = Object.assign({}, section, {pref: Object.assign({}, section.pref, value)});
+    this.updateSection(id, updatedSection, true);
+  },
+  async addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
     let options;
     try {
       options = JSON.parse(optionsPrefValue);
@@ -116,9 +132,11 @@ const SectionsManager = {
       options = {};
       Cu.reportError(`Problem parsing options pref for ${feedPrefName}`);
     }
-    const section = BUILT_IN_SECTIONS[feedPrefName](options);
+    const storedPrefs = await this._storage.get(feedPrefName) || {};
+    const defaultSection = BUILT_IN_SECTIONS[feedPrefName](options);
+    const section = Object.assign({}, defaultSection, {options}, {pref: Object.assign({}, getDefaultOptions(storedPrefs), defaultSection.pref)});
     section.pref.feed = feedPrefName;
-    this.addSection(section.id, Object.assign(section, {options}));
+    this.addSection(section.id, section);
   },
   addSection(id, options) {
     this.updateLinkMenuOptions(options);
@@ -136,9 +154,6 @@ const SectionsManager = {
   disableSection(id) {
     this.updateSection(id, {enabled: false, rows: [], initialized: false}, true);
     this.emit(this.DISABLE_SECTION, id);
-  },
-  updateSections() {
-    this.sections.forEach((section, id) => this.updateSection(id, section, true));
   },
   updateSection(id, options, shouldBroadcast) {
     this.updateLinkMenuOptions(options);
@@ -237,8 +252,6 @@ for (const action of [
   "ACTION_DISPATCHED",
   "ADD_SECTION",
   "REMOVE_SECTION",
-  "ENABLE_SECTION",
-  "DISABLE_SECTION",
   "UPDATE_SECTION",
   "UPDATE_SECTION_CARD",
   "INIT",
@@ -313,9 +326,9 @@ class SectionsFeed {
   }
 
   get enabledSectionIds() {
-    let sections = this.store.getState().Sections.filter(section => section.enabled).map(s => s.id);
+    let sections = this.store.getState().Sections.filter(section => !section.pref.disabled).map(s => s.id);
     // Top Sites is a special case. Append if show pref is on.
-    if (this.store.getState().Prefs.values.showTopSites) {
+    if (!this.store.getState().TopSites.pref.disabled) {
       sections.push("topsites");
     }
     return sections;
@@ -370,6 +383,9 @@ class SectionsFeed {
         }
         break;
       }
+      case at.UPDATE_SECTION_PREFS:
+        SectionsManager.updateSectionPrefs(action.data.id, action.data.value);
+        break;
       case at.PLACES_BOOKMARK_ADDED:
         SectionsManager.updateBookmarkMetadata(action.data);
         break;
@@ -377,12 +393,6 @@ class SectionsFeed {
         if (action.data) {
           SectionsManager.removeSectionCard(action.data.source, action.data.url);
         }
-        break;
-      case at.SECTION_DISABLE:
-        SectionsManager.disableSection(action.data);
-        break;
-      case at.SECTION_ENABLE:
-        SectionsManager.enableSection(action.data);
         break;
       case at.SECTION_MOVE:
         this.moveSection(action.data.id, action.data.direction);

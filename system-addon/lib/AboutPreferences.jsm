@@ -6,10 +6,11 @@
 Cu.importGlobalProperties(["fetch"]);
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.defineModuleGetter(this, "PluralForm", "resource://gre/modules/PluralForm.jsm");
-const {actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
+const {actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 
 const PREFERENCES_LOADED_EVENT = "sync-pane-loaded";
 const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+const INDEXEDDB_PREFS = ["topsites", "highlights", "topstories"];
 
 // These "section" objects are formatted in a way to be similar to the ones from
 // SectionsManager to construct the preferences view.
@@ -58,6 +59,7 @@ const CUSTOM_CSS = `
 this.AboutPreferences = class AboutPreferences {
   init() {
     Services.obs.addObserver(this, PREFERENCES_LOADED_EVENT);
+    this._prefElements = [];
   }
 
   uninit() {
@@ -75,6 +77,16 @@ this.AboutPreferences = class AboutPreferences {
       case at.SETTINGS_OPEN:
         action._target.browser.ownerGlobal.openPreferences("paneHome", {origin: "aboutHome"});
         break;
+      case at.UPDATE_SECTION_PREFS:
+        this.updatePreferenceControls(action.data);
+        break;
+    }
+  }
+
+  updatePreferenceControls({id, value}) {
+    const checkbox = this._prefElements.find(el => el.id === id);
+    if (checkbox) {
+      checkbox.checked = !value.disabled;
     }
   }
 
@@ -128,13 +140,42 @@ this.AboutPreferences = class AboutPreferences {
     };
 
     // Helper to link a UI element to a preference for updating
-    const linkPref = (element, name, type) => {
-      const fullPref = `browser.newtabpage.activity-stream.${name}`;
-      element.setAttribute("preference", fullPref);
-      Preferences.add({id: fullPref, type});
+    const linkPref = (element, id, name, type) => {
+      if (INDEXEDDB_PREFS.includes(id)) {
+        let disabled = false;
+        let state;
+        switch (id) {
+          case "topsites":
+            state = this.store.getState().TopSites;
+            disabled = state.initialized && state.pref.disabled;
+            break;
+          case "topstories":
+          case "highlights":
+            state = this.store.getState().Sections.find(s => s.id === id);
+            disabled = state.initialized && state.pref.disabled;
+            break;
+        }
 
-      // Prevent changing the UI if the preference can't be changed
-      element.disabled = Preferences.get(fullPref).locked;
+        element.setAttribute("id", id);
+        element.checked = !disabled;
+
+        element.addEventListener("click", ev => {
+          this.store.dispatch(ac.OnlyToMain({
+            type: at.UPDATE_SECTION_PREFS,
+            data: {id, value: {disabled: !ev.target.checked}}
+          }));
+        });
+        if (!this._prefElements.find(el => el.id === id)) {
+          this._prefElements.push(element);
+        }
+      } else {
+        const fullPref = `browser.newtabpage.activity-stream.${name}`;
+        element.setAttribute("preference", fullPref);
+        Preferences.add({id: fullPref, type});
+
+        // Prevent changing the UI if the preference can't be changed
+        element.disabled = Preferences.get(fullPref).locked;
+      }
     };
 
     // Add in custom styling
@@ -184,7 +225,7 @@ this.AboutPreferences = class AboutPreferences {
       const checkbox = createAppend("checkbox", sectionVbox);
       checkbox.setAttribute("label", formatString(titleString));
       checkbox.setAttribute("src", iconUrl);
-      linkPref(checkbox, name, "bool");
+      linkPref(checkbox, id, name, "bool");
 
       // Add more details for the section (e.g., description, more prefs)
       const detailVbox = createAppend("vbox", sectionVbox);
