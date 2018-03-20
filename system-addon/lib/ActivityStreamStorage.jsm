@@ -2,8 +2,8 @@ ChromeUtils.defineModuleGetter(this, "IndexedDB", "resource://gre/modules/Indexe
 
 this.ActivityStreamStorage = class ActivityStreamStorage {
   /**
-   * @param storeName String with the store name we want to access or
-   *                  array of strings to create all the required stores
+   * @param storeName String with the store name to access or array of strings
+   *                  to create all the required stores
    */
   constructor(storeName) {
     this.dbName = "ActivityStream";
