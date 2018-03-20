@@ -79,7 +79,7 @@ this.PrefsFeed = class PrefsFeed {
           const data = {id: PREF_MIGRATION[indexedDBPref].get(migratePref), value: {}};
           data.value[indexedDBPref] = true;
           this.store.dispatch(ac.OnlyToMain({type: at.UPDATE_SECTION_PREFS, data}));
-          this._prefs.resetPref(migratePref);
+          this._prefs.reset(migratePref);
         }
       }
     }

@@ -13,7 +13,6 @@ describe("PrefsFeed", () => {
   let feed;
   let FAKE_PREFS;
   let sandbox;
-  let getAllStub;
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     FAKE_PREFS = new Map([["foo", 1], ["bar", 2]]);
@@ -25,14 +24,13 @@ describe("PrefsFeed", () => {
       observe: sinon.spy(),
       observeBranch: sinon.spy(),
       ignore: sinon.spy(),
-      ignoreBranch: sinon.spy()
+      ignoreBranch: sinon.spy(),
+      reset: sinon.stub()
     };
-    getAllStub = sandbox.stub();
     const fakeDB = {
       objectStore: sandbox.stub().returns({
         get: sandbox.stub().returns(Promise.resolve()),
-        set: sandbox.stub().returns(Promise.resolve()),
-        getAll: getAllStub
+        set: sandbox.stub().returns(Promise.resolve())
       })
     };
     overrider.set({
@@ -73,15 +71,16 @@ describe("PrefsFeed", () => {
     assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.PREF_CHANGED, data: {name: "foo", value: 2}}));
   });
   describe("INIT prerendering", () => {
-    it("should set a prerender pref on init", () => {
+    it("should set a prerender pref on init", async () => {
       sandbox.stub(feed, "_setPrerenderPref");
 
-      feed.onAction({type: at.INIT});
+      await feed.init();
+
       assert.calledOnce(feed._setPrerenderPref);
     });
     it("should set prerender pref to true if prefs match initial values", async () => {
       Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
-      getAllStub.returns([]);
+      sandbox.stub(feed._storage, "getAll").returns(Promise.resolve([]));
 
       await feed._setPrerenderPref();
 
@@ -90,7 +89,7 @@ describe("PrefsFeed", () => {
     it("should set prerender pref to false if a pref does not match its initial value", async () => {
       Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
       FAKE_PREFS.set("showSearch", false);
-      getAllStub.returns([]);
+      sandbox.stub(feed._storage, "getAll").returns(Promise.resolve([]));
 
       await feed._setPrerenderPref();
 
@@ -98,7 +97,7 @@ describe("PrefsFeed", () => {
     });
     it("should set prerender pref to true if indexedDB prefs are unchanged", async () => {
       Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
-      getAllStub.returns([{collapsed: false}, {collapsed: false}]);
+      sandbox.stub(feed._storage, "getAll").returns(Promise.resolve([{collapsed: false}, {collapsed: false}]));
 
       await feed._setPrerenderPref();
 
@@ -107,7 +106,7 @@ describe("PrefsFeed", () => {
     it("should set prerender pref to false if a indexedDB pref changed value", async () => {
       Object.keys(initialPrefs).forEach(name => FAKE_PREFS.set(name, initialPrefs[name]));
       FAKE_PREFS.set("showSearch", false);
-      getAllStub.returns([{collapsed: false}, {collapsed: true}]);
+      sandbox.stub(feed._storage, "getAll").returns(Promise.resolve([{collapsed: false}, {collapsed: true}]));
 
       await feed._setPrerenderPref();
 
@@ -120,14 +119,25 @@ describe("PrefsFeed", () => {
       defaultBranch = {setBoolPref: sandbox.stub()};
       sandbox.stub(global.Services.prefs, "getDefaultBranch").returns(defaultBranch);
     });
-    it("should set ONBOARDING_FINISHED_PREF to true if prefs.feeds.snippets if false", () => {
-      FAKE_PREFS.set("feeds.snippets", false);
+    it("should call feed.init on INIT action", () => {
+      sandbox.stub(feed, "init");
+
       feed.onAction({type: at.INIT});
+
+      assert.calledOnce(feed.init);
+    });
+    it("should set ONBOARDING_FINISHED_PREF to true if prefs.feeds.snippets if false", async () => {
+      FAKE_PREFS.set("feeds.snippets", false);
+
+      await feed.init();
+
       assert.calledWith(defaultBranch.setBoolPref, ONBOARDING_FINISHED_PREF, true);
     });
-    it("should not set ONBOARDING_FINISHED_PREF if prefs.feeds.snippets is true", () => {
+    it("should not set ONBOARDING_FINISHED_PREF if prefs.feeds.snippets is true", async () => {
       FAKE_PREFS.set("feeds.snippets", true);
-      feed.onAction({type: at.INIT});
+
+      await feed.init();
+
       assert.notCalled(defaultBranch.setBoolPref);
     });
     it("should set ONBOARDING_FINISHED_PREF to true if the feeds.snippets pref changes to false", () => {
@@ -198,7 +208,7 @@ describe("PrefsFeed", () => {
       FAKE_PREFS.set("showSearch", false);
       feed._prefs.set("showSearch", true);
       feed.onPrefChanged("showSearch", true);
-      getAllStub.returns(Promise.resolve([]));
+      sandbox.stub(feed._storage, "getAll").returns(Promise.resolve([]));
 
       await feed._setPrerenderPref();
 
@@ -209,11 +219,39 @@ describe("PrefsFeed", () => {
       FAKE_PREFS.set("showSearch", false);
       feed._prefs.set("showSearch", false);
       feed.onPrefChanged("showSearch", false);
-      getAllStub.returns(Promise.resolve([]));
+      sandbox.stub(feed._storage, "getAll").returns(Promise.resolve([]));
 
       await feed._setPrerenderPref();
 
       assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, false);
+    });
+  });
+  describe("migration code", () => {
+    it("should migrate prefs on init", async () => {
+      sandbox.stub(feed, "_migratePrefs");
+
+      await feed.init();
+
+      assert.calledOnce(feed._migratePrefs);
+    });
+    it("should migrate user set values", () => {
+      FAKE_PREFS.set("collapseTopSites", true);
+
+      feed._migratePrefs();
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWithExactly(feed.store.dispatch, ac.OnlyToMain({
+        type: at.UPDATE_SECTION_PREFS,
+        data: {id: "topsites", value: {collapsed: true}}
+      }));
+    });
+    it("should reset any migrated prefs", () => {
+      FAKE_PREFS.set("collapseTopSites", true);
+
+      feed._migratePrefs();
+
+      assert.calledOnce(feed._prefs.reset);
+      assert.calledWithExactly(feed._prefs.reset, "collapseTopSites");
     });
   });
 });
