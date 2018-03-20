@@ -159,15 +159,6 @@ this.TopSitesFeed = class TopSitesFeed {
     if (!this._storage.intialized) {
       await this._storage.init();
       const storedPrefs = await this._storage.get(SECTION_ID) || {};
-      // Migrate prefs from Prefs if IndexedDB is empty
-      if (!Object.keys(storedPrefs).length) {
-        storedPrefs.collapsed = this.store.getState().Prefs.initialized &&
-          this.store.getState().Prefs.values.collapseTopSites;
-        this.store.dispatch(ac.OnlyToMain({
-          type: at.MIGRATE_PREFS,
-          data: {id: SECTION_ID, value: {collapsed: storedPrefs.collapsed}}
-        }));
-      }
       newAction.data.pref = getDefaultOptions(storedPrefs);
     }
 

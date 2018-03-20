@@ -37,6 +37,10 @@ this.Prefs = class Prefs extends Preferences {
     this._prefBranch.addObserver("", observer);
     this._branchObservers.set(listener, observer);
   }
+
+  resetPref(prefName) {
+    this.reset(prefName);
+  }
 };
 
 this.DefaultPrefs = class DefaultPrefs {

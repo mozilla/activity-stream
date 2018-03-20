@@ -104,10 +104,6 @@ const PREFS_CONFIG = new Map([
     title: "Show the Top Sites section",
     value: true
   }],
-  ["collapseTopSites", {
-    title: "Collapse the Top Sites section",
-    value: false
-  }],
   ["topSitesRows", {
     title: "Number of rows of Top Sites to display",
     value: 1
@@ -126,17 +122,9 @@ const PREFS_CONFIG = new Map([
     title: "Telemetry server endpoint",
     value: "https://tiles.services.mozilla.com/v4/links/activity-stream"
   }],
-  ["section.highlights.collapsed", {
-    title: "Collapse the Highlights section",
-    value: false
-  }],
   ["section.highlights.includePocket", {
     title: "Boolean flag that decides whether or not to show saved Pocket stories in highlights.",
     value: true
-  }],
-  ["section.topstories.collapsed", {
-    title: "Collapse the Top Stories section",
-    value: false
   }],
   ["section.topstories.showDisclaimer", {
     title: "Boolean flag that decides whether or not to show the topstories disclaimer.",

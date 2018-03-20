@@ -14,6 +14,17 @@ ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
 
 const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
 
+// List of prefs that require migration to indexedDB.
+// Object key is the name of the pref in indexedDB, each will contain a
+// map (key: name of preference to migrate, value: name of component).
+const PREF_MIGRATION = {
+  collapsed: new Map([
+    ["collapseTopSites", "topsites"],
+    ["section.highlights.collapsed", "highlights"],
+    ["section.topstories.collapsed", "topstories"]
+  ])
+};
+
 this.PrefsFeed = class PrefsFeed {
   constructor(prefMap) {
     this._prefMap = prefMap;
@@ -24,9 +35,6 @@ this.PrefsFeed = class PrefsFeed {
   // If the any prefs are set to something other than what the prerendered version
   // of AS expects, we can't use it.
   async _setPrerenderPref() {
-    if (!this._storage.intialized) {
-      await this._storage.init();
-    }
     const indexedDBPrefs = await this._storage.getAll();
     this._prefs.set("prerender", PrerenderData.arePrefsValid(pref => this._prefs.get(pref), indexedDBPrefs));
   }
@@ -63,7 +71,21 @@ this.PrefsFeed = class PrefsFeed {
     }
   }
 
-  init() {
+  _migratePrefs() {
+    for (const indexedDBPref of Object.keys(PREF_MIGRATION)) {
+      for (const migratePref of PREF_MIGRATION[indexedDBPref].keys()) {
+        // Check if pref exists (if the user changed the default)
+        if (this._prefs.get(migratePref, null) === true) {
+          const data = {id: PREF_MIGRATION[indexedDBPref].get(migratePref), value: {}};
+          data.value[indexedDBPref] = true;
+          this.store.dispatch(ac.OnlyToMain({type: at.UPDATE_SECTION_PREFS, data}));
+          this._prefs.resetPref(migratePref);
+        }
+      }
+    }
+  }
+
+  async init() {
     this._prefs.observeBranch(this);
 
     // Get the initial value of each activity stream pref
@@ -78,6 +100,10 @@ this.PrefsFeed = class PrefsFeed {
     // Set the initial state of all prefs in redux
     this.store.dispatch(ac.BroadcastToContent({type: at.PREFS_INITIAL_VALUES, data: values}));
 
+    if (!this._storage.intialized) {
+      await this._storage.init();
+      this._migratePrefs();
+    }
     this._setPrerenderPref();
     this._initOnboardingPref();
   }
@@ -107,7 +133,6 @@ this.PrefsFeed = class PrefsFeed {
       case at.DISABLE_ONBOARDING:
         this.setOnboardingDisabledDefault(true);
         break;
-      case at.MIGRATE_PREFS:
       case at.UPDATE_SECTION_PREFS:
         this._setIndexedDBPref(action.data.id, action.data.value);
         break;
