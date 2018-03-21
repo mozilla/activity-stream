@@ -380,7 +380,8 @@ $half-base-gutter: $base-gutter / 2;
         offset-inline-end: 8px;
       }
 
-      // See https://searchfox.org/mozilla-central/rev/3abf6fa7e2a6d9a7bfb88796141b0f012e68c2db/browser/themes/shared/tabs.inc.css#191
+      // This animation is derived from Firefox's tab loading animation
+      // See https://searchfox.org/mozilla-central/rev/b29daa46443b30612415c35be0a3c9c13b9dc5f6/browser/themes/shared/tabs.inc.css#208-216
       .loading-animation {
         @keyframes tab-throbber-animation {
           100% { transform: translateX(-960px); }
