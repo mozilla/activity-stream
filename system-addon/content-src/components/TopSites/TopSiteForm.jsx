@@ -104,10 +104,14 @@ export class TopSiteForm extends React.PureComponent {
   onPreviewButtonClick(event) {
     event.preventDefault();
     if (this.validateForm()) {
-      this.props.dispatch(ac.AlsoToMain({
-        type: at.PREVIEW_REQUEST,
+      this.props.dispatch(ac.OnlyToMain({
+        type: at.PREVIEW_SCREENSHOT,
         data: {url: this.cleanUrl(this.state.customScreenshotUrl)}
       }));
+      this.props.dispatch({
+        type: at.PREVIEW_REQUEST,
+        data: {url: this.cleanUrl(this.state.customScreenshotUrl)}
+      });
       this.props.dispatch(ac.UserEvent({
         source: TOP_SITES_SOURCE,
         event: "PREVIEW_REQUEST"
