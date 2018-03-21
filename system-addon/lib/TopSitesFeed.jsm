@@ -392,7 +392,7 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.TOP_SITES_INSERT:
         this.insert(action);
         break;
-      case at.PREVIEW_SCREENSHOT:
+      case at.PREVIEW_REQUEST:
         this.getScreenshotPreview(action.data.url, action.meta.fromTarget);
         break;
       case at.UNINIT:
