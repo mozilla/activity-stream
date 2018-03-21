@@ -50,20 +50,20 @@ export class TopSiteForm extends React.PureComponent {
     this.setState({showCustomScreenshotForm: true});
   }
 
-  _updateCustomScreenshotInput(event) {
+  _updateCustomScreenshotInput(value) {
     this.setState({
-      customScreenshotUrl: event ? event.target.value : "",
+      customScreenshotUrl: value,
       validationError: false
     });
     this.props.dispatch(ac.OnlyToThisContent({type: at.PREVIEW_REQUEST_CANCEL}));
   }
 
   onCustomScreenshotUrlChange(event) {
-    this._updateCustomScreenshotInput(event);
+    this._updateCustomScreenshotInput(event.target.value);
   }
 
   onClearScreenshotInput() {
-    this._updateCustomScreenshotInput();
+    this._updateCustomScreenshotInput("");
   }
 
   onCancelButtonClick(ev) {
@@ -106,7 +106,7 @@ export class TopSiteForm extends React.PureComponent {
     if (this.validateForm()) {
       this.props.dispatch(ac.AlsoToMain({
         type: at.PREVIEW_REQUEST,
-        data: {customScreenshotURL: this.cleanUrl(this.state.customScreenshotUrl)}
+        data: {url: this.cleanUrl(this.state.customScreenshotUrl)}
       }));
       this.props.dispatch(ac.UserEvent({
         source: TOP_SITES_SOURCE,
@@ -133,7 +133,7 @@ export class TopSiteForm extends React.PureComponent {
 
   validateCustomScreenshotUrl() {
     const {customScreenshotUrl} = this.state;
-    return customScreenshotUrl ? this.validateUrl(customScreenshotUrl) : true;
+    return !customScreenshotUrl || this.validateUrl(customScreenshotUrl);
   }
 
   validateForm() {
@@ -147,9 +147,13 @@ export class TopSiteForm extends React.PureComponent {
   }
 
   _renderCustomScreenshotInput() {
-    const validationError = (this.state.validationError && !this.validateCustomScreenshotUrl()) || this.props.screenshotRequestFailed;
+    const {customScreenshotUrl} = this.state;
+    const requestFailed = this.props.previewResponse === "";
+    const validationError = (this.state.validationError && !this.validateCustomScreenshotUrl()) || requestFailed;
     // Set focus on error if the url field is valid or when the input is first rendered and is empty
-    const shouldFocus = (validationError && this.validateUrl(this.state.url)) || !this.state.customScreenshotUrl;
+    const shouldFocus = (validationError && this.validateUrl(this.state.url)) || !customScreenshotUrl;
+    const isLoading = this.props.previewResponse === null &&
+      customScreenshotUrl && this.props.previewUrl === this.cleanUrl(customScreenshotUrl);
 
     if (!this.state.showCustomScreenshotForm) {
       return (<a className="enable-custom-image-input" onClick={this.onEnableScreenshotUrlForm}>
@@ -158,13 +162,13 @@ export class TopSiteForm extends React.PureComponent {
     }
     return (<div className="custom-image-input-container">
       <TopSiteFormInput
-        errorMessageId={this.props.screenshotRequestFailed ? "topsites_form_image_validation" : "topsites_form_url_validation"}
-        loading={!!this.props.requestedScreenshotURL}
+        errorMessageId={requestFailed ? "topsites_form_image_validation" : "topsites_form_url_validation"}
+        loading={isLoading}
         onChange={this.onCustomScreenshotUrlChange}
         onClear={this.onClearScreenshotInput}
         shouldFocus={shouldFocus}
         typeUrl={true}
-        value={this.state.customScreenshotUrl}
+        value={customScreenshotUrl}
         validationError={validationError}
         titleId="topsites_form_image_url_label"
         placeholderId="topsites_form_url_placeholder"
@@ -172,19 +176,21 @@ export class TopSiteForm extends React.PureComponent {
     </div>);
   }
 
-  _getPreviewScreenshot() {
-    return Object.assign({}, this.props.site, {screenshotPreview: this.props.screenshotPreview});
-  }
-
   render() {
     const {customScreenshotUrl} = this.state;
+    const requestFailed = this.props.previewResponse === "";
     // For UI purposes, editing without an existing link is "add"
     const showAsAdd = !this.props.site;
-    const previous = this.props.site && this.props.site.customScreenshotURL;
+    const previous = (this.props.site && this.props.site.customScreenshotURL) || "";
     const changed = customScreenshotUrl && this.cleanUrl(customScreenshotUrl) !== previous;
     // Preview mode if changes were made to the custom screenshot URL and no preview was received yet
     // or the request failed
-    const previewMode = (changed && !this.props.screenshotPreview) || this.props.screenshotRequestFailed;
+    const previewMode = (changed && this.props.previewResponse === null) || requestFailed;
+    const previewLink = Object.assign({}, this.props.site);
+    if (this.props.previewResponse) {
+      previewLink.screenshot = this.props.previewResponse;
+      previewLink.customScreenshotURL = this.props.previewUrl;
+    }
     return (
       <form className="topsite-form">
         <div className="form-input-container">
@@ -210,8 +216,8 @@ export class TopSiteForm extends React.PureComponent {
                 intl={this.props.intl} />
               {this._renderCustomScreenshotInput()}
             </div>
-            <TopSiteLink link={this._getPreviewScreenshot()}
-              defaultStyle={this.props.screenshotRequestFailed}
+            <TopSiteLink link={previewLink}
+              defaultStyle={requestFailed}
               title={this.state.label} />
           </div>
         </div>

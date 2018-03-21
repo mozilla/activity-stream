@@ -90,27 +90,22 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       }
       return Object.assign({}, prevState, {initialized: true, rows: action.data});
     case at.TOP_SITES_EDIT:
-      return Object.assign({}, prevState, {editForm: {index: action.data.index, screenshotRequestFailed: false, screenshotPreview: null}});
-    case at.TOP_SITES_CANCEL_EDIT:
-      return Object.assign({}, prevState, {editForm: null});
-    case at.PREVIEW_FAILED:
       return Object.assign({}, prevState, {
         editForm: {
-          index: prevState.editForm.index,
-          screenshotRequestFailed: true,
-          requestedScreenshotURL: null
+          index: action.data.index,
+          previewResponse: null
         }
       });
-    case at.SCREENSHOT_PREVIEW:
+    case at.TOP_SITES_CANCEL_EDIT:
+      return Object.assign({}, prevState, {editForm: null});
+    case at.PREVIEW_RESPONSE:
       if (prevState.editForm &&
-        prevState.editForm.requestedScreenshotURL === action.data.customScreenshotURL) {
+        prevState.editForm.previewUrl === action.data.url) {
         return Object.assign({}, prevState, {
           editForm: {
-            index: prevState.editForm ? prevState.editForm.index : -1,
-            screenshotRequestFailed: false,
-            screenshotPreview: action.data.screenshotPreview,
-            customScreenshotURL: action.data.customScreenshotURL,
-            requestedScreenshotURL: null
+            index: prevState.editForm.index,
+            previewResponse: action.data.preview,
+            previewUrl: action.data.url
           }
         });
       }
@@ -122,18 +117,18 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       return Object.assign({}, prevState, {
         editForm: {
           index: prevState.editForm.index,
-          screenshotPreview: null,
-          screenshotRequestFailed: false,
-          requestedScreenshotURL: action.data.customScreenshotURL
+          previewResponse: null,
+          previewUrl: action.data.url
         }
       });
     case at.PREVIEW_REQUEST_CANCEL:
+      if (!prevState.editForm) {
+        return prevState;
+      }
       return Object.assign({}, prevState, {
         editForm: {
           index: prevState.editForm.index,
-          screenshotRequestFailed: false,
-          screenshotPreview: null,
-          requestedScreenshotURL: null
+          previewResponse: null
         }
       });
     case at.SCREENSHOT_UPDATED:

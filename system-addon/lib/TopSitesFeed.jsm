@@ -215,11 +215,11 @@ this.TopSitesFeed = class TopSitesFeed {
    * @param customScreenshotURL {string} The URL used to capture the screenshot
    * @param target {string} Id of content process where to dispatch the result
    */
-  async getScreenshotPreview({customScreenshotURL}, target) {
-    const screenshotPreview = await Screenshots.getScreenshotForURL(customScreenshotURL);
+  async getScreenshotPreview(url, target) {
+    const preview = await Screenshots.getScreenshotForURL(url) || "";
     this.store.dispatch(ac.OnlyToOneContent({
-      data: {screenshotPreview, customScreenshotURL},
-      type: screenshotPreview ? at.SCREENSHOT_PREVIEW : at.PREVIEW_FAILED
+      data: {url, preview},
+      type: at.PREVIEW_RESPONSE
     }, target));
   }
 
@@ -393,7 +393,7 @@ this.TopSitesFeed = class TopSitesFeed {
         this.insert(action);
         break;
       case at.PREVIEW_REQUEST:
-        this.getScreenshotPreview(action.data, action.meta.fromTarget);
+        this.getScreenshotPreview(action.data.url, action.meta.fromTarget);
         break;
       case at.UNINIT:
         this.uninit();
