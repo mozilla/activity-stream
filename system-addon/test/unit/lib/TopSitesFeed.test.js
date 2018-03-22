@@ -448,29 +448,23 @@ describe("Top Sites Feed", () => {
     });
   });
   describe("#getScreenshotPreview", () => {
-    it("should call getScreenshotForURL with correct parameters", async () => {
-      await feed.getScreenshotPreview({url: "foo.com", customScreenshotURL: "custom"}, 1234);
-
-      assert.calledOnce(fakeScreenshot.getScreenshotForURL);
-      assert.calledWithExactly(fakeScreenshot.getScreenshotForURL, "custom");
-    });
-    it("should dispatch SCREENSHOT_PREVIEW if request is succesful", async () => {
-      await feed.getScreenshotPreview({customScreenshotURL: "custom"}, 1234);
+    it("should dispatch preview if request is succesful", async () => {
+      await feed.getScreenshotPreview("custom", 1234);
 
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.OnlyToOneContent({
-        data: {screenshotPreview: FAKE_SCREENSHOT, customScreenshotURL: "custom"},
-        type: at.SCREENSHOT_PREVIEW
+        data: {preview: FAKE_SCREENSHOT, url: "custom"},
+        type: at.PREVIEW_RESPONSE
       }, 1234));
     });
-    it("should dispatch PREVIEW_FAILED if request fails", async () => {
+    it("should return empty string if request fails", async () => {
       fakeScreenshot.getScreenshotForURL = sandbox.stub().returns(Promise.resolve(null));
-      await feed.getScreenshotPreview({customScreenshotURL: "custom"}, 1234);
+      await feed.getScreenshotPreview("custom", 1234);
 
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.OnlyToOneContent({
-        data: {screenshotPreview: null, customScreenshotURL: "custom"},
-        type: at.PREVIEW_FAILED
+        data: {preview: "", url: "custom"},
+        type: at.PREVIEW_RESPONSE
       }, 1234));
     });
   });
@@ -565,7 +559,7 @@ describe("Top Sites Feed", () => {
     it("should call getScreenshotPreview on PREVIEW_REQUEST", () => {
       sandbox.stub(feed, "getScreenshotPreview");
 
-      feed.onAction({type: at.PREVIEW_REQUEST, data: "foo", meta: {fromTarget: 1234}});
+      feed.onAction({type: at.PREVIEW_REQUEST, data: {url: "foo"}, meta: {fromTarget: 1234}});
 
       assert.calledOnce(feed.getScreenshotPreview);
       assert.calledWithExactly(feed.getScreenshotPreview, "foo", 1234);
