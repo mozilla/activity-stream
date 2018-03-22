@@ -55,7 +55,7 @@ export class TopSiteForm extends React.PureComponent {
       customScreenshotUrl: value,
       validationError: false
     });
-    this.props.dispatch(ac.OnlyToThisContent({type: at.PREVIEW_REQUEST_CANCEL}));
+    this.props.dispatch({type: at.PREVIEW_REQUEST_CANCEL});
   }
 
   onCustomScreenshotUrlChange(event) {

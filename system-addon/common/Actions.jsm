@@ -140,18 +140,6 @@ function AlsoToMain(action, fromTarget, skipLocal) {
 }
 
 /**
- * OnlyToThisContent - Creates a message that will only be dispatched locally.
- *
- * @param {object} action Any redux action (required)
- */
-function OnlyToThisContent(action) {
-  return _RouteMessage(action, {
-    from: CONTENT_MESSAGE_TYPE,
-    to: CONTENT_MESSAGE_TYPE
-  });
-}
-
-/**
  * OnlyToMain - Creates a message that will be sent to the Main process and skip the local reducer.
  *
  * @param  {object} action Any redux action (required)
@@ -306,7 +294,6 @@ this.actionCreators = {
   OnlyToOneContent,
   AlsoToMain,
   OnlyToMain,
-  OnlyToThisContent,
   AlsoToPreloaded,
   SetPref,
   WebExtEvent
