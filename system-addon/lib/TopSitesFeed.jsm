@@ -10,6 +10,7 @@ const {TippyTopProvider} = ChromeUtils.import("resource://activity-stream/lib/Ti
 const {insertPinned, TOP_SITES_MAX_SITES_PER_ROW} = ChromeUtils.import("resource://activity-stream/common/Reducers.jsm", {});
 const {Dedupe} = ChromeUtils.import("resource://activity-stream/common/Dedupe.jsm", {});
 const {shortURL} = ChromeUtils.import("resource://activity-stream/lib/ShortURL.jsm", {});
+const {ActivityStreamStorage, getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "filterAdult",
   "resource://activity-stream/lib/FilterAdult.jsm");
@@ -28,6 +29,7 @@ const FRECENCY_THRESHOLD = 100 + 1; // 1 visit (skip first-run/one-time pages)
 const MIN_FAVICON_SIZE = 96;
 const CACHED_LINK_PROPS_TO_MIGRATE = ["screenshot"];
 const PINNED_FAVICON_PROPS_TO_MIGRATE = ["favicon", "faviconRef", "faviconSize"];
+const SECTION_ID = "topsites";
 
 this.TopSitesFeed = class TopSitesFeed {
   constructor() {
@@ -40,6 +42,7 @@ this.TopSitesFeed = class TopSitesFeed {
     this.pinnedCache = new LinksCache(NewTabUtils.pinnedLinks, "links",
       [...CACHED_LINK_PROPS_TO_MIGRATE, ...PINNED_FAVICON_PROPS_TO_MIGRATE]);
     PageThumbs.addExpirationFilter(this);
+    this._storage = new ActivityStreamStorage("sectionPrefs");
   }
 
   uninit() {
@@ -151,7 +154,14 @@ this.TopSitesFeed = class TopSitesFeed {
     }
 
     const links = await this.getLinksWithDefaults();
-    const newAction = {type: at.TOP_SITES_UPDATED, data: links};
+    const newAction = {type: at.TOP_SITES_UPDATED, data: {links}};
+
+    if (!this._storage.intialized) {
+      await this._storage.init();
+      const storedPrefs = await this._storage.get(SECTION_ID) || {};
+      newAction.data.pref = getDefaultOptions(storedPrefs);
+    }
+
     if (options.broadcast) {
       // Broadcast an update to all open content pages
       this.store.dispatch(ac.BroadcastToContent(newAction));
@@ -195,6 +205,10 @@ this.TopSitesFeed = class TopSitesFeed {
       type: at.RICH_ICON_MISSING,
       data: {url}
     });
+  }
+
+  updateSectionPrefs(collapsed) {
+    this.store.dispatch(ac.BroadcastToContent({type: at.TOP_SITES_PREFS_UPDATED, data: {pref: collapsed}}));
   }
 
   /**
@@ -325,6 +339,11 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.PREF_CHANGED:
         if (action.data.name === DEFAULT_SITES_PREF) {
           this.refreshDefaults(action.data.value);
+        }
+        break;
+      case at.UPDATE_SECTION_PREFS:
+        if (action.data.id === SECTION_ID) {
+          this.updateSectionPrefs(action.data.value);
         }
         break;
       case at.PREFS_INITIAL_VALUES:

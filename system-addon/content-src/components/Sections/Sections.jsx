@@ -53,9 +53,7 @@ export class Section extends React.PureComponent {
       // When the page becomes visible, send the impression stats ping if the section isn't collapsed.
       this._onVisibilityChange = () => {
         if (props.document.visibilityState === VISIBLE) {
-          const {id, Prefs} = this.props;
-          const isCollapsed = Prefs.values[`section.${id}.collapsed`];
-          if (!isCollapsed) {
+          if (!this.props.pref.collapsed) {
             this._dispatchImpressionStats();
           }
           props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
@@ -66,19 +64,15 @@ export class Section extends React.PureComponent {
   }
 
   componentDidMount() {
-    const {id, rows, Prefs} = this.props;
-    const isCollapsed = Prefs.values[`section.${id}.collapsed`];
-    if (rows.length && !isCollapsed) {
+    if (this.props.rows.length && !this.props.pref.collapsed) {
       this.sendImpressionStatsOrAddListener();
     }
   }
 
   componentDidUpdate(prevProps) {
     const {props} = this;
-    const {id, Prefs} = props;
-    const isCollapsedPref = `section.${id}.collapsed`;
-    const isCollapsed = Prefs.values[isCollapsedPref];
-    const wasCollapsed = prevProps.Prefs.values[isCollapsedPref];
+    const isCollapsed = props.pref.collapsed;
+    const wasCollapsed = prevProps.pref.collapsed;
     if (
       // Don't send impression stats for the empty state
       props.rows.length &&
@@ -154,7 +148,7 @@ export class Section extends React.PureComponent {
         id={id}
         eventSource={eventSource}
         disclaimer={disclaimer}
-        prefName={`section.${id}.collapsed`}
+        collapsed={this.props.pref.collapsed}
         showPrefName={(pref && pref.feed) || id}
         privacyNoticeURL={privacyNoticeURL}
         Prefs={this.props.Prefs}
@@ -189,6 +183,7 @@ Section.defaultProps = {
   document: global.document,
   rows: [],
   emptyState: {},
+  pref: {},
   title: ""
 };
 
