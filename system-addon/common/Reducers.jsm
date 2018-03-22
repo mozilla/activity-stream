@@ -99,17 +99,16 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
     case at.TOP_SITES_CANCEL_EDIT:
       return Object.assign({}, prevState, {editForm: null});
     case at.PREVIEW_RESPONSE:
-      if (prevState.editForm &&
-        prevState.editForm.previewUrl === action.data.url) {
-        return Object.assign({}, prevState, {
-          editForm: {
-            index: prevState.editForm.index,
-            previewResponse: action.data.preview,
-            previewUrl: action.data.url
-          }
-        });
+      if (!prevState.editForm || action.data.url !== prevState.editForm.previewUrl) {
+        return prevState;
       }
-      return prevState;
+      return Object.assign({}, prevState, {
+        editForm: {
+          index: prevState.editForm.index,
+          previewResponse: action.data.preview,
+          previewUrl: action.data.url
+        }
+      });
     case at.PREVIEW_REQUEST:
       if (!prevState.editForm) {
         return prevState;

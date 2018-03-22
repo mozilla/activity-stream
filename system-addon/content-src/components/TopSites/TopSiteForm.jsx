@@ -50,9 +50,9 @@ export class TopSiteForm extends React.PureComponent {
     this.setState({showCustomScreenshotForm: true});
   }
 
-  _updateCustomScreenshotInput(value) {
+  _updateCustomScreenshotInput(customScreenshotUrl) {
     this.setState({
-      customScreenshotUrl: value,
+      customScreenshotUrl,
       validationError: false
     });
     this.props.dispatch({type: at.PREVIEW_REQUEST_CANCEL});
@@ -185,7 +185,7 @@ export class TopSiteForm extends React.PureComponent {
     const changed = customScreenshotUrl && this.cleanUrl(customScreenshotUrl) !== previous;
     // Preview mode if changes were made to the custom screenshot URL and no preview was received yet
     // or the request failed
-    const previewMode = (changed && this.props.previewResponse === null) || requestFailed;
+    const previewMode = changed && !this.props.previewResponse;
     const previewLink = Object.assign({}, this.props.site);
     if (this.props.previewResponse) {
       previewLink.screenshot = this.props.previewResponse;

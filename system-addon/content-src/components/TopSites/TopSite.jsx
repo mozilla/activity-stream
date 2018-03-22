@@ -67,10 +67,10 @@ export class TopSiteLink extends React.PureComponent {
     let showSmallFavicon = false;
     let smallFaviconStyle;
     let smallFaviconFallback;
-    if (defaultStyle) { // Render the Topsite without any image or icon
+    if (defaultStyle) { // force no styles (letter fallback) even if the link has imagery
       smallFaviconFallback = false;
     } else if (link.customScreenshotURL) {
-      // styles and class names for top sites with custom screenshot
+      // assume high quality custom screenshot and use rich icon styles and class names
       imageClassName = "top-site-icon rich-icon";
       imageStyle = {
         backgroundColor: link.backgroundColor,
