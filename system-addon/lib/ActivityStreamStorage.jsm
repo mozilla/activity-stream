@@ -42,6 +42,8 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
 
   _openDatabase() {
     return IndexedDB.open(this.dbName, {version: this.dbVersion}, db => {
+      // If provided with array of objectStore names we need to create all the
+      // individual stores
       if (Array.isArray(this.storeName)) {
         this.storeName.forEach(store => {
           if (!db.objectStoreNames.contains(store)) {
