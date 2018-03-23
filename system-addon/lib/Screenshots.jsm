@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const EXPORTED_SYMBOLS = ["Screenshots", "EMPTY_SCREENSHOT"];
+const EXPORTED_SYMBOLS = ["Screenshots"];
 
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
@@ -22,7 +22,6 @@ ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
 ChromeUtils.defineModuleGetter(this, "Services",
   "resource://gre/modules/Services.jsm");
 
-const EMPTY_SCREENSHOT = "data:image/png;base64,";
 const GREY_10 = "#F9F9FA";
 
 this.Screenshots = {
@@ -45,6 +44,7 @@ this.Screenshots = {
   },
 
   async getScreenshotForURL(url) {
+    let screenshot = null;
     try {
       await BackgroundPageThumbs.captureIfMissing(url, {backgroundColor: GREY_10});
       const imgPath = PageThumbs.getThumbnailPath(url);
@@ -59,18 +59,11 @@ this.Screenshots = {
       const bytes = await file.read();
       const encodedData = btoa(this._bytesToString(bytes));
       file.close();
-      return `data:${contentType};base64,${encodedData}`;
+      screenshot = `data:${contentType};base64,${encodedData}`;
     } catch (err) {
-      Cu.reportError(`getScreenshot(${url}) failed: ${err}`);
+      Cu.reportError(`getScreenshot error: ${err}`);
     }
-
-    // We must have failed to get the screenshot, so persist the failure by
-    // storing an empty file. This will cause future requests to return an empty
-    // screenshot, so do the same thing here. The empty file should not expire
-    // with the usual filtering process to avoid repeated background requests,
-    // which can cause unwanted high CPU, network and memory usage - Bug 1384094
-    PageThumbs._store(url, url, null, true);
-    return EMPTY_SCREENSHOT;
+    return screenshot;
   },
 
   /**
@@ -122,5 +115,3 @@ this.Screenshots = {
     onScreenshot(screenshot);
   }
 };
-
-this.EMPTY_SCREENSHOT = EMPTY_SCREENSHOT;
