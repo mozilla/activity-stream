@@ -7,7 +7,6 @@ ChromeUtils.import("resource://gre/modules/EventEmitter.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
-const {ActivityStreamStorage, getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 
@@ -80,12 +79,10 @@ const SectionsManager = {
   },
   initialized: false,
   sections: new Map(),
-  async init(prefs = {}) {
-    await this.initStorage();
-
+  init(prefs = {}) {
     for (const feedPrefName of Object.keys(BUILT_IN_SECTIONS)) {
       const optionsPrefName = `${feedPrefName}.options`;
-      await this.addBuiltInSection(feedPrefName, prefs[optionsPrefName]);
+      this.addBuiltInSection(feedPrefName, prefs[optionsPrefName]);
 
       this._dedupeConfiguration = [];
       this.sections.forEach(section => {
@@ -104,10 +101,6 @@ const SectionsManager = {
     this.initialized = true;
     this.emit(this.INIT);
   },
-  initStorage() {
-    this._storage = new ActivityStreamStorage("sectionPrefs");
-    return this._storage.init();
-  },
   observe(subject, topic, data) {
     switch (topic) {
       case "nsPref:changed":
@@ -119,16 +112,7 @@ const SectionsManager = {
         break;
     }
   },
-  updateSectionPrefs(id, collapsed) {
-    const section = this.sections.get(id);
-    if (!section) {
-      return;
-    }
-
-    const updatedSection = Object.assign({}, section, {pref: Object.assign({}, section.pref, collapsed)});
-    this.updateSection(id, updatedSection, true);
-  },
-  async addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
+  addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
     let options;
     try {
       options = JSON.parse(optionsPrefValue);
@@ -136,9 +120,7 @@ const SectionsManager = {
       options = {};
       Cu.reportError(`Problem parsing options pref for ${feedPrefName}`);
     }
-    const storedPrefs = await this._storage.get(feedPrefName) || {};
-    const defaultSection = BUILT_IN_SECTIONS[feedPrefName](options);
-    const section = Object.assign({}, defaultSection, {pref: Object.assign({}, defaultSection.pref, getDefaultOptions(storedPrefs))});
+    const section = BUILT_IN_SECTIONS[feedPrefName](options);
     section.pref.feed = feedPrefName;
     this.addSection(section.id, Object.assign(section, {options}));
   },
@@ -422,9 +404,6 @@ class SectionsFeed {
         }
         break;
       }
-      case at.UPDATE_SECTION_PREFS:
-        SectionsManager.updateSectionPrefs(action.data.id, action.data.value);
-        break;
       case at.PLACES_BOOKMARK_ADDED:
         SectionsManager.updateBookmarkMetadata(action.data);
         break;

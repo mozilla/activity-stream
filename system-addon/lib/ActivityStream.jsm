@@ -26,7 +26,6 @@ const {FaviconFeed} = ChromeUtils.import("resource://activity-stream/lib/Favicon
 const {TopSitesFeed} = ChromeUtils.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
 const {TopStoriesFeed} = ChromeUtils.import("resource://activity-stream/lib/TopStoriesFeed.jsm", {});
 const {HighlightsFeed} = ChromeUtils.import("resource://activity-stream/lib/HighlightsFeed.jsm", {});
-const {ActivityStreamStorage} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 
 const DEFAULT_SITES = new Map([
   // This first item is the global list fallback for any unexpected geos
@@ -103,6 +102,10 @@ const PREFS_CONFIG = new Map([
     title: "Show the Top Sites section",
     value: true
   }],
+  ["collapseTopSites", {
+    title: "Collapse the Top Sites section",
+    value: false
+  }],
   ["topSitesRows", {
     title: "Number of rows of Top Sites to display",
     value: 1
@@ -121,9 +124,17 @@ const PREFS_CONFIG = new Map([
     title: "Telemetry server endpoint",
     value: "https://tiles.services.mozilla.com/v4/links/activity-stream"
   }],
+  ["section.highlights.collapsed", {
+    title: "Collapse the Highlights section",
+    value: false
+  }],
   ["section.highlights.includePocket", {
     title: "Boolean flag that decides whether or not to show saved Pocket stories in highlights.",
     value: true
+  }],
+  ["section.topstories.collapsed", {
+    title: "Collapse the Top Stories section",
+    value: false
   }],
   ["section.topstories.showDisclaimer", {
     title: "Boolean flag that decides whether or not to show the topstories disclaimer.",
@@ -255,14 +266,12 @@ this.ActivityStream = class ActivityStream {
     this.store = new Store();
     this.feeds = FEEDS_CONFIG;
     this._defaultPrefs = new DefaultPrefs(PREFS_CONFIG);
-    this._storage = new ActivityStreamStorage(["sectionPrefs", "snippets"]);
   }
 
   init() {
     try {
       this._updateDynamicPrefs();
       this._defaultPrefs.init();
-      this._storage.init();
 
       // Hook up the store and let all feeds and pages initialize
       this.store.init(this.feeds, ac.BroadcastToContent({
