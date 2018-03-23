@@ -81,7 +81,11 @@ this.Screenshots = {
     // failure, so do the same thing here. The empty file should not expire with
     // the usual filtering process to avoid repeated background requests, which
     // can cause unwanted high CPU, network and memory usage - Bug 1384094
-    PageThumbs._store(url, url, null, true);
+    try {
+      await PageThumbs._store(url, url, null, true);
+    } catch (err) {
+      // Probably failed to create the empty file, but not much more we can do.
+    }
     return null;
   },
 
