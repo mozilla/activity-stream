@@ -107,7 +107,7 @@ export class _TopSites extends React.PureComponent {
         className="top-sites"
         icon="topsites"
         id="topsites"
-        title={props.intl.formatMessage({id: "header_top_sites"})}
+        title={{id: "header_top_sites"}}
         extraMenuOptions={["AddTopSite"]}
         showPrefName="showTopSites"
         eventSource={TOP_SITES_SOURCE}

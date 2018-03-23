@@ -144,7 +144,7 @@ export class Section extends React.PureComponent {
     // <section> <-- HTML5 element
     return (<ComponentPerfTimer {...this.props}>
       <CollapsibleSection className="section" icon={icon}
-        title={getFormattedMessage(title)}
+        title={title}
         id={id}
         eventSource={eventSource}
         disclaimer={disclaimer}
