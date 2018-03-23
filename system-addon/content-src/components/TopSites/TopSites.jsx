@@ -10,6 +10,9 @@ import {TopSiteForm} from "./TopSiteForm";
 import {TopSiteList} from "./TopSite";
 
 function topSiteIconType(link) {
+  if (link.customScreenshotURL) {
+    return "custom_screenshot";
+  }
   if (link.tippyTopIcon || link.faviconRef === "tippytop") {
     return "tippytop";
   }
@@ -37,6 +40,7 @@ function countTopSitesIconsTypes(topSites) {
   };
 
   return topSites.reduce(countTopSitesTypes, {
+    "custom_screenshot": 0,
     "screenshot_with_icon": 0,
     "screenshot": 0,
     "tippytop": 0,
@@ -119,10 +123,10 @@ export class _TopSites extends React.PureComponent {
               <div className="modal">
                 <TopSiteForm
                   site={props.TopSites.rows[editForm.index]}
-                  index={editForm.index}
                   onClose={this.onFormClose}
                   dispatch={this.props.dispatch}
-                  intl={this.props.intl} />
+                  intl={this.props.intl}
+                  {...editForm} />
               </div>
             </div>
           }

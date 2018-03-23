@@ -153,7 +153,7 @@ $half-base-gutter: $base-gutter / 2;
   }
 
   .rich-icon {
-    background-size: $rich-icon-size;
+    background-size: cover;
     height: 100%;
     offset-inline-start: 0;
     top: 0;
@@ -302,7 +302,7 @@ $half-base-gutter: $base-gutter / 2;
   .form-input-container {
     max-width: $form-width + 3 * $form-spacing + $rich-icon-size;
     margin: 0 auto;
-    padding: $form-spacing $form-spacing 40px;
+    padding: $form-spacing;
 
     .top-site-outer {
       padding: 0;
@@ -337,20 +337,71 @@ $half-base-gutter: $base-gutter / 2;
         transform: translateY(-50%);
         top: 50%;
         offset-inline-end: 8px;
+      }
+    }
 
-        & + input:dir(ltr) {
-          padding-right: 32px;
-        }
+    .url {
+      input:dir(ltr) {
+        padding-right: 32px;
+      }
 
-        & + input:dir(rtl) {
-          padding-left: 32px;
+      input:dir(rtl) {
+        padding-left: 32px;
+
+        &:not(:placeholder-shown) {
+          direction: ltr;
+          text-align: right;
         }
       }
     }
 
-    .url input:not(:placeholder-shown):dir(rtl) {
-      direction: ltr;
-      text-align: right;
+    .enable-custom-image-input {
+      display: inline-block;
+      font-size: 13px;
+      margin-top: 4px;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+        color: $blue-60;
+      }
+    }
+
+    .custom-image-input-container {
+      margin-top: 4px;
+
+      .loading-container {
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        position: absolute;
+        transform: translateY(-50%);
+        top: 50%;
+        offset-inline-end: 8px;
+      }
+
+      // This animation is derived from Firefox's tab loading animation
+      // See https://searchfox.org/mozilla-central/rev/b29daa46443b30612415c35be0a3c9c13b9dc5f6/browser/themes/shared/tabs.inc.css#208-216
+      .loading-animation {
+        @keyframes tab-throbber-animation {
+          100% { transform: translateX(-960px); }
+        }
+
+        @keyframes tab-throbber-animation-rtl {
+          100% { transform: translateX(960px); }
+        }
+
+        width: 960px;
+        height: 16px;
+        -moz-context-properties: fill;
+        fill: $blue-50;
+        background-image: url('chrome://browser/skin/tabbrowser/loading.svg');
+        animation: tab-throbber-animation 1.05s steps(60) infinite;
+
+        &:dir(rtl) {
+          animation-name: tab-throbber-animation-rtl;
+        }
+      }
     }
 
     input {
@@ -361,10 +412,17 @@ $half-base-gutter: $base-gutter / 2;
         padding: 0 8px;
         height: 32px;
         width: 100%;
+        font-size: 15px;
 
         &:focus {
           border: $input-border-active;
           box-shadow: $input-focus-boxshadow;
+        }
+
+        &[disabled] {
+          border: $input-border;
+          box-shadow: none;
+          opacity: 0.4;
         }
       }
     }

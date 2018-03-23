@@ -55,8 +55,8 @@ $text-secondary: $grey-50;
 $input-border: solid 1px $grey-90-20;
 $input-border-active: solid 1px $blue-50;
 $input-error-border: solid 1px $red-60;
-$input-error-boxshadow: 0 0 0 2px rgba($red-60, 0.35);
-$input-focus-boxshadow: 0 0 0 2px rgba($blue-50, 0.35);
+$input-error-boxshadow: 0 0 0 1px $red-60, 0 0 0 4px rgba($red-60, 0.3);
+$input-focus-boxshadow: 0 0 0 1px $blue-50, 0 0 0 4px rgba($blue-50, 0.3);
 
 $white: #FFF;
 $border-radius: 3px;
