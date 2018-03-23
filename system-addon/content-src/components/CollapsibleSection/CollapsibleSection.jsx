@@ -3,13 +3,15 @@ import {actionCreators as ac} from "common/Actions.jsm";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
 import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
-import {SectionMenuOptions} from "content-src/lib/section-menu-options";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 
 function getFormattedMessage(message) {
   return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
+}
+function getCollapsed(props) {
+  return (props.prefName in props.Prefs.values) ? props.Prefs.values[props.prefName] : false;
 }
 
 export class Disclaimer extends React.PureComponent {
@@ -66,7 +68,7 @@ export class _CollapsibleSection extends React.PureComponent {
 
   componentWillUpdate(nextProps) {
     // Check if we're about to go from expanded to collapsed
-    if (!this.props.collapsed && nextProps.collapsed) {
+    if (!getCollapsed(this.props) && getCollapsed(nextProps)) {
       // This next line forces a layout flush of the section body, which has a
       // max-height style set, so that the upcoming collapse animation can
       // animate from that height to the collapsed height. Without this, the
@@ -95,8 +97,7 @@ export class _CollapsibleSection extends React.PureComponent {
     // If this.sectionBody is unset, it means that we're in some sort of error
     // state, probably displaying the error fallback, so we won't be able to
     // compute the height, and we don't want to persist the preference.
-    // If props.collapsed is undefined handler shouldn't do anything.
-    if (!this.sectionBody || this.props.collapsed === undefined) {
+    if (!this.sectionBody) {
       return;
     }
 
@@ -105,12 +106,7 @@ export class _CollapsibleSection extends React.PureComponent {
       isAnimating: true,
       maxHeight: `${this.sectionBody.scrollHeight}px`
     });
-    const {action, userEvent} = SectionMenuOptions.CheckCollapsed(this.props);
-    this.props.dispatch(action);
-    this.props.dispatch(ac.UserEvent({
-      event: userEvent,
-      source: this.props.source
-    }));
+    this.props.dispatch(ac.SetPref(this.props.prefName, !getCollapsed(this.props)));
   }
 
   onTransitionEnd(event) {
@@ -146,21 +142,22 @@ export class _CollapsibleSection extends React.PureComponent {
   }
 
   render() {
-    const isCollapsible = this.props.collapsed !== undefined;
+    const isCollapsible = this.props.prefName in this.props.Prefs.values;
+    const isCollapsed = getCollapsed(this.props);
     const {enableAnimation, isAnimating, maxHeight, menuButtonHover, showContextMenu} = this.state;
-    const {id, eventSource, collapsed, disclaimer, title, extraMenuOptions, showPrefName, privacyNoticeURL, dispatch, isFirst, isLast} = this.props;
+    const {id, eventSource, disclaimer, title, extraMenuOptions, prefName, showPrefName, privacyNoticeURL, dispatch, isFirst, isLast} = this.props;
     const disclaimerPref = `section.${id}.showDisclaimer`;
     const needsDisclaimer = disclaimer && this.props.Prefs.values[disclaimerPref];
     const active = menuButtonHover || showContextMenu;
 
     return (
-      <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${collapsed ? " collapsed" : ""}${active ? " active" : ""}`}>
+      <section className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${isCollapsed ? " collapsed" : ""}${active ? " active" : ""}`}>
         <div className="section-top-bar">
           <h3 className="section-title">
-            <span className="click-target" onClick={this.onHeaderClick}>
+            <span className="click-target" onClick={isCollapsible && this.onHeaderClick}>
               {this.renderIcon()}
               {getFormattedMessage(title)}
-              {isCollapsible && <span className={`collapsible-arrow icon ${collapsed ? "icon-arrowhead-forward-small" : "icon-arrowhead-down-small"}`} />}
+              {isCollapsible && <span className={`collapsible-arrow icon ${isCollapsed ? "icon-arrowhead-forward-small" : "icon-arrowhead-down-small"}`} />}
             </span>
           </h3>
           <div>
@@ -179,8 +176,9 @@ export class _CollapsibleSection extends React.PureComponent {
                 extraOptions={extraMenuOptions}
                 eventSource={eventSource}
                 showPrefName={showPrefName}
+                collapsePrefName={prefName}
                 privacyNoticeURL={privacyNoticeURL}
-                collapsed={collapsed}
+                isCollapsed={isCollapsed}
                 onUpdate={this.onMenuUpdate}
                 isFirst={isFirst}
                 isLast={isLast}
@@ -193,7 +191,7 @@ export class _CollapsibleSection extends React.PureComponent {
             className={`section-body${isAnimating ? " animating" : ""}`}
             onTransitionEnd={this.onTransitionEnd}
             ref={this.onBodyMount}
-            style={isAnimating && !collapsed ? {maxHeight} : null}>
+            style={isAnimating && !isCollapsed ? {maxHeight} : null}>
             {needsDisclaimer && <DisclaimerIntl disclaimerPref={disclaimerPref} disclaimer={disclaimer} eventSource={eventSource} dispatch={this.props.dispatch} />}
             {this.props.children}
           </div>

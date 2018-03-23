@@ -25,15 +25,13 @@ describe("ActivityStream", () => {
       "lib/FaviconFeed.jsm": {FaviconFeed: Fake},
       "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake},
       "lib/TopStoriesFeed.jsm": {TopStoriesFeed: Fake},
-      "lib/HighlightsFeed.jsm": {HighlightsFeed: Fake},
-      "lib/ActivityStreamStorage.jsm": {ActivityStreamStorage: Fake}
+      "lib/HighlightsFeed.jsm": {HighlightsFeed: Fake}
     }));
     as = new ActivityStream();
     sandbox.stub(as.store, "init");
     sandbox.stub(as.store, "uninit");
     sandbox.stub(as._defaultPrefs, "init");
     sandbox.stub(as._defaultPrefs, "reset");
-    as._storage = {init: sandbox.stub()};
   });
 
   afterEach(() => sandbox.restore());
@@ -57,14 +55,10 @@ describe("ActivityStream", () => {
     it("should call .store.init", () => {
       assert.calledOnce(as.store.init);
     });
-    it("should call storage init", () => {
-      assert.calledOnce(as._storage.init);
-    });
     it("should pass to Store an INIT event with the right version", () => {
       as = new ActivityStream({version: "1.2.3"});
       sandbox.stub(as.store, "init");
       sandbox.stub(as._defaultPrefs, "init");
-      as._storage = {init: sandbox.stub()};
 
       as.init();
 

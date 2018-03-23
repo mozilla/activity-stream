@@ -109,9 +109,10 @@ export class _TopSites extends React.PureComponent {
         id="topsites"
         title={{id: "header_top_sites"}}
         extraMenuOptions={["AddTopSite"]}
+        prefName="collapseTopSites"
         showPrefName="showTopSites"
         eventSource={TOP_SITES_SOURCE}
-        collapsed={props.TopSites.pref ? props.TopSites.pref.collapsed : undefined}
+        Prefs={props.Prefs}
         isFirst={props.isFirst}
         isLast={props.isLast}
         dispatch={props.dispatch}>
