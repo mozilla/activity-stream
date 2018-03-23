@@ -1,10 +1,12 @@
 import {filterAdult} from "lib/FilterAdult.jsm";
+import {resetMD5Hasher} from "lib/Utils.jsm";
 
 describe("filterAdult", () => {
   let hashStub;
   let hashValue;
 
   beforeEach(() => {
+    resetMD5Hasher();
     hashStub = {
       finish: sinon.stub().callsFake(() => hashValue),
       init: sinon.stub(),
