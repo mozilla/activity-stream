@@ -164,6 +164,16 @@ describe("Reducers", () => {
 
       assert.equal(state.pref, "foo");
     });
+    it("should not update state for empty action.data on PLACES_LINK_DELETED", () => {
+      const nextState = TopSites(undefined, {type: at.PLACES_LINK_DELETED});
+      assert.equal(nextState, INITIAL_STATE.TopSites);
+    });
+    it("should remove the site on PLACES_LINK_DELETED", () => {
+      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
+      const deleteAction = {type: at.PLACES_LINK_DELETED, data: {url: "foo.com"}};
+      const nextState = TopSites(oldState, deleteAction);
+      assert.deepEqual(nextState.rows, [{url: "bar.com"}]);
+    });
   });
   describe("Prefs", () => {
     function prevState(custom = {}) {
@@ -374,21 +384,16 @@ describe("Reducers", () => {
     });
     it("should remove blocked and deleted urls from all rows in all sections", () => {
       const blockAction = {type: at.PLACES_LINK_BLOCKED, data: {url: "www.foo.bar"}};
-      const deleteAction = {type: at.PLACES_LINKS_DELETED, data: ["www.foo.bar"]};
+      const deleteAction = {type: at.PLACES_LINK_DELETED, data: {url: "www.foo.bar"}};
       const newBlockState = Sections(oldState, blockAction);
       const newDeleteState = Sections(oldState, deleteAction);
       newBlockState.concat(newDeleteState).forEach(section => {
         assert.deepEqual(section.rows, [{url: "www.other.url"}]);
       });
     });
-    it("should remove all deleted urls", () => {
-      const deleteAction = {type: at.PLACES_LINKS_DELETED, data: ["www.foo.bar", "www.other.url"]};
-
-      const newState = Sections(oldState, deleteAction);
-
-      newState.forEach(section => {
-        assert.lengthOf(section.rows, 0);
-      });
+    it("should not update state for empty action.data on PLACES_LINK_DELETED", () => {
+      const nextState = Sections(undefined, {type: at.PLACES_LINK_DELETED});
+      assert.equal(nextState, INITIAL_STATE.Sections);
     });
     it("should remove all removed pocket urls", () => {
       const removeAction = {type: at.DELETE_FROM_POCKET, data: {pocket_id: 123}};
