@@ -42,23 +42,6 @@ main {
   }
 }
 
-.section-top-bar {
-  height: 16px;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: $section-title-font-size;
-  font-weight: bold;
-  text-transform: uppercase;
-
-  span {
-    color: $text-secondary;
-    fill: $text-secondary;
-    vertical-align: middle;
-  }
-}
-
 .base-content-fallback {
   // Make the error message be centered against the viewport
   height: 100vh;
