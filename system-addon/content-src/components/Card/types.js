@@ -18,5 +18,9 @@ export const cardContextTypes = {
   pocket: {
     intlID: "type_label_pocket",
     icon: "pocket"
+  },
+  download: {
+    intlID: "type_label_downloaded",
+    icon: "download"
   }
 };

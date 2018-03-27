@@ -1,5 +1,5 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {Card, PlaceholderCard} from "content-src/components/Card/Card";
+import {_Card as Card, PlaceholderCard} from "content-src/components/Card/Card";
 import {combineReducers, createStore} from "redux";
 import {INITIAL_STATE, reducers} from "common/Reducers.jsm";
 import {cardContextTypes} from "content-src/components/Card/types";
@@ -120,6 +120,32 @@ describe("<Card>", () => {
     assert.isFalse(wrapper.find(".card-outer").hasClass("active"));
     button.simulate("click", {preventDefault: () => {}});
     assert.isTrue(wrapper.find(".card-outer").hasClass("active"));
+  });
+  it("should send SHOW_DOWNLOAD_FILE if we clicked on a download", () => {
+    const downloadLink = {
+      type: "download",
+      url: "download.mov"
+    };
+    wrapper = mountCardWithProps(Object.assign({}, DEFAULT_PROPS, {link: downloadLink}));
+    const card = wrapper.find(".card");
+    card.simulate("click", {preventDefault: () => {}});
+    assert.calledThrice(DEFAULT_PROPS.dispatch);
+
+    assert.equal(DEFAULT_PROPS.dispatch.firstCall.args[0].type, at.SHOW_DOWNLOAD_FILE);
+    assert.deepEqual(DEFAULT_PROPS.dispatch.firstCall.args[0].data, downloadLink);
+  });
+  it("should send OPEN_LINK if we clicked on anything other than a download", () => {
+    const nonDownloadLink = {
+      type: "history",
+      url: "download.mov"
+    };
+    wrapper = mountCardWithProps(Object.assign({}, DEFAULT_PROPS, {link: nonDownloadLink}));
+    const card = wrapper.find(".card");
+    const event = {altKey: "1", button: "2", ctrlKey: "3", metaKey: "4", shiftKey: "5"};
+    card.simulate("click", Object.assign({}, event, {preventDefault: () => {}}));
+    assert.calledThrice(DEFAULT_PROPS.dispatch);
+
+    assert.equal(DEFAULT_PROPS.dispatch.firstCall.args[0].type, at.OPEN_LINK);
   });
   describe("image loading", () => {
     let link;
@@ -246,7 +272,7 @@ describe("<Card>", () => {
 
 describe("<PlaceholderCard />", () => {
   it("should render a Card with placeholder=true", () => {
-    const wrapper = shallow(<PlaceholderCard />);
+    const wrapper = mountWithIntl(<Provider store={createStore(combineReducers(reducers), INITIAL_STATE)}><PlaceholderCard /></Provider>);
     assert.isTrue(wrapper.find(Card).props().placeholder);
   });
 });

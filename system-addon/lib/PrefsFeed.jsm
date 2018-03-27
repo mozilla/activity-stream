@@ -13,6 +13,8 @@ ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm");
 
+ChromeUtils.defineModuleGetter(this, "AppConstants",
+  "resource://gre/modules/AppConstants.jsm");
 const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
 
 // List of prefs that require migration to indexedDB.
@@ -97,8 +99,10 @@ this.PrefsFeed = class PrefsFeed {
       values[name] = this._prefs.get(name);
     }
 
-    // Not a pref, but we need this to determine whether to show private-browsing-related stuff
+    // These are not prefs, but are needed to determine stuff in content that can only be
+    // computed in main process
     values.isPrivateBrowsingEnabled = PrivateBrowsingUtils.enabled;
+    values.platform = AppConstants.platform;
 
     // Set the initial state of all prefs in redux
     this.store.dispatch(ac.BroadcastToContent({type: at.PREFS_INITIAL_VALUES, data: values}));

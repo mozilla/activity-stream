@@ -100,6 +100,53 @@ describe("<LinkMenu>", () => {
     const {options} = wrapper.find(ContextMenu).props();
     assert.isDefined(options.find(o => (o.id && o.id === "menu_action_remove_bookmark")));
   });
+  it("should show Open File option for a downloaded item", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download", path: "foo"}} source={"HIGHLIGHTS"} options={["OpenFile"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_open_file")));
+  });
+  it("should show Show File option for a downloaded item on a default platform", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download", path: "foo"}} source={"HIGHLIGHTS"} options={["ShowFile"]} platform={"default"} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_show_file_default")));
+  });
+  it("should show Show in Finder option for a downloaded item on a mac", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download"}} source={"HIGHLIGHTS"} options={["ShowFile"]} platform={"macosx"} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_show_file_mac_os")));
+  });
+  it("should show Open containing folder option for a downloaded item on windows", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download"}} source={"HIGHLIGHTS"} options={["ShowFile"]} platform={"win"} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_show_file_windows")));
+  });
+  it("should show Open containing folder option for a downloaded item on linux", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download"}} source={"HIGHLIGHTS"} options={["ShowFile"]} platform={"linux"} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_show_file_linux")));
+  });
+  it("should show Copy Downlad Link option for a downloaded item when CopyDownloadLink", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download"}} source={"HIGHLIGHTS"} options={["CopyDownloadLink"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_copy_download_link")));
+  });
+  it("should show Go To Download Page option for a downloaded item when GoToDownloadPage", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download", referrer: "foo"}} source={"HIGHLIGHTS"} options={["GoToDownloadPage"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_go_to_download_page")));
+    assert.isFalse(options[0].disabled);
+  });
+  it("should show Go To Download Page option as disabled for a downloaded item when GoToDownloadPage if no referrer exists", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download", referrer: null}} source={"HIGHLIGHTS"} options={["GoToDownloadPage"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_go_to_download_page")));
+    assert.isTrue(options[0].disabled);
+  });
+  it("should show Remove Download Link option for a downloaded item when RemoveDownload", () => {
+    wrapper = shallowWithIntl(<LinkMenu site={{url: "", type: "download"}} source={"HIGHLIGHTS"} options={["RemoveDownload"]} dispatch={() => {}} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    assert.isDefined(options.find(o => (o.id && o.id === "menu_action_remove_download")));
+  });
   it("should show Edit option", () => {
     const props = {url: "foo", label: "label"};
     const index = 5;
@@ -129,9 +176,9 @@ describe("<LinkMenu>", () => {
   describe(".onClick", () => {
     const FAKE_INDEX = 3;
     const FAKE_SOURCE = "TOP_SITES";
-    const FAKE_SITE = {url: "https://foo.com", pocket_id: "1234", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "bookmark"};
+    const FAKE_SITE = {url: "https://foo.com", pocket_id: "1234", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "bookmark", path: "foo"};
     const dispatch = sinon.stub();
-    const propOptions = ["Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket", "DeleteFromPocket", "ArchiveFromPocket", "WebExtDismiss"];
+    const propOptions = ["ShowFile", "CopyDownloadLink", "GoToDownloadPage", "RemoveDownload", "Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket", "DeleteFromPocket", "ArchiveFromPocket", "WebExtDismiss"];
     const expectedActionData = {
       menu_action_remove_bookmark: FAKE_SITE.bookmarkGuid,
       menu_action_bookmark: {url: FAKE_SITE.url, title: FAKE_SITE.title, type: FAKE_SITE.type},
@@ -144,7 +191,11 @@ describe("<LinkMenu>", () => {
       menu_action_unpin: {site: {url: FAKE_SITE.url}},
       menu_action_save_to_pocket: {site: {url: FAKE_SITE.url, title: FAKE_SITE.title}},
       menu_action_delete_pocket: {pocket_id: "1234"},
-      menu_action_archive_pocket: {pocket_id: "1234"}
+      menu_action_archive_pocket: {pocket_id: "1234"},
+      menu_action_show_file_default: {url: FAKE_SITE.url},
+      menu_action_copy_download_link: {url: FAKE_SITE.url},
+      menu_action_go_to_download_page: {url: FAKE_SITE.url},
+      menu_action_remove_download: {url: FAKE_SITE.url}
     };
 
     const {options} = shallowWithIntl(<LinkMenu
@@ -153,6 +204,7 @@ describe("<LinkMenu>", () => {
       dispatch={dispatch}
       index={FAKE_INDEX}
       isPrivateBrowsingEnabled={true}
+      platform={"default"}
       options={propOptions}
       source={FAKE_SOURCE}
       shouldSendImpressionStats={true} />)

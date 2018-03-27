@@ -1,11 +1,19 @@
+import {combineReducers, createStore} from "redux";
+import {INITIAL_STATE, reducers} from "common/Reducers.jsm";
 import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
 import {Section, SectionIntl, _Sections as Sections} from "content-src/components/Sections/Sections";
 import {actionTypes as at} from "common/Actions.jsm";
 import {PlaceholderCard} from "content-src/components/Card/Card";
+import {Provider} from "react-redux";
 import React from "react";
 import {SectionMenu} from "content-src/components/SectionMenu/SectionMenu";
 import {shallow} from "enzyme";
 import {TopSites} from "content-src/components/TopSites/TopSites";
+
+function mountSectionWithProps(props) {
+  const store = createStore(combineReducers(reducers), INITIAL_STATE);
+  return mountWithIntl(<Provider store={store}><Section {...props} /></Provider>);
+}
 
 describe("<Sections>", () => {
   let wrapper;
@@ -67,24 +75,25 @@ describe("<Section>", () => {
         message: "Some message"
       }
     };
-
-    wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
+    wrapper = mountSectionWithProps(FAKE_SECTION);
   });
 
   describe("context menu", () => {
     it("should render a context menu button", () => {
-      wrapper = mountWithIntl(<Section {...FAKE_SECTION} />);
+      wrapper = mountSectionWithProps(FAKE_SECTION);
+
       assert.equal(wrapper.find(".section-top-bar .context-menu-button").length, 1);
     });
     it("should render a section menu when button is clicked", () => {
-      wrapper = mountWithIntl(<Section {...FAKE_SECTION} />);
+      wrapper = mountSectionWithProps(FAKE_SECTION);
+
       const button = wrapper.find(".section-top-bar .context-menu-button");
       assert.equal(wrapper.find(SectionMenu).length, 0);
       button.simulate("click", {preventDefault: () => {}});
       assert.equal(wrapper.find(SectionMenu).length, 1);
     });
     it("should not render a section menu by default", () => {
-      wrapper = mountWithIntl(<Section {...FAKE_SECTION} />);
+      wrapper = shallowWithIntl(<Section {...FAKE_SECTION} />);
       assert.equal(wrapper.find(SectionMenu).length, 0);
     });
   });
@@ -93,8 +102,8 @@ describe("<Section>", () => {
     const CARDS_PER_ROW = 3;
     const fakeSite = {link: "http://localhost"};
     function renderWithSites(rows) {
-      return shallowWithIntl(
-        <Section {...FAKE_SECTION} rows={rows} maxRows={2} />);
+      const store = createStore(combineReducers(reducers), INITIAL_STATE);
+      return mountWithIntl(<Provider store={store}><Section {...FAKE_SECTION} rows={rows} maxRows={2} /></Provider>);
     }
 
     it("should return 1 row of placeholders if realRows is 0", () => {
@@ -164,21 +173,21 @@ describe("<Section>", () => {
       };
     });
     it("should not render for empty topics", () => {
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      wrapper = mountSectionWithProps(TOP_STORIES_SECTION);
 
       assert.lengthOf(wrapper.find(".topic"), 0);
     });
     it("should render for non-empty topics", () => {
       TOP_STORIES_SECTION.topics = [{name: "topic1", url: "topic-url1"}];
 
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      wrapper = mountSectionWithProps(TOP_STORIES_SECTION);
 
       assert.lengthOf(wrapper.find(".topic"), 1);
     });
     it("should render for uninitialized topics", () => {
       delete TOP_STORIES_SECTION.topics;
 
-      wrapper = mountWithIntl(<Section {...TOP_STORIES_SECTION} />);
+      wrapper = mountSectionWithProps(TOP_STORIES_SECTION);
 
       assert.lengthOf(wrapper.find(".topic"), 1);
     });

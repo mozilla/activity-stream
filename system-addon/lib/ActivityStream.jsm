@@ -122,6 +122,10 @@ const PREFS_CONFIG = new Map([
     title: "Boolean flag that decides whether or not to show saved Pocket stories in highlights.",
     value: true
   }],
+  ["section.highlights.includeDownloads", {
+    title: "Boolean flag that decides whether or not to show saved recent Downloads in highlights.",
+    value: true
+  }],
   ["section.topstories.showDisclaimer", {
     title: "Boolean flag that decides whether or not to show the topstories disclaimer.",
     value: true
