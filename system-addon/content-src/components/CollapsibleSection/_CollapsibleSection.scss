@@ -5,7 +5,17 @@
   transition-property: background-color;
 
   .section-title {
+    font-size: $section-title-font-size;
+    font-weight: bold;
     margin: 0;
+    text-transform: uppercase;
+
+    span {
+      color: $text-secondary;
+      display: inline-block;
+      fill: $text-secondary;
+      vertical-align: middle;
+    }
 
     .click-target {
       cursor: pointer;
@@ -20,6 +30,8 @@
   }
 
   .section-top-bar {
+    height: 19px;
+    margin-bottom: 13px;
     position: relative;
 
     .context-menu-button {
@@ -27,7 +39,7 @@
       border: 0;
       cursor: pointer;
       fill: $grey-50;
-      height: $section-context-menu-button-height;
+      height: 100%;
       offset-inline-end: 0;
       opacity: 0;
       position: absolute;
