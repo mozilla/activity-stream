@@ -90,7 +90,10 @@ overrider.set({
         };
       }
     },
-    tm: {dispatchToMainThread: cb => cb()},
+    tm: {
+      dispatchToMainThread: cb => cb(),
+      idleDispatchToMainThread: cb => cb()
+    },
     eTLD: {
       getBaseDomain({spec}) { return spec.match(/\/([^/]+)/)[1]; },
       getPublicSuffix() {}
