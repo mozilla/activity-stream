@@ -207,6 +207,13 @@ describe("SectionsManager", () => {
 
       assert.calledOnce(SectionsManager.updateSections);
     });
+    it("should call initStorage on init", async () => {
+      sandbox.stub(SectionsManager, "initStorage").returns(Promise.resolve());
+
+      await SectionsManager.init();
+
+      assert.calledOnce(SectionsManager.initStorage);
+    });
   });
   describe("#_addCardTypeLinkMenuOptions", () => {
     const addCardTypeLinkMenuOptionsOrig = SectionsManager._addCardTypeLinkMenuOptions;
