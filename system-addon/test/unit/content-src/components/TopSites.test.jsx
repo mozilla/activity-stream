@@ -609,9 +609,15 @@ describe("<TopSiteForm>", () => {
     });
 
     it("should return true for an empty custom screenshot URL", () => {
-      wrapper.setState({customScreenshotURL: ""});
+      wrapper.setState({customScreenshotUrl: ""});
 
       assert.isTrue(wrapper.instance().validateForm());
+    });
+
+    it("should return false for file: protocol", () => {
+      wrapper.setState({customScreenshotUrl: "file:///C:/Users/foo"});
+
+      assert.isFalse(wrapper.instance().validateForm());
     });
   });
 
