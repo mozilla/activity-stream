@@ -79,35 +79,39 @@ a {
   justify-content: flex-start;
   margin: 0;
   padding: 15px 25px 0;
+}
 
-  button {
-    background-color: var(--newtab-button-secondary-color);
-    border: $border-primary;
-    border-radius: 4px;
-    color: inherit;
-    cursor: pointer;
-    margin-bottom: 15px;
-    padding: 10px 30px;
-    white-space: nowrap;
+// Default button (grey)
+.button,
+.actions button {
+  background-color: var(--newtab-button-secondary-color);
+  border: $border-primary;
+  border-radius: 4px;
+  color: inherit;
+  cursor: pointer;
+  margin-bottom: 15px;
+  padding: 10px 30px;
+  white-space: nowrap;
 
-    &:hover:not(.dismiss) {
-      box-shadow: $shadow-primary;
-      transition: box-shadow 150ms;
-    }
+  &:hover:not(.dismiss) {
+    box-shadow: $shadow-primary;
+    transition: box-shadow 150ms;
+  }
 
-    &.dismiss {
-      background-color: transparent;
-      border: 0;
-      padding: 0;
-      text-decoration: underline;
-    }
+  &.dismiss {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    text-decoration: underline;
+  }
 
-    &.done {
-      background-color: var(--newtab-button-primary-color);
-      border: solid 1px var(--newtab-button-primary-color);
-      color: $white;
-      margin-inline-start: auto;
-    }
+  // Blue button
+  &.primary,
+  &.done {
+    background-color: var(--newtab-button-primary-color);
+    border: solid 1px var(--newtab-button-primary-color);
+    color: $white;
+    margin-inline-start: auto;
   }
 }
 
@@ -128,3 +132,4 @@ a {
 @import '../components/Card/Card';
 @import '../components/ManualMigration/ManualMigration';
 @import '../components/CollapsibleSection/CollapsibleSection';
+@import '../components/MessageCenterAdmin/MessageCenterAdmin';

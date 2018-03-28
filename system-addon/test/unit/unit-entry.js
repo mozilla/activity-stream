@@ -112,6 +112,7 @@ const TEST_GLOBAL = {
       getStringPref() {},
       getIntPref() {},
       getBoolPref() {},
+      setBoolPref() {},
       getBranch() {},
       getDefaultBranch() {
         return {

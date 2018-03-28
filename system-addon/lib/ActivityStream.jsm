@@ -28,6 +28,7 @@ const {TopStoriesFeed} = ChromeUtils.import("resource://activity-stream/lib/TopS
 const {HighlightsFeed} = ChromeUtils.import("resource://activity-stream/lib/HighlightsFeed.jsm", {});
 const {ActivityStreamStorage} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 const {ThemeFeed} = ChromeUtils.import("resource://activity-stream/lib/ThemeFeed.jsm", {});
+const {MessageCenterFeed} = ChromeUtils.import("resource://activity-stream/lib/MessageCenterFeed.jsm", {});
 
 const DEFAULT_SITES = new Map([
   // This first item is the global list fallback for any unexpected geos
@@ -141,6 +142,10 @@ const PREFS_CONFIG = new Map([
   ["sectionOrder", {
     title: "The rendering order for the sections",
     value: "topsites,topstories,highlights"
+  }],
+  ["messageCenterExperimentEnabled", {
+    title: "Is the message center experiment on?",
+    value: false
   }]
 ]);
 
@@ -235,6 +240,12 @@ const FEEDS_DATA = [
   {
     name: "topsites",
     factory: () => new TopSitesFeed(),
+    title: "Queries places and gets metadata for Top Sites section",
+    value: true
+  },
+  {
+    name: "messagecenterfeed",
+    factory: () => new MessageCenterFeed(),
     title: "Queries places and gets metadata for Top Sites section",
     value: true
   }
