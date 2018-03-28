@@ -3,6 +3,7 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {FakePrefs, GlobalOverrider} from "test/unit/utils";
 import {insertPinned, TOP_SITES_DEFAULT_ROWS, TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
+import {getDefaultOptions} from "lib/ActivityStreamStorage.jsm";
 import injector from "inject!lib/TopSitesFeed.jsm";
 import {Screenshots} from "lib/Screenshots.jsm";
 
@@ -80,9 +81,15 @@ describe("Top Sites Feed", () => {
       "lib/FilterAdult.jsm": {filterAdult: filterAdultStub},
       "lib/Screenshots.jsm": {Screenshots: fakeScreenshot},
       "lib/TippyTopProvider.jsm": {TippyTopProvider: FakeTippyTopProvider},
-      "lib/ShortURL.jsm": {shortURL: shortURLStub}
+      "lib/ShortURL.jsm": {shortURL: shortURLStub},
+      "lib/ActivityStreamStorage.jsm": {ActivityStreamStorage: function Fake() {}, getDefaultOptions}
     }));
     feed = new TopSitesFeed();
+    feed._storage = {
+      init: sandbox.stub().returns(Promise.resolve()),
+      get: sandbox.stub().returns(Promise.resolve()),
+      set: sandbox.stub().returns(Promise.resolve())
+    };
     feed.store = {
       dispatch: sinon.spy(),
       getState() { return this.state; },
@@ -419,7 +426,7 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.BroadcastToContent({
         type: at.TOP_SITES_UPDATED,
-        data: []
+        data: {links: [], pref: {collapsed: false}}
       }));
     });
     it("should dispatch an action with the links returned", async () => {
@@ -428,7 +435,7 @@ describe("Top Sites Feed", () => {
 
       assert.calledOnce(feed.store.dispatch);
       assert.propertyVal(feed.store.dispatch.firstCall.args[0], "type", at.TOP_SITES_UPDATED);
-      assert.deepEqual(feed.store.dispatch.firstCall.args[0].data, reference);
+      assert.deepEqual(feed.store.dispatch.firstCall.args[0].data.links, reference);
     });
     it("should handle empty slots in the resulting top sites array", async () => {
       links = [FAKE_LINKS[0]];
@@ -443,7 +450,39 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.store.dispatch);
       assert.calledWithExactly(feed.store.dispatch, ac.AlsoToPreloaded({
         type: at.TOP_SITES_UPDATED,
-        data: []
+        data: {links: [], pref: {collapsed: false}}
+      }));
+    });
+    it("should not init storage if it is already initialized", async () => {
+      feed._storage.initialized = true;
+
+      await feed.refresh({broadcast: false});
+
+      assert.notCalled(feed._storage.init);
+    });
+    it("should call init storage if not initialized", async () => {
+      feed._storage.initialized = false;
+
+      await feed.refresh({broadcast: false});
+
+      assert.calledOnce(feed._storage.init);
+    });
+  });
+  describe("#updateSectionPrefs", () => {
+    it("should call updateSectionPrefs on UPDATE_SECTION_PREFS", () => {
+      sandbox.stub(feed, "updateSectionPrefs");
+
+      feed.onAction({type: at.UPDATE_SECTION_PREFS, data: {id: "topsites"}});
+
+      assert.calledOnce(feed.updateSectionPrefs);
+    });
+    it("should dispatch TOP_SITES_PREFS_UPDATED", async () => {
+      await feed.updateSectionPrefs({collapsed: true});
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWithExactly(feed.store.dispatch, ac.BroadcastToContent({
+        type: at.TOP_SITES_PREFS_UPDATED,
+        data: {pref: {collapsed: true}}
       }));
     });
   });
@@ -930,8 +969,8 @@ describe("Top Sites Feed", () => {
       await forDispatch({type: at.PLACES_LINK_BLOCKED});
 
       assert.calledTwice(feed.store.dispatch);
-      assert.equal(feed.store.dispatch.firstCall.args[0].data[0].url, url);
-      assert.equal(feed.store.dispatch.secondCall.args[0].data[0].url, FAKE_LINKS[0].url);
+      assert.equal(feed.store.dispatch.firstCall.args[0].data.links[0].url, url);
+      assert.equal(feed.store.dispatch.secondCall.args[0].data.links[0].url, FAKE_LINKS[0].url);
     });
   });
 });

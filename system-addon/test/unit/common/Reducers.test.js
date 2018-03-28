@@ -28,12 +28,22 @@ describe("Reducers", () => {
     });
     it("should add top sites on TOP_SITES_UPDATED", () => {
       const newRows = [{url: "foo.com"}, {url: "bar.com"}];
-      const nextState = TopSites(undefined, {type: at.TOP_SITES_UPDATED, data: newRows});
+      const nextState = TopSites(undefined, {type: at.TOP_SITES_UPDATED, data: {links: newRows}});
       assert.equal(nextState.rows, newRows);
     });
     it("should not update state for empty action.data on TOP_SITES_UPDATED", () => {
       const nextState = TopSites(undefined, {type: at.TOP_SITES_UPDATED});
       assert.equal(nextState, INITIAL_STATE.TopSites);
+    });
+    it("should initialize prefs on TOP_SITES_UPDATED", () => {
+      const nextState = TopSites(undefined, {type: at.TOP_SITES_UPDATED, data: {links: [], pref: "foo"}});
+
+      assert.equal(nextState.pref, "foo");
+    });
+    it("should pass prevState.prefs if not present in TOP_SITES_UPDATED", () => {
+      const nextState = TopSites({prefs: "foo"}, {type: at.TOP_SITES_UPDATED, data: {links: []}});
+
+      assert.equal(nextState.prefs, "foo");
     });
     it("should set editForm.site to action.data on TOP_SITES_EDIT", () => {
       const data = {index: 7};
@@ -148,6 +158,11 @@ describe("Reducers", () => {
     it("should not update state for empty action.data on PLACES_BOOKMARK_REMOVED", () => {
       const nextState = TopSites(undefined, {type: at.PLACES_BOOKMARK_REMOVED});
       assert.equal(nextState, INITIAL_STATE.TopSites);
+    });
+    it("should update prefs on TOP_SITES_PREFS_UPDATED", () => {
+      const state = TopSites({}, {type: at.TOP_SITES_PREFS_UPDATED, data: {pref: "foo"}});
+
+      assert.equal(state.pref, "foo");
     });
   });
   describe("Prefs", () => {
