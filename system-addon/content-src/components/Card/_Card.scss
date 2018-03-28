@@ -151,19 +151,20 @@
     display: flex;
     font-size: 11px;
     left: 0;
-    padding: 12px 16px 12px 14px;
+    padding: 9px 16px 9px 14px;
     position: absolute;
     right: 0;
   }
 
   .card-context-icon {
     fill: $fill-secondary;
+    height: 22px;
     margin-inline-end: 6px;
   }
 
   .card-context-label {
     flex-grow: 1;
-    line-height: $icon-size;
+    line-height: 22px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
