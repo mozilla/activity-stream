@@ -33,7 +33,8 @@ export class SentryProvider extends React.PureComponent {
 
   isRavenEnabled() {
     const prefs = this.props.Prefs;
-    if (prefs.initialized && prefs.telemetry) {
+    if (prefs.initialized && prefs.dataReportingUploadEnabled &&
+      prefs.telemetry) {
       return true;
     }
 

@@ -115,13 +115,12 @@ describe("<SentryProvider>", () => {
   });
 
   describe("#isRavenEnabled", () => {
-    // XXX add in data reporting pref check
-
     const PrefsTable = [
-      {initialized: true, telemetry: true, expected: true},
-      {initialized: false, telemetry: false, expected: false},
-      {initialized: true, telemetry: false, expected: false},
-      {initialized: false, telemetry: true, expected: false}
+      {initialized: true, telemetry: true, dataReportingUploadEnabled: true, expected: true},
+      {initialized: false, telemetry: false, dataReportingUploadEnabled: false, expected: false},
+      {initialized: false, telemetry: true, dataReportingUploadEnabled: true, expected: false},
+      {initialized: true, telemetry: false, dataReportingUploadEnabled: true, expected: false},
+      {initialized: true, telemetry: true, dataReportingUploadEnabled: false, expected: false}
     ];
 
     PrefsTable.forEach(Prefs => {
