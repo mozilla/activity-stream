@@ -695,11 +695,11 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.refresh);
       assert.calledWithExactly(feed.refresh, {broadcast: true});
     });
-    it("should call refresh on PLACES_LINKS_DELETED action", async () => {
+    it("should call refresh on PLACES_LINKS_CHANGED action", async () => {
       sinon.stub(feed, "refresh");
-      await feed.onAction({type: at.PLACES_LINKS_DELETED});
+      await feed.onAction({type: at.PLACES_LINKS_CHANGED});
       assert.calledOnce(feed.refresh);
-      assert.calledWithExactly(feed.refresh, {broadcast: true});
+      assert.calledWithExactly(feed.refresh, {broadcast: false});
     });
     it("should call pin with correct args on TOP_SITES_INSERT without an index specified", () => {
       const addAction = {

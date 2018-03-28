@@ -168,6 +168,12 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
         return site;
       });
       return Object.assign({}, prevState, {rows: newRows});
+    case at.PLACES_LINK_DELETED:
+      if (!action.data) {
+        return prevState;
+      }
+      newRows = prevState.rows.filter(site => action.data.url !== site.url);
+      return Object.assign({}, prevState, {rows: newRows});
     default:
       return prevState;
   }
@@ -336,10 +342,11 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
           return item;
         })
       }));
-    case at.PLACES_LINKS_DELETED:
-      return prevState.map(section => Object.assign({}, section,
-        {rows: section.rows.filter(site => !action.data.includes(site.url))}));
+    case at.PLACES_LINK_DELETED:
     case at.PLACES_LINK_BLOCKED:
+      if (!action.data) {
+        return prevState;
+      }
       return prevState.map(section =>
         Object.assign({}, section, {rows: section.rows.filter(site => site.url !== action.data.url)}));
     case at.DELETE_FROM_POCKET:

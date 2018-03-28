@@ -60,7 +60,10 @@ const TEST_GLOBAL = {
       removeObserver() {}
     }
   },
-  Ci: {nsIHttpChannel: {REFERRER_POLICY_UNSAFE_URL: 5}},
+  Ci: {
+    nsIHttpChannel: {REFERRER_POLICY_UNSAFE_URL: 5},
+    nsITimer: {TYPE_ONE_SHOT: 1}
+  },
   Cu: {
     importGlobalProperties() {},
     now: () => window.performance.now(),

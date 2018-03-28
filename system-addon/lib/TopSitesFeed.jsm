@@ -380,9 +380,12 @@ this.TopSitesFeed = class TopSitesFeed {
       // All these actions mean we need new top sites
       case at.MIGRATION_COMPLETED:
       case at.PLACES_HISTORY_CLEARED:
-      case at.PLACES_LINKS_DELETED:
         this.frecentCache.expire();
         this.refresh({broadcast: true});
+        break;
+      case at.PLACES_LINKS_CHANGED:
+        this.frecentCache.expire();
+        this.refresh({broadcast: false});
         break;
       case at.PLACES_LINK_BLOCKED:
         this.frecentCache.expire();
