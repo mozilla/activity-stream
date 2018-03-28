@@ -16,25 +16,21 @@ describe("ActivityStreamStorage", () => {
   afterEach(() => {
     sandbox.restore();
   });
-  it("should throw an error if you try to use it without init", () => {
-    assert.throws(() => storage.db);
-  });
-  it("should not throw an error if you called init", async () => {
-    await storage.init();
+  it("should not throw an error when accessing db", async () => {
     assert.ok(storage.db);
   });
-  it("should revert key value parameters for put", () => {
+  it("should revert key value parameters for put", async () => {
     const stub = sandbox.stub();
-    sandbox.stub(storage, "getStore").returns({put: stub});
+    sandbox.stub(storage, "getStore").resolves({put: stub});
 
-    storage.set("key", "value");
+    await storage.set("key", "value");
 
     assert.calledOnce(stub);
     assert.calledWith(stub, "value", "key");
   });
   it("should create a db with the correct store name", async () => {
     const dbStub = {createObjectStore: sandbox.stub(), objectStoreNames: {contains: sandbox.stub().returns(false)}};
-    await storage.init();
+    await storage.db;
 
     // call the cb with a stub
     indexedDB.open.args[0][2](dbStub);
@@ -45,7 +41,7 @@ describe("ActivityStreamStorage", () => {
   it("should handle an array of object store names", async () => {
     storage = new ActivityStreamStorage(["store1", "store2"]);
     const dbStub = {createObjectStore: sandbox.stub(), objectStoreNames: {contains: sandbox.stub().returns(false)}};
-    await storage.init();
+    await storage.db;
 
     // call the cb with a stub
     indexedDB.open.args[0][2](dbStub);
@@ -57,20 +53,11 @@ describe("ActivityStreamStorage", () => {
   it("should skip creating existing stores", async () => {
     storage = new ActivityStreamStorage(["store1", "store2"]);
     const dbStub = {createObjectStore: sandbox.stub(), objectStoreNames: {contains: sandbox.stub().returns(true)}};
-    await storage.init();
+    await storage.db;
 
     // call the cb with a stub
     indexedDB.open.args[0][2](dbStub);
 
     assert.notCalled(dbStub.createObjectStore);
-  });
-  it("should be initialized after calling init", async () => {
-    const dbStub = {createObjectStore: sandbox.stub(), objectStoreNames: {contains: sandbox.stub().returns(false)}};
-    await storage.init();
-
-    // call the cb with a stub
-    indexedDB.open.args[0][2](dbStub);
-
-    assert.isTrue(storage.intialized);
   });
 });

@@ -9,35 +9,26 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
     this.dbName = "ActivityStream";
     this.dbVersion = 3;
     this.storeName = storeName;
-
-    this._db = null;
   }
 
   get db() {
-    if (!this._db) {
-      throw new Error("It looks like the db connection has not initialized yet. Are you use .init was called?");
-    }
-    return this._db;
+    return this._db || (this._db = this._openDatabase());
   }
 
-  get intialized() {
-    return this._db !== null;
+  async getStore() {
+    return (await this.db).objectStore(this.storeName, "readwrite");
   }
 
-  getStore() {
-    return this.db.objectStore(this.storeName, "readwrite");
+  async get(key) {
+    return (await this.getStore()).get(key);
   }
 
-  get(key) {
-    return this.getStore().get(key);
+  async getAll() {
+    return (await this.getStore()).getAll();
   }
 
-  getAll() {
-    return this.getStore().getAll();
-  }
-
-  set(key, value) {
-    return this.getStore().put(value, key);
+  async set(key, value) {
+    return (await this.getStore()).put(value, key);
   }
 
   _openDatabase() {
@@ -54,10 +45,6 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
         db.createObjectStore(this.storeName);
       }
     });
-  }
-
-  async init() {
-    this._db = await this._openDatabase();
   }
 };
 

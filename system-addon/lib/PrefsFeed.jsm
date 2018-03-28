@@ -88,7 +88,7 @@ this.PrefsFeed = class PrefsFeed {
     }
   }
 
-  async init() {
+  init() {
     this._prefs.observeBranch(this);
 
     // Get the initial value of each activity stream pref
@@ -103,10 +103,7 @@ this.PrefsFeed = class PrefsFeed {
     // Set the initial state of all prefs in redux
     this.store.dispatch(ac.BroadcastToContent({type: at.PREFS_INITIAL_VALUES, data: values}));
 
-    if (!this._storage.intialized) {
-      await this._storage.init();
-      this._migratePrefs();
-    }
+    this._migratePrefs();
     this._setPrerenderPref();
     this._initOnboardingPref();
   }

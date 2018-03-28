@@ -460,13 +460,6 @@ describe("Top Sites Feed", () => {
 
       assert.notCalled(feed._storage.init);
     });
-    it("should call init storage if not initialized", async () => {
-      feed._storage.initialized = false;
-
-      await feed.refresh({broadcast: false});
-
-      assert.calledOnce(feed._storage.init);
-    });
   });
   describe("#updateSectionPrefs", () => {
     it("should call updateSectionPrefs on UPDATE_SECTION_PREFS", () => {

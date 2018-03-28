@@ -167,11 +167,8 @@ this.TopSitesFeed = class TopSitesFeed {
     const links = await this.getLinksWithDefaults();
     const newAction = {type: at.TOP_SITES_UPDATED, data: {links}};
 
-    if (!this._storage.initialized) {
-      await this._storage.init();
-      const storedPrefs = await this._storage.get(SECTION_ID) || {};
-      newAction.data.pref = getDefaultOptions(storedPrefs);
-    }
+    const storedPrefs = await this._storage.get(SECTION_ID) || {};
+    newAction.data.pref = getDefaultOptions(storedPrefs);
 
     if (options.broadcast) {
       // Broadcast an update to all open content pages

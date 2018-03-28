@@ -81,7 +81,7 @@ const SectionsManager = {
   initialized: false,
   sections: new Map(),
   async init(prefs = {}) {
-    await this.initStorage();
+    this._storage = new ActivityStreamStorage("sectionPrefs");
 
     for (const feedPrefName of Object.keys(BUILT_IN_SECTIONS)) {
       const optionsPrefName = `${feedPrefName}.options`;
@@ -103,10 +103,6 @@ const SectionsManager = {
 
     this.initialized = true;
     this.emit(this.INIT);
-  },
-  initStorage() {
-    this._storage = new ActivityStreamStorage("sectionPrefs");
-    return this._storage.init();
   },
   observe(subject, topic, data) {
     switch (topic) {

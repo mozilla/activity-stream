@@ -26,7 +26,6 @@ describe("ActivityStream", () => {
       "lib/TopSitesFeed.jsm": {TopSitesFeed: Fake},
       "lib/TopStoriesFeed.jsm": {TopStoriesFeed: Fake},
       "lib/HighlightsFeed.jsm": {HighlightsFeed: Fake},
-      "lib/ActivityStreamStorage.jsm": {ActivityStreamStorage: Fake},
       "lib/ThemeFeed.jsm": {ThemeFeed: Fake},
       "lib/MessageCenterFeed.jsm": {MessageCenterFeed: Fake}
     }));
@@ -35,7 +34,7 @@ describe("ActivityStream", () => {
     sandbox.stub(as.store, "uninit");
     sandbox.stub(as._defaultPrefs, "init");
     sandbox.stub(as._defaultPrefs, "reset");
-    as._storage = {init: sandbox.stub()};
+    sandbox.stub(as._storage, "_openDatabase");
   });
 
   afterEach(() => sandbox.restore());
@@ -59,14 +58,14 @@ describe("ActivityStream", () => {
     it("should call .store.init", () => {
       assert.calledOnce(as.store.init);
     });
-    it("should call storage init", () => {
-      assert.calledOnce(as._storage.init);
+    it("should cause storage to open database", () => {
+      assert.calledOnce(as._storage._openDatabase);
     });
     it("should pass to Store an INIT event with the right version", () => {
       as = new ActivityStream({version: "1.2.3"});
       sandbox.stub(as.store, "init");
       sandbox.stub(as._defaultPrefs, "init");
-      as._storage = {init: sandbox.stub()};
+      sandbox.stub(as._storage, "_openDatabase");
 
       as.init();
 
