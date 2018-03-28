@@ -13,8 +13,12 @@ describe("<SentryProvider>", () => {
     ravenConfigRetval = {install: sinon.spy()};
     fakeRaven = {config: sinon.stub().returns(ravenConfigRetval)};
 
-    let Prefs = {initialized: true, telemetry: true};
-    DEFAULT_PROPS = {fakeRaven, Prefs};
+    DEFAULT_PROPS = {
+      fakeRaven,
+      dataReportingUploadEnabled: false,
+      initialized: false,
+      telemetry: false
+    };
   });
 
   afterEach(() => {
@@ -61,33 +65,33 @@ describe("<SentryProvider>", () => {
         "maybeInitializeRaven");
     });
 
-    it("should call #maybeInitializeRaven when prefs.initialized changes to true", () => {
-      let wrapper = shallow(<SentryProvider Prefs={{initialized: false}}fakeRaven={fakeRaven} />,
+    it("should call #maybeInitializeRaven when initialized changes to true", () => {
+      const wrapper = shallow(
+        <SentryProvider initialized={false} fakeRaven={fakeRaven} />,
         {disableLifecycleMethods: true});
 
-      wrapper.instance().componentWillReceiveProps(
-        {Prefs: {initialized: true}});
+      wrapper.instance().componentWillReceiveProps({initialized: true});
 
       assert.calledOnce(mIRSpy);
       assert.calledWithExactly(mIRSpy);
     });
 
     it("should not call #maybeInitializeRaven when prefs.initialized stays true", () => {
-      let wrapper = shallow(<SentryProvider Prefs={{initialized: true}} fakeRaven={fakeRaven} />,
+      const wrapper = shallow(
+        <SentryProvider initialized={true} fakeRaven={fakeRaven} />,
         {disableLifecycleMethods: true});
 
-      wrapper.instance().componentWillReceiveProps(
-        {Prefs: {initialized: true}});
+      wrapper.instance().componentWillReceiveProps({initialized: true});
 
       assert.notCalled(mIRSpy);
     });
 
     it("should not call #maybeInitializeRaven when prefs.initialized is false", () => {
-      let wrapper = shallow(<SentryProvider Prefs={{initialized: true}} fakeRaven={fakeRaven} />,
+      const wrapper = shallow(
+        <SentryProvider initialized={true} fakeRaven={fakeRaven} />,
         {disableLifecycleMethods: true});
 
-      wrapper.instance().componentWillReceiveProps(
-        {Prefs: {initialized: false}});
+      wrapper.instance().componentWillReceiveProps({initialized: false});
 
       assert.notCalled(mIRSpy);
     });
@@ -114,7 +118,7 @@ describe("<SentryProvider>", () => {
     });
   });
 
-  describe("#isRavenEnabled", () => {
+  describe("#isRavenPrefEnabled", () => {
     const PrefsTable = [
       {initialized: true, telemetry: true, dataReportingUploadEnabled: true, expected: true},
       {initialized: false, telemetry: false, dataReportingUploadEnabled: false, expected: false},
@@ -124,21 +128,21 @@ describe("<SentryProvider>", () => {
     ];
 
     PrefsTable.forEach(Prefs => {
-      it(`should return ${Prefs.expected} if prefs.initialized==${Prefs.initialized} && prefs.telemetry=${Prefs.telemetry}`, () => {
-        let PROPS = Object.assign({}, DEFAULT_PROPS, {Prefs});
+      it(`should return ${Prefs.expected} if props.initialized===${Prefs.initialized} && props.telemetry===${Prefs.telemetry} && props.dataReportingUploadEnabled===${Prefs.dataReportingUploadEnabled}`, () => {
+        let PROPS = Object.assign({}, DEFAULT_PROPS, Prefs);
         const wrapper =
-          shallow(<SentryProvider Prefs={Prefs} {...PROPS} />);
+          shallow(<SentryProvider {...Prefs} {...PROPS} />);
 
-        const isEnabled = wrapper.instance().isRavenEnabled();
+        const isEnabled = wrapper.instance().isRavenPrefEnabled();
 
-        assert.equal(Prefs.expected, isEnabled);
+        assert.strictEqual(Prefs.expected, isEnabled);
       });
     });
   });
 
   describe("#maybeInitializeRaven", () => {
-    it("should call #initializeRaven if #isRavenEnabled returns true", () => {
-      sandbox.stub(SentryProvider.prototype, "isRavenEnabled").returns(true);
+    it("should call #initializeRaven if #isRavenPrefEnabled returns true", () => {
+      sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(true);
       const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
 
       const wrapper = shallow(
@@ -152,8 +156,8 @@ describe("<SentryProvider>", () => {
       assert.calledWithExactly(iRSpy);
     });
 
-    it("should not call #initializeRaven if #isRavenEnabled() is false", () => {
-      sandbox.stub(SentryProvider.prototype, "isRavenEnabled").returns(false);
+    it("should not call #initializeRaven if #isRavenPrefEnabled() is false", () => {
+      sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(false);
       const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
 
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS}>

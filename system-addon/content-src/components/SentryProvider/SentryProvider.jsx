@@ -18,23 +18,23 @@ export class SentryProvider extends React.PureComponent {
   }
 
   maybeInitializeRaven() {
-    if (this.isRavenEnabled()) {
+    if (this.isRavenPrefEnabled()) {
       this.initializeRaven();
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.Prefs.initialized || this.props.Prefs.initialized) {
+    if (!nextProps.initialized || this.props.initialized) {
       return;
     }
 
     this.maybeInitializeRaven();
   }
 
-  isRavenEnabled() {
-    const prefs = this.props.Prefs;
-    if (prefs.initialized && prefs.dataReportingUploadEnabled &&
-      prefs.telemetry) {
+  isRavenPrefEnabled() {
+    const {props} = this;
+    if (props.initialized && props.dataReportingUploadEnabled &&
+      props.telemetry) {
       return true;
     }
 
