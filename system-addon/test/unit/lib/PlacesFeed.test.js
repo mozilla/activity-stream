@@ -32,29 +32,12 @@ describe("PlacesFeed", () => {
         addPocketEntry: sandbox.spy(() => Promise.resolve())
       }
     });
-    globals.set("PlacesUtils", {
-      history: {
-        addObserver: sandbox.spy(),
-        removeObserver: sandbox.spy(),
-        insert: sandbox.stub()
-      },
-      bookmarks: {
-        TYPE_BOOKMARK,
-        addObserver: sandbox.spy(),
-        removeObserver: sandbox.spy(),
-        SOURCES
-      }
-    });
-    global.Cc["@mozilla.org/browser/nav-history-service;1"] = {
-      getService() {
-        return global.PlacesUtils.history;
-      }
-    };
-    global.Cc["@mozilla.org/browser/nav-bookmarks-service;1"] = {
-      getService() {
-        return global.PlacesUtils.bookmarks;
-      }
-    };
+    sandbox.stub(global.PlacesUtils.bookmarks, "TYPE_BOOKMARK").value(TYPE_BOOKMARK);
+    sandbox.stub(global.PlacesUtils.bookmarks, "SOURCES").value(SOURCES);
+    sandbox.spy(global.PlacesUtils.bookmarks, "addObserver");
+    sandbox.spy(global.PlacesUtils.bookmarks, "removeObserver");
+    sandbox.spy(global.PlacesUtils.history, "addObserver");
+    sandbox.spy(global.PlacesUtils.history, "removeObserver");
     sandbox.spy(global.Services.obs, "addObserver");
     sandbox.spy(global.Services.obs, "removeObserver");
     sandbox.spy(global.Cu, "reportError");

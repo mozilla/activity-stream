@@ -23,9 +23,8 @@ sinon.assert.expose(assert, {prefix: ""});
 
 chai.use(chaiAssertions);
 
-let overrider = new GlobalOverrider();
-
-overrider.set({
+const overrider = new GlobalOverrider();
+const TEST_GLOBAL = {
   AddonManager: {
     getActiveAddons() {
       return Promise.resolve({addons: [], fullData: false});
@@ -39,7 +38,28 @@ overrider.set({
   Components: {isSuccessCode: () => true},
   // eslint-disable-next-line object-shorthand
   ContentSearchUIController: function() {}, // NB: This is a function/constructor
-  Cc: {},
+  Cc: {
+    "@mozilla.org/browser/nav-bookmarks-service;1": {
+      addObserver() {},
+      getService() {
+        return this;
+      },
+      removeObserver() {},
+      SOURCES: {},
+      TYPE_BOOKMARK: {}
+    },
+    "@mozilla.org/browser/nav-history-service;1": {
+      addObserver() {},
+      executeQuery() {},
+      getNewQuery() {},
+      getNewQueryOptions() {},
+      getService() {
+        return this;
+      },
+      insert() {},
+      removeObserver() {}
+    }
+  },
   Ci: {nsIHttpChannel: {REFERRER_POLICY_UNSAFE_URL: 5}},
   Cu: {
     importGlobalProperties() {},
@@ -50,6 +70,14 @@ overrider.set({
   fetch() {},
   // eslint-disable-next-line object-shorthand
   Image: function() {}, // NB: This is a function/constructor
+  PlacesUtils: {
+    get bookmarks() {
+      return TEST_GLOBAL.Cc["@mozilla.org/browser/nav-bookmarks-service;1"];
+    },
+    get history() {
+      return TEST_GLOBAL.Cc["@mozilla.org/browser/nav-history-service;1"];
+    }
+  },
   PluralForm: {get() {}},
   Preferences: FakePrefs,
   Services: {
@@ -129,7 +157,8 @@ overrider.set({
   },
   EventEmitter,
   ShellService: {isDefaultBrowser: () => true}
-});
+};
+overrider.set(TEST_GLOBAL);
 
 describe("activity-stream", () => {
   after(() => overrider.restore());
