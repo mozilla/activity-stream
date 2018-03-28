@@ -86,6 +86,7 @@ export class BaseContent extends React.PureComponent {
     this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
   }
 
+  // XXX turn me into a functional component?
   render() {
     const {props} = this;
     const {App, Theme} = props;
