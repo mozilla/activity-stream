@@ -279,7 +279,11 @@ this.ActivityStream = class ActivityStream {
     try {
       this._updateDynamicPrefs();
       this._defaultPrefs.init();
-      this._storage.init();
+
+      // Accessing the db causes the object stores to be created / migrated.
+      // This needs to happen before other instances try to access the db, which
+      // would update only a subset of the stores to the latest version.
+      this._storage.db; // eslint-disable-line no-unused-expressions
 
       // Hook up the store and let all feeds and pages initialize
       this.store.init(this.feeds, ac.BroadcastToContent({

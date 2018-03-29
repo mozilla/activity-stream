@@ -169,7 +169,6 @@ this.SnippetsFeed = class SnippetsFeed {
   }
 
   async init() {
-    await this._storage.init();
     this._previousSessionEnd = await this._storage.get("previousSessionEnd");
     await this._refresh();
     Services.prefs.addObserver(ONBOARDING_FINISHED_PREF, this._refresh);
