@@ -103,13 +103,15 @@ this.TopSitesFeed = class TopSitesFeed {
       // Copy all properties from a frecent link and add more
       const finder = other => other.url === link.url;
 
+      // Remove frecent link's screenshot if pinned link has a custom one
       const frecentSite = frecent.find(finder);
+      if (frecentSite && link.customScreenshotURL) {
+        delete frecentSite.screenshot;
+      }
       // If the link is a frecent site, do not copy over 'isDefault', else check
       // if the site is a default site
       const copy = Object.assign({}, frecentSite ||
-        {isDefault: !!notBlockedDefaultSites.find(finder)}, link, {hostname: shortURL(link)},
-        // If the pinned site has a customScreenshotURL the frecent screenshot will be incorrect
-        (frecentSite && !link.screenshot) && {screenshot: link.customScreenshotURL ? undefined : frecentSite.screenshot});
+        {isDefault: !!notBlockedDefaultSites.find(finder)}, link, {hostname: shortURL(link)});
 
       // Add in favicons if we don't already have it
       if (!copy.favicon) {
