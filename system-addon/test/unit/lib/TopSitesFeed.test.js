@@ -298,6 +298,38 @@ describe("Top Sites Feed", () => {
         const internal = Object.keys(result[0]).filter(key => key.startsWith("__"));
         assert.equal(internal.join(""), "");
       });
+      it("should copy the screenshot of the frecent site if pinned site doesn't have customScreenshotURL", async () => {
+        links = [{url: "https://foo.com/", screenshot: "screenshot"}];
+        fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/"}];
+
+        const result = await feed.getLinksWithDefaults();
+
+        assert.equal(result[0].screenshot, links[0].screenshot);
+      });
+      it("should not copy the frecent screenshot if customScreenshotURL is set", async () => {
+        links = [{url: "https://foo.com/", screenshot: "screenshot"}];
+        fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/", customScreenshotURL: "custom"}];
+
+        const result = await feed.getLinksWithDefaults();
+
+        assert.isUndefined(result[0].screenshot);
+      });
+      it("should keep the same screenshot if no frecent site is found", async () => {
+        links = [];
+        fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/", screenshot: "custom"}];
+
+        const result = await feed.getLinksWithDefaults();
+
+        assert.equal(result[0].screenshot, "custom");
+      });
+      it("should not overwrite pinned site screenshot", async () => {
+        links = [{url: "https://foo.com/", screenshot: "foo"}];
+        fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/", screenshot: "bar"}];
+
+        const result = await feed.getLinksWithDefaults();
+
+        assert.equal(result[0].screenshot, "bar");
+      });
       describe("concurrency", () => {
         let resolvers;
         beforeEach(() => {

@@ -81,7 +81,7 @@ this.TopSitesFeed = class TopSitesFeed {
     }, []));
   }
 
-  async getLinksWithDefaults(action) {
+  async getLinksWithDefaults() {
     // Get at least 2 rows so toggling between 1 and 2 rows has sites
     const numItems = Math.max(this.store.getState().Prefs.values.topSitesRows, 2) * TOP_SITES_MAX_SITES_PER_ROW;
     const frecent = (await this.frecentCache.request({
@@ -103,9 +103,14 @@ this.TopSitesFeed = class TopSitesFeed {
       // Copy all properties from a frecent link and add more
       const finder = other => other.url === link.url;
 
+      // Remove frecent link's screenshot if pinned link has a custom one
+      const frecentSite = frecent.find(finder);
+      if (frecentSite && link.customScreenshotURL) {
+        delete frecentSite.screenshot;
+      }
       // If the link is a frecent site, do not copy over 'isDefault', else check
       // if the site is a default site
-      const copy = Object.assign({}, frecent.find(finder) ||
+      const copy = Object.assign({}, frecentSite ||
         {isDefault: !!notBlockedDefaultSites.find(finder)}, link, {hostname: shortURL(link)});
 
       // Add in favicons if we don't already have it
