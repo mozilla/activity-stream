@@ -21,7 +21,7 @@ const BUILT_IN_SECTIONS = {
     id: "topstories",
     pref: {
       titleString: {id: "header_recommended_by", values: {provider: options.provider_name}},
-      descString: {id: options.provider_description || "prefs_topstories_description"},
+      descString: {id: "prefs_topstories_description2"},
       nestedPrefs: options.show_spocs ? [{
         name: "showSponsored",
         titleString: {id: "prefs_topstories_show_sponsored_label", values: {provider: options.provider_name}},
@@ -33,15 +33,14 @@ const BUILT_IN_SECTIONS = {
     icon: options.provider_icon,
     title: {id: "header_recommended_by", values: {provider: options.provider_name}},
     disclaimer: {
-      text: {id: options.disclaimer_text || "section_disclaimer_topstories"},
+      text: {id: "section_disclaimer_topstories"},
       link: {
-        // The href fallback is temporary so users in existing Shield studies get this configuration as well
-        href: options.disclaimer_link || "https://getpocket.cdn.mozilla.net/firefox/new_tab_learn_more",
-        id: options.disclaimer_linktext || "section_disclaimer_topstories_linktext"
+        href: "https://getpocket.com/firefox/new_tab_learn_more",
+        id: "section_disclaimer_topstories_linktext"
       },
-      button: {id: options.disclaimer_buttontext || "section_disclaimer_topstories_buttontext"}
+      button: {id: "section_disclaimer_topstories_buttontext"}
     },
-    privacyNoticeURL: options.privacy_notice_link || "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
+    privacyNoticeURL: "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
     maxRows: 1,
     availableLinkMenuOptions: ["CheckBookmarkOrArchive", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
     emptyState: {
