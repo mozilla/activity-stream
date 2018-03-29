@@ -2,7 +2,6 @@
 import {FaviconFeed, fetchIconFromRedirects} from "lib/FaviconFeed.jsm";
 import {actionTypes as at} from "common/Actions.jsm";
 import {GlobalOverrider} from "test/unit/utils";
-import {resetMD5Hasher} from "lib/Utils.jsm";
 
 const FAKE_ENDPOINT = "https://foo.com/";
 
@@ -12,8 +11,6 @@ describe("FaviconFeed", () => {
   let sandbox;
   let clock;
   let siteIconsPref;
-  let hashStub;
-  let hashValue = "somehashvalue==";
 
   beforeEach(() => {
     clock = sinon.useFakeTimers();
@@ -49,17 +46,6 @@ describe("FaviconFeed", () => {
         "image_url": "https://iconserver.com/gmail.png"
       }])
     });
-    resetMD5Hasher();
-    hashStub = {
-      finish: sinon.stub().callsFake(() => hashValue),
-      init: sinon.stub(),
-      update: sinon.stub()
-    };
-    global.Cc["@mozilla.org/security/hash;1"] = {
-      createInstance() {
-        return hashStub;
-      }
-    };
 
     feed = new FaviconFeed();
     feed.store = {
@@ -275,7 +261,6 @@ describe("FaviconFeed", () => {
       sandbox.spy(global.Services.tm, "idleDispatchToMainThread");
 
       await feed.fetchIcon("https://example.com");
-      hashValue = "anotherhashvalue==";
       await feed.fetchIcon("https://another.example.com");
 
       assert.calledTwice(global.Services.tm.idleDispatchToMainThread);

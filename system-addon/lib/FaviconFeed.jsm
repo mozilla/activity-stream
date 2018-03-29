@@ -10,7 +10,6 @@ Cu.importGlobalProperties(["fetch", "URL"]);
 const {actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {PersistentCache} = ChromeUtils.import("resource://activity-stream/lib/PersistentCache.jsm", {});
 const {getDomain} = ChromeUtils.import("resource://activity-stream/lib/TippyTopProvider.jsm", {});
-const {md5Hash} = ChromeUtils.import("resource://activity-stream/lib/Utils.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "PlacesUtils",
   "resource://gre/modules/PlacesUtils.jsm");
@@ -224,11 +223,9 @@ this.FaviconFeed = class FaviconFeed {
       return;
     }
 
-    let fetchedByTippyTop = false;
     const sitesByDomain = await this.getSitesByDomain();
     const domain = getDomain(url);
     if (domain in sitesByDomain) {
-      fetchedByTippyTop = true;
       let iconUri = Services.io.newURI(sitesByDomain[domain].image_url);
       // The #tippytop is to be able to identify them for telemetry.
       iconUri = iconUri.mutate().setRef("tippytop").finalize();
@@ -240,14 +237,12 @@ this.FaviconFeed = class FaviconFeed {
         null,
         Services.scriptSecurityManager.getSystemPrincipal()
       );
+      return;
     }
 
-    if (!fetchedByTippyTop) {
-      const md5 = md5Hash(url);
-      if (!this._queryForRedirects.has(md5)) {
-        this._queryForRedirects.add(md5);
-        Services.tm.idleDispatchToMainThread(() => fetchIconFromRedirects(url));
-      }
+    if (!this._queryForRedirects.has(url)) {
+      this._queryForRedirects.add(url);
+      Services.tm.idleDispatchToMainThread(() => fetchIconFromRedirects(url));
     }
   }
 
