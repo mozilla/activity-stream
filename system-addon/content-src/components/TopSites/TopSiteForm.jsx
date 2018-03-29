@@ -133,17 +133,14 @@ export class TopSiteForm extends React.PureComponent {
 
   validateUrl(url) {
     const validProtocols = ["http:", "https:"];
-    const urlObj = this._tryParseUrl(url) || this._tryParseUrl(`https://${url}`);
+    const urlObj = this._tryParseUrl(url) || this._tryParseUrl(this.cleanUrl(url));
 
     return urlObj && validProtocols.includes(urlObj.protocol);
   }
 
   validateCustomScreenshotUrl() {
-    const invalidProtocols = ["file:"];
     const {customScreenshotUrl} = this.state;
-
-    return !customScreenshotUrl ||
-      (this.validateUrl(customScreenshotUrl) && !invalidProtocols.some(p => customScreenshotUrl.startsWith(p)));
+    return !customScreenshotUrl || this.validateUrl(customScreenshotUrl);
   }
 
   validateForm() {
