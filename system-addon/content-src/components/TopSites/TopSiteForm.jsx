@@ -123,12 +123,19 @@ export class TopSiteForm extends React.PureComponent {
     return url;
   }
 
-  validateUrl(url) {
+  _tryParseUrl(url) {
     try {
-      return !!new URL(this.cleanUrl(url));
+      return new URL(url);
     } catch (e) {
       return false;
     }
+  }
+
+  validateUrl(url) {
+    const validProtocols = ["http:", "https:"];
+    const urlObj = this._tryParseUrl(url) || this._tryParseUrl(`https://${url}`);
+
+    return urlObj && validProtocols.includes(urlObj.protocol);
   }
 
   validateCustomScreenshotUrl() {
