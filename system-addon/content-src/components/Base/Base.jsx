@@ -94,7 +94,12 @@ export class BaseContent extends React.PureComponent {
 
     const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
 
-    const outerClassName = `outer-wrapper ${Theme.className}${shouldBeFixedToTop ? " fixed-to-top" : ""} ${prefs.enableWideLayout ? "wide-layout-enabled" : "wide-layout-disabled"}`;
+    const outerClassName = [
+      "outer-wrapper",
+      Theme.className,
+      shouldBeFixedToTop && "fixed-to-top",
+      prefs.enableWideLayout ? "wide-layout-enabled" : "wide-layout-disabled"
+    ].filter(v => v).join(" ");
 
     return (
         <div className={outerClassName}>

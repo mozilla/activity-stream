@@ -109,7 +109,7 @@
     }
 
     button {
-      background: transparent;
+      background: var(--newtab-button-secondary-color);
       border: 1px solid $grey-40;
       border-radius: 4px;
       cursor: pointer;
