@@ -2,7 +2,7 @@ import {mount, shallow} from "enzyme";
 import React from "react";
 import {SentryProvider} from "content-src/components/SentryProvider/SentryProvider";
 
-describe.only("<SentryProvider>", () => {
+describe("<SentryProvider>", () => {
   let DEFAULT_PROPS;
   let fakeRaven;
   let ravenConfigRetval;

@@ -9,6 +9,7 @@ import {PrerenderData} from "common/PrerenderData.jsm";
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
 import {Sections} from "content-src/components/Sections/Sections";
+import {SentryProvider} from "content-src/components/SentryProvider/SentryProvider";
 
 const PrefsButton = injectIntl(props => (
   <div className="prefs-button">
@@ -56,7 +57,7 @@ export class _Base extends React.PureComponent {
 
   render() {
     const {props} = this;
-    const {App, locale, strings} = props;
+    const {App, Prefs, locale, strings} = props;
     const {initialized} = App;
 
     if (props.Prefs.values.messageCenterExperimentEnabled && window.location.hash === "#message-center-admin") {
@@ -67,10 +68,16 @@ export class _Base extends React.PureComponent {
       return null;
     }
 
-    return (<IntlProvider locale={locale} messages={strings}>
-        <ErrorBoundary className="base-content-fallback">
-          <BaseContent {...this.props} />
-        </ErrorBoundary>
+    return (
+      <IntlProvider locale={locale} messages={strings}>
+        <SentryProvider
+          initialized={Prefs.initialized}
+          telemetry={Prefs.values.telemetry}
+          dataReportingUploadEnabled={Prefs.values.dataReportingUploadEnabled}>
+          <ErrorBoundary className="base-content-fallback">
+            <BaseContent {...this.props} />
+          </ErrorBoundary>
+        </SentryProvider>
       </IntlProvider>);
   }
 }
