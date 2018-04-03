@@ -14,21 +14,23 @@ export class SentryProvider extends React.PureComponent {
   componentDidMount() {
     // The React docs say not to put side-effects or subscriptions in
     // componentWillMount, so we're doing it here.
-    this.maybeInitializeRaven();
+    this.maybeStartOrStopRaven();
   }
 
-  maybeInitializeRaven() {
+  maybeStartOrStopRaven() {
     if (this.isRavenPrefEnabled()) {
       this.initializeRaven();
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.initialized || this.props.initialized) {
+    if (this.props.initialized === nextProps.initialized &&
+      this.props.telemetry === nextProps.telemetry &&
+      this.props.dataReportingUploadEnabled === nextProps.dataReportingUploadEnabled) {
       return;
     }
 
-    this.maybeInitializeRaven();
+    this.maybeStartOrStopRaven();
   }
 
   isRavenPrefEnabled() {
