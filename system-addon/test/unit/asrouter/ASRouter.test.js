@@ -29,10 +29,21 @@ const FAKE_MESSAGE_IDS = FAKE_MESSAGES.map(message => message.id);
 describe("ASRouter", () => {
   let Router;
   let channel;
-  beforeEach(() => {
+  let sandbox;
+  let blockList;
+  beforeEach(async () => {
+    sandbox = sinon.sandbox.create();
+    blockList = [];
     Router = new _ASRouter({messages: FAKE_MESSAGES});
+    Router._storage = {
+      get: sandbox.stub().returns(Promise.resolve(blockList)),
+      set: sandbox.stub().returns(Promise.resolve())
+    };
     channel = new FakeRemotePageManager();
-    Router.init(channel);
+    await Router.init(channel);
+  });
+  afterEach(() => {
+    sandbox.restore();
   });
   describe(".state", () => {
     it("should throw if an attempt to set .state was made", () => {
@@ -46,6 +57,13 @@ describe("ASRouter", () => {
       assert.calledWith(channel.addMessageListener, CHILD_TO_PARENT_MESSAGE_NAME);
       const [, listenerAdded] = channel.addMessageListener.firstCall.args;
       assert.isFunction(listenerAdded);
+    });
+    it("should update the blockList state", () => {
+      blockList.push("MESSAGE_ID");
+
+      assert.calledOnce(Router._storage.get);
+      assert.calledWithExactly(Router._storage.get, "blockList");
+      assert.deepEqual(Router.state.blockList, ["MESSAGE_ID"]);
     });
   });
   describe("#uninit", () => {
@@ -86,7 +104,7 @@ describe("ASRouter", () => {
       const msg = createRemoteMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id: "foo"}});
       await Router.onMessage(msg);
 
-      assert.isTrue(Router.state.blockList.foo);
+      assert.isTrue(Router.state.blockList.includes("foo"));
       assert.isNull(Router.state.currentId);
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_MESSAGE"});
     });
@@ -94,10 +112,10 @@ describe("ASRouter", () => {
   describe("#onMessage: UNBLOCK_MESSAGE_BY_ID", () => {
     it("should remove the id from the blockList", async () => {
       await Router.onMessage(createRemoteMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id: "foo"}}));
-      assert.isTrue(Router.state.blockList.foo);
+      assert.isTrue(Router.state.blockList.includes("foo"));
       await Router.onMessage(createRemoteMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id: "foo"}}));
 
-      assert.isUndefined(Router.state.blockList.foo);
+      assert.isFalse(Router.state.blockList.includes("foo"));
     });
   });
   describe("#onMessage: ADMIN_CONNECT_STATE", () => {
@@ -140,11 +158,18 @@ describe("ASRouterFeed", () => {
   describe("#onAction: INIT", () => {
     it("should initialize the ASRouter if it is not initialized and override onboardin if the experiment pref is true", () => {
       // Router starts out not initialized
-      sinon.stub(Router, "init");
+      sandbox.stub(feed, "enable");
       prefs[EXPERIMENT_PREF] = true;
 
       // call .onAction with INIT
       feed.onAction({type: at.INIT});
+
+      assert.calledOnce(feed.enable);
+    });
+    it("should initialize the MessageCenterRouter and override onboarding", async () => {
+      sandbox.stub(Router, "init").returns(Promise.resolve());
+
+      await feed.enable();
 
       assert.calledWith(Router.init, channel);
       assert.calledWith(global.Services.prefs.setBoolPref, ONBOARDING_FINISHED_PREF, true);

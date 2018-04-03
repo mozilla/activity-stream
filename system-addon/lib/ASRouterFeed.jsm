@@ -13,8 +13,8 @@ class ASRouterFeed {
     this.router = options.router || ASRouter;
   }
 
-  enable() {
-    this.router.init(this.store._messageChannel.channel);
+  async enable() {
+    await this.router.init(this.store._messageChannel.channel);
     // Disable onboarding
     Services.prefs.setBoolPref(ONBOARDING_FINISHED_PREF, true);
   }
@@ -32,10 +32,10 @@ class ASRouterFeed {
    * (asrouterExperimentEnabled) and enable or disable ASRouter based on
    * its value.
    */
-  enableOrDisableBasedOnPref() {
+  async enableOrDisableBasedOnPref() {
     const isExperimentEnabled = this.store.getState().Prefs.values.asrouterExperimentEnabled;
     if (!this.router.initialized && isExperimentEnabled) {
-      this.enable();
+      await this.enable();
     } else if (!isExperimentEnabled && this.router.initialized) {
       this.disable();
     }

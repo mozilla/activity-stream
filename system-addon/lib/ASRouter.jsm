@@ -61,9 +61,10 @@ class _ASRouter {
   constructor(initialState = {}) {
     this.initialized = false;
     this.messageChannel = null;
+    this._storage = new ActivityStreamStorage("snippets");
     this._state = Object.assign({
       currentId: null,
-      blockList: {},
+      blockList: [],
       messages: {}
     }, initialState);
     this.onMessage = this.onMessage.bind(this);
@@ -84,10 +85,13 @@ class _ASRouter {
    * @param {RemotePageManager} channel a RemotePageManager instance
    * @memberof _ASRouter
    */
-  init(channel) {
+  async init(channel) {
     this.messageChannel = channel;
     this.messageChannel.addMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this.initialized = true;
+
+    const blockList = await this._storage.get("blockList");
+    await this.setState({blockList});
   }
 
   uninit() {
@@ -97,8 +101,8 @@ class _ASRouter {
     this.initialized = false;
   }
 
-  setState(callbackOrObj) {
-    const newState = (typeof callbackOrObj === "function") ? callbackOrObj(this.state) : callbackOrObj;
+  async setState(callbackOrObj) {
+    const newState = (typeof callbackOrObj === "function") ? await callbackOrObj(this.state) : callbackOrObj;
     this._state = Object.assign({}, this.state, newState);
     return new Promise(resolve => {
       this._onStateChanged(this.state);
@@ -138,17 +142,21 @@ class _ASRouter {
         break;
       case "BLOCK_MESSAGE_BY_ID":
         await this.setState(state => {
-          const newState = Object.assign({}, state.blockList);
-          newState[action.data.id] = true;
-          return {blockList: newState};
+          const blockList = state.blockList.slice();
+          blockList.push(action.data.id);
+          this._storage.set("blockList", blockList);
+
+          return {blockList};
         });
         await this.clearMessage(target, action.data.id);
         break;
       case "UNBLOCK_MESSAGE_BY_ID":
         await this.setState(state => {
-          const newState = Object.assign({}, state.blockList);
-          delete newState[action.data.id];
-          return {blockList: newState};
+          const blockList = state.blockList.slice();
+          blockList.splice(blockList.indexOf(action.data.id), 1);
+          this._storage.set("blockList", blockList);
+
+          return {blockList};
         });
         break;
       case "ADMIN_CONNECT_STATE":
