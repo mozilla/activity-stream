@@ -127,7 +127,7 @@ export class TopSiteForm extends React.PureComponent {
     try {
       return new URL(url);
     } catch (e) {
-      return false;
+      return null;
     }
   }
 

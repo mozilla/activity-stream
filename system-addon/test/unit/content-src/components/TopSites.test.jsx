@@ -592,7 +592,7 @@ describe("<TopSiteForm>", () => {
     it("should return false for a incorrect URL", () => {
       wrapper.setState({url: " "});
 
-      assert.isFalse(wrapper.instance().validateForm());
+      assert.isNull(wrapper.instance().validateForm());
       assert.isTrue(wrapper.state().validationError);
     });
 
@@ -605,7 +605,7 @@ describe("<TopSiteForm>", () => {
     it("should return false for a incorrect custom screenshot URL", () => {
       wrapper.setState({customScreenshotUrl: " "});
 
-      assert.isFalse(wrapper.instance().validateForm());
+      assert.isNull(wrapper.instance().validateForm());
     });
 
     it("should return true for an empty custom screenshot URL", () => {
@@ -909,8 +909,8 @@ describe("<TopSiteForm>", () => {
       assert.ok(wrapper.instance().validateUrl("https://mozilla.invisionapp.com/d/main/#/projects/prototypes"));
       assert.ok(wrapper.instance().validateUrl("httpfoobar"));
       assert.ok(wrapper.instance().validateUrl("httpsfoo.bar"));
-      assert.isFalse(wrapper.instance().validateUrl("mozilla org"));
-      assert.isFalse(wrapper.instance().validateUrl(""));
+      assert.isNull(wrapper.instance().validateUrl("mozilla org"));
+      assert.isNull(wrapper.instance().validateUrl(""));
     });
   });
 
