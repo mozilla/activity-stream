@@ -107,6 +107,8 @@ describe("ASRouter", () => {
       assert.isTrue(Router.state.blockList.includes("foo"));
       assert.isNull(Router.state.currentId);
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_MESSAGE"});
+      assert.calledOnce(Router._storage.set);
+      assert.calledWithExactly(Router._storage.set, "blockList", ["foo"]);
     });
   });
   describe("#onMessage: UNBLOCK_MESSAGE_BY_ID", () => {
@@ -116,6 +118,12 @@ describe("ASRouter", () => {
       await Router.onMessage(createRemoteMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id: "foo"}}));
 
       assert.isFalse(Router.state.blockList.includes("foo"));
+    });
+    it("should save the blockList", async () => {
+      await Router.onMessage(createRemoteMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id: "foo"}}));
+
+      assert.calledOnce(Router._storage.set);
+      assert.calledWithExactly(Router._storage.set, "blockList", []);
     });
   });
   describe("#onMessage: ADMIN_CONNECT_STATE", () => {
