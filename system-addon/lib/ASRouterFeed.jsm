@@ -32,10 +32,10 @@ class ASRouterFeed {
    * (asrouterExperimentEnabled) and enable or disable ASRouter based on
    * its value.
    */
-  async enableOrDisableBasedOnPref() {
+  enableOrDisableBasedOnPref() {
     const isExperimentEnabled = this.store.getState().Prefs.values.asrouterExperimentEnabled;
     if (!this.router.initialized && isExperimentEnabled) {
-      await this.enable();
+      this.enable();
     } else if (!isExperimentEnabled && this.router.initialized) {
       this.disable();
     }
