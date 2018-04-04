@@ -192,8 +192,7 @@ describe.only("<SentryProvider>", () => {
       fakeRaven.isSetup.returns(true);
       sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(true);
       const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
-      const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />,
-        {disableLifecycleMethods: true});
+      const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />);
 
       wrapper.instance().maybeStartOrStopRaven();
 
@@ -224,8 +223,7 @@ describe.only("<SentryProvider>", () => {
 
     it("should not call this.raven.uninstall if #isRavenPrefEnabled returns false and this.raven.isSetup() is false", () => {
       sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(false);
-      const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />,
-        {disableLifecycleMethods: true});
+      const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />);
 
       wrapper.instance().maybeStartOrStopRaven();
 
