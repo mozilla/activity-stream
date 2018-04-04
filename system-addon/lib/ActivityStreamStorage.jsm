@@ -5,10 +5,11 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
    * @param storeName String with the store name to access or array of strings
    *                  to create all the required stores
    */
-  constructor(storeNames) {
+  constructor(storeNames, telemetry) {
     this.dbName = "ActivityStream";
     this.dbVersion = 3;
     this.storeNames = storeNames;
+    this.telemetry = telemetry;
   }
 
   get db() {
@@ -19,16 +20,16 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
     return (await this.db).objectStore(storeName, "readwrite");
   }
 
-  async get(storeName, key) {
-    return (await this.getStore(storeName)).get(key);
+  get(storeName, key) {
+    return this.requestWrapper(async () => (await this.getStore(storeName)).get(key));
   }
 
-  async getAll(storeName) {
-    return (await this.getStore(storeName)).getAll();
+  getAll(storeName) {
+    return this.requestWrapper(async () => (await this.getStore(storeName)).getAll());
   }
 
-  async set(storeName, key, value) {
-    return (await this.getStore(storeName)).put(value, key);
+  set(storeName, key, value) {
+    return this.requestWrapper(async () => (await this.getStore(storeName)).put(value, key));
   }
 
   _openDatabase() {
@@ -37,7 +38,7 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
       // individual stores
       this.storeNames.forEach(store => {
         if (!db.objectStoreNames.contains(store)) {
-          db.createObjectStore(store);
+          this.requestWrapper(() => db.createObjectStore(store));
         }
       });
     });
@@ -53,6 +54,20 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
     }
 
     return null;
+  }
+
+  async requestWrapper(request) {
+    let result = null;
+    try {
+      result = await request();
+    } catch (e) {
+      if (this.telemetry) {
+        this.telemetry.handleUndesiredEvent({data: {event: "TRANSACTION_FAILED"}});
+      }
+      Cu.reportError(e.stack);
+    }
+
+    return result;
   }
 };
 
