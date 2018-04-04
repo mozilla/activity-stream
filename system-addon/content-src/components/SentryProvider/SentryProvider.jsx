@@ -17,10 +17,25 @@ export class SentryProvider extends React.PureComponent {
     this.maybeStartOrStopRaven();
   }
 
+  /**
+   * Start or stop raven if necessary to make the running state match the
+   * current preferences.
+   */
   maybeStartOrStopRaven() {
     if (this.isRavenPrefEnabled()) {
+      if (this.raven.isSetup()) {
+        return;
+      }
+
       this.initializeRaven();
+      return;
     }
+
+    if (!this.raven.isSetup()) {
+      return;
+    }
+
+    this.raven.uninstall();
   }
 
   componentWillReceiveProps(nextProps) {
