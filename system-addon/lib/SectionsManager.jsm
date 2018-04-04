@@ -7,7 +7,7 @@ ChromeUtils.import("resource://gre/modules/EventEmitter.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
-const {ActivityStreamStorage, getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
+const {getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 
@@ -79,8 +79,8 @@ const SectionsManager = {
   },
   initialized: false,
   sections: new Map(),
-  async init(prefs = {}) {
-    this._storage = new ActivityStreamStorage("sectionPrefs");
+  async init(prefs = {}, storage) {
+    this._storage = storage;
 
     for (const feedPrefName of Object.keys(BUILT_IN_SECTIONS)) {
       const optionsPrefName = `${feedPrefName}.options`;
@@ -405,7 +405,7 @@ class SectionsFeed {
         break;
       // Wait for pref values, as some sections have options stored in prefs
       case at.PREFS_INITIAL_VALUES:
-        SectionsManager.init(action.data);
+        SectionsManager.init(action.data, this.store.storage.getObjectStore("sectionPrefs"));
         break;
       case at.PREF_CHANGED: {
         if (action.data) {

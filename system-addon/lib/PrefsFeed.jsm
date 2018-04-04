@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {ActivityStreamStorage} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {Prefs} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm", {});
 const {PrerenderData} = ChromeUtils.import("resource://activity-stream/common/PrerenderData.jsm", {});
@@ -30,7 +29,6 @@ this.PrefsFeed = class PrefsFeed {
   constructor(prefMap) {
     this._prefMap = prefMap;
     this._prefs = new Prefs();
-    this._storage = new ActivityStreamStorage("sectionPrefs");
   }
 
   // If any prefs or the theme are set to something other than what the
@@ -90,6 +88,7 @@ this.PrefsFeed = class PrefsFeed {
 
   init() {
     this._prefs.observeBranch(this);
+    this._storage = this.store.storage.getObjectStore("sectionPrefs");
 
     // Get the initial value of each activity stream pref
     const values = {};
