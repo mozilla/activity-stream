@@ -52,14 +52,13 @@
   }
 
   .card-preview-image-outer {
-    background-color: var(--newtab-background-color);
     border-radius: $border-radius $border-radius 0 0;
     height: $card-preview-image-height;
     overflow: hidden;
     position: relative;
 
     &::after {
-      border-bottom: 1px solid $black-5;
+      border-bottom: 1px solid var(--newtab-card-hairline-color);
       bottom: 0;
       content: '';
       position: absolute;
