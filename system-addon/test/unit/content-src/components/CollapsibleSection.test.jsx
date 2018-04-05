@@ -181,6 +181,6 @@ describe("<Disclaimer>", () => {
     wrapper.find(".section-disclaimer").childAt(1).simulate("click");
     assert.calledTwice(dispatch);
     assert.calledWith(dispatch.firstCall, ac.SetPref("section.test.showDisclaimer", false));
-    assert.calledWith(dispatch.secondCall, ac.UserEvent({event: "SECTION_DISCLAIMER_ACKNOWLEDGED", source: "test"}));
+    assert.calledWith(dispatch.secondCall, ac.UserEvent({event: "DISCLAIMER_ACKED", source: "test"}));
   });
 });

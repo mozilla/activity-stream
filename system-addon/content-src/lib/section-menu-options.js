@@ -13,7 +13,7 @@ export const SectionMenuOptions = {
       type: at.SECTION_MOVE,
       data: {id: section.id, direction: -1}
     }),
-    userEvent: "SECTION_MENU_MOVE_UP",
+    userEvent: "MENU_MOVE_UP",
     disabled: !!section.isFirst
   }),
   MoveDown: section => ({
@@ -23,38 +23,38 @@ export const SectionMenuOptions = {
       type: at.SECTION_MOVE,
       data: {id: section.id, direction: +1}
     }),
-    userEvent: "SECTION_MENU_MOVE_DOWN",
+    userEvent: "MENU_MOVE_DOWN",
     disabled: !!section.isLast
   }),
   RemoveSection: section => ({
     id: "section_menu_action_remove_section",
     icon: "dismiss",
     action: ac.SetPref(section.showPrefName, false),
-    userEvent: "SECTION_MENU_REMOVE"
+    userEvent: "MENU_REMOVE"
   }),
   CollapseSection: section => ({
     id: "section_menu_action_collapse_section",
     icon: "minimize",
     action: ac.OnlyToMain({type: at.UPDATE_SECTION_PREFS, data: {id: section.id, value: {collapsed: true}}}),
-    userEvent: "SECTION_MENU_COLLAPSE"
+    userEvent: "MENU_COLLAPSE"
   }),
   ExpandSection: section => ({
     id: "section_menu_action_expand_section",
     icon: "maximize",
     action: ac.OnlyToMain({type: at.UPDATE_SECTION_PREFS, data: {id: section.id, value: {collapsed: false}}}),
-    userEvent: "SECTION_MENU_EXPAND"
+    userEvent: "MENU_EXPAND"
   }),
   ManageSection: section => ({
     id: "section_menu_action_manage_section",
     icon: "settings",
     action: ac.OnlyToMain({type: at.SETTINGS_OPEN}),
-    userEvent: "SECTION_MENU_MANAGE"
+    userEvent: "MENU_MANAGE"
   }),
   AddTopSite: section => ({
     id: "section_menu_action_add_topsite",
     icon: "add",
     action: {type: at.TOP_SITES_EDIT, data: {index: -1}},
-    userEvent: "SECTION_MENU_ADD_TOPSITE"
+    userEvent: "MENU_ADD_TOPSITE"
   }),
   PrivacyNotice: section => ({
     id: "section_menu_action_privacy_notice",
@@ -63,7 +63,7 @@ export const SectionMenuOptions = {
       type: at.OPEN_LINK,
       data: {url: section.privacyNoticeURL}
     }),
-    userEvent: "SECTION_MENU_PRIVACY_NOTICE"
+    userEvent: "MENU_PRIVACY_NOTICE"
   }),
   CheckCollapsed: section => (section.collapsed ? SectionMenuOptions.ExpandSection(section) : SectionMenuOptions.CollapseSection(section))
 };
