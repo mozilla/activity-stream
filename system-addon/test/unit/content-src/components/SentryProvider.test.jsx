@@ -42,6 +42,18 @@ describe("<SentryProvider>", () => {
       [<div className="world" />, <div className="cat" />]));
   });
 
+  describe("#constructor", () => {
+    it("should call this.maybeStartOrStopRaven", () => {
+      const stub = sandbox.stub(SentryProvider.prototype, "maybeStartOrStopRaven");
+
+      shallow(<SentryProvider {...DEFAULT_PROPS} />,
+        {disableLifecycleMethods: true});
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub);
+    });
+  });
+
   it("should render no children if there are no children", () => {
     const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />);
 
@@ -50,10 +62,10 @@ describe("<SentryProvider>", () => {
 
   describe("#componentDidMount", () => {
     it("should call this.maybeStartOrStopRaven", () => {
-      const mStartStopSpy = sandbox.spy(SentryProvider.prototype, "maybeStartOrStopRaven");
-
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />,
         {disableLifecycleMethods: true});
+
+      const mStartStopSpy = sandbox.spy(SentryProvider.prototype, "maybeStartOrStopRaven");
       wrapper.instance().componentDidMount();
 
       assert.calledOnce(mStartStopSpy);
@@ -62,17 +74,12 @@ describe("<SentryProvider>", () => {
   });
 
   describe("#componentWillReceiveProps", () => {
-    let mStartStopSpy;
-
-    beforeEach(() => {
-      mStartStopSpy = sandbox.spy(SentryProvider.prototype,
-        "maybeStartOrStopRaven");
-    });
-
     it("should call #maybeStartOrStopRaven when props.telemetry !== nextProps.telemetry", () => {
       const props = Object.assign({}, DEFAULT_PROPS, {telemetry: true});
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />,
         {disableLifecycleMethods: true});
+      const mStartStopSpy = sandbox.spy(SentryProvider.prototype,
+        "maybeStartOrStopRaven");
 
       wrapper.instance().componentWillReceiveProps(props);
 
@@ -84,6 +91,8 @@ describe("<SentryProvider>", () => {
       const props = Object.assign({}, DEFAULT_PROPS, {telemetry: true});
       const wrapper = shallow(<SentryProvider {...props} />,
         {disableLifecycleMethods: true});
+      const mStartStopSpy = sandbox.spy(SentryProvider.prototype,
+        "maybeStartOrStopRaven");
 
       wrapper.instance().componentWillReceiveProps(props);
 
@@ -94,6 +103,8 @@ describe("<SentryProvider>", () => {
       const props = Object.assign({}, DEFAULT_PROPS, {initialized: true});
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />,
         {disableLifecycleMethods: true});
+      const mStartStopSpy = sandbox.spy(SentryProvider.prototype,
+        "maybeStartOrStopRaven");
 
       wrapper.instance().componentWillReceiveProps(props);
 
@@ -105,6 +116,8 @@ describe("<SentryProvider>", () => {
       const props = Object.assign({}, DEFAULT_PROPS, {initialized: true});
       const wrapper = shallow(<SentryProvider {...props} />,
         {disableLifecycleMethods: true});
+      const mStartStopSpy = sandbox.spy(SentryProvider.prototype,
+        "maybeStartOrStopRaven");
 
       wrapper.instance().componentWillReceiveProps(props);
 
@@ -115,6 +128,8 @@ describe("<SentryProvider>", () => {
       const props = Object.assign({}, DEFAULT_PROPS, {dataReportingUploadEnabled: true});
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />,
         {disableLifecycleMethods: true});
+      const mStartStopSpy = sandbox.spy(SentryProvider.prototype,
+        "maybeStartOrStopRaven");
 
       wrapper.instance().componentWillReceiveProps(props);
 
@@ -126,6 +141,8 @@ describe("<SentryProvider>", () => {
       const props = Object.assign({}, DEFAULT_PROPS, {dataReportingUploadEnabled: true});
       const wrapper = shallow(<SentryProvider {...props} />,
         {disableLifecycleMethods: true});
+      const mStartStopSpy = sandbox.spy(SentryProvider.prototype,
+        "maybeStartOrStopRaven");
 
       wrapper.instance().componentWillReceiveProps(props);
 
@@ -178,9 +195,9 @@ describe("<SentryProvider>", () => {
   describe("#maybeStartOrStopRaven", () => {
     it("should call #initializeRaven if #isRavenPrefEnabled is true and this.raven.isSetup() is false", () => {
       sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(true);
-      const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />,
         {disableLifecycleMethods: true});
+      const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
 
       wrapper.instance().maybeStartOrStopRaven();
 
@@ -191,8 +208,8 @@ describe("<SentryProvider>", () => {
     it("should not call #initializeRaven if #isRavenPrefEnabled is true and this.raven.isSetup() is true", () => {
       fakeRaven.isSetup.returns(true);
       sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(true);
-      const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />);
+      const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
 
       wrapper.instance().maybeStartOrStopRaven();
 
@@ -201,8 +218,8 @@ describe("<SentryProvider>", () => {
 
     it("should not call #initializeRaven if #isRavenPrefEnabled() is false", () => {
       sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(false);
-      const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />);
+      const iRSpy = sandbox.spy(SentryProvider.prototype, "initializeRaven");
 
       wrapper.instance().maybeStartOrStopRaven();
 
@@ -210,10 +227,10 @@ describe("<SentryProvider>", () => {
     });
 
     it("should call this.raven.uninstall if #isRavenPrefEnabled returns false and this.raven.isSetup() is true", () => {
-      fakeRaven.isSetup.returns(true);
-      sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(false);
       const wrapper = shallow(<SentryProvider {...DEFAULT_PROPS} />,
         {disableLifecycleMethods: true});
+      fakeRaven.isSetup.returns(true);
+      sandbox.stub(SentryProvider.prototype, "isRavenPrefEnabled").returns(false);
 
       wrapper.instance().maybeStartOrStopRaven();
 

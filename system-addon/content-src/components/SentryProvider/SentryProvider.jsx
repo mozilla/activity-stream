@@ -9,6 +9,10 @@ export class SentryProvider extends React.PureComponent {
     } else {
       this.raven = Raven;
     }
+
+    // We need to start raven here if the prefs are ready so that we can report
+    // errors in our children on the initial client-side hydrate.
+    this.maybeStartOrStopRaven();
   }
 
   componentDidMount() {
