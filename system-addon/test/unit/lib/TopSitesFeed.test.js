@@ -453,12 +453,18 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.refresh);
       assert.calledWithExactly(feed.refresh, {broadcast: true});
     });
-    it("should initialise _tippyTopProvider if it's not already initialised", async () => {
+    it("should initialise _tippyTopProvider", async () => {
       feed._tippyTopProvider.initialized = false;
 
       await feed.init();
 
       assert.isTrue(feed._tippyTopProvider.initialized);
+    });
+    it("should initialise the storage", async () => {
+      await feed.init();
+
+      assert.calledOnce(feed.store.storage.getObjectStore);
+      assert.calledWithExactly(feed.store.storage.getObjectStore, "sectionPrefs");
     });
   });
   describe("#refresh", () => {

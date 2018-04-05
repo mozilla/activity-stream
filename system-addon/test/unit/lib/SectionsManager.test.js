@@ -60,6 +60,11 @@ describe("SectionsManager", () => {
       assert.calledOnce(fakeServices.prefs.addObserver);
       assert.calledWith(fakeServices.prefs.addObserver, "MENU_ITEM_PREF", SectionsManager);
     });
+    it("should save the reference to `storage` passed in", async () => {
+      await SectionsManager.init({}, storage);
+
+      assert.equal(SectionsManager._storage, storage);
+    });
   });
   describe("#uninit", () => {
     it("should remove observer for context menu prefs", () => {
@@ -542,6 +547,8 @@ describe("SectionsFeed", () => {
       feed.onAction({type: "PREFS_INITIAL_VALUES", data: {foo: "bar"}});
       assert.calledOnce(SectionsManager.init);
       assert.calledWith(SectionsManager.init, {foo: "bar"});
+      assert.calledOnce(feed.store.storage.getObjectStore);
+      assert.calledWithExactly(feed.store.storage.getObjectStore, "sectionPrefs");
     });
     it("should call SectionsManager.addBuiltInSection on suitable PREF_CHANGED events", () => {
       sinon.spy(SectionsManager, "addBuiltInSection");

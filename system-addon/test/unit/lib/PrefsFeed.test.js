@@ -62,6 +62,12 @@ describe("PrefsFeed", () => {
     assert.calledOnce(feed._prefs.observeBranch);
     assert.calledWith(feed._prefs.observeBranch, feed);
   });
+  it("should initialise the storage on init", () => {
+    feed.init();
+
+    assert.calledOnce(feed.store.storage.getObjectStore);
+    assert.calledWithExactly(feed.store.storage.getObjectStore, "sectionPrefs");
+  });
   it("should remove the branch observer on uninit", () => {
     feed.onAction({type: at.UNINIT});
     assert.calledOnce(feed._prefs.ignoreBranch);

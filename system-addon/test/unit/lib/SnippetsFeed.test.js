@@ -87,6 +87,8 @@ describe("SnippetsFeed", () => {
     await feed.init();
 
     assert.calledOnce(feed.store.dispatch);
+    assert.calledOnce(feed.store.storage.getObjectStore);
+    assert.calledWithExactly(feed.store.storage.getObjectStore, "snippets");
 
     const [action] = feed.store.dispatch.firstCall.args;
     assert.propertyVal(action, "type", at.SNIPPETS_DATA);
