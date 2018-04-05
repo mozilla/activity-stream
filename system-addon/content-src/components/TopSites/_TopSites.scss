@@ -144,7 +144,7 @@ $half-base-gutter: $base-gutter / 2;
 
   // Some common styles for all icons (rich and default) in top sites
   .top-site-icon {
-    background-color: var(--newtab-background-color);
+    background-color: $white;
     background-position: center center;
     background-repeat: no-repeat;
     border-radius: $top-sites-border-radius;
