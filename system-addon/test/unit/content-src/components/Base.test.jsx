@@ -32,6 +32,15 @@ describe("<Base>", () => {
     assert.equal(
       wrapper.find(ErrorBoundary).first().prop("className"), "base-content-fallback");
   });
+
+  it("should change body className on updateTheme", () => {
+    const wrapper = shallow(<Base {...DEFAULT_PROPS} />);
+    assert.equal(document.querySelectorAll("body.some-theme").length, 0);
+    wrapper.instance().updateTheme({className: "some-theme"});
+    assert.equal(document.querySelectorAll("body.some-theme").length, 1);
+    wrapper.instance().updateTheme({className: ""});
+    assert.equal(document.querySelectorAll("body.some-theme").length, 0);
+  });
 });
 
 describe("<BaseContent>", () => {
