@@ -4,6 +4,9 @@
   max-width: 996px;
   margin: 0 auto;
   font-size: 14px;
+  // Reset .outer-wrapper styles
+  display: inherit;
+  padding: 0;
 
   h1 {
     font-weight: 200;

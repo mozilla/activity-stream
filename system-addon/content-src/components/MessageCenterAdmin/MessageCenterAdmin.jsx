@@ -60,7 +60,7 @@ export class MessageCenterAdmin extends React.PureComponent {
   }
 
   render() {
-    return (<div className="messages-admin">
+    return (<div className="messages-admin outer-wrapper">
       <h1>Messages Admin</h1>
       <button className="button primary" onClick={MessageCenterUtils.getNextMessage}>Refresh Current Message</button>
       <h2>Messages</h2>
