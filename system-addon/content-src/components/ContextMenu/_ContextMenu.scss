@@ -35,20 +35,7 @@
         white-space: nowrap;
 
         &:-moz-any(:focus, :hover) {
-          background: var(--newtab-link-primary-color);
-          color: $white;
-
-          a {
-            color: $grey-90;
-          }
-
-          .icon {
-            fill: $white;
-          }
-
-          &:-moz-any(:focus, :hover) {
-            color: $white;
-          }
+          background: var(--newtab-element-active-color);
         }
 
         &.disabled {

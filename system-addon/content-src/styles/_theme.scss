@@ -6,7 +6,7 @@
   --newtab-border-secondary-color: $grey-30;
   --newtab-button-primary-color: $blue-60;
   --newtab-button-secondary-color: inherit;
-  --newtab-element-active-color: $grey-20-60;
+  --newtab-element-active-color: $grey-20;
   --newtab-icon-primary-color: $grey-90-80;
   --newtab-icon-secondary-color: $grey-90-60;
   --newtab-icon-tertiary-color: $grey-30;
@@ -99,7 +99,6 @@
 // scss variables related to the theme.
 $border-primary: 1px solid var(--newtab-border-primary-color);
 $border-secondary: 1px solid var(--newtab-border-secondary-color);
-$input-primary: $blue-60;
 $shadow-primary: 0 0 0 5px var(--newtab-card-active-outline-color);
 $shadow-secondary: 0 1px 4px 0 $grey-90-10;
 $input-border: solid 1px var(--newtab-textbox-border);
