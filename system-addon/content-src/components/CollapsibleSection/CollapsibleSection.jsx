@@ -20,7 +20,7 @@ export class Disclaimer extends React.PureComponent {
 
   onAcknowledge() {
     this.props.dispatch(ac.SetPref(this.props.disclaimerPref, false));
-    this.props.dispatch(ac.UserEvent({event: "SECTION_DISCLAIMER_ACKNOWLEDGED", source: this.props.eventSource}));
+    this.props.dispatch(ac.UserEvent({event: "DISCLAIMER_ACKED", source: this.props.eventSource}));
   }
 
   render() {
