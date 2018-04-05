@@ -25,7 +25,7 @@ const PREFS_BEFORE_SECTIONS = [
   {
     id: "topsites",
     pref: {
-      feed: "showTopSites",
+      feed: "feeds.topsites",
       titleString: "settings_pane_topsites_header",
       descString: "prefs_topsites_description"
     },
