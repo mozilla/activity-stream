@@ -1,6 +1,6 @@
 .search-wrapper {
   $search-border-radius: 3px;
-  $search-focus-color: var(--newtab-search-focus-border-color);
+  $search-focus-color: $blue-60;
   $search-height: 35px;
   $search-input-left-label-width: 35px;
   $search-button-width: 36px;
@@ -25,7 +25,6 @@
     border: solid 1px var(--newtab-search-border-color);
     border-radius: $search-border-radius;
     box-shadow: $shadow-secondary, 0 0 0 1px $black-15;
-    color: var(--newtab-search-text-color);
     font-size: 15px;
     padding: 0;
     padding-inline-end: $search-button-width;
@@ -84,8 +83,9 @@
   // Adjust the style of the contentSearchUI-generated table
   // sass-lint:disable-block class-name-format
   .contentSearchSuggestionTable {
-    background-color: var(--newtab-search-background-color);
+    background-color: var(--newtab-modal-color);
     border: 0;
+    box-shadow: $context-menu-shadow;
     transform: translateY(3px);
 
     .contentSearchHeader {
@@ -94,12 +94,20 @@
     }
 
     .contentSearchHeader,
-    .contentSearchSuggestionsList {
-      border-color: var(--newtab-border-primary-color);
+    .contentSearchSuggestionsList,
+    .contentSearchSettingsButton {
+      border-color: var(--newtab-border-secondary-color);
     }
 
     .contentSearchSearchWithHeaderSearchText {
       color: var(--newtab-text-primary-color);
+    }
+
+    .contentSearchSettingsButton {
+      &:hover {
+        background: var(--newtab-element-active-color);
+        color: var(--newtab-text-primary-color);
+      }
     }
   }
 }
