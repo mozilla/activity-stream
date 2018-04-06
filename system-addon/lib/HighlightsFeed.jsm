@@ -118,7 +118,7 @@ this.HighlightsFeed = class HighlightsFeed {
    */
   async fetchHighlights(options = {}) {
     // We need TopSites for deduping, so wait for TOP_SITES_UPDATED.
-    if (!this.store.getState().TopSites.initialized || !this.store.getState().Prefs.values["feeds.topsites"]) {
+    if (!this.store.getState().TopSites.initialized && this.store.getState().Prefs.values["feeds.topsites"]) {
       return;
     }
 
