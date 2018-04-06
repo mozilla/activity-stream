@@ -178,10 +178,10 @@ describe("Highlights Feed", () => {
       await feed.fetchHighlights(options);
       return sectionsManagerStub.updateSection.firstCall.args[1].rows;
     };
-
     it("should return early if if are not TopSites initialised", async () => {
       sandbox.spy(feed.linksCache, "request");
       feed.store.state.TopSites.initialized = false;
+      feed.store.state.Prefs.values["feeds.topsites"] = true;
 
       // Initially TopSites is uninitialised and fetchHighlights should return.
       await feed.fetchHighlights();
@@ -218,6 +218,15 @@ describe("Highlights Feed", () => {
       assert.equal(highlights[4].url, links[5].url);
       assert.equal(highlights[5].url, links[2].url);
       assert.equal(highlights[6].url, links[3].url);
+    });
+    it("should fetch Highlights if TopSites are not enabled", async () => {
+      sandbox.spy(feed.linksCache, "request");
+      feed.store.state.Prefs.values["feeds.topsites"] = false;
+
+      await feed.fetchHighlights();
+
+      assert.calledOnce(feed.linksCache.request);
+      assert.calledOnce(fakeNewTabUtils.activityStreamLinks.getHighlights);
     });
     it("should add hostname and hasImage to each link", async () => {
       links = [{url: "https://mozilla.org"}];
