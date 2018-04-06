@@ -21,6 +21,7 @@ describe("<SentryProvider>", () => {
       fakeRaven,
       dataReportingUploadEnabled: false,
       initialized: false,
+      release: "4.3.2.1",
       telemetry: false
     };
   });
@@ -161,7 +162,7 @@ describe("<SentryProvider>", () => {
     it("should configure Raven with the given DSN and appropriate options", () => {
       assert.calledOnce(fakeRaven.config);
       assert.calledWithExactly(fakeRaven.config, sinon.match.string,
-        {allowSecretKey: true});
+        {allowSecretKey: true, release: DEFAULT_PROPS.release});
     });
 
     it("should call install on the return value from Raven.config", () => {

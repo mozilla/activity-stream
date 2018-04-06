@@ -1,6 +1,8 @@
 import Raven from "raven-js";
 import React from "react";
 
+// This component is "Pure" in the sense that nothing effects what gets
+// rendered at all, even though there are side-effects.
 export class SentryProvider extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -69,11 +71,10 @@ export class SentryProvider extends React.PureComponent {
    *
    */
   initializeRaven() {
-    const ravenOptions  = {allowSecretKey: true};
+    const ravenOptions = {allowSecretKey: true, release: this.props.release};
     const sentryDsn =
       "https://8f7472f5a012407e9056a886648e91fd:883d9882e50847df83dad975a2f606ae@sentry.prod.mozaws.net/150";
 
-    // XXXYYY add release for now
     this.raven.config(sentryDsn, ravenOptions).install();
   }
 

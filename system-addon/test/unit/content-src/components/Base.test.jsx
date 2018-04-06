@@ -13,7 +13,7 @@ describe("<Base>", () => {
 
   let DEFAULT_PROPS = {
     store: {getState: () => {}},
-    App: {initialized: true},
+    App: {initialized: true, version: "5.6.7.8"},
     Prefs: {initialized: false, values: prefVals},
     Theme: {className: ""},
     dispatch: () => {}
@@ -26,8 +26,11 @@ describe("<Base>", () => {
   });
 
   it("should render a SentryProvider with the correct props", () => {
-    const expectedProps = Object.assign({},
-        prefVals, {initialized: DEFAULT_PROPS.Prefs.initialized});
+    const expectedProps = Object.assign({}, prefVals,
+      {
+        initialized: DEFAULT_PROPS.Prefs.initialized,
+        release: DEFAULT_PROPS.App.version
+      });
     const wrapper = shallow(<Base {...DEFAULT_PROPS} />);
 
     const sentryProps = wrapper.dive(SentryProvider).props();

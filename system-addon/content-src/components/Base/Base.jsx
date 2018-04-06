@@ -69,8 +69,13 @@ export class _Base extends React.PureComponent {
     }
 
     return (
+
+      // XXX we're using App.version for the SentryProvider release for now;
+      // we may want to switch over to Services.appinfo.appBuildID for
+      // consistency with the chrome-side error collection experiment.
       <IntlProvider locale={locale} messages={strings}>
         <SentryProvider
+          release={App.version}
           initialized={Prefs.initialized}
           telemetry={Prefs.values.telemetry}
           dataReportingUploadEnabled={Prefs.values.dataReportingUploadEnabled}>
