@@ -1,5 +1,5 @@
 // Default theme
-.outer-wrapper {
+body {
   // General styles
   --newtab-background-color: $grey-10;
   --newtab-border-primary-color: $grey-40;
@@ -46,7 +46,7 @@
 }
 
 // Dark theme
-.outer-wrapper.dark-theme {
+.dark-theme {
   // General styles
   --newtab-background-color: $grey-80;
   --newtab-border-primary-color: $grey-10-80;

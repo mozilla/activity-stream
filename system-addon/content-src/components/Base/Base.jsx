@@ -25,7 +25,10 @@ function addLocaleDataForReactIntl(locale) {
 
 export class _Base extends React.PureComponent {
   componentWillMount() {
-    const {App, locale} = this.props;
+    const {App, locale, Theme} = this.props;
+    if (Theme.className) {
+      this.updateTheme(Theme);
+    }
     this.sendNewTabRehydrated(App);
     addLocaleDataForReactIntl(locale);
   }
@@ -40,8 +43,21 @@ export class _Base extends React.PureComponent {
     }
   }
 
-  componentWillUpdate({App}) {
+  componentWillUnmount() {
+    this.updateTheme({className: ""});
+  }
+
+  componentWillUpdate({App, Theme}) {
+    this.updateTheme(Theme);
     this.sendNewTabRehydrated(App);
+  }
+
+  updateTheme(Theme) {
+    const bodyClassName = [
+      "activity-stream",
+      Theme.className
+    ].filter(v => v).join(" ");
+    global.document.body.className = bodyClassName;
   }
 
   // The NEW_TAB_REHYDRATED event is used to inform feeds that their
@@ -88,7 +104,7 @@ export class BaseContent extends React.PureComponent {
 
   render() {
     const {props} = this;
-    const {App, Theme} = props;
+    const {App} = props;
     const {initialized} = App;
     const prefs = props.Prefs.values;
 
@@ -96,7 +112,6 @@ export class BaseContent extends React.PureComponent {
 
     const outerClassName = [
       "outer-wrapper",
-      Theme.className,
       shouldBeFixedToTop && "fixed-to-top",
       prefs.enableWideLayout ? "wide-layout-enabled" : "wide-layout-disabled"
     ].filter(v => v).join(" ");
