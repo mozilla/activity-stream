@@ -48,8 +48,6 @@ test_newtab({
     Assert.equal(defaultTopSitesNumber, 5, "5 top sites are displayed after one of them is dismissed");
   },
   async after() {
-    await SpecialPowers.pushPrefEnv({set: [["browser.newtabpage.blocked", ""]]});
     await new Promise(resolve => NewTabUtils.undoAll(resolve));
-    await setDefaultTopSites();
   }
 });
