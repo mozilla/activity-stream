@@ -130,6 +130,12 @@ function onBrowserReady() {
     }
   });
 
+  migratePref("browser.newtabpage.activity-stream.showTopSites", value => {
+    if (value === false) {
+      Services.prefs.setBoolPref("browser.newtabpage.activity-stream.feeds.topsites", false);
+    }
+  });
+
   // Old activity stream topSitesCount pref showed 6 per row
   migratePref("browser.newtabpage.activity-stream.topSitesCount", count => {
     Services.prefs.setIntPref("browser.newtabpage.activity-stream.topSitesRows", Math.ceil(count / 6));

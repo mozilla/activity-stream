@@ -375,9 +375,7 @@ this.TopSitesFeed = class TopSitesFeed {
     switch (action.type) {
       case at.INIT:
         // If the feed was previously disabled PREFS_INITIAL_VALUES was never received
-        if (!DEFAULT_TOP_SITES.length) {
-          this.refreshDefaults(this.store.getState().Prefs.values[DEFAULT_SITES_PREF]);
-        }
+        this.refreshDefaults(this.store.getState().Prefs.values[DEFAULT_SITES_PREF]);
         this.refresh({broadcast: true});
         break;
       case at.SYSTEM_TICK:

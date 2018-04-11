@@ -117,7 +117,7 @@ this.HighlightsFeed = class HighlightsFeed {
    * @param {bool} options.broadcast Should the update be broadcasted.
    */
   async fetchHighlights(options = {}) {
-    // We need TopSites for deduping, so wait for TOP_SITES_UPDATED.
+    // If TopSites are enabled we need them for deduping, so wait for TOP_SITES_UPDATED.
     if (!this.store.getState().TopSites.initialized && this.store.getState().Prefs.values["feeds.topsites"]) {
       return;
     }
