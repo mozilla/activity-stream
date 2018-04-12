@@ -73,7 +73,7 @@
   }
 
   &.active {
-    background: var(--newtab-element-active-color);
+    background: var(--newtab-element-hover-color);
     border-radius: 4px;
 
     .section-top-bar {
@@ -103,7 +103,7 @@
     }
 
     a {
-      color: var(--newtab-link-secondary-color);
+      color: var(--newtab-link-primary-color);
       font-weight: bold;
       padding-left: 3px;
     }

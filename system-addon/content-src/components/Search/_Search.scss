@@ -1,6 +1,4 @@
 .search-wrapper {
-  $search-border-radius: 3px;
-  $search-focus-color: $blue-60;
   $search-height: 35px;
   $search-input-left-label-width: 35px;
   $search-button-width: 36px;
@@ -13,17 +11,13 @@
   cursor: default;
   display: flex;
   height: $search-height;
-  // The extra 1px is to account for the box-shadow being outside of the element
-  // instead of inside. It needs to be like that to not overlap the inner background
-  // color of the hover state of the submit button.
-  margin: 1px 1px $section-spacing;
+  margin-bottom: $section-spacing;
   position: relative;
   width: 100%;
 
   input {
-    background: var(--newtab-search-background-color);
+    background: var(--newtab-textbox-background-color);
     border: solid 1px var(--newtab-search-border-color);
-    border-radius: $search-border-radius;
     box-shadow: $shadow-secondary, 0 0 0 1px $black-15;
     font-size: 15px;
     padding: 0;
@@ -38,7 +32,8 @@
 
   &:active input,
   input:focus {
-    box-shadow: 0 0 0 $os-search-focus-shadow-radius $search-focus-color;
+    border: $input-border-active;
+    box-shadow: var(--newtab-textbox-focus-boxshadow);
   }
 
   .search-label {
@@ -83,13 +78,12 @@
   // Adjust the style of the contentSearchUI-generated table
   // sass-lint:disable-block class-name-format
   .contentSearchSuggestionTable {
-    background-color: var(--newtab-modal-color);
     border: 0;
     box-shadow: $context-menu-shadow;
     transform: translateY(3px);
 
     .contentSearchHeader {
-      background-color: var(--newtab-background-color);
+      background-color: var(--newtab-search-dropdown-header-color);
       color: var(--newtab-text-secondary-color);
     }
 
@@ -103,9 +97,34 @@
       color: var(--newtab-text-primary-color);
     }
 
+    .contentSearchSuggestionsContainer {
+      background-color: var(--newtab-search-dropdown-color);
+    }
+
+    .contentSearchSuggestionRow {
+      &.selected {
+        background: var(--newtab-element-hover-color);
+        color: var(--newtab-text-primary-color);
+
+        &:active {
+          background: var(--newtab-element-active-color);
+        }
+
+        .historyIcon {
+          fill: var(--newtab-icon-secondary-color);
+        }
+      }
+    }
+
+    .contentSearchOneOffsTable {
+      .contentSearchSuggestionsContainer {
+        background-color: var(--newtab-search-dropdown-header-color);
+      }
+    }
+
     .contentSearchSettingsButton {
       &:hover {
-        background: var(--newtab-element-active-color);
+        background: var(--newtab-element-hover-color);
         color: var(--newtab-text-primary-color);
       }
     }
