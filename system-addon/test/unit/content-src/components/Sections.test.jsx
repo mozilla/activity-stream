@@ -30,12 +30,12 @@ describe("<Sections>", () => {
       assert.equal(section.props().enabled, true);
     });
   });
-  it("should render Top Sites if showTopSites pref is true", () => {
-    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {showTopSites: true, sectionOrder: "topsites,topstories,highlights"}}} />);
+  it("should render Top Sites if feeds.topsites pref is true", () => {
+    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {"feeds.topsites": true, "sectionOrder": "topsites,topstories,highlights"}}} />);
     assert.equal(wrapper.find(TopSites).length, 1);
   });
-  it("should NOT render Top Sites if showTopSites pref is false", () => {
-    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {showTopSites: false, sectionOrder: "topsites,topstories,highlights"}}} />);
+  it("should NOT render Top Sites if feeds.topsites pref is false", () => {
+    wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {"feeds.topsites": false, "sectionOrder": "topsites,topstories,highlights"}}} />);
     assert.equal(wrapper.find(TopSites).length, 0);
   });
   it("should render the sections in the order specifed by sectionOrder pref", () => {
