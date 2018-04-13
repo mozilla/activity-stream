@@ -1,6 +1,10 @@
+@function textbox-shadow($color) {
+  @return 0 0 0 1px $color, 0 0 0 4px rgba($color, 0.3);
+}
+
 @mixin textbox-focus($color) {
   --newtab-textbox-focus-color: $color;
-  --newtab-textbox-focus-boxshadow: 0 0 0 1px $color, 0 0 0 4px rgba($color, 0.3); // sass-lint:disable-line no-color-literals
+  --newtab-textbox-focus-boxshadow: textbox-shadow($color);
 }
 
 // Default theme
@@ -116,5 +120,5 @@ $shadow-secondary: 0 1px 4px 0 $grey-90-20;
 $input-border: solid 1px var(--newtab-textbox-border);
 $input-border-active: solid 1px var(--newtab-textbox-focus-color);
 $input-error-border: solid 1px $red-60;
-$input-error-boxshadow: 0 0 0 1px $red-60, 0 0 0 4px rgba($red-60, 0.3);
+$input-error-boxshadow: textbox-shadow($red-60);
 $inner-box-shadow: 0 0 0 1px var(--newtab-inner-box-shadow-color);
