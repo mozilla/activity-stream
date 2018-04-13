@@ -18,7 +18,7 @@
 
   .card {
     border-radius: $border-radius;
-    box-shadow: $shadow-secondary;
+    box-shadow: var(--newtab-card-shadow);
     height: 100%;
   }
 
@@ -131,6 +131,7 @@
 
   .card-title {
     font-size: 14px;
+    font-weight: 600;
     line-height: $card-text-line-height;
     margin: 0 0 $card-title-margin;
     word-wrap: break-word;

@@ -90,6 +90,10 @@ main {
 
     &:hover,
     &:focus {
+      background-color: var(--newtab-element-hover-color);
+    }
+
+    &:active {
       background-color: var(--newtab-element-active-color);
     }
   }

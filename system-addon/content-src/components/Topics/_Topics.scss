@@ -33,10 +33,12 @@
 
   .topic-link {
     color: var(--newtab-link-secondary-color);
+    font-weight: bold;
   }
 
   .topic-read-more {
     color: var(--newtab-link-secondary-color);
+    font-weight: bold;
 
     @media (min-width: $break-point-large) {
       // This is floating to accomodate a very large number of topics and/or

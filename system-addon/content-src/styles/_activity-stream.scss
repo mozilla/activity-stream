@@ -116,6 +116,13 @@ a {
   }
 }
 
+input {
+  &[type='text'],
+  &[type='search'] {
+    border-radius: $border-radius;
+  }
+}
+
 // Make sure snippets show up above other UI elements
 #snippets-container { // sass-lint:disable-line no-ids
   z-index: 1;

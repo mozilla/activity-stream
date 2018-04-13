@@ -1,5 +1,5 @@
 .context-menu {
-  background: var(--newtab-background-color);
+  background: var(--newtab-contextmenu-background-color);
   border-radius: $context-menu-border-radius;
   box-shadow: $context-menu-shadow;
   display: block;
@@ -35,6 +35,10 @@
         white-space: nowrap;
 
         &:-moz-any(:focus, :hover) {
+          background: var(--newtab-element-hover-color);
+        }
+
+        &:active {
           background: var(--newtab-element-active-color);
         }
 
