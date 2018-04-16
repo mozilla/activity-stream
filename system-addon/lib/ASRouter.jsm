@@ -141,20 +141,20 @@ class _ASRouter {
         await this.sendNextMessage(target);
         break;
       case "BLOCK_MESSAGE_BY_ID":
-        await this.setState(async state => {
-          const blockList = state.blockList.slice();
+        await this.setState(state => {
+          const blockList = [...state.blockList];
           blockList.push(action.data.id);
-          await this._storage.set("blockList", blockList);
+          this._storage.set("blockList", blockList);
 
           return {blockList};
         });
         await this.clearMessage(target, action.data.id);
         break;
       case "UNBLOCK_MESSAGE_BY_ID":
-        await this.setState(async state => {
-          const blockList = state.blockList.slice();
+        await this.setState(state => {
+          const blockList = [...state.blockList];
           blockList.splice(blockList.indexOf(action.data.id), 1);
-          await this._storage.set("blockList", blockList);
+          this._storage.set("blockList", blockList);
 
           return {blockList};
         });
