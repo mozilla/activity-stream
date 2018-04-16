@@ -139,6 +139,8 @@ this.HighlightsFeed = class HighlightsFeed {
     // deduping against Top Sites or multiple history from the same domain, etc.
     const manyPages = await this.linksCache.request({
       numItems: MANY_EXTRA_LENGTH,
+      excludeBookmarks: !this.store.getState().Prefs.values["section.highlights.includeBookmarks"],
+      excludeHistory: !this.store.getState().Prefs.values["section.highlights.includeVisited"],
       excludePocket: !this.store.getState().Prefs.values["section.highlights.includePocket"]
     });
 
@@ -177,8 +179,10 @@ this.HighlightsFeed = class HighlightsFeed {
         this.fetchImage(page);
       }
 
-      // Adjust the type for 'history' items that are also 'bookmarked'
-      if (page.type === "history" && page.bookmarkGuid) {
+      // Adjust the type for 'history' items that are also 'bookmarked' when we
+      // want to include bookmarks
+      if (page.type === "history" && page.bookmarkGuid &&
+          this.store.getState().Prefs.values["section.highlights.includeBookmarks"]) {
         page.type = "bookmark";
       }
 
@@ -260,6 +264,12 @@ this.HighlightsFeed = class HighlightsFeed {
       case at.SYSTEM_TICK:
       case at.TOP_SITES_UPDATED:
         this.fetchHighlights({broadcast: false});
+        break;
+      case at.PREF_CHANGED:
+        // Update existing pages when the user changes what should be shown
+        if (action.data.name.startsWith("section.highlights.include")) {
+          this.fetchHighlights({broadcast: true});
+        }
         break;
       case at.MIGRATION_COMPLETED:
       case at.PLACES_HISTORY_CLEARED:

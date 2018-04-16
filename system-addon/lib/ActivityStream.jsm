@@ -123,6 +123,14 @@ const PREFS_CONFIG = new Map([
     title: "Telemetry server endpoint",
     value: "https://tiles.services.mozilla.com/v4/links/activity-stream"
   }],
+  ["section.highlights.includeVisited", {
+    title: "Boolean flag that decides whether or not to show visited pages in highlights.",
+    value: true
+  }],
+  ["section.highlights.includeBookmarks", {
+    title: "Boolean flag that decides whether or not to show bookmarks in highlights.",
+    value: true
+  }],
   ["section.highlights.includePocket", {
     title: "Boolean flag that decides whether or not to show saved Pocket stories in highlights.",
     value: true
