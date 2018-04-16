@@ -66,6 +66,30 @@ describe("ASRouter", () => {
       assert.deepEqual(Router.state.blockList, ["MESSAGE_ID"]);
     });
   });
+  describe("#sendNextMessage", () => {
+    afterEach(async () => {
+      // Reset the blockList after the test is finished.
+      await Router.setState(() => ({blockList: []}));
+    });
+    it("should not return a blocked message", async () => {
+      await Router.setState(() => ({blockList: [FAKE_MESSAGE_IDS[0]]}));
+      const targetStub = {sendAsyncMessage: sandbox.stub()};
+
+      await Router.sendNextMessage(targetStub, FAKE_MESSAGE_IDS[1]);
+
+      assert.calledOnce(targetStub.sendAsyncMessage);
+      assert.equal(Router.state.currentId, FAKE_MESSAGE_IDS[2]);
+    });
+    it("should not return any message", async () => {
+      await Router.setState(() => ({blockList: [FAKE_MESSAGE_IDS[0], FAKE_MESSAGE_IDS[1], FAKE_MESSAGE_IDS[2]]}));
+      const targetStub = {sendAsyncMessage: sandbox.stub()};
+
+      await Router.sendNextMessage(targetStub, null);
+
+      assert.calledOnce(targetStub.sendAsyncMessage);
+      assert.equal(Router.state.currentId, null);
+    });
+  });
   describe("#uninit", () => {
     it("should remove the message listener on the RemotePageManager", () => {
       const [, listenerAdded] = channel.addMessageListener.firstCall.args;
@@ -132,6 +156,27 @@ describe("ASRouter", () => {
       await Router.onMessage(msg);
 
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: Router.state});
+    });
+  });
+
+  describe("#onMessage: CONNECT_UI_REQUEST GET_NEXT_MESSAGE", () => {
+    it("should call sendNextMessage on CONNECT_UI_REQUEST", async () => {
+      sandbox.stub(Router, "sendNextMessage").resolves();
+      const msg = createRemoteMessage({type: "CONNECT_UI_REQUEST"});
+
+      await Router.onMessage(msg);
+
+      assert.calledOnce(Router.sendNextMessage);
+      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager));
+    });
+    it("should call sendNextMessage on GET_NEXT_MESSAGE", async () => {
+      sandbox.stub(Router, "sendNextMessage").resolves();
+      const msg = createRemoteMessage({type: "GET_NEXT_MESSAGE"});
+
+      await Router.onMessage(msg);
+
+      assert.calledOnce(Router.sendNextMessage);
+      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager));
     });
   });
 });

@@ -117,7 +117,7 @@ class _ASRouter {
   async sendNextMessage(target, id) {
     let message;
     await this.setState(state => {
-      message = getRandomItemFromArray(state.messages.filter(item => item.id !== state.currentId && !state.blockList[item.id]));
+      message = getRandomItemFromArray(state.messages.filter(item => item.id !== state.currentId && !state.blockList.includes(item.id)));
       return {currentId: message ? message.id : null};
     });
     if (message) {
