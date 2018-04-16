@@ -1,5 +1,5 @@
 @function textbox-shadow($color) {
-  @return 0 0 0 1px $color, 0 0 0 4px rgba($color, 0.3);
+  @return 0 0 0 1px $color, 0 0 0 $textbox-shadow-size rgba($color, 0.3);
 }
 
 @mixin textbox-focus($color) {
