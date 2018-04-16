@@ -1,4 +1,5 @@
 import {FormattedMessage} from "react-intl";
+import Raven from "raven-js";
 import React from "react";
 
 export class ErrorBoundaryFallback extends React.PureComponent {
@@ -50,10 +51,23 @@ export class ErrorBoundary extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {hasError: false};
+    this.raven = props.fakeRaven || Raven;
   }
 
   componentDidCatch(error, info) {
     this.setState({hasError: true});
+
+    // XXX It's possible that we should, in theory, be calling Raven.isSetup()
+    // here and only trying to capture the exception has been setup.  However,
+    // captureException doesn't actually send anything if Raven is turned off.
+
+    // Note that of the extra info, we explicitly ONLY pass through the stack
+    // trace, since if future versions of React add other pieces of extra info
+    // to this callback, we don't want to just blindly send them as well.
+    this.raven.captureException(
+      error,
+      {extra: {componentStack: info.componentStack}}
+    );
   }
 
   render() {

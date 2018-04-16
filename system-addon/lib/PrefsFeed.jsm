@@ -14,6 +14,8 @@ ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm");
 
 const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
+const TELEMETRY_PREF_BRANCH = "datareporting.healthreport.";
+const TELEMETRY_PREF_NAME = "uploadEnabled";
 
 // List of prefs that require migration to indexedDB.
 // Object key is the name of the pref in indexedDB, each will contain a
@@ -31,6 +33,7 @@ this.PrefsFeed = class PrefsFeed {
     this._prefMap = prefMap;
     this._prefs = new Prefs();
     this._storage = new ActivityStreamStorage("sectionPrefs");
+    this._dataReportingBranch = Services.prefs.getBranch(TELEMETRY_PREF_BRANCH);
   }
 
   // If any prefs or the theme are set to something other than what the
@@ -58,6 +61,23 @@ this.PrefsFeed = class PrefsFeed {
   setOnboardingDisabledDefault(value) {
     const branch = Services.prefs.getDefaultBranch("");
     branch.setBoolPref(ONBOARDING_FINISHED_PREF, value);
+  }
+
+  /**
+   * nsIObserver.observe, used as a callback mechanism for seeing when
+   * the global data reporting pref has changed.
+   */
+  observe(subject, topic, data) {
+    if (subject !== this._dataReportingBranch || topic !== "nsPref:changed" ||
+      data !== TELEMETRY_PREF_NAME) {
+      return;
+    }
+
+    let newValue = subject.getBoolPref(data);
+    this.store.dispatch(ac.BroadcastToContent({
+      type: at.PREF_CHANGED,
+      data: {name: "dataReportingUploadEnabled", value: newValue}
+    }));
   }
 
   onPrefChanged(name, value) {
@@ -97,8 +117,19 @@ this.PrefsFeed = class PrefsFeed {
       values[name] = this._prefs.get(name);
     }
 
-    // Not a pref, but we need this to determine whether to show private-browsing-related stuff
+    // XXX add a comment with pointer to bug (from blame) explaining that this won't change
+    // Not a pref, but we need this to determine whether to showprivate-browsing-related stuff
     values.isPrivateBrowsingEnabled = PrivateBrowsingUtils.enabled;
+
+    // XXX test/impl consumer
+    // Graft a copy of a top-level pref onto the prefs chunk of the store.
+
+    // XXX this is pretty gross.  If we have to do much more of this, we should
+    // consider making ActivityStreamPrefs able to handle more than
+    // just the local AS pref branch.
+    this._dataReportingBranch.addObserver(TELEMETRY_PREF_NAME, this);
+    values.dataReportingUploadEnabled =
+      this._dataReportingBranch.getBoolPref(TELEMETRY_PREF_NAME);
 
     // Set the initial state of all prefs in redux
     this.store.dispatch(ac.BroadcastToContent({type: at.PREFS_INITIAL_VALUES, data: values}));
@@ -110,6 +141,7 @@ this.PrefsFeed = class PrefsFeed {
 
   removeListeners() {
     this._prefs.ignoreBranch(this);
+    this._dataReportingBranch.removeObserver(TELEMETRY_PREF_NAME, this);
   }
 
   async _setIndexedDBPref(id, value) {

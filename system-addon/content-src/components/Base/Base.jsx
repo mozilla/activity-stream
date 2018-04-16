@@ -9,6 +9,7 @@ import {PrerenderData} from "common/PrerenderData.jsm";
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
 import {Sections} from "content-src/components/Sections/Sections";
+import {SentryProvider} from "content-src/components/SentryProvider/SentryProvider";
 
 const PrefsButton = injectIntl(props => (
   <div className="prefs-button">
@@ -72,7 +73,7 @@ export class _Base extends React.PureComponent {
 
   render() {
     const {props} = this;
-    const {App, locale, strings} = props;
+    const {App, Prefs, locale, strings} = props;
     const {initialized} = App;
 
     if (props.Prefs.values.messageCenterExperimentEnabled && window.location.hash === "#message-center-admin") {
@@ -83,10 +84,21 @@ export class _Base extends React.PureComponent {
       return null;
     }
 
-    return (<IntlProvider locale={locale} messages={strings}>
-        <ErrorBoundary className="base-content-fallback">
-          <BaseContent {...this.props} />
-        </ErrorBoundary>
+    return (
+
+      // XXX we're using App.version for the SentryProvider release for now;
+      // we may want to switch over to Services.appinfo.appBuildID for
+      // consistency with the chrome-side error collection experiment.
+      <IntlProvider locale={locale} messages={strings}>
+        <SentryProvider
+          release={App.version}
+          initialized={Prefs.initialized}
+          telemetry={Prefs.values.telemetry}
+          dataReportingUploadEnabled={Prefs.values.dataReportingUploadEnabled}>
+          <ErrorBoundary className="base-content-fallback">
+            <BaseContent {...this.props} />
+          </ErrorBoundary>
+        </SentryProvider>
       </IntlProvider>);
   }
 }
@@ -102,6 +114,7 @@ export class BaseContent extends React.PureComponent {
     this.props.dispatch(ac.UserEvent({event: "OPEN_NEWTAB_PREFS"}));
   }
 
+  // XXX turn me into a functional component?
   render() {
     const {props} = this;
     const {App} = props;

@@ -2,14 +2,47 @@ import {_Base as Base, BaseContent} from "content-src/components/Base/Base";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
+import {SentryProvider} from "content-src/components/SentryProvider/SentryProvider";
 import {shallow} from "enzyme";
 
 describe("<Base>", () => {
-  let DEFAULT_PROPS = {store: {getState: () => {}}, App: {initialized: true}, Prefs: {values: {}}, Theme: {className: ""}, dispatch: () => {}};
+  const prefVals = {
+    telemetry: true,
+    dataReportingUploadEnabled: true
+  };
+
+  let DEFAULT_PROPS = {
+    store: {getState: () => {}},
+    App: {initialized: true, version: "5.6.7.8"},
+    Prefs: {initialized: false, values: prefVals},
+    Theme: {className: ""},
+    dispatch: () => {}
+  };
 
   it("should render Base component", () => {
     const wrapper = shallow(<Base {...DEFAULT_PROPS} />);
+
     assert.ok(wrapper.exists());
+  });
+
+  it("should render a SentryProvider with the correct props", () => {
+    const expectedProps = Object.assign({}, prefVals,
+      {
+        initialized: DEFAULT_PROPS.Prefs.initialized,
+        release: DEFAULT_PROPS.App.version
+      });
+    const wrapper = shallow(<Base {...DEFAULT_PROPS} />);
+
+    const sentryProps = wrapper.dive(SentryProvider).props();
+
+    assert.deepInclude(sentryProps, expectedProps);
+  });
+
+  it("should render a SentryProvider wrapping top-level ErrorBoundary", () => {
+    const wrapper = shallow(<Base {...DEFAULT_PROPS} />);
+
+    const ebChildren = wrapper.children(SentryProvider).children(ErrorBoundary);
+    assert.lengthOf(ebChildren, 1);
   });
 
   it("should render the BaseContent component, passing through all props", () => {

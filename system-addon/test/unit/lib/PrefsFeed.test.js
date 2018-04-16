@@ -1,11 +1,13 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {GlobalOverrider} from "test/unit/utils";
+import {FakensIPrefBranch, GlobalOverrider} from "test/unit/utils";
 import {PrefsFeed} from "lib/PrefsFeed.jsm";
 import {PrerenderData} from "common/PrerenderData.jsm";
 const {initialPrefs} = PrerenderData;
 
 const PRERENDER_PREF_NAME = "prerender";
 const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
+const TELEMETRY_PREF_BRANCH = "datareporting.healthreport.";
+const TELEMETRY_PREF_NAME = "uploadEnabled";
 
 let overrider = new GlobalOverrider();
 
@@ -13,8 +15,17 @@ describe("PrefsFeed", () => {
   let feed;
   let FAKE_PREFS;
   let sandbox;
+  let fakePrefBranch;
+
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
+
+    fakePrefBranch = new FakensIPrefBranch();
+    fakePrefBranch.setBoolPref(TELEMETRY_PREF_NAME, true);
+    sandbox.stub(global.Services.prefs, "getBranch")
+      .withArgs(TELEMETRY_PREF_BRANCH)
+      .returns(fakePrefBranch);
+
     FAKE_PREFS = new Map([["foo", 1], ["bar", 2]]);
     feed = new PrefsFeed(FAKE_PREFS);
     feed.store = {
@@ -60,20 +71,86 @@ describe("PrefsFeed", () => {
     assert.equal(data.bar, 2);
     assert.isTrue(data.isPrivateBrowsingEnabled);
   });
+
+  it("should dispatch PREFS_INITIAL_VALUES with .dataReportingUploadEnabled", () => {
+    const actionMatcher = sinon.match({
+      data: {dataReportingUploadEnabled: true},
+      type: at.PREFS_INITIAL_VALUES
+    });
+    const feedSpy = feed.store.dispatch.withArgs(actionMatcher);
+
+    feed.onAction({type: at.INIT});
+
+    assert.calledOnce(feedSpy);
+  });
+
   it("should add one branch observer on init", () => {
     feed.onAction({type: at.INIT});
     assert.calledOnce(feed._prefs.observeBranch);
     assert.calledWith(feed._prefs.observeBranch, feed);
   });
+
+  it("should call addObserver on .datareporting pref branch on init", () => {
+    sandbox.spy(fakePrefBranch, "addObserver");
+
+    feed.onAction({type: at.INIT});
+
+    assert.calledOnce(fakePrefBranch.addObserver);
+    assert.calledWithExactly(fakePrefBranch.addObserver,
+      TELEMETRY_PREF_NAME, feed);
+  });
+
   it("should remove the branch observer on uninit", () => {
     feed.onAction({type: at.UNINIT});
     assert.calledOnce(feed._prefs.ignoreBranch);
     assert.calledWith(feed._prefs.ignoreBranch, feed);
   });
+
+  it("should call removeObserver on the datareporting branch on uninit", () => {
+    sandbox.spy(fakePrefBranch, "removeObserver");
+
+    feed.onAction({type: at.UNINIT});
+
+    assert.calledOnce(fakePrefBranch.removeObserver);
+    assert.calledWithExactly(fakePrefBranch.removeObserver,
+      TELEMETRY_PREF_NAME, feed);
+  });
+
   it("should send a PREF_CHANGED action when onPrefChanged is called", () => {
     feed.onPrefChanged("foo", 2);
     assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.PREF_CHANGED, data: {name: "foo", value: 2}}));
   });
+
+  it("should send PREF_CHANGED if observe() called on true datareporting.healthenabled", () => {
+    fakePrefBranch.setBoolPref(TELEMETRY_PREF_NAME, true);
+
+    feed.observe(fakePrefBranch, "nsPref:changed", TELEMETRY_PREF_NAME);
+
+    assert.calledWith(feed.store.dispatch,
+      ac.BroadcastToContent({
+        type: at.PREF_CHANGED,
+        data: {name: "dataReportingUploadEnabled", value: true}
+      }));
+  });
+
+  it("should send PREF_CHANGED if observe() called on false datareporting.healthenabled", () => {
+    fakePrefBranch.setBoolPref(TELEMETRY_PREF_NAME, false);
+
+    feed.observe(fakePrefBranch, "nsPref:changed", TELEMETRY_PREF_NAME);
+
+    assert.calledWith(feed.store.dispatch,
+      ac.BroadcastToContent({
+        type: at.PREF_CHANGED,
+        data: {name: "dataReportingUploadEnabled", value: false}
+      }));
+  });
+
+  it("should not send a PREF_CHANGED action if observe() is called with a different prefName", () => {
+    feed.observe(fakePrefBranch, "nsPref:changed", "monkeys");
+
+    assert.notCalled(feed.store.dispatch);
+  });
+
   describe("INIT prerendering", () => {
     it("should set a prerender pref on init", async () => {
       sandbox.stub(feed, "_setPrerenderPref");

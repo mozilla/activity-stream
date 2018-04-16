@@ -4,6 +4,16 @@ import React from "react";
 import {shallow} from "enzyme";
 
 describe("<ErrorBoundary>", () => {
+  let fakeError;
+  let fakeInfo;
+  let fakeRaven;
+
+  beforeEach(() => {
+    fakeRaven = {captureException: sinon.spy()};
+    fakeError = "fakeError";
+    fakeInfo = {componentStack: "fakeStack"};
+  });
+
   it("should render its children if componentDidCatch wasn't called", () => {
     const wrapper = shallow(<ErrorBoundary ><div className="kids" /></ErrorBoundary>);
 
@@ -11,13 +21,27 @@ describe("<ErrorBoundary>", () => {
   });
 
   it("should render ErrorBoundaryFallback if componentDidCatch called", () => {
-    const wrapper = shallow(<ErrorBoundary />);
+    const wrapper = shallow(<ErrorBoundary fakeRaven={fakeRaven} />);
 
-    wrapper.instance().componentDidCatch();
+    wrapper.instance().componentDidCatch(fakeError, fakeInfo);
     // since shallow wrappers don't automatically manage lifecycle semantics:
     wrapper.update();
 
     assert.lengthOf(wrapper.find(ErrorBoundaryFallback), 1);
+  });
+
+  it("should call Raven.captureException if componentDidCatch fires", () => {
+    const wrapper = shallow(<ErrorBoundary fakeRaven={fakeRaven} />);
+    // note that we explicitly check that ONLY this WASN'T passed
+    // through, since if future versions of React add other pieces of extra
+    // info, we only want to send them after explicitly auditing them against
+    // our privacy policies.
+    fakeInfo.otherStuff = "fakeOtherStuff";
+    wrapper.instance().componentDidCatch("fakeError", fakeInfo);
+
+    assert.calledOnce(fakeRaven.captureException);
+    assert.calledWithExactly(fakeRaven.captureException,
+      "fakeError", {extra: {componentStack: "fakeStack"}});
   });
 
   it("should render the given FallbackComponent if componentDidCatch called", () => {
@@ -27,8 +51,9 @@ describe("<ErrorBoundary>", () => {
       }
     }
 
-    const wrapper = shallow(<ErrorBoundary FallbackComponent={TestFallback} />);
-    wrapper.instance().componentDidCatch();
+    const wrapper = shallow(<ErrorBoundary
+      FallbackComponent={TestFallback} fakeRaven={fakeRaven} />);
+    wrapper.instance().componentDidCatch(fakeError, fakeInfo);
     // since shallow wrappers don't automatically manage lifecycle semantics:
     wrapper.update();
 
@@ -44,7 +69,7 @@ describe("<ErrorBoundary>", () => {
 
     const wrapper = shallow(
       <ErrorBoundary FallbackComponent={TestFallback} className="sheep" />);
-    wrapper.instance().componentDidCatch();
+    wrapper.instance().componentDidCatch(fakeError, fakeInfo);
     // since shallow wrappers don't automatically manage lifecycle semantics:
     wrapper.update();
 

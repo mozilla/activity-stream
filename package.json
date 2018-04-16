@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "prop-types": "15.6.0",
+    "raven-js": "3.23.1",
     "react": "16.2.0",
     "react-dom": "16.2.0",
     "react-intl": "2.4.0",
