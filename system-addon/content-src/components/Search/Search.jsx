@@ -63,10 +63,12 @@ export class _Search extends React.PureComponent {
    * in order to execute searches in various tests
    */
   render() {
+    let icon = this.props.Prefs.values.searchEngineIcon;
     return (<div className="search-wrapper">
       <label htmlFor="newtab-search-text" className="search-label">
         <span className="sr-only"><FormattedMessage id="search_web_placeholder" /></span>
       </label>
+      <span className="search-icon" style={{backgroundImage: `url('${icon}')`}} />
       <input
         id="newtab-search-text"
         maxLength="256"
@@ -85,4 +87,4 @@ export class _Search extends React.PureComponent {
   }
 }
 
-export const Search = connect()(injectIntl(_Search));
+export const Search = connect(state => ({Prefs: state.Prefs}))(injectIntl(_Search));
