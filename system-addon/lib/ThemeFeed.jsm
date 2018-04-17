@@ -34,7 +34,8 @@ this.ThemeFeed = class ThemeFeed {
     }
 
     // If the theme is the built-in Dark theme, then activate our dark theme.
-    const className = data.id === "firefox-compact-dark@mozilla.org" ? "dark-theme" : "";
+    const isDarkTheme = data && data.id === "firefox-compact-dark@mozilla.org";
+    const className = isDarkTheme ? "dark-theme" : "";
     this.store.dispatch(ac.BroadcastToContent({type: at.THEME_UPDATE, data: {className}}));
   }
 
