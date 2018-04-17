@@ -88,7 +88,7 @@ this.PrefsFeed = class PrefsFeed {
 
   init() {
     this._prefs.observeBranch(this);
-    this._storage = this.store.storage.getObjectStore("sectionPrefs");
+    this._storage = this.store.storage.getDbTable("sectionPrefs");
 
     // Get the initial value of each activity stream pref
     const values = {};
@@ -113,8 +113,12 @@ this.PrefsFeed = class PrefsFeed {
 
   async _setIndexedDBPref(id, value) {
     const name = id === "topsites" ? id : `feeds.section.${id}`;
-    await this._storage.set(name, value);
-    this._setPrerenderPref();
+    try {
+      await this._storage.set(name, value);
+      this._setPrerenderPref();
+    } catch (e) {
+      Cu.reportError("Could not set section preferences.");
+    }
   }
 
   onAction(action) {

@@ -2,34 +2,55 @@ ChromeUtils.defineModuleGetter(this, "IndexedDB", "resource://gre/modules/Indexe
 
 this.ActivityStreamStorage = class ActivityStreamStorage {
   /**
-   * @param storeName String with the store name to access or array of strings
-   *                  to create all the required stores
+   * @param storeNames Array of strings used to create all the required stores
    */
-  constructor(storeNames, telemetry) {
+  constructor(options = {}) {
+    if (!options.storeNames || !options.telemetry) {
+      throw new Error("storeNames and telemetry are required");
+    }
+
     this.dbName = "ActivityStream";
     this.dbVersion = 3;
-    this.storeNames = storeNames;
-    this.telemetry = telemetry;
+    this.storeNames = options.storeNames;
+    this.telemetry = options.telemetry;
   }
 
   get db() {
     return this._db || (this._db = this._openDatabase());
   }
 
-  async getStore(storeName) {
+  /**
+   * Public method that binds the store required by the consumer and exposes
+   * the private db getters and setters.
+   *
+   * @param storeName String name of desired store
+   */
+  getDbTable(storeName) {
+    if (this.storeNames.includes(storeName)) {
+      return {
+        get: this._get.bind(this, storeName),
+        getAll: this._getAll.bind(this, storeName),
+        set: this._set.bind(this, storeName)
+      };
+    }
+
+    throw new Error(`Store name ${storeName} does not exist.`);
+  }
+
+  async _getStore(storeName) {
     return (await this.db).objectStore(storeName, "readwrite");
   }
 
-  get(storeName, key) {
-    return this.requestWrapper(async () => (await this.getStore(storeName)).get(key));
+  _get(storeName, key) {
+    return this._requestWrapper(async () => (await this._getStore(storeName)).get(key));
   }
 
-  getAll(storeName) {
-    return this.requestWrapper(async () => (await this.getStore(storeName)).getAll());
+  _getAll(storeName) {
+    return this._requestWrapper(async () => (await this._getStore(storeName)).getAll());
   }
 
-  set(storeName, key, value) {
-    return this.requestWrapper(async () => (await this.getStore(storeName)).put(value, key));
+  _set(storeName, key, value) {
+    return this._requestWrapper(async () => (await this._getStore(storeName)).put(value, key));
   }
 
   _openDatabase() {
@@ -38,25 +59,13 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
       // individual stores
       this.storeNames.forEach(store => {
         if (!db.objectStoreNames.contains(store)) {
-          this.requestWrapper(() => db.createObjectStore(store));
+          this._requestWrapper(() => db.createObjectStore(store));
         }
       });
     });
   }
 
-  getObjectStore(storeName) {
-    if (this.storeNames.includes(storeName)) {
-      return {
-        get: this.get.bind(this, storeName),
-        getAll: this.getAll.bind(this, storeName),
-        set: this.set.bind(this, storeName)
-      };
-    }
-
-    return null;
-  }
-
-  async requestWrapper(request) {
+  async _requestWrapper(request) {
     let result = null;
     try {
       result = await request();
@@ -64,7 +73,7 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
       if (this.telemetry) {
         this.telemetry.handleUndesiredEvent({data: {event: "TRANSACTION_FAILED"}});
       }
-      Cu.reportError(e.stack);
+      throw e;
     }
 
     return result;
