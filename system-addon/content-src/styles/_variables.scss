@@ -107,6 +107,8 @@ $image-path: '../data/content/assets/';
 
 $snippets-container-height: 120px;
 
+$textbox-shadow-size: 4px;
+
 @mixin fade-in {
   box-shadow: inset $inner-box-shadow, $shadow-primary;
   transition: box-shadow 150ms;

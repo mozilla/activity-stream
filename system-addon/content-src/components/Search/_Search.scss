@@ -78,9 +78,10 @@
   // Adjust the style of the contentSearchUI-generated table
   // sass-lint:disable-block class-name-format
   .contentSearchSuggestionTable {
+    background-color: var(--newtab-search-dropdown-color);
     border: 0;
     box-shadow: $context-menu-shadow;
-    transform: translateY(3px);
+    transform: translateY($textbox-shadow-size);
 
     .contentSearchHeader {
       background-color: var(--newtab-search-dropdown-header-color);
@@ -88,9 +89,17 @@
     }
 
     .contentSearchHeader,
-    .contentSearchSuggestionsList,
     .contentSearchSettingsButton {
       border-color: var(--newtab-border-secondary-color);
+    }
+
+    .contentSearchSuggestionsList {
+      border: 0;
+    }
+
+    .contentSearchOneOffsTable {
+      background-color: var(--newtab-search-dropdown-header-color);
+      border-top: solid 1px var(--newtab-border-secondary-color);
     }
 
     .contentSearchSearchWithHeaderSearchText {
@@ -119,6 +128,21 @@
     .contentSearchOneOffsTable {
       .contentSearchSuggestionsContainer {
         background-color: var(--newtab-search-dropdown-header-color);
+      }
+    }
+
+    .contentSearchOneOffItem {
+      background-image: none;
+      border-right: solid 1px var(--newtab-border-secondary-color);
+      height: 22px;
+      margin: 5px 0;
+
+      &.selected {
+        background: var(--newtab-element-hover-color);
+      }
+
+      &:active {
+        background: var(--newtab-element-active-color);
       }
     }
 
