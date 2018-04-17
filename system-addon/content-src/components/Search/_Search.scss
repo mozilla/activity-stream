@@ -36,14 +36,13 @@
     box-shadow: var(--newtab-textbox-focus-boxshadow);
   }
 
-  .search-label {
-    background: $search-glyph-image no-repeat $search-glyph-left-position center / $search-glyph-size;
-    -moz-context-properties: fill;
-    fill: var(--newtab-search-icon-color);
-    height: 100%;
-    offset-inline-start: 0;
+  .search-icon {
+    background-size: 18px 18px;
+    height: 18px;
+    margin: 8px;
+    pointer-events: none;
     position: absolute;
-    width: $search-input-left-label-width;
+    width: 18px;
   }
 
   .search-button {

@@ -141,6 +141,10 @@ const PREFS_CONFIG = new Map([
   ["messageCenterExperimentEnabled", {
     title: "Is the message center experiment on?",
     value: false
+  }],
+  ["searchEngineIcon", {
+    title: "Icon that represents the current default search engine",
+    value: ""
   }]
 ]);
 
@@ -273,6 +277,7 @@ this.ActivityStream = class ActivityStream {
 
   init() {
     try {
+      this._startSearchIconUpdates();
       this._updateDynamicPrefs();
       this._defaultPrefs.init();
 
@@ -317,6 +322,18 @@ this.ActivityStream = class ActivityStream {
     }
   }
 
+  _startSearchIconUpdates() {
+    this._updateSearchIcon();
+    Services.obs.addObserver(this, "browser-search-engine-modified");
+  }
+
+  _updateSearchIcon() {
+    Services.search.init(() => {
+      let icon = Services.search.currentEngine.iconURI.displaySpec;
+      this._defaultPrefs.setDefaultPref("searchEngineIcon", icon);
+    });
+  }
+
   _updateDynamicPrefs() {
     // Save the geo pref if we have it
     if (Services.prefs.prefHasUserValue(GEO_PREF)) {
@@ -358,6 +375,11 @@ this.ActivityStream = class ActivityStream {
         if (data === GEO_PREF) {
           this._updateDynamicPrefs();
           Services.prefs.removeObserver(GEO_PREF, this);
+        }
+        break;
+      case "browser-search-engine-modified":
+        if (data === "engine-current") {
+          this._updateSearchIcon();
         }
         break;
     }
