@@ -31,6 +31,7 @@ const CENTRAL_LOCALES = [
   "bs",
   "ca",
   "cak",
+  "crh",
   "cs",
   "cy",
   "da",
@@ -89,6 +90,7 @@ const CENTRAL_LOCALES = [
   "ne-NP",
   "nl",
   "nn-NO",
+  "oc",
   "or",
   "pa-IN",
   "pl",
@@ -113,6 +115,7 @@ const CENTRAL_LOCALES = [
   "ur",
   "uz",
   "vi",
+  "wo",
   "xh",
   "zh-CN",
   "zh-TW"
