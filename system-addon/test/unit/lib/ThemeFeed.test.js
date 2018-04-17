@@ -56,14 +56,24 @@ describe("ThemeFeed", () => {
       assert.calledOnce(dispatch);
       assert.equal(dispatch.firstCall.args[0].data.className, "dark-theme");
     });
-    it("should switch to default theme if the current theme is not the builtin Dark theme", () => {
+    it("should switch to default theme if the current theme has an id that isn't Dark theme", () => {
       const dispatch = sinon.spy();
       feed.store.dispatch = dispatch;
       feed.updateTheme({id: "firefox-compact-light@mozilla.org"});
       assert.calledOnce(dispatch);
       assert.equal(dispatch.firstCall.args[0].data.className, "");
-      dispatch.reset();
+    });
+    it("should switch to default theme if the current theme has an undefined id", () => {
+      const dispatch = sinon.spy();
+      feed.store.dispatch = dispatch;
       feed.updateTheme({id: undefined});
+      assert.calledOnce(dispatch);
+      assert.equal(dispatch.firstCall.args[0].data.className, "");
+    });
+    it("should switch to default theme if the current theme is undefined (Default)", () => {
+      const dispatch = sinon.spy();
+      feed.store.dispatch = dispatch;
+      feed.updateTheme(undefined);
       assert.calledOnce(dispatch);
       assert.equal(dispatch.firstCall.args[0].data.className, "");
     });
