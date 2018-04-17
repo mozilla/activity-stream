@@ -178,12 +178,23 @@ describe("Highlights Feed", () => {
       await feed.fetchHighlights(options);
       return sectionsManagerStub.updateSection.firstCall.args[1].rows;
     };
-    it("should return early if if are not TopSites initialised", async () => {
+    it("should return early if TopSites are not initialised", async () => {
       sandbox.spy(feed.linksCache, "request");
       feed.store.state.TopSites.initialized = false;
       feed.store.state.Prefs.values["feeds.topsites"] = true;
 
       // Initially TopSites is uninitialised and fetchHighlights should return.
+      await feed.fetchHighlights();
+
+      assert.notCalled(fakeNewTabUtils.activityStreamLinks.getHighlights);
+      assert.notCalled(feed.linksCache.request);
+    });
+    it("should return early if Sections are not initialised", async () => {
+      sandbox.spy(feed.linksCache, "request");
+      feed.store.state.TopSites.initialized = true;
+      feed.store.state.Prefs.values["feeds.topsites"] = true;
+      feed.store.state.Sections = [];
+
       await feed.fetchHighlights();
 
       assert.notCalled(fakeNewTabUtils.activityStreamLinks.getHighlights);
