@@ -11,7 +11,10 @@ describe("ActivityStreamStorage", () => {
     sandbox = sinon.sandbox.create();
     indexedDB = {open: sandbox.stub().resolves({})};
     overrider.set({IndexedDB: indexedDB});
-    storage = new ActivityStreamStorage(["storage_test"]);
+    storage = new ActivityStreamStorage({
+      storeNames: ["storage_test"],
+      telemetry: {handleUndesiredEvent: sandbox.stub()}
+    });
   });
   afterEach(() => {
     sandbox.restore();
@@ -19,7 +22,10 @@ describe("ActivityStreamStorage", () => {
   it("should not throw an error when accessing db", async () => {
     assert.ok(storage.db);
   });
-  describe("#getObjectStore", () => {
+  it("should throw if arguments not provided", () => {
+    assert.throws(() => new ActivityStreamStorage());
+  });
+  describe("#getDbTable", () => {
     let testStorage;
     let storeStub;
     beforeEach(() => {
@@ -28,8 +34,8 @@ describe("ActivityStreamStorage", () => {
         get: sandbox.stub().resolves(),
         put: sandbox.stub().resolves()
       };
-      sandbox.stub(storage, "getStore").resolves(storeStub);
-      testStorage = storage.getObjectStore("storage_test");
+      sandbox.stub(storage, "_getStore").resolves(storeStub);
+      testStorage = storage.getDbTable("storage_test");
     });
     it("should reverse key value parameters for put", async () => {
       await testStorage.set("key", "value");
@@ -56,18 +62,18 @@ describe("ActivityStreamStorage", () => {
     it("should query the correct object store", async () => {
       await testStorage.get();
 
-      assert.calledOnce(storage.getStore);
-      assert.calledWithExactly(storage.getStore, "storage_test");
+      assert.calledOnce(storage._getStore);
+      assert.calledWithExactly(storage._getStore, "storage_test");
     });
-    it("should return null for object stores that don't exist", () => {
-      assert.isNull(storage.getObjectStore("undefined_store"));
+    it("should throw if table is not found", () => {
+      assert.throws(() => storage.getDbTable("undefined_store"));
     });
   });
-  it("should get the correct objectStore when calling getStore", async () => {
+  it("should get the correct objectStore when calling _getStore", async () => {
     const objectStoreStub = sandbox.stub();
     indexedDB.open.resolves({objectStore: objectStoreStub});
 
-    await storage.getStore("foo");
+    await storage._getStore("foo");
 
     assert.calledOnce(objectStoreStub);
     assert.calledWithExactly(objectStoreStub, "foo", "readwrite");
@@ -83,7 +89,10 @@ describe("ActivityStreamStorage", () => {
     assert.calledWithExactly(dbStub.createObjectStore, "storage_test");
   });
   it("should handle an array of object store names", async () => {
-    storage = new ActivityStreamStorage(["store1", "store2"]);
+    storage = new ActivityStreamStorage({
+      storeNames: ["store1", "store2"],
+      telemetry: {}
+    });
     const dbStub = {createObjectStore: sandbox.stub(), objectStoreNames: {contains: sandbox.stub().returns(false)}};
     await storage.db;
 
@@ -95,7 +104,10 @@ describe("ActivityStreamStorage", () => {
     assert.calledWith(dbStub.createObjectStore, "store2");
   });
   it("should skip creating existing stores", async () => {
-    storage = new ActivityStreamStorage(["store1", "store2"]);
+    storage = new ActivityStreamStorage({
+      storeNames: ["store1", "store2"],
+      telemetry: {}
+    });
     const dbStub = {createObjectStore: sandbox.stub(), objectStoreNames: {contains: sandbox.stub().returns(true)}};
     await storage.db;
 
@@ -104,21 +116,19 @@ describe("ActivityStreamStorage", () => {
 
     assert.notCalled(dbStub.createObjectStore);
   });
-  describe("#requestWrapper", () => {
-    beforeEach(async () => {
-      storage.telemetry = {handleUndesiredEvent: sandbox.stub()};
-    });
+  describe("#_requestWrapper", () => {
     it("should return a successful result", async () => {
-      const result = await storage.requestWrapper(() => Promise.resolve("foo"));
+      const result = await storage._requestWrapper(() => Promise.resolve("foo"));
 
       assert.equal(result, "foo");
       assert.notCalled(storage.telemetry.handleUndesiredEvent);
     });
     it("should report failures", async () => {
-      const result = await storage.requestWrapper(() => Promise.reject(new Error()));
-
-      assert.isNull(result);
-      assert.calledOnce(storage.telemetry.handleUndesiredEvent);
+      try {
+        await storage._requestWrapper(() => Promise.reject(new Error()));
+      } catch (e) {
+        assert.calledOnce(storage.telemetry.handleUndesiredEvent);
+      }
     });
   });
 });

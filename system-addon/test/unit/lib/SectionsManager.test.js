@@ -91,6 +91,20 @@ describe("SectionsManager", () => {
 
       assert.calledOnce(Cu.reportError);
     });
+    it("should not throw if the indexedDB operation fails", async () => {
+      globals.sandbox.spy(global.Cu, "reportError");
+      storage.get.returns(new Error());
+      SectionsManager._storage = storage;
+
+      try {
+        await SectionsManager.addBuiltInSection("feeds.section.topstories");
+      } catch (e) {
+        assert.fail();
+      }
+
+      assert.calledOnce(storage.get);
+      assert.calledOnce(Cu.reportError);
+    });
   });
   describe("#updateSectionPrefs", () => {
     it("should update the collapsed value of the section", async () => {
@@ -401,7 +415,7 @@ describe("SectionsFeed", () => {
         },
         Sections: [{initialized: false}]
       },
-      storage: {getObjectStore: sandbox.stub().returns(storage)}
+      storage: {getDbTable: sandbox.stub().returns(storage)}
     };
   });
   afterEach(() => {
@@ -547,8 +561,8 @@ describe("SectionsFeed", () => {
       feed.onAction({type: "PREFS_INITIAL_VALUES", data: {foo: "bar"}});
       assert.calledOnce(SectionsManager.init);
       assert.calledWith(SectionsManager.init, {foo: "bar"});
-      assert.calledOnce(feed.store.storage.getObjectStore);
-      assert.calledWithExactly(feed.store.storage.getObjectStore, "sectionPrefs");
+      assert.calledOnce(feed.store.storage.getDbTable);
+      assert.calledWithExactly(feed.store.storage.getDbTable, "sectionPrefs");
     });
     it("should call SectionsManager.addBuiltInSection on suitable PREF_CHANGED events", () => {
       sinon.spy(SectionsManager, "addBuiltInSection");

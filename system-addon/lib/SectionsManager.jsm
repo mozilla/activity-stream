@@ -125,13 +125,19 @@ const SectionsManager = {
   },
   async addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
     let options;
+    let storedPrefs;
     try {
       options = JSON.parse(optionsPrefValue);
     } catch (e) {
       options = {};
       Cu.reportError(`Problem parsing options pref for ${feedPrefName}`);
     }
-    const storedPrefs = await this._storage.get(feedPrefName) || {};
+    try {
+      storedPrefs = await this._storage.get(feedPrefName) || {};
+    } catch (e) {
+      storedPrefs = {};
+      Cu.reportError(`Problem getting stored prefs for ${feedPrefName}`);
+    }
     const defaultSection = BUILT_IN_SECTIONS[feedPrefName](options);
     const section = Object.assign({}, defaultSection, {pref: Object.assign({}, defaultSection.pref, getDefaultOptions(storedPrefs))});
     section.pref.feed = feedPrefName;

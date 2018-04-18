@@ -6,7 +6,7 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
    */
   constructor(options = {}) {
     if (!options.storeNames || !options.telemetry) {
-      throw new Error("storeNames and telemetry are required");
+      throw new Error(`storeNames and telemetry are required, called only with ${Object.keys(options)}`);
     }
 
     this.dbName = "ActivityStream";

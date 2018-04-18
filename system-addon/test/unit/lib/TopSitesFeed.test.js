@@ -99,7 +99,7 @@ describe("Top Sites Feed", () => {
         Prefs: {values: {filterAdult: false, topSitesRows: 2}},
         TopSites: {rows: Array(12).fill("site")}
       },
-      storage: {getObjectStore: sandbox.stub().returns(storage)}
+      storage: {getDbTable: sandbox.stub().returns(storage)}
     };
     feed.dedupe.group = (...sites) => sites;
     links = FAKE_LINKS;
@@ -463,8 +463,8 @@ describe("Top Sites Feed", () => {
     it("should initialise the storage", async () => {
       await feed.init();
 
-      assert.calledOnce(feed.store.storage.getObjectStore);
-      assert.calledWithExactly(feed.store.storage.getObjectStore, "sectionPrefs");
+      assert.calledOnce(feed.store.storage.getDbTable);
+      assert.calledWithExactly(feed.store.storage.getDbTable, "sectionPrefs");
     });
   });
   describe("#refresh", () => {
@@ -512,6 +512,18 @@ describe("Top Sites Feed", () => {
       await feed.refresh({broadcast: false});
 
       assert.notCalled(feed._storage.init);
+    });
+    it("should catch indexedDB errors", async () => {
+      feed._storage.get.throws(new Error());
+      globals.sandbox.spy(global.Cu, "reportError");
+
+      try {
+        await feed.refresh({broadcast: false});
+      } catch (e) {
+        assert.fails();
+      }
+
+      assert.calledOnce(Cu.reportError);
     });
   });
   describe("#updateSectionPrefs", () => {

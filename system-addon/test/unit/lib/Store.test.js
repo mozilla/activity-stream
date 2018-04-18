@@ -6,6 +6,7 @@ describe("Store", () => {
   let Store;
   let sandbox;
   let store;
+  let dbStub;
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     function ActivityStreamMessageChannel(options) {
@@ -15,11 +16,18 @@ describe("Store", () => {
       this.middleware = sandbox.spy(s => next => action => next(action));
       this.simulateMessagesForExistingTabs = sandbox.stub();
     }
+    dbStub = sandbox.stub().resolves();
+    function FakeActivityStreamStorage() {
+      this.db = {};
+      sinon.stub(this, "db").get(dbStub);
+    }
     ({Store} = injector({
       "lib/ActivityStreamMessageChannel.jsm": {ActivityStreamMessageChannel},
-      "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs}
+      "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
+      "lib/ActivityStreamStorage.jsm": {ActivityStreamStorage: FakeActivityStreamStorage}
     }));
     store = new Store();
+    sandbox.stub(store, "_initIndexedDB").resolves();
   });
   afterEach(() => {
     sandbox.restore();
@@ -138,6 +146,18 @@ describe("Store", () => {
       await store.init(new Map([["foo", () => {}], ["bar", () => {}]]));
       assert.calledWith(store.initFeed, "foo");
       assert.calledWith(store.initFeed, "bar");
+    });
+    it("should call _initIndexedDB", async () => {
+      await store.init(new Map());
+
+      assert.calledOnce(store._initIndexedDB);
+      assert.calledWithExactly(store._initIndexedDB, "feeds.telemetry");
+    });
+    it("should access the db property of indexedDB", async () => {
+      store._initIndexedDB.restore();
+      await store.init(new Map());
+
+      assert.calledOnce(dbStub);
     });
     it("should not initialize the feed if the Pref is set to false", async () => {
       sinon.stub(store, "initFeed");

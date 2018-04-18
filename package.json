@@ -115,7 +115,7 @@
     "testmc:unit": "karma start karma.mc.config.js || (cat logs/coverage/system-addon/text.txt && exit 2)",
     "posttestmc": "cat logs/coverage/system-addon/text-summary.txt",
     "tddmc": "karma start karma.mc.config.js --tdd",
-    "debugcoverage": "open logs/coverage/system-addon/report-html/index.html",
+    "debugcoverage": "firefox logs/coverage/system-addon/report-html/index.html",
     "lint": "npm-run-all lint:*",
     "lint:eslint": "esw --ext=.js,.jsm,.json,.jsx .",
     "lint:sasslint": "sass-lint -v -q",

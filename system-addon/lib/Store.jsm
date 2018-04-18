@@ -124,11 +124,7 @@ this.Store = class Store {
       this.initFeed(telemetryKey);
     }
 
-    this.storage = new ActivityStreamStorage(["sectionPrefs", "snippets"], this.feeds.get(telemetryKey));
-    // Accessing the db causes the object stores to be created / migrated.
-    // This needs to happen before other instances try to access the db, which
-    // would update only a subset of the stores to the latest version.
-    await this.storage.db; // eslint-disable-line no-unused-expressions
+    await this._initIndexedDB(telemetryKey);
 
     for (const pref of feedFactories.keys()) {
       if (pref !== telemetryKey && this._prefs.get(pref)) {
@@ -146,6 +142,17 @@ this.Store = class Store {
 
     // Dispatch NEW_TAB_INIT/NEW_TAB_LOAD events after INIT event.
     this._messageChannel.simulateMessagesForExistingTabs();
+  }
+
+  async _initIndexedDB(telemetryKey) {
+    this.storage = new ActivityStreamStorage({
+      storeNames: ["sectionPrefs", "snippets"],
+      telemetry: this.feeds.get(telemetryKey)
+    });
+    // Accessing the db causes the object stores to be created / migrated.
+    // This needs to happen before other instances try to access the db, which
+    // would update only a subset of the stores to the latest version.
+    await this.storage.db; // eslint-disable-line no-unused-expressions
   }
 
   /**

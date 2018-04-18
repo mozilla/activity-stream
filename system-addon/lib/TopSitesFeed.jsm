@@ -48,7 +48,7 @@ this.TopSitesFeed = class TopSitesFeed {
     await this._tippyTopProvider.init();
     // If the feed was previously disabled PREFS_INITIAL_VALUES was never received
     this.refreshDefaults(this.store.getState().Prefs.values[DEFAULT_SITES_PREF]);
-    this._storage = this.store.storage.getObjectStore("sectionPrefs");
+    this._storage = this.store.storage.getDbTable("sectionPrefs");
     this.refresh({broadcast: true});
   }
 
@@ -174,8 +174,13 @@ this.TopSitesFeed = class TopSitesFeed {
   async refresh(options = {}) {
     const links = await this.getLinksWithDefaults();
     const newAction = {type: at.TOP_SITES_UPDATED, data: {links}};
-
-    const storedPrefs = await this._storage.get(SECTION_ID) || {};
+    let storedPrefs;
+    try {
+      storedPrefs = await this._storage.get(SECTION_ID) || {};
+    } catch (e) {
+      storedPrefs = {};
+      Cu.reportError("Problem getting stored prefs for TopSites");
+    }
     newAction.data.pref = getDefaultOptions(storedPrefs);
 
     if (options.broadcast) {

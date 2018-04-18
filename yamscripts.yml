@@ -56,7 +56,7 @@ scripts:
 
   tddmc: karma start karma.mc.config.js --tdd
 
-  debugcoverage: open logs/coverage/system-addon/report-html/index.html
+  debugcoverage: firefox logs/coverage/system-addon/report-html/index.html
 
 # lint: Run eslint and sass-lint
   lint:

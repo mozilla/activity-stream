@@ -25,7 +25,7 @@ describe("PrefsFeed", () => {
       dispatch: sinon.spy(),
       getState() { return this.state; },
       state: {Theme: {className: ""}},
-      storage: {getObjectStore: sandbox.stub().returns(storage)}
+      storage: {getDbTable: sandbox.stub().returns(storage)}
     };
     // Setup for tests that don't call `init`
     feed._storage = storage;
@@ -65,8 +65,8 @@ describe("PrefsFeed", () => {
   it("should initialise the storage on init", () => {
     feed.init();
 
-    assert.calledOnce(feed.store.storage.getObjectStore);
-    assert.calledWithExactly(feed.store.storage.getObjectStore, "sectionPrefs");
+    assert.calledOnce(feed.store.storage.getDbTable);
+    assert.calledWithExactly(feed.store.storage.getDbTable, "sectionPrefs");
   });
   it("should remove the branch observer on uninit", () => {
     feed.onAction({type: at.UNINIT});
@@ -182,6 +182,15 @@ describe("PrefsFeed", () => {
       await feed._setIndexedDBPref("topsites", "foo");
 
       assert.calledOnce(feed._setPrerenderPref);
+    });
+    it("should catch any save errors", () => {
+      const globals = new GlobalOverrider();
+      globals.sandbox.spy(global.Cu, "reportError");
+      feed._storage.set.throws(new Error());
+
+      assert.doesNotThrow(() => feed._setIndexedDBPref());
+      assert.calledOnce(Cu.reportError);
+      globals.restore();
     });
   });
   describe("onPrefChanged prerendering", () => {
