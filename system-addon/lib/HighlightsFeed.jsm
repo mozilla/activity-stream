@@ -118,7 +118,9 @@ this.HighlightsFeed = class HighlightsFeed {
    */
   async fetchHighlights(options = {}) {
     // If TopSites are enabled we need them for deduping, so wait for TOP_SITES_UPDATED.
-    if (!this.store.getState().TopSites.initialized && this.store.getState().Prefs.values["feeds.topsites"]) {
+    // Wait for SectionsManager to initialise the Sections.
+    if ((!this.store.getState().TopSites.initialized && this.store.getState().Prefs.values["feeds.topsites"]) ||
+        !this.store.getState().Sections.length) {
       return;
     }
 
