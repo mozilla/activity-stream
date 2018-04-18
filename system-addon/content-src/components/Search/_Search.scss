@@ -133,9 +133,7 @@
 
     .contentSearchOneOffItem {
       background-image: none;
-      border-right: solid 1px var(--newtab-border-secondary-color);
-      height: 22px;
-      margin: 5px 0;
+      position: relative;
 
       &.selected {
         background: var(--newtab-element-hover-color);
@@ -143,6 +141,15 @@
 
       &:active {
         background: var(--newtab-element-active-color);
+      }
+
+      &::after {
+        border-right: solid 1px var(--newtab-border-secondary-color);
+        content: '';
+        height: 22px;
+        offset-inline-end: 0;
+        position: absolute;
+        top: 5px;
       }
     }
 
