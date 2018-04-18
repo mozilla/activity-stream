@@ -72,10 +72,10 @@ describe("ASRouter", () => {
       await Router.setState(() => ({blockList: []}));
     });
     it("should not return a blocked message", async () => {
-      await Router.setState(() => ({blockList: [FAKE_MESSAGE_IDS[0]]}));
+      await Router.setState(() => ({blockList: [FAKE_MESSAGE_IDS[0], FAKE_MESSAGE_IDS[1]]}));
       const targetStub = {sendAsyncMessage: sandbox.stub()};
 
-      await Router.sendNextMessage(targetStub, FAKE_MESSAGE_IDS[1]);
+      await Router.sendNextMessage(targetStub, null);
 
       assert.calledOnce(targetStub.sendAsyncMessage);
       assert.equal(Router.state.currentId, FAKE_MESSAGE_IDS[2]);
