@@ -79,7 +79,7 @@ describe("SnippetsFeed", () => {
     const feed = new SnippetsFeed();
     feed.store = {
       dispatch: sandbox.stub(),
-      storage: {getObjectStore: sandbox.stub().returns({get: getStub})}
+      dbStorage: {getDbTable: sandbox.stub().returns({get: getStub})}
     };
 
     clock.tick(WEEK_IN_MS * 2);
@@ -87,8 +87,8 @@ describe("SnippetsFeed", () => {
     await feed.init();
 
     assert.calledOnce(feed.store.dispatch);
-    assert.calledOnce(feed.store.storage.getObjectStore);
-    assert.calledWithExactly(feed.store.storage.getObjectStore, "snippets");
+    assert.calledOnce(feed.store.dbStorage.getDbTable);
+    assert.calledWithExactly(feed.store.dbStorage.getDbTable, "snippets");
 
     const [action] = feed.store.dispatch.firstCall.args;
     assert.propertyVal(action, "type", at.SNIPPETS_DATA);

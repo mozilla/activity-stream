@@ -145,14 +145,14 @@ this.Store = class Store {
   }
 
   async _initIndexedDB(telemetryKey) {
-    this.storage = new ActivityStreamStorage({
+    this.dbStorage = new ActivityStreamStorage({
       storeNames: ["sectionPrefs", "snippets"],
       telemetry: this.feeds.get(telemetryKey)
     });
     // Accessing the db causes the object stores to be created / migrated.
     // This needs to happen before other instances try to access the db, which
     // would update only a subset of the stores to the latest version.
-    await this.storage.db; // eslint-disable-line no-unused-expressions
+    await this.dbStorage.db; // eslint-disable-line no-unused-expressions
   }
 
   /**

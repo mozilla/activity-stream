@@ -167,7 +167,7 @@ this.SnippetsFeed = class SnippetsFeed {
   }
 
   async init() {
-    this._storage = this.store.storage.getObjectStore("snippets");
+    this._storage = this.store.dbStorage.getDbTable("snippets");
     Services.obs.addObserver(this, SEARCH_ENGINE_OBSERVER_TOPIC);
     this._previousSessionEnd = await this._storage.get("previousSessionEnd");
     await this._refresh();

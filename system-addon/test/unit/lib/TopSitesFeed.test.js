@@ -99,7 +99,7 @@ describe("Top Sites Feed", () => {
         Prefs: {values: {filterAdult: false, topSitesRows: 2}},
         TopSites: {rows: Array(12).fill("site")}
       },
-      storage: {getDbTable: sandbox.stub().returns(storage)}
+      dbStorage: {getDbTable: sandbox.stub().returns(storage)}
     };
     feed.dedupe.group = (...sites) => sites;
     links = FAKE_LINKS;
@@ -463,8 +463,8 @@ describe("Top Sites Feed", () => {
     it("should initialise the storage", async () => {
       await feed.init();
 
-      assert.calledOnce(feed.store.storage.getDbTable);
-      assert.calledWithExactly(feed.store.storage.getDbTable, "sectionPrefs");
+      assert.calledOnce(feed.store.dbStorage.getDbTable);
+      assert.calledWithExactly(feed.store.dbStorage.getDbTable, "sectionPrefs");
     });
   });
   describe("#refresh", () => {

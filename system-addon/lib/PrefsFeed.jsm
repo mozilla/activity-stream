@@ -88,7 +88,7 @@ this.PrefsFeed = class PrefsFeed {
 
   init() {
     this._prefs.observeBranch(this);
-    this._storage = this.store.storage.getDbTable("sectionPrefs");
+    this._storage = this.store.dbStorage.getDbTable("sectionPrefs");
 
     // Get the initial value of each activity stream pref
     const values = {};

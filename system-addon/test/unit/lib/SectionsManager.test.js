@@ -415,7 +415,7 @@ describe("SectionsFeed", () => {
         },
         Sections: [{initialized: false}]
       },
-      storage: {getDbTable: sandbox.stub().returns(storage)}
+      dbStorage: {getDbTable: sandbox.stub().returns(storage)}
     };
   });
   afterEach(() => {
@@ -561,8 +561,8 @@ describe("SectionsFeed", () => {
       feed.onAction({type: "PREFS_INITIAL_VALUES", data: {foo: "bar"}});
       assert.calledOnce(SectionsManager.init);
       assert.calledWith(SectionsManager.init, {foo: "bar"});
-      assert.calledOnce(feed.store.storage.getDbTable);
-      assert.calledWithExactly(feed.store.storage.getDbTable, "sectionPrefs");
+      assert.calledOnce(feed.store.dbStorage.getDbTable);
+      assert.calledWithExactly(feed.store.dbStorage.getDbTable, "sectionPrefs");
     });
     it("should call SectionsManager.addBuiltInSection on suitable PREF_CHANGED events", () => {
       sinon.spy(SectionsManager, "addBuiltInSection");

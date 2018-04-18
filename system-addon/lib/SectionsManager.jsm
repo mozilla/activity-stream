@@ -411,7 +411,7 @@ class SectionsFeed {
         break;
       // Wait for pref values, as some sections have options stored in prefs
       case at.PREFS_INITIAL_VALUES:
-        SectionsManager.init(action.data, this.store.storage.getDbTable("sectionPrefs"));
+        SectionsManager.init(action.data, this.store.dbStorage.getDbTable("sectionPrefs"));
         break;
       case at.PREF_CHANGED: {
         if (action.data) {

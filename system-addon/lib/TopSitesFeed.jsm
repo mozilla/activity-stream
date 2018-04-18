@@ -48,7 +48,7 @@ this.TopSitesFeed = class TopSitesFeed {
     await this._tippyTopProvider.init();
     // If the feed was previously disabled PREFS_INITIAL_VALUES was never received
     this.refreshDefaults(this.store.getState().Prefs.values[DEFAULT_SITES_PREF]);
-    this._storage = this.store.storage.getDbTable("sectionPrefs");
+    this._storage = this.store.dbStorage.getDbTable("sectionPrefs");
     this.refresh({broadcast: true});
   }
 

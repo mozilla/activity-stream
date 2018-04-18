@@ -25,7 +25,7 @@ describe("PrefsFeed", () => {
       dispatch: sinon.spy(),
       getState() { return this.state; },
       state: {Theme: {className: ""}},
-      storage: {getDbTable: sandbox.stub().returns(storage)}
+      dbStorage: {getDbTable: sandbox.stub().returns(storage)}
     };
     // Setup for tests that don't call `init`
     feed._storage = storage;
@@ -65,8 +65,8 @@ describe("PrefsFeed", () => {
   it("should initialise the storage on init", () => {
     feed.init();
 
-    assert.calledOnce(feed.store.storage.getDbTable);
-    assert.calledWithExactly(feed.store.storage.getDbTable, "sectionPrefs");
+    assert.calledOnce(feed.store.dbStorage.getDbTable);
+    assert.calledWithExactly(feed.store.dbStorage.getDbTable, "sectionPrefs");
   });
   it("should remove the branch observer on uninit", () => {
     feed.onAction({type: at.UNINIT});
