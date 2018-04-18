@@ -117,8 +117,9 @@ this.HighlightsFeed = class HighlightsFeed {
    * @param {bool} options.broadcast Should the update be broadcasted.
    */
   async fetchHighlights(options = {}) {
-    // If TopSites are enabled we need them for deduping, so wait for TOP_SITES_UPDATED.
-    // Wait for SectionsManager to initialise the Sections.
+    // If TopSites are enabled we need them for deduping, so wait for
+    // TOP_SITES_UPDATED. We also need the section to be registered to update
+    // state, so wait for postInit triggered by SectionsManager initializing.
     if ((!this.store.getState().TopSites.initialized && this.store.getState().Prefs.values["feeds.topsites"]) ||
         !this.store.getState().Sections.length) {
       return;
