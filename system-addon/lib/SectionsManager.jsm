@@ -24,7 +24,7 @@ const BUILT_IN_SECTIONS = {
       descString: {id: "prefs_topstories_description2"},
       nestedPrefs: options.show_spocs ? [{
         name: "showSponsored",
-        titleString: {id: "prefs_topstories_show_sponsored_label", values: {provider: options.provider_name}},
+        titleString: "prefs_topstories_options_sponsored_label",
         icon: "icon-info"
       }] : []
     },
