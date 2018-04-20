@@ -10,12 +10,12 @@ const DEFAULT_SITE_MENU_OPTIONS = ["CheckPinTopSite", "EditTopSite", "Separator"
 export class _LinkMenu extends React.PureComponent {
   getOptions() {
     const {props} = this;
-    const {site, index, source, isPrivateBrowsingEnabled, siteInfo} = props;
+    const {site, index, source, isPrivateBrowsingEnabled, siteInfo, platform} = props;
 
     // Handle special case of default site
     const propOptions = !site.isDefault ? props.options : DEFAULT_SITE_MENU_OPTIONS;
 
-    const options = propOptions.map(o => LinkMenuOptions[o](site, index, source, isPrivateBrowsingEnabled, siteInfo)).map(option => {
+    const options = propOptions.map(o => LinkMenuOptions[o](site, index, source, isPrivateBrowsingEnabled, siteInfo, platform)).map(option => {
       const {action, impression, id, string_id, type, userEvent} = option;
       if (!type && id) {
         option.label = props.intl.formatMessage({id: string_id || id});
@@ -52,5 +52,5 @@ export class _LinkMenu extends React.PureComponent {
   }
 }
 
-const getState = state => ({isPrivateBrowsingEnabled: state.Prefs.values.isPrivateBrowsingEnabled});
+const getState = state => ({isPrivateBrowsingEnabled: state.Prefs.values.isPrivateBrowsingEnabled, platform: state.Prefs.values.platform});
 export const LinkMenu = connect(getState)(injectIntl(_LinkMenu));

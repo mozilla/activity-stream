@@ -1,6 +1,8 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {cardContextTypes} from "./types";
+import {connect} from "react-redux";
 import {FormattedMessage} from "react-intl";
+import {GetPlatformString} from "content-src/lib/link-menu-options";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 
@@ -16,7 +18,7 @@ const gImageLoading = new Map();
  * this class. Each card will then get a context menu which reflects the actions that
  * can be done on this Card.
  */
-export class Card extends React.PureComponent {
+export class _Card extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -82,12 +84,18 @@ export class Card extends React.PureComponent {
 
   onLinkClick(event) {
     event.preventDefault();
-    const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
-    this.props.dispatch(ac.AlsoToMain({
-      type: at.OPEN_LINK,
-      data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
-    }));
-
+    if (this.props.link.type === "download") {
+      this.props.dispatch(ac.OnlyToMain({
+        type: at.SHOW_DOWNLOAD_FILE,
+        data: this.props.link
+      }));
+    } else {
+      const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
+      this.props.dispatch(ac.OnlyToMain({
+        type: at.OPEN_LINK,
+        data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
+      }));
+    }
     if (this.props.isWebExtension) {
       this.props.dispatch(ac.WebExtEvent(at.WEBEXT_CLICK, {
         source: this.props.eventSource,
@@ -146,6 +154,8 @@ export class Card extends React.PureComponent {
             <div className={`card-preview-image${this.state.imageLoaded ? " loaded" : ""}`} style={imageStyle} />
           </div>}
           <div className={`card-details${hasImage ? "" : " no-image"}`}>
+            {link.type === "download" && <div className="card-download-icon icon icon-download-folder" />}
+            {link.type === "download" && <div className="card-host-name alternate"><FormattedMessage id={GetPlatformString(this.props.platform)} /></div>}
             {link.hostname && <div className="card-host-name">{link.hostname}</div>}
             <div className={[
               "card-text",
@@ -184,6 +194,6 @@ export class Card extends React.PureComponent {
    </li>);
   }
 }
-Card.defaultProps = {link: {}};
-
+_Card.defaultProps = {link: {}};
+export const Card = connect(state => ({platform: state.Prefs.values.platform}))(_Card);
 export const PlaceholderCard = () => <Card placeholder={true} />;

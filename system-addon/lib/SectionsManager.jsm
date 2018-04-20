@@ -75,7 +75,8 @@ const SectionsManager = {
   CONTEXT_MENU_OPTIONS_FOR_HIGHLIGHT_TYPES: {
     history: ["CheckBookmark", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"],
     bookmark: ["CheckBookmark", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"],
-    pocket: ["ArchiveFromPocket", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"]
+    pocket: ["ArchiveFromPocket", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
+    download: ["OpenFile", "ShowFile", "Separator", "GoToDownloadPage", "CopyDownloadLink", "Separator", "RemoveDownload", "BlockUrl"]
   },
   initialized: false,
   sections: new Map(),

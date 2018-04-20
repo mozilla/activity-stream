@@ -49,6 +49,14 @@
     .card-title {
       color: var(--newtab-link-primary-color);
     }
+
+    .alternate ~ .card-host-name {
+      display: none;
+    }
+
+    .card-host-name.alternate {
+      display: block;
+    }
   }
 
   .card-preview-image-outer {
@@ -129,6 +137,19 @@
     text-transform: uppercase;
   }
 
+  .card-host-name.alternate { display: none; }
+
+  .card-download-icon {
+    float: inline-end;
+    margin-inline-start: 15px;
+    margin-top: 2px;
+
+    &.icon-download-folder {
+      height: $small-download-folder-icon-size;
+      width: $small-download-folder-icon-size;
+    }
+  }
+
   .card-title {
     font-size: 14px;
     font-weight: 600;
@@ -193,6 +214,13 @@
       .card-host-name {
         font-size: 12px;
         padding-bottom: 5px;
+      }
+
+      .card-download-icon {
+        &.icon-download-folder {
+          height: $large-download-folder-icon-size;
+          width: $large-download-folder-icon-size;
+        }
       }
 
       .card-title {

@@ -10,6 +10,19 @@ const _OpenInPrivateWindow = site => ({
   userEvent: "OPEN_PRIVATE_WINDOW"
 });
 
+export const GetPlatformString = platform => {
+  switch (platform) {
+    case "win":
+      return "menu_action_show_file_windows";
+    case "macosx":
+      return "menu_action_show_file_mac_os";
+    case "linux":
+      return "menu_action_show_file_linux";
+    default:
+      return "menu_action_show_file_default";
+  }
+};
+
 /**
  * List of functions that return items that can be included as menu options in a
  * LinkMenu. All functions take the site as the first parameter, and optionally
@@ -90,6 +103,47 @@ export const LinkMenuOptions = {
       }
     },
     userEvent: "DIALOG_OPEN"
+  }),
+  ShowFile: (site, index, eventSource, isEnabled, siteInfo, platform) => ({
+    id: GetPlatformString(platform),
+    icon: "search",
+    action: ac.OnlyToMain({
+      type: at.SHOW_DOWNLOAD_FILE,
+      data: {url: site.url}
+    })
+  }),
+  OpenFile: site => ({
+    id: "menu_action_open_file",
+    icon: "open-file",
+    action: ac.OnlyToMain({
+      type: at.OPEN_DOWNLOAD_FILE,
+      data: {url: site.url}
+    })
+  }),
+  CopyDownloadLink: site => ({
+    id: "menu_action_copy_download_link",
+    icon: "copy",
+    action: ac.OnlyToMain({
+      type: at.COPY_DOWNLOAD_LINK,
+      data: {url: site.url}
+    })
+  }),
+  GoToDownloadPage: site => ({
+    id: "menu_action_go_to_download_page",
+    icon: "download",
+    action: ac.OnlyToMain({
+      type: at.GO_TO_DOWNLOAD_PAGE,
+      data: {url: site.url}
+    }),
+    disabled: !site.referrer
+  }),
+  RemoveDownload: site => ({
+    id: "menu_action_remove_download",
+    icon: "delete",
+    action: ac.OnlyToMain({
+      type: at.REMOVE_DOWNLOAD_FILE,
+      data: {url: site.url}
+    })
   }),
   PinTopSite: (site, index) => ({
     id: "menu_action_pin",
