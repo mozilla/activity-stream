@@ -26,7 +26,6 @@ const {FaviconFeed} = ChromeUtils.import("resource://activity-stream/lib/Favicon
 const {TopSitesFeed} = ChromeUtils.import("resource://activity-stream/lib/TopSitesFeed.jsm", {});
 const {TopStoriesFeed} = ChromeUtils.import("resource://activity-stream/lib/TopStoriesFeed.jsm", {});
 const {HighlightsFeed} = ChromeUtils.import("resource://activity-stream/lib/HighlightsFeed.jsm", {});
-const {ActivityStreamStorage} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 const {ThemeFeed} = ChromeUtils.import("resource://activity-stream/lib/ThemeFeed.jsm", {});
 const {MessageCenterFeed} = ChromeUtils.import("resource://activity-stream/lib/MessageCenterFeed.jsm", {});
 
@@ -278,18 +277,12 @@ this.ActivityStream = class ActivityStream {
     this.store = new Store();
     this.feeds = FEEDS_CONFIG;
     this._defaultPrefs = new DefaultPrefs(PREFS_CONFIG);
-    this._storage = new ActivityStreamStorage(["sectionPrefs", "snippets"]);
   }
 
   init() {
     try {
       this._updateDynamicPrefs();
       this._defaultPrefs.init();
-
-      // Accessing the db causes the object stores to be created / migrated.
-      // This needs to happen before other instances try to access the db, which
-      // would update only a subset of the stores to the latest version.
-      this._storage.db; // eslint-disable-line no-unused-expressions
 
       // Hook up the store and let all feeds and pages initialize
       this.store.init(this.feeds, ac.BroadcastToContent({

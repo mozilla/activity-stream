@@ -7,7 +7,7 @@ ChromeUtils.import("resource://gre/modules/EventEmitter.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
-const {ActivityStreamStorage, getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
+const {getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 
@@ -80,8 +80,8 @@ const SectionsManager = {
   },
   initialized: false,
   sections: new Map(),
-  async init(prefs = {}) {
-    this._storage = new ActivityStreamStorage("sectionPrefs");
+  async init(prefs = {}, storage) {
+    this._storage = storage;
 
     for (const feedPrefName of Object.keys(BUILT_IN_SECTIONS)) {
       const optionsPrefName = `${feedPrefName}.options`;
@@ -126,13 +126,19 @@ const SectionsManager = {
   },
   async addBuiltInSection(feedPrefName, optionsPrefValue = "{}") {
     let options;
+    let storedPrefs;
     try {
       options = JSON.parse(optionsPrefValue);
     } catch (e) {
       options = {};
       Cu.reportError(`Problem parsing options pref for ${feedPrefName}`);
     }
-    const storedPrefs = await this._storage.get(feedPrefName) || {};
+    try {
+      storedPrefs = await this._storage.get(feedPrefName) || {};
+    } catch (e) {
+      storedPrefs = {};
+      Cu.reportError(`Problem getting stored prefs for ${feedPrefName}`);
+    }
     const defaultSection = BUILT_IN_SECTIONS[feedPrefName](options);
     const section = Object.assign({}, defaultSection, {pref: Object.assign({}, defaultSection.pref, getDefaultOptions(storedPrefs))});
     section.pref.feed = feedPrefName;
@@ -406,7 +412,7 @@ class SectionsFeed {
         break;
       // Wait for pref values, as some sections have options stored in prefs
       case at.PREFS_INITIAL_VALUES:
-        SectionsManager.init(action.data);
+        SectionsManager.init(action.data, this.store.dbStorage.getDbTable("sectionPrefs"));
         break;
       case at.PREF_CHANGED: {
         if (action.data) {
