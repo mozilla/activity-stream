@@ -137,7 +137,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["section.highlights.includeDownloads", {
     title: "Boolean flag that decides whether or not to show saved recent Downloads in highlights.",
-    value: true
+    value: false
   }],
   ["section.topstories.showDisclaimer", {
     title: "Boolean flag that decides whether or not to show the topstories disclaimer.",

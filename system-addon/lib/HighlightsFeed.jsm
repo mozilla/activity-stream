@@ -57,7 +57,8 @@ this.HighlightsFeed = class HighlightsFeed {
   postInit() {
     SectionsManager.enableSection(SECTION_ID);
     this.fetchHighlights({broadcast: true});
-    this.downloadsManager.init(this.store);
+    // Commented out for now, due to DownloadsManager.jsm leaking memory
+    // this.downloadsManager.init(this.store);
   }
 
   uninit() {
