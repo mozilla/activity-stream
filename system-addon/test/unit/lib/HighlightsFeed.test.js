@@ -123,10 +123,11 @@ describe("Highlights Feed", () => {
       feed.postInit();
       assert.calledOnce(feed.fetchHighlights);
     });
-    it("should hook up the store for the DownloadsManager", () => {
-      feed.onAction({type: at.INIT});
-      assert.calledOnce(feed.downloadsManager.init);
-    });
+    // Commented out for now, due to DownloadsManager.jsm leaking memory
+    // it("should hook up the store for the DownloadsManager", () => {
+    //   feed.onAction({type: at.INIT});
+    //   assert.calledOnce(feed.downloadsManager.init);
+    // });
   });
   describe("#observe", () => {
     beforeEach(() => {
