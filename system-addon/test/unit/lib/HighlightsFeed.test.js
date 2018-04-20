@@ -12,7 +12,6 @@ const FAKE_IMAGE = "data123";
 describe("Highlights Feed", () => {
   let HighlightsFeed;
   let SECTION_ID;
-  let MANY_EXTRA_LENGTH;
   let SYNC_BOOKMARKS_FINISHED_EVENT;
   let BOOKMARKS_RESTORE_SUCCESS_EVENT;
   let BOOKMARKS_RESTORE_FAILED_EVENT;
@@ -66,7 +65,7 @@ describe("Highlights Feed", () => {
 
     globals.set("NewTabUtils", fakeNewTabUtils);
     globals.set("PageThumbs", fakePageThumbs);
-    ({HighlightsFeed, SECTION_ID, MANY_EXTRA_LENGTH, SYNC_BOOKMARKS_FINISHED_EVENT, BOOKMARKS_RESTORE_SUCCESS_EVENT, BOOKMARKS_RESTORE_FAILED_EVENT} = injector({
+    ({HighlightsFeed, SECTION_ID, SYNC_BOOKMARKS_FINISHED_EVENT, BOOKMARKS_RESTORE_SUCCESS_EVENT, BOOKMARKS_RESTORE_FAILED_EVENT} = injector({
       "lib/FilterAdult.jsm": {filterAdult: filterAdultStub},
       "lib/ShortURL.jsm": {shortURL: shortURLStub},
       "lib/SectionsManager.jsm": {SectionsManager: sectionsManagerStub},
@@ -346,13 +345,13 @@ describe("Highlights Feed", () => {
       sandbox.spy(feed.linksCache, "request");
       await feed.fetchHighlights();
 
-      assert.calledWith(feed.linksCache.request, {numItems: MANY_EXTRA_LENGTH, excludePocket: false});
+      assert.propertyVal(feed.linksCache.request.firstCall.args[0], "excludePocket", false);
     });
     it("should not includePocket pocket items when pref is false", async () => {
       sandbox.spy(feed.linksCache, "request");
       await feed.fetchHighlights();
 
-      assert.calledWith(feed.linksCache.request, {numItems: MANY_EXTRA_LENGTH, excludePocket: true});
+      assert.propertyVal(feed.linksCache.request.firstCall.args[0], "excludePocket", true);
     });
     it("should not include downloads when includeDownloads pref is false", async () => {
       links = [
@@ -401,11 +400,20 @@ describe("Highlights Feed", () => {
       assert.calledOnce(global.NewTabUtils.activityStreamProvider._processHighlights);
     });
     it("should set type to bookmark if there is a bookmarkGuid", async () => {
+      feed.store.state.Prefs.values["section.highlights.includeBookmarks"] = true;
       links = [{url: "https://mozilla.org", type: "history", bookmarkGuid: "1234567890"}];
 
       const highlights = await fetchHighlights();
 
       assert.equal(highlights[0].type, "bookmark");
+    });
+    it("should keep history type if there is a bookmarkGuid but don't include bookmarks", async () => {
+      feed.store.state.Prefs.values["section.highlights.includeBookmarks"] = false;
+      links = [{url: "https://mozilla.org", type: "history", bookmarkGuid: "1234567890"}];
+
+      const highlights = await fetchHighlights();
+
+      assert.propertyVal(highlights[0], "type", "history");
     });
     it("should not filter out adult pages when pref is false", async () => {
       await feed.fetchHighlights();
@@ -523,6 +531,21 @@ describe("Highlights Feed", () => {
 
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWithExactly(feed.fetchHighlights, {broadcast: false});
+    });
+    it("should fetch highlights on PREF_CHANGED for include prefs", async () => {
+      feed.fetchHighlights = sinon.spy();
+
+      feed.onAction({type: at.PREF_CHANGED, data: {name: "section.highlights.includeBookmarks"}});
+
+      assert.calledOnce(feed.fetchHighlights);
+      assert.calledWith(feed.fetchHighlights, {broadcast: true});
+    });
+    it("should not fetch highlights on PREF_CHANGED for other prefs", async () => {
+      feed.fetchHighlights = sinon.spy();
+
+      feed.onAction({type: at.PREF_CHANGED, data: {name: "section.topstories.showDisclaimer"}});
+
+      assert.notCalled(feed.fetchHighlights);
     });
     it("should fetch highlights on MIGRATION_COMPLETED", async () => {
       await feed.fetchHighlights();
