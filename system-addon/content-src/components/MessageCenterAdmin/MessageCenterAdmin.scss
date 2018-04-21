@@ -1,12 +1,13 @@
 
 .messages-admin {
+  $border-color: var(--newtab-border-secondary-color);
   $monospace: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', monospace;
   max-width: 996px;
   margin: 0 auto;
   font-size: 14px;
   // Reset .outer-wrapper styles
   display: inherit;
-  padding: 0;
+  padding: 0 0 42px;
 
   h1 {
     font-weight: 200;
@@ -20,20 +21,20 @@
 
   .message-item {
     &:first-child td {
-      border-top: 1px solid $black-10;
+      border-top: 1px solid $border-color;
     }
 
     td {
       vertical-align: top;
-      border-bottom: 1px solid $black-10;
+      border-bottom: 1px solid $border-color;
       padding: 8px;
 
       &:first-child {
-        border-left: 1px solid $black-10;
+        border-left: 1px solid $border-color;
       }
 
       &:last-child {
-        border-right: 1px solid $black-10;
+        border-right: 1px solid $border-color;
       }
     }
 
@@ -41,6 +42,10 @@
       .message-id span {
         background: $yellow-50;
         padding: 2px 5px;
+
+        .dark-theme & {
+          color: $black;
+        }
       }
     }
 
@@ -51,7 +56,7 @@
       }
 
       .message-id {
-        color: $grey-90;
+        opacity: 0.5;
       }
     }
 
@@ -62,7 +67,7 @@
   }
 
   pre {
-    background: $white;
+    background: var(--newtab-textbox-background-color);
     margin: 0;
     padding: 8px;
     font-size: 12px;
