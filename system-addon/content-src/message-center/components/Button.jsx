@@ -10,6 +10,4 @@ const styles = {
   }
 };
 
-export const Button = props => (<button style={styles.button} {...props}>
-  {props.children}
-</button>);
+export const Button = props => (<a href={props.url} onClick={props.onClick} style={styles.button}>{props.children}</a>);

@@ -100,7 +100,6 @@ describe("MessageCenterRouter", () => {
       assert.isUndefined(Router.state.blockList.foo);
     });
   });
-
   describe("#onMessage: ADMIN_CONNECT_STATE", () => {
     it("should send a message containing the whole state", async () => {
       const msg = createRemoteMessage({type: "ADMIN_CONNECT_STATE"});

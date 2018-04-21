@@ -35,6 +35,16 @@ const defaultStyles = {
 };
 
 export class SnippetBase extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onBlockClicked = this.onBlockClicked.bind(this);
+  }
+
+  onBlockClicked() {
+    this.props.sendUserActionTelemetry({event: "BLOCK", source: this.props.UISurface, message_id: this.props.id});
+    this.props.onBlock();
+  }
+
   render() {
     const {props} = this;
 
@@ -50,7 +60,7 @@ export class SnippetBase extends React.PureComponent {
       <div style={styles.innerWrapper}>
         {props.children}
       </div>
-      <button style={styles.blockButton} onClick={props.onBlock} />
+      <button style={styles.blockButton} onClick={this.onBlockClicked} />
     </div>);
   }
 }
