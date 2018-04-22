@@ -127,7 +127,12 @@
     }
 
     .contentSearchOneOffItem {
+      // Make the border slightly shorter by offsetting from the top and bottom
+      $border-offset: 18%;
+
       background-image: none;
+      border-image: linear-gradient(transparent $border-offset, var(--newtab-border-secondary-color) $border-offset, var(--newtab-border-secondary-color) 100% - $border-offset, transparent 100% - $border-offset) 1;
+      border-inline-end: 1px solid;
       position: relative;
 
       &.selected {
@@ -136,15 +141,6 @@
 
       &:active {
         background: var(--newtab-element-active-color);
-      }
-
-      &::after {
-        border-right: solid 1px var(--newtab-border-secondary-color);
-        content: '';
-        height: 22px;
-        offset-inline-end: 0;
-        position: absolute;
-        top: 5px;
       }
     }
 
