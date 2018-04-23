@@ -71,7 +71,6 @@
 
 @at-root {
   // Adjust the style of the contentSearchUI-generated table
-  // sass-lint:disable-block class-name-format
   .contentSearchSuggestionTable {
     background-color: var(--newtab-search-dropdown-color);
     border: 0;
