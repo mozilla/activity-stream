@@ -54,7 +54,11 @@ export const LinkMenuOptions = {
     icon: "new-window",
     action: ac.AlsoToMain({
       type: at.OPEN_NEW_WINDOW,
-      data: {url: site.url, referrer: site.referrer}
+      data: {
+        referrer: site.referrer,
+        typedBonus: site.typedBonus,
+        url: site.url
+      }
     }),
     userEvent: "OPEN_NEW_WINDOW"
   }),

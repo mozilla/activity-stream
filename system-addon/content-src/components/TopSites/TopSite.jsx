@@ -163,8 +163,17 @@ export class TopSite extends React.PureComponent {
     }, this._getTelemetryInfo())));
   }
 
-  onLinkClick(ev) {
+  onLinkClick(event) {
     this.userEvent("CLICK");
+
+    // Specially handle a top site link click for "typed" frecency bonus as
+    // specified as a property on the link.
+    event.preventDefault();
+    const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
+    this.props.dispatch(ac.OnlyToMain({
+      type: at.OPEN_LINK,
+      data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
+    }));
   }
 
   onMenuButtonClick(event) {

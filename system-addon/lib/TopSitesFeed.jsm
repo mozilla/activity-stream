@@ -161,6 +161,9 @@ this.TopSitesFeed = class TopSitesFeed {
 
         // Remove internal properties that might be updated after dispatch
         delete link.__sharedCache;
+
+        // Indicate that these links should get a frecency bonus when clicked
+        link.typedBonus = true;
       }
     }
 
