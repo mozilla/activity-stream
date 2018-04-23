@@ -91,7 +91,7 @@ class _ASRouter {
     this.initialized = true;
 
     const blockList = await this._storage.get("blockList");
-    await this.setState({blockList});
+    this.setState({blockList});
   }
 
   uninit() {
@@ -101,8 +101,8 @@ class _ASRouter {
     this.initialized = false;
   }
 
-  async setState(callbackOrObj) {
-    const newState = (typeof callbackOrObj === "function") ? await callbackOrObj(this.state) : callbackOrObj;
+  setState(callbackOrObj) {
+    const newState = (typeof callbackOrObj === "function") ? callbackOrObj(this.state) : callbackOrObj;
     this._state = Object.assign({}, this.state, newState);
     return new Promise(resolve => {
       this._onStateChanged(this.state);
@@ -141,7 +141,7 @@ class _ASRouter {
         await this.sendNextMessage(target);
         break;
       case "BLOCK_MESSAGE_BY_ID":
-        await this.setState(state => {
+        this.setState(state => {
           const blockList = [...state.blockList];
           blockList.push(action.data.id);
           this._storage.set("blockList", blockList);
@@ -151,7 +151,7 @@ class _ASRouter {
         await this.clearMessage(target, action.data.id);
         break;
       case "UNBLOCK_MESSAGE_BY_ID":
-        await this.setState(state => {
+        this.setState(state => {
           const blockList = [...state.blockList];
           blockList.splice(blockList.indexOf(action.data.id), 1);
           this._storage.set("blockList", blockList);
