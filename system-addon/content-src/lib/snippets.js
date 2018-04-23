@@ -7,7 +7,7 @@ const SNIPPETS_ENABLED_EVENT = "Snippets:Enabled";
 const SNIPPETS_DISABLED_EVENT = "Snippets:Disabled";
 
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {initMessageCenter} from "content-src/message-center/message-center-content";
+import {initASRouter} from "content-src/asrouter/asrouter-content";
 
 /**
  * SnippetsMap - A utility for cacheing values related to the snippet. It has
@@ -375,7 +375,7 @@ export function addSnippetsSubscriber(store) {
     // snippets.initialized:                  Is SnippetsProvider currently initialised?
     if (state.Prefs.values["feeds.snippets"] &&
       // If the message center experiment is enabled, don't show snippets
-      !state.Prefs.values.messageCenterExperimentEnabled &&
+      !state.Prefs.values.asrouterExperimentEnabled &&
       !state.Prefs.values.disableSnippets &&
       state.Snippets.initialized &&
       !snippets.initialized &&
@@ -393,8 +393,8 @@ export function addSnippetsSubscriber(store) {
       snippets.uninit();
     }
 
-    if (state.Prefs.values.messageCenterExperimentEnabled) {
-      initMessageCenter();
+    if (state.Prefs.values.asrouterExperimentEnabled) {
+      initASRouter();
     }
   });
 

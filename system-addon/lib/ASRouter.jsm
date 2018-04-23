@@ -1,5 +1,5 @@
-const INCOMING_MESSAGE_NAME = "MessageCenter:child-to-parent";
-const OUTGOING_MESSAGE_NAME = "MessageCenter:parent-to-child";
+const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
+const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
 
 const FAKE_MESSAGES = [
   {
@@ -50,14 +50,14 @@ function getRandomItemFromArray(arr) {
 }
 
 /**
- * @class _MessageCenterRouter - Keeps track of all messages, UI surfaces, and
- * handles blocking, rotation, etc. Inspecting MessageCenter.state will
+ * @class _ASRouter - Keeps track of all messages, UI surfaces, and
+ * handles blocking, rotation, etc. Inspecting ASRouter.state will
  * tell you what the current displayed message is in all UI surfaces.
  *
  * Note: This is written as a constructor rather than just a plain object
  * so that it can be more easily unit tested.
  */
-class _MessageCenterRouter {
+class _ASRouter {
   constructor(initialState = {}) {
     this.initialized = false;
     this.messageChannel = null;
@@ -82,7 +82,7 @@ class _MessageCenterRouter {
    * It is ready when it has been connected to a RemotePageManager instance.
    *
    * @param {RemotePageManager} channel a RemotePageManager instance
-   * @memberof _MessageCenterRouter
+   * @memberof _ASRouter
    */
   init(channel) {
     this.messageChannel = channel;
@@ -157,12 +157,12 @@ class _MessageCenterRouter {
     }
   }
 }
-this._MessageCenterRouter = _MessageCenterRouter;
+this._ASRouter = _ASRouter;
 
 /**
- * MessageCenterRouter - singleton instance of _MessageCenterRouter that controls all messages
+ * ASRouter - singleton instance of _ASRouter that controls all messages
  * in the new tab page.
  */
-this.MessageCenterRouter = new _MessageCenterRouter({messages: FAKE_MESSAGES});
+this.ASRouter = new _ASRouter({messages: FAKE_MESSAGES});
 
-const EXPORTED_SYMBOLS = ["_MessageCenterRouter", "MessageCenterRouter"];
+const EXPORTED_SYMBOLS = ["_ASRouter", "ASRouter"];

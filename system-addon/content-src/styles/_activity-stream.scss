@@ -140,4 +140,9 @@ input {
 @import '../components/Card/Card';
 @import '../components/ManualMigration/ManualMigration';
 @import '../components/CollapsibleSection/CollapsibleSection';
-@import '../components/MessageCenterAdmin/MessageCenterAdmin';
+@import '../components/ASRouterAdmin/ASRouterAdmin';
+
+// AS Router
+@import '../asrouter/components/Button/Button';
+@import '../asrouter/components/SnippetBase/SnippetBase';
+@import '../asrouter/templates/SimpleSnippet/SimpleSnippet';

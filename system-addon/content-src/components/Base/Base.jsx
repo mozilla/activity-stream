@@ -1,10 +1,10 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {addLocaleData, injectIntl, IntlProvider} from "react-intl";
+import {ASRouterAdmin} from "content-src/components/ASRouterAdmin/ASRouterAdmin";
 import {ConfirmDialog} from "content-src/components/ConfirmDialog/ConfirmDialog";
 import {connect} from "react-redux";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
 import {ManualMigration} from "content-src/components/ManualMigration/ManualMigration";
-import {MessageCenterAdmin} from "content-src/components/MessageCenterAdmin/MessageCenterAdmin";
 import {PrerenderData} from "common/PrerenderData.jsm";
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
@@ -75,8 +75,8 @@ export class _Base extends React.PureComponent {
     const {App, locale, strings} = props;
     const {initialized} = App;
 
-    if (props.Prefs.values.messageCenterExperimentEnabled && window.location.hash === "#message-center-admin") {
-      return (<MessageCenterAdmin />);
+    if (props.Prefs.values.asrouterExperimentEnabled && window.location.hash === "#asrouter") {
+      return (<ASRouterAdmin />);
     }
 
     if (!props.isPrerendered && !initialized) {
