@@ -39,6 +39,7 @@
   }
 
   &.icon-modal-delete {
+    flex-shrink: 0;
     background-image: url('#{$image-path}glyph-modal-delete-32.svg');
     background-size: $larger-icon-size;
     height: $larger-icon-size;
