@@ -1,7 +1,7 @@
-import {_MessageCenterRouter, MessageCenterRouter} from "lib/MessageCenterRouter.jsm";
+import {_ASRouter, ASRouter} from "lib/ASRouter.jsm";
 import {CHILD_TO_PARENT_MESSAGE_NAME, EXPERIMENT_PREF, PARENT_TO_CHILD_MESSAGE_NAME} from "./constants";
+import {ASRouterFeed} from "lib/ASRouterFeed.jsm";
 import {actionTypes as at} from "common/Actions.jsm";
-import {MessageCenterFeed} from "lib/MessageCenterFeed.jsm";
 
 const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
 
@@ -26,11 +26,11 @@ const FAKE_MESSAGES = [
 ];
 const FAKE_MESSAGE_IDS = FAKE_MESSAGES.map(message => message.id);
 
-describe("MessageCenterRouter", () => {
+describe("ASRouter", () => {
   let Router;
   let channel;
   beforeEach(() => {
-    Router = new _MessageCenterRouter({messages: FAKE_MESSAGES});
+    Router = new _ASRouter({messages: FAKE_MESSAGES});
     channel = new FakeRemotePageManager();
     Router.init(channel);
   });
@@ -110,15 +110,15 @@ describe("MessageCenterRouter", () => {
   });
 });
 
-describe("MessageCenterFeed", () => {
+describe("ASRouterFeed", () => {
   let Router;
   let feed;
   let prefs;
   let channel;
   let sandbox;
   beforeEach(() => {
-    Router = new _MessageCenterRouter();
-    feed = new MessageCenterFeed({router: Router});
+    Router = new _ASRouter();
+    feed = new ASRouterFeed({router: Router});
     sandbox = sinon.sandbox.create();
     sandbox.spy(global.Services.prefs, "setBoolPref");
 
@@ -130,15 +130,15 @@ describe("MessageCenterFeed", () => {
   afterEach(() => {
     sandbox.restore();
   });
-  it("should set .router to the MessageCenterRouter singleton if none is specified in options", () => {
-    feed = new MessageCenterFeed();
-    assert.equal(feed.router, MessageCenterRouter);
+  it("should set .router to the ASRouter singleton if none is specified in options", () => {
+    feed = new ASRouterFeed();
+    assert.equal(feed.router, ASRouter);
 
-    feed = new MessageCenterFeed({});
-    assert.equal(feed.router, MessageCenterRouter);
+    feed = new ASRouterFeed({});
+    assert.equal(feed.router, ASRouter);
   });
   describe("#onAction: INIT", () => {
-    it("should initialize the MessageCenterRouter if it is not initialized and override onboardin if the experiment pref is true", () => {
+    it("should initialize the ASRouter if it is not initialized and override onboardin if the experiment pref is true", () => {
       // Router starts out not initialized
       sinon.stub(Router, "init");
       prefs[EXPERIMENT_PREF] = true;
@@ -149,7 +149,7 @@ describe("MessageCenterFeed", () => {
       assert.calledWith(Router.init, channel);
       assert.calledWith(global.Services.prefs.setBoolPref, ONBOARDING_FINISHED_PREF, true);
     });
-    it("should not re-initialize the MessageCenterRouter if it is already initialized", () => {
+    it("should not re-initialize the ASRouter if it is already initialized", () => {
       // Router starts initialized
       Router.init(new FakeRemotePageManager());
       sinon.stub(Router, "init");
@@ -162,7 +162,7 @@ describe("MessageCenterFeed", () => {
     });
   });
   describe("#onAction: PREF_CHANGE", () => {
-    it("should uninitialize the MessageCenterRouter if it is already initialized and the experiment pref is false", () => {
+    it("should uninitialize the ASRouter if it is already initialized and the experiment pref is false", () => {
       // Router starts initialized
       Router.init(new FakeRemotePageManager());
       sinon.stub(Router, "uninit");
@@ -175,7 +175,7 @@ describe("MessageCenterFeed", () => {
     });
   });
   describe("#onAction: UNINIT", () => {
-    it("should uninitialize the MessageCenterRouter and restore onboarding", () => {
+    it("should uninitialize the ASRouter and restore onboarding", () => {
       Router.init(new FakeRemotePageManager());
       sinon.stub(Router, "uninit");
 

@@ -1,7 +1,7 @@
-import {MessageCenterUtils} from "../../message-center/message-center-content";
+import {ASRouterUtils} from "../../asrouter/asrouter-content";
 import React from "react";
 
-export class MessageCenterAdmin extends React.PureComponent {
+export class ASRouterAdmin extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onMessage = this.onMessage.bind(this);
@@ -15,20 +15,20 @@ export class MessageCenterAdmin extends React.PureComponent {
   }
 
   componentWillMount() {
-    MessageCenterUtils.sendMessage({type: "ADMIN_CONNECT_STATE"});
-    MessageCenterUtils.addListener(this.onMessage);
+    ASRouterUtils.sendMessage({type: "ADMIN_CONNECT_STATE"});
+    ASRouterUtils.addListener(this.onMessage);
   }
 
   componentWillUnmount() {
-    MessageCenterUtils.removeListener(this.onMessage);
+    ASRouterUtils.removeListener(this.onMessage);
   }
 
   handleBlock(id) {
-    return () => MessageCenterUtils.blockById(id);
+    return () => ASRouterUtils.blockById(id);
   }
 
   handleUnblock(id) {
-    return () => MessageCenterUtils.unblockById(id);
+    return () => ASRouterUtils.unblockById(id);
   }
 
   renderMessageItem(msg) {
@@ -60,9 +60,9 @@ export class MessageCenterAdmin extends React.PureComponent {
   }
 
   render() {
-    return (<div className="messages-admin outer-wrapper">
-      <h1>Messages Admin</h1>
-      <button className="button primary" onClick={MessageCenterUtils.getNextMessage}>Refresh Current Message</button>
+    return (<div className="asrouter-admin outer-wrapper">
+      <h1>AS Router Admin</h1>
+      <button className="button primary" onClick={ASRouterUtils.getNextMessage}>Refresh Current Message</button>
       <h2>Messages</h2>
       {this.renderMessages()}
     </div>);
