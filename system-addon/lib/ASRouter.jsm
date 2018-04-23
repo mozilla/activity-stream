@@ -61,7 +61,7 @@ class _ASRouter {
   constructor(initialState = {}) {
     this.initialized = false;
     this.messageChannel = null;
-    this._storage = new ActivityStreamStorage("snippets");
+    this._storage = null;
     this._state = Object.assign({
       currentId: null,
       blockList: [],
@@ -85,10 +85,11 @@ class _ASRouter {
    * @param {RemotePageManager} channel a RemotePageManager instance
    * @memberof _ASRouter
    */
-  async init(channel) {
+  async init(channel, storage) {
     this.messageChannel = channel;
     this.messageChannel.addMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this.initialized = true;
+    this._storage = storage;
 
     const blockList = await this._storage.get("blockList");
     this.setState({blockList});

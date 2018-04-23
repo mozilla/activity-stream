@@ -35,12 +35,12 @@ describe("ASRouter", () => {
     sandbox = sinon.sandbox.create();
     blockList = [];
     Router = new _ASRouter({messages: FAKE_MESSAGES});
-    Router._storage = {
+    const storage = {
       get: sandbox.stub().returns(Promise.resolve(blockList)),
       set: sandbox.stub().returns(Promise.resolve())
     };
     channel = new FakeRemotePageManager();
-    await Router.init(channel);
+    await Router.init(channel, storage);
   });
   afterEach(() => {
     sandbox.restore();
@@ -196,7 +196,11 @@ describe("ASRouterFeed", () => {
     // Add prefs to feed.store
     prefs = {};
     channel = new FakeRemotePageManager();
-    feed.store = {_messageChannel: {channel}, getState: () => ({Prefs: {values: prefs}})};
+    feed.store = {
+      _messageChannel: {channel},
+      getState: () => ({Prefs: {values: prefs}}),
+      dbStorage: {getDbTable: sandbox.stub().returns({})}
+    };
   });
   afterEach(() => {
     sandbox.restore();
@@ -225,6 +229,8 @@ describe("ASRouterFeed", () => {
       await feed.enable();
 
       assert.calledWith(Router.init, channel);
+      assert.calledOnce(feed.store.dbStorage.getDbTable);
+      assert.calledWithExactly(feed.store.dbStorage.getDbTable, "snippets");
       assert.calledWith(global.Services.prefs.setBoolPref, ONBOARDING_FINISHED_PREF, true);
     });
     it("should not re-initialize the ASRouter if it is already initialized", () => {
