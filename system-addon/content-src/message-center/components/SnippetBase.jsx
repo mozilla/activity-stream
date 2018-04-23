@@ -6,11 +6,14 @@ const defaultStyles = {
     bottom: 0,
     left: 0,
     right: 0,
-    padding: "20px",
-    backgroundColor: "white",
+    padding: "12px",
+    backgroundColor: "var(--newtab-card-background-color)",
+    color: "var(--newtab-text-primary-color)",
     fontSize: "12px",
     lineHeight: "16px",
-    boxShadow: "0 -1px 4px 0 rgba(12, 12, 13, 0.1)"
+    boxShadow: "0 -1px 4px 0 rgba(12, 12, 13, 0.1)",
+    display: "flex",
+    alignItems: "center"
   },
   innerWrapper: {
     maxWidth: "992px",
@@ -24,10 +27,13 @@ const defaultStyles = {
     display: "block",
     position: "absolute",
     top: "50%",
-    right: "24px",
+    offsetInlineEnd: "24px",
     height: "16px",
     width: "16px",
     backgroundImage: "url(resource://activity-stream/data/content/assets/glyph-dismiss-16.svg)",
+    // Note: this doesn't actually seem to be working
+    MozContextProperties: "fill",
+    fill: "var(--newtab-icon-primary-color)",
     opacity: 0.5,
     marginTop: "-8px",
     padding: 0
