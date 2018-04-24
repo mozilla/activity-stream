@@ -3,11 +3,12 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: var(--newtab-card-background-color);
+  background-color: var(--newtab-snippets-background-color);
   color: var(--newtab-text-primary-color);
   font-size: 12px;
   line-height: 16px;
-  box-shadow: $inner-box-shadow;
+  border-top: 1px solid var(--newtab-snippets-hairline-color);
+  box-shadow: $shadow-secondary;
   display: flex;
   align-items: center;
 
@@ -55,4 +56,3 @@
     display: block;
   }
 }
-
