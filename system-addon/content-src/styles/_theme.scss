@@ -7,6 +7,17 @@
   --newtab-textbox-focus-boxshadow: textbox-shadow($color);
 }
 
+// scss variables related to the theme.
+$border-primary: 1px solid var(--newtab-border-primary-color);
+$border-secondary: 1px solid var(--newtab-border-secondary-color);
+$inner-box-shadow: 0 0 0 1px var(--newtab-inner-box-shadow-color);
+$input-border: 1px solid var(--newtab-textbox-border);
+$input-border-active: 1px solid var(--newtab-textbox-focus-color);
+$input-error-border: 1px solid $red-60;
+$input-error-boxshadow: textbox-shadow($red-60);
+$shadow-primary: 0 0 0 5px var(--newtab-card-active-outline-color);
+$shadow-secondary: 0 1px 4px 0 $grey-90-20;
+
 // Default theme
 body {
   // General styles
@@ -52,6 +63,7 @@ body {
 
   // Top Sites
   --newtab-topsites-background-color: $white;
+  --newtab-topsites-icon-shadow: inset $inner-box-shadow;
   --newtab-topsites-label-color: inherit;
 
   // Cards
@@ -106,6 +118,7 @@ body {
 
   // Top Sites
   --newtab-topsites-background-color: $grey-70;
+  --newtab-topsites-icon-shadow: none;
   --newtab-topsites-label-color: $grey-10-80;
 
   // Cards
@@ -114,14 +127,3 @@ body {
   --newtab-card-hairline-color: $grey-10-10;
   --newtab-card-shadow: 0 1px 8px 0 $grey-90-20;
 }
-
-// scss variables related to the theme.
-$border-primary: 1px solid var(--newtab-border-primary-color);
-$border-secondary: 1px solid var(--newtab-border-secondary-color);
-$shadow-primary: 0 0 0 5px var(--newtab-card-active-outline-color);
-$shadow-secondary: 0 1px 4px 0 $grey-90-20;
-$input-border: solid 1px var(--newtab-textbox-border);
-$input-border-active: solid 1px var(--newtab-textbox-focus-color);
-$input-error-border: solid 1px $red-60;
-$input-error-boxshadow: textbox-shadow($red-60);
-$inner-box-shadow: 0 0 0 1px var(--newtab-inner-box-shadow-color);
