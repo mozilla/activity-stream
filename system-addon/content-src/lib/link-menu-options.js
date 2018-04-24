@@ -136,8 +136,8 @@ export const LinkMenuOptions = {
     id: "menu_action_go_to_download_page",
     icon: "download",
     action: ac.OnlyToMain({
-      type: at.GO_TO_DOWNLOAD_PAGE,
-      data: {url: site.url}
+      type: at.OPEN_LINK,
+      data: {url: site.referrer}
     }),
     disabled: !site.referrer
   }),

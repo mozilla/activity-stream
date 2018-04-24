@@ -204,7 +204,7 @@ describe("<LinkMenu>", () => {
       menu_action_archive_pocket: {pocket_id: "1234"},
       menu_action_show_file_default: {url: FAKE_SITE.url},
       menu_action_copy_download_link: {url: FAKE_SITE.url},
-      menu_action_go_to_download_page: {url: FAKE_SITE.url},
+      menu_action_go_to_download_page: {url: FAKE_SITE.referrer},
       menu_action_remove_download: {url: FAKE_SITE.url}
     };
 
