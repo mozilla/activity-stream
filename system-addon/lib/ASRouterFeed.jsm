@@ -13,8 +13,9 @@ class ASRouterFeed {
     this.router = options.router || ASRouter;
   }
 
-  enable() {
-    this.router.init(this.store._messageChannel.channel);
+  async enable() {
+    await this.router.init(this.store._messageChannel.channel,
+      this.store.dbStorage.getDbTable("snippets"));
     // Disable onboarding
     Services.prefs.setBoolPref(ONBOARDING_FINISHED_PREF, true);
   }

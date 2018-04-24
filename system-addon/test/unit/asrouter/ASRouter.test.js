@@ -29,10 +29,21 @@ const FAKE_MESSAGE_IDS = FAKE_MESSAGES.map(message => message.id);
 describe("ASRouter", () => {
   let Router;
   let channel;
-  beforeEach(() => {
+  let sandbox;
+  let blockList;
+  beforeEach(async () => {
+    sandbox = sinon.sandbox.create();
+    blockList = [];
     Router = new _ASRouter({messages: FAKE_MESSAGES});
+    const storage = {
+      get: sandbox.stub().returns(Promise.resolve(blockList)),
+      set: sandbox.stub().returns(Promise.resolve())
+    };
     channel = new FakeRemotePageManager();
-    Router.init(channel);
+    await Router.init(channel, storage);
+  });
+  afterEach(() => {
+    sandbox.restore();
   });
   describe(".state", () => {
     it("should throw if an attempt to set .state was made", () => {
@@ -46,6 +57,37 @@ describe("ASRouter", () => {
       assert.calledWith(channel.addMessageListener, CHILD_TO_PARENT_MESSAGE_NAME);
       const [, listenerAdded] = channel.addMessageListener.firstCall.args;
       assert.isFunction(listenerAdded);
+    });
+    it("should update the blockList state", () => {
+      blockList.push("MESSAGE_ID");
+
+      assert.calledOnce(Router._storage.get);
+      assert.calledWithExactly(Router._storage.get, "blockList");
+      assert.deepEqual(Router.state.blockList, ["MESSAGE_ID"]);
+    });
+  });
+  describe("#sendNextMessage", () => {
+    afterEach(async () => {
+      // Reset the blockList after the test is finished.
+      await Router.setState(() => ({blockList: []}));
+    });
+    it("should not return a blocked message", async () => {
+      await Router.setState(() => ({blockList: [FAKE_MESSAGE_IDS[0], FAKE_MESSAGE_IDS[1]]}));
+      const targetStub = {sendAsyncMessage: sandbox.stub()};
+
+      await Router.sendNextMessage(targetStub, null);
+
+      assert.calledOnce(targetStub.sendAsyncMessage);
+      assert.equal(Router.state.currentId, FAKE_MESSAGE_IDS[2]);
+    });
+    it("should not return any message", async () => {
+      await Router.setState(() => ({blockList: [FAKE_MESSAGE_IDS[0], FAKE_MESSAGE_IDS[1], FAKE_MESSAGE_IDS[2]]}));
+      const targetStub = {sendAsyncMessage: sandbox.stub()};
+
+      await Router.sendNextMessage(targetStub, null);
+
+      assert.calledOnce(targetStub.sendAsyncMessage);
+      assert.equal(Router.state.currentId, null);
     });
   });
   describe("#uninit", () => {
@@ -86,18 +128,26 @@ describe("ASRouter", () => {
       const msg = createRemoteMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id: "foo"}});
       await Router.onMessage(msg);
 
-      assert.isTrue(Router.state.blockList.foo);
+      assert.isTrue(Router.state.blockList.includes("foo"));
       assert.isNull(Router.state.currentId);
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_MESSAGE"});
+      assert.calledOnce(Router._storage.set);
+      assert.calledWithExactly(Router._storage.set, "blockList", ["foo"]);
     });
   });
   describe("#onMessage: UNBLOCK_MESSAGE_BY_ID", () => {
     it("should remove the id from the blockList", async () => {
       await Router.onMessage(createRemoteMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id: "foo"}}));
-      assert.isTrue(Router.state.blockList.foo);
+      assert.isTrue(Router.state.blockList.includes("foo"));
       await Router.onMessage(createRemoteMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id: "foo"}}));
 
-      assert.isUndefined(Router.state.blockList.foo);
+      assert.isFalse(Router.state.blockList.includes("foo"));
+    });
+    it("should save the blockList", async () => {
+      await Router.onMessage(createRemoteMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id: "foo"}}));
+
+      assert.calledOnce(Router._storage.set);
+      assert.calledWithExactly(Router._storage.set, "blockList", []);
     });
   });
   describe("#onMessage: ADMIN_CONNECT_STATE", () => {
@@ -106,6 +156,27 @@ describe("ASRouter", () => {
       await Router.onMessage(msg);
 
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: Router.state});
+    });
+  });
+
+  describe("#onMessage: CONNECT_UI_REQUEST GET_NEXT_MESSAGE", () => {
+    it("should call sendNextMessage on CONNECT_UI_REQUEST", async () => {
+      sandbox.stub(Router, "sendNextMessage").resolves();
+      const msg = createRemoteMessage({type: "CONNECT_UI_REQUEST"});
+
+      await Router.onMessage(msg);
+
+      assert.calledOnce(Router.sendNextMessage);
+      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager));
+    });
+    it("should call sendNextMessage on GET_NEXT_MESSAGE", async () => {
+      sandbox.stub(Router, "sendNextMessage").resolves();
+      const msg = createRemoteMessage({type: "GET_NEXT_MESSAGE"});
+
+      await Router.onMessage(msg);
+
+      assert.calledOnce(Router.sendNextMessage);
+      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager));
     });
   });
 });
@@ -125,7 +196,11 @@ describe("ASRouterFeed", () => {
     // Add prefs to feed.store
     prefs = {};
     channel = new FakeRemotePageManager();
-    feed.store = {_messageChannel: {channel}, getState: () => ({Prefs: {values: prefs}})};
+    feed.store = {
+      _messageChannel: {channel},
+      getState: () => ({Prefs: {values: prefs}}),
+      dbStorage: {getDbTable: sandbox.stub().returns({})}
+    };
   });
   afterEach(() => {
     sandbox.restore();
@@ -140,13 +215,22 @@ describe("ASRouterFeed", () => {
   describe("#onAction: INIT", () => {
     it("should initialize the ASRouter if it is not initialized and override onboardin if the experiment pref is true", () => {
       // Router starts out not initialized
-      sinon.stub(Router, "init");
+      sandbox.stub(feed, "enable");
       prefs[EXPERIMENT_PREF] = true;
 
       // call .onAction with INIT
       feed.onAction({type: at.INIT});
 
+      assert.calledOnce(feed.enable);
+    });
+    it("should initialize the MessageCenterRouter and override onboarding", async () => {
+      sandbox.stub(Router, "init").returns(Promise.resolve());
+
+      await feed.enable();
+
       assert.calledWith(Router.init, channel);
+      assert.calledOnce(feed.store.dbStorage.getDbTable);
+      assert.calledWithExactly(feed.store.dbStorage.getDbTable, "snippets");
       assert.calledWith(global.Services.prefs.setBoolPref, ONBOARDING_FINISHED_PREF, true);
     });
     it("should not re-initialize the ASRouter if it is already initialized", () => {

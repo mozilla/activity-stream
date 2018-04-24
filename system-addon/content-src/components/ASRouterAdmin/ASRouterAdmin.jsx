@@ -33,7 +33,7 @@ export class ASRouterAdmin extends React.PureComponent {
 
   renderMessageItem(msg) {
     const isCurrent = msg.id === this.state.currentId;
-    const isBlocked = this.state.blockList[msg.id];
+    const isBlocked = this.state.blockList.includes(msg.id);
 
     let itemClassName = "message-item";
     if (isCurrent) { itemClassName += " current"; }
