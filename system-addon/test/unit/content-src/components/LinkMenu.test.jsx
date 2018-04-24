@@ -176,13 +176,23 @@ describe("<LinkMenu>", () => {
   describe(".onClick", () => {
     const FAKE_INDEX = 3;
     const FAKE_SOURCE = "TOP_SITES";
-    const FAKE_SITE = {url: "https://foo.com", pocket_id: "1234", referrer: "https://foo.com/ref", title: "bar", bookmarkGuid: 1234, hostname: "foo", type: "bookmark", path: "foo"};
+    const FAKE_SITE = {
+      bookmarkGuid: 1234,
+      hostname: "foo",
+      path: "foo",
+      pocket_id: "1234",
+      referrer: "https://foo.com/ref",
+      title: "bar",
+      type: "bookmark",
+      typedBonus: true,
+      url: "https://foo.com"
+    };
     const dispatch = sinon.stub();
     const propOptions = ["ShowFile", "CopyDownloadLink", "GoToDownloadPage", "RemoveDownload", "Separator", "RemoveBookmark", "AddBookmark", "OpenInNewWindow", "OpenInPrivateWindow", "BlockUrl", "DeleteUrl", "PinTopSite", "UnpinTopSite", "SaveToPocket", "DeleteFromPocket", "ArchiveFromPocket", "WebExtDismiss"];
     const expectedActionData = {
       menu_action_remove_bookmark: FAKE_SITE.bookmarkGuid,
       menu_action_bookmark: {url: FAKE_SITE.url, title: FAKE_SITE.title, type: FAKE_SITE.type},
-      menu_action_open_new_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
+      menu_action_open_new_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer, typedBonus: FAKE_SITE.typedBonus},
       menu_action_open_private_window: {url: FAKE_SITE.url, referrer: FAKE_SITE.referrer},
       menu_action_dismiss: {url: FAKE_SITE.url, pocket_id: FAKE_SITE.pocket_id},
       menu_action_webext_dismiss: {source: "TOP_SITES", url: FAKE_SITE.url, action_position: 3},

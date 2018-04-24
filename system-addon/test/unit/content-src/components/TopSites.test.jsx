@@ -543,20 +543,20 @@ describe("<TopSite>", () => {
       ["CheckPinTopSite", "EditTopSite", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl", "DeleteUrl"]);
   });
 
-  describe("#trackClick", () => {
+  describe("#onLinkClick", () => {
     it("should call dispatch when the link is clicked", () => {
       const dispatch = sinon.stub();
       const wrapper = shallow(<TopSite link={link} index={3} dispatch={dispatch} />);
 
-      wrapper.find(TopSiteLink).simulate("click", {});
+      wrapper.find(TopSiteLink).simulate("click", {preventDefault() {}});
 
-      assert.calledOnce(dispatch);
+      assert.calledTwice(dispatch);
     });
     it("should dispatch a UserEventAction with the right data", () => {
       const dispatch = sinon.stub();
       const wrapper = shallow(<TopSite link={Object.assign({}, link, {iconType: "rich_icon", isPinned: true})} index={3} dispatch={dispatch} />);
 
-      wrapper.find(TopSiteLink).simulate("click", {});
+      wrapper.find(TopSiteLink).simulate("click", {preventDefault() {}});
 
       const [action] = dispatch.firstCall.args;
       assert.isUserEventAction(action);
@@ -566,6 +566,16 @@ describe("<TopSite>", () => {
       assert.propertyVal(action.data, "action_position", 3);
       assert.propertyVal(action.data.value, "card_type", "pinned");
       assert.propertyVal(action.data.value, "icon_type", "rich_icon");
+    });
+    it("should dispatch OPEN_LINK with the right data", () => {
+      const dispatch = sinon.stub();
+      const wrapper = shallow(<TopSite link={Object.assign({}, link, {typedBonus: true})} index={3} dispatch={dispatch} />);
+
+      wrapper.find(TopSiteLink).simulate("click", {preventDefault() {}});
+
+      const [action] = dispatch.secondCall.args;
+      assert.propertyVal(action, "type", at.OPEN_LINK);
+      assert.propertyVal(action.data, "typedBonus", true);
     });
   });
 });

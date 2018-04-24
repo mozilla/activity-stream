@@ -66,6 +66,7 @@ const TEST_GLOBAL = {
         return this;
       },
       insert() {},
+      markPageAsTyped() {},
       removeObserver() {}
     }
   },

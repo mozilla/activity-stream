@@ -166,10 +166,18 @@ describe("Top Sites Feed", () => {
     describe("general", () => {
       it("should get the links from NewTabUtils", async () => {
         const result = await feed.getLinksWithDefaults();
-        const reference = links.map(site => Object.assign({}, site, {hostname: shortURLStub(site)}));
+        const reference = links.map(site => Object.assign({}, site, {
+          hostname: shortURLStub(site),
+          typedBonus: true
+        }));
 
         assert.deepEqual(result, reference);
         assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
+      });
+      it("should indicate the links get typed bonus", async () => {
+        const result = await feed.getLinksWithDefaults();
+
+        assert.propertyVal(result[0], "typedBonus", true);
       });
       it("should not filter out adult sites when pref is false", async () => {
         await feed.getLinksWithDefaults();
@@ -193,6 +201,7 @@ describe("Top Sites Feed", () => {
         const topsite = {
           frecency: FAKE_FRECENCY,
           hostname: shortURLStub({url}),
+          typedBonus: true,
           url
         };
         const blockedDefaultSite = {url: "https://foo.com"};
@@ -222,7 +231,11 @@ describe("Top Sites Feed", () => {
         links = [{frecency: FAKE_FRECENCY, url: "foo.com"}];
 
         const result = await feed.getLinksWithDefaults();
-        const reference = [...links, ...DEFAULT_TOP_SITES].map(s => Object.assign({}, s, {hostname: shortURLStub(s)}));
+        const reference = [...links, ...DEFAULT_TOP_SITES].map(s =>
+          Object.assign({}, s, {
+            hostname: shortURLStub(s),
+            typedBonus: true
+          }));
 
         assert.deepEqual(result, reference);
       });
@@ -233,7 +246,11 @@ describe("Top Sites Feed", () => {
           links.push({frecency: FAKE_FRECENCY, url: `foo${i}.com`});
         }
         const result = await feed.getLinksWithDefaults();
-        const reference = [...links, DEFAULT_TOP_SITES[0]].map(s => Object.assign({}, s, {hostname: shortURLStub(s)}));
+        const reference = [...links, DEFAULT_TOP_SITES[0]].map(s =>
+          Object.assign({}, s, {
+            hostname: shortURLStub(s),
+            typedBonus: true
+          }));
 
         assert.lengthOf(result, numVisible);
         assert.deepEqual(result, reference);
@@ -484,7 +501,10 @@ describe("Top Sites Feed", () => {
     });
     it("should dispatch an action with the links returned", async () => {
       await feed.refresh({broadcast: true});
-      const reference = links.map(site => Object.assign({}, site, {hostname: shortURLStub(site)}));
+      const reference = links.map(site => Object.assign({}, site, {
+        hostname: shortURLStub(site),
+        typedBonus: true
+      }));
 
       assert.calledOnce(feed.store.dispatch);
       assert.propertyVal(feed.store.dispatch.firstCall.args[0], "type", at.TOP_SITES_UPDATED);
