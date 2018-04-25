@@ -22,8 +22,8 @@ describe("ActivityStreamStorage", () => {
   it("should not throw an error when accessing db", async () => {
     assert.ok(storage.db);
   });
-  it("should throw if arguments not provided", () => {
-    assert.throws(() => new ActivityStreamStorage());
+  it("should throw if required arguments not provided", () => {
+    assert.throws(() => new ActivityStreamStorage({telemetry: true}));
   });
   describe("#getDbTable", () => {
     let testStorage;
