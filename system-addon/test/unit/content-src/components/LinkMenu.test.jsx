@@ -13,10 +13,10 @@ describe("<LinkMenu>", () => {
     wrapper = shallowWithIntl(<LinkMenu site={{url: ""}} options={["CheckPinTopSite", "CheckBookmark", "OpenInNewWindow"]} dispatch={() => {}} />);
   });
   it("should render a ContextMenu element", () => {
-    assert.ok(wrapper.find(ContextMenu));
+    assert.ok(wrapper.find(ContextMenu).exists());
   });
   it("should pass onUpdate, and options to ContextMenu", () => {
-    assert.ok(wrapper.find(ContextMenu));
+    assert.ok(wrapper.find(ContextMenu).exists());
     const contextMenuProps = wrapper.find(ContextMenu).props();
     ["onUpdate", "options"].forEach(prop => assert.property(contextMenuProps, prop));
   });
