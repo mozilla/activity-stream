@@ -15,7 +15,7 @@
     "redux": "3.6.0"
   },
   "devDependencies": {
-    "@octokit/rest": "14.0.8",
+    "@octokit/rest": "15.3.0",
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
     "babel-plugin-jsm-to-commonjs": "0.4.0",
