@@ -212,7 +212,7 @@ describe("FaviconFeed", () => {
     });
 
     it("should setAndFetchFaviconForPage if the url is in the TippyTop data", async () => {
-      await feed.fetchIcon(url);
+      await feed.fetchIcon({}, url);
 
       assert.calledOnce(global.PlacesUtils.favicons.setAndFetchFaviconForPage);
       assert.calledWith(global.PlacesUtils.favicons.setAndFetchFaviconForPage,
@@ -226,49 +226,49 @@ describe("FaviconFeed", () => {
     it("should NOT setAndFetchFaviconForPage if site_icons pref is false", async () => {
       siteIconsPref = false;
 
-      await feed.fetchIcon(url);
+      await feed.fetchIcon({}, url);
 
       assert.notCalled(global.PlacesUtils.favicons.setAndFetchFaviconForPage);
     });
     it("should NOT setAndFetchFaviconForPage if the endpoint is empty", async () => {
       feed.store.state.Prefs.values["tippyTop.service.endpoint"] = "";
 
-      await feed.fetchIcon(url);
+      await feed.fetchIcon({}, url);
 
       assert.notCalled(global.PlacesUtils.favicons.setAndFetchFaviconForPage);
     });
     it("should NOT setAndFetchFaviconForPage if the url is NOT in the TippyTop data", async () => {
-      await feed.fetchIcon("https://example.com");
+      await feed.fetchIcon({}, "https://example.com");
 
       assert.notCalled(global.PlacesUtils.favicons.setAndFetchFaviconForPage);
     });
     it("should issue a fetchIconFromRedirects if the url is NOT in the TippyTop data", async () => {
       sandbox.spy(global.Services.tm, "idleDispatchToMainThread");
 
-      await feed.fetchIcon("https://example.com");
+      await feed.fetchIcon({}, "https://example.com");
 
       assert.calledOnce(global.Services.tm.idleDispatchToMainThread);
     });
     it("should only issue fetchIconFromRedirects once on the same url", async () => {
       sandbox.spy(global.Services.tm, "idleDispatchToMainThread");
 
-      await feed.fetchIcon("https://example.com");
-      await feed.fetchIcon("https://example.com");
+      await feed.fetchIcon({}, "https://example.com");
+      await feed.fetchIcon({}, "https://example.com");
 
       assert.calledOnce(global.Services.tm.idleDispatchToMainThread);
     });
     it("should issue fetchIconFromRedirects twice on two different urls", async () => {
       sandbox.spy(global.Services.tm, "idleDispatchToMainThread");
 
-      await feed.fetchIcon("https://example.com");
-      await feed.fetchIcon("https://another.example.com");
+      await feed.fetchIcon({}, "https://example.com");
+      await feed.fetchIcon({}, "https://another.example.com");
 
       assert.calledTwice(global.Services.tm.idleDispatchToMainThread);
     });
     it("should cause sites to initialize with fetched sites if no sites", async () => {
       delete feed._sitesByDomain;
 
-      await feed.fetchIcon(url);
+      await feed.fetchIcon({}, url);
 
       assert.containsAllKeys(feed._sitesByDomain, ["facebook.com", "gmail.com", "mail.google.com"]);
     });
@@ -290,9 +290,10 @@ describe("FaviconFeed", () => {
     it("should fetchIcon on RICH_ICON_MISSING", async () => {
       feed.fetchIcon = sinon.spy();
       const url = "https://mozilla.org";
-      feed.onAction({type: at.RICH_ICON_MISSING, data: {url}});
+      const link = {url};
+      feed.onAction({type: at.RICH_ICON_MISSING, data: {link, url}});
       assert.calledOnce(feed.fetchIcon);
-      assert.calledWith(feed.fetchIcon, url);
+      assert.calledWith(feed.fetchIcon, link, url);
     });
   });
 

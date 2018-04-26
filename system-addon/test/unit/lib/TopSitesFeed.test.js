@@ -288,18 +288,18 @@ describe("Top Sites Feed", () => {
 
         assert.calledTwice(global.NewTabUtils.activityStreamLinks.getTopSites);
       });
-      it("should migrate frecent screenshot data without getting screenshots again", async () => {
-        stubFaviconsToUseScreenshots();
-        await feed.getLinksWithDefaults();
-        const {callCount} = fakeScreenshot.getScreenshotForURL;
-        feed.frecentCache.expire();
-
-        const result = await feed.getLinksWithDefaults();
-
-        assert.calledTwice(global.NewTabUtils.activityStreamLinks.getTopSites);
-        assert.callCount(fakeScreenshot.getScreenshotForURL, callCount);
-        assert.propertyVal(result[0], "screenshot", FAKE_SCREENSHOT);
-      });
+      // it("should migrate frecent screenshot data without getting screenshots again", async () => {
+      //   stubFaviconsToUseScreenshots();
+      //   await feed.getLinksWithDefaults();
+      //   const {callCount} = fakeScreenshot.getScreenshotForURL;
+      //   feed.frecentCache.expire();
+      //
+      //   const result = await feed.getLinksWithDefaults();
+      //
+      //   assert.calledTwice(global.NewTabUtils.activityStreamLinks.getTopSites);
+      //   assert.callCount(fakeScreenshot.getScreenshotForURL, callCount);
+      //   assert.propertyVal(result[0], "screenshot", FAKE_SCREENSHOT);
+      // });
       it("should migrate pinned favicon data without getting favicons again", async () => {
         fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/"}];
         await feed.getLinksWithDefaults();
@@ -360,26 +360,26 @@ describe("Top Sites Feed", () => {
         });
 
         const getTwice = () => Promise.all([feed.getLinksWithDefaults(), feed.getLinksWithDefaults()]);
-        const resolveAll = () => resolvers.forEach(resolve => resolve(FAKE_SCREENSHOT));
+        // const resolveAll = () => resolvers.forEach(resolve => resolve(FAKE_SCREENSHOT));
 
         it("should call the backing data once", async () => {
           await getTwice();
 
           assert.calledOnce(global.NewTabUtils.activityStreamLinks.getTopSites);
         });
-        it("should get screenshots once per link", async () => {
-          await getTwice();
-
-          assert.callCount(fakeScreenshot.getScreenshotForURL, FAKE_LINKS.length);
-        });
-        it("should dispatch once per link screenshot fetched", async () => {
-          feed._requestRichIcon = sinon.stub();
-          await getTwice();
-
-          await resolveAll();
-
-          assert.callCount(feed.store.dispatch, FAKE_LINKS.length);
-        });
+        // it("should get screenshots once per link", async () => {
+        //   await getTwice();
+        //
+        //   assert.callCount(fakeScreenshot.getScreenshotForURL, FAKE_LINKS.length);
+        // });
+        // it("should dispatch once per link screenshot fetched", async () => {
+        //   feed._requestRichIcon = sinon.stub();
+        //   await getTwice();
+        //
+        //   await resolveAll();
+        //
+        //   assert.callCount(feed.store.dispatch, FAKE_LINKS.length);
+        // });
       });
     });
     describe("deduping", () => {
@@ -610,17 +610,11 @@ describe("Top Sites Feed", () => {
 
       assert.notCalled(fakeScreenshot.getScreenshotForURL);
     });
-    it("should get a screenshot if the link is missing it", () => {
-      feed._fetchIcon(Object.assign({__sharedCache: {}}, FAKE_LINKS[0]));
-
-      assert.calledOnce(fakeScreenshot.getScreenshotForURL);
-      assert.calledWith(fakeScreenshot.getScreenshotForURL, FAKE_LINKS[0].url);
-    });
     it("should update the link's cache with a screenshot", async () => {
       const updateLink = sandbox.stub();
       const link = {__sharedCache: {updateLink}};
 
-      await feed._fetchIcon(link);
+      await feed._fetchScreenshot(link, link.url);
 
       assert.calledOnce(updateLink);
       assert.calledWith(updateLink, "screenshot", FAKE_SCREENSHOT);
@@ -810,6 +804,14 @@ describe("Top Sites Feed", () => {
       feed.onAction({type: "UNINIT"});
 
       assert.calledOnce(fakePageThumbs.removeExpirationFilter);
+    });
+    it("should get a screenshot on SCREENSHOT_NEEDED if the link is missing it", () => {
+      const link = Object.assign({__sharedCache: {}}, FAKE_LINKS[0]);
+      const {url} = link;
+      feed.onAction({type: "SCREENSHOT_NEEDED", data: {link, url}});
+
+      assert.calledOnce(fakeScreenshot.getScreenshotForURL);
+      assert.calledWith(fakeScreenshot.getScreenshotForURL, url);
     });
   });
   describe("#add", () => {

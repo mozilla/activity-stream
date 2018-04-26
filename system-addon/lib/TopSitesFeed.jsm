@@ -200,7 +200,7 @@ this.TopSitesFeed = class TopSitesFeed {
   /**
    * Get an image for the link preferring tippy top, rich favicon, screenshots.
    */
-  async _fetchIcon(link) {
+  _fetchIcon(link) {
     // Nothing to do if we already have a rich icon from the page
     if (link.favicon && link.faviconSize >= MIN_FAVICON_SIZE) {
       return;
@@ -213,10 +213,7 @@ this.TopSitesFeed = class TopSitesFeed {
     }
 
     // Make a request for a better icon
-    this._requestRichIcon(link.url);
-
-    // Also request a screenshot if we don't have one yet
-    await this._fetchScreenshot(link, link.url);
+    this._requestRichIcon(link, link.url);
   }
 
   /**
@@ -248,10 +245,10 @@ this.TopSitesFeed = class TopSitesFeed {
     }, target));
   }
 
-  _requestRichIcon(url) {
+  _requestRichIcon(link, url) {
     this.store.dispatch({
       type: at.RICH_ICON_MISSING,
-      data: {url}
+      data: {link, url}
     });
   }
 
@@ -431,6 +428,9 @@ this.TopSitesFeed = class TopSitesFeed {
         break;
       case at.PREVIEW_REQUEST:
         this.getScreenshotPreview(action.data.url, action.meta.fromTarget);
+        break;
+      case at.SCREENSHOT_NEEDED:
+        this._fetchScreenshot(action.data.link, action.data.url);
         break;
       case at.UNINIT:
         this.uninit();
