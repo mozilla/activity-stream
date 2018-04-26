@@ -470,13 +470,6 @@ describe("Top Sites Feed", () => {
       assert.calledOnce(feed.refresh);
       assert.calledWithExactly(feed.refresh, {broadcast: true});
     });
-    it("should initialise _tippyTopProvider", async () => {
-      feed._tippyTopProvider.initialized = false;
-
-      await feed.init();
-
-      assert.isTrue(feed._tippyTopProvider.initialized);
-    });
     it("should initialise the storage", async () => {
       await feed.init();
 
@@ -487,6 +480,22 @@ describe("Top Sites Feed", () => {
   describe("#refresh", () => {
     beforeEach(() => {
       sandbox.stub(feed, "_fetchIcon");
+    });
+    it("should wait for tippytop to initialize", async () => {
+      feed._tippyTopProvider.initialized = false;
+      sinon.stub(feed._tippyTopProvider, "init").resolves();
+
+      await feed.refresh();
+
+      assert.calledOnce(feed._tippyTopProvider.init);
+    });
+    it("should not init the tippyTopProvider if already initialized", async () => {
+      feed._tippyTopProvider.initialized = true;
+      sinon.stub(feed._tippyTopProvider, "init").resolves();
+
+      await feed.refresh();
+
+      assert.notCalled(feed._tippyTopProvider.init);
     });
     it("should broadcast TOP_SITES_UPDATED", async () => {
       sinon.stub(feed, "getLinksWithDefaults").returns(Promise.resolve([]));
