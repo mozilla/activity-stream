@@ -712,7 +712,7 @@ describe("<TopSiteForm>", () => {
     beforeEach(() => setup());
 
     it("should render the component", () => {
-      assert.ok(wrapper.find(TopSiteForm));
+      assert.ok(wrapper.find(TopSiteForm).exists());
     });
     it("should have the correct header", () => {
       assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_add_header").length, 1);
@@ -785,7 +785,7 @@ describe("<TopSiteForm>", () => {
     beforeEach(() => setup({site: {url: "https://foo.bar", label: "baz", customScreenshotURL: "http://foo"}, index: 7}));
 
     it("should render the component", () => {
-      assert.ok(wrapper.find(TopSiteForm));
+      assert.ok(wrapper.find(TopSiteForm).exists());
     });
     it("should have the correct header", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_edit_header").length, 1);

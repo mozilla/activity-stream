@@ -64,8 +64,7 @@ describe("<Card>", () => {
 
     assert.lengthOf(wrapper.find(".card-preview-image"), 0);
   });
-  it("should have a link menu", () => assert.ok(wrapper.find(LinkMenu)));
-  it("should have a link menu button", () => assert.ok(wrapper.find(".context-menu-button")));
+  it("should have a link menu button", () => assert.ok(wrapper.find(".context-menu-button").exists()));
   it("should render a link menu when button is clicked", () => {
     const button = wrapper.find(".context-menu-button");
     assert.equal(wrapper.find(LinkMenu).length, 0);

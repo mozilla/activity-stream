@@ -22,10 +22,10 @@ describe("<ConfirmDialog>", () => {
     wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
   });
   it("should render an overlay", () => {
-    assert.ok(wrapper.find(".modal-overlay"));
+    assert.ok(wrapper.find(".modal-overlay").exists());
   });
   it("should render a modal", () => {
-    assert.ok(wrapper.find(ConfirmDialog));
+    assert.ok(wrapper.find(".confirmation-dialog").exists());
   });
   it("should not render if visible is false", () => {
     ConfirmDialogProps.visible = false;
@@ -59,7 +59,7 @@ describe("<ConfirmDialog>", () => {
       wrapper = shallowWithIntl(<ConfirmDialog dispatch={dispatch} {...ConfirmDialogProps} />);
 
       let doneLabel = wrapper.find(".actions").childAt(1).find(FormattedMessage);
-      assert.ok(doneLabel);
+      assert.ok(doneLabel.exists());
       assert.equal(doneLabel.props().id, ConfirmDialogProps.data.confirm_button_string_id);
     });
   });
@@ -67,7 +67,7 @@ describe("<ConfirmDialog>", () => {
     it("should emit AlsoToMain DIALOG_CANCEL when you click the overlay", () => {
       let overlay = wrapper.find(".modal-overlay");
 
-      assert.ok(overlay);
+      assert.ok(overlay.exists());
       overlay.simulate("click");
 
       // Two events are emitted: UserEvent+AlsoToMain.
