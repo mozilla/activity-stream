@@ -4,15 +4,15 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
   /**
    * @param storeNames Array of strings used to create all the required stores
    */
-  constructor(options = {}) {
-    if (!options.storeNames || !options.telemetry) {
-      throw new Error(`storeNames and telemetry are required, called only with ${Object.keys(options)}`);
+  constructor({storeNames, telemetry}) {
+    if (!storeNames) {
+      throw new Error("storeNames required");
     }
 
     this.dbName = "ActivityStream";
     this.dbVersion = 3;
-    this.storeNames = options.storeNames;
-    this.telemetry = options.telemetry;
+    this.storeNames = storeNames;
+    this.telemetry = telemetry;
   }
 
   get db() {
