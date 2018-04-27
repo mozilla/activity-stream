@@ -96,8 +96,7 @@ export class ASRouterUISurface extends React.PureComponent {
         dispatchImpressionStats={this.dispatchImpressionStats}
         message={message}
         sendOnMount={true}
-        shouldSendImpressionsOnUpdate={this.shouldSendImpressionsOnUpdate}
-        shouldSendImpressionStats={true}>
+        shouldSendImpressionsOnUpdate={this.shouldSendImpressionsOnUpdate}>
         <SimpleSnippet
           {...message}
           UISurface={this.props.id}

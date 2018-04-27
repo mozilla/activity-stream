@@ -362,7 +362,6 @@ describe("<ImpressionsWrapper>", () => {
   it("should call sendImpressionStatsOrAddListener only once for multiple updates", () => {
     const prevProps = {};
     defaultProps.shouldSendImpressionsOnUpdate.returns(true);
-    wrapper.setProps({shouldSendImpressionStats: true});
 
     // Multiple updates
     wrapper.instance().componentDidUpdate(prevProps);
@@ -402,13 +401,6 @@ describe("<ImpressionsWrapper>", () => {
   });
 
   describe("#sendImpressionStatsOrAddListener", () => {
-    it("should return early if shouldSendImpressionStats is false", () => {
-      wrapper.instance().sendImpressionStatsOrAddListener();
-
-      assert.notCalled(defaultProps.dispatchImpressionStats);
-      assert.notCalled(defaultProps.document.removeEventListener);
-    });
-
     it("should add an event listener if the visibilityState is not VISIBLE", () => {
       wrapper.setProps({shouldSendImpressionStats: true});
 
@@ -419,7 +411,6 @@ describe("<ImpressionsWrapper>", () => {
     });
 
     it("should add an event listener if the visibilityState is not VISIBLE", () => {
-      wrapper.setProps({shouldSendImpressionStats: true});
       wrapper.instance()._onVisibilityChange = () => {};
 
       wrapper.instance().sendImpressionStatsOrAddListener();
@@ -429,10 +420,7 @@ describe("<ImpressionsWrapper>", () => {
     });
 
     it("should dispatch impression if visibilityState is VISIBLE", () => {
-      wrapper.setProps({
-        shouldSendImpressionStats: true,
-        document: Object.assign(defaultProps.document, {visibilityState: VISIBLE})
-      });
+      wrapper.setProps({document: Object.assign(defaultProps.document, {visibilityState: VISIBLE})});
 
       wrapper.instance().sendImpressionStatsOrAddListener();
 
@@ -441,8 +429,6 @@ describe("<ImpressionsWrapper>", () => {
     });
 
     it("should not dispatch impression if visiblity is not VISIBLE", () => {
-      wrapper.setProps({shouldSendImpressionStats: true});
-
       wrapper.instance().sendImpressionStatsOrAddListener();
 
       // Call the addEventListener cb;
@@ -453,8 +439,6 @@ describe("<ImpressionsWrapper>", () => {
     });
 
     it("should dispatch impression if visiblity is VISIBLE", () => {
-      wrapper.setProps({shouldSendImpressionStats: true});
-
       wrapper.instance().sendImpressionStatsOrAddListener();
 
       wrapper.setProps({document: Object.assign(defaultProps.document, {visibilityState: VISIBLE})});
@@ -468,10 +452,7 @@ describe("<ImpressionsWrapper>", () => {
     });
 
     it("should send 1 impression when the page becomes visible after loading", () => {
-      defaultProps = Object.assign({}, defaultProps, {
-        sendOnMount: true,
-        shouldSendImpressionStats: true
-      });
+      defaultProps = Object.assign({}, defaultProps, {sendOnMount: true});
       wrapper = setUp(defaultProps);
 
       assert.calledOnce(defaultProps.document.addEventListener);

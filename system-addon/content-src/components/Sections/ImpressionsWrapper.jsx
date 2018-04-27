@@ -11,10 +11,6 @@ export class ImpressionsWrapper extends React.PureComponent {
   // changes while the page is hidden (i.e. preloaded or on a hidden tab),
   // only send the event if the page becomes visible again.
   sendImpressionStatsOrAddListener() {
-    if (!this.props.shouldSendImpressionStats) {
-      return;
-    }
-
     if (this.props.document.visibilityState === VISIBLE) {
       this.props.dispatchImpressionStats();
     } else {

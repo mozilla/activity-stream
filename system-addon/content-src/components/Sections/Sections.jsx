@@ -23,7 +23,7 @@ export class Section extends React.PureComponent {
   }
 
   dispatchImpressionStats() {
-    if (this.props.pref.collapsed) {
+    if (this.props.pref.collapsed || !this.props.shouldSendImpressionStats) {
       return;
     }
 
@@ -120,8 +120,7 @@ export class Section extends React.PureComponent {
       pref={pref}
       rows={this.props.rows}
       sendOnMount={sendImpressionsOnMount}
-      shouldSendImpressionsOnUpdate={this.shouldSendImpressionsOnUpdate}
-      shouldSendImpressionStats={this.props.shouldSendImpressionStats}>
+      shouldSendImpressionsOnUpdate={this.shouldSendImpressionsOnUpdate}>
       <ComponentPerfTimer pref={pref}><CollapsibleSection className="section" icon={icon}
         title={title}
         id={id}
