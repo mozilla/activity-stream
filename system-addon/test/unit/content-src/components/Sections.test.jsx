@@ -1,4 +1,5 @@
 import {combineReducers, createStore} from "redux";
+import {ImpressionsWrapper, VISIBILITY_CHANGE_EVENT, VISIBLE} from "content-src/components/Sections/ImpressionsWrapper.jsx";
 import {INITIAL_STATE, reducers} from "common/Reducers.jsm";
 import {mountWithIntl, shallowWithIntl} from "test/unit/utils";
 import {Section, SectionIntl, _Sections as Sections} from "content-src/components/Sections/Sections";
@@ -194,22 +195,32 @@ describe("<Section>", () => {
   });
 
   describe("impression stats", () => {
-    const FAKE_TOPSTORIES_SECTION_PROPS = {
-      id: "TopStories",
-      title: "Foo Bar 1",
-      pref: {collapsed: false},
-      maxRows: 1,
-      rows: [{guid: 1}, {guid: 2}],
-      shouldSendImpressionStats: true,
+    let FAKE_TOPSTORIES_SECTION_PROPS;
+    let sandbox;
+    beforeEach(() => {
+      sandbox = sinon.sandbox.create();
+      FAKE_TOPSTORIES_SECTION_PROPS = {
+        id: "TopStories",
+        title: "Foo Bar 1",
+        pref: {collapsed: false},
+        maxRows: 1,
+        rows: [{guid: 1}, {guid: 2}],
+        shouldSendImpressionStats: true,
 
-      document: {
-        visibilityState: "visible",
-        addEventListener: sinon.stub(),
-        removeEventListener: sinon.stub()
-      },
-      eventSource: "TOP_STORIES",
-      options: {personalized: false}
-    };
+        document: {
+          visibilityState: "visible",
+          addEventListener: sinon.stub(),
+          removeEventListener: sinon.stub()
+        },
+        eventSource: "TOP_STORIES",
+        options: {personalized: false}
+      };
+    });
+
+    afterEach(() => {
+      wrapper.unmount();
+      sandbox.restore();
+    });
 
     function renderSection(props = {}) {
       return shallowWithIntl(<Section
@@ -219,8 +230,9 @@ describe("<Section>", () => {
 
     it("should send impression with the right stats when the page loads", () => {
       const dispatch = sinon.spy();
-      renderSection({dispatch});
+      wrapper = renderSection({dispatch});
 
+      wrapper.instance().dispatchImpressionStats();
       assert.calledOnce(dispatch);
 
       const [action] = dispatch.firstCall.args;
@@ -231,76 +243,59 @@ describe("<Section>", () => {
     it("should not send impression stats if not configured", () => {
       const dispatch = sinon.spy();
       const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {shouldSendImpressionStats: false, dispatch});
-      renderSection(props);
+      wrapper = renderSection(props);
       assert.notCalled(dispatch);
     });
     it("should not send impression stats if the section is collapsed", () => {
       const dispatch = sinon.spy();
       const props = Object.assign({}, FAKE_TOPSTORIES_SECTION_PROPS, {pref: {collapsed: true}});
-      renderSection(props);
+      wrapper = renderSection(props);
       assert.notCalled(dispatch);
-    });
-    it("should send 1 impression when the page becomes visibile after loading", () => {
-      const props = {
-        dispatch: sinon.spy(),
-        document: {
-          visibilityState: "hidden",
-          addEventListener: sinon.spy(),
-          removeEventListener: sinon.spy()
-        }
-      };
-
-      renderSection(props);
-
-      // Was the event listener added?
-      assert.calledWith(props.document.addEventListener, "visibilitychange");
-
-      // Make sure dispatch wasn't called yet
-      assert.notCalled(props.dispatch);
-
-      // Simulate a visibilityChange event
-      const [, listener] = props.document.addEventListener.firstCall.args;
-      props.document.visibilityState = "visible";
-      listener();
-
-      // Did we actually dispatch an event?
-      assert.calledOnce(props.dispatch);
-      assert.equal(props.dispatch.firstCall.args[0].type, at.TELEMETRY_IMPRESSION_STATS);
-
-      // Did we remove the event listener?
-      assert.calledWith(props.document.removeEventListener, "visibilitychange", listener);
-    });
-    it("should remove visibility change listener when section is removed", () => {
-      const props = {
-        dispatch: sinon.spy(),
-        document: {
-          visibilityState: "hidden",
-          addEventListener: sinon.spy(),
-          removeEventListener: sinon.spy()
-        }
-      };
-
-      const section = renderSection(props);
-      assert.calledWith(props.document.addEventListener, "visibilitychange");
-      const [, listener] = props.document.addEventListener.firstCall.args;
-
-      section.unmount();
-      assert.calledWith(props.document.removeEventListener, "visibilitychange", listener);
     });
     it("should send an impression if props are updated and props.rows are different", () => {
       const props = {dispatch: sinon.spy()};
       wrapper = renderSection(props);
       props.dispatch.reset();
 
+      wrapper.instance().componentDidUpdate = prevProps => {
+        assert.isTrue(wrapper.instance().shouldSendImpressionsOnUpdate(prevProps));
+      };
+
       // New rows
       wrapper.setProps(Object.assign({},
         FAKE_TOPSTORIES_SECTION_PROPS,
         {rows: [{guid: 123}]}
       ));
-
-      assert.calledOnce(props.dispatch);
     });
-    it("should not send an impression if props are updated but props.rows are the same", () => {
+    it("should not send an impression if props are updated and props.rows are the same but section is collapsed", () => {
+      wrapper = renderSection();
+
+      let prevProps = wrapper.props();
+
+      // New rows and collapsed
+      wrapper.setProps(Object.assign({},
+        FAKE_TOPSTORIES_SECTION_PROPS,
+        {
+          rows: [{guid: 123}],
+          pref: {collapsed: true}
+        }
+      ));
+
+      assert.isFalse(wrapper.instance().shouldSendImpressionsOnUpdate(prevProps));
+      prevProps = wrapper.props();
+
+      // Expand the section. Now the impression stats should be sent
+      wrapper.setProps(Object.assign({},
+        FAKE_TOPSTORIES_SECTION_PROPS,
+        {
+          rows: [{guid: 123}],
+          pref: {collapsed: false}
+        }
+      ));
+
+      assert.isTrue(wrapper.instance().shouldSendImpressionsOnUpdate(prevProps));
+    });
+    it("should not send an impression if props are updated but GUIDs are the same", () => {
       const props = {dispatch: sinon.spy()};
       wrapper = renderSection(props);
       props.dispatch.reset();
@@ -313,76 +308,184 @@ describe("<Section>", () => {
 
       assert.notCalled(props.dispatch);
     });
-    it("should not send an impression if props are updated and props.rows are the same but section is collapsed", () => {
-      const props = {dispatch: sinon.spy()};
-      wrapper = renderSection(props);
-      props.dispatch.reset();
+  });
+});
 
-      // New rows and collapsed
-      wrapper.setProps(Object.assign({},
-        FAKE_TOPSTORIES_SECTION_PROPS,
-        {
-          rows: [{guid: 123}],
-          pref: {collapsed: true}
-        }
-      ));
+describe("<ImpressionsWrapper>", () => {
+  let sandbox;
+  let wrapper;
+  let defaultProps;
+  function setUp(props = {}) {
+    return shallow(<ImpressionsWrapper {...props}><InnerEl /></ImpressionsWrapper>);
+  }
 
-      assert.notCalled(props.dispatch);
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+    sandbox.spy(ImpressionsWrapper.prototype, "sendImpressionStatsOrAddListener");
+    defaultProps = {
+      shouldSendImpressionsOnUpdate: sandbox.stub(),
+      dispatchImpressionStats: sandbox.stub(),
+      document: {
+        removeEventListener: sandbox.stub(),
+        addEventListener: sandbox.stub()
+      }
+    };
+    wrapper = setUp(defaultProps);
+  });
 
-      // Expand the section. Now the impression stats should be sent
-      wrapper.setProps(Object.assign({},
-        FAKE_TOPSTORIES_SECTION_PROPS,
-        {
-          rows: [{guid: 123}],
-          pref: {collapsed: false}
-        }
-      ));
+  afterEach(() => {
+    sandbox.restore();
+  });
 
-      assert.calledOnce(props.dispatch);
+  const InnerEl = () => (<div>Inner Element</div>);
+
+  it("should render props.children", () => {
+    assert.ok(wrapper.contains(<InnerEl />));
+  });
+
+  it("should call sendImpressionStatsOrAddListener on mount if prop is true", () => {
+    wrapper.setProps({sendOnMount: true});
+
+    wrapper.instance().componentDidMount();
+
+    assert.calledOnce(wrapper.instance().sendImpressionStatsOrAddListener);
+  });
+
+  it("should not call sendImpressionStatsOrAddListener on mount if prop is false", () => {
+    wrapper.setProps({sendOnMount: false});
+
+    wrapper.instance().componentDidMount();
+
+    assert.notCalled(wrapper.instance().sendImpressionStatsOrAddListener);
+  });
+
+  it("should call sendImpressionStatsOrAddListener only once for multiple updates", () => {
+    const prevProps = {};
+    defaultProps.shouldSendImpressionsOnUpdate.returns(true);
+    wrapper.setProps({shouldSendImpressionStats: true});
+
+    // Multiple updates
+    wrapper.instance().componentDidUpdate(prevProps);
+    wrapper.instance().componentDidUpdate(prevProps);
+    wrapper.instance().componentDidUpdate(prevProps);
+    wrapper.setProps({document: Object.assign(defaultProps.document, {visibilityState: VISIBLE})});
+
+    assert.calledOnce(defaultProps.dispatchImpressionStats);
+  });
+
+  it("should call sendImpressionStatsOrAddListener on update if fn returns true", () => {
+    const prevProps = {};
+    defaultProps.shouldSendImpressionsOnUpdate.returns(true);
+
+    wrapper.instance().componentDidUpdate(prevProps);
+
+    assert.calledWithExactly(defaultProps.shouldSendImpressionsOnUpdate, prevProps);
+    assert.calledOnce(wrapper.instance().sendImpressionStatsOrAddListener);
+  });
+
+  it("should not call sendImpressionStatsOrAddListener on update if fn returns false", () => {
+    defaultProps.shouldSendImpressionsOnUpdate.returns(false);
+
+    wrapper.instance().componentDidUpdate({});
+
+    assert.calledOnce(defaultProps.shouldSendImpressionsOnUpdate);
+    assert.notCalled(wrapper.instance().sendImpressionStatsOrAddListener);
+  });
+
+  it("should remove event listener on unmount", () => {
+    wrapper.instance()._onVisibilityChange = () => {};
+
+    wrapper.instance().componentWillUnmount();
+
+    assert.calledOnce(defaultProps.document.removeEventListener);
+    assert.calledWithExactly(defaultProps.document.removeEventListener, VISIBILITY_CHANGE_EVENT, wrapper.instance()._onVisibilityChange);
+  });
+
+  describe("#sendImpressionStatsOrAddListener", () => {
+    it("should return early if shouldSendImpressionStats is false", () => {
+      wrapper.instance().sendImpressionStatsOrAddListener();
+
+      assert.notCalled(defaultProps.dispatchImpressionStats);
+      assert.notCalled(defaultProps.document.removeEventListener);
     });
-    it("should not send an impression if props are updated but GUIDs are the same", () => {
-      const props = {dispatch: sinon.spy()};
-      wrapper = renderSection(props);
-      props.dispatch.reset();
 
-      wrapper.setProps(Object.assign({},
-        FAKE_TOPSTORIES_SECTION_PROPS,
-        {rows: [{guid: 1}, {guid: 2}]}
-      ));
+    it("should add an event listener if the visibilityState is not VISIBLE", () => {
+      wrapper.setProps({shouldSendImpressionStats: true});
 
-      assert.notCalled(props.dispatch);
+      wrapper.instance().sendImpressionStatsOrAddListener();
+
+      assert.calledOnce(defaultProps.document.addEventListener);
+      assert.calledWithExactly(defaultProps.document.addEventListener, VISIBILITY_CHANGE_EVENT, wrapper.instance()._onVisibilityChange);
     });
-    it("should only send the latest impression on a visibility change", () => {
-      const listeners = new Set();
-      const props = {
-        dispatch: sinon.spy(),
-        document: {
-          visibilityState: "hidden",
-          addEventListener: (ev, cb) => listeners.add(cb),
-          removeEventListener: (ev, cb) => listeners.delete(cb)
-        }
-      };
 
-      wrapper = renderSection(props);
+    it("should add an event listener if the visibilityState is not VISIBLE", () => {
+      wrapper.setProps({shouldSendImpressionStats: true});
+      wrapper.instance()._onVisibilityChange = () => {};
 
-      // Update twice
-      wrapper.setProps(Object.assign({}, props,
-        {rows: [{guid: 123}]}
-      ));
-      wrapper.setProps(Object.assign({}, props,
-        {rows: [{guid: 2432}]}
-      ));
+      wrapper.instance().sendImpressionStatsOrAddListener();
 
-      assert.notCalled(props.dispatch);
+      assert.calledOnce(defaultProps.document.removeEventListener);
+      assert.calledWithExactly(defaultProps.document.removeEventListener, VISIBILITY_CHANGE_EVENT, sinon.match.func);
+    });
 
-      // Simulate listeners getting called
-      props.document.visibilityState = "visible";
-      listeners.forEach(l => l());
+    it("should dispatch impression if visibilityState is VISIBLE", () => {
+      wrapper.setProps({
+        shouldSendImpressionStats: true,
+        document: Object.assign(defaultProps.document, {visibilityState: VISIBLE})
+      });
 
-      // Make sure we only sent the latest event
-      assert.calledOnce(props.dispatch);
-      const [action] = props.dispatch.firstCall.args;
-      assert.deepEqual(action.data.tiles, [{id: 2432}]);
+      wrapper.instance().sendImpressionStatsOrAddListener();
+
+      assert.calledOnce(defaultProps.dispatchImpressionStats);
+      assert.notCalled(defaultProps.document.addEventListener);
+    });
+
+    it("should not dispatch impression if visiblity is not VISIBLE", () => {
+      wrapper.setProps({shouldSendImpressionStats: true});
+
+      wrapper.instance().sendImpressionStatsOrAddListener();
+
+      // Call the addEventListener cb;
+      defaultProps.document.addEventListener.args[0][1]();
+
+      assert.notCalled(defaultProps.dispatchImpressionStats);
+      assert.notCalled(defaultProps.document.removeEventListener);
+    });
+
+    it("should dispatch impression if visiblity is VISIBLE", () => {
+      wrapper.setProps({shouldSendImpressionStats: true});
+
+      wrapper.instance().sendImpressionStatsOrAddListener();
+
+      wrapper.setProps({document: Object.assign(defaultProps.document, {visibilityState: VISIBLE})});
+
+      // Call the addEventListener cb;
+      defaultProps.document.addEventListener.args[0][1]();
+
+      assert.calledOnce(defaultProps.dispatchImpressionStats);
+      assert.calledOnce(defaultProps.document.removeEventListener);
+      assert.calledWithExactly(defaultProps.document.removeEventListener, VISIBILITY_CHANGE_EVENT, wrapper.instance()._onVisibilityChange);
+    });
+
+    it("should send 1 impression when the page becomes visible after loading", () => {
+      defaultProps = Object.assign({}, defaultProps, {
+        sendOnMount: true,
+        shouldSendImpressionStats: true
+      });
+      wrapper = setUp(defaultProps);
+
+      assert.calledOnce(defaultProps.document.addEventListener);
+      assert.calledWithExactly(defaultProps.document.addEventListener, VISIBILITY_CHANGE_EVENT, sinon.match.func);
+
+      // because document visibility is hidden
+      assert.notCalled(defaultProps.dispatchImpressionStats);
+
+      const [, listener] = defaultProps.document.addEventListener.firstCall.args;
+      wrapper.setProps({document: Object.assign(defaultProps.document, {visibilityState: VISIBLE})});
+      listener();
+
+      assert.calledOnce(defaultProps.dispatchImpressionStats);
+      assert.calledWithExactly(defaultProps.document.removeEventListener, VISIBILITY_CHANGE_EVENT, listener);
     });
   });
 });
