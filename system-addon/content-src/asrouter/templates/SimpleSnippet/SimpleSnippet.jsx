@@ -1,5 +1,6 @@
 import {Button} from "../../components/Button/Button";
 import React from "react";
+import {safeURI} from "../../template-utils";
 import {SnippetBase} from "../../components/SnippetBase/SnippetBase";
 
 const DEFAULT_ICON_PATH = "chrome://branding/content/icon64.png";
@@ -17,7 +18,7 @@ export class SimpleSnippet extends React.PureComponent {
   render() {
     const {props} = this;
     return (<SnippetBase {...props} className="SimpleSnippet">
-      <img src={props.content.icon || DEFAULT_ICON_PATH} className="icon" />
+      <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" />
       <div>
         {props.content.title ? <h3 className="title">{props.content.title}</h3> : null} <p className="body">{props.content.text}</p>
       </div>

@@ -31,6 +31,10 @@ export class ASRouterAdmin extends React.PureComponent {
     return () => ASRouterUtils.unblockById(id);
   }
 
+  handleOverride(id) {
+    return () => ASRouterUtils.overrideMessage(id);
+  }
+
   renderMessageItem(msg) {
     const isCurrent = msg.id === this.state.currentId;
     const isBlocked = this.state.blockList.includes(msg.id);
@@ -43,6 +47,7 @@ export class ASRouterAdmin extends React.PureComponent {
       <td className="message-id"><span>{msg.id}</span></td>
       <td>
         <button className={`button ${(isBlocked ? "" : " primary")}`} onClick={isBlocked ? this.handleUnblock(msg.id) : this.handleBlock(msg.id)}>{isBlocked ? "Unblock" : "Block"}</button>
+       {isBlocked ? null : <button className="button" onClick={this.handleOverride(msg.id)}>Show</button>}
       </td>
       <td className="message-summary">
         <pre>{JSON.stringify(msg, null, 2)}</pre>
@@ -59,10 +64,21 @@ export class ASRouterAdmin extends React.PureComponent {
     </tbody></table>);
   }
 
+  renderProviders() {
+    return (<table><tbody>
+      {this.state.providers.map((provider, i) => (<tr className="message-item" key={i}>
+        <td>{provider.id}</td>
+        <td>{provider.type === "remote" ? <a target="_blank" href={provider.url}>{provider.url}</a> : "(local)"}</td>
+      </tr>))}
+    </tbody></table>);
+  }
+
   render() {
     return (<div className="asrouter-admin outer-wrapper">
       <h1>AS Router Admin</h1>
       <button className="button primary" onClick={ASRouterUtils.getNextMessage}>Refresh Current Message</button>
+      <h2>Message Providers</h2>
+      {this.state.providers ? this.renderProviders() : null}
       <h2>Messages</h2>
       {this.renderMessages()}
     </div>);

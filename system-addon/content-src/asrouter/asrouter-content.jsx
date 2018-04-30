@@ -34,6 +34,9 @@ export const ASRouterUtils = {
   },
   getNextMessage() {
     ASRouterUtils.sendMessage({type: "GET_NEXT_MESSAGE"});
+  },
+  overrideMessage(id) {
+    ASRouterUtils.sendMessage({type: "OVERRIDE_MESSAGE", data: {id}});
   }
 };
 
