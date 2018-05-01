@@ -29,7 +29,7 @@
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.1.1",
     "eslint": "4.19.1",
-    "eslint-plugin-import": "2.8.0",
+    "eslint-plugin-import": "2.11.0",
     "eslint-plugin-json": "1.2.0",
     "eslint-plugin-mozilla": "0.8.1",
     "eslint-plugin-no-unsanitized": "2.0.2",
