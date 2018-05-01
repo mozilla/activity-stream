@@ -59,7 +59,7 @@
     "rimraf": "2.6.2",
     "sass-lint": "1.12.1",
     "shelljs": "0.8.1",
-    "simple-git": "1.89.0",
+    "simple-git": "1.92.0",
     "sinon": "4.2.2",
     "webpack": "3.10.0",
     "yamscripts": "0.0.3"
