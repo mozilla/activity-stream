@@ -217,7 +217,7 @@ for (const src of ${JSON.stringify(scripts, null, 2)}) {
   script.async = false;
   script.src = src;
 }
-    })()</script>
+    })();</script>
   </body>
 </html>
 `;
