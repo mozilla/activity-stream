@@ -33,17 +33,13 @@ main {
     width: $wrapper-max-width-large;
   }
 
+  @media (min-width: $break-point-widest) {
+    width: $wrapper-max-width-widest;
+  }
+
   section {
     margin-bottom: $section-spacing;
     position: relative;
-  }
-}
-
-.wide-layout-enabled {
-  main {
-    @media (min-width: $break-point-widest) {
-      width: $wrapper-max-width-widest;
-    }
   }
 }
 
