@@ -38,6 +38,7 @@ const CENTRAL_LOCALES = [
   "de",
   "dsb",
   "el",
+  "en-CA",
   "en-GB",
   "en-ZA",
   "eo",
