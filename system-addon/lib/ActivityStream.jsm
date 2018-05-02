@@ -214,8 +214,8 @@ const FEEDS_DATA = [
     // Dynamically determine if Pocket should be shown for a geo / locale
     getValue: ({geo, locale}) => {
       const locales = ({
-        "US": ["en-US", "en-GB", "en-ZA"],
-        "CA": ["en-US", "en-GB", "en-ZA"],
+        "US": ["en-CA", "en-GB", "en-US", "en-ZA"],
+        "CA": ["en-CA", "en-GB", "en-US", "en-ZA"],
         "DE": ["de", "de-DE", "de-AT", "de-CH"]
       })[geo];
       return !!locales && locales.includes(locale);
