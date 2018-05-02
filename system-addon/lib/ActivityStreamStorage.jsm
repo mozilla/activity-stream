@@ -16,7 +16,7 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
   }
 
   get db() {
-    return this._db || (this._db = this._openDatabase());
+    return this._db || (this._db = this.createOrOpenDb());
   }
 
   /**
@@ -63,6 +63,26 @@ this.ActivityStreamStorage = class ActivityStreamStorage {
         }
       });
     });
+  }
+
+  /**
+   * createOrOpenDb - Open a db (with this.dbName) if it exists.
+   *                  If it does not exist, create it.
+   *                  If an error occurs, deleted the db and attempt to
+   *                  re-create it.
+   * @returns Promise that resolves with a db instance
+   */
+  async createOrOpenDb() {
+    try {
+      const db = await this._openDatabase();
+      return db;
+    } catch (e) {
+      if (this.telemetry) {
+        this.telemetry.handleUndesiredEvent({data: {event: "INDEXEDDB_OPEN_FAILED"}});
+      }
+      await IndexedDB.deleteDatabase(this.dbName);
+      return this._openDatabase();
+    }
   }
 
   async _requestWrapper(request) {
