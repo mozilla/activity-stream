@@ -112,8 +112,7 @@ export class BaseContent extends React.PureComponent {
 
     const outerClassName = [
       "outer-wrapper",
-      shouldBeFixedToTop && "fixed-to-top",
-      prefs.enableWideLayout ? "wide-layout-enabled" : "wide-layout-disabled"
+      shouldBeFixedToTop && "fixed-to-top"
     ].filter(v => v).join(" ");
 
     return (

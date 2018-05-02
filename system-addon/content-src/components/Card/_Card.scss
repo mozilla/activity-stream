@@ -190,60 +190,56 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-}
 
-.wide-layout-enabled {
-  $line-height: 23px;
+  // Wide layout styles
+  @media (min-width: $break-point-widest) {
+    $line-height: 23px;
+    height: $card-height-large;
 
-  .card-outer {
-    @media (min-width: $break-point-widest) {
-      height: $card-height-large;
+    .card-preview-image-outer {
+      height: $card-preview-image-height-large;
+    }
 
-      .card-preview-image-outer {
-        height: $card-preview-image-height-large;
+    .card-details {
+      padding: 13px 16px 12px;
+    }
+
+    .card-text {
+      max-height: 6 * $line-height + $card-title-margin;
+    }
+
+    .card-host-name {
+      font-size: 12px;
+      padding-bottom: 5px;
+    }
+
+    .card-download-icon {
+      &.icon-download-folder {
+        height: $large-download-folder-icon-size;
+        width: $large-download-folder-icon-size;
       }
+    }
 
-      .card-details {
-        padding: 13px 16px 12px;
-      }
+    .card-title {
+      font-size: 17px;
+      line-height: $line-height;
+      margin-bottom: 0;
+    }
 
-      .card-text {
-        max-height: 6 * $line-height + $card-title-margin;
-      }
-
-      .card-host-name {
-        font-size: 12px;
-        padding-bottom: 5px;
-      }
-
-      .card-download-icon {
-        &.icon-download-folder {
-          height: $large-download-folder-icon-size;
-          width: $large-download-folder-icon-size;
-        }
-      }
-
+    .card-text:not(.no-description) {
       .card-title {
-        font-size: 17px;
-        line-height: $line-height;
-        margin-bottom: 0;
+        max-height: 3 * $line-height;
       }
+    }
 
-      .card-text:not(.no-description) {
-        .card-title {
-          max-height: 3 * $line-height;
-        }
-      }
+    .card-description {
+      font-size: 15px;
+      line-height: $line-height;
+    }
 
-      .card-description {
-        font-size: 15px;
-        line-height: $line-height;
-      }
-
-      .card-context {
-        bottom: 4px;
-        font-size: 14px;
-      }
+    .card-context {
+      bottom: 4px;
+      font-size: 14px;
     }
   }
 }
