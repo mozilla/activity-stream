@@ -233,11 +233,12 @@ for (const src of ${JSON.stringify(scripts, null, 2)}) {
  * it is still necessary.
  *
  * @param  {string} name The name of the global to expose
- * @param  {obj}    data The data to expose as a window global
+ * @param  {string} desc Extra description to include in a js comment
+ * @param  {obj}   state The data to expose as a window global
  * @return {str}         The js file as a string
  */
-function templateJs(name, state) {
-  return `// Note - this is a generated file.
+function templateJs(name, desc, state) {
+  return `// Note - this is a generated ${desc} file.
 window.${name} = ${JSON.stringify(state, null, 2)};
 `;
 }
@@ -261,13 +262,13 @@ function writeFiles(name, destPath, filesMap, {html, state}, options) {
 
 const STATIC_FILES = new Map([
   ["activity-stream-debug.html", ({options}) => templateHTML(options)],
-  ["activity-stream-initial-state.js", ({state}) => templateJs("gActivityStreamPrerenderedState", state)],
+  ["activity-stream-initial-state.js", ({state}) => templateJs("gActivityStreamPrerenderedState", "static", state)],
   ["activity-stream-prerendered-debug.html", ({html, options}) => templateHTML(options, html)]
 ]);
 
 const LOCALIZED_FILES = new Map([
   ["activity-stream-prerendered.html", ({html, options}) => templateHTML(options, html)],
-  ["activity-stream-strings.js", ({options: {strings}}) => templateJs("gActivityStreamStrings", strings)],
+  ["activity-stream-strings.js", ({options: {locale, strings}}) => templateJs("gActivityStreamStrings", locale, strings)],
   ["activity-stream.html", ({options}) => templateHTML(options)]
 ]);
 
