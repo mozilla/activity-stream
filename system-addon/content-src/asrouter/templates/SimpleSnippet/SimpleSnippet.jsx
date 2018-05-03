@@ -12,7 +12,7 @@ export class SimpleSnippet extends React.PureComponent {
   }
 
   onButtonClick() {
-    this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", source: this.props.UISurface, message_id: this.props.id});
+    this.props.sendUserActionTelemetry({event: "CLICK_BUTTON"});
   }
 
   render() {

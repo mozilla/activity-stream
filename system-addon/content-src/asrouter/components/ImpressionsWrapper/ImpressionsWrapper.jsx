@@ -10,9 +10,9 @@ export class ImpressionsWrapper extends React.PureComponent {
   // This sends an event when a user sees a set of new content. If content
   // changes while the page is hidden (i.e. preloaded or on a hidden tab),
   // only send the event if the page becomes visible again.
-  sendImpressionStatsOrAddListener() {
+  sendImpressionOrAddListener() {
     if (this.props.document.visibilityState === VISIBLE) {
-      this.props.dispatchImpressionStats();
+      this.props.sendImpression();
     } else {
       // We should only ever send the latest impression stats ping, so remove any
       // older listeners.
@@ -23,7 +23,7 @@ export class ImpressionsWrapper extends React.PureComponent {
       // When the page becomes visible, send the impression stats ping if the section isn't collapsed.
       this._onVisibilityChange = () => {
         if (this.props.document.visibilityState === VISIBLE) {
-          this.props.dispatchImpressionStats();
+          this.props.sendImpression();
           this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
         }
       };
@@ -39,13 +39,13 @@ export class ImpressionsWrapper extends React.PureComponent {
 
   componentDidMount() {
     if (this.props.sendOnMount) {
-      this.sendImpressionStatsOrAddListener();
+      this.sendImpressionOrAddListener();
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps && this.props.shouldSendImpressionsOnUpdate(prevProps)) {
-      this.sendImpressionStatsOrAddListener();
+    if (this.props.shouldSendImpressionOnUpdate(this.props, prevProps)) {
+      this.sendImpressionOrAddListener();
     }
   }
 
@@ -53,3 +53,8 @@ export class ImpressionsWrapper extends React.PureComponent {
     return this.props.children;
   }
 }
+
+ImpressionsWrapper.defaultProps = {
+  document: global.document,
+  sendOnMount: true
+};
