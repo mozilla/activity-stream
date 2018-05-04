@@ -1,5 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content-src/lib/init-store";
+import {ImpressionsWrapper} from "content-src/components/Sections/ImpressionsWrapper";
 import React from "react";
 import ReactDOM from "react-dom";
 import {SimpleSnippet} from "./templates/SimpleSnippet/SimpleSnippet";
@@ -32,6 +33,11 @@ export const ASRouterUtils = {
     const payload = ac.ASRouterUserEvent(Object.assign({}, data, {action: eventType}));
     global.sendAsyncMessage(AS_GENERAL_OUTGOING_MESSAGE_NAME, payload);
   },
+  sendImpressionStats({id, campaign, template}) {
+    const eventType =  `${PROVIDER}_impression`;
+    const payload = ac.ASRouterUserEvent(Object.assign({}, {id, campaign, template}, {action: eventType}));
+    global.sendAsyncMessage(AS_GENERAL_OUTGOING_MESSAGE_NAME, payload);
+  },
   getNextMessage() {
     ASRouterUtils.sendMessage({type: "GET_NEXT_MESSAGE"});
   },
@@ -40,11 +46,26 @@ export const ASRouterUtils = {
   }
 };
 
-class ASRouterUISurface extends React.PureComponent {
+export class ASRouterUISurface extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onMessageFromParent = this.onMessageFromParent.bind(this);
     this.state = {message: {}};
+    this.dispatchImpressionStats = this.dispatchImpressionStats.bind(this);
+    this.shouldSendImpressionsOnUpdate = this.shouldSendImpressionsOnUpdate.bind(this);
+  }
+
+  dispatchImpressionStats() {
+    ASRouterUtils.sendImpressionStats(this.state.message);
+  }
+
+  shouldSendImpressionsOnUpdate(prevProps) {
+    const {state} = this;
+    if (state.message.id && (!prevProps.message || prevProps.message.id !== state.message.id)) {
+      return true;
+    }
+
+    return false;
   }
 
   onBlockById(id) {
@@ -74,12 +95,18 @@ class ASRouterUISurface extends React.PureComponent {
   render() {
     const {message} = this.state;
     if (!message.id) { return null; }
-    return (<SimpleSnippet
-      {...message}
-      UISurface={this.props.id}
-      getNextMessage={ASRouterUtils.getNextMessage}
-      onBlock={this.onBlockById(message.id)}
-      sendUserActionTelemetry={ASRouterUtils.sendUserActionTelemetry} />
+    return (<ImpressionsWrapper document={global.document}
+        dispatchImpressionStats={this.dispatchImpressionStats}
+        message={message}
+        sendOnMount={true}
+        shouldSendImpressionsOnUpdate={this.shouldSendImpressionsOnUpdate}>
+        <SimpleSnippet
+          {...message}
+          UISurface={this.props.id}
+          getNextMessage={ASRouterUtils.getNextMessage}
+          onBlock={this.onBlockById(message.id)}
+          sendUserActionTelemetry={ASRouterUtils.sendUserActionTelemetry} />
+      </ImpressionsWrapper>
     );
   }
 }

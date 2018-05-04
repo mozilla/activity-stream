@@ -4,12 +4,11 @@ import {actionCreators as ac} from "common/Actions.jsm";
 import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/ComponentPerfTimer";
 import {connect} from "react-redux";
+import {ImpressionsWrapper} from "./ImpressionsWrapper.jsx";
 import React from "react";
 import {Topics} from "content-src/components/Topics/Topics";
 import {TopSites} from "content-src/components/TopSites/TopSites";
 
-const VISIBLE = "visible";
-const VISIBILITY_CHANGE_EVENT = "visibilitychange";
 const CARDS_PER_ROW = 3;
 
 function getFormattedMessage(message) {
@@ -17,7 +16,17 @@ function getFormattedMessage(message) {
 }
 
 export class Section extends React.PureComponent {
-  _dispatchImpressionStats() {
+  constructor(props) {
+    super(props);
+    this.dispatchImpressionStats = this.dispatchImpressionStats.bind(this);
+    this.shouldSendImpressionsOnUpdate = this.shouldSendImpressionsOnUpdate.bind(this);
+  }
+
+  dispatchImpressionStats() {
+    if (this.props.pref.collapsed || !this.props.shouldSendImpressionStats) {
+      return;
+    }
+
     const {props} = this;
     const maxCards = 3 * props.maxRows;
     const cards = props.rows.slice(0, maxCards);
@@ -31,45 +40,11 @@ export class Section extends React.PureComponent {
     }
   }
 
-  // This sends an event when a user sees a set of new content. If content
-  // changes while the page is hidden (i.e. preloaded or on a hidden tab),
-  // only send the event if the page becomes visible again.
-  sendImpressionStatsOrAddListener() {
-    const {props} = this;
-
-    if (!props.shouldSendImpressionStats || !props.dispatch) {
-      return;
+  shouldSendImpressionsOnUpdate(prevProps) {
+    if (!prevProps.rows || !prevProps.pref) {
+      return false;
     }
 
-    if (props.document.visibilityState === VISIBLE) {
-      this._dispatchImpressionStats();
-    } else {
-      // We should only ever send the latest impression stats ping, so remove any
-      // older listeners.
-      if (this._onVisibilityChange) {
-        props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
-      }
-
-      // When the page becomes visible, send the impression stats ping if the section isn't collapsed.
-      this._onVisibilityChange = () => {
-        if (props.document.visibilityState === VISIBLE) {
-          if (!this.props.pref.collapsed) {
-            this._dispatchImpressionStats();
-          }
-          props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
-        }
-      };
-      props.document.addEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
-    }
-  }
-
-  componentDidMount() {
-    if (this.props.rows.length && !this.props.pref.collapsed) {
-      this.sendImpressionStatsOrAddListener();
-    }
-  }
-
-  componentDidUpdate(prevProps) {
     const {props} = this;
     const isCollapsed = props.pref.collapsed;
     const wasCollapsed = prevProps.pref.collapsed;
@@ -84,14 +59,10 @@ export class Section extends React.PureComponent {
         (wasCollapsed && !isCollapsed)
       )
     ) {
-      this.sendImpressionStatsOrAddListener();
+      return true;
     }
-  }
 
-  componentWillUnmount() {
-    if (this._onVisibilityChange) {
-      this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
-    }
+    return false;
   }
 
   needsImpressionStats(cards) {
@@ -140,10 +111,17 @@ export class Section extends React.PureComponent {
     // Otherwise, we should show placeholders.
     const shouldShowEmptyState = initialized && !rows.length;
 
+    const sendImpressionsOnMount = this.props.rows.length && !this.props.pref.collapsed;
+
     // <Section> <-- React component
     // <section> <-- HTML5 element
-    return (<ComponentPerfTimer {...this.props}>
-      <CollapsibleSection className="section" icon={icon}
+    return (<ImpressionsWrapper document={this.props.document}
+      dispatchImpressionStats={this.dispatchImpressionStats}
+      pref={pref}
+      rows={this.props.rows}
+      sendOnMount={sendImpressionsOnMount}
+      shouldSendImpressionsOnUpdate={this.shouldSendImpressionsOnUpdate}>
+      <ComponentPerfTimer pref={pref}><CollapsibleSection className="section" icon={icon}
         title={title}
         id={id}
         eventSource={eventSource}
@@ -175,7 +153,7 @@ export class Section extends React.PureComponent {
           </div>}
         {shouldShowTopics && <Topics topics={this.props.topics} read_more_endpoint={this.props.read_more_endpoint} />}
       </CollapsibleSection>
-    </ComponentPerfTimer>);
+    </ComponentPerfTimer></ImpressionsWrapper>);
   }
 }
 
