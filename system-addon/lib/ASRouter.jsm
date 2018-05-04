@@ -7,31 +7,14 @@ const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 // This is a temporary endpoint until we have something for snippets
 const SNIPPETS_ENDPOINT = "https://activity-stream-icons.services.mozilla.com/v1/messages.json.br";
 
-const ONBOARDING_MESSAGES = [
+const LOCAL_TEST_MESSAGES = [
   {
-    id: "ONBOARDING_1",
+    id: "LOCAL_TEST_THEMES",
     template: "simple_snippet",
     content: {
-      title: "Find it faster",
-      text: "Access all of your favorite search engines with a click. Search the whole Web or just one website from the search box.",
-      button_label: "Learn More",
-      button_url: "https://mozilla.org"
-    }
-  },
-  {
-    id: "ONBOARDING_2",
-    template: "simple_snippet",
-    content: {
-      title: "Make Firefox your go-to-browser",
-      text: "It doesn't take much to get the most from Firefox. Just set Firefox as your default browser and put control, customization, and protection on autopilot."
-    }
-  },
-  {
-    id: "ONBOARDING_3",
-    template: "simple_snippet",
-    content: {
-      title: "Did you know?",
-      text: "All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience and should act towards one another in a spirit of brotherhood."
+      text: "Your browser is ready for a makeover. Don't worry, you've got tons of options.",
+      button_label: "Check them out here",
+      button_url: "https://addons.mozilla.org/en-US/firefox/themes"
     }
   }
 ];
@@ -322,7 +305,7 @@ this._ASRouter = _ASRouter;
  */
 this.ASRouter = new _ASRouter({
   providers: [
-    {id: "onboarding", type: "local", messages: ONBOARDING_MESSAGES},
+    {id: "onboarding", type: "local", messages: LOCAL_TEST_MESSAGES},
     {id: "snippets", type: "remote", url: SNIPPETS_ENDPOINT, updateCycleInMs: ONE_HOUR_IN_MS * 4}
   ]
 });
