@@ -140,6 +140,21 @@ Schema definitions/validations that can be used for tests can be found in `syste
 }
 ```
 
+# Example Activity Stream `Router` Pings
+
+```js
+{
+  "client_id": "n/a",
+  "action": ["snippets_user_event" | "onboarding_user_event"],
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
+  "source": "pocket",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "source": "NEWTAB_FOOTER_BAR",
+  "message_id": "some_snippet_id",
+  "event": "IMPRESSION"
+}
+```
 
 | KEY | DESCRIPTION | &nbsp; |
 |-----|-------------|:-----:|
@@ -195,8 +210,9 @@ and losing focus. | :one:
 | `is_prerendered` | [Required] A boolean to signify whether the page is prerendered or not | :one:
 | `is_preloaded` | [Required] A boolean to signify whether the page is preloaded or not | :one:
 | `icon_type` | [Optional] ("tippytop", "rich_icon", "screenshot_with_icon", "screenshot", "no_image") | :one:
-| `region` | [Optional] An string maps to pref "browser.search.region", which is essentially the two letter ISO 3166-1 country code populated by the Firefox search service. Note that: 1). it reports "OTHER" for those regions with smaller Firefox user base (less than 10000) so that users cannot be uniquely identified; 2). it reports "UNSET" if this pref is missing; 3). it reports "EMPTY" if the value of this pref is an empty string. | :one:
+| `region` | [Optional] A string maps to pref "browser.search.region", which is essentially the two letter ISO 3166-1 country code populated by the Firefox search service. Note that: 1). it reports "OTHER" for those regions with smaller Firefox user base (less than 10000) so that users cannot be uniquely identified; 2). it reports "UNSET" if this pref is missing; 3). it reports "EMPTY" if the value of this pref is an empty string. | :one:
 | `profile_creation_date` | [Optional] An integer to record the age of the Firefox profile as the total number of days since the UNIX epoch. | :one:
+|`message_id` | [required] A string identifier of the message in Activity Stream Router. | :one:
 
 **Where:**
 
