@@ -201,13 +201,7 @@ function templateHTML(options, html) {
     <div id="snippets-container">
       <div id="snippets"></div>
     </div>
-    <script>(() => {
-// Clear out any prerendered content if we shouldn't continue loading
-if (top !== window) {
-  document.documentElement.innerHTML = "";
-  return;
-}
-
+    <script>
 // Don't directly load the following scripts as part of html to let the page
 // finish loading to render the content sooner.
 for (const src of ${JSON.stringify(scripts, null, 2)}) {
@@ -217,7 +211,7 @@ for (const src of ${JSON.stringify(scripts, null, 2)}) {
   script.async = false;
   script.src = src;
 }
-    })();</script>
+    </script>
   </body>
 </html>
 `;
