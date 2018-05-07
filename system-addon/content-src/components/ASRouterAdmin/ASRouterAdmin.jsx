@@ -5,6 +5,7 @@ export class ASRouterAdmin extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onMessage = this.onMessage.bind(this);
+    this.findOtherBundledMessagesOfSameTemplate = this.findOtherBundledMessagesOfSameTemplate.bind(this);
     this.state = {};
   }
 
@@ -23,12 +24,26 @@ export class ASRouterAdmin extends React.PureComponent {
     ASRouterUtils.removeListener(this.onMessage);
   }
 
-  handleBlock(id) {
-    return () => ASRouterUtils.blockById(id);
+  findOtherBundledMessagesOfSameTemplate(template) {
+    return this.state.messages.filter(msg => msg.template === template && msg.bundled);
   }
 
-  handleUnblock(id) {
-    return () => ASRouterUtils.unblockById(id);
+  handleBlock(msg) {
+    if (msg.bundled) {
+      // If we are blocking a message that belongs to a bundle, block all other messages that are bundled of that same template
+      let bundle = this.findOtherBundledMessagesOfSameTemplate(msg.template);
+      return () => ASRouterUtils.blockBundle(bundle);
+    }
+    return () => ASRouterUtils.blockById(msg.id);
+  }
+
+  handleUnblock(msg) {
+    if (msg.bundled) {
+      // If we are unblocking a message that belongs to a bundle, unblock all other messages that are bundled of that same template
+      let bundle = this.findOtherBundledMessagesOfSameTemplate(msg.template);
+      return () => ASRouterUtils.unblockBundle(bundle);
+    }
+    return () => ASRouterUtils.unblockById(msg.id);
   }
 
   handleOverride(id) {
@@ -46,7 +61,7 @@ export class ASRouterAdmin extends React.PureComponent {
     return (<tr className={itemClassName} key={msg.id}>
       <td className="message-id"><span>{msg.id}</span></td>
       <td>
-        <button className={`button ${(isBlocked ? "" : " primary")}`} onClick={isBlocked ? this.handleUnblock(msg.id) : this.handleBlock(msg.id)}>{isBlocked ? "Unblock" : "Block"}</button>
+        <button className={`button ${(isBlocked ? "" : " primary")}`} onClick={isBlocked ? this.handleUnblock(msg) : this.handleBlock(msg)}>{isBlocked ? "Unblock" : "Block"}</button>
        {isBlocked ? null : <button className="button" onClick={this.handleOverride(msg.id)}>Show</button>}
       </td>
       <td className="message-summary">
