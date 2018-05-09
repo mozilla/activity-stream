@@ -73,13 +73,13 @@ export class SnippetsMap extends Map {
 
   getTotalBookmarksCount() {
     return new Promise(resolve => {
-      this._dispatch(ac.OnlyToMain({type: at.TOTAL_BOOKMARKS_REQUEST}));
       global.addMessageListener("ActivityStream:MainToContent", function onMessage({data: action}) {
         if (action.type === at.TOTAL_BOOKMARKS_RESPONSE) {
           resolve(action.data);
           global.removeMessageListener("ActivityStream:MainToContent", onMessage);
         }
       });
+      this._dispatch(ac.OnlyToMain({type: at.TOTAL_BOOKMARKS_REQUEST}));
     });
   }
 
