@@ -63,6 +63,18 @@ describe("<SectionMenu>", () => {
     assert.propertyVal(options[i++], "id", "section_menu_action_manage_section");
     assert.propertyVal(options, "length", i);
   });
+  it("should show the correct default options for a web extension", () => {
+    wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} isWebExtension={true} />);
+    const {options} = wrapper.find(ContextMenu).props();
+    let i = 0;
+    assert.propertyVal(options[i++], "id", "section_menu_action_move_up");
+    assert.propertyVal(options[i++], "id", "section_menu_action_move_down");
+    assert.propertyVal(options[i++], "type", "separator");
+    assert.propertyVal(options[i++], "id", "section_menu_action_collapse_section");
+    assert.propertyVal(options[i++], "type", "separator");
+    assert.propertyVal(options[i++], "id", "section_menu_action_manage_webext");
+    assert.propertyVal(options, "length", i);
+  });
   it("should show Collapse option for an expanded section if CheckCollapsed in options list", () => {
     wrapper = shallowWithIntl(<SectionMenu {...DEFAULT_PROPS} collapsed={false} />);
     const {options} = wrapper.find(ContextMenu).props();

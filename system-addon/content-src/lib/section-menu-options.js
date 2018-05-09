@@ -50,6 +50,11 @@ export const SectionMenuOptions = {
     action: ac.OnlyToMain({type: at.SETTINGS_OPEN}),
     userEvent: "MENU_MANAGE"
   }),
+  ManageWebExtension: section => ({
+    id: "section_menu_action_manage_webext",
+    icon: "settings",
+    action: ac.OnlyToMain({type: at.OPEN_WEBEXT_SETTINGS, data: section.id})
+  }),
   AddTopSite: section => ({
     id: "section_menu_action_add_topsite",
     icon: "add",
