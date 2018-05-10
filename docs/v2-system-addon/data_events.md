@@ -400,8 +400,11 @@ This reports all the Pocket recommended articles (a list of `id`s) when the user
 ```js
 {
   "action": "activity_stream_impression_stats",
-  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
-  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+
+  // both "client_id" and "session_id" are set to "n/a" in this ping.
+  "client_id": "n/a",
+  "session_id": "n/a",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
@@ -422,6 +425,7 @@ This reports the user's interaction with those Pocket tiles.
   // both "client_id" and "session_id" are set to "n/a" in this ping.
   "client_id": "n/a",
   "session_id": "n/a",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
