@@ -24,6 +24,7 @@ scripts:
     # Copy over all of the system-addon directory
     copy: cpx "system-addon/**/{,.}*" $npm_package_config_mc_dir/browser/extensions/activity-stream
     version: node ./bin/update-version.js $npm_package_config_mc_dir/browser/extensions/activity-stream
+    stringsExport: cp locales/en-US/strings.properties $npm_package_config_mc_dir/browser/locales/en-US/chrome/browser/activity-stream/newtab.properties
     copyPingCentre: cpx "system-addon/ping-centre/PingCentre.jsm" $npm_package_config_mc_dir/browser/modules
     rmextra: rimraf "$npm_package_config_mc_dir/browser/extensions/activity-stream/{{,test/unit/}{content-src,ping-centre},data/locales.json}"
 
@@ -62,9 +63,6 @@ scripts:
   lint:
     eslint: esw --ext=.js,.jsm,.json,.jsx .
     sasslint: sass-lint -v -q
-
-# strings-export: Copy newest en-US strings to strings repository
-  strings-export: node ./bin/strings-export.js ../activity-stream-l10n
 
 # strings-import: Update strings repository and replace local strings
   strings-import: node ./bin/strings-import.js ../activity-stream-l10n
