@@ -2,74 +2,74 @@
 "use strict";
 
 /* eslint-disable no-console */
+const fetch = require("node-fetch");
 
-const DEFAULT_LOCALE = "en-US";
-
-/* globals cd, cp, ls, mkdir, rm */
+/* globals cd, ls, mkdir, rm, ShellString */
 require("shelljs/global");
 
-const args = process.argv.slice(2);
-if (args.length < 1) {
-  throw Error("Please provide the path to the target strings repository");
+const DEFAULT_LOCALE = "en-US";
+const L10N_CENTRAL = "https://hg.mozilla.org/l10n-central";
+const PROPERTIES_PATH = "raw-file/default/browser/chrome/browser/activity-stream/newtab.properties";
+const STRINGS_FILE = "strings.properties";
+
+// Get all the locales in l10n-central
+async function getLocales() {
+  console.log(`Getting locales from ${L10N_CENTRAL}`);
+
+  // Add all non-test sub repository locales
+  const locales = [];
+  const subrepos = await (await fetch(`${L10N_CENTRAL}?style=json`)).json();
+  subrepos.entries.forEach(({name}) => {
+    if (name !== "x-testing") {
+      locales.push(name);
+    }
+  });
+
+  console.log(`Got ${locales.length} locales: ${locales}`);
+  return locales;
 }
 
-// Use the first script argument as the source of localized strings
-const [stringsPath] = args;
-const stringsRepo = require("simple-git")(stringsPath);
+// Save the properties file to the locale's directory
+async function saveProperties(locale) {
+  // Only save a file if the repository has the file
+  const url = `${L10N_CENTRAL}/${locale}/${PROPERTIES_PATH}`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    // Indicate that this locale didn't save
+    return locale;
+  }
 
-// Update strings repository to the latest version
-function pullStrings() {
-  return new Promise((resolve, reject) => {
-    console.log(`Updating L10n repo: ${stringsPath}`);
+  // Save the file to the right place
+  const text = await response.text();
+  mkdir(locale);
+  cd(locale);
+  ShellString(text).to(STRINGS_FILE);
+  cd("..");
 
-    // Get the strings revision
-    stringsRepo.pull().show(["--format=%H", "--no-patch"], (err, val) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      resolve(val.trim());
-    });
-  });
+  // Indicate that we were successful in saving
+  return "";
 }
 
 // Replace and update each locale's strings
-function updateLocales(revision) {
-  return new Promise(resolve => {
-    cd("locales");
+async function updateLocales() {
+  console.log("Switching to and deleting existing l10n tree under: locales");
 
-    console.log("switching to and deleting existing l10n tree under: locales");
-    ls().forEach(dir => {
-      // Keep the default/source locale as it might have newer strings
-      if (dir !== DEFAULT_LOCALE) {
-        rm("-r", dir);
-      }
-    });
-
-    const l10nPath = `../${stringsPath}/l10n`;
-    console.log(`updating l10n tree from: ${l10nPath}`);
-    const locales = ls(l10nPath).map(dir => {
-      // Convert pontoon locale names to this repo's naming
-      const locale = dir.replace("_", "-").replace("templates", DEFAULT_LOCALE);
-
-      // Skip potentially old default template strings
-      if (locale !== DEFAULT_LOCALE) {
-        mkdir(locale);
-        cp(`${l10nPath}/${dir}/strings.properties`, locale);
-      }
-
-      return locale;
-    });
-
-    console.log(`
-Please check the diffs, add/remove files, and then commit the result. Suggested commit message:
-chore(l10n): Update L10n from changeset ${revision}`);
-
-    resolve(revision, locales);
+  cd("locales");
+  ls().forEach(dir => {
+    // Keep the default/source locale as it might have newer strings
+    if (dir !== DEFAULT_LOCALE) {
+      rm("-r", dir);
+    }
   });
+
+  // Save the properties file for each locale in parallel
+  const locales = await getLocales();
+  const missing = (await Promise.all(locales.map(saveProperties))).filter(v => v);
+  console.log(`Skipped ${missing.length} locales without strings: ${missing.sort()}`);
+
+  console.log(`
+Please check the diffs, add/remove files, and then commit the result. Suggested commit message:
+chore(l10n): Update from l10n-central ${new Date()}`);
 }
 
-pullStrings().then(updateLocales).catch(err => {
-  console.log(`Error: ${err}`);
-  process.exit(1); // eslint-disable-line no-process-exit
-});
+updateLocales().catch(console.error);
