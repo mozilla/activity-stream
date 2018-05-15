@@ -15,14 +15,31 @@ export class SimpleSnippet extends React.PureComponent {
     this.props.sendUserActionTelemetry({event: "CLICK_BUTTON"});
   }
 
+  renderTitle() {
+    const {title} = this.props.content;
+    return title ? <h3 className="title">{title}</h3> : null;
+  }
+
+  renderButton(className) {
+    const {props} = this;
+    return (<Button
+      className={className}
+      onClick={this.onButtonClick}
+      url={props.content.button_url}>
+      {props.content.button_label}
+    </Button>);
+  }
+
   render() {
     const {props} = this;
+    const hasLink = props.content.button_url && props.content.button_type === "anchor";
+    const hasButton = props.content.button_url && !props.content.button_type;
     return (<SnippetBase {...props} className="SimpleSnippet">
       <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" />
       <div>
-        {props.content.title ? <h3 className="title">{props.content.title}</h3> : null} <p className="body">{props.content.text}</p>
+        {this.renderTitle()} <p className="body">{props.content.text}</p> {hasLink ? this.renderButton("ASRouterAnchor") : null}
       </div>
-      {props.content.button_url ? <div><Button onClick={this.onButtonClick} url={props.content.button_url}>{props.content.button_label}</Button></div> : null}
+      {hasButton ? <div>{this.renderButton()}</div> : null}
     </SnippetBase>);
   }
 }
