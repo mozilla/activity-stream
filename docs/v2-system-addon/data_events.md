@@ -462,7 +462,7 @@ This reports the duration of the domain affinity calculation in milliseconds.
 
 ## Undesired event pings
 
-There pings record the undesired events happen in the addon for further investigation.
+These pings record the undesired events happen in the addon for further investigation.
 
 ### Addon initialization failure
 
@@ -477,5 +477,44 @@ This reports when the addon fails to initialize
   "user_prefs": 7,
   "event": "ADDON_INIT_FAILED",
   "value": -1
+}
+```
+## Activity Stream Router pings
+
+These pings record the impression and user interactions within Activity Stream Router.
+
+### Impression ping
+
+This reports the impression of Activity Stream Router.
+
+```js
+{
+  "client_id": "n/a",
+  "action": ["snippets_user_event" | "onboarding_user_event"],
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
+  "source": "pocket",
+  "addon_version": "1.0.12",
+  "locale": "en-US",
+  "source": "NEWTAB_FOOTER_BAR",
+  "message_id": "some_snippet_id",
+  "event": "IMPRESSION"
+}
+```
+
+
+### User interaction pings
+
+This reports the user's interaction with Activity Stream Router.
+
+```js
+{
+  "client_id": "n/a",
+  "action": ["snippets_user_event" | "onboarding_user_event"],
+  "addon_version": "1.0.12",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
+  "locale": "en-US",
+  "source": "NEWTAB_FOOTER_BAR",
+  "message_id": "some_snippet_id",
+  "event": ["CLICK_BUTTION" | "BLOCK"]
 }
 ```
