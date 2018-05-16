@@ -148,7 +148,7 @@ export class _CollapsibleSection extends React.PureComponent {
   render() {
     const isCollapsible = this.props.collapsed !== undefined;
     const {enableAnimation, isAnimating, maxHeight, menuButtonHover, showContextMenu} = this.state;
-    const {id, eventSource, collapsed, disclaimer, title, extraMenuOptions, showPrefName, privacyNoticeURL, dispatch, isFirst, isLast} = this.props;
+    const {id, eventSource, collapsed, disclaimer, title, extraMenuOptions, showPrefName, privacyNoticeURL, dispatch, isFirst, isLast, isWebExtension} = this.props;
     const disclaimerPref = `section.${id}.showDisclaimer`;
     const needsDisclaimer = disclaimer && this.props.Prefs.values[disclaimerPref];
     const active = menuButtonHover || showContextMenu;
@@ -186,7 +186,8 @@ export class _CollapsibleSection extends React.PureComponent {
                 onUpdate={this.onMenuUpdate}
                 isFirst={isFirst}
                 isLast={isLast}
-                dispatch={dispatch} />
+                dispatch={dispatch}
+                isWebExtension={isWebExtension} />
             }
           </div>
         </div>

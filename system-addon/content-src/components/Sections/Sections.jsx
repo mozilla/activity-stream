@@ -154,7 +154,8 @@ export class Section extends React.PureComponent {
         Prefs={this.props.Prefs}
         isFirst={isFirst}
         isLast={isLast}
-        dispatch={this.props.dispatch}>
+        dispatch={this.props.dispatch}
+        isWebExtension={this.props.isWebExtension}>
 
         {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
           {realRows.map((link, index) => link &&
