@@ -139,30 +139,40 @@ export class _Card extends React.PureComponent {
   }
 
   render() {
-    const {index, link, dispatch, contextMenuOptions, eventSource, shouldSendImpressionStats} = this.props;
+    const {index, className, link, dispatch, contextMenuOptions, eventSource, shouldSendImpressionStats} = this.props;
     const {props} = this;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     // Display "now" as "trending" until we have new strings #3402
     const {icon, intlID} = cardContextTypes[link.type === "now" ? "trending" : link.type] || {};
     const hasImage = link.image || link.hasImage;
     const imageStyle = {backgroundImage: link.image ? `url(${link.image})` : "none"};
+    const outerClassName = [
+      "card-outer",
+      className,
+      isContextMenuOpen && "active",
+      props.placeholder && "placeholder"
+    ].filter(v => v).join(" ");
 
-    return (<li className={`card-outer${isContextMenuOpen ? " active" : ""}${props.placeholder ? " placeholder" : ""}`}>
+    return (<li className={outerClassName}>
       <a href={link.type === "pocket" ? link.open_url : link.url} onClick={!props.placeholder ? this.onLinkClick : undefined}>
         <div className="card">
-          {hasImage && <div className="card-preview-image-outer">
-            <div className={`card-preview-image${this.state.imageLoaded ? " loaded" : ""}`} style={imageStyle} />
-          </div>}
-          <div className={`card-details${hasImage ? "" : " no-image"}`}>
-            {link.type === "download" && <div className="card-download-icon icon icon-download-folder" />}
+          <div className="card-preview-image-outer">
+            {hasImage &&
+              <div className={`card-preview-image${this.state.imageLoaded ? " loaded" : ""}`} style={imageStyle} />
+            }
+          </div>
+          <div className="card-details">
             {link.type === "download" && <div className="card-host-name alternate"><FormattedMessage id={GetPlatformString(this.props.platform)} /></div>}
-            {link.hostname && <div className="card-host-name">{link.hostname}</div>}
+            {link.hostname &&
+              <div className="card-host-name">
+                {link.hostname}{link.type === "download" && `  \u2014 ${link.description}`}
+              </div>
+            }
             <div className={[
               "card-text",
               icon ? "" : "no-context",
               link.description ? "" : "no-description",
-              link.hostname ? "" : "no-host-name",
-              hasImage ? "" : "no-image"
+              link.hostname ? "" : "no-host-name"
             ].join(" ")}>
               <h4 className="card-title" dir="auto">{link.title}</h4>
               <p className="card-description" dir="auto">{link.description}</p>
@@ -196,4 +206,4 @@ export class _Card extends React.PureComponent {
 }
 _Card.defaultProps = {link: {}};
 export const Card = connect(state => ({platform: state.Prefs.values.platform}))(_Card);
-export const PlaceholderCard = () => <Card placeholder={true} />;
+export const PlaceholderCard = props => <Card placeholder={true} className={props.className} />;
