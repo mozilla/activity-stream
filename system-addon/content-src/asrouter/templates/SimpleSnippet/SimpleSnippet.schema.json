@@ -1,0 +1,39 @@
+{
+  "title": "SimpleSnippet",
+  "description": "A simple template with an icon, text, and optional button.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Snippet title displayed before snippet text"
+    },
+    "text": {
+      "type": "string",
+      "description": "Main body text of snippet"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Snippet icon. 64x64px. SVG or PNG preferred."
+    },
+    "button_url": {
+      "type": "string",
+      "description": "A url, button_label links to this"
+    },
+    "button_label": {
+      "type": "string",
+      "description": "Text for a button next to main snippet text that links to button_url. Requires button_url."
+    },
+    "button_type": {
+      "type": "string",
+      "enum": ["anchor", "button"],
+      "description": "(**temporary**, until we get html support in text field Bug 1457233) Style for button, either a regular button or a text link."
+    }
+  },
+  "additionalProperties": false,
+  "required": ["text"],
+  "dependencies": {
+    "button_url": ["button_label"],
+    "button_label": ["button_url"],
+    "button_type": ["button_url"]
+  }
+}
