@@ -50,6 +50,10 @@
         "url": {
           "type": "string",
           "description": "The url where the link points to."
+        },
+        "metric": {
+          "type": "string",
+          "description": "Custom event name sent with telemetry event."
         }
       }
     }
