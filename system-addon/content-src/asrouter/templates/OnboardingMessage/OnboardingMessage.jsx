@@ -17,7 +17,7 @@ class OnboardingCard extends React.PureComponent {
     const {content} = this.props;
     return (
       <div className="onboardingMessage">
-        <img src={`resource://activity-stream/data/content/assets/illustration-${content.icon}@2x.png`} />
+        <div className={`onboardingMessageImage ${content.icon}`} />
         <div className="onboardingContent">
           <span>
             <h3> {content.title} </h3>
