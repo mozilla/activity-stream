@@ -1,6 +1,8 @@
 import {actionCreators as ac, ASRouterActions as ra} from "common/Actions.jsm";
+import {LocalizationProvider, Localized} from "fluent-react";
 import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content-src/lib/init-store";
 import {ImpressionsWrapper} from "./components/ImpressionsWrapper/ImpressionsWrapper";
+import {MessageContext} from "fluent";
 import {OnboardingMessage} from "./templates/OnboardingMessage/OnboardingMessage";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -51,6 +53,30 @@ export const ASRouterUtils = {
 // Note: nextProps/prevProps refer to props passed to <ImpressionsWrapper />, not <ASRouterUISurface />
 function shouldSendImpressionOnUpdate(nextProps, prevProps) {
   return (nextProps.message.id && (!prevProps.message || prevProps.message.id !== nextProps.message.id));
+}
+
+function* generateMessages(content) {
+  const cx = new MessageContext("en-US");
+  cx.addMessages(`RichTextSnippet = ${content}`);
+  yield cx;
+}
+
+// Elements allowed in snippet content
+const ALLOWED_TAGS = {
+  b: <b />,
+  i: <i />,
+  u: <u />,
+  strong: <strong />,
+  em: <em />,
+  br: <br />
+};
+
+function RichText(props) {
+  return (
+    <Localized id="RichTextSnippet" {...ALLOWED_TAGS}>
+      <span>{props.text.text}</span>
+    </Localized>
+  );
 }
 
 export class ASRouterUISurface extends React.PureComponent {
@@ -129,12 +155,15 @@ export class ASRouterUISurface extends React.PureComponent {
         shouldSendImpressionOnUpdate={shouldSendImpressionOnUpdate}
         // This helps with testing
         document={this.props.document}>
-          <SimpleSnippet
-            {...this.state.message}
-            UISurface="NEWTAB_FOOTER_BAR"
-            getNextMessage={ASRouterUtils.getNextMessage}
-            onBlock={this.onBlockById(this.state.message.id)}
-            sendUserActionTelemetry={this.sendUserActionTelemetry} />
+          <LocalizationProvider messages={generateMessages(this.state.message.content.text)}>
+            <SimpleSnippet
+              {...this.state.message}
+              richText={<RichText text={this.state.message.content} />}
+              UISurface="NEWTAB_FOOTER_BAR"
+              getNextMessage={ASRouterUtils.getNextMessage}
+              onBlock={this.onBlockById(this.state.message.id)}
+              sendUserActionTelemetry={this.sendUserActionTelemetry} />
+          </LocalizationProvider>
       </ImpressionsWrapper>);
   }
 
