@@ -1,6 +1,7 @@
-import {actionCreators as ac} from "common/Actions.jsm";
+import {actionCreators as ac, ASRouterActions as ra} from "common/Actions.jsm";
 import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content-src/lib/init-store";
 import {ImpressionsWrapper} from "./components/ImpressionsWrapper/ImpressionsWrapper";
+import {OnboardingMessage} from "./templates/OnboardingMessage/OnboardingMessage";
 import React from "react";
 import ReactDOM from "react-dom";
 import {SimpleSnippet} from "./templates/SimpleSnippet/SimpleSnippet";
@@ -21,8 +22,19 @@ export const ASRouterUtils = {
   blockById(id) {
     ASRouterUtils.sendMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id}});
   },
+  blockBundle(bundle) {
+    ASRouterUtils.sendMessage({type: "BLOCK_BUNDLE", data: {bundle}});
+  },
+  executeAction({button_action, button_action_params}) {
+    if (button_action in ra) {
+      ASRouterUtils.sendMessage({type: button_action, data: {button_action_params}});
+    }
+  },
   unblockById(id) {
     ASRouterUtils.sendMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id}});
+  },
+  unblockBundle(bundle) {
+    ASRouterUtils.sendMessage({type: "UNBLOCK_BUNDLE", data: {bundle}});
   },
   getNextMessage() {
     ASRouterUtils.sendMessage({type: "GET_NEXT_MESSAGE"});
@@ -47,15 +59,18 @@ export class ASRouterUISurface extends React.PureComponent {
     this.onMessageFromParent = this.onMessageFromParent.bind(this);
     this.sendImpression = this.sendImpression.bind(this);
     this.sendUserActionTelemetry = this.sendUserActionTelemetry.bind(this);
-    this.state = {message: {}};
+    this.state = {message: {}, bundle: {}};
   }
 
   sendUserActionTelemetry(extraProps = {}) {
-    const {message} = this.state;
-    const eventType =  `${message.provider}_user_event`;
+    const {message, bundle} = this.state;
+    if (!message && !extraProps.message_id) {
+      throw new Error(`You must provide a message_id for bundled messages`);
+    }
+    const eventType = `${message.provider || bundle.provider}_user_event`;
 
     ASRouterUtils.sendTelemetry(Object.assign({
-      message_id: message.id,
+      message_id: message.id || extraProps.message_id,
       source: this.props.id,
       action: eventType
     }, extraProps));
@@ -69,13 +84,20 @@ export class ASRouterUISurface extends React.PureComponent {
     return () => ASRouterUtils.blockById(id);
   }
 
+  clearBundle(bundle) {
+    return () => ASRouterUtils.blockBundle(bundle);
+  }
+
   onMessageFromParent({data: action}) {
     switch (action.type) {
       case "SET_MESSAGE":
         this.setState({message: action.data});
         break;
+      case "SET_BUNDLED_MESSAGES":
+        this.setState({bundle: action.data});
+        break;
       case "CLEAR_MESSAGE":
-        this.setState({message: {}});
+        this.setState({message: {}, bundle: {}});
         break;
     }
   }
@@ -89,28 +111,44 @@ export class ASRouterUISurface extends React.PureComponent {
     ASRouterUtils.removeListener(this.onMessageFromParent);
   }
 
-  render() {
-    const {message} = this.state;
-    if (!message.id) { return null; }
-    return (<ImpressionsWrapper
-        message={message}
+  renderSnippets() {
+    return (
+      <ImpressionsWrapper
+        message={this.state.message}
         sendImpression={this.sendImpression}
         shouldSendImpressionOnUpdate={shouldSendImpressionOnUpdate}
         // This helps with testing
         document={this.props.document}>
-        <SimpleSnippet
-          {...message}
-          UISurface={this.props.id}
-          getNextMessage={ASRouterUtils.getNextMessage}
-          onBlock={this.onBlockById(message.id)}
-          sendUserActionTelemetry={this.sendUserActionTelemetry} />
-      </ImpressionsWrapper>
-    );
+          <SimpleSnippet
+            {...this.state.message}
+            UISurface="NEWTAB_FOOTER_BAR"
+            getNextMessage={ASRouterUtils.getNextMessage}
+            onBlock={this.onBlockById(this.state.message.id)}
+            sendUserActionTelemetry={this.sendUserActionTelemetry} />
+      </ImpressionsWrapper>);
+  }
+
+  renderOnboarding() {
+    return (
+      <OnboardingMessage
+        {...this.state.bundle}
+        UISurface="NEWTAB_OVERLAY"
+        onAction={ASRouterUtils.executeAction}
+        onDoneButton={this.clearBundle(this.state.bundle.bundle)}
+        getNextMessage={ASRouterUtils.getNextMessage}
+        sendUserActionTelemetry={this.sendUserActionTelemetry} />);
+  }
+
+  render() {
+    const {message, bundle} = this.state;
+    if (!message.id && !bundle.template) { return null; }
+    if (bundle.template === "onboarding") { return this.renderOnboarding(); }
+    return this.renderSnippets();
   }
 }
 
 ASRouterUISurface.defaultProps = {document: global.document};
 
 export function initASRouter() {
-  ReactDOM.render(<ASRouterUISurface id="NEWTAB_FOOTER_BAR" />, document.getElementById("snippets-container"));
+  ReactDOM.render(<ASRouterUISurface />, document.getElementById("snippets-container"));
 }
