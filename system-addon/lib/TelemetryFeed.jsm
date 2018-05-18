@@ -494,8 +494,8 @@ this.TelemetryFeed = class TelemetryFeed {
       Services.obs.removeObserver(this.browserOpenNewtabStart,
         "browser-open-newtab-start");
     } catch (e) {
-      // wip
-      Cu.reportError(e);
+      // Operation can fail when uninit is called before
+      // init has finished setting up the observer
     }
 
     // Only uninit if the getter has initialized it
