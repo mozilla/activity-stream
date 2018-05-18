@@ -98,8 +98,17 @@ export class ASRouterUISurface extends React.PureComponent {
         this.setState({bundle: action.data});
         break;
       case "CLEAR_MESSAGE":
-        this.setState({message: {}, bundle: {}});
+        if (action.data.id === this.state.message.id) {
+          this.setState({message: {}});
+        }
         break;
+      case "CLEAR_BUNDLE":
+        if (this.state.bundle.bundle) {
+          this.setState({bundle: {}});
+        }
+        break;
+      case "CLEAR_ALL":
+        this.setState({message: {}, bundle: {}});
     }
   }
 
