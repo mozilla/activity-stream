@@ -19,14 +19,14 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: "babel-loader",
-        options: {presets: ["react"]}
+        options: {presets: ["react"], plugins: [["transform-object-rest-spread", {"useBuiltIns": true}]]}
       },
       {
         test: /\.jsm$/,
         exclude: /node_modules/,
         loader: "babel-loader",
         // Converts .jsm files into common-js modules
-        options: {plugins: [["jsm-to-esmodules", {basePath: resourcePathRegEx, replace: true}]]}
+        options: {plugins: [["jsm-to-esmodules", {basePath: resourcePathRegEx, replace: true}], ["transform-object-rest-spread", {"useBuiltIns": true}]]}
       }
     ]
   },

@@ -127,7 +127,7 @@ for (const type of [
 // Helper function for creating routed actions between content and main
 // Not intended to be used by consumers
 function _RouteMessage(action, options) {
-  const meta = action.meta ? Object.assign({}, action.meta) : {};
+  const meta = action.meta ? {...action.meta} : {};
   if (!options || !options.from || !options.to) {
     throw new Error("Routed Messages must have options as the second parameter, and must at least include a .from and .to property.");
   }
@@ -140,7 +140,7 @@ function _RouteMessage(action, options) {
       delete meta[o];
     }
   });
-  return Object.assign({}, action, {meta});
+  return {...action, meta};
 }
 
 /**
