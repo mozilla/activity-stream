@@ -95,7 +95,6 @@
     "buildmc:copy": "cpx \"system-addon/**/{,.}*\" $npm_package_config_mc_dir/browser/extensions/activity-stream/system-addon",
     "buildmc:version": "node ./bin/update-version.js $npm_package_config_mc_dir/browser/extensions/activity-stream/system-addon",
     "buildmc:copyPingCentre": "cpx \"system-addon/ping-centre/PingCentre.jsm\" $npm_package_config_mc_dir/browser/modules",
-    "buildmc:rmextra": "rimraf \"$npm_package_config_mc_dir/browser/extensions/activity-stream/system-addon/{{,test/unit/}{content-src,ping-centre},data/locales.json}\"",
     "packagemc": "npm-run-all packagemc:*",
     "prepackagemc": "npm run cleanmc",
     "packagemc:build": "npm run buildmc:webpack && npm run buildmc:css && npm run buildmc:locales",
