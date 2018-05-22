@@ -32,7 +32,7 @@ XPCOMUtils.defineLazyModuleGetter(this, "ActivityStream",
     // Helper to fetch a resource directory listing and call back with each item
     const processListing = async (uri, cb) => {
       try {
-        return (await (await fetch(uri)).text())
+        (await (await fetch(uri)).text())
           .split("\n").slice(2).forEach(line => cb(line.split(" ").slice(1)));
       } catch (e) {
         // Silently ignore any modules that fail to load.
