@@ -27,7 +27,7 @@ export const EARLY_QUEUED_ACTIONS = [at.SAVE_SESSION_PERF_DATA, at.PAGE_PRERENDE
 function mergeStateReducer(mainReducer) {
   return (prevState, action) => {
     if (action.type === MERGE_STORE_ACTION) {
-      return Object.assign({}, prevState, action.data);
+      return {...prevState, ...action.data};
     }
 
     return mainReducer(prevState, action);

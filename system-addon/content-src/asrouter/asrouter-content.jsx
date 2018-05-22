@@ -69,11 +69,12 @@ export class ASRouterUISurface extends React.PureComponent {
     }
     const eventType = `${message.provider || bundle.provider}_user_event`;
 
-    ASRouterUtils.sendTelemetry(Object.assign({
+    ASRouterUtils.sendTelemetry({
       message_id: message.id || extraProps.message_id,
       source: this.props.id,
-      action: eventType
-    }, extraProps));
+      action: eventType,
+      ...extraProps
+    });
   }
 
   sendImpression() {

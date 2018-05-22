@@ -96,7 +96,8 @@ module.exports = function(config) {
                   // Converts .jsm files into common-js modules
                   ["jsm-to-commonjs", {basePath: PATHS.resourcePathRegEx, replace: true}], // require("babel-plugin-jsm-to-commonjs")
                   ["transform-async-to-module-method", {module: "co-task", method: "async"}], // require("babel-plugin-transform-async-to-module-method")
-                  "transform-es2015-modules-commonjs" // require("babel-plugin-transform-es2015-modules-commonjs")
+                  "transform-es2015-modules-commonjs", // require("babel-plugin-transform-es2015-modules-commonjs")
+                  ["transform-object-rest-spread", {"useBuiltIns": true}] // require("babel-plugin-transform-object-rest-spread")
                 ]
               }
             }]
@@ -109,7 +110,8 @@ module.exports = function(config) {
               options: {
                 plugins: [
                   ["transform-async-to-module-method", {module: "co-task", method: "async"}],
-                  "transform-es2015-modules-commonjs"
+                  "transform-es2015-modules-commonjs",
+                  ["transform-object-rest-spread", {"useBuiltIns": true}]
                 ]
               }
             }]
@@ -118,7 +120,10 @@ module.exports = function(config) {
             test: /\.jsx$/,
             exclude: /node_modules/,
             loader: "babel-loader",
-            options: {presets: ["react"]} // require("babel-preset-react")
+            options: {
+              presets: ["react"], // require("babel-preset-react")
+              plugins: [["transform-object-rest-spread", {"useBuiltIns": true}]]
+            }
           },
           {
             enforce: "post",

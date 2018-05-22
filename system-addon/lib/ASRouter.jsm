@@ -81,7 +81,7 @@ const MessageLoaderUtils = {
       try {
         remoteMessages = (await (await fetch(provider.url)).json())
           .messages
-          .map(msg => (Object.assign({}, msg, {provider_url: provider.url})));
+          .map(msg => ({...msg, provider_url: provider.url}));
       } catch (e) {
         Cu.reportError(e);
       }
@@ -127,7 +127,7 @@ const MessageLoaderUtils = {
    */
   async loadMessagesForProvider(provider) {
     const messages = (await this._getMessageLoader(provider)(provider))
-        .map(msg => Object.assign({}, msg, {provider: provider.id}));
+        .map(msg => ({...msg, provider: provider.id}));
     const lastUpdated = Date.now();
     return {messages, lastUpdated};
   }
@@ -160,15 +160,13 @@ class _ASRouter {
     this.messageChannel = null;
     this._storage = null;
     this._resetInitialization();
-    this._state = Object.assign(
-      {
-        currentId: null,
-        providers: [],
-        blockList: [],
-        messages: []
-      },
-      initialState
-    );
+    this._state = {
+      currentId: null,
+      providers: [],
+      blockList: [],
+      messages: [],
+      ...initialState
+    };
     this.onMessage = this.onMessage.bind(this);
   }
 
@@ -211,7 +209,7 @@ class _ASRouter {
       for (const provider of this.state.providers) {
         if (needsUpdate.includes(provider)) {
           const {messages, lastUpdated} = await MessageLoaderUtils.loadMessagesForProvider(provider);
-          newState.providers.push((Object.assign({}, provider, {lastUpdated})));
+          newState.providers.push({...provider, lastUpdated});
           newState.messages = [...newState.messages, ...messages];
         } else {
           // Skip updating this provider's messages if no update is required
@@ -253,7 +251,7 @@ class _ASRouter {
 
   setState(callbackOrObj) {
     const newState = (typeof callbackOrObj === "function") ? callbackOrObj(this.state) : callbackOrObj;
-    this._state = Object.assign({}, this.state, newState);
+    this._state = {...this.state, ...newState};
     return new Promise(resolve => {
       this._onStateChanged(this.state);
       resolve();
