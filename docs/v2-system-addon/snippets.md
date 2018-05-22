@@ -44,6 +44,30 @@ does not hide onboarding notifications on the **current** page, since that would
 bookmarks a user has (including default bookmarks). Note that is value is only updated once per day or when a
 a user restarts the browser.
 
+`.getAddonsInfo()`:( func) An async function that resolves with an object `{isFullData: (bool), addons: (obj)}`.
+Note that at startup, we are sometimes unable to provide full data due to performance constraits (`.isFullData` will be `false`).
+E.g.
+
+```js
+{
+  isFullData: true,
+  addons: {
+      // This is the ID of the addon
+    "someaddon@mozilla.org": {
+      type: "extension",
+      isSystem: false,
+      isWebExtension: true,
+      version: "29.0.0"
+
+      // The following properties may not be available when the browser starts up
+      name: "Firefox Screenshots",
+      userDisabled: false,
+      installDate: Date 2018-02-27T19:33:33.440Z,
+    }
+  }
+}
+```
+
 ### Expected values in gSnippetsMap
 
 Note that names and functionality of values in v4 snippets have been preserved
@@ -86,26 +110,6 @@ If we could not determine the default browser, this value is `null`. Note that
 currently this value is only checked once when the browser is initialized.
 
 `appData.isDevtoolsUser`: (bool) Has the user ever used devtools?
-
-`appData.addonInfo`: (obj) An object containing info about installed addons.
-For example:
-
-```js
-{
-  // This is the ID of the addon
-  "someaddon@mozilla.org": {
-    type: "extension",
-    isSystem: false,
-    isWebExtension: true,
-    version: "29.0.0"
-
-    // The following properties may not be available when the browser starts up
-    name: "Firefox Screenshots",
-    userDisabled: false,
-    installDate: Date 2018-02-27T19:33:33.440Z,
-  }
-}
-```
 
 ## Events
 

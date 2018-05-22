@@ -25,6 +25,8 @@ this.globalImportContext = globalImportContext;
 // }
 const actionTypes = {};
 for (const type of [
+  "ADDONS_INFO_REQUEST",
+  "ADDONS_INFO_RESPONSE",
   "ARCHIVE_FROM_POCKET",
   "AS_ROUTER_TELEMETRY_USER_EVENT",
   "BLOCK_URL",
