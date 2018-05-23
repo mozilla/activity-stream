@@ -51,7 +51,7 @@ export class ASRouterAdmin extends React.PureComponent {
   }
 
   renderMessageItem(msg) {
-    const isCurrent = msg.id === this.state.currentId;
+    const isCurrent = msg.id === this.state.lastMessageId;
     const isBlocked = this.state.blockList.includes(msg.id);
 
     let itemClassName = "message-item";
