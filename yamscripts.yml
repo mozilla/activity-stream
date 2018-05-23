@@ -22,7 +22,7 @@ scripts:
     css: node-sass --source-map true --source-map-contents system-addon/content-src/styles -o system-addon/css
     html: rimraf system-addon/prerendered && webpack --config webpack.prerender.config.js && node ./bin/render-activity-stream-html.js
     # Copy over the entire repo
-    copy: cpx "./**/{,.}*" $npm_package_config_mc_dir/browser/extensions/activity-stream
+    copy: node ./bin/mirror-trees.js
     version: node ./bin/update-version.js $npm_package_config_mc_dir/browser/extensions/activity-stream/system-addon
     copyPingCentre: cpx "system-addon/ping-centre/PingCentre.jsm" $npm_package_config_mc_dir/browser/modules
 
