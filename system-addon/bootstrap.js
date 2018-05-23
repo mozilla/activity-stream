@@ -35,10 +35,9 @@ XPCOMUtils.defineLazyModuleGetter(this, "ActivityStream",
         (await (await fetch(uri)).text())
           .split("\n").slice(2).forEach(line => cb(line.split(" ").slice(1)));
       } catch (e) {
-        // Silently ignore any modules that fail to load.
+        // Silently ignore listings that fail to load
+        // probably because the resource: has been unloaded
       }
-
-      return null;
     };
 
     // Look for modules one level deeper than the top resource URI
