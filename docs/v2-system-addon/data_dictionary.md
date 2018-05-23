@@ -1,6 +1,7 @@
 # Activity Stream Pings
 
 The Activity Stream system add-on sends various types of pings to the backend (HTTPS POST) [Onyx server](https://github.com/mozilla/onyx) :
+- a `health` ping that reports whether or not a user has a custom about:home or about:newtab page
 - a `session` ping that describes the ending of an Activity Stream session (a new tab is closed or refreshed), and
 - an `event` ping that records specific data about individual user interactions while interacting with Activity Stream
 - a `performance` ping that records specific performance related events
@@ -8,6 +9,26 @@ The Activity Stream system add-on sends various types of pings to the backend (H
 - an `impression_stats` ping that records data about Pocket impressions and user interactions
 
 Schema definitions/validations that can be used for tests can be found in `system-addon/test/schemas/pings.js`.
+
+# Example Activity Stream `health` log
+
+```js
+{
+  "addon_version": "1.0.0",
+  "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
+  "locale": "en-US",
+  "version": "62.0a1",
+  "release_channel": "nightly",
+  "event": "AS_ENABLED",
+  "value": 10,
+
+  // These fields are generated on the server
+  "date": "2016-03-07",
+  "ip": "10.192.171.13",
+  "ua": "python-requests/2.9.1",
+  "receive_at": 1457396660000
+}
+```
 
 # Example Activity Stream `session` Log
 

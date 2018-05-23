@@ -10,6 +10,27 @@ Data collected from Activity Stream is retained on Mozilla secured servers for a
 
 The following is a detailed overview of the different kinds of data we collect in the Activity Stream. See [data_dictionary.md](data_dictionary.md) for more details for each field.
 
+## Health ping
+
+This is a heartbeat ping indicating whether Activity Stream is currently being used or not, it's submitted once upon the browser initialization.
+
+```js
+{
+  "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
+  "locale": "en-US",
+  "version": "62.0a1",
+  "release_channel": "nightly",
+  "event": "AS_ENABLED",
+  "value": 10
+}
+```
+where the "value" is encoded as:
+  * Value 0: default
+  * Value 1: about:blank
+  * Value 2: web extension
+  * Value 3: other custom URL(s)
+Two encoded integers for about:newtab and about:home are combined in a bitwise fashion. For instance, if both about:home and about:newtab were set to about:blank, then `value = 5 = (1 | (1 << 2))`, i.e `value = (bitfield of about:newtab) | (bitfield of about:newhome << 2)`.
+
 ## User event pings
 
 These pings are captured when a user **performs some kind of interaction** in the add-on.
