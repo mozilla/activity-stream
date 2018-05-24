@@ -106,11 +106,14 @@ describe("<Section>", () => {
       return mountWithIntl(<Provider store={store}><Section {...FAKE_SECTION} rows={rows} maxRows={2} /></Provider>);
     }
 
-    it("should return 1 row of placeholders if realRows is 0", () => {
+    it("should return 2 row of placeholders if realRows is 0", () => {
       wrapper = renderWithSites([]);
-      assert.lengthOf(wrapper.find(PlaceholderCard), 3);
+      assert.lengthOf(wrapper.find(PlaceholderCard), 6);
     });
-    it("should fill in the rest of the row", () => {
+    it("should fill in the rest of the rows", () => {
+      wrapper = renderWithSites(new Array(CARDS_PER_ROW).fill(fakeSite));
+      assert.lengthOf(wrapper.find(PlaceholderCard), CARDS_PER_ROW, "CARDS_PER_ROW");
+
       wrapper = renderWithSites(new Array(CARDS_PER_ROW + 1).fill(fakeSite));
       assert.lengthOf(wrapper.find(PlaceholderCard), 2, "CARDS_PER_ROW + 1");
 
@@ -120,10 +123,7 @@ describe("<Section>", () => {
       wrapper = renderWithSites(new Array(2 * CARDS_PER_ROW - 1).fill(fakeSite));
       assert.lengthOf(wrapper.find(PlaceholderCard), 1, "CARDS_PER_ROW - 1");
     });
-    it("should not add placeholders if a whole row is filled in", () => {
-      wrapper = renderWithSites(new Array(CARDS_PER_ROW).fill(fakeSite));
-      assert.lengthOf(wrapper.find(PlaceholderCard), 0, "1 row");
-
+    it("should not add placeholders all the rows are full", () => {
       wrapper = renderWithSites(new Array(2 * CARDS_PER_ROW).fill(fakeSite));
       assert.lengthOf(wrapper.find(PlaceholderCard), 0, "2 rows");
     });

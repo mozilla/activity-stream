@@ -44,13 +44,17 @@ $black-20: rgba($black, 0.2);
 $black-25: rgba($black, 0.25);
 $black-30: rgba($black, 0.3);
 
-// Photon transitions from http://design.firefox.com/photon/motion/duration-and-easing.html
-$photon-easing: cubic-bezier(0.07, 0.95, 0, 1);
-
 // Other colors
 $white: #FFF;
 $white-10: rgba($white, 0.1);
 $pocket-teal: #50BCB6;
+$bookmark-icon-fill: #0A84FF;
+$download-icon-fill: #12BC00;
+$history-icon-fill: #B1B1B3;
+$pocket-icon-fill: #D70022;
+
+// Photon transitions from http://design.firefox.com/photon/motion/duration-and-easing.html
+$photon-easing: cubic-bezier(0.07, 0.95, 0, 1);
 
 $border-radius: 3px;
 
@@ -64,9 +68,6 @@ $grid-unit: 96px; // 1 top site
 $icon-size: 16px;
 $smaller-icon-size: 12px;
 $larger-icon-size: 32px;
-
-$small-download-folder-icon-size: 36px;
-$large-download-folder-icon-size: $small-download-folder-icon-size * 1.5;
 
 $wrapper-default-width: $grid-unit * 2 + $base-gutter * 1 + $section-horizontal-padding * 2; // 2 top sites
 $wrapper-max-width-small: $grid-unit * 3 + $base-gutter * 2 + $section-horizontal-padding * 2; // 3 top sites
@@ -93,6 +94,9 @@ $card-text-line-height: 19px;
 $card-width-large: 309px;
 $card-height-large: 370px;
 $card-preview-image-height-large: 155px;
+// Compact cards for Highlights
+$card-height-compact: 160px;
+$card-preview-image-height-compact: 108px;
 
 $topic-margin-top: 12px;
 

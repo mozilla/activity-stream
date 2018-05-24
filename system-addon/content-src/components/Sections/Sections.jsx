@@ -10,7 +10,8 @@ import {TopSites} from "content-src/components/TopSites/TopSites";
 
 const VISIBLE = "visible";
 const VISIBILITY_CHANGE_EVENT = "visibilitychange";
-const CARDS_PER_ROW = 3;
+const CARDS_PER_ROW_DEFAULT = 3;
+const CARDS_PER_ROW_COMPACT_WIDE = 4;
 
 function getFormattedMessage(message) {
   return typeof message === "string" ? <span>{message}</span> : <FormattedMessage {...message} />;
@@ -19,7 +20,14 @@ function getFormattedMessage(message) {
 export class Section extends React.PureComponent {
   _dispatchImpressionStats() {
     const {props} = this;
-    const maxCards = 3 * props.maxRows;
+    let cardsPerRow = CARDS_PER_ROW_DEFAULT;
+    if (props.compactCards && global.matchMedia(`(min-width: 1072px)`).matches) {
+      // If the section has compact cards and the viewport is wide enough, we show
+      // 4 columns instead of 3.
+      // $break-point-widest = 1072px (from _variables.scss)
+      cardsPerRow = CARDS_PER_ROW_COMPACT_WIDE;
+    }
+    const maxCards = cardsPerRow * props.maxRows;
     const cards = props.rows.slice(0, maxCards);
 
     if (this.needsImpressionStats(cards)) {
@@ -108,25 +116,17 @@ export class Section extends React.PureComponent {
     return false;
   }
 
-  numberOfPlaceholders(items) {
-    if (items === 0) {
-      return CARDS_PER_ROW;
-    }
-    const remainder = items % CARDS_PER_ROW;
-    if (remainder === 0) {
-      return 0;
-    }
-    return CARDS_PER_ROW - remainder;
-  }
-
   render() {
     const {
       id, eventSource, title, icon, rows,
-      emptyState, dispatch, maxRows,
+      emptyState, dispatch, compactCards, maxRows,
       contextMenuOptions, initialized, disclaimer,
       pref, privacyNoticeURL, isFirst, isLast
     } = this.props;
-    const maxCards = CARDS_PER_ROW * maxRows;
+
+    const maxCardsPerRow = compactCards ? CARDS_PER_ROW_COMPACT_WIDE : CARDS_PER_ROW_DEFAULT;
+    const maxCards = maxCardsPerRow * maxRows;
+    const maxCardsOnNarrow = CARDS_PER_ROW_DEFAULT * maxRows;
 
     // Show topics only for top stories and if it's not initialized yet (so
     // content doesn't shift when it is loaded) or has loaded with topics
@@ -134,16 +134,43 @@ export class Section extends React.PureComponent {
       (!this.props.topics || this.props.topics.length > 0));
 
     const realRows = rows.slice(0, maxCards);
-    const placeholders = this.numberOfPlaceholders(realRows.length);
 
     // The empty state should only be shown after we have initialized and there is no content.
     // Otherwise, we should show placeholders.
     const shouldShowEmptyState = initialized && !rows.length;
 
+    const cards = [];
+    if (!shouldShowEmptyState) {
+      for (let i = 0; i < maxCards; i++) {
+        const link = realRows[i];
+        // On narrow viewports, we only show 3 cards per row. We'll mark the rest as
+        // .hide-for-narrow to hide in CSS via @media query.
+        const className = (i >= maxCardsOnNarrow) ? "hide-for-narrow" : "";
+        cards.push(link ? (
+          <Card key={i}
+            index={i}
+            className={className}
+            dispatch={dispatch}
+            link={link}
+            contextMenuOptions={contextMenuOptions}
+            eventSource={eventSource}
+            shouldSendImpressionStats={this.props.shouldSendImpressionStats}
+            isWebExtension={this.props.isWebExtension} />
+        ) : (
+          <PlaceholderCard key={i} className={className} />
+        ));
+      }
+    }
+
+    const sectionClassName = [
+      "section",
+      compactCards ? "compact-cards" : "normal-cards"
+    ].join(" ");
+
     // <Section> <-- React component
     // <section> <-- HTML5 element
     return (<ComponentPerfTimer {...this.props}>
-      <CollapsibleSection className="section" icon={icon}
+      <CollapsibleSection className={sectionClassName} icon={icon}
         title={title}
         id={id}
         eventSource={eventSource}
@@ -158,10 +185,7 @@ export class Section extends React.PureComponent {
         isWebExtension={this.props.isWebExtension}>
 
         {!shouldShowEmptyState && (<ul className="section-list" style={{padding: 0}}>
-          {realRows.map((link, index) => link &&
-            <Card key={index} index={index} dispatch={dispatch} link={link} contextMenuOptions={contextMenuOptions}
-              eventSource={eventSource} shouldSendImpressionStats={this.props.shouldSendImpressionStats} isWebExtension={this.props.isWebExtension} />)}
-          {placeholders > 0 && [...new Array(placeholders)].map((_, i) => <PlaceholderCard key={i} />)}
+          {cards}
         </ul>)}
         {shouldShowEmptyState &&
           <div className="section-empty-state">

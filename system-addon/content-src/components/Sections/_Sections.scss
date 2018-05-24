@@ -26,10 +26,6 @@
         @include context-menu-open-left;
       }
     }
-
-    @media (min-width: $break-point-widest) {
-      grid-template-columns: repeat(auto-fit, $card-width-large);
-    }
   }
 
   .section-empty-state {
@@ -65,6 +61,17 @@
 
     @media (min-width: $break-point-widest) {
       height: $card-height-large;
+    }
+  }
+}
+
+@media (min-width: $break-point-widest) {
+  .sections-list {
+    // Compact cards stay the same size but normal cards get bigger.
+    .normal-cards {
+      .section-list {
+        grid-template-columns: repeat(auto-fit, $card-width-large);
+      }
     }
   }
 }

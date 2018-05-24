@@ -14,6 +14,11 @@
     .card {
       box-shadow: inset $inner-box-shadow;
     }
+
+    .card-preview-image-outer,
+    .card-context {
+      display: none;
+    }
   }
 
   .card {
@@ -60,6 +65,7 @@
   }
 
   .card-preview-image-outer {
+    background-color: $grey-30;
     border-radius: $border-radius $border-radius 0 0;
     height: $card-preview-image-height;
     overflow: hidden;
@@ -90,36 +96,19 @@
 
   .card-details {
     padding: 15px 16px 12px;
-
-    &.no-image {
-      padding-top: 16px;
-    }
   }
 
   .card-text {
     max-height: 4 * $card-text-line-height + $card-title-margin;
     overflow: hidden;
 
-    &.no-image {
-      max-height: 10 * $card-text-line-height + $card-title-margin;
-    }
-
     &.no-host-name,
     &.no-context {
       max-height: 5 * $card-text-line-height + $card-title-margin;
     }
 
-    &.no-image.no-host-name,
-    &.no-image.no-context {
-      max-height: 11 * $card-text-line-height + $card-title-margin;
-    }
-
     &.no-host-name.no-context {
       max-height: 6 * $card-text-line-height + $card-title-margin;
-    }
-
-    &.no-image.no-host-name.no-context {
-      max-height: 12 * $card-text-line-height + $card-title-margin;
     }
 
     &:not(.no-description) .card-title {
@@ -138,17 +127,6 @@
   }
 
   .card-host-name.alternate { display: none; }
-
-  .card-download-icon {
-    float: inline-end;
-    margin-inline-start: 15px;
-    margin-top: 2px;
-
-    &.icon-download-folder {
-      height: $small-download-folder-icon-size;
-      width: $small-download-folder-icon-size;
-    }
-  }
 
   .card-title {
     font-size: 14px;
@@ -190,56 +168,144 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+}
 
-  // Wide layout styles
-  @media (min-width: $break-point-widest) {
-    $line-height: 23px;
-    height: $card-height-large;
+.normal-cards {
+  .card-outer {
+    // Wide layout styles
+    @media (min-width: $break-point-widest) {
+      $line-height: 23px;
+      height: $card-height-large;
+
+      .card-preview-image-outer {
+        height: $card-preview-image-height-large;
+      }
+
+      .card-details {
+        padding: 13px 16px 12px;
+      }
+
+      .card-text {
+        max-height: 6 * $line-height + $card-title-margin;
+      }
+
+      .card-host-name {
+        font-size: 12px;
+        padding-bottom: 5px;
+      }
+
+      .card-title {
+        font-size: 17px;
+        line-height: $line-height;
+        margin-bottom: 0;
+      }
+
+      .card-text:not(.no-description) {
+        .card-title {
+          max-height: 3 * $line-height;
+        }
+      }
+
+      .card-description {
+        font-size: 15px;
+        line-height: $line-height;
+      }
+
+      .card-context {
+        bottom: 4px;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.compact-cards {
+  .card-outer {
+    height: $card-height-compact;
 
     .card-preview-image-outer {
-      height: $card-preview-image-height-large;
+      height: $card-preview-image-height-compact;
     }
 
     .card-details {
-      padding: 13px 16px 12px;
-    }
-
-    .card-text {
-      max-height: 6 * $line-height + $card-title-margin;
+      padding: 12px 16px;
     }
 
     .card-host-name {
-      font-size: 12px;
-      padding-bottom: 5px;
+      line-height: 10px;
     }
 
-    .card-download-icon {
-      &.icon-download-folder {
-        height: $large-download-folder-icon-size;
-        width: $large-download-folder-icon-size;
-      }
-    }
-
-    .card-title {
-      font-size: 17px;
-      line-height: $line-height;
-      margin-bottom: 0;
-    }
-
-    .card-text:not(.no-description) {
-      .card-title {
-        max-height: 3 * $line-height;
+    .card-text {
+      .card-title,
+      &:not(.no-description) .card-title {
+        font-size: 10px;
+        line-height: 12px;
+        max-height: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
     .card-description {
-      font-size: 15px;
-      line-height: $line-height;
+      display: none;
     }
 
     .card-context {
-      bottom: 4px;
-      font-size: 14px;
+      $icon-size: 16px;
+      $container-size: 32px;
+      background-color: var(--newtab-card-background-color);
+      border-radius: $container-size / 2;
+      height: $container-size;
+      width: $container-size;
+      padding: ($container-size - $icon-size) / 2;
+      top: 92px;
+      left: auto;
+      offset-inline-end: 12px;
+
+      &::after {
+        border: 1px solid var(--newtab-card-hairline-color);
+        border-bottom: 0;
+        border-radius: ($container-size / 2) ($container-size / 2) 0 0;
+        content: '';
+        position: absolute;
+        height: 50%;
+        width: 100%;
+        top: 0;
+        left: 0;
+      }
+
+      .card-context-icon {
+        margin-inline-end: 0;
+        height: $icon-size;
+        width: $icon-size;
+
+        &.icon-bookmark-added {
+          fill: $bookmark-icon-fill;
+        }
+
+        &.icon-download {
+          fill: $download-icon-fill;
+        }
+
+        &.icon-history-item {
+          fill: $history-icon-fill;
+        }
+
+        &.icon-pocket {
+          fill: $pocket-icon-fill;
+        }
+      }
+
+      .card-context-label {
+        display: none;
+      }
+    }
+  }
+
+  @media not all and (min-width: $break-point-widest) {
+    .hide-for-narrow {
+      display: none;
     }
   }
 }

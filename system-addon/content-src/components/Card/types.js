@@ -1,7 +1,7 @@
 export const cardContextTypes = {
   history: {
     intlID: "type_label_visited",
-    icon: "historyItem"
+    icon: "history-item"
   },
   bookmark: {
     intlID: "type_label_bookmarked",
