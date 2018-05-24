@@ -165,6 +165,25 @@ describe("SnippetsMap", () => {
       assert.calledWith(global.removeMessageListener, INCOMING_MESSAGE_NAME, listener);
     });
   });
+  describe("#getAddonsInfo", () => {
+    it("should dispatch a ADDONS_INFO_REQUEST and resolve with the right data", async () => {
+      const addonsPromise = snippetsMap.getAddonsInfo();
+
+      assert.calledOnce(dispatch);
+      assert.equal(dispatch.firstCall.args[0].type, at.ADDONS_INFO_REQUEST);
+      assert.calledWith(global.addMessageListener, INCOMING_MESSAGE_NAME);
+
+      // Call listener
+      const [, listener] = global.addMessageListener.firstCall.args;
+      const addonsInfo = {isFullData: true, addons: {foo: {}}};
+      listener({data: {type: at.ADDONS_INFO_RESPONSE, data: addonsInfo}});
+
+      const result = await addonsPromise;
+
+      assert.equal(result, addonsInfo);
+      assert.calledWith(global.removeMessageListener, INCOMING_MESSAGE_NAME, listener);
+    });
+  });
 });
 
 describe("SnippetsProvider", () => {
