@@ -132,7 +132,9 @@ module.exports = function(config) {
             include: [path.resolve("system-addon")],
             exclude: [
               path.resolve("system-addon/test/"),
-              path.resolve("system-addon/vendor")
+              path.resolve("system-addon/vendor"),
+              // This file is tested with mochi tests instead of mocha
+              path.resolve("system-addon/lib/ASRouterTargeting.jsm")
             ]
           }
         ]

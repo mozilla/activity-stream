@@ -7,6 +7,9 @@ ChromeUtils.import("resource://gre/modules/Services.jsm");
 Cu.importGlobalProperties(["fetch"]);
 const {ASRouterActions: ra} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 
+ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
+  "resource://activity-stream/lib/ASRouterTargeting.jsm");
+
 const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
 const ONE_HOUR_IN_MS = 60 * 60 * 1000;
@@ -143,17 +146,6 @@ const MessageLoaderUtils = {
 this.MessageLoaderUtils = MessageLoaderUtils;
 
 /**
- * getRandomItemFromArray
- *
- * @param {Array} arr An array of items
- * @returns one of the items in the array
- */
-function getRandomItemFromArray(arr) {
-  const index = Math.floor(Math.random() * arr.length);
-  return arr[index];
-}
-
-/**
  * @class _ASRouter - Keeps track of all messages, UI surfaces, and
  * handles blocking, rotation, etc. Inspecting ASRouter.state will
  * tell you what the current displayed message is in all UI surfaces.
@@ -288,14 +280,17 @@ class _ASRouter {
     return {bundle: bundledMessages, provider: originalMessage.provider, template: originalMessage.template};
   }
 
-  async sendNextMessage(target) {
-    let message;
-    let bundledMessages;
+  _getUnblockedMessages() {
+    let {state} = this;
+    return state.messages.filter(item => !state.blockList.includes(item.id));
+  }
 
-    await this.setState(state => {
-      message = getRandomItemFromArray(state.messages.filter(item => item.id !== state.lastMessageId && !state.blockList.includes(item.id)));
-      return {lastMessageId: message ? message.id : null};
-    });
+  async sendNextMessage(target) {
+    let bundledMessages;
+    const msgs = this._getUnblockedMessages();
+    let message = await ASRouterTargeting.findMatchingMessage(msgs);
+    await this.setState({lastMessageId: message ? message.id : null});
+
     // If this message needs to be bundled with other messages of the same template, find them and bundle them together
     if (message && message.bundled) {
       bundledMessages = this._getBundledMessages(message);
