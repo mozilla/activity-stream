@@ -10,7 +10,7 @@ Read [docs/v2-system-addon](https://github.com/mozilla/activity-stream/tree/mast
 
 ## Where should I file bugs?
 
-Although we regularly check the ActivityStream:NewTab component on Bugzilla.
+We regularly check the ActivityStream:NewTab component on Bugzilla.
 
 ## For Developers
 

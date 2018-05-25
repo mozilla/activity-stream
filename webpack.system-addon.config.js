@@ -1,7 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 
-const absolute = relPath => path.join(__dirname, "system-addon", relPath);
+const absolute = relPath => path.join(__dirname, relPath);
 
 const resourcePathRegEx = /^resource:\/\/activity-stream\//;
 
@@ -30,12 +30,12 @@ module.exports = {
       }
     ]
   },
-  // This resolve config allows us to import with paths relative to the system-addon/ directory, e.g. "lib/ActivityStream.jsm"
+  // This resolve config allows us to import with paths relative to the root directory, e.g. "lib/ActivityStream.jsm"
   resolve: {
     extensions: [".js", ".jsx"],
     modules: [
       "node_modules",
-      "system-addon"
+      "."
     ]
   },
   externals: {
