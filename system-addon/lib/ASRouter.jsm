@@ -79,9 +79,16 @@ const MessageLoaderUtils = {
     let remoteMessages = [];
     if (provider.url) {
       try {
-        remoteMessages = (await (await fetch(provider.url)).json())
-          .messages
-          .map(msg => ({...msg, provider_url: provider.url}));
+        const response = await fetch(provider.url);
+        if (
+          // Empty response
+          response.status !== 204 &&
+          (response.ok || response.status === 302)
+        ) {
+          remoteMessages = (await response.json())
+            .messages
+            .map(msg => ({...msg, provider_url: provider.url}));
+        }
       } catch (e) {
         Cu.reportError(e);
       }
