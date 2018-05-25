@@ -149,10 +149,9 @@
     color: var(--newtab-text-tertiary-color);
     display: flex;
     font-size: 11px;
-    left: 0;
+    offset-inline-start: 0;
     padding: 9px 16px 9px 14px;
     position: absolute;
-    right: 0;
   }
 
   .card-context-icon {
@@ -260,8 +259,8 @@
       width: $container-size;
       padding: ($container-size - $icon-size) / 2;
       top: 92px;
-      left: auto;
       offset-inline-end: 12px;
+      offset-inline-start: auto;
 
       &::after {
         border: 1px solid var(--newtab-card-hairline-color);
