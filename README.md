@@ -1,13 +1,16 @@
-# Activity Stream
+# activity-stream
 
-This is the source code for the Activity Stream project, which replaces the "New Tab" of Firefox with a new design based on rich metadata and browsing behavior.
+This system add-on replaces the new tab page in Firefox with a new design and
+functionality as part of the Activity Stream project.
 
-We export our code to Mozilla Central on a weekly (or sometimes more frequent) basis.
+The files in this directory, including vendor dependencies, are imported from the
+system-addon directory in https://github.com/mozilla/activity-stream.
+
+Read [docs/v2-system-addon](https://github.com/mozilla/activity-stream/tree/master/docs/v2-system-addon/1.GETTING_STARTED.md) for more detail.
 
 ## Where should I file bugs?
 
-Although we regularly check the ActivityStream:NewTab component on Bugzilla, we generally
-like to file bugs at https://github.com/mozilla/activity-stream/issues.
+Although we regularly check the ActivityStream:NewTab component on Bugzilla.
 
 ## For Developers
 
