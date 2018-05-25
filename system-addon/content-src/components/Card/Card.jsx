@@ -24,7 +24,8 @@ export class _Card extends React.PureComponent {
     this.state = {
       activeCard: null,
       imageLoaded: false,
-      showContextMenu: false
+      showContextMenu: false,
+      cardImage: null
     };
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
@@ -36,30 +37,115 @@ export class _Card extends React.PureComponent {
    */
   async maybeLoadImage() {
     // No need to load if it's already loaded or no image
-    const {image} = this.props.link;
-    if (!this.state.imageLoaded && image) {
+    const {cardImage} = this.state;
+    if (!cardImage) {
+      return;
+    }
+
+    const imageUrl = cardImage.url;
+    if (!this.state.imageLoaded) {
       // Initialize a promise to share a load across multiple card updates
-      if (!gImageLoading.has(image)) {
+      if (!gImageLoading.has(imageUrl)) {
         const loaderPromise = new Promise((resolve, reject) => {
           const loader = new Image();
           loader.addEventListener("load", resolve);
           loader.addEventListener("error", reject);
-          loader.src = image;
+          loader.src = imageUrl;
         });
 
         // Save and remove the promise only while it's pending
-        gImageLoading.set(image, loaderPromise);
-        loaderPromise.catch(ex => ex).then(() => gImageLoading.delete(image)).catch();
+        gImageLoading.set(imageUrl, loaderPromise);
+        loaderPromise.catch(ex => ex).then(() => gImageLoading.delete(imageUrl)).catch();
       }
 
       // Wait for the image whether just started loading or reused promise
-      await gImageLoading.get(image);
+      await gImageLoading.get(imageUrl);
 
       // Only update state if we're still waiting to load the original image
-      if (this.props.link.image === image && !this.state.imageLoaded) {
+      if (_Card.isImageInState(this.state, this.props.link.image) && !this.state.imageLoaded) {
         this.setState({imageLoaded: true});
       }
     }
+  }
+
+  /**
+   * Checks if `.image` property on link object is a local image with blob data.
+   * This function only works for props since state has `.url` and not `.data`.
+   *
+   * @param {obj|string} image
+   * @returns {bool} true if image is a local image object, otherwise false
+   *                 (otherwise, image will be a URL as a string)
+   */
+  static isLocalImageObject(image) {
+    return image && image.data && image.path;
+  }
+
+  /**
+   * Helper to obtain the next state based on nextProps and prevState.
+   *
+   * NOTE: Rename this method to getDerivedStateFromProps when we update React
+   *       to >= 16.3. We will need to update tests as well. We cannot rename this
+   *       method to getDerivedStateFromProps now because there is a mismatch in
+   *       the React version that we are using for both testing and production.
+   *       (i.e. react-test-render => "16.3.2", react => "16.2.0").
+   *
+   * See https://github.com/airbnb/enzyme/blob/master/packages/enzyme-adapter-react-16/package.json#L43.
+   */
+  static getNextStateFromProps(nextProps, prevState) {
+    const {image} = nextProps.link;
+    const imageInState = _Card.isImageInState(prevState, image);
+    let nextState = null;
+
+    // Image is updating.
+    if (!imageInState && nextProps.link) {
+      nextState = {imageLoaded: false};
+    }
+
+    if (imageInState) {
+      return nextState;
+    }
+
+    nextState = nextState || {};
+
+    // Since image was updated, attempt to revoke old image blob URL, if it exists.
+    _Card.maybeRevokeImageBlob(prevState);
+
+    if (!image) {
+      nextState.cardImage = null;
+    } else if (_Card.isLocalImageObject(image)) {
+      nextState.cardImage = {url: global.URL.createObjectURL(image.data), path: image.path};
+    } else {
+      nextState.cardImage = {url: image};
+    }
+
+    return nextState;
+  }
+
+  /**
+   * Helper to conditionally revoke the previous card image if it is a blob.
+   */
+  static maybeRevokeImageBlob(prevState) {
+    if (prevState.cardImage && prevState.cardImage.path) {
+      global.URL.revokeObjectURL(prevState.cardImage.url);
+    }
+  }
+
+  /**
+   * Helper to check if an image is already in state.
+   */
+  static isImageInState(state, image) {
+    const {cardImage} = state;
+
+    // Both image and cardImage are present.
+    if (image && cardImage) {
+      return _Card.isLocalImageObject(image) ?
+             cardImage.path === image.path :
+             cardImage.url === image;
+    }
+
+    // This will only handle the remaining three possible outcomes.
+    // (i.e. everything except when both image and cardImage are present)
+    return !image && !cardImage;
   }
 
   onMenuButtonClick(event) {
@@ -131,11 +217,28 @@ export class _Card extends React.PureComponent {
     this.maybeLoadImage();
   }
 
-  componentWillReceiveProps(nextProps) {
-    // Clear the image state if changing images
-    if (nextProps.link.image !== this.props.link.image) {
-      this.setState({imageLoaded: false});
+  // NOTE: Remove this function when we update React to >= 16.3 since React will
+  //       call getDerivedStateFromProps automatically. We will also need to
+  //       rename getNextStateFromProps to getDerivedStateFromProps.
+  componentWillMount() {
+    const nextState = _Card.getNextStateFromProps(this.props, this.state);
+    if (nextState) {
+      this.setState(nextState);
     }
+  }
+
+  // NOTE: Remove this function when we update React to >= 16.3 since React will
+  //       call getDerivedStateFromProps automatically. We will also need to
+  //       rename getNextStateFromProps to getDerivedStateFromProps.
+  componentWillReceiveProps(nextProps) {
+    const nextState = _Card.getNextStateFromProps(nextProps, this.state);
+    if (nextState) {
+      this.setState(nextState);
+    }
+  }
+
+  componentWillUnmount() {
+    _Card.maybeRevokeImageBlob(this.state);
   }
 
   render() {
@@ -144,8 +247,8 @@ export class _Card extends React.PureComponent {
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     // Display "now" as "trending" until we have new strings #3402
     const {icon, intlID} = cardContextTypes[link.type === "now" ? "trending" : link.type] || {};
-    const hasImage = link.image || link.hasImage;
-    const imageStyle = {backgroundImage: link.image ? `url(${link.image})` : "none"};
+    const hasImage = this.state.cardImage || link.hasImage;
+    const imageStyle = {backgroundImage: this.state.cardImage ? `url(${this.state.cardImage.url})` : "none"};
     const outerClassName = [
       "card-outer",
       className,
