@@ -219,6 +219,8 @@
 }
 
 .compact-cards {
+  $card-detail-vertical-spacing: 12px;
+
   .card-outer {
     height: $card-height-compact;
 
@@ -227,7 +229,7 @@
     }
 
     .card-details {
-      padding: 12px 16px;
+      padding: $card-detail-vertical-spacing 16px;
     }
 
     .card-host-name {
@@ -255,10 +257,11 @@
       $container-size: 32px;
       background-color: var(--newtab-card-background-color);
       border-radius: $container-size / 2;
+      clip-path: inset(0 0 $container-size - ($card-height-compact - $card-preview-image-height-compact - 2 * $card-detail-vertical-spacing));
       height: $container-size;
       width: $container-size;
       padding: ($container-size - $icon-size) / 2;
-      top: 92px;
+      top: $card-preview-image-height-compact - $icon-size;
       offset-inline-end: 12px;
       offset-inline-start: auto;
 
