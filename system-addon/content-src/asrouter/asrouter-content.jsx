@@ -159,6 +159,30 @@ export class ASRouterUISurface extends React.PureComponent {
 
 ASRouterUISurface.defaultProps = {document: global.document};
 
-export function initASRouter() {
-  ReactDOM.render(<ASRouterUISurface />, document.getElementById("snippets-container"));
+export class ASRouterContent {
+  constructor() {
+    this.initialized = false;
+    this.containerElement = null;
+  }
+
+  _mount() {
+    this.containerElement = global.document.getElementById("snippets-container");
+    ReactDOM.render(<ASRouterUISurface />, this.containerElement);
+  }
+
+  _unmount() {
+    ReactDOM.unmountComponentAtNode(this.containerElement);
+  }
+
+  init() {
+    this._mount();
+    this.initialized = true;
+  }
+
+  uninit() {
+    if (this.initialized) {
+      this._unmount();
+      this.initialized = false;
+    }
+  }
 }
