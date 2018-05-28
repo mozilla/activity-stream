@@ -445,6 +445,7 @@ describe("addSnippetsSubscriber", () => {
   let store;
   let sandbox;
   let snippets;
+  let asrouterContent;
   function setSnippetEnabledPref(value) {
     store.dispatch({type: at.PREF_CHANGED, data: {name: "feeds.snippets", value}});
   }
@@ -453,7 +454,13 @@ describe("addSnippetsSubscriber", () => {
     store = createStore(combineReducers(reducers));
     sandbox.spy(store, "subscribe");
     setSnippetEnabledPref(true);
-    snippets = addSnippetsSubscriber(store);
+    ({snippets, asrouterContent} = addSnippetsSubscriber(store));
+
+    sandbox.spy(asrouterContent, "init");
+    sandbox.spy(asrouterContent, "uninit");
+    // These need to be stubbed because they do dom stuff
+    sandbox.stub(asrouterContent, "_mount");
+    sandbox.stub(asrouterContent, "_unmount");
 
     sandbox.stub(snippets, "init").resolves();
     sandbox.stub(snippets, "uninit");
@@ -505,5 +512,30 @@ describe("addSnippetsSubscriber", () => {
 
     assert.calledOnce(store.subscribe);
     assert.notCalled(snippets.init);
+  });
+  describe("asrouter", () => {
+    it("should initialize asrouter once if asrouterExperimentEnabled and snippets pref are both true", () => {
+      store.dispatch({type: "FOO"});
+      store.dispatch({type: at.PREF_CHANGED, data: {name: "asrouterExperimentEnabled", value: true}});
+
+      assert.calledOnce(asrouterContent.init);
+      assert.isTrue(asrouterContent.initialized);
+    });
+    it("should uninitialize asrouter if asrouterExperimentEnabled pref is turned off", () => {
+      store.dispatch({type: at.PREF_CHANGED, data: {name: "asrouterExperimentEnabled", value: true}});
+      assert.isTrue(asrouterContent.initialized);
+
+      store.dispatch({type: at.PREF_CHANGED, data: {name: "asrouterExperimentEnabled", value: false}});
+      assert.calledOnce(asrouterContent.uninit);
+      assert.isFalse(asrouterContent.initialized);
+    });
+    it("should uninitialize asrouter if snippets pref is turned off", () => {
+      store.dispatch({type: at.PREF_CHANGED, data: {name: "asrouterExperimentEnabled", value: true}});
+      assert.isTrue(asrouterContent.initialized);
+
+      store.dispatch({type: at.PREF_CHANGED, data: {name: "feeds.snippets", value: false}});
+      assert.calledOnce(asrouterContent.uninit);
+      assert.isFalse(asrouterContent.initialized);
+    });
   });
 });
