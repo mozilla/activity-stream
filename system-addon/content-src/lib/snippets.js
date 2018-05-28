@@ -7,7 +7,7 @@ const SNIPPETS_ENABLED_EVENT = "Snippets:Enabled";
 const SNIPPETS_DISABLED_EVENT = "Snippets:Disabled";
 
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {initASRouter} from "content-src/asrouter/asrouter-content";
+import {ASRouterContent} from "content-src/asrouter/asrouter-content";
 
 /**
  * SnippetsMap - A utility for cacheing values related to the snippet. It has
@@ -361,10 +361,11 @@ export class SnippetsProvider {
  *                         Snippet data.
  *
  * @param  {obj} store   The redux store
- * @return {obj}         Returns the snippets instance and unsubscribe function
+ * @return {obj}         Returns the snippets instance, asrouterContent instance and unsubscribe function
  */
 export function addSnippetsSubscriber(store) {
   const snippets = new SnippetsProvider(store.dispatch);
+  const asrouterContent = new ASRouterContent();
 
   let initializing = false;
 
@@ -393,11 +394,21 @@ export function addSnippetsSubscriber(store) {
       snippets.uninit();
     }
 
-    if (state.Prefs.values.asrouterExperimentEnabled) {
-      initASRouter();
+    // Turn on AS Router snippets if the experiment is enabled and the snippets pref is on;
+    // otherwise, turn it off.
+    if (
+      state.Prefs.values.asrouterExperimentEnabled &&
+      state.Prefs.values["feeds.snippets"] &&
+      !asrouterContent.initialized) {
+      asrouterContent.init();
+    } else if (
+      (!state.Prefs.values.asrouterExperimentEnabled || !state.Prefs.values["feeds.snippets"]) &&
+      asrouterContent.initialized
+    ) {
+      asrouterContent.uninit();
     }
   });
 
   // These values are returned for testing purposes
-  return snippets;
+  return {snippets, asrouterContent};
 }
