@@ -64,8 +64,8 @@ scripts:
     eslint: esw --ext=.js,.jsm,.json,.jsx .
     sasslint: sass-lint -v -q
 
-# strings-import: Update strings repository and replace local strings
-  strings-import: node ./bin/strings-import.js ../activity-stream-l10n
+# strings-import: Replace local strings with those from l10n-central
+  strings-import: node ./bin/strings-import.js
 
 # test: Run all tests once
   test: =>testmc
