@@ -12,6 +12,13 @@ import {SimpleSnippet} from "./templates/SimpleSnippet/SimpleSnippet";
 const INCOMING_MESSAGE_NAME = "ASRouter:parent-to-child";
 const OUTGOING_MESSAGE_NAME = "ASRouter:child-to-parent";
 
+// List of hosts for endpoints that serve router messages.
+// Key is allowed host, value is a name for the endpoint host.
+const WHITELIST_HOSTS = {
+  "activity-stream-icons.services.mozilla.com": "snippets",
+  "gist.githubusercontent.com": "staging"
+};
+
 export const ASRouterUtils = {
   addListener(listener) {
     global.addMessageListener(INCOMING_MESSAGE_NAME, listener);
@@ -48,6 +55,26 @@ export const ASRouterUtils = {
   sendTelemetry(ping) {
     const payload = ac.ASRouterUserEvent(ping);
     global.sendAsyncMessage(AS_GENERAL_OUTGOING_MESSAGE_NAME, payload);
+  },
+  getEndpoint() {
+    if (window.location.href.includes("endpoint")) {
+      const params = new URLSearchParams(window.location.href.slice(window.location.href.indexOf("endpoint")));
+      let endpoint;
+      try {
+        endpoint = new URL(params.get("endpoint"));
+      } catch (e) {
+        return null;
+      }
+      if (endpoint.protocol === "https:" && WHITELIST_HOSTS[endpoint.host]) {
+        return {
+          url: endpoint.href,
+          id: WHITELIST_HOSTS[endpoint.host],
+          snippetId: params.get("snippetId")
+        };
+      }
+    }
+
+    return null;
   }
 };
 
@@ -170,9 +197,18 @@ export class ASRouterUISurface extends React.PureComponent {
     }
   }
 
+  componentDidUpdate() {
+    const endpoint = ASRouterUtils.getEndpoint();
+    // Force to show the message with the id provided in the URL
+    if (endpoint && endpoint.snippetId && this.state.message.id !== endpoint.snippetId) {
+      ASRouterUtils.overrideMessage(endpoint.snippetId);
+    }
+  }
+
   componentWillMount() {
+    const endpoint = ASRouterUtils.getEndpoint();
     ASRouterUtils.addListener(this.onMessageFromParent);
-    ASRouterUtils.sendMessage({type: "CONNECT_UI_REQUEST"});
+    ASRouterUtils.sendMessage({type: "CONNECT_UI_REQUEST", data: {endpoint}});
   }
 
   componentWillUnmount() {

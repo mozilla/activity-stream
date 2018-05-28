@@ -327,12 +327,24 @@ class _ASRouter {
     }
   }
 
+  async _addEndpoint({url, id}) {
+    const providers = [...this.state.providers];
+    if (!providers.find(p => p.url === url)) {
+      // Set update cycle to 0 to fetch new content on every page refresh
+      providers.push({id, type: "remote", url, updateCycleInMs: 0});
+      await this.setState({providers});
+    }
+  }
+
   async onMessage({data: action, target}) {
     switch (action.type) {
       case "CONNECT_UI_REQUEST":
       case "GET_NEXT_MESSAGE":
         // Wait for our initial message loading to be done before responding to any UI requests
         await this.waitForInitialized;
+        if (action.data && action.data.endpoint) {
+          await this._addEndpoint(action.data.endpoint);
+        }
         // Check if any updates are needed first
         await this.loadMessagesFromAllProviders();
         await this.sendNextMessage(target);
@@ -377,7 +389,12 @@ class _ASRouter {
         await this.setMessageById(action.data.id, target);
         break;
       case "ADMIN_CONNECT_STATE":
-        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: this.state});
+        if (action.data && action.data.endpoint) {
+          this._addEndpoint(action.data.endpoint);
+          await this.loadMessagesFromAllProviders();
+        } else {
+          target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: this.state});
+        }
         break;
     }
   }

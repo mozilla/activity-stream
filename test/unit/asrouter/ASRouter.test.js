@@ -216,6 +216,25 @@ describe("ASRouter", () => {
 
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_ALL"});
     });
+    it("should add the endpoint provided on CONNECT_UI_REQUEST", async () => {
+      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url: "foo"}}});
+      await Router.onMessage(msg);
+
+      assert.isDefined(Router.state.providers.find(p => p.url === "foo"));
+    });
+    it("should add the endpoint provided on ADMIN_CONNECT_STATE", async () => {
+      const msg = fakeAsyncMessage({type: "ADMIN_CONNECT_STATE", data: {endpoint: {url: "foo"}}});
+      await Router.onMessage(msg);
+
+      assert.isDefined(Router.state.providers.find(p => p.url === "foo"));
+    });
+    it("should not add the same endpoint twice", async () => {
+      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url: "foo"}}});
+      await Router.onMessage(msg);
+      await Router.onMessage(msg);
+
+      assert.lengthOf(Router.state.providers.filter(p => p.url === "foo"), 1);
+    });
   });
 
   describe("#onMessage: BLOCK_MESSAGE_BY_ID", () => {
