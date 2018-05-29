@@ -24,8 +24,7 @@ const LOCAL_TEST_MESSAGES = [
       text: "Browse by yourself. Private Browsing with Tracking Protection blocks online trackers that follow you around the web.",
       icon: "privatebrowsing",
       button_label: "Try It Now",
-      button_action: "OPEN_PRIVATE_BROWSER_WINDOW",
-      button_action_params: "about:home"
+      button_action: "OPEN_PRIVATE_BROWSER_WINDOW"
     }
   },
   {
@@ -358,7 +357,8 @@ class _ASRouter {
         await this.sendNextMessage(target);
         break;
       case ra.OPEN_PRIVATE_BROWSER_WINDOW:
-        this.openLinkIn(action.data.button_action_params, target, {isPrivate: true, where: "window"});
+        // Forcefully open about:privatebrowsing
+        target.browser.ownerGlobal.OpenBrowserWindow({private: true});
         break;
       case ra.OPEN_URL:
         this.openLinkIn(action.data.button_action_params, target, {isPrivate: false, where: "tabshifted"});
