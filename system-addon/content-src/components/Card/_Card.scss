@@ -124,6 +124,7 @@
     padding-bottom: 4px;
     text-overflow: ellipsis;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .card-host-name.alternate { display: none; }
