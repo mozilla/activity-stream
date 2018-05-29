@@ -73,7 +73,10 @@ describe("<Section>", () => {
       emptyState: {
         icon: "check",
         message: "Some message"
-      }
+      },
+      rowsPref: "section.rows",
+      maxRows: 4,
+      Prefs: {values: {"section.rows": 2}}
     };
     wrapper = mountSectionWithProps(FAKE_SECTION);
   });
@@ -103,7 +106,7 @@ describe("<Section>", () => {
     const fakeSite = {link: "http://localhost"};
     function renderWithSites(rows) {
       const store = createStore(combineReducers(reducers), INITIAL_STATE);
-      return mountWithIntl(<Provider store={store}><Section {...FAKE_SECTION} rows={rows} maxRows={2} /></Provider>);
+      return mountWithIntl(<Provider store={store}><Section {...FAKE_SECTION} rows={rows} /></Provider>);
     }
 
     it("should return 2 row of placeholders if realRows is 0", () => {
