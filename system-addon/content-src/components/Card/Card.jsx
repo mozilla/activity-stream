@@ -165,7 +165,7 @@ export class _Card extends React.PureComponent {
             {link.type === "download" && <div className="card-host-name alternate"><FormattedMessage id={GetPlatformString(this.props.platform)} /></div>}
             {link.hostname &&
               <div className="card-host-name">
-                {link.hostname}{link.type === "download" && `  \u2014 ${link.description}`}
+                {link.hostname.slice(0, 100)}{link.type === "download" && `  \u2014 ${link.description}`}
               </div>
             }
             <div className={[
