@@ -20,10 +20,7 @@ function getFormattedMessage(message) {
 export class Section extends React.PureComponent {
   get numRows() {
     const {rowsPref, maxRows, Prefs} = this.props;
-    if (rowsPref && Prefs.values[rowsPref] <= maxRows) {
-      return Prefs.values[rowsPref];
-    }
-    return maxRows;
+    return rowsPref ? Prefs.values[rowsPref] : maxRows;
   }
 
   _dispatchImpressionStats() {

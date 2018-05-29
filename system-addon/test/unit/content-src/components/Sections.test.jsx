@@ -388,4 +388,34 @@ describe("<Section>", () => {
       assert.deepEqual(action.data.tiles, [{id: 2432}]);
     });
   });
+
+  describe("#numRows", () => {
+    it("should return maxRows if there is no rowsPref set", () => {
+      delete FAKE_SECTION.rowsPref;
+      wrapper = mountSectionWithProps(FAKE_SECTION);
+      assert.equal(wrapper.find(Section).instance().numRows, FAKE_SECTION.maxRows);
+    });
+
+    it("should return number of rows set in Pref if rowsPref is set", () => {
+      const numRows = 2;
+      Object.assign(FAKE_SECTION, {
+        rowsPref: "section.rows",
+        maxRows: 4,
+        Prefs: {values: {"section.rows": numRows}}
+      });
+      wrapper = mountSectionWithProps(FAKE_SECTION);
+      assert.equal(wrapper.find(Section).instance().numRows, numRows);
+    });
+
+    it("should return number of rows set in Pref even if higher than maxRows value", () => {
+      const numRows = 10;
+      Object.assign(FAKE_SECTION, {
+        rowsPref: "section.rows",
+        maxRows: 4,
+        Prefs: {values: {"section.rows": numRows}}
+      });
+      wrapper = mountSectionWithProps(FAKE_SECTION);
+      assert.equal(wrapper.find(Section).instance().numRows, numRows);
+    });
+  });
 });
