@@ -6,6 +6,7 @@
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 Cu.importGlobalProperties(["fetch"]);
 const {ASRouterActions: ra} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
+const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm", {});
 
 const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
@@ -14,46 +15,6 @@ const SNIPPETS_ENDPOINT_PREF = "browser.newtabpage.activity-stream.asrouter.snip
 // Note: currently a restart is required when this pref is changed, this will be fixed in Bug 1462114
 const SNIPPETS_ENDPOINT = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_PREF,
   "https://activity-stream-icons.services.mozilla.com/v1/messages.json.br");
-const LOCAL_TEST_MESSAGES = [
-  {
-    id: "ONBOARDING_1",
-    template: "onboarding",
-    bundled: 3,
-    content: {
-      title: "Private Browsing",
-      text: "Browse by yourself. Private Browsing with Tracking Protection blocks online trackers that follow you around the web.",
-      icon: "privatebrowsing",
-      button_label: "Try It Now",
-      button_action: "OPEN_PRIVATE_BROWSER_WINDOW"
-    }
-  },
-  {
-    id: "ONBOARDING_2",
-    template: "onboarding",
-    bundled: 3,
-    content: {
-      title: "Screenshots",
-      text: "Take, save and share screenshots - without leaving Firefox. Capture a region or an entire page as you browse. Then save to the web for easy access and sharing.",
-      icon: "screenshots",
-      button_label: "Try It Now",
-      button_action: "OPEN_URL",
-      button_action_params: "https://screenshots.firefox.com/#tour"
-    }
-  },
-  {
-    id: "ONBOARDING_3",
-    template: "onboarding",
-    bundled: 3,
-    content: {
-      title: "Add-ons",
-      text: "Add even more features that make Firefox work harder for you. Compare prices, check the weather or express your personality with a custom theme.",
-      icon: "addons",
-      button_label: "Try It Now",
-      button_action: "OPEN_ABOUT_PAGE",
-      button_action_params: "addons"
-    }
-  }
-];
 
 const MessageLoaderUtils = {
   /**
@@ -409,7 +370,7 @@ this._ASRouter = _ASRouter;
  */
 this.ASRouter = new _ASRouter({
   providers: [
-    {id: "onboarding", type: "local", messages: LOCAL_TEST_MESSAGES},
+    {id: "onboarding", type: "local", messages: OnboardingMessageProvider.getMessages()},
     {id: "snippets", type: "remote", url: SNIPPETS_ENDPOINT, updateCycleInMs: ONE_HOUR_IN_MS * 4}
   ]
 });
