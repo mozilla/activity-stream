@@ -71,9 +71,24 @@ const ALLOWED_TAGS = {
   br: <br />
 };
 
+/**
+ * Transform an object (tag name: {url}) into (tag name: anchor) where the url
+ * is used as href, in order to render links inside a Fluent.Localized component.
+ */
+function convertLinks(links) {
+  if (links) {
+    return Object.keys(links).reduce((acc, linkTag) => {
+      acc[linkTag] = <a href={links[linkTag].url} />;
+      return acc;
+    }, {});
+  }
+
+  return null;
+}
+
 function RichText(props) {
   return (
-    <Localized id="RichTextSnippet" {...ALLOWED_TAGS}>
+    <Localized id="RichTextSnippet" {...ALLOWED_TAGS} {...convertLinks(props.text.links)}>
       <span>{props.text.text}</span>
     </Localized>
   );
