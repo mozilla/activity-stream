@@ -14,10 +14,7 @@ const OUTGOING_MESSAGE_NAME = "ASRouter:child-to-parent";
 
 // List of hosts for endpoints that serve router messages.
 // Key is allowed host, value is a name for the endpoint host.
-const WHITELIST_HOSTS = {
-  "activity-stream-icons.services.mozilla.com": "snippets",
-  "gist.githubusercontent.com": "staging"
-};
+const WHITELIST_HOSTS = {"https://snippets-admin.moz.works": "preview"};
 
 export const ASRouterUtils = {
   addListener(listener) {
