@@ -73,7 +73,10 @@ describe("<Section>", () => {
       emptyState: {
         icon: "check",
         message: "Some message"
-      }
+      },
+      rowsPref: "section.rows",
+      maxRows: 4,
+      Prefs: {values: {"section.rows": 2}}
     };
     wrapper = mountSectionWithProps(FAKE_SECTION);
   });
@@ -103,7 +106,7 @@ describe("<Section>", () => {
     const fakeSite = {link: "http://localhost"};
     function renderWithSites(rows) {
       const store = createStore(combineReducers(reducers), INITIAL_STATE);
-      return mountWithIntl(<Provider store={store}><Section {...FAKE_SECTION} rows={rows} maxRows={2} /></Provider>);
+      return mountWithIntl(<Provider store={store}><Section {...FAKE_SECTION} rows={rows} /></Provider>);
     }
 
     it("should return 2 row of placeholders if realRows is 0", () => {
@@ -383,6 +386,36 @@ describe("<Section>", () => {
       assert.calledOnce(props.dispatch);
       const [action] = props.dispatch.firstCall.args;
       assert.deepEqual(action.data.tiles, [{id: 2432}]);
+    });
+  });
+
+  describe("#numRows", () => {
+    it("should return maxRows if there is no rowsPref set", () => {
+      delete FAKE_SECTION.rowsPref;
+      wrapper = mountSectionWithProps(FAKE_SECTION);
+      assert.equal(wrapper.find(Section).instance().numRows, FAKE_SECTION.maxRows);
+    });
+
+    it("should return number of rows set in Pref if rowsPref is set", () => {
+      const numRows = 2;
+      Object.assign(FAKE_SECTION, {
+        rowsPref: "section.rows",
+        maxRows: 4,
+        Prefs: {values: {"section.rows": numRows}}
+      });
+      wrapper = mountSectionWithProps(FAKE_SECTION);
+      assert.equal(wrapper.find(Section).instance().numRows, numRows);
+    });
+
+    it("should return number of rows set in Pref even if higher than maxRows value", () => {
+      const numRows = 10;
+      Object.assign(FAKE_SECTION, {
+        rowsPref: "section.rows",
+        maxRows: 4,
+        Prefs: {values: {"section.rows": numRows}}
+      });
+      wrapper = mountSectionWithProps(FAKE_SECTION);
+      assert.equal(wrapper.find(Section).instance().numRows, numRows);
     });
   });
 });

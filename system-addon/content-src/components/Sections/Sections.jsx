@@ -18,6 +18,11 @@ function getFormattedMessage(message) {
 }
 
 export class Section extends React.PureComponent {
+  get numRows() {
+    const {rowsPref, maxRows, Prefs} = this.props;
+    return rowsPref ? Prefs.values[rowsPref] : maxRows;
+  }
+
   _dispatchImpressionStats() {
     const {props} = this;
     let cardsPerRow = CARDS_PER_ROW_DEFAULT;
@@ -27,7 +32,7 @@ export class Section extends React.PureComponent {
       // $break-point-widest = 1072px (from _variables.scss)
       cardsPerRow = CARDS_PER_ROW_COMPACT_WIDE;
     }
-    const maxCards = cardsPerRow * props.maxRows;
+    const maxCards = cardsPerRow * this.numRows;
     const cards = props.rows.slice(0, maxCards);
 
     if (this.needsImpressionStats(cards)) {
@@ -119,14 +124,15 @@ export class Section extends React.PureComponent {
   render() {
     const {
       id, eventSource, title, icon, rows,
-      emptyState, dispatch, compactCards, maxRows,
+      emptyState, dispatch, compactCards,
       contextMenuOptions, initialized, disclaimer,
       pref, privacyNoticeURL, isFirst, isLast
     } = this.props;
 
     const maxCardsPerRow = compactCards ? CARDS_PER_ROW_COMPACT_WIDE : CARDS_PER_ROW_DEFAULT;
-    const maxCards = maxCardsPerRow * maxRows;
-    const maxCardsOnNarrow = CARDS_PER_ROW_DEFAULT * maxRows;
+    const {numRows} = this;
+    const maxCards = maxCardsPerRow * numRows;
+    const maxCardsOnNarrow = CARDS_PER_ROW_DEFAULT * numRows;
 
     // Show topics only for top stories and if it's not initialized yet (so
     // content doesn't shift when it is loaded) or has loaded with topics
