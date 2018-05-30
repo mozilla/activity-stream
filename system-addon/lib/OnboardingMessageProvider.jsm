@@ -41,6 +41,19 @@ const ONBOARDING_MESSAGES = [
       button_action: "OPEN_ABOUT_PAGE",
       button_action_params: "addons"
     }
+  },
+  {
+    id: "ONBOARDING_4",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: "Extensions",
+      text: "Make browsing faster, smarter, or safer with browser apps. Protect passwords, find deals, download videos, and much more. You can even block annoying ads with extensions like Ghostery.",
+      icon: "gift",
+      button_label: "Get Ghostery",
+      button_action: "OPEN_URL",
+      button_action_params: "https://addons.mozilla.org/en-US/firefox/addon/ghostery/"
+    }
   }
 ];
 
