@@ -9,7 +9,7 @@ class OnboardingCard extends React.PureComponent {
 
   onClick() {
     const {props} = this;
-    props.sendUserActionTelemetry({event: "CLICK_BUTTON", message_id: props.id});
+    props.sendUserActionTelemetry({event: "CLICK_BUTTON", message_id: props.id, id: props.UISurface});
     props.onAction(props.content);
   }
 
@@ -39,7 +39,11 @@ export class OnboardingMessage extends React.PureComponent {
       <ModalOverlay {...props} button_label={"Start Browsing"} title={"Welcome to Firefox"}>
         <div className="onboardingMessageContainer">
           {props.bundle.map(message => (
-            <OnboardingCard key={message.id} sendUserActionTelemetry={props.sendUserActionTelemetry} onAction={props.onAction} {...message} />
+            <OnboardingCard key={message.id}
+              sendUserActionTelemetry={props.sendUserActionTelemetry}
+              onAction={props.onAction}
+              UISurface={props.UISurface}
+              {...message} />
           ))}
         </div>
       </ModalOverlay>

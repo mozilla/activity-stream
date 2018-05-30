@@ -18,6 +18,13 @@ function mountAndCheckProps(content = {}) {
 }
 
 describe("SimpleSnippet", () => {
+  let sandbox;
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create();
+  });
+  afterEach(() => {
+    sandbox.restore();
+  });
   it("should render .text", () => {
     const wrapper = mountAndCheckProps({text: "bar"});
     assert.equal(wrapper.find(".body").text(), "bar");

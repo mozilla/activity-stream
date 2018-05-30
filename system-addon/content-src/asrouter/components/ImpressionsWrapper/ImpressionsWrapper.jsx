@@ -12,7 +12,7 @@ export class ImpressionsWrapper extends React.PureComponent {
   // only send the event if the page becomes visible again.
   sendImpressionOrAddListener() {
     if (this.props.document.visibilityState === VISIBLE) {
-      this.props.sendImpression();
+      this.props.sendImpression({id: this.props.id});
     } else {
       // We should only ever send the latest impression stats ping, so remove any
       // older listeners.
@@ -23,7 +23,7 @@ export class ImpressionsWrapper extends React.PureComponent {
       // When the page becomes visible, send the impression stats ping if the section isn't collapsed.
       this._onVisibilityChange = () => {
         if (this.props.document.visibilityState === VISIBLE) {
-          this.props.sendImpression();
+          this.props.sendImpression({id: this.props.id});
           this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
         }
       };
