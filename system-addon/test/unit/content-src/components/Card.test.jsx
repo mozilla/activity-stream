@@ -1,10 +1,10 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {_Card as Card, PlaceholderCard} from "content-src/components/Card/Card";
 import {combineReducers, createStore} from "redux";
+import {GlobalOverrider, mountWithIntl} from "test/unit/utils";
 import {INITIAL_STATE, reducers} from "common/Reducers.jsm";
 import {cardContextTypes} from "content-src/components/Card/types";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
-import {mountWithIntl} from "test/unit/utils";
 import {Provider} from "react-redux";
 import React from "react";
 import {shallow} from "enzyme";
@@ -26,18 +26,29 @@ let DEFAULT_PROPS = {
   contextMenuOptions: ["Separator"]
 };
 
+let DEFAULT_BLOB_IMAGE = {
+  path: "/testpath",
+  data: new Blob([0])
+};
+
 function mountCardWithProps(props) {
   const store = createStore(combineReducers(reducers), INITIAL_STATE);
   return mountWithIntl(<Provider store={store}><Card {...props} /></Provider>);
 }
 
 describe("<Card>", () => {
+  let globals;
+  let sandbox;
   let wrapper;
   beforeEach(() => {
+    globals = new GlobalOverrider();
+    sandbox = sinon.sandbox.create();
     wrapper = mountCardWithProps(DEFAULT_PROPS);
   });
   afterEach(() => {
     DEFAULT_PROPS.dispatch.reset();
+    sandbox.restore();
+    globals.restore();
   });
   it("should render a Card component", () => assert.ok(wrapper.exists()));
   it("should add the right url", () => {
@@ -50,20 +61,9 @@ describe("<Card>", () => {
   });
   it("should display a title", () => assert.equal(wrapper.find(".card-title").text(), DEFAULT_PROPS.link.title));
   it("should display a description", () => (
-    assert.equal(wrapper.find(".card-description").text(), DEFAULT_PROPS.link.description))
-  );
+    assert.equal(wrapper.find(".card-description").text(), DEFAULT_PROPS.link.description)
+  ));
   it("should display a host name", () => assert.equal(wrapper.find(".card-host-name").text(), "foo"));
-  it("should display an image if there is one, with the correct background", () => (
-    assert.equal(wrapper.find(".card-preview-image").props().style.backgroundImage, `url(${DEFAULT_PROPS.link.image})`))
-  );
-  it("should not show an image if there isn't one", () => {
-    const link = Object.assign({}, DEFAULT_PROPS.link);
-    delete link.image;
-
-    wrapper = mountCardWithProps(Object.assign({}, DEFAULT_PROPS, {link}));
-
-    assert.lengthOf(wrapper.find(".card-preview-image"), 0);
-  });
   it("should have a link menu button", () => assert.ok(wrapper.find(".context-menu-button").exists()));
   it("should render a link menu when button is clicked", () => {
     const button = wrapper.find(".context-menu-button");
@@ -146,6 +146,128 @@ describe("<Card>", () => {
 
     assert.equal(DEFAULT_PROPS.dispatch.firstCall.args[0].type, at.OPEN_LINK);
   });
+  describe("card image display", () => {
+    const DEFAULT_BLOB_URL = "blob:testBlobUrl";
+    let url;
+    beforeEach(() => {
+      url = {createObjectURL: sandbox.stub().returns(DEFAULT_BLOB_URL), revokeObjectURL: sandbox.spy()};
+      globals.set("URL", url);
+    });
+    afterEach(() => {
+      sandbox.restore();
+    });
+    it("should display a regular image correctly and not call revokeObjectURL when unmounted", () => {
+      wrapper = shallow(<Card {...DEFAULT_PROPS} />);
+
+      assert.isUndefined(wrapper.state("cardImage").path);
+      assert.equal(wrapper.state("cardImage").url, DEFAULT_PROPS.link.image);
+      assert.equal(wrapper.find(".card-preview-image").props().style.backgroundImage, `url(${wrapper.state("cardImage").url})`);
+
+      wrapper.unmount();
+      assert.notCalled(url.revokeObjectURL);
+    });
+    it("should display a blob image correctly and revoke blob url when unmounted", () => {
+      const link = Object.assign({}, DEFAULT_PROPS.link, {image: DEFAULT_BLOB_IMAGE});
+      wrapper = shallow(<Card {...DEFAULT_PROPS} link={link} />);
+
+      assert.equal(wrapper.state("cardImage").path, DEFAULT_BLOB_IMAGE.path);
+      assert.equal(wrapper.state("cardImage").url, DEFAULT_BLOB_URL);
+      assert.equal(wrapper.find(".card-preview-image").props().style.backgroundImage, `url(${wrapper.state("cardImage").url})`);
+
+      wrapper.unmount();
+      assert.calledOnce(url.revokeObjectURL);
+    });
+    it("should not show an image if there isn't one and not call revokeObjectURL when unmounted", () => {
+      const link = Object.assign({}, DEFAULT_PROPS.link);
+      delete link.image;
+
+      wrapper = shallow(<Card {...DEFAULT_PROPS} link={link} />);
+
+      assert.isNull(wrapper.state("cardImage"));
+      assert.lengthOf(wrapper.find(".card-preview-image"), 0);
+
+      wrapper.unmount();
+      assert.notCalled(url.revokeObjectURL);
+    });
+    it("should remove current card image if new image is not present", () => {
+      wrapper = shallow(<Card {...DEFAULT_PROPS} />);
+
+      const otherLink = Object.assign({}, DEFAULT_PROPS.link);
+      delete otherLink.image;
+      wrapper.setProps(Object.assign({}, DEFAULT_PROPS, {link: otherLink}));
+
+      assert.isNull(wrapper.state("cardImage"));
+    });
+    it("should not create or revoke urls if normal image is already in state", () => {
+      wrapper = shallow(<Card {...DEFAULT_PROPS} />);
+
+      wrapper.setProps(DEFAULT_PROPS);
+
+      assert.notCalled(url.createObjectURL);
+      assert.notCalled(url.revokeObjectURL);
+    });
+    it("should not create or revoke more urls if blob image is already in state", () => {
+      const link = Object.assign({}, DEFAULT_PROPS.link, {image: DEFAULT_BLOB_IMAGE});
+      wrapper = shallow(<Card {...DEFAULT_PROPS} link={link} />);
+
+      assert.calledOnce(url.createObjectURL);
+      assert.notCalled(url.revokeObjectURL);
+
+      wrapper.setProps(Object.assign({}, DEFAULT_PROPS, {link}));
+
+      assert.calledOnce(url.createObjectURL);
+      assert.notCalled(url.revokeObjectURL);
+    });
+    it("should create blob urls for new blobs and revoke existing ones", () => {
+      const link = Object.assign({}, DEFAULT_PROPS.link, {image: DEFAULT_BLOB_IMAGE});
+      wrapper = shallow(<Card {...DEFAULT_PROPS} link={link} />);
+
+      assert.calledOnce(url.createObjectURL);
+      assert.notCalled(url.revokeObjectURL);
+
+      const otherLink = Object.assign({}, DEFAULT_PROPS.link, {image: {path: "/newpath", data: new Blob([0])}});
+      wrapper.setProps(Object.assign({}, DEFAULT_PROPS, {link: otherLink}));
+
+      assert.calledTwice(url.createObjectURL);
+      assert.calledOnce(url.revokeObjectURL);
+    });
+    it("should not call createObjectURL and revokeObjectURL for normal images", () => {
+      wrapper = shallow(<Card {...DEFAULT_PROPS} />);
+
+      assert.notCalled(url.createObjectURL);
+      assert.notCalled(url.revokeObjectURL);
+
+      const otherLink = Object.assign({}, DEFAULT_PROPS.link, {image: "https://other/image"});
+      wrapper.setProps(Object.assign({}, DEFAULT_PROPS, {link: otherLink}));
+
+      assert.notCalled(url.createObjectURL);
+      assert.notCalled(url.revokeObjectURL);
+    });
+  });
+  describe("static isImageInState", () => {
+    it("should return true if both image and cardImage are not present", () => {
+      assert.isTrue(Card.isImageInState({cardImage: null}, null));
+    });
+    it("should return false if image is present and cardImage is not present", () => {
+      assert.isFalse(Card.isImageInState({cardImage: null}, {}));
+    });
+    it("should return false if image is not present and cardImage is present", () => {
+      assert.isFalse(Card.isImageInState({cardImage: {}}, null));
+    });
+    it("should return true if both image and cardImage are equal blobs", () => {
+      const blob = new Blob([0]);
+      assert.isTrue(Card.isImageInState({cardImage: {path: "/hello", data: blob}}, {path: "/hello", data: blob}));
+    });
+    it("should return false if both image and cardImage are different blobs", () => {
+      assert.isFalse(Card.isImageInState({cardImage: {path: "/different", data: new Blob([0])}}, {path: "/hello", data: new Blob([0])}));
+    });
+    it("should return true if both image and cardImage are equal images", () => {
+      assert.isTrue(Card.isImageInState({cardImage: {url: "test url"}}, "test url"));
+    });
+    it("should return false if both image and cardImage are different images", () => {
+      assert.isFalse(Card.isImageInState({cardImage: {url: "test url 1"}}, "test url 2"));
+    });
+  });
   describe("image loading", () => {
     let link;
     let triggerImage = {};
@@ -211,7 +333,6 @@ describe("<Card>", () => {
       assert.notCalled(spy);
     });
   });
-
   describe("#trackClick", () => {
     it("should call dispatch when the link is clicked with the right data", () => {
       const card = wrapper.find(".card");
