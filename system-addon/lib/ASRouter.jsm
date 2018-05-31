@@ -238,13 +238,21 @@ class _ASRouter {
     bundledMessages.push({content: originalMessage.content, id: originalMessage.id});
     for (const msg of this.state.messages) {
       if (msg.bundled && msg.template === originalMessage.template && msg.id !== originalMessage.id && !this.state.blockList.includes(msg.id)) {
-        // only copy the content - that's what the UI cares about
+        // Only copy the content - that's what the UI cares about
         bundledMessages.push({content: msg.content, id: msg.id});
       }
+
+      // Stop once we have enough messages to fill a bundle
       if (bundledMessages.length === originalMessage.bundled) {
         break;
       }
     }
+
+    // If we did not find enough messages to fill the bundle, do not send the bundle down
+    if (bundledMessages.length < originalMessage.bundled) {
+      return null;
+    }
+
     return {bundle: bundledMessages, provider: originalMessage.provider, template: originalMessage.template};
   }
 
@@ -260,7 +268,7 @@ class _ASRouter {
     if (message && message.bundled) {
       bundledMessages = this._getBundledMessages(message);
     }
-    if (message && !bundledMessages) {
+    if (message && !message.bundled) {
       // If we only need to send 1 message, send the message
       target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
     } else if (bundledMessages) {
