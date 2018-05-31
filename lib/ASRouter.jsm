@@ -19,6 +19,12 @@ const SNIPPETS_ENDPOINT_PREF = "browser.newtabpage.activity-stream.asrouter.snip
 // Note: currently a restart is required when this pref is changed, this will be fixed in Bug 1462114
 const SNIPPETS_ENDPOINT = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_PREF,
   "https://activity-stream-icons.services.mozilla.com/v1/messages.json.br");
+// List of hosts for endpoints that serve router messages.
+// Key is allowed host, value is a name for the endpoint host.
+const WHITELIST_HOSTS = {
+  "activity-stream-icons.services.mozilla.com": "production",
+  "snippets-admin.moz.works": "preview"
+};
 
 const MessageLoaderUtils = {
   /**
@@ -327,11 +333,20 @@ class _ASRouter {
     }
   }
 
-  async _addEndpoint({url, id}) {
+  _validPreviewEndpoint(url) {
+    try {
+      const endpoint = new URL(url);
+      return endpoint.protocol === "https:" && WHITELIST_HOSTS[endpoint.host];
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async _addPreviewEndpoint(url) {
     const providers = [...this.state.providers];
-    if (!providers.find(p => p.url === url)) {
+    if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
       // Set update cycle to 0 to fetch new content on every page refresh
-      providers.push({id, type: "remote", url, updateCycleInMs: 0});
+      providers.push({id: "preview", type: "remote", url, updateCycleInMs: 0});
       await this.setState({providers});
     }
   }
@@ -343,7 +358,7 @@ class _ASRouter {
         // Wait for our initial message loading to be done before responding to any UI requests
         await this.waitForInitialized;
         if (action.data && action.data.endpoint) {
-          await this._addEndpoint(action.data.endpoint);
+          await this._addPreviewEndpoint(action.data.endpoint.url);
         }
         // Check if any updates are needed first
         await this.loadMessagesFromAllProviders();
