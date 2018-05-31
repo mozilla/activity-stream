@@ -83,6 +83,18 @@ export class SnippetsMap extends Map {
     });
   }
 
+  getAddonsInfo() {
+    return new Promise(resolve => {
+      this._dispatch(ac.OnlyToMain({type: at.ADDONS_INFO_REQUEST}));
+      global.addMessageListener("ActivityStream:MainToContent", function onMessage({data: action}) {
+        if (action.type === at.ADDONS_INFO_RESPONSE) {
+          resolve(action.data);
+          global.removeMessageListener("ActivityStream:MainToContent", onMessage);
+        }
+      });
+    });
+  }
+
   /**
    * connect - Attaches an indexedDB back-end to the Map so that any set values
    *           are also cached in a store. It also restores any existing values
