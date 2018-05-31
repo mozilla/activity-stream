@@ -1,6 +1,7 @@
 {
   "title": "SimpleSnippet",
   "description": "A simple template with an icon, text, and optional button.",
+  "version": "0.1.0",
   "type": "object",
   "properties": {
     "title": {
@@ -27,6 +28,11 @@
       "type": "string",
       "enum": ["anchor", "button"],
       "description": "(**temporary**, until we get html support in text field Bug 1457233) Style for button, either a regular button or a text link."
+    },
+    "links": {
+      "[a-z0-9]*": {
+        "url": "string"
+      }
     }
   },
   "additionalProperties": false,
