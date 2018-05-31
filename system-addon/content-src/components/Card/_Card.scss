@@ -147,7 +147,7 @@
 
   .card-context {
     bottom: 0;
-    color: var(--newtab-text-tertiary-color);
+    color: var(--newtab-text-secondary-color);
     display: flex;
     font-size: 11px;
     offset-inline-start: 0;
@@ -156,7 +156,7 @@
   }
 
   .card-context-icon {
-    fill: var(--newtab-icon-tertiary-color);
+    fill: var(--newtab-text-secondary-color);
     height: 22px;
     margin-inline-end: 6px;
   }
