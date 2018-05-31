@@ -7,7 +7,7 @@ export class SnippetBase extends React.PureComponent {
   }
 
   onBlockClicked() {
-    this.props.sendUserActionTelemetry({event: "BLOCK"});
+    this.props.sendUserActionTelemetry({event: "BLOCK", id: this.props.UISurface});
     this.props.onBlock();
   }
 

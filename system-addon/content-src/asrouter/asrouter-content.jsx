@@ -68,17 +68,16 @@ export class ASRouterUISurface extends React.PureComponent {
       throw new Error(`You must provide a message_id for bundled messages`);
     }
     const eventType = `${message.provider || bundle.provider}_user_event`;
-
     ASRouterUtils.sendTelemetry({
       message_id: message.id || extraProps.message_id,
-      source: this.props.id,
+      source: extraProps.id,
       action: eventType,
       ...extraProps
     });
   }
 
-  sendImpression() {
-    this.sendUserActionTelemetry({event: "IMPRESSION"});
+  sendImpression(extraProps) {
+    this.sendUserActionTelemetry({event: "IMPRESSION", ...extraProps});
   }
 
   onBlockById(id) {
@@ -124,6 +123,7 @@ export class ASRouterUISurface extends React.PureComponent {
   renderSnippets() {
     return (
       <ImpressionsWrapper
+        id="NEWTAB_FOOTER_BAR"
         message={this.state.message}
         sendImpression={this.sendImpression}
         shouldSendImpressionOnUpdate={shouldSendImpressionOnUpdate}
