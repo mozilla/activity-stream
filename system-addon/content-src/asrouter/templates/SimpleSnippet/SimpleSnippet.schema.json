@@ -30,8 +30,11 @@
       "description": "(**temporary**, until we get html support in text field Bug 1457233) Style for button, either a regular button or a text link."
     },
     "links": {
-      "[a-z0-9]*": {
-        "url": "string"
+      "additionalProperties": {
+        "url": {
+          "type": "string",
+          "description": "The url where the link points to."
+        }
       }
     }
   },

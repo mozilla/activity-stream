@@ -28,7 +28,7 @@ The following tags are allowed in the content of the snippet: `i, b, u, strong, 
 Links cannot be rendered using regular anchor tags because [Fluent does not allow for href attributes](https://github.com/projectfluent/fluent.js/blob/a03d3aa833660f8c620738b26c80e46b1a4edb05/fluent-dom/src/overlay.js#L13). They will be wrapped in custom tags, for example `<cta>link</cta>` and the url will be provided as part of the payload:
 ```
 {
- "id": "7899",
+  "id": "7899",
   "content": {
     "text": "Use the CMD (CTRL) + T keyboard shortcut to <cta>open a new tab quickly!</cta>",
     "links": {
