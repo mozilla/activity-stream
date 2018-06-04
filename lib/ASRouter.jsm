@@ -405,7 +405,7 @@ class _ASRouter {
         break;
       case "ADMIN_CONNECT_STATE":
         if (action.data && action.data.endpoint) {
-          this._addEndpoint(action.data.endpoint);
+          this._addPreviewEndpoint(action.data.endpoint.url);
           await this.loadMessagesFromAllProviders();
         } else {
           target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: this.state});
