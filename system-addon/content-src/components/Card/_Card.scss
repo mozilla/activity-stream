@@ -221,6 +221,7 @@
 
 .compact-cards {
   $card-detail-vertical-spacing: 12px;
+  $card-title-font-size: 12px;
 
   .card-outer {
     height: $card-height-compact;
@@ -240,9 +241,9 @@
     .card-text {
       .card-title,
       &:not(.no-description) .card-title {
-        font-size: 10px;
-        line-height: 12px;
-        max-height: 12px;
+        font-size: $card-title-font-size;
+        line-height: $card-title-font-size + 1;
+        max-height: $card-title-font-size + 1;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
