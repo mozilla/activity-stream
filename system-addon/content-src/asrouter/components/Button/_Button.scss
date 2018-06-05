@@ -5,6 +5,9 @@
   background-color: var(--newtab-button-secondary-color);
   font-family: inherit;
   padding: 8px 15px;
-  margin-left: 12px;
+  margin-inline-start: 12px;
   color: inherit;
+  .tall & {
+    margin-inline-start: 20px;
+  }
 }
