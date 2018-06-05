@@ -37,7 +37,6 @@ body {
   --newtab-text-conditional-color: $grey-60;
   --newtab-text-primary-color: $grey-90;
   --newtab-text-secondary-color: $grey-50;
-  --newtab-text-tertiary-color: $grey-50;
   --newtab-textbox-background-color: $white;
   --newtab-textbox-border: $grey-90-20;
   @include textbox-focus($blue-60); // sass-lint:disable-line mixins-before-declarations
@@ -96,7 +95,6 @@ body {
   --newtab-text-conditional-color: $grey-10;
   --newtab-text-primary-color: $grey-10;
   --newtab-text-secondary-color: $grey-10-80;
-  --newtab-text-tertiary-color: $grey-10-60;
   --newtab-textbox-background-color: $grey-70;
   --newtab-textbox-border: $grey-10-20;
   @include textbox-focus($blue-40); // sass-lint:disable-line mixins-before-declarations
