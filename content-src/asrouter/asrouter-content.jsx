@@ -6,6 +6,7 @@ import {MessageContext} from "fluent";
 import {OnboardingMessage} from "./templates/OnboardingMessage/OnboardingMessage";
 import React from "react";
 import ReactDOM from "react-dom";
+import {safeURI} from "./components/template-utils";
 import {SimpleSnippet} from "./templates/SimpleSnippet/SimpleSnippet";
 
 const INCOMING_MESSAGE_NAME = "ASRouter:parent-to-child";
@@ -78,7 +79,7 @@ const ALLOWED_TAGS = {
 function convertLinks(links) {
   if (links) {
     return Object.keys(links).reduce((acc, linkTag) => {
-      acc[linkTag] = <a href={links[linkTag].url} />;
+      acc[linkTag] = <a href={safeURI(links[linkTag].url)} />;
       return acc;
     }, {});
   }
@@ -86,10 +87,13 @@ function convertLinks(links) {
   return null;
 }
 
+/**
+ * Message wrapper used to sanitize markup and render HTML.
+ */
 function RichText(props) {
   return (
-    <Localized id="RichTextSnippet" {...ALLOWED_TAGS} {...convertLinks(props.text.links)}>
-      <span>{props.text.text}</span>
+    <Localized id="RichTextSnippet" {...ALLOWED_TAGS} {...convertLinks(props.links)}>
+      <span>{props.text}</span>
     </Localized>
   );
 }
@@ -173,7 +177,7 @@ export class ASRouterUISurface extends React.PureComponent {
           <LocalizationProvider messages={generateMessages(this.state.message.content.text)}>
             <SimpleSnippet
               {...this.state.message}
-              richText={<RichText text={this.state.message.content} />}
+              richText={<RichText text={this.state.message.content.text} links={this.state.message.content.links} />}
               UISurface="NEWTAB_FOOTER_BAR"
               getNextMessage={ASRouterUtils.getNextMessage}
               onBlock={this.onBlockById(this.state.message.id)}
