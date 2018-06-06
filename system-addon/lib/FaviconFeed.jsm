@@ -217,9 +217,10 @@ this.FaviconFeed = class FaviconFeed {
   * the places for rich icon with its most recent visit in order to deal with
   * the redirected visit. See Bug 1421428 for more details.
   */
-  async fetchIcon(url) {
+  async fetchIcon(link, url) {
     // Avoid initializing and fetching icons if prefs are turned off
     if (!this.shouldFetchIcons) {
+      this._requestScreenshot(link, url);
       return;
     }
 
@@ -244,6 +245,15 @@ this.FaviconFeed = class FaviconFeed {
       this._queryForRedirects.add(url);
       Services.tm.idleDispatchToMainThread(() => fetchIconFromRedirects(url));
     }
+
+    this._requestScreenshot(link, url);
+  }
+
+  _requestScreenshot(link, url) {
+    this.store.dispatch({
+      type: at.SCREENSHOT_NEEDED,
+      data: {link, url}
+    });
   }
 
   /**
@@ -262,7 +272,7 @@ this.FaviconFeed = class FaviconFeed {
         }
         break;
       case at.RICH_ICON_MISSING:
-        this.fetchIcon(action.data.url);
+        this.fetchIcon(action.data.link, action.data.url);
         break;
     }
   }
