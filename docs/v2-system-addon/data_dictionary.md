@@ -39,7 +39,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "addon_version": "1.0.0",
   "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
   "locale": "en-US",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "session_duration": 1635,
   "session_id": "{12dasd-213asda-213dkakj}",
   "region": "US",
@@ -64,7 +64,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "client_id": "374dc4d8-0cb2-4ac5-a3cf-c5a9bc3c602e",
   "event": "click or scroll or search or delete",
   "locale": "en-US",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "source": "top sites, or bookmarks, or...",
   "session_id": "{12dasd-213asda-213dkakj}",
   "recommender_type": "pocket-trending",
@@ -112,7 +112,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "event": "MISSING_IMAGE",
   "locale": "en-US",
-  "page": ["about:newtab" | "about:home" | "unknown"]
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"]
   "source": "HIGHLIGHTS",
   "value": 0,
   "user_prefs": 7,
@@ -135,7 +135,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
-  "page": ["about:newtab" | "about:home" | "unknown"]
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"]
   "tiles": [{"id": 10000}, {"id": 10001}, {"id": 10002}]
   "user_prefs": 7
 }
@@ -195,7 +195,7 @@ Schema definitions/validations that can be used for tests can be found in `syste
 | `load_trigger_ts` | [Optional][Server Counter][Server Alert for too many omissions]  DOMHighResTimeStamp of the action perceived by the user to trigger the load of this page. | :one:
 | `load_trigger_type` | [Server Counter][Server Alert for too many omissions] Either ["first_window_opened", "menu_plus_or_keyboard", "unexpected"]. | :one:
 | `metadata_source` | [Optional] The source of which we computed metadata. Either (`MetadataService` or `Local` or `TippyTopProvider`). | :one:
-| `page` | [Required] One of ["about:newtab", "about:home", "unknown" (which either means not-applicable or is a bug)]. | :one:
+| `page` | [Required] One of ["about:newtab", "about:home", "about:welcome", "unknown" (which either means not-applicable or is a bug)]. | :one:
 | `recommender_type` | [Optional] The type of recommendation that is being shown, if any. | :one:
 | `session_duration` | [Optional][Server Counter][Server Alert for too many omissions] Time in (integer) milliseconds of the difference between the new tab becoming visible
 and losing focus. | :one:

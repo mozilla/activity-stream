@@ -2,7 +2,7 @@
 
 By default, the about:newtab and about:home pages in Firefox (the pages you see when you open a new tab and when you start the browser), will send data back to Mozilla servers about usage of these pages.  The intent is to collect data in order to improve the user's experience while using Activity Stream.  Data about your specific browsing behaior or the sites you visit is **never transmitted to any Mozilla server**.  At any time, it is easy to **turn off** this data collection by [opting out of Firefox telemetry](https://support.mozilla.org/kb/share-telemetry-data-mozilla-help-improve-firefox).
 
-Data is sent to our servers in the form of discreet HTTPS 'pings' or messages whenever you do some action on the Activity Stream about:home or about:newtab pages.  We try to minimize the amount and frequency of pings by batching them together.  Pings are sent in [JSON serialized format](http://www.json.org/).
+Data is sent to our servers in the form of discreet HTTPS 'pings' or messages whenever you do some action on the Activity Stream about:home, about:newtab or about:welcome pages.  We try to minimize the amount and frequency of pings by batching them together.  Pings are sent in [JSON serialized format](http://www.json.org/).
 
 At Mozilla, [we take your privacy very seriously](https://www.mozilla.org/privacy/).  The Activity Stream page will never send any data that could personally identify you.  We do not transmit what you are browsing, searches you perform or any private settings.  Activity Stream does not set or send cookies, and uses [Transport Layer Security](https://en.wikipedia.org/wiki/Transport_Layer_Security) to securely transmit data to Mozilla servers.
 
@@ -53,7 +53,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action_position": 1,
 
   // Basic metadata
-  "page": ["about:newtab" | "about:home" | "unknown" ],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown" ],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -73,7 +73,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -96,7 +96,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -119,7 +119,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -142,7 +142,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -164,7 +164,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home"],
+  "page": ["about:newtab" | "about:home" | "about:welcome"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -186,7 +186,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -209,7 +209,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -232,7 +232,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -249,7 +249,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -266,7 +266,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -284,7 +284,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
   // Basic metadata
   "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
@@ -329,7 +329,7 @@ All `"activity_stream_session"` pings have the following basic shape. Some field
   "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
   "addon_version": "1.0.12",
   "locale": "en-US",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "session_duration": 4199,
   "region": "US",
   "profile_creation_date": 14786,
@@ -429,7 +429,7 @@ This reports all the Pocket recommended articles (a list of `id`s) when the user
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "user_prefs": 7,
   "tiles": [{"id": 10000}, {"id": 10001}, {"id": 10002}]
 }
@@ -450,7 +450,7 @@ This reports the user's interaction with those Pocket tiles.
   "addon_version": "1.0.12",
   "locale": "en-US",
   "source": "pocket",
-  "page": ["about:newtab" | "about:home" | "unknown"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
   "user_prefs": 7,
 
   // "pos" is the 0-based index to record the tile's position in the Pocket section.
