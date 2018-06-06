@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 "use strict";
 
-/* eslint-disable no-console */
+/* eslint-disable no-console, mozilla/no-task */
 /* this is a node script; primary interaction is via console */
 
 const Task = require("co-task");
