@@ -6,7 +6,7 @@ import {MessageContext} from "fluent";
 import {OnboardingMessage} from "./templates/OnboardingMessage/OnboardingMessage";
 import React from "react";
 import ReactDOM from "react-dom";
-import {safeURI} from "./components/template-utils";
+import {safeURI} from "./template-utils";
 import {SimpleSnippet} from "./templates/SimpleSnippet/SimpleSnippet";
 
 const INCOMING_MESSAGE_NAME = "ASRouter:parent-to-child";
