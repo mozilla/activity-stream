@@ -10,54 +10,46 @@ scripts:
   # Run the activity-stream mochitests with the browser toolbox debugger.
   # Often handy in combination with adding a "debugger" statement in your
   # mochitest somewhere.
-  mochitest-debug: (cd $npm_package_config_mc_dir && ./mach mochitest --jsdebugger browser/extensions/activity-stream/test/functional/mochitest )
+  mochitest-debug: (cd $npm_package_config_mc_dir && ./mach mochitest --jsdebugger browser/extensions/activity-stream/test/functional/mochitest)
 
-  cleanmc: rimraf $npm_package_config_mc_dir/browser/extensions/activity-stream
+# bundle: Build all assets for activity stream
+  bundle:
+    locales: pontoon-to-json --src locales --dest data
+    webpack: webpack --config webpack.system-addon.config.js --display-optimization-bailout
+    css: node-sass --source-map true --source-map-contents content-src/styles -o css
+    html: rimraf prerendered && webpack --config webpack.prerender.config.js && node ./bin/render-activity-stream-html.js
 
 # buildmc: Export the bootstraped add-on to mozilla central
   buildmc:
-    pre: =>cleanmc
-    locales: pontoon-to-json --src locales --dest system-addon/data
-    webpack: webpack --config webpack.system-addon.config.js --display-optimization-bailout
-    css: node-sass --source-map true --source-map-contents system-addon/content-src/styles -o system-addon/css
-    html: rimraf system-addon/prerendered && webpack --config webpack.prerender.config.js && node ./bin/render-activity-stream-html.js
-    # Copy over all of the system-addon directory
-    copy: cpx "system-addon/**/{,.}*" $npm_package_config_mc_dir/browser/extensions/activity-stream
+    pre: rimraf $npm_package_config_mc_dir/browser/extensions/activity-stream/
+    bundle: => bundle
+    copy: rsync --exclude-from .mcignore -a . $npm_package_config_mc_dir/browser/extensions/activity-stream/
     version: node ./bin/update-version.js $npm_package_config_mc_dir/browser/extensions/activity-stream
     stringsExport: cp locales/en-US/strings.properties $npm_package_config_mc_dir/browser/locales/en-US/chrome/browser/activity-stream/newtab.properties
-    copyPingCentre: cpx "system-addon/ping-centre/PingCentre.jsm" $npm_package_config_mc_dir/browser/modules
-    rmextra: rimraf "$npm_package_config_mc_dir/browser/extensions/activity-stream/{{,test/unit/}{content-src,ping-centre},data/locales.json}"
-
-# packagemc: Build stand-alone system add-on xpi
-  packagemc:
-    pre: =>cleanmc
-    build: =>buildmc:webpack && =>buildmc:css && =>buildmc:locales
-    copy: cpx "system-addon/**" dist/system-addon
-    version: node ./bin/update-version.js dist/system-addon
-    process: node ./bin/process-system-addon-for-package.js dist/system-addon
-    xpi: (cd dist/system-addon && zip -r ../activity-stream-system-addon.xpi * )
+    copyPingCentre: cpx "ping-centre/PingCentre.jsm" $npm_package_config_mc_dir/browser/modules
 
 # startmc: Start developing the bootstrapped add-on
   startmc:
     _parallel: true
-    pre: =>prebuildmc
-    copy: =>buildmc:copy -- -w
+    pre: =>buildmc
+    # This copies only the system addon sub-folder; changing anything outside of it will need a full rebuild.
+    copy: cpx "{{,.}*,!(node_modules)/**/{,.}*}" $npm_package_config_mc_dir/browser/extensions/activity-stream/ -w
     copyPingCentre: =>buildmc:copyPingCentre -- -w
-    webpack: =>buildmc:webpack -- -w
-    css: =>buildmc:css && =>buildmc:css -- -w
+    webpack: =>bundle:webpack -- -w
+    css: =>bundle:css && =>bundle:css -- -w
 
   # importmc: Import changes from mc to github repo
-  importmc: cpx "$npm_package_config_mc_dir/browser/extensions/activity-stream/**/*" system-addon/
+  importmc: rsync --exclude-from .mcignore -a $npm_package_config_mc_dir/browser/extensions/activity-stream/ .
 
   testmc:
     lint: =>lint
-    build: =>buildmc:webpack && =>buildmc:locales
-    unit: karma start karma.mc.config.js || (cat logs/coverage/system-addon/text.txt && exit 2)
-    post: cat logs/coverage/system-addon/text-summary.txt
+    build: =>bundle:webpack && =>bundle:locales
+    unit: karma start karma.mc.config.js || (cat logs/coverage/text.txt && exit 2)
+    post: cat logs/coverage/text-summary.txt
 
   tddmc: karma start karma.mc.config.js --tdd
 
-  debugcoverage: open logs/coverage/system-addon/report-html/index.html
+  debugcoverage: open logs/coverage/report-html/index.html
 
 # lint: Run eslint and sass-lint
   lint:

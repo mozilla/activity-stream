@@ -2,7 +2,7 @@ options:
   merge-default-rules: true
 
 files:
-  include: 'system-addon/content-src/**/*.scss'
+  include: 'content-src/**/*.scss'
 
 rules:
   class-name-format: [{convention: ["hyphenatedlowercase", "camelcase"]}]

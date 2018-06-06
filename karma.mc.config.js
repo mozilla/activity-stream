@@ -2,18 +2,18 @@ const path = require("path");
 
 const PATHS = {
   // Where is the entry point for the unit tests?
-  testEntryFile: path.resolve(__dirname, "system-addon/test/unit/unit-entry.js"),
+  testEntryFile: path.resolve(__dirname, "test/unit/unit-entry.js"),
 
   // A glob-style pattern matching all unit tests
-  testFilesPattern: "system-addon/test/unit/**/*.js",
+  testFilesPattern: "test/unit/**/*.js",
 
   // The base directory of all source files (used for path resolution in webpack importing)
-  systemAddonDirectory: path.resolve(__dirname, "system-addon"),
+  moduleResolveDirectory: __dirname,
 
   // a RegEx matching all Cu.import statements of local files
   resourcePathRegEx: /^resource:\/\/activity-stream\//,
 
-  coverageReportingPath: "logs/coverage/system-addon"
+  coverageReportingPath: "logs/coverage/"
 };
 
 // When tweaking here, be sure to review the docs about the execution ordering
@@ -68,11 +68,11 @@ module.exports = function(config) {
       devtool: "inline-source-map",
       // This loader allows us to override required files in tests
       resolveLoader: {alias: {inject: path.join(__dirname, "loaders/inject-loader")}},
-      // This resolve config allows us to import with paths relative to the system-addon/ directory, e.g. "lib/ActivityStream.jsm"
+      // This resolve config allows us to import with paths relative to the root directory, e.g. "lib/ActivityStream.jsm"
       resolve: {
         extensions: [".js", ".jsx"],
         modules: [
-          PATHS.systemAddonDirectory,
+          PATHS.moduleResolveDirectory,
           "node_modules"
         ]
       },
@@ -129,12 +129,15 @@ module.exports = function(config) {
             enforce: "post",
             test: /\.jsm?$/,
             loader: "istanbul-instrumenter-loader",
-            include: [path.resolve("system-addon")],
+            include: [
+              path.resolve("content-src"),
+              path.resolve("lib"),
+              path.resolve("common")
+            ],
             exclude: [
-              path.resolve("system-addon/test/"),
-              path.resolve("system-addon/vendor"),
-              // This file is tested with mochi tests instead of mocha
-              path.resolve("system-addon/lib/ASRouterTargeting.jsm")
+              path.resolve("test"),
+              path.resolve("vendor"),
+              path.resolve("lib/ASRouterTargeting.jsm")
             ]
           }
         ]
