@@ -56,10 +56,10 @@ function shouldSendImpressionOnUpdate(nextProps, prevProps) {
   return (nextProps.message.id && (!prevProps.message || prevProps.message.id !== nextProps.message.id));
 }
 
-function* generateMessages(content) {
+function generateMessages(content) {
   const cx = new MessageContext("en-US");
   cx.addMessages(`RichTextSnippet = ${content}`);
-  yield cx;
+  return [cx];
 }
 
 // Elements allowed in snippet content
