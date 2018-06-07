@@ -23,7 +23,7 @@ const SNIPPETS_ENDPOINT = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_PREF,
 // Key is allowed host, value is a name for the endpoint host.
 const WHITELIST_HOSTS = {
   "activity-stream-icons.services.mozilla.com": "production",
-  "snippets-admin.moz.works": "preview"
+  "snippets-admin.mozilla.org": "preview"
 };
 
 const MessageLoaderUtils = {
