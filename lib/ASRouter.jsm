@@ -259,7 +259,6 @@ class _ASRouter {
     if (message && message.bundled) {
       bundledMessages = this._getBundledMessages(message);
     }
-
     if (message && !message.bundled) {
       // If we only need to send 1 message, send the message
       target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
