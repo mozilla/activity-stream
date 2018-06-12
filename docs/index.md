@@ -18,6 +18,8 @@ documenation.
 * Bugzy
 * Trello Board
 * Bugzilla
+* Status Reports
+  * Sprint Status Reports
 * Meeting Notes
   * Product Meeting Notes
   * UX Meeting Notes
