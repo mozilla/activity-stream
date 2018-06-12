@@ -1,0 +1,3 @@
+## Weekly Engineering Stand-up Meeting
+### Wednesday, June 20th, 2018
+**Attendees:**  Jenn, Tim, etc.....
