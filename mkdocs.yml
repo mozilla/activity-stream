@@ -1,0 +1,10 @@
+site_name: Activity Stream
+pages:
+  - Home: index.md
+  - Developer Guide:
+    - Getting Started: v2-system-addon/1.GETTING_STARTED.md
+    - Writing Unit Tests: v2-system-addon/unit_testing_guide.md
+    - Adding New Telemetry: v2-system-addon/telemetry.md
+    - Reading and Changing Firefox Prefs: v2-system-addon/preferences.md
+    - Adding New Sections: v2-system-addon/sections.md
+  - Unit Testing: v2/system-addon/unit_testing_guide.md
