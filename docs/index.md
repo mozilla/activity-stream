@@ -18,7 +18,13 @@ documenation.
 * Bugzy
 * Trello Board
 * Bugzilla
-* Product Meeting Notes
+* Meeting Notes
+  * Product Meeting Notes
+  * UX Meeting Notes
+  * Weekly Engineering Standup
+  * Retrospective Meeting Notes
+  * Snippets Sync-Up Meeting Notes
+  * Links to Outside Meeting Notes
 * Dashboards
 * Content Signing
 * about:library
