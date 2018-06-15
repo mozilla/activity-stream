@@ -11,7 +11,7 @@
 }
 
 .overlay-wrapper {
-  position: fixed;
+  position: absolute;
   top: 0;
   width: 100vw;
   height: 100vh;
@@ -19,6 +19,7 @@
   font-weight: 200;
   transition: opacity 0.4s;
   opacity: 0;
+  overflow-x: auto;
 
   &.show {
     transition: none;
@@ -29,6 +30,13 @@
       transition-delay: 0.2s;
       transform: translateY(-50%) scale(1);
       opacity: 1;
+
+      @media screen and (max-width: 790px) {
+        float: none;
+        margin: auto;
+        top: 190px;
+        margin-bottom: 100px;
+      }
     }
 
     .firstrun-firefox-logo {
@@ -71,6 +79,7 @@
   linear-gradient(to bottom, $blue-70 40%, #004EC2 60%, $blue-60 80%, #0080FF 90%, #00C7FF 100%) top center no-repeat,
   $blue-70;
   background-size: cover;
+  position: fixed;
 }
 
 .firstrun-sign-in {
@@ -115,9 +124,15 @@
     border: 1px solid $grey-50;
     border-radius: 2px;
     font-size: 16px;
+    transition: border-color 150ms, box-shadow 150ms;
 
     &:hover {
       border-color: $grey-90;
+    }
+
+    &:focus {
+      border-color: $blue-50;
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.3);
     }
   }
 
@@ -126,14 +141,13 @@
     margin: 15px auto;
   }
 
-  .form-header span {
+  .form-header .sub-header {
     font-size: 14px;
     margin-top: 4px;
     display: block;
   }
 
   button {
-    border-radius: 2px;
     display: block;
     cursor: pointer;
     margin: 10px auto 0;
@@ -144,13 +158,14 @@
     height: 43px;
     width: 250px;
     padding: 8px 0;
-    border: 1px solid $blue-60;
+    border: 0;
+    border-radius: 4px;
     color: $white;
-    background-color: $blue-50;
-    transition-duration: 150ms;
-    transition-property: background-color;
+    background-color: $blue-60;
+    transition: background-color 150ms;
 
-    &:not([disabled]):active {
+    &:not([disabled]):active,
+    &:not([disabled]):hover {
       background: $blue-70;
       border-color: $blue-80;
     }
@@ -158,11 +173,12 @@
 
   .skip-button {
     font-size: 13px;
-    margin-top: 40px;
+    margin-top: 35px;
     margin-bottom: 20px;
     background-color: #FCFCFC;
     color: $blue-50;
     border: 1px solid $blue-50;
+    border-radius: 2px;
     min-height: 24px;
     padding: 5px 10px;
     transition: background-color 150ms, color 150ms, border-color 150ms;
@@ -188,6 +204,17 @@
   float: inline-start;
   clear: both;
   width: 435px;
+
+  @media screen and (max-width: 825) {
+    width: 400px;
+  }
+
+  @media screen and (max-width: 790px) {
+    margin: auto;
+    float: none;
+    width: 352px;
+    text-align: center;
+  }
 }
 
 .firstrun-content {
@@ -216,6 +243,11 @@
   margin: 40px 0 10px;
   padding-top: 110px;
   font-weight: 200;
+
+  @media screen and (max-width: 790px) {
+    background: url('chrome://branding/content/about-logo.png') top center no-repeat;
+    background-size: 90px 90px;
+  }
 }
 
 [dir='rtl'] {
@@ -237,6 +269,15 @@
   z-index: 10;
   transition: opacity 0.3s;
   opacity: 0;
+
+  @media screen and (max-width: 825) {
+    width: 784px;
+  }
+
+  @media screen and (max-width: 790px) {
+    width: auto;
+    height: 100%;
+  }
 }
 
 .firstrun-title,
