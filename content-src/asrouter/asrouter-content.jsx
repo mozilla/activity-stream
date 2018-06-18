@@ -130,7 +130,12 @@ export class ASRouterUISurface extends React.PureComponent {
   // telemetry field which can have arbitrary values.
   // Used for router messages with links as part of the content.
   sendClick(event) {
-    const metric = {value: event.target.dataset.metric};
+    const metric = {
+      value: event.target.dataset.metric,
+      // The will the the `source` of the event. Needed to differentiate
+      // from other snippet or onboarding events that may occur
+      id: "NEWTAB_FOOTER_BAR_CONTENT"
+    };
     this.sendUserActionTelemetry({event: "CLICK_BUTTON", ...metric});
   }
 
