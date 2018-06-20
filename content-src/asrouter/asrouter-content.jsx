@@ -132,8 +132,8 @@ export class ASRouterUISurface extends React.PureComponent {
   sendClick(event) {
     const metric = {
       value: event.target.dataset.metric,
-      // The will the the `source` of the event. Needed to differentiate
-      // from other snippet or onboarding events that may occur
+      // Used for the `source` of the event. Needed to differentiate
+      // from other snippet or onboarding events that may occur.
       id: "NEWTAB_FOOTER_BAR_CONTENT"
     };
     this.sendUserActionTelemetry({event: "CLICK_BUTTON", ...metric});
