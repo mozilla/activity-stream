@@ -1,7 +1,7 @@
 {
   "title": "SimpleSnippet",
   "description": "A simple template with an icon, text, and optional button.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "object",
   "properties": {
     "title": {
@@ -22,7 +22,8 @@
     },
     "button_url": {
       "type": "string",
-      "description": "A url, button_label links to this"
+      "description": "A url, button_label links to this",
+      "format": "uri"
     },
     "button_label": {
       "type": "string",
@@ -49,7 +50,8 @@
       "additionalProperties": {
         "url": {
           "type": "string",
-          "description": "The url where the link points to."
+          "description": "The url where the link points to.",
+          "format": "uri"
         },
         "metric": {
           "type": "string",
