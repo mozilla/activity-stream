@@ -16,7 +16,6 @@
   width: 100vw;
   height: 100vh;
   z-index: 21000;
-  font-weight: 200;
   transition: opacity 0.4s;
   opacity: 0;
   overflow-x: auto;
@@ -137,7 +136,7 @@
   }
 
   .form-header {
-    font-size: 18px;
+    font-size: 22px;
     margin: 15px auto;
   }
 
@@ -242,7 +241,6 @@
   background-size: 90px 90px;
   margin: 40px 0 10px;
   padding-top: 110px;
-  font-weight: 200;
 
   @media screen and (max-width: 790px) {
     background: url('chrome://branding/content/about-logo.png') top center no-repeat;
