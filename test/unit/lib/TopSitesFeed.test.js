@@ -41,7 +41,8 @@ describe("Top Sites Feed", () => {
     fakeNewTabUtils = {
       blockedLinks: {
         links: [],
-        isBlocked: () => false
+        isBlocked: () => false,
+        unblock: sandbox.spy()
       },
       activityStreamLinks: {getTopSites: sandbox.spy(() => Promise.resolve(links))},
       activityStreamProvider: {
@@ -728,6 +729,14 @@ describe("Top Sites Feed", () => {
       await feed.pin(pinExistingAction);
 
       assert.calledOnce(feed.refresh);
+    });
+    it("should unblock a previously blocked top site if we are now adding it manually via 'Add a Top Site' option", async () => {
+      const pinAction = {
+        type: at.TOP_SITES_PIN,
+        data: {site: {url: "foo.com"}, index: -1}
+      };
+      feed.onAction(pinAction);
+      assert.calledWith(fakeNewTabUtils.blockedLinks.unblock, {url: pinAction.data.site.url});
     });
     it("should call insert on TOP_SITES_INSERT", async () => {
       sinon.stub(feed, "insert");
