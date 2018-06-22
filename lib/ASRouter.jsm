@@ -336,7 +336,10 @@ class _ASRouter {
   _validPreviewEndpoint(url) {
     try {
       const endpoint = new URL(url);
-      return endpoint.protocol === "https:" && WHITELIST_HOSTS[endpoint.host];
+      if (!WHITELIST_HOSTS[endpoint.host]) {
+        Cu.reportError(`The preview URL host ${endpoint.host} is not in the whitelist`);
+      }
+      return (endpoint.protocol === "https:" && WHITELIST_HOSTS[endpoint.host]);
     } catch (e) {
       return false;
     }
