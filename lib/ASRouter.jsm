@@ -300,10 +300,11 @@ class _ASRouter {
     const msgs = this._getUnblockedMessages();
     let message = null;
     const previewMsgs = this.state.messages.filter(item => item.provider === "preview");
-    if (!previewMsgs.length) {
-      message = await ASRouterTargeting.findMatchingMessage(msgs, target);
-    } else {
+    // Always send preview messages when available
+    if (previewMsgs.length) {
       [message] = previewMsgs;
+    } else {
+      message = await ASRouterTargeting.findMatchingMessage(msgs, target);
     }
     await this.setState({lastMessageId: message ? message.id : null});
 
