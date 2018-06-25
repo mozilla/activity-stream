@@ -232,7 +232,22 @@ class _ASRouter {
     this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: state});
   }
 
-  async _getBundledMessages(originalMessage, target, force = false) {
+  async _findMessage(msgs, target, data = {}) {
+    let message;
+    let {trigger} = data;
+    if (trigger) {
+      // Find a message that matches the targeting context as well as the trigger context
+      message = await ASRouterTargeting.findMatchingMessageWithTrigger(msgs, target, trigger);
+    }
+    if (!message) {
+      // If there was no messages with this trigger, try finding a regular targeted message
+      message = await ASRouterTargeting.findMatchingMessage(msgs, target);
+    }
+
+    return message;
+  }
+
+  async _getBundledMessages(originalMessage, target, data, force = false) {
     let result = [{content: originalMessage.content, id: originalMessage.id}];
 
     // First, find all messages of same template. These are potential matching targeting candidates
@@ -251,7 +266,7 @@ class _ASRouter {
     } else {
       while (bundledMessagesOfSameTemplate.length) {
         // Find a message that matches the targeting context - or break if there are no matching messages
-        const message = await ASRouterTargeting.findMatchingMessage(bundledMessagesOfSameTemplate, target);
+        const message = await this._findMessage(bundledMessagesOfSameTemplate, target, data);
         if (!message) {
           /* istanbul ignore next */ // Code coverage in mochitests
           break;
@@ -279,11 +294,11 @@ class _ASRouter {
     return state.messages.filter(item => !state.blockList.includes(item.id));
   }
 
-  async _sendMessageToTarget(message, target, force = false) {
+  async _sendMessageToTarget(message, target, data, force = false) {
     let bundledMessages;
     // If this message needs to be bundled with other messages of the same template, find them and bundle them together
     if (message && message.bundled) {
-      bundledMessages = await this._getBundledMessages(message, target, force);
+      bundledMessages = await this._getBundledMessages(message, target, data, force);
     }
     if (message && !message.bundled) {
       // If we only need to send 1 message, send the message
@@ -296,7 +311,8 @@ class _ASRouter {
     }
   }
 
-  async sendNextMessage(target) {
+  async sendNextMessage(target, action = {}) {
+    let {data} = action;
     const msgs = this._getUnblockedMessages();
     let message = null;
     const previewMsgs = this.state.messages.filter(item => item.provider === "preview");
@@ -304,18 +320,18 @@ class _ASRouter {
     if (previewMsgs.length) {
       [message] = previewMsgs;
     } else {
-      message = await ASRouterTargeting.findMatchingMessage(msgs, target);
+      message = await this._findMessage(msgs, target, data);
     }
     await this.setState({lastMessageId: message ? message.id : null});
 
-    await this._sendMessageToTarget(message, target);
+    await this._sendMessageToTarget(message, target, data);
   }
 
-  async setMessageById(id, target, force = true) {
+  async setMessageById(id, target, force = true, action = {}) {
     await this.setState({lastMessageId: id});
     const newMessage = this.getMessageById(id);
 
-    await this._sendMessageToTarget(newMessage, target, force);
+    await this._sendMessageToTarget(newMessage, target, force, action.data);
   }
 
   async blockById(idOrIds) {
@@ -368,6 +384,7 @@ class _ASRouter {
     switch (action.type) {
       case "CONNECT_UI_REQUEST":
       case "GET_NEXT_MESSAGE":
+      case "TRIGGER":
         // Wait for our initial message loading to be done before responding to any UI requests
         await this.waitForInitialized;
         if (action.data && action.data.endpoint) {
@@ -375,7 +392,7 @@ class _ASRouter {
         }
         // Check if any updates are needed first
         await this.loadMessagesFromAllProviders();
-        await this.sendNextMessage(target);
+        await this.sendNextMessage(target, action);
         break;
       case ra.OPEN_PRIVATE_BROWSER_WINDOW:
         // Forcefully open about:privatebrowsing
@@ -414,7 +431,7 @@ class _ASRouter {
         });
         break;
       case "OVERRIDE_MESSAGE":
-        await this.setMessageById(action.data.id, target);
+        await this.setMessageById(action.data.id, target, true, action);
         break;
       case "ADMIN_CONNECT_STATE":
         if (action.data && action.data.endpoint) {
