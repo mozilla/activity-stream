@@ -346,7 +346,7 @@ class _ASRouter {
         Cu.reportError(`The preview URL host ${endpoint.host} is not in the whitelist.`);
       }
       if (endpoint.protocol !== "https:") {
-        Cu.reportError(`The URL protocol is not https.`);
+        Cu.reportError("The URL protocol is not https.");
       }
       return (endpoint.protocol === "https:" && WHITELIST_HOSTS[endpoint.host]);
     } catch (e) {
