@@ -344,7 +344,7 @@ describe("ASRouter", () => {
     });
     it("should return the preview message if that's available", async () => {
       const expectedObj = {provider: "preview"};
-      sandbox.stub(Router, "_getUnblockedMessages").returns([expectedObj, {provider: "external"}]);
+      Router.setState({messages: [expectedObj]});
 
       await Router.sendNextMessage(channel);
 

@@ -298,7 +298,13 @@ class _ASRouter {
 
   async sendNextMessage(target) {
     const msgs = this._getUnblockedMessages();
-    let message = await ASRouterTargeting.findMatchingMessage(msgs, target);
+    let message = null;
+    const previewMsgs = this.state.messages.filter(item => item.provider === "preview");
+    if (!previewMsgs.length) {
+      message = await ASRouterTargeting.findMatchingMessage(msgs, target);
+    } else {
+      [message] = previewMsgs;
+    }
     await this.setState({lastMessageId: message ? message.id : null});
 
     await this._sendMessageToTarget(message, target);
