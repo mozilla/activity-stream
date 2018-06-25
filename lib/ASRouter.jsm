@@ -19,6 +19,12 @@ const SNIPPETS_ENDPOINT_PREF = "browser.newtabpage.activity-stream.asrouter.snip
 // Note: currently a restart is required when this pref is changed, this will be fixed in Bug 1462114
 const SNIPPETS_ENDPOINT = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_PREF,
   "https://activity-stream-icons.services.mozilla.com/v1/messages.json.br");
+// List of hosts for endpoints that serve router messages.
+// Key is allowed host, value is a name for the endpoint host.
+const WHITELIST_HOSTS = {
+  "activity-stream-icons.services.mozilla.com": "production",
+  "snippets-admin.mozilla.org": "preview"
+};
 
 const MessageLoaderUtils = {
   /**
@@ -292,7 +298,14 @@ class _ASRouter {
 
   async sendNextMessage(target) {
     const msgs = this._getUnblockedMessages();
-    let message = await ASRouterTargeting.findMatchingMessage(msgs, target);
+    let message = null;
+    const previewMsgs = this.state.messages.filter(item => item.provider === "preview");
+    // Always send preview messages when available
+    if (previewMsgs.length) {
+      [message] = previewMsgs;
+    } else {
+      message = await ASRouterTargeting.findMatchingMessage(msgs, target);
+    }
     await this.setState({lastMessageId: message ? message.id : null});
 
     await this._sendMessageToTarget(message, target);
@@ -327,12 +340,39 @@ class _ASRouter {
     }
   }
 
+  _validPreviewEndpoint(url) {
+    try {
+      const endpoint = new URL(url);
+      if (!WHITELIST_HOSTS[endpoint.host]) {
+        Cu.reportError(`The preview URL host ${endpoint.host} is not in the whitelist.`);
+      }
+      if (endpoint.protocol !== "https:") {
+        Cu.reportError("The URL protocol is not https.");
+      }
+      return (endpoint.protocol === "https:" && WHITELIST_HOSTS[endpoint.host]);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async _addPreviewEndpoint(url) {
+    const providers = [...this.state.providers];
+    if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
+      // Set update cycle to 0 to fetch new content on every page refresh
+      providers.push({id: "preview", type: "remote", url, updateCycleInMs: 0});
+      await this.setState({providers});
+    }
+  }
+
   async onMessage({data: action, target}) {
     switch (action.type) {
       case "CONNECT_UI_REQUEST":
       case "GET_NEXT_MESSAGE":
         // Wait for our initial message loading to be done before responding to any UI requests
         await this.waitForInitialized;
+        if (action.data && action.data.endpoint) {
+          await this._addPreviewEndpoint(action.data.endpoint.url);
+        }
         // Check if any updates are needed first
         await this.loadMessagesFromAllProviders();
         await this.sendNextMessage(target);
@@ -377,7 +417,12 @@ class _ASRouter {
         await this.setMessageById(action.data.id, target);
         break;
       case "ADMIN_CONNECT_STATE":
-        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: this.state});
+        if (action.data && action.data.endpoint) {
+          this._addPreviewEndpoint(action.data.endpoint.url);
+          await this.loadMessagesFromAllProviders();
+        } else {
+          target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: this.state});
+        }
         break;
     }
   }
