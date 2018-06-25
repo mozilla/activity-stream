@@ -444,4 +444,13 @@ describe("ASRouter", () => {
       assert.calledOnce(msg.target.browser.ownerGlobal.openTrustedLinkIn);
     });
   });
+
+  describe("valid preview endpoint", () => {
+    it("should report an error if url protocol is not https", () => {
+      sandbox.stub(Cu, "reportError");
+
+      assert.equal(false, Router._validPreviewEndpoint("http://foo.com"));
+      assert.calledTwice(Cu.reportError);
+    });
+  });
 });
