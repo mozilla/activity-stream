@@ -17,7 +17,7 @@ describe("ASRouterUtils", () => {
     global = new GlobalOverrider();
     sandbox = sinon.sandbox.create();
     fakeSendAsyncMessage = sandbox.stub();
-    global.set({sendAsyncMessage: fakeSendAsyncMessage});
+    global.set({RPMSendAsyncMessage: fakeSendAsyncMessage});
   });
   afterEach(() => {
     sandbox.restore();
@@ -65,9 +65,9 @@ describe("ASRouterUISurface", () => {
     };
     global = new GlobalOverrider();
     global.set({
-      addMessageListener: sandbox.stub(),
-      removeMessageListener: sandbox.stub(),
-      sendAsyncMessage: sandbox.stub()
+      RPMAddMessageListener: sandbox.stub(),
+      RPMRemoveMessageListener: sandbox.stub(),
+      RPMSendAsyncMessage: sandbox.stub()
     });
 
     sandbox.stub(ASRouterUtils, "sendTelemetry");
