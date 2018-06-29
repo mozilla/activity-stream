@@ -124,7 +124,11 @@ this.Store = class Store {
       this.initFeed(telemetryKey);
     }
 
-    await this._initIndexedDB(telemetryKey);
+    try {
+      await this._initIndexedDB(telemetryKey);
+    } catch (e) {
+      this.dbStorage.telemetry = null;
+    }
 
     for (const pref of feedFactories.keys()) {
       if (pref !== telemetryKey && this._prefs.get(pref)) {
