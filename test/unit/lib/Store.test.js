@@ -159,7 +159,7 @@ describe("Store", () => {
 
       assert.calledOnce(dbStub);
     });
-    it("should reset ASStorage telemetry if opening the db fails", async () => {
+    it("should reset ActivityStreamStorage telemetry if opening the db fails", async () => {
       store._initIndexedDB.restore();
       // Force an IndexedDB error
       dbStub.rejects();
