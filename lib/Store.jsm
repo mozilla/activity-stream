@@ -124,12 +124,7 @@ this.Store = class Store {
       this.initFeed(telemetryKey);
     }
 
-    try {
-      await this._initIndexedDB(telemetryKey);
-    } catch (e) {
-      /* istanbul ignore next */
-      this.dbStorage.telemetry = null;
-    }
+    await this._initIndexedDB(telemetryKey);
 
     for (const pref of feedFactories.keys()) {
       if (pref !== telemetryKey && this._prefs.get(pref)) {
@@ -157,7 +152,11 @@ this.Store = class Store {
     // Accessing the db causes the object stores to be created / migrated.
     // This needs to happen before other instances try to access the db, which
     // would update only a subset of the stores to the latest version.
-    await this.dbStorage.db; // eslint-disable-line no-unused-expressions
+    try {
+      await this.dbStorage.db; // eslint-disable-line no-unused-expressions
+    } catch (e) {
+      this.dbStorage.telemetry = null;
+    }
   }
 
   /**
