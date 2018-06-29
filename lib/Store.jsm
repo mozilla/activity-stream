@@ -127,6 +127,7 @@ this.Store = class Store {
     try {
       await this._initIndexedDB(telemetryKey);
     } catch (e) {
+      /* istanbul ignore next */
       this.dbStorage.telemetry = null;
     }
 
