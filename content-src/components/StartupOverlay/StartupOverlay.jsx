@@ -56,6 +56,7 @@ export class _StartupOverlay extends React.PureComponent {
     error.classList.add("active");
     e.target.classList.add("invalid");
     e.preventDefault(); // Override built-in form validation popup
+    e.target.focus();
   }
 
   render() {
