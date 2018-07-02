@@ -32,6 +32,9 @@ export class _Base extends React.PureComponent {
     }
     this.sendNewTabRehydrated(App);
     addLocaleDataForReactIntl(locale);
+    if (this.props.isFirstrun) {
+      global.document.body.classList.add("welcome");
+    }
   }
 
   componentDidMount() {
@@ -54,12 +57,10 @@ export class _Base extends React.PureComponent {
   }
 
   updateTheme(Theme) {
-    const bodyClassName = [
+    [
       "activity-stream",
-      Theme.className,
-      this.props.isFirstrun ? "welcome" : ""
-    ].filter(v => v).join(" ");
-    global.document.body.className = bodyClassName;
+      Theme.className
+    ].filter(v => v && global.document.body.classList.add(v));
   }
 
   // The NEW_TAB_REHYDRATED event is used to inform feeds that their
