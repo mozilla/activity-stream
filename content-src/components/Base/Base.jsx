@@ -61,7 +61,7 @@ export class _Base extends React.PureComponent {
       "activity-stream",
       // If we skipped the about:welcome overlay and removed the CSS class
       // we don't want to add it back to the Activity Stream view
-      document.body.classList.contains("welcome") && "welcome",
+      document.body.classList.contains("welcome") ? "welcome" : "",
       Theme.className
     ].filter(v => v).join(" ");
     global.document.body.className = bodyClassName;
