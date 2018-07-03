@@ -57,10 +57,14 @@ export class _Base extends React.PureComponent {
   }
 
   updateTheme(Theme) {
-    [
+    const bodyClassName = [
       "activity-stream",
+      // If we skipped the about:welcome overlay and removed the CSS class
+      // we don't want to add it back to the Activity Stream view
+      document.body.classList.contains("welcome") && "welcome",
       Theme.className
-    ].filter(v => v && global.document.body.classList.add(v));
+    ].filter(v => v).join(" ");
+    global.document.body.className = bodyClassName;
   }
 
   // The NEW_TAB_REHYDRATED event is used to inform feeds that their
