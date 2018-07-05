@@ -129,6 +129,7 @@ describe("AboutPreferences Feed", () => {
     let strings;
     let prefStructure;
     let Preferences;
+    let gHomePane;
     const testRender = () => instance.renderPreferences({
       document: {
         createElementNS: sandbox.stub().returns(node),
@@ -136,7 +137,8 @@ describe("AboutPreferences Feed", () => {
         getElementById: sandbox.stub().returns(node),
         insertBefore: sandbox.stub().returnsArg(0)
       },
-      Preferences
+      Preferences,
+      gHomePane
     }, strings, prefStructure);
     beforeEach(() => {
       node = {
@@ -152,6 +154,7 @@ describe("AboutPreferences Feed", () => {
         add: sandbox.stub(),
         get: sandbox.stub().returns({})
       };
+      gHomePane = {toggleRestoreDefaultsBtn: sandbox.stub()};
     });
     describe("#formatString", () => {
       it("should fall back to string id if missing", () => {
@@ -266,6 +269,13 @@ describe("AboutPreferences Feed", () => {
         testRender();
 
         assert.calledWith(node.setAttribute, "label", titleString);
+      });
+    });
+    describe("restore defaults btn", () => {
+      it("should call toggleRestoreDefaultsBtn", () => {
+        testRender();
+
+        assert.calledOnce(gHomePane.toggleRestoreDefaultsBtn);
       });
     });
   });
