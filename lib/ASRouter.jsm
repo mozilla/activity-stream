@@ -15,10 +15,8 @@ ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
 const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
 const ONE_HOUR_IN_MS = 60 * 60 * 1000;
-const SNIPPETS_ENDPOINT_PREF = "browser.newtabpage.activity-stream.asrouter.snippetsUrl";
-// Note: currently a restart is required when this pref is changed, this will be fixed in Bug 1462114
-const SNIPPETS_ENDPOINT = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_PREF,
-  "https://activity-stream-icons.services.mozilla.com/v1/messages.json.br");
+const ASROUTER_PREF_BRANCH = "browser.newtabpage.activity-stream.asrouter.";
+const SNIPPETS_ENDPOINT_PREF = "snippetsUrl";
 // List of hosts for endpoints that serve router messages.
 // Key is allowed host, value is a name for the endpoint host.
 const WHITELIST_HOSTS = {
@@ -126,6 +124,14 @@ class _ASRouter {
     this.messageChannel = null;
     this._storage = null;
     this._resetInitialization();
+    this._updateProviderEndpointUrl = this._updateProviderEndpointUrl.bind(this);
+
+    this._prefs = Services.prefs.getBranch(ASROUTER_PREF_BRANCH);
+    this._prefs.addObserver("", this);
+    if (initialState.providers) {
+      initialState.providers = initialState.providers.map(this._updateProviderEndpointUrl);
+    }
+
     this._state = {
       lastMessageId: null,
       providers: [],
@@ -134,6 +140,31 @@ class _ASRouter {
       ...initialState
     };
     this.onMessage = this.onMessage.bind(this);
+  }
+
+  // Update provider endpoint and fetch new messages on pref change
+  async observe(aSubject, aTopic, aPrefName) {
+    if (!this.initialized) {
+      return;
+    }
+
+    await this.setState(prevState => {
+      const providers = [...prevState.providers];
+      this._updateProviderEndpointUrl(providers.find(p => p.endpointPref === aPrefName));
+      return {providers};
+    });
+
+    await this.loadMessagesFromAllProviders();
+  }
+
+  _updateProviderEndpointUrl(provider) {
+    if (provider && provider.endpointPref) {
+      provider.url = this._prefs.getStringPref(provider.endpointPref, "");
+      // Reset provider update timestamp to force messages refresh
+      provider.lastUpdated = undefined;
+    }
+
+    return provider;
   }
 
   get state() {
@@ -212,6 +243,8 @@ class _ASRouter {
     this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_ALL"});
     this.messageChannel.removeMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this.messageChannel = null;
+    this._prefs.removeObserver("", this);
+    this._prefs = null;
     this._resetInitialization();
   }
 
@@ -453,7 +486,7 @@ this._ASRouter = _ASRouter;
 this.ASRouter = new _ASRouter({
   providers: [
     {id: "onboarding", type: "local", messages: OnboardingMessageProvider.getMessages()},
-    {id: "snippets", type: "remote", url: SNIPPETS_ENDPOINT, updateCycleInMs: ONE_HOUR_IN_MS * 4}
+    {id: "snippets", type: "remote", endpointPref: SNIPPETS_ENDPOINT_PREF, updateCycleInMs: ONE_HOUR_IN_MS * 4}
   ]
 });
 

@@ -33,7 +33,10 @@ class ASRouterFeed {
    * (asrouterExperimentEnabled) and enable or disable ASRouter based on
    * its value.
    */
-  enableOrDisableBasedOnPref() {
+  enableOrDisableBasedOnPref(prefChanged) {
+    if (!["asrouterOnboardingCohort", "asrouterExperimentEnabled"].includes(prefChanged)) {
+      return;
+    }
     const prefs = this.store.getState().Prefs.values;
     const isExperimentEnabled = prefs.asrouterExperimentEnabled;
     const isOnboardingExperimentEnabled = prefs.asrouterOnboardingCohort;
