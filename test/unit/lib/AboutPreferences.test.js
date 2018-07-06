@@ -234,6 +234,24 @@ describe("AboutPreferences Feed", () => {
         assert.calledWith(node.setAttribute, "src", icon);
       });
     });
+    describe("title line", () => {
+      it("should render a title", () => {
+        const titleString = "the_title";
+        prefStructure = [{pref: {titleString}}];
+
+        testRender();
+
+        assert.calledWith(node.setAttribute, "label", titleString);
+      });
+      it("should add a link for top stories", () => {
+        const href = "https://disclaimer/";
+        prefStructure = [{disclaimer: {link: {href}}, id: "topstories"}];
+
+        testRender();
+
+        assert.calledWith(node.setAttribute, "href", href);
+      });
+    });
     describe("description line", () => {
       it("should render a description", () => {
         const descString = "the_desc";
@@ -242,14 +260,6 @@ describe("AboutPreferences Feed", () => {
         testRender();
 
         assert.equal(node.textContent, descString);
-      });
-      it("should add a link for top stories", () => {
-        const href = "https://disclaimer/";
-        prefStructure = [{disclaimer: {link: {href}}, id: "topstories", pref: {descString: "some_desc"}}];
-
-        testRender();
-
-        assert.calledWith(node.setAttribute, "href", href);
       });
       it("should render rows dropdown with appropriate number", () => {
         prefStructure = [{rowsPref: "row_pref", maxRows: 3, pref: {descString: "foo"}}];
