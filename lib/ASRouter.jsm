@@ -123,11 +123,11 @@ class _ASRouter {
     this.initialized = false;
     this.messageChannel = null;
     this._storage = null;
+    this._prefs = null;
     this._resetInitialization();
     this._updateProviderEndpointUrl = this._updateProviderEndpointUrl.bind(this);
+    this._addASRouterPrefListener();
 
-    this._prefs = Services.prefs.getBranch(ASROUTER_PREF_BRANCH);
-    this._prefs.addObserver("", this);
     if (initialState.providers) {
       initialState.providers = initialState.providers.map(this._updateProviderEndpointUrl);
     }
@@ -140,6 +140,13 @@ class _ASRouter {
       ...initialState
     };
     this.onMessage = this.onMessage.bind(this);
+  }
+
+  _addASRouterPrefListener() {
+    if (this._prefs === null) {
+      this._prefs = Services.prefs.getBranch(ASROUTER_PREF_BRANCH);
+      this._prefs.addObserver("", this);
+    }
   }
 
   // Update provider endpoint and fetch new messages on pref change
@@ -230,6 +237,7 @@ class _ASRouter {
   async init(channel, storage) {
     this.messageChannel = channel;
     this.messageChannel.addMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
+    this._addASRouterPrefListener();
     await this.loadMessagesFromAllProviders();
     this._storage = storage;
 
