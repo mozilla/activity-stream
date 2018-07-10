@@ -15,8 +15,7 @@ ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
 const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
 const ONE_HOUR_IN_MS = 60 * 60 * 1000;
-const ASROUTER_PREF_BRANCH = "browser.newtabpage.activity-stream.asrouter.";
-const SNIPPETS_ENDPOINT_PREF = `${ASROUTER_PREF_BRANCH}snippetsUrl`;
+const SNIPPETS_ENDPOINT_PREF = "browser.newtabpage.activity-stream.asrouter.snippetsUrl";
 // List of hosts for endpoints that serve router messages.
 // Key is allowed host, value is a name for the endpoint host.
 const WHITELIST_HOSTS = {
@@ -123,10 +122,7 @@ class _ASRouter {
     this.initialized = false;
     this.messageChannel = null;
     this._storage = null;
-    this._prefs = null;
     this._resetInitialization();
-    this._updateProviderEndpointUrl = this._updateProviderEndpointUrl.bind(this);
-
     this._state = {
       lastMessageId: null,
       providers: [],
