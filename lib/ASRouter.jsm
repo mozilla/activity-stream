@@ -16,7 +16,7 @@ const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
 const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 const ASROUTER_PREF_BRANCH = "browser.newtabpage.activity-stream.asrouter.";
-const SNIPPETS_ENDPOINT_PREF = "snippetsUrl";
+const SNIPPETS_ENDPOINT_PREF = `${ASROUTER_PREF_BRANCH}snippetsUrl`;
 // List of hosts for endpoints that serve router messages.
 // Key is allowed host, value is a name for the endpoint host.
 const WHITELIST_HOSTS = {
@@ -126,11 +126,6 @@ class _ASRouter {
     this._prefs = null;
     this._resetInitialization();
     this._updateProviderEndpointUrl = this._updateProviderEndpointUrl.bind(this);
-    this._addASRouterPrefListener();
-
-    if (initialState.providers) {
-      initialState.providers = initialState.providers.map(this._updateProviderEndpointUrl);
-    }
 
     this._state = {
       lastMessageId: null,
@@ -143,18 +138,15 @@ class _ASRouter {
   }
 
   _addASRouterPrefListener() {
-    if (this._prefs === null) {
-      this._prefs = Services.prefs.getBranch(ASROUTER_PREF_BRANCH);
-      this._prefs.addObserver("", this);
-    }
+    this.state.providers.forEach(provider => {
+      if (provider.endpointPref) {
+        Services.prefs.addObserver(provider.endpointPref, this);
+      }
+    });
   }
 
   // Update provider endpoint and fetch new messages on pref change
   async observe(aSubject, aTopic, aPrefName) {
-    if (!this.initialized) {
-      return;
-    }
-
     await this.setState(prevState => {
       const providers = [...prevState.providers];
       this._updateProviderEndpointUrl(providers.find(p => p.endpointPref === aPrefName));
@@ -166,7 +158,7 @@ class _ASRouter {
 
   _updateProviderEndpointUrl(provider) {
     if (provider && provider.endpointPref) {
-      provider.url = this._prefs.getStringPref(provider.endpointPref, "");
+      provider.url = Services.prefs.getStringPref(provider.endpointPref, "");
       // Reset provider update timestamp to force messages refresh
       provider.lastUpdated = undefined;
     }
@@ -212,7 +204,7 @@ class _ASRouter {
       let newState = {messages: [], providers: []};
       for (const provider of this.state.providers) {
         if (needsUpdate.includes(provider)) {
-          const {messages, lastUpdated} = await MessageLoaderUtils.loadMessagesForProvider(provider);
+          const {messages, lastUpdated} = await MessageLoaderUtils.loadMessagesForProvider(this._updateProviderEndpointUrl(provider));
           newState.providers.push({...provider, lastUpdated});
           newState.messages = [...newState.messages, ...messages];
         } else {
@@ -251,8 +243,11 @@ class _ASRouter {
     this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_ALL"});
     this.messageChannel.removeMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this.messageChannel = null;
-    this._prefs.removeObserver("", this);
-    this._prefs = null;
+    this.state.providers.forEach(provider => {
+      if (provider.endpointPref) {
+        Services.prefs.removeObserver(provider.endpointPref, this);
+      }
+    });
     this._resetInitialization();
   }
 

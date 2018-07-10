@@ -48,14 +48,9 @@ describe("ASRouter", () => {
     fetchStub = sandbox.stub(global, "fetch")
       .withArgs("http://fake.com/endpoint")
       .resolves({ok: true, status: 200, json: () => Promise.resolve({messages: FAKE_REMOTE_MESSAGES})});
-    getStringPrefStub = sandbox.stub();
-    addObserverStub = sandbox.stub();
+    getStringPrefStub = sandbox.stub(global.Services.prefs, "getStringPref");
     getStringPrefStub.returns("http://fake.com/endpoint");
-    sandbox.stub(global.Services.prefs, "getBranch").returns({
-      getStringPref: getStringPrefStub,
-      addObserver: addObserverStub,
-      removeObserver: sandbox.stub()
-    });
+    addObserverStub = sandbox.stub(global.Services.prefs, "addObserver");
 
     await createRouterAndInit();
   });
@@ -77,6 +72,10 @@ describe("ASRouter", () => {
       const [, listenerAdded] = channel.addMessageListener.firstCall.args;
       assert.isFunction(listenerAdded);
     });
+    it("should add an observer for each provider with a defined endpointPref", () => {
+      assert.calledOnce(addObserverStub);
+      assert.calledWith(addObserverStub, "remotePref");
+    });
     it("should set state.blockList to the block list in persistent storage", async () => {
       blockList = ["MESSAGE_ID"];
 
@@ -95,31 +94,12 @@ describe("ASRouter", () => {
       assert.isArray(Router.state.messages);
       assert.lengthOf(Router.state.messages, FAKE_LOCAL_MESSAGES.length + FAKE_REMOTE_MESSAGES.length);
     });
-    it("should add an observer for the asrouter. branch", () => {
-      assert.calledOnce(addObserverStub);
-    });
-    it("should load provider endpoint based on pref", async () => {
-      getStringPrefStub.reset();
-      getStringPrefStub.returns("example.com");
-      Router = new _ASRouter({providers: FAKE_PROVIDERS});
-
-      assert.calledOnce(getStringPrefStub);
-      assert.isDefined(Router.state.providers.find(p => p.url === "example.com"));
-    });
     it("should call loadMessagesFromAllProviders on pref endpoint change", async () => {
       sandbox.spy(Router, "loadMessagesFromAllProviders");
 
       await Router.observe();
 
       assert.calledOnce(Router.loadMessagesFromAllProviders);
-    });
-    it("should return early if the router is not initialized", async () => {
-      sandbox.spy(Router, "loadMessagesFromAllProviders");
-      Router.initialized = false;
-
-      await Router.observe();
-
-      assert.notCalled(Router.loadMessagesFromAllProviders);
     });
     it("should update provider url on pref change", async () => {
       getStringPrefStub.withArgs("remotePref").returns("baz.com");
@@ -141,6 +121,15 @@ describe("ASRouter", () => {
       }
     }
 
+    it("should load provider endpoint based on pref", async () => {
+      getStringPrefStub.reset();
+      getStringPrefStub.returns("example.com");
+      await createRouterAndInit();
+
+      assert.calledOnce(getStringPrefStub);
+      assert.calledWithExactly(getStringPrefStub, "remotePref", "");
+      assert.isDefined(Router.state.providers.find(p => p.url === "example.com"));
+    });
     it("should not trigger an update if not enough time has passed for a provider", async () => {
       await createRouterAndInit([
         {id: "remotey", type: "remote", url: "http://fake.com/endpoint", updateCycleInMs: 300}
