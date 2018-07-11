@@ -51,6 +51,7 @@ export class _StartupOverlay extends React.PureComponent {
 
   removeOverlay() {
     window.removeEventListener("visibilitychange", this.removeOverlay);
+    document.body.classList.remove("hide-main");
     this.setState({show: false});
     setTimeout(() => {
       // Allow scrolling and fully remove overlay after animation finishes.
@@ -95,7 +96,7 @@ export class _StartupOverlay extends React.PureComponent {
     let privacyLink = (<a href={`${this.props.fxa_endpoint}/legal/privacy`} target="_blank" rel="noopener noreferrer"><FormattedMessage id="firstrun_privacy_notice" /></a>);
 
     return (
-      <div className={`overlay-wrapper ${this.state.show ? "show " : ""}`}>
+      <div className={`overlay-wrapper ${this.state.show ? "show" : ""}`}>
         <div className="background" />
         <div className="firstrun-scene">
           <div className="fxaccounts-container">

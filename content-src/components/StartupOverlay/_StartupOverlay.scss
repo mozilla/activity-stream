@@ -13,6 +13,7 @@
 .overlay-wrapper {
   position: absolute;
   top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   z-index: 21000;
@@ -70,7 +71,7 @@
   }
 }
 
-.background {
+.background, body.hide-main {
   width: 100%;
   height: 100%;
   display: block;
@@ -236,7 +237,7 @@
   padding-bottom: 210px;
 }
 
-.firstrun-link {
+a.firstrun-link {
   color: $white;
   display: block;
   text-decoration: underline;
