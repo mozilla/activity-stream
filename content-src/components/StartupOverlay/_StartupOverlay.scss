@@ -71,13 +71,15 @@
   }
 }
 
-.background, body.hide-main {
+.background,
+body.hide-main {
   width: 100%;
   height: 100%;
   display: block;
-  background: url('#{$image-path}fox-tail.png') top -200px center no-repeat,
-  linear-gradient(to bottom, $blue-70 40%, #004EC2 60%, $blue-60 80%, #0080FF 90%, #00C7FF 100%) top center no-repeat,
-  $blue-70;
+  background-image: url('#{$image-path}fox-tail.png'), linear-gradient(to bottom, $blue-70 40%, #004EC2 60%, $blue-60 80%, #0080FF 90%, #00C7FF 100%);
+  background-position-x: center;
+  background-position-y: -200px, top;
+  background-repeat: no-repeat;
   background-size: cover;
   position: fixed;
 }
