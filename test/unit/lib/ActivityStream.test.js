@@ -1,8 +1,6 @@
 import {CONTENT_MESSAGE_TYPE} from "common/Actions.jsm";
 import injector from "inject!lib/ActivityStream.jsm";
 
-const REASON_ADDON_UNINSTALL = 6;
-
 describe("ActivityStream", () => {
   let sandbox;
   let as;
@@ -79,16 +77,6 @@ describe("ActivityStream", () => {
     });
     it("should call .store.uninit", () => {
       assert.calledOnce(as.store.uninit);
-    });
-  });
-  describe("#uninstall", () => {
-    it("should reset default prefs if the reason is REASON_ADDON_UNINSTALL", () => {
-      as.uninstall(REASON_ADDON_UNINSTALL);
-      assert.calledOnce(as._defaultPrefs.reset);
-    });
-    it("should not reset default prefs if the reason is something else", () => {
-      as.uninstall("foo");
-      assert.notCalled(as._defaultPrefs.reset);
     });
   });
   describe("feeds", () => {
