@@ -52,7 +52,7 @@ describe("ASRouterFeed", () => {
       prefs[EXPERIMENT_PREF] = true;
 
       // call .onAction with INIT
-      feed.onAction({type: at.INIT, data: {name: EXPERIMENT_PREF}});
+      feed.onAction({type: at.INIT});
 
       assert.calledOnce(feed.enable);
     });
