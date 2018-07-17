@@ -66,6 +66,11 @@ describe("ActivityStream", () => {
       const [, , action] = as.store.init.firstCall.args;
       assert.equal(action.type, "UNINIT");
     });
+    it("should call _migratePrefs on init", () => {
+      sandbox.stub(as, "_migratePrefs");
+      as.init();
+      assert.calledOnce(as._migratePrefs);
+    });
   });
   describe("#uninit", () => {
     beforeEach(() => {
@@ -140,6 +145,97 @@ describe("ActivityStream", () => {
     it("should create a ASRouter feed", () => {
       const feed = as.feeds.get("feeds.asrouterfeed")();
       assert.instanceOf(feed, Fake);
+    });
+  });
+  describe("_migratePrefs and _migratePref", () => {
+    it("should migrate the correct prefs", () => {
+      sandbox.stub(as, "_migratePref");
+      as._migratePrefs();
+      // pref names we want to migrate
+      assert.calledWith(as._migratePref.firstCall, "browser.newtabpage.rows");
+      assert.calledWith(as._migratePref.secondCall, "browser.newtabpage.activity-stream.showTopSites");
+      assert.calledWith(as._migratePref.thirdCall, "browser.newtabpage.activity-stream.topSitesCount");
+    });
+    it("should properly set the new value for browser.newtabpage.rows migration", () => {
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      sandbox.stub(global.Services.prefs, "getPrefType").returns("integer");
+      sandbox.stub(global.Services.prefs, "getIntPref").returns(10);
+      sandbox.stub(global.Services.prefs, "setIntPref");
+      as._migratePrefs();
+      // Set new pref with value of old pref 'browser.newtabpage.rows'
+      assert.calledWith(global.Services.prefs.setIntPref, "browser.newtabpage.activity-stream.topSitesRows", 10);
+
+      global.Services.prefs.getIntPref.returns(0);
+      sandbox.stub(global.Services.prefs, "setBoolPref");
+      as._migratePrefs();
+      // Turn off top sites feed if 'browser.newtabpage.rows' was <= 0
+      assert.calledWith(global.Services.prefs.setBoolPref, "browser.newtabpage.activity-stream.feeds.topsites", false);
+    });
+    it("should properly set the new value for browser.newtabpage.activity-stream.showTopSites migration", () => {
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      sandbox.stub(global.Services.prefs, "getPrefType").returns("boolean");
+      sandbox.stub(global.Services.prefs, "getBoolPref").returns(true);
+      sandbox.stub(global.Services.prefs, "setBoolPref");
+      as._migratePrefs();
+      // If top sites should be shown, do nothing during migration
+      assert.notCalled(global.Services.prefs.setBoolPref);
+
+      global.Services.prefs.getBoolPref.returns(false);
+      as._migratePrefs();
+      // If top sites has been turned off, turn the top sites feed off too
+      assert.calledWith(global.Services.prefs.setBoolPref, "browser.newtabpage.activity-stream.feeds.topsites", false);
+    });
+    it("should properly set the new value for browser.newtabpage.activity-stream.topSitesCount migration", () => {
+      const count = 40;
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      sandbox.stub(global.Services.prefs, "getPrefType").returns("integer");
+      sandbox.stub(global.Services.prefs, "getIntPref").returns(count);
+      sandbox.stub(global.Services.prefs, "setIntPref");
+      const expectedCount = Math.ceil(count / 6);
+      as._migratePrefs();
+      // If topSitesCount has been modified, calculate how many rows of top sites to show
+      assert.calledWith(global.Services.prefs.setIntPref, "browser.newtabpage.activity-stream.topSitesRows", expectedCount);
+    });
+    it("should migrate a pref if the user has set a custom value", () => {
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      sandbox.stub(global.Services.prefs, "getPrefType").returns("integer");
+      sandbox.stub(global.Services.prefs, "getIntPref").returns(10);
+      as._migratePref("oldPrefName", result => assert.equal(10, result));
+    });
+    it("should not migrate a pref if the user has not set a custom value", () => {
+      // we bailed out early so we don't check the pref type later
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(false);
+      sandbox.stub(global.Services.prefs, "getPrefType");
+      as._migratePref("oldPrefName");
+      assert.notCalled(global.Services.prefs.getPrefType);
+    });
+    it("should use the proper pref getter for each type", () => {
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+
+      // Integer
+      sandbox.stub(global.Services.prefs, "getIntPref");
+      sandbox.stub(global.Services.prefs, "getPrefType").returns("integer");
+      as._migratePref("oldPrefName", () => {});
+      assert.calledWith(global.Services.prefs.getIntPref, "oldPrefName");
+
+      // Boolean
+      sandbox.stub(global.Services.prefs, "getBoolPref");
+      global.Services.prefs.getPrefType.returns("boolean");
+      as._migratePref("oldPrefName", () => {});
+      assert.calledWith(global.Services.prefs.getBoolPref, "oldPrefName");
+
+      // String
+      sandbox.stub(global.Services.prefs, "getStringPref");
+      global.Services.prefs.getPrefType.returns("string");
+      as._migratePref("oldPrefName", () => {});
+      assert.calledWith(global.Services.prefs.getStringPref, "oldPrefName");
+    });
+    it("should clear the old pref after setting the new one", () => {
+      sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+      sandbox.stub(global.Services.prefs, "clearUserPref");
+      sandbox.stub(global.Services.prefs, "getPrefType").returns("integer");
+      as._migratePref("oldPrefName", () => {});
+      assert.calledWith(global.Services.prefs.clearUserPref, "oldPrefName");
     });
   });
   describe("_updateDynamicPrefs topstories default value", () => {
