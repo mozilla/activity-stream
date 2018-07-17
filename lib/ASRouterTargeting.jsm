@@ -5,6 +5,8 @@ ChromeUtils.defineModuleGetter(this, "AddonManager",
 ChromeUtils.defineModuleGetter(this, "ProfileAge",
   "resource://gre/modules/ProfileAge.jsm");
 ChromeUtils.import("resource://gre/modules/Console.jsm");
+ChromeUtils.defineModuleGetter(this, "ShellService",
+  "resource:///modules/ShellService.jsm");
 
 const FXA_USERNAME_PREF = "services.sync.username";
 const ONBOARDING_EXPERIMENT_PREF = "browser.newtabpage.activity-stream.asrouterOnboardingCohort";
@@ -69,6 +71,13 @@ const TargetingGetters = {
         }
       });
     });
+  },
+
+  get isDefaultBrowser() {
+    try {
+      return ShellService.isDefaultBrowser();
+    } catch (e) {}
+    return null;
   },
 
   // Temporary targeting function for the purposes of running the simplified onboarding experience

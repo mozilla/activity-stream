@@ -53,6 +53,7 @@ Name | Type | Example value | Description
 ---  | ---  | ---           | ---
 `addonsInfo` | `Object` | [example below](#addonsinfo-example) | Information about the addons the user has installed
 `hasFxAccount` | `Boolean` | `true` | Does the user have a firefox account
+`isDefaultBrowser` | `Boolean` or `null` | Is Firefox the user's default browser? If we could not determine the default browser, this value is `null`
 `profileAgeCreated` | Number | `1522843725924` | Profile creation timestamp
 `profileAgeReset` | `Number` or `undefined` | `1522843725924` | When (if) the profile was reset
 `searchEngines` | `Object` | [example below](#searchengines-example) | Information about the current and available search engines

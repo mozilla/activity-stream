@@ -4,6 +4,8 @@ ChromeUtils.defineModuleGetter(this, "ProfileAge",
   "resource://gre/modules/ProfileAge.jsm");
 ChromeUtils.defineModuleGetter(this, "AddonManager",
   "resource://gre/modules/AddonManager.jsm");
+ChromeUtils.defineModuleGetter(this, "ShellService",
+  "resource:///modules/ShellService.jsm");
 
 const {AddonTestUtils} = ChromeUtils.import("resource://testing-common/AddonTestUtils.jsm", {});
 
@@ -93,6 +95,18 @@ add_task(async function checksearchEngines() {
   const message2 = {id: "foo", targeting: `searchEngines[${Services.search.getVisibleEngines()[0].identifier} in .installed]`};
   is(await ASRouterTargeting.findMatchingMessage([message2], {}), message2,
     "should select correct item by searchEngines.installed");
+});
+
+add_task(async function checkisDefaultBrowser() {
+  const expected = ShellService.isDefaultBrowser();
+  const result = ASRouterTargeting.Environment.isDefaultBrowser;
+  is(typeof result, "boolean",
+    "isDefaultBrowser should be a boolean value");
+  is(result, expected,
+    "isDefaultBrowser should be equal to ShellService.isDefaultBrowser()");
+  const message = {id: "foo", targeting: `isDefaultBrowser == ${expected.toString()}`};
+  is(await ASRouterTargeting.findMatchingMessage([message], {}), message,
+    "should select correct item by isDefaultBrowser");
 });
 
 AddonTestUtils.initMochitest(this);
