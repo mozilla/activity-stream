@@ -40,7 +40,6 @@ const DEFAULT_SITES = new Map([
   ["FR", "https://www.youtube.com/,https://www.facebook.com/,https://www.wikipedia.org/,https://www.amazon.fr/,https://www.leboncoin.fr/,https://twitter.com/"]
 ]);
 const GEO_PREF = "browser.search.region";
-const REASON_ADDON_UNINSTALL = 6;
 const SPOCS_GEOS = ["US"];
 
 // Determine if spocs should be shown for a geo/locale
@@ -316,15 +315,6 @@ this.ActivityStream = class ActivityStream {
 
     this.store.uninit();
     this.initialized = false;
-  }
-
-  uninstall(reason) {
-    if (reason === REASON_ADDON_UNINSTALL) {
-      // This resets all prefs in the config to their default values,
-      // so we DON'T want to do this on an upgrade/downgrade, only on a
-      // real uninstall
-      this._defaultPrefs.reset();
-    }
   }
 
   _updateDynamicPrefs() {
