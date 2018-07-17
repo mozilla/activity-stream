@@ -109,6 +109,15 @@ add_task(async function checkisDefaultBrowser() {
     "should select correct item by isDefaultBrowser");
 });
 
+add_task(async function checkdevToolsOpenedCount() {
+  await pushPrefs(["devtools.selfxss.count", 5]);
+  is(ASRouterTargeting.Environment.devToolsOpenedCount, 5,
+    "devToolsOpenedCount should be equal to devtools.selfxss.count pref value");
+  const message = {id: "foo", targeting: "devToolsOpenedCount >= 5"};
+  is(await ASRouterTargeting.findMatchingMessage([message], {}), message,
+    "should select correct item by devToolsOpenedCount");
+});
+
 AddonTestUtils.initMochitest(this);
 
 add_task(async function checkAddonsInfo() {

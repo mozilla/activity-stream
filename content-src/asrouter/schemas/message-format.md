@@ -52,6 +52,7 @@ Currently we expose the following targeting attributes that can be used by messa
 Name | Type | Example value | Description
 ---  | ---  | ---           | ---
 `addonsInfo` | `Object` | [example below](#addonsinfo-example) | Information about the addons the user has installed
+`devToolsOpenedCount` | `Integer` | Number of usages of the web console or scratchpad
 `hasFxAccount` | `Boolean` | `true` | Does the user have a firefox account
 `isDefaultBrowser` | `Boolean` or `null` | Is Firefox the user's default browser? If we could not determine the default browser, this value is `null`
 `profileAgeCreated` | Number | `1522843725924` | Profile creation timestamp

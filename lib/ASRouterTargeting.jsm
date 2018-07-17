@@ -80,6 +80,10 @@ const TargetingGetters = {
     return null;
   },
 
+  get devToolsOpenedCount() {
+    return Services.prefs.getIntPref("devtools.selfxss.count");
+  },
+
   // Temporary targeting function for the purposes of running the simplified onboarding experience
   get isInExperimentCohort() {
     return Services.prefs.getIntPref(ONBOARDING_EXPERIMENT_PREF, 0);
