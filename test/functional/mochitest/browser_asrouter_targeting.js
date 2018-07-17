@@ -71,6 +71,30 @@ add_task(async function checkhasFxAccount() {
     "should select correct item by hasFxAccount");
 });
 
+add_task(async function checksearchEngines() {
+  const result = await ASRouterTargeting.Environment.searchEngines;
+  const expectedInstalled = Services.search.getVisibleEngines()
+    .map(engine => engine.identifier)
+    .sort()
+    .join(",");
+  ok(result.installed.length,
+    "searchEngines.installed should be a non-empty array");
+  is(result.installed.sort().join(","), expectedInstalled,
+    "searchEngines.installed should be an array of visible search engines");
+  ok(result.current && typeof result.current === "string",
+    "searchEngines.current should be a truthy string");
+  is(result.current, Services.search.currentEngine.identifier,
+    "searchEngines.current should be the current engine name");
+
+  const message = {id: "foo", targeting: `searchEngines[.current == ${Services.search.currentEngine.identifier}]`};
+  is(await ASRouterTargeting.findMatchingMessage([message], {}), message,
+    "should select correct item by searchEngines.current");
+
+  const message2 = {id: "foo", targeting: `searchEngines[${Services.search.getVisibleEngines()[0].identifier} in .installed]`};
+  is(await ASRouterTargeting.findMatchingMessage([message2], {}), message2,
+    "should select correct item by searchEngines.installed");
+});
+
 AddonTestUtils.initMochitest(this);
 
 add_task(async function checkAddonsInfo() {

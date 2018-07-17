@@ -51,6 +51,26 @@ const TargetingGetters = {
         return {addons: info, isFullData: fullData};
       });
   },
+
+  get searchEngines() {
+    return new Promise(resolve => {
+      // Note: calling init ensures this code is only executed after Search has been initialized
+      Services.search.init(rv => {
+        if (Components.isSuccessCode(rv)) {
+          let engines = Services.search.getVisibleEngines();
+          resolve({
+            current: Services.search.defaultEngine.identifier,
+            installed: engines
+              .map(engine => engine.identifier)
+              .filter(engine => engine)
+          });
+        } else {
+          resolve({installed: [], current: ""});
+        }
+      });
+    });
+  },
+
   // Temporary targeting function for the purposes of running the simplified onboarding experience
   get isInExperimentCohort() {
     return Services.prefs.getIntPref(ONBOARDING_EXPERIMENT_PREF, 0);
