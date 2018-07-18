@@ -1,0 +1,30 @@
+version: 0
+tasks:
+  - provisionerId: '{{ taskcluster.docker.provisionerId }}'
+    workerType: '{{ taskcluster.docker.workerType }}'
+    extra:
+      github:
+        events:
+          - pull_request.opened
+          - pull_request.reopened
+          - pull_request.synchronize
+    payload:
+      maxRunTime: 7200
+      image: piatra/asmochitests
+      command:
+        - /bin/bash
+        - '--login'
+        - '-c'
+        - >-
+          git clone {{event.head.repo.url}} /activity-stream && cd /activity-stream &&
+          git checkout {{event.head.sha}} && npm install . && npm run buildmc &&
+          export SHELL=/bin/bash && cd /mozilla-central &&
+          wget https://gist.githubusercontent.com/piatra/3e14b97ab54f9bc1c2ba2146a7367270/raw/e7bd33e9f6315b20ea65a3cf40f8429b84890cf8/mozconfig &&
+          ./mach build && cd /activity-stream && npm run mochitest
+    metadata:
+      name: activitystream
+      description: run mochitests for PRs
+      owner: '{{ event.head.user.email }}'
+      source: '{{ event.head.repo.url }}'
+allowPullRequests: public
+
