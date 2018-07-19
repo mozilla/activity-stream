@@ -8,6 +8,7 @@ tasks:
           - pull_request.opened
           - pull_request.reopened
           - pull_request.synchronize
+          - push
     payload:
       maxRunTime: 7200
       image: piatra/asmochitests
@@ -17,7 +18,7 @@ tasks:
         - '-c'
         - >-
           git clone {{event.head.repo.url}} /activity-stream && cd /activity-stream &&
-          git checkout {{event.head.sha}} && npm install . && bash ./mochitest.sh
+          git checkout {{event.head.sha}} && bash ./mochitest.sh
     metadata:
       name: activitystream
       description: run mochitests for PRs
