@@ -45,7 +45,12 @@ const TEST_GLOBAL = {
   ChromeUtils: {
     defineModuleGetter() {},
     generateQI() { return {}; },
-    import() {}
+    import(str) {
+      if (str === "resource://services-settings/remote-settings.js") {
+        return {RemoteSettings: TEST_GLOBAL.RemoteSettings};
+      }
+      return {};
+    }
   },
   Components: {isSuccessCode: () => true},
   // eslint-disable-next-line object-shorthand
@@ -184,7 +189,8 @@ const TEST_GLOBAL = {
   },
   EventEmitter,
   ShellService: {isDefaultBrowser: () => true},
-  FilterExpressions: {eval() { return Promise.resolve(true); }}
+  FilterExpressions: {eval() { return Promise.resolve(true); }},
+  RemoteSettings() { return {get() { return Promise.resolve([]); }}; }
 };
 overrider.set(TEST_GLOBAL);
 
