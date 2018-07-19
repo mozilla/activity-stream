@@ -49,7 +49,7 @@ add_task(async function checkProfileAgeCreated() {
     "should return correct profile age creation date");
 
   const message = {id: "foo", targeting: `profileAgeCreated > ${await profileAccessor.created - 100}`};
-  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}, context}), message,
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), message,
     "should select correct item by profile age created");
 });
 
@@ -89,11 +89,11 @@ add_task(async function checksearchEngines() {
     "searchEngines.current should be the current engine name");
 
   const message = {id: "foo", targeting: `searchEngines[.current == ${Services.search.currentEngine.identifier}]`};
-  is(await ASRouterTargeting.findMatchingMessage([message], {}), message,
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), message,
     "should select correct item by searchEngines.current");
 
   const message2 = {id: "foo", targeting: `searchEngines[${Services.search.getVisibleEngines()[0].identifier} in .installed]`};
-  is(await ASRouterTargeting.findMatchingMessage([message2], {}), message2,
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message2], target: {}}), message2,
     "should select correct item by searchEngines.installed");
 });
 
@@ -105,7 +105,7 @@ add_task(async function checkisDefaultBrowser() {
   is(result, expected,
     "isDefaultBrowser should be equal to ShellService.isDefaultBrowser()");
   const message = {id: "foo", targeting: `isDefaultBrowser == ${expected.toString()}`};
-  is(await ASRouterTargeting.findMatchingMessage([message], {}), message,
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), message,
     "should select correct item by isDefaultBrowser");
 });
 
@@ -114,7 +114,7 @@ add_task(async function checkdevToolsOpenedCount() {
   is(ASRouterTargeting.Environment.devToolsOpenedCount, 5,
     "devToolsOpenedCount should be equal to devtools.selfxss.count pref value");
   const message = {id: "foo", targeting: "devToolsOpenedCount >= 5"};
-  is(await ASRouterTargeting.findMatchingMessage([message], {}), message,
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), message,
     "should select correct item by devToolsOpenedCount");
 });
 
