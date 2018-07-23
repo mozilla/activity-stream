@@ -6,6 +6,10 @@ ChromeUtils.defineModuleGetter(this, "AddonManager",
   "resource://gre/modules/AddonManager.jsm");
 ChromeUtils.defineModuleGetter(this, "ShellService",
   "resource:///modules/ShellService.jsm");
+ChromeUtils.defineModuleGetter(this, "NewTabUtils",
+  "resource://gre/modules/NewTabUtils.jsm");
+ChromeUtils.defineModuleGetter(this, "PlacesTestUtils",
+  "resource://testing-common/PlacesTestUtils.jsm");
 
 const {AddonTestUtils} = ChromeUtils.import("resource://testing-common/AddonTestUtils.jsm", {});
 
@@ -173,6 +177,53 @@ add_task(async function checkAddonsInfo() {
     "should correctly provide `userDisabled` property from full data");
 
   ok(Object.prototype.hasOwnProperty.call(testAddon, "installDate") &&
-    (Math.abs(new Date() - new Date(testAddon.installDate)) < 60 * 1000),
+    (Math.abs(Date.now() - new Date(testAddon.installDate)) < 60 * 1000),
     "should correctly provide `installDate` property from full data");
+});
+
+add_task(async function checkFrecentSites() {
+  const now = Date.now();
+  const timeDaysAgo = numDays => now - numDays * 24 * 60 * 60 * 1000;
+
+  const visits = [];
+  for (const [uri, count, visitDate] of [
+    ["https://mozilla1.com/", 10, timeDaysAgo(0)], // frecency 1000
+    ["https://mozilla2.com/", 5, timeDaysAgo(1)],  // frecency 500
+    ["https://mozilla3.com/", 1, timeDaysAgo(2)]   // frecency 100
+  ]) {
+    [...Array(count).keys()].forEach(() => visits.push({
+      uri,
+      visitDate: visitDate * 1000 // Places expects microseconds
+    }));
+  }
+
+  await PlacesTestUtils.addVisits(visits);
+
+  let message = {id: "foo", targeting: "'mozilla3.com' in topFrecentSites|mapToProperty('host')"};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), message,
+    "should select correct item by host in topFrecentSites");
+
+  message = {id: "foo", targeting: "'non-existent.com' in topFrecentSites|mapToProperty('host')"};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), undefined,
+    "should not select incorrect item by host in topFrecentSites");
+
+  message = {id: "foo", targeting: "'mozilla2.com' in topFrecentSites[.frecency >= 400]|mapToProperty('host')"};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), message,
+    "should select correct item when filtering by frecency");
+
+  message = {id: "foo", targeting: "'mozilla2.com' in topFrecentSites[.frecency >= 600]|mapToProperty('host')"};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), undefined,
+    "should not select incorrect item when filtering by frecency");
+
+  message = {id: "foo", targeting: `'mozilla2.com' in topFrecentSites[.lastVisitDate >= ${timeDaysAgo(1) - 1}]|mapToProperty('host')`};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), message,
+    "should select correct item when filtering by lastVisitDate");
+
+  message = {id: "foo", targeting: `'mozilla2.com' in topFrecentSites[.lastVisitDate >= ${timeDaysAgo(0) - 1}]|mapToProperty('host')`};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), undefined,
+    "should not select incorrect item when filtering by lastVisitDate");
+
+  message = {id: "foo", targeting: `(topFrecentSites[.frecency >= 900 && .lastVisitDate >= ${timeDaysAgo(1) - 1}]|mapToProperty('host') intersect ['mozilla3.com', 'mozilla2.com', 'mozilla1.com'])|length > 0`};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message], target: {}}), message,
+    "should select correct item when filtering by frecency and lastVisitDate with multiple candidate domains");
 });
