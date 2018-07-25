@@ -248,6 +248,18 @@ describe("ASRouter", () => {
       assert.equal(msg.target.sendAsyncMessage.firstCall.args[1].type, "SET_BUNDLED_MESSAGES");
       assert.equal(msg.target.sendAsyncMessage.firstCall.args[1].data.bundle[0].content, currentMessage.content);
     });
+    it("should properly order the message's bundle if specified", async () => {
+      // force the only messages to be a bundled messages so getRandomItemFromArray picks one of them
+      const firstMessage = {id: "foo2", template: "simple_template", bundled: 2, order: 1, content: {title: "Foo2", body: "Foo123-2"}};
+      const secondMessage = {id: "foo1", template: "simple_template", bundled: 2, order: 2, content: {title: "Foo1", body: "Foo123-1"}};
+      await Router.setState({messages: [secondMessage, firstMessage]});
+      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      await Router.onMessage(msg);
+      assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME);
+      assert.equal(msg.target.sendAsyncMessage.firstCall.args[1].type, "SET_BUNDLED_MESSAGES");
+      assert.equal(msg.target.sendAsyncMessage.firstCall.args[1].data.bundle[0].content, firstMessage.content);
+      assert.equal(msg.target.sendAsyncMessage.firstCall.args[1].data.bundle[1].content, secondMessage.content);
+    });
     it("should return a null bundle if we do not have enough messages to fill the bundle", async () => {
       // force the only message to be a bundled message that needs 2 messages in the bundle
       await Router.setState({messages: [{id: "foo1", template: "simple_template", bundled: 2, content: {title: "Foo1", body: "Foo123-1"}}]});
@@ -419,7 +431,7 @@ describe("ASRouter", () => {
       const expectedObj = {
         template: testMessage1.template,
         provider: testMessage1.provider,
-        bundle: [{content: testMessage1.content, id: testMessage1.id}, {content: testMessage2.content, id: testMessage2.id}]
+        bundle: [{content: testMessage1.content, id: testMessage1.id, order: 1}, {content: testMessage2.content, id: testMessage2.id}]
       };
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "SET_BUNDLED_MESSAGES", data: expectedObj});
     });
@@ -434,7 +446,7 @@ describe("ASRouter", () => {
       const expectedObj = {
         template: testMessage1.template,
         provider: testMessage1.provider,
-        bundle: [{content: testMessage1.content, id: testMessage1.id}, {content: testMessage2.content, id: testMessage2.id}]
+        bundle: [{content: testMessage1.content, id: testMessage1.id, order: 1}, {content: testMessage2.content, id: testMessage2.id, order: 2}]
       };
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "SET_BUNDLED_MESSAGES", data: expectedObj});
     });
