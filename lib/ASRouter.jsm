@@ -484,7 +484,7 @@ class _ASRouter {
 
   _loadSnippetsWhitelistHosts() {
     let additionalHosts = [];
-    const whitelistPrefValue = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_WHITELIST);
+    const whitelistPrefValue = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_WHITELIST, "");
     try {
       additionalHosts = JSON.parse(whitelistPrefValue);
     } catch (e) {
