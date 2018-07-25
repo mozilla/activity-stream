@@ -706,6 +706,7 @@ class _ASRouter {
   }
 
   async _addPreviewEndpoint(url) {
+    this.dispatchToAS(ac.AlsoToPreloaded({type: "SNIPPETS_PREVIEW_MODE"}));
     const providers = [...this.state.providers];
     if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
       providers.push({id: "preview", type: "remote", url, updateCycleInMs: 0});

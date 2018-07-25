@@ -187,6 +187,8 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       return Object.assign({}, prevState, {rows: newRows});
     case at.UPDATE_SEARCH_SHORTCUTS:
       return {...prevState, searchShortcuts: action.data.searchShortcuts};
+    case at.SNIPPETS_PREVIEW_MODE:
+      return {...prevState, rows: []};
     default:
       return prevState;
   }
@@ -366,6 +368,8 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
     case at.ARCHIVE_FROM_POCKET:
       return prevState.map(section =>
         Object.assign({}, section, {rows: section.rows.filter(site => site.pocket_id !== action.data.pocket_id)}));
+    case at.SNIPPETS_PREVIEW_MODE:
+      return prevState.map(section => ({...section, rows: []}));
     default:
       return prevState;
   }
