@@ -291,3 +291,12 @@ add_task(async function check_sync() {
   is(await ASRouterTargeting.Environment.sync.totalDevices, Services.prefs.getIntPref("services.sync.numClients", 0),
     "should return correct mobileDevices info");
 });
+
+add_task(async function check_onboarding_cohort() {
+  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", enabled: true, cohort: 1}]));
+  is(await ASRouterTargeting.Environment.isInExperimentCohort, 1);
+  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify(17));
+  is(await ASRouterTargeting.Environment.isInExperimentCohort, 0);
+  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", enabled: true, cohort: "hello"}]));
+  is(await ASRouterTargeting.Environment.isInExperimentCohort, 0);
+});

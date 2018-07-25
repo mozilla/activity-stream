@@ -13,7 +13,7 @@ ChromeUtils.defineModuleGetter(this, "TelemetryEnvironment",
   "resource://gre/modules/TelemetryEnvironment.jsm");
 
 const FXA_USERNAME_PREF = "services.sync.username";
-const ONBOARDING_EXPERIMENT_PREF = "browser.newtabpage.activity-stream.asrouterOnboardingCohort";
+const ONBOARDING_MESSAGE_PROVDIER_EXPERIMENT_PREF = "browser.newtabpage.activity-stream.asrouter.messageProviders";
 const MOZ_JEXL_FILEPATH = "mozjexl";
 
 // Max possible cap for any message
@@ -153,7 +153,14 @@ const TargetingGetters = {
 
   // Temporary targeting function for the purposes of running the simplified onboarding experience
   get isInExperimentCohort() {
-    return Services.prefs.getIntPref(ONBOARDING_EXPERIMENT_PREF, 0);
+    const allProviders = Services.prefs.getStringPref(ONBOARDING_MESSAGE_PROVDIER_EXPERIMENT_PREF, "");
+    try {
+      const {cohort} = JSON.parse(allProviders).find(i => i.id === "onboarding");
+      return (typeof cohort === "number" ? cohort : 0);
+    } catch (e) {
+      Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
+    }
+    return 0;
   }
 };
 

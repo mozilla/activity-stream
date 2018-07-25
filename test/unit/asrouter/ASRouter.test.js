@@ -177,7 +177,7 @@ describe("ASRouter", () => {
 
     it("should not trigger an update if not enough time has passed for a provider", async () => {
       await createRouterAndInit([
-        {id: "remotey", type: "remote", url: "http://fake.com/endpoint", updateCycleInMs: 300}
+        {id: "remotey", type: "remote", enabled: true, url: "http://fake.com/endpoint", updateCycleInMs: 300}
       ]);
 
       const previousState = Router.state;
@@ -189,7 +189,7 @@ describe("ASRouter", () => {
     });
     it("should not trigger an update if we only have local providers", async () => {
       await createRouterAndInit([
-        {id: "foo", type: "local", messages: FAKE_LOCAL_MESSAGES}
+        {id: "foo", type: "local", enabled: true, messages: FAKE_LOCAL_MESSAGES}
       ]);
 
       const previousState = Router.state;
@@ -202,8 +202,8 @@ describe("ASRouter", () => {
     it("should update messages for a provider if enough time has passed, without removing messages for other providers", async () => {
       const NEW_MESSAGES = [{id: "new_123"}];
       await createRouterAndInit([
-        {id: "remotey", type: "remote", url: "http://fake.com/endpoint", updateCycleInMs: 300},
-        {id: "alocalprovider", type: "local", messages: FAKE_LOCAL_MESSAGES}
+        {id: "remotey", type: "remote", url: "http://fake.com/endpoint", enabled: true, updateCycleInMs: 300},
+        {id: "alocalprovider", type: "local", enabled: true, messages: FAKE_LOCAL_MESSAGES}
       ]);
       fetchStub
         .withArgs("http://fake.com/endpoint")
@@ -222,7 +222,7 @@ describe("ASRouter", () => {
 
       /* eslint-disable object-curly-newline */ /* eslint-disable object-property-newline */
       await createRouterAndInit([
-        {id: "foo", type: "local", messages: [
+        {id: "foo", type: "local", enabled: true, messages: [
           {id: "foo", template: "simple_template", trigger: {id: "firstRun"}, content: {title: "Foo", body: "Foo123"}},
           {id: "bar1", template: "simple_template", trigger: {id: "openURL", params: ["www.mozilla.org", "www.mozilla.com"]}, content: {title: "Bar1", body: "Bar123"}},
           {id: "bar2", template: "simple_template", trigger: {id: "openURL", params: ["www.example.com"]}, content: {title: "Bar2", body: "Bar123"}}
@@ -243,7 +243,7 @@ describe("ASRouter", () => {
       // If this test fails, you need to update the constant STARTPAGE_VERSION in
       // ASRouter.jsm to match the `version` property of provider-response-schema.json
       const expectedStartpageVersion = ProviderResponseSchema.version;
-      const provider = {id: "foo", type: "remote", url: "https://www.mozilla.org/%STARTPAGE_VERSION%/"};
+      const provider = {id: "foo", enabled: true, type: "remote", url: "https://www.mozilla.org/%STARTPAGE_VERSION%/"};
       setMessageProviderPref([provider]);
       Router._updateMessageProviders();
       assert.equal(Router.state.providers[0].url, `https://www.mozilla.org/${expectedStartpageVersion}/`);
@@ -254,12 +254,22 @@ describe("ASRouter", () => {
       const stub = sandbox.stub(global.Services.urlFormatter, "formatURL")
         .withArgs(url)
         .returns(replacedUrl);
-      const provider = {id: "foo", type: "remote", url};
+      const provider = {id: "foo", enabled: true, type: "remote", url};
       setMessageProviderPref([provider]);
       Router._updateMessageProviders();
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, url);
       assert.equal(Router.state.providers[0].url, replacedUrl);
+    });
+    it("should only add the providers that are enabled", () => {
+      const providers = [
+        {id: "foo", enabled: false, type: "remote", url: "https://www.foo.com/"},
+        {id: "bar", enabled: true, type: "remote", url: "https://www.bar.com/"}
+      ];
+      setMessageProviderPref(providers);
+      Router._updateMessageProviders();
+      assert.equal(Router.state.providers.length, 1);
+      assert.equal(Router.state.providers[0].id, providers[1].id);
     });
   });
 
@@ -715,7 +725,7 @@ describe("ASRouter", () => {
         // Impressions for "bar" should be removed since that id does not exist in messages
         const result = {foo: [0]};
 
-        await createRouterAndInit([{id: "onboarding", type: "local", messages}]);
+        await createRouterAndInit([{id: "onboarding", type: "local", messages, enabled: true}]);
         assert.calledWith(Router._storage.set, "impressions", result);
         assert.deepEqual(Router.state.impressions, result);
       });
@@ -727,7 +737,7 @@ describe("ASRouter", () => {
         // Only 0 and 1 are more than 24 hours before CURRENT_TIME
         const result = {foo: [CURRENT_TIME - 10]};
 
-        await createRouterAndInit([{id: "onboarding", type: "local", messages}]);
+        await createRouterAndInit([{id: "onboarding", type: "local", messages, enabled: true}]);
         assert.calledWith(Router._storage.set, "impressions", result);
         assert.deepEqual(Router.state.impressions, result);
       });
@@ -739,7 +749,7 @@ describe("ASRouter", () => {
         // Only 0 and 1 are more than 24 hours before CURRENT_TIME
         const result = {foo: [CURRENT_TIME - 10]};
 
-        await createRouterAndInit([{id: "onboarding", type: "local", messages}]);
+        await createRouterAndInit([{id: "onboarding", type: "local", messages, enabled: true}]);
         assert.calledWith(Router._storage.set, "impressions", result);
         assert.deepEqual(Router.state.impressions, result);
       });
@@ -749,7 +759,7 @@ describe("ASRouter", () => {
         impressions = {foo: 0};
         const result = {};
 
-        await createRouterAndInit([{id: "onboarding", type: "local", messages}]);
+        await createRouterAndInit([{id: "onboarding", type: "local", messages, enabled: true}]);
         assert.calledWith(Router._storage.set, "impressions", result);
         assert.deepEqual(Router.state.impressions, result);
       });
@@ -757,7 +767,7 @@ describe("ASRouter", () => {
         const messages = [{id: "foo", frequency: {lifetime: 10}}, {id: "bar", frequency: {lifetime: 10}}];
         impressions = {foo: [0], bar: []};
 
-        await createRouterAndInit([{id: "onboarding", type: "local", messages}]);
+        await createRouterAndInit([{id: "onboarding", type: "local", messages, enabled: true}]);
         assert.notCalled(Router._storage.set);
         assert.deepEqual(Router.state.impressions, impressions);
       });
