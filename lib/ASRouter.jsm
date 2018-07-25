@@ -484,9 +484,14 @@ class _ASRouter {
 
   _loadSnippetsWhitelistHosts() {
     let additionalHosts = [];
+    const whitelistPrefValue = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_WHITELIST);
     try {
-      additionalHosts = JSON.parse(Services.prefs.getStringPref(SNIPPETS_ENDPOINT_WHITELIST));
-    } catch (e) {}
+      additionalHosts = JSON.parse(whitelistPrefValue);
+    } catch (e) {
+      if (whitelistPrefValue) {
+        Cu.reportError(`Pref ${SNIPPETS_ENDPOINT_WHITELIST} value is not valid JSON`);
+      }
+    }
 
     if (!additionalHosts.length) {
       return DEFAULT_WHITELIST_HOSTS;
