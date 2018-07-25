@@ -162,7 +162,7 @@ describe("ASRouter", () => {
       // Get snippets endpoint url, get the whitelisted hosts for endpoints
       assert.calledTwice(getStringPrefStub);
       assert.calledWithExactly(getStringPrefStub, "remotePref", "");
-      assert.calledWithExactly(getStringPrefStub, "browser.newtab.activity-stream.asrouter.whitelistHosts");
+      assert.calledWithExactly(getStringPrefStub, "browser.newtab.activity-stream.asrouter.whitelistHosts", "");
       assert.isDefined(Router.state.providers.find(p => p.url === "example.com"));
     });
     it("should not trigger an update if not enough time has passed for a provider", async () => {
