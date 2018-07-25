@@ -283,8 +283,12 @@ class _ASRouter {
     return message;
   }
 
+  _orderBundle(bundle) {
+    return bundle.sort((a, b) => a.order - b.order);
+  }
+
   async _getBundledMessages(originalMessage, target, data, force = false) {
-    let result = [{content: originalMessage.content, id: originalMessage.id}];
+    let result = [{content: originalMessage.content, id: originalMessage.id, order: originalMessage.order || 0}];
 
     // First, find all messages of same template. These are potential matching targeting candidates
     let bundledMessagesOfSameTemplate = this._getUnblockedMessages()
@@ -309,7 +313,7 @@ class _ASRouter {
         }
         // Only copy the content of the message (that's what the UI cares about)
         // Also delete the message we picked so we don't pick it again
-        result.push({content: message.content, id: message.id});
+        result.push({content: message.content, id: message.id, order: message.order || 0});
         bundledMessagesOfSameTemplate.splice(bundledMessagesOfSameTemplate.findIndex(msg => msg.id === message.id), 1);
         // Stop once we have enough messages to fill a bundle
         if (result.length === originalMessage.bundled) {
@@ -322,7 +326,8 @@ class _ASRouter {
     if (result.length < originalMessage.bundled) {
       return null;
     }
-    return {bundle: result, provider: originalMessage.provider, template: originalMessage.template};
+
+    return {bundle: this._orderBundle(result), provider: originalMessage.provider, template: originalMessage.template};
   }
 
   _getUnblockedMessages() {
