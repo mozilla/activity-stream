@@ -31,6 +31,7 @@ describe("ASRouter", () => {
   let clock;
   let getStringPrefStub;
   let addObserverStub;
+  let dispatchStub;
 
   function createFakeStorage() {
     const getStub = sandbox.stub();
@@ -45,7 +46,8 @@ describe("ASRouter", () => {
   async function createRouterAndInit(providers = FAKE_PROVIDERS) {
     channel = new FakeRemotePageManager();
     Router = new _ASRouter({providers});
-    await Router.init(channel, createFakeStorage());
+    dispatchStub = sandbox.stub();
+    await Router.init(channel, createFakeStorage(), dispatchStub);
   }
 
   beforeEach(async () => {
@@ -87,7 +89,7 @@ describe("ASRouter", () => {
     it("should set state.blockList to the block list in persistent storage", async () => {
       blockList = ["foo"];
       Router = new _ASRouter({providers: FAKE_PROVIDERS});
-      await Router.init(channel, createFakeStorage());
+      await Router.init(channel, createFakeStorage(), dispatchStub);
 
       assert.deepEqual(Router.state.blockList, ["foo"]);
     });
@@ -98,7 +100,7 @@ describe("ASRouter", () => {
       impressions = {foo: [0, 1, 2]};
 
       Router = new _ASRouter({providers: [{id: "onboarding", type: "local", messages: [testMessage]}]});
-      await Router.init(channel, createFakeStorage());
+      await Router.init(channel, createFakeStorage(), dispatchStub);
 
       assert.deepEqual(Router.state.impressions, impressions);
     });
@@ -106,7 +108,7 @@ describe("ASRouter", () => {
       Router = new _ASRouter({providers: FAKE_PROVIDERS});
 
       const loadMessagesSpy = sandbox.spy(Router, "loadMessagesFromAllProviders");
-      await Router.init(channel, createFakeStorage());
+      await Router.init(channel, createFakeStorage(), dispatchStub);
 
       assert.calledOnce(loadMessagesSpy);
       assert.isArray(Router.state.messages);
@@ -144,6 +146,9 @@ describe("ASRouter", () => {
       assert.lengthOf(Object.keys(Router.WHITELIST_HOSTS), 2);
       assert.propertyVal(Router.WHITELIST_HOSTS, "snippets-admin.mozilla.org", "preview");
       assert.propertyVal(Router.WHITELIST_HOSTS, "activity-stream-icons.services.mozilla.com", "production");
+    });
+    it("should set this.dispatchToAS to the third parameter passed to .init()", async () => {
+      assert.equal(Router.dispatchToAS, dispatchStub);
     });
   });
 
@@ -270,6 +275,10 @@ describe("ASRouter", () => {
       for (const listener of ASRouterTriggerListeners.values()) {
         assert.calledOnce(listener.uninit);
       }
+    });
+    it("should set .dispatchToAS to null", () => {
+      Router.uninit();
+      assert.isNull(Router.dispatchToAS);
     });
   });
 
@@ -706,6 +715,20 @@ describe("ASRouter", () => {
         assert.notCalled(Router._storage.set);
         assert.deepEqual(Router.state.impressions, impressions);
       });
+    });
+  });
+
+  describe("handle targeting errors", () => {
+    it("should dispatch an event when a targeting expression throws an error", async () => {
+      sandbox.stub(global.FilterExpressions, "eval").returns(Promise.reject(new Error("fake error")));
+      await Router.setState({messages: [{id: "foo", targeting: "foo2.[[("}]});
+      const msg = fakeAsyncMessage({type: "GET_NEXT_MESSAGE"});
+      await Router.onMessage(msg);
+
+      assert.calledOnce(dispatchStub);
+      const [action] = dispatchStub.firstCall.args;
+      assert.equal(action.type, "AS_ROUTER_TELEMETRY_USER_EVENT");
+      assert.equal(action.data.message_id, "foo");
     });
   });
 });
