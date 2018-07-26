@@ -10,6 +10,7 @@ import {
   PARENT_TO_CHILD_MESSAGE_NAME
 } from "./constants";
 import {ASRouterTriggerListeners} from "lib/ASRouterTriggerListeners.jsm";
+import {GlobalOverrider} from "test/unit/utils";
 import ProviderResponseSchema from "content-src/asrouter/schemas/provider-response.schema.json";
 
 const MESSAGE_PROVIDER_PREF_NAME = "browser.newtabpage.activity-stream.asrouter.messageProviders";
@@ -21,7 +22,10 @@ const ONE_DAY = 24 * 60 * 60 * 1000;
 // Creates a message object that looks like messages returned by
 // RemotePageManager listeners
 function fakeAsyncMessage(action) {
-  return {data: action, target: new FakeRemotePageManager()};
+  return {
+    data: {type: "USER_ACTION", data: action},
+    target: new FakeRemotePageManager()
+  };
 }
 
 describe("ASRouter", () => {
@@ -551,7 +555,7 @@ describe("ASRouter", () => {
       ];
 
       const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
-      let message = await Router._findMessage(messages, target, data.data.trigger);
+      let message = await Router._findMessage(messages, target, data.data.data.trigger);
       assert.equal(message, messages[0]);
     });
     it("should pick a message with the right targeting and trigger", async () => {
@@ -562,7 +566,7 @@ describe("ASRouter", () => {
       ];
       await Router.setState({messages});
       const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
-      let {bundle} = await Router._getBundledMessages(messages[0], target, data.data.trigger);
+      let {bundle} = await Router._getBundledMessages(messages[0], target, data.data.data.trigger);
       assert.equal(bundle.length, 2);
       // it should have picked foo1 and foo3 only
       assert.isTrue(bundle.every(elem => elem.id === "foo1" || elem.id === "foo3"));
@@ -636,6 +640,23 @@ describe("ASRouter", () => {
       Router._triggerHandler(target, trigger);
       assert.calledOnce(Router.onMessage);
       assert.calledWithExactly(Router.onMessage, {target, data: {type: "TRIGGER", trigger}});
+    });
+  });
+
+  describe("#UITour", () => {
+    let globals;
+    let showMenuStub;
+    beforeEach(() => {
+      globals = new GlobalOverrider();
+      showMenuStub = sandbox.stub();
+      globals.set("UITour", {showMenu: showMenuStub});
+    });
+    it("should call UITour.showMenu with the correct params on OPEN_APPLICATIONS_MENU", async () => {
+      const msg = fakeAsyncMessage({type: "OPEN_APPLICATIONS_MENU"});
+      await Router.onMessage(msg);
+
+      assert.calledOnce(showMenuStub);
+      assert.calledWith(showMenuStub, msg.target.browser.ownerGlobal, "appMenu");
     });
   });
 

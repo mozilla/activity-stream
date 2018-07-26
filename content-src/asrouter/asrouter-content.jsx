@@ -1,5 +1,5 @@
-import {actionCreators as ac, ASRouterActions as ra} from "common/Actions.jsm";
 import {LocalizationProvider, Localized} from "fluent-react";
+import {actionCreators as ac} from "common/Actions.jsm";
 import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content-src/lib/init-store";
 import {ImpressionsWrapper} from "./components/ImpressionsWrapper/ImpressionsWrapper";
 import {MessageContext} from "fluent";
@@ -20,18 +20,16 @@ export const ASRouterUtils = {
     global.RPMRemoveMessageListener(INCOMING_MESSAGE_NAME, listener);
   },
   sendMessage(action) {
-    global.RPMSendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
+    global.RPMSendAsyncMessage(OUTGOING_MESSAGE_NAME, {
+      type: "USER_ACTION",
+      data: action
+    });
   },
   blockById(id) {
     ASRouterUtils.sendMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id}});
   },
   blockBundle(bundle) {
     ASRouterUtils.sendMessage({type: "BLOCK_BUNDLE", data: {bundle}});
-  },
-  executeAction(button_action) {
-    if (button_action.type in ra) {
-      ASRouterUtils.sendMessage(button_action);
-    }
   },
   unblockById(id) {
     ASRouterUtils.sendMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id}});
@@ -229,7 +227,7 @@ export class ASRouterUISurface extends React.PureComponent {
       <OnboardingMessage
         {...this.state.bundle}
         UISurface="NEWTAB_OVERLAY"
-        onAction={ASRouterUtils.executeAction}
+        onAction={ASRouterUtils.sendMessage}
         onDoneButton={this.clearBundle(this.state.bundle.bundle)}
         getNextMessage={ASRouterUtils.getNextMessage}
         sendUserActionTelemetry={this.sendUserActionTelemetry} />);
