@@ -16,10 +16,6 @@ const FXA_USERNAME_PREF = "services.sync.username";
 const ONBOARDING_MESSAGE_PROVDIER_EXPERIMENT_PREF = "browser.newtabpage.activity-stream.asrouter.messageProviders";
 const MOZ_JEXL_FILEPATH = "mozjexl";
 
-// Max possible cap for any message
-const MAX_LIFETIME_CAP = 100;
-const ONE_DAY = 24 * 60 * 60 * 1000;
-
 const {activityStreamProvider: asProvider} = NewTabUtils;
 
 const FRECENT_SITES_UPDATE_INTERVAL = 6 * 60 * 60 * 1000; // Six hours
@@ -185,35 +181,6 @@ this.ASRouterTargeting = {
     return candidateMessageTrigger.params.includes(trigger.param);
   },
 
-  isBelowFrequencyCap(message, impressionsForMessage) {
-    if (!message.frequency || !impressionsForMessage || !impressionsForMessage.length) {
-      return true;
-    }
-
-    if (
-      message.frequency.lifetime &&
-      impressionsForMessage.length >= Math.min(message.frequency.lifetime, MAX_LIFETIME_CAP)
-    ) {
-      return false;
-    }
-
-    if (message.frequency.custom) {
-      const now = Date.now();
-      for (const setting of message.frequency.custom) {
-        let {period} = setting;
-        if (period === "daily") {
-          period = ONE_DAY;
-        }
-        const impressionsInPeriod = impressionsForMessage.filter(t => (now - t) < period);
-        if (impressionsInPeriod.length >= setting.cap) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  },
-
   /**
    * checkMessageTargeting - Checks is a message's targeting parameters are satisfied
    *
@@ -251,7 +218,7 @@ this.ASRouterTargeting = {
    * @param {obj|null} context A FilterExpression context. Defaults to TargetingGetters above.
    * @returns {obj} an AS router message
    */
-  async findMatchingMessage({messages, impressions = {}, trigger, context, onError}) {
+  async findMatchingMessage({messages, trigger, context, onError}) {
     const arrayOfItems = [...messages];
     let match;
     let candidate;
@@ -262,7 +229,6 @@ this.ASRouterTargeting = {
       if (
         candidate &&
         (trigger ? this.isTriggerMatch(trigger, candidate.trigger) : !candidate.trigger) &&
-        this.isBelowFrequencyCap(candidate, impressions[candidate.id]) &&
         // If a trigger expression was passed to this function, the message should match it.
         // Otherwise, we should choose a message with no trigger property (i.e. a message that can show up at any time)
         await this.checkMessageTargeting(candidate, context, onError)
