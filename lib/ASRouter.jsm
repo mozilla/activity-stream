@@ -18,10 +18,11 @@ const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 const SNIPPETS_ENDPOINT_PREF = "browser.newtabpage.activity-stream.asrouter.snippetsUrl";
 // List of hosts for endpoints that serve router messages.
 // Key is allowed host, value is a name for the endpoint host.
-const WHITELIST_HOSTS = {
+const DEFAULT_WHITELIST_HOSTS = {
   "activity-stream-icons.services.mozilla.com": "production",
   "snippets-admin.mozilla.org": "preview"
 };
+const SNIPPETS_ENDPOINT_WHITELIST = "browser.newtab.activity-stream.asrouter.whitelistHosts";
 
 const MessageLoaderUtils = {
   /**
@@ -229,6 +230,7 @@ class _ASRouter {
     this.messageChannel.addMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this._addASRouterPrefListener();
     this._storage = storage;
+    this.WHITELIST_HOSTS = this._loadSnippetsWhitelistHosts();
 
     const blockList = await this._storage.get("blockList") || [];
     const impressions = await this._storage.get("impressions") || {};
@@ -473,16 +475,40 @@ class _ASRouter {
   _validPreviewEndpoint(url) {
     try {
       const endpoint = new URL(url);
-      if (!WHITELIST_HOSTS[endpoint.host]) {
+      if (!this.WHITELIST_HOSTS[endpoint.host]) {
         Cu.reportError(`The preview URL host ${endpoint.host} is not in the whitelist.`);
       }
       if (endpoint.protocol !== "https:") {
         Cu.reportError("The URL protocol is not https.");
       }
-      return (endpoint.protocol === "https:" && WHITELIST_HOSTS[endpoint.host]);
+      return (endpoint.protocol === "https:" && this.WHITELIST_HOSTS[endpoint.host]);
     } catch (e) {
       return false;
     }
+  }
+
+  _loadSnippetsWhitelistHosts() {
+    let additionalHosts = [];
+    const whitelistPrefValue = Services.prefs.getStringPref(SNIPPETS_ENDPOINT_WHITELIST, "");
+    try {
+      additionalHosts = JSON.parse(whitelistPrefValue);
+    } catch (e) {
+      if (whitelistPrefValue) {
+        Cu.reportError(`Pref ${SNIPPETS_ENDPOINT_WHITELIST} value is not valid JSON`);
+      }
+    }
+
+    if (!additionalHosts.length) {
+      return DEFAULT_WHITELIST_HOSTS;
+    }
+
+    // If there are additional hosts we want to whitelist, add them as
+    // `preview` so that the updateCycle is 0
+    return additionalHosts.reduce((whitelist_hosts, host) => {
+      whitelist_hosts[host] = "preview";
+      Services.console.logStringMessage(`Adding ${host} to whitelist hosts.`);
+      return whitelist_hosts;
+    }, {...DEFAULT_WHITELIST_HOSTS});
   }
 
   async _addPreviewEndpoint(url) {

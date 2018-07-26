@@ -128,6 +128,22 @@ describe("ASRouter", () => {
       assert.lengthOf(Router.state.providers, length);
       assert.isDefined(provider);
     });
+    it("should load additional whitelisted hosts", async () => {
+      getStringPrefStub.returns("[\"whitelist.com\"]");
+      await createRouterAndInit();
+
+      assert.propertyVal(Router.WHITELIST_HOSTS, "whitelist.com", "preview");
+      // Should still include the defaults
+      assert.lengthOf(Object.keys(Router.WHITELIST_HOSTS), 3);
+    });
+    it("should fallback to defaults if pref parsing fails", async () => {
+      getStringPrefStub.returns("err");
+      await createRouterAndInit();
+
+      assert.lengthOf(Object.keys(Router.WHITELIST_HOSTS), 2);
+      assert.propertyVal(Router.WHITELIST_HOSTS, "snippets-admin.mozilla.org", "preview");
+      assert.propertyVal(Router.WHITELIST_HOSTS, "activity-stream-icons.services.mozilla.com", "production");
+    });
   });
 
   describe("#loadMessagesFromAllProviders", () => {
@@ -143,8 +159,10 @@ describe("ASRouter", () => {
       getStringPrefStub.returns("example.com");
       await createRouterAndInit();
 
-      assert.calledOnce(getStringPrefStub);
+      // Get snippets endpoint url, get the whitelisted hosts for endpoints
+      assert.calledTwice(getStringPrefStub);
       assert.calledWithExactly(getStringPrefStub, "remotePref", "");
+      assert.calledWithExactly(getStringPrefStub, "browser.newtab.activity-stream.asrouter.whitelistHosts", "");
       assert.isDefined(Router.state.providers.find(p => p.url === "example.com"));
     });
     it("should not trigger an update if not enough time has passed for a provider", async () => {
