@@ -12,6 +12,8 @@ const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stre
 
 ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
   "resource://activity-stream/lib/ASRouterTargeting.jsm");
+ChromeUtils.defineModuleGetter(this, "ASRouterTriggerListeners",
+  "resource://activity-stream/lib/ASRouterTriggerListeners.jsm");
 
 const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
@@ -143,6 +145,7 @@ class _ASRouter {
       messages: [],
       ...initialState
     };
+    this._triggerHandler = this._triggerHandler.bind(this);
     this.onMessage = this.onMessage.bind(this);
   }
 
@@ -223,6 +226,21 @@ class _ASRouter {
           newState.messages = [...newState.messages, ...messages];
         }
       }
+
+      // Some messages have triggers that require us to initalise trigger listeners
+      const unseenListeners = new Set(ASRouterTriggerListeners.keys());
+      for (const {trigger} of newState.messages) {
+        if (trigger && ASRouterTriggerListeners.has(trigger.id)) {
+          ASRouterTriggerListeners.get(trigger.id).init(this._triggerHandler, trigger.params);
+          unseenListeners.delete(trigger.id);
+        }
+      }
+      // We don't need these listeners, but they may have previously been
+      // initialised, so uninitialise them
+      for (const triggerID of unseenListeners) {
+        ASRouterTriggerListeners.get(triggerID).uninit();
+      }
+
       await this.setState(newState);
       await this.cleanupImpressions();
     }
@@ -261,6 +279,10 @@ class _ASRouter {
         Services.prefs.removeObserver(provider.endpointPref, this);
       }
     });
+    // Uninitialise all trigger listeners
+    for (const listener of ASRouterTriggerListeners.values()) {
+      listener.uninit();
+    }
     this._resetInitialization();
   }
 
@@ -518,6 +540,11 @@ class _ASRouter {
       Services.console.logStringMessage(`Adding ${host} to whitelist hosts.`);
       return whitelist_hosts;
     }, {...DEFAULT_WHITELIST_HOSTS});
+  }
+
+  // To be passed to ASRouterTriggerListeners
+  async _triggerHandler(target, trigger) {
+    await this.onMessage({target, data: {type: "TRIGGER", trigger}});
   }
 
   async _addPreviewEndpoint(url) {

@@ -45,7 +45,7 @@
               "id": {
                 "type": "string",
                 "description": "A string identifying the trigger action",
-                "enum": ["firstRun"]
+                "enum": ["firstRun", "openURL"]
               },
               "params": {
                 "type": "array",

@@ -8,6 +8,7 @@ import {
   FakeRemotePageManager,
   PARENT_TO_CHILD_MESSAGE_NAME
 } from "./constants";
+import {ASRouterTriggerListeners} from "lib/ASRouterTriggerListeners.jsm";
 
 const FAKE_PROVIDERS = [FAKE_LOCAL_PROVIDER, FAKE_REMOTE_PROVIDER];
 const ALL_MESSAGE_IDS = [...FAKE_LOCAL_MESSAGES, ...FAKE_REMOTE_MESSAGES].map(message => message.id);
@@ -207,6 +208,25 @@ describe("ASRouter", () => {
       // These are the local messages that should not have been deleted
       assertRouterContainsMessages(FAKE_LOCAL_MESSAGES);
     });
+    it("should parse the triggers in the messages and register the trigger listeners", async () => {
+      sandbox.spy(ASRouterTriggerListeners.get("openURL"), "init");
+
+      /* eslint-disable object-curly-newline */ /* eslint-disable object-property-newline */
+      await createRouterAndInit([
+        {id: "foo", type: "local", messages: [
+          {id: "foo", template: "simple_template", trigger: {id: "firstRun"}, content: {title: "Foo", body: "Foo123"}},
+          {id: "bar1", template: "simple_template", trigger: {id: "openURL", params: ["www.mozilla.org", "www.mozilla.com"]}, content: {title: "Bar1", body: "Bar123"}},
+          {id: "bar2", template: "simple_template", trigger: {id: "openURL", params: ["www.example.com"]}, content: {title: "Bar2", body: "Bar123"}}
+        ]}
+      ]);
+      /* eslint-enable object-curly-newline */ /* eslint-enable object-property-newline */
+
+      assert.calledTwice(ASRouterTriggerListeners.get("openURL").init);
+      assert.calledWithExactly(ASRouterTriggerListeners.get("openURL").init,
+        Router._triggerHandler, ["www.mozilla.org", "www.mozilla.com"]);
+      assert.calledWithExactly(ASRouterTriggerListeners.get("openURL").init,
+        Router._triggerHandler, ["www.example.com"]);
+    });
   });
 
   describe("blocking", () => {
@@ -239,6 +259,17 @@ describe("ASRouter", () => {
       Router.uninit();
 
       assert.calledWith(channel.removeMessageListener, CHILD_TO_PARENT_MESSAGE_NAME, listenerAdded);
+    });
+    it("should unregister the trigger listeners", () => {
+      for (const listener of ASRouterTriggerListeners.values()) {
+        sandbox.spy(listener, "uninit");
+      }
+
+      Router.uninit();
+
+      for (const listener of ASRouterTriggerListeners.values()) {
+        assert.calledOnce(listener.uninit);
+      }
     });
   });
 
@@ -566,6 +597,17 @@ describe("ASRouter", () => {
 
       assert.calledOnce(MessageLoaderUtils.installAddonFromURL);
       assert.calledWithExactly(MessageLoaderUtils.installAddonFromURL, msg.target.browser, "foo.com");
+    });
+  });
+
+  describe("_triggerHandler", () => {
+    it("should call #onMessage with the correct trigger", () => {
+      sinon.spy(Router, "onMessage");
+      const target = {};
+      const trigger = {id: "FAKE_TRIGGER", param: "some fake param"};
+      Router._triggerHandler(target, trigger);
+      assert.calledOnce(Router.onMessage);
+      assert.calledWithExactly(Router.onMessage, {target, data: {type: "TRIGGER", trigger}});
     });
   });
 
