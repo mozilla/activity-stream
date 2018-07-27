@@ -7,17 +7,21 @@
 with Files("**"):
     BUG_COMPONENT = ("Firefox", "Activity Streams: Newtab")
 
-DEFINES['MOZ_APP_VERSION'] = CONFIG['MOZ_APP_VERSION']
-DEFINES['MOZ_APP_MAXVERSION'] = CONFIG['MOZ_APP_MAXVERSION']
+BROWSER_CHROME_MANIFESTS += ['test/browser/browser.ini']
 
-FINAL_TARGET_FILES.features['activity-stream@mozilla.org'] += [
-  'bootstrap.js',
+XPCSHELL_TESTS_MANIFESTS += [
+    'test/xpcshell/xpcshell.ini',
 ]
 
-FINAL_TARGET_PP_FILES.features['activity-stream@mozilla.org'] += [
-  'install.rdf.in'
+XPIDL_SOURCES += [
+    'nsIAboutNewTabService.idl',
+]
+
+XPIDL_MODULE = 'browser-newtab'
+
+EXTRA_COMPONENTS += [
+    'aboutNewTabService.js',
+    'NewTabComponents.manifest',
 ]
 
 JAR_MANIFESTS += ['jar.mn']
-
-BROWSER_CHROME_MANIFESTS += ['test/functional/mochitest/browser.ini']
