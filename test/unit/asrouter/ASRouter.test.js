@@ -410,7 +410,7 @@ describe("ASRouter", () => {
       await Router.onMessage(msg);
 
       assert.calledOnce(Router.sendNextMessage);
-      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {type: "CONNECT_UI_REQUEST"});
+      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {});
     });
     it("should call sendNextMessage on GET_NEXT_MESSAGE", async () => {
       sandbox.stub(Router, "sendNextMessage").resolves();
@@ -419,7 +419,7 @@ describe("ASRouter", () => {
       await Router.onMessage(msg);
 
       assert.calledOnce(Router.sendNextMessage);
-      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {type: "GET_NEXT_MESSAGE"});
+      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {});
     });
     it("should return the preview message if that's available", async () => {
       const expectedObj = {provider: "preview"};
@@ -480,30 +480,30 @@ describe("ASRouter", () => {
   describe("#onMessage: TRIGGER", () => {
     it("should pass the trigger to ASRouterTargeting on TRIGGER message", async () => {
       sandbox.stub(Router, "_findMessage").resolves();
-      const msg = fakeAsyncMessage({type: "TRIGGER", data: {trigger: "firstRun"}});
+      const msg = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "firstRun"}}});
       await Router.onMessage(msg);
 
       assert.calledOnce(Router._findMessage);
-      assert.deepEqual(Router._findMessage.firstCall.args[2], {trigger: "firstRun"});
+      assert.deepEqual(Router._findMessage.firstCall.args[2], {id: "firstRun"});
     });
     it("consider the trigger when picking a message", async () => {
       let messages = [
-        {id: "foo1", template: "simple_template", bundled: 1, trigger: "foo", content: {title: "Foo1", body: "Foo123-1"}}
+        {id: "foo1", template: "simple_template", bundled: 1, trigger: {id: "foo"}, content: {title: "Foo1", body: "Foo123-1"}}
       ];
 
-      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: "foo"}});
-      let message = await Router._findMessage(messages, target, data.data);
+      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
+      let message = await Router._findMessage(messages, target, data.data.trigger);
       assert.equal(message, messages[0]);
     });
     it("should pick a message with the right targeting and trigger", async () => {
       let messages = [
-        {id: "foo1", template: "simple_template", bundled: 2, trigger: "foo", content: {title: "Foo1", body: "Foo123-1"}},
-        {id: "foo2", template: "simple_template", bundled: 2, trigger: "bar", content: {title: "Foo2", body: "Foo123-2"}},
-        {id: "foo3", template: "simple_template", bundled: 2, trigger: "foo", content: {title: "Foo3", body: "Foo123-3"}}
+        {id: "foo1", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo1", body: "Foo123-1"}},
+        {id: "foo2", template: "simple_template", bundled: 2, trigger: {id: "bar"}, content: {title: "Foo2", body: "Foo123-2"}},
+        {id: "foo3", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo3", body: "Foo123-3"}}
       ];
       await Router.setState({messages});
-      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: "foo"}});
-      let {bundle} = await Router._getBundledMessages(messages[0], target, data.data);
+      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
+      let {bundle} = await Router._getBundledMessages(messages[0], target, data.data.trigger);
       assert.equal(bundle.length, 2);
       // it should have picked foo1 and foo3 only
       assert.isTrue(bundle.every(elem => elem.id === "foo1" || elem.id === "foo3"));
