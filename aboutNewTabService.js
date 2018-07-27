@@ -20,7 +20,7 @@ const TOPIC_CONTENT_DOCUMENT_INTERACTIVE = "content-document-interactive";
 
 // Automated tests ensure packaged locales are in this list. Copied output of:
 // https://github.com/mozilla/activity-stream/blob/master/bin/render-activity-stream-html.js
-const ACTIVITY_STREAM_LOCALES = "en-US ach an ar ast az be bg bn-BD bn-IN br bs ca cak crh cs cy da de dsb el en-CA en-GB eo es-AR es-CL es-ES es-MX et eu fa ff fi fr fy-NL ga-IE gd gl gn gu-IN he hi-IN hr hsb hu hy-AM ia id it ja ja-JP-mac ka kab kk km kn ko lij lo lt ltg lv mai mk ml mr ms my nb-NO ne-NP nl nn-NO oc pa-IN pl pt-BR pt-PT rm ro ru si sk sl sq sr sv-SE ta te th tl tr uk ur uz vi zh-CN zh-TW".split(" ");
+const ACTIVITY_STREAM_BCP47 = "en-US ach an ar ast az be bg bn-BD bn-IN br bs ca cak crh cs cy da de dsb el en-CA en-GB eo es-AR es-CL es-ES es-MX et eu fa ff fi fr fy-NL ga-IE gd gl gn gu-IN he hi-IN hr hsb hu hy-AM ia id it ja ja-JP-macos ka kab kk km kn ko lij lo lt ltg lv mai mk ml mr ms my nb-NO ne-NP nl nn-NO oc pa-IN pl pt-BR pt-PT rm ro ru si sk sl sq sr sv-SE ta te th tl tr uk ur uz vi zh-CN zh-TW".split(" ");
 
 const ABOUT_URL = "about:newtab";
 const BASE_URL = "resource://activity-stream/";
@@ -309,11 +309,14 @@ AboutNewTabService.prototype = {
   get activityStreamLocale() {
     // Pick the best available locale to match the app locales
     return Services.locale.negotiateLanguages(
-      Services.locale.getAppLocalesAsLangTags(),
-      ACTIVITY_STREAM_LOCALES,
+      Services.locale.getAppLocalesAsBCP47(),
+      ACTIVITY_STREAM_BCP47,
       // defaultLocale's strings aren't necessarily packaged, but en-US' are
-      "en-US"
-    )[0];
+      "en-US",
+      Services.locale.langNegStrategyLookup
+    // Convert the BCP47 to lang tag, which is what is used in our paths, as a
+    // workaround for bug 1478930 negotiating incorrectly with lang tags
+    )[0].replace(/^(ja-JP-mac)os$/, "$1");
   },
 
   resetNewTabURL() {
