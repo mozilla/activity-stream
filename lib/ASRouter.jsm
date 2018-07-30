@@ -226,6 +226,7 @@ class _ASRouter {
           newState.messages = [...newState.messages, ...messages];
         }
       }
+<<<<<<< HEAD
 
       // Some messages have triggers that require us to initalise trigger listeners
       const unseenListeners = new Set(ASRouterTriggerListeners.keys());
@@ -242,6 +243,10 @@ class _ASRouter {
       }
 
       await this.setState(newState);
+=======
+      // We don't want to cache preview endpoints, remove them after messages are fetched
+      await this.setState(this._removePreviewEndpoint(newState));
+>>>>>>> 30b5534e... Remove preview endpoint after we fetch the message
       await this.cleanupImpressions();
     }
   }
@@ -547,10 +552,14 @@ class _ASRouter {
     await this.onMessage({target, data: {type: "TRIGGER", trigger}});
   }
 
+  _removePreviewEndpoint(state) {
+    state.providers = state.providers.filter(p => p.id !== "preview");
+    return state;
+  }
+
   async _addPreviewEndpoint(url) {
     const providers = [...this.state.providers];
     if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
-      // Set update cycle to 0 to fetch new content on every page refresh
       providers.push({id: "preview", type: "remote", url, updateCycleInMs: 0});
       await this.setState({providers});
     }
