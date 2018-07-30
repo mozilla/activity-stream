@@ -156,7 +156,7 @@ describe("MessageLoaderUtils", () => {
       sandbox.restore();
       globals.restore();
     });
-    it("should call installAddonFromWebpage with correct arguments", async () => {
+    it("should call the Addons API when passed a valid URL", async () => {
       getInstallStub.resolves(null);
       installAddonStub.resolves(null);
 
