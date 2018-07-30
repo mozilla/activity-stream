@@ -335,13 +335,15 @@ describe("ASRouter", () => {
       await Router.onMessage(msg);
 
       assert.calledWith(global.fetch, url);
+      assert.lengthOf(Router.state.providers.filter(p => p.url === url), 0);
     });
-    it("should make a request to the provided endpoint on ADMIN_CONNECT_STATE", async () => {
+    it("should make a request to the provided endpoint on ADMIN_CONNECT_STATE and remove the endpoint", async () => {
       const url = "https://snippets-admin.mozilla.org/foo";
       const msg = fakeAsyncMessage({type: "ADMIN_CONNECT_STATE", data: {endpoint: {url}}});
       await Router.onMessage(msg);
 
       assert.calledWith(global.fetch, url);
+      assert.lengthOf(Router.state.providers.filter(p => p.url === url), 0);
     });
     it("should not add a url that is not from a whitelisted host", async () => {
       const url = "https://mozilla.org";
@@ -444,13 +446,14 @@ describe("ASRouter", () => {
       assert.calledOnce(Router.sendNextMessage);
       assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {});
     });
-    it("should return the preview message if that's available", async () => {
+    it("should return the preview message if that's available and remove it from Router.state", async () => {
       const expectedObj = {provider: "preview"};
       Router.setState({messages: [expectedObj]});
 
       await Router.sendNextMessage(channel);
 
       assert.calledWith(channel.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "SET_MESSAGE", data: expectedObj});
+      assert.isUndefined(Router.state.messages.find(m => m.provider === "preview"));
     });
     it("should call _getBundledMessages if we request a message that needs to be bundled", async () => {
       sandbox.stub(Router, "_getBundledMessages").resolves();
