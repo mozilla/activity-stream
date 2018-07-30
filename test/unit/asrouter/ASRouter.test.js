@@ -1,3 +1,4 @@
+import {_ASRouter, MessageLoaderUtils} from "lib/ASRouter.jsm";
 import {
   CHILD_TO_PARENT_MESSAGE_NAME,
   FAKE_LOCAL_MESSAGES,
@@ -7,7 +8,6 @@ import {
   FakeRemotePageManager,
   PARENT_TO_CHILD_MESSAGE_NAME
 } from "./constants";
-import {_ASRouter} from "lib/ASRouter.jsm";
 
 const FAKE_PROVIDERS = [FAKE_LOCAL_PROVIDER, FAKE_REMOTE_PROVIDER];
 const ALL_MESSAGE_IDS = [...FAKE_LOCAL_MESSAGES, ...FAKE_REMOTE_MESSAGES].map(message => message.id);
@@ -554,6 +554,18 @@ describe("ASRouter", () => {
 
       assert.calledWith(Router.openLinkIn, `about:${testMessage.button_action_params}`, msg.target, {isPrivate: false, trusted: true, where: "tab"});
       assert.calledOnce(msg.target.browser.ownerGlobal.openTrustedLinkIn);
+    });
+  });
+
+  describe("#onMessage: INSTALL_ADDON_FROM_URL", () => {
+    it("should call installAddonFromURL with correct arguments", async () => {
+      sandbox.stub(MessageLoaderUtils, "installAddonFromURL").resolves(null);
+      const msg = fakeAsyncMessage({type: "INSTALL_ADDON_FROM_URL", data: {url: "foo.com"}});
+
+      await Router.onMessage(msg);
+
+      assert.calledOnce(MessageLoaderUtils.installAddonFromURL);
+      assert.calledWithExactly(MessageLoaderUtils.installAddonFromURL, msg.target.browser, "foo.com");
     });
   });
 

@@ -5,6 +5,7 @@
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 const {ASRouterActions: ra} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm", {});
@@ -105,6 +106,16 @@ const MessageLoaderUtils = {
         .map(msg => ({...msg, provider: provider.id}));
     const lastUpdated = Date.now();
     return {messages, lastUpdated};
+  },
+
+  async installAddonFromURL(browser, url) {
+    try {
+      const aUri = Services.io.newURI(url);
+      const systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+      const install = await AddonManager.getInstallForURL(aUri.spec, "application/x-xpinstall");
+      await AddonManager.installAddonFromWebpage("application/x-xpinstall", browser,
+        systemPrincipal, install);
+    } catch (e) {}
   }
 };
 
@@ -583,6 +594,9 @@ class _ASRouter {
         break;
       case "IMPRESSION":
         this.addImpression(action.data);
+        break;
+      case ra.INSTALL_ADDON_FROM_URL:
+        await MessageLoaderUtils.installAddonFromURL(target.browser, action.data.url);
         break;
     }
   }
