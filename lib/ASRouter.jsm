@@ -595,7 +595,7 @@ class _ASRouter {
       case "IMPRESSION":
         this.addImpression(action.data);
         break;
-      case "INSTALL_ADDON_FROM_URL":
+      case ra.INSTALL_ADDON_FROM_URL:
         await MessageLoaderUtils.installAddonFromURL(target.browser, action.data.url);
         break;
     }
