@@ -471,8 +471,17 @@ class _ASRouter {
       message = await this._findMessage(msgs, target, trigger);
     }
 
+<<<<<<< HEAD
     await this.setState({lastMessageId: message ? message.id : null});
     await this._sendMessageToTarget(message, target, trigger);
+=======
+    if (previewMsgs.length) {
+      await this.setState(state => this._removePreviewMessage(state, {lastMessageId: message.id}));
+    } else {
+      await this.setState({lastMessageId: message ? message.id : null});
+    }
+    await this._sendMessageToTarget(message, target, data);
+>>>>>>> 696489fc... Remove a preview message after it has been shown
   }
 
   async setMessageById(id, target, force = true, action = {}) {
