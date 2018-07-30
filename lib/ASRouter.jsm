@@ -476,6 +476,7 @@ class _ASRouter {
     await this._sendMessageToTarget(message, target, trigger);
 =======
     if (previewMsgs.length) {
+      // We don't want to cache preview messages, remove them after we selected the message to show
       await this.setState(state => this._removePreviewMessage(state, {lastMessageId: message.id}));
     } else {
       await this.setState({lastMessageId: message ? message.id : null});
