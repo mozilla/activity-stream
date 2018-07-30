@@ -109,11 +109,13 @@ const MessageLoaderUtils = {
   },
 
   async installAddonFromURL(browser, url) {
-    const aUri = Services.io.newURI(url);
-    const systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
-    const install = await AddonManager.getInstallForURL(aUri.spec, "application/x-xpinstall");
-    await AddonManager.installAddonFromWebpage("application/x-xpinstall", browser,
-      systemPrincipal, install);
+    try {
+      const aUri = Services.io.newURI(url);
+      const systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
+      const install = await AddonManager.getInstallForURL(aUri.spec, "application/x-xpinstall");
+      await AddonManager.installAddonFromWebpage("application/x-xpinstall", browser,
+        systemPrincipal, install);
+    } catch (e) {}
   }
 };
 

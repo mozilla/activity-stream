@@ -165,5 +165,13 @@ describe("MessageLoaderUtils", () => {
       assert.calledOnce(getInstallStub);
       assert.calledOnce(installAddonStub);
     });
+    it("should not call the Addons API on invalid URLs", async () => {
+      sandbox.stub(global.Services.scriptSecurityManager, "getSystemPrincipal").throws();
+
+      await MessageLoaderUtils.installAddonFromURL({}, "https://foo.com");
+
+      assert.notCalled(getInstallStub);
+      assert.notCalled(installAddonStub);
+    });
   });
 });
