@@ -36,6 +36,12 @@ describe("ActivityStreamMessageChannel", () => {
 
   afterEach(() => globals.restore());
 
+  it("should throw for an invalid portID", () => {
+    assert.throws(() => mm.validatePortID({}));
+    assert.throws(() => mm.validatePortID(""));
+    assert.throws(() => mm.validatePortID("foo"));
+  });
+
   it("should exist", () => {
     assert.ok(ActivityStreamMessageChannel);
   });
@@ -153,16 +159,16 @@ describe("ActivityStreamMessageChannel", () => {
   describe("Message handling", () => {
     describe("#getTargetById", () => {
       it("should get an id if it exists", () => {
-        const t = {portID: "foo"};
+        const t = {portID: "foo:1"};
         mm.createChannel();
         mm.channel.messagePorts.push(t);
-        assert.equal(mm.getTargetById("foo"), t);
+        assert.equal(mm.getTargetById("foo:1"), t);
       });
       it("should return null if the target doesn't exist", () => {
-        const t = {portID: "foo"};
+        const t = {portID: "foo:2"};
         mm.createChannel();
         mm.channel.messagePorts.push(t);
-        assert.equal(mm.getTargetById("bar"), null);
+        assert.equal(mm.getTargetById("bar:3"), null);
       });
     });
     describe("#getPreloadedBrowser", () => {
@@ -264,19 +270,19 @@ describe("ActivityStreamMessageChannel", () => {
   describe("Sending and broadcasting", () => {
     describe("#send", () => {
       it("should send a message on the right port", () => {
-        const t = {portID: "foo", sendAsyncMessage: sinon.spy()};
+        const t = {portID: "foo:3", sendAsyncMessage: sinon.spy()};
         mm.createChannel();
         mm.channel.messagePorts = [t];
-        const action = ac.AlsoToOneContent({type: "HELLO"}, "foo");
-        mm.send(action, "foo");
+        const action = ac.AlsoToOneContent({type: "HELLO"}, "foo:3");
+        mm.send(action);
         assert.calledWith(t.sendAsyncMessage, DEFAULT_OPTIONS.outgoingMessageName, action);
       });
       it("should not throw if the target isn't around", () => {
         mm.createChannel();
         // port is not added to the channel
-        const action = ac.AlsoToOneContent({type: "HELLO"}, "foo");
+        const action = ac.AlsoToOneContent({type: "HELLO"}, "foo:4");
 
-        assert.doesNotThrow(() => mm.send(action, "foo"));
+        assert.doesNotThrow(() => mm.send(action));
       });
     });
     describe("#broadcast", () => {
@@ -337,7 +343,7 @@ describe("ActivityStreamMessageChannel", () => {
   });
   describe("Handling actions", () => {
     describe("#onActionFromContent", () => {
-      beforeEach(() => mm.onActionFromContent({type: "FOO"}, "foo"));
+      beforeEach(() => mm.onActionFromContent({type: "FOO"}, "foo:5"));
       it("should dispatch a AlsoToMain action", () => {
         assert.calledOnce(dispatch);
         const [action] = dispatch.firstCall.args;
@@ -345,7 +351,7 @@ describe("ActivityStreamMessageChannel", () => {
       });
       it("should have the right fromTarget", () => {
         const [action] = dispatch.firstCall.args;
-        assert.equal(action.meta.fromTarget, "foo", "meta.fromTarget");
+        assert.equal(action.meta.fromTarget, "foo:5", "meta.fromTarget");
       });
     });
     describe("#middleware", () => {
