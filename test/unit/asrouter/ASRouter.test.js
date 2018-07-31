@@ -423,7 +423,7 @@ describe("ASRouter", () => {
       await Router.onMessage(msg);
 
       assert.calledOnce(Router.dispatchToAS);
-      assert.calledWithExactly(Router.dispatchToAS, ac.BroadcastToContent({type: "SNIPPETS_PREVIEW_MODE"}));
+      assert.calledWithExactly(Router.dispatchToAS, ac.OnlyToOneContent({type: "SNIPPETS_PREVIEW_MODE"}, msg.target.portID));
     });
     it("should not add a url that is not from a whitelisted host", async () => {
       const url = "https://mozilla.org";

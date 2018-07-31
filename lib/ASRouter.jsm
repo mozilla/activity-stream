@@ -10,8 +10,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   AddonManager: "resource://gre/modules/AddonManager.jsm",
   UITour: "resource:///modules/UITour.jsm"
 });
-const {ASRouterActions: ra, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm", {});
+const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm", {});
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js", {});
 const {CFRPageActions} = ChromeUtils.import("resource://activity-stream/lib/CFRPageActions.jsm", {});
@@ -705,9 +705,9 @@ class _ASRouter {
     return state;
   }
 
-  async _addPreviewEndpoint(url) {
+  async _addPreviewEndpoint(url, target) {
     // When you view a preview snippet we want to hide all real content
-    this.dispatchToAS(ac.BroadcastToContent({type: "SNIPPETS_PREVIEW_MODE"}));
+    this.dispatchToAS(ac.OnlyToOneContent({type: at.SNIPPETS_PREVIEW_MODE}, target));
     const providers = [...this.state.providers];
     if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
       providers.push({id: "preview", type: "remote", url, updateCycleInMs: 0});
@@ -756,7 +756,7 @@ class _ASRouter {
         // Wait for our initial message loading to be done before responding to any UI requests
         await this.waitForInitialized;
         if (action.data && action.data.endpoint) {
-          await this._addPreviewEndpoint(action.data.endpoint.url);
+          await this._addPreviewEndpoint(action.data.endpoint.url, target.portID);
         }
         // Check if any updates are needed first
         await this.loadMessagesFromAllProviders();
@@ -805,7 +805,7 @@ class _ASRouter {
         break;
       case "ADMIN_CONNECT_STATE":
         if (action.data && action.data.endpoint) {
-          this._addPreviewEndpoint(action.data.endpoint.url);
+          this._addPreviewEndpoint(action.data.endpoint.url, target);
           await this.loadMessagesFromAllProviders();
         } else {
           target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: this.state});

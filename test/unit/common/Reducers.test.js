@@ -184,6 +184,11 @@ describe("Reducers", () => {
       const nextState = TopSites(undefined, {type: at.UPDATE_SEARCH_SHORTCUTS, data: {searchShortcuts: shortcuts}});
       assert.deepEqual(shortcuts, nextState.searchShortcuts);
     });
+    it("should remove all content on SNIPPETS_PREVIEW_MODE", () => {
+      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
+      const nextState = TopSites(oldState, {type: at.SNIPPETS_PREVIEW_MODE});
+      assert.lengthOf(nextState.rows, 0);
+    });
   });
   describe("Prefs", () => {
     function prevState(custom = {}) {
@@ -505,6 +510,13 @@ describe("Reducers", () => {
 
       // old row is unchanged
       assert.equal(oldRow, oldState[0].rows[1]);
+    });
+    it("should remove all content on SNIPPETS_PREVIEW_MODE", () => {
+      const previewMode = {type: at.SNIPPETS_PREVIEW_MODE};
+      const newState = Sections(oldState, previewMode);
+      newState.forEach(section => {
+        assert.lengthOf(section.rows, 0);
+      });
     });
   });
   describe("#insertPinned", () => {
