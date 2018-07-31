@@ -12,6 +12,8 @@ const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stre
 
 ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
   "resource://activity-stream/lib/ASRouterTargeting.jsm");
+ChromeUtils.defineModuleGetter(this, "ASRouterTriggerListeners",
+  "resource://activity-stream/lib/ASRouterTriggerListeners.jsm");
 
 const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
@@ -143,6 +145,7 @@ class _ASRouter {
       messages: [],
       ...initialState
     };
+    this._triggerHandler = this._triggerHandler.bind(this);
     this.onMessage = this.onMessage.bind(this);
   }
 
@@ -223,6 +226,21 @@ class _ASRouter {
           newState.messages = [...newState.messages, ...messages];
         }
       }
+
+      // Some messages have triggers that require us to initalise trigger listeners
+      const unseenListeners = new Set(ASRouterTriggerListeners.keys());
+      for (const {trigger} of newState.messages) {
+        if (trigger && ASRouterTriggerListeners.has(trigger.id)) {
+          ASRouterTriggerListeners.get(trigger.id).init(this._triggerHandler, trigger.params);
+          unseenListeners.delete(trigger.id);
+        }
+      }
+      // We don't need these listeners, but they may have previously been
+      // initialised, so uninitialise them
+      for (const triggerID of unseenListeners) {
+        ASRouterTriggerListeners.get(triggerID).uninit();
+      }
+
       await this.setState(newState);
       await this.cleanupImpressions();
     }
@@ -261,6 +279,10 @@ class _ASRouter {
         Services.prefs.removeObserver(provider.endpointPref, this);
       }
     });
+    // Uninitialise all trigger listeners
+    for (const listener of ASRouterTriggerListeners.values()) {
+      listener.uninit();
+    }
     this._resetInitialization();
   }
 
@@ -281,9 +303,8 @@ class _ASRouter {
     this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: state});
   }
 
-  async _findMessage(messages, target, data = {}) {
+  async _findMessage(messages, target, trigger) {
     let message;
-    const {trigger} = data;
     const {impressions} = this.state;
     if (trigger) {
       // Find a message that matches the targeting context as well as the trigger context
@@ -300,7 +321,7 @@ class _ASRouter {
     return bundle.sort((a, b) => a.order - b.order);
   }
 
-  async _getBundledMessages(originalMessage, target, data, force = false) {
+  async _getBundledMessages(originalMessage, target, trigger, force = false) {
     let result = [{content: originalMessage.content, id: originalMessage.id, order: originalMessage.order || 0}];
 
     // First, find all messages of same template. These are potential matching targeting candidates
@@ -319,7 +340,7 @@ class _ASRouter {
     } else {
       while (bundledMessagesOfSameTemplate.length) {
         // Find a message that matches the targeting context - or break if there are no matching messages
-        const message = await this._findMessage(bundledMessagesOfSameTemplate, target, data);
+        const message = await this._findMessage(bundledMessagesOfSameTemplate, target, trigger);
         if (!message) {
           /* istanbul ignore next */ // Code coverage in mochitests
           break;
@@ -348,11 +369,11 @@ class _ASRouter {
     return state.messages.filter(item => !state.blockList.includes(item.id));
   }
 
-  async _sendMessageToTarget(message, target, data, force = false) {
+  async _sendMessageToTarget(message, target, trigger, force = false) {
     let bundledMessages;
     // If this message needs to be bundled with other messages of the same template, find them and bundle them together
     if (message && message.bundled) {
-      bundledMessages = await this._getBundledMessages(message, target, data, force);
+      bundledMessages = await this._getBundledMessages(message, target, trigger, force);
     }
     if (message && !message.bundled) {
       // If we only need to send 1 message, send the message
@@ -434,8 +455,7 @@ class _ASRouter {
     });
   }
 
-  async sendNextMessage(target, action = {}) {
-    let {data} = action;
+  async sendNextMessage(target, trigger) {
     const msgs = this._getUnblockedMessages();
     let message = null;
     const previewMsgs = this.state.messages.filter(item => item.provider === "preview");
@@ -443,11 +463,11 @@ class _ASRouter {
     if (previewMsgs.length) {
       [message] = previewMsgs;
     } else {
-      message = await this._findMessage(msgs, target, data);
+      message = await this._findMessage(msgs, target, trigger);
     }
 
     await this.setState({lastMessageId: message ? message.id : null});
-    await this._sendMessageToTarget(message, target, data);
+    await this._sendMessageToTarget(message, target, trigger);
   }
 
   async setMessageById(id, target, force = true, action = {}) {
@@ -522,6 +542,11 @@ class _ASRouter {
     }, {...DEFAULT_WHITELIST_HOSTS});
   }
 
+  // To be passed to ASRouterTriggerListeners
+  async _triggerHandler(target, trigger) {
+    await this.onMessage({target, data: {type: "TRIGGER", trigger}});
+  }
+
   async _addPreviewEndpoint(url) {
     const providers = [...this.state.providers];
     if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
@@ -543,7 +568,7 @@ class _ASRouter {
         }
         // Check if any updates are needed first
         await this.loadMessagesFromAllProviders();
-        await this.sendNextMessage(target, action);
+        await this.sendNextMessage(target, (action.data && action.data.trigger) || {});
         break;
       case ra.OPEN_PRIVATE_BROWSER_WINDOW:
         // Forcefully open about:privatebrowsing

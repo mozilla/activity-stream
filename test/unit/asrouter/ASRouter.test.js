@@ -8,6 +8,7 @@ import {
   FakeRemotePageManager,
   PARENT_TO_CHILD_MESSAGE_NAME
 } from "./constants";
+import {ASRouterTriggerListeners} from "lib/ASRouterTriggerListeners.jsm";
 
 const FAKE_PROVIDERS = [FAKE_LOCAL_PROVIDER, FAKE_REMOTE_PROVIDER];
 const ALL_MESSAGE_IDS = [...FAKE_LOCAL_MESSAGES, ...FAKE_REMOTE_MESSAGES].map(message => message.id);
@@ -207,6 +208,25 @@ describe("ASRouter", () => {
       // These are the local messages that should not have been deleted
       assertRouterContainsMessages(FAKE_LOCAL_MESSAGES);
     });
+    it("should parse the triggers in the messages and register the trigger listeners", async () => {
+      sandbox.spy(ASRouterTriggerListeners.get("openURL"), "init");
+
+      /* eslint-disable object-curly-newline */ /* eslint-disable object-property-newline */
+      await createRouterAndInit([
+        {id: "foo", type: "local", messages: [
+          {id: "foo", template: "simple_template", trigger: {id: "firstRun"}, content: {title: "Foo", body: "Foo123"}},
+          {id: "bar1", template: "simple_template", trigger: {id: "openURL", params: ["www.mozilla.org", "www.mozilla.com"]}, content: {title: "Bar1", body: "Bar123"}},
+          {id: "bar2", template: "simple_template", trigger: {id: "openURL", params: ["www.example.com"]}, content: {title: "Bar2", body: "Bar123"}}
+        ]}
+      ]);
+      /* eslint-enable object-curly-newline */ /* eslint-enable object-property-newline */
+
+      assert.calledTwice(ASRouterTriggerListeners.get("openURL").init);
+      assert.calledWithExactly(ASRouterTriggerListeners.get("openURL").init,
+        Router._triggerHandler, ["www.mozilla.org", "www.mozilla.com"]);
+      assert.calledWithExactly(ASRouterTriggerListeners.get("openURL").init,
+        Router._triggerHandler, ["www.example.com"]);
+    });
   });
 
   describe("blocking", () => {
@@ -239,6 +259,17 @@ describe("ASRouter", () => {
       Router.uninit();
 
       assert.calledWith(channel.removeMessageListener, CHILD_TO_PARENT_MESSAGE_NAME, listenerAdded);
+    });
+    it("should unregister the trigger listeners", () => {
+      for (const listener of ASRouterTriggerListeners.values()) {
+        sandbox.spy(listener, "uninit");
+      }
+
+      Router.uninit();
+
+      for (const listener of ASRouterTriggerListeners.values()) {
+        assert.calledOnce(listener.uninit);
+      }
     });
   });
 
@@ -410,7 +441,7 @@ describe("ASRouter", () => {
       await Router.onMessage(msg);
 
       assert.calledOnce(Router.sendNextMessage);
-      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {type: "CONNECT_UI_REQUEST"});
+      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {});
     });
     it("should call sendNextMessage on GET_NEXT_MESSAGE", async () => {
       sandbox.stub(Router, "sendNextMessage").resolves();
@@ -419,7 +450,7 @@ describe("ASRouter", () => {
       await Router.onMessage(msg);
 
       assert.calledOnce(Router.sendNextMessage);
-      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {type: "GET_NEXT_MESSAGE"});
+      assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {});
     });
     it("should return the preview message if that's available", async () => {
       const expectedObj = {provider: "preview"};
@@ -480,30 +511,30 @@ describe("ASRouter", () => {
   describe("#onMessage: TRIGGER", () => {
     it("should pass the trigger to ASRouterTargeting on TRIGGER message", async () => {
       sandbox.stub(Router, "_findMessage").resolves();
-      const msg = fakeAsyncMessage({type: "TRIGGER", data: {trigger: "firstRun"}});
+      const msg = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "firstRun"}}});
       await Router.onMessage(msg);
 
       assert.calledOnce(Router._findMessage);
-      assert.deepEqual(Router._findMessage.firstCall.args[2], {trigger: "firstRun"});
+      assert.deepEqual(Router._findMessage.firstCall.args[2], {id: "firstRun"});
     });
     it("consider the trigger when picking a message", async () => {
       let messages = [
-        {id: "foo1", template: "simple_template", bundled: 1, trigger: "foo", content: {title: "Foo1", body: "Foo123-1"}}
+        {id: "foo1", template: "simple_template", bundled: 1, trigger: {id: "foo"}, content: {title: "Foo1", body: "Foo123-1"}}
       ];
 
-      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: "foo"}});
-      let message = await Router._findMessage(messages, target, data.data);
+      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
+      let message = await Router._findMessage(messages, target, data.data.trigger);
       assert.equal(message, messages[0]);
     });
     it("should pick a message with the right targeting and trigger", async () => {
       let messages = [
-        {id: "foo1", template: "simple_template", bundled: 2, trigger: "foo", content: {title: "Foo1", body: "Foo123-1"}},
-        {id: "foo2", template: "simple_template", bundled: 2, trigger: "bar", content: {title: "Foo2", body: "Foo123-2"}},
-        {id: "foo3", template: "simple_template", bundled: 2, trigger: "foo", content: {title: "Foo3", body: "Foo123-3"}}
+        {id: "foo1", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo1", body: "Foo123-1"}},
+        {id: "foo2", template: "simple_template", bundled: 2, trigger: {id: "bar"}, content: {title: "Foo2", body: "Foo123-2"}},
+        {id: "foo3", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo3", body: "Foo123-3"}}
       ];
       await Router.setState({messages});
-      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: "foo"}});
-      let {bundle} = await Router._getBundledMessages(messages[0], target, data.data);
+      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
+      let {bundle} = await Router._getBundledMessages(messages[0], target, data.data.trigger);
       assert.equal(bundle.length, 2);
       // it should have picked foo1 and foo3 only
       assert.isTrue(bundle.every(elem => elem.id === "foo1" || elem.id === "foo3"));
@@ -566,6 +597,17 @@ describe("ASRouter", () => {
 
       assert.calledOnce(MessageLoaderUtils.installAddonFromURL);
       assert.calledWithExactly(MessageLoaderUtils.installAddonFromURL, msg.target.browser, "foo.com");
+    });
+  });
+
+  describe("_triggerHandler", () => {
+    it("should call #onMessage with the correct trigger", () => {
+      sinon.spy(Router, "onMessage");
+      const target = {};
+      const trigger = {id: "FAKE_TRIGGER", param: "some fake param"};
+      Router._triggerHandler(target, trigger);
+      assert.calledOnce(Router.onMessage);
+      assert.calledWithExactly(Router.onMessage, {target, data: {type: "TRIGGER", trigger}});
     });
   });
 

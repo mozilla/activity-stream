@@ -145,6 +145,15 @@ this.ASRouterTargeting = {
     return FilterExpressions.eval(filterExpression, context);
   },
 
+  isTriggerMatch(trigger = {}, candidateMessageTrigger = {}) {
+    if (trigger.id !== candidateMessageTrigger.id) {
+      return false;
+    } else if (!candidateMessageTrigger.params) {
+      return true;
+    }
+    return candidateMessageTrigger.params.includes(trigger.param);
+  },
+
   isBelowFrequencyCap(message, impressionsForMessage) {
     if (!message.frequency || !impressionsForMessage || !impressionsForMessage.length) {
       return true;
@@ -202,6 +211,9 @@ this.ASRouterTargeting = {
   },
 
   async findMatchingMessageWithTrigger({messages, impressions = {}, target, trigger, context}) {
+    if (!trigger) {
+      return null;
+    }
     const arrayOfItems = [...messages];
     let match;
     let candidate;
@@ -209,8 +221,8 @@ this.ASRouterTargeting = {
       candidate = removeRandomItemFromArray(arrayOfItems);
       if (
         candidate &&
+        this.isTriggerMatch(trigger, candidate.trigger) &&
         this.isBelowFrequencyCap(candidate, impressions[candidate.id]) &&
-        candidate.trigger === trigger &&
         (!candidate.targeting || await this.isMatch(candidate.targeting, target, context))
       ) {
         match = candidate;
