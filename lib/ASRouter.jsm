@@ -226,7 +226,6 @@ class _ASRouter {
           newState.messages = [...newState.messages, ...messages];
         }
       }
-<<<<<<< HEAD
 
       // Some messages have triggers that require us to initalise trigger listeners
       const unseenListeners = new Set(ASRouterTriggerListeners.keys());
@@ -242,11 +241,8 @@ class _ASRouter {
         ASRouterTriggerListeners.get(triggerID).uninit();
       }
 
-      await this.setState(newState);
-=======
       // We don't want to cache preview endpoints, remove them after messages are fetched
       await this.setState(this._removePreviewEndpoint(newState));
->>>>>>> 30b5534e... Remove preview endpoint after we fetch the message
       await this.cleanupImpressions();
     }
   }
@@ -471,18 +467,16 @@ class _ASRouter {
       message = await this._findMessage(msgs, target, trigger);
     }
 
-<<<<<<< HEAD
-    await this.setState({lastMessageId: message ? message.id : null});
-    await this._sendMessageToTarget(message, target, trigger);
-=======
     if (previewMsgs.length) {
       // We don't want to cache preview messages, remove them after we selected the message to show
-      await this.setState(state => this._removePreviewMessage(state, {lastMessageId: message.id}));
+      await this.setState(state => ({
+        lastMessageId: message.id,
+        messages: state.messages.filter(m => m.id !== message.id)
+      }));
     } else {
       await this.setState({lastMessageId: message ? message.id : null});
     }
-    await this._sendMessageToTarget(message, target, data);
->>>>>>> 696489fc... Remove a preview message after it has been shown
+    await this._sendMessageToTarget(message, target, trigger);
   }
 
   async setMessageById(id, target, force = true, action = {}) {
