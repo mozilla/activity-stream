@@ -134,7 +134,7 @@ $half-base-gutter: $base-gutter / 2;
     font-size: 32px;
     font-weight: 200;
     justify-content: center;
-    text-transform: uppercase;
+    text-transform: uppercase; // sass-lint:disable-line no-disallowed-properties
 
     &::before {
       content: attr(data-fallback);
