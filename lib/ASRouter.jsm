@@ -241,7 +241,8 @@ class _ASRouter {
         ASRouterTriggerListeners.get(triggerID).uninit();
       }
 
-      await this.setState(newState);
+      // We don't want to cache preview endpoints, remove them after messages are fetched
+      await this.setState(this._removePreviewEndpoint(newState));
       await this.cleanupImpressions();
     }
   }
@@ -466,7 +467,15 @@ class _ASRouter {
       message = await this._findMessage(msgs, target, trigger);
     }
 
-    await this.setState({lastMessageId: message ? message.id : null});
+    if (previewMsgs.length) {
+      // We don't want to cache preview messages, remove them after we selected the message to show
+      await this.setState(state => ({
+        lastMessageId: message.id,
+        messages: state.messages.filter(m => m.id !== message.id)
+      }));
+    } else {
+      await this.setState({lastMessageId: message ? message.id : null});
+    }
     await this._sendMessageToTarget(message, target, trigger);
   }
 
@@ -547,10 +556,14 @@ class _ASRouter {
     await this.onMessage({target, data: {type: "TRIGGER", trigger}});
   }
 
+  _removePreviewEndpoint(state) {
+    state.providers = state.providers.filter(p => p.id !== "preview");
+    return state;
+  }
+
   async _addPreviewEndpoint(url) {
     const providers = [...this.state.providers];
     if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
-      // Set update cycle to 0 to fetch new content on every page refresh
       providers.push({id: "preview", type: "remote", url, updateCycleInMs: 0});
       await this.setState({providers});
     }

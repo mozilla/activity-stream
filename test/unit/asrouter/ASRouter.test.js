@@ -329,27 +329,21 @@ describe("ASRouter", () => {
 
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_ALL"});
     });
-    it("should add the endpoint provided on CONNECT_UI_REQUEST", async () => {
+    it("should make a request to the provided endpoint on CONNECT_UI_REQUEST", async () => {
       const url = "https://snippets-admin.mozilla.org/foo";
       const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url}}});
       await Router.onMessage(msg);
 
-      assert.isDefined(Router.state.providers.find(p => p.url === url));
+      assert.calledWith(global.fetch, url);
+      assert.lengthOf(Router.state.providers.filter(p => p.url === url), 0);
     });
-    it("should add the endpoint provided on ADMIN_CONNECT_STATE", async () => {
+    it("should make a request to the provided endpoint on ADMIN_CONNECT_STATE and remove the endpoint", async () => {
       const url = "https://snippets-admin.mozilla.org/foo";
       const msg = fakeAsyncMessage({type: "ADMIN_CONNECT_STATE", data: {endpoint: {url}}});
       await Router.onMessage(msg);
 
-      assert.isDefined(Router.state.providers.find(p => p.url === url));
-    });
-    it("should not add the same endpoint twice", async () => {
-      const url = "https://snippets-admin.mozilla.org/foo";
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url}}});
-      await Router.onMessage(msg);
-      await Router.onMessage(msg);
-
-      assert.lengthOf(Router.state.providers.filter(p => p.url === url), 1);
+      assert.calledWith(global.fetch, url);
+      assert.lengthOf(Router.state.providers.filter(p => p.url === url), 0);
     });
     it("should not add a url that is not from a whitelisted host", async () => {
       const url = "https://mozilla.org";
@@ -452,13 +446,14 @@ describe("ASRouter", () => {
       assert.calledOnce(Router.sendNextMessage);
       assert.calledWithExactly(Router.sendNextMessage, sinon.match.instanceOf(FakeRemotePageManager), {});
     });
-    it("should return the preview message if that's available", async () => {
+    it("should return the preview message if that's available and remove it from Router.state", async () => {
       const expectedObj = {provider: "preview"};
       Router.setState({messages: [expectedObj]});
 
       await Router.sendNextMessage(channel);
 
       assert.calledWith(channel.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "SET_MESSAGE", data: expectedObj});
+      assert.isUndefined(Router.state.messages.find(m => m.provider === "preview"));
     });
     it("should call _getBundledMessages if we request a message that needs to be bundled", async () => {
       sandbox.stub(Router, "_getBundledMessages").resolves();
