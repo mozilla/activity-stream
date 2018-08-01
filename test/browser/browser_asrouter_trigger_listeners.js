@@ -13,7 +13,7 @@ async function openURLInWindow(window, url) {
 }
 
 add_task(async function check_openURL_listener() {
-  const TEST_URL = "https://example.com/browser/browser/components/newtab/test/browser/blue_page.html";
+  const TEST_URL = "https://example.com/browser/browser/components/newtab/test/browser/red_page.html";
 
   let urlVisitCount = 0;
   const triggerHandler = () => urlVisitCount++;
