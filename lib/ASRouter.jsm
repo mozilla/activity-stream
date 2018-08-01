@@ -7,7 +7,7 @@ ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
-const {ASRouterActions: ra} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
+const {ASRouterActions: ra, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
@@ -135,6 +135,7 @@ class _ASRouter {
   constructor(initialState = {}) {
     this.initialized = false;
     this.messageChannel = null;
+    this.dispatchToAS = null;
     this._storage = null;
     this._resetInitialization();
     this._state = {
@@ -147,6 +148,7 @@ class _ASRouter {
     };
     this._triggerHandler = this._triggerHandler.bind(this);
     this.onMessage = this.onMessage.bind(this);
+    this._handleTargetingError = this._handleTargetingError.bind(this);
   }
 
   _addASRouterPrefListener() {
@@ -253,14 +255,16 @@ class _ASRouter {
    *
    * @param {RemotePageManager} channel a RemotePageManager instance
    * @param {obj} storage an AS storage instance
+   * @param {func} dispatchToAS dispatch an action the main AS Store
    * @memberof _ASRouter
    */
-  async init(channel, storage) {
+  async init(channel, storage, dispatchToAS) {
     this.messageChannel = channel;
     this.messageChannel.addMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this._addASRouterPrefListener();
     this._storage = storage;
     this.WHITELIST_HOSTS = this._loadSnippetsWhitelistHosts();
+    this.dispatchToAS = dispatchToAS;
 
     const blockList = await this._storage.get("blockList") || [];
     const impressions = await this._storage.get("impressions") || {};
@@ -275,6 +279,7 @@ class _ASRouter {
     this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_ALL"});
     this.messageChannel.removeMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this.messageChannel = null;
+    this.dispatchToAS = null;
     this.state.providers.forEach(provider => {
       if (provider.endpointPref) {
         Services.prefs.removeObserver(provider.endpointPref, this);
@@ -304,18 +309,24 @@ class _ASRouter {
     this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: state});
   }
 
-  async _findMessage(messages, target, trigger) {
-    let message;
+  _handleTargetingError(type, error, message) {
+    Cu.reportError(error);
+    if (this.dispatchToAS) {
+      this.dispatchToAS(ac.ASRouterUserEvent({
+        message_id: message.id,
+        action: "asrouter_undesired_event",
+        event: "TARGETING_EXPRESSION_ERROR",
+        value: type
+      }));
+    }
+  }
+
+  _findMessage(messages, target, trigger) {
     const {impressions} = this.state;
-    if (trigger) {
-      // Find a message that matches the targeting context as well as the trigger context
-      message = await ASRouterTargeting.findMatchingMessageWithTrigger({messages, impressions, target, trigger});
-    }
-    if (!message) {
-      // If there was no messages with this trigger, try finding a regular targeted message
-      message = await ASRouterTargeting.findMatchingMessage({messages, impressions, target});
-    }
-    return message;
+
+     // Find a message that matches the targeting context as well as the trigger context (if one is provided)
+     // If no trigger is provided, we should find a message WITHOUT a trigger property defined.
+    return ASRouterTargeting.findMatchingMessage({messages, impressions, trigger, onError: this._handleTargetingError});
   }
 
   _orderBundle(bundle) {
