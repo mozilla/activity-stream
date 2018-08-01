@@ -4,6 +4,7 @@
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const {PageThumbsStorage} = ChromeUtils.import("resource://gre/modules/PageThumbs.jsm", {});
 
 // a blue page
 const TEST_URL = "https://example.com/browser/browser/components/newtab/test/browser/blue_page.html";
@@ -31,6 +32,8 @@ function get_pixels_for_blob(blob, width, height) {
 }
 
 add_task(async function test_screenshot() {
+  // Clear out existing screenshots
+  await PageThumbsStorage.wipe();
   await SpecialPowers.pushPrefEnv({set: [["browser.pagethumbnails.capturing_disabled", false]]});
 
   // take a screenshot of a blue page and save it as a blob
