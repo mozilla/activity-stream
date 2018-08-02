@@ -765,7 +765,7 @@ describe("Top Stories Feed", () => {
         "settings": {"spocsPerNewTabs": 1},
         "recommendations": [{"guid": "rec1"}, {"guid": "rec2"}, {"guid": "rec3"}],
         "spocs": [
-          {"id": "spoc1", "campaign_id": 1, "caps": {"lifetime": 101}}
+          {"id": "spoc1", "campaign_id": 1, "caps": {"lifetime": 501}}
         ]
       };
 
@@ -776,7 +776,7 @@ describe("Top Stories Feed", () => {
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchStories();
 
-      instance._prefs.get = pref => JSON.stringify({1: [...Array(100).keys()]});
+      instance._prefs.get = pref => JSON.stringify({1: [...Array(500).keys()]});
       instance.onAction({type: at.NEW_TAB_REHYDRATED, meta: {fromTarget: {}}});
       assert.notCalled(instance.store.dispatch);
     });
