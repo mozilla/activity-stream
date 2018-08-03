@@ -163,6 +163,10 @@ const PREFS_CONFIG = new Map([
     title: "Experiment to remove tiles that are the same as the default search",
     value: false
   }],
+  ["improvesearch.topSiteSearchShortcuts", {
+    title: "Experiment to show special top sites that perform keyword searches",
+    value: true
+  }],
   ["asrouterExperimentEnabled", {
     title: "Is the message center experiment on?",
     value: false
