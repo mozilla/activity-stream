@@ -157,7 +157,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["improvesearch.noDefaultSearchTile", {
     title: "Experiment to remove tiles that are the same as the default search",
-    value: false
+    value: true
   }],
   ["asrouterExperimentEnabled", {
     title: "Is the message center experiment on?",
