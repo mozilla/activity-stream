@@ -1,10 +1,9 @@
 .search-wrapper {
-  $search-height: 35px;
+  $search-height: 48px;
   $search-icon-size: 18px;
-  $search-icon-padding: 8px;
+  $search-icon-padding: 15px;
   $search-icon-width: 2 * $search-icon-padding + $search-icon-size;
-  $search-input-left-label-width: 35px;
-  $search-button-width: 36px;
+  $search-button-width: 48px;
   $glyph-forward: url('chrome://browser/skin/forward.svg');
 
   cursor: default;
@@ -149,5 +148,11 @@
         color: var(--newtab-text-primary-color);
       }
     }
+  }
+
+  .contentSearchHeaderRow > td > img,
+  .contentSearchSuggestionRow > td > .historyIcon {
+    margin-inline-start: 7px;
+    margin-inline-end: 15px;
   }
 }
