@@ -219,8 +219,8 @@ this.TopSitesFeed = class TopSitesFeed {
     for (const site of insertPinned(dedupedUnpinned, pinned).slice(0, numItems)) {
       // A default site that is also a search topsite should be pinned to
       // the first position
-      if (site.searchTopSite && site.isDefault && !site.isPinned) {
-        await this._insertPin(site, 0);
+      if (site && site.searchTopSite && site.isDefault && !site.isPinned) {
+        this._insertPin(site, 0);
         // Refresh the cache because we just modified pinned sites
         this.pinnedCache.expire();
         pinned = await this.pinnedCache.request();
