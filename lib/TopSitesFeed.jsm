@@ -207,7 +207,8 @@ this.TopSitesFeed = class TopSitesFeed {
     }));
 
     const dedupedUnpinned = this.dedupeTopSites({
-      // Convert any frecent site to a search topsite
+      // Convert any frecent site that matches SEARCH_HOST_FILTERS to a search topsite
+      // without pinning or changing position
       frecent: frecent.map(this.topsiteToSearchTopSite),
       pinned,
       defaultSites: notBlockedDefaultSites
@@ -216,8 +217,8 @@ this.TopSitesFeed = class TopSitesFeed {
     // Insert the original pinned sites into the deduped frecent and defaults
     // and check if any match default search topsite rules
     for (const site of insertPinned(dedupedUnpinned, pinned).slice(0, numItems)) {
-      // A default site that matches SEARCH_HOST_FILTERS should be changed to
-      // a search topsite and pinned to the first position
+      // A default site that is also a search topsite should be pinned to
+      // the first position
       if (site.searchTopSite && site.isDefault && !site.isPinned) {
         await this._insertPin(site, 0);
         // Refresh the cache because we just modified pinned sites
