@@ -46,6 +46,12 @@ const SEARCH_HOST_FILTERS = [
   {hostname: "google", identifierPattern: /^google|^www.google/},
   {hostname: "amazon", identifierPattern: /^amazon|^www.amazon/}
 ];
+// List of sites we match against Topsites in order to identify sites
+// that should be converted to search Topsites
+const TOPSITE_SEARCH_PROVIDERS = [
+  {hostname: /^google|^www.google/},
+  {hostname: /^amazon|^www.amazon/}
+];
 
 function getShortURLForCurrentSearch() {
   const url = shortURL({url: Services.search.currentEngine.searchForm});
@@ -53,7 +59,7 @@ function getShortURLForCurrentSearch() {
 }
 
 function isSearchProvider(url) {
-  return SEARCH_HOST_FILTERS.some(({identifierPattern}) => url.hostname.match(identifierPattern));
+  return TOPSITE_SEARCH_PROVIDERS.some(({hostname}) => url.hostname.match(hostname));
 }
 
 this.TopSitesFeed = class TopSitesFeed {
@@ -216,20 +222,22 @@ this.TopSitesFeed = class TopSitesFeed {
 
     // Insert the original pinned sites into the deduped frecent and defaults
     // and check if any match default search topsite rules
-    for (const site of insertPinned(dedupedUnpinned, pinned).slice(0, numItems)) {
+    let withPinned = insertPinned(dedupedUnpinned, pinned).slice(0, numItems);
+    for (const site of withPinned) {
       // A default site that is also a search topsite should be pinned to
       // the first position
       if (site && site.searchTopSite && site.isDefault && !site.isPinned) {
         this._insertPin(site, 0);
         // Refresh the cache because we just modified pinned sites
         this.pinnedCache.expire();
-        pinned = await this.pinnedCache.request();
       }
     }
-    // Insert any new pinned sites in case of changes
-    const withPinned = insertPinned(dedupedUnpinned,
-      pinned.map(site => site && {hostname: shortURL(site), ...site}))
-      .slice(0, numItems);
+    // If we previously expired the cache we should update the results
+    if (this.pinnedCache.lastUpdate === undefined) {
+      pinned = await this.pinnedCache.request();
+      // Insert the new pinned sites
+      withPinned = insertPinned(dedupedUnpinned, pinned).slice(0, numItems);
+    }
 
     // Now, get a tippy top icon, a rich icon, or screenshot for every item
     for (const link of withPinned) {
