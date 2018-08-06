@@ -214,9 +214,10 @@ this.TopSitesFeed = class TopSitesFeed {
     });
 
     // Insert the original pinned sites into the deduped frecent and defaults
-    // and check if any default topsites show up in order to pin the to the first position
+    // and check if any match default search topsite rules
     for (const site of insertPinned(dedupedUnpinned, pinned).slice(0, numItems)) {
-      // If a default site that is also a search top site shows up then we want to pin it to the first position
+      // A default site that matches SEARCH_HOST_FILTERS should be changed to
+      // a search topsite and pinned to the first position
       if (site.searchTopSite && site.isDefault && !site.isPinned) {
         await this._insertPin(site, 0);
         // Refresh the cache because we just modified pinned sites
@@ -224,7 +225,7 @@ this.TopSitesFeed = class TopSitesFeed {
         pinned = await this.pinnedCache.request();
       }
     }
-    // Re insert pinned sites in case anything changed
+    // Insert any new pinned sites in case of changes
     const withPinned = insertPinned(dedupedUnpinned,
       pinned.map(site => site && {hostname: shortURL(site), ...site}))
       .slice(0, numItems);
