@@ -53,7 +53,7 @@ function getShortURLForCurrentSearch() {
 }
 
 function isSearchProvider(url) {
-  return SEARCH_HOST_FILTERS.some(({identifierPattern}) => url.hostname.match(identifierPattern) && url.pathname.length <= 1);
+  return SEARCH_HOST_FILTERS.some(({identifierPattern}) => url.hostname.match(identifierPattern));
 }
 
 this.TopSitesFeed = class TopSitesFeed {
