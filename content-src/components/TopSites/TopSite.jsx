@@ -226,10 +226,17 @@ export class TopSite extends React.PureComponent {
     // specified as a property on the link.
     event.preventDefault();
     const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
-    this.props.dispatch(ac.OnlyToMain({
-      type: at.OPEN_LINK,
-      data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
-    }));
+    if (!this.props.link.searchTopSite) {
+      this.props.dispatch(ac.OnlyToMain({
+        type: at.OPEN_LINK,
+        data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
+      }));
+    } else {
+      this.props.dispatch(ac.OnlyToMain({
+        type: at.FILL_SEARCH_TERM,
+        data: this.props.link
+      }));
+    }
   }
 
   onMenuButtonClick(event) {

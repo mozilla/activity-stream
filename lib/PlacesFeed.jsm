@@ -278,6 +278,13 @@ class PlacesFeed {
     }
   }
 
+  fillSearchTopSiteTerm(action) {
+    const gURLBar = action._target.browser.ownerGlobal.document.getElementById("urlbar");
+    gURLBar.value = `${action.data.label} `;
+    gURLBar.focus();
+    gURLBar.selectionStart = gURLBar.selectionEnd;
+  }
+
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -314,6 +321,9 @@ class PlacesFeed {
         break;
       case at.SAVE_TO_POCKET:
         this.saveToPocket(action.data.site, action._target.browser);
+        break;
+      case at.FILL_SEARCH_TERM:
+        this.fillSearchTopSiteTerm(action);
         break;
       case at.OPEN_LINK: {
         this.openLink(action);
