@@ -149,12 +149,12 @@ export const LinkMenuOptions = {
       data: {url: site.url}
     })
   }),
-  PinTopSite: ({url, searchTopSite}, index) => ({
+  PinTopSite: ({url, searchTopSite, label}, index) => ({
     id: "menu_action_pin",
     icon: "pin",
     action: ac.AlsoToMain({
       type: at.TOP_SITES_PIN,
-      data: {site: {url, searchTopSite}, index}
+      data: {site: {url, searchTopSite, label}, index}
     }),
     userEvent: "PIN"
   }),
