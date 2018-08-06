@@ -282,6 +282,7 @@ class PlacesFeed {
     const gURLBar = action._target.browser.ownerGlobal.document.getElementById("urlbar");
     gURLBar.value = `${action.data.label} `;
     gURLBar.focus();
+    // Clear the url bar text selection that happens on focus
     gURLBar.selectionStart = gURLBar.selectionEnd;
   }
 
