@@ -42,10 +42,18 @@ const SEARCH_FILTERS = [
   "ask",
   "duckduckgo"
 ];
+const SEARCH_HOST_FILTERS = [
+  {hostname: "google", identifierPattern: /^google|^www.google/},
+  {hostname: "amazon", identifierPattern: /^amazon|^www.amazon/}
+];
 
 function getShortURLForCurrentSearch() {
   const url = shortURL({url: Services.search.currentEngine.searchForm});
   return url;
+}
+
+function isSearchProvider(url) {
+  return SEARCH_HOST_FILTERS.some(({identifierPattern}) => url.hostname.match(identifierPattern) && url.pathname.length <= 1);
 }
 
 this.TopSitesFeed = class TopSitesFeed {
@@ -159,11 +167,11 @@ this.TopSitesFeed = class TopSitesFeed {
           return false;
         }
         return true;
-      });
+      }).map(this.topsiteToSearchTopSite);
 
     // Get pinned links augmented with desired properties
     const plainPinned = await this.pinnedCache.request();
-    const pinned = await Promise.all(plainPinned.map(async link => {
+    let pinned = await Promise.all(plainPinned.map(async link => {
       if (!link) {
         return link;
       }
@@ -198,17 +206,28 @@ this.TopSitesFeed = class TopSitesFeed {
       return copy;
     }));
 
-    // Remove any duplicates from frecent and default sites
-    const [, dedupedFrecent, dedupedDefaults] = this.dedupe.group(
-      pinned, frecent, notBlockedDefaultSites);
-    const dedupedUnpinned = [...dedupedFrecent, ...dedupedDefaults];
-
-    // Remove adult sites if we need to
-    const checkedAdult = this.store.getState().Prefs.values.filterAdult ?
-      filterAdult(dedupedUnpinned) : dedupedUnpinned;
+    const dedupedUnpinned = this.dedupeTopSites({
+      // Convert any frecent site to a search topsite
+      frecent: frecent.map(this.topsiteToSearchTopSite),
+      pinned,
+      defaultSites: notBlockedDefaultSites
+    });
 
     // Insert the original pinned sites into the deduped frecent and defaults
-    const withPinned = insertPinned(checkedAdult, pinned).slice(0, numItems);
+    // and check if any default topsites show up in order to pin the to the first position
+    for (const site of insertPinned(dedupedUnpinned, pinned).slice(0, numItems)) {
+      // If a default site that is also a search top site shows up then we want to pin it to the first position
+      if (site.searchTopSite && site.isDefault && !site.isPinned) {
+        await this._insertPin(site, 0);
+        // Refresh the cache because we just modified pinned sites
+        this.pinnedCache.expire();
+        pinned = await this.pinnedCache.request();
+      }
+    }
+    // Re insert pinned sites in case anything changed
+    const withPinned = insertPinned(dedupedUnpinned,
+      pinned.map(site => site && {hostname: shortURL(site), ...site}))
+      .slice(0, numItems);
 
     // Now, get a tippy top icon, a rich icon, or screenshot for every item
     for (const link of withPinned) {
@@ -229,6 +248,19 @@ this.TopSitesFeed = class TopSitesFeed {
     }
 
     return withPinned;
+  }
+
+  dedupeTopSites({pinned, frecent, defaultSites}) {
+    // Remove any duplicates from frecent and default sites
+    const [, dedupedFrecent, dedupedDefaults] = this.dedupe.group(
+      pinned, frecent, defaultSites);
+    const dedupedUnpinned = [...dedupedFrecent, ...dedupedDefaults];
+
+    // Remove adult sites if we need to
+    const checkedAdult = this.store.getState().Prefs.values.filterAdult ?
+      filterAdult(dedupedUnpinned) : dedupedUnpinned;
+
+    return checkedAdult;
   }
 
   /**
@@ -257,6 +289,18 @@ this.TopSitesFeed = class TopSitesFeed {
       // Don't broadcast only update the state and update the preloaded tab.
       this.store.dispatch(ac.AlsoToPreloaded(newAction));
     }
+  }
+
+  topsiteToSearchTopSite(site) {
+    if (isSearchProvider(new URL(site.url))) {
+      return {
+        searchTopSite: true,
+        label: `@${site.hostname}`,
+        ...site
+      };
+    }
+
+    return site;
   }
 
   /**
@@ -337,13 +381,16 @@ this.TopSitesFeed = class TopSitesFeed {
    * @param customScreenshotURL {string} User set URL of preview image for site
    * @param label {string} User set string of custom site name
    */
-  async _pinSiteAt({customScreenshotURL, label, url}, index) {
+  async _pinSiteAt({customScreenshotURL, label, url, searchTopSite}, index) {
     const toPin = {url};
     if (label) {
       toPin.label = label;
     }
     if (customScreenshotURL) {
       toPin.customScreenshotURL = customScreenshotURL;
+    }
+    if (searchTopSite) {
+      toPin.searchTopSite = searchTopSite;
     }
     NewTabUtils.pinnedLinks.pin(toPin, index);
 

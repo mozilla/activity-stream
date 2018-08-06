@@ -120,6 +120,11 @@ export class TopSiteLink extends React.PureComponent {
     let hasScreenshotImage = this.state.screenshotImage && this.state.screenshotImage.url;
     if (defaultStyle) { // force no styles (letter fallback) even if the link has imagery
       smallFaviconFallback = false;
+    } else if (link.searchTopSite) {
+      imageClassName = "screenshot";
+      imageStyle = {backgroundImage: "none"};
+      showSmallFavicon = true;
+      smallFaviconStyle = {backgroundImage:  `url(${tippyTopIcon || link.favicon})`};
     } else if (link.customScreenshotURL) {
       // assume high quality custom screenshot and use rich icon styles and class names
       imageClassName = "top-site-icon rich-icon";
@@ -361,7 +366,8 @@ export class _TopSiteList extends React.PureComponent {
               site: {
                 url: this.state.draggedSite.url,
                 label: this.state.draggedTitle,
-                customScreenshotURL: this.state.draggedSite.customScreenshotURL
+                customScreenshotURL: this.state.draggedSite.customScreenshotURL,
+                searchTopSite: this.state.draggedSite.searchTopSite
               },
               index,
               draggedFromIndex: this.state.draggedIndex
