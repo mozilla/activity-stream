@@ -167,7 +167,7 @@ this.TopSitesFeed = class TopSitesFeed {
           return false;
         }
         return true;
-      }).map(this.topsiteToSearchTopSite);
+      }).map(this.topSiteToSearchTopSite);
 
     // Get pinned links augmented with desired properties
     const plainPinned = await this.pinnedCache.request();
@@ -209,7 +209,7 @@ this.TopSitesFeed = class TopSitesFeed {
     const dedupedUnpinned = this.dedupeTopSites({
       // Convert any frecent site that matches SEARCH_HOST_FILTERS to a search topsite
       // without pinning or changing position
-      frecent: frecent.map(this.topsiteToSearchTopSite),
+      frecent: frecent.map(this.topSiteToSearchTopSite),
       pinned,
       defaultSites: notBlockedDefaultSites
     });
@@ -293,7 +293,7 @@ this.TopSitesFeed = class TopSitesFeed {
     }
   }
 
-  topsiteToSearchTopSite(site) {
+  topSiteToSearchTopSite(site) {
     if (isSearchProvider(new URL(site.url))) {
       return {
         searchTopSite: true,
