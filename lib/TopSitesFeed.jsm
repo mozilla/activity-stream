@@ -317,19 +317,16 @@ this.TopSitesFeed = class TopSitesFeed {
    * Fetch the icon corresponding to the URL origin
    * @param site {object} LinksCache object corresponding to a TopSite
    */
-  async _fetchOriginTopSiteIcon(site) {
+  _fetchOriginTopSiteIcon(site) {
     try {
-      const originSite = {...site, url: new URL(site.url).origin};
-      NewTabUtils.activityStreamProvider._faviconBytesToDataURI(await
-        NewTabUtils.activityStreamProvider._addFavicons([originSite]));
-
-      for (const prop of PINNED_FAVICON_PROPS_TO_MIGRATE) {
-        originSite.__sharedCache.updateLink(prop, originSite[prop]);
-        site[prop] = originSite[prop];
-      }
+      const {tippyTopIcon, backgroundColor} = this._tippyTopProvider.processSite({...site, url: new URL(site.url).origin});
+      site.backgroundColor = backgroundColor;
+      site.tippyTopIcon = tippyTopIcon;
     } catch (e) {
       // Some issue with favicon, so just continue without one
     }
+
+    return site;
   }
 
   /**
