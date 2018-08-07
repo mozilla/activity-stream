@@ -42,20 +42,18 @@ const SEARCH_FILTERS = [
   "ask",
   "duckduckgo"
 ];
+const SEARCH_SHORTCUTS_EXPERIMENT = "improvesearch.topSiteSearchShortcuts";
 // List of sites we match against Topsites in order to identify sites
 // that should be converted to search Topsites
-const TOPSITE_SEARCH_PROVIDERS = [
-  {hostname: /^google|^www.google/},
-  {hostname: /^amazon|^www.amazon/}
-];
+const TOPSITE_SEARCH_PROVIDERS = [/^google/, /^amazon/];
 
 function getShortURLForCurrentSearch() {
   const url = shortURL({url: Services.search.currentEngine.searchForm});
   return url;
 }
 
-function isSearchProvider(url) {
-  return TOPSITE_SEARCH_PROVIDERS.some(({hostname}) => url.hostname.match(hostname));
+function isSearchProvider(shortUrl) {
+  return TOPSITE_SEARCH_PROVIDERS.some(match => shortUrl.match(match));
 }
 
 this.TopSitesFeed = class TopSitesFeed {
@@ -136,6 +134,10 @@ this.TopSitesFeed = class TopSitesFeed {
    */
   isExperimentOnAndLinkFilteredSearch(hostname) {
     if (!this.store.getState().Prefs.values[NO_DEFAULT_SEARCH_TILE_EXP_PREF]) {
+      return false;
+    }
+    // If TopSite Search Shortcuts is enabled we don't want to filter those sites out
+    if (this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT] && isSearchProvider(hostname)) {
       return false;
     }
     if (SEARCH_FILTERS.includes(hostname) || hostname === this._currentSearchHostname) {
@@ -302,7 +304,7 @@ this.TopSitesFeed = class TopSitesFeed {
   }
 
   topSiteToSearchTopSite(site) {
-    if (isSearchProvider(new URL(site.url))) {
+    if (isSearchProvider(shortURL(site))) {
       return {
         searchTopSite: true,
         label: `@${site.hostname}`,
