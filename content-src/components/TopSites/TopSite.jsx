@@ -374,7 +374,8 @@ export class _TopSiteList extends React.PureComponent {
                 url: this.state.draggedSite.url,
                 label: this.state.draggedTitle,
                 customScreenshotURL: this.state.draggedSite.customScreenshotURL,
-                searchTopSite: this.state.draggedSite.searchTopSite
+                // Only if the search topsites experiment is enabled
+                ...(this.state.draggedSite.searchTopSite ? {searchTopSite: true} : {})
               },
               index,
               draggedFromIndex: this.state.draggedIndex
