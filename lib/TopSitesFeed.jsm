@@ -164,18 +164,18 @@ this.TopSitesFeed = class TopSitesFeed {
 
     // Remove any defaults that have been blocked
     const notBlockedDefaultSites = DEFAULT_TOP_SITES
-      .filter(link => {
+      .reduce((topsites, link) => {
         if (NewTabUtils.blockedLinks.isBlocked({url: link.url})) {
-          return false;
+          return topsites;
         } else if (this.isExperimentOnAndLinkFilteredSearch(link.hostname)) {
-          return false;
+          return topsites;
         }
-        return true;
-      }).map(this.topSiteToSearchTopSite);
+        return [...topsites, this.topSiteToSearchTopSite(link)];
+      }, []);
 
     // Get pinned links augmented with desired properties
     const plainPinned = await this.pinnedCache.request();
-    let pinned = await Promise.all(plainPinned.map(async link => {
+    const pinned = await Promise.all(plainPinned.map(async link => {
       if (!link) {
         return link;
       }
@@ -210,32 +210,17 @@ this.TopSitesFeed = class TopSitesFeed {
       return copy;
     }));
 
-    const dedupedUnpinned = this.dedupeTopSites({
-      // Convert any frecent site that matches TOPSITE_SEARCH_PROVIDERS to a search topsite
-      // without pinning or changing position
-      frecent: frecent.map(this.topSiteToSearchTopSite),
-      pinned,
-      defaultSites: notBlockedDefaultSites
-    });
+    // Remove any duplicates from frecent and default sites
+    const [, dedupedFrecent, dedupedDefaults] = this.dedupe.group(
+      pinned, frecent, notBlockedDefaultSites);
+    const dedupedUnpinned = [...dedupedFrecent, ...dedupedDefaults];
+
+    // Remove adult sites if we need to
+    const checkedAdult = this.store.getState().Prefs.values.filterAdult ?
+      filterAdult(dedupedUnpinned) : dedupedUnpinned;
 
     // Insert the original pinned sites into the deduped frecent and defaults
-    // and check if any match default search topsite rules
-    let withPinned = insertPinned(dedupedUnpinned, pinned).slice(0, numItems);
-    for (const site of withPinned) {
-      // A default site that is also a search topsite should be pinned to
-      // the first position
-      if (site && site.searchTopSite && site.isDefault && !site.isPinned) {
-        this._insertPin(site, 0);
-        // Refresh the cache because we just modified pinned sites
-        this.pinnedCache.expire();
-      }
-    }
-    // If we previously expired the cache we should update the results
-    if (this.pinnedCache.lastUpdate === undefined) {
-      pinned = await this.pinnedCache.request();
-      // Insert the new pinned sites
-      withPinned = insertPinned(dedupedUnpinned, pinned).slice(0, numItems);
-    }
+    const withPinned = insertPinned(checkedAdult, pinned).slice(0, numItems);
 
     // Now, get a tippy top icon, a rich icon, or screenshot for every item
     for (const link of withPinned) {
@@ -260,19 +245,6 @@ this.TopSitesFeed = class TopSitesFeed {
     }
 
     return withPinned;
-  }
-
-  dedupeTopSites({pinned, frecent, defaultSites}) {
-    // Remove any duplicates from frecent and default sites
-    const [, dedupedFrecent, dedupedDefaults] = this.dedupe.group(
-      pinned, frecent, defaultSites);
-    const dedupedUnpinned = [...dedupedFrecent, ...dedupedDefaults];
-
-    // Remove adult sites if we need to
-    const checkedAdult = this.store.getState().Prefs.values.filterAdult ?
-      filterAdult(dedupedUnpinned) : dedupedUnpinned;
-
-    return checkedAdult;
   }
 
   /**
