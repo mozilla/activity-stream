@@ -477,22 +477,38 @@ describe("Top Sites Feed", () => {
           site.backgroundColor = "#fff";
           return site;
         };
-        links = [{url: "google.com/photos"}];
+        links = [{url: "google.com"}];
 
         const urlsReturned = await feed.getLinksWithDefaults();
 
-        const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com/photos");
-        assert.isTrue(defaultSearchTopsite.searchTopSite);
+        const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
+        assert.propertyVal(defaultSearchTopsite, "searchTopSite", true);
+        assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
+        assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
+      });
+      it("should update default search topsite icon", async () => {
+        feed._tippyTopProvider.processSite = site => {
+          site.tippyTopIcon = "icon.png";
+          site.backgroundColor = "#fff";
+          return site;
+        };
+        links = [{url: "foo.com"}];
+        feed.onAction({type: at.PREFS_INITIAL_VALUES, data: {"default.sites": "google.com,amazon.com"}});
+
+        const urlsReturned = await feed.getLinksWithDefaults();
+
+        const defaultSearchTopsite = urlsReturned.find(s => s.url === "amazon.com");
+        assert.propertyVal(defaultSearchTopsite, "searchTopSite", true);
         assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
         assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
       });
       it("should not overlap with improvesearch.noDefaultSearchTile and still provide search tiles", async () => {
         feed.store.state.Prefs.values["improvesearch.noDefaultSearchTile"] = true;
-        links = [{url: "google.com/photos"}];
+        links = [{url: "google.com"}];
 
         const urlsReturned = await feed.getLinksWithDefaults();
 
-        const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com/photos");
+        const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
         assert.isTrue(defaultSearchTopsite.searchTopSite);
       });
     });

@@ -45,7 +45,7 @@ const SEARCH_FILTERS = [
 const SEARCH_SHORTCUTS_EXPERIMENT = "improvesearch.topSiteSearchShortcuts";
 // List of sites we match against Topsites in order to identify sites
 // that should be converted to search Topsites
-const TOPSITE_SEARCH_PROVIDERS = [/^google/, /^amazon/];
+const TOPSITE_SEARCH_PROVIDERS = ["google", "amazon"];
 
 function getShortURLForCurrentSearch() {
   const url = shortURL({url: Services.search.currentEngine.searchForm});
@@ -53,7 +53,7 @@ function getShortURLForCurrentSearch() {
 }
 
 function isSearchProvider(shortUrl) {
-  return TOPSITE_SEARCH_PROVIDERS.some(match => shortUrl.match(match));
+  return TOPSITE_SEARCH_PROVIDERS.some(match => shortUrl === match);
 }
 
 this.TopSitesFeed = class TopSitesFeed {
@@ -159,8 +159,8 @@ this.TopSitesFeed = class TopSitesFeed {
       const hostname = shortURL(link);
       if (!this.isExperimentOnAndLinkFilteredSearch(hostname)) {
         validLinks.push({
-          hostname,
-          ...(searchShortcutsExperiment ? this.topSiteToSearchTopSite(link) : link)
+          ...(searchShortcutsExperiment ? this.topSiteToSearchTopSite(link) : link),
+          hostname
         });
       }
       return validLinks;
