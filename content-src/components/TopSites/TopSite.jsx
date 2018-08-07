@@ -234,7 +234,7 @@ export class TopSite extends React.PureComponent {
     } else {
       this.props.dispatch(ac.OnlyToMain({
         type: at.FILL_SEARCH_TERM,
-        data: this.props.link
+        data: {label: this.props.link.label}
       }));
     }
   }
