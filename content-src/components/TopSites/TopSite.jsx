@@ -124,7 +124,7 @@ export class TopSiteLink extends React.PureComponent {
       imageClassName = "screenshot";
       imageStyle = {backgroundImage: "none"};
       showSmallFavicon = true;
-      smallFaviconStyle = {backgroundImage:  `url(${tippyTopIcon || link.favicon})`};
+      smallFaviconStyle = {backgroundImage:  `url(${tippyTopIcon})`};
     } else if (link.customScreenshotURL) {
       // assume high quality custom screenshot and use rich icon styles and class names
       imageClassName = "top-site-icon rich-icon";
