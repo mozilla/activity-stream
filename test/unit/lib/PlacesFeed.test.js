@@ -218,6 +218,27 @@ describe("PlacesFeed", () => {
       assert.propertyVal(params, "private", false);
       assert.propertyVal(params, "triggeringPrincipal", undefined);
     });
+    it("should call fillSearchTopSiteTerm on FILL_SEARCH_TERM", () => {
+      sinon.stub(feed, "fillSearchTopSiteTerm");
+
+      feed.onAction({type: at.FILL_SEARCH_TERM});
+
+      assert.calledOnce(feed.fillSearchTopSiteTerm);
+    });
+    it("should set the URL bar value to the label value", () => {
+      const locationBar = {focus: sandbox.stub()};
+      const getElementById = sandbox.stub().returns(locationBar);
+      const action = {
+        type: at.FILL_SEARCH_TERM,
+        data: {label: "@Foo"},
+        _target: {browser: {ownerGlobal: {document: {getElementById}}}}
+      };
+
+      feed.fillSearchTopSiteTerm(action);
+
+      assert.equal(locationBar.value, "@Foo ");
+      assert.calledOnce(locationBar.focus);
+    });
     it("should call saveToPocket on SAVE_TO_POCKET", () => {
       const action = {
         type: at.SAVE_TO_POCKET,

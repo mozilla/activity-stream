@@ -42,10 +42,18 @@ const SEARCH_FILTERS = [
   "ask",
   "duckduckgo"
 ];
+const SEARCH_SHORTCUTS_EXPERIMENT = "improvesearch.topSiteSearchShortcuts";
+// List of sites we match against Topsites in order to identify sites
+// that should be converted to search Topsites
+const TOPSITE_SEARCH_PROVIDERS = ["google", "amazon"];
 
 function getShortURLForCurrentSearch() {
   const url = shortURL({url: Services.search.currentEngine.searchForm});
   return url;
+}
+
+function isSearchProvider(shortUrl) {
+  return TOPSITE_SEARCH_PROVIDERS.some(match => shortUrl === match);
 }
 
 this.TopSitesFeed = class TopSitesFeed {
@@ -128,6 +136,10 @@ this.TopSitesFeed = class TopSitesFeed {
     if (!this.store.getState().Prefs.values[NO_DEFAULT_SEARCH_TILE_EXP_PREF]) {
       return false;
     }
+    // If TopSite Search Shortcuts is enabled we don't want to filter those sites out
+    if (this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT] && isSearchProvider(hostname)) {
+      return false;
+    }
     if (SEARCH_FILTERS.includes(hostname) || hostname === this._currentSearchHostname) {
       return true;
     }
@@ -136,6 +148,7 @@ this.TopSitesFeed = class TopSitesFeed {
 
   async getLinksWithDefaults() {
     const numItems = this.store.getState().Prefs.values[ROWS_PREF] * TOP_SITES_MAX_SITES_PER_ROW;
+    const searchShortcutsExperiment = this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT];
 
     // Get all frecent sites from history
     const frecent = (await this.frecentCache.request({
@@ -145,21 +158,27 @@ this.TopSitesFeed = class TopSitesFeed {
     .reduce((validLinks, link) => {
       const hostname = shortURL(link);
       if (!this.isExperimentOnAndLinkFilteredSearch(hostname)) {
-        validLinks.push({...link, hostname});
+        validLinks.push({
+          ...(searchShortcutsExperiment ? this.topSiteToSearchTopSite(link) : link),
+          hostname
+        });
       }
       return validLinks;
     }, []);
 
     // Remove any defaults that have been blocked
     const notBlockedDefaultSites = DEFAULT_TOP_SITES
-      .filter(link => {
+      .reduce((topsites, link) => {
         if (NewTabUtils.blockedLinks.isBlocked({url: link.url})) {
-          return false;
+          return topsites;
         } else if (this.isExperimentOnAndLinkFilteredSearch(link.hostname)) {
-          return false;
+          return topsites;
         }
-        return true;
-      });
+        return [
+          ...topsites,
+          searchShortcutsExperiment ? this.topSiteToSearchTopSite(link) : link
+        ];
+      }, []);
 
     // Get pinned links augmented with desired properties
     const plainPinned = await this.pinnedCache.request();
@@ -216,6 +235,8 @@ this.TopSitesFeed = class TopSitesFeed {
         // If there is a custom screenshot this is the only image we display
         if (link.customScreenshotURL) {
           this._fetchScreenshot(link, link.customScreenshotURL);
+        } else if (link.searchTopSite && !link.isDefault) {
+          this._tippyTopProvider.processSite(link);
         } else {
           this._fetchIcon(link);
         }
@@ -257,6 +278,18 @@ this.TopSitesFeed = class TopSitesFeed {
       // Don't broadcast only update the state and update the preloaded tab.
       this.store.dispatch(ac.AlsoToPreloaded(newAction));
     }
+  }
+
+  topSiteToSearchTopSite(site) {
+    if (isSearchProvider(shortURL(site))) {
+      return {
+        searchTopSite: true,
+        label: `@${shortURL(site)}`,
+        ...site
+      };
+    }
+
+    return site;
   }
 
   /**
@@ -337,13 +370,16 @@ this.TopSitesFeed = class TopSitesFeed {
    * @param customScreenshotURL {string} User set URL of preview image for site
    * @param label {string} User set string of custom site name
    */
-  async _pinSiteAt({customScreenshotURL, label, url}, index) {
+  async _pinSiteAt({customScreenshotURL, label, url, searchTopSite}, index) {
     const toPin = {url};
     if (label) {
       toPin.label = label;
     }
     if (customScreenshotURL) {
       toPin.customScreenshotURL = customScreenshotURL;
+    }
+    if (searchTopSite) {
+      toPin.searchTopSite = searchTopSite;
     }
     NewTabUtils.pinnedLinks.pin(toPin, index);
 
@@ -473,7 +509,11 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.PREF_CHANGED:
         if (action.data.name === DEFAULT_SITES_PREF) {
           this.refreshDefaults(action.data.value);
-        } else if ([ROWS_PREF, NO_DEFAULT_SEARCH_TILE_EXP_PREF].includes(action.data.name)) {
+        } else if ([
+          ROWS_PREF,
+          NO_DEFAULT_SEARCH_TILE_EXP_PREF,
+          SEARCH_SHORTCUTS_EXPERIMENT
+        ].includes(action.data.name)) {
           this.refresh({broadcast: true});
         }
         break;
