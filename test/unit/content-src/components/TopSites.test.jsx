@@ -1023,14 +1023,14 @@ describe("<TopSiteList>", () => {
     const wrapper = shallow(<TopSiteList {...DEFAULT_PROPS} dispatch={dispatch} />);
     const instance = wrapper.instance();
     const index = 7;
-    const link = {url: "https://foo.com", customScreenshotURL: "foo"};
+    const link = {url: "https://foo.com", customScreenshotURL: "foo", searchTopSite: false};
     const title = "foo";
     instance.onDragEvent({type: "dragstart"}, index, link, title);
     dispatch.reset();
     instance.onDragEvent({type: "drop"}, 3);
     assert.calledTwice(dispatch);
     assert.calledWith(dispatch, {
-      data: {draggedFromIndex: 7, index: 3, site: {label: "foo", url: "https://foo.com", customScreenshotURL: "foo"}},
+      data: {draggedFromIndex: 7, index: 3, site: {label: "foo", url: "https://foo.com", customScreenshotURL: "foo", searchTopSite: false}},
       meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
       type: "TOP_SITES_INSERT"
     });

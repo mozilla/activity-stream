@@ -4,6 +4,7 @@ import {
   MIN_CORNER_FAVICON_SIZE,
   MIN_RICH_FAVICON_SIZE,
   TOP_SITES_CONTEXT_MENU_OPTIONS,
+  TOP_SITES_SEARCH_SHORTCUTS_CONTEXT_MENU_OPTIONS,
   TOP_SITES_SOURCE
 } from "./TopSitesConstants";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
@@ -120,6 +121,11 @@ export class TopSiteLink extends React.PureComponent {
     let hasScreenshotImage = this.state.screenshotImage && this.state.screenshotImage.url;
     if (defaultStyle) { // force no styles (letter fallback) even if the link has imagery
       smallFaviconFallback = false;
+    } else if (link.searchTopSite) {
+      imageClassName = "screenshot";
+      imageStyle = {backgroundImage: "none"};
+      showSmallFavicon = true;
+      smallFaviconStyle = {backgroundImage:  `url(${tippyTopIcon})`};
     } else if (link.customScreenshotURL) {
       // assume high quality custom screenshot and use rich icon styles and class names
       imageClassName = "top-site-icon rich-icon";
@@ -221,10 +227,17 @@ export class TopSite extends React.PureComponent {
     // specified as a property on the link.
     event.preventDefault();
     const {altKey, button, ctrlKey, metaKey, shiftKey} = event;
-    this.props.dispatch(ac.OnlyToMain({
-      type: at.OPEN_LINK,
-      data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
-    }));
+    if (!this.props.link.searchTopSite) {
+      this.props.dispatch(ac.OnlyToMain({
+        type: at.OPEN_LINK,
+        data: Object.assign(this.props.link, {event: {altKey, button, ctrlKey, metaKey, shiftKey}})
+      }));
+    } else {
+      this.props.dispatch(ac.OnlyToMain({
+        type: at.FILL_SEARCH_TERM,
+        data: {label: this.props.link.label}
+      }));
+    }
   }
 
   onMenuButtonClick(event) {
@@ -254,7 +267,7 @@ export class TopSite extends React.PureComponent {
               dispatch={props.dispatch}
               index={props.index}
               onUpdate={this.onMenuUpdate}
-              options={TOP_SITES_CONTEXT_MENU_OPTIONS}
+              options={link.searchTopSite ? TOP_SITES_SEARCH_SHORTCUTS_CONTEXT_MENU_OPTIONS : TOP_SITES_CONTEXT_MENU_OPTIONS}
               site={link}
               siteInfo={this._getTelemetryInfo()}
               source={TOP_SITES_SOURCE} />
@@ -361,7 +374,8 @@ export class _TopSiteList extends React.PureComponent {
               site: {
                 url: this.state.draggedSite.url,
                 label: this.state.draggedTitle,
-                customScreenshotURL: this.state.draggedSite.customScreenshotURL
+                customScreenshotURL: this.state.draggedSite.customScreenshotURL,
+                searchTopSite: this.state.draggedSite.searchTopSite
               },
               index,
               draggedFromIndex: this.state.draggedIndex

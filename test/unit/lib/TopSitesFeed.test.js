@@ -66,7 +66,7 @@ describe("Top Sites Feed", () => {
       _shouldGetScreenshots: sinon.stub().returns(true)
     };
     filterAdultStub = sinon.stub().returns([]);
-    shortURLStub = sinon.stub().callsFake(site => site.url.replace(".com", ""));
+    shortURLStub = sinon.stub().callsFake(site => site.url.replace(".com", "").replace("https://", ""));
     const fakeDedupe = function() {};
     fakePageThumbs = {
       addExpirationFilter: sinon.stub(),
@@ -204,7 +204,7 @@ describe("Top Sites Feed", () => {
       });
       it("should filter out the defaults that have been blocked", async () => {
         // make sure we only have one top site, and we block the only default site we have to show
-        const url = "www.myonlytopsite.com";
+        const url = "https://www.myonlytopsite.com";
         const topsite = {
           frecency: FAKE_FRECENCY,
           hostname: shortURLStub({url}),
@@ -234,8 +234,8 @@ describe("Top Sites Feed", () => {
 
         assert.equal(result, site.hostname);
       });
-      it("should add defaults if there are are not enough links", async () => {
-        links = [{frecency: FAKE_FRECENCY, url: "foo.com"}];
+      it("should add defaults if there are not enough links", async () => {
+        links = [{frecency: FAKE_FRECENCY, url: "https://foo.com"}];
 
         const result = await feed.getLinksWithDefaults();
         const reference = [...links, ...DEFAULT_TOP_SITES].map(s =>
@@ -250,7 +250,7 @@ describe("Top Sites Feed", () => {
         links = [];
         const numVisible = TOP_SITES_DEFAULT_ROWS * TOP_SITES_MAX_SITES_PER_ROW;
         for (let i = 0; i < numVisible - 1; i++) {
-          links.push({frecency: FAKE_FRECENCY, url: `foo${i}.com`});
+          links.push({frecency: FAKE_FRECENCY, url: `https://foo${i}.com`});
         }
         const result = await feed.getLinksWithDefaults();
         const reference = [...links, DEFAULT_TOP_SITES[0]].map(s =>
@@ -466,6 +466,20 @@ describe("Top Sites Feed", () => {
       await feed.getLinksWithDefaults();
 
       assert.calledWith(feed._fetchScreenshot, sinon.match.object, "custom");
+    });
+    it("should update frecent search topsite icon", async () => {
+      feed._tippyTopProvider.processSite = site => {
+        site.tippyTopIcon = "icon.png";
+        site.backgroundColor = "#fff";
+        return site;
+      };
+      links = [{url: "https://google.com/photos"}];
+
+      const urlsReturned = await feed.getLinksWithDefaults();
+
+      const defaultSearchTopsite = urlsReturned.find(s => s.url === "https://google.com/photos");
+      assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
+      assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
     });
   });
   describe("#init", () => {
@@ -1104,29 +1118,29 @@ describe("Top Sites Feed", () => {
         "ask.com",
         "duckduckgo.com"
       ];
-      links = [{url: "amazon.com"}, ...TOP_5_TEST.map(url => ({url}))];
+      links = [{url: "https://amazon.com"}, ...TOP_5_TEST.map(url => ({url}))];
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
-      assert.include(urlsReturned, "amazon.com");
+      assert.include(urlsReturned, "https://amazon.com");
       TOP_5_TEST.forEach(url => assert.notInclude(urlsReturned, url));
     });
     it("should not filter out alexa, default search from the query results if the experiment pref is off", async () => {
-      links = [{url: "google.com"}, {url: "foo.com"}, {url: "duckduckgo"}];
+      links = [{url: "https://google.com"}, {url: "https://foo.com"}, {url: "https://duckduckgo"}];
       feed.store.state.Prefs.values[NO_DEFAULT_SEARCH_TILE_PREF] = false;
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
-      assert.include(urlsReturned, "google.com");
+      assert.include(urlsReturned, "https://google.com");
     });
     it("should filter out the current default search from the default sites", async () => {
       feed._currentSearchHostname = "amazon";
-      feed.onAction({type: at.PREFS_INITIAL_VALUES, data: {"default.sites": "google.com,amazon.com"}});
-      links = [{url: "foo.com"}];
+      feed.onAction({type: at.PREFS_INITIAL_VALUES, data: {"default.sites": "https://google.com,https://amazon.com"}});
+      links = [{url: "https://foo.com"}];
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
-      assert.notInclude(urlsReturned, "amazon.com");
+      assert.notInclude(urlsReturned, "https://amazon.com");
     });
     it("should not filter out current default search from pinned sites even if it matches the current default search", async () => {
-      links = [{url: "foo.com"}];
-      fakeNewTabUtils.pinnedLinks.links = [{url: "google.com"}];
+      links = [{url: "https://foo.com"}];
+      fakeNewTabUtils.pinnedLinks.links = [{url: "https://google.com"}];
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
-      assert.include(urlsReturned, "google.com");
+      assert.include(urlsReturned, "https://google.com");
     });
     it("should set ._currentSearchHostname to the current engine hostname on init", async () => {
       global.Services.search.currentEngine = {identifier: "ddg", searchForm: "duckduckgo.com"};
