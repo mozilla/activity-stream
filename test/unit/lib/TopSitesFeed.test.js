@@ -467,6 +467,51 @@ describe("Top Sites Feed", () => {
 
       assert.calledWith(feed._fetchScreenshot, sinon.match.object, "custom");
     });
+    describe("#improvesearch.topSiteSearchShortcuts", () => {
+      beforeEach(() => {
+        feed.store.state.Prefs.values["improvesearch.topSiteSearchShortcuts"] = true;
+      });
+      it("should update frecent search topsite icon", async () => {
+        feed._tippyTopProvider.processSite = site => {
+          site.tippyTopIcon = "icon.png";
+          site.backgroundColor = "#fff";
+          return site;
+        };
+        links = [{url: "google.com"}];
+
+        const urlsReturned = await feed.getLinksWithDefaults();
+
+        const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
+        assert.propertyVal(defaultSearchTopsite, "searchTopSite", true);
+        assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
+        assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
+      });
+      it("should update default search topsite icon", async () => {
+        feed._tippyTopProvider.processSite = site => {
+          site.tippyTopIcon = "icon.png";
+          site.backgroundColor = "#fff";
+          return site;
+        };
+        links = [{url: "foo.com"}];
+        feed.onAction({type: at.PREFS_INITIAL_VALUES, data: {"default.sites": "google.com,amazon.com"}});
+
+        const urlsReturned = await feed.getLinksWithDefaults();
+
+        const defaultSearchTopsite = urlsReturned.find(s => s.url === "amazon.com");
+        assert.propertyVal(defaultSearchTopsite, "searchTopSite", true);
+        assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
+        assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
+      });
+      it("should not overlap with improvesearch.noDefaultSearchTile and still provide search tiles", async () => {
+        feed.store.state.Prefs.values["improvesearch.noDefaultSearchTile"] = true;
+        links = [{url: "google.com"}];
+
+        const urlsReturned = await feed.getLinksWithDefaults();
+
+        const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
+        assert.isTrue(defaultSearchTopsite.searchTopSite);
+      });
+    });
   });
   describe("#init", () => {
     it("should call refresh (broadcast:true)", async () => {
@@ -929,6 +974,13 @@ describe("Top Sites Feed", () => {
       feed.pin({data: {index: 2, site}});
       assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
       assert.calledWith(fakeNewTabUtils.pinnedLinks.pin, site, 2);
+    });
+    it("should save the searchTopSite attribute if set", () => {
+      fakeNewTabUtils.pinnedLinks.links = [null, {url: "example.com"}];
+      const site = {url: "foo.bar", label: "foo", searchTopSite: true};
+      feed.pin({data: {index: 2, site}});
+      assert.calledOnce(fakeNewTabUtils.pinnedLinks.pin);
+      assert.propertyVal(fakeNewTabUtils.pinnedLinks.pin.firstCall.args[0], "searchTopSite", true);
     });
     it("should NOT move a pinned site in specified slot to the next slot", () => {
       fakeNewTabUtils.pinnedLinks.links = [null, null, {url: "example.com"}];
