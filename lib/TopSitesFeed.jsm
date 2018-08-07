@@ -148,6 +148,7 @@ this.TopSitesFeed = class TopSitesFeed {
 
   async getLinksWithDefaults() {
     const numItems = this.store.getState().Prefs.values[ROWS_PREF] * TOP_SITES_MAX_SITES_PER_ROW;
+    const searchShortcutsExperiment = this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT];
 
     // Get all frecent sites from history
     const frecent = (await this.frecentCache.request({
@@ -157,7 +158,10 @@ this.TopSitesFeed = class TopSitesFeed {
     .reduce((validLinks, link) => {
       const hostname = shortURL(link);
       if (!this.isExperimentOnAndLinkFilteredSearch(hostname)) {
-        validLinks.push({...link, hostname});
+        validLinks.push({
+          hostname,
+          ...(searchShortcutsExperiment ? this.topSiteToSearchTopSite(link) : link)
+        });
       }
       return validLinks;
     }, []);
@@ -170,7 +174,10 @@ this.TopSitesFeed = class TopSitesFeed {
         } else if (this.isExperimentOnAndLinkFilteredSearch(link.hostname)) {
           return topsites;
         }
-        return [...topsites, this.topSiteToSearchTopSite(link)];
+        return [
+          ...topsites,
+          searchShortcutsExperiment ? this.topSiteToSearchTopSite(link) : link
+        ];
       }, []);
 
     // Get pinned links augmented with desired properties
@@ -527,7 +534,11 @@ this.TopSitesFeed = class TopSitesFeed {
       case at.PREF_CHANGED:
         if (action.data.name === DEFAULT_SITES_PREF) {
           this.refreshDefaults(action.data.value);
-        } else if ([ROWS_PREF, NO_DEFAULT_SEARCH_TILE_EXP_PREF].includes(action.data.name)) {
+        } else if ([
+          ROWS_PREF,
+          NO_DEFAULT_SEARCH_TILE_EXP_PREF,
+          SEARCH_SHORTCUTS_EXPERIMENT
+        ].includes(action.data.name)) {
           this.refresh({broadcast: true});
         }
         break;
