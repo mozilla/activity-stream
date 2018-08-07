@@ -157,7 +157,7 @@ export const LinkMenuOptions = {
       data: {
         site: {
           url,
-          ...(searchTopSite && {searchTopSite})
+          ...(searchTopSite && {searchTopSite, label})
         },
         index
       }
