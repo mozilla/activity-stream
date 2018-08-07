@@ -2,12 +2,26 @@
 
 ChromeUtils.defineModuleGetter(this, "PlacesTestUtils",
   "resource://testing-common/PlacesTestUtils.jsm");
+ChromeUtils.defineModuleGetter(this, "NewTabUtils",
+  "resource://gre/modules/NewTabUtils.jsm");
 
 function popPrefs() {
   return SpecialPowers.popPrefEnv();
 }
 function pushPrefs(...prefs) {
   return SpecialPowers.pushPrefEnv({set: prefs});
+}
+
+// Temporarily disable the search improvements for mochitests
+// To be fixed in Bug 1481680
+async function disableSearchImprovements() {
+  await pushPrefs(["browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts", false]);
+  // If the search shortcuts have been pinned, unpin them
+  NewTabUtils.pinnedLinks.unpin({url: "https://www.google.com", searchTopSite: true});
+  NewTabUtils.pinnedLinks.unpin({url: "https://www.amazon.com", searchTopSite: true});
+  // Toggle the feed off and on as a workaround to read the new prefs.
+  await pushPrefs(["browser.newtabpage.activity-stream.feeds.topsites", false]);
+  await pushPrefs(["browser.newtabpage.activity-stream.feeds.topsites", true]);
 }
 
 async function setDefaultTopSites() { // eslint-disable-line no-unused-vars
@@ -148,6 +162,7 @@ function test_newtab(testInfo) { // eslint-disable-line no-unused-vars
 
     // Chain together before -> contentTask -> after data passing
     try {
+      await disableSearchImprovements();
       let contentArg = await before({pushPrefs: scopedPushPrefs, tab});
       let contentResult = await ContentTask.spawn(browser, contentArg, contentTask);
       await after(contentResult);

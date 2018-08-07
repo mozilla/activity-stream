@@ -163,6 +163,10 @@ const PREFS_CONFIG = new Map([
     title: "Experiment to show special top sites that perform keyword searches",
     value: true
   }],
+  ["improvesearch.topSiteSearchShortcuts.havePinned", {
+    title: "A comma-delimited list of search shortcuts that have previously been pinned",
+    value: ""
+  }],
   ["asrouterExperimentEnabled", {
     title: "Is the message center experiment on?",
     value: false
