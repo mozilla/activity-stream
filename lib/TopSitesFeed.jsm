@@ -236,9 +236,7 @@ this.TopSitesFeed = class TopSitesFeed {
         if (link.customScreenshotURL) {
           this._fetchScreenshot(link, link.customScreenshotURL);
         } else if (link.searchTopSite && !link.isDefault) {
-          // Search topsites that come from frecent sites can have favicons
-          // that don't match the favicon associated with the URL origin
-          this._fetchOriginTopSiteIcon(link);
+          this._tippyTopProvider.processSite(link);
         } else {
           this._fetchIcon(link);
         }
@@ -286,25 +284,9 @@ this.TopSitesFeed = class TopSitesFeed {
     if (isSearchProvider(shortURL(site))) {
       return {
         searchTopSite: true,
-        label: `@${site.hostname}`,
+        label: `@${shortURL(site)}`,
         ...site
       };
-    }
-
-    return site;
-  }
-
-  /**
-   * Fetch the icon corresponding to the URL origin
-   * @param site {object} LinksCache object corresponding to a TopSite
-   */
-  _fetchOriginTopSiteIcon(site) {
-    try {
-      const {tippyTopIcon, backgroundColor} = this._tippyTopProvider.processSite({...site, url: new URL(site.url).origin});
-      site.backgroundColor = backgroundColor;
-      site.tippyTopIcon = tippyTopIcon;
-    } catch (e) {
-      // Some issue with favicon, so just continue without one
     }
 
     return site;
