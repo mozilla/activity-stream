@@ -42,10 +42,6 @@ const SEARCH_FILTERS = [
   "ask",
   "duckduckgo"
 ];
-const SEARCH_HOST_FILTERS = [
-  {hostname: "google", identifierPattern: /^google|^www.google/},
-  {hostname: "amazon", identifierPattern: /^amazon|^www.amazon/}
-];
 // List of sites we match against Topsites in order to identify sites
 // that should be converted to search Topsites
 const TOPSITE_SEARCH_PROVIDERS = [
@@ -213,7 +209,7 @@ this.TopSitesFeed = class TopSitesFeed {
     }));
 
     const dedupedUnpinned = this.dedupeTopSites({
-      // Convert any frecent site that matches SEARCH_HOST_FILTERS to a search topsite
+      // Convert any frecent site that matches TOPSITE_SEARCH_PROVIDERS to a search topsite
       // without pinning or changing position
       frecent: frecent.map(this.topSiteToSearchTopSite),
       pinned,

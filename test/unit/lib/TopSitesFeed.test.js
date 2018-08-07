@@ -1124,9 +1124,9 @@ describe("Top Sites Feed", () => {
         "ask.com",
         "duckduckgo.com"
       ];
-      links = [{url: "amazon.com"}, ...TOP_5_TEST.map(url => ({url}))];
+      links = [{url: "https://amazon.com"}, ...TOP_5_TEST.map(url => ({url}))];
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
-      assert.include(urlsReturned, "amazon.com");
+      assert.include(urlsReturned, "https://amazon.com");
       TOP_5_TEST.forEach(url => assert.notInclude(urlsReturned, url));
     });
     it("should not filter out alexa, default search from the query results if the experiment pref is off", async () => {
@@ -1137,14 +1137,14 @@ describe("Top Sites Feed", () => {
     });
     it("should filter out the current default search from the default sites", async () => {
       feed._currentSearchHostname = "amazon";
-      feed.onAction({type: at.PREFS_INITIAL_VALUES, data: {"default.sites": "google.com,amazon.com"}});
-      links = [{url: "foo.com"}];
+      feed.onAction({type: at.PREFS_INITIAL_VALUES, data: {"default.sites": "https://google.com,https://amazon.com"}});
+      links = [{url: "https://foo.com"}];
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
-      assert.notInclude(urlsReturned, "amazon.com");
+      assert.notInclude(urlsReturned, "https://amazon.com");
     });
     it("should not filter out current default search from pinned sites even if it matches the current default search", async () => {
-      links = [{url: "foo.com"}];
-      fakeNewTabUtils.pinnedLinks.links = [{url: "google.com"}];
+      links = [{url: "https://foo.com"}];
+      fakeNewTabUtils.pinnedLinks.links = [{url: "https://google.com"}];
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
       assert.include(urlsReturned, "https://google.com");
     });
