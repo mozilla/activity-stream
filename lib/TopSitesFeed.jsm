@@ -245,6 +245,10 @@ this.TopSitesFeed = class TopSitesFeed {
         // If there is a custom screenshot this is the only image we display
         if (link.customScreenshotURL) {
           this._fetchScreenshot(link, link.customScreenshotURL);
+        } else if (link.searchTopSite && !link.isDefault) {
+          // Search topsites that come from frecent sites can have favicons
+          // that don't match the favicon associated with the URL origin
+          this._fetchOriginTopSiteIcon(link);
         } else {
           this._fetchIcon(link);
         }
@@ -311,6 +315,25 @@ this.TopSitesFeed = class TopSitesFeed {
     }
 
     return site;
+  }
+
+  /**
+   * Fetch the icon corresponding to the URL origin
+   * @param site {object} LinksCache object corresponding to a TopSite
+   */
+  async _fetchOriginTopSiteIcon(site) {
+    try {
+      const originSite = {...site, url: new URL(site.url).origin};
+      NewTabUtils.activityStreamProvider._faviconBytesToDataURI(await
+        NewTabUtils.activityStreamProvider._addFavicons([originSite]));
+
+      for (const prop of PINNED_FAVICON_PROPS_TO_MIGRATE) {
+        originSite.__sharedCache.updateLink(prop, originSite[prop]);
+        site[prop] = originSite[prop];
+      }
+    } catch (e) {
+      // Some issue with favicon, so just continue without one
+    }
   }
 
   /**

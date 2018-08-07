@@ -472,11 +472,20 @@ describe("Top Sites Feed", () => {
       links = [{url: "https://foo.com"}];
       sandbox.spy(feed.pinnedCache, "expire");
 
-      const urlsReturned = (await feed.getLinksWithDefaults());
+      const urlsReturned = await feed.getLinksWithDefaults();
 
       const defaultSearchTopsite = urlsReturned.find(s => s.url === "https://amazon.com");
       assert.calledTwice(feed.pinnedCache.expire);
       assert.equal(defaultSearchTopsite.searchTopSite, true);
+    });
+    it("should update frecent search topsite icon", async () => {
+      links = [{url: "https://google.com/photos"}];
+
+      const urlsReturned = await feed.getLinksWithDefaults();
+
+      const defaultSearchTopsite = urlsReturned.find(s => s.url === "https://google.com/photos");
+      assert.equal(defaultSearchTopsite.favicon, FAKE_FAVICON);
+      assert.equal(defaultSearchTopsite.faviconSize, FAKE_FAVICON_SIZE);
     });
   });
   describe("#init", () => {
