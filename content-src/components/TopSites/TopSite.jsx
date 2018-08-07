@@ -4,6 +4,7 @@ import {
   MIN_CORNER_FAVICON_SIZE,
   MIN_RICH_FAVICON_SIZE,
   TOP_SITES_CONTEXT_MENU_OPTIONS,
+  TOP_SITES_SEARCH_SHORTCUTS_CONTEXT_MENU_OPTIONS,
   TOP_SITES_SOURCE
 } from "./TopSitesConstants";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
@@ -266,7 +267,7 @@ export class TopSite extends React.PureComponent {
               dispatch={props.dispatch}
               index={props.index}
               onUpdate={this.onMenuUpdate}
-              options={TOP_SITES_CONTEXT_MENU_OPTIONS}
+              options={link.searchTopSite ? TOP_SITES_SEARCH_SHORTCUTS_CONTEXT_MENU_OPTIONS : TOP_SITES_CONTEXT_MENU_OPTIONS}
               site={link}
               siteInfo={this._getTelemetryInfo()}
               source={TOP_SITES_SOURCE} />
