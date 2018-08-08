@@ -359,9 +359,9 @@ this.TopSitesFeed = class TopSitesFeed {
   topSiteToSearchTopSite(site) {
     if (isSearchProvider(shortURL(site))) {
       return {
+        ...site,
         searchTopSite: true,
-        label: `@${shortURL(site)}`,
-        ...site
+        label: `@${shortURL(site)}`
       };
     }
 
