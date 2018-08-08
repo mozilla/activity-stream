@@ -11,6 +11,11 @@ const {insertPinned, TOP_SITES_MAX_SITES_PER_ROW} = ChromeUtils.import("resource
 const {Dedupe} = ChromeUtils.import("resource://activity-stream/common/Dedupe.jsm", {});
 const {shortURL} = ChromeUtils.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
+const {
+  SEARCH_SHORTCUTS,
+  SEARCH_SHORTCUTS_EXPERIMENT,
+  getSearchProvider
+} = ChromeUtils.import("resource://activity-stream/lib/SearchShortcuts.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "filterAdult",
   "resource://activity-stream/lib/FilterAdult.jsm");
@@ -33,6 +38,7 @@ const SECTION_ID = "topsites";
 const ROWS_PREF = "topSitesRows";
 
 // Search experiment stuff
+const SEARCH_SHORTCUTS_HAVE_PINNED_PREF = "improvesearch.topSiteSearchShortcuts.havePinned";
 const NO_DEFAULT_SEARCH_TILE_EXP_PREF = "improvesearch.noDefaultSearchTile";
 const SEARCH_FILTERS = [
   "google",
@@ -42,22 +48,10 @@ const SEARCH_FILTERS = [
   "ask",
   "duckduckgo"
 ];
-const SEARCH_SHORTCUTS_EXPERIMENT = "improvesearch.topSiteSearchShortcuts";
-const SEARCH_SHORTCUTS_HAVE_PINNED_PREF = "improvesearch.topSiteSearchShortcuts.havePinned";
-// List of sites we match against Topsites in order to identify sites
-// that should be converted to search Topsites
-const SEARCH_SHORTCUTS = [
-  {keyword: "@google", shortURL: "google", url: "https://google.com", searchIdentifier: /^google/},
-  {keyword: "@amazon", shortURL: "amazon", url: "https://amazon.com", searchIdentifier: /^amazon/}
-];
 
 function getShortURLForCurrentSearch() {
   const url = shortURL({url: Services.search.currentEngine.searchForm});
   return url;
-}
-
-function isSearchProvider(candidateShortURL) {
-  return SEARCH_SHORTCUTS.some(match => candidateShortURL === match.shortURL);
 }
 
 this.TopSitesFeed = class TopSitesFeed {
@@ -141,7 +135,7 @@ this.TopSitesFeed = class TopSitesFeed {
       return false;
     }
     // If TopSite Search Shortcuts is enabled we don't want to filter those sites out
-    if (this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT] && isSearchProvider(hostname)) {
+    if (this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT] && getSearchProvider(hostname)) {
       return false;
     }
     if (SEARCH_FILTERS.includes(hostname) || hostname === this._currentSearchHostname) {
@@ -357,15 +351,15 @@ this.TopSitesFeed = class TopSitesFeed {
   }
 
   topSiteToSearchTopSite(site) {
-    if (isSearchProvider(shortURL(site))) {
-      return {
-        searchTopSite: true,
-        label: `@${shortURL(site)}`,
-        ...site
-      };
+    const searchProvider = getSearchProvider(shortURL(site));
+    if (!searchProvider) {
+      return site;
     }
-
-    return site;
+    return {
+      ...site,
+      searchTopSite: true,
+      label: searchProvider.keyword
+    };
   }
 
   /**
