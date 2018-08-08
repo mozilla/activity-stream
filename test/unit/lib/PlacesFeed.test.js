@@ -226,7 +226,7 @@ describe("PlacesFeed", () => {
       assert.calledOnce(feed.fillSearchTopSiteTerm);
     });
     it("should set the URL bar value to the label value", () => {
-      const locationBar = {focus: sandbox.stub()};
+      const locationBar = {search: sandbox.stub()};
       const getElementById = sandbox.stub().returns(locationBar);
       const action = {
         type: at.FILL_SEARCH_TERM,
@@ -236,8 +236,8 @@ describe("PlacesFeed", () => {
 
       feed.fillSearchTopSiteTerm(action);
 
-      assert.equal(locationBar.value, "@Foo ");
-      assert.calledOnce(locationBar.focus);
+      assert.calledOnce(locationBar.search);
+      assert.calledWithExactly(locationBar.search, "@Foo ");
     });
     it("should call saveToPocket on SAVE_TO_POCKET", () => {
       const action = {
