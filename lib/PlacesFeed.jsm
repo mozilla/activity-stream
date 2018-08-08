@@ -279,7 +279,7 @@ class PlacesFeed {
   }
 
   fillSearchTopSiteTerm({_target, data}) {
-    _target.browser.ownerGlobal.document.getElementById("urlbar").search(`${data.label} `);
+    _target.browser.ownerGlobal.gURLBar.search(`${data.label} `, {disableOneOffButtons: true, disableSearchSuggestionsNotification: true});
   }
 
   onAction(action) {

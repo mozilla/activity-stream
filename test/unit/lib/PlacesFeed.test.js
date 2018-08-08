@@ -227,17 +227,16 @@ describe("PlacesFeed", () => {
     });
     it("should set the URL bar value to the label value", () => {
       const locationBar = {search: sandbox.stub()};
-      const getElementById = sandbox.stub().returns(locationBar);
       const action = {
         type: at.FILL_SEARCH_TERM,
         data: {label: "@Foo"},
-        _target: {browser: {ownerGlobal: {document: {getElementById}}}}
+        _target: {browser: {ownerGlobal: {gURLBar: locationBar}}}
       };
 
       feed.fillSearchTopSiteTerm(action);
 
       assert.calledOnce(locationBar.search);
-      assert.calledWithExactly(locationBar.search, "@Foo ");
+      assert.calledWithExactly(locationBar.search, "@Foo ", {disableOneOffButtons: true, disableSearchSuggestionsNotification: true});
     });
     it("should call saveToPocket on SAVE_TO_POCKET", () => {
       const action = {
