@@ -68,7 +68,7 @@ describe("Top Sites Feed", () => {
       _shouldGetScreenshots: sinon.stub().returns(true)
     };
     filterAdultStub = sinon.stub().returns([]);
-    shortURLStub = sinon.stub().callsFake(site => site.url.replace(".com", "").replace("https://", ""));
+    shortURLStub = sinon.stub().callsFake(site => site.url.replace(/(.com|.ca)/, "").replace("https://", ""));
     const fakeDedupe = function() {};
     fakePageThumbs = {
       addExpirationFilter: sinon.stub(),
@@ -1224,6 +1224,13 @@ describe("Top Sites Feed", () => {
       });
     });
 
+    it("should filter out default top sites that match a hostname of a search shortcut if previously blocked", async () => {
+      feed.refreshDefaults("https://amazon.ca");
+      fakeNewTabUtils.blockedLinks.links = [{url: "https://amazon.com"}];
+      fakeNewTabUtils.blockedLinks.isBlocked = site => (fakeNewTabUtils.blockedLinks.links[0].url === site.url);
+      const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
+      assert.notInclude(urlsReturned, "https://amazon.ca");
+    });
     it("_maybeInsertSearchShortcuts should be called on getLinksWithDefaults", async () => {
       sandbox.spy(feed, "_maybeInsertSearchShortcuts");
       await feed.getLinksWithDefaults();
