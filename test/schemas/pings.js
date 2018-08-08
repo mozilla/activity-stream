@@ -98,7 +98,7 @@ export const UserEventAction = Joi.object().keys({
     value: Joi.object().keys({
       icon_type: Joi.valid(["tippytop", "rich_icon", "screenshot_with_icon", "screenshot", "no_image"]),
       card_type: Joi.valid(["bookmark", "trending", "pinned", "pocket", "search"]),
-      search_vendor: Joi.valid(["google", "amazon", "baidu", "yandex"])
+      search_vendor: Joi.valid(["google", "amazon"])
     })
   }).required(),
   meta: Joi.object().keys({
