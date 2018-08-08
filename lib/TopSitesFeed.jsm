@@ -43,17 +43,21 @@ const SEARCH_FILTERS = [
   "duckduckgo"
 ];
 const SEARCH_SHORTCUTS_EXPERIMENT = "improvesearch.topSiteSearchShortcuts";
+const SEARCH_SHORTCUTS_HAVE_PINNED_PREF = "improvesearch.topSiteSearchShortcuts.havePinned";
 // List of sites we match against Topsites in order to identify sites
 // that should be converted to search Topsites
-const TOPSITE_SEARCH_PROVIDERS = ["google", "amazon"];
+const SEARCH_SHORTCUTS = [
+  {keyword: "@google", shortURL: "google", url: "https://google.com", searchIdentifier: /^google/},
+  {keyword: "@amazon", shortURL: "amazon", url: "https://amazon.com", searchIdentifier: /^amazon/}
+];
 
 function getShortURLForCurrentSearch() {
   const url = shortURL({url: Services.search.currentEngine.searchForm});
   return url;
 }
 
-function isSearchProvider(shortUrl) {
-  return TOPSITE_SEARCH_PROVIDERS.some(match => shortUrl === match);
+function isSearchProvider(candidateShortURL) {
+  return SEARCH_SHORTCUTS.some(match => candidateShortURL === match.shortURL);
 }
 
 this.TopSitesFeed = class TopSitesFeed {
@@ -146,6 +150,65 @@ this.TopSitesFeed = class TopSitesFeed {
     return false;
   }
 
+  /**
+   * _maybeInsertSearchShortcuts - if the search shortcuts experiment is running,
+   *                               insert search shortcuts if needed
+   * @param {Array} plainPinnedSites (from the pinnedSitesCache)
+   * @returns {Boolean} Did we insert any search shortcuts?
+   */
+  async _maybeInsertSearchShortcuts(plainPinnedSites) {
+    // Only insert shortcuts if the experiment is running
+    if (this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT]) {
+      // We don't want to insert shortcuts we've previously inserted
+      const prevInsertedShortcuts = this.store.getState().Prefs.values[SEARCH_SHORTCUTS_HAVE_PINNED_PREF]
+        .split(",").filter(s => s); // Filter out empty strings
+      const newInsertedShortcuts = [];
+
+      // If we've previously inserted all search shortcuts return early
+      if (SEARCH_SHORTCUTS.every(shortcut => prevInsertedShortcuts.includes(shortcut.shortURL))) {
+        return false;
+      }
+
+      const numberOfSlots = this.store.getState().Prefs.values[ROWS_PREF] * TOP_SITES_MAX_SITES_PER_ROW;
+
+      // The plainPinnedSites array is populated with pinned sites at their
+      // respective indices, and null everywhere else, but is not always the
+      // right length
+      const pinnedSites = [...plainPinnedSites].concat(
+        Array(numberOfSlots - plainPinnedSites.length).fill(null)
+      );
+
+      await new Promise(resolve => Services.search.init(resolve));
+
+      const tryToInsertSearchShortcut = shortcut => {
+        const nextAvailable = pinnedSites.indexOf(null);
+        // Only add a search shortcut if the site isn't already pinned, we
+        // haven't previously inserted it, there's space to pin it, and the
+        // search engine is available in Firefox
+        if (
+          !pinnedSites.find(s => s && s.hostname === shortcut.shortURL) &&
+          !prevInsertedShortcuts.includes(shortcut.shortURL) &&
+          nextAvailable > -1 &&
+          Services.search.getEngines().find(e => e.identifier.match(shortcut.searchIdentifier))
+        ) {
+          const site = this.topSiteToSearchTopSite({url: shortcut.url});
+          this._pinSiteAt(site, nextAvailable);
+          pinnedSites[nextAvailable] = site;
+          newInsertedShortcuts.push(shortcut.shortURL);
+        }
+      };
+
+      SEARCH_SHORTCUTS.forEach(shortcut => tryToInsertSearchShortcut(shortcut));
+
+      if (newInsertedShortcuts.length) {
+        this.store.dispatch(ac.SetPref(SEARCH_SHORTCUTS_HAVE_PINNED_PREF, prevInsertedShortcuts.concat(newInsertedShortcuts).join(",")));
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   async getLinksWithDefaults() {
     const numItems = this.store.getState().Prefs.values[ROWS_PREF] * TOP_SITES_MAX_SITES_PER_ROW;
     const searchShortcutsExperiment = this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT];
@@ -181,7 +244,16 @@ this.TopSitesFeed = class TopSitesFeed {
       }, []);
 
     // Get pinned links augmented with desired properties
-    const plainPinned = await this.pinnedCache.request();
+    let plainPinned = await this.pinnedCache.request();
+
+    // Insert search shortcuts if we need to.
+    // _maybeInsertSearchShortcuts returns true if any search shortcuts are
+    // inserted, meaning we need to expire and refresh the pinnedCache
+    if (await this._maybeInsertSearchShortcuts(plainPinned)) {
+      this.pinnedCache.expire();
+      plainPinned = await this.pinnedCache.request();
+    }
+
     const pinned = await Promise.all(plainPinned.map(async link => {
       if (!link) {
         return link;
@@ -197,8 +269,12 @@ this.TopSitesFeed = class TopSitesFeed {
       }
       // If the link is a frecent site, do not copy over 'isDefault', else check
       // if the site is a default site
-      const copy = Object.assign({}, frecentSite ||
-        {isDefault: !!notBlockedDefaultSites.find(finder)}, link, {hostname: shortURL(link)});
+      const copy = Object.assign(
+        {},
+        frecentSite || {isDefault: !!notBlockedDefaultSites.find(finder)},
+        searchShortcutsExperiment ? this.topSiteToSearchTopSite(link) : link,
+        {hostname: shortURL(link)}
+      );
 
       // Add in favicons if we don't already have it
       if (!copy.favicon) {
