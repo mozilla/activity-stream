@@ -226,9 +226,14 @@ this.TopSitesFeed = class TopSitesFeed {
     // Remove any defaults that have been blocked
     const notBlockedDefaultSites = DEFAULT_TOP_SITES
       .reduce((topsites, link) => {
+        const searchProvider = getSearchProvider(shortURL(link));
         if (NewTabUtils.blockedLinks.isBlocked({url: link.url})) {
           return topsites;
         } else if (this.isExperimentOnAndLinkFilteredSearch(link.hostname)) {
+          return topsites;
+          // If we've previously blocked a search shortcut, remove the default top site
+          // that matches the hostname
+        } else if (searchProvider && NewTabUtils.blockedLinks.isBlocked({url: searchProvider.url})) {
           return topsites;
         }
         return [
