@@ -593,6 +593,7 @@ describe("<TopSite>", () => {
         iconType: "tippytop",
         isPinned: true,
         searchTopSite: true,
+        hostname: "google",
         label: "@google"
       };
       const wrapper = shallow(<TopSite link={Object.assign({}, link, siteInfo)} index={3} dispatch={dispatch} />);

@@ -211,8 +211,7 @@ export class TopSite extends React.PureComponent {
     if (this.props.link.searchTopSite) {
       // Set the card_type as "search" regardless of its pinning status
       value.card_type = "search";
-      // Extract search vendor from the label, i.e. "@search_vendor" => "search_vendor"
-      value.search_vendor = this.props.link.label.slice(1);
+      value.search_vendor = this.props.link.hostname;
     }
     return {value};
   }

@@ -92,7 +92,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "value": {
     "card_type": ["pinned" | "search"],
     "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"],
-    "search_vendor": ["google" | "amazon"]
+    // only exists if its card_type = "search"
+    "search_vendor": "google"
   }
 
   // Basic metadata
@@ -114,7 +115,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action_position": 2,
   "value": {
     "card_type": "search",
-    "search_vendor": ["google" | "amazon"]
+    "search_vendor": "google"
   }
 
   // Basic metadata
@@ -136,7 +137,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "action_position": 2,
   "value": {
     "card_type": "search",
-    "search_vendor": ["google" | "amazon"]
+    "search_vendor": "google"
   }
 
   // Basic metadata
@@ -183,7 +184,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "value": {
     "card_type": ["pinned" | "search"],
     "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"],
-    "search_vendor": ["google" | "amazon"]
+    // only exists if its card_type = "search"
+    "search_vendor": "google"
   }
 
   // Basic metadata
