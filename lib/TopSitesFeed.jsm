@@ -12,8 +12,9 @@ const {Dedupe} = ChromeUtils.import("resource://activity-stream/common/Dedupe.js
 const {shortURL} = ChromeUtils.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 const {
-  SEARCH_SHORTCUTS,
   SEARCH_SHORTCUTS_EXPERIMENT,
+  SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF,
+  SEARCH_SHORTCUTS_HAVE_PINNED_PREF,
   getSearchProvider
 } = ChromeUtils.import("resource://activity-stream/lib/SearchShortcuts.jsm", {});
 
@@ -38,7 +39,6 @@ const SECTION_ID = "topsites";
 const ROWS_PREF = "topSitesRows";
 
 // Search experiment stuff
-const SEARCH_SHORTCUTS_HAVE_PINNED_PREF = "improvesearch.topSiteSearchShortcuts.havePinned";
 const NO_DEFAULT_SEARCH_TILE_EXP_PREF = "improvesearch.noDefaultSearchTile";
 const SEARCH_FILTERS = [
   "google",
@@ -158,8 +158,13 @@ this.TopSitesFeed = class TopSitesFeed {
         .split(",").filter(s => s); // Filter out empty strings
       const newInsertedShortcuts = [];
 
+      const shouldPin = this.store.getState().Prefs.values[SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF]
+        .split(",")
+        .map(getSearchProvider)
+        .filter(s => s);
+
       // If we've previously inserted all search shortcuts return early
-      if (SEARCH_SHORTCUTS.every(shortcut => prevInsertedShortcuts.includes(shortcut.shortURL))) {
+      if (shouldPin.every(shortcut => prevInsertedShortcuts.includes(shortcut.shortURL))) {
         return false;
       }
 
@@ -192,7 +197,7 @@ this.TopSitesFeed = class TopSitesFeed {
         }
       };
 
-      SEARCH_SHORTCUTS.forEach(shortcut => tryToInsertSearchShortcut(shortcut));
+      shouldPin.forEach(shortcut => tryToInsertSearchShortcut(shortcut));
 
       if (newInsertedShortcuts.length) {
         this.store.dispatch(ac.SetPref(SEARCH_SHORTCUTS_HAVE_PINNED_PREF, prevInsertedShortcuts.concat(newInsertedShortcuts).join(",")));

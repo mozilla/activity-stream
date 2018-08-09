@@ -16,6 +16,7 @@ const FAKE_LINKS = new Array(2 * TOP_SITES_MAX_SITES_PER_ROW).fill(null).map((v,
 }));
 const FAKE_SCREENSHOT = "data123";
 const SEARCH_SHORTCUTS_EXPERIMENT_PREF = "improvesearch.topSiteSearchShortcuts";
+const SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF = "improvesearch.topSiteSearchShortcuts.searchEngines";
 const SEARCH_SHORTCUTS_HAVE_PINNED_PREF = "improvesearch.topSiteSearchShortcuts.havePinned";
 
 function FakeTippyTopProvider() {}
@@ -470,51 +471,6 @@ describe("Top Sites Feed", () => {
       await feed.getLinksWithDefaults();
 
       assert.calledWith(feed._fetchScreenshot, sinon.match.object, "custom");
-    });
-    describe("#improvesearch.topSiteSearchShortcuts", () => {
-      beforeEach(() => {
-        feed.store.state.Prefs.values["improvesearch.topSiteSearchShortcuts"] = true;
-      });
-      it("should update frecent search topsite icon", async () => {
-        feed._tippyTopProvider.processSite = site => {
-          site.tippyTopIcon = "icon.png";
-          site.backgroundColor = "#fff";
-          return site;
-        };
-        links = [{url: "google.com"}];
-
-        const urlsReturned = await feed.getLinksWithDefaults();
-
-        const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
-        assert.propertyVal(defaultSearchTopsite, "searchTopSite", true);
-        assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
-        assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
-      });
-      it("should update default search topsite icon", async () => {
-        feed._tippyTopProvider.processSite = site => {
-          site.tippyTopIcon = "icon.png";
-          site.backgroundColor = "#fff";
-          return site;
-        };
-        links = [{url: "foo.com"}];
-        feed.onAction({type: at.PREFS_INITIAL_VALUES, data: {"default.sites": "google.com,amazon.com"}});
-
-        const urlsReturned = await feed.getLinksWithDefaults();
-
-        const defaultSearchTopsite = urlsReturned.find(s => s.url === "amazon.com");
-        assert.propertyVal(defaultSearchTopsite, "searchTopSite", true);
-        assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
-        assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
-      });
-      it("should not overlap with improvesearch.noDefaultSearchTile and still provide search tiles", async () => {
-        feed.store.state.Prefs.values["improvesearch.noDefaultSearchTile"] = true;
-        links = [{url: "google.com"}];
-
-        const urlsReturned = await feed.getLinksWithDefaults();
-
-        const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
-        assert.isTrue(defaultSearchTopsite.searchTopSite);
-      });
     });
   });
   describe("#init", () => {
@@ -1205,6 +1161,7 @@ describe("Top Sites Feed", () => {
   describe("improvesearch.topSitesSearchShortcuts", () => {
     beforeEach(() => {
       feed.store.state.Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT_PREF] = true;
+      feed.store.state.Prefs.values[SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF] = "google,amazon";
       feed.store.state.Prefs.values[SEARCH_SHORTCUTS_HAVE_PINNED_PREF] = "";
       global.Services.search.getEngines = () => [
         {identifier: "google"},
@@ -1222,10 +1179,46 @@ describe("Top Sites Feed", () => {
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
       assert.notInclude(urlsReturned, "https://amazon.ca");
     });
-    it("_maybeInsertSearchShortcuts should be called on getLinksWithDefaults", async () => {
-      sandbox.spy(feed, "_maybeInsertSearchShortcuts");
-      await feed.getLinksWithDefaults();
-      assert.calledOnce(feed._maybeInsertSearchShortcuts);
+
+    it("should update frecent search topsite icon", async () => {
+      feed._tippyTopProvider.processSite = site => {
+        site.tippyTopIcon = "icon.png";
+        site.backgroundColor = "#fff";
+        return site;
+      };
+      links = [{url: "google.com"}];
+
+      const urlsReturned = await feed.getLinksWithDefaults();
+
+      const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
+      assert.propertyVal(defaultSearchTopsite, "searchTopSite", true);
+      assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
+      assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
+    });
+    it("should update default search topsite icon", async () => {
+      feed._tippyTopProvider.processSite = site => {
+        site.tippyTopIcon = "icon.png";
+        site.backgroundColor = "#fff";
+        return site;
+      };
+      links = [{url: "foo.com"}];
+      feed.onAction({type: at.PREFS_INITIAL_VALUES, data: {"default.sites": "google.com,amazon.com"}});
+
+      const urlsReturned = await feed.getLinksWithDefaults();
+
+      const defaultSearchTopsite = urlsReturned.find(s => s.url === "amazon.com");
+      assert.propertyVal(defaultSearchTopsite, "searchTopSite", true);
+      assert.equal(defaultSearchTopsite.tippyTopIcon, "icon.png");
+      assert.equal(defaultSearchTopsite.backgroundColor, "#fff");
+    });
+    it("should not overlap with improvesearch.noDefaultSearchTile and still provide search tiles", async () => {
+      feed.store.state.Prefs.values["improvesearch.noDefaultSearchTile"] = true;
+      links = [{url: "google.com"}];
+
+      const urlsReturned = await feed.getLinksWithDefaults();
+
+      const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
+      assert.isTrue(defaultSearchTopsite.searchTopSite);
     });
 
     describe("_maybeInsertSearchShortcuts", () => {
@@ -1236,30 +1229,34 @@ describe("Top Sites Feed", () => {
         fakeNewTabUtils.pinnedLinks.links = [{url: ""}, {url: ""}, {url: ""}, null, {url: ""}, {url: ""}, null, {url: ""}];
       });
 
+      it("should be called on getLinksWithDefaults", async () => {
+        sandbox.spy(feed, "_maybeInsertSearchShortcuts");
+        await feed.getLinksWithDefaults();
+        assert.calledOnce(feed._maybeInsertSearchShortcuts);
+      });
+
       it("should do nothing and return false if the experiment is disabled", async () => {
         feed.store.state.Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT_PREF] = false;
         assert.isFalse(await feed._maybeInsertSearchShortcuts(fakeNewTabUtils.pinnedLinks.links));
         assert.notCalled(fakeNewTabUtils.pinnedLinks.pin);
       });
 
-      it("should pin Google in the first available slot", async () => {
+      it("should pin shortcuts in the correct order, into the available unpinned slots", async () => {
         await feed._maybeInsertSearchShortcuts(fakeNewTabUtils.pinnedLinks.links);
+        // The shouldPin pref is "google,amazon" so expect the shortcuts in that order
         assert.deepEqual(fakeNewTabUtils.pinnedLinks.links[3], {url: "https://google.com", searchTopSite: true, label: "@google"});
-      });
-
-      it("should pin Amazon in the second available slot", async () => {
-        await feed._maybeInsertSearchShortcuts(fakeNewTabUtils.pinnedLinks.links);
         assert.deepEqual(fakeNewTabUtils.pinnedLinks.links[6], {url: "https://amazon.com", searchTopSite: true, label: "@amazon"});
       });
 
-      it("should only pin Google if there's only one available slot", async () => {
+      it("should only pin the first shortcut if there's only one available slot", async () => {
         fakeNewTabUtils.pinnedLinks.links[3] = {url: ""};
         await feed._maybeInsertSearchShortcuts(fakeNewTabUtils.pinnedLinks.links);
+        // The first item in the shouldPin pref is "google" so expect only Google to be pinned
         assert.ok(fakeNewTabUtils.pinnedLinks.links.find(s => s && s.url === "https://google.com"));
         assert.notOk(fakeNewTabUtils.pinnedLinks.links.find(s => s && s.url === "https://amazon.com"));
       });
 
-      it("should pin neither if there's no available slot", async () => {
+      it("should pin none if there's no available slot", async () => {
         fakeNewTabUtils.pinnedLinks.links[3] = {url: ""};
         fakeNewTabUtils.pinnedLinks.links[6] = {url: ""};
         await feed._maybeInsertSearchShortcuts(fakeNewTabUtils.pinnedLinks.links);
@@ -1267,7 +1264,8 @@ describe("Top Sites Feed", () => {
         assert.notOk(fakeNewTabUtils.pinnedLinks.links.find(s => s && s.url === "https://amazon.com"));
       });
 
-      it("should not pin Amazon if Amazon is not available as a search engine", async () => {
+      it("should not pin a shortcut if the corresponding search engine is not available", async () => {
+        // Make Amazon search engine unavailable
         global.Services.search.getEngines = () => [{identifier: "google"}];
         fakeNewTabUtils.pinnedLinks.links.fill(null);
         await feed._maybeInsertSearchShortcuts(fakeNewTabUtils.pinnedLinks.links);
