@@ -587,6 +587,29 @@ describe("<TopSite>", () => {
       assert.propertyVal(action.data.value, "card_type", "pinned");
       assert.propertyVal(action.data.value, "icon_type", "rich_icon");
     });
+    it("should dispatch a UserEventAction with the right data for search top site", () => {
+      const dispatch = sinon.stub();
+      const siteInfo = {
+        iconType: "tippytop",
+        isPinned: true,
+        searchTopSite: true,
+        hostname: "google",
+        label: "@google"
+      };
+      const wrapper = shallow(<TopSite link={Object.assign({}, link, siteInfo)} index={3} dispatch={dispatch} />);
+
+      wrapper.find(TopSiteLink).simulate("click", {preventDefault() {}});
+
+      const [action] = dispatch.firstCall.args;
+      assert.isUserEventAction(action);
+
+      assert.propertyVal(action.data, "event", "CLICK");
+      assert.propertyVal(action.data, "source", "TOP_SITES");
+      assert.propertyVal(action.data, "action_position", 3);
+      assert.propertyVal(action.data.value, "card_type", "search");
+      assert.propertyVal(action.data.value, "icon_type", "tippytop");
+      assert.propertyVal(action.data.value, "search_vendor", "google");
+    });
     it("should dispatch OPEN_LINK with the right data", () => {
       const dispatch = sinon.stub();
       const wrapper = shallow(<TopSite link={Object.assign({}, link, {typedBonus: true})} index={3} dispatch={dispatch} />);
