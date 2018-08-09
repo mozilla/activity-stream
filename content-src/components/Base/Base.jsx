@@ -160,7 +160,7 @@ export class BaseContent extends React.PureComponent {
     const outerClassName = [
       "outer-wrapper",
       shouldBeFixedToTop && "fixed-to-top",
-      this.state.fixedSearch && "fixed-search"
+      prefs.showSearch && this.state.fixedSearch && "fixed-search"
     ].filter(v => v).join(" ");
 
     return (
