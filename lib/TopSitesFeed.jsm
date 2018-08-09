@@ -507,6 +507,20 @@ this.TopSitesFeed = class TopSitesFeed {
     this._broadcastPinnedSitesUpdated();
   }
 
+  disableSearchImprovements() {
+    Services.prefs.clearUserPref(`browser.newtabpage.activity-stream.${SEARCH_SHORTCUTS_HAVE_PINNED_PREF}`);
+    this.unpinAllSearchShortcuts();
+  }
+
+  unpinAllSearchShortcuts() {
+    for (let pinnedLink of NewTabUtils.pinnedLinks.links) {
+      if (pinnedLink && pinnedLink.searchTopSite) {
+        NewTabUtils.pinnedLinks.unpin(pinnedLink);
+      }
+    }
+    this.pinnedCache.expire();
+  }
+
   /**
    * Insert a site to pin at a position shifting over any other pinned sites.
    */
@@ -594,14 +608,19 @@ this.TopSitesFeed = class TopSitesFeed {
         this.refresh({broadcast: true});
         break;
       case at.PREF_CHANGED:
-        if (action.data.name === DEFAULT_SITES_PREF) {
-          this.refreshDefaults(action.data.value);
-        } else if ([
-          ROWS_PREF,
-          NO_DEFAULT_SEARCH_TILE_EXP_PREF,
-          SEARCH_SHORTCUTS_EXPERIMENT
-        ].includes(action.data.name)) {
-          this.refresh({broadcast: true});
+        switch (action.data.name) {
+          case DEFAULT_SITES_PREF:
+            this.refreshDefaults(action.data.value);
+            break;
+          case ROWS_PREF:
+          case NO_DEFAULT_SEARCH_TILE_EXP_PREF:
+            this.refresh({broadcast: true});
+            break;
+          case SEARCH_SHORTCUTS_EXPERIMENT:
+            if (!action.data.value) {
+              this.disableSearchImprovements();
+            }
+            this.refresh({broadcast: true});
         }
         break;
       case at.UPDATE_SECTION_PREFS:

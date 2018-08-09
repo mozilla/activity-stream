@@ -1181,6 +1181,50 @@ describe("Top Sites Feed", () => {
       });
     });
 
+    it("should properly disable search improvements if the pref is off", async () => {
+      sandbox.stub(global.Services.prefs, "clearUserPref");
+      sandbox.spy(feed.pinnedCache, "expire");
+      sandbox.spy(feed, "refresh");
+
+      // an actual implementation of unpin (until we can get a mochitest for search improvements)
+      fakeNewTabUtils.pinnedLinks.unpin = sinon.stub().callsFake(site => {
+        let index = -1;
+        for (let i = 0; i < fakeNewTabUtils.pinnedLinks.links.length; i++) {
+          let link = fakeNewTabUtils.pinnedLinks.links[i];
+          if (link && link.url === site.url) {
+            index = i;
+          }
+        }
+        if (index > -1) {
+          fakeNewTabUtils.pinnedLinks.links[index] = null;
+        }
+      });
+
+      // ensure we've inserted search shorcuts + pin an additional site in space 4
+      await feed._maybeInsertSearchShortcuts(fakeNewTabUtils.pinnedLinks.links);
+      fakeNewTabUtils.pinnedLinks.pin({url: "https://dontunpinme.com"}, 3);
+
+      // turn the experiment off
+      feed.onAction({type: at.PREF_CHANGED, data: {name: SEARCH_SHORTCUTS_EXPERIMENT_PREF, value: false}});
+
+      // check we cleared the pref, expired the pinned cache, and refreshed the feed
+      assert.calledWith(global.Services.prefs.clearUserPref, `browser.newtabpage.activity-stream.${SEARCH_SHORTCUTS_HAVE_PINNED_PREF}`);
+      assert.calledOnce(feed.pinnedCache.expire);
+      assert.calledWith(feed.refresh, {broadcast: true});
+
+      // check that the search shortcuts were removed from the list of pinned sites
+      const urlsReturned = fakeNewTabUtils.pinnedLinks.links.filter(s => s).map(link => link.url);
+      assert.notInclude(urlsReturned, "https://amazon.com");
+      assert.notInclude(urlsReturned, "https://google.com");
+      assert.include(urlsReturned, "https://dontunpinme.com");
+
+      // check that the positions where the search shortcuts were null, and the additional pinned site is untouched in space 4
+      assert.equal(fakeNewTabUtils.pinnedLinks.links[0], null);
+      assert.equal(fakeNewTabUtils.pinnedLinks.links[1], null);
+      assert.equal(fakeNewTabUtils.pinnedLinks.links[2], undefined);
+      assert.deepEqual(fakeNewTabUtils.pinnedLinks.links[3], {url: "https://dontunpinme.com"});
+    });
+
     it("should filter out default top sites that match a hostname of a search shortcut if previously blocked", async () => {
       feed.refreshDefaults("https://amazon.ca");
       fakeNewTabUtils.blockedLinks.links = [{url: "https://amazon.com"}];
