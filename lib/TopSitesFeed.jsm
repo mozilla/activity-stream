@@ -614,6 +614,7 @@ this.TopSitesFeed = class TopSitesFeed {
             break;
           case ROWS_PREF:
           case NO_DEFAULT_SEARCH_TILE_EXP_PREF:
+          case SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF:
             this.refresh({broadcast: true});
             break;
           case SEARCH_SHORTCUTS_EXPERIMENT:
