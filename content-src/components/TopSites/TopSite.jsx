@@ -122,9 +122,11 @@ export class TopSiteLink extends React.PureComponent {
     if (defaultStyle) { // force no styles (letter fallback) even if the link has imagery
       smallFaviconFallback = false;
     } else if (link.searchTopSite) {
-      imageClassName = "screenshot";
-      imageStyle = {backgroundImage: "none"};
-      showSmallFavicon = true;
+      imageClassName = "top-site-icon rich-icon";
+      imageStyle = {
+        backgroundColor: link.backgroundColor,
+        backgroundImage: `url(${tippyTopIcon})`
+      };
       smallFaviconStyle = {backgroundImage:  `url(${tippyTopIcon})`};
     } else if (link.customScreenshotURL) {
       // assume high quality custom screenshot and use rich icon styles and class names
@@ -170,6 +172,7 @@ export class TopSiteLink extends React.PureComponent {
          <a href={link.url} onClick={onClick}>
             <div className="tile" aria-hidden={true} data-fallback={letterFallback}>
               <div className={imageClassName} style={imageStyle} />
+              {link.searchTopSite && <div className="top-site-icon search-topsite" />}
               {showSmallFavicon && <div
                 className="top-site-icon default-icon"
                 data-fallback={smallFaviconFallback && letterFallback}
