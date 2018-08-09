@@ -10,6 +10,16 @@ function pushPrefs(...prefs) {
   return SpecialPowers.pushPrefEnv({set: prefs});
 }
 
+// async function disableSearchImprovementsPrefs() { // eslint-disable-line no-unused-vars
+  // await pushPrefs(["browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts", false]);
+  // // If the search shortcuts have been pinned, unpin them
+  // NewTabUtils.pinnedLinks.unpin({url: "https://google.com", searchTopSite: true});
+  // NewTabUtils.pinnedLinks.unpin({url: "https://amazon.com", searchTopSite: true});
+  // // Toggle the feed off and on as a workaround to read the new prefs.
+  // await pushPrefs(["browser.newtabpage.activity-stream.feeds.topsites", false]);
+  // await pushPrefs(["browser.newtabpage.activity-stream.feeds.topsites", true]);
+// }
+
 async function setDefaultTopSites() { // eslint-disable-line no-unused-vars
   // The pref for TopSites is empty by default.
   await pushPrefs(["browser.newtabpage.activity-stream.default.sites",

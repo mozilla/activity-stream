@@ -62,6 +62,7 @@ test_newtab({
 
 // Check Topsites add
 test_newtab({
+  before: setDefaultTopSites,
   // it should be able to click the topsites edit button to reveal the edit topsites modal and overlay.
   test: async function topsites_add() {
     let nativeInputValueSetter = Object.getOwnPropertyDescriptor(content.window.HTMLInputElement.prototype, "value").set;
@@ -114,5 +115,28 @@ test_newtab({
 
     // Wait for Topsite to be removed
     await ContentTaskUtils.waitForCondition(() => (content.document.querySelector(".top-site-outer:first-child a").getAttribute("href") !== "https://bugzilla.mozilla.org"), "Topsite not removed");
+  }
+});
+
+test_newtab({
+  before: async ({pushPrefs}) => {
+    // This is modified when calling .unpin in `disableSearchImprovementsPrefs`
+    // Services.prefs.clearUserPref("improvesearch.topSiteSearchShortcuts.havePinned");
+    // await pushPrefs(["browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts", true]);
+    await setDefaultTopSites();
+  },
+  test: async function test_search_topsite_keyword() {
+    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".title.pinned"), "Wait for pinned search topsites");
+
+    const searchTopSites = content.document.querySelectorAll(".title.pinned");
+    ok(searchTopSites.length >= 2, "There should be at least 2 search topsites");
+
+    searchTopSites[0].click();
+
+    return searchTopSites[0].innerText;
+  },
+  after: searchTopSiteTag => {
+    ok(gURLBar.focused, "We clicked a search topsite the focus should be in location bar");
+    ok(gURLBar.value.includes(searchTopSiteTag), "Should contain the tag of the search topsite clicked");
   }
 });

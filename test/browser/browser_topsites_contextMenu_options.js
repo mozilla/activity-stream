@@ -5,7 +5,10 @@
 "use strict";
 
 test_newtab({
-  before: setDefaultTopSites,
+  before: async () => {
+    await disableSearchImprovementsPrefs();
+    await setDefaultTopSites();
+  },
   // Test verifies the menu options for a default top site.
   test: async function defaultTopSites_menuOptions() {
     await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".top-site-icon"),
@@ -24,7 +27,10 @@ test_newtab({
 });
 
 test_newtab({
-  before: setDefaultTopSites,
+  before: async () => {
+    await disableSearchImprovementsPrefs();
+    await setDefaultTopSites();
+  },
   // Test verifies that the next top site in queue replaces a dismissed top site.
   test: async function defaultTopSites_dismiss() {
     await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".top-site-icon"),
@@ -49,5 +55,27 @@ test_newtab({
   },
   async after() {
     await new Promise(resolve => NewTabUtils.undoAll(resolve));
+  }
+});
+
+test_newtab({
+  before: async () => {
+    // This is modified when calling .unpin in `disableSearchImprovementsPrefs`
+    Services.prefs.clearUserPref("improvesearch.topSiteSearchShortcuts.havePinned");
+    await pushPrefs(["browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts", true]);
+    await setDefaultTopSites();
+  },
+  test: async function searchTopSites_dismiss() {
+    let defaultTopSitesNumber = content.document.querySelectorAll(".top-sites-list .rich-icon").length;
+    Assert.equal(defaultTopSitesNumber, 7, "7 top sites are loaded by default");
+
+    let contextMenuItems = content.openContextMenuAndGetOptions(".top-sites-list li:first-child");
+    is(contextMenuItems.length, 2, "Search TopSites should only have Unpin and Dismiss");
+
+    // Unpin
+    contextMenuItems[0].querySelector("a").click();
+
+    defaultTopSitesNumber = content.document.querySelector(".top-sites-list").querySelectorAll("[class=\"top-site-outer\"]").length;
+    Assert.equal(defaultTopSitesNumber, 6, "6 top sites are displayed after we unpin the search topsite");
   }
 });
