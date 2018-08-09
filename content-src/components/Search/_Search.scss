@@ -115,6 +115,10 @@
       input {
         background-position-x: $search-icon-padding;
         background-size: $search-icon-size;
+
+        &:dir(rtl) {
+          background-position-x: right $search-icon-padding;
+        }
       }
     }
   }
