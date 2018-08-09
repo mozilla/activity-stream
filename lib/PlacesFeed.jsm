@@ -280,12 +280,8 @@ class PlacesFeed {
     }
   }
 
-  fillSearchTopSiteTerm(action) {
-    const gURLBar = action._target.browser.ownerGlobal.document.getElementById("urlbar");
-    gURLBar.value = `${action.data.label} `;
-    gURLBar.focus();
-    // Clear the url bar text selection that happens on focus
-    gURLBar.selectionStart = gURLBar.selectionEnd;
+  fillSearchTopSiteTerm({_target, data}) {
+    _target.browser.ownerGlobal.gURLBar.search(`${data.label} `, {disableOneOffButtons: true, disableSearchSuggestionsNotification: true});
   }
 
   onAction(action) {
