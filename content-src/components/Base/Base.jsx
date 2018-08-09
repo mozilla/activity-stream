@@ -62,9 +62,29 @@ export class _Base extends React.PureComponent {
     this.updateTheme();
   }
 
-  componentWillUpdate({App}) {
+  hasTopStoriesSectionChanged(nextProps) {
+    const nPropsSections = nextProps.Sections.find(section => section.id === "topstories");
+    const tPropsSections = this.props.Sections.find(section => section.id === "topstories");
+    if (nPropsSections && nPropsSections.options) {
+      if (!tPropsSections || !tPropsSections.options) {
+        return true;
+      }
+      if (nPropsSections.options.show_spocs !== tPropsSections.options.show_spocs) {
+        return true;
+      }
+      if (nPropsSections.options.stories_endpoint !== tPropsSections.options.stories_endpoint) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  componentWillUpdate(nextProps) {
     this.updateTheme();
-    this.sendNewTabRehydrated(App);
+    if (this.hasTopStoriesSectionChanged(nextProps)) {
+      this.renderNotified = false;
+    }
+    this.sendNewTabRehydrated(nextProps.App);
   }
 
   updateTheme() {
@@ -188,4 +208,4 @@ export class BaseContent extends React.PureComponent {
   }
 }
 
-export const Base = connect(state => ({App: state.App, Prefs: state.Prefs}))(_Base);
+export const Base = connect(state => ({App: state.App, Prefs: state.Prefs, Sections: state.Sections}))(_Base);
