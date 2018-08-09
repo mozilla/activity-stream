@@ -24,6 +24,20 @@ function addLocaleDataForReactIntl(locale) {
   addLocaleData([{locale, parentLocale: "en"}]);
 }
 
+// Returns a function will not be continuously triggered when called. The
+// function will be triggered if called again after `wait` milliseconds.
+function debounce(func, wait) {
+  let timer;
+  return (...args) => {
+    if (timer) { return; }
+
+    let wakeUp = () => { timer = null; };
+
+    timer = setTimeout(wakeUp, wait);
+    func.apply(this, args);
+  };
+}
+
 export class _Base extends React.PureComponent {
   componentWillMount() {
     const {App, locale} = this.props;
@@ -106,6 +120,25 @@ export class BaseContent extends React.PureComponent {
   constructor(props) {
     super(props);
     this.openPreferences = this.openPreferences.bind(this);
+    this.onWindowScroll = debounce(this.onWindowScroll.bind(this), 5);
+    this.state = {fixedSearch: false};
+  }
+
+  componentDidMount() {
+    global.addEventListener("scroll", this.onWindowScroll);
+  }
+
+  componentWillUnmount() {
+    global.removeEventListener("scroll", this.onWindowScroll);
+  }
+
+  onWindowScroll() {
+    const SCROLL_THRESHOLD = 34;
+    if (global.scrollY > SCROLL_THRESHOLD && !this.state.fixedSearch) {
+      this.setState({fixedSearch: true});
+    } else if (global.scrollY <= SCROLL_THRESHOLD && this.state.fixedSearch) {
+      this.setState({fixedSearch: false});
+    }
   }
 
   openPreferences() {
@@ -123,7 +156,8 @@ export class BaseContent extends React.PureComponent {
 
     const outerClassName = [
       "outer-wrapper",
-      shouldBeFixedToTop && "fixed-to-top"
+      shouldBeFixedToTop && "fixed-to-top",
+      this.state.fixedSearch && "fixed-search"
     ].filter(v => v).join(" ");
 
     return (
