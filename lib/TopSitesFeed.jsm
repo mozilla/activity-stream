@@ -12,6 +12,7 @@ const {Dedupe} = ChromeUtils.import("resource://activity-stream/common/Dedupe.js
 const {shortURL} = ChromeUtils.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 const {
+  SEARCH_SHORTCUTS,
   SEARCH_SHORTCUTS_EXPERIMENT,
   SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF,
   SEARCH_SHORTCUTS_HAVE_PINNED_PREF,
@@ -342,6 +343,7 @@ this.TopSitesFeed = class TopSitesFeed {
     if (!this._tippyTopProvider.initialized) {
       await this._tippyTopProvider.init();
     }
+
     const links = await this.getLinksWithDefaults();
     const newAction = {type: at.TOP_SITES_UPDATED, data: {links}};
     let storedPrefs;
@@ -360,6 +362,31 @@ this.TopSitesFeed = class TopSitesFeed {
       // Don't broadcast only update the state and update the preloaded tab.
       this.store.dispatch(ac.AlsoToPreloaded(newAction));
     }
+  }
+
+  async updateSearchShortcuts() {
+    if (!this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT]) {
+      return;
+    }
+
+    if (!this._tippyTopProvider.initialized) {
+      await this._tippyTopProvider.init();
+    }
+
+    // Populate the state with available search shortcuts
+    await new Promise(resolve => Services.search.init(resolve));
+    const searchShortcuts = SEARCH_SHORTCUTS.reduce((result, shortcut) => {
+      // Only add the shortcut if the engine is available.
+      if (!Services.search.getEngines().find(e => e.identifier && e.identifier.match(shortcut.searchIdentifier))) {
+        return result;
+      }
+      result.push(this._tippyTopProvider.processSite({...shortcut}));
+      return result;
+    }, []);
+    this.store.dispatch(ac.BroadcastToContent({
+      type: at.UPDATE_SEARCH_SHORTCUTS,
+      data: {searchShortcuts}
+    }));
   }
 
   topSiteToSearchTopSite(site) {
@@ -582,6 +609,7 @@ this.TopSitesFeed = class TopSitesFeed {
     switch (action.type) {
       case at.INIT:
         this.init();
+        this.updateSearchShortcuts();
         break;
       case at.SYSTEM_TICK:
         this.refresh({broadcast: false});
