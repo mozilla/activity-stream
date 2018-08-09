@@ -271,7 +271,7 @@ this.TopSitesFeed = class TopSitesFeed {
       const copy = Object.assign(
         {},
         frecentSite || {isDefault: !!notBlockedDefaultSites.find(finder)},
-        searchShortcutsExperiment ? this.topSiteToSearchTopSite(link) : link,
+        link,
         {hostname: shortURL(link)}
       );
 
