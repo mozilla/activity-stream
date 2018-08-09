@@ -707,6 +707,10 @@ describe("<TopSiteForm>", () => {
   });
 
   describe("#TopSiteLink", () => {
+    beforeEach(() => {
+      setup();
+    });
+
     it("should display a TopSiteLink preview", () => {
       assert.equal(wrapper.find(TopSiteLink).length, 1);
     });
@@ -725,6 +729,13 @@ describe("<TopSiteForm>", () => {
       wrapper.setProps({previewResponse: ""});
 
       assert.equal(wrapper.find(".top-site-icon").length, 0);
+    });
+
+    it("should render the search icon when searchTopSite is true", () => {
+      wrapper.setProps({site: {tippyTopIcon: "bar", searchTopSite: true}});
+
+      assert.equal(wrapper.find(".rich-icon").getDOMNode().style["background-image"], "url(\"bar\")");
+      assert.isTrue(wrapper.find(".search-topsite").exists());
     });
   });
 
