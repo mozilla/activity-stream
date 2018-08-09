@@ -179,7 +179,7 @@ $half-base-gutter: $base-gutter / 2;
   }
 
   .default-icon,
-  .search-topsite { // sass-lint:disable block property-sort-order
+  .search-topsite {
     background-size: $default-icon-size;
     bottom: -$default-icon-offset;
     height: $default-icon-wrapper-size;
