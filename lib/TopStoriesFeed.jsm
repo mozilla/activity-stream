@@ -25,7 +25,7 @@ const DEFAULT_RECS_EXPIRE_TIME = 60 * 60 * 1000; // 1 hour
 const SECTION_ID = "topstories";
 const SPOC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.spoc.impressions";
 const REC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.rec.impressions";
-const MAX_LIFETIME_CAP = 100; // Guard against misconfiguration on the server
+const MAX_LIFETIME_CAP = 500; // Guard against misconfiguration on the server
 
 this.TopStoriesFeed = class TopStoriesFeed {
   constructor() {
