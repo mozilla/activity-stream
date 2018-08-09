@@ -7,16 +7,21 @@
 // that should be converted to search Topsites
 const SEARCH_SHORTCUTS = [
   {keyword: "@google", shortURL: "google", url: "https://google.com", searchIdentifier: /^google/},
+  {keyword: "@baidu", shortURL: "baidu", url: "https://baidu.com", searchIdentifier: /^baidu/},
+  {keyword: "@yandex", shortURL: "yandex", url: "https://yandex.com", searchIdentifier: /^yandex/},
   {keyword: "@amazon", shortURL: "amazon", url: "https://amazon.com", searchIdentifier: /^amazon/}
 ];
 this.SEARCH_SHORTCUTS = SEARCH_SHORTCUTS;
 
 // Note: you must add the activity stream branch to the beginning of this if using outside activity stream
 this.SEARCH_SHORTCUTS_EXPERIMENT = "improvesearch.topSiteSearchShortcuts";
+this.SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF = "improvesearch.topSiteSearchShortcuts.searchEngines";
+this.SEARCH_SHORTCUTS_HAVE_PINNED_PREF = "improvesearch.topSiteSearchShortcuts.havePinned";
 
 function getSearchProvider(candidateShortURL) {
   return SEARCH_SHORTCUTS.filter(match => candidateShortURL === match.shortURL)[0] || null;
 }
 this.getSearchProvider = getSearchProvider;
 
-const EXPORTED_SYMBOLS = ["getSearchProvider", "SEARCH_SHORTCUTS", "SEARCH_SHORTCUTS_EXPERIMENT"];
+const EXPORTED_SYMBOLS = ["getSearchProvider", "SEARCH_SHORTCUTS", "SEARCH_SHORTCUTS_EXPERIMENT",
+  "SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF", "SEARCH_SHORTCUTS_HAVE_PINNED_PREF"];
