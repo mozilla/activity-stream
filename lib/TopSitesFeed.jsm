@@ -375,12 +375,13 @@ this.TopSitesFeed = class TopSitesFeed {
 
     // Populate the state with available search shortcuts
     await new Promise(resolve => Services.search.init(resolve));
-    const searchShortcuts = SEARCH_SHORTCUTS.reduce((result, shortcut) => {
-      // Only add the shortcut if the engine is available.
-      if (!Services.search.getEngines().find(e => e.identifier && e.identifier.match(shortcut.searchIdentifier))) {
-        return result;
+    const searchShortcuts = Services.search.getDefaultEngines().reduce((result, engine) => {
+      if (engine.identifier) {
+        const shortcut = SEARCH_SHORTCUTS.find(s => engine.identifier.match(s.searchIdentifier));
+        if (shortcut) {
+          result.push(this._tippyTopProvider.processSite({...shortcut}));
+        }
       }
-      result.push(this._tippyTopProvider.processSite({...shortcut}));
       return result;
     }, []);
     this.store.dispatch(ac.BroadcastToContent({

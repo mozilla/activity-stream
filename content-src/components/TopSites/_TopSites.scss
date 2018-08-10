@@ -321,7 +321,11 @@ $half-base-gutter: $base-gutter / 2;
 
     .top-site-outer {
       margin-inline-start: 0;
-      margin-inline-end: 32px;
+      margin-inline-end: 39px;
+
+      &:nth-child(5n) {
+        margin-inline-end: 0;
+      }
     }
   }
 
