@@ -173,8 +173,9 @@ this.TopSitesFeed = class TopSitesFeed {
       // The plainPinnedSites array is populated with pinned sites at their
       // respective indices, and null everywhere else, but is not always the
       // right length
+      const emptySlots = numberOfSlots > plainPinnedSites.length ? numberOfSlots - plainPinnedSites.length : 0;
       const pinnedSites = [...plainPinnedSites].concat(
-        Array(numberOfSlots - plainPinnedSites.length).fill(null)
+        Array(emptySlots).fill(null)
       );
 
       await new Promise(resolve => Services.search.init(resolve));
