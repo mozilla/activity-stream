@@ -277,7 +277,8 @@ this.TopSitesFeed = class TopSitesFeed {
         {},
         frecentSite || {isDefault: !!notBlockedDefaultSites.find(finder)},
         link,
-        {hostname: shortURL(link)}
+        {hostname: shortURL(link)},
+        {searchTopSite: !!link.searchTopSite}
       );
 
       // Add in favicons if we don't already have it
