@@ -12,7 +12,7 @@ const {Dedupe} = ChromeUtils.import("resource://activity-stream/common/Dedupe.js
 const {shortURL} = ChromeUtils.import("resource://activity-stream/lib/ShortURL.jsm", {});
 const {getDefaultOptions} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamStorage.jsm", {});
 const {
-  SEARCH_SHORTCUTS,
+  CUSTOM_SEARCH_SHORTCUTS,
   SEARCH_SHORTCUTS_EXPERIMENT,
   SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF,
   SEARCH_SHORTCUTS_HAVE_PINNED_PREF,
@@ -364,7 +364,7 @@ this.TopSitesFeed = class TopSitesFeed {
     }
   }
 
-  async updateSearchShortcuts() {
+  async updateCustomSearchShortcuts() {
     if (!this.store.getState().Prefs.values[SEARCH_SHORTCUTS_EXPERIMENT]) {
       return;
     }
@@ -377,7 +377,7 @@ this.TopSitesFeed = class TopSitesFeed {
     await new Promise(resolve => Services.search.init(resolve));
     const searchShortcuts = Services.search.getDefaultEngines().reduce((result, engine) => {
       if (engine.identifier) {
-        const shortcut = SEARCH_SHORTCUTS.find(s => engine.identifier.match(s.searchIdentifier));
+        const shortcut = CUSTOM_SEARCH_SHORTCUTS.find(s => engine.identifier.match(s.searchIdentifier));
         if (shortcut) {
           result.push(this._tippyTopProvider.processSite({...shortcut}));
         }
@@ -617,7 +617,7 @@ this.TopSitesFeed = class TopSitesFeed {
     switch (action.type) {
       case at.INIT:
         this.init();
-        this.updateSearchShortcuts();
+        this.updateCustomSearchShortcuts();
         break;
       case at.SYSTEM_TICK:
         this.refresh({broadcast: false});

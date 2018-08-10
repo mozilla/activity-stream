@@ -38,7 +38,10 @@ export class SearchShortcutsForm extends React.PureComponent {
     const shortcuts = [];
     const {rows, searchShortcuts} = props.TopSites;
     searchShortcuts.forEach(shortcut => {
-      shortcuts.push(Object.assign({}, shortcut, {isSelected: !!rows.find(({isPinned, searchTopSite, label}) => isPinned && searchTopSite && label === shortcut.keyword)}));
+      shortcuts.push({
+        ...shortcut,
+        isSelected: !!rows.find(row => row && row.isPinned && row.searchTopSite && row.label === shortcut.keyword)
+      });
     });
     this.state = {shortcuts};
   }
@@ -67,7 +70,7 @@ export class SearchShortcutsForm extends React.PureComponent {
     const pinQueue = [];
     const unpinQueue = [];
     this.state.shortcuts.forEach(shortcut => {
-      const alreadyPinned = rows.find(({isPinned, searchTopSite, label}) => isPinned && searchTopSite && label === shortcut.keyword);
+      const alreadyPinned = rows.find(row => row && row.isPinned && row.searchTopSite && row.label === shortcut.keyword);
       if (shortcut.isSelected && !alreadyPinned) {
         pinQueue.push(this._searchTopSite(shortcut));
       } else if (!shortcut.isSelected && alreadyPinned) {
@@ -80,8 +83,8 @@ export class SearchShortcutsForm extends React.PureComponent {
       // First find the available slots. A slot is available if it isn't pinned
       // or if it's a pinned shortcut that we are about to unpin.
       const availableSlots = [];
-      rows.forEach(({isPinned, searchTopSite, url}, index) => {
-        if (!isPinned || (searchTopSite && unpinQueue.find(site => url === site.url))) {
+      rows.forEach((row, index) => {
+        if (!row || !row.isPinned || (row.searchTopSite && unpinQueue.find(site => row.url === site.url))) {
           availableSlots.push(index);
         }
       });

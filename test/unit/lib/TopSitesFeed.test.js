@@ -1287,9 +1287,9 @@ describe("Top Sites Feed", () => {
       const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
       assert.isTrue(defaultSearchTopsite.searchTopSite);
     });
-    it("should dispatch UPDATE_SEARCH_SHORTCUTS on updateSearchShortcuts", async () => {
+    it("should dispatch UPDATE_SEARCH_SHORTCUTS on updateCustomSearchShortcuts", async () => {
       feed.store.state.Prefs.values["improvesearch.noDefaultSearchTile"] = true;
-      await feed.updateSearchShortcuts();
+      await feed.updateCustomSearchShortcuts();
       assert.calledOnce(feed.store.dispatch);
       assert.calledWith(feed.store.dispatch, {
         data: {
