@@ -6,10 +6,15 @@
 // List of sites we match against Topsites in order to identify sites
 // that should be converted to search Topsites
 const SEARCH_SHORTCUTS = [
-  {keyword: "@google", shortURL: "google", url: "https://google.com", searchIdentifier: /^google/},
+  {keyword: "@amazon", shortURL: "amazon", url: "https://amazon.com", searchIdentifier: /^amazon/},
   {keyword: "@baidu", shortURL: "baidu", url: "https://baidu.com", searchIdentifier: /^baidu/},
-  {keyword: "@yandex", shortURL: "yandex", url: "https://yandex.com", searchIdentifier: /^yandex/},
-  {keyword: "@amazon", shortURL: "amazon", url: "https://amazon.com", searchIdentifier: /^amazon/}
+  {keyword: "@bing", shortURL: "bing", url: "https://bing.com", searchIdentifier: /^bing/},
+  {keyword: "@duckduckgo", shortURL: "duckduckgo", url: "https://duckduckgo.com", searchIdentifier: /^ddg/},
+  {keyword: "@ebay", shortURL: "ebay", url: "https://ebay.com", searchIdentifier: /^ebay/},
+  {keyword: "@google", shortURL: "google", url: "https://google.com", searchIdentifier: /^google/},
+  {keyword: "@twitter", shortURL: "twitter", url: "https://twitter.com", searchIdentifier: /^twitter/},
+  {keyword: "@wikipedia", shortURL: "wikipedia", url: "https://wikipedia.org", searchIdentifier: /^wikipedia/},
+  {keyword: "@yandex", shortURL: "yandex", url: "https://yandex.com", searchIdentifier: /^yandex/}
 ];
 this.SEARCH_SHORTCUTS = SEARCH_SHORTCUTS;
 

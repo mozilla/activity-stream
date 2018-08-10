@@ -1186,6 +1186,10 @@ describe("Top Sites Feed", () => {
         {identifier: "google"},
         {identifier: "amazon"}
       ];
+      global.Services.search.getDefaultEngines = () => [
+        {identifier: "google"},
+        {identifier: "amazon"}
+      ];
       fakeNewTabUtils.pinnedLinks.pin = sinon.stub().callsFake((site, index) => {
         fakeNewTabUtils.pinnedLinks.links[index] = site;
       });
