@@ -44,8 +44,21 @@ async function saveProperties(locale) {
     return locale;
   }
 
+  // For now, detect if a string is missing to use a different one instead
+  let text = await response.text();
+  const expectedText = "section_menu_action_add_search_engine=";
+  if (!text.includes(expectedText)) {
+    const otherFile = await fetch(`${L10N_CENTRAL}/${locale}/raw-file/default/browser/chrome/browser/search.properties`);
+    if (otherFile.ok) {
+      const otherText = await otherFile.text();
+      const otherMatch = otherText.match(/searchAddFoundEngine2=([^\n]+)/);
+      if (otherMatch) {
+        text += `${expectedText}${otherMatch[1]}\n`;
+      }
+    }
+  }
+
   // Save the file to the right place
-  const text = await response.text();
   mkdir(locale);
   cd(locale);
   ShellString(text).to(STRINGS_FILE);
