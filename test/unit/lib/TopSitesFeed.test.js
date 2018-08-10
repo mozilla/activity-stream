@@ -362,6 +362,16 @@ describe("Top Sites Feed", () => {
 
         assert.equal(result[0].screenshot, "bar");
       });
+      it("should not set searchTopSite from frecent site", async () => {
+        links = [{url: "https://foo.com/", searchTopSite: true, screenshot: "screenshot"}];
+        fakeNewTabUtils.pinnedLinks.links = [{url: "https://foo.com/"}];
+
+        const result = await feed.getLinksWithDefaults();
+
+        assert.propertyVal(result[0], "searchTopSite", false);
+        // But it should copy over other properties
+        assert.propertyVal(result[0], "screenshot", "screenshot");
+      });
       describe("concurrency", () => {
         let resolvers;
         beforeEach(() => {
