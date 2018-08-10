@@ -189,7 +189,7 @@ this.TopSitesFeed = class TopSitesFeed {
           !pinnedSites.find(s => s && s.hostname === shortcut.shortURL) &&
           !prevInsertedShortcuts.includes(shortcut.shortURL) &&
           nextAvailable > -1 &&
-          Services.search.getEngines().find(e => e.identifier.match(shortcut.searchIdentifier))
+          Services.search.getEngines().find(e => e.identifier && e.identifier.match(shortcut.searchIdentifier))
         ) {
           const site = this.topSiteToSearchTopSite({url: shortcut.url});
           this._pinSiteAt(site, nextAvailable);
