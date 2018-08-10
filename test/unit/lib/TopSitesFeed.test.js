@@ -1283,6 +1283,28 @@ describe("Top Sites Feed", () => {
       const defaultSearchTopsite = urlsReturned.find(s => s.url === "google.com");
       assert.isTrue(defaultSearchTopsite.searchTopSite);
     });
+    it("should dispatch UPDATE_SEARCH_SHORTCUTS on updateSearchShortcuts", async () => {
+      feed.store.state.Prefs.values["improvesearch.noDefaultSearchTile"] = true;
+      await feed.updateSearchShortcuts();
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWith(feed.store.dispatch, {
+        data: {
+          searchShortcuts: [{
+            keyword: "@google",
+            searchIdentifier: /^google/,
+            shortURL: "google",
+            url: "https://google.com"
+          }, {
+            keyword: "@amazon",
+            searchIdentifier: /^amazon/,
+            shortURL: "amazon",
+            url: "https://amazon.com"
+          }]
+        },
+        meta: {from: "ActivityStream:Main", to: "ActivityStream:Content"},
+        type: "UPDATE_SEARCH_SHORTCUTS"
+      });
+    });
 
     describe("_maybeInsertSearchShortcuts", () => {
       beforeEach(() => {
