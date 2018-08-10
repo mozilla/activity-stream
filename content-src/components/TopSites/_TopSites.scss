@@ -123,6 +123,7 @@ $half-base-gutter: $base-gutter / 2;
   .tile { // sass-lint:disable-block property-sort-order
     border-radius: $top-sites-border-radius;
     box-shadow: inset $inner-box-shadow, var(--newtab-card-shadow);
+    cursor: pointer;
     height: $top-sites-size;
     position: relative;
     width: $top-sites-size;
