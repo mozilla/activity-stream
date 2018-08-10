@@ -123,7 +123,9 @@ export class SearchShortcutsForm extends React.PureComponent {
           <h3 className="section-title">
             <FormattedMessage id="section_menu_action_add_search_engine" />
           </h3>
-          {this.state.shortcuts.map(shortcut => <SelectableSearchShortcut key={shortcut.keyword} shortcut={shortcut} selected={shortcut.isSelected} onChange={this.handleChange} />)}
+          <div>
+            {this.state.shortcuts.map(shortcut => <SelectableSearchShortcut key={shortcut.keyword} shortcut={shortcut} selected={shortcut.isSelected} onChange={this.handleChange} />)}
+          </div>
         </div>
         <section className="actions">
           <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
