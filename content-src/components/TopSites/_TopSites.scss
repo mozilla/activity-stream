@@ -283,7 +283,7 @@ $half-base-gutter: $base-gutter / 2;
     left: 0;
     margin: 0 auto;
     max-height: calc(100% - 40px);
-    overflow: auto;
+    overflow-y: auto;
     position: fixed;
     right: 0;
     top: 40px;
