@@ -1186,7 +1186,6 @@ describe("Top Sites Feed", () => {
         {wrappedJSObject: {_internalAliases: ["@google"]}},
         {wrappedJSObject: {_internalAliases: ["@amazon"]}}
       ];
-      global.Services.search.getEngines = () => searchEngines;
       global.Services.search.getDefaultEngines = () => searchEngines;
       fakeNewTabUtils.pinnedLinks.pin = sinon.stub().callsFake((site, index) => {
         fakeNewTabUtils.pinnedLinks.links[index] = site;

@@ -35,7 +35,7 @@ function getSearchProvider(candidateShortURL) {
 }
 this.getSearchProvider = getSearchProvider;
 
-// Check search engine against predefined list of valid search topsites
+// Check topsite against predefined list of valid search engines
 // https://searchfox.org/mozilla-central/rev/ca869724246f4230b272ed1c8b9944596e80d920/toolkit/components/search/nsSearchService.js#939
 function checkHasSearchEngine(keyword) {
   return Services.search.getDefaultEngines()
@@ -43,5 +43,5 @@ function checkHasSearchEngine(keyword) {
 }
 this.checkHasSearchEngine = checkHasSearchEngine;
 
-const EXPORTED_SYMBOLS = ["getSearchProvider", "SEARCH_SHORTCUTS", "CUSTOM_SEARCH_SHORTCUTS", "SEARCH_SHORTCUTS_EXPERIMENT",
+const EXPORTED_SYMBOLS = ["checkHasSearchEngine", "getSearchProvider", "SEARCH_SHORTCUTS", "CUSTOM_SEARCH_SHORTCUTS", "SEARCH_SHORTCUTS_EXPERIMENT",
   "SEARCH_SHORTCUTS_SEARCH_ENGINES_PREF", "SEARCH_SHORTCUTS_HAVE_PINNED_PREF"];
