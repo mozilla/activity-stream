@@ -54,6 +54,10 @@ export class TopSiteLink extends React.PureComponent {
         }
         break;
       case "mousedown":
+        // Block the scroll wheel from appearing for middle clicks on search top sites
+        if (event.button === 1 && this.props.link.searchTopSite) {
+          event.preventDefault();
+        }
         // Reset at the first mouse event of a potential drag
         this.dragged = false;
         break;
