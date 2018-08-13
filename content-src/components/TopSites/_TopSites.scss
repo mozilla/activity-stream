@@ -325,13 +325,13 @@ $half-base-gutter: $base-gutter / 2;
     margin: 0 auto;
     padding: $form-spacing;
 
+    > div {
+      margin-inline-end: -39px;
+    }
+
     .top-site-outer {
       margin-inline-start: 0;
       margin-inline-end: 39px;
-
-      &:nth-child(5n) {
-        margin-inline-end: 0;
-      }
     }
   }
 
