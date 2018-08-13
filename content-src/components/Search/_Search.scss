@@ -51,7 +51,6 @@
     box-shadow: $shadow-secondary, 0 0 0 1px $black-25;
   }
 
-  &:active input,
   input:focus {
     border: $input-border-active;
     box-shadow: var(--newtab-textbox-focus-boxshadow);
