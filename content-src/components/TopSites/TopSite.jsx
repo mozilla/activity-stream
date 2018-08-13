@@ -110,7 +110,7 @@ export class TopSiteLink extends React.PureComponent {
 
   render() {
     const {children, className, defaultStyle, isDraggable, link, onClick, title} = this.props;
-    const topSiteOuterClassName = `top-site-outer${className ? ` ${className}` : ""}${link.isDragged ? " dragged" : ""}`;
+    const topSiteOuterClassName = `top-site-outer${className ? ` ${className}` : ""}${link.isDragged ? " dragged" : ""}${link.searchTopSite ? " search-shortcut" : ""}`;
     const {tippyTopIcon, faviconSize} = link;
     const [letterFallback] = title;
     let imageClassName;
