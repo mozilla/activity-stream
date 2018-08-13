@@ -16,8 +16,16 @@ cd /mozilla-central && ./mach build \
   && ./mach test browser_parsable_css \
   && ./mach lint -l codespell browser/components/newtab \
   && ./mach test browser/components/newtab/test/browser \
-  && ./mach test browser/components/newtab/test/xpcshell \
-  && ./mach test browser/components/preferences/in-content/tests/browser_hometab_restore_defaults.js \
-  && ./mach test browser/components/preferences/in-content/tests/browser_newtab_menu.js \
-  && ./mach test browser/components/enterprisepolicies/tests/browser/browser_policy_set_homepage.js \
-  && ./mach test browser/components/preferences/in-content/tests/browser_search_subdialogs_within_preferences_1.js
+  browser/components/newtab/test/xpcshell \
+  browser/components/preferences/in-content/tests/browser_hometab_restore_defaults.js \
+  browser/components/preferences/in-content/tests/browser_newtab_menu.js \
+  browser/components/enterprisepolicies/tests/browser/browser_policy_set_homepage.js \
+  browser/components/preferences/in-content/tests/browser_search_subdialogs_within_preferences_1.js --log-tbpl test_run_log
+
+# Check test log for any error reports
+if [ $(cat test_run_log | grep "TEST-UNEXPECTED" | wc -l) -gt 0 ]
+then
+	false
+else
+	true
+fi
