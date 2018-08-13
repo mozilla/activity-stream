@@ -282,6 +282,8 @@ $half-base-gutter: $base-gutter / 2;
     box-shadow: $shadow-secondary;
     left: 0;
     margin: 0 auto;
+    max-height: calc(100% - 40px);
+    overflow: auto;
     position: fixed;
     right: 0;
     top: 40px;
