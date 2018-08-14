@@ -439,6 +439,9 @@ perf: {
   // The number of Top Sites that are pinned.
   "topsites_pinned": 3,
 
+  // The number of search shortcut Top Sites.
+  "topsites_search_shortcuts": 2,
+
   // How much longer the data took, in milliseconds, to be ready for display
   // than it would have been in the ideal case. The user currently sees placeholder
   // cards instead of real cards for approximately this length of time. This is
