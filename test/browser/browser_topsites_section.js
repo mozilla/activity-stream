@@ -28,13 +28,14 @@ test_newtab({
     await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".top-site-icon"),
       "Topsite tippytop icon not found");
     // There are only topsites on the page, the selector with find the first topsite menu button.
-    let topsiteContextBtn = content.document.querySelector(".top-sites-list .context-menu-button");
+    let topsiteEl = content.document.querySelector(".top-site-outer:not(.search-shortcut)");
+    let topsiteContextBtn = topsiteEl.querySelector(".context-menu-button");
     topsiteContextBtn.click();
 
-    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".top-sites-list .context-menu"),
+    await ContentTaskUtils.waitForCondition(() => topsiteEl.querySelector(".top-sites-list .context-menu"),
       "No context menu found");
 
-    let contextMenu = content.document.querySelector(".top-sites-list .context-menu");
+    let contextMenu = topsiteEl.querySelector(".top-sites-list .context-menu");
     ok(contextMenu, "Should find a topsite context menu");
 
     const pinUnpinTopsiteBtn = contextMenu.querySelector(".top-sites .context-menu-item a");
@@ -42,20 +43,20 @@ test_newtab({
     pinUnpinTopsiteBtn.click();
 
     // Need to wait for pin action.
-    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".icon-pin-small"),
+    await ContentTaskUtils.waitForCondition(() => topsiteEl.querySelector(".icon-pin-small"),
       "No pinned icon found");
 
-    let pinnedIcon = content.document.querySelectorAll(".icon-pin-small").length;
+    let pinnedIcon = topsiteEl.querySelectorAll(".icon-pin-small").length;
     is(pinnedIcon, 1, "should find 1 pinned topsite");
 
     // Unpin the topsite.
-    topsiteContextBtn = content.document.querySelector(".top-sites-list .context-menu-button");
+    topsiteContextBtn = topsiteEl.querySelector(".context-menu-button");
     ok(topsiteContextBtn, "Should find a context menu button");
     topsiteContextBtn.click();
-    content.document.querySelector(".top-sites-list .context-menu-item a").click();
+    topsiteEl.querySelector(".context-menu-item a").click();
 
     // Need to wait for unpin action.
-    await ContentTaskUtils.waitForCondition(() => !content.document.querySelector(".icon-pin-small"),
+    await ContentTaskUtils.waitForCondition(() => !topsiteEl.querySelector(".icon-pin-small"),
       "Topsite should be unpinned");
   }
 });
@@ -120,13 +121,10 @@ test_newtab({
 
 test_newtab({
   before: async ({pushPrefs}) => {
-    // This is modified when calling .unpin in `disableSearchImprovementsPrefs`
-    // Services.prefs.clearUserPref("improvesearch.topSiteSearchShortcuts.havePinned");
-    // await pushPrefs(["browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts", true]);
     await setDefaultTopSites();
   },
   test: async function test_search_topsite_keyword() {
-    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".title.pinned"), "Wait for pinned search topsites");
+    await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".search-shortcut .title.pinned"), "Wait for pinned search topsites");
 
     const searchTopSites = content.document.querySelectorAll(".title.pinned");
     ok(searchTopSites.length >= 2, "There should be at least 2 search topsites");
