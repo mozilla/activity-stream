@@ -68,6 +68,8 @@ this.TopSitesFeed = class TopSitesFeed {
     this.pinnedCache = new LinksCache(NewTabUtils.pinnedLinks, "links",
       [...CACHED_LINK_PROPS_TO_MIGRATE, ...PINNED_FAVICON_PROPS_TO_MIGRATE]);
     PageThumbs.addExpirationFilter(this);
+    this._refreshRequestQueue = [];
+    this._refreshInProgress = false;
   }
 
   init() {
@@ -341,6 +343,28 @@ this.TopSitesFeed = class TopSitesFeed {
    * @param {bool} options.broadcast Should the update be broadcasted.
    */
   async refresh(options = {}) {
+    // To avoid races, calls to this method may not run in parallel.
+    if (this._refreshInProgress) {
+      // A refresh is currently in progress, so add a refreshRequest (a promise
+      // paired with the call's options) and wait for the promise to resolve
+      let resolver;
+      const promise = new Promise(resolve => { resolver = resolve; });
+      this._refreshRequestQueue.push({resolver, options});
+      // The promise resolves with a boolean value indicating whether on not
+      // a refresh has already completed since we requested the refresh. If so,
+      // we have nothing left to do.
+      const refreshCompleted = await promise;
+      if (refreshCompleted) {
+        return;
+      }
+    }
+
+    this._refreshInProgress = true;
+    // Any refresh requests that are currently in the queue can be satisfied by
+    // this single run of the 'refresh' body.
+    const parallelRefreshRequests = this._refreshRequestQueue;
+    this._refreshRequestQueue = [];
+
     if (!this._tippyTopProvider.initialized) {
       await this._tippyTopProvider.init();
     }
@@ -356,12 +380,31 @@ this.TopSitesFeed = class TopSitesFeed {
     }
     newAction.data.pref = getDefaultOptions(storedPrefs);
 
-    if (options.broadcast) {
+    // We need to broadcast if any of the parallel refresh requests need to
+    const shouldBroadcast = parallelRefreshRequests.reduce(
+      (prev, current) => prev || current,
+      !!options.broadcast
+    );
+
+    if (shouldBroadcast) {
       // Broadcast an update to all open content pages
       this.store.dispatch(ac.BroadcastToContent(newAction));
     } else {
       // Don't broadcast only update the state and update the preloaded tab.
       this.store.dispatch(ac.AlsoToPreloaded(newAction));
+    }
+
+    // None of the other parallel requests need to be run so we can resolve
+    // their promises indiciting that the request has been satisfied
+    for (const {resolver} of parallelRefreshRequests) {
+      resolver(true);
+    }
+    this._refreshInProgress = false;
+
+    // If necessary we should trigger the next refresh
+    if (this._refreshRequestQueue.length > 0) {
+      const {resolver} = this._refreshRequestQueue.pop(0);
+      resolver(false);
     }
   }
 
