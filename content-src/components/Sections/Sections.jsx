@@ -18,6 +18,11 @@ function getFormattedMessage(message) {
 }
 
 export class Section extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {delayThirdCard: props.id === "topstories"};
+  }
+
   get numRows() {
     const {rowsPref, maxRows, Prefs} = this.props;
     return rowsPref ? Prefs.values[rowsPref] : maxRows;
@@ -77,6 +82,12 @@ export class Section extends React.PureComponent {
   }
 
   componentDidMount() {
+    if (this.state.delayThirdCard) {
+      // We delay the third card for 200ms to give time for a spoc to load.
+      setTimeout(() => {
+        this.setState({delayThirdCard: false});
+      }, 200);
+    }
     if (this.props.rows.length && !this.props.pref.collapsed) {
       this.sendImpressionStatsOrAddListener();
     }
@@ -152,7 +163,12 @@ export class Section extends React.PureComponent {
         // On narrow viewports, we only show 3 cards per row. We'll mark the rest as
         // .hide-for-narrow to hide in CSS via @media query.
         const className = (i >= maxCardsOnNarrow) ? "hide-for-narrow" : "";
-        cards.push(link ? (
+        let usePlaceholder = !link;
+        if (this.state.delayThirdCard && i === 2 && !usePlaceholder) {
+          usePlaceholder = this.state.delayThirdCard;
+        }
+
+        cards.push(!usePlaceholder ? (
           <Card key={i}
             index={i}
             className={className}

@@ -194,6 +194,25 @@ describe("<Section>", () => {
 
       assert.lengthOf(wrapper.find(".topic"), 1);
     });
+    it("should delay render of third rec to give time for potential spoc", async () => {
+      TOP_STORIES_SECTION.rows = [
+        {guid: 1, link: "http://localhost"},
+        {guid: 2, link: "http://localhost"},
+        {guid: 3, link: "http://localhost"}
+      ];
+
+      wrapper = shallow(<Section {...TOP_STORIES_SECTION} />);
+      assert.equal(wrapper.state("delayThirdCard"), true);
+      assert.lengthOf(wrapper.find(PlaceholderCard), 1);
+      wrapper.setState({delayThirdCard: false});
+      assert.equal(wrapper.state("delayThirdCard"), false);
+      assert.lengthOf(wrapper.find(PlaceholderCard), 0);
+
+      TOP_STORIES_SECTION.id = "topsites";
+      wrapper = shallow(<Section {...TOP_STORIES_SECTION} />);
+      assert.lengthOf(wrapper.find(PlaceholderCard), 0);
+      assert.equal(!!wrapper.state("delayThirdCard"), false);
+    });
   });
 
   describe("impression stats", () => {
