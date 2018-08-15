@@ -28,9 +28,9 @@ export const ASRouterUtils = {
   blockBundle(bundle) {
     ASRouterUtils.sendMessage({type: "BLOCK_BUNDLE", data: {bundle}});
   },
-  executeAction({button_action, button_action_params}) {
-    if (button_action in ra) {
-      ASRouterUtils.sendMessage({type: button_action, data: {button_action_params}});
+  executeAction(button_action) {
+    if (button_action.type in ra) {
+      ASRouterUtils.sendMessage(button_action);
     }
   },
   unblockById(id) {

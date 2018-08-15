@@ -597,21 +597,21 @@ describe("ASRouter", () => {
     it("should call openLinkIn with the correct params on OPEN_URL", async () => {
       sinon.spy(Router, "openLinkIn");
       let [testMessage] = Router.state.messages;
-      testMessage.button_action_params = "some/url.com";
-      const msg = fakeAsyncMessage({type: "OPEN_URL", data: testMessage});
+      testMessage.button_action = {type: "OPEN_URL", data: {url: "some/url.com"}};
+      const msg = fakeAsyncMessage(testMessage.button_action);
       await Router.onMessage(msg);
 
-      assert.calledWith(Router.openLinkIn, testMessage.button_action_params, msg.target, {isPrivate: false, where: "tabshifted"});
+      assert.calledWith(Router.openLinkIn, "some/url.com", msg.target, {isPrivate: false, where: "tabshifted"});
       assert.calledOnce(msg.target.browser.ownerGlobal.openLinkIn);
     });
     it("should call openLinkIn with the correct params on OPEN_ABOUT_PAGE", async () => {
       sinon.spy(Router, "openLinkIn");
       let [testMessage] = Router.state.messages;
-      testMessage.button_action_params = "something";
-      const msg = fakeAsyncMessage({type: "OPEN_ABOUT_PAGE", data: testMessage});
+      testMessage.button_action = {type: "OPEN_ABOUT_PAGE", data: {page: "something"}};
+      const msg = fakeAsyncMessage(testMessage.button_action);
       await Router.onMessage(msg);
 
-      assert.calledWith(Router.openLinkIn, `about:${testMessage.button_action_params}`, msg.target, {isPrivate: false, trusted: true, where: "tab"});
+      assert.calledWith(Router.openLinkIn, `about:something`, msg.target, {isPrivate: false, trusted: true, where: "tab"});
       assert.calledOnce(msg.target.browser.ownerGlobal.openTrustedLinkIn);
     });
   });

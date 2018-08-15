@@ -613,10 +613,10 @@ class _ASRouter {
         target.browser.ownerGlobal.OpenBrowserWindow({private: true});
         break;
       case ra.OPEN_URL:
-        this.openLinkIn(action.data.button_action_params, target, {isPrivate: false, where: "tabshifted"});
+        this.openLinkIn(action.data.url, target, {isPrivate: false, where: "tabshifted"});
         break;
       case ra.OPEN_ABOUT_PAGE:
-        this.openLinkIn(`about:${action.data.button_action_params}`, target, {isPrivate: false, trusted: true, where: "tab"});
+        this.openLinkIn(`about:${action.data.page}`, target, {isPrivate: false, trusted: true, where: "tab"});
         break;
       case "BLOCK_MESSAGE_BY_ID":
         await this.blockById(action.data.id);
