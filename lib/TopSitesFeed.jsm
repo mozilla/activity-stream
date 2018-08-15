@@ -612,6 +612,38 @@ this.TopSitesFeed = class TopSitesFeed {
     this._broadcastPinnedSitesUpdated();
   }
 
+  updatePinnedSearchShortcuts({selectedShortcuts}) {
+    const {rows} = this.store.getState().TopSites;
+
+    // Unpin any shortcuts that are no longer selected.
+    rows.filter(row => row && row.isPinned && row.searchTopSite).forEach(({label, url}) => {
+      if (!selectedShortcuts.find(shortcut => shortcut.label === label)) {
+        NewTabUtils.pinnedLinks.unpin({url});
+      }
+    });
+
+    // Pin any selected shortcuts that weren't previously pinned.
+    const numberOfSlots = this.store.getState().Prefs.values[ROWS_PREF] * TOP_SITES_MAX_SITES_PER_ROW;
+    selectedShortcuts.forEach(shortcut => {
+      if (!rows.find(row => row && row.isPinned && row.searchTopSite && row.label === shortcut.label)) {
+        // Find first hole in pinnedLinks.
+        let index = NewTabUtils.pinnedLinks.links.indexOf(null);
+        if (index < 0 && NewTabUtils.pinnedLinks.links.length + 1 < numberOfSlots) {
+          // pinnedLinks can have less slots than the total available.
+          index = NewTabUtils.pinnedLinks.links.length;
+        }
+        if (index >= 0) {
+          NewTabUtils.pinnedLinks.pin(shortcut, index);
+        } else {
+          // No slots available, we need to do an insert in first slot and push over other pinned links.
+          this._insertPin(shortcut, 0, numberOfSlots);
+        }
+      }
+    });
+
+    this._broadcastPinnedSitesUpdated();
+  }
+
   onAction(action) {
     switch (action.type) {
       case at.INIT:
@@ -675,6 +707,9 @@ this.TopSitesFeed = class TopSitesFeed {
         break;
       case at.PREVIEW_REQUEST:
         this.getScreenshotPreview(action.data.url, action.meta.fromTarget);
+        break;
+      case at.UPDATE_PINNED_SEARCH_SHORTCUTS:
+        this.updatePinnedSearchShortcuts(action.data);
         break;
       case at.UNINIT:
         this.uninit();

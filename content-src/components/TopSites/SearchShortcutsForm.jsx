@@ -1,7 +1,6 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {FormattedMessage} from "react-intl";
 import React from "react";
-import {TOP_SITES_SOURCE} from "./TopSitesConstants";
 
 class SelectableSearchShortcut extends React.PureComponent {
   render() {
@@ -66,58 +65,10 @@ export class SearchShortcutsForm extends React.PureComponent {
   onSaveButtonClick(ev) {
     ev.preventDefault();
 
-    // Check if there were any changes and act accordingly
-    const {rows} = this.props.TopSites;
-    const pinQueue = [];
-    const unpinQueue = [];
-    this.state.shortcuts.forEach(shortcut => {
-      const alreadyPinned = rows.find(row => row && row.isPinned && row.searchTopSite && row.label === shortcut.keyword);
-      if (shortcut.isSelected && !alreadyPinned) {
-        pinQueue.push(this._searchTopSite(shortcut));
-      } else if (!shortcut.isSelected && alreadyPinned) {
-        unpinQueue.push({url: alreadyPinned.url, searchVendor: shortcut.shortURL});
-      }
-    });
-
-    // Pin the pinQueue
-    if (pinQueue.length > 0) {
-      // First find the available slots. A slot is available if it isn't pinned
-      // or if it's a pinned shortcut that we are about to unpin.
-      const availableSlots = [];
-      rows.forEach((row, index) => {
-        if (!row || !row.isPinned || (row.searchTopSite && unpinQueue.find(site => row.url === site.url))) {
-          availableSlots.push(index);
-        }
-      });
-
-      pinQueue.forEach(shortcut => {
-        this.props.dispatch(ac.OnlyToMain({
-          type: at.TOP_SITES_PIN,
-          data: {
-            site: shortcut,
-            index: availableSlots.shift()
-          }
-        }));
-        this.props.dispatch(ac.UserEvent({
-          source: TOP_SITES_SOURCE,
-          event: "SEARCH_EDIT_ADD",
-          value: {search_vendor: shortcut.searchVendor}
-        }));
-      });
-    }
-
-    // Unpin the unpinQueue.
-    unpinQueue.forEach(shortcut => {
-      this.props.dispatch(ac.OnlyToMain({
-        type: at.TOP_SITES_UNPIN,
-        data: {site: shortcut}
-      }));
-      this.props.dispatch(ac.UserEvent({
-        source: TOP_SITES_SOURCE,
-        event: "SEARCH_EDIT_DELETE",
-        value: {search_vendor: shortcut.searchVendor}
-      }));
-    });
+    this.props.dispatch(ac.OnlyToMain({
+      type: at.UPDATE_PINNED_SEARCH_SHORTCUTS,
+      data: {selectedShortcuts: this.state.shortcuts.filter(({isSelected}) => isSelected).map(shortcut => this._searchTopSite(shortcut))}
+    }));
 
     this.props.onClose();
   }
