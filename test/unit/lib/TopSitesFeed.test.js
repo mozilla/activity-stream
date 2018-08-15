@@ -504,6 +504,44 @@ describe("Top Sites Feed", () => {
     beforeEach(() => {
       sandbox.stub(feed, "_fetchIcon");
     });
+    it("multiple calls to .refresh should not run in parallel and be queued appropriately", async () => {
+      // This will block the first call to refresh
+      let resolver;
+      feed._storage.get.onCall(0).returns(new Promise(resolve => { resolver = resolve; }));
+
+      const firstCall = feed.refresh();
+      // The first call should progress and therefore set ._refreshInProgress
+      // but not add a refreshRequest to the ._refreshRequestQueue
+      assert.ok(feed._refreshInProgress);
+      assert.isEmpty(feed._refreshRequestQueue);
+
+      const secondCall = feed.refresh();
+      // The second (parallel) call should not proceed and instead add a
+      // refreshRequest to the ._refreshRequestQueue
+      assert.lengthOf(feed._refreshRequestQueue, 1);
+
+      const thirdCall = feed.refresh({broadcast: true});
+      // The third call should also not proceed and instead add a refreshRequest
+      assert.lengthOf(feed._refreshRequestQueue, 2);
+
+      // Call the resolver and wait for first call to complete
+      resolver();
+      await firstCall;
+
+      // The second and third call should then complete
+      await Promise.all([secondCall, thirdCall]);
+      assert.isEmpty(feed._refreshRequestQueue);
+
+      // The third call to refresh was initiated before the first completed, so
+      // the second and third calls to refresh should result in only a single
+      // actual run of the refresh body. As a result there should be two actions
+      // dispatched, one for the first call (not broadcasted to content) and one
+      // for the combined second and third call (which should be broadcasted to
+      // content, because third request had options.broadcast === true).
+      assert.calledTwice(feed.store.dispatch);
+      assert.equal(feed.store.dispatch.getCall(0).args[0].meta.to, "ActivityStream:PreloadedBrowser");
+      assert.equal(feed.store.dispatch.getCall(1).args[0].meta.to, "ActivityStream:Content");
+    });
     it("should wait for tippytop to initialize", async () => {
       feed._tippyTopProvider.initialized = false;
       sinon.stub(feed._tippyTopProvider, "init").resolves();
