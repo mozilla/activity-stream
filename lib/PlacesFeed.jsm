@@ -279,6 +279,14 @@ class PlacesFeed {
   }
 
   fillSearchTopSiteTerm({_target, data}) {
+    // Workaround for bug 1482551
+    // If the url bar already had the text value "@keyword " then starting the
+    // same search again will highlight the existing text. If we first modify
+    // the text value to be "@keyword" (no trailing space) then initiate the
+    // search, the text value is different so the url bar text is not
+    // highlighted on the subsequent focus event. This should have no visible
+    // effect for the user.
+    _target.browser.ownerGlobal.gURLBar.textValue = data.label;
     _target.browser.ownerGlobal.gURLBar.search(`${data.label} `, {disableOneOffButtons: true, disableSearchSuggestionsNotification: true});
   }
 
