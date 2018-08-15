@@ -217,7 +217,8 @@ this.TopSitesFeed = class TopSitesFeed {
 
     // Get all frecent sites from history
     const frecent = (await this.frecentCache.request({
-      numItems,
+      // We need to overquery due to the top 5 alexa search + default search possibly being removed
+      numItems: numItems + SEARCH_FILTERS.length + 1,
       topsiteFrecency: FRECENCY_THRESHOLD
     }))
     .reduce((validLinks, link) => {
