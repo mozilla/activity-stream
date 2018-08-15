@@ -616,9 +616,14 @@ this.TopSitesFeed = class TopSitesFeed {
     const {rows} = this.store.getState().TopSites;
 
     // Unpin any shortcuts that are no longer selected.
-    rows.filter(row => row && row.isPinned && row.searchTopSite).forEach(({label, url}) => {
+    rows.filter(row => row && row.isPinned && row.searchTopSite).forEach(({label, url, hostname}) => {
       if (!selectedShortcuts.find(shortcut => shortcut.label === label)) {
         NewTabUtils.pinnedLinks.unpin({url});
+        this.store.dispatch(ac.UserEvent({
+          source: "TOP_SITES",
+          event: "SEARCH_EDIT_DELETE",
+          value: {search_vendor: hostname}
+        }));
       }
     });
 
@@ -638,6 +643,11 @@ this.TopSitesFeed = class TopSitesFeed {
           // No slots available, we need to do an insert in first slot and push over other pinned links.
           this._insertPin(shortcut, 0, numberOfSlots);
         }
+        this.store.dispatch(ac.UserEvent({
+          source: "TOP_SITES",
+          event: "SEARCH_EDIT_ADD",
+          value: {search_vendor: shortcut.searchVendor}
+        }));
       }
     });
 
