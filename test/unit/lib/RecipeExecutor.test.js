@@ -21,7 +21,19 @@ describe.only("RecipeExecutor", () => {
       "baz": ["one", "two", "three"],
       "qux": 42,
       "text": "This Is A_sentence.",
-      "url": "http://www.wonder.example.com/dir1/dir2a-dir2b/dir3+4?key1&key2=val2&key3&%26amp=%3D3+4"
+      "url": "http://www.wonder.example.com/dir1/dir2a-dir2b/dir3+4?key1&key2=val2&key3&%26amp=%3D3+4",
+      "map": {
+        "c": 3,
+        "a": 1,
+        "b": 2
+      },
+      "map2": {
+        "b": 2,
+        "c": 3,
+        "d": 4
+      },
+      "arr1": [2, 3, 4],
+      "arr2": [3, 4, 5]
     };
   });
 
@@ -137,6 +149,183 @@ describe.only("RecipeExecutor", () => {
       item = instance.tokenizeField(item, {"field": "text", "dest": "toks"});
       assert.isTrue("toks" in item);
       assert.deepEqual(["this", "is", "a", "sentence"], item.toks);
+    });
+  });
+
+  describe("#_typeOf", () => {
+    it("should know this is a map", () => {
+      assert.equal(instance._typeOf({}), "map");
+    });
+    it("should know this is an array", () => {
+      assert.equal(instance._typeOf([]), "array");
+    });
+    it("should know this is a string", () => {
+      assert.equal(instance._typeOf("blah"), "string");
+    });
+  });
+
+  describe("#_lookupScalar", () => {
+    it("should return the constant", () => {
+      assert.equal(instance._lookupScalar({}, 1, 0), 1);
+    });
+    it("should return the default", () => {
+      assert.equal(instance._lookupScalar({}, "blah", 42), 42);
+    });
+    it("should return the field's value", () => {
+      assert.equal(instance._lookupScalar({"blah": 11}, "blah", 42), 11);
+    });
+  });
+
+  describe("#copyValue", () => {
+    it("should copy values", () => {
+      item = instance.copyValue(item, {"src": "one", "dest": "again"});
+      assert.isTrue("again" in item);
+      assert.equal(item.again, 1);
+    });
+  });
+
+  describe("#keepTopK", () => {
+    it("should keep the 2 smallest", () => {
+      item = instance.keepTopK(item, {"field": "map", "k": 2, "descending": false});
+      assert.equal(Object.keys(item.map).length, 2);
+      assert.isTrue("a" in item.map);
+      assert.equal(item.map.a, 1);
+      assert.isTrue("b" in item.map);
+      assert.equal(item.map.b, 2);
+      assert.isTrue(!("c" in item.map));
+    });
+    it("should keep the 2 largest", () => {
+      item = instance.keepTopK(item, {"field": "map", "k": 2, "descending": true});
+      assert.equal(Object.keys(item.map).length, 2);
+      assert.isTrue(!("a" in item.map));
+      assert.isTrue("b" in item.map);
+      assert.equal(item.map.b, 2);
+      assert.isTrue("c" in item.map);
+      assert.equal(item.map.c, 3);
+    });
+    it("should still keep the 2 largest", () => {
+      item = instance.keepTopK(item, {"field": "map", "k": 2});
+      assert.equal(Object.keys(item.map).length, 2);
+      assert.isTrue(!("a" in item.map));
+      assert.isTrue("b" in item.map);
+      assert.equal(item.map.b, 2);
+      assert.isTrue("c" in item.map);
+      assert.equal(item.map.c, 3);
+    });
+  });
+
+  describe("#scalarMultiply", () => {
+    it("should use constants", () => {
+      item = instance.scalarMultiply(item, {"field": "map", "k": 2});
+      assert.equal(item.map.a, 2);
+      assert.equal(item.map.b, 4);
+      assert.equal(item.map.c, 6);
+    });
+    it("should use fields", () => {
+      item = instance.scalarMultiply(item, {"field": "map", "k": "three"});
+      assert.equal(item.map.a, 3);
+      assert.equal(item.map.b, 6);
+      assert.equal(item.map.c, 9);
+    });
+    it("should use default", () => {
+      item = instance.scalarMultiply(item, {"field": "map", "k": "missing", "default": 4});
+      assert.equal(item.map.a, 4);
+      assert.equal(item.map.b, 8);
+      assert.equal(item.map.c, 12);
+    });
+  });
+
+  describe("#elementwiseMultiply", () => {
+    it("should handle maps", () => {
+      item = instance.elementwiseMultiply(item, {"left": "map", "right": "map2"});
+      assert.equal(item.map.a, 0);
+      assert.equal(item.map.b, 4);
+      assert.equal(item.map.c, 9);
+    });
+    it("should handle arrays", () => {
+      item = instance.elementwiseMultiply(item, {"left": "arr1", "right": "arr2"});
+      assert.equal(item.arr1.length, 3);
+      assert.equal(item.arr1[0], 6);
+      assert.equal(item.arr1[1], 12);
+      assert.equal(item.arr1[2], 20);
+    });
+  });
+
+  describe("#vectorMultiply", () => {
+    it("should calculate dot products from maps", () => {
+      item = instance.vectorMultiply(item, {"left": "map", "right": "map2", "dest": "dot"});
+      assert.equal(item.dot, 13);
+    });
+    it("should calculate dot products from arrays", () => {
+      item = instance.vectorMultiply(item, {"left": "arr1", "right": "arr2", "dest": "dot"});
+      assert.equal(item.dot, 38);
+    });
+  });
+
+  describe("#scalarAdd", () => {
+    it("should add a constant to every cell on a map", () => {
+      item = instance.scalarAdd(item, {"field": "map", "k": 10});
+      assert.deepEqual(item.map, {"a": 11, "b": 12, "c": 13});
+    });
+    it("should add a value from a field to every cell on a map", () => {
+      item = instance.scalarAdd(item, {"field": "map", "k": "qux"});
+      assert.deepEqual(item.map, {"a": 43, "b": 44, "c": 45});
+    });
+    it("should add a constant to every cell on an array", () => {
+      item = instance.scalarAdd(item, {"field": "arr1", "k": 10});
+      assert.deepEqual(item.arr1, [12, 13, 14]);
+    });
+  });
+
+  describe("#vectorAdd", () => {
+    it("should calculate add vectors from maps", () => {
+      item = instance.vectorAdd(item, {"left": "map", "right": "map2"});
+      assert.equal(Object.keys(item.map).length, 4);
+      assert.isTrue("a" in item.map);
+      assert.equal(item.map.a, 1);
+      assert.isTrue("b" in item.map);
+      assert.equal(item.map.b, 4);
+      assert.isTrue("c" in item.map);
+      assert.equal(item.map.c, 6);
+      assert.isTrue("d" in item.map);
+      assert.equal(item.map.d, 4);
+    });
+    it("should calculate add vectors from arrays", () => {
+      item = instance.vectorAdd(item, {"left": "arr1", "right": "arr2"});
+      assert.deepEqual(item.arr1, [5, 7, 9]);
+    });
+  });
+
+  describe("#makeBoolean", () => {
+    it("should 0/1 a map", () => {
+      item = instance.makeBoolean(item, {"field": "map", "threshold": 2});
+      assert.deepEqual(item.map, {"a": 0, "b": 0, "c": 1});
+    });
+    it("should a map of all 1s", () => {
+      item = instance.makeBoolean(item, {"field": "map"});
+      assert.deepEqual(item.map, {"a": 1, "b": 1, "c": 1});
+    });
+    it("should -1/1 a map", () => {
+      item = instance.makeBoolean(item, {"field": "map", "threshold": 2, "keep_negative": true});
+      assert.deepEqual(item.map, {"a": -1, "b": -1, "c": 1});
+    });
+    it("should work an array", () => {
+      item = instance.makeBoolean(item, {"field": "arr1", "threshold": 3});
+      assert.deepEqual(item.arr1, [0, 0, 1]);
+    });
+  });
+
+  describe("#whitelistFields", () => {
+    it("should filter the keys out of a map", () => {
+      item = instance.whitelistFields(item, {"fields": ["foo", "bar"]});
+      assert.deepEqual(item, {"foo": "FOO", "bar": "BAR"});
+    });
+  });
+
+  describe("#filterByValue", () => {
+    it("should filter the keys out of a map", () => {
+      item = instance.filterByValue(item, {"field": "map", "threshold": 2});
+      assert.deepEqual(item.map, {"c": 3});
     });
   });
 });
