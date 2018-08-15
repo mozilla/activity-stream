@@ -850,6 +850,12 @@ describe("Top Sites Feed", () => {
 
       assert.calledOnce(fakePageThumbs.removeExpirationFilter);
     });
+    it("should call updatePinnedSearchShortcuts on UPDATE_PINNED_SEARCH_SHORTCUTS action", async () => {
+      sinon.stub(feed, "updatePinnedSearchShortcuts");
+      const selectedShortcuts = [{url: "https://google.com", searchVendor: "google", label: "google", searchTopSite: true}];
+      await feed.onAction({type: at.UPDATE_PINNED_SEARCH_SHORTCUTS, data: {selectedShortcuts}});
+      assert.calledOnce(feed.updatePinnedSearchShortcuts);
+    });
   });
   describe("#add", () => {
     it("should pin site in first slot of empty pinned list", () => {
@@ -1397,6 +1403,16 @@ describe("Top Sites Feed", () => {
           type: "SET_PREF"
         });
       });
+    });
+  });
+
+  describe("updatePinnedSearchShortcuts", () => {
+    it("should unpin a shortcut no longer selected", () => {
+      const selectedShortcuts = [{url: "https://google.com", searchVendor: "google", label: "google", searchTopSite: true}];
+      fakeNewTabUtils.pinnedLinks.links[3] = {url: "https://amazon.com", searchVendor: "amazon", label: "amazon", searchTopSite: true};
+      feed.updatePinnedSearchShortcuts({selectedShortcuts});
+      assert.calledOnce(fakeNewTabUtils.pinnedLinks.unpin);
+      // assert.calledWith(fakeNewTabUtils.pinnedLinks.unpin, {});
     });
   });
 });
