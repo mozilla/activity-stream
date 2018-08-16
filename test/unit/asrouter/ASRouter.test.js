@@ -554,8 +554,8 @@ describe("ASRouter", () => {
         {id: "foo1", template: "simple_template", bundled: 1, trigger: {id: "foo"}, content: {title: "Foo1", body: "Foo123-1"}}
       ];
 
-      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
-      let message = await Router._findMessage(messages, target, data.data.data.trigger);
+      const {target} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
+      let message = await Router._findMessage(messages, target, {id: "foo"});
       assert.equal(message, messages[0]);
     });
     it("should pick a message with the right targeting and trigger", async () => {
@@ -565,8 +565,8 @@ describe("ASRouter", () => {
         {id: "foo3", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo3", body: "Foo123-3"}}
       ];
       await Router.setState({messages});
-      const {target, data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
-      let {bundle} = await Router._getBundledMessages(messages[0], target, data.data.data.trigger);
+      const {target} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
+      let {bundle} = await Router._getBundledMessages(messages[0], target, {id: "foo"});
       assert.equal(bundle.length, 2);
       // it should have picked foo1 and foo3 only
       assert.isTrue(bundle.every(elem => elem.id === "foo1" || elem.id === "foo3"));
