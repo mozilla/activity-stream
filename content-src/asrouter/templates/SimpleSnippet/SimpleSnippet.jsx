@@ -28,18 +28,14 @@ export class SimpleSnippet extends React.PureComponent {
     return titleIcon ? <span className="titleIcon" style={{backgroundImage: `url("${titleIcon}")`}} /> : null;
   }
 
-  renderButton(className) {
+  renderButton() {
     const {props} = this;
-    const hasLink = props.content.button_url && props.content.button_type === "anchor";
-
-    if (!hasLink && !props.content.button_action) {
+    if (!props.content.button_action) {
       return null;
     }
 
     return (<Button
-      className={className}
       onClick={this.onButtonClick}
-      url={props.content.button_url}
       color={props.content.button_color}
       backgroundColor={props.content.button_background_color}>
       {props.content.button_label}
@@ -48,14 +44,13 @@ export class SimpleSnippet extends React.PureComponent {
 
   render() {
     const {props} = this;
-    const hasButton = props.content.button_url && !props.content.button_type;
     const className = `SimpleSnippet${props.content.tall ? " tall" : ""}`;
     return (<SnippetBase {...props} className={className}>
       <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" />
       <div>
-        {this.renderTitleIcon()} {this.renderTitle()} <p className="body">{props.richText || props.content.text}</p> {this.renderButton("ASRouterAnchor")}
+        {this.renderTitleIcon()} {this.renderTitle()} <p className="body">{props.richText || props.content.text}</p>
       </div>
-      {hasButton ? <div>{this.renderButton()}</div> : null}
+      {<div>{this.renderButton()}</div>}
     </SnippetBase>);
   }
 }

@@ -652,7 +652,7 @@ describe("ASRouter", () => {
       globals.set("UITour", {showMenu: showMenuStub});
     });
     it("should call UITour.showMenu with the correct params on OPEN_APPLICATIONS_MENU", async () => {
-      const msg = fakeAsyncMessage({type: "OPEN_APPLICATIONS_MENU"});
+      const msg = fakeAsyncMessage({type: "OPEN_APPLICATIONS_MENU", data: {target: "appMenu"}});
       await Router.onMessage(msg);
 
       assert.calledOnce(showMenuStub);

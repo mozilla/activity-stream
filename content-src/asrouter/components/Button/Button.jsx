@@ -1,5 +1,4 @@
 import React from "react";
-import {safeURI} from "../../template-utils";
 
 const ALLOWED_STYLE_TAGS = ["color", "backgroundColor"];
 
@@ -19,8 +18,7 @@ export const Button = props => {
 
   return (<a onClick={props.onClick}
     className={props.className || "ASRouterButton"}
-    style={style}
-    {...(props.url && {href: safeURI(props.url)})}>
+    style={style}>
     {props.children}
   </a>);
 };
