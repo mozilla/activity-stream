@@ -40,9 +40,15 @@
       "description": "Small icon that shows up before the title / text. 16x16px. SVG or PNG preferred. Grayscale."
     },
     "button_action": {
-      "additionalProperties": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": ["OPEN_APPLICATIONS_MENU"],
+          "description": "The type of action the button should trigger."
+        },
         "data": {
-          "additionalProperties": {
+          "type": "object",
+          "properties": {
             "target": {
               "type": "string",
               "description": "Additional parameters for button action, example which specific menu the button should open"

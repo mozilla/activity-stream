@@ -37,7 +37,7 @@ describe("SimpleSnippet", () => {
   it("should render .button_label and default className", () => {
     const wrapper = mountAndCheckProps({
       button_label: "Click here",
-      button_action: {type: "foo", data: {target: "bar"}}
+      button_action: {type: "OPEN_APPLICATIONS_MENU", data: {target: "appMenu"}}
     });
 
     const button = wrapper.find("button.ASRouterButton");
