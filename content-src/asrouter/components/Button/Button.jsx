@@ -16,9 +16,9 @@ export const Button = props => {
     style.border = "0";
   }
 
-  return (<a onClick={props.onClick}
+  return (<button onClick={props.onClick}
     className={props.className || "ASRouterButton"}
     style={style}>
     {props.children}
-  </a>);
+  </button>);
 };

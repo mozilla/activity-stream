@@ -39,6 +39,18 @@
       "type": "string",
       "description": "Small icon that shows up before the title / text. 16x16px. SVG or PNG preferred. Grayscale."
     },
+    "button_action": {
+      "additionalProperties": {
+        "data": {
+          "additionalProperties": {
+            "target": {
+              "type": "string",
+              "description": "Additional parameters for button action, example which specific menu the button should open"
+            }
+          }
+        }
+      }
+    },
     "button_label": {
       "allOf": [
         {"$ref": "#/definitions/plainText"},
@@ -75,6 +87,7 @@
   "additionalProperties": false,
   "required": ["text"],
   "dependencies": {
+    "button_label": ["button_action"],
     "button_color": ["button_label"],
     "button_background_color": ["button_label"]
   }
