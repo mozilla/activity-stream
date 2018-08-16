@@ -17,10 +17,10 @@ export const Button = props => {
     style.border = "0";
   }
 
-  return (<a href={safeURI(props.url)}
-    onClick={props.onClick}
+  return (<a onClick={props.onClick}
     className={props.className || "ASRouterButton"}
-    style={style}>
+    style={style}
+    {...(props.url && {href: safeURI(props.url)})}>
     {props.children}
   </a>);
 };

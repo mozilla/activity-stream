@@ -217,6 +217,7 @@ export class ASRouterUISurface extends React.PureComponent {
               UISurface="NEWTAB_FOOTER_BAR"
               getNextMessage={ASRouterUtils.getNextMessage}
               onBlock={this.onBlockById(this.state.message.id)}
+              onAction={ASRouterUtils.sendMessage}
               sendUserActionTelemetry={this.sendUserActionTelemetry} />
           </LocalizationProvider>
       </ImpressionsWrapper>);

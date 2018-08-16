@@ -672,7 +672,7 @@ class _ASRouter {
         this.openLinkIn(`about:${action.data.page}`, target, {isPrivate: false, trusted: true, where: "tab"});
         break;
       case ra.OPEN_APPLICATIONS_MENU:
-        UITour.showMenu(target.browser.ownerGlobal, "appMenu");
+        UITour.showMenu(target.browser.ownerGlobal, action.data.target);
         break;
       case ra.INSTALL_ADDON_FROM_URL:
         await MessageLoaderUtils.installAddonFromURL(target.browser, action.data.url);

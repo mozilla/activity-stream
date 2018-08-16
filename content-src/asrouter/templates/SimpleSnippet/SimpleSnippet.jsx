@@ -13,6 +13,9 @@ export class SimpleSnippet extends React.PureComponent {
 
   onButtonClick() {
     this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", id: this.props.UISurface});
+    if (this.props.content.button_action) {
+      this.props.onAction(this.props.content.button_action);
+    }
   }
 
   renderTitle() {
@@ -27,6 +30,12 @@ export class SimpleSnippet extends React.PureComponent {
 
   renderButton(className) {
     const {props} = this;
+    const hasLink = props.content.button_url && props.content.button_type === "anchor";
+
+    if (!hasLink && !props.content.button_action) {
+      return null;
+    }
+
     return (<Button
       className={className}
       onClick={this.onButtonClick}
@@ -39,13 +48,12 @@ export class SimpleSnippet extends React.PureComponent {
 
   render() {
     const {props} = this;
-    const hasLink = props.content.button_url && props.content.button_type === "anchor";
     const hasButton = props.content.button_url && !props.content.button_type;
     const className = `SimpleSnippet${props.content.tall ? " tall" : ""}`;
     return (<SnippetBase {...props} className={className}>
       <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" />
       <div>
-        {this.renderTitleIcon()} {this.renderTitle()} <p className="body">{props.richText || props.content.text}</p> {hasLink ? this.renderButton("ASRouterAnchor") : null}
+        {this.renderTitleIcon()} {this.renderTitle()} <p className="body">{props.richText || props.content.text}</p> {this.renderButton("ASRouterAnchor")}
       </div>
       {hasButton ? <div>{this.renderButton()}</div> : null}
     </SnippetBase>);
