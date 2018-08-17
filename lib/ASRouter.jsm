@@ -597,6 +597,32 @@ class _ASRouter {
 
   async handleUserAction({data: action, target}) {
     switch (action.type) {
+      case ra.OPEN_PRIVATE_BROWSER_WINDOW:
+        // Forcefully open about:privatebrowsing
+        target.browser.ownerGlobal.OpenBrowserWindow({private: true});
+        break;
+      case ra.OPEN_URL:
+        this.openLinkIn(action.data.url, target, {isPrivate: false, where: "tabshifted"});
+        break;
+      case ra.OPEN_ABOUT_PAGE:
+        this.openLinkIn(`about:${action.data.page}`, target, {isPrivate: false, trusted: true, where: "tab"});
+        break;
+      case ra.OPEN_APPLICATIONS_MENU:
+        UITour.showMenu(target.browser.ownerGlobal, action.data.target);
+        break;
+      case ra.INSTALL_ADDON_FROM_URL:
+        await MessageLoaderUtils.installAddonFromURL(target.browser, action.data.url);
+        break;
+    }
+  }
+
+  async onMessage({data: action, target}) {
+    switch (action.type) {
+      case "USER_ACTION":
+        if (action.data.type in ra) {
+          await this.handleUserAction({data: action.data, target});
+        }
+        break;
       case "CONNECT_UI_REQUEST":
       case "GET_NEXT_MESSAGE":
       case "TRIGGER":
@@ -648,34 +674,6 @@ class _ASRouter {
         break;
       case "IMPRESSION":
         this.addImpression(action.data);
-        break;
-    }
-  }
-
-  async onMessage({data: action, target}) {
-    switch (action.type) {
-      case "USER_ACTION":
-        if (action.data.type in ra) {
-          await this.onMessage({data: action.data, target});
-        } else {
-          await this.handleUserAction({data: action.data, target});
-        }
-        break;
-      case ra.OPEN_PRIVATE_BROWSER_WINDOW:
-        // Forcefully open about:privatebrowsing
-        target.browser.ownerGlobal.OpenBrowserWindow({private: true});
-        break;
-      case ra.OPEN_URL:
-        this.openLinkIn(action.data.url, target, {isPrivate: false, where: "tabshifted"});
-        break;
-      case ra.OPEN_ABOUT_PAGE:
-        this.openLinkIn(`about:${action.data.page}`, target, {isPrivate: false, trusted: true, where: "tab"});
-        break;
-      case ra.OPEN_APPLICATIONS_MENU:
-        UITour.showMenu(target.browser.ownerGlobal, action.data.target);
-        break;
-      case ra.INSTALL_ADDON_FROM_URL:
-        await MessageLoaderUtils.installAddonFromURL(target.browser, action.data.url);
         break;
     }
   }

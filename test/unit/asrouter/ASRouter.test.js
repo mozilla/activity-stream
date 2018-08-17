@@ -22,10 +22,11 @@ const ONE_DAY = 24 * 60 * 60 * 1000;
 // Creates a message object that looks like messages returned by
 // RemotePageManager listeners
 function fakeAsyncMessage(action) {
-  return {
-    data: {type: "USER_ACTION", data: action},
-    target: new FakeRemotePageManager()
-  };
+  return {data: action, target: new FakeRemotePageManager()};
+}
+// Create a message that looks like a user action
+function fakeExecuteUserAction(action) {
+  return fakeAsyncMessage({data: action, type: "USER_ACTION"});
 }
 
 describe("ASRouter", () => {
@@ -593,7 +594,7 @@ describe("ASRouter", () => {
   describe("#onMessage: Onboarding actions", () => {
     it("should call OpenBrowserWindow with a private window on OPEN_PRIVATE_BROWSER_WINDOW", async () => {
       let [testMessage] = Router.state.messages;
-      const msg = fakeAsyncMessage({type: "OPEN_PRIVATE_BROWSER_WINDOW", data: testMessage});
+      const msg = fakeExecuteUserAction({type: "OPEN_PRIVATE_BROWSER_WINDOW", data: testMessage});
       await Router.onMessage(msg);
 
       assert.calledWith(msg.target.browser.ownerGlobal.OpenBrowserWindow, {private: true});
@@ -602,7 +603,7 @@ describe("ASRouter", () => {
       sinon.spy(Router, "openLinkIn");
       let [testMessage] = Router.state.messages;
       testMessage.button_action = {type: "OPEN_URL", data: {url: "some/url.com"}};
-      const msg = fakeAsyncMessage(testMessage.button_action);
+      const msg = fakeExecuteUserAction(testMessage.button_action);
       await Router.onMessage(msg);
 
       assert.calledWith(Router.openLinkIn, "some/url.com", msg.target, {isPrivate: false, where: "tabshifted"});
@@ -612,7 +613,7 @@ describe("ASRouter", () => {
       sinon.spy(Router, "openLinkIn");
       let [testMessage] = Router.state.messages;
       testMessage.button_action = {type: "OPEN_ABOUT_PAGE", data: {page: "something"}};
-      const msg = fakeAsyncMessage(testMessage.button_action);
+      const msg = fakeExecuteUserAction(testMessage.button_action);
       await Router.onMessage(msg);
 
       assert.calledWith(Router.openLinkIn, `about:something`, msg.target, {isPrivate: false, trusted: true, where: "tab"});
@@ -623,7 +624,7 @@ describe("ASRouter", () => {
   describe("#onMessage: INSTALL_ADDON_FROM_URL", () => {
     it("should call installAddonFromURL with correct arguments", async () => {
       sandbox.stub(MessageLoaderUtils, "installAddonFromURL").resolves(null);
-      const msg = fakeAsyncMessage({type: "INSTALL_ADDON_FROM_URL", data: {url: "foo.com"}});
+      const msg = fakeExecuteUserAction({type: "INSTALL_ADDON_FROM_URL", data: {url: "foo.com"}});
 
       await Router.onMessage(msg);
 
@@ -652,7 +653,7 @@ describe("ASRouter", () => {
       globals.set("UITour", {showMenu: showMenuStub});
     });
     it("should call UITour.showMenu with the correct params on OPEN_APPLICATIONS_MENU", async () => {
-      const msg = fakeAsyncMessage({type: "OPEN_APPLICATIONS_MENU", data: {target: "appMenu"}});
+      const msg = fakeExecuteUserAction({type: "OPEN_APPLICATIONS_MENU", data: {target: "appMenu"}});
       await Router.onMessage(msg);
 
       assert.calledOnce(showMenuStub);

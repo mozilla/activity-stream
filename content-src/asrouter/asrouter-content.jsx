@@ -20,16 +20,19 @@ export const ASRouterUtils = {
     global.RPMRemoveMessageListener(INCOMING_MESSAGE_NAME, listener);
   },
   sendMessage(action) {
-    global.RPMSendAsyncMessage(OUTGOING_MESSAGE_NAME, {
-      type: "USER_ACTION",
-      data: action
-    });
+    global.RPMSendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
   },
   blockById(id) {
     ASRouterUtils.sendMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id}});
   },
   blockBundle(bundle) {
     ASRouterUtils.sendMessage({type: "BLOCK_BUNDLE", data: {bundle}});
+  },
+  executeAction(button_action) {
+    ASRouterUtils.sendMessage({
+      type: "USER_ACTION",
+      data: button_action
+    });
   },
   unblockById(id) {
     ASRouterUtils.sendMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id}});
@@ -217,7 +220,7 @@ export class ASRouterUISurface extends React.PureComponent {
               UISurface="NEWTAB_FOOTER_BAR"
               getNextMessage={ASRouterUtils.getNextMessage}
               onBlock={this.onBlockById(this.state.message.id)}
-              onAction={ASRouterUtils.sendMessage}
+              onAction={ASRouterUtils.executeAction}
               sendUserActionTelemetry={this.sendUserActionTelemetry} />
           </LocalizationProvider>
       </ImpressionsWrapper>);
@@ -228,7 +231,7 @@ export class ASRouterUISurface extends React.PureComponent {
       <OnboardingMessage
         {...this.state.bundle}
         UISurface="NEWTAB_OVERLAY"
-        onAction={ASRouterUtils.sendMessage}
+        onAction={ASRouterUtils.executeAction}
         onDoneButton={this.clearBundle(this.state.bundle.bundle)}
         getNextMessage={ASRouterUtils.getNextMessage}
         sendUserActionTelemetry={this.sendUserActionTelemetry} />);
