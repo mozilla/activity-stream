@@ -243,7 +243,7 @@ export class ASRouterUISurface extends React.PureComponent {
   }
 
   renderPreviewBanner() {
-    if (!this.state.message.provider === "preview") {
+    if (this.state.message.provider !== "preview") {
       return null;
     }
 
