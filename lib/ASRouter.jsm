@@ -10,6 +10,7 @@ ChromeUtils.import("resource:///modules/UITour.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 const {ASRouterActions: ra, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm", {});
+const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js", {});
 
 ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
   "resource://activity-stream/lib/ASRouterTargeting.jsm");
@@ -74,6 +75,29 @@ const MessageLoaderUtils = {
   },
 
   /**
+   * _remoteSettingsLoader - Loads messages for a RemoteSettings provider
+   *
+   * @param {obj} provider An AS router provider
+   * @param {string} provider.bucket The name of the Remote Settings bucket
+   * @returns {Promise} resolves with an array of messages, or an empty array if none could be fetched
+   */
+  async _remoteSettingsLoader(provider) {
+    let messages = [];
+    if (provider.bucket) {
+      try {
+        messages = await MessageLoaderUtils._getRemoteSettingsMessages(provider.bucket);
+      } catch (e) {
+        Cu.reportError(e);
+      }
+    }
+    return messages;
+  },
+
+  _getRemoteSettingsMessages(bucket) {
+    return RemoteSettings(bucket).get({filters: {locale: Services.locale.getAppLocaleAsLangTag()}});
+  },
+
+  /**
    * _getMessageLoader - return the right loading function given the provider's type
    *
    * @param {obj} provider An AS Router provider
@@ -83,6 +107,8 @@ const MessageLoaderUtils = {
     switch (provider.type) {
       case "remote":
         return this._remoteLoader;
+      case "remote-settings":
+        return this._remoteSettingsLoader;
       case "local":
       default:
         return this._localLoader;

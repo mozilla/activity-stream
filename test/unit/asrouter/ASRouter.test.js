@@ -6,6 +6,7 @@ import {
   FAKE_LOCAL_PROVIDERS,
   FAKE_REMOTE_MESSAGES,
   FAKE_REMOTE_PROVIDER,
+  FAKE_REMOTE_SETTINGS_PROVIDER,
   FakeRemotePageManager,
   PARENT_TO_CHILD_MESSAGE_NAME
 } from "./constants";
@@ -14,7 +15,7 @@ import {GlobalOverrider} from "test/unit/utils";
 import ProviderResponseSchema from "content-src/asrouter/schemas/provider-response.schema.json";
 
 const MESSAGE_PROVIDER_PREF_NAME = "browser.newtabpage.activity-stream.asrouter.messageProviders";
-const FAKE_PROVIDERS = [FAKE_LOCAL_PROVIDER, FAKE_REMOTE_PROVIDER];
+const FAKE_PROVIDERS = [FAKE_LOCAL_PROVIDER, FAKE_REMOTE_PROVIDER, FAKE_REMOTE_SETTINGS_PROVIDER];
 const ALL_MESSAGE_IDS = [...FAKE_LOCAL_MESSAGES, ...FAKE_REMOTE_MESSAGES].map(message => message.id);
 const FAKE_BUNDLE = [FAKE_LOCAL_MESSAGES[1], FAKE_LOCAL_MESSAGES[2]];
 const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -143,7 +144,7 @@ describe("ASRouter", () => {
     });
     it("should update the list of providers on pref change", async () => {
       const modifiedRemoteProvider = Object.assign({}, FAKE_REMOTE_PROVIDER, {url: "baz.com"});
-      setMessageProviderPref([FAKE_LOCAL_PROVIDER, modifiedRemoteProvider]);
+      setMessageProviderPref([FAKE_LOCAL_PROVIDER, modifiedRemoteProvider, FAKE_REMOTE_SETTINGS_PROVIDER]);
 
       const {length} = Router.state.providers;
       await Router.observe("", "", MESSAGE_PROVIDER_PREF_NAME);
@@ -241,6 +242,10 @@ describe("ASRouter", () => {
         Router._triggerHandler, ["www.mozilla.org", "www.mozilla.com"]);
       assert.calledWithExactly(ASRouterTriggerListeners.get("openURL").init,
         Router._triggerHandler, ["www.example.com"]);
+    });
+    it("should gracefully handle RemoteSettings blowing up", async () => {
+      sandbox.stub(MessageLoaderUtils, "_getRemoteSettingsMessages").rejects("fake error");
+      await createRouterAndInit();
     });
   });
 
