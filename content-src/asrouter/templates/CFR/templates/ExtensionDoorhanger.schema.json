@@ -16,10 +16,21 @@
   },
   "properties": {
     "heading": {
-      "allOf": [
-        {"$ref": "#/definitions/plainText"},
-        {"description": "Tooltip heading describing it's purpose."}
-      ]
+      "type": "object",
+      "properties": {
+        "title": {
+          "allOf": [
+            {"$ref": "#/definitions/plainText"},
+            {"description": "Tooltip heading describing it's purpose."}
+          ]
+        },
+        "url": {
+          "allOf": [
+            {"$ref": "#/definitions/linkUrl"},
+            {"description": "Link to support page with explanation."}
+          ]
+        }
+      }
     },
     "addon": {
       "type": "object",
