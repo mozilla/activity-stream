@@ -1,0 +1,76 @@
+{
+  "title": "ExtensionDoorhanger",
+  "description": "A template with a heading, addon icon, title and description. No markup allowed.",
+  "version": "1.0.0",
+  "type": "object",
+  "definitions": {
+    "plainText": {
+      "description": "Plain text (no HTML allowed)",
+      "type": "string"
+    },
+    "linkUrl": {
+      "description": "Target for links or buttons",
+      "type": "string",
+      "format": "uri"
+    }
+  },
+  "properties": {
+    "heading": {
+      "allOf": [
+        {"$ref": "#/definitions/plainText"},
+        {"description": "Tooltip heading describing it's purpose."}
+      ]
+    },
+    "addon": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "allOf": [
+            {"$ref": "#/definitions/plainText"},
+            {"description": "Addon name."}
+          ]
+        },
+        "author": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {"$ref": "#/definitions/plainText"},
+                {"description": "Author name."}
+              ]
+            },
+            "url": {
+              "allOf": [
+                {"$ref": "#/definitions/linkUrl"},
+                {"description": "Link to addon creator."}
+              ]
+            }
+          }
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "allOf": [
+            {"$ref": "#/definitions/plainText"},
+            {"description": "Description of the addon."}
+          ]
+        },
+        "url": {
+          "allOf": [
+            {"$ref": "#/definitions/linkUrl"},
+            {"description": "Learn more link."}
+          ]
+        }
+      }
+    },
+    "icon": {
+      "type": "string",
+      "description": "Addon icon."
+    }
+  },
+  "additionalProperties": false,
+  "required": ["heading", "addon", "content"]
+}
