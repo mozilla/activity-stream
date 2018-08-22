@@ -8,10 +8,7 @@ const DEFAULT_CONTENT = {
   "addon": {
     "title": "Addon name",
     "icon": "base64",
-    "author": {
-      "title": "Author name",
-      "url": "https://mozilla.org"
-    }
+    "author": "Author name"
   },
   "content": {
     "text": "Description of addon",

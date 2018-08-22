@@ -42,21 +42,10 @@
           ]
         },
         "author": {
-          "type": "object",
-          "properties": {
-            "title": {
-              "allOf": [
-                {"$ref": "#/definitions/plainText"},
-                {"description": "Author name."}
-              ]
-            },
-            "url": {
-              "allOf": [
-                {"$ref": "#/definitions/linkUrl"},
-                {"description": "Link to addon creator."}
-              ]
-            }
-          }
+          "allOf": [
+            {"$ref": "#/definitions/plainText"},
+            {"description": "Addon author."}
+          ]
         }
       }
     },
