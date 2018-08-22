@@ -171,7 +171,11 @@ class _ASRouter {
     const providers = existingPreviewProvider ? [existingPreviewProvider] : [];
     const providersJSON = Services.prefs.getStringPref(this._messageProviderPref, "");
     try {
-      JSON.parse(providersJSON).forEach(provider => providers.push(provider));
+      JSON.parse(providersJSON).forEach(provider => {
+        if (provider.enabled) {
+          providers.push(provider);
+        }
+      });
     } catch (e) {
       Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
     }

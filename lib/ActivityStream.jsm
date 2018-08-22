@@ -192,10 +192,6 @@ const PREFS_CONFIG = new Map([
     title: "Is the message center experiment on?",
     value: false
   }],
-  ["asrouterOnboardingCohort", {
-    title: "What cohort is the user in?",
-    value: 0
-  }],
   ["asrouter.messageProviders", {
     title: "Configuration for ASRouter message providers",
 
@@ -207,12 +203,15 @@ const PREFS_CONFIG = new Map([
     value: JSON.stringify([{
       id: "onboarding",
       type: "local",
-      localProvider: "OnboardingMessageProvider"
+      localProvider: "OnboardingMessageProvider",
+      enabled: false,
+      cohort: 0
     }, {
       id: "snippets",
       type: "remote",
       url: "https://activity-stream-icons.services.mozilla.com/v1/messages.json.br",
-      updateCycleInMs: ONE_HOUR_IN_MS * 4
+      updateCycleInMs: ONE_HOUR_IN_MS * 4,
+      enabled: false
     }])
   }]
 ]);
