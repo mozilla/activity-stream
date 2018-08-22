@@ -46,6 +46,12 @@
             {"$ref": "#/definitions/plainText"},
             {"description": "Addon author."}
           ]
+        },
+        "icon": {
+          "allOf": [
+            {"$ref": "#/definitions/linkUrl"},
+            {"description": "Addon icon."}
+          ]
         }
       }
     },
@@ -65,10 +71,6 @@
           ]
         }
       }
-    },
-    "icon": {
-      "type": "string",
-      "description": "Addon icon."
     }
   },
   "additionalProperties": false,
