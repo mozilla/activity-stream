@@ -67,7 +67,7 @@ const TargetingGetters = {
       update: settings.update
     };
   },
-  get timestamp() {
+  get currentTimestamp() {
     return new Date(new Date().getTime());
   },
   get profileAgeCreated() {

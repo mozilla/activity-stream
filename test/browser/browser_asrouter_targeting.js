@@ -110,6 +110,16 @@ add_task(async function checkProfileAgeReset() {
     "should select correct item by profile age reset");
 });
 
+add_task(async function checkCurrentTimestamp() {
+  let message = {id: "foo", targeting: `currentTimestamp < '${new Date(new Date().getTime() + 1000)}'|date`};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "should select message based on currentTimestamp");
+
+  message = {id: "foo", targeting: `currentTimestamp > '${new Date(new Date().getTime() - 1000)}'|date`};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "should select message based on currentTimestamp");
+});
+
 add_task(async function checkhasFxAccount() {
   await pushPrefs(["services.sync.username", "someone@foo.com"]);
   is(await ASRouterTargeting.Environment.hasFxAccount, true,
