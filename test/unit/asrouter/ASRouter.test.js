@@ -697,7 +697,7 @@ describe("ASRouter", () => {
       const trigger = {id: "FAKE_TRIGGER", param: "some fake param"};
       Router._triggerHandler(target, trigger);
       assert.calledOnce(Router.onMessage);
-      assert.calledWithExactly(Router.onMessage, {target, data: {type: "TRIGGER", trigger}});
+      assert.calledWithExactly(Router.onMessage, {target, data: {type: "TRIGGER", data: {trigger}}});
     });
   });
 

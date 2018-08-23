@@ -30,12 +30,11 @@
             {"description": "Text for button tooltip used to provider information about the doorhanger."}
           ]
         },
-        "url": {
-          "allOf": [
-            {"$ref": "#/definitions/linkUrl"},
-            {"description": "Link to support page with the information about the doorhanger."}
-          ]
-        }  
+        "sumo_path": {
+          "type": "string",
+          "description": "Last part of the path in the URL to the support page with the information about the doorhanger.",
+          "examples": ["extensionpromotions", "extensionrecommendations"]
+        }
       }
     },
     "heading_text": {
