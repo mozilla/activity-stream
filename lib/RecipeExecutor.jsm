@@ -552,7 +552,7 @@ this.RecipeExecutor = class RecipeExecutor {
    * Rewrites a field so that its values are now L2 normed.
    *
    * Config:
-   *  fields        Points to a map of strings to numbers, or an array of numbers
+   *  field         Points to a map of strings to numbers, or an array of numbers
    */
   l2Normalize(item, config) {
     if (config.field in item) {
@@ -563,6 +563,7 @@ this.RecipeExecutor = class RecipeExecutor {
         for (let i = 0; i < data.length; i++) {
           norm += data[i] * data[i];
         }
+        norm = Math.sqrt(norm);
         for (let i = 0; i < data.length; i++) {
           data[i] /= norm;
         }
@@ -571,6 +572,7 @@ this.RecipeExecutor = class RecipeExecutor {
         Object.keys(data).forEach(key => {
           norm += data[key] * data[key];
         });
+        norm = Math.sqrt(norm);
         Object.keys(data).forEach(key => {
           data[key] /= norm;
         });
@@ -586,7 +588,7 @@ this.RecipeExecutor = class RecipeExecutor {
    * Rewrites a field so that all of its values sum to 1.0
    *
    * Config:
-   *  fields        Points to a map of strings to numbers, or an array of numbers
+   *  field         Points to a map of strings to numbers, or an array of numbers
    */
   probNormalize(item, config) {
     if (config.field in item) {
@@ -610,6 +612,58 @@ this.RecipeExecutor = class RecipeExecutor {
         });
       }
     }
+
+    return item;
+  }
+
+  /**
+   * Stores a value, if it is not already present
+   *
+   * Config:
+   *  field             field to write to if it is missing
+   *  value             value to store in that field
+   */
+  setDefault(item, config) {
+    let val = this._lookupScalar(item, config.value, 0);
+    if (!(config.field in item)) {
+      item[config.field] = val;
+    }
+
+    return item;
+  }
+
+  /**
+   * Selctively promotes an value from an inner map up to the outer map
+   *
+   * Config:
+   *  haystack            Points to a map of strings to values
+   *  needle              Key inside the map we should promote up
+   *  dest                Where we should write the value of haystack[needle]
+   */
+  lookupValue(item, config) {
+    if ((config.haystack in item) && (config.needle in item[config.haystack])) {
+      item[config.dest] = item[config.haystack][config.needle];
+    }
+
+    return item;
+  }
+
+  /**
+   * Demotes a field into a map
+   *
+   * Config:
+   *  src               Field to copy
+   *  dest_map          Points to a map
+   *  dest_key          Key inside dest_map to copy src to
+   */
+  copyToMap(item, config) {
+    if (config.src in item) {
+      if (!(config.dest_map in item)) {
+        item[config.dest_map] = {};
+      }
+      item[config.dest_map][config.dest_key] = item[config.src];
+    }
+
     return item;
   }
 };

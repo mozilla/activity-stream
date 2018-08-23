@@ -328,4 +328,75 @@ describe.only("RecipeExecutor", () => {
       assert.deepEqual(item.map, {"c": 3});
     });
   });
+
+  describe("#l2Normalize", () => {
+    it("should L2 normalize an array", () => {
+      item = instance.l2Normalize(item, {"field": "arr1"});
+      assert.deepEqual(item.arr1, [0.3713906763541037, 0.5570860145311556, 0.7427813527082074]);
+    });
+    it("should L2 normalize a map", () => {
+      item = instance.l2Normalize(item, {"field": "map"});
+      assert.deepEqual(item.map, {"a": 0.2672612419124244, "b": 0.5345224838248488, "c": 0.8017837257372732});
+    });
+  });
+
+  describe("#probNormalize", () => {
+    it("should normalize an array to sum to 1", () => {
+      item = instance.probNormalize(item, {"field": "arr1"});
+      assert.deepEqual(item.arr1, [0.2222222222222222, 0.3333333333333333, 0.4444444444444444]);
+    });
+    it("should normalize a map to sum to 1", () => {
+      item = instance.probNormalize(item, {"field": "map"});
+      assert.equal(Object.keys(item.map).length, 3);
+      assert.isTrue("a" in item.map);
+      assert.isTrue(Math.abs(item.map.a - 0.16667) <= 0.00001);
+      assert.isTrue("b" in item.map);
+      assert.isTrue(Math.abs(item.map.b - 0.33333) <= 0.00001);
+      assert.isTrue("c" in item.map);
+      assert.isTrue(Math.abs(item.map.c - 0.5) <= 0.00001);
+    });
+  });
+
+  describe("#setDefault", () => {
+    it("should store a missing value", () => {
+      item = instance.setDefault(item, {"field": "missing", "value": 1111});
+      assert.equal(item.missing, 1111);
+    });
+    it("should not overwrite an existing value", () => {
+      item = instance.setDefault(item, {"field": "lhs", "value": 1111});
+      assert.equal(item.lhs, 2);
+    });
+  });
+
+  describe("#lookupValue", () => {
+    it("should promote a value", () => {
+      item = instance.lookupValue(item, {"haystack": "map", "needle": "c", "dest": "ccc"});
+      assert.equal(item.ccc, 3);
+    });
+    it("should handle a missing haystack", () => {
+      item = instance.lookupValue(item, {"haystack": "missing", "needle": "c", "dest": "ccc"});
+      assert.isTrue(!("ccc" in item));
+    });
+    it("should handle a missing needle", () => {
+      item = instance.lookupValue(item, {"haystack": "map", "needle": "missing", "dest": "ccc"});
+      assert.isTrue(!("ccc" in item));
+    });
+  });
+
+  describe("#copyToMap", () => {
+    it("should copy a value to a map", () => {
+      item = instance.copyToMap(item, {"src": "qux", "dest_map": "map", "dest_key": "zzz"});
+      assert.isTrue("zzz" in item.map);
+      assert.equal(item.map.zzz, item.qux);
+    });
+    it("should create a new map to hold the key", () => {
+      item = instance.copyToMap(item, {"src": "qux", "dest_map": "missing", "dest_key": "zzz"});
+      assert.equal(Object.keys(item.missing).length, 1);
+      assert.equal(item.missing.zzz, item.qux);
+    });
+    it("should not create an empty map if the src is missing", () => {
+      item = instance.copyToMap(item, {"src": "missing", "dest_map": "no_map", "dest_key": "zzz"});
+      assert.isTrue(!("no_map" in item));
+    });
+  });
 });
