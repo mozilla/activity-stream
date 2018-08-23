@@ -17,6 +17,8 @@ export const FAKE_REMOTE_MESSAGES = [
 ];
 export const FAKE_REMOTE_PROVIDER = {id: "remotey", type: "remote", url: "http://fake.com/endpoint", enabled: true};
 
+export const FAKE_REMOTE_SETTINGS_PROVIDER = {id: "remotey-settingsy", type: "remote-settings", bucket: "bucketname", enabled: true};
+
 // Stubs methods on RemotePageManager
 export class FakeRemotePageManager {
   constructor() {
