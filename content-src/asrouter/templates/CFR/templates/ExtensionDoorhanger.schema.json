@@ -15,22 +15,34 @@
     }
   },
   "properties": {
-    "heading": {
+    "notification_text": {
+      "allOf": [
+        {"$ref": "#/definitions/plainText"},
+        {"description": "Text for location bar chiclet."}
+      ]
+    },
+    "info_icon": {
       "type": "object",
       "properties": {
-        "title": {
+        "label": {
           "allOf": [
             {"$ref": "#/definitions/plainText"},
-            {"description": "Tooltip heading describing it's purpose."}
+            {"description": "Text for button tooltip used to provider information about the doorhanger."}
           ]
         },
         "url": {
           "allOf": [
             {"$ref": "#/definitions/linkUrl"},
-            {"description": "Link to support page with explanation."}
+            {"description": "Link to support page with the information about the doorhanger."}
           ]
-        }
+        }  
       }
+    },
+    "heading_text": {
+      "allOf": [
+        {"$ref": "#/definitions/plainText"},
+        {"description": "Doorhanger heading describing its purpose."}
+      ]
     },
     "addon": {
       "type": "object",
@@ -38,41 +50,82 @@
         "name": {
           "allOf": [
             {"$ref": "#/definitions/plainText"},
-            {"description": "Addon name."}
+            {"description": "Addon name"}
           ]
         },
         "author": {
           "allOf": [
             {"$ref": "#/definitions/plainText"},
-            {"description": "Addon author."}
+            {"description": "Addon author"}
           ]
         },
         "icon": {
           "allOf": [
             {"$ref": "#/definitions/linkUrl"},
-            {"description": "Addon icon."}
+            {"description": "Addon icon"}
           ]
         }
       }
     },
-    "content": {
+    "text": {
+      "allOf": [
+        {"$ref": "#/definitions/plainText"},
+        {"description": "Description for the addon."}
+      ]
+    },
+    "amo_url": {
+      "allOf": [
+        {"$ref": "#/definitions/linkUrl"},
+        {"description": "Link that offers more information related to the addon."}
+      ]
+    },
+    "buttons": {
       "type": "object",
       "properties": {
-        "text": {
-          "allOf": [
-            {"$ref": "#/definitions/plainText"},
-            {"description": "Description of the addon."}
-          ]
-        },
-        "url": {
-          "allOf": [
-            {"$ref": "#/definitions/linkUrl"},
-            {"description": "Learn more link."}
-          ]
+        "primary": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "allOf": [
+                {"$ref": "#/definitions/plainText"},
+                {"description": "Text for the primary button of the doorhanger."}
+              ]
+            },
+            "action": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "enum": ["INSTALL_ADDON_FROM_URL"],
+                  "description": "Action dispatched by the button."
+                },
+                "data": {
+                  "properties": {
+                    "url": {
+                      "allOf": [
+                        {"$ref": "#/definitions/linkUrl"},
+                        {"description": "URL used in combination with the primary action dispatched."}
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "secondary": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "allOf": [
+                  {"$ref": "#/definitions/plainText"},
+                  {"description": "Text for the secondary button of the doorhanger."}
+                ]
+              } 
+            }
+          }
         }
       }
     }
   },
   "additionalProperties": false,
-  "required": ["heading", "addon", "content"]
+  "required": ["notification_text", "heading_text", "addon", "text", "buttons"]
 }
