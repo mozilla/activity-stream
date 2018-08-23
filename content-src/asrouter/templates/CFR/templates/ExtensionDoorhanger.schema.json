@@ -64,6 +64,12 @@
             {"$ref": "#/definitions/linkUrl"},
             {"description": "Addon icon"}
           ]
+        },
+        "amo_url": {
+          "allOf": [
+            {"$ref": "#/definitions/linkUrl"},
+            {"description": "Link that offers more information related to the addon."}
+          ]
         }
       }
     },
@@ -71,12 +77,6 @@
       "allOf": [
         {"$ref": "#/definitions/plainText"},
         {"description": "Description for the addon."}
-      ]
-    },
-    "amo_url": {
-      "allOf": [
-        {"$ref": "#/definitions/linkUrl"},
-        {"description": "Link that offers more information related to the addon."}
       ]
     },
     "buttons": {
@@ -95,7 +95,7 @@
               "type": "object",
               "properties": {
                 "type": {
-                  "enum": ["INSTALL_ADDON_FROM_URL"],
+                  "type": "string",
                   "description": "Action dispatched by the button."
                 },
                 "data": {
@@ -119,6 +119,15 @@
                   {"$ref": "#/definitions/plainText"},
                   {"description": "Text for the secondary button of the doorhanger."}
                 ]
+              },
+              "action": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Action dispatched by the button."
+                  }
+                }
               } 
             }
           }

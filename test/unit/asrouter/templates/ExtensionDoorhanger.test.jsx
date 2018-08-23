@@ -10,10 +10,10 @@ const DEFAULT_CONTENT = {
   "addon": {
     "title": "Addon name",
     "icon": "https://mozilla.org/icon",
-    "author": "Author name"
+    "author": "Author name",
+    "amo_url": "https://example.com"
   },
   "text": "Description of addon",
-  "amo_url": "https://example.com",
   "buttons": {
     "primary": {
       "label": "btn_ok",
@@ -22,7 +22,10 @@ const DEFAULT_CONTENT = {
         "data": {"url": "https://example.com"}
       }
     },
-    "secondary": {"label": "btn_cancel"}
+    "secondary": {
+      "label": "btn_cancel",
+      "action": {"type": "CANCEL"}
+    }
   }
 };
 
