@@ -9,7 +9,7 @@ const DEFAULT_CONTENT = {
   },
   "addon": {
     "title": "Addon name",
-    "icon": "base64",
+    "icon": "https://mozilla.org/icon",
     "author": "Author name"
   },
   "text": "Description of addon",
@@ -27,7 +27,7 @@ const DEFAULT_CONTENT = {
 };
 
 describe("ExtensionDoorhanger", () => {
-  it.only("should validate DEFAULT_CONTENT", () => {
+  it("should validate DEFAULT_CONTENT", () => {
     assert.jsonSchema(DEFAULT_CONTENT, schema);
   });
 });
