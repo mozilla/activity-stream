@@ -576,13 +576,6 @@ $half-base-gutter: $base-gutter / 2;
     }
   }
 
-  // when unselected, higlight the tile on hover
-  [type='checkbox']:not(:checked) + label {
-    .tile:hover {
-      @include fade-in;
-    }
-  }
-
   // checkmark changes
   [type='checkbox']:not(:checked) + label::after {
     opacity: 0;
@@ -590,11 +583,6 @@ $half-base-gutter: $base-gutter / 2;
 
   [type='checkbox']:checked + label::after {
     opacity: 1;
-  }
-
-  // hover
-  [type='checkbox'] + label:hover::before {
-    border: 1px solid var(--newtab-link-primary-color);
   }
 
   // accessibility
