@@ -1,3 +1,4 @@
+import {CFRMessageProvider} from "lib/CFRMessageProvider.jsm";
 import schema from "content-src/asrouter/templates/CFR/templates/ExtensionDoorhanger.schema.json";
 
 const DEFAULT_CONTENT = {
@@ -5,7 +6,7 @@ const DEFAULT_CONTENT = {
   "heading_text": "Recommended Extension",
   "info_icon": {
     "label": "why_seeing_this",
-    "url": "https://support.mozilla.org"
+    "sumo_path": "extensionrecommendations"
   },
   "addon": {
     "title": "Addon name",
@@ -32,5 +33,9 @@ const DEFAULT_CONTENT = {
 describe("ExtensionDoorhanger", () => {
   it("should validate DEFAULT_CONTENT", () => {
     assert.jsonSchema(DEFAULT_CONTENT, schema);
+  });
+  it("should validate all messages from CFRMessageProvider", () => {
+    const messages = CFRMessageProvider.getMessages();
+    messages.forEach(msg => assert.jsonSchema(msg.content, schema));
   });
 });

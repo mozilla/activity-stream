@@ -105,7 +105,6 @@ const TargetingGetters = {
         return {addons: info, isFullData: fullData};
       });
   },
-
   get searchEngines() {
     return new Promise(resolve => {
       // Note: calling init ensures this code is only executed after Search has been initialized
@@ -124,18 +123,15 @@ const TargetingGetters = {
       });
     });
   },
-
   get isDefaultBrowser() {
     try {
       return ShellService.isDefaultBrowser();
     } catch (e) {}
     return null;
   },
-
   get devToolsOpenedCount() {
     return Services.prefs.getIntPref("devtools.selfxss.count");
   },
-
   get topFrecentSites() {
     return TopFrecentSitesCache.topFrecentSites.then(sites => sites.map(site => (
       {
@@ -146,7 +142,6 @@ const TargetingGetters = {
       }
     )));
   },
-
   // Temporary targeting function for the purposes of running the simplified onboarding experience
   get isInExperimentCohort() {
     const allProviders = Services.prefs.getStringPref(ONBOARDING_MESSAGE_PROVDIER_EXPERIMENT_PREF, "");

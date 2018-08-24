@@ -199,19 +199,26 @@ const PREFS_CONFIG = new Map([
      * Each provider must have a unique id and a type of "local" or "remote".
      * Local providers must specify the name of an ASRouter message provider.
      * Remote providers must specify a `url` and an `updateCycleInMs`.
+     * Each provider must also have an `enabled` boolean.
      */
     value: JSON.stringify([{
       id: "onboarding",
       type: "local",
       localProvider: "OnboardingMessageProvider",
-      enabled: false,
+      enabled: AppConstants.MOZ_UPDATE_CHANNEL !== "release",
       cohort: 0
     }, {
       id: "snippets",
       type: "remote",
       url: "https://activity-stream-icons.services.mozilla.com/v1/messages.json.br",
       updateCycleInMs: ONE_HOUR_IN_MS * 4,
-      enabled: false
+      enabled: AppConstants.MOZ_UPDATE_CHANNEL !== "release"
+    }, {
+      id: "cfr",
+      type: "local",
+      localProvider: "CFRMessageProvider",
+      enabled: AppConstants.MOZ_UPDATE_CHANNEL !== "release",
+      cohort: 0
     }])
   }]
 ]);
