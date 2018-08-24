@@ -557,12 +557,13 @@ These pings record the impression and user interactions within Activity Stream R
 
 This reports the impression of Activity Stream Router.
 
+#### Snippets impression
 ```js
 {
   "client_id": "n/a",
-  "action": ["snippets_user_event" | "onboarding_user_event"],
+  "action": "snippets_user_event",
   "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
-  "source": "pocket",
+  "source": "SNIPPETS",
   "addon_version": "20180710100040",
   "locale": "en-US",
   "source": "NEWTAB_FOOTER_BAR",
@@ -571,6 +572,38 @@ This reports the impression of Activity Stream Router.
 }
 ```
 
+CFR impression ping has two forms, in which the message_id could be of different meanings.
+
+#### CFR impression for all the prerelease channels and shield experiment
+```js
+{
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "action": "cfr_user_event",
+  "impression_id": "n/a",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "source": "CFR",
+  // message_id could be the ID of the recommendation, such as "amazon_addon"
+  "message_id": "amazon_addon",
+  "event": "IMPRESSION"
+}
+```
+
+#### CFR impression for the release channel
+```js
+{
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "action": "cfr_user_event",
+  "impression_id": "n/a",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "source": "CFR",
+  // message_id should be a bucket ID in the release channel, we may not use the
+  // individual ID, such as addon ID, per legal's request
+  "message_id": "bucket_id",
+  "event": "IMPRESSION"
+}
+```
 
 ### User interaction pings
 
@@ -598,9 +631,40 @@ This reports the user's interaction with Activity Stream Router.
   "addon_version": "20180710100040",
   "impression_id": "n/a",
   "locale": "en-US",
-  "source": "NEWTAB_FOOTER_BAR",
+  "source": "ONBOARDING",
   "message_id": "onboarding_message_1",
   "event": "CLICK_BUTTION"
+}
+```
+
+#### CFR interaction pings for all the prerelease channels and shield experiment
+```js
+{
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "action": "cfr_user_event",
+  "addon_version": "20180710100040",
+  "impression_id": "n/a",
+  "locale": "en-US",
+  "source": "CFR",
+  // message_id could be the ID of the recommendation, such as "amazon_addon"
+  "message_id": "amazon_addon",
+  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE]"
+}
+```
+
+#### CFR interaction pings for release channel
+```js
+{
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "action": "cfr_user_event",
+  "addon_version": "20180710100040",
+  "impression_id": "n/a",
+  "locale": "en-US",
+  "source": "CFR",
+  // message_id should be a bucket ID in the release channel, we may not use the
+  // individual ID, such as addon ID, per legal's request
+  "message_id": "bucket_id",
+  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE]"
 }
 ```
 
