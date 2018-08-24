@@ -657,24 +657,23 @@ describe("ASRouter", () => {
       assert.calledWith(msg.target.browser.ownerGlobal.OpenBrowserWindow, {private: true});
     });
     it("should call openLinkIn with the correct params on OPEN_URL", async () => {
-      sinon.spy(Router, "openLinkIn");
       let [testMessage] = Router.state.messages;
       testMessage.button_action = {type: "OPEN_URL", data: {url: "some/url.com"}};
       const msg = fakeExecuteUserAction(testMessage.button_action);
       await Router.onMessage(msg);
 
-      assert.calledWith(Router.openLinkIn, "some/url.com", msg.target, {isPrivate: false, where: "tabshifted"});
       assert.calledOnce(msg.target.browser.ownerGlobal.openLinkIn);
+      assert.calledWith(msg.target.browser.ownerGlobal.openLinkIn,
+        "some/url.com", "tabshifted", {"private": false, "triggeringPrincipal": undefined});
     });
     it("should call openLinkIn with the correct params on OPEN_ABOUT_PAGE", async () => {
-      sinon.spy(Router, "openLinkIn");
       let [testMessage] = Router.state.messages;
       testMessage.button_action = {type: "OPEN_ABOUT_PAGE", data: {page: "something"}};
       const msg = fakeExecuteUserAction(testMessage.button_action);
       await Router.onMessage(msg);
 
-      assert.calledWith(Router.openLinkIn, `about:something`, msg.target, {isPrivate: false, trusted: true, where: "tab"});
       assert.calledOnce(msg.target.browser.ownerGlobal.openTrustedLinkIn);
+      assert.calledWith(msg.target.browser.ownerGlobal.openTrustedLinkIn, "about:something", "tab");
     });
   });
 
