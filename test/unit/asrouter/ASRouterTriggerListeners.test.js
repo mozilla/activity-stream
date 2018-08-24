@@ -13,11 +13,7 @@ describe("ASRouterTriggerListeners", () => {
   function resetEnumeratorStub(windows) {
     windowEnumeratorStub
       .withArgs("navigator:browser")
-      .returns({
-        _count: -1,
-        hasMoreElements() { this._count++; return this._count < windows.length; },
-        getNext() { return windows[this._count]; }
-      });
+      .returns(windows);
   }
 
   beforeEach(async () => {
