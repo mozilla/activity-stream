@@ -639,19 +639,6 @@ class _ASRouter {
     });
   }
 
-  openLinkIn(url, target, {isPrivate = false, trusted = false, where = ""}) {
-    const win = target.browser.ownerGlobal;
-    const params = {
-      private: isPrivate,
-      triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({})
-    };
-    if (trusted) {
-      win.openTrustedLinkIn(url, where);
-    } else {
-      win.openLinkIn(url, where, params);
-    }
-  }
-
   _validPreviewEndpoint(url) {
     try {
       const endpoint = new URL(url);
@@ -716,10 +703,13 @@ class _ASRouter {
         target.browser.ownerGlobal.OpenBrowserWindow({private: true});
         break;
       case ra.OPEN_URL:
-        this.openLinkIn(action.data.url, target, {isPrivate: false, where: "tabshifted"});
+        target.browser.ownerGlobal.openLinkIn(action.data.url, "tabshifted", {
+          private: false,
+          triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({})
+        });
         break;
       case ra.OPEN_ABOUT_PAGE:
-        this.openLinkIn(`about:${action.data.page}`, target, {isPrivate: false, trusted: true, where: "tab"});
+        target.browser.ownerGlobal.openTrustedLinkIn(`about:${action.data.page}`, "tab");
         break;
       case ra.OPEN_APPLICATIONS_MENU:
         UITour.showMenu(target.browser.ownerGlobal, action.data.target);
