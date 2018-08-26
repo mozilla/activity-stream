@@ -68,7 +68,7 @@ const TargetingGetters = {
     };
   },
   get currentTimestamp() {
-    return new Date(new Date().getTime());
+    return new Date();
   },
   get profileAgeCreated() {
     return new ProfileAge(null, null).created;
