@@ -90,6 +90,10 @@
                 {"description": "Text for the primary button of the doorhanger."}
               ]
             },
+            "accessKey": {
+              "type": "string",
+              "description": "A single character to be used as a shortcut key for the primary button. This should be one of the characters that appears in the button label."
+            },
             "action": {
               "type": "object",
               "properties": {
@@ -118,6 +122,10 @@
                   {"$ref": "#/definitions/plainText"},
                   {"description": "Text for the secondary button of the doorhanger."}
                 ]
+              },
+              "accessKey": {
+                "type": "string",
+                "description": "A single character to be used as a shortcut key for the secondary button. This should be one of the characters that appears in the button label."
               },
               "action": {
                 "type": "object",
