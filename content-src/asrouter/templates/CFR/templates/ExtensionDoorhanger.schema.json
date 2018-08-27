@@ -15,6 +15,10 @@
     }
   },
   "properties": {
+    "bucket_id": {
+      "type": "string",
+      "description": "Bucket identifier for the addon."
+    },
     "notification_text": {
       "oneOf": [
         {
@@ -274,5 +278,5 @@
     }
   },
   "additionalProperties": false,
-  "required": ["notification_text", "heading_text", "addon", "text", "buttons"]
+  "required": ["bucket_id", "notification_text", "heading_text", "addon", "text", "buttons"]
 }

@@ -812,6 +812,11 @@ class _ASRouter {
       case "IMPRESSION":
         await this.addImpression(action.data);
         break;
+      case "DOORHANGER_TELEMETRY":
+        if (this.dispatchToAS) {
+          this.dispatchToAS(ac.ASRouterUserEvent(action.data));
+        }
+        break;
     }
   }
 }

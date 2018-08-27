@@ -592,9 +592,9 @@ CFR impression ping has two forms, in which the message_id could be of different
 #### CFR impression for the release channel
 ```js
 {
-  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "client_id": "n/a",
   "action": "cfr_user_event",
-  "impression_id": "n/a",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
   "addon_version": "20180710100040",
   "locale": "en-US",
   "source": "CFR",
@@ -648,23 +648,23 @@ This reports the user's interaction with Activity Stream Router.
   "source": "CFR",
   // message_id could be the ID of the recommendation, such as "amazon_addon"
   "message_id": "amazon_addon",
-  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE]"
+  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE | LEARN_MORE | CLICK_DOORHANGER]"
 }
 ```
 
 #### CFR interaction pings for release channel
 ```js
 {
-  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "client_id": "n/a",
   "action": "cfr_user_event",
   "addon_version": "20180710100040",
-  "impression_id": "n/a",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
   "locale": "en-US",
   "source": "CFR",
   // message_id should be a bucket ID in the release channel, we may not use the
   // individual ID, such as addon ID, per legal's request
   "message_id": "bucket_id",
-  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE]"
+  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE | LEARN_MORE | CLICK_DOORHANGER]"
 }
 ```
 
