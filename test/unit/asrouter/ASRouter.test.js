@@ -11,6 +11,7 @@ import {
   PARENT_TO_CHILD_MESSAGE_NAME
 } from "./constants";
 import {ASRouterTriggerListeners} from "lib/ASRouterTriggerListeners.jsm";
+import {CFRPageActions} from "lib/CFRPageActions.jsm";
 import {GlobalOverrider} from "test/unit/utils";
 import ProviderResponseSchema from "content-src/asrouter/schemas/provider-response.schema.json";
 
@@ -640,6 +641,17 @@ describe("ASRouter", () => {
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "SET_MESSAGE", data: testMessage});
     });
 
+    it("should call CFRPageActions.addRecommendation if the template is cfr_action", async () => {
+      sandbox.stub(CFRPageActions, "addRecommendation");
+      const testMessage = {id: "foo", template: "cfr_doorhanger"};
+      await Router.setState({messages: [testMessage]});
+      const msg = fakeAsyncMessage({type: "OVERRIDE_MESSAGE", data: {id: testMessage.id}});
+      await Router.onMessage(msg);
+
+      assert.notCalled(msg.target.sendAsyncMessage);
+      assert.calledOnce(CFRPageActions.addRecommendation);
+    });
+
     it("should broadcast CLEAR_ALL if provided id did not resolve to a message", async () => {
       const msg = fakeAsyncMessage({type: "OVERRIDE_MESSAGE", data: {id: -1}});
       await Router.onMessage(msg);
@@ -686,6 +698,21 @@ describe("ASRouter", () => {
 
       assert.calledOnce(MessageLoaderUtils.installAddonFromURL);
       assert.calledWithExactly(MessageLoaderUtils.installAddonFromURL, msg.target.browser, "foo.com");
+    });
+  });
+
+  describe("#dispatch(action, target)", () => {
+    it("should an action and target to onMessage", async () => {
+      // use the IMPRESSION action to make sure actions are actually getting processed
+      sandbox.stub(Router, "addImpression");
+      sandbox.spy(Router, "onMessage");
+      const target = {};
+      const action = {type: "IMPRESSION"};
+
+      Router.dispatch(action, target);
+
+      assert.calledWith(Router.onMessage, {data: action, target});
+      assert.calledOnce(Router.addImpression);
     });
   });
 
