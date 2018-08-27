@@ -210,7 +210,7 @@ const PREFS_CONFIG = new Map([
     }, {
       id: "snippets",
       type: "remote",
-      url: "https://activity-stream-icons.services.mozilla.com/v1/messages.json.br",
+      url: "https://snippets.cdn.mozilla.net/us-west/bundles/bundle_d6d90fb9098ce8b45e60acf601bcb91b68322309.json",
       updateCycleInMs: ONE_HOUR_IN_MS * 4,
       enabled: AppConstants.MOZ_UPDATE_CHANNEL !== "release"
     }, {
