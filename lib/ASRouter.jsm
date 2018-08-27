@@ -12,6 +12,7 @@ const {ASRouterActions: ra, actionCreators: ac} = ChromeUtils.import("resource:/
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm", {});
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm", {});
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js", {});
+const {CFRPageActions} = ChromeUtils.import("resource://activity-stream/lib/CFRPageActions.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
   "resource://activity-stream/lib/ASRouterTargeting.jsm");
@@ -319,6 +320,7 @@ class _ASRouter {
     this._storage = storage;
     this.WHITELIST_HOSTS = this._loadSnippetsWhitelistHosts();
     this.dispatchToAS = dispatchToAS;
+    this.dispatch = this.dispatch.bind(this);
 
     const messageBlockList = await this._storage.get("messageBlockList") || [];
     const providerBlockList = await this._storage.get("providerBlockList") || [];
@@ -477,19 +479,23 @@ class _ASRouter {
   }
 
   async _sendMessageToTarget(message, target, trigger, force = false) {
-    let bundledMessages;
-    // If this message needs to be bundled with other messages of the same template, find them and bundle them together
-    if (message && message.bundled) {
-      bundledMessages = await this._getBundledMessages(message, target, trigger, force);
-    }
-    if (message && !message.bundled) {
-      // If we only need to send 1 message, send the message
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
-    } else if (bundledMessages) {
-      // If the message we want is bundled with other messages, send the entire bundle
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_BUNDLED_MESSAGES", data: bundledMessages});
-    } else {
+    // No message is available, so send CLEAR_ALL.
+    if (!message) {
       target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_ALL"});
+
+    // For bundled messages, look for the rest of the bundle or else send CLEAR_ALL
+    } else if (message.bundled) {
+      const bundledMessages = await this._getBundledMessages(message, target, trigger, force);
+      const action = bundledMessages ? {type: "SET_BUNDLED_MESSAGES", data: bundledMessages} : {type: "CLEAR_ALL"};
+      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
+
+    // CFR doorhanger
+    } else if (message.template === "cfr_doorhanger") {
+      CFRPageActions.addRecommendation(target.browser, "", message, this.dispatch, force);
+
+    // New tab single messages
+    } else {
+      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
     }
   }
 
@@ -719,6 +725,10 @@ class _ASRouter {
         await MessageLoaderUtils.installAddonFromURL(target.browser, action.data.url);
         break;
     }
+  }
+
+  dispatch(action, target) {
+    this.onMessage({data: action, target});
   }
 
   async onMessage({data: action, target}) {
