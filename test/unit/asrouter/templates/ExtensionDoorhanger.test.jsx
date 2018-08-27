@@ -2,6 +2,7 @@ import {CFRMessageProvider} from "lib/CFRMessageProvider.jsm";
 import schema from "content-src/asrouter/templates/CFR/templates/ExtensionDoorhanger.schema.json";
 
 const DEFAULT_CONTENT = {
+  "bucket_id": "some_bucket_id",
   "notification_text": "Recommendation",
   "heading_text": "Recommended Extension",
   "info_icon": {
@@ -37,6 +38,7 @@ const DEFAULT_CONTENT = {
 };
 
 const L10N_CONTENT = {
+  "bucket_id": "some_bucket_id",
   "notification_text": {"string_id": "notification_text_id"},
   "heading_text": {"string_id": "heading_text_id"},
   "info_icon": {

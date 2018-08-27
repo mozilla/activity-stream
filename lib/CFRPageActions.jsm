@@ -63,6 +63,17 @@ class PageAction {
     this._dispatchToASRouter({type: "IMPRESSION", data: message});
   }
 
+  _sendTelemetry(ping) {
+    // Note `useClientID` is set to true to tell TelemetryFeed to use client_id
+    // instead of `impression_id`. TelemetryFeed is also responsible for deciding
+    // whether to use `message_id` or `bucket_id` based on the release channel and
+    // shield study setup.
+    this._dispatchToASRouter({
+      type: "DOORHANGER_TELEMETRY",
+      data: {useClientID: true, action: "cfr_user_event", source: "CFR", ...ping}
+    });
+  }
+
   async show(recommendation, shouldExpand = false) {
     this.container.hidden = false;
 
@@ -82,6 +93,13 @@ class PageAction {
       this._expand(DELAY_BEFORE_EXPAND_MS);
 
       this._dispatchImpression(recommendation);
+      // Only send an impression ping upon the first expansion.
+      // Note that when the user clicks on the "show" button on the asrouter admin
+      // page (both `bucket_id` and `id` will be set as null), we don't want to send
+      // the impression ping in that case.
+      if (!!recommendation.id && !!recommendation.content.bucket_id) {
+        this._sendTelemetry({message_id: recommendation.id, bucket_id: recommendation.content.bucket_id, event: "IMPRESSION"});
+      }
     }
   }
 
@@ -191,7 +209,7 @@ class PageAction {
       this.hide();
       return;
     }
-    const {content, id} = RecommendationMap.get(browser);
+    const {id, content} = RecommendationMap.get(browser);
 
     // The recommendation should remain either collapsed or expanded while the
     // doorhanger is showing
@@ -219,6 +237,7 @@ class PageAction {
     const attribute = isRTL ? "left" : "right";
     headerLink.setAttribute(attribute, 0);
     headerImage.setAttribute("tooltiptext", await this.getStrings(content.info_icon.label, "tooltiptext"));
+    headerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "RATIONALE"});
 
     author.textContent = await this.getStrings({
       string_id: "cfr-doorhanger-extension-author",
@@ -270,6 +289,7 @@ class PageAction {
 
     footerLink.value = await this.getStrings({string_id: "cfr-doorhanger-extension-learn-more-link"});
     footerLink.setAttribute("href", content.addon.amo_url);
+    footerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "LEARN_MORE"});
 
     const {primary, secondary} = content.buttons;
     const primaryBtnStrings = await this.getStrings(primary.label);
@@ -282,6 +302,7 @@ class PageAction {
         this._blockMessage(id);
         this.dispatchUserAction(primary.action);
         this.hide();
+        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "INSTALL"});
         RecommendationMap.delete(browser);
       }
     };
@@ -291,6 +312,7 @@ class PageAction {
       accessKey: secondaryBtnStrings.attributes.accesskey,
       callback: () => {
         this.hide();
+        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "DISMISS"});
         RecommendationMap.delete(browser);
       }
     }];
@@ -301,6 +323,7 @@ class PageAction {
       eventCallback: this._popupStateChange
     };
 
+    this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "CLICK_DOORHANGER"});
     this.currentNotification = this.window.PopupNotifications.show(
       browser,
       POPUP_NOTIFICATION_ID,
