@@ -4,8 +4,11 @@
 "use strict";
 
 this.RecipeExecutor = class RecipeExecutor {
-  constructor(tfidfVectorizer) {
+  constructor(tfidfVectorizer, nbTaggers) {
+    this.ITEM_BUILDER_REGISTRY = {};
+    this.ITEM_COMBINER_REGISTRY = {};
     this.tfidfVectorizer = tfidfVectorizer;
+    this.nbTaggers = nbTaggers;
   }
 
   /**
@@ -192,9 +195,6 @@ this.RecipeExecutor = class RecipeExecutor {
 
     return item;
   }
-
-  // FIXME: Not implmenetned: nb_tag, conditionally_nmf_tag,
-  // FIXME: Look into doing different: threshold_nmf_tags, apply_softmax, scalar_multiply_tag
 
   /**
    * Deep copy from one field to another.
@@ -665,6 +665,257 @@ this.RecipeExecutor = class RecipeExecutor {
     }
 
     return item;
+  }
+
+  /**
+   * Config:
+   *  field             Points to a string to number map
+   *  k                 Scalar to multiply the values by
+   *  log_scale         Boolean, if true, then the values will be transformed
+   *                      by a logrithm prior to multiplications
+   */
+  scalarMultiplyTag(item, config) {
+    let EPSILON = 0.000001;
+    let k = this._lookupScalar(item, config.k, 1);
+    if (!(config.field in item)) {
+      return item;
+    }
+    let type = this._typeOf(item[config.field]);
+    if (type === "array") {
+      for (let i = 0; i < item[config.field].length; i++) {
+        let v = item[config.field][i];
+        if (config.log_scale) {
+          v = Math.log(v + EPSILON);
+        }
+        item[config.field][i] = v * k;
+      }
+    } else if (type === "map") {
+      Object.keys(item[config.field]).forEach(key => {
+        let v = item[config.field][key];
+        if (config.log_scale) {
+          v = Math.log(v + EPSILON);
+        }
+        item[config.field][key] = v * k;
+      });
+    } else if (type === "number") {
+      let v = item[config.field];
+      if (config.log_scale) {
+        v = Math.log(v + EPSILON);
+      }
+      item[config.field] = v * k;
+    }
+
+    return item;
+  }
+
+  /**
+   * Independently pplies softmax across all subtags.
+   *
+   * Config:
+   *   field        Points to a map of strings with values being another map of strings
+   */
+  applySoftmaxTags(item, config) {
+    let type = this._typeOf(item[config.field]);
+    if (type !== "map") {
+      return null;
+    }
+
+    let softmaxSum = {};
+    Object.keys(item[config.field]).forEach(tag => {
+      softmaxSum[tag] = 0;
+      Object.keys(item[config.field][tag]).forEach(subtag => {
+        let score = item[config.field][tag][subtag];
+        softmaxSum[tag] += Math.exp(score);
+      });
+    });
+
+    Object.keys(item[config.field]).forEach(tag => {
+      Object.keys(item[config.field][tag]).forEach(subtag => {
+        item[config.field][tag][subtag] = Math.exp(item[config.field][tag][subtag]) / softmaxSum[tag];
+      });
+    });
+
+    return item;
+  }
+
+  /**
+   * Vector adds a field and stores the result in left.
+   *
+   * Config:
+   *   field              The field to vector add
+   */
+  combinerAdd(left, right, config) {
+    if (!(config.field in right)) {
+      return left;
+    }
+    let type = this._typeOf(right[config.field]);
+    if (!(config.field in left)) {
+      if (type === "map") {
+        left[config.field] = {};
+      } else if (type === "array") {
+        left[config.field] = [];
+      } else if (type === "number") {
+        left[config.field] = 0;
+      } else {
+        return null;
+      }
+    }
+    if (type === "map") {
+      Object.keys(right[config.field]).forEach(key => {
+        if (!(key in left[config.field])) {
+          left[config.field][key] = 0;
+        }
+        left[config.field][key] += right[config.field][key];
+      });
+    } else if (type === "array") {
+      for (let i = 0; i < right[config.field].length; i++) {
+        if (i < left[config.field].length) {
+          left[config.field][i] += right[config.field][i];
+        } else {
+          left[config.field].push(right[config.field][i]);
+        }
+      }
+    } else { // number
+      left[config.field] += right[config.field];
+    }
+
+    return left;
+  }
+
+  /**
+   * Stores the maximum value of the field in left.
+   *
+   * Config:
+   *   field              The field to vector add
+   */
+  combinerMax(left, right, config) {
+    if (!(config.field in right)) {
+      return left;
+    }
+    let type = this._typeOf(right[config.field]);
+    if (!(config.field in left)) {
+      if (type === "map") {
+        left[config.field] = {};
+      } else if (type === "array") {
+        left[config.field] = [];
+      } else if (type === "number") {
+        left[config.field] = 0;
+      } else {
+        return null;
+      }
+    }
+    if (type === "map") {
+      Object.keys(right[config.field]).forEach(key => {
+        if (!(key in left[config.field])
+            || (right[config.field][key] > left[config.field][key])) {
+          left[config.field][key] = right[config.field][key];
+        }
+      });
+    } else if (type === "array") {
+      for (let i = 0; i < right[config.field].length; i++) {
+        if (i < left[config.field].length) {
+          if (left[config.field][i] < right[config.field][i]) {
+            left[config.field][i] = right[config.field][i];
+          }
+        } else {
+          left[config.field].push(right[config.field][i]);
+        }
+      }
+    } else if (left[config.field] < right[config.field]) { // number
+      left[config.field] = right[config.field];
+    }
+
+    return left;
+  }
+
+  /**
+   * Associates a value in right with another value in right. This association
+   * is then stored in a map in left.
+   *
+   *     For example: If a sequence of rights is:
+   *     { 'tags': {}, 'url_domain': 'maseratiusa.com/maserati', 'time': 41 }
+   *     { 'tags': {}, 'url_domain': 'mbusa.com/mercedes',       'time': 21 }
+   *     { 'tags': {}, 'url_domain': 'maseratiusa.com/maserati', 'time': 34 }
+   *
+   *     Then assuming a 'sum' operation, left can build a map that would look like:
+   *     {
+   *         'maseratiusa.com/maserati': 75,
+   *         'mbusa.com/mercedes': 21,
+   *     }
+   *
+   * Fields:
+   *  left_field              field in the left to store / update the map
+   *  right_key_field         Field in the right to use as a key
+   *  right_value_field       Field in the right to use as a value
+   *  operation               One of "sum", "max", "overwrite", "count"
+   */
+  combinerCollectValues(left, right, config) {
+    let op;
+    if (config.operation === "sum") {
+      op = (a, b) => a + b;
+    } else if (config.operation === "max") {
+      op = (a, b) => ((a > b) ? a : b);
+    } else if (config.operation === "overwrite") {
+      op = (a, b) => b;
+    } else if (config.operation === "count") {
+      op = (a, b) => a + 1;
+    } else {
+      return null;
+    }
+    if (!(config.left_field in left)) {
+      left[config.left_field] = {};
+    }
+    if ((!(config.right_key_field in right)) || (!(config.right_value_field in right))) {
+      return left;
+    }
+
+    let key = right[config.right_key_field];
+    let rightValue = right[config.right_value_field];
+    let leftValue = 0.0;
+    if (key in left[config.left_field]) {
+      leftValue = left[config.left_field][key];
+    }
+    left[config.left_field][key] = op(leftValue, rightValue);
+
+    return left;
+  }
+
+  /**
+   * Executes a recipe. Returns an object on success, or null on failure.
+   */
+  executeRecipe(item, recipe) {
+    let newItem = item;
+    for (let step of recipe) {
+      let op = this.ITEM_BUILDER_REGISTRY[step.function];
+      if (op === undefined) {
+        return null;
+      }
+      newItem = op(newItem, step);
+      if (newItem === null) {
+        break;
+      }
+    }
+
+    return newItem;
+  }
+
+  /**
+   * Executes a recipe. Returns an object on success, or null on failure.
+   */
+  executeCombinerRecipe(item1, item2, recipe) {
+    let newItem1 = item1;
+    for (let step of recipe) {
+      let op = this.ITEM_COMBINER_REGISTRY[step.function];
+      if (op === undefined) {
+        return null;
+      }
+      newItem1 = op(newItem1, item2, step);
+      if (newItem1 === null) {
+        break;
+      }
+    }
+
+    return newItem1;
   }
 };
 
