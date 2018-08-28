@@ -5,8 +5,34 @@
 
 this.RecipeExecutor = class RecipeExecutor {
   constructor(tfidfVectorizer, nbTaggers) {
-    this.ITEM_BUILDER_REGISTRY = {};
-    this.ITEM_COMBINER_REGISTRY = {};
+    this.ITEM_BUILDER_REGISTRY = {
+      "accept_item_by_field_value": this.acceptItemByFieldValue,
+      "tokenize_url": this.tokenizeUrl,
+      "get_url_domain": this.getUrlDomain,
+      "tokenize_field": this.tokenizeField,
+      "copy_value": this.copyValue,
+      "keep_top_k": this.keepTopK,
+      "scalar_multiply": this.scalarMultiply,
+      "elementwise_multiply": this.elementwiseMultiply,
+      "vector_multiply": this.vectorMultiply,
+      "scalar_add": this.scalarAdd,
+      "vector_add": this.vectorAdd,
+      "make_boolean": this.makeBoolean,
+      "whitelist_fields": this.whitelistFields,
+      "filter_by_value": this.filterByValue,
+      "l2_normalize": this.l2Normalize,
+      "prob_normalize": this.probNormalize,
+      "set_default": this.setDefault,
+      "lookupValue": this.lookupValue,
+      "copy_to_map": this.copyToMap,
+      "scalar_multiply_tag": this.scalarMultiplyTag,
+      "apply_softmax_tags": this.applySoftmaxTags
+    };
+    this.ITEM_COMBINER_REGISTRY = {
+      "combiner_add": this.combinerAdd,
+      "combiner_max": this.combinerMax,
+      "combiner_collect_values": this.combinerCollectValues
+    };
     this.tfidfVectorizer = tfidfVectorizer;
     this.nbTaggers = nbTaggers;
   }
@@ -806,8 +832,8 @@ this.RecipeExecutor = class RecipeExecutor {
     }
     if (type === "map") {
       Object.keys(right[config.field]).forEach(key => {
-        if (!(key in left[config.field])
-            || (right[config.field][key] > left[config.field][key])) {
+        if (!(key in left[config.field]) ||
+          (right[config.field][key] > left[config.field][key])) {
           left[config.field][key] = right[config.field][key];
         }
       });

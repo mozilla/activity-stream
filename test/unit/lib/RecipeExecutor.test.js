@@ -1,6 +1,6 @@
 import {RecipeExecutor} from "lib/RecipeExecutor.jsm";
 
-describe.only("RecipeExecutor", () => {
+describe("RecipeExecutor", () => {
   let mockVectorizer = {
     "tokenize": text => String(text).toLocaleLowerCase()
                           .split(/[ .,_/=&%-]/)
@@ -65,6 +65,7 @@ describe.only("RecipeExecutor", () => {
   };
   */
   let EPSILON = 0.00001;
+
   /*
   let nbTaggers = [
     new this.mockNbTagger("tag1", 0.70),
