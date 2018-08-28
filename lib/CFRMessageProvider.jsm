@@ -5,12 +5,12 @@
 const BASE_ADDONS_DOWNLOAD_URL = "https://addons.mozilla.org/firefox/downloads/file";
 const AMAZON_ASSISTANT_PARAMS = {
   existing_addons: ["abb@amazon.com", "{75c7fe97-5a90-4b54-9052-3534235eaf41}", "{ef34596e-1e43-4e84-b2ff-1e58e287e08d}", "{ea280feb-155a-492e-8016-ac96dd995f2c}", "izer@camelcamelcamel.com", "amptra@keepa.com", "pricealarm@icopron.ch", "{774f76c7-6807-481e-bf64-f9b7d5cda602}"],
-  open_urls: ["smile.amazon.com", "www.audible.com", "www.amazon.com"],
+  open_urls: ["smile.amazon.com", "www.audible.com", "www.amazon.com", "amazon.com", "audible.com"],
   sumo_path: "extensionpromotions"
 };
 const FACEBOOK_CONTAINER_PARAMS = {
   existing_addons: ["@contain-facebook", "{bb1b80be-e6b3-40a1-9b6e-9d4073343f0b}", "{a50d61ca-d27b-437a-8b52-5fd801a0a88b}"],
-  open_urls: ["www.facebook.com"],
+  open_urls: ["www.facebook.com", "facebook.com"],
   sumo_path: "extensionrecommendations"
 };
 const GOOGLE_TRANSLATE_PARAMS = {
@@ -25,17 +25,17 @@ const GOOGLE_TRANSLATE_PARAMS = {
 const YOUTUBE_ENHANCE_PARAMS = {
   existing_addons: ["enhancerforyoutube@maximerf.addons.mozilla.org", "{dc8f61ab-5e98-4027-98ef-bb2ff6060d71}", "{7b1bf0b6-a1b9-42b0-b75d-252036438bdc}", "jid0-UVAeBCfd34Kk5usS8A1CBiobvM8@jetpack",
     "iridium@particlecore.github.io", "jid1-ss6kLNCbNz6u0g@jetpack", "{1cf918d2-f4ea-4b4f-b34e-455283fef19f}"],
-  open_urls: ["www.youtube.com"],
+  open_urls: ["www.youtube.com", "youtube.com"],
   sumo_path: "extensionrecommendations"
 };
 const WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS = {
   existing_addons: ["@wikipediacontextmenusearch", "{ebf47fc8-01d8-4dba-aa04-2118402f4b20}", "{5737a280-b359-4e26-95b0-adec5915a854}", "olivier.debroqueville@gmail.com", "{3923146e-98cb-472b-9c13-f6849d34d6b8}"],
-  open_urls: ["www.wikipedia.org"],
+  open_urls: ["www.wikipedia.org", "wikipedia.org"],
   sumo_path: "extensionrecommendations"
 };
 const REDDIT_ENHANCEMENT_PARAMS = {
   existing_addons: ["jid1-xUfzOsOFlzSOXg@jetpack"],
-  open_urls: ["www.reddit.com"],
+  open_urls: ["www.reddit.com", "reddit.com"],
   sumo_path: "extensionrecommendations"
 };
 
@@ -102,7 +102,7 @@ const CFR_MESSAGES = [
           accessKey: "A",
           action: {
             type: "INSTALL_ADDON_FROM_URL",
-            data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/950930/918624/facebook_container-1.3.1-an+fx-linux.xpi`}
+            data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/918624/facebook_container-1.3.1-an+fx-linux.xpi`}
           }
         },
         secondary: {
@@ -168,7 +168,7 @@ const CFR_MESSAGES = [
         sumo_path: YOUTUBE_ENHANCE_PARAMS.sumo_path
       },
       addon: {
-        title: "Enhancer for YouTube™",
+        title: "Enhancer for YouTube\u2122",
         icon: "resource://activity-stream/data/content/assets/cfr_enhancer_youtube.png",
         author: "Maxime RF",
         amo_url: "https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-youtube/"

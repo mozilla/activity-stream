@@ -117,12 +117,12 @@ describe("ASRouterTriggerListeners", () => {
         const newTriggerHandler = sinon.stub();
         openURLListener.init(newTriggerHandler, hosts);
 
-        const browser = {messageManager: {}};
+        const browser = {};
         const webProgress = {isTopLevel: true};
         const location = "https://www.mozilla.org/something";
         openURLListener.onLocationChange(browser, webProgress, undefined, {spec: location});
         assert.calledOnce(newTriggerHandler);
-        assert.calledWithExactly(newTriggerHandler, browser.messageManager, {id: "openURL", param: "www.mozilla.org"});
+        assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "www.mozilla.org"});
       });
     });
   });

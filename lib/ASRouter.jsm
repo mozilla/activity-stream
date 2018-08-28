@@ -483,7 +483,9 @@ class _ASRouter {
   async _sendMessageToTarget(message, target, trigger, force = false) {
     // No message is available, so send CLEAR_ALL.
     if (!message) {
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_ALL"});
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_ALL"});
+      } catch (e) {}
 
     // For bundled messages, look for the rest of the bundle or else send CLEAR_ALL
     } else if (message.bundled) {
@@ -493,7 +495,7 @@ class _ASRouter {
 
     // CFR doorhanger
     } else if (message.template === "cfr_doorhanger") {
-      CFRPageActions.addRecommendation(target.browser, "", message, this.dispatch, force);
+      CFRPageActions.addRecommendation(target, trigger.param, message, this.dispatch, force);
 
     // New tab single messages
     } else {
