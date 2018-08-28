@@ -194,6 +194,7 @@ const TEST_GLOBAL = {
     },
     defineLazyGlobalGetters() {},
     defineLazyModuleGetter() {},
+    defineLazyModuleGetters() {},
     defineLazyServiceGetter() {},
     generateQI() { return {}; }
   },
