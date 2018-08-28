@@ -3,15 +3,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+
 ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm");
 ChromeUtils.defineModuleGetter(this, "Services",
   "resource://gre/modules/Services.jsm");
 
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
+const SUMO_BASE_URL = Services.urlFormatter.formatURLPref("app.support.baseURL");
 
 const DELAY_BEFORE_EXPAND_MS = 1000;
-const DURATION_OF_EXPAND_MS = 5000;
 
 /**
  * A WeakMap from browsers to {host, recommendation} pairs. Recommendations are
@@ -76,9 +78,6 @@ class PageAction {
       // After one second, expand
       this._expand(DELAY_BEFORE_EXPAND_MS);
 
-      // Five seconds later, collapse again
-      this._collapse(DELAY_BEFORE_EXPAND_MS + DURATION_OF_EXPAND_MS);
-
       this._dispatchImpression(recommendation);
     }
   }
@@ -87,6 +86,8 @@ class PageAction {
     this.container.hidden = true;
     this._clearScheduledStateChanges();
     this.urlbar.removeAttribute("cfr-recommendation-state");
+    // This is safe even if this.currentNotification is invalid/undefined
+    this.window.PopupNotifications.remove(this.currentNotification);
   }
 
   dispatchUserAction(action) {
@@ -167,11 +168,34 @@ class PageAction {
     // See https://searchfox.org/mozilla-central/rev/847b64cc28b74b44c379f9bff4f415b97da1c6d7/toolkit/modules/PopupNotifications.jsm#42
     browser.cfrpopupnotificationanchor = this.container;
 
+    const notification = this.window.document.getElementById("contextual-feature-recommendation-notification");
+    const headerLabel = this.window.document.getElementById("cfr-notification-header-label");
+    const headerLink = this.window.document.getElementById("cfr-notification-header-link");
+    const headerImage = this.window.document.getElementById("cfr-notification-header-image");
+    const author = this.window.document.getElementById("cfr-notification-author");
+    const footerText = this.window.document.getElementById("cfr-notification-footer-text");
+    const footerLink = this.window.document.getElementById("cfr-notification-footer-learn-more-link");
+
+    headerLabel.value = content.heading_text;
+    headerLink.setAttribute("href", SUMO_BASE_URL + content.info_icon.sumo_path);
+    const isRTL = this.window.getComputedStyle(notification).direction === "rtl";
+    const attribute = isRTL ? "left" : "right";
+    headerLink.setAttribute(attribute, 0);
+    headerImage.setAttribute("tooltiptext", content.info_icon.label);
+
+    // Must replace with fetch of localised string
+    const authorString = "By <>";
+    author.textContent = authorString.replace("<>", content.addon.author);
+
+    footerText.textContent = content.text;
+    footerLink.value = "Learn more";
+    footerLink.setAttribute("href", content.addon.amo_url);
+
     const {primary, secondary} = content.buttons;
 
     const mainAction = {
       label: primary.label,
-      accessKey: primary.accessKey,
+      accessKey: primary.accesskey,
       callback: () => {
         this._blockMessage(id);
         this.dispatchUserAction(primary.action);
@@ -182,7 +206,7 @@ class PageAction {
 
     const secondaryActions = [{
       label: secondary.label,
-      accessKey: secondary.accessKey,
+      accessKey: secondary.accesskey,
       callback: () => {
         this.hide();
         RecommendationMap.delete(browser);
@@ -195,10 +219,10 @@ class PageAction {
       eventCallback: this._popupStateChange
     };
 
-    this.window.PopupNotifications.show(
+    this.currentNotification = this.window.PopupNotifications.show(
       browser,
       POPUP_NOTIFICATION_ID,
-      content.text,
+      content.addon.title,
       "cfr",
       mainAction,
       secondaryActions,
