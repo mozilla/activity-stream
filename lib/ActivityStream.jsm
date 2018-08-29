@@ -205,7 +205,7 @@ const PREFS_CONFIG = new Map([
       id: "onboarding",
       type: "local",
       localProvider: "OnboardingMessageProvider",
-      enabled: AppConstants.MOZ_UPDATE_CHANNEL !== "release",
+      enabled: false,
       cohort: 0
     }, {
       id: "snippets",
