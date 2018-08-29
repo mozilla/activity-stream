@@ -70,7 +70,7 @@ describe("TF-IDF Term Vectorizer", () => {
     ];
     let checkTokenGeneration = tc => {
       describe(`${tc.input} should have only vocabulary tokens`, () => {
-        let actual = instance.toksTotfIdfVector(instance.tokenize(tc.input), vocab_idfs);
+        let actual = instance.getTfIdfVector(tc.input, vocab_idfs);
 
         it(`${tc.input} should generate exactly ${Object.keys(tc.expected)}`, () => {
           let seen = {};
@@ -92,7 +92,7 @@ describe("TF-IDF Term Vectorizer", () => {
     };
 
     let checkTfIdfVector = tc => {
-      let actual = instance.toksTotfIdfVector(instance.tokenize(tc.input), vocab_idfs);
+      let actual = instance.getTfIdfVector(tc.input, vocab_idfs);
       it(`${tc.input} should have the correct tf-idf`, () => {
         Object.keys(actual).forEach(actualTok => {
           let delta = Math.abs(tc.expected[actualTok][1] - actual[actualTok][1]);
@@ -106,5 +106,13 @@ describe("TF-IDF Term Vectorizer", () => {
       checkTokenGeneration(testCases[i]);
       checkTfIdfVector(testCases[i]);
     }
+
+    it("should give the same results whether pretokenized or not", () => {
+      // eslint-disable-next-line prefer-destructuring
+      let tc = testCases[0];
+      let textResults = instance.getTfIdfVector(tc.input, vocab_idfs);
+      let tokResults = instance.toksTotfIdfVector(instance.tokenize(tc.input), vocab_idfs);
+      assert.deepEqual(textResults, tokResults);
+    });
   });
 });

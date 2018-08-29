@@ -16,8 +16,12 @@ this.NaiveBayesTextTagger = class NaiveBayesTextTagger {
    * the positive class is more likely, then "label" is the positive class
    * label. If the negative class is matched, then "label" is set to null.
    */
-  tag(text) {
-    let fv = this.tokenizer.getTfIdfVector(text, this.model.vocab_idfs);
+  tagText(text) {
+    return this.tagTokens(this.tokenizer.tokenize(text));
+  }
+
+  tagTokens(tokens) {
+    let fv = this.tokenizer.toksTotfIdfVector(tokens, this.model.vocab_idfs);
 
     let bestLogProb = null;
     let bestClassId = -1;

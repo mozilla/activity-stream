@@ -88,7 +88,7 @@ describe("Naive Bayes Tagger", () => {
     ];
 
     let checkTag = tc => {
-      let actual = instance.tag(tc.input);
+      let actual = instance.tagText(tc.input);
       it(`should tag ${tc.input} with ${tc.expected.label}`, () => {
         assert.equal(tc.expected.label, actual.label);
       });
@@ -102,5 +102,13 @@ describe("Naive Bayes Tagger", () => {
     for (let i = 0; i < testCases.length; i++) {
       checkTag(testCases[i]);
     }
+
+    it("should give the same results whether pretokenized or not", () => {
+      // eslint-disable-next-line prefer-destructuring
+      let tc = testCases[0];
+      let textResults = instance.tagText(tc.input);
+      let tokResults = instance.tagTokens(instance.tokenizer.tokenize(tc.input));
+      assert.deepEqual(textResults, tokResults);
+    });
   });
 });

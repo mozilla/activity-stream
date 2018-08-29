@@ -16,8 +16,12 @@ this.NmfTextTagger = class NmfTextTagger {
    * (Higher is more confident.) All classes get scored, so it is up to
    * consumer of this data determine what classes are most valuable.
    */
-  tag(text) {
-    let fv = this.tokenizer.getTfIdfVector(text, this.model.vocab_idfs);
+  tagText(text) {
+    return this.tagTokens(this.tokenizer.tokenize(text));
+  }
+
+  tagTokens(tokens) {
+    let fv = this.tokenizer.toksTotfIdfVector(tokens, this.model.vocab_idfs);
     let fve = Object.values(fv);
 
     // normalize by the sum of the vector
