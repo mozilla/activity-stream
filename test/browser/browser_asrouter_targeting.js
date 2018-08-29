@@ -111,11 +111,11 @@ add_task(async function checkProfileAgeReset() {
 });
 
 add_task(async function checkCurrentDate() {
-  let message = {id: "foo", targeting: `currentDate < '${new Date(Date.now() + 1000)}'|date`};
+  let message = {id: "foo", targeting: `currentDate < '${new Date(Date.now() + 5000)}'|date`};
   is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
     "should select message based on currentDate < timestamp");
 
-  message = {id: "foo", targeting: `currentDate > '${new Date(Date.now() - 1000)}'|date`};
+  message = {id: "foo", targeting: `currentDate > '${new Date(Date.now() - 5000)}'|date`};
   is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
     "should select message based on currentDate > timestamp");
 });
