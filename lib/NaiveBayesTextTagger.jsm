@@ -28,10 +28,8 @@ this.NaiveBayesTextTagger = class NaiveBayesTextTagger {
       let classLogProb = classModel.log_prior;
 
       // dot fv with the class model
-      let fve = Object.values(fv);
-      for (let i = 0; i < fve.length; i++) {
-        // eslint-disable-next-line prefer-destructuring
-        let [termId, tfidf] = fve[i];
+      for (let pair of Object.values(fv)) {
+        let [termId, tfidf] = pair;
         classLogProb += tfidf * classModel.feature_log_probs[termId];
       }
 

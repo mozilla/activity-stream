@@ -22,9 +22,9 @@ this.NmfTextTagger = class NmfTextTagger {
 
     // normalize by the sum of the vector
     let sum = 0.0;
-    for (let i = 0; i < fve.length; i++) {
+    for (let pair of fve) {
       // eslint-disable-next-line prefer-destructuring
-      sum += fve[i][1];
+      sum += pair[1];
     }
     for (let i = 0; i < fve.length; i++) {
       // eslint-disable-next-line prefer-destructuring
@@ -34,13 +34,12 @@ this.NmfTextTagger = class NmfTextTagger {
     // dot the document with each topic vector so that we can transform it into
     // the latent space
     let toksInLatentSpace = [];
-    for (let topicId = 0; topicId < this.model.topic_word.length; topicId++) {
+    for (let topicVect of this.model.topic_word) {
       let fvDotTwv = 0;
       // dot fv with each topic word vector
-      for (let j = 0; j < fve.length; j++) {
-        // eslint-disable-next-line prefer-destructuring
-        let [termId, tfidf] = fve[j];
-        fvDotTwv += tfidf * this.model.topic_word[topicId][termId];
+      for (let pair of fve) {
+        let [termId, tfidf] = pair;
+        fvDotTwv += tfidf * topicVect[termId];
       }
       toksInLatentSpace.push(fvDotTwv);
     }
