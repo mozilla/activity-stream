@@ -128,6 +128,12 @@ class PageAction {
     }
   }
 
+  _blockMessage(messageID) {
+    this._dispatchToASRouter(
+      {type: "BLOCK_MESSAGE_BY_ID", data: {id: messageID}}
+    );
+  }
+
   /**
    * Respond to a user click on the recommendation by showing a doorhanger/
    * popup notification
@@ -140,7 +146,7 @@ class PageAction {
       this.hide();
       return;
     }
-    const {content} = RecommendationMap.get(browser);
+    const {content, id} = RecommendationMap.get(browser);
 
     // The recommendation should remain either collapsed or expanded while the
     // doorhanger is showing
@@ -155,13 +161,21 @@ class PageAction {
     const mainAction = {
       label: primary.label,
       accessKey: primary.accessKey,
-      callback: () => this.dispatchUserAction(primary.action)
+      callback: () => {
+        this._blockMessage(id);
+        this.dispatchUserAction(primary.action);
+        this.hide();
+        RecommendationMap.delete(browser);
+      }
     };
 
     const secondaryActions = [{
       label: secondary.label,
       accessKey: secondary.accessKey,
-      callback: this._collapse
+      callback: () => {
+        this.hide();
+        RecommendationMap.delete(browser);
+      }
     }];
 
     const options = {
