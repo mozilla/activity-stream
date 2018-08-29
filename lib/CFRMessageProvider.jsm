@@ -6,7 +6,7 @@ const BASE_ADDONS_DOWNLOAD_URL = "https://addons.mozilla.org/firefox/downloads/f
 const AMAZON_ASSISTANT_PARAMS = {
   existing_addons: ["abb@amazon.com", "{75c7fe97-5a90-4b54-9052-3534235eaf41}", "{ef34596e-1e43-4e84-b2ff-1e58e287e08d}", "{ea280feb-155a-492e-8016-ac96dd995f2c}", "izer@camelcamelcamel.com", "amptra@keepa.com", "pricealarm@icopron.ch", "{774f76c7-6807-481e-bf64-f9b7d5cda602}"],
   open_urls: ["smile.amazon.com", "www.audible.com", "www.amazon.com", "amazon.com", "audible.com"],
-  sumo_path: "extensionpromotions"
+  sumo_path: "extensionrecommendations"
 };
 const FACEBOOK_CONTAINER_PARAMS = {
   existing_addons: ["@contain-facebook", "{bb1b80be-e6b3-40a1-9b6e-9d4073343f0b}", "{a50d61ca-d27b-437a-8b52-5fd801a0a88b}"],
