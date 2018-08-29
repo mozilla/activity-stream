@@ -13,7 +13,7 @@ ChromeUtils.defineModuleGetter(this, "TelemetryEnvironment",
   "resource://gre/modules/TelemetryEnvironment.jsm");
 
 const FXA_USERNAME_PREF = "services.sync.username";
-const ONBOARDING_MESSAGE_PROVDIER_EXPERIMENT_PREF = "browser.newtabpage.activity-stream.asrouter.messageProviders";
+const MESSAGE_PROVDIER_EXPERIMENT_PREF = "browser.newtabpage.activity-stream.asrouter.messageProviders";
 const MOZ_JEXL_FILEPATH = "mozjexl";
 
 const {activityStreamProvider: asProvider} = NewTabUtils;
@@ -147,7 +147,7 @@ const TargetingGetters = {
   },
   // Temporary targeting function for the purposes of running the simplified onboarding experience
   get isInExperimentCohort() {
-    const allProviders = Services.prefs.getStringPref(ONBOARDING_MESSAGE_PROVDIER_EXPERIMENT_PREF, "");
+    const allProviders = Services.prefs.getStringPref(MESSAGE_PROVDIER_EXPERIMENT_PREF, "");
     try {
       const {cohort} = JSON.parse(allProviders).find(i => i.id === "onboarding");
       return (typeof cohort === "number" ? cohort : 0);
@@ -155,6 +155,20 @@ const TargetingGetters = {
       Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
     }
     return 0;
+  },
+
+  get providerCohorts() {
+    const allProviders = Services.prefs.getStringPref(MESSAGE_PROVDIER_EXPERIMENT_PREF, "");
+    const cohorts = {};
+    try {
+      JSON.parse(allProviders).reduce((prev, current) => {
+        prev[current.id] = current.cohort || "";
+        return prev;
+      }, cohorts);
+    } catch (e) {
+      Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
+    }
+    return cohorts;
   }
 };
 
