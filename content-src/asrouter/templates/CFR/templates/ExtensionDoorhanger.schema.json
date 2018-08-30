@@ -90,7 +90,7 @@
                 {"description": "Text for the primary button of the doorhanger."}
               ]
             },
-            "accessKey": {
+            "accesskey": {
               "type": "string",
               "description": "A single character to be used as a shortcut key for the primary button. This should be one of the characters that appears in the button label."
             },
@@ -123,7 +123,7 @@
                   {"description": "Text for the secondary button of the doorhanger."}
                 ]
               },
-              "accessKey": {
+              "accesskey": {
                 "type": "string",
                 "description": "A single character to be used as a shortcut key for the secondary button. This should be one of the characters that appears in the button label."
               },

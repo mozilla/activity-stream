@@ -53,7 +53,7 @@ const CFR_MESSAGES = [
       notification_text: "Recommendation",
       heading_text: "Recommended Extension",
       info_icon: {
-        label: "why_seeing_this",
+        label: "Why am I seeing this?",
         sumo_path: AMAZON_ASSISTANT_PARAMS.sumo_path
       },
       addon: {
@@ -66,7 +66,7 @@ const CFR_MESSAGES = [
       buttons: {
         primary: {
           label: "Add to Firefox",
-          accessKey: "A",
+          accesskey: "A",
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/950930/amazon_assistant_for_firefox-10.1805.2.1019-an+fx.xpi`}
@@ -74,7 +74,7 @@ const CFR_MESSAGES = [
         },
         secondary: {
           label: "No Thanks",
-          accessKey: "N",
+          accesskey: "N",
           action: {type: "CANCEL"}
         }
       }
@@ -92,7 +92,7 @@ const CFR_MESSAGES = [
       notification_text: "Recommendation",
       heading_text: "Recommended Extension",
       info_icon: {
-        label: "why_seeing_this",
+        label: "Why am I seeing this?",
         sumo_path: FACEBOOK_CONTAINER_PARAMS.sumo_path
       },
       addon: {
@@ -105,7 +105,7 @@ const CFR_MESSAGES = [
       buttons: {
         primary: {
           label: "Add to Firefox",
-          accessKey: "A",
+          accesskey: "A",
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/918624/facebook_container-1.3.1-an+fx-linux.xpi`}
@@ -113,7 +113,7 @@ const CFR_MESSAGES = [
         },
         secondary: {
           label: "No Thanks",
-          accessKey: "N",
+          accesskey: "N",
           action: {type: "CANCEL"}
         }
       }
@@ -131,7 +131,7 @@ const CFR_MESSAGES = [
       notification_text: "Recommendation",
       heading_text: "Recommended Extension",
       info_icon: {
-        label: "why_seeing_this",
+        label: "Why am I seeing this?",
         sumo_path: GOOGLE_TRANSLATE_PARAMS.sumo_path
       },
       addon: {
@@ -144,7 +144,7 @@ const CFR_MESSAGES = [
       buttons: {
         primary: {
           label: "Add to Firefox",
-          accessKey: "A",
+          accesskey: "A",
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/1008798/al_traductor_de_google-3.3-an+fx.xpi`}
@@ -152,7 +152,7 @@ const CFR_MESSAGES = [
         },
         secondary: {
           label: "No Thanks",
-          accessKey: "N",
+          accesskey: "N",
           action: {type: "CANCEL"}
         }
       }
@@ -170,7 +170,7 @@ const CFR_MESSAGES = [
       notification_text: "Recommendation",
       heading_text: "Recommended Extension",
       info_icon: {
-        label: "why_seeing_this",
+        label: "Why am I seeing this?",
         sumo_path: YOUTUBE_ENHANCE_PARAMS.sumo_path
       },
       addon: {
@@ -183,7 +183,7 @@ const CFR_MESSAGES = [
       buttons: {
         primary: {
           label: "Add to Firefox",
-          accessKey: "A",
+          accesskey: "A",
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/1028400/enhancer_for_youtubetm-2.0.73-an+fx-linux.xpi`}
@@ -191,7 +191,7 @@ const CFR_MESSAGES = [
         },
         secondary: {
           label: "No Thanks",
-          accessKey: "N",
+          accesskey: "N",
           action: {type: "CANCEL"}
         }
       }
@@ -209,7 +209,7 @@ const CFR_MESSAGES = [
       notification_text: "Recommendation",
       heading_text: "Recommended Extension",
       info_icon: {
-        label: "why_seeing_this",
+        label: "Why am I seeing this?",
         sumo_path: WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS.sumo_path
       },
       addon: {
@@ -222,7 +222,7 @@ const CFR_MESSAGES = [
       buttons: {
         primary: {
           label: "Add to Firefox",
-          accessKey: "A",
+          accesskey: "A",
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/890224/wikipedia_context_menu_search-1.8-an+fx.xpi`}
@@ -230,7 +230,7 @@ const CFR_MESSAGES = [
         },
         secondary: {
           label: "No Thanks",
-          accessKey: "N",
+          accesskey: "N",
           action: {type: "CANCEL"}
         }
       }
@@ -248,7 +248,7 @@ const CFR_MESSAGES = [
       notification_text: "Recommendation",
       heading_text: "Recommended Extension",
       info_icon: {
-        label: "why_seeing_this",
+        label: "Why am I seeing this?",
         sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path
       },
       addon: {
@@ -261,7 +261,7 @@ const CFR_MESSAGES = [
       buttons: {
         primary: {
           label: "Add to Firefox",
-          accessKey: "A",
+          accesskey: "A",
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/991623/reddit_enhancement_suite-5.12.5-an+fx.xpi`}
@@ -269,7 +269,7 @@ const CFR_MESSAGES = [
         },
         secondary: {
           label: "No Thanks",
-          accessKey: "N",
+          accesskey: "N",
           action: {type: "CANCEL"}
         }
       }
