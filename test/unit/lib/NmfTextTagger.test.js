@@ -105,19 +105,16 @@ describe("NMF Tagger", () => {
           assert.isTrue(delta <= EPSILON);
         });
       });
+      it("should give the same results for ${tc.input}, whether pretokenized or not", () => {
+        let textResults = instance.tagText(tc.input);
+        let tokResults = instance.tagTokens(instance.tokenizer.tokenize(tc.input));
+        assert.deepEqual(textResults, tokResults);
+      });
     };
 
     // RELEASE THE TESTS!
-    for (let i = 0; i < testCases.length; i++) {
-      checkTag(testCases[i]);
+    for (let tc of testCases) {
+      checkTag(tc);
     }
-
-    it("should give the same results whether pretokenized or not", () => {
-      // eslint-disable-next-line prefer-destructuring
-      let tc = testCases[0];
-      let textResults = instance.tagText(tc.input);
-      let tokResults = instance.tagTokens(instance.tokenizer.tokenize(tc.input));
-      assert.deepEqual(textResults, tokResults);
-    });
   });
 });
