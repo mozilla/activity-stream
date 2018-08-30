@@ -5,6 +5,8 @@
 
 ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm");
+ChromeUtils.defineModuleGetter(this, "Services",
+  "resource://gre/modules/Services.jsm");
 
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
 
@@ -19,12 +21,12 @@ const DURATION_OF_EXPAND_MS = 5000;
  * given browser is closed or the user navigates (within that browser) away from
  * the host.
  */
-const RecommendationMap = new WeakMap();
+let RecommendationMap = new WeakMap();
 
 /**
  * A WeakMap from windows to their CFR PageAction.
  */
-const PageActionMap = new WeakMap();
+let PageActionMap = new WeakMap();
 
 /**
  * We need one PageAction for each window
@@ -291,11 +293,16 @@ const CFRPageActions = {
    * Clear all recommendations and hide all PageActions
    */
   clearRecommendations() {
-    for (const [win, pageAction] of PageActionMap) {
-      pageAction.hide();
-      PageActionMap.delete(win);
+    // WeakMaps aren't iterable so we have to test all existing windows
+    for (const win of Services.wm.getEnumerator("navigator:browser")) {
+      if (win.closed || !PageActionMap.has(win)) {
+        continue;
+      }
+      PageActionMap.get(win).hide();
     }
-    RecommendationMap.clear();
+    // WeakMaps don't have a `clear` method
+    PageActionMap = new WeakMap();
+    RecommendationMap = new WeakMap();
   }
 };
 this.CFRPageActions = CFRPageActions;

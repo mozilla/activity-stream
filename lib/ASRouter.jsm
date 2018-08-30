@@ -346,6 +346,8 @@ class _ASRouter {
     for (const listener of ASRouterTriggerListeners.values()) {
       listener.uninit();
     }
+    // If we added any CFR recommendations, they need to be removed
+    CFRPageActions.clearRecommendations();
     this._resetInitialization();
   }
 
