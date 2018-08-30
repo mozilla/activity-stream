@@ -52,10 +52,14 @@ class PageAction {
     this.container.onclick = this._handleClick;
   }
 
-  async show(notificationText, shouldExpand = false) {
+  _dispatchImpression(message) {
+    this._dispatchToASRouter({type: "IMPRESSION", data: message});
+  }
+
+  async show(recommendation, shouldExpand = false) {
     this.container.hidden = false;
 
-    this.label.value = notificationText;
+    this.label.value = recommendation.content.notification_text;
 
     // Wait for layout to flush to avoid a synchronous reflow then calculate the
     // label width. We can safely get the width even though the recommendation is
@@ -72,6 +76,8 @@ class PageAction {
 
       // Five seconds later, collapse again
       this._collapse(DELAY_BEFORE_EXPAND_MS + DURATION_OF_EXPAND_MS);
+
+      this._dispatchImpression(recommendation);
     }
   }
 
@@ -220,11 +226,11 @@ const CFRPageActions = {
       return;
     }
     if (RecommendationMap.has(browser)) {
-      const {host, content} = RecommendationMap.get(browser);
-      if (isHostMatch(browser, host)) {
+      const recommendation = RecommendationMap.get(browser);
+      if (isHostMatch(browser, recommendation.host)) {
         // The browser has a recommendation specified with this host, so show
         // the page action
-        pageAction.show(content.notification_text);
+        pageAction.show(recommendation);
       } else {
         // The user has navigated away from the specified host in the given
         // browser, so the recommendation is no longer valid and should be removed
@@ -252,7 +258,7 @@ const CFRPageActions = {
     if (!PageActionMap.has(win)) {
       PageActionMap.set(win, new PageAction(win, dispatchToASRouter));
     }
-    await PageActionMap.get(win).show(recommendation.content.notification_text, true);
+    await PageActionMap.get(win).show(recommendation, true);
     return true;
   },
 
@@ -277,7 +283,7 @@ const CFRPageActions = {
     if (!PageActionMap.has(win)) {
       PageActionMap.set(win, new PageAction(win, dispatchToASRouter));
     }
-    await PageActionMap.get(win).show(recommendation.content.notification_text, true);
+    await PageActionMap.get(win).show(recommendation, true);
     return true;
   },
 
