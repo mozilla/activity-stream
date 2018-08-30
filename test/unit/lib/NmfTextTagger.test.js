@@ -105,7 +105,7 @@ describe("NMF Tagger", () => {
           assert.isTrue(delta <= EPSILON);
         });
       });
-      it("should give the same results for ${tc.input}, whether pretokenized or not", () => {
+      it(`should give the same results for ${tc.input}, whether pretokenized or not`, () => {
         let textResults = instance.tagText(tc.input);
         let tokResults = instance.tagTokens(instance.tokenizer.tokenize(tc.input));
         assert.deepEqual(textResults, tokResults);
