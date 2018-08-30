@@ -13,8 +13,8 @@ import {FakePrefs, GlobalOverrider} from "test/unit/utils";
 import injector from "inject!lib/TelemetryFeed.jsm";
 
 const FAKE_UUID = "{foo-123-foo}";
-const FAKE_ROUTER_MESSAGE_PROVIDER = JSON.stringify([{id: "cfr", enabled: true, cohort: 0}]);
-const FAKE_ROUTER_MESSAGE_PROVIDER_COHORT = JSON.stringify([{id: "cfr", enabled: true, cohort: 1}]);
+const FAKE_ROUTER_MESSAGE_PROVIDER = JSON.stringify([{id: "cfr", enabled: true}]);
+const FAKE_ROUTER_MESSAGE_PROVIDER_COHORT = JSON.stringify([{id: "cfr", enabled: true, cohort: "cohort_group"}]);
 
 describe("TelemetryFeed", () => {
   let globals;

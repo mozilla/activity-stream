@@ -122,13 +122,12 @@ this.TelemetryFeed = class TelemetryFeed {
   /**
    * Check the CFR experiment cohort information by parsing the pref string of
    * AS router message provider. The experiment cohort can be identified by the
-   * `cohort` field in the "cfr" provider, where a positive number means it is
-   * in the experiment cohort.
+   * `cohort` field in the "cfr" provider.
    */
   _parseCFRCohort(pref) {
     try {
       for (let provider of JSON.parse(pref)) {
-        if (provider.id === "cfr" && provider.enabled && provider.cohort > 0) {
+        if (provider.id === "cfr" && provider.enabled && provider.cohort) {
           return true;
         }
       }
