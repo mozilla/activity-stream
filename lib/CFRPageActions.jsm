@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
+  "resource://gre/modules/PrivateBrowsingUtils.jsm");
+
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
 
 const DELAY_BEFORE_EXPAND_MS = 1000;
@@ -263,6 +266,9 @@ const CFRPageActions = {
    */
   async addRecommendation(browser, host, recommendation, dispatchToASRouter) {
     const win = browser.ownerGlobal;
+    if (PrivateBrowsingUtils.isWindowPrivate(win)) {
+      return false;
+    }
     if (browser !== win.gBrowser.selectedBrowser || !isHostMatch(browser, host)) {
       return false;
     }
