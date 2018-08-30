@@ -4,8 +4,10 @@
 "use strict";
 
 this.RecipeExecutor = class RecipeExecutor {
-  constructor(tfidfVectorizer, nbTaggers) {
+  constructor(tfidfVectorizer, nbTaggers, nmfTaggers) {
     this.ITEM_BUILDER_REGISTRY = {
+      "nb_tag": this.naiveBayesTag,
+      "conditionally_nmf_tag": this.conditionallyNmfTag,
       "accept_item_by_field_value": this.acceptItemByFieldValue,
       "tokenize_url": this.tokenizeUrl,
       "get_url_domain": this.getUrlDomain,
@@ -35,6 +37,7 @@ this.RecipeExecutor = class RecipeExecutor {
     };
     this.tfidfVectorizer = tfidfVectorizer;
     this.nbTaggers = nbTaggers;
+    this.nmfTaggers = nmfTaggers;
   }
 
   /**
@@ -95,6 +98,63 @@ this.RecipeExecutor = class RecipeExecutor {
       }
     }
     return textArr.join(" ");
+  }
+
+  /**
+   * Runs the naive bayes text taggers over a set of text fields. Stores the
+   * results in new fields:
+   *  nb_tags:         a map of text strings to probabilites
+   *  nb_tokens:       the tokenized text that was tagged
+   *
+   * Config:
+   *  fields:          an array containing a list of fields to concatenate and tag
+   */
+  naiveBayesTag(item, config) {
+    let text = this._assembleText(item, config.fields);
+    let tokens = this.tfidfVectorizer.tokenizer.tokenize(text);
+    let tags = {};
+
+    for (let nbTagger of this.nbTaggers) {
+      let result = nbTagger.tagTokens(tokens);
+      if ((result.label !== null) && result.confident) {
+        tags[result.label] = Math.exp(result.logProb);
+      }
+    }
+    item.nb_tags = tags;
+    item.nb_tokens = tokens;
+
+    return item;
+  }
+
+  /**
+   * Selectively runs NMF text taggers depending on which tags were found
+   * by the naive bayes taggers. Writes the results in into new fields:
+   *  nmf_tags_parent_weights:
+   *  nmf_tags:
+   *  nmf_tags_parent
+   *
+   * Config:
+   *  Not configurable
+   */
+  conditionallyNmfTag(item, config) {
+    let allNmfTags = {};
+    let parentTags = {};
+
+    Object.keys(item.nb_tags).forEach(parentTag => {
+      let nmfTagger = this.nmfTaggers[parentTag];
+      if (nmfTagger !== undefined) {
+        let nmfTags = nmfTagger.tagTokens(item.nb_tokens);
+        Object.keys(nmfTags).forEach(nmfTag => {
+          allNmfTags[nmfTag] = nmfTags[nmfTag];
+          parentTags[nmfTag] = parentTag;
+        });
+      }
+    });
+
+    item.nmf_tags = allNmfTags;
+    item.nmf_tags_parent = parentTags;
+
+    return item;
   }
 
   /**
