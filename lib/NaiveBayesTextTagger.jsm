@@ -44,7 +44,7 @@ this.NaiveBayesTextTagger = class NaiveBayesTextTagger {
       logSumExp += Math.exp(classLogProb);
     }
 
-    // now normalizae the probability by dividing by P(x)
+    // now normalize the probability by dividing by P(x)
     logSumExp = Math.log(logSumExp);
     bestLogProb -= logSumExp;
     if (bestClassId === this.model.positive_class_id) {
