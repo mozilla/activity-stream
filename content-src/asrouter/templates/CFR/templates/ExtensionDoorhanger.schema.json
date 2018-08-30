@@ -64,6 +64,17 @@
             {"description": "Addon icon"}
           ]
         },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "description": "Star rating"
+        },
+        "users": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Installed users"
+        },
         "amo_url": {
           "allOf": [
             {"$ref": "#/definitions/linkUrl"},

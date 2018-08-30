@@ -150,7 +150,7 @@ class PageAction {
    * Respond to a user click on the recommendation by showing a doorhanger/
    * popup notification
    */
-  _handleClick(event) {
+  _handleClick(event) { // eslint-disable-line max-statements
     const browser = this.window.gBrowser.selectedBrowser;
     if (!RecommendationMap.has(browser)) {
       // There's no recommendation for this browser, so the user shouldn't have
@@ -174,6 +174,10 @@ class PageAction {
     const headerImage = this.window.document.getElementById("cfr-notification-header-image");
     const author = this.window.document.getElementById("cfr-notification-author");
     const footerText = this.window.document.getElementById("cfr-notification-footer-text");
+    const footerFilledStars = this.window.document.getElementById("cfr-notification-footer-filled-stars");
+    const footerEmptyStars = this.window.document.getElementById("cfr-notification-footer-empty-stars");
+    const footerUsers = this.window.document.getElementById("cfr-notification-footer-users");
+    const footerSpacer = this.window.document.getElementById("cfr-notification-footer-spacer");
     const footerLink = this.window.document.getElementById("cfr-notification-footer-learn-more-link");
 
     headerLabel.value = content.heading_text;
@@ -188,6 +192,43 @@ class PageAction {
     author.textContent = authorString.replace("<>", content.addon.author);
 
     footerText.textContent = content.text;
+
+    const {rating} = content.addon;
+    if (rating) {
+      const MAX_RATING = 5;
+      const STARS_WIDTH = 17 * MAX_RATING;
+      const calcWidth = stars => `${stars / MAX_RATING * STARS_WIDTH}px`;
+      footerFilledStars.style.width = calcWidth(rating);
+      footerEmptyStars.style.width = calcWidth(MAX_RATING - rating);
+
+      const ratingString = "<> rating".replace("<>", rating.toLocaleString());
+      footerFilledStars.setAttribute("tooltiptext", ratingString);
+      footerEmptyStars.setAttribute("tooltiptext", ratingString);
+    } else {
+      footerFilledStars.style.width = "";
+      footerEmptyStars.style.width = "";
+      footerFilledStars.removeAttribute("tooltiptext");
+      footerEmptyStars.removeAttribute("tooltiptext");
+    }
+
+    const {users} = content.addon;
+    if (users) {
+      const usersString = "<> users";
+      footerUsers.setAttribute("value", usersString.replace("<>", users.toLocaleString()));
+      footerUsers.removeAttribute("hidden");
+    } else {
+      // Prevent whitespace around empty label from affecting other spacing
+      footerUsers.setAttribute("hidden", true);
+      footerUsers.removeAttribute("value");
+    }
+
+    // Spacer pushes the link to the opposite end when there's other content
+    if (rating || users) {
+      footerSpacer.removeAttribute("hidden");
+    } else {
+      footerSpacer.setAttribute("hidden", true);
+    }
+
     footerLink.value = "Learn more";
     footerLink.setAttribute("href", content.addon.amo_url);
 
