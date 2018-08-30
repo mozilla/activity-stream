@@ -59,6 +59,8 @@ const CFR_MESSAGES = [
       addon: {
         title: "Amazon Assistant",
         icon: "resource://activity-stream/data/content/assets/cfr_amazon_assistant.png",
+        rating: 3.3,
+        users: 443046,
         author: "Amazon",
         amo_url: "https://addons.mozilla.org/en-US/firefox/addon/amazon-browser-bar/"
       },
@@ -98,6 +100,8 @@ const CFR_MESSAGES = [
       addon: {
         title: "Facebook Container",
         icon: "resource://activity-stream/data/content/assets/cfr_fb_container.png",
+        rating: 4.6,
+        users: 299019,
         author: "Mozilla",
         amo_url: "https://addons.mozilla.org/en-US/firefox/addon/facebook-container/"
       },
@@ -137,6 +141,8 @@ const CFR_MESSAGES = [
       addon: {
         title: "To Google Translate",
         icon: "resource://activity-stream/data/content/assets/cfr_google_translate.png",
+        rating: 4.1,
+        users: 313474,
         author: "Juan Escobar",
         amo_url: "https://addons.mozilla.org/en-US/firefox/addon/to-google-translate/"
       },
@@ -176,6 +182,8 @@ const CFR_MESSAGES = [
       addon: {
         title: "Enhancer for YouTube\u2122",
         icon: "resource://activity-stream/data/content/assets/cfr_enhancer_youtube.png",
+        rating: 4.8,
+        users: 357328,
         author: "Maxime RF",
         amo_url: "https://addons.mozilla.org/en-US/firefox/addon/enhancer-for-youtube/"
       },
@@ -215,6 +223,8 @@ const CFR_MESSAGES = [
       addon: {
         title: "Wikipedia Context Menu Search",
         icon: "resource://activity-stream/data/content/assets/cfr_wiki_search.png",
+        rating: 4.9,
+        users: 3095,
         author: "Nick Diedrich",
         amo_url: "https://addons.mozilla.org/en-US/firefox/addon/wikipedia-context-menu-search/"
       },
@@ -254,6 +264,8 @@ const CFR_MESSAGES = [
       addon: {
         title: "Reddit Enhancement Suite",
         icon: "resource://activity-stream/data/content/assets/cfr_reddit_enhancement.png",
+        rating: 4.6,
+        users: 258129,
         author: "honestbleeps",
         amo_url: "https://addons.mozilla.org/en-US/firefox/addon/reddit-enhancement-suite/"
       },
