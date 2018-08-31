@@ -158,6 +158,8 @@ class PageAction {
   _popupStateChange(state) {
     if (["dismissed", "removed"].includes(state)) {
       this._collapse();
+      // This is safe even if this.currentNotification is invalid/undefined
+      this.window.PopupNotifications.remove(this.currentNotification);
     }
   }
 
