@@ -3,12 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+const {Localization} = ChromeUtils.import("resource://gre/modules/Localization.jsm", {});
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm");
-ChromeUtils.defineModuleGetter(this, "Services",
-  "resource://gre/modules/Services.jsm");
 
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
 const SUMO_BASE_URL = Services.urlFormatter.formatURLPref("app.support.baseURL");
@@ -50,6 +49,10 @@ class PageAction {
     this._handleClick = this._handleClick.bind(this);
     this.dispatchUserAction = this.dispatchUserAction.bind(this);
 
+    this._l10n = new Localization([
+      "browser/newtab/asrouter.ftl"
+    ]);
+
     // Saved timeout IDs for scheduled state changes, so they can be cancelled
     this.stateTransitionTimeoutIDs = [];
 
@@ -63,7 +66,7 @@ class PageAction {
   async show(recommendation, shouldExpand = false) {
     this.container.hidden = false;
 
-    this.label.value = recommendation.content.notification_text;
+    this.label.value = await this.getStrings(recommendation.content.notification_text);
 
     // Wait for layout to flush to avoid a synchronous reflow then calculate the
     // label width. We can safely get the width even though the recommendation is
@@ -147,10 +150,40 @@ class PageAction {
   }
 
   /**
+   * getStrings - Handles getting the localized strings vs message overrides.
+   *              If string_id is not defined it assumes you passed in an override
+   *              message and it just returns it.
+   *              If subAttribute is provided, the string for it is returned.
+   * @return A string. One of 1) passed in string 2) a String object with
+   *         attributes property if there are attributes 3) the sub attribute.
+   */
+  async getStrings(string, subAttribute = "") {
+    if (!string.string_id) {
+      return string;
+    }
+
+    const [localeStrings] = await this._l10n.formatMessages([{
+      id: string.string_id,
+      args: string.args
+    }]);
+
+    const mainString = new String(localeStrings.value); // eslint-disable-line no-new-wrappers
+    if (localeStrings.attributes) {
+      const attributes = localeStrings.attributes.reduce((acc, attribute) => {
+        acc[attribute.name] = attribute.value;
+        return acc;
+      }, {});
+      mainString.attributes = attributes;
+    }
+
+    return subAttribute ? mainString.attributes[subAttribute] : mainString;
+  }
+
+  /**
    * Respond to a user click on the recommendation by showing a doorhanger/
    * popup notification
    */
-  _handleClick(event) { // eslint-disable-line max-statements
+  async _handleClick(event) { // eslint-disable-line max-statements
     const browser = this.window.gBrowser.selectedBrowser;
     if (!RecommendationMap.has(browser)) {
       // There's no recommendation for this browser, so the user shouldn't have
@@ -180,18 +213,19 @@ class PageAction {
     const footerSpacer = this.window.document.getElementById("cfr-notification-footer-spacer");
     const footerLink = this.window.document.getElementById("cfr-notification-footer-learn-more-link");
 
-    headerLabel.value = content.heading_text;
+    headerLabel.value = await this.getStrings(content.heading_text);
     headerLink.setAttribute("href", SUMO_BASE_URL + content.info_icon.sumo_path);
     const isRTL = this.window.getComputedStyle(notification).direction === "rtl";
     const attribute = isRTL ? "left" : "right";
     headerLink.setAttribute(attribute, 0);
-    headerImage.setAttribute("tooltiptext", content.info_icon.label);
+    headerImage.setAttribute("tooltiptext", await this.getStrings(content.info_icon.label, "tooltiptext"));
 
-    // Must replace with fetch of localised string
-    const authorString = "By <>";
-    author.textContent = authorString.replace("<>", content.addon.author);
+    author.textContent = await this.getStrings({
+      string_id: "cfr-doorhanger-extension-author",
+      args: {name: content.addon.author}
+    });
 
-    footerText.textContent = content.text;
+    footerText.textContent = await this.getStrings(content.text);
 
     const {rating} = content.addon;
     if (rating) {
@@ -201,7 +235,10 @@ class PageAction {
       footerFilledStars.style.width = calcWidth(rating);
       footerEmptyStars.style.width = calcWidth(MAX_RATING - rating);
 
-      const ratingString = "<> rating".replace("<>", rating.toLocaleString());
+      const ratingString = await this.getStrings({
+        string_id: "cfr-doorhanger-extension-rating",
+        args: {total: rating}
+      }, "tooltiptext");
       footerFilledStars.setAttribute("tooltiptext", ratingString);
       footerEmptyStars.setAttribute("tooltiptext", ratingString);
     } else {
@@ -213,8 +250,10 @@ class PageAction {
 
     const {users} = content.addon;
     if (users) {
-      const usersString = "<> users";
-      footerUsers.setAttribute("value", usersString.replace("<>", users.toLocaleString()));
+      footerUsers.setAttribute("value", await this.getStrings({
+        string_id: "cfr-doorhanger-extension-total-users",
+        args: {total: users}
+      }));
       footerUsers.removeAttribute("hidden");
     } else {
       // Prevent whitespace around empty label from affecting other spacing
@@ -229,14 +268,16 @@ class PageAction {
       footerSpacer.setAttribute("hidden", true);
     }
 
-    footerLink.value = "Learn more";
+    footerLink.value = await this.getStrings({string_id: "cfr-doorhanger-extension-learn-more-link"});
     footerLink.setAttribute("href", content.addon.amo_url);
 
     const {primary, secondary} = content.buttons;
+    const primaryBtnStrings = await this.getStrings(primary.label);
+    const secondaryBtnStrings = await this.getStrings(secondary.label);
 
     const mainAction = {
-      label: primary.label,
-      accessKey: primary.accesskey,
+      label: primaryBtnStrings,
+      accessKey: primaryBtnStrings.attributes.accesskey,
       callback: () => {
         this._blockMessage(id);
         this.dispatchUserAction(primary.action);
@@ -246,8 +287,8 @@ class PageAction {
     };
 
     const secondaryActions = [{
-      label: secondary.label,
-      accessKey: secondary.accesskey,
+      label: secondaryBtnStrings,
+      accessKey: secondaryBtnStrings.attributes.accesskey,
       callback: () => {
         this.hide();
         RecommendationMap.delete(browser);
@@ -263,7 +304,7 @@ class PageAction {
     this.currentNotification = this.window.PopupNotifications.show(
       browser,
       POPUP_NOTIFICATION_ID,
-      content.addon.title,
+      await this.getStrings(content.addon.title),
       "cfr",
       mainAction,
       secondaryActions,

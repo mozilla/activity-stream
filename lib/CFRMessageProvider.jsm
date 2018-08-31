@@ -50,10 +50,10 @@ const CFR_MESSAGES = [
     id: "AMAZON_ASSISTANT_1",
     template: "cfr_doorhanger",
     content: {
-      notification_text: "Recommendation",
-      heading_text: "Recommended Extension",
+      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
+      heading_text: {string_id: "cfr-doorhanger-extension-heading"},
       info_icon: {
-        label: "Why am I seeing this?",
+        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: AMAZON_ASSISTANT_PARAMS.sumo_path
       },
       addon: {
@@ -67,16 +67,14 @@ const CFR_MESSAGES = [
       text: "Amazon Assistant helps you make better shopping decisions by showing product comparisons at thousands of retail sites.",
       buttons: {
         primary: {
-          label: "Add to Firefox",
-          accesskey: "A",
+          label: {string_id: "cfr-doorhanger-extension-ok-button"},
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/950930/amazon_assistant_for_firefox-10.1805.2.1019-an+fx.xpi`}
           }
         },
         secondary: {
-          label: "No Thanks",
-          accesskey: "N",
+          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
           action: {type: "CANCEL"}
         }
       }
@@ -91,10 +89,10 @@ const CFR_MESSAGES = [
     id: "FACEBOOK_CONTAINER_1",
     template: "cfr_doorhanger",
     content: {
-      notification_text: "Recommendation",
-      heading_text: "Recommended Extension",
+      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
+      heading_text: {string_id: "cfr-doorhanger-extension-heading"},
       info_icon: {
-        label: "Why am I seeing this?",
+        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: FACEBOOK_CONTAINER_PARAMS.sumo_path
       },
       addon: {
@@ -108,16 +106,14 @@ const CFR_MESSAGES = [
       text: "Stop Facebook from tracking your activity across the web. Use Facebook the way you normally do without annoying ads following you around.",
       buttons: {
         primary: {
-          label: "Add to Firefox",
-          accesskey: "A",
+          label: {string_id: "cfr-doorhanger-extension-ok-button"},
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/918624/facebook_container-1.3.1-an+fx-linux.xpi`}
           }
         },
         secondary: {
-          label: "No Thanks",
-          accesskey: "N",
+          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
           action: {type: "CANCEL"}
         }
       }
@@ -132,10 +128,10 @@ const CFR_MESSAGES = [
     id: "GOOGLE_TRANSLATE_1",
     template: "cfr_doorhanger",
     content: {
-      notification_text: "Recommendation",
-      heading_text: "Recommended Extension",
+      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
+      heading_text: {string_id: "cfr-doorhanger-extension-heading"},
       info_icon: {
-        label: "Why am I seeing this?",
+        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: GOOGLE_TRANSLATE_PARAMS.sumo_path
       },
       addon: {
@@ -149,16 +145,14 @@ const CFR_MESSAGES = [
       text: "Instantly translate any webpage text. Simply highlight the text, right-click to open the context menu, and choose a text or aural translation.",
       buttons: {
         primary: {
-          label: "Add to Firefox",
-          accesskey: "A",
+          label: {string_id: "cfr-doorhanger-extension-ok-button"},
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/1008798/al_traductor_de_google-3.3-an+fx.xpi`}
           }
         },
         secondary: {
-          label: "No Thanks",
-          accesskey: "N",
+          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
           action: {type: "CANCEL"}
         }
       }
@@ -173,10 +167,10 @@ const CFR_MESSAGES = [
     id: "YOUTUBE_ENHANCE_1",
     template: "cfr_doorhanger",
     content: {
-      notification_text: "Recommendation",
-      heading_text: "Recommended Extension",
+      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
+      heading_text: {string_id: "cfr-doorhanger-extension-heading"},
       info_icon: {
-        label: "Why am I seeing this?",
+        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: YOUTUBE_ENHANCE_PARAMS.sumo_path
       },
       addon: {
@@ -190,16 +184,14 @@ const CFR_MESSAGES = [
       text: "Take control of your YouTube experience. Automatically block annoying ads, set playback speed and volume, remove annotations, and more.",
       buttons: {
         primary: {
-          label: "Add to Firefox",
-          accesskey: "A",
+          label: {string_id: "cfr-doorhanger-extension-ok-button"},
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/1028400/enhancer_for_youtubetm-2.0.73-an+fx-linux.xpi`}
           }
         },
         secondary: {
-          label: "No Thanks",
-          accesskey: "N",
+          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
           action: {type: "CANCEL"}
         }
       }
@@ -214,10 +206,10 @@ const CFR_MESSAGES = [
     id: "WIKIPEDIA_CONTEXT_MENU_SEARCH_1",
     template: "cfr_doorhanger",
     content: {
-      notification_text: "Recommendation",
-      heading_text: "Recommended Extension",
+      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
+      heading_text: {string_id: "cfr-doorhanger-extension-heading"},
       info_icon: {
-        label: "Why am I seeing this?",
+        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS.sumo_path
       },
       addon: {
@@ -231,16 +223,14 @@ const CFR_MESSAGES = [
       text: "Get to a Wikipedia page fast, from anywhere on the web. Just highlight any webpage text and right-click to open the context menu to start a Wikipedia search.",
       buttons: {
         primary: {
-          label: "Add to Firefox",
-          accesskey: "A",
+          label: {string_id: "cfr-doorhanger-extension-ok-button"},
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/890224/wikipedia_context_menu_search-1.8-an+fx.xpi`}
           }
         },
         secondary: {
-          label: "No Thanks",
-          accesskey: "N",
+          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
           action: {type: "CANCEL"}
         }
       }
@@ -255,10 +245,10 @@ const CFR_MESSAGES = [
     id: "REDDIT_ENHANCEMENT_1",
     template: "cfr_doorhanger",
     content: {
-      notification_text: "Recommendation",
-      heading_text: "Recommended Extension",
+      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
+      heading_text: {string_id: "cfr-doorhanger-extension-heading"},
       info_icon: {
-        label: "Why am I seeing this?",
+        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path
       },
       addon: {
@@ -272,16 +262,14 @@ const CFR_MESSAGES = [
       text: "New features include Inline Image Viewer, Never Ending Reddit (never click 'next page' again), Keyboard Navigation, Account Switcher, and User Tagger.",
       buttons: {
         primary: {
-          label: "Add to Firefox",
-          accesskey: "A",
+          label: {string_id: "cfr-doorhanger-extension-ok-button"},
           action: {
             type: "INSTALL_ADDON_FROM_URL",
             data: {url: `${BASE_ADDONS_DOWNLOAD_URL}/991623/reddit_enhancement_suite-5.12.5-an+fx.xpi`}
           }
         },
         secondary: {
-          label: "No Thanks",
-          accesskey: "N",
+          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
           action: {type: "CANCEL"}
         }
       }
