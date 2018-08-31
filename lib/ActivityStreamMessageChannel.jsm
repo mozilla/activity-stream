@@ -117,11 +117,11 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
    * https://searchfox.org/mozilla-central/rev/196560b95f191b48ff7cba7c2ba9237bba6b5b6a/toolkit/components/remotepagemanager/RemotePageManagerChild.jsm#14
    */
   validatePortID(id) {
-    if (typeof id === "string" && id.includes(":")) {
-      return id;
+    if (typeof id !== "string" || !id.includes(":")) {
+      Cu.reportError("Invalid portID");
     }
 
-    throw new Error("Invalid portID");
+    return id;
   }
 
   /**

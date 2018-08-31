@@ -36,10 +36,22 @@ describe("ActivityStreamMessageChannel", () => {
 
   afterEach(() => globals.restore());
 
-  it("should throw for an invalid portID", () => {
-    assert.throws(() => mm.validatePortID({}));
-    assert.throws(() => mm.validatePortID(""));
-    assert.throws(() => mm.validatePortID("foo"));
+  describe("portID validation", () => {
+    let sandbox;
+    beforeEach(() => {
+      sandbox = sinon.sandbox.create();
+      sandbox.spy(global.Cu, "reportError");
+    });
+    afterEach(() => {
+      sandbox.restore();
+    });
+    it("should log errors for an invalid portID", () => {
+      mm.validatePortID({});
+      mm.validatePortID({});
+      mm.validatePortID({});
+
+      assert.equal(global.Cu.reportError.callCount, 3);
+    });
   });
 
   it("should exist", () => {
