@@ -86,10 +86,14 @@ this.TopStoriesFeed = class TopStoriesFeed {
     }
   }
 
+  async clearCache() {
+    await this.cache.set("stories", {});
+    await this.cache.set("topics", {});
+    await this.cache.set("spocs", {});
+  }
+
   uninit() {
     this.storiesLoaded = false;
-    this.cache.set("stories", {});
-    this.cache.set("topics", {});
     Services.obs.removeObserver(this, "idle-daily");
     SectionsManager.disableSection(SECTION_ID);
   }
@@ -126,6 +130,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.spocCampaignMap = new Map(body.spocs.map(s => [s.id, `${s.campaign_id}`]));
         this.spocs = this.transform(body.spocs).filter(s => s.score >= s.min_score);
         this.cleanUpCampaignImpressionPref();
+        // Spocs won't exist without stories, so no need to worry about last updated.
+        this.cache.set("spocs", this.spocs);
       }
       this.storiesLastUpdated = Date.now();
       body._timestamp = this.storiesLastUpdated;
@@ -139,6 +145,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
     const data = await this.cache.get();
     let stories = data.stories && data.stories.recommendations;
     let topics = data.topics && data.topics.topics;
+    let {spocs} = data;
+
     let affinities = data.domainAffinities;
     if (this.personalized && affinities && affinities.scores) {
       this.affinityProvider = new UserDomainAffinityProvider(affinities.timeSegments,
@@ -147,9 +155,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
     }
     if (stories && stories.length > 0 && this.storiesLastUpdated === 0) {
       this.updateSettings(data.stories.settings);
-      const rows = this.transform(stories);
-      this.stories = rows;
+      this.stories = this.rotate(this.transform(stories));
       this.storiesLastUpdated = data.stories._timestamp;
+      if (spocs && spocs.length) {
+        this.spocs = spocs;
+      }
     }
     if (topics && topics.length > 0 && this.topicsLastUpdated === 0) {
       this.topics = topics;
@@ -475,10 +485,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this._prefs.set(pref, JSON.stringify(impressions));
   }
 
-  removeSpocs() {
+  async removeSpocs() {
     // Quick hack so that SPOCS are removed from all open and preloaded tabs when
     // they are disabled. The longer term fix should probably be to remove them
     // in the Reducer.
+    await this.clearCache();
     this.uninit();
     this.init();
   }
@@ -506,6 +517,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         break;
       case at.SECTION_OPTIONS_CHANGED:
         if (action.data === SECTION_ID) {
+          await this.clearCache();
           this.uninit();
           this.init();
         }
@@ -543,7 +555,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       case at.PREF_CHANGED:
         // Check if spocs was disabled. Remove them if they were.
         if (action.data.name === "showSponsored" && !action.data.value) {
-          this.removeSpocs();
+          await this.removeSpocs();
         }
         break;
     }

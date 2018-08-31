@@ -154,10 +154,56 @@ describe("Top Stories Feed", () => {
       assert.calledOnce(sectionsManagerStub.disableSection);
       assert.calledWith(sectionsManagerStub.disableSection, SECTION_ID);
     });
-    it("should unload stories", () => {
+    it("should unload stories on uninit", async () => {
+      sinon.stub(instance.cache, "set").returns(Promise.resolve());
+      await instance.clearCache();
+      assert.calledWith(instance.cache.set.firstCall, "stories", {});
+      assert.calledWith(instance.cache.set.secondCall, "topics", {});
+      assert.calledWith(instance.cache.set.thirdCall, "spocs", {});
+    });
+  });
+  describe("#cache", () => {
+    it("should clear all cache items when calling clearCache", () => {
+      sinon.stub(instance.cache, "set").returns(Promise.resolve());
       instance.storiesLoaded = true;
-      instance.onAction({type: at.UNINIT});
+      instance.uninit();
       assert.equal(instance.storiesLoaded, false);
+    });
+    it("should set spocs cache on fetch", async () => {
+      const response = {
+        "recommendations":  [{"id": "1"}, {"id": "2"}],
+        "settings": {"timeSegments": {}, "domainAffinityParameterSets": {}},
+        "spocs": [{"id": "spoc1"}]
+      };
+
+      instance.show_spocs = true;
+      instance.personalized = true;
+      instance.stories_endpoint = "stories-endpoint";
+
+      let fetchStub = globals.sandbox.stub();
+      globals.set("fetch", fetchStub);
+      globals.set("NewTabUtils", {blockedLinks: {isBlocked: () => {}}});
+      fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
+      sinon.spy(instance.cache, "set");
+
+      await instance.fetchStories();
+
+      assert.calledTwice(instance.cache.set);
+      const {args} = instance.cache.set.firstCall;
+      assert.equal(args[0], "spocs");
+      assert.equal(args[1][0].guid, "spoc1");
+    });
+    it("should get spocs on cache load", async () => {
+      instance.cache.get = () => ({
+        stories: {recommendations:  [{"id": "1"}, {"id": "2"}]},
+        spocs: [{"id": "spoc1"}]
+      });
+      instance.storiesLastUpdated = 0;
+      globals.set("NewTabUtils", {blockedLinks: {isBlocked: () => {}}});
+
+      await instance.loadCachedData();
+
+      assert.equal(instance.spocs[0].id, "spoc1");
     });
   });
   describe("#fetch", () => {
@@ -961,12 +1007,14 @@ describe("Top Stories Feed", () => {
       assert.notCalled(instance.init);
       assert.notCalled(instance.uninit);
     });
-    it("should call init and uninit on options change", () => {
+    it("should call init and uninit on options change", async () => {
+      sinon.stub(instance, "clearCache").returns(Promise.resolve());
       sinon.spy(instance, "init");
       sinon.spy(instance, "uninit");
-      instance.onAction({type: at.SECTION_OPTIONS_CHANGED, data: "topstories"});
+      await instance.onAction({type: at.SECTION_OPTIONS_CHANGED, data: "topstories"});
       assert.calledOnce(sectionsManagerStub.disableSection);
       assert.calledOnce(sectionsManagerStub.enableSection);
+      assert.calledOnce(instance.clearCache);
       assert.calledOnce(instance.init);
       assert.calledOnce(instance.uninit);
     });
@@ -1100,10 +1148,12 @@ describe("Top Stories Feed", () => {
       assert.isUndefined(instance.affinityProvider);
     });
   });
-  it("should call uninit and init on disabling of showSponsored pref", () => {
+  it("should call uninit and init on disabling of showSponsored pref", async () => {
+    sinon.stub(instance, "clearCache").returns(Promise.resolve());
     sinon.stub(instance, "uninit");
     sinon.stub(instance, "init");
-    instance.onAction({type: at.PREF_CHANGED, data: {name: "showSponsored", value: false}});
+    await instance.onAction({type: at.PREF_CHANGED, data: {name: "showSponsored", value: false}});
+    assert.calledOnce(instance.clearCache);
     assert.calledOnce(instance.uninit);
     assert.calledOnce(instance.init);
   });
