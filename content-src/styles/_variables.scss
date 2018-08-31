@@ -172,6 +172,7 @@ $textbox-shadow-size: 4px;
   .context-menu-button {
     opacity: 1;
     transform: scale(1);
+    transition-delay: 333ms;
   }
 }
 
