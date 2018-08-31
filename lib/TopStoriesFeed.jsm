@@ -16,6 +16,7 @@ const {UserDomainAffinityProvider} = ChromeUtils.import("resource://activity-str
 const {PersistentCache} = ChromeUtils.import("resource://activity-stream/lib/PersistentCache.jsm", {});
 
 ChromeUtils.defineModuleGetter(this, "perfService", "resource://activity-stream/common/PerfService.jsm");
+ChromeUtils.defineModuleGetter(this, "pktApi", "chrome://pocket/content/pktApi.jsm");
 
 const STORIES_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
@@ -51,6 +52,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       this.topicsLastUpdated = 0;
       this.storiesLoaded = false;
       this.domainAffinitiesLastUpdated = 0;
+      this.dispatchPocketCta(this._prefs.get("pocketCta"), false);
 
       // Cache is used for new page loads, which shouldn't have changed data.
       // If we have changed data, cache should be cleared,
@@ -96,6 +98,16 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.storiesLoaded = false;
     Services.obs.removeObserver(this, "idle-daily");
     SectionsManager.disableSection(SECTION_ID);
+  }
+
+  getPocketState(target) {
+    const action = {type: at.POCKET_LOGGED_IN, data: pktApi.isUserLoggedIn()};
+    this.store.dispatch(ac.OnlyToOneContent(action, target));
+  }
+
+  dispatchPocketCta(data, shouldBroadcast) {
+    const action = {type: at.POCKET_CTA, data: JSON.parse(data)};
+    this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
   }
 
   doContentUpdate(shouldBroadcast) {
@@ -513,6 +525,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.uninit();
         break;
       case at.NEW_TAB_REHYDRATED:
+        this.getPocketState(action.meta.fromTarget);
         this.maybeAddSpoc(action.meta.fromTarget);
         break;
       case at.SECTION_OPTIONS_CHANGED:
@@ -556,6 +569,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
         // Check if spocs was disabled. Remove them if they were.
         if (action.data.name === "showSponsored" && !action.data.value) {
           await this.removeSpocs();
+        }
+        if (action.data.name === "pocketCta") {
+          this.dispatchPocketCta(action.data.value, true);
         }
         break;
     }
