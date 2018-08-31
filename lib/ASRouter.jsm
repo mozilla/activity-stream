@@ -10,8 +10,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   AddonManager: "resource://gre/modules/AddonManager.jsm",
   UITour: "resource:///modules/UITour.jsm"
 });
-const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm", {});
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
+const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm", {});
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm", {});
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js", {});
 const {CFRPageActions} = ChromeUtils.import("resource://activity-stream/lib/CFRPageActions.jsm", {});
@@ -707,9 +707,9 @@ class _ASRouter {
 
   async _addPreviewEndpoint(url, target) {
     // When you view a preview snippet we want to hide all real content
-    this.dispatchToAS(ac.OnlyToOneContent({type: at.SNIPPETS_PREVIEW_MODE}, target));
     const providers = [...this.state.providers];
     if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
+      this.dispatchToAS(ac.OnlyToOneContent({type: at.SNIPPETS_PREVIEW_MODE}, target));
       providers.push({id: "preview", type: "remote", url, updateCycleInMs: 0});
       await this.setState({providers});
     }
