@@ -976,7 +976,7 @@ this.RecipeExecutor = class RecipeExecutor {
       if (op === undefined) {
         return null;
       }
-      newItem = op(newItem, step);
+      newItem = op.call(this, newItem, step);
       if (newItem === null) {
         break;
       }
@@ -995,7 +995,7 @@ this.RecipeExecutor = class RecipeExecutor {
       if (op === undefined) {
         return null;
       }
-      newItem1 = op(newItem1, item2, step);
+      newItem1 = op.call(this, newItem1, item2, step);
       if (newItem1 === null) {
         break;
       }
