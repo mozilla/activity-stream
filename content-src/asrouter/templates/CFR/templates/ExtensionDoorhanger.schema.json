@@ -38,9 +38,21 @@
       "type": "object",
       "properties": {
         "label": {
-          "allOf": [
-            {"$ref": "#/definitions/plainText"},
-            {"description": "Text for button tooltip used to provider information about the doorhanger."}
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Text for button tooltip used to provide information about the doorhanger."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "string_id": {
+                  "type": "string",
+                  "description": "Id of localized string used to provide information about the doorhanger."
+                }
+              },
+              "required": ["string_id"]
+            }
           ]
         },
         "sumo_path": {

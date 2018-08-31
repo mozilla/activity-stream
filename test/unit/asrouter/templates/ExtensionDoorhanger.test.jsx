@@ -5,7 +5,7 @@ const DEFAULT_CONTENT = {
   "notification_text": "Recommendation",
   "heading_text": "Recommended Extension",
   "info_icon": {
-    "label": "why_seeing_this",
+    "label": "Why am I seeing this",
     "sumo_path": "extensionrecommendations"
   },
   "addon": {
@@ -40,7 +40,7 @@ const L10N_CONTENT = {
   "notification_text": {"string_id": "notification_text_id"},
   "heading_text": {"string_id": "heading_text_id"},
   "info_icon": {
-    "label": "why_seeing_this",
+    "label": {string_id: "why_seeing_this"},
     "sumo_path": "extensionrecommendations"
   },
   "addon": {
