@@ -10,7 +10,7 @@ class MockTagger {
       // eslint-disable-next-line prefer-destructuring
       let tag = Object.keys(this.tagScoreMap)[0];
       // eslint-disable-next-line prefer-destructuring
-      let prob = this.tagScoreMap[0][tag];
+      let prob = this.tagScoreMap[tag];
       let conf =  prob >= 0.85;
       return {
         label: tag,
@@ -25,13 +25,7 @@ class MockTagger {
   }
 }
 
-describe.only("RecipeExecutor", () => {
-  let mockVectorizer = {
-    "tokenize": text => String(text).toLocaleLowerCase()
-                          .split(/[ .,_/=&%-]/)
-                          .filter(tok => tok.match(/[a-z0-9]/))
-  };
-
+describe("RecipeExecutor", () => {
   let makeItem = () => {
     let x = {
       "lhs": 2,
@@ -74,7 +68,7 @@ describe.only("RecipeExecutor", () => {
 
   let EPSILON = 0.00001;
 
-  let instance = new RecipeExecutor(mockVectorizer,
+  let instance = new RecipeExecutor(
     [new MockTagger("nb", {tag1: 0.70}),
       new MockTagger("nb", {tag2: 0.86}),
       new MockTagger("nb", {tag3: 0.90})],
@@ -125,21 +119,17 @@ describe.only("RecipeExecutor", () => {
 
   describe("#naiveBayesTag", () => {
     it("should understand NaiveBayesTextTagger", () => {
-      item = instance.naiveBayesTag(item, {field: ["text"]});
+      item = instance.naiveBayesTag(item, {fields: ["text"]});
       assert.isTrue("nb_tags" in item);
-      assert.deepEqual(item.nb_tags.tag1, {
-        label: "tag1",
-        logProb: Math.logProb(0.70),
-        confident: false
-      });
-      assert.deepEqual(item.nb_tags.tag1, {
+      assert.isTrue(!("tag1" in item.nb_tags));
+      assert.deepEqual(item.nb_tags.tag2, {
         label: "tag2",
-        logProb: Math.logProb(0.86),
+        logProb: Math.log(0.86),
         confident: true
       });
-      assert.deepEqual(item.nb_tags.tag1, {
+      assert.deepEqual(item.nb_tags.tag3, {
         label: "tag3",
-        logProb: Math.logProb(0.90),
+        logProb: Math.log(0.90),
         confident: true
       });
       assert.isTrue("nb_tokens" in item);
@@ -150,18 +140,13 @@ describe.only("RecipeExecutor", () => {
   describe("#conditionallyNmfTag", () => {
     it("should do nothing if it's not nb tagged", () => {
       item = instance.conditionallyNmfTag(item, {});
-      assert.isTrue(!("nb_tags" in item));
-      assert.isTrue(!("nmf_tags" in item));
-      assert.isTrue(!("nmf_tags_parent" in item));
+      assert.equal(item, null);
     });
     it("should populate nmf tags for the nb tags", () => {
-      item = instance.naiveBayesTag(item, {field: ["text"]});
+      item = instance.naiveBayesTag(item, {fields: ["text"]});
       item = instance.conditionallyNmfTag(item, {});
       assert.isTrue(("nb_tags" in item));
       assert.deepEqual(item.nmf_tags, {
-        tag11: 0.9,
-        tag12: 0.8,
-        tag13: 0.7,
         tag21: 0.8,
         tag22: 0.7,
         tag23: 0.6,
@@ -170,9 +155,6 @@ describe.only("RecipeExecutor", () => {
         tag33: 0.5
       });
       assert.deepEqual(item.nmf_tags_parent, {
-        tag11: "tag1",
-        tag12: "tag1",
-        tag13: "tag1",
         tag21: "tag2",
         tag22: "tag2",
         tag23: "tag2",
@@ -182,7 +164,7 @@ describe.only("RecipeExecutor", () => {
       });
     });
     it("should not populate nmf tags for things that were not nb tagged", () => {
-      item = instance.naiveBayesTag(item, {field: ["text"]});
+      item = instance.naiveBayesTag(item, {fields: ["text"]});
       item = instance.conditionallyNmfTag(item, {});
       assert.isTrue(("nmf_tags" in item));
       assert.isTrue(!("tag4" in item.nmf_tags));

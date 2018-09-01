@@ -3,8 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+const {tokenize} = ChromeUtils.import("resource://activity-stream/lib/TfIdfVectorizer.jsm", {});
+
 this.RecipeExecutor = class RecipeExecutor {
-  constructor(tfidfVectorizer, nbTaggers, nmfTaggers) {
+  constructor(nbTaggers, nmfTaggers) {
     this.ITEM_BUILDER_REGISTRY = {
       "nb_tag": this.naiveBayesTag,
       "conditionally_nmf_tag": this.conditionallyNmfTag,
@@ -35,7 +37,6 @@ this.RecipeExecutor = class RecipeExecutor {
       "combiner_max": this.combinerMax,
       "combiner_collect_values": this.combinerCollectValues
     };
-    this.tfidfVectorizer = tfidfVectorizer;
     this.nbTaggers = nbTaggers;
     this.nmfTaggers = nmfTaggers;
   }
@@ -111,18 +112,17 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   naiveBayesTag(item, config) {
     let text = this._assembleText(item, config.fields);
-    let tokens = this.tfidfVectorizer.tokenizer.tokenize(text);
+    let tokens = tokenize(text);
     let tags = {};
 
     for (let nbTagger of this.nbTaggers) {
       let result = nbTagger.tagTokens(tokens);
       if ((result.label !== null) && result.confident) {
-        tags[result.label] = Math.exp(result.logProb);
+        tags[result.label] = result;
       }
     }
     item.nb_tags = tags;
     item.nb_tokens = tokens;
-
     return item;
   }
 
@@ -139,6 +139,10 @@ this.RecipeExecutor = class RecipeExecutor {
   conditionallyNmfTag(item, config) {
     let allNmfTags = {};
     let parentTags = {};
+
+    if (!("nb_tags" in item) || !("nb_tokens" in item)) {
+      return null;
+    }
 
     Object.keys(item.nb_tags).forEach(parentTag => {
       let nmfTagger = this.nmfTaggers[parentTag];
@@ -214,18 +218,18 @@ this.RecipeExecutor = class RecipeExecutor {
       if (domain.startsWith("www.")) {
         domain = domain.substring(4);
       }
-      let toks = this.tfidfVectorizer.tokenize(domain);
-      let pathToks =  this.tfidfVectorizer.tokenize(decodeURIComponent(url.pathname.replace(/\+/g, " ")));
+      let toks = tokenize(domain);
+      let pathToks =  tokenize(decodeURIComponent(url.pathname.replace(/\+/g, " ")));
       for (let i = 0; i < pathToks.length; i++) {
         toks.push(pathToks[i]);
       }
       for (let pair of url.searchParams.entries()) {
-        let k = this.tfidfVectorizer.tokenize(decodeURIComponent(pair[0].replace(/\+/g, " ")));
+        let k = tokenize(decodeURIComponent(pair[0].replace(/\+/g, " ")));
         for (let i = 0; i < k.length; i++) {
           toks.push(k[i]);
         }
         if ((pair[1] !== null) && (pair[1] !== "")) {
-          let v = this.tfidfVectorizer.tokenize(decodeURIComponent(pair[1].replace(/\+/g, " ")));
+          let v = tokenize(decodeURIComponent(pair[1].replace(/\+/g, " ")));
           for (let i = 0; i < v.length; i++) {
             toks.push(v[i]);
           }
@@ -276,7 +280,7 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   tokenizeField(item, config) {
     if (config.field in item) {
-      item[config.dest] = this.tfidfVectorizer.tokenize(item[config.field]);
+      item[config.dest] = tokenize(item[config.field]);
     }
 
     return item;
