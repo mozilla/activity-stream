@@ -8,34 +8,34 @@ const {tokenize} = ChromeUtils.import("resource://activity-stream/lib/TfIdfVecto
 this.RecipeExecutor = class RecipeExecutor {
   constructor(nbTaggers, nmfTaggers) {
     this.ITEM_BUILDER_REGISTRY = {
-      "nb_tag": this.naiveBayesTag,
-      "conditionally_nmf_tag": this.conditionallyNmfTag,
-      "accept_item_by_field_value": this.acceptItemByFieldValue,
-      "tokenize_url": this.tokenizeUrl,
-      "get_url_domain": this.getUrlDomain,
-      "tokenize_field": this.tokenizeField,
-      "copy_value": this.copyValue,
-      "keep_top_k": this.keepTopK,
-      "scalar_multiply": this.scalarMultiply,
-      "elementwise_multiply": this.elementwiseMultiply,
-      "vector_multiply": this.vectorMultiply,
-      "scalar_add": this.scalarAdd,
-      "vector_add": this.vectorAdd,
-      "make_boolean": this.makeBoolean,
-      "whitelist_fields": this.whitelistFields,
-      "filter_by_value": this.filterByValue,
-      "l2_normalize": this.l2Normalize,
-      "prob_normalize": this.probNormalize,
-      "set_default": this.setDefault,
-      "lookupValue": this.lookupValue,
-      "copy_to_map": this.copyToMap,
-      "scalar_multiply_tag": this.scalarMultiplyTag,
-      "apply_softmax_tags": this.applySoftmaxTags
+      nb_tag: this.naiveBayesTag,
+      conditionally_nmf_tag: this.conditionallyNmfTag,
+      accept_item_by_field_value: this.acceptItemByFieldValue,
+      tokenize_url: this.tokenizeUrl,
+      get_url_domain: this.getUrlDomain,
+      tokenize_field: this.tokenizeField,
+      copy_value: this.copyValue,
+      keep_top_k: this.keepTopK,
+      scalar_multiply: this.scalarMultiply,
+      elementwise_multiply: this.elementwiseMultiply,
+      vector_multiply: this.vectorMultiply,
+      scalar_add: this.scalarAdd,
+      vector_add: this.vectorAdd,
+      make_boolean: this.makeBoolean,
+      whitelist_fields: this.whitelistFields,
+      filter_by_value: this.filterByValue,
+      l2_normalize: this.l2Normalize,
+      prob_normalize: this.probNormalize,
+      set_default: this.setDefault,
+      lookupValue: this.lookupValue,
+      copy_to_map: this.copyToMap,
+      scalar_multiply_tag: this.scalarMultiplyTag,
+      apply_softmax_tags: this.applySoftmaxTags
     };
     this.ITEM_COMBINER_REGISTRY = {
-      "combiner_add": this.combinerAdd,
-      "combiner_max": this.combinerMax,
-      "combiner_collect_values": this.combinerCollectValues
+      combiner_add: this.combinerAdd,
+      combiner_max: this.combinerMax,
+      combiner_collect_values: this.combinerCollectValues
     };
     this.nbTaggers = nbTaggers;
     this.nmfTaggers = nmfTaggers;
@@ -325,7 +325,7 @@ this.RecipeExecutor = class RecipeExecutor {
     // to an array, and then sort.
     let sortable = [];
     Object.keys(item[config.field]).forEach(key => {
-      sortable.push({"key": key, "value": item[config.field][key]});
+      sortable.push({key: key, value: item[config.field][key]});
     });
     sortable.sort((a, b) => {
       if (descending) {
@@ -519,7 +519,7 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   vectorAdd(item, config) {
     if (!(config.left in item)) {
-      return this.copyValue(item, {"src": config.right, "dest": config.left});
+      return this.copyValue(item, {src: config.right, dest: config.left});
     }
     if (!(config.right in item)) {
       return null;
