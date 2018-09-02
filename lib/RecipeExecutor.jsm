@@ -65,17 +65,12 @@ this.RecipeExecutor = class RecipeExecutor {
    * fails.
    */
   _lookupScalar(item, k, dfault) {
-    let kVal = 0.0;
-    if (typeof(k) === "number") {
-      kVal = k;
-    } else if ((typeof(k) === "string") &&
-        (k in item) &&
-        (typeof(item[k]) === "number")) {
-      kVal = item[k];
-    } else if ((dfault !== undefined) && (typeof(dfault) === "number")) {
-      kVal = dfault;
+    if (this._typeOf(k) === "number") {
+      return k;
+    } else if ((this._typeOf(k) == "string") && (k in item) && (this._typeOf(item[k]) === "number")) {
+      return item[k];
     }
-    return kVal;
+    return dfault;
   }
 
   /**
@@ -212,31 +207,34 @@ this.RecipeExecutor = class RecipeExecutor {
    * NOTE: Any initial 'www' on the hostname is removed.
    */
   tokenizeUrl(item, config) {
-    if (config.field in item) {
-      let url = new URL(item[config.field]);
-      let domain = url.hostname;
-      if (domain.startsWith("www.")) {
-        domain = domain.substring(4);
-      }
-      let toks = tokenize(domain);
-      let pathToks =  tokenize(decodeURIComponent(url.pathname.replace(/\+/g, " ")));
-      for (let i = 0; i < pathToks.length; i++) {
-        toks.push(pathToks[i]);
-      }
-      for (let pair of url.searchParams.entries()) {
-        let k = tokenize(decodeURIComponent(pair[0].replace(/\+/g, " ")));
-        for (let i = 0; i < k.length; i++) {
-          toks.push(k[i]);
-        }
-        if ((pair[1] !== null) && (pair[1] !== "")) {
-          let v = tokenize(decodeURIComponent(pair[1].replace(/\+/g, " ")));
-          for (let i = 0; i < v.length; i++) {
-            toks.push(v[i]);
-          }
-        }
-      }
-      item[config.dest] = toks;
+    if (!(config.field in item)) {
+      return null;
     }
+
+    let url = new URL(item[config.field]);
+    let domain = url.hostname;
+    if (domain.startsWith("www.")) {
+      domain = domain.substring(4);
+    }
+    let toks = tokenize(domain);
+    let pathToks =  tokenize(decodeURIComponent(url.pathname.replace(/\+/g, " ")));
+    for (let i = 0; i < pathToks.length; i++) {
+      toks.push(pathToks[i]);
+    }
+    for (let pair of url.searchParams.entries()) {
+      let k = tokenize(decodeURIComponent(pair[0].replace(/\+/g, " ")));
+      for (let i = 0; i < k.length; i++) {
+        toks.push(k[i]);
+      }
+      if ((pair[1] !== null) && (pair[1] !== "")) {
+        let v = tokenize(decodeURIComponent(pair[1].replace(/\+/g, " ")));
+        for (let i = 0; i < v.length; i++) {
+          toks.push(v[i]);
+        }
+      }
+    }
+    item[config.dest] = toks;
+
 
     return item;
   }
@@ -251,22 +249,24 @@ this.RecipeExecutor = class RecipeExecutor {
    *  path_length    OPTIONAL (DEFAULT: 0) Number of leftmost subdirectories to include
    */
   getUrlDomain(item, config) {
-    if (config.field in item) {
-      let url = new URL(item[config.field]);
-      let domain = url.hostname.toLocaleLowerCase();
-      if (domain.startsWith("www.")) {
-        domain = domain.substring(4);
-      }
-      item[config.dest] = domain;
-      let pathLength = 0;
-      if ("path_length" in config) {
-        pathLength = config.path_length;
-      }
-      if (pathLength > 0) {
-        item[config.dest] += url.pathname.toLocaleLowerCase().split("/")
-                              .slice(0, pathLength + 1)
-                              .join("/");
-      }
+    if (!(config.field in item)) {
+      return null;
+    }
+
+    let url = new URL(item[config.field]);
+    let domain = url.hostname.toLocaleLowerCase();
+    if (domain.startsWith("www.")) {
+      domain = domain.substring(4);
+    }
+    item[config.dest] = domain;
+    let pathLength = 0;
+    if ("path_length" in config) {
+      pathLength = config.path_length;
+    }
+    if (pathLength > 0) {
+      item[config.dest] += url.pathname.toLocaleLowerCase().split("/")
+                            .slice(0, pathLength + 1)
+                            .join("/");
     }
 
     return item;
@@ -279,9 +279,11 @@ this.RecipeExecutor = class RecipeExecutor {
    *  dest          Field to write the array of strings to
    */
   tokenizeField(item, config) {
-    if (config.field in item) {
-      item[config.dest] = tokenize(item[config.field]);
+    if (!(config.field in item)) {
+      return null;
     }
+
+    item[config.dest] = tokenize(item[config.field]);
 
     return item;
   }
@@ -293,9 +295,11 @@ this.RecipeExecutor = class RecipeExecutor {
    *  dest          Field to write to
    */
   copyValue(item, config) {
-    if (config.src in item) {
-      item[config.dest] = JSON.parse(JSON.stringify(item[config.src]));
+    if (!(config.src in item)) {
+      return null;
     }
+
+    item[config.dest] = JSON.parse(JSON.stringify(item[config.src]));
 
     return item;
   }
@@ -312,13 +316,9 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   keepTopK(item, config) {
     if (!(config.field in item)) {
-      return item;
+      return null;
     }
     let k = this._lookupScalar(item, config.k, 1048576);
-
-    if (!("k" in config)) {
-      return item;
-    }
     let descending = (!("descending" in config) || (config.descending !== false));
 
     // we can't sort by the values in the map, so we have to convert this
@@ -337,19 +337,12 @@ this.RecipeExecutor = class RecipeExecutor {
     // now take the top k
     let newMap = {};
     let i = 0;
-    let BreakException = {};
-    try {
-      sortable.forEach(pair => {
-        if (i >= k) {
-          throw BreakException;
-        }
-        newMap[pair.key] = pair.value;
-        i++;
-      });
-    } catch (e) {
-      if (e !== BreakException) {
-        throw e;
+    for (let pair of sortable) {
+      if (i >= k) {
+        break;
       }
+      newMap[pair.key] = pair.value;
+      i++;
     }
     item[config.field] = newMap;
 
@@ -371,17 +364,17 @@ this.RecipeExecutor = class RecipeExecutor {
    *                  value is found, then use this value.
    */
   scalarMultiply(item, config) {
-    let k = this._lookupScalar(item, config.k, config.default);
     if (!(config.field in item)) {
-      return item;
+      return null;
     }
+    let k = this._lookupScalar(item, config.k, config.default);
 
     let fieldType = this._typeOf(item[config.field]);
     if (fieldType === "number") {
       item[config.field] *= k;
     } else if (fieldType === "array") {
       for (let i = 0; i < item[config.field].length; i++) {
-        item[config.field] *= k;
+        item[config.field][i] *= k;
       }
     } else if (fieldType === "map") {
       Object.keys(item[config.field]).forEach(key => {
@@ -407,25 +400,18 @@ this.RecipeExecutor = class RecipeExecutor {
     if (!(config.left in item) || !(config.right in item)) {
       return null;
     }
-    let leftType  = typeof(item[config.left]);
-    let rightType = typeof(item[config.right]);
-    if ((leftType !== "object") || (rightType !== "object")) {
+    let leftType = this._typeOf(item[config.left]);
+    if (leftType !== this._typeOf(item[config.right])) {
       return null;
     }
-    let isArray = Array.isArray(item[config.left]);
-    if (isArray !== Array.isArray(item[config.right])) {
-      // one is an array, the other is a map
-      return null;
-    }
-    if (isArray) {
-      if (item[config.left].length !== item[config.right].length) {
+    if (leftType === "array") {
+      if (item[config.left].length != item[config.right].length) {
         return null;
       }
       for (let i = 0; i < item[config.left].length; i++) {
         item[config.left][i] *= item[config.right][i];
       }
-    } else {
-      // we have a map
+    } else if (leftType === "map") {
       Object.keys(item[config.left]).forEach(key => {
         let r = 0;
         if (key in item[config.right]) {
@@ -433,7 +419,12 @@ this.RecipeExecutor = class RecipeExecutor {
         }
         item[config.left][key] *= r;
       });
+    } else if (leftType === "number") {
+      item[config.left] *= item[config.right]
+    } else {
+      return null;
     }
+
     return item;
   }
 
@@ -451,8 +442,7 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   vectorMultiply(item, config) {
     if (!(config.left in item) || !(config.right in item)) {
-      item[config.dest] = 0.0;
-      return item;
+      return null;
     }
 
     let leftType = this._typeOf(item[config.left]);
@@ -462,6 +452,9 @@ this.RecipeExecutor = class RecipeExecutor {
 
     let destVal = 0.0;
     if (leftType === "array") {
+      if (item[config.left].length !=  item[config.right].length) {
+        return null;
+      }
       for (let i = 0; i < item[config.left].length; i++) {
         destVal += item[config.left][i] * item[config.right][i];
       }
@@ -526,11 +519,10 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   vectorAdd(item, config) {
     if (!(config.left in item)) {
-      this.copyValue(item, {"src": config.right, "dest": config.left});
-      return item;
+      return this.copyValue(item, {"src": config.right, "dest": config.left});
     }
     if (!(config.right in item)) {
-      return item;
+      return null;
     }
 
     let leftType = this._typeOf(item[config.left]);
@@ -572,32 +564,45 @@ this.RecipeExecutor = class RecipeExecutor {
    *                      threshold will be converted to -1 instead of 0.
    */
   makeBoolean(item, config) {
-    let threshold = this._lookupScalar(item, config.threshold, 0.0);
-    if (config.field in item) {
-      if (this._typeOf(item[config.field]) === "array") {
-        for (let i = 0; i < item[config.field].length; i++) {
-          if (item[config.field][i] > threshold) {
-            item[config.field][i] = 1.0;
-          } else if (config.keep_negative) {
-            item[config.field][i] = -1.0;
-          } else {
-            item[config.field][i] = 0.0;
-          }
-        }
-      } else {
-        // assume it's a map
-        Object.keys(item[config.field]).forEach(key => {
-          let value = item[config.field][key];
-          if (value > threshold) {
-            item[config.field][key] = 1.0;
-          } else if (config.keep_negative) {
-            item[config.field][key] = -1.0;
-          } else {
-            item[config.field][key] = 0.0;
-          }
-        });
-      }
+    if (!(config.field in item)) {
+      return null;
     }
+    let threshold = this._lookupScalar(item, config.threshold, 0.0);
+    let type = this._typeOf(item[config.field]);
+    if (type === "array") {
+      for (let i = 0; i < item[config.field].length; i++) {
+        if (item[config.field][i] > threshold) {
+          item[config.field][i] = 1.0;
+        } else if (config.keep_negative) {
+          item[config.field][i] = -1.0;
+        } else {
+          item[config.field][i] = 0.0;
+        }
+      }
+    } else if (type === "map") {
+      Object.keys(item[config.field]).forEach(key => {
+        let value = item[config.field][key];
+        if (value > threshold) {
+          item[config.field][key] = 1.0;
+        } else if (config.keep_negative) {
+          item[config.field][key] = -1.0;
+        } else {
+          item[config.field][key] = 0.0;
+        }
+      });
+    } else if (type === "number"){
+      let value = item[config.field];
+      if (value > threshold) {
+        item[config.field] = 1.0;
+      } else if (config.keep_negative) {
+        item[config.field] = -1.0;
+      } else {
+        item[config.field] = 0.0;
+      }
+    } else {
+      return null;
+    }
+
     return item;
   }
 
@@ -624,17 +629,19 @@ this.RecipeExecutor = class RecipeExecutor {
    *   threshold     Values must exceed this value, otherwise they are removed.
    */
   filterByValue(item, config) {
-    let threshold = this._lookupScalar(item, config.threshold, 0.0);
-    if (config.field in item) {
-      let filtered = {};
-      Object.keys(item[config.field]).forEach(key => {
-        let value = item[config.field][key];
-        if (value > threshold) {
-          filtered[key] = value;
-        }
-      });
-      item[config.field] = filtered;
+    if (!(config.field in item)) {
+      return null;
     }
+    let threshold = this._lookupScalar(item, config.threshold, 0.0);
+    let filtered = {};
+    Object.keys(item[config.field]).forEach(key => {
+      let value = item[config.field][key];
+      if (value > threshold) {
+        filtered[key] = value;
+      }
+    });
+    item[config.field] = filtered;
+
     return item;
   }
 
@@ -645,31 +652,34 @@ this.RecipeExecutor = class RecipeExecutor {
    *  field         Points to a map of strings to numbers, or an array of numbers
    */
   l2Normalize(item, config) {
-    if (config.field in item) {
-      let data = item[config.field];
-      let type = this._typeOf(data);
-      if (type === "array") {
-        let norm = 0.0;
-        for (let i = 0; i < data.length; i++) {
-          norm += data[i] * data[i];
-        }
-        norm = Math.sqrt(norm);
-        for (let i = 0; i < data.length; i++) {
-          data[i] /= norm;
-        }
-      } else if (type === "map") {
-        let norm = 0.0;
-        Object.keys(data).forEach(key => {
-          norm += data[key] * data[key];
-        });
-        norm = Math.sqrt(norm);
-        Object.keys(data).forEach(key => {
-          data[key] /= norm;
-        });
-      }
-
-      item[config.field] = data;
+    if (!(config.field in item)) {
+      return null;
     }
+    let data = item[config.field];
+    let type = this._typeOf(data);
+    if (type === "array") {
+      let norm = 0.0;
+      for (let i = 0; i < data.length; i++) {
+        norm += data[i] * data[i];
+      }
+      norm = Math.sqrt(norm);
+      for (let i = 0; i < data.length; i++) {
+        data[i] /= norm;
+      }
+    } else if (type === "map") {
+      let norm = 0.0;
+      Object.keys(data).forEach(key => {
+        norm += data[key] * data[key];
+      });
+      norm = Math.sqrt(norm);
+      Object.keys(data).forEach(key => {
+        data[key] /= norm;
+      });
+    } else {
+      return null;
+    }
+
+    item[config.field] = data;
 
     return item;
   }
@@ -681,26 +691,29 @@ this.RecipeExecutor = class RecipeExecutor {
    *  field         Points to a map of strings to numbers, or an array of numbers
    */
   probNormalize(item, config) {
-    if (config.field in item) {
-      let data = item[config.field];
-      let type = this._typeOf(data);
-      if (type === "array") {
-        let norm = 0.0;
-        for (let i = 0; i < data.length; i++) {
-          norm += data[i];
-        }
-        for (let i = 0; i < data.length; i++) {
-          data[i] /= norm;
-        }
-      } else if (type === "map") {
-        let norm = 0.0;
-        Object.keys(item[config.field]).forEach(key => {
-          norm += item[config.field][key];
-        });
-        Object.keys(item[config.field]).forEach(key => {
-          item[config.field][key] /= norm;
-        });
+    if (!(config.field in item)) {
+      return null;
+    }
+    let data = item[config.field];
+    let type = this._typeOf(data);
+    if (type === "array") {
+      let norm = 0.0;
+      for (let i = 0; i < data.length; i++) {
+        norm += data[i];
       }
+      for (let i = 0; i < data.length; i++) {
+        data[i] /= norm;
+      }
+    } else if (type === "map") {
+      let norm = 0.0;
+      Object.keys(item[config.field]).forEach(key => {
+        norm += item[config.field][key];
+      });
+      Object.keys(item[config.field]).forEach(key => {
+        item[config.field][key] /= norm;
+      });
+    } else {
+      return null;
     }
 
     return item;
@@ -766,10 +779,10 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   scalarMultiplyTag(item, config) {
     let EPSILON = 0.000001;
-    let k = this._lookupScalar(item, config.k, 1);
     if (!(config.field in item)) {
-      return item;
+      return null;
     }
+    let k = this._lookupScalar(item, config.k, 1);
     let type = this._typeOf(item[config.field]);
     if (type === "array") {
       for (let i = 0; i < item[config.field].length; i++) {
@@ -793,6 +806,8 @@ this.RecipeExecutor = class RecipeExecutor {
         v = Math.log(v + EPSILON);
       }
       item[config.field] = v * k;
+    } else {
+      return null;
     }
 
     return item;
@@ -810,14 +825,32 @@ this.RecipeExecutor = class RecipeExecutor {
       return null;
     }
 
+    let abort = false;
     let softmaxSum = {};
     Object.keys(item[config.field]).forEach(tag => {
+      if (this._typeOf(item[config.field][tag]) !== "map") {
+        abort = true;
+        return;
+      }
+      if (abort) {
+        return;
+      }
       softmaxSum[tag] = 0;
       Object.keys(item[config.field][tag]).forEach(subtag => {
+        if (this._typeOf(item[config.field][tag][subtag]) !== "number") {
+          abort = true;
+          return;
+        }
         let score = item[config.field][tag][subtag];
         softmaxSum[tag] += Math.exp(score);
       });
+      if (abort) {
+        return;
+      }
     });
+    if (abort) {
+      return null;
+    }
 
     Object.keys(item[config.field]).forEach(tag => {
       Object.keys(item[config.field][tag]).forEach(subtag => {
@@ -850,6 +883,9 @@ this.RecipeExecutor = class RecipeExecutor {
         return null;
       }
     }
+    if (type !== this._typeOf(left[config.field])) {
+      return null;
+    }
     if (type === "map") {
       Object.keys(right[config.field]).forEach(key => {
         if (!(key in left[config.field])) {
@@ -865,8 +901,10 @@ this.RecipeExecutor = class RecipeExecutor {
           left[config.field].push(right[config.field][i]);
         }
       }
-    } else { // number
+    } else if (type === "number") {
       left[config.field] += right[config.field];
+    } else {
+      return null
     }
 
     return left;
@@ -894,6 +932,9 @@ this.RecipeExecutor = class RecipeExecutor {
         return null;
       }
     }
+    if (type !== this._typeOf(left[config.field])) {
+      return null;
+    }
     if (type === "map") {
       Object.keys(right[config.field]).forEach(key => {
         if (!(key in left[config.field]) ||
@@ -911,8 +952,12 @@ this.RecipeExecutor = class RecipeExecutor {
           left[config.field].push(right[config.field][i]);
         }
       }
-    } else if (left[config.field] < right[config.field]) { // number
-      left[config.field] = right[config.field];
+    } else if (type === "number") {
+      if (left[config.field] < right[config.field]) {
+        left[config.field] = right[config.field];
+      }
+    } else {
+      return null;
     }
 
     return left;

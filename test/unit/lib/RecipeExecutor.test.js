@@ -38,6 +38,7 @@ describe("RecipeExecutor", () => {
       "qux": 42,
       "text": "This Is A_sentence.",
       "url": "http://www.wonder.example.com/dir1/dir2a-dir2b/dir3+4?key1&key2=val2&key3&%26amp=%3D3+4",
+      "url2": "http://wonder.example.com/dir1/dir2a-dir2b/dir3+4?key1&key2=val2&key3&%26amp=%3D3+4",
       "map": {
         "c": 3,
         "a": 1,
@@ -50,6 +51,7 @@ describe("RecipeExecutor", () => {
       },
       "arr1": [2, 3, 4],
       "arr2": [3, 4, 5],
+      "long": [3, 4, 5, 6, 7],
       "tags": {
         "a": {
           "aa": 0.1,
@@ -61,6 +63,18 @@ describe("RecipeExecutor", () => {
           "bb": 5,
           "bc": 6
         }
+      },
+      "bogus": {
+        "a": {
+          "aa": "0.1",
+          "ab": "0.2",
+          "ac": "0.3"
+        },
+        "b": {
+          "ba": "4",
+          "bb": "5",
+          "bc": "6"
+        }
       }
     };
     return x;
@@ -71,7 +85,8 @@ describe("RecipeExecutor", () => {
   let instance = new RecipeExecutor(
     [new MockTagger("nb", {tag1: 0.70}),
       new MockTagger("nb", {tag2: 0.86}),
-      new MockTagger("nb", {tag3: 0.90})],
+      new MockTagger("nb", {tag3: 0.90}),
+      new MockTagger("nb", {tag5: 0.90})],
     {
       tag1: new MockTagger("nmf", {
         tag11: 0.9,
@@ -129,6 +144,11 @@ describe("RecipeExecutor", () => {
       });
       assert.deepEqual(item.nb_tags.tag3, {
         label: "tag3",
+        logProb: Math.log(0.90),
+        confident: true
+      });
+      assert.deepEqual(item.nb_tags.tag5, {
+        label: "tag5",
         logProb: Math.log(0.90),
         confident: true
       });
@@ -237,18 +257,32 @@ describe("RecipeExecutor", () => {
   });
 
   describe("#tokenizeUrl", () => {
-    it("should tokenize the url", () => {
+    it("should strip the leading www from a url", () => {
       item = instance.tokenizeUrl(item, {"field": "url", "dest": "url_toks"});
-      assert.isTrue("url_toks" in item);
       assert.deepEqual(
         ["wonder", "example", "com", "dir1", "dir2a", "dir2b", "dir3", "4", "key1", "key2", "val2", "key3", "amp", "3", "4"],
         item.url_toks);
     });
+    it("should tokenize the not strip the leading non-wwww token from a url", () => {
+      item = instance.tokenizeUrl(item, {"field": "url2", "dest": "url_toks"});
+      assert.deepEqual(
+        ["wonder", "example", "com", "dir1", "dir2a", "dir2b", "dir3", "4", "key1", "key2", "val2", "key3", "amp", "3", "4"],
+        item.url_toks);
+    });
+    it("should error for a missing url", () => {
+      item = instance.tokenizeUrl(item, {"field": "missing", "dest": "url_toks"});
+      assert.equal(item, null)
+    });
   });
 
   describe("#getUrlDomain", () => {
-    it("should get the hostname only", () => {
+    it("should get only the hostname skipping the www", () => {
       item = instance.getUrlDomain(item, {"field": "url", "dest": "url_domain"});
+      assert.isTrue("url_domain" in item);
+      assert.deepEqual("wonder.example.com", item.url_domain);
+    });
+    it("should get only the hostname", () => {
+      item = instance.getUrlDomain(item, {"field": "url2", "dest": "url_domain"});
       assert.isTrue("url_domain" in item);
       assert.deepEqual("wonder.example.com", item.url_domain);
     });
@@ -257,6 +291,10 @@ describe("RecipeExecutor", () => {
       assert.isTrue("url_plus_2" in item);
       assert.deepEqual("wonder.example.com/dir1/dir2a-dir2b", item.url_plus_2);
     });
+    it("should error for a missing url", () => {
+      item = instance.getUrlDomain(item, {"field": "missing", "dest": "url_domain"});
+      assert.equal(item, null)
+    });
   });
 
   describe("#tokenizeField", () => {
@@ -264,6 +302,14 @@ describe("RecipeExecutor", () => {
       item = instance.tokenizeField(item, {"field": "text", "dest": "toks"});
       assert.isTrue("toks" in item);
       assert.deepEqual(["this", "is", "a", "sentence"], item.toks);
+    });
+    it("should error for a missing field", () => {
+      item = instance.tokenizeField(item, {"field": "missing", "dest": "toks"});
+      assert.equal(item, null)
+    });
+    it("should error for a broken config", () => {
+      item = instance.tokenizeField(item, {});
+      assert.equal(item, null)
     });
   });
 
@@ -297,6 +343,10 @@ describe("RecipeExecutor", () => {
       assert.isTrue("again" in item);
       assert.equal(item.again, 1);
     });
+    it("should error for a missing field", () => {
+      item = instance.copyValue(item, {"src": "missing", "dest": "toks"});
+      assert.equal(item, null)
+    });
   });
 
   describe("#keepTopK", () => {
@@ -327,6 +377,10 @@ describe("RecipeExecutor", () => {
       assert.isTrue("c" in item.map);
       assert.equal(item.map.c, 3);
     });
+    it("should error for a missing field", () => {
+      item = instance.keepTopK(item, {"field": "missing", "k": 3});
+      assert.equal(item, null)
+    });
   });
 
   describe("#scalarMultiply", () => {
@@ -348,6 +402,22 @@ describe("RecipeExecutor", () => {
       assert.equal(item.map.b, 8);
       assert.equal(item.map.c, 12);
     });
+    it("should error for a missing field", () => {
+      item = instance.scalarMultiply(item, {"field": "missing", "k": 3});
+      assert.equal(item, null)
+    });
+    it("should multiply numbers", () => {
+      item = instance.scalarMultiply(item, {"field": "lhs", "k": 2});
+      assert.equal(item.lhs, 4);
+    });
+    it("should multiply arrays", () => {
+      item = instance.scalarMultiply(item, {"field": "arr1", "k": 2});
+      assert.deepEqual(item.arr1, [4, 6, 8]);
+    });
+    it("should should error on strings", () => {
+      item = instance.scalarMultiply(item, {"field": "foo", "k": 2});
+      assert.equal(item, null);
+    });
   });
 
   describe("#elementwiseMultiply", () => {
@@ -357,12 +427,33 @@ describe("RecipeExecutor", () => {
       assert.equal(item.map.b, 4);
       assert.equal(item.map.c, 9);
     });
-    it("should handle arrays", () => {
+    it("should handle arrays of same length", () => {
       item = instance.elementwiseMultiply(item, {"left": "arr1", "right": "arr2"});
-      assert.equal(item.arr1.length, 3);
-      assert.equal(item.arr1[0], 6);
-      assert.equal(item.arr1[1], 12);
-      assert.equal(item.arr1[2], 20);
+      assert.deepEqual(item.arr1, [6, 12, 20]);
+    });
+    it("should error for arrays of different lengths", () => {
+      item = instance.elementwiseMultiply(item, {"left": "arr1", "right": "long"});
+      assert.equal(item, null);
+    });
+    it("should error for a missing left", () => {
+      item = instance.elementwiseMultiply(item, {"left": "missing", "right": "arr2"});
+      assert.equal(item, null);
+    });
+    it("should error for a missing right", () => {
+      item = instance.elementwiseMultiply(item, {"left": "arr1", "right": "missing"});
+      assert.equal(item, null);
+    });
+    it("should handle numbers", () => {
+      item = instance.elementwiseMultiply(item, {"left": "three", "right": "two"});
+      assert.equal(item.three, 6);
+    });
+    it("should error for mismatched types", () => {
+      item = instance.elementwiseMultiply(item, {"left": "arr1", "right": "two"});
+      assert.equal(item, null);
+    });
+    it("should error for strings", () => {
+      item = instance.elementwiseMultiply(item, {"left": "foo", "right": "bar"});
+      assert.equal(item, null);
     });
   });
 
@@ -375,9 +466,37 @@ describe("RecipeExecutor", () => {
       item = instance.vectorMultiply(item, {"left": "arr1", "right": "arr2", "dest": "dot"});
       assert.equal(item.dot, 38);
     });
+    it("should error for arrays of different lengths", () => {
+      item = instance.vectorMultiply(item, {"left": "arr1", "right": "long"});
+      assert.equal(item, null);
+    });
+    it("should error for a missing left", () => {
+      item = instance.vectorMultiply(item, {"left": "missing", "right": "arr2"});
+      assert.equal(item, null);
+    });
+    it("should error for a missing right", () => {
+      item = instance.vectorMultiply(item, {"left": "arr1", "right": "missing"});
+      assert.equal(item, null);
+    });
+    it("should error for mismatched types", () => {
+      item = instance.vectorMultiply(item, {"left": "arr1", "right": "two"});
+      assert.equal(item, null);
+    });
+    it("should error for strings", () => {
+      item = instance.vectorMultiply(item, {"left": "foo", "right": "bar"});
+      assert.equal(item, null);
+    });
   });
 
   describe("#scalarAdd", () => {
+    it("should error for a missing field", () => {
+      item = instance.scalarAdd(item, {"field": "missing", "k": 10});
+      assert.equal(item, null);
+    });
+    it("should error for strings", () => {
+      item = instance.scalarAdd(item, {"field": "foo", "k": 10});
+      assert.equal(item, null);
+    });
     it("should add a constant to every cell on a map", () => {
       item = instance.scalarAdd(item, {"field": "map", "k": 10});
       assert.deepEqual(item.map, {"a": 11, "b": 12, "c": 13});
@@ -405,6 +524,30 @@ describe("RecipeExecutor", () => {
       assert.isTrue("d" in item.map);
       assert.equal(item.map.d, 4);
     });
+    it("should work for missing left", () => {
+      item = instance.vectorAdd(item, {"left": "missing", "right": "arr2"});
+      assert.deepEqual(item.missing, [3, 4, 5]);
+    });
+    it("should error for missing right", () => {
+      item = instance.vectorAdd(item, {"left": "arr2", "right": "missing"});
+      assert.equal(item, null);
+    });
+    it("should error error for strings", () => {
+      item = instance.vectorAdd(item, {"left": "foo", "right": "bar"});
+      assert.equal(item, null);
+    });
+    it("should error for different types", () => {
+      item = instance.vectorAdd(item, {"left": "arr2", "right": "map"});
+      assert.equal(item, null);
+    });
+    it("should calculate add vectors from arrays", () => {
+      item = instance.vectorAdd(item, {"left": "arr1", "right": "arr2"});
+      assert.deepEqual(item.arr1, [5, 7, 9]);
+    });
+    it("should abort on different sized arrays", () => {
+      item = instance.vectorAdd(item, {"left": "arr1", "right": "long"});
+      assert.equal(item, null);
+    });
     it("should calculate add vectors from arrays", () => {
       item = instance.vectorAdd(item, {"left": "arr1", "right": "arr2"});
       assert.deepEqual(item.arr1, [5, 7, 9]);
@@ -412,6 +555,10 @@ describe("RecipeExecutor", () => {
   });
 
   describe("#makeBoolean", () => {
+    it("should error for missing field", () => {
+      item = instance.makeBoolean(item, {"field": "missing", "threshold": 2});
+      assert.equal(item, null);
+    });
     it("should 0/1 a map", () => {
       item = instance.makeBoolean(item, {"field": "map", "threshold": 2});
       assert.deepEqual(item.map, {"a": 0, "b": 0, "c": 1});
@@ -428,16 +575,40 @@ describe("RecipeExecutor", () => {
       item = instance.makeBoolean(item, {"field": "arr1", "threshold": 3});
       assert.deepEqual(item.arr1, [0, 0, 1]);
     });
+    it("should -1/1 an array", () => {
+      item = instance.makeBoolean(item, {"field": "arr1", "threshold": 3, "keep_negative": true});
+      assert.deepEqual(item.arr1, [-1, -1, 1]);
+    });
+    it("should 1 a high number", () => {
+      item = instance.makeBoolean(item, {"field": "qux", "threshold": 3});
+      assert.equal(item.qux, 1);
+    });
+    it("should 0 a low number", () => {
+      item = instance.makeBoolean(item, {"field": "qux", "threshold": 70});
+      assert.equal(item.qux, 0);
+    });
+    it("should -1 a low number", () => {
+      item = instance.makeBoolean(item, {"field": "qux", "threshold": 83, "keep_negative": true});
+      assert.equal(item.qux, -1);
+    });
+    it("should fail a string", () => {
+      item = instance.makeBoolean(item, {"field": "foo", "threshold": 3});
+      assert.equal(item, null);
+    });
   });
 
   describe("#whitelistFields", () => {
     it("should filter the keys out of a map", () => {
-      item = instance.whitelistFields(item, {"fields": ["foo", "bar"]});
+      item = instance.whitelistFields(item, {"fields": ["foo", "missing", "bar"]});
       assert.deepEqual(item, {"foo": "FOO", "bar": "BAR"});
     });
   });
 
   describe("#filterByValue", () => {
+    it("should fail on missing field", () => {
+      item = instance.filterByValue(item, {"field": "missing", "threshold": 2});
+      assert.equal(item, null);
+    });
     it("should filter the keys out of a map", () => {
       item = instance.filterByValue(item, {"field": "map", "threshold": 2});
       assert.deepEqual(item.map, {"c": 3});
@@ -445,6 +616,10 @@ describe("RecipeExecutor", () => {
   });
 
   describe("#l2Normalize", () => {
+    it("should fail on missing field", () => {
+      item = instance.l2Normalize(item, {"field": "missing"});
+      assert.equal(item, null);
+    });
     it("should L2 normalize an array", () => {
       item = instance.l2Normalize(item, {"field": "arr1"});
       assert.deepEqual(item.arr1, [0.3713906763541037, 0.5570860145311556, 0.7427813527082074]);
@@ -453,9 +628,17 @@ describe("RecipeExecutor", () => {
       item = instance.l2Normalize(item, {"field": "map"});
       assert.deepEqual(item.map, {"a": 0.2672612419124244, "b": 0.5345224838248488, "c": 0.8017837257372732});
     });
+    it("should fail a string", () => {
+      item = instance.l2Normalize(item, {"field": "foo"});
+      assert.equal(item, null);
+    });
   });
 
   describe("#probNormalize", () => {
+    it("should fail on missing field", () => {
+      item = instance.probNormalize(item, {"field": "missing"});
+      assert.equal(item, null);
+    });
     it("should normalize an array to sum to 1", () => {
       item = instance.probNormalize(item, {"field": "arr1"});
       assert.deepEqual(item.arr1, [0.2222222222222222, 0.3333333333333333, 0.4444444444444444]);
@@ -469,6 +652,50 @@ describe("RecipeExecutor", () => {
       assert.isTrue(Math.abs(item.map.b - 0.33333) <= EPSILON);
       assert.isTrue("c" in item.map);
       assert.isTrue(Math.abs(item.map.c - 0.5) <= EPSILON);
+    });
+    it("should fail a string", () => {
+      item = instance.probNormalize(item, {"field": "foo"});
+      assert.equal(item, null);
+    });
+  });
+
+  describe("#scalarMultiplyTag", () => {
+    it("should fail on missing field", () => {
+      item = instance.scalarMultiplyTag(item, {"field": "missing", "k": 3});
+      assert.equal(item, null);
+    });
+    it("should scalar multiply an array", () => {
+      item = instance.scalarMultiplyTag(item, {"field": "arr1", "k": 3});
+      assert.deepEqual(item.arr1, [6, 9, 12]);
+    });
+    it("should scalar multiply an array with logrithms", () => {
+      item = instance.scalarMultiplyTag(item, {"field": "arr1", "k": 3, "log_scale": true});
+      assert.equal(item.arr1.length, 3);
+      assert.isTrue(Math.abs(item.arr1[0] - Math.log(2) * 3) <= EPSILON);
+      assert.isTrue(Math.abs(item.arr1[1] - Math.log(3) * 3) <= EPSILON);
+      assert.isTrue(Math.abs(item.arr1[2] - Math.log(4) * 3) <= EPSILON);
+    });
+    it("should scalar multiply a number", () => {
+      item = instance.scalarMultiplyTag(item, {"field": "lhs", "k": 3});
+      assert.equal(item.lhs, 6);
+    });
+    it("should scalar multiply a number with logrithms", () => {
+      item = instance.scalarMultiplyTag(item, {"field": "lhs", "k": 3, "log_scale": true});
+      assert.isTrue(Math.abs(item.lhs - Math.log(2) * 3) <= EPSILON);
+    });
+    it("should scalar multiply a map", () => {
+      item = instance.scalarMultiplyTag(item, {"field": "map", "k": 3, "log_scale": false});
+      assert.deepEqual(item.map, {"a": 3, "b": 6, "c": 9});
+    });
+    it("should scalar multiply a map with logrithms", () => {
+      item = instance.scalarMultiplyTag(item, {"field": "map", "k": 3, "log_scale": true});
+      assert.isTrue(Math.abs(item.map.a - Math.log(1) * 3) <= EPSILON);
+      assert.isTrue(Math.abs(item.map.b - Math.log(2) * 3) <= EPSILON);
+      assert.isTrue(Math.abs(item.map.c - Math.log(3) * 3) <= EPSILON);
+    });
+    it("should fail a string", () => {
+      item = instance.scalarMultiplyTag(item, {"field": "foo", "k": 3});
+      assert.equal(item, null);
     });
   });
 
@@ -516,6 +743,22 @@ describe("RecipeExecutor", () => {
   });
 
   describe("#applySoftmaxTags", () => {
+    it("should error on missing field", () => {
+      item = instance.applySoftmaxTags(item, {"field": "missing"});
+      assert.equal(item, null);
+    });
+    it("should error on nonmaps", () => {
+      item = instance.applySoftmaxTags(item, {"field": "arr1"});
+      assert.equal(item, null);
+    });
+    it("should error on unnested maps", () => {
+      item = instance.applySoftmaxTags(item, {"field": "map"});
+      assert.equal(item, null);
+    });
+    it("should error on wrong nested maps", () => {
+      item = instance.applySoftmaxTags(item, {"field": "bogus"});
+      assert.equal(item, null);
+    });
     it("should apply softmax across the subtags", () => {
       item = instance.applySoftmaxTags(item, {"field": "tags"});
       assert.isTrue("a" in item.tags);
@@ -542,6 +785,12 @@ describe("RecipeExecutor", () => {
       let combined = instance.combinerAdd(item, right, {"field": "missing"});
       assert.deepEqual(combined, item);
     });
+    it("should handle missing left maps", () => {
+      let right = makeItem();
+      right.missingmap = {"a": 5, "b": -1, "c": 3};
+      let combined = instance.combinerAdd(item, right, {"field": "missingmap"});
+      assert.deepEqual(combined.missingmap, {"a": 5, "b": -1, "c": 3});
+    });
     it("should add equal sized maps", () => {
       let right = makeItem();
       let combined = instance.combinerAdd(item, right, {"field": "map"});
@@ -564,6 +813,12 @@ describe("RecipeExecutor", () => {
       let combined = instance.combinerAdd(item, right, {"field": "arr1"});
       assert.deepEqual(combined.arr1, [4, 6, 8]);
     });
+    it("should handle missing left arrays", () => {
+      let right = makeItem();
+      right.missingarray = [5, 1, 4];
+      let combined = instance.combinerAdd(item, right, {"field": "missingarray"});
+      assert.deepEqual(combined.missingarray, [5, 1, 4]);
+    });
     it("should add long array to short array", () => {
       let right = makeItem();
       right.arr1 = [2, 3, 4, 12];
@@ -576,10 +831,33 @@ describe("RecipeExecutor", () => {
       let combined = instance.combinerAdd(item, right, {"field": "arr1"});
       assert.deepEqual(combined.arr1, [4, 6, 8, 12]);
     });
+    it("should handle missing left number", () => {
+      let right = makeItem();
+      right.missingnumber = 999;
+      let combined = instance.combinerAdd(item, right, {"field": "missingnumber"});
+      assert.deepEqual(combined.missingnumber, 999);
+    });
     it("should add numbers", () => {
       let right = makeItem();
       let combined = instance.combinerAdd(item, right, {"field": "lhs"});
       assert.equal(combined.lhs, 4);
+    });
+    it("should error on missing left, and right is a string", () => {
+      let right = makeItem();
+      right.error = "error";
+      let combined = instance.combinerAdd(item, right, {"field": "error"});
+      assert.equal(combined, null);
+    });
+    it("should error on left string", () => {
+      let right = makeItem();
+      let combined = instance.combinerAdd(item, right, {"field": "foo"});
+      assert.equal(combined, null);
+    });
+    it("should error on mismatch types", () => {
+      let right = makeItem();
+      right.lhs = [1, 2, 3];
+      let combined = instance.combinerAdd(item, right, {"field": "lhs"});
+      assert.equal(combined, null);
     });
   });
 
@@ -588,6 +866,12 @@ describe("RecipeExecutor", () => {
       let right = makeItem();
       let combined = instance.combinerMax(item, right, {"field": "missing"});
       assert.deepEqual(combined, item);
+    });
+    it("should handle missing left maps", () => {
+      let right = makeItem();
+      right.missingmap = {"a": 5, "b": -1, "c": 3};
+      let combined = instance.combinerMax(item, right, {"field": "missingmap"});
+      assert.deepEqual(combined.missingmap, {"a": 5, "b": -1, "c": 3});
     });
     it("should handle equal sized maps", () => {
       let right = makeItem();
@@ -614,6 +898,12 @@ describe("RecipeExecutor", () => {
       let combined = instance.combinerMax(item, right, {"field": "arr1"});
       assert.deepEqual(combined.arr1, [5, 3, 4]);
     });
+    it("should handle missing left arrays", () => {
+      let right = makeItem();
+      right.missingarray = [5, 1, 4];
+      let combined = instance.combinerMax(item, right, {"field": "missingarray"});
+      assert.deepEqual(combined.missingarray, [5, 1, 4]);
+    });
     it("should handle short array to long array", () => {
       let right = makeItem();
       right.arr1 = [5, 1, 4, 7];
@@ -627,6 +917,12 @@ describe("RecipeExecutor", () => {
       let combined = instance.combinerMax(item, right, {"field": "arr1"});
       assert.deepEqual(combined.arr1, [5, 3, 4, 7]);
     });
+    it("should handle missing left number", () => {
+      let right = makeItem();
+      right.missingnumber = 999;
+      let combined = instance.combinerMax(item, right, {"field": "missingnumber"});
+      assert.deepEqual(combined.missingnumber, 999);
+    });
     it("should handle big number", () => {
       let right = makeItem();
       right.lhs = 99;
@@ -639,9 +935,34 @@ describe("RecipeExecutor", () => {
       let combined = instance.combinerMax(item, right, {"field": "lhs"});
       assert.equal(combined.lhs, 99);
     });
+    it("should error on missing left, and right is a string", () => {
+      let right = makeItem();
+      right.error = "error";
+      let combined = instance.combinerMax(item, right, {"field": "error"});
+      assert.equal(combined, null);
+    });
+    it("should error on left string", () => {
+      let right = makeItem();
+      let combined = instance.combinerMax(item, right, {"field": "foo"});
+      assert.equal(combined, null);
+    });
+    it("should error on mismatch types", () => {
+      let right = makeItem();
+      right.lhs = [1, 2, 3];
+      let combined = instance.combinerMax(item, right, {"field": "lhs"});
+      assert.equal(combined, null);
+    });
   });
 
   describe("#combinerCollectValues", () => {
+    it("should error on bogus operation", () => {
+      let right = makeItem();
+      right.url_domain = "maseratiusa.com/maserati";
+      right.time = 41;
+      let combined = instance.combinerCollectValues(item, right,
+        {"left_field": "combined_map", "right_key_field": "url_domain", "right_value_field": "time", "operation": "missing"});
+      assert.equal(combined, null);
+    });
     it("should sum when missing left", () => {
       let right = makeItem();
       right.url_domain = "maseratiusa.com/maserati";
@@ -749,6 +1070,69 @@ describe("RecipeExecutor", () => {
       let combined = instance.combinerCollectValues(item, right,
         {"left_field": "combined_map", "right_key_field": "url_domain", "right_value_field": "time", "operation": "count"});
       assert.deepEqual(combined.combined_map, {"fake": 42, "maseratiusa.com/maserati": 2});
+    });
+  });
+
+  describe("#executeRecipe", () => {
+    it("should handle working steps", () => {
+      let final = instance.executeRecipe({}, [
+        {"function": "set_default", "field": "foo", "value": 1},
+        {"function": "set_default", "field": "bar", "value": 10}
+      ]);
+      assert.equal(final.foo, 1);
+      assert.equal(final.bar, 10);
+    });
+    it("should handle unknown steps", () => {
+      let final = instance.executeRecipe({}, [
+        {"function": "set_default", "field": "foo", "value": 1},
+        {"function": "missing"},
+        {"function": "set_default", "field": "bar", "value": 10}
+      ]);
+      assert.equal(final, null);
+    });
+    it("should handle erroring steps", () => {
+      let final = instance.executeRecipe({}, [
+        {"function": "set_default", "field": "foo", "value": 1},
+        {"function": "accept_item_by_field_value", "field": "missing", "op": "invalid", "rhsField": "moot", "rhsValue": "m00t"},
+        {"function": "set_default", "field": "bar", "value": 10}
+      ]);
+      assert.equal(final, null);
+    });
+  });
+
+  describe("#executeCombinerRecipe", () => {
+    it("should handle working steps", () => {
+      let final = instance.executeCombinerRecipe(
+        {"foo": 1, "bar": 10},
+        {"foo": 1, "bar": 10},
+        [
+          {"function": "combiner_add", "field": "foo"},
+          {"function": "combiner_add", "field": "bar"}
+        ]);
+      assert.equal(final.foo, 2);
+      assert.equal(final.bar, 20);
+    });
+    it("should handle unknown steps", () => {
+      let final = instance.executeCombinerRecipe(
+        {"foo": 1, "bar": 10},
+        {"foo": 1, "bar": 10},
+        [
+          {"function": "combiner_add", "field": "foo"},
+          {"function": "missing"},
+          {"function": "combiner_add", "field": "bar"}
+        ]);
+      assert.equal(final, null);
+    });
+    it("should handle erroring steps", () => {
+      let final = instance.executeCombinerRecipe(
+        {"foo": 1, "bar": 10, "baz": 0},
+        {"foo": 1, "bar": 10, "baz": "hundred"},
+        [
+          {"function": "combiner_add", "field": "foo"},
+          {"function": "combiner_add", "field": "baz"},
+          {"function": "combiner_add", "field": "bar"}
+        ]);
+      assert.equal(final, null);
     });
   });
 });
