@@ -9,8 +9,14 @@ class OnboardingCard extends React.PureComponent {
 
   onClick() {
     const {props} = this;
-    props.sendUserActionTelemetry({event: "CLICK_BUTTON", message_id: props.id, id: props.UISurface});
-    props.onAction(props.content);
+    const ping = {
+      event: "CLICK_BUTTON",
+      message_id: props.id,
+      id: props.UISurface,
+      includeClientID: true
+    };
+    props.sendUserActionTelemetry(ping);
+    props.onAction(props.content.button_action);
   }
 
   render() {

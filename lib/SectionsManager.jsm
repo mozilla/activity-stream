@@ -32,13 +32,11 @@ const BUILT_IN_SECTIONS = {
     eventSource: "TOP_STORIES",
     icon: options.provider_icon,
     title: {id: "header_recommended_by", values: {provider: options.provider_name}},
-    disclaimer: {
-      text: {id: "section_disclaimer_topstories"},
+    learnMore: {
       link: {
         href: "https://getpocket.com/firefox/new_tab_learn_more",
-        id: "section_disclaimer_topstories_linktext"
-      },
-      button: {id: "section_disclaimer_topstories_buttontext"}
+        id: "pocket_learn_more"
+      }
     },
     privacyNoticeURL: "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
     compactCards: false,
@@ -422,7 +420,7 @@ class SectionsFeed {
     this.store.dispatch(ac.SetPref("sectionOrder", orderedSections.join(",")));
   }
 
-  onAction(action) {
+  async onAction(action) {
     switch (action.type) {
       case at.INIT:
         SectionsManager.onceInitialized(this.init);
@@ -435,7 +433,7 @@ class SectionsFeed {
         if (action.data) {
           const matched = action.data.name.match(/^(feeds.section.(\S+)).options$/i);
           if (matched) {
-            SectionsManager.addBuiltInSection(matched[1], action.data.value);
+            await SectionsManager.addBuiltInSection(matched[1], action.data.value);
             this.store.dispatch({type: at.SECTION_OPTIONS_CHANGED, data: matched[2]});
           }
         }

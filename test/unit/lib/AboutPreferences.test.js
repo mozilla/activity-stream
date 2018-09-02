@@ -132,7 +132,7 @@ describe("AboutPreferences Feed", () => {
     let gHomePane;
     const testRender = () => instance.renderPreferences({
       document: {
-        createElementNS: sandbox.stub().returns(node),
+        createXULElement: sandbox.stub().returns(node),
         createProcessingInstruction: sandbox.stub(),
         getElementById: sandbox.stub().returns(node),
         insertBefore: sandbox.stub().returnsArg(0)
@@ -245,10 +245,9 @@ describe("AboutPreferences Feed", () => {
       });
       it("should add a link for top stories", () => {
         const href = "https://disclaimer/";
-        prefStructure = [{disclaimer: {link: {href}}, id: "topstories"}];
+        prefStructure = [{learnMore: {link: {href}}, id: "topstories"}];
 
         testRender();
-
         assert.calledWith(node.setAttribute, "href", href);
       });
     });
