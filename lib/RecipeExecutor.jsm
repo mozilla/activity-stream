@@ -67,7 +67,7 @@ this.RecipeExecutor = class RecipeExecutor {
   _lookupScalar(item, k, dfault) {
     if (this._typeOf(k) === "number") {
       return k;
-    } else if ((this._typeOf(k) == "string") && (k in item) && (this._typeOf(item[k]) === "number")) {
+    } else if ((this._typeOf(k) === "string") && (k in item) && (this._typeOf(item[k]) === "number")) {
       return item[k];
     }
     return dfault;
@@ -79,17 +79,17 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   _assembleText(item, fields) {
     let textArr = [];
-    for (let i = 0; i < fields.length; i++) {
-      if (fields[i] in item) {
-        if (typeof item[fields[i]] === "string") {
-          textArr.push(item[fields[i]]);
-        } else if ((typeof item[fields[i]] === "object") &&
-            Array.isArray(item[fields[i]])) {
-          for (let j = 0; j < item[fields[i]].length; j++) {
-            textArr.push(item[fields[i]][j]);
+    for (let field of fields) {
+      if (field in item) {
+        let type = this._typeOf(item[field]);
+        if (type === "string") {
+          textArr.push(item[field]);
+        } else if (type === "array") {
+          for (let ele of item[field]) {
+            textArr.push(ele);
           }
         } else {
-          textArr.push(String(item[fields[i]]));
+          textArr.push(String(item[field]));
         }
       }
     }
@@ -218,23 +218,22 @@ this.RecipeExecutor = class RecipeExecutor {
     }
     let toks = tokenize(domain);
     let pathToks =  tokenize(decodeURIComponent(url.pathname.replace(/\+/g, " ")));
-    for (let i = 0; i < pathToks.length; i++) {
-      toks.push(pathToks[i]);
+    for (let tok of pathToks) {
+      toks.push(tok);
     }
     for (let pair of url.searchParams.entries()) {
       let k = tokenize(decodeURIComponent(pair[0].replace(/\+/g, " ")));
-      for (let i = 0; i < k.length; i++) {
-        toks.push(k[i]);
+      for (let tok of k) {
+        toks.push(tok);
       }
       if ((pair[1] !== null) && (pair[1] !== "")) {
         let v = tokenize(decodeURIComponent(pair[1].replace(/\+/g, " ")));
-        for (let i = 0; i < v.length; i++) {
-          toks.push(v[i]);
+        for (let tok of v) {
+          toks.push(tok);
         }
       }
     }
     item[config.dest] = toks;
-
 
     return item;
   }
@@ -325,7 +324,7 @@ this.RecipeExecutor = class RecipeExecutor {
     // to an array, and then sort.
     let sortable = [];
     Object.keys(item[config.field]).forEach(key => {
-      sortable.push({key: key, value: item[config.field][key]});
+      sortable.push({key, value: item[config.field][key]});
     });
     sortable.sort((a, b) => {
       if (descending) {
@@ -405,7 +404,7 @@ this.RecipeExecutor = class RecipeExecutor {
       return null;
     }
     if (leftType === "array") {
-      if (item[config.left].length != item[config.right].length) {
+      if (item[config.left].length !== item[config.right].length) {
         return null;
       }
       for (let i = 0; i < item[config.left].length; i++) {
@@ -420,7 +419,7 @@ this.RecipeExecutor = class RecipeExecutor {
         item[config.left][key] *= r;
       });
     } else if (leftType === "number") {
-      item[config.left] *= item[config.right]
+      item[config.left] *= item[config.right];
     } else {
       return null;
     }
@@ -452,7 +451,7 @@ this.RecipeExecutor = class RecipeExecutor {
 
     let destVal = 0.0;
     if (leftType === "array") {
-      if (item[config.left].length !=  item[config.right].length) {
+      if (item[config.left].length !== item[config.right].length) {
         return null;
       }
       for (let i = 0; i < item[config.left].length; i++) {
@@ -590,7 +589,7 @@ this.RecipeExecutor = class RecipeExecutor {
           item[config.field][key] = 0.0;
         }
       });
-    } else if (type === "number"){
+    } else if (type === "number") {
       let value = item[config.field];
       if (value > threshold) {
         item[config.field] = 1.0;
@@ -613,9 +612,9 @@ this.RecipeExecutor = class RecipeExecutor {
    */
   whitelistFields(item, config) {
     let newItem = {};
-    for (let i = 0; i < config.fields.length; i++) {
-      if (config.fields[i] in item) {
-        newItem[config.fields[i]] = item[config.fields[i]];
+    for (let ele of config.fields) {
+      if (ele in item) {
+        newItem[ele] = item[ele];
       }
     }
     return newItem;
@@ -659,8 +658,8 @@ this.RecipeExecutor = class RecipeExecutor {
     let type = this._typeOf(data);
     if (type === "array") {
       let norm = 0.0;
-      for (let i = 0; i < data.length; i++) {
-        norm += data[i] * data[i];
+      for (let datum of data) {
+        norm += datum * datum;
       }
       norm = Math.sqrt(norm);
       for (let i = 0; i < data.length; i++) {
@@ -698,8 +697,8 @@ this.RecipeExecutor = class RecipeExecutor {
     let type = this._typeOf(data);
     if (type === "array") {
       let norm = 0.0;
-      for (let i = 0; i < data.length; i++) {
-        norm += data[i];
+      for (let datum of data) {
+        norm += datum;
       }
       for (let i = 0; i < data.length; i++) {
         data[i] /= norm;
@@ -844,9 +843,6 @@ this.RecipeExecutor = class RecipeExecutor {
         let score = item[config.field][tag][subtag];
         softmaxSum[tag] += Math.exp(score);
       });
-      if (abort) {
-        return;
-      }
     });
     if (abort) {
       return null;
@@ -904,7 +900,7 @@ this.RecipeExecutor = class RecipeExecutor {
     } else if (type === "number") {
       left[config.field] += right[config.field];
     } else {
-      return null
+      return null;
     }
 
     return left;
