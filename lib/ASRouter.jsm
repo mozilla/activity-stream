@@ -705,11 +705,11 @@ class _ASRouter {
     return state;
   }
 
-  async _addPreviewEndpoint(url, target) {
+  async _addPreviewEndpoint(url, portID) {
     // When you view a preview snippet we want to hide all real content
     const providers = [...this.state.providers];
     if (this._validPreviewEndpoint(url) && !providers.find(p => p.url === url)) {
-      this.dispatchToAS(ac.OnlyToOneContent({type: at.SNIPPETS_PREVIEW_MODE}, target));
+      this.dispatchToAS(ac.OnlyToOneContent({type: at.SNIPPETS_PREVIEW_MODE}, portID));
       providers.push({id: "preview", type: "remote", url, updateCycleInMs: 0});
       await this.setState({providers});
     }
