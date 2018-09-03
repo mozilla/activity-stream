@@ -120,9 +120,7 @@ test_newtab({
 });
 
 test_newtab({
-  before: async ({pushPrefs}) => {
-    await setDefaultTopSites();
-  },
+  before: setDefaultTopSites,
   test: async function test_search_topsite_keyword() {
     await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".search-shortcut .title.pinned"), "Wait for pinned search topsites");
 

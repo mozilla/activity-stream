@@ -46,8 +46,7 @@ test_newtab({
     await ContentTaskUtils.waitForCondition(() => content.document.querySelector(".top-sites-list li:not(.search-shortcut):not(.placeholder)").getAttribute("href") === secondTopSite,
       "First default topsite was dismissed");
 
-    defaultTopSitesNumber = content.document.querySelectorAll(".top-site-outer:not(.placeholder):not(.search-shortcut)").length;
-    Assert.equal(defaultTopSitesNumber, 4, "4 top sites are displayed after one of them is dismissed");
+    await ContentTaskUtils.waitForCondition(() => content.document.querySelectorAll(".top-site-outer:not(.placeholder):not(.search-shortcut)").length === 4, "4 top sites are displayed after one of them is dismissed");
   },
   async after() {
     await new Promise(resolve => NewTabUtils.undoAll(resolve));
@@ -55,9 +54,7 @@ test_newtab({
 });
 
 test_newtab({
-  before: async () => {
-    await setDefaultTopSites();
-  },
+  before: setDefaultTopSites,
   test: async function searchTopSites_dismiss() {
     await ContentTaskUtils.waitForCondition(() => content.document.querySelectorAll(".search-shortcut").length === 2,
       "2 search topsites are loaded by default");
@@ -71,7 +68,7 @@ test_newtab({
     await ContentTaskUtils.waitForCondition(() => content.document.querySelectorAll(".search-shortcut").length === 1,
       "1 search topsite displayed after we unpin the other one");
   },
-  after: async () => {
+  after: () => {
     // This is modified when calling .unpin in `disableSearchImprovementsPrefs`
     Services.prefs.clearUserPref("browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.havePinned");
   }
