@@ -32,5 +32,6 @@ export class FakeRemotePageManager {
         OpenBrowserWindow: sinon.stub()
       }
     };
+    this.portID = "6000:2";
   }
 }

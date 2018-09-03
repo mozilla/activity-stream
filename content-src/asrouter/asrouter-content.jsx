@@ -242,11 +242,28 @@ export class ASRouterUISurface extends React.PureComponent {
         sendUserActionTelemetry={this.sendUserActionTelemetry} />);
   }
 
+  renderPreviewBanner() {
+    if (this.state.message.provider !== "preview") {
+      return null;
+    }
+
+    return (
+      <div className="snippets-preview-banner">
+        <span className="icon icon-small-spacer icon-info" />
+        <span>Preview Purposes Only</span>
+      </div>
+    );
+  }
+
   render() {
     const {message, bundle} = this.state;
     if (!message.id && !bundle.template) { return null; }
-    if (bundle.template === "onboarding") { return this.renderOnboarding(); }
-    return this.renderSnippets();
+    return (
+      <div>
+        {this.renderPreviewBanner()}
+        {bundle.template === "onboarding" ? this.renderOnboarding() : this.renderSnippets()}
+      </div>
+    );
   }
 }
 
