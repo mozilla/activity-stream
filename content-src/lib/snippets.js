@@ -381,17 +381,16 @@ export function addSnippetsSubscriber(store) {
 
   store.subscribe(async () => {
     const state = store.getState();
-    let snippetsEnabled = false;
-    try {
-      snippetsEnabled = JSON.parse(state.Prefs.values["asrouter.messageProviders"]).find(i => i.id === "snippets").enabled;
-    } catch (e) {}
-    const isASRouterEnabled = state.Prefs.values.asrouterExperimentEnabled && snippetsEnabled;
-    // state.Prefs.values["feeds.snippets"]:  Should snippets be shown?
-    // state.Snippets.initialized             Is the snippets data initialized?
+
+    // state.Prefs.values["feeds.snippets"]:  User preference for snippets
+    // state.Snippets.initialized:            Is the snippets feed initialized?
     // snippets.initialized:                  Is SnippetsProvider currently initialised?
+    // ASRouter.initialized:                  Is ASRouter currently initialised?
+    // ASRouter.allowLegacySnippets:          Are ASRouter snippets turned OFF (i.e. legacy snippets are allowed)
     if (state.Prefs.values["feeds.snippets"] &&
       // If the message center experiment is enabled, don't show snippets
-      !isASRouterEnabled &&
+      state.ASRouter.initialized &&
+      state.ASRouter.allowLegacySnippets &&
       !state.Prefs.values.disableSnippets &&
       state.Snippets.initialized &&
       !snippets.initialized &&
@@ -401,13 +400,24 @@ export function addSnippetsSubscriber(store) {
     ) {
       initializing = true;
       await snippets.init({appData: state.Snippets});
+      // istanbul ignore if
+      if (state.Prefs.values["asrouter.devtoolsEnabled"]) {
+        console.log("Legacy snippets initialized"); // eslint-disable-line no-console
+      }
       initializing = false;
     } else if (
-      (state.Prefs.values["feeds.snippets"] === false ||
-        state.Prefs.values.disableSnippets === true) &&
+      (
+        state.Prefs.values["feeds.snippets"] === false ||
+        state.Prefs.values.disableSnippets === true ||
+        (state.ASRouter.initialized && !state.ASRouter.allowLegacySnippets)
+      ) &&
       snippets.initialized
     ) {
       snippets.uninit();
+      // istanbul ignore if
+      if (state.Prefs.values["asrouter.devtoolsEnabled"]) {
+        console.log("Legacy snippets removed"); // eslint-disable-line no-console
+      }
     }
   });
 

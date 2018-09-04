@@ -193,8 +193,8 @@ const PREFS_CONFIG = new Map([
     title: "A comma-delimited list of search shortcuts that have previously been pinned",
     value: ""
   }],
-  ["asrouterExperimentEnabled", {
-    title: "Is the message center experiment on?",
+  ["asrouter.devtoolsEnabled", {
+    title: "Are the asrouter devtools enabled?",
     value: false
   }],
   ["asrouter.messageProviders", {
