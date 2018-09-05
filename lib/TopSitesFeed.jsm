@@ -60,7 +60,7 @@ function getShortURLForCurrentSearch() {
 this.TopSitesFeed = class TopSitesFeed {
   constructor() {
     this._tippyTopProvider = new TippyTopProvider();
-    this._currentSearchHostname = null;
+    XPCOMUtils.defineLazyGetter(this, "_currentSearchHostname", getShortURLForCurrentSearch);
     this.dedupe = new Dedupe(this._dedupeKey);
     this.frecentCache = new LinksCache(NewTabUtils.activityStreamLinks,
       "getTopSites", CACHED_LINK_PROPS_TO_MIGRATE, (oldOptions, newOptions) =>
@@ -77,19 +77,18 @@ this.TopSitesFeed = class TopSitesFeed {
     this._storage = this.store.dbStorage.getDbTable("sectionPrefs");
     this.refresh({broadcast: true});
     Services.obs.addObserver(this, "browser-search-engine-modified");
-    XPCOMUtils.defineLazyGetter(this, "_currentSearchHostname", getShortURLForCurrentSearch);
   }
 
   uninit() {
     PageThumbs.removeExpirationFilter(this);
     Services.obs.removeObserver(this, "browser-search-engine-modified");
-    this._currentSearchHostname = null;
   }
 
   observe(subj, topic, data) {
     // We should update the current top sites if the search engine has been changed since
     // the search engine that gets filtered out of top sites has changed.
     if (topic === "browser-search-engine-modified" && data === "engine-current" && this.store.getState().Prefs.values[NO_DEFAULT_SEARCH_TILE_EXP_PREF]) {
+      delete this._currentSearchHostname;
       this._currentSearchHostname = getShortURLForCurrentSearch();
       this.refresh({broadcast: true});
     }

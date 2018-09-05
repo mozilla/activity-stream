@@ -77,6 +77,7 @@ describe("Top Sites Feed", () => {
     };
     globals.set("PageThumbs", fakePageThumbs);
     globals.set("NewTabUtils", fakeNewTabUtils);
+    sandbox.spy(global.XPCOMUtils, "defineLazyGetter");
     FakePrefs.prototype.prefs["default.sites"] = "https://foo.com/";
     ({TopSitesFeed, DEFAULT_TOP_SITES} = injector({
       "lib/ActivityStreamPrefs.jsm": {Prefs: FakePrefs},
@@ -118,6 +119,13 @@ describe("Top Sites Feed", () => {
   function stubFaviconsToUseScreenshots() {
     fakeNewTabUtils.activityStreamProvider._addFavicons = sandbox.stub();
   }
+
+  describe("#constructor", () => {
+    it("should defineLazyGetter for _currentSearchHostname", () => {
+      assert.calledOnce(global.XPCOMUtils.defineLazyGetter);
+      assert.calledWith(global.XPCOMUtils.defineLazyGetter, feed, "_currentSearchHostname", sinon.match.func);
+    });
+  });
 
   describe("#refreshDefaults", () => {
     it("should add defaults on PREFS_INITIAL_VALUES", () => {
@@ -1156,14 +1164,6 @@ describe("Top Sites Feed", () => {
       fakeNewTabUtils.pinnedLinks.links = [{url: "google.com"}];
       const urlsReturned = (await feed.getLinksWithDefaults()).map(link => link.url);
       assert.include(urlsReturned, "google.com");
-    });
-    it("should set ._currentSearchHostname to the current engine hostname on init", async () => {
-      global.Services.search.currentEngine = {identifier: "ddg", searchForm: "duckduckgo.com"};
-      sandbox.stub(feed, "refresh");
-
-      await feed.init();
-
-      assert.equal(feed._currentSearchHostname, "duckduckgo");
     });
     it("should call refresh and set ._currentSearchHostname to the new engine hostname when the the default search engine has been set", () => {
       sinon.stub(feed, "refresh");
