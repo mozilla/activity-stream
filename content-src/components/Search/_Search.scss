@@ -14,6 +14,51 @@
     }
   }
 
+  .logo-and-wordmark {
+    $logo-size: 128px;
+    $wordmark-size: 200px;
+
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    margin-top: -20px;
+
+    .logo {
+      background: url('chrome://branding/content/icon128.png') no-repeat center center;
+      background-size: $logo-size;
+      height: $logo-size;
+      width: $logo-size;
+    }
+
+    .wordmark {
+      background: url('#{$image-path}firefox-wordmark.svg') no-repeat center center;
+      background-size: $wordmark-size;
+      -moz-context-properties: fill;
+      fill: var(--newtab-text-primary-color);
+      height: $logo-size;
+      margin-left: 20px;
+      width: $wordmark-size;
+    }
+
+    @media (max-width: $break-point-small - 1) {
+      $logo-size-small: 64px;
+      $wordmark-small-size: 100px;
+
+      .logo {
+        background-size: $logo-size-small;
+        height: $logo-size-small;
+        width: $logo-size-small;
+      }
+
+      .wordmark {
+        background-size: $wordmark-small-size;
+        height: $logo-size-small;
+        width: $wordmark-small-size;
+      }
+    }
+  }
+
   .search-inner-wrapper {
     cursor: default;
     display: flex;
