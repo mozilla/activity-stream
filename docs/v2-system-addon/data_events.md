@@ -90,8 +90,52 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "source": "TOP_SITES",
   "action_position": 2,
   "value": {
-    "card_type": "pinned",
-    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
+    "card_type": ["pinned" | "search"],
+    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"],
+    // only exists if its card_type = "search"
+    "search_vendor": "google"
+  }
+
+  // Basic metadata
+  "action": "activity_stream_event",
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7
+}
+```
+
+#### Adding a search shortcut
+```js
+{
+  "event": "SEARCH_EDIT_ADD",
+  "source": "TOP_SITES",
+  "action_position": 2,
+  "value": {
+    "search_vendor": "google"
+  }
+
+  // Basic metadata
+  "action": "activity_stream_event",
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7
+}
+```
+
+#### Deleting a search shortcut
+```js
+{
+  "event": "SEARCH_EDIT_DELETE",
+  "source": "TOP_SITES",
+  "action_position": 2,
+  "value": {
+    "search_vendor": "google"
   }
 
   // Basic metadata
@@ -136,8 +180,10 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "source": "TOP_SITES",
   "action_position": 2,
   "value": {
-    "card_type": "pinned",
-    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"]
+    "card_type": ["pinned" | "search"],
+    "icon_type": ["screenshot_with_icon" | "screenshot" | "tippytop" | "rich_icon" | "no_image"],
+    // only exists if its card_type = "search"
+    "search_vendor": "google"
   }
 
   // Basic metadata
@@ -275,24 +321,6 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 }
 ```
 
-#### Acknowledging a section disclaimer
-
-```js
-{
-  "event": "SECTION_DISCLAIMER_ACKNOWLEDGED",
-  "source": "TOP_STORIES",
-
-  // Basic metadata
-  "action": "activity_stream_event",
-  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
-  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
-  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
-  "addon_version": "20180710100040",
-  "locale": "en-US",
-  "user_prefs": 7
-}
-```
-
 #### Adding or editing a new TopSite
 
 ```js
@@ -392,6 +420,9 @@ perf: {
 
   // The number of Top Sites that are pinned.
   "topsites_pinned": 3,
+
+  // The number of search shortcut Top Sites.
+  "topsites_search_shortcuts": 2,
 
   // How much longer the data took, in milliseconds, to be ready for display
   // than it would have been in the ideal case. The user currently sees placeholder
@@ -508,12 +539,13 @@ These pings record the impression and user interactions within Activity Stream R
 
 This reports the impression of Activity Stream Router.
 
+#### Snippets impression
 ```js
 {
   "client_id": "n/a",
-  "action": ["snippets_user_event" | "onboarding_user_event"],
+  "action": "snippets_user_event",
   "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
-  "source": "pocket",
+  "source": "SNIPPETS",
   "addon_version": "20180710100040",
   "locale": "en-US",
   "source": "NEWTAB_FOOTER_BAR",
@@ -522,21 +554,99 @@ This reports the impression of Activity Stream Router.
 }
 ```
 
+CFR impression ping has two forms, in which the message_id could be of different meanings.
+
+#### CFR impression for all the prerelease channels and shield experiment
+```js
+{
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "action": "cfr_user_event",
+  "impression_id": "n/a",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "source": "CFR",
+  // message_id could be the ID of the recommendation, such as "amazon_addon"
+  "message_id": "amazon_addon",
+  "event": "IMPRESSION"
+}
+```
+
+#### CFR impression for the release channel
+```js
+{
+  "client_id": "n/a",
+  "action": "cfr_user_event",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "source": "CFR",
+  // message_id should be a bucket ID in the release channel, we may not use the
+  // individual ID, such as addon ID, per legal's request
+  "message_id": "bucket_id",
+  "event": "IMPRESSION"
+}
+```
 
 ### User interaction pings
 
 This reports the user's interaction with Activity Stream Router.
 
+#### Snippets interaction pings
 ```js
 {
   "client_id": "n/a",
-  "action": ["snippets_user_event" | "onboarding_user_event"],
+  "action": "snippets_user_event",
   "addon_version": "20180710100040",
   "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
   "locale": "en-US",
   "source": "NEWTAB_FOOTER_BAR",
   "message_id": "some_snippet_id",
   "event": ["CLICK_BUTTION" | "BLOCK"]
+}
+```
+
+#### Onboarding interaction pings
+```js
+{
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "action": "onboarding_user_event",
+  "addon_version": "20180710100040",
+  "impression_id": "n/a",
+  "locale": "en-US",
+  "source": "ONBOARDING",
+  "message_id": "onboarding_message_1",
+  "event": "CLICK_BUTTION"
+}
+```
+
+#### CFR interaction pings for all the prerelease channels and shield experiment
+```js
+{
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "action": "cfr_user_event",
+  "addon_version": "20180710100040",
+  "impression_id": "n/a",
+  "locale": "en-US",
+  "source": "CFR",
+  // message_id could be the ID of the recommendation, such as "amazon_addon"
+  "message_id": "amazon_addon",
+  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE | LEARN_MORE | CLICK_DOORHANGER]"
+}
+```
+
+#### CFR interaction pings for release channel
+```js
+{
+  "client_id": "n/a",
+  "action": "cfr_user_event",
+  "addon_version": "20180710100040",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
+  "locale": "en-US",
+  "source": "CFR",
+  // message_id should be a bucket ID in the release channel, we may not use the
+  // individual ID, such as addon ID, per legal's request
+  "message_id": "bucket_id",
+  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE | LEARN_MORE | CLICK_DOORHANGER]"
 }
 ```
 

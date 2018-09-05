@@ -24,6 +24,20 @@ function addLocaleDataForReactIntl(locale) {
   addLocaleData([{locale, parentLocale: "en"}]);
 }
 
+// Returns a function will not be continuously triggered when called. The
+// function will be triggered if called again after `wait` milliseconds.
+function debounce(func, wait) {
+  let timer;
+  return (...args) => {
+    if (timer) { return; }
+
+    let wakeUp = () => { timer = null; };
+
+    timer = setTimeout(wakeUp, wait);
+    func.apply(this, args);
+  };
+}
+
 export class _Base extends React.PureComponent {
   componentWillMount() {
     const {App, locale} = this.props;
@@ -48,9 +62,29 @@ export class _Base extends React.PureComponent {
     this.updateTheme();
   }
 
-  componentWillUpdate({App}) {
+  hasTopStoriesSectionChanged(nextProps) {
+    const nPropsSections = nextProps.Sections.find(section => section.id === "topstories");
+    const tPropsSections = this.props.Sections.find(section => section.id === "topstories");
+    if (nPropsSections && nPropsSections.options) {
+      if (!tPropsSections || !tPropsSections.options) {
+        return true;
+      }
+      if (nPropsSections.options.show_spocs !== tPropsSections.options.show_spocs) {
+        return true;
+      }
+      if (nPropsSections.options.stories_endpoint !== tPropsSections.options.stories_endpoint) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  componentWillUpdate(nextProps) {
     this.updateTheme();
-    this.sendNewTabRehydrated(App);
+    if (this.hasTopStoriesSectionChanged(nextProps)) {
+      this.renderNotified = false;
+    }
+    this.sendNewTabRehydrated(nextProps.App);
   }
 
   updateTheme() {
@@ -80,7 +114,7 @@ export class _Base extends React.PureComponent {
     const {initialized} = App;
 
     const prefs = props.Prefs.values;
-    if ((prefs.asrouterExperimentEnabled || prefs.asrouterOnboardingCohort > 0) && window.location.hash === "#asrouter") {
+    if (prefs.asrouterExperimentEnabled && window.location.hash === "#asrouter") {
       return (<ASRouterAdmin />);
     }
 
@@ -90,7 +124,12 @@ export class _Base extends React.PureComponent {
 
     // Until we can delete the existing onboarding tour, just hide the onboarding button when users are in
     // the new simplified onboarding experiment. CSS hacks ftw
-    if (prefs.asrouterOnboardingCohort > 0) {
+    let isOnboardingEnabled = false;
+    try {
+      isOnboardingEnabled = JSON.parse(prefs["asrouter.messageProviders"]).find(i => i.id === "onboarding").enabled;
+    } catch (e) {}
+
+    if (isOnboardingEnabled) {
       global.document.body.classList.add("hide-onboarding");
     }
 
@@ -106,6 +145,25 @@ export class BaseContent extends React.PureComponent {
   constructor(props) {
     super(props);
     this.openPreferences = this.openPreferences.bind(this);
+    this.onWindowScroll = debounce(this.onWindowScroll.bind(this), 5);
+    this.state = {fixedSearch: false};
+  }
+
+  componentDidMount() {
+    global.addEventListener("scroll", this.onWindowScroll);
+  }
+
+  componentWillUnmount() {
+    global.removeEventListener("scroll", this.onWindowScroll);
+  }
+
+  onWindowScroll() {
+    const SCROLL_THRESHOLD = 34;
+    if (global.scrollY > SCROLL_THRESHOLD && !this.state.fixedSearch) {
+      this.setState({fixedSearch: true});
+    } else if (global.scrollY <= SCROLL_THRESHOLD && this.state.fixedSearch) {
+      this.setState({fixedSearch: false});
+    }
   }
 
   openPreferences() {
@@ -123,7 +181,8 @@ export class BaseContent extends React.PureComponent {
 
     const outerClassName = [
       "outer-wrapper",
-      shouldBeFixedToTop && "fixed-to-top"
+      shouldBeFixedToTop && "fixed-to-top",
+      prefs.showSearch && this.state.fixedSearch && "fixed-search"
     ].filter(v => v).join(" ");
 
     return (
@@ -154,4 +213,4 @@ export class BaseContent extends React.PureComponent {
   }
 }
 
-export const Base = connect(state => ({App: state.App, Prefs: state.Prefs}))(_Base);
+export const Base = connect(state => ({App: state.App, Prefs: state.Prefs, Sections: state.Sections}))(_Base);

@@ -85,7 +85,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
    * @param  {string} targetId The portID of the port that sent the message
    */
   onActionFromContent(action, targetId) {
-    this.dispatch(ac.AlsoToMain(action, targetId));
+    this.dispatch(ac.AlsoToMain(action, this.validatePortID(targetId)));
   }
 
   /**
@@ -113,12 +113,25 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
   }
 
   /**
+   * A valid portID is a combination of process id and port
+   * https://searchfox.org/mozilla-central/rev/196560b95f191b48ff7cba7c2ba9237bba6b5b6a/toolkit/components/remotepagemanager/RemotePageManagerChild.jsm#14
+   */
+  validatePortID(id) {
+    if (typeof id !== "string" || !id.includes(":")) {
+      Cu.reportError("Invalid portID");
+    }
+
+    return id;
+  }
+
+  /**
    * getIdByTarget - Retrieve the id of a message target, if it exists in this.targets
    *
    * @param  {obj} targetObj A message target
    * @return {string|null} The unique id of the target, if it exists.
    */
   getTargetById(id) {
+    this.validatePortID(id);
     for (let port of this.channel.messagePorts) {
       if (port.portID === id) {
         return port;

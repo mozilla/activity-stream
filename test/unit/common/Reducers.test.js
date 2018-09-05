@@ -1,5 +1,5 @@
 import {INITIAL_STATE, insertPinned, reducers} from "common/Reducers.jsm";
-const {TopSites, App, Snippets, Prefs, Dialog, Sections} = reducers;
+const {TopSites, App, Snippets, Prefs, Dialog, Sections, Pocket} = reducers;
 import {actionTypes as at} from "common/Actions.jsm";
 
 describe("Reducers", () => {
@@ -166,6 +166,28 @@ describe("Reducers", () => {
       const deleteAction = {type: at.PLACES_LINK_DELETED, data: {url: "foo.com"}};
       const nextState = TopSites(oldState, deleteAction);
       assert.deepEqual(nextState.rows, [{url: "bar.com"}]);
+    });
+    it("should set showSearchShortcutsForm to true on TOP_SITES_OPEN_SEARCH_SHORTCUTS_MODAL", () => {
+      const data = {index: 7};
+      const nextState = TopSites(undefined, {type: at.TOP_SITES_OPEN_SEARCH_SHORTCUTS_MODAL, data});
+      assert.isTrue(nextState.showSearchShortcutsForm);
+    });
+    it("should set showSearchShortcutsForm to false on TOP_SITES_CLOSE_SEARCH_SHORTCUTS_MODAL", () => {
+      const nextState = TopSites(undefined, {type: at.TOP_SITES_CLOSE_SEARCH_SHORTCUTS_MODAL});
+      assert.isFalse(nextState.showSearchShortcutsForm);
+    });
+    it("should update searchShortcuts on UPDATE_SEARCH_SHORTCUTS", () => {
+      const shortcuts = [
+        {keyword: "@google", shortURL: "google", url: "https://google.com", searchIdentifier: /^google/},
+        {keyword: "@baidu", shortURL: "baidu", url: "https://baidu.com", searchIdentifier: /^baidu/}
+      ];
+      const nextState = TopSites(undefined, {type: at.UPDATE_SEARCH_SHORTCUTS, data: {searchShortcuts: shortcuts}});
+      assert.deepEqual(shortcuts, nextState.searchShortcuts);
+    });
+    it("should remove all content on SNIPPETS_PREVIEW_MODE", () => {
+      const oldState = {rows: [{url: "foo.com"}, {url: "bar.com"}]};
+      const nextState = TopSites(oldState, {type: at.SNIPPETS_PREVIEW_MODE});
+      assert.lengthOf(nextState.rows, 0);
     });
   });
   describe("Prefs", () => {
@@ -489,6 +511,13 @@ describe("Reducers", () => {
       // old row is unchanged
       assert.equal(oldRow, oldState[0].rows[1]);
     });
+    it("should remove all content on SNIPPETS_PREVIEW_MODE", () => {
+      const previewMode = {type: at.SNIPPETS_PREVIEW_MODE};
+      const newState = Sections(oldState, previewMode);
+      newState.forEach(section => {
+        assert.lengthOf(section.rows, 0);
+      });
+    });
   });
   describe("#insertPinned", () => {
     let links;
@@ -582,6 +611,40 @@ describe("Reducers", () => {
     it("should clear the blocklist on SNIPPETS_BLOCKLIST_CLEARED", () => {
       const state = Snippets({blockList: [1, 2]}, {type: at.SNIPPETS_BLOCKLIST_CLEARED});
       assert.deepEqual(state.blockList, []);
+    });
+  });
+  describe("Pocket", () => {
+    it("should return INITIAL_STATE by default", () => {
+      assert.equal(Pocket(undefined, {type: "some_action"}), INITIAL_STATE.Pocket);
+    });
+    it("should set waitingForSpoc on a POCKET_WAITING_FOR_SPOC action", () => {
+      const state = Pocket(undefined, {type: at.POCKET_WAITING_FOR_SPOC, data: false});
+      assert.isFalse(state.waitingForSpoc);
+    });
+    it("should set isUserLoggedIn to false on a POCKET_LOGGED_IN with null", () => {
+      const state = Pocket(undefined, {type: at.POCKET_LOGGED_IN, data: null});
+      assert.isFalse(state.isUserLoggedIn);
+    });
+    it("should set isUserLoggedIn to false on a POCKET_LOGGED_IN with false", () => {
+      const state = Pocket(undefined, {type: at.POCKET_LOGGED_IN, data: false});
+      assert.isFalse(state.isUserLoggedIn);
+    });
+    it("should set isUserLoggedIn to true on a POCKET_LOGGED_IN with true", () => {
+      const state = Pocket(undefined, {type: at.POCKET_LOGGED_IN, data: true});
+      assert.isTrue(state.isUserLoggedIn);
+    });
+    it("should set pocketCta with correct object on a POCKET_CTA", () => {
+      const data = {
+        cta_button: "cta button",
+        cta_text: "cta text",
+        cta_url: "https://cta-url.com",
+        use_cta: true
+      };
+      const state = Pocket(undefined, {type: at.POCKET_CTA, data});
+      assert.equal(state.pocketCta.ctaButton, data.cta_button);
+      assert.equal(state.pocketCta.ctaText, data.cta_text);
+      assert.equal(state.pocketCta.ctaUrl, data.cta_url);
+      assert.equal(state.pocketCta.useCta, data.use_cta);
     });
   });
 });

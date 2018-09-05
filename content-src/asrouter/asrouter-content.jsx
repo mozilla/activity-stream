@@ -1,5 +1,5 @@
-import {actionCreators as ac, ASRouterActions as ra} from "common/Actions.jsm";
 import {LocalizationProvider, Localized} from "fluent-react";
+import {actionCreators as ac} from "common/Actions.jsm";
 import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content-src/lib/init-store";
 import {ImpressionsWrapper} from "./components/ImpressionsWrapper/ImpressionsWrapper";
 import {MessageContext} from "fluent";
@@ -28,10 +28,11 @@ export const ASRouterUtils = {
   blockBundle(bundle) {
     ASRouterUtils.sendMessage({type: "BLOCK_BUNDLE", data: {bundle}});
   },
-  executeAction({button_action, button_action_params}) {
-    if (button_action in ra) {
-      ASRouterUtils.sendMessage({type: button_action, data: {button_action_params}});
-    }
+  executeAction(button_action) {
+    ASRouterUtils.sendMessage({
+      type: "USER_ACTION",
+      data: button_action
+    });
   },
   unblockById(id) {
     ASRouterUtils.sendMessage({type: "UNBLOCK_MESSAGE_BY_ID", data: {id}});
@@ -175,6 +176,11 @@ export class ASRouterUISurface extends React.PureComponent {
           this.setState({message: {}});
         }
         break;
+      case "CLEAR_PROVIDER":
+        if (action.data.id === this.state.message.provider) {
+          this.setState({message: {}});
+        }
+        break;
       case "CLEAR_BUNDLE":
         if (this.state.bundle.bundle) {
           this.setState({bundle: {}});
@@ -219,6 +225,7 @@ export class ASRouterUISurface extends React.PureComponent {
               UISurface="NEWTAB_FOOTER_BAR"
               getNextMessage={ASRouterUtils.getNextMessage}
               onBlock={this.onBlockById(this.state.message.id)}
+              onAction={ASRouterUtils.executeAction}
               sendUserActionTelemetry={this.sendUserActionTelemetry} />
           </LocalizationProvider>
       </ImpressionsWrapper>);
@@ -235,11 +242,28 @@ export class ASRouterUISurface extends React.PureComponent {
         sendUserActionTelemetry={this.sendUserActionTelemetry} />);
   }
 
+  renderPreviewBanner() {
+    if (this.state.message.provider !== "preview") {
+      return null;
+    }
+
+    return (
+      <div className="snippets-preview-banner">
+        <span className="icon icon-small-spacer icon-info" />
+        <span>Preview Purposes Only</span>
+      </div>
+    );
+  }
+
   render() {
     const {message, bundle} = this.state;
     if (!message.id && !bundle.template) { return null; }
-    if (bundle.template === "onboarding") { return this.renderOnboarding(); }
-    return this.renderSnippets();
+    return (
+      <div>
+        {this.renderPreviewBanner()}
+        {bundle.template === "onboarding" ? this.renderOnboarding() : this.renderSnippets()}
+      </div>
+    );
   }
 }
 

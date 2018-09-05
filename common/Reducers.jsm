@@ -23,7 +23,11 @@ const INITIAL_STATE = {
     // The history (and possibly default) links
     rows: [],
     // Used in content only to dispatch action to TopSiteForm.
-    editForm: null
+    editForm: null,
+    // Used in content only to open the SearchShortcutsForm modal.
+    showSearchShortcutsForm: false,
+    // The list of available search shortcuts.
+    searchShortcuts: []
   },
   Prefs: {
     initialized: false,
@@ -33,7 +37,12 @@ const INITIAL_STATE = {
     visible: false,
     data: {}
   },
-  Sections: []
+  Sections: [],
+  Pocket: {
+    isUserLoggedIn: false,
+    pocketCta: {},
+    waitingForSpoc: true
+  }
 };
 
 function App(prevState = INITIAL_STATE.App, action) {
@@ -98,6 +107,10 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       });
     case at.TOP_SITES_CANCEL_EDIT:
       return Object.assign({}, prevState, {editForm: null});
+    case at.TOP_SITES_OPEN_SEARCH_SHORTCUTS_MODAL:
+      return Object.assign({}, prevState, {showSearchShortcutsForm: true});
+    case at.TOP_SITES_CLOSE_SEARCH_SHORTCUTS_MODAL:
+      return Object.assign({}, prevState, {showSearchShortcutsForm: false});
     case at.PREVIEW_RESPONSE:
       if (!prevState.editForm || action.data.url !== prevState.editForm.previewUrl) {
         return prevState;
@@ -172,6 +185,10 @@ function TopSites(prevState = INITIAL_STATE.TopSites, action) {
       }
       newRows = prevState.rows.filter(site => action.data.url !== site.url);
       return Object.assign({}, prevState, {rows: newRows});
+    case at.UPDATE_SEARCH_SHORTCUTS:
+      return {...prevState, searchShortcuts: action.data.searchShortcuts};
+    case at.SNIPPETS_PREVIEW_MODE:
+      return {...prevState, rows: []};
     default:
       return prevState;
   }
@@ -351,6 +368,8 @@ function Sections(prevState = INITIAL_STATE.Sections, action) {
     case at.ARCHIVE_FROM_POCKET:
       return prevState.map(section =>
         Object.assign({}, section, {rows: section.rows.filter(site => site.pocket_id !== action.data.pocket_id)}));
+    case at.SNIPPETS_PREVIEW_MODE:
+      return prevState.map(section => ({...section, rows: []}));
     default:
       return prevState;
   }
@@ -371,10 +390,31 @@ function Snippets(prevState = INITIAL_STATE.Snippets, action) {
   }
 }
 
+function Pocket(prevState = INITIAL_STATE.Pocket, action) {
+  switch (action.type) {
+    case at.POCKET_WAITING_FOR_SPOC:
+      return {...prevState, waitingForSpoc: action.data};
+    case at.POCKET_LOGGED_IN:
+      return {...prevState, isUserLoggedIn: !!action.data};
+    case at.POCKET_CTA:
+      return {
+        ...prevState,
+        pocketCta: {
+          ctaButton: action.data.cta_button,
+          ctaText: action.data.cta_text,
+          ctaUrl: action.data.cta_url,
+          useCta: action.data.use_cta
+        }
+      };
+    default:
+      return prevState;
+  }
+}
+
 this.INITIAL_STATE = INITIAL_STATE;
 this.TOP_SITES_DEFAULT_ROWS = TOP_SITES_DEFAULT_ROWS;
 this.TOP_SITES_MAX_SITES_PER_ROW = TOP_SITES_MAX_SITES_PER_ROW;
 
-this.reducers = {TopSites, App, Snippets, Prefs, Dialog, Sections};
+this.reducers = {TopSites, App, Snippets, Prefs, Dialog, Sections, Pocket};
 
 const EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned", "TOP_SITES_DEFAULT_ROWS", "TOP_SITES_MAX_SITES_PER_ROW"];

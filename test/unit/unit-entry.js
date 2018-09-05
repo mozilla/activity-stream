@@ -110,7 +110,7 @@ const TEST_GLOBAL = {
       getAppLocalesAsLangTags() {},
       negotiateLanguages() {}
     },
-    urlFormatter: {formatURL: str => str},
+    urlFormatter: {formatURL: str => str, formatURLPref: str => str},
     mm: {
       addMessageListener: (msg, cb) => cb(),
       removeMessageListener() {}
@@ -180,14 +180,21 @@ const TEST_GLOBAL = {
       createNullPrincipal() {},
       getSystemPrincipal() {}
     },
-    wm: {getMostRecentWindow: () => window, getEnumerator: () => ({hasMoreElements: () => false})},
+    wm: {getMostRecentWindow: () => window, getEnumerator: () => []},
     ww: {registerNotification() {}, unregisterNotification() {}},
     appinfo: {appBuildID: "20180710100040"}
   },
   XPCOMUtils: {
-    defineLazyGetter(_1, _2, f) { f(); },
+    defineLazyGetter(object, name, f) {
+      if (object && name) {
+        object[name] = f();
+      } else {
+        f();
+      }
+    },
     defineLazyGlobalGetters() {},
     defineLazyModuleGetter() {},
+    defineLazyModuleGetters() {},
     defineLazyServiceGetter() {},
     generateQI() { return {}; }
   },

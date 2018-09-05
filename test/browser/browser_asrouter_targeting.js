@@ -12,6 +12,8 @@ ChromeUtils.defineModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
 ChromeUtils.defineModuleGetter(this, "PlacesTestUtils",
   "resource://testing-common/PlacesTestUtils.jsm");
+ChromeUtils.defineModuleGetter(this, "TelemetryEnvironment",
+  "resource://gre/modules/TelemetryEnvironment.jsm");
 
 // ASRouterTargeting.isMatch
 add_task(async function should_do_correct_targeting() {
@@ -106,6 +108,16 @@ add_task(async function checkProfileAgeReset() {
   const message = {id: "foo", targeting: `profileAgeReset == ${await profileAccessor.reset}`};
   is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
     "should select correct item by profile age reset");
+});
+
+add_task(async function checkCurrentDate() {
+  let message = {id: "foo", targeting: `currentDate < '${new Date(Date.now() + 1000)}'|date`};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "should select message based on currentDate < timestamp");
+
+  message = {id: "foo", targeting: `currentDate > '${new Date(Date.now() - 1000)}'|date`};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "should select message based on currentDate > timestamp");
 });
 
 add_task(async function checkhasFxAccount() {
@@ -271,4 +283,36 @@ add_task(async function checkFrecentSites() {
   // Cleanup
   await clearHistoryAndBookmarks();
   TopFrecentSitesCache.expire();
+});
+
+add_task(async function check_browserSettings() {
+  is(await ASRouterTargeting.Environment.browserSettings.attribution, TelemetryEnvironment.currentEnvironment.settings.attribution,
+    "should return correct attribution info");
+
+  is(await JSON.stringify(ASRouterTargeting.Environment.browserSettings.update), JSON.stringify(TelemetryEnvironment.currentEnvironment.settings.update),
+      "should return correct update info");
+});
+
+add_task(async function check_sync() {
+  is(await ASRouterTargeting.Environment.sync.desktopDevices, Services.prefs.getIntPref("services.sync.clients.devices.desktop", 0),
+    "should return correct desktopDevices info");
+  is(await ASRouterTargeting.Environment.sync.mobileDevices, Services.prefs.getIntPref("services.sync.clients.devices.mobile", 0),
+    "should return correct mobileDevices info");
+  is(await ASRouterTargeting.Environment.sync.totalDevices, Services.prefs.getIntPref("services.sync.numClients", 0),
+    "should return correct mobileDevices info");
+});
+
+add_task(async function check_onboarding_cohort() {
+  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", enabled: true, cohort: 1}]));
+  is(await ASRouterTargeting.Environment.isInExperimentCohort, 1);
+  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify(17));
+  is(await ASRouterTargeting.Environment.isInExperimentCohort, 0);
+  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", enabled: true, cohort: "hello"}]));
+  is(await ASRouterTargeting.Environment.isInExperimentCohort, 0);
+});
+
+add_task(async function check_provider_cohorts() {
+  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", enabled: true, cohort: "foo"}, {id: "cfr", cohort: "bar"}]));
+  is(await ASRouterTargeting.Environment.providerCohorts.onboarding, "foo");
+  is(await ASRouterTargeting.Environment.providerCohorts.cfr, "bar");
 });
