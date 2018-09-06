@@ -131,7 +131,7 @@ test_newtab({
 
     return searchTopSites[0].innerText;
   },
-  after: searchTopSiteTag => {
+  after(searchTopSiteTag) {
     ok(gURLBar.focused, "We clicked a search topsite the focus should be in location bar");
     ok(gURLBar.value.includes(searchTopSiteTag), "Should contain the tag of the search topsite clicked");
   }

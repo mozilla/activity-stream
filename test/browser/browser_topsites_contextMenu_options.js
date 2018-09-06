@@ -69,7 +69,8 @@ test_newtab({
       "1 search topsite displayed after we unpin the other one");
   },
   after: () => {
-    // This is modified when calling .unpin in `disableSearchImprovementsPrefs`
+    // Required for multiple test runs in the same browser, pref is used to
+    // prevent pinning the same search topsite twice
     Services.prefs.clearUserPref("browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.havePinned");
   }
 });
