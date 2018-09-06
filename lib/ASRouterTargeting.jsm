@@ -168,6 +168,9 @@ const TargetingGetters = {
       Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
     }
     return cohorts;
+  },
+  get totalBookmarksCount() {
+    return asProvider.getTotalBookmarksCount();
   }
 };
 

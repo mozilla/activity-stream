@@ -130,6 +130,27 @@ add_task(async function checkhasFxAccount() {
     "should select correct item by hasFxAccount");
 });
 
+add_task(async function check_totalBookmarksCount() {
+  // Make sure we remove default bookmarks so they don't interfere
+  await clearHistoryAndBookmarks();
+  const message = {id: "foo", targeting: "totalBookmarksCount > 0"};
+
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), undefined,
+    "Should not select any message because");
+
+  const bookmark = await PlacesUtils.bookmarks.insert({
+    parentGuid: PlacesUtils.bookmarks.unfiledGuid,
+    title: "foo",
+    url: "https://mozilla1.com/nowNew"
+  });
+
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "Should select correct item after bookmarks are added.");
+
+  // Cleanup
+  await PlacesUtils.bookmarks.remove(bookmark.guid);
+});
+
 add_task(async function checksearchEngines() {
   const result = await ASRouterTargeting.Environment.searchEngines;
   const expectedInstalled = Services.search.getVisibleEngines()
