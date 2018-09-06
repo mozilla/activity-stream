@@ -180,6 +180,10 @@ this.ASRouterTargeting = {
   },
 
   isMatch(filterExpression, context = this.Environment) {
+    // Combine any provided context with the default getters
+    if (context !== this.Environment) {
+      return FilterExpressions.eval(filterExpression, {...this.Environment, ...context});
+    }
     return FilterExpressions.eval(filterExpression, context);
   },
 

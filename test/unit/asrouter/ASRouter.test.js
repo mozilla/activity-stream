@@ -40,6 +40,7 @@ describe("ASRouter", () => {
   let providerBlockList;
   let messageImpressions;
   let providerImpressions;
+  let previousSessionEnd;
   let fetchStub;
   let clock;
   let getStringPrefStub;
@@ -52,6 +53,7 @@ describe("ASRouter", () => {
     getStub.withArgs("providerBlockList").returns(Promise.resolve(providerBlockList));
     getStub.withArgs("messageImpressions").returns(Promise.resolve(messageImpressions));
     getStub.withArgs("providerImpressions").returns(Promise.resolve(providerImpressions));
+    getStub.withArgs("previousSessionEnd").returns(Promise.resolve(previousSessionEnd));
     return {
       get: getStub,
       set: sandbox.stub().returns(Promise.resolve())
@@ -77,6 +79,7 @@ describe("ASRouter", () => {
     providerBlockList = [];
     messageImpressions = {};
     providerImpressions = {};
+    previousSessionEnd = 100;
     sandbox = sinon.sandbox.create();
     clock = sandbox.useFakeTimers();
     fetchStub = sandbox.stub(global, "fetch")
@@ -173,6 +176,12 @@ describe("ASRouter", () => {
     });
     it("should set this.dispatchToAS to the third parameter passed to .init()", async () => {
       assert.equal(Router.dispatchToAS, dispatchStub);
+    });
+    it("should set state.previousSessionEnd from IndexedDB", async () => {
+      previousSessionEnd = 200;
+      await createRouterAndInit();
+
+      assert.equal(Router.state.previousSessionEnd, previousSessionEnd);
     });
   });
 
@@ -342,6 +351,12 @@ describe("ASRouter", () => {
     it("should set .dispatchToAS to null", () => {
       Router.uninit();
       assert.isNull(Router.dispatchToAS);
+    });
+    it("should save previousSessionEnd", () => {
+      Router.uninit();
+
+      assert.calledOnce(Router._storage.set);
+      assert.calledWithExactly(Router._storage.set, "previousSessionEnd", sinon.match.number);
     });
   });
 
@@ -638,6 +653,9 @@ describe("ASRouter", () => {
       assert.equal(bundle.length, 2);
       // it should have picked foo1 and foo3 only
       assert.isTrue(bundle.every(elem => elem.id === "foo1" || elem.id === "foo3"));
+    });
+    it("should have previousSessionEnd in the message context", () => {
+      assert.propertyVal(Router._getMessagesContext(), "previousSessionEnd", 100);
     });
   });
 
