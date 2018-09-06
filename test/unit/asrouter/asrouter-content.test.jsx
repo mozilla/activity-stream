@@ -90,6 +90,16 @@ describe("ASRouterUISurface", () => {
     assert.isTrue(wrapper.exists());
   });
 
+  it("should render a preview banner if message provider is preview", () => {
+    wrapper.setState({message: {...FAKE_MESSAGE, provider: "preview"}});
+    assert.isTrue(wrapper.find(".snippets-preview-banner").exists());
+  });
+
+  it("should not render a preview banner if message provider is not preview", () => {
+    wrapper.setState({message: FAKE_MESSAGE});
+    assert.isFalse(wrapper.find(".snippets-preview-banner").exists());
+  });
+
   describe("snippets", () => {
     it("should send correct event and source when snippet is blocked", () => {
       wrapper.setState({message: FAKE_MESSAGE});

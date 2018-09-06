@@ -10,6 +10,7 @@ import {
   FakeRemotePageManager,
   PARENT_TO_CHILD_MESSAGE_NAME
 } from "./constants";
+import {actionCreators as ac} from "common/Actions.jsm";
 import {ASRouterTriggerListeners} from "lib/ASRouterTriggerListeners.jsm";
 import {CFRPageActions} from "lib/CFRPageActions.jsm";
 import {GlobalOverrider} from "test/unit/utils";
@@ -415,6 +416,14 @@ describe("ASRouter", () => {
 
       assert.calledWith(global.fetch, url);
       assert.lengthOf(Router.state.providers.filter(p => p.url === url), 0);
+    });
+    it("should dispatch SNIPPETS_PREVIEW_MODE when adding a preview endpoint", async () => {
+      const url = "https://snippets-admin.mozilla.org/foo";
+      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url}}});
+      await Router.onMessage(msg);
+
+      assert.calledOnce(Router.dispatchToAS);
+      assert.calledWithExactly(Router.dispatchToAS, ac.OnlyToOneContent({type: "SNIPPETS_PREVIEW_MODE"}, msg.target.portID));
     });
     it("should not add a url that is not from a whitelisted host", async () => {
       const url = "https://mozilla.org";
