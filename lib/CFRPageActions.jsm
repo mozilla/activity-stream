@@ -184,6 +184,16 @@ class PageAction {
    */
   async getStrings(string, subAttribute = "") {
     if (!string.string_id) {
+      if (subAttribute) {
+        return string.attributes[subAttribute];
+      }
+
+      if (string.attributes) {
+        const stringWithAttributes = new String(string.value); // eslint-disable-line no-new-wrappers
+        stringWithAttributes.attributes = string.attributes;
+        return stringWithAttributes;
+      }
+
       return string;
     }
 
