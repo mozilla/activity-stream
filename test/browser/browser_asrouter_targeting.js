@@ -251,6 +251,7 @@ add_task(async function checkFrecentSites() {
   }
 
   await PlacesTestUtils.addVisits(visits);
+  TopFrecentSitesCache.expire();
 
   let message = {id: "foo", targeting: "'mozilla3.com' in topFrecentSites|mapToProperty('host')"};
   is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,

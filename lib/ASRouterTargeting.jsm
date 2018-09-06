@@ -179,12 +179,8 @@ this.ASRouterTargeting = {
     OTHER_ERROR: "OTHER_ERROR"
   },
 
-  isMatch(filterExpression, context = this.Environment) {
-    // Combine any provided context with the default getters
-    if (context !== this.Environment) {
-      return FilterExpressions.eval(filterExpression, {...this.Environment, ...context});
-    }
-    return FilterExpressions.eval(filterExpression, context);
+  isMatch(filterExpression, context) {
+    return FilterExpressions.eval(filterExpression, Object.assign({}, this.Environment, context));
   },
 
   isTriggerMatch(trigger = {}, candidateMessageTrigger = {}) {
