@@ -99,6 +99,7 @@ Name | Type | Example value | Description
 `browserSettings.attribution` | `Object` or `undefined` | [example below](#attribution-example) | Attribution for the source of of where the browser was downloaded.
 `providerCohorts` | `Object` | `{onboarding: "hello"}` | Cohorts defined for all providers
 `previousSessionEnd` | `Number` | `1536325802800` | Timestamp in milliseconds of previously closed session
+`totalBookmarksCount` | `Number` | `8` | Total number of bookmarks
 #### addonsInfo Example
 
 ```javascript
