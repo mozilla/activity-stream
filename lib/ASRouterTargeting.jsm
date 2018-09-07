@@ -180,7 +180,12 @@ this.ASRouterTargeting = {
   },
 
   isMatch(filterExpression, context) {
-    return FilterExpressions.eval(filterExpression, Object.assign({}, this.Environment, context));
+    if (context) {
+      // If we passed in a value for `context` we want to merge that with `Environment`
+      // Object.create will do this without evaluating/calling any of the getters defined in `Environment`
+      context.prototype = Object.create({}, Object.getOwnPropertyDescriptors(this.Environment));
+    }
+    return FilterExpressions.eval(filterExpression, context || this.Environment);
   },
 
   isTriggerMatch(trigger = {}, candidateMessageTrigger = {}) {
