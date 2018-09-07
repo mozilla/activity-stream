@@ -153,6 +153,9 @@ export class ASRouterUISurface extends React.PureComponent {
       id: "NEWTAB_FOOTER_BAR_CONTENT"
     };
     this.sendUserActionTelemetry({event: "CLICK_BUTTON", ...metric});
+    if (!this.state.message.content.do_not_autoblock) {
+      ASRouterUtils.blockById(this.state.message.id);
+    }
   }
 
   onBlockById(id) {
