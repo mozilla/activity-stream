@@ -328,7 +328,8 @@ class _ASRouter {
     const providerBlockList = await this._storage.get("providerBlockList") || [];
     const messageImpressions = await this._storage.get("messageImpressions") || {};
     const providerImpressions = await this._storage.get("providerImpressions") || {};
-    await this.setState({messageBlockList, providerBlockList, messageImpressions, providerImpressions});
+    const previousSessionEnd = await this._storage.get("previousSessionEnd") || 0;
+    await this.setState({messageBlockList, providerBlockList, messageImpressions, providerImpressions, previousSessionEnd});
     this._updateMessageProviders();
     await this.loadMessagesFromAllProviders();
 
@@ -337,6 +338,8 @@ class _ASRouter {
   }
 
   uninit() {
+    this._storage.set("previousSessionEnd", Date.now());
+
     this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_ALL"});
     this.messageChannel.removeMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this.messageChannel = null;
@@ -380,12 +383,23 @@ class _ASRouter {
     }
   }
 
+  // Return an object containing targeting parameters used to select messages
+  _getMessagesContext() {
+    const {previousSessionEnd} = this.state;
+    return {
+      get previousSessionEnd() {
+        return previousSessionEnd;
+      }
+    };
+  }
+
   _findMessage(candidateMessages, trigger) {
     const messages = candidateMessages.filter(m => this.isBelowFrequencyCaps(m));
+    const context = this._getMessagesContext();
 
      // Find a message that matches the targeting context as well as the trigger context (if one is provided)
      // If no trigger is provided, we should find a message WITHOUT a trigger property defined.
-    return ASRouterTargeting.findMatchingMessage({messages, trigger, onError: this._handleTargetingError});
+    return ASRouterTargeting.findMatchingMessage({messages, trigger, context, onError: this._handleTargetingError});
   }
 
   _orderBundle(bundle) {
