@@ -1,4 +1,4 @@
-const {ASRouterTargeting, TopFrecentSitesCache} =
+const {ASRouterTargeting, TopFrecentSitesCache, TotalBookmarksCountCache} =
   ChromeUtils.import("resource://activity-stream/lib/ASRouterTargeting.jsm", {});
 const {AddonTestUtils} =
   ChromeUtils.import("resource://testing-common/AddonTestUtils.jsm", {});
@@ -143,6 +143,8 @@ add_task(async function check_totalBookmarksCount() {
     title: "foo",
     url: "https://mozilla1.com/nowNew"
   });
+
+  TotalBookmarksCountCache.expire();
 
   is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
     "Should select correct item after bookmarks are added.");
