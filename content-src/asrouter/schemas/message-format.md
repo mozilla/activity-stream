@@ -98,6 +98,7 @@ Name | Type | Example value | Description
 `searchEngines` | `Object` | [example below](#searchengines-example) | Information about the current and available search engines
 `browserSettings.attribution` | `Object` or `undefined` | [example below](#attribution-example) | Attribution for the source of of where the browser was downloaded.
 `providerCohorts` | `Object` | `{onboarding: "hello"}` | Cohorts defined for all providers
+`previousSessionEnd` | `Number` | `1536325802800` | Timestamp in milliseconds of previously closed session
 #### addonsInfo Example
 
 ```javascript
