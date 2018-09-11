@@ -13,8 +13,11 @@ ChromeUtils.defineModuleGetter(this, "ShellService",
   "resource:///modules/ShellService.jsm");
 ChromeUtils.defineModuleGetter(this, "TelemetryEnvironment",
   "resource://gre/modules/TelemetryEnvironment.jsm");
+ChromeUtils.defineModuleGetter(this, "AppConstants",
+  "resource://gre/modules/AppConstants.jsm");
 
 const FXA_USERNAME_PREF = "services.sync.username";
+const SEARCH_REGION_PREF = "browser.search.region";
 const MOZ_JEXL_FILEPATH = "mozjexl";
 
 const {activityStreamProvider: asProvider} = NewTabUtils;
@@ -176,6 +179,12 @@ const TargetingGetters = {
   },
   get totalBookmarksCount() {
     return TotalBookmarksCountCache.getTotalBookmarksCount;
+  },
+  get firefoxVersion() {
+    return parseInt(AppConstants.MOZ_APP_VERSION, 10);
+  },
+  get geoCountry() {
+    return Services.prefs.getStringPref(SEARCH_REGION_PREF);
   }
 };
 

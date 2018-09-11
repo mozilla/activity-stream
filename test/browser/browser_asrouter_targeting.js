@@ -308,6 +308,18 @@ add_task(async function checkFrecentSites() {
   TopFrecentSitesCache.expire();
 });
 
+add_task(async function check_firefox_version() {
+  const message = {id: "foo", targeting: "firefoxVersion > 0"};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "should select correct item when filtering by firefox version");
+});
+
+add_task(async function check_geoCountry() {
+  const message = {id: "foo", targeting: "geoCountry in ['US']"};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "should select correct item when filtering by firefox geo");
+});
+
 add_task(async function check_browserSettings() {
   is(await ASRouterTargeting.Environment.browserSettings.attribution, TelemetryEnvironment.currentEnvironment.settings.attribution,
     "should return correct attribution info");
