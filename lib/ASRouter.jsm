@@ -41,6 +41,9 @@ const LOCAL_MESSAGE_PROVIDERS = {OnboardingMessageProvider, CFRMessageProvider};
 const STARTPAGE_VERSION = "0.1.0";
 
 const MessageLoaderUtils = {
+  STARTPAGE_VERSION,
+  REMOTE_LOADER_CACHE_KEY: "RemoteLoaderCache",
+
   /**
    * _localLoader - Loads messages for a local provider (i.e. one that lives in mozilla central)
    *
@@ -52,26 +55,74 @@ const MessageLoaderUtils = {
     return provider.messages;
   },
 
+  async _remoteLoaderCache(storage) {
+    let allCached;
+    try {
+      allCached = await storage.get(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY) || {};
+    } catch (e) {
+      // istanbul ignore next
+      Cu.reportError(e);
+      // istanbul ignore next
+      allCached = {};
+    }
+    return allCached;
+  },
+
   /**
    * _remoteLoader - Loads messages for a remote provider
    *
    * @param {obj} provider An AS router provider
    * @param {string} provider.url An endpoint that returns an array of messages as JSON
+   * @param {obj} storage A storage object with get() and set() methods for caching.
    * @returns {Promise} resolves with an array of messages, or an empty array if none could be fetched
    */
-  async _remoteLoader(provider) {
+  async _remoteLoader(provider, storage) {
     let remoteMessages = [];
     if (provider.url) {
+      const allCached = await MessageLoaderUtils._remoteLoaderCache(storage);
+      const cached = allCached[provider.id];
+      let etag;
+
+      if (cached && cached.url === provider.url && cached.version === STARTPAGE_VERSION) {
+        const {lastFetched, messages} = cached;
+        if (!MessageLoaderUtils.shouldProviderUpdate({...provider, lastUpdated: lastFetched})) {
+          // Cached messages haven't expired, return early.
+          return messages;
+        }
+        etag = cached.etag;
+        remoteMessages = messages;
+      }
+
+      let headers = new Headers();
+      if (etag) {
+        headers.set("If-None-Match", etag);
+      }
+
       try {
-        const response = await fetch(provider.url);
+        const response = await fetch(provider.url, {headers});
         if (
           // Empty response
           response.status !== 204 &&
+          // Not modified
+          response.status !== 304 &&
           (response.ok || response.status === 302)
         ) {
           remoteMessages = (await response.json())
             .messages
             .map(msg => ({...msg, provider_url: provider.url}));
+
+          // Cache the results if this isn't a preview URL.
+          if (provider.updateCycleInMs > 0) {
+            etag = response.headers.get("ETag");
+            const cacheInfo = {
+              messages: remoteMessages,
+              etag,
+              lastFetched: Date.now(),
+              version: STARTPAGE_VERSION
+            };
+
+            storage.set(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY, {...allCached, [provider.id]: cacheInfo});
+          }
         }
       } catch (e) {
         Cu.reportError(e);
@@ -139,11 +190,12 @@ const MessageLoaderUtils = {
    *
    * @param {obj} provider An AS Router provider
    * @param {string} provider.type An AS Router provider type (defaults to "local")
+   * @param {obj} storage A storage object with get() and set() methods for caching.
    * @returns {obj} Returns an object with .messages (an array of messages) and .lastUpdated (the time the messages were updated)
    */
-  async loadMessagesForProvider(provider) {
+  async loadMessagesForProvider(provider, storage) {
     const loader = this._getMessageLoader(provider);
-    let messages = await loader(provider);
+    let messages = await loader(provider, storage);
     // istanbul ignore if
     if (!messages) {
       messages = [];
@@ -161,6 +213,26 @@ const MessageLoaderUtils = {
       await AddonManager.installAddonFromWebpage("application/x-xpinstall", browser,
         systemPrincipal, install);
     } catch (e) {}
+  },
+
+  /**
+   * cleanupCache - Removes cached data of removed providers.
+   *
+   * @param {Array} providers A list of activer AS Router providers
+   */
+  async cleanupCache(providers, storage) {
+    const ids = providers.filter(p => p.type === "remote").map(p => p.id);
+    const cache = await MessageLoaderUtils._remoteLoaderCache(storage);
+    let dirty = false;
+    for (let id in cache) {
+      if (!ids.includes(id)) {
+        delete cache[id];
+        dirty = true;
+      }
+    }
+    if (dirty) {
+      await storage.set(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY, cache);
+    }
   }
 };
 
@@ -295,7 +367,7 @@ class _ASRouter {
       let newState = {messages: [], providers: []};
       for (const provider of this.state.providers) {
         if (needsUpdate.includes(provider)) {
-          const {messages, lastUpdated} = await MessageLoaderUtils.loadMessagesForProvider(provider);
+          const {messages, lastUpdated} = await MessageLoaderUtils.loadMessagesForProvider(provider, this._storage);
           newState.providers.push({...provider, lastUpdated});
           newState.messages = [...newState.messages, ...messages];
         } else {
@@ -355,6 +427,7 @@ class _ASRouter {
     this._updateMessageProviders();
     this.overrideOrEnableLegacyOnboarding();
     await this.loadMessagesFromAllProviders();
+    await MessageLoaderUtils.cleanupCache(this.state.providers, storage);
 
     // set necessary state in the rest of AS
     this.dispatchToAS(ac.BroadcastToContent({type: at.AS_ROUTER_INITIALIZED, data: ASRouterPreferences.specialConditions}));
