@@ -157,13 +157,9 @@ class PageAction {
   }
 
   _sendTelemetry(ping) {
-    // Note `useClientID` is set to true to tell TelemetryFeed to use client_id
-    // instead of `impression_id`. TelemetryFeed is also responsible for deciding
-    // whether to use `message_id` or `bucket_id` based on the release channel and
-    // shield study setup.
     this._dispatchToASRouter({
       type: "DOORHANGER_TELEMETRY",
-      data: {useClientID: true, action: "cfr_user_event", source: "CFR", ...ping}
+      data: {action: "cfr_user_event", source: "CFR", ...ping}
     });
   }
 

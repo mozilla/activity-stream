@@ -159,7 +159,6 @@ describe("CFRPageActions", () => {
         assert.calledWith(dispatchStub, {
           type: "DOORHANGER_TELEMETRY",
           data: {
-            useClientID: true,
             action: "cfr_user_event",
             source: "CFR",
             message_id: fakeRecommendation.id,
@@ -303,7 +302,7 @@ describe("CFRPageActions", () => {
         pageAction._sendTelemetry(fakePing);
         assert.calledWith(dispatchStub, {
           type: "DOORHANGER_TELEMETRY",
-          data: {useClientID: true, action: "cfr_user_event", source: "CFR", message_id: 42}
+          data: {action: "cfr_user_event", source: "CFR", message_id: 42}
         });
       });
     });
@@ -409,7 +408,6 @@ describe("CFRPageActions", () => {
         assert.calledWith(dispatchStub, {
           type: "DOORHANGER_TELEMETRY",
           data: {
-            useClientID: true,
             action: "cfr_user_event",
             source: "CFR",
             message_id: fakeRecommendation.id,
@@ -441,7 +439,6 @@ describe("CFRPageActions", () => {
         assert.calledWith(dispatchStub, {
           type: "DOORHANGER_TELEMETRY",
           data: {
-            useClientID: true,
             action: "cfr_user_event",
             source: "CFR",
             message_id: fakeRecommendation.id,
@@ -465,7 +462,6 @@ describe("CFRPageActions", () => {
         assert.calledWith(dispatchStub, {
           type: "DOORHANGER_TELEMETRY",
           data: {
-            useClientID: true,
             action: "cfr_user_event",
             source: "CFR",
             message_id: fakeRecommendation.id,
