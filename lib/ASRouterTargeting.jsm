@@ -35,11 +35,16 @@ function CachedTargetingGetter(property, options = null, updateInterval = FRECEN
   };
 
   Object.defineProperty(targetingGetter, property, {
-    get: () => new Promise(async resolve => {
+    get: () => new Promise(async (resolve, reject) => {
       const now = Date.now();
       if (now - targetingGetter._lastUpdated >= updateInterval) {
-        targetingGetter._value = await asProvider[property](options);
-        targetingGetter._lastUpdated = now;
+        try {
+          targetingGetter._value = await asProvider[property](options);
+          targetingGetter._lastUpdated = now;
+        } catch (e) {
+          Cu.reportError(e);
+          reject(e);
+        }
       }
       resolve(targetingGetter._value);
     })
@@ -274,4 +279,5 @@ this.ASRouterTargeting = {
 // Export for testing
 this.TopFrecentSitesCache = TopFrecentSitesCache;
 this.TotalBookmarksCountCache = TotalBookmarksCountCache;
-this.EXPORTED_SYMBOLS = ["ASRouterTargeting", "TopFrecentSitesCache", "TotalBookmarksCountCache"];
+this.CachedTargetingGetter = CachedTargetingGetter;
+this.EXPORTED_SYMBOLS = ["ASRouterTargeting", "TopFrecentSitesCache", "TotalBookmarksCountCache", "CachedTargetingGetter"];
