@@ -132,6 +132,23 @@ describe("ASRouterUISurface", () => {
       fakeDocument.visibilityState = value;
     }
 
+    it("should call blockById after CTA link is clicked", () => {
+      wrapper.setState({message: FAKE_MESSAGE});
+      sandbox.stub(ASRouterUtils, "blockById");
+      wrapper.instance().sendClick({target: {dataset: {metric: ""}}});
+
+      assert.calledOnce(ASRouterUtils.blockById);
+      assert.calledWithExactly(ASRouterUtils.blockById, FAKE_MESSAGE.id);
+    });
+
+    it("should not call blockById if do_not_autoblock is true", () => {
+      wrapper.setState({message: {...FAKE_MESSAGE, ...{content: {...FAKE_MESSAGE.content, do_not_autoblock: true}}}});
+      sandbox.stub(ASRouterUtils, "blockById");
+      wrapper.instance().sendClick({target: {dataset: {metric: ""}}});
+
+      assert.notCalled(ASRouterUtils.blockById);
+    });
+
     it("should not send an impression if no message exists", () => {
       simulateVisibilityChange("visible");
 

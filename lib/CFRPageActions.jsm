@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {Localization} = ChromeUtils.import("resource://gre/modules/Localization.jsm", {});
+ChromeUtils.import("resource://gre/modules/Localization.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
@@ -59,21 +59,6 @@ class PageAction {
     this.container.onclick = this._handleClick;
   }
 
-  _dispatchImpression(message) {
-    this._dispatchToASRouter({type: "IMPRESSION", data: message});
-  }
-
-  _sendTelemetry(ping) {
-    // Note `useClientID` is set to true to tell TelemetryFeed to use client_id
-    // instead of `impression_id`. TelemetryFeed is also responsible for deciding
-    // whether to use `message_id` or `bucket_id` based on the release channel and
-    // shield study setup.
-    this._dispatchToASRouter({
-      type: "DOORHANGER_TELEMETRY",
-      data: {useClientID: true, action: "cfr_user_event", source: "CFR", ...ping}
-    });
-  }
-
   async show(recommendation, shouldExpand = false) {
     this.container.hidden = false;
 
@@ -111,13 +96,6 @@ class PageAction {
       this.window.PopupNotifications.remove(this.currentNotification);
       this.currentNotification = null;
     }
-  }
-
-  dispatchUserAction(action) {
-    this._dispatchToASRouter(
-      {type: "USER_ACTION", data: action},
-      {browser: this.window.gBrowser.selectedBrowser}
-    );
   }
 
   _expand(delay = 0) {
@@ -165,6 +143,24 @@ class PageAction {
         this.currentNotification = null;
       }
     }
+  }
+
+  dispatchUserAction(action) {
+    this._dispatchToASRouter(
+      {type: "USER_ACTION", data: action},
+      {browser: this.window.gBrowser.selectedBrowser}
+    );
+  }
+
+  _dispatchImpression(message) {
+    this._dispatchToASRouter({type: "IMPRESSION", data: message});
+  }
+
+  _sendTelemetry(ping) {
+    this._dispatchToASRouter({
+      type: "DOORHANGER_TELEMETRY",
+      data: {action: "cfr_user_event", source: "CFR", ...ping}
+    });
   }
 
   _blockMessage(messageID) {
@@ -438,8 +434,12 @@ const CFRPageActions = {
     // WeakMaps don't have a `clear` method
     PageActionMap = new WeakMap();
     RecommendationMap = new WeakMap();
+    this.PageActionMap = PageActionMap;
+    this.RecommendationMap = RecommendationMap;
   }
 };
+
+this.PageAction = PageAction;
 this.CFRPageActions = CFRPageActions;
 
-const EXPORTED_SYMBOLS = ["CFRPageActions"];
+const EXPORTED_SYMBOLS = ["CFRPageActions", "PageAction"];

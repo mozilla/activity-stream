@@ -1,4 +1,4 @@
-const {ASRouterTargeting, TopFrecentSitesCache} =
+const {ASRouterTargeting, TopFrecentSitesCache, TotalBookmarksCountCache} =
   ChromeUtils.import("resource://activity-stream/lib/ASRouterTargeting.jsm", {});
 const {AddonTestUtils} =
   ChromeUtils.import("resource://testing-common/AddonTestUtils.jsm", {});
@@ -128,6 +128,29 @@ add_task(async function checkhasFxAccount() {
   const message = {id: "foo", targeting: "hasFxAccount"};
   is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
     "should select correct item by hasFxAccount");
+});
+
+add_task(async function check_totalBookmarksCount() {
+  // Make sure we remove default bookmarks so they don't interfere
+  await clearHistoryAndBookmarks();
+  const message = {id: "foo", targeting: "totalBookmarksCount > 0"};
+
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), undefined,
+    "Should not select any message because");
+
+  const bookmark = await PlacesUtils.bookmarks.insert({
+    parentGuid: PlacesUtils.bookmarks.unfiledGuid,
+    title: "foo",
+    url: "https://mozilla1.com/nowNew"
+  });
+
+  TotalBookmarksCountCache.expire();
+
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "Should select correct item after bookmarks are added.");
+
+  // Cleanup
+  await PlacesUtils.bookmarks.remove(bookmark.guid);
 });
 
 add_task(async function checksearchEngines() {
