@@ -49,7 +49,7 @@ const MessageLoaderUtils = {
    * @returns {Array} the array of messages
    */
   _localLoader(provider) {
-    return provider.messages;
+    return provider.messages || [];
   },
 
   /**
@@ -142,8 +142,10 @@ const MessageLoaderUtils = {
    * @returns {obj} Returns an object with .messages (an array of messages) and .lastUpdated (the time the messages were updated)
    */
   async loadMessagesForProvider(provider) {
-    const messages = (await this._getMessageLoader(provider)(provider))
-        .map(msg => ({...msg, provider: provider.id}));
+    const loader = this._getMessageLoader(provider);
+    const messages = (await loader(provider))
+      .map(msg => ({...msg, provider: provider.id}));
+
     const lastUpdated = Date.now();
     return {messages, lastUpdated};
   },
