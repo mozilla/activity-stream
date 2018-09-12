@@ -23,31 +23,48 @@ const FRECENT_SITES_IGNORE_BLOCKED = true;
 const FRECENT_SITES_NUM_ITEMS = 25;
 const FRECENT_SITES_MIN_FRECENCY = 100;
 
-const TopFrecentSitesCache = {
-  _lastUpdated: 0,
-  _topFrecentSites: null,
-  get topFrecentSites() {
-    return new Promise(async resolve => {
+function CachedTargetingGetter(property, options = null, updateInterval = FRECENT_SITES_UPDATE_INTERVAL) {
+  const targetingGetter = {
+    _lastUpdated: 0,
+    _value: null,
+    // For testing
+    expire() {
+      this._lastUpdated = 0;
+      this._value = null;
+    }
+  };
+
+  Object.defineProperty(targetingGetter, property, {
+    get: () => new Promise(async (resolve, reject) => {
       const now = Date.now();
-      if (now - this._lastUpdated >= FRECENT_SITES_UPDATE_INTERVAL) {
-        this._topFrecentSites = await asProvider.getTopFrecentSites({
-          ignoreBlocked: FRECENT_SITES_IGNORE_BLOCKED,
-          numItems: FRECENT_SITES_NUM_ITEMS,
-          topsiteFrecency: FRECENT_SITES_MIN_FRECENCY,
-          onePerDomain: true,
-          includeFavicon: false
-        });
-        this._lastUpdated = now;
+      if (now - targetingGetter._lastUpdated >= updateInterval) {
+        try {
+          targetingGetter._value = await asProvider[property](options);
+          targetingGetter._lastUpdated = now;
+        } catch (e) {
+          Cu.reportError(e);
+          reject(e);
+        }
       }
-      resolve(this._topFrecentSites);
-    });
-  },
-  // For testing
-  expire() {
-    this._lastUpdated = 0;
-    this._topFrecentSites = null;
+      resolve(targetingGetter._value);
+    })
+  });
+
+  return targetingGetter;
+}
+
+const TopFrecentSitesCache = new CachedTargetingGetter(
+  "getTopFrecentSites",
+  {
+    ignoreBlocked: FRECENT_SITES_IGNORE_BLOCKED,
+    numItems: FRECENT_SITES_NUM_ITEMS,
+    topsiteFrecency: FRECENT_SITES_MIN_FRECENCY,
+    onePerDomain: true,
+    includeFavicon: false
   }
-};
+);
+
+const TotalBookmarksCountCache = new CachedTargetingGetter("getTotalBookmarksCount");
 
 /**
  * removeRandomItemFromArray - Removes a random item from the array and returns it.
@@ -136,7 +153,7 @@ const TargetingGetters = {
     return Services.prefs.getIntPref("devtools.selfxss.count");
   },
   get topFrecentSites() {
-    return TopFrecentSitesCache.topFrecentSites.then(sites => sites.map(site => (
+    return TopFrecentSitesCache.getTopFrecentSites.then(sites => sites.map(site => (
       {
         url: site.url,
         host: (new URL(site.url)).hostname,
@@ -168,6 +185,9 @@ const TargetingGetters = {
       Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
     }
     return cohorts;
+  },
+  get totalBookmarksCount() {
+    return TotalBookmarksCountCache.getTotalBookmarksCount;
   }
 };
 
@@ -258,4 +278,6 @@ this.ASRouterTargeting = {
 
 // Export for testing
 this.TopFrecentSitesCache = TopFrecentSitesCache;
-this.EXPORTED_SYMBOLS = ["ASRouterTargeting", "TopFrecentSitesCache"];
+this.TotalBookmarksCountCache = TotalBookmarksCountCache;
+this.CachedTargetingGetter = CachedTargetingGetter;
+this.EXPORTED_SYMBOLS = ["ASRouterTargeting", "TopFrecentSitesCache", "TotalBookmarksCountCache", "CachedTargetingGetter"];
