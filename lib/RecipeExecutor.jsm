@@ -3,8 +3,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {tokenize} = ChromeUtils.import("resource://activity-stream/lib/TfIdfVectorizer.jsm", {});
+const {tokenize} = ChromeUtils.import("resource://activity-stream/lib/Tokenize.jsm", {});
 
+/**
+ * RecipeExecutor is the core feature engineering pipeline for the in-browser
+ * personalization work. These pipelines are called "recipes". A recipe is an
+ * array of objects that define a "step" in the recipe. A step is simply an
+ * object with a field "function" that specifies what is being done in the step
+ * along with other fields that are semantically defined for that step.
+ *
+ * There are two types of recipes "builder" recipes and "combiner" recipes. Builder
+ * recipes mutate an object until it matches some set of critera. Combiner
+ * recipes take two objects, (a "left" and a "right"), and specify the steps
+ * to merge the right object into the left object.
+ *
+ * A short nonsense example recipe is:
+ * [ {"function": "get_url_domain", "path_length": 1, "field": "url", "dest": "url_domain"},
+ *   {"function": "nb_tag", "fields": ["title", "description"]},
+ *   {"function": "conditionally_nmf_tag", "fields": ["title", "description"]} ]
+ *
+ * Recipes are sandboxed by the fact that the step functions must be explicitly
+ * whitelisted. Functions whitelisted for builder recipes are specifed in the
+ * RecipeExecutor.ITEM_BUILDER_REGISTRY, while combiner functions are whitelisted
+ * in RecipeExecutor.ITEM_COMBINER_REGISTRY .
+ */
 this.RecipeExecutor = class RecipeExecutor {
   constructor(nbTaggers, nmfTaggers) {
     this.ITEM_BUILDER_REGISTRY = {

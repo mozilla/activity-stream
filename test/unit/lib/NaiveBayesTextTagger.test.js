@@ -1,5 +1,5 @@
 import {NaiveBayesTextTagger} from "lib/NaiveBayesTextTagger.jsm";
-import {tokenize} from "lib/TfIdfVectorizer.jsm";
+import {tokenize} from "lib/Tokenize.jsm";
 
 const EPSILON = 0.00001;
 

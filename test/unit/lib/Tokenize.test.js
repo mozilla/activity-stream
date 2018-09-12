@@ -1,4 +1,4 @@
-import {tokenize, toksToTfIdfVector} from "lib/TfIdfVectorizer.jsm";
+import {tokenize, toksToTfIdfVector} from "lib/Tokenize.jsm";
 
 const EPSILON = 0.00001;
 
