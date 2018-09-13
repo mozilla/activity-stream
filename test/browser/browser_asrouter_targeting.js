@@ -120,7 +120,7 @@ add_task(async function checkCurrentDate() {
     "should select message based on currentDate > timestamp");
 });
 
-add_task(async function checkusesFirefoxSync() {
+add_task(async function check_usesFirefoxSync() {
   await pushPrefs(["services.sync.username", "someone@foo.com"]);
   is(await ASRouterTargeting.Environment.usesFirefoxSync, true,
     "should return true if a fx account is set");
