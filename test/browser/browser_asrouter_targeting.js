@@ -315,7 +315,9 @@ add_task(async function check_firefox_version() {
 });
 
 add_task(async function check_geoCountry() {
-  const message = {id: "foo", targeting: "geoCountry in ['US']"};
+  await SpecialPowers.pushPrefEnv({"set": [["browser.search.region", "DE"]]});
+
+  const message = {id: "foo", targeting: "geoCountry in ['DE']"};
   is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
     "should select correct item when filtering by firefox geo");
 });

@@ -184,7 +184,7 @@ const TargetingGetters = {
     return parseInt(AppConstants.MOZ_APP_VERSION, 10);
   },
   get geoCountry() {
-    return Services.prefs.getStringPref(SEARCH_REGION_PREF);
+    return Services.prefs.getStringPref(SEARCH_REGION_PREF, "");
   }
 };
 
