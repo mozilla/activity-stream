@@ -55,8 +55,6 @@ class PageAction {
 
     // Saved timeout IDs for scheduled state changes, so they can be cancelled
     this.stateTransitionTimeoutIDs = [];
-
-    this.container.onclick = this._handleClick;
   }
 
   async show(recommendation, shouldExpand = false) {
@@ -70,6 +68,11 @@ class PageAction {
     await this.window.promiseDocumentFlushed;
     const [{width}] = this.label.getClientRects();
     this.urlbar.style.setProperty("--cfr-label-width", `${width}px`);
+
+    this.container.addEventListener("click", this._handleClick);
+    // Collapse the recommendation on url bar focus in order to free up more
+    // space to display and edit the url
+    this.urlbar.addEventListener("focus", this._collapse);
 
     if (shouldExpand) {
       this._clearScheduledStateChanges();
@@ -92,37 +95,39 @@ class PageAction {
     this.container.hidden = true;
     this._clearScheduledStateChanges();
     this.urlbar.removeAttribute("cfr-recommendation-state");
+    this.container.removeEventListener("click", this._handleClick);
+    this.urlbar.removeEventListener("focus", this._collapse);
     if (this.currentNotification) {
       this.window.PopupNotifications.remove(this.currentNotification);
       this.currentNotification = null;
     }
   }
 
-  _expand(delay = 0) {
-    if (!delay) {
-      // Non-delayed state change overrides any scheduled state changes
-      this._clearScheduledStateChanges();
-      this.urlbar.setAttribute("cfr-recommendation-state", "expanded");
-    } else {
+  _expand(delay) {
+    if (delay > 0) {
       this.stateTransitionTimeoutIDs.push(this.window.setTimeout(() => {
         this.urlbar.setAttribute("cfr-recommendation-state", "expanded");
       }, delay));
+    } else {
+      // Non-delayed state change overrides any scheduled state changes
+      this._clearScheduledStateChanges();
+      this.urlbar.setAttribute("cfr-recommendation-state", "expanded");
     }
   }
 
-  _collapse(delay = 0) {
-    if (!delay) {
-      // Non-delayed state change overrides any scheduled state changes
-      this._clearScheduledStateChanges();
-      if (this.urlbar.getAttribute("cfr-recommendation-state") === "expanded") {
-        this.urlbar.setAttribute("cfr-recommendation-state", "collapsed");
-      }
-    } else {
+  _collapse(delay) {
+    if (delay > 0) {
       this.stateTransitionTimeoutIDs.push(this.window.setTimeout(() => {
         if (this.urlbar.getAttribute("cfr-recommendation-state") === "expanded") {
           this.urlbar.setAttribute("cfr-recommendation-state", "collapsed");
         }
       }, delay));
+    } else {
+      // Non-delayed state change overrides any scheduled state changes
+      this._clearScheduledStateChanges();
+      if (this.urlbar.getAttribute("cfr-recommendation-state") === "expanded") {
+        this.urlbar.setAttribute("cfr-recommendation-state", "collapsed");
+      }
     }
   }
 
