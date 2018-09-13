@@ -41,6 +41,7 @@ const DEFAULT_SITES = new Map([
 ]);
 const GEO_PREF = "browser.search.region";
 const SPOCS_GEOS = ["US"];
+const IS_NIGHTLY_OR_UNBRANDED_BUILD = ["nightly", "default"].includes(AppConstants.MOZ_UPDATE_CHANNEL);
 
 const ONE_HOUR_IN_MS = 60 * 60 * 1000;
 
@@ -193,8 +194,8 @@ const PREFS_CONFIG = new Map([
     title: "A comma-delimited list of search shortcuts that have previously been pinned",
     value: ""
   }],
-  ["asrouterExperimentEnabled", {
-    title: "Is the message center experiment on?",
+  ["asrouter.devtoolsEnabled", {
+    title: "Are the asrouter devtools enabled?",
     value: false
   }],
   ["asrouter.messageProviders", {
@@ -217,15 +218,15 @@ const PREFS_CONFIG = new Map([
       type: "remote",
       url: "https://snippets.cdn.mozilla.net/us-west/bundles/bundle_d6d90fb9098ce8b45e60acf601bcb91b68322309.json",
       updateCycleInMs: ONE_HOUR_IN_MS * 4,
-      enabled: AppConstants.MOZ_UPDATE_CHANNEL !== "release"
+      enabled: false
     }, {
       id: "cfr",
       type: "local",
       localProvider: "CFRMessageProvider",
-      enabled: AppConstants.MOZ_UPDATE_CHANNEL !== "release",
-      cohort: 0
-    }])
-  }]
+      enabled: IS_NIGHTLY_OR_UNBRANDED_BUILD,
+      cohort: IS_NIGHTLY_OR_UNBRANDED_BUILD ? "nightly" : "",
+    }]),
+  }],
 ]);
 
 // Array of each feed's FEEDS_CONFIG factory and values to add to PREFS_CONFIG
