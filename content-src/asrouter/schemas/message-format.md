@@ -23,7 +23,7 @@ Field name | Type     | Required | Description | Example / Note
     title: "Find it faster",
     body: "Access all of your favorite search engines with a click. Search the whole Web or just one website from the search box."
   },
-  targeting: "hasFxAccount && !addonsInfo.addons['activity-stream@mozilla.org']",
+  targeting: "usesFirefoxSync && !addonsInfo.addons['activity-stream@mozilla.org']",
   frequency: {
     lifetime: 20,
     custom: [{period: "daily", cap: 5}, {period: 3600000, cap: 1}]
@@ -90,7 +90,7 @@ Name | Type | Example value | Description
 ---  | ---  | ---           | ---
 `addonsInfo` | `Object` | [example below](#addonsinfo-example) | Information about the addons the user has installed
 `devToolsOpenedCount` | `Integer` | Number of usages of the web console or scratchpad
-`hasFxAccount` | `Boolean` | `true` | Does the user have a firefox account
+`usesFirefoxSync` | `Boolean` | `true` | Does the user have a firefox account
 `isDefaultBrowser` | `Boolean` or `null` | Is Firefox the user's default browser? If we could not determine the default browser, this value is `null`
 `profileAgeCreated` | Number | `1522843725924` | Profile creation timestamp
 `profileAgeReset` | `Number` or `undefined` | `1522843725924` | When (if) the profile was reset
@@ -155,14 +155,14 @@ Examples:
   "id": "7864",
   "content": {...},
   // simple equality check
-  "targeting": "hasFxAccount == true"
+  "targeting": "usesFirefoxSync == true"
 }
 
 {
   "id": "7865",
   "content": {...},
   // using JEXL transforms and combining two attributes
-  "targeting": "hasFxAccount == true && profileAgeCreated > '2018-01-07'|date"
+  "targeting": "usesFirefoxSync == true && profileAgeCreated > '2018-01-07'|date"
 }
 
 {
