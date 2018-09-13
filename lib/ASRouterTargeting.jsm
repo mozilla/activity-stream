@@ -181,9 +181,9 @@ const TargetingGetters = {
     return TotalBookmarksCountCache.getTotalBookmarksCount;
   },
   get firefoxVersion() {
-    return parseInt(AppConstants.MOZ_APP_VERSION, 10);
+    return parseInt(AppConstants.MOZ_APP_VERSION.match(/\d+/), 10);
   },
-  get geoCountry() {
+  get region() {
     return Services.prefs.getStringPref(SEARCH_REGION_PREF, "");
   }
 };
