@@ -49,7 +49,7 @@ const MessageLoaderUtils = {
    * @returns {Array} the array of messages
    */
   _localLoader(provider) {
-    return provider.messages || [];
+    return provider.messages;
   },
 
   /**
@@ -143,11 +143,14 @@ const MessageLoaderUtils = {
    */
   async loadMessagesForProvider(provider) {
     const loader = this._getMessageLoader(provider);
-    const messages = (await loader(provider))
-      .map(msg => ({...msg, provider: provider.id}));
-
+    let messages = await loader(provider);
+    // istanbul ignore if
+    if (!messages) {
+      messages = [];
+      Cu.reportError(new Error(`Tried to load messages for ${provider.id} but the result was not an Array.`));
+    }
     const lastUpdated = Date.now();
-    return {messages, lastUpdated};
+    return {messages: messages.map(msg => ({...msg, provider: provider.id})), lastUpdated};
   },
 
   async installAddonFromURL(browser, url) {
@@ -194,13 +197,22 @@ class _ASRouter {
     this.onPrefChange = this.onPrefChange.bind(this);
   }
 
+  /**
+   * Turns legacy onboarding off or on using the ONBOARDING_FINISHED_PREF.
+   * This is required since ASRouter also shows snippets and onboarding, which
+   * interferes with legacy onboarding.
+   *
+   * Note that when this pref is true, legacy onboarding does NOT show up;
+   * when it is false, iegacy onboarding may show up if the profile age etc.
+   * is appropriate for the user to see it.
+   */
   overrideOrEnableLegacyOnboarding() {
     const {allowLegacyOnboarding} = ASRouterPreferences.specialConditions;
-    const onboardingEnabled = Services.prefs.getBoolPref(ONBOARDING_FINISHED_PREF, true);
+    const onboardingFinished = Services.prefs.getBoolPref(ONBOARDING_FINISHED_PREF, true);
 
-    if (!allowLegacyOnboarding && onboardingEnabled === false) {
+    if (!allowLegacyOnboarding && onboardingFinished === false) {
       Services.prefs.setBoolPref(ONBOARDING_FINISHED_PREF, true);
-    } else if (allowLegacyOnboarding && onboardingEnabled === true) {
+    } else if (allowLegacyOnboarding && onboardingFinished === true) {
       Services.prefs.setBoolPref(ONBOARDING_FINISHED_PREF, false);
     }
   }

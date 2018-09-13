@@ -382,13 +382,22 @@ export function addSnippetsSubscriber(store) {
   store.subscribe(async () => {
     const state = store.getState();
 
-    // state.Prefs.values["feeds.snippets"]:  User preference for snippets
-    // state.Snippets.initialized:            Is the snippets feed initialized?
-    // snippets.initialized:                  Is SnippetsProvider currently initialised?
-    // ASRouter.initialized:                  Is ASRouter currently initialised?
-    // ASRouter.allowLegacySnippets:          Are ASRouter snippets turned OFF (i.e. legacy snippets are allowed)
-    if (state.Prefs.values["feeds.snippets"] &&
-      // If the message center experiment is enabled, don't show snippets
+    /**
+     * Sorry this code is so complicated. It will be removed soon.
+     * This is what the different values actually mean:
+     *
+     * ASRouter.initialized                   Is ASRouter.jsm initialised?
+     * ASRouter.allowLegacySnippets           Are ASRouter snippets turned OFF (i.e. legacy snippets are allowed)
+     * state.Prefs.values["feeds.snippets"]   User preference for snippets
+     * state.Snippets.initialized             Is SnippetsFeed.jsm initialised?
+     * snippets.initialized                   Is in-content snippets currently initialised?
+     * state.Prefs.values.disableSnippets     This pref is used to disable legacy snippets in an emergency
+     *                                        in a way that is not user-editable (true = disabled)
+     */
+
+    /** If we should initialize snippets... */
+    if (
+      state.Prefs.values["feeds.snippets"] &&
       state.ASRouter.initialized &&
       state.ASRouter.allowLegacySnippets &&
       !state.Prefs.values.disableSnippets &&
@@ -405,6 +414,8 @@ export function addSnippetsSubscriber(store) {
         console.log("Legacy snippets initialized"); // eslint-disable-line no-console
       }
       initializing = false;
+
+    /** If we should remove snippets... */
     } else if (
       (
         state.Prefs.values["feeds.snippets"] === false ||
@@ -413,6 +424,7 @@ export function addSnippetsSubscriber(store) {
       ) &&
       snippets.initialized
     ) {
+      // Remove snippets
       snippets.uninit();
       // istanbul ignore if
       if (state.Prefs.values["asrouter.devtoolsEnabled"]) {

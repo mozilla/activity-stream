@@ -18,7 +18,6 @@ describe("asrouter", () => {
   it("should initialize asrouter once if ASRouter.initialized is true", () => {
     ({asrouterContent} = enableASRouterContent(store, {
       init: sandbox.stub(),
-      uninit: sandbox.stub(),
       initialized: false
     }));
     store.dispatch({type: at.AS_ROUTER_INITIALIZED, data: {}});
@@ -33,7 +32,6 @@ describe("asrouter", () => {
     const addStub = sandbox.stub(global.document.body.classList, "add");
     ({asrouterContent} = enableASRouterContent(store, {
       init: sandbox.stub(),
-      uninit: sandbox.stub(),
       initialized: false
     }));
     store.dispatch({type: at.INIT});
@@ -43,7 +41,6 @@ describe("asrouter", () => {
     const addStub = sandbox.stub(global.document.body.classList, "add");
     ({asrouterContent} = enableASRouterContent(store, {
       init: sandbox.stub(),
-      uninit: sandbox.stub(),
       initialized: false
     }));
     store.dispatch({type: at.AS_ROUTER_INITIALIZED, data: {allowLegacyOnboarding: false}});
@@ -54,7 +51,6 @@ describe("asrouter", () => {
     const removeStub = sandbox.stub(global.document.body.classList, "remove");
     ({asrouterContent} = enableASRouterContent(store, {
       init: sandbox.stub(),
-      uninit: sandbox.stub(),
       initialized: false
     }));
     // first hide it
