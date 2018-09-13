@@ -50,6 +50,7 @@ describe("ASRouter", () => {
 
   function createFakeStorage() {
     const getStub = sandbox.stub();
+    getStub.returns(Promise.resolve());
     getStub.withArgs("messageBlockList").returns(Promise.resolve(messageBlockList));
     getStub.withArgs("providerBlockList").returns(Promise.resolve(providerBlockList));
     getStub.withArgs("messageImpressions").returns(Promise.resolve(messageImpressions));
