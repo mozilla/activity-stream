@@ -6,7 +6,7 @@ const DEFAULT_CONTENT = {
   "notification_text": "Recommendation",
   "heading_text": "Recommended Extension",
   "info_icon": {
-    "label": "Why am I seeing this",
+    "label": {"attributes": {"tooltiptext": "Why am I seeing this"}},
     "sumo_path": "extensionrecommendations"
   },
   "addon": {
