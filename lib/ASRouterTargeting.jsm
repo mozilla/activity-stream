@@ -94,7 +94,7 @@ const TargetingGetters = {
   get profileAgeReset() {
     return new ProfileAge(null, null).reset;
   },
-  get hasFxAccount() {
+  get usesFirefoxSync() {
     return Services.prefs.prefHasUserValue(FXA_USERNAME_PREF);
   },
   get sync() {
