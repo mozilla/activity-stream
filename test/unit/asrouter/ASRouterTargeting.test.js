@@ -30,7 +30,15 @@ describe("ASRouterTargeting#isInExperimentCohort", () => {
     assert.equal(result, 0);
   });
   it("should combine customContext and TargetingGetters", async () => {
-    assert.isTrue(await ASRouterTargeting.isMatch("foo == true && currentDate == 0", {foo: true}));
+    sandbox.stub(global.FilterExpressions, "eval");
+
+    await ASRouterTargeting.isMatch("true == true", {foo: true});
+
+    assert.calledOnce(global.FilterExpressions.eval);
+    const [, context] = global.FilterExpressions.eval.firstCall.args;
+    // Assert direct properties instead of inherited
+    assert.equal(context.foo, true);
+    assert.match(context.currentDate, sinon.match.date);
   });
 });
 

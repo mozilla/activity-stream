@@ -340,7 +340,7 @@ describe("ASRouter", () => {
       const provider = {id: "foo", enabled: true, type: "remote", url: "https://www.mozilla.org/%STARTPAGE_VERSION%/"};
       setMessageProviderPref([provider]);
       Router._updateMessageProviders();
-      assert.equal(Router.state.providers[0].url, `https://www.mozilla.org/${expectedStartpageVersion}/`);
+      assert.equal(Router.state.providers[0].url, `https://www.mozilla.org/${parseInt(expectedStartpageVersion, 10)}/`);
     });
     it("should replace other params in remote provider urls by calling Services.urlFormater.formatURL", () => {
       const url = "https://www.example.com/";

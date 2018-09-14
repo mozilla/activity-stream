@@ -38,7 +38,7 @@ const SNIPPETS_ENDPOINT_WHITELIST = "browser.newtab.activity-stream.asrouter.whi
 const MAX_MESSAGE_LIFETIME_CAP = 100;
 
 const LOCAL_MESSAGE_PROVIDERS = {OnboardingMessageProvider, CFRMessageProvider};
-const STARTPAGE_VERSION = "0.1.0";
+const STARTPAGE_VERSION = "6";
 
 const MessageLoaderUtils = {
   STARTPAGE_VERSION,
