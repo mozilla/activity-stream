@@ -11,7 +11,7 @@ describe("TF-IDF Term Vectorizer", () => {
       {input: "Call Jenny: 967-5309", expected: ["call", "jenny", "967", "5309"]},
       {input: "Yo(what)[[hello]]{{jim}}}bob{1:2:1+2=$3", expected: ["yo", "what", "hello", "jim", "bob", "1", "2", "1", "2", "3"]},
       {input: "čÄfė 80's", expected: ["čäfė", "80", "s"]},
-      {input: "我知道很多东西。", expected: ["我知道很多东西"]}
+      {input: "我知道很多东西。", expected: ["我知道很多东西"]},
     ];
     let checkTokenization = tc => {
       it(`${tc.input} should tokenize to ${tc.expected}`, () => {
@@ -33,7 +33,7 @@ describe("TF-IDF Term Vectorizer", () => {
       sites:   [792, 5.9578371085292850],
       care:    [153, 5.9578371085292850],
       needs:   [596, 5.8243057159047620],
-      finally: [334, 5.7065226802483790]
+      finally: [334, 5.7065226802483790],
     };
     let testCases = [
       {
@@ -42,31 +42,31 @@ describe("TF-IDF Term Vectorizer", () => {
           finally: [334, 0.50098162958537610],
           easy:    [269, 0.48336453811728713],
           care:    [153, 0.52304478763682270],
-          tanks:   [867, 0.49173191907236774]
-        }
+          tanks:   [867, 0.49173191907236774],
+        },
       },
       {
         input: "Easy easy EASY",
-        expected: {easy: [269, 1.0]}
+        expected: {easy: [269, 1.0]},
       },
       {
         input: "Easy easy care",
         expected: {
           easy: [269, 0.8795205218806832],
-          care: [153, 0.4758609582543317]
-        }
+          care: [153, 0.4758609582543317],
+        },
       },
       {
         input: "easy care",
         expected: {
           easy: [269, 0.6786999710383944],
-          care: [153, 0.7344156515982504]
-        }
+          care: [153, 0.7344156515982504],
+        },
       },
       {
         input: "这个空间故意留空。",
-        expected: { /* This space is left intentionally blank. */ }
-      }
+        expected: { /* This space is left intentionally blank. */ },
+      },
     ];
     let checkTokenGeneration = tc => {
       describe(`${tc.input} should have only vocabulary tokens`, () => {

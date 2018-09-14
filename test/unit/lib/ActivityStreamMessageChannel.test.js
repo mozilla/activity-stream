@@ -27,7 +27,7 @@ describe("ActivityStreamMessageChannel", () => {
     override.withArgs(false).returns(null);
     globals.set("AboutNewTab", {
       override,
-      reset: globals.sandbox.spy()
+      reset: globals.sandbox.spy(),
     });
     globals.set("RemotePages", RP);
     dispatch = globals.sandbox.spy();
@@ -110,14 +110,14 @@ describe("ActivityStreamMessageChannel", () => {
           loaded: false,
           portID: "inited",
           simulated: true,
-          browser: {getAttribute: () => "preloaded"}
+          browser: {getAttribute: () => "preloaded"},
         });
         RPmessagePorts.push({
           url: "about:sheep",
           loaded: true,
           portID: "loaded",
           simulated: true,
-          browser: {getAttribute: () => "preloaded"}
+          browser: {getAttribute: () => "preloaded"},
         });
 
         mm.simulateMessagesForExistingTabs();
@@ -189,8 +189,8 @@ describe("ActivityStreamMessageChannel", () => {
           browser: {
             getAttribute() {
               return "preloaded";
-            }
-          }
+            },
+          },
         };
         mm.createChannel();
         mm.channel.messagePorts.push(port);
@@ -201,8 +201,8 @@ describe("ActivityStreamMessageChannel", () => {
           browser: {
             getAttribute() {
               return "preloaded";
-            }
-          }
+            },
+          },
         };
         mm.createChannel();
         mm.channel.messagePorts.push(port);
@@ -214,8 +214,8 @@ describe("ActivityStreamMessageChannel", () => {
           browser: {
             getAttribute() {
               return "consumed";
-            }
-          }
+            },
+          },
         };
         mm.createChannel();
         mm.channel.messagePorts.push(port);
@@ -231,7 +231,7 @@ describe("ActivityStreamMessageChannel", () => {
 
         assert.calledWith(mm.onActionFromContent, {
           type: at.NEW_TAB_INIT,
-          data: t
+          data: t,
         });
       });
     });
@@ -272,7 +272,7 @@ describe("ActivityStreamMessageChannel", () => {
         const expectedAction = {
           type: action.data.type,
           data: action.data.data,
-          _target: {portID: "foo"}
+          _target: {portID: "foo"},
         };
         mm.onMessage(action);
         assert.calledWith(mm.onActionFromContent, expectedAction, "foo");
@@ -311,9 +311,9 @@ describe("ActivityStreamMessageChannel", () => {
           browser: {
             getAttribute() {
               return "preloaded";
-            }
+            },
           },
-          sendAsyncMessage: sinon.spy()
+          sendAsyncMessage: sinon.spy(),
         };
         mm.createChannel();
         mm.channel.messagePorts.push(port);
@@ -326,9 +326,9 @@ describe("ActivityStreamMessageChannel", () => {
           browser: {
             getAttribute() {
               return "preloaded";
-            }
+            },
           },
-          sendAsyncMessage: sinon.spy()
+          sendAsyncMessage: sinon.spy(),
         };
         mm.createChannel();
         mm.channel.messagePorts.push(port);
@@ -341,9 +341,9 @@ describe("ActivityStreamMessageChannel", () => {
           browser: {
             getAttribute() {
               return "consumed";
-            }
+            },
           },
-          sendAsyncMessage: sinon.spy()
+          sendAsyncMessage: sinon.spy(),
         };
         mm.createChannel();
         mm.channel.messagePorts.push(port);

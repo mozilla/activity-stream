@@ -78,7 +78,7 @@ async function fetchVisitPaths(url) {
 
   const visits = await NewTabUtils.activityStreamProvider.executePlacesQuery(query, {
     columns: ["visit_id", "url"],
-    params: {url}
+    params: {url},
   });
   return visits;
 }

@@ -61,13 +61,13 @@ describe("ASRouterUISurface", () => {
       },
       removeEventListener(event, listener) {
         this._listeners.delete(listener);
-      }
+      },
     };
     global = new GlobalOverrider();
     global.set({
       RPMAddMessageListener: sandbox.stub(),
       RPMRemoveMessageListener: sandbox.stub(),
-      RPMSendAsyncMessage: sandbox.stub()
+      RPMSendAsyncMessage: sandbox.stub(),
     });
 
     sandbox.stub(ASRouterUtils, "sendTelemetry");
@@ -114,7 +114,7 @@ describe("ASRouterUISurface", () => {
     it("should return an object with anchor elements", () => {
       const cta = {
         url: "https://foo.com",
-        metric: "foo"
+        metric: "foo",
       };
       const stub = sandbox.stub();
       const result = convertLinks({cta}, stub);

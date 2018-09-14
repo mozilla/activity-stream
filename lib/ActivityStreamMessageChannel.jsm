@@ -19,7 +19,7 @@ const DEFAULT_OPTIONS = {
   },
   pageURL: ABOUT_NEW_TAB_URL,
   outgoingMessageName: "ActivityStream:MainToContent",
-  incomingMessageName: "ActivityStream:ContentToMain"
+  incomingMessageName: "ActivityStream:ContentToMain",
 };
 
 this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
@@ -236,7 +236,7 @@ this.ActivityStreamMessageChannel = class ActivityStreamMessageChannel {
   onNewTabInit(msg) {
     this.onActionFromContent({
       type: at.NEW_TAB_INIT,
-      data: msg.target
+      data: msg.target,
     }, msg.target.portID);
   }
 

@@ -3,7 +3,7 @@ import {
   addSnippetsSubscriber,
   SNIPPETS_UPDATE_INTERVAL_MS,
   SnippetsMap,
-  SnippetsProvider
+  SnippetsProvider,
 } from "content-src/lib/snippets.js";
 import {combineReducers, createStore} from "redux";
 import {GlobalOverrider} from "test/unit/utils";
@@ -475,7 +475,7 @@ describe("addSnippetsSubscriber", () => {
     asrIntialized = true,
     allowLegacySnippets = true,
     forceDisablePrefOn = false,
-    userPrefOn = true
+    userPrefOn = true,
   } = {}) {
     [
       // The snippets feed should be initialized;
@@ -487,7 +487,7 @@ describe("addSnippetsSubscriber", () => {
       // Force disable pref is on
       {type: at.PREF_CHANGED, data: {name: "disableSnippets", value: forceDisablePrefOn}},
       // Is the user setting for snippets on?
-      {type: at.PREF_CHANGED, data: {name: "feeds.snippets", value: userPrefOn}}
+      {type: at.PREF_CHANGED, data: {name: "feeds.snippets", value: userPrefOn}},
     ].filter(a => a).forEach(action => store.dispatch(action));
   }
 

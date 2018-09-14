@@ -30,7 +30,7 @@ add_task(async function should_handle_async_getters() {
 add_task(async function find_matching_message() {
   const messages = [
     {id: "foo", targeting: "FOO"},
-    {id: "bar", targeting: "!FOO"}
+    {id: "bar", targeting: "!FOO"},
   ];
   const context = {FOO: true};
 
@@ -141,7 +141,7 @@ add_task(async function check_totalBookmarksCount() {
   const bookmark = await PlacesUtils.bookmarks.insert({
     parentGuid: PlacesUtils.bookmarks.unfiledGuid,
     title: "foo",
-    url: "https://mozilla1.com/nowNew"
+    url: "https://mozilla1.com/nowNew",
   });
 
   TotalBookmarksCountCache.expire();
@@ -209,13 +209,13 @@ add_task(async function checkAddonsInfo() {
     manifest: {
       applications: {gecko: {id: FAKE_ID}},
       name: FAKE_NAME,
-      version: FAKE_VERSION
-    }
+      version: FAKE_VERSION,
+    },
   });
 
   await Promise.all([
     AddonTestUtils.promiseWebExtensionStartup(FAKE_ID),
-    AddonManager.installTemporaryAddon(xpi)
+    AddonManager.installTemporaryAddon(xpi),
   ]);
 
   const {addons} = await AddonManager.getActiveAddons(["extension", "service"]);
@@ -265,11 +265,11 @@ add_task(async function checkFrecentSites() {
   for (const [uri, count, visitDate] of [
     ["https://mozilla1.com/", 10, timeDaysAgo(0)], // frecency 1000
     ["https://mozilla2.com/", 5, timeDaysAgo(1)],  // frecency 500
-    ["https://mozilla3.com/", 1, timeDaysAgo(2)]   // frecency 100
+    ["https://mozilla3.com/", 1, timeDaysAgo(2)],   // frecency 100
   ]) {
     [...Array(count).keys()].forEach(() => visits.push({
       uri,
-      visitDate: visitDate * 1000 // Places expects microseconds
+      visitDate: visitDate * 1000, // Places expects microseconds
     }));
   }
 

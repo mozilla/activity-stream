@@ -104,5 +104,5 @@ this.Screenshots = {
     // Update the cache for future links and call back for existing content
     cache.updateLink(property, screenshot);
     onScreenshot(screenshot);
-  }
+  },
 };
