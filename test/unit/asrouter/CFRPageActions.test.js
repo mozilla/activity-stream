@@ -379,6 +379,15 @@ describe("CFRPageActions", () => {
 
         assert.equal(result, "A");
       });
+      it("should report an error when no attributes are present but subAttribute is requested", async () => {
+        const fromJson = {value: "Foo"};
+        const stub = sandbox.stub(global.Cu, "reportError");
+
+        await pageAction.getStrings(fromJson, "accesskey");
+
+        assert.calledOnce(stub);
+        stub.restore();
+      });
     });
 
     describe("#_handleClick", () => {

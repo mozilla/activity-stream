@@ -185,10 +185,15 @@ class PageAction {
   async getStrings(string, subAttribute = "") {
     if (!string.string_id) {
       if (subAttribute) {
-        return string.attributes[subAttribute];
+        if (string.attributes) {
+          return string.attributes[subAttribute];
+        }
+
+        Cu.reportError(`String ${string.value} does not contain any attributes`);
+        return subAttribute;
       }
 
-      if (string.attributes) {
+      if (typeof string.value === "string") {
         const stringWithAttributes = new String(string.value); // eslint-disable-line no-new-wrappers
         stringWithAttributes.attributes = string.attributes;
         return stringWithAttributes;
