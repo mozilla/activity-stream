@@ -199,7 +199,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         "url": s.url,
         "min_score": s.min_score || 0,
         "score": this.personalized && this.affinityProvider ? this.affinityProvider.calculateItemRelevanceScore(s) : s.item_score || 1,
-        "spoc_meta": this.show_spocs ? {campaign_id: s.campaign_id, caps: s.caps} : {}
+        "spoc_meta": this.show_spocs ? {campaign_id: s.campaign_id, caps: s.caps} : {},
       }))
       .sort(this.personalized ? this.compareScore : (a, b) => 0);
   }
@@ -266,7 +266,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
     this.store.dispatch(ac.PerfEvent({
       event: "topstories.domain.affinity.calculation.ms",
-      value: Math.round(perfService.absNow() - start)
+      value: Math.round(perfService.absNow() - start),
     }));
 
     const affinities = this.affinityProvider.getAffinities();

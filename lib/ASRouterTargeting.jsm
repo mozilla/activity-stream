@@ -35,7 +35,7 @@ function CachedTargetingGetter(property, options = null, updateInterval = FRECEN
     expire() {
       this._lastUpdated = 0;
       this._value = null;
-    }
+    },
   };
 
   Object.defineProperty(targetingGetter, property, {
@@ -51,7 +51,7 @@ function CachedTargetingGetter(property, options = null, updateInterval = FRECEN
         }
       }
       resolve(targetingGetter._value);
-    })
+    }),
   });
 
   return targetingGetter;
@@ -64,7 +64,7 @@ const TopFrecentSitesCache = new CachedTargetingGetter(
     numItems: FRECENT_SITES_NUM_ITEMS,
     topsiteFrecency: FRECENT_SITES_MIN_FRECENCY,
     onePerDomain: true,
-    includeFavicon: false
+    includeFavicon: false,
   }
 );
 
@@ -85,7 +85,7 @@ const TargetingGetters = {
     const {settings} = TelemetryEnvironment.currentEnvironment;
     return {
       attribution: settings.attribution,
-      update: settings.update
+      update: settings.update,
     };
   },
   get currentDate() {
@@ -104,7 +104,7 @@ const TargetingGetters = {
     return {
       desktopDevices: Services.prefs.getIntPref("services.sync.clients.devices.desktop", 0),
       mobileDevices: Services.prefs.getIntPref("services.sync.clients.devices.mobile", 0),
-      totalDevices: Services.prefs.getIntPref("services.sync.numClients", 0)
+      totalDevices: Services.prefs.getIntPref("services.sync.numClients", 0),
     };
   },
   get addonsInfo() {
@@ -116,13 +116,13 @@ const TargetingGetters = {
             version: addon.version,
             type: addon.type,
             isSystem: addon.isSystem,
-            isWebExtension: addon.isWebExtension
+            isWebExtension: addon.isWebExtension,
           };
           if (fullData) {
             Object.assign(info[addon.id], {
               name: addon.name,
               userDisabled: addon.userDisabled,
-              installDate: addon.installDate
+              installDate: addon.installDate,
             });
           }
         }
@@ -139,7 +139,7 @@ const TargetingGetters = {
             current: Services.search.defaultEngine.identifier,
             installed: engines
               .map(engine => engine.identifier)
-              .filter(engine => engine)
+              .filter(engine => engine),
           });
         } else {
           resolve({installed: [], current: ""});
@@ -162,7 +162,7 @@ const TargetingGetters = {
         url: site.url,
         host: (new URL(site.url)).hostname,
         frecency: site.frecency,
-        lastVisitDate: site.lastVisitDate
+        lastVisitDate: site.lastVisitDate,
       }
     )));
   },
@@ -185,7 +185,7 @@ const TargetingGetters = {
   },
   get region() {
     return Services.prefs.getStringPref(SEARCH_REGION_PREF, "");
-  }
+  },
 };
 
 this.ASRouterTargeting = {
@@ -193,7 +193,7 @@ this.ASRouterTargeting = {
 
   ERROR_TYPES: {
     MALFORMED_EXPRESSION: "MALFORMED_EXPRESSION",
-    OTHER_ERROR: "OTHER_ERROR"
+    OTHER_ERROR: "OTHER_ERROR",
   },
 
   isMatch(filterExpression, customContext) {
@@ -272,7 +272,7 @@ this.ASRouterTargeting = {
       }
     }
     return match;
-  }
+  },
 };
 
 // Export for testing

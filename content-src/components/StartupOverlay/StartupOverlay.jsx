@@ -17,7 +17,7 @@ export class _StartupOverlay extends React.PureComponent {
       emailInput: "",
       overlayRemoved: false,
       flowId: "",
-      flowBeginTime: 0
+      flowBeginTime: 0,
     };
     this.didFetch = false;
   }
@@ -124,7 +124,7 @@ export class _StartupOverlay extends React.PureComponent {
                     id="firstrun_extra_legal_links"
                     values={{
                       terms: termsLink,
-                      privacy: privacyLink
+                      privacy: privacyLink,
                     }} />
                 </div>
                 <button className="continue-button" type="submit"><FormattedMessage id="firstrun_continue_to_login" /></button>

@@ -71,7 +71,7 @@ export class _Base extends React.PureComponent {
       // If we skipped the about:welcome overlay and removed the CSS classes
       // we don't want to add them back to the Activity Stream view
       document.body.classList.contains("welcome") ? "welcome" : "",
-      document.body.classList.contains("hide-main") ? "hide-main" : ""
+      document.body.classList.contains("hide-main") ? "hide-main" : "",
     ].filter(v => v).join(" ");
     global.document.body.className = bodyClassName;
   }
@@ -139,7 +139,7 @@ export class BaseContent extends React.PureComponent {
     const outerClassName = [
       "outer-wrapper",
       shouldBeFixedToTop && "fixed-to-top",
-      prefs.showSearch && this.state.fixedSearch && "fixed-search"
+      prefs.showSearch && this.state.fixedSearch && "fixed-search",
     ].filter(v => v).join(" ");
 
     return (

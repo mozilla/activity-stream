@@ -40,7 +40,7 @@ export class Section extends React.PureComponent {
     if (this.needsImpressionStats(cards)) {
       props.dispatch(ac.ImpressionStats({
         source: props.eventSource,
-        tiles: cards.map(link => ({id: link.guid}))
+        tiles: cards.map(link => ({id: link.guid})),
       }));
       this.impressionCardGuids = cards.map(link => link.guid);
     }
@@ -146,7 +146,7 @@ export class Section extends React.PureComponent {
       id, eventSource, title, icon, rows, Pocket, topics,
       emptyState, dispatch, compactCards, read_more_endpoint,
       contextMenuOptions, initialized, learnMore,
-      pref, privacyNoticeURL, isFirst, isLast
+      pref, privacyNoticeURL, isFirst, isLast,
     } = this.props;
 
     const waitingForSpoc = id === "topstories" && this.props.Pocket.waitingForSpoc;
@@ -208,7 +208,7 @@ export class Section extends React.PureComponent {
 
     const sectionClassName = [
       "section",
-      compactCards ? "compact-cards" : "normal-cards"
+      compactCards ? "compact-cards" : "normal-cards",
     ].join(" ");
 
     // <Section> <-- React component
@@ -259,7 +259,7 @@ Section.defaultProps = {
   rows: [],
   emptyState: {},
   pref: {},
-  title: ""
+  title: "",
 };
 
 export const SectionIntl = connect(state => ({Prefs: state.Prefs, Pocket: state.Pocket}))(injectIntl(Section));
@@ -276,7 +276,7 @@ export class _Sections extends React.PureComponent {
       const commonProps = {
         key: sectionId,
         isFirst: sections.length === 0,
-        isLast: sections.length === expectedCount - 1
+        isLast: sections.length === expectedCount - 1,
       };
       if (sectionId === "topsites" && showTopSites) {
         sections.push(<TopSites {...commonProps} />);

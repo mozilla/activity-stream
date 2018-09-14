@@ -27,7 +27,7 @@ describe("CFRPageActions", () => {
     "cfr-notification-footer-empty-stars",
     "cfr-notification-footer-users",
     "cfr-notification-footer-spacer",
-    "cfr-notification-footer-learn-more-link"
+    "cfr-notification-footer-learn-more-link",
   ];
 
   beforeEach(() => {
@@ -41,7 +41,7 @@ describe("CFRPageActions", () => {
         notification_text: "Fake Notification Text",
         info_icon: {
           label: "Fake Info Icon Label",
-          sumo_path: "a_help_path_fragment"
+          sumo_path: "a_help_path_fragment",
         },
         heading_text: "Fake Heading Text",
         addon:  {
@@ -50,28 +50,28 @@ describe("CFRPageActions", () => {
           icon: "a_path_to_some_icon",
           rating: 4.2,
           users: 1234,
-          amo_url: "a_path_to_amo"
+          amo_url: "a_path_to_amo",
         },
         text: "Here is the recommendation text body",
         buttons: {
           primary: {
             label: {string_id: "primary_button_id"},
-            action: {id: "primary_action"}
+            action: {id: "primary_action"},
           },
           secondary: {
             label: {string_id: "secondary_button_id"},
-            action: {id: "secondary_action"}
-          }
-        }
-      }
+            action: {id: "secondary_action"},
+          },
+        },
+      },
     };
     fakeHost = "mozilla.org";
     fakeBrowser = {
       documentURI: {
         scheme: "https",
-        host: fakeHost
+        host: fakeHost,
       },
-      ownerGlobal: window
+      ownerGlobal: window,
     };
     dispatchStub = sandbox.stub();
 
@@ -81,10 +81,10 @@ describe("CFRPageActions", () => {
       promiseDocumentFlushed: Promise.resolve(),
       PopupNotifications: {
         show: sandbox.stub(),
-        remove: sandbox.stub()
+        remove: sandbox.stub(),
       },
       PrivateBrowsingUtils: {isWindowPrivate: sandbox.stub().returns(false)},
-      gBrowser: {selectedBrowser: fakeBrowser}
+      gBrowser: {selectedBrowser: fakeBrowser},
     });
 
     elements = {};
@@ -163,8 +163,8 @@ describe("CFRPageActions", () => {
             source: "CFR",
             message_id: fakeRecommendation.id,
             bucket_id: fakeRecommendation.content.bucket_id,
-            event: "IMPRESSION"
-          }
+            event: "IMPRESSION",
+          },
         });
       });
     });
@@ -302,7 +302,7 @@ describe("CFRPageActions", () => {
         pageAction._sendTelemetry(fakePing);
         assert.calledWith(dispatchStub, {
           type: "DOORHANGER_TELEMETRY",
-          data: {action: "cfr_user_event", source: "CFR", message_id: 42}
+          data: {action: "cfr_user_event", source: "CFR", message_id: 42},
         });
       });
     });
@@ -313,7 +313,7 @@ describe("CFRPageActions", () => {
         assert.calledOnce(dispatchStub);
         assert.calledWith(dispatchStub, {
           type: "BLOCK_MESSAGE_BY_ID",
-          data: {id: "fake id"}
+          data: {id: "fake id"},
         });
       });
     });
@@ -325,8 +325,8 @@ describe("CFRPageActions", () => {
         attributes: [
           {name: "first_attr", value: 42},
           {name: "second_attr", value: "some string"},
-          {name: "third_attr", value: [1, 2, 3]}
-        ]
+          {name: "third_attr", value: [1, 2, 3]},
+        ],
       }];
 
       beforeEach(() => {
@@ -455,8 +455,8 @@ describe("CFRPageActions", () => {
             source: "CFR",
             message_id: fakeRecommendation.id,
             bucket_id: fakeRecommendation.content.bucket_id,
-            event: "CLICK_DOORHANGER"
-          }
+            event: "CLICK_DOORHANGER",
+          },
         });
       });
       it("should set the main action correctly", async () => {
@@ -470,7 +470,7 @@ describe("CFRPageActions", () => {
         // Should block the message
         assert.calledWith(dispatchStub, {
           type: "BLOCK_MESSAGE_BY_ID",
-          data: {id: fakeRecommendation.id}
+          data: {id: fakeRecommendation.id},
         });
         // Should trigger the action
         assert.calledWith(
@@ -486,8 +486,8 @@ describe("CFRPageActions", () => {
             source: "CFR",
             message_id: fakeRecommendation.id,
             bucket_id: fakeRecommendation.content.bucket_id,
-            event: "INSTALL"
-          }
+            event: "INSTALL",
+          },
         });
         // Should remove the recommendation
         assert.isFalse(CFRPageActions.RecommendationMap.has(fakeBrowser));
@@ -509,8 +509,8 @@ describe("CFRPageActions", () => {
             source: "CFR",
             message_id: fakeRecommendation.id,
             bucket_id: fakeRecommendation.content.bucket_id,
-            event: "DISMISS"
-          }
+            event: "DISMISS",
+          },
         });
         // Should remove the recommendation
         assert.isFalse(CFRPageActions.RecommendationMap.has(fakeBrowser));
@@ -528,7 +528,7 @@ describe("CFRPageActions", () => {
           {
             popupIconURL: fakeRecommendation.content.addon.icon,
             hideClose: true,
-            eventCallback: pageAction._popupStateChange
+            eventCallback: pageAction._popupStateChange,
           }
         );
       });
@@ -552,7 +552,7 @@ describe("CFRPageActions", () => {
         savedRec = {
           id,
           host: fakeHost,
-          content
+          content,
         };
         CFRPageActions.RecommendationMap.set(fakeBrowser, savedRec);
       });
@@ -595,7 +595,7 @@ describe("CFRPageActions", () => {
         assert.isTrue(await CFRPageActions.forceRecommendation({browser: fakeBrowser}, fakeRecommendation, dispatchStub));
         assert.deepInclude(CFRPageActions.RecommendationMap.get(fakeBrowser), {
           id: fakeRecommendation.id,
-          content: fakeRecommendation.content
+          content: fakeRecommendation.content,
         });
       });
       it("should create a PageAction if one doesn't exist for the window, save it in the PageActionMap, and call `show`", async () => {
@@ -628,7 +628,7 @@ describe("CFRPageActions", () => {
         assert.deepInclude(CFRPageActions.RecommendationMap.get(fakeBrowser), {
           id: fakeRecommendation.id,
           host: fakeHost,
-          content: fakeRecommendation.content
+          content: fakeRecommendation.content,
         });
       });
       it("should create a PageAction if one doesn't exist for the window, save it in the PageActionMap, and call `show`", async () => {

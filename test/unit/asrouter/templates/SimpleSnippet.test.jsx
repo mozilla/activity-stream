@@ -20,7 +20,7 @@ describe("SimpleSnippet", () => {
       content: Object.assign({}, DEFAULT_CONTENT, content),
       onBlock: onBlockStub,
       sendUserActionTelemetry: sandbox.stub(),
-      onAction: sandbox.stub()
+      onAction: sandbox.stub(),
     };
     assert.jsonSchema(props.content, schema);
     return mount(<SimpleSnippet {...props} />);
@@ -54,7 +54,7 @@ describe("SimpleSnippet", () => {
   it("should render .button_label and default className", () => {
     const wrapper = mountAndCheckProps({
       button_label: "Click here",
-      button_action: {type: "OPEN_APPLICATIONS_MENU", data: {target: "appMenu"}}
+      button_action: {type: "OPEN_APPLICATIONS_MENU", data: {target: "appMenu"}},
     });
 
     const button = wrapper.find("button.ASRouterButton");

@@ -8,7 +8,7 @@ import {
   FAKE_REMOTE_PROVIDER,
   FAKE_REMOTE_SETTINGS_PROVIDER,
   FakeRemotePageManager,
-  PARENT_TO_CHILD_MESSAGE_NAME
+  PARENT_TO_CHILD_MESSAGE_NAME,
 } from "./constants";
 import {actionCreators as ac} from "common/Actions.jsm";
 import {ASRouterPreferences} from "lib/ASRouterPreferences.jsm";
@@ -58,7 +58,7 @@ describe("ASRouter", () => {
     getStub.withArgs("previousSessionEnd").returns(Promise.resolve(previousSessionEnd));
     return {
       get: getStub,
-      set: sandbox.stub().returns(Promise.resolve())
+      set: sandbox.stub().returns(Promise.resolve()),
     };
   }
 
@@ -267,7 +267,7 @@ describe("ASRouter", () => {
 
     it("should not trigger an update if not enough time has passed for a provider", async () => {
       await createRouterAndInit([
-        {id: "remotey", type: "remote", enabled: true, url: "http://fake.com/endpoint", updateCycleInMs: 300}
+        {id: "remotey", type: "remote", enabled: true, url: "http://fake.com/endpoint", updateCycleInMs: 300},
       ]);
 
       const previousState = Router.state;
@@ -279,7 +279,7 @@ describe("ASRouter", () => {
     });
     it("should not trigger an update if we only have local providers", async () => {
       await createRouterAndInit([
-        {id: "foo", type: "local", enabled: true, messages: FAKE_LOCAL_MESSAGES}
+        {id: "foo", type: "local", enabled: true, messages: FAKE_LOCAL_MESSAGES},
       ]);
 
       const previousState = Router.state;
@@ -293,7 +293,7 @@ describe("ASRouter", () => {
       const NEW_MESSAGES = [{id: "new_123"}];
       await createRouterAndInit([
         {id: "remotey", type: "remote", url: "http://fake.com/endpoint", enabled: true, updateCycleInMs: 300},
-        {id: "alocalprovider", type: "local", enabled: true, messages: FAKE_LOCAL_MESSAGES}
+        {id: "alocalprovider", type: "local", enabled: true, messages: FAKE_LOCAL_MESSAGES},
       ]);
       fetchStub
         .withArgs("http://fake.com/endpoint")
@@ -315,8 +315,8 @@ describe("ASRouter", () => {
         {id: "foo", type: "local", enabled: true, messages: [
           {id: "foo", template: "simple_template", trigger: {id: "firstRun"}, content: {title: "Foo", body: "Foo123"}},
           {id: "bar1", template: "simple_template", trigger: {id: "openURL", params: ["www.mozilla.org", "www.mozilla.com"]}, content: {title: "Bar1", body: "Bar123"}},
-          {id: "bar2", template: "simple_template", trigger: {id: "openURL", params: ["www.example.com"]}, content: {title: "Bar2", body: "Bar123"}}
-        ]}
+          {id: "bar2", template: "simple_template", trigger: {id: "openURL", params: ["www.example.com"]}, content: {title: "Bar2", body: "Bar123"}},
+        ]},
       ]);
       /* eslint-enable object-curly-newline */ /* eslint-enable object-property-newline */
 
@@ -358,7 +358,7 @@ describe("ASRouter", () => {
     it("should only add the providers that are enabled", () => {
       const providers = [
         {id: "foo", enabled: false, type: "remote", url: "https://www.foo.com/"},
-        {id: "bar", enabled: true, type: "remote", url: "https://www.bar.com/"}
+        {id: "bar", enabled: true, type: "remote", url: "https://www.bar.com/"},
       ];
       setMessageProviderPref(providers);
       Router._updateMessageProviders();
@@ -657,7 +657,7 @@ describe("ASRouter", () => {
       const expectedObj = {
         template: testMessage1.template,
         provider: testMessage1.provider,
-        bundle: [{content: testMessage1.content, id: testMessage1.id, order: 1}, {content: testMessage2.content, id: testMessage2.id}]
+        bundle: [{content: testMessage1.content, id: testMessage1.id, order: 1}, {content: testMessage2.content, id: testMessage2.id}],
       };
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "SET_BUNDLED_MESSAGES", data: expectedObj});
     });
@@ -672,7 +672,7 @@ describe("ASRouter", () => {
       const expectedObj = {
         template: testMessage1.template,
         provider: testMessage1.provider,
-        bundle: [{content: testMessage1.content, id: testMessage1.id, order: 1}, {content: testMessage2.content, id: testMessage2.id, order: 2}]
+        bundle: [{content: testMessage1.content, id: testMessage1.id, order: 1}, {content: testMessage2.content, id: testMessage2.id, order: 2}],
       };
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "SET_BUNDLED_MESSAGES", data: expectedObj});
     });
@@ -696,7 +696,7 @@ describe("ASRouter", () => {
     });
     it("consider the trigger when picking a message", async () => {
       const messages = [
-        {id: "foo1", template: "simple_template", bundled: 1, trigger: {id: "foo"}, content: {title: "Foo1", body: "Foo123-1"}}
+        {id: "foo1", template: "simple_template", bundled: 1, trigger: {id: "foo"}, content: {title: "Foo1", body: "Foo123-1"}},
       ];
 
       const {data} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
@@ -707,7 +707,7 @@ describe("ASRouter", () => {
       let messages = [
         {id: "foo1", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo1", body: "Foo123-1"}},
         {id: "foo2", template: "simple_template", bundled: 2, trigger: {id: "bar"}, content: {title: "Foo2", body: "Foo123-2"}},
-        {id: "foo3", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo3", body: "Foo123-3"}}
+        {id: "foo3", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo3", body: "Foo123-3"}},
       ];
       await Router.setState({messages});
       const {target} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});

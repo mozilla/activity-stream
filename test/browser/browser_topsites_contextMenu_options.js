@@ -20,7 +20,7 @@ test_newtab({
     for (let i = 0; i < contextMenuItems.length; i++) {
       Assert.equal(contextMenuItems[i], expectedItemsText[i], "Name option is correct");
     }
-  }
+  },
 });
 
 test_newtab({
@@ -50,7 +50,7 @@ test_newtab({
   },
   async after() {
     await new Promise(resolve => NewTabUtils.undoAll(resolve));
-  }
+  },
 });
 
 test_newtab({
@@ -72,5 +72,5 @@ test_newtab({
     // Required for multiple test runs in the same browser, pref is used to
     // prevent pinning the same search topsite twice
     Services.prefs.clearUserPref("browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.havePinned");
-  }
+  },
 });

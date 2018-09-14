@@ -13,7 +13,7 @@ const DEFAULT_STATE = {
   _providers: null,
   _providerPref: PROVIDER_PREF,
   _devtoolsEnabled: null,
-  _devtoolsPref: DEVTOOLS_PREF
+  _devtoolsPref: DEVTOOLS_PREF,
 };
 
 class _ASRouterPreferences {
@@ -55,7 +55,7 @@ class _ASRouterPreferences {
     }
     return {
       allowLegacyOnboarding,
-      allowLegacySnippets
+      allowLegacySnippets,
     };
   }
 

@@ -313,7 +313,7 @@ export class SnippetsProvider {
     Object.assign(this, {
       appData: {},
       elementId: "snippets",
-      connect: true
+      connect: true,
     }, options);
 
     // Add listener so we know when snippets are blocked on other pages

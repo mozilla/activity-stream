@@ -50,7 +50,7 @@ class PageAction {
     this.dispatchUserAction = this.dispatchUserAction.bind(this);
 
     this._l10n = new Localization([
-      "browser/newtab/asrouter.ftl"
+      "browser/newtab/asrouter.ftl",
     ]);
 
     // Saved timeout IDs for scheduled state changes, so they can be cancelled
@@ -164,7 +164,7 @@ class PageAction {
   _sendTelemetry(ping) {
     this._dispatchToASRouter({
       type: "DOORHANGER_TELEMETRY",
-      data: {action: "cfr_user_event", source: "CFR", ...ping}
+      data: {action: "cfr_user_event", source: "CFR", ...ping},
     });
   }
 
@@ -204,7 +204,7 @@ class PageAction {
 
     const [localeStrings] = await this._l10n.formatMessages([{
       id: string.string_id,
-      args: string.args
+      args: string.args,
     }]);
 
     const mainString = new String(localeStrings.value); // eslint-disable-line no-new-wrappers
@@ -263,7 +263,7 @@ class PageAction {
 
     author.textContent = await this.getStrings({
       string_id: "cfr-doorhanger-extension-author",
-      args: {name: content.addon.author}
+      args: {name: content.addon.author},
     });
 
     footerText.textContent = await this.getStrings(content.text);
@@ -278,7 +278,7 @@ class PageAction {
 
       const ratingString = await this.getStrings({
         string_id: "cfr-doorhanger-extension-rating",
-        args: {total: rating}
+        args: {total: rating},
       }, "tooltiptext");
       footerFilledStars.setAttribute("tooltiptext", ratingString);
       footerEmptyStars.setAttribute("tooltiptext", ratingString);
@@ -293,7 +293,7 @@ class PageAction {
     if (users) {
       footerUsers.setAttribute("value", await this.getStrings({
         string_id: "cfr-doorhanger-extension-total-users",
-        args: {total: users}
+        args: {total: users},
       }));
       footerUsers.removeAttribute("hidden");
     } else {
@@ -326,7 +326,7 @@ class PageAction {
         this.hide();
         this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "INSTALL"});
         RecommendationMap.delete(browser);
-      }
+      },
     };
 
     const secondaryActions = [{
@@ -336,13 +336,13 @@ class PageAction {
         this.hide();
         this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "DISMISS"});
         RecommendationMap.delete(browser);
-      }
+      },
     }];
 
     const options = {
       popupIconURL: content.addon.icon,
       hideClose: true,
-      eventCallback: this._popupStateChange
+      eventCallback: this._popupStateChange,
     };
 
     this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "CLICK_DOORHANGER"});
@@ -456,7 +456,7 @@ const CFRPageActions = {
     RecommendationMap = new WeakMap();
     this.PageActionMap = PageActionMap;
     this.RecommendationMap = RecommendationMap;
-  }
+  },
 };
 
 this.PageAction = PageAction;
