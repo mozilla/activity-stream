@@ -33,7 +33,7 @@ export class _StartupOverlay extends React.PureComponent {
           this.setState({flowId, flowBeginTime});
         }
       } catch (error) {
-        this.props.dispatch(ac.OnlyToMain({type: at.TELEMETRY_UNDESIRED_EVENT, data: {value: "FXA_METRICS_ERROR"}}));
+        this.props.dispatch(ac.OnlyToMain({type: at.TELEMETRY_UNDESIRED_EVENT, data: {event: "FXA_METRICS_ERROR"}}));
       }
     }
   }
