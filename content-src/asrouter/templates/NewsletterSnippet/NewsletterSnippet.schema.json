@@ -1,0 +1,167 @@
+{
+  "title": "NewsletterSchema",
+  "description": "A template with two states: a SimpleSnippet and another that contains a form",
+  "version": "1.0.0",
+  "type": "object",
+  "definitions": {
+    "plainText": {
+      "description": "Plain text (no HTML allowed)",
+      "type": "string"
+    },
+    "richText": {
+      "description": "Text with HTML subset allowed: i, b, u, strong, em, br",
+      "type": "string"
+    },
+    "link_url": {
+      "description": "Target for links or buttons",
+      "type": "string",
+      "format": "uri"
+    }
+  },
+  "properties": {
+    "title": {
+      "allOf": [
+        {"$ref": "#/definitions/plainText"},
+        {"description": "Snippet title displayed before snippet text"}
+      ]
+    },
+    "text": {
+      "allOf": [
+        {"$ref": "#/definitions/richText"},
+        {"description": "Main body text of snippet. HTML subset allowed: i, b, u, strong, em, br"}
+      ]
+    },
+    "icon": {
+      "type": "string",
+      "description": "Snippet icon. 64x64px. SVG or PNG preferred."
+    },
+    "title_icon": {
+      "type": "string",
+      "description": "Small icon that shows up before the title / text. 16x16px. SVG or PNG preferred. Grayscale."
+    },
+    "form": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "object",
+          "properties": {
+            "url": "string",
+            "description": "Endpoint to submit form data"
+          }
+        },
+        "heading": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "Explanation about the form submission"
+            }
+          }
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "HTML attribute value"
+            },
+            "name": {
+              "type": "string",
+              "description": "HTML attribute value"
+            },
+            "placeholder": {
+              "type": "string",
+              "description": "Value to show while input is empty"
+            }
+          }
+        },
+        "button_submit_label": {
+          "type": "string",
+          "description": "Label for form submit button"
+        },
+        "privacy_notice": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "Information about how the form data is used"
+            },
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "allOf": [
+                      {"$ref": "#/definitions/link_url"},
+                      {"description": "The url where the link points to."}
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "hidden_inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "HTML attribute value"
+              },
+              "value": {
+                "type": "string",
+                "description": "HTML attribute value"
+              }
+            }
+          }
+        }
+      },
+      "required": ["input", "heading", "action", "hidden_inputs"]
+    },
+    "button_label": {
+      "allOf": [
+        {"$ref": "#/definitions/plainText"},
+        {"description": "Text for a button next to main snippet text that links to button_url. Requires button_url."}
+      ]
+    },
+    "button_color": {
+      "type": "string",
+      "description": "The text color of the button. Valid CSS color."
+    },
+    "button_background_color": {
+      "type": "string",
+      "description": "The background color of the button. Valid CSS color."
+    },
+    "tall": {
+      "type": "boolean",
+      "description": "To be used by fundraising only, increases height to roughly 120px. Defaults to false."
+    },
+    "do_not_autoblock": {
+      "type": "boolean",
+      "description": "Used to prevent blocking the snippet after the CTA (link or button) has been clicked"
+    },
+    "links": {
+      "additionalProperties": {
+        "url": {
+          "allOf": [
+            {"$ref": "#/definitions/link_url"},
+            {"description": "The url where the link points to."}
+          ]
+        },
+        "metric": {
+          "type": "string",
+          "description": "Custom event name sent with telemetry event."
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": ["text", "button_label"],
+  "dependencies": {
+    "button_color": ["button_label"],
+    "button_background_color": ["button_label"]
+  }
+}
