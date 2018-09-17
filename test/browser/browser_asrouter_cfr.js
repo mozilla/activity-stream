@@ -10,7 +10,7 @@ function trigger_cfr_panel(browser, trigger, cb) {
         notification_text: "Mochitest",
         heading_text: "Mochitest",
         info_icon: {
-          label: "Why am I seeing this",
+          label: {attributes: {tooltiptext: "Why am I seeing this"}},
           sumo_path: "extensionrecommendations"
         },
         addon: {

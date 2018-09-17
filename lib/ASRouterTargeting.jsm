@@ -1,6 +1,8 @@
 ChromeUtils.import("resource://gre/modules/components-utils/FilterExpressions.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
+ChromeUtils.defineModuleGetter(this, "ASRouterPreferences",
+  "resource://activity-stream/lib/ASRouterPreferences.jsm");
 ChromeUtils.defineModuleGetter(this, "AddonManager",
   "resource://gre/modules/AddonManager.jsm");
 ChromeUtils.defineModuleGetter(this, "NewTabUtils",
@@ -11,9 +13,11 @@ ChromeUtils.defineModuleGetter(this, "ShellService",
   "resource:///modules/ShellService.jsm");
 ChromeUtils.defineModuleGetter(this, "TelemetryEnvironment",
   "resource://gre/modules/TelemetryEnvironment.jsm");
+ChromeUtils.defineModuleGetter(this, "AppConstants",
+  "resource://gre/modules/AppConstants.jsm");
 
 const FXA_USERNAME_PREF = "services.sync.username";
-const MESSAGE_PROVDIER_EXPERIMENT_PREF = "browser.newtabpage.activity-stream.asrouter.messageProviders";
+const SEARCH_REGION_PREF = "browser.search.region";
 const MOZ_JEXL_FILEPATH = "mozjexl";
 
 const {activityStreamProvider: asProvider} = NewTabUtils;
@@ -93,7 +97,7 @@ const TargetingGetters = {
   get profileAgeReset() {
     return new ProfileAge(null, null).reset;
   },
-  get hasFxAccount() {
+  get usesFirefoxSync() {
     return Services.prefs.prefHasUserValue(FXA_USERNAME_PREF);
   },
   get sync() {
@@ -164,30 +168,23 @@ const TargetingGetters = {
   },
   // Temporary targeting function for the purposes of running the simplified onboarding experience
   get isInExperimentCohort() {
-    const allProviders = Services.prefs.getStringPref(MESSAGE_PROVDIER_EXPERIMENT_PREF, "");
-    try {
-      const {cohort} = JSON.parse(allProviders).find(i => i.id === "onboarding");
-      return (typeof cohort === "number" ? cohort : 0);
-    } catch (e) {
-      Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
-    }
-    return 0;
+    const {cohort} = ASRouterPreferences.providers.find(i => i.id === "onboarding") || {};
+    return (typeof cohort === "number" ? cohort : 0);
   },
   get providerCohorts() {
-    const allProviders = Services.prefs.getStringPref(MESSAGE_PROVDIER_EXPERIMENT_PREF, "");
-    const cohorts = {};
-    try {
-      JSON.parse(allProviders).reduce((prev, current) => {
-        prev[current.id] = current.cohort || "";
-        return prev;
-      }, cohorts);
-    } catch (e) {
-      Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
-    }
-    return cohorts;
+    return ASRouterPreferences.providers.reduce((prev, current) => {
+      prev[current.id] = current.cohort || "";
+      return prev;
+    }, {});
   },
   get totalBookmarksCount() {
     return TotalBookmarksCountCache.getTotalBookmarksCount;
+  },
+  get firefoxVersion() {
+    return parseInt(AppConstants.MOZ_APP_VERSION.match(/\d+/), 10);
+  },
+  get region() {
+    return Services.prefs.getStringPref(SEARCH_REGION_PREF, "");
   }
 };
 

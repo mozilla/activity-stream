@@ -200,7 +200,7 @@ const TEST_GLOBAL = {
   },
   EventEmitter,
   ShellService: {isDefaultBrowser: () => true},
-  FilterExpressions: {eval() { return Promise.resolve(true); }},
+  FilterExpressions: {eval() { return Promise.resolve(false); }},
   RemoteSettings() { return {get() { return Promise.resolve([]); }}; }
 };
 overrider.set(TEST_GLOBAL);

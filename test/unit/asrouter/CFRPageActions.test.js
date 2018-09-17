@@ -319,6 +319,7 @@ describe("CFRPageActions", () => {
     });
 
     describe("#getStrings", () => {
+      let formatMessagesStub;
       const localeStrings = [{
         value: "你好世界",
         attributes: [
@@ -330,9 +331,10 @@ describe("CFRPageActions", () => {
 
       beforeEach(() => {
         getStringsStub.restore();
-        global.Localization.prototype.formatMessages = sandbox.stub()
+        formatMessagesStub = sandbox.stub()
           .withArgs({id: "hello_world"})
           .resolves(localeStrings);
+        global.Localization.prototype.formatMessages = formatMessagesStub;
       });
 
       it("should return the argument if a string_id is not defined", async () => {
@@ -344,6 +346,47 @@ describe("CFRPageActions", () => {
       });
       it("should return the right sub-attribute if specified", async () => {
         assert.equal(await pageAction.getStrings({string_id: "hello_world"}, "second_attr"), "some string");
+      });
+      it("should attach attributes to string overrides", async () => {
+        const fromJson = {value: "Add Now", attributes: {accesskey: "A"}};
+
+        const result = await pageAction.getStrings(fromJson);
+
+        assert.equal(result, fromJson.value);
+        assert.propertyVal(result.attributes, "accesskey", "A");
+      });
+      it("should return subAttributes when doing string overrides", async () => {
+        const fromJson = {value: "Add Now", attributes: {accesskey: "A"}};
+
+        const result = await pageAction.getStrings(fromJson, "accesskey");
+
+        assert.equal(result, "A");
+      });
+      it("should resolve ftl strings and attach subAttributes", async () => {
+        const fromFtl = {string_id: "cfr-doorhanger-extension-ok-button"};
+        formatMessagesStub.resolves([{value: "Add Now", attributes: [{name: "accesskey", value: "A"}]}]);
+
+        const result = await pageAction.getStrings(fromFtl);
+
+        assert.equal(result, "Add Now");
+        assert.propertyVal(result.attributes, "accesskey", "A");
+      });
+      it("should return subAttributes from ftl ids", async () => {
+        const fromFtl = {string_id: "cfr-doorhanger-extension-ok-button"};
+        formatMessagesStub.resolves([{value: "Add Now", attributes: [{name: "accesskey", value: "A"}]}]);
+
+        const result = await pageAction.getStrings(fromFtl, "accesskey");
+
+        assert.equal(result, "A");
+      });
+      it("should report an error when no attributes are present but subAttribute is requested", async () => {
+        const fromJson = {value: "Foo"};
+        const stub = sandbox.stub(global.Cu, "reportError");
+
+        await pageAction.getStrings(fromJson, "accesskey");
+
+        assert.calledOnce(stub);
+        stub.restore();
       });
     });
 

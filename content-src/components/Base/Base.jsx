@@ -40,8 +40,7 @@ function debounce(func, wait) {
 
 export class _Base extends React.PureComponent {
   componentWillMount() {
-    const {App, locale} = this.props;
-    this.sendNewTabRehydrated(App);
+    const {locale} = this.props;
     addLocaleDataForReactIntl(locale);
     if (this.props.isFirstrun) {
       global.document.body.classList.add("welcome", "hide-main");
@@ -62,29 +61,8 @@ export class _Base extends React.PureComponent {
     this.updateTheme();
   }
 
-  hasTopStoriesSectionChanged(nextProps) {
-    const nPropsSections = nextProps.Sections.find(section => section.id === "topstories");
-    const tPropsSections = this.props.Sections.find(section => section.id === "topstories");
-    if (nPropsSections && nPropsSections.options) {
-      if (!tPropsSections || !tPropsSections.options) {
-        return true;
-      }
-      if (nPropsSections.options.show_spocs !== tPropsSections.options.show_spocs) {
-        return true;
-      }
-      if (nPropsSections.options.stories_endpoint !== tPropsSections.options.stories_endpoint) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  componentWillUpdate(nextProps) {
+  componentWillUpdate() {
     this.updateTheme();
-    if (this.hasTopStoriesSectionChanged(nextProps)) {
-      this.renderNotified = false;
-    }
-    this.sendNewTabRehydrated(nextProps.App);
   }
 
   updateTheme() {
@@ -98,39 +76,18 @@ export class _Base extends React.PureComponent {
     global.document.body.className = bodyClassName;
   }
 
-  // The NEW_TAB_REHYDRATED event is used to inform feeds that their
-  // data has been consumed e.g. for counting the number of tabs that
-  // have rendered that data.
-  sendNewTabRehydrated(App) {
-    if (App && App.initialized && !this.renderNotified) {
-      this.props.dispatch(ac.AlsoToMain({type: at.NEW_TAB_REHYDRATED, data: {}}));
-      this.renderNotified = true;
-    }
-  }
-
   render() {
     const {props} = this;
     const {App, locale, strings} = props;
     const {initialized} = App;
 
     const prefs = props.Prefs.values;
-    if (prefs.asrouterExperimentEnabled && window.location.hash === "#asrouter") {
+    if (prefs["asrouter.devtoolsEnabled"] && window.location.hash === "#asrouter") {
       return (<ASRouterAdmin />);
     }
 
     if (!props.isPrerendered && !initialized) {
       return null;
-    }
-
-    // Until we can delete the existing onboarding tour, just hide the onboarding button when users are in
-    // the new simplified onboarding experiment. CSS hacks ftw
-    let isOnboardingEnabled = false;
-    try {
-      isOnboardingEnabled = JSON.parse(prefs["asrouter.messageProviders"]).find(i => i.id === "onboarding").enabled;
-    } catch (e) {}
-
-    if (isOnboardingEnabled) {
-      global.document.body.classList.add("hide-onboarding");
     }
 
     return (<IntlProvider locale={locale} messages={strings}>

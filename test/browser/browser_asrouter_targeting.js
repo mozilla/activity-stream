@@ -120,14 +120,14 @@ add_task(async function checkCurrentDate() {
     "should select message based on currentDate > timestamp");
 });
 
-add_task(async function checkhasFxAccount() {
+add_task(async function check_usesFirefoxSync() {
   await pushPrefs(["services.sync.username", "someone@foo.com"]);
-  is(await ASRouterTargeting.Environment.hasFxAccount, true,
+  is(await ASRouterTargeting.Environment.usesFirefoxSync, true,
     "should return true if a fx account is set");
 
-  const message = {id: "foo", targeting: "hasFxAccount"};
+  const message = {id: "foo", targeting: "usesFirefoxSync"};
   is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
-    "should select correct item by hasFxAccount");
+    "should select correct item by usesFirefoxSync");
 });
 
 add_task(async function check_totalBookmarksCount() {
@@ -308,6 +308,20 @@ add_task(async function checkFrecentSites() {
   TopFrecentSitesCache.expire();
 });
 
+add_task(async function check_firefox_version() {
+  const message = {id: "foo", targeting: "firefoxVersion > 0"};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "should select correct item when filtering by firefox version");
+});
+
+add_task(async function check_region() {
+  await SpecialPowers.pushPrefEnv({"set": [["browser.search.region", "DE"]]});
+
+  const message = {id: "foo", targeting: "region in ['DE']"};
+  is(await ASRouterTargeting.findMatchingMessage({messages: [message]}), message,
+    "should select correct item when filtering by firefox geo");
+});
+
 add_task(async function check_browserSettings() {
   is(await ASRouterTargeting.Environment.browserSettings.attribution, TelemetryEnvironment.currentEnvironment.settings.attribution,
     "should return correct attribution info");
@@ -326,16 +340,16 @@ add_task(async function check_sync() {
 });
 
 add_task(async function check_onboarding_cohort() {
-  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", enabled: true, cohort: 1}]));
+  await pushPrefs(["browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", messages: [], enabled: true, cohort: 1}])]);
   is(await ASRouterTargeting.Environment.isInExperimentCohort, 1);
-  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify(17));
+  await pushPrefs(["browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify(17)]);
   is(await ASRouterTargeting.Environment.isInExperimentCohort, 0);
-  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", enabled: true, cohort: "hello"}]));
+  await pushPrefs(["browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", messages: [], enabled: true, cohort: "hello"}])]);
   is(await ASRouterTargeting.Environment.isInExperimentCohort, 0);
 });
 
 add_task(async function check_provider_cohorts() {
-  Services.prefs.setStringPref("browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", enabled: true, cohort: "foo"}, {id: "cfr", cohort: "bar"}]));
+  await pushPrefs(["browser.newtabpage.activity-stream.asrouter.messageProviders", JSON.stringify([{id: "onboarding", messages: [], enabled: true, cohort: "foo"}, {id: "cfr", messages: [], cohort: "bar"}])]);
   is(await ASRouterTargeting.Environment.providerCohorts.onboarding, "foo");
   is(await ASRouterTargeting.Environment.providerCohorts.cfr, "bar");
 });

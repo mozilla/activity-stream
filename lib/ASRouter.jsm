@@ -16,6 +16,8 @@ const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stre
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js", {});
 const {CFRPageActions} = ChromeUtils.import("resource://activity-stream/lib/CFRPageActions.jsm", {});
 
+ChromeUtils.defineModuleGetter(this, "ASRouterPreferences",
+  "resource://activity-stream/lib/ASRouterPreferences.jsm");
 ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
   "resource://activity-stream/lib/ASRouterTargeting.jsm");
 ChromeUtils.defineModuleGetter(this, "ASRouterTriggerListeners",
@@ -23,7 +25,6 @@ ChromeUtils.defineModuleGetter(this, "ASRouterTriggerListeners",
 
 const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
-const MESSAGE_PROVIDER_PREF = "browser.newtabpage.activity-stream.asrouter.messageProviders";
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 // List of hosts for endpoints that serve router messages.
 // Key is allowed host, value is a name for the endpoint host.
@@ -31,14 +32,18 @@ const DEFAULT_WHITELIST_HOSTS = {
   "activity-stream-icons.services.mozilla.com": "production",
   "snippets-admin.mozilla.org": "preview"
 };
+const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
 const SNIPPETS_ENDPOINT_WHITELIST = "browser.newtab.activity-stream.asrouter.whitelistHosts";
 // Max possible impressions cap for any message
 const MAX_MESSAGE_LIFETIME_CAP = 100;
 
 const LOCAL_MESSAGE_PROVIDERS = {OnboardingMessageProvider, CFRMessageProvider};
-const STARTPAGE_VERSION = "0.1.0";
+const STARTPAGE_VERSION = "6";
 
 const MessageLoaderUtils = {
+  STARTPAGE_VERSION,
+  REMOTE_LOADER_CACHE_KEY: "RemoteLoaderCache",
+
   /**
    * _localLoader - Loads messages for a local provider (i.e. one that lives in mozilla central)
    *
@@ -50,26 +55,74 @@ const MessageLoaderUtils = {
     return provider.messages;
   },
 
+  async _remoteLoaderCache(storage) {
+    let allCached;
+    try {
+      allCached = await storage.get(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY) || {};
+    } catch (e) {
+      // istanbul ignore next
+      Cu.reportError(e);
+      // istanbul ignore next
+      allCached = {};
+    }
+    return allCached;
+  },
+
   /**
    * _remoteLoader - Loads messages for a remote provider
    *
    * @param {obj} provider An AS router provider
    * @param {string} provider.url An endpoint that returns an array of messages as JSON
+   * @param {obj} storage A storage object with get() and set() methods for caching.
    * @returns {Promise} resolves with an array of messages, or an empty array if none could be fetched
    */
-  async _remoteLoader(provider) {
+  async _remoteLoader(provider, storage) {
     let remoteMessages = [];
     if (provider.url) {
+      const allCached = await MessageLoaderUtils._remoteLoaderCache(storage);
+      const cached = allCached[provider.id];
+      let etag;
+
+      if (cached && cached.url === provider.url && cached.version === STARTPAGE_VERSION) {
+        const {lastFetched, messages} = cached;
+        if (!MessageLoaderUtils.shouldProviderUpdate({...provider, lastUpdated: lastFetched})) {
+          // Cached messages haven't expired, return early.
+          return messages;
+        }
+        etag = cached.etag;
+        remoteMessages = messages;
+      }
+
+      let headers = new Headers();
+      if (etag) {
+        headers.set("If-None-Match", etag);
+      }
+
       try {
-        const response = await fetch(provider.url);
+        const response = await fetch(provider.url, {headers});
         if (
           // Empty response
           response.status !== 204 &&
+          // Not modified
+          response.status !== 304 &&
           (response.ok || response.status === 302)
         ) {
           remoteMessages = (await response.json())
             .messages
             .map(msg => ({...msg, provider_url: provider.url}));
+
+          // Cache the results if this isn't a preview URL.
+          if (provider.updateCycleInMs > 0) {
+            etag = response.headers.get("ETag");
+            const cacheInfo = {
+              messages: remoteMessages,
+              etag,
+              lastFetched: Date.now(),
+              version: STARTPAGE_VERSION
+            };
+
+            storage.set(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY, {...allCached, [provider.id]: cacheInfo});
+          }
         }
       } catch (e) {
         Cu.reportError(e);
@@ -137,13 +190,19 @@ const MessageLoaderUtils = {
    *
    * @param {obj} provider An AS Router provider
    * @param {string} provider.type An AS Router provider type (defaults to "local")
+   * @param {obj} storage A storage object with get() and set() methods for caching.
    * @returns {obj} Returns an object with .messages (an array of messages) and .lastUpdated (the time the messages were updated)
    */
-  async loadMessagesForProvider(provider) {
-    const messages = (await this._getMessageLoader(provider)(provider))
-        .map(msg => ({...msg, provider: provider.id}));
+  async loadMessagesForProvider(provider, storage) {
+    const loader = this._getMessageLoader(provider);
+    let messages = await loader(provider, storage);
+    // istanbul ignore if
+    if (!messages) {
+      messages = [];
+      Cu.reportError(new Error(`Tried to load messages for ${provider.id} but the result was not an Array.`));
+    }
     const lastUpdated = Date.now();
-    return {messages, lastUpdated};
+    return {messages: messages.map(msg => ({...msg, provider: provider.id})), lastUpdated};
   },
 
   async installAddonFromURL(browser, url) {
@@ -154,6 +213,26 @@ const MessageLoaderUtils = {
       await AddonManager.installAddonFromWebpage("application/x-xpinstall", browser,
         systemPrincipal, install);
     } catch (e) {}
+  },
+
+  /**
+   * cleanupCache - Removes cached data of removed providers.
+   *
+   * @param {Array} providers A list of activer AS Router providers
+   */
+  async cleanupCache(providers, storage) {
+    const ids = providers.filter(p => p.type === "remote").map(p => p.id);
+    const cache = await MessageLoaderUtils._remoteLoaderCache(storage);
+    let dirty = false;
+    for (let id in cache) {
+      if (!ids.includes(id)) {
+        delete cache[id];
+        dirty = true;
+      }
+    }
+    if (dirty) {
+      await storage.set(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY, cache);
+    }
   }
 };
 
@@ -168,7 +247,7 @@ this.MessageLoaderUtils = MessageLoaderUtils;
  * so that it can be more easily unit tested.
  */
 class _ASRouter {
-  constructor(messageProviderPref = MESSAGE_PROVIDER_PREF, localProviders = LOCAL_MESSAGE_PROVIDERS) {
+  constructor(localProviders = LOCAL_MESSAGE_PROVIDERS) {
     this.initialized = false;
     this.messageChannel = null;
     this.dispatchToAS = null;
@@ -184,38 +263,50 @@ class _ASRouter {
       messages: []
     };
     this._triggerHandler = this._triggerHandler.bind(this);
-    this._messageProviderPref = messageProviderPref;
     this._localProviders = localProviders;
     this.onMessage = this.onMessage.bind(this);
     this._handleTargetingError = this._handleTargetingError.bind(this);
+    this.onPrefChange = this.onPrefChange.bind(this);
+  }
+
+  /**
+   * Turns legacy onboarding off or on using the ONBOARDING_FINISHED_PREF.
+   * This is required since ASRouter also shows snippets and onboarding, which
+   * interferes with legacy onboarding.
+   *
+   * Note that when this pref is true, legacy onboarding does NOT show up;
+   * when it is false, iegacy onboarding may show up if the profile age etc.
+   * is appropriate for the user to see it.
+   */
+  overrideOrEnableLegacyOnboarding() {
+    const {allowLegacyOnboarding} = ASRouterPreferences.specialConditions;
+    const onboardingFinished = Services.prefs.getBoolPref(ONBOARDING_FINISHED_PREF, true);
+
+    if (!allowLegacyOnboarding && onboardingFinished === false) {
+      Services.prefs.setBoolPref(ONBOARDING_FINISHED_PREF, true);
+    } else if (allowLegacyOnboarding && onboardingFinished === true) {
+      Services.prefs.setBoolPref(ONBOARDING_FINISHED_PREF, false);
+    }
   }
 
   // Update message providers and fetch new messages on pref change
-  async observe(aSubject, aTopic, aPrefName) {
-    if (aPrefName === this._messageProviderPref) {
-      this._updateMessageProviders();
-    }
-
+  async onPrefChange() {
+    this._updateMessageProviders();
+    this.overrideOrEnableLegacyOnboarding();
     await this.loadMessagesFromAllProviders();
+    this.dispatchToAS(ac.BroadcastToContent({type: at.AS_ROUTER_PREF_CHANGED, data: ASRouterPreferences.specialConditions}));
   }
 
   // Fetch and decode the message provider pref JSON, and update the message providers
   _updateMessageProviders() {
-    // If we have added a `preview` provider, hold onto it
-    const existingPreviewProvider = this.state.providers.find(p => p.id === "preview");
-    const providers = existingPreviewProvider ? [existingPreviewProvider] : [];
-    const providersJSON = Services.prefs.getStringPref(this._messageProviderPref, "");
-    try {
-      JSON.parse(providersJSON).forEach(provider => {
-        if (provider.enabled) {
-          providers.push(provider);
-        }
-      });
-    } catch (e) {
-      Cu.reportError("Problem parsing JSON message provider pref for ASRouter");
-    }
+    const providers = [
+      // If we have added a `preview` provider, hold onto it
+      ...this.state.providers.filter(p => p.id === "preview"),
+      ...ASRouterPreferences.providers.filter(p => p.enabled)
+    ].map(_provider => {
+      // make a copy so we don't modify the source of the pref
+      const provider = {..._provider};
 
-    providers.forEach(provider => {
       if (provider.type === "local" && !provider.messages) {
         // Get the messages from the local message provider
         const localProvider = this._localProviders[provider.localProvider];
@@ -227,6 +318,7 @@ class _ASRouter {
       }
       // Reset provider update timestamp to force message refresh
       provider.lastUpdated = undefined;
+      return provider;
     });
 
     const providerIDs = providers.map(p => p.id);
@@ -275,7 +367,7 @@ class _ASRouter {
       let newState = {messages: [], providers: []};
       for (const provider of this.state.providers) {
         if (needsUpdate.includes(provider)) {
-          const {messages, lastUpdated} = await MessageLoaderUtils.loadMessagesForProvider(provider);
+          const {messages, lastUpdated} = await MessageLoaderUtils.loadMessagesForProvider(provider, this._storage);
           newState.providers.push({...provider, lastUpdated});
           newState.messages = [...newState.messages, ...messages];
         } else {
@@ -318,11 +410,13 @@ class _ASRouter {
   async init(channel, storage, dispatchToAS) {
     this.messageChannel = channel;
     this.messageChannel.addMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
-    Services.prefs.addObserver(this._messageProviderPref, this);
     this._storage = storage;
     this.WHITELIST_HOSTS = this._loadSnippetsWhitelistHosts();
     this.dispatchToAS = dispatchToAS;
     this.dispatch = this.dispatch.bind(this);
+
+    ASRouterPreferences.init();
+    ASRouterPreferences.addListener(this.onPrefChange);
 
     const messageBlockList = await this._storage.get("messageBlockList") || [];
     const providerBlockList = await this._storage.get("providerBlockList") || [];
@@ -331,7 +425,12 @@ class _ASRouter {
     const previousSessionEnd = await this._storage.get("previousSessionEnd") || 0;
     await this.setState({messageBlockList, providerBlockList, messageImpressions, providerImpressions, previousSessionEnd});
     this._updateMessageProviders();
+    this.overrideOrEnableLegacyOnboarding();
     await this.loadMessagesFromAllProviders();
+    await MessageLoaderUtils.cleanupCache(this.state.providers, storage);
+
+    // set necessary state in the rest of AS
+    this.dispatchToAS(ac.BroadcastToContent({type: at.AS_ROUTER_INITIALIZED, data: ASRouterPreferences.specialConditions}));
 
     // sets .initialized to true and resolves .waitForInitialized promise
     this._finishInitializing();
@@ -344,7 +443,12 @@ class _ASRouter {
     this.messageChannel.removeMessageListener(INCOMING_MESSAGE_NAME, this.onMessage);
     this.messageChannel = null;
     this.dispatchToAS = null;
-    Services.prefs.removeObserver(this._messageProviderPref, this);
+
+    this.overrideOrEnableLegacyOnboarding();
+
+    ASRouterPreferences.removeListener(this.onPrefChange);
+    ASRouterPreferences.uninit();
+
     // Uninitialise all trigger listeners
     for (const listener of ASRouterTriggerListeners.values()) {
       listener.uninit();
@@ -368,7 +472,9 @@ class _ASRouter {
   }
 
   _onStateChanged(state) {
-    this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: state});
+    if (ASRouterPreferences.devtoolsEnabled) {
+      this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: this.state});
+    }
   }
 
   _handleTargetingError(type, error, message) {
