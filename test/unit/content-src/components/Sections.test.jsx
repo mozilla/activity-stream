@@ -30,7 +30,7 @@ describe("<Sections>", () => {
       id: `foo_bar_${i}`,
       title: `Foo Bar ${i}`,
       enabled: !!(i % 2),
-      rows: []
+      rows: [],
     }));
     wrapper = shallow(<Sections Sections={FAKE_SECTIONS} Prefs={{values: {sectionOrder: FAKE_SECTIONS.map(i => i.id).join(",")}}} />);
   });
@@ -79,11 +79,11 @@ describe("<Section>", () => {
       rows: [{link: "http://localhost", index: 0}],
       emptyState: {
         icon: "check",
-        message: "Some message"
+        message: "Some message",
       },
       rowsPref: "section.rows",
       maxRows: 4,
-      Prefs: {values: {"section.rows": 2}}
+      Prefs: {values: {"section.rows": 2}},
     };
     wrapper = mountSectionIntlWithProps(FAKE_SECTION);
   });
@@ -145,7 +145,7 @@ describe("<Section>", () => {
         initialized: true,
         dispatch: () => {},
         rows: [],
-        emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
+        emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"},
       });
       wrapper = shallowWithIntl(
         <Section {...FAKE_SECTION} />);
@@ -157,7 +157,7 @@ describe("<Section>", () => {
       Object.assign(FAKE_SECTION, {
         initialized: false,
         rows: [],
-        emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"}
+        emptyState: {message: "Some message", icon: "moz-extension://some/extension/path"},
       });
       wrapper = shallowWithIntl(
         <Section {...FAKE_SECTION} />);
@@ -180,7 +180,7 @@ describe("<Section>", () => {
         topics: [],
         read_more_endpoint: "http://localhost/read-more",
         maxRows: 1,
-        eventSource: "TOP_STORIES"
+        eventSource: "TOP_STORIES",
       };
     });
     it("should not render for empty topics", () => {
@@ -199,7 +199,7 @@ describe("<Section>", () => {
       TOP_STORIES_SECTION.rows = [
         {guid: 1, link: "http://localhost"},
         {guid: 2, link: "http://localhost"},
-        {guid: 3, link: "http://localhost"}
+        {guid: 3, link: "http://localhost"},
       ];
       wrapper = shallow(<Section Pocket={{waitingForSpoc: true, pocketCta: {}}} {...TOP_STORIES_SECTION} />);
       assert.lengthOf(wrapper.find(PlaceholderCard), 1);
@@ -207,8 +207,8 @@ describe("<Section>", () => {
       wrapper.setProps({
         Pocket: {
           waitingForSpoc: false,
-          pocketCta: {}
-        }
+          pocketCta: {},
+        },
       });
       assert.lengthOf(wrapper.find(PlaceholderCard), 0);
     });
@@ -269,10 +269,10 @@ describe("<Section>", () => {
       document: {
         visibilityState: "visible",
         addEventListener: sinon.stub(),
-        removeEventListener: sinon.stub()
+        removeEventListener: sinon.stub(),
       },
       eventSource: "TOP_STORIES",
-      options: {personalized: false}
+      options: {personalized: false},
     };
 
     function renderSection(props = {}) {
@@ -310,8 +310,8 @@ describe("<Section>", () => {
         document: {
           visibilityState: "hidden",
           addEventListener: sinon.spy(),
-          removeEventListener: sinon.spy()
-        }
+          removeEventListener: sinon.spy(),
+        },
       };
 
       renderSection(props);
@@ -340,8 +340,8 @@ describe("<Section>", () => {
         document: {
           visibilityState: "hidden",
           addEventListener: sinon.spy(),
-          removeEventListener: sinon.spy()
-        }
+          removeEventListener: sinon.spy(),
+        },
       };
 
       const section = renderSection(props);
@@ -387,7 +387,7 @@ describe("<Section>", () => {
         FAKE_TOPSTORIES_SECTION_PROPS,
         {
           rows: [{guid: 123}],
-          pref: {collapsed: true}
+          pref: {collapsed: true},
         }
       ));
 
@@ -398,7 +398,7 @@ describe("<Section>", () => {
         FAKE_TOPSTORIES_SECTION_PROPS,
         {
           rows: [{guid: 123}],
-          pref: {collapsed: false}
+          pref: {collapsed: false},
         }
       ));
 
@@ -423,8 +423,8 @@ describe("<Section>", () => {
         document: {
           visibilityState: "hidden",
           addEventListener: (ev, cb) => listeners.add(cb),
-          removeEventListener: (ev, cb) => listeners.delete(cb)
-        }
+          removeEventListener: (ev, cb) => listeners.delete(cb),
+        },
       };
 
       wrapper = renderSection(props);
@@ -462,7 +462,7 @@ describe("<Section>", () => {
         topics: [],
         read_more_endpoint: "http://localhost/read-more",
         maxRows: 1,
-        eventSource: "TOP_STORIES"
+        eventSource: "TOP_STORIES",
       };
       wrapper = shallow(<Section Pocket={{waitingForSpoc: true, pocketCta: {}}} {...TOP_STORIES_SECTION} dispatch={dispatch} />);
       assert.notCalled(dispatch);
@@ -487,7 +487,7 @@ describe("<Section>", () => {
       Object.assign(FAKE_SECTION, {
         rowsPref: "section.rows",
         maxRows: 4,
-        Prefs: {values: {"section.rows": numRows}}
+        Prefs: {values: {"section.rows": numRows}},
       });
       wrapper = mountSectionWithProps(FAKE_SECTION);
       assert.equal(wrapper.find(Section).instance().numRows, numRows);
@@ -498,7 +498,7 @@ describe("<Section>", () => {
       Object.assign(FAKE_SECTION, {
         rowsPref: "section.rows",
         maxRows: 4,
-        Prefs: {values: {"section.rows": numRows}}
+        Prefs: {values: {"section.rows": numRows}},
       });
       wrapper = mountSectionWithProps(FAKE_SECTION);
       assert.equal(wrapper.find(Section).instance().numRows, numRows);

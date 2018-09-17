@@ -58,7 +58,7 @@ test_newtab({
     // Need to wait for unpin action.
     await ContentTaskUtils.waitForCondition(() => !topsiteEl.querySelector(".icon-pin-small"),
       "Topsite should be unpinned");
-  }
+  },
 });
 
 // Check Topsites add
@@ -116,7 +116,7 @@ test_newtab({
 
     // Wait for Topsite to be removed
     await ContentTaskUtils.waitForCondition(() => (content.document.querySelector(".top-site-outer:first-child a").getAttribute("href") !== "https://bugzilla.mozilla.org"), "Topsite not removed");
-  }
+  },
 });
 
 test_newtab({
@@ -134,5 +134,5 @@ test_newtab({
   after(searchTopSiteTag) {
     ok(gURLBar.focused, "We clicked a search topsite the focus should be in location bar");
     ok(gURLBar.value.includes(searchTopSiteTag), "Should contain the tag of the search topsite clicked");
-  }
+  },
 });

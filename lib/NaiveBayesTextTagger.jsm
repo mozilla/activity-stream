@@ -55,7 +55,7 @@ this.NaiveBayesTextTagger = class NaiveBayesTextTagger {
     return {
       "label": bestClassLabel,
       "logProb": bestLogProb,
-      "confident": confident
+      "confident": confident,
     };
   }
 };

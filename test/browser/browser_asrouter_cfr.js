@@ -11,30 +11,30 @@ function trigger_cfr_panel(browser, trigger, cb) {
         heading_text: "Mochitest",
         info_icon: {
           label: {attributes: {tooltiptext: "Why am I seeing this"}},
-          sumo_path: "extensionrecommendations"
+          sumo_path: "extensionrecommendations",
         },
         addon: {
           title: "Addon name",
           icon: "foo",
           author: "Author name",
-          amo_url: "https://example.com"
+          amo_url: "https://example.com",
         },
         text: "Mochitest",
         buttons: {
           primary: {
             label: {
               value: "OK",
-              attributes: {accesskey: "O"}
-            }
+              attributes: {accesskey: "O"},
+            },
           },
           secondary: {
             label: {
               value: "Cancel",
-              attributes: {accesskey: "C"}
-            }
-          }
-        }
-      }
+              attributes: {accesskey: "C"},
+            },
+          },
+        },
+      },
     },
     cb
   );

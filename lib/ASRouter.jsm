@@ -8,7 +8,7 @@ ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 XPCOMUtils.defineLazyModuleGetters(this, {
   AddonManager: "resource://gre/modules/AddonManager.jsm",
-  UITour: "resource:///modules/UITour.jsm"
+  UITour: "resource:///modules/UITour.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm", {});
@@ -30,7 +30,7 @@ const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 // Key is allowed host, value is a name for the endpoint host.
 const DEFAULT_WHITELIST_HOSTS = {
   "activity-stream-icons.services.mozilla.com": "production",
-  "snippets-admin.mozilla.org": "preview"
+  "snippets-admin.mozilla.org": "preview",
 };
 const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
 const SNIPPETS_ENDPOINT_WHITELIST = "browser.newtab.activity-stream.asrouter.whitelistHosts";
@@ -118,7 +118,7 @@ const MessageLoaderUtils = {
               messages: remoteMessages,
               etag,
               lastFetched: Date.now(),
-              version: STARTPAGE_VERSION
+              version: STARTPAGE_VERSION,
             };
 
             storage.set(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY, {...allCached, [provider.id]: cacheInfo});
@@ -233,7 +233,7 @@ const MessageLoaderUtils = {
     if (dirty) {
       await storage.set(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY, cache);
     }
-  }
+  },
 };
 
 this.MessageLoaderUtils = MessageLoaderUtils;
@@ -260,7 +260,7 @@ class _ASRouter {
       providerBlockList: [],
       messageImpressions: {},
       providerImpressions: {},
-      messages: []
+      messages: [],
     };
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
@@ -302,7 +302,7 @@ class _ASRouter {
     const providers = [
       // If we have added a `preview` provider, hold onto it
       ...this.state.providers.filter(p => p.id === "preview"),
-      ...ASRouterPreferences.providers.filter(p => p.enabled)
+      ...ASRouterPreferences.providers.filter(p => p.enabled),
     ].map(_provider => {
       // make a copy so we don't modify the source of the pref
       const provider = {..._provider};
@@ -325,7 +325,7 @@ class _ASRouter {
     this.setState(prevState => ({
       providers,
       // Clear any messages from removed providers
-      messages: [...prevState.messages.filter(message => providerIDs.includes(message.provider))]
+      messages: [...prevState.messages.filter(message => providerIDs.includes(message.provider))],
     }));
   }
 
@@ -484,7 +484,7 @@ class _ASRouter {
         message_id: message.id,
         action: "asrouter_undesired_event",
         event: "TARGETING_EXPRESSION_ERROR",
-        value: type
+        value: type,
       }));
     }
   }
@@ -495,7 +495,7 @@ class _ASRouter {
     return {
       get previousSessionEnd() {
         return previousSessionEnd;
-      }
+      },
     };
   }
 
@@ -735,7 +735,7 @@ class _ASRouter {
       // We don't want to cache preview messages, remove them after we selected the message to show
       await this.setState(state => ({
         lastMessageId: message.id,
-        messages: state.messages.filter(m => m.id !== message.id)
+        messages: state.messages.filter(m => m.id !== message.id),
       }));
     } else {
       await this.setState({lastMessageId: message ? message.id : null});
@@ -844,7 +844,7 @@ class _ASRouter {
       case ra.OPEN_URL:
         target.browser.ownerGlobal.openLinkIn(action.data.url, "tabshifted", {
           private: false,
-          triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({})
+          triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}),
         });
         break;
       case ra.OPEN_ABOUT_PAGE:

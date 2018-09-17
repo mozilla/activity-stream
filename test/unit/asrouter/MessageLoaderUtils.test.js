@@ -6,7 +6,7 @@ const FAKE_STORAGE = {
   set() {
     return Promise.resolve();
   },
-  get() { return Promise.resolve(); }
+  get() { return Promise.resolve(); },
 };
 const FAKE_RESPONSE_HEADERS = {get() {}};
 
@@ -99,10 +99,10 @@ describe("MessageLoaderUtils", () => {
                 url: provider.url,
                 messages,
                 etag: "etag0987654321",
-                lastFetched: 1
-              }
+                lastFetched: 1,
+              },
             });
-          }
+          },
         };
         fetchStub.resolves({ok: true, status: 304, json: () => "", headers: FAKE_RESPONSE_HEADERS});
         const result = await MessageLoaderUtils.loadMessagesForProvider(provider, fakeStorage);
@@ -139,10 +139,10 @@ describe("MessageLoaderUtils", () => {
                 url: provider.url,
                 messages,
                 etag: "etag0987654321",
-                lastFetched: Date.now()
-              }
+                lastFetched: Date.now(),
+              },
             });
-          }
+          },
         };
         const result = await MessageLoaderUtils.loadMessagesForProvider(provider, fakeStorage);
         assert.equal(result.messages.length, messages.length);
@@ -164,10 +164,10 @@ describe("MessageLoaderUtils", () => {
                 url: provider.url,
                 messages: [{id: "message-1"}, {id: "message-2"}],
                 etag: "etag0987654321",
-                lastFetched: 1
-              }
+                lastFetched: 1,
+              },
             });
-          }
+          },
         };
         fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(respJson), headers: FAKE_RESPONSE_HEADERS});
         const result = await MessageLoaderUtils.loadMessagesForProvider(provider, fakeStorage);
@@ -188,7 +188,7 @@ describe("MessageLoaderUtils", () => {
       const provider = {
         id: "provider123",
         type: "remote",
-        url: "foo.com"
+        url: "foo.com",
       };
 
       fetchStub.resolves({
@@ -198,7 +198,7 @@ describe("MessageLoaderUtils", () => {
           clock.tick(42);
           resolve({messages: [sourceMessage]});
         }),
-        headers: FAKE_RESPONSE_HEADERS
+        headers: FAKE_RESPONSE_HEADERS,
       });
 
       const result = await MessageLoaderUtils.loadMessagesForProvider(provider, FAKE_STORAGE);
@@ -237,7 +237,7 @@ describe("MessageLoaderUtils", () => {
       installAddonStub = sandbox.stub();
       globals.set("AddonManager", {
         getInstallForURL: getInstallStub,
-        installAddonFromWebpage: installAddonStub
+        installAddonFromWebpage: installAddonStub,
       });
     });
     afterEach(() => {
@@ -269,9 +269,9 @@ describe("MessageLoaderUtils", () => {
         get: sinon.stub().returns(Promise.resolve({
           "id-1": {},
           "id-2": {},
-          "id-3": {}
+          "id-3": {},
         })),
-        set: sinon.stub().returns(Promise.resolve())
+        set: sinon.stub().returns(Promise.resolve()),
       };
       const fakeProviders = [{id: "id-1", type: "remote"}, {id: "id-3", type: "remote"}];
 

@@ -24,8 +24,8 @@ describe("Naive Bayes Tagger", () => {
             -7.1639509366900604,
             -7.218981434452414,
             -6.854842907887801,
-            -7.080328841624584
-          ]
+            -7.080328841624584,
+          ],
         },
         {
           log_prior: -0.6981849745899025,
@@ -40,9 +40,9 @@ describe("Naive Bayes Tagger", () => {
             -7.015756380369387,
             -7.739036845511857,
             -9.748294397894645,
-            -3.9353548206941955
-          ]
-        }
+            -3.9353548206941955,
+          ],
+        },
       ],
       vocab_idfs: {
         deal:    [0,  5.5058519847862275],
@@ -55,8 +55,8 @@ describe("Naive Bayes Tagger", () => {
         super:   [7,  5.2646899279693390],
         heard:   [8,  5.5058519847862275],
         reached: [9,  5.9578371085292850],
-        words:   [10, 5.0705339135283820]
-      }
+        words:   [10, 5.0705339135283820],
+      },
     };
     let instance = new NaiveBayesTextTagger(model);
 
@@ -66,25 +66,25 @@ describe("Naive Bayes Tagger", () => {
         expected: {
           label: "military",
           logProb: -0.16299510296630082,
-          confident: true
-        }
+          confident: true,
+        },
       },
       {
         input: "heard",
         expected: {
           label: "military",
           logProb: -0.4628170738373294,
-          confident: false
-        }
+          confident: false,
+        },
       },
       {
         input: "words",
         expected: {
           label: null,
           logProb: -0.04258339303757985,
-          confident: false
-        }
-      }
+          confident: false,
+        },
+      },
     ];
 
     let checkTag = tc => {
