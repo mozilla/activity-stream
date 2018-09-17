@@ -75,7 +75,12 @@ describe("RecipeExecutor", () => {
           bb: "5",
           bc: "6"
         }
-      }
+      },
+      zero: {
+        a: 0,
+        b: 0
+      },
+      zaro: [0, 0]
     };
     return x;
   };
@@ -322,6 +327,13 @@ describe("RecipeExecutor", () => {
     });
     it("should know this is a string", () => {
       assert.equal(instance._typeOf("blah"), "string");
+    });
+    it("should know this is a boolean", () => {
+      assert.equal(instance._typeOf(true), "boolean");
+    });
+
+    it("should know this is a null", () => {
+      assert.equal(instance._typeOf(null), "null");
     });
   });
 
@@ -632,6 +644,12 @@ describe("RecipeExecutor", () => {
       item = instance.l2Normalize(item, {field: "foo"});
       assert.equal(item, null);
     });
+    it("should not bomb on a zero vector", () => {
+      item = instance.l2Normalize(item, {field: "zero"});
+      assert.deepEqual(item.zero, {a: 0, b: 0});
+      item = instance.l2Normalize(item, {field: "zaro"});
+      assert.deepEqual(item.zaro, [0, 0]);
+    });
   });
 
   describe("#probNormalize", () => {
@@ -656,6 +674,12 @@ describe("RecipeExecutor", () => {
     it("should fail a string", () => {
       item = instance.probNormalize(item, {field: "foo"});
       assert.equal(item, null);
+    });
+    it("should not bomb on a zero vector", () => {
+      item = instance.probNormalize(item, {field: "zero"});
+      assert.deepEqual(item.zero, {a: 0, b: 0});
+      item = instance.probNormalize(item, {field: "zaro"});
+      assert.deepEqual(item.zaro, [0, 0]);
     });
   });
 

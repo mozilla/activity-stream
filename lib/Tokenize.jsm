@@ -35,7 +35,7 @@ function tokenize(text) {
 
 /**
  * Converts a sequence of tokens into an L2 normed TF-IDF. Any terms that are
- * not preindexed (i.e. does has a computed inverse document frequency) will
+ * not preindexed (i.e. does have a computed inverse document frequency) will
  * be dropped.
  */
 function toksToTfIdfVector(tokens, vocab_idfs) {
