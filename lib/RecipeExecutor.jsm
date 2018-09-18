@@ -52,12 +52,12 @@ this.RecipeExecutor = class RecipeExecutor {
       lookupValue: this.lookupValue,
       copy_to_map: this.copyToMap,
       scalar_multiply_tag: this.scalarMultiplyTag,
-      apply_softmax_tags: this.applySoftmaxTags
+      apply_softmax_tags: this.applySoftmaxTags,
     };
     this.ITEM_COMBINER_REGISTRY = {
       combiner_add: this.combinerAdd,
       combiner_max: this.combinerMax,
-      combiner_collect_values: this.combinerCollectValues
+      combiner_collect_values: this.combinerCollectValues,
     };
     this.nbTaggers = nbTaggers;
     this.nmfTaggers = nmfTaggers;
@@ -110,10 +110,10 @@ this.RecipeExecutor = class RecipeExecutor {
           textArr.push(item[field]);
         } else if (type === "array") {
           for (let ele of item[field]) {
-            textArr.push(Object.toString(ele));
+            textArr.push(String(ele));
           }
         } else {
-          textArr.push(Object.toString(item[field]));
+          textArr.push(String(item[field]));
         }
       }
     }

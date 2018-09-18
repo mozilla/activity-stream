@@ -15,7 +15,7 @@ class MockTagger {
       return {
         label: tag,
         logProb: Math.log(prob),
-        confident: conf
+        confident: conf,
       };
     }
     return this.tagScoreMap;
@@ -42,12 +42,12 @@ describe("RecipeExecutor", () => {
       map: {
         c: 3,
         a: 1,
-        b: 2
+        b: 2,
       },
       map2: {
         b: 2,
         c: 3,
-        d: 4
+        d: 4,
       },
       arr1: [2, 3, 4],
       arr2: [3, 4, 5],
@@ -56,31 +56,31 @@ describe("RecipeExecutor", () => {
         a: {
           aa: 0.1,
           ab: 0.2,
-          ac: 0.3
+          ac: 0.3,
         },
         b: {
           ba: 4,
           bb: 5,
-          bc: 6
+          bc: 6,
         }
       },
       bogus: {
         a: {
           aa: "0.1",
           ab: "0.2",
-          ac: "0.3"
+          ac: "0.3",
         },
         b: {
           ba: "4",
           bb: "5",
-          bc: "6"
-        }
+          bc: "6",
+        },
       },
       zero: {
         a: 0,
-        b: 0
+        b: 0,
       },
-      zaro: [0, 0]
+      zaro: [0, 0],
     };
     return x;
   };
@@ -96,19 +96,19 @@ describe("RecipeExecutor", () => {
       tag1: new MockTagger("nmf", {
         tag11: 0.9,
         tag12: 0.8,
-        tag13: 0.7
+        tag13: 0.7,
       }),
       tag2: new MockTagger("nmf", {
         tag21: 0.8,
         tag22: 0.7,
-        tag23: 0.6
+        tag23: 0.6,
       }),
       tag3: new MockTagger("nmf", {
         tag31: 0.7,
         tag32: 0.6,
-        tag33: 0.5
+        tag33: 0.5,
       }),
-      tag4: new MockTagger("nmf", {tag41: 0.99})
+      tag4: new MockTagger("nmf", {tag41: 0.99}),
     });
   let item = null;
 
@@ -145,17 +145,17 @@ describe("RecipeExecutor", () => {
       assert.deepEqual(item.nb_tags.tag2, {
         label: "tag2",
         logProb: Math.log(0.86),
-        confident: true
+        confident: true,
       });
       assert.deepEqual(item.nb_tags.tag3, {
         label: "tag3",
         logProb: Math.log(0.90),
-        confident: true
+        confident: true,
       });
       assert.deepEqual(item.nb_tags.tag5, {
         label: "tag5",
         logProb: Math.log(0.90),
-        confident: true
+        confident: true,
       });
       assert.isTrue("nb_tokens" in item);
       assert.deepEqual(item.nb_tokens, ["this", "is", "a", "sentence"]);
@@ -177,7 +177,7 @@ describe("RecipeExecutor", () => {
         tag23: 0.6,
         tag31: 0.7,
         tag32: 0.6,
-        tag33: 0.5
+        tag33: 0.5,
       });
       assert.deepEqual(item.nmf_tags_parent, {
         tag21: "tag2",
@@ -185,7 +185,7 @@ describe("RecipeExecutor", () => {
         tag23: "tag2",
         tag31: "tag3",
         tag32: "tag3",
-        tag33: "tag3"
+        tag33: "tag3",
       });
     });
     it("should not populate nmf tags for things that were not nb tagged", () => {
@@ -1101,7 +1101,7 @@ describe("RecipeExecutor", () => {
     it("should handle working steps", () => {
       let final = instance.executeRecipe({}, [
         {function: "set_default", field: "foo", value: 1},
-        {function: "set_default", field: "bar", value: 10}
+        {function: "set_default", field: "bar", value: 10},
       ]);
       assert.equal(final.foo, 1);
       assert.equal(final.bar, 10);
@@ -1110,7 +1110,7 @@ describe("RecipeExecutor", () => {
       let final = instance.executeRecipe({}, [
         {function: "set_default", field: "foo", value: 1},
         {function: "missing"},
-        {function: "set_default", field: "bar", value: 10}
+        {function: "set_default", field: "bar", value: 10},
       ]);
       assert.equal(final, null);
     });
@@ -1118,7 +1118,7 @@ describe("RecipeExecutor", () => {
       let final = instance.executeRecipe({}, [
         {function: "set_default", field: "foo", value: 1},
         {function: "accept_item_by_field_value", field: "missing", op: "invalid", rhsField: "moot", rhsValue: "m00t"},
-        {function: "set_default", field: "bar", value: 10}
+        {function: "set_default", field: "bar", value: 10},
       ]);
       assert.equal(final, null);
     });
@@ -1131,7 +1131,7 @@ describe("RecipeExecutor", () => {
         {foo: 1, bar: 10},
         [
           {function: "combiner_add", field: "foo"},
-          {function: "combiner_add", field: "bar"}
+          {function: "combiner_add", field: "bar"},
         ]);
       assert.equal(final.foo, 2);
       assert.equal(final.bar, 20);
@@ -1143,7 +1143,7 @@ describe("RecipeExecutor", () => {
         [
           {function: "combiner_add", field: "foo"},
           {function: "missing"},
-          {function: "combiner_add", field: "bar"}
+          {function: "combiner_add", field: "bar"},
         ]);
       assert.equal(final, null);
     });
@@ -1154,7 +1154,7 @@ describe("RecipeExecutor", () => {
         [
           {function: "combiner_add", field: "foo"},
           {function: "combiner_add", field: "baz"},
-          {function: "combiner_add", field: "bar"}
+          {function: "combiner_add", field: "bar"},
         ]);
       assert.equal(final, null);
     });
