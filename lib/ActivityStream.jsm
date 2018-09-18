@@ -7,6 +7,8 @@ ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 ChromeUtils.defineModuleGetter(this, "AppConstants",
   "resource://gre/modules/AppConstants.jsm");
+ChromeUtils.defineModuleGetter(this, "UpdateUtils",
+  "resource://gre/modules/UpdateUtils.jsm");
 
 // NB: Eagerly load modules that will be loaded/constructed/initialized in the
 // common case to avoid the overhead of wrapping and detecting lazy loading.
@@ -166,7 +168,7 @@ const PREFS_CONFIG = new Map([
   }],
   ["improvesearch.topSiteSearchShortcuts", {
     title: "Experiment to show special top sites that perform keyword searches",
-    value: AppConstants.MOZ_UPDATE_CHANNEL !== "release",
+    value: UpdateUtils.getUpdateChannel(true) !== "release",
   }],
   ["improvesearch.topSiteSearchShortcuts.searchEngines", {
     title: "An ordered, comma-delimited list of search shortcuts that we should try and pin",
@@ -222,7 +224,7 @@ const PREFS_CONFIG = new Map([
       id: "cfr",
       type: "local",
       localProvider: "CFRMessageProvider",
-      enabled: AppConstants.MOZ_UPDATE_CHANNEL !== "release",
+      enabled: UpdateUtils.getUpdateChannel(true) !== "release",
       cohort: 0,
     }]),
   }],
