@@ -1,5 +1,5 @@
 import {NaiveBayesTextTagger} from "lib/NaiveBayesTextTagger.jsm";
-import {TfIdfVectorizer} from "lib/TfIdfVectorizer.jsm";
+import {tokenize} from "lib/Tokenize.jsm";
 
 const EPSILON = 0.00001;
 
@@ -58,7 +58,7 @@ describe("Naive Bayes Tagger", () => {
         words:   [10, 5.0705339135283820],
       },
     };
-    let instance = new NaiveBayesTextTagger(model, new TfIdfVectorizer());
+    let instance = new NaiveBayesTextTagger(model);
 
     let testCases = [
       {
@@ -88,18 +88,13 @@ describe("Naive Bayes Tagger", () => {
     ];
 
     let checkTag = tc => {
-      let actual = instance.tagText(tc.input);
+      let actual = instance.tagTokens(tokenize(tc.input));
       it(`should tag ${tc.input} with ${tc.expected.label}`, () => {
         assert.equal(tc.expected.label, actual.label);
       });
       it(`should give ${tc.input} the correct probability`, () => {
         let delta = Math.abs(tc.expected.logProb - actual.logProb);
         assert.isTrue(delta <= EPSILON);
-      });
-      it(`should give the same results for ${tc.input}, whether pretokenized or not`, () => {
-        let textResults = instance.tagText(tc.input);
-        let tokResults = instance.tagTokens(instance.tokenizer.tokenize(tc.input));
-        assert.deepEqual(textResults, tokResults);
       });
     };
 

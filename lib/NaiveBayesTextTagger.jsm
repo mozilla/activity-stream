@@ -3,25 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+const {toksToTfIdfVector} = ChromeUtils.import("resource://activity-stream/lib/Tokenize.jsm", {});
+
 this.NaiveBayesTextTagger = class NaiveBayesTextTagger {
-  constructor(model, tokenizer) {
+  constructor(model) {
     this.model = model;
-    this.tokenizer = tokenizer;
   }
 
   /**
-   * Determines if the text belongs to class according to binary naive Bayes
+   * Determines if the tokenized text belongs to class according to binary naive Bayes
    * classifier. Returns an object containing the class label ("label"), and
    * the log probability ("logProb") that the text belongs to that class. If
    * the positive class is more likely, then "label" is the positive class
    * label. If the negative class is matched, then "label" is set to null.
    */
-  tagText(text) {
-    return this.tagTokens(this.tokenizer.tokenize(text));
-  }
-
   tagTokens(tokens) {
-    let fv = this.tokenizer.toksTotfIdfVector(tokens, this.model.vocab_idfs);
+    let fv = toksToTfIdfVector(tokens, this.model.vocab_idfs);
 
     let bestLogProb = null;
     let bestClassId = -1;

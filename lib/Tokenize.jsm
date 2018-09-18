@@ -23,58 +23,49 @@ const UNICODE_LETTER = "A-Za-z\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u
 const REGEXP_SPLITS = new RegExp(`[${UNICODE_SPACE}${UNICODE_SYMBOL}${UNICODE_PUNCT}]+`);
 const REGEXP_ALPHANUMS = new RegExp(`^[${UNICODE_NUMBER}${UNICODE_MARK}${UNICODE_LETTER}]+$`);
 
-this.TfIdfVectorizer = class TfIdfVectorizer {
-  /**
-   * Downcases the text, and splits it into consecutive alphanumeric characters.
-   * This is locale aware, and so will not strip accents. This uses "word
-   * breaks", and os is not appropriate for languages without them
-   * (e.g. Chinese).
-   */
-  tokenize(text) {
-    return text.toLocaleLowerCase().split(REGEXP_SPLITS).filter(tok => tok.match(REGEXP_ALPHANUMS));
-  }
+/**
+ * Downcases the text, and splits it into consecutive alphanumeric characters.
+ * This is locale aware, and so will not strip accents. This uses "word
+ * breaks", and os is not appropriate for languages without them
+ * (e.g. Chinese).
+ */
+function tokenize(text) {
+  return text.toLocaleLowerCase().split(REGEXP_SPLITS).filter(tok => tok.match(REGEXP_ALPHANUMS));
+}
 
-  /**
-   * Converts a sequence of tokens into an L2 normed TF-IDF. Any terms that are
-   * not preindexed (i.e. does has a computed inverse document frequency) will
-   * be dropped.
-   */
-  toksTotfIdfVector(tokens, vocab_idfs) {
-    let tfidfs = {};
+/**
+ * Converts a sequence of tokens into an L2 normed TF-IDF. Any terms that are
+ * not preindexed (i.e. does have a computed inverse document frequency) will
+ * be dropped.
+ */
+function toksToTfIdfVector(tokens, vocab_idfs) {
+  let tfidfs = {};
 
-    // calcualte the term frequencies
-    for (let tok of tokens) {
-      if (!(tok in vocab_idfs)) {
-        continue;
-      }
-      if (!(tok in tfidfs)) {
-        tfidfs[tok] = [vocab_idfs[tok][0], 1];
-      } else {
-        tfidfs[tok][1]++;
-      }
+  // calcualte the term frequencies
+  for (let tok of tokens) {
+    if (!(tok in vocab_idfs)) {
+      continue;
     }
-
-    // now multiply by the log inverse document frequencies, then take
-    // the L2 norm of this.
-    let l2Norm = 0.0;
-    Object.keys(tfidfs).forEach(tok => {
-      tfidfs[tok][1] *= vocab_idfs[tok][1];
-      l2Norm += tfidfs[tok][1] * tfidfs[tok][1];
-    });
-    l2Norm = Math.sqrt(l2Norm);
-    Object.keys(tfidfs).forEach(tok => {
-      tfidfs[tok][1] /= l2Norm;
-    });
-
-    return tfidfs;
+    if (!(tok in tfidfs)) {
+      tfidfs[tok] = [vocab_idfs[tok][0], 1];
+    } else {
+      tfidfs[tok][1]++;
+    }
   }
 
-  /**
-   * Convenience function that returns the TF-IDF vector directly from raw text.
-   */
-  getTfIdfVector(text, vocab_idfs) {
-    return this.toksTotfIdfVector(this.tokenize(text), vocab_idfs);
-  }
-};
+  // now multiply by the log inverse document frequencies, then take
+  // the L2 norm of this.
+  let l2Norm = 0.0;
+  Object.keys(tfidfs).forEach(tok => {
+    tfidfs[tok][1] *= vocab_idfs[tok][1];
+    l2Norm += tfidfs[tok][1] * tfidfs[tok][1];
+  });
+  l2Norm = Math.sqrt(l2Norm);
+  Object.keys(tfidfs).forEach(tok => {
+    tfidfs[tok][1] /= l2Norm;
+  });
 
-const EXPORTED_SYMBOLS = ["TfIdfVectorizer"];
+  return tfidfs;
+}
+
+const EXPORTED_SYMBOLS = ["tokenize", "toksToTfIdfVector"];

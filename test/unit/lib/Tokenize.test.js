@@ -1,10 +1,9 @@
-import {TfIdfVectorizer} from "lib/TfIdfVectorizer.jsm";
+import {tokenize, toksToTfIdfVector} from "lib/Tokenize.jsm";
 
 const EPSILON = 0.00001;
 
 describe("TF-IDF Term Vectorizer", () => {
   describe("#tokenize", () => {
-    let instance = new TfIdfVectorizer();
     let testCases = [
       {input: "HELLO there", expected: ["hello", "there"]},
       {input: "blah,,,blah,blah", expected: ["blah", "blah", "blah"]},
@@ -15,7 +14,7 @@ describe("TF-IDF Term Vectorizer", () => {
     ];
     let checkTokenization = tc => {
       it(`${tc.input} should tokenize to ${tc.expected}`, () => {
-        assert.deepEqual(tc.expected, instance.tokenize(tc.input));
+        assert.deepEqual(tc.expected, tokenize(tc.input));
       });
     };
 
@@ -25,7 +24,6 @@ describe("TF-IDF Term Vectorizer", () => {
   });
 
   describe("#tfidf", () => {
-    let instance = new TfIdfVectorizer();
     let vocab_idfs = {
       deal:    [221, 5.5058519847862275],
       easy:    [269, 5.5058519847862275],
@@ -70,7 +68,7 @@ describe("TF-IDF Term Vectorizer", () => {
     ];
     let checkTokenGeneration = tc => {
       describe(`${tc.input} should have only vocabulary tokens`, () => {
-        let actual = instance.getTfIdfVector(tc.input, vocab_idfs);
+        let actual = toksToTfIdfVector(tokenize(tc.input), vocab_idfs);
 
         it(`${tc.input} should generate exactly ${Object.keys(tc.expected)}`, () => {
           let seen = {};
@@ -92,7 +90,7 @@ describe("TF-IDF Term Vectorizer", () => {
     };
 
     let checkTfIdfVector = tc => {
-      let actual = instance.getTfIdfVector(tc.input, vocab_idfs);
+      let actual = toksToTfIdfVector(tokenize(tc.input), vocab_idfs);
       it(`${tc.input} should have the correct tf-idf`, () => {
         Object.keys(actual).forEach(actualTok => {
           let delta = Math.abs(tc.expected[actualTok][1] - actual[actualTok][1]);
@@ -106,13 +104,5 @@ describe("TF-IDF Term Vectorizer", () => {
       checkTokenGeneration(testCases[i]);
       checkTfIdfVector(testCases[i]);
     }
-
-    it("should give the same results whether pretokenized or not", () => {
-      // eslint-disable-next-line prefer-destructuring
-      let tc = testCases[0];
-      let textResults = instance.getTfIdfVector(tc.input, vocab_idfs);
-      let tokResults = instance.toksTotfIdfVector(instance.tokenize(tc.input), vocab_idfs);
-      assert.deepEqual(textResults, tokResults);
-    });
   });
 });

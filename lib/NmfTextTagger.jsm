@@ -3,25 +3,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
+const {toksToTfIdfVector} = ChromeUtils.import("resource://activity-stream/lib/Tokenize.jsm", {});
+
 this.NmfTextTagger = class NmfTextTagger {
-  constructor(model, tokenizer) {
+  constructor(model) {
     this.model = model;
-    this.tokenizer = tokenizer;
   }
 
   /**
-   * A multiclass classifier that scores text against several classes through
+   * A multiclass classifier that scores tokenized text against several classes through
    * inference of a nonnegative matrix factorization of TF-IDF vectors and
    * class labels. Returns a map of class labels as string keys to scores.
    * (Higher is more confident.) All classes get scored, so it is up to
    * consumer of this data determine what classes are most valuable.
    */
-  tagText(text) {
-    return this.tagTokens(this.tokenizer.tokenize(text));
-  }
-
   tagTokens(tokens) {
-    let fv = this.tokenizer.toksTotfIdfVector(tokens, this.model.vocab_idfs);
+    let fv = toksToTfIdfVector(tokens, this.model.vocab_idfs);
     let fve = Object.values(fv);
 
     // normalize by the sum of the vector

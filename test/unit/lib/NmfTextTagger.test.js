@@ -1,5 +1,5 @@
 import {NmfTextTagger} from "lib/NmfTextTagger.jsm";
-import {TfIdfVectorizer} from "lib/TfIdfVectorizer.jsm";
+import {tokenize} from "lib/Tokenize.jsm";
 
 const EPSILON = 0.00001;
 
@@ -27,7 +27,7 @@ describe("NMF Tagger", () => {
       },
     };
 
-    let instance = new NmfTextTagger(model, new TfIdfVectorizer());
+    let instance = new NmfTextTagger(model);
 
     let testCases = [
       {
@@ -98,17 +98,12 @@ describe("NMF Tagger", () => {
     ];
 
     let checkTag = tc => {
-      let actual = instance.tagText(tc.input);
+      let actual = instance.tagTokens(tokenize(tc.input));
       it(`should score ${tc.input} correctly`, () => {
         Object.keys(actual).forEach(tag => {
           let delta = Math.abs(tc.expected[tag] - actual[tag]);
           assert.isTrue(delta <= EPSILON);
         });
-      });
-      it(`should give the same results for ${tc.input}, whether pretokenized or not`, () => {
-        let textResults = instance.tagText(tc.input);
-        let tokResults = instance.tagTokens(instance.tokenizer.tokenize(tc.input));
-        assert.deepEqual(textResults, tokResults);
       });
     };
 
