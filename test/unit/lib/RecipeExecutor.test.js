@@ -62,7 +62,7 @@ describe("RecipeExecutor", () => {
           ba: 4,
           bb: 5,
           bc: 6,
-        }
+        },
       },
       bogus: {
         a: {
