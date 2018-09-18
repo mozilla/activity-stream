@@ -83,9 +83,8 @@ export class _CollapsibleSection extends React.PureComponent {
     const div = this.sectionBody;
     if (div.style.display === "none") {
       // If the div isn't displayed, we can't get it's height. So we display it
-      // with a 0px height to get the height. We don't undo this because we are about
-      // to expand the section anyway;
-      div.style.maxHeight = "0px";
+      // to get the height (it doesn't show up because max-height is set to 0px
+      // in CSS). We don't undo this because we are about to expand the section.
       div.style.display = "block";
     }
     return div.scrollHeight;
