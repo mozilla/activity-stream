@@ -42,9 +42,11 @@ function trigger_cfr_panel(browser, trigger, cb) {
 
 add_task(async function test_cfr_notification_show() {
   // addRecommendation checks that scheme starts with http and host matches
-  let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, "http://example.com", false);
+  let browser = gBrowser.selectedBrowser;
+  browser.loadURI("http://example.com");
+  await BrowserTestUtils.browserLoaded(browser, false, "http://example.com/");
 
-  const response = await trigger_cfr_panel(tab.linkedBrowser, "example.com", () => {});
+  const response = await trigger_cfr_panel(browser, "example.com", () => {});
   Assert.ok(response, "Should return true if addRecommendation checks were successful");
 
   const showPanel = BrowserTestUtils.waitForEvent(PopupNotifications.panel, "popupshown");
@@ -64,6 +66,4 @@ add_task(async function test_cfr_notification_show() {
   // Clicking the primary action also removes the notification
   Assert.equal(PopupNotifications._currentNotifications.length, 0,
     "Should have removed the notification");
-
-  BrowserTestUtils.removeTab(tab);
 });
