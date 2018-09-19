@@ -53,7 +53,7 @@ describe("PingCentre", () => {
       getActiveExperiments: sandbox.spy(() => FAKE_ACTIVE_EXPERIMENTS),
       currentEnvironment: {profile: {creationDate: FAKE_PROFILE_CREATION_DATE}},
     });
-    globals.set("AppConstants", {MOZ_UPDATE_CHANNEL: FAKE_UPDATE_CHANNEL});
+    globals.set("UpdateUtils", {getUpdateChannel() { return FAKE_UPDATE_CHANNEL; }});
     sandbox.spy(global.Cu, "reportError");
   });
 

@@ -42,6 +42,7 @@ const TEST_GLOBAL = {
     },
   },
   AppConstants: {MOZILLA_OFFICIAL: true},
+  UpdateUtils: {getUpdateChannel() {}},
   ChromeUtils: {
     defineModuleGetter() {},
     generateQI() { return {}; },
