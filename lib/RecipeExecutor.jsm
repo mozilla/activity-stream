@@ -407,7 +407,7 @@ this.RecipeExecutor = class RecipeExecutor {
     if (!(config.field in item)) {
       return null;
     }
-    let k = this._lookupScalar(item, config.k, config.default);
+    let k = this._lookupScalar(item, config.k, config.dfault);
 
     let fieldType = this._typeOf(item[config.field]);
     if (fieldType === "number") {
@@ -536,7 +536,7 @@ this.RecipeExecutor = class RecipeExecutor {
    *                  value is found, then use this value.
    */
   scalarAdd(item, config) {
-    let k = this._lookupScalar(item, config.k, config.default);
+    let k = this._lookupScalar(item, config.k, config.dfault);
     if (!(config.field in item)) {
       return null;
     }
@@ -1063,14 +1063,20 @@ this.RecipeExecutor = class RecipeExecutor {
   /**
    * Executes a recipe. Returns an object on success, or null on failure.
    */
-  executeRecipe(item, recipe) {
+  executeRecipe(item, recipe, debug=false) {
     let newItem = item;
     for (let step of recipe) {
+      if (debug) {
+        console.log(">>>> executing ", step);
+      }
       let op = this.ITEM_BUILDER_REGISTRY[step.function];
       if (op === undefined) {
         return null;
       }
       newItem = op.call(this, newItem, step);
+      if (debug) {
+        console.log(">>>> item now ", newItem);
+      }
       if (newItem === null) {
         break;
       }

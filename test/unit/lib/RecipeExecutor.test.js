@@ -360,11 +360,22 @@ describe("RecipeExecutor", () => {
     });
   });
 
-  describe("#copyValue", () => {
+  describe.only("#copyValue", () => {
     it("should copy values", () => {
       item = instance.copyValue(item, {src: "one", dest: "again"});
       assert.isTrue("again" in item);
       assert.equal(item.again, 1);
+      item.one = 100;
+      assert.equal(item.one, 100);
+      assert.equal(item.again, 1);
+    });
+    it("should handle maps corrects", () => {
+      item = instance.copyValue(item, {src: "map", dest: "again"});
+      assert.deepEqual(item.again, {a: 1, b: 2, c: 3});
+      item.map.c = 100;
+      assert.deepEqual(item.again, {a: 1, b: 2, c: 3});
+      item.map = 342;
+      assert.deepEqual(item.again, {a: 1, b: 2, c: 3});
     });
     it("should error for a missing field", () => {
       item = instance.copyValue(item, {src: "missing", dest: "toks"});
