@@ -202,7 +202,11 @@ const MessageLoaderUtils = {
       Cu.reportError(new Error(`Tried to load messages for ${provider.id} but the result was not an Array.`));
     }
     const lastUpdated = Date.now();
-    return {messages: messages.map(msg => ({...msg, provider: provider.id})), lastUpdated};
+    return {
+      messages: messages.map(msg => ({weight: 100, ...msg, provider: provider.id}))
+                        .filter(message => message.weight > 0),
+      lastUpdated,
+    };
   },
 
   async installAddonFromURL(browser, url) {
