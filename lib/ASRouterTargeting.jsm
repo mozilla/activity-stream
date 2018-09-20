@@ -23,7 +23,7 @@ const MOZ_JEXL_FILEPATH = "mozjexl";
 const {activityStreamProvider: asProvider} = NewTabUtils;
 
 const FRECENT_SITES_UPDATE_INTERVAL = 6 * 60 * 60 * 1000; // Six hours
-const FRECENT_SITES_IGNORE_BLOCKED = true;
+const FRECENT_SITES_IGNORE_BLOCKED = false;
 const FRECENT_SITES_NUM_ITEMS = 25;
 const FRECENT_SITES_MIN_FRECENCY = 100;
 
