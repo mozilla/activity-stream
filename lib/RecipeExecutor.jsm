@@ -538,7 +538,6 @@ this.RecipeExecutor = class RecipeExecutor {
   scalarAdd(item, config) {
     let k = this._lookupScalar(item, config.k, config.default);
     if (!(config.field in item)) {
-      console.log("in scalarAdd, 1 null: !", config.field, "in", item);
       return null;
     }
 
@@ -554,7 +553,6 @@ this.RecipeExecutor = class RecipeExecutor {
     } else if (fieldType === "number") {
       item[config.field] += k;
     } else {
-      console.log("in scalarAdd, 2 null:", fieldType);
       return null;
     }
 
@@ -1068,17 +1066,12 @@ this.RecipeExecutor = class RecipeExecutor {
   executeRecipe(item, recipe) {
     let newItem = item;
     for (let step of recipe) {
-      console.log("trying op", this.ITEM_BUILDER_REGISTRY, step.function);
       let op = this.ITEM_BUILDER_REGISTRY[step.function];
       if (op === undefined) {
-        console.log("op is undefined");
         return null;
       }
       newItem = op.call(this, newItem, step);
       if (newItem === null) {
-        console.log(newItem, step);
-        console.log("execute recipe:", step.function, this.ITEM_BUILDER_REGISTRY);
-        console.log("returning null!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         break;
       }
     }
