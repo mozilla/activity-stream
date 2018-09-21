@@ -7,6 +7,7 @@ ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const PROVIDER_PREF = "browser.newtabpage.activity-stream.asrouter.messageProviders";
 const DEVTOOLS_PREF = "browser.newtabpage.activity-stream.asrouter.devtoolsEnabled";
+const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
 
 const DEFAULT_STATE = {
   _initialized: false,
@@ -14,7 +15,11 @@ const DEFAULT_STATE = {
   _providerPref: PROVIDER_PREF,
   _devtoolsEnabled: null,
   _devtoolsPref: DEVTOOLS_PREF,
+  _onboardingFinished: null,
+  _onboardingPref: ONBOARDING_FINISHED_PREF,
 };
+
+const USER_PREFERENCES = {snippets: "browser.newtabpage.activity-stream.feeds.snippets"};
 
 class _ASRouterPreferences {
   constructor() {
@@ -42,6 +47,13 @@ class _ASRouterPreferences {
     return this._devtoolsEnabled;
   }
 
+  get onboardingFinished() {
+    if (!this._initialized || this._onboardingFinished === null) {
+      this._onboardingFinished = Services.prefs.getBoolPref(this._onboardingPref, true);
+    }
+    return this._onboardingFinished;
+  }
+
   get specialConditions() {
     let allowLegacyOnboarding = true;
     let allowLegacySnippets = true;
@@ -56,6 +68,7 @@ class _ASRouterPreferences {
     return {
       allowLegacyOnboarding,
       allowLegacySnippets,
+      onboardingFinished: this.onboardingFinished,
     };
   }
 
@@ -67,8 +80,18 @@ class _ASRouterPreferences {
       case this._devtoolsPref:
         this._devtoolsEnabled = null;
         break;
+      case this._onboardingPref:
+        this._onboardingFinished = null;
+        break;
     }
     this._callbacks.forEach(cb => cb(aPrefName));
+  }
+
+  getUserPreference(providerId) {
+    if (!USER_PREFERENCES[providerId]) {
+      return null;
+    }
+    return Services.prefs.getBoolPref(USER_PREFERENCES[providerId], true);
   }
 
   addListener(callback) {
@@ -85,6 +108,10 @@ class _ASRouterPreferences {
     }
     Services.prefs.addObserver(this._providerPref, this);
     Services.prefs.addObserver(this._devtoolsPref, this);
+    Services.prefs.addObserver(this._onboardingPref, this);
+    for (const id of Object.keys(USER_PREFERENCES)) {
+      Services.prefs.addObserver(USER_PREFERENCES[id], this);
+    }
     this._initialized = true;
   }
 
@@ -92,6 +119,10 @@ class _ASRouterPreferences {
     if (this._initialized) {
       Services.prefs.removeObserver(this._providerPref, this);
       Services.prefs.removeObserver(this._devtoolsPref, this);
+      Services.prefs.removeObserver(this._onboardingPref, this);
+      for (const id of Object.keys(USER_PREFERENCES)) {
+        Services.prefs.removeObserver(USER_PREFERENCES[id], this);
+      }
     }
     Object.assign(this, DEFAULT_STATE);
     this._callbacks.clear();

@@ -3,6 +3,16 @@ const FAKE_PROVIDERS = [{id: "foo"}, {id: "bar"}];
 
 const PROVIDER_PREF = "browser.newtabpage.activity-stream.asrouter.messageProviders";
 const DEVTOOLS_PREF = "browser.newtabpage.activity-stream.asrouter.devtoolsEnabled";
+const SNIPPETS_USER_PREF = "browser.newtabpage.activity-stream.feeds.snippets";
+const ONBOARDING_PREF = "browser.onboarding.notification.finished";
+
+/** NUMBER_OF_PREFS_TO_OBSERVE includes:
+ *  1. asrouter.messageProvider
+ *  2. asrouter.devtoolsEnabled
+ *  3. browser.onboarding.notification.finished (legacy onboarding - to be removed)
+ *  4. browser.newtabpage.activity-stream.feeds.snippets (user preference - snippets)
+ */
+const NUMBER_OF_PREFS_TO_OBSERVE = 4;
 
 describe("ASRouterPreferences", () => {
   let ASRouterPreferences;
@@ -16,7 +26,7 @@ describe("ASRouterPreferences", () => {
     sandbox = sinon.sandbox.create();
     addObserverStub = sandbox.stub(global.Services.prefs, "addObserver");
     stringPrefStub =  sandbox.stub(global.Services.prefs, "getStringPref").withArgs(PROVIDER_PREF).returns(JSON.stringify(FAKE_PROVIDERS));
-    boolPrefStub = sandbox.stub(global.Services.prefs, "getBoolPref").withArgs(DEVTOOLS_PREF).returns(false);
+    boolPrefStub = sandbox.stub(global.Services.prefs, "getBoolPref").returns(false);
   });
   afterEach(() => {
     sandbox.restore();
@@ -29,12 +39,12 @@ describe("ASRouterPreferences", () => {
       ASRouterPreferences.init();
       assert.isTrue(ASRouterPreferences._initialized);
     });
-    it("should set two observers and not re-initialize if already initialized", () => {
+    it(`should set ${NUMBER_OF_PREFS_TO_OBSERVE} observers and not re-initialize if already initialized`, () => {
       ASRouterPreferences.init();
-      assert.calledTwice(addObserverStub);
+      assert.callCount(addObserverStub, NUMBER_OF_PREFS_TO_OBSERVE);
       ASRouterPreferences.init();
       ASRouterPreferences.init();
-      assert.calledTwice(addObserverStub);
+      assert.callCount(addObserverStub, NUMBER_OF_PREFS_TO_OBSERVE);
     });
   });
   describe("#uninit", () => {
@@ -64,7 +74,7 @@ describe("ASRouterPreferences", () => {
       // Tests to make sure we don't remove observers that weren't set
       ASRouterPreferences.uninit();
 
-      assert.calledTwice(removeStub);
+      assert.callCount(removeStub, NUMBER_OF_PREFS_TO_OBSERVE);
       assert.calledWith(removeStub, PROVIDER_PREF);
       assert.calledWith(removeStub, DEVTOOLS_PREF);
       assert.isEmpty(ASRouterPreferences._callbacks);
@@ -124,6 +134,30 @@ describe("ASRouterPreferences", () => {
       assert.calledTwice(boolPrefStub);
     });
   });
+  describe(".onboardingFinished", () => {
+    it("should read the pref the first time .onboardingFinished is accessed", () => {
+      ASRouterPreferences.init();
+
+      const result = ASRouterPreferences.onboardingFinished;
+      assert.deepEqual(result, false);
+      assert.calledOnce(boolPrefStub);
+    });
+    it("should return the cached value the second time .onboardingFinished is accessed", () => {
+      ASRouterPreferences.init();
+      const [, secondCall] = [ASRouterPreferences.onboardingFinished, ASRouterPreferences.onboardingFinished];
+
+      assert.deepEqual(secondCall, false);
+      assert.calledOnce(boolPrefStub);
+    });
+    it("should just parse the pref each time if ASRouterPreferences hasn't been initialized yet", () => {
+      // Intentionally not initialized
+      const [firstCall, secondCall] = [ASRouterPreferences.onboardingFinished, ASRouterPreferences.onboardingFinished];
+
+      assert.deepEqual(firstCall, false);
+      assert.deepEqual(secondCall, false);
+      assert.calledTwice(boolPrefStub);
+    });
+  });
   describe(".specialConditions", () => {
     it("should return .allowLegacyOnboarding=true if onboarding is not present, disabled, or doesn't have cohort", () => {
       ASRouterPreferences.init();
@@ -163,6 +197,12 @@ describe("ASRouterPreferences", () => {
       assert.isFalse(ASRouterPreferences.specialConditions.allowLegacySnippets);
     });
   });
+  describe("#getUserPreference(providerId)", () => {
+    it("should return the user preference for snippets", () => {
+      boolPrefStub.withArgs(SNIPPETS_USER_PREF).returns(true);
+      assert.isTrue(ASRouterPreferences.getUserPreference("snippets"));
+    });
+  });
   describe("observer, listeners", () => {
     it("should invalidate .providers when the pref is changed", () => {
       const testProviders = [{id: "newstuff"}];
@@ -185,6 +225,16 @@ describe("ASRouterPreferences", () => {
 
       // Cache should be invalidated so we access the new value of the pref now
       assert.isTrue(ASRouterPreferences.devtoolsEnabled);
+    });
+    it("should invalidate .onboardingFinished when the pref is changed", () => {
+      ASRouterPreferences.init();
+
+      assert.isFalse(ASRouterPreferences.onboardingFinished);
+      boolPrefStub.withArgs(ONBOARDING_PREF).returns(true);
+      ASRouterPreferences.observe(null, null, ONBOARDING_PREF);
+
+      // Cache should be invalidated so we access the new value of the pref now
+      assert.isTrue(ASRouterPreferences.onboardingFinished);
     });
     it("should call listeners added with .addListener", () => {
       const callback1 = sinon.stub();

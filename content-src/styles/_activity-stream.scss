@@ -132,8 +132,9 @@ input {
   }
 }
 
-// Make sure snippets show up above other UI elements
-#snippets-container { // sass-lint:disable-line no-ids
+// Make sure snippets/asr show up above other UI elements
+#snippets-container, // sass-lint:disable-line no-ids
+#asr-newtab-container { // sass-lint:disable-line no-ids
   z-index: 1;
 }
 
