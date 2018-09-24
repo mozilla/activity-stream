@@ -98,13 +98,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
   uninit() {
     this.storiesLoaded = false;
-    console.log(0);
     Services.obs.removeObserver(this, "idle-daily");
     SectionsManager.disableSection(SECTION_ID);
-  }
-
-  onUninit() {
-    SectionsManager.onceInitialized(this.onUninit.bind(this));
   }
 
   getPocketState(target) {
@@ -131,15 +126,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
   }
 
   async affinityProividerSwitcher(...args) {
-    console.log("switcher");
     const {affinityProviderV2} = this;
-    if (affinityProviderV2 && affinityProviderV2.use_v2 !== null) {
-      console.log("affinityProviderV2 not null and useV2 is", affinityProviderV2.use_v2);
-    } else {
-      console.log("affinityProviderV2 is null");
-    }
     if (affinityProviderV2 && affinityProviderV2.use_v2) {
-      console.log("v2 keys", affinityProviderV2.model_keys);
       const provider = this.PersonalityProvider(...args, affinityProviderV2.model_keys);
       await provider.init();
       return provider;
@@ -534,7 +522,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
     // they are disabled. The longer term fix should probably be to remove them
     // in the Reducer.
     await this.clearCache();
-    console.log(1);
     this.uninit();
     this.init();
   }
@@ -572,7 +559,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.doContentUpdate(false);
         break;
       case at.UNINIT:
-        console.log(4);
         this.uninit();
         break;
       case at.NEW_TAB_REHYDRATED:
@@ -582,7 +568,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
       case at.SECTION_OPTIONS_CHANGED:
         if (action.data === SECTION_ID) {
           await this.clearCache();
-          console.log(3);
           this.uninit();
           this.init();
         }
@@ -630,7 +615,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
             const options = JSON.parse(action.data.value);
             if (this.processAffinityProividerVersion(options)) {
               await this.clearCache();
-              console.log(2);
               this.uninit();
               this.init();
             }

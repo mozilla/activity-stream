@@ -152,9 +152,7 @@ this.PersonalityProvider = class PersonalityProvider {
       }
     }
 
-    let xxx =  this.recipeExecutor.executeRecipe(interestVector, this.interestConfig.interest_finalizer);
-    console.log("FINAL IV ", xxx);
-    return xxx;
+    return this.recipeExecutor.executeRecipe(interestVector, this.interestConfig.interest_finalizer);
   }
 
   /**
@@ -163,37 +161,22 @@ this.PersonalityProvider = class PersonalityProvider {
    * is populated.
    */
   calculateItemRelevanceScore(pocketItem) {
-    console.log('=====================');
-    console.log("scoring", pocketItem.url, "((", pocketItem.title, "))");
     let scorableItem = this.recipeExecutor.executeRecipe(pocketItem, this.interestConfig.item_to_rank_builder);
     if (scorableItem === null) {
       return -1;
     }
-    console.log("just scorable item", scorableItem);
-    console.log('---------------------');
-
 
     let rankingVector = JSON.parse(JSON.stringify(this.interestVector));
-    console.log("just interest vector:", rankingVector);
-    console.log('---------------------');
-
 
     Object.keys(scorableItem).forEach(key => {
       rankingVector[key] = scorableItem[key];
     });
-    console.log("ranking vector merged with scorable item:", rankingVector);
-    console.log('---------------------');
-
 
     rankingVector = this.recipeExecutor.executeRecipe(rankingVector, this.interestConfig.item_ranker);
-    console.log("ranking vector after scoring:", rankingVector);
-
 
     if (rankingVector === null) {
-      console.log("ERROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       return -1;
     }
-    console.log("scored", rankingVector.score);
     return rankingVector.score;
   }
 

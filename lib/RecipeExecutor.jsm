@@ -1063,20 +1063,14 @@ this.RecipeExecutor = class RecipeExecutor {
   /**
    * Executes a recipe. Returns an object on success, or null on failure.
    */
-  executeRecipe(item, recipe, debug=false) {
+  executeRecipe(item, recipe) {
     let newItem = item;
     for (let step of recipe) {
-      if (debug) {
-        console.log(">>>> executing ", step);
-      }
       let op = this.ITEM_BUILDER_REGISTRY[step.function];
       if (op === undefined) {
         return null;
       }
       newItem = op.call(this, newItem, step);
-      if (debug) {
-        console.log(">>>> item now ", newItem);
-      }
       if (newItem === null) {
         break;
       }

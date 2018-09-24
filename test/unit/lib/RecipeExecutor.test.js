@@ -360,7 +360,7 @@ describe("RecipeExecutor", () => {
     });
   });
 
-  describe.only("#copyValue", () => {
+  describe("#copyValue", () => {
     it("should copy values", () => {
       item = instance.copyValue(item, {src: "one", dest: "again"});
       assert.isTrue("again" in item);
