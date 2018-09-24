@@ -436,7 +436,7 @@ describe("RecipeExecutor", () => {
       assert.equal(item.map.c, 9);
     });
     it("should use default", () => {
-      item = instance.scalarMultiply(item, {field: "map", k: "missing", default: 4});
+      item = instance.scalarMultiply(item, {field: "map", k: "missing", dfault: 4});
       assert.equal(item.map.a, 4);
       assert.equal(item.map.b, 8);
       assert.equal(item.map.c, 12);
