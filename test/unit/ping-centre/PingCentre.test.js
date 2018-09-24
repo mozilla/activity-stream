@@ -45,8 +45,8 @@ describe("PingCentre", () => {
 
     sandbox.stub(global.Services.prefs, "getBranch")
         .returns(new FakePrefs({initHook: prefInitHook}));
-    sandbox.stub(global.Services.locale, "getAppLocalesAsLangTags")
-        .returns([FAKE_LOCALE]);
+    sandbox.stub(global.Services.locale, "appLocaleAsLangTag")
+        .get(() => FAKE_LOCALE);
     globals.set("fetch", fetchStub);
     globals.set("ClientID", {getClientID: sandbox.spy(async () => FAKE_TELEMETRY_ID)});
     globals.set("TelemetryEnvironment", {
