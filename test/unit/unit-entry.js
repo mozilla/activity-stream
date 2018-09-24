@@ -107,8 +107,7 @@ const TEST_GLOBAL = {
   DownloadsViewUI: {DownloadElementShell},
   Services: {
     locale: {
-      getAppLocaleAsLangTag() { return "en-US"; },
-      getAppLocalesAsLangTags() {},
+      get appLocaleAsLangTag() { return "en-US"; },
       negotiateLanguages() {},
     },
     urlFormatter: {formatURL: str => str, formatURLPref: str => str},
