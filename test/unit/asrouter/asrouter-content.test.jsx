@@ -7,7 +7,7 @@ import React from "react";
 let [FAKE_MESSAGE] = FAKE_LOCAL_MESSAGES;
 
 FAKE_MESSAGE = Object.assign({}, FAKE_MESSAGE, {provider: "fakeprovider"});
-const FAKE_BUNDLED_MESSAGE = {bundle: [{id: "foo", template: "onboarding", content: {title: "Foo", body: "Foo123"}}], template: "onboarding"};
+const FAKE_BUNDLED_MESSAGE = {bundle: [{id: "foo", template: "onboarding", content: {title: "Foo", body: "Foo123"}}], extraTemplateStrings: {}, template: "onboarding"};
 
 describe("ASRouterUtils", () => {
   let global;

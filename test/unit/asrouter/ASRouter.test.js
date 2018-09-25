@@ -201,6 +201,18 @@ describe("ASRouter", () => {
       assert.lengthOf(Router.state.providers, length);
       assert.isDefined(provider);
     });
+    it("should update the list of providers and load messages on legacy onboarding pref change", async () => {
+      sandbox.spy(Router, "_updateMessageProviders");
+      sandbox.spy(Router, "loadMessagesFromAllProviders");
+      // we do NOT want to set the onboarding pref again and cause an infinite loop
+      sandbox.stub(global.Services.prefs, "setBoolPref");
+
+      await Router.observe(null, null, ONBOARDING_FINISHED_PREF);
+
+      assert.calledOnce(Router._updateMessageProviders);
+      assert.calledOnce(Router.loadMessagesFromAllProviders);
+      assert.notCalled(global.Services.prefs.setBoolPref);
+    });
   });
 
   describe("setState", () => {
@@ -219,7 +231,7 @@ describe("ASRouter", () => {
   });
 
   describe("#overrideOrEnableLegacyOnboarding", () => {
-    it("should set the onboarding finished pref to true if it is true and ASRPreferences.allowLegacyOnboarding is false", async () => {
+    it("should set the onboarding finished pref to true if legacy onboarding is NOT allowed", async () => {
       sandbox.stub(global.Services.prefs, "getBoolPref").withArgs(ONBOARDING_FINISHED_PREF).returns(false);
       sandbox.stub(ASRouterPreferences, "specialConditions").get(() => ({allowLegacyOnboarding: false}));
       const setStub = sandbox.stub(global.Services.prefs, "setBoolPref");
@@ -227,9 +239,15 @@ describe("ASRouter", () => {
       Router.overrideOrEnableLegacyOnboarding();
       assert.calledWith(setStub, ONBOARDING_FINISHED_PREF, true);
     });
-    it("should set the onboarding finished pref to false if it is false and ASRPreferences.allowLegacyOnboarding is true", async () => {
-      sandbox.stub(global.Services.prefs, "getBoolPref").withArgs(ONBOARDING_FINISHED_PREF).returns(true);
-      sandbox.stub(ASRouterPreferences, "specialConditions").get(() => ({allowLegacyOnboarding: true}));
+    it("should set the onboarding finished pref to false if ASRPreferences.allowLegacyOnboarding is true and we previously override onboarding", async () => {
+      // First override the finished pref to be to true so we can reverse the overriding
+      const onboardingPrefStub = sandbox.stub(global.Services.prefs, "getBoolPref").withArgs(ONBOARDING_FINISHED_PREF).returns(false);
+      const specialConditionsStub = sandbox.stub(ASRouterPreferences, "specialConditions").get(() => ({allowLegacyOnboarding: false}));
+      Router.overrideOrEnableLegacyOnboarding();
+
+      // Now reverse it
+      onboardingPrefStub.withArgs(ONBOARDING_FINISHED_PREF).returns(true);
+      specialConditionsStub.get(() => ({allowLegacyOnboarding: true}));
       const setStub = sandbox.stub(global.Services.prefs, "setBoolPref");
 
       Router.overrideOrEnableLegacyOnboarding();
@@ -365,6 +383,15 @@ describe("ASRouter", () => {
       assert.equal(Router.state.providers.length, 1);
       assert.equal(Router.state.providers[0].id, providers[1].id);
     });
+    it("should not add snippets if legacy onboarding is not finished", () => {
+      sandbox.stub(global.Services.prefs, "getBoolPref").withArgs(ONBOARDING_FINISHED_PREF).returns(false);
+      const providers = [
+        {id: "snippets", enabled: true, type: "remote", url: "https://www.foo.com/"},
+      ];
+      setMessageProviderPref(providers);
+      Router._updateMessageProviders();
+      assert.equal(Router.state.providers.length, 0);
+    });
   });
 
   describe("blocking", () => {
@@ -432,24 +459,25 @@ describe("ASRouter", () => {
     });
   });
 
-  describe("#onMessage: CONNECT_UI_REQUEST", () => {
+  describe("#onMessage: SNIPPETS_REQUEST", () => {
     it("should set state.lastMessageId to a message id", async () => {
-      await Router.onMessage(fakeAsyncMessage({type: "CONNECT_UI_REQUEST"}));
+      await Router.onMessage(fakeAsyncMessage({type: "SNIPPETS_REQUEST"}));
 
       assert.include(ALL_MESSAGE_IDS, Router.state.lastMessageId);
     });
     it("should send a message back to the to the target", async () => {
       // force the only message to be a regular message so getRandomItemFromArray picks it
       await Router.setState({messages: [{id: "foo", template: "simple_template", content: {title: "Foo", body: "Foo123"}}]});
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST"});
       await Router.onMessage(msg);
       const [currentMessage] = Router.state.messages.filter(message => message.id === Router.state.lastMessageId);
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "SET_MESSAGE", data: currentMessage});
     });
     it("should send a message back to the to the target if there is a bundle, too", async () => {
       // force the only message to be a bundled message so getRandomItemFromArray picks it
+      sandbox.stub(Router, "_findProvider").returns(null);
       await Router.setState({messages: [{id: "foo1", template: "simple_template", bundled: 1, content: {title: "Foo1", body: "Foo123-1"}}]});
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST"});
       await Router.onMessage(msg);
       const [currentMessage] = Router.state.messages.filter(message => message.id === Router.state.lastMessageId);
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME);
@@ -458,10 +486,11 @@ describe("ASRouter", () => {
     });
     it("should properly order the message's bundle if specified", async () => {
       // force the only messages to be a bundled messages so getRandomItemFromArray picks one of them
+      sandbox.stub(Router, "_findProvider").returns(null);
       const firstMessage = {id: "foo2", template: "simple_template", bundled: 2, order: 1, content: {title: "Foo2", body: "Foo123-2"}};
       const secondMessage = {id: "foo1", template: "simple_template", bundled: 2, order: 2, content: {title: "Foo1", body: "Foo123-1"}};
       await Router.setState({messages: [secondMessage, firstMessage]});
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST"});
       await Router.onMessage(msg);
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME);
       assert.equal(msg.target.sendAsyncMessage.firstCall.args[1].type, "SET_BUNDLED_MESSAGES");
@@ -474,23 +503,29 @@ describe("ASRouter", () => {
       const bundle = await Router._getBundledMessages(Router.state.messages[0]);
       assert.equal(bundle, null);
     });
+    it("should send down extra attributes in the bundle if they exist", async () => {
+      sandbox.stub(Router, "_findProvider").returns({getExtraAttributes() { return Promise.resolve({header: "header"}); }});
+      await Router.setState({messages: [{id: "foo1", template: "simple_template", bundled: 1, content: {title: "Foo1", body: "Foo123-1"}}]});
+      const result = await Router._getBundledMessages(Router.state.messages[0]);
+      assert.equal(result.extraTemplateStrings.header, "header");
+    });
     it("should send a CLEAR_ALL message if no bundle available", async () => {
       // force the only message to be a bundled message that needs 2 messages in the bundle
       await Router.setState({messages: [{id: "foo1", template: "simple_template", bundled: 2, content: {title: "Foo1", body: "Foo123-1"}}]});
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST"});
       await Router.onMessage(msg);
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_ALL"});
     });
     it("should send a CLEAR_ALL message if no messages are available", async () => {
       await Router.setState({messages: []});
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST"});
       await Router.onMessage(msg);
 
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_ALL"});
     });
-    it("should make a request to the provided endpoint on CONNECT_UI_REQUEST", async () => {
+    it("should make a request to the provided endpoint on SNIPPETS_REQUEST", async () => {
       const url = "https://snippets-admin.mozilla.org/foo";
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url}}});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST", data: {endpoint: {url}}});
       await Router.onMessage(msg);
 
       assert.calledWith(global.fetch, url);
@@ -506,21 +541,21 @@ describe("ASRouter", () => {
     });
     it("should dispatch SNIPPETS_PREVIEW_MODE when adding a preview endpoint", async () => {
       const url = "https://snippets-admin.mozilla.org/foo";
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url}}});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST", data: {endpoint: {url}}});
       await Router.onMessage(msg);
 
       assert.calledWithExactly(Router.dispatchToAS, ac.OnlyToOneContent({type: "SNIPPETS_PREVIEW_MODE"}, msg.target.portID));
     });
     it("should not add a url that is not from a whitelisted host", async () => {
       const url = "https://mozilla.org";
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url}}});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST", data: {endpoint: {url}}});
       await Router.onMessage(msg);
 
       assert.lengthOf(Router.state.providers.filter(p => p.url === url), 0);
     });
     it("should reject bad urls", async () => {
       const url = "foo";
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST", data: {endpoint: {url}}});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST", data: {endpoint: {url}}});
       await Router.onMessage(msg);
 
       assert.lengthOf(Router.state.providers.filter(p => p.url === url), 0);
@@ -613,15 +648,14 @@ describe("ASRouter", () => {
     it("should send a message containing the whole state", async () => {
       const msg = fakeAsyncMessage({type: "ADMIN_CONNECT_STATE"});
       await Router.onMessage(msg);
-
       assert.calledWith(msg.target.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: Router.state});
     });
   });
 
-  describe("#onMessage: CONNECT_UI_REQUEST", () => {
-    it("should call sendNextMessage on CONNECT_UI_REQUEST", async () => {
+  describe("#onMessage: SNIPPETS_REQUEST", () => {
+    it("should call sendNextMessage on SNIPPETS_REQUEST", async () => {
       sandbox.stub(Router, "sendNextMessage").resolves();
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST"});
 
       await Router.onMessage(msg);
 
@@ -678,7 +712,7 @@ describe("ASRouter", () => {
     });
     it("should get the bundle and send the message if the message has a bundle", async () => {
       sandbox.stub(Router, "sendNextMessage").resolves();
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST"});
       msg.bundled = 2; // force this message to want to be bundled
       await Router.onMessage(msg);
       assert.calledOnce(Router.sendNextMessage);
@@ -709,6 +743,7 @@ describe("ASRouter", () => {
         {id: "foo2", template: "simple_template", bundled: 2, trigger: {id: "bar"}, content: {title: "Foo2", body: "Foo123-2"}},
         {id: "foo3", template: "simple_template", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo3", body: "Foo123-3"}},
       ];
+      sandbox.stub(Router, "_findProvider").returns(null);
       await Router.setState({messages});
       const {target} = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "foo"}}});
       let {bundle} = await Router._getBundledMessages(messages[0], target, {id: "foo"});
@@ -1130,7 +1165,7 @@ describe("ASRouter", () => {
     it("should dispatch an event when a targeting expression throws an error", async () => {
       sandbox.stub(global.FilterExpressions, "eval").returns(Promise.reject(new Error("fake error")));
       await Router.setState({messages: [{id: "foo", targeting: "foo2.[[("}]});
-      const msg = fakeAsyncMessage({type: "CONNECT_UI_REQUEST"});
+      const msg = fakeAsyncMessage({type: "SNIPPETS_REQUEST"});
       dispatchStub.reset();
 
       await Router.onMessage(msg);
