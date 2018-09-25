@@ -82,6 +82,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 1},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr == "one_per_day_amazon") &&
       (${JSON.stringify(AMAZON_ASSISTANT_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(AMAZON_ASSISTANT_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${AMAZON_ASSISTANT_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -123,6 +124,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 3},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr == "three_per_day_amazon") &&
       (${JSON.stringify(AMAZON_ASSISTANT_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(AMAZON_ASSISTANT_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${AMAZON_ASSISTANT_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -164,6 +166,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 1},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr in ["one_per_day", "nightly"]) &&
       (${JSON.stringify(FACEBOOK_CONTAINER_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(FACEBOOK_CONTAINER_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${FACEBOOK_CONTAINER_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -205,6 +208,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 3},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr == "three_per_day") &&
       (${JSON.stringify(FACEBOOK_CONTAINER_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(FACEBOOK_CONTAINER_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${FACEBOOK_CONTAINER_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -246,6 +250,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 1},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr in ["one_per_day", "nightly"]) &&
       (${JSON.stringify(GOOGLE_TRANSLATE_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(GOOGLE_TRANSLATE_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${GOOGLE_TRANSLATE_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -287,6 +292,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 3},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr == "three_per_day") &&
       (${JSON.stringify(GOOGLE_TRANSLATE_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(GOOGLE_TRANSLATE_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${GOOGLE_TRANSLATE_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -328,6 +334,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 1},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr in ["one_per_day", "nightly"]) &&
       (${JSON.stringify(YOUTUBE_ENHANCE_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(YOUTUBE_ENHANCE_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${YOUTUBE_ENHANCE_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -369,6 +376,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 3},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr == "three_per_day") &&
       (${JSON.stringify(YOUTUBE_ENHANCE_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(YOUTUBE_ENHANCE_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${YOUTUBE_ENHANCE_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -410,6 +418,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 1},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr in ["one_per_day", "nightly"]) &&
       (${JSON.stringify(WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -451,6 +460,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 3},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr == "three_per_day") &&
       (${JSON.stringify(WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${WIKIPEDIA_CONTEXT_MENU_SEARCH_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -492,6 +502,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 1},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr in ["one_per_day", "nightly"]) &&
       (${JSON.stringify(REDDIT_ENHANCEMENT_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(REDDIT_ENHANCEMENT_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${REDDIT_ENHANCEMENT_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
@@ -533,6 +544,7 @@ const CFR_MESSAGES = [
     },
     frequency: {lifetime: 3},
     targeting: `
+      localeLanguageCode == "en" &&
       (providerCohorts.cfr == "three_per_day") &&
       (${JSON.stringify(REDDIT_ENHANCEMENT_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(REDDIT_ENHANCEMENT_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${REDDIT_ENHANCEMENT_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,

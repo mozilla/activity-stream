@@ -97,6 +97,12 @@ function sortMessagesByWeightedRank(messages) {
 }
 
 const TargetingGetters = {
+  get locale() {
+    return Services.locale.appLocaleAsLangTag;
+  },
+  get localeLanguageCode() {
+    return Services.locale.appLocaleAsLangTag && Services.locale.appLocaleAsLangTag.substr(0, 2);
+  },
   get browserSettings() {
     const {settings} = TelemetryEnvironment.currentEnvironment;
     return {
