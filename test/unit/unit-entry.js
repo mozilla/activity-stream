@@ -92,7 +92,12 @@ const TEST_GLOBAL = {
   fetch() {},
   // eslint-disable-next-line object-shorthand
   Image: function() {}, // NB: This is a function/constructor
-  NewTabUtils: {activityStreamProvider: {getTopFrecentSites: () => []}},
+  NewTabUtils: {
+    activityStreamProvider: {
+      getTopFrecentSites: () => [],
+      executePlacesQuery: async (sql, options) => ({sql, options}),
+    },
+  },
   PlacesUtils: {
     get bookmarks() {
       return TEST_GLOBAL.Cc["@mozilla.org/browser/nav-bookmarks-service;1"];

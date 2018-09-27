@@ -163,92 +163,75 @@ describe("Personality Provider", () => {
     });
   });
   describe("#remote-settings", () => {
-    it("should return a remote setting for getRemoteSettings", () => {
-      assert.equal(typeof instance.getRemoteSettings("test"), "object");
-    });
-  });
-  describe("#NewTabUtils", () => {
-    it("should return an object for getNewTabUtils", () => {
-      assert.equal(typeof instance.getNewTabUtils(), "object");
-    });
-  });
-  describe("#taggers", () => {
-    it("should return a NaiveBayesTextTagger on getNaiveBayesTextTagger", () => {
-      instance.getNaiveBayesTextTagger({});
-      assert.calledOnce(NaiveBayesTextTaggerStub);
-    });
-    it("should return a NmfTextTagger on getNmfTextTagger", () => {
-      instance.getNmfTextTagger({});
-      assert.calledOnce(NmfTextTaggerStub);
+    it("should return a remote setting for getFromRemoteSettings", async () => {
+      const settings = await instance.getFromRemoteSettings("test");
+      assert.equal(typeof settings, "object");
+      assert.equal(settings.length, 0);
     });
   });
   describe("#executor", () => {
-    it("should return a RecipeExecutor on getRecipeExecutor", () => {
-      instance.getRecipeExecutor([], []);
-      assert.calledOnce(RecipeExecutorStub);
-    });
     it("should pass recipe models to getRecipeExecutor on generateRecipeExecutor", async () => {
       instance.modelKeys = ["nb_model_sports", "nmf_model_sports"];
-      sinon.stub(instance, "getRecipeExecutor");
 
-      instance.getRemoteSettings = async name => [
+      instance.getFromRemoteSettings = async name => [
         {key: "nb_model_sports", data: {model_type: "nb"}},
         {key: "nmf_model_sports", data: {model_type: "nmf", parent_tag: "nmf_sports_parent_tag"}},
       ];
-      instance.getNaiveBayesTextTagger = model => model;
-      instance.getNmfTextTagger = model => model;
-      await instance.generateRecipeExecutor();
-      assert.calledOnce(instance.getRecipeExecutor);
 
-      const {args} = instance.getRecipeExecutor.firstCall;
-      assert.equal(args[0][0].model_type, "nb");
-      assert.equal(args[1].nmf_sports_parent_tag.model_type, "nmf");
-      assert.equal(args[1].nmf_sports_parent_tag.parent_tag, "nmf_sports_parent_tag");
+      await instance.generateRecipeExecutor();
+      assert.calledOnce(RecipeExecutorStub);
+      assert.calledOnce(NaiveBayesTextTaggerStub);
+      assert.calledOnce(NmfTextTaggerStub);
+
+      const {args} = RecipeExecutorStub.firstCall;
+      assert.equal(args[0].length, 1);
+      assert.isDefined(args[1].nmf_sports_parent_tag);
     });
     it("should skip any models not in modelKeys", async () => {
       instance.modelKeys = ["nb_model_sports"];
-      sinon.stub(instance, "getRecipeExecutor");
 
-      instance.getRemoteSettings = async name => [
+      instance.getFromRemoteSettings = async name => [
         {key: "nb_model_sports", data: {model_type: "nb"}},
         {key: "nmf_model_sports", data: {model_type: "nmf", parent_tag: "nmf_sports_parent_tag"}},
       ];
-      instance.getNaiveBayesTextTagger = model => model;
-      instance.getNmfTextTagger = model => model;
-      await instance.generateRecipeExecutor();
 
-      const {args} = instance.getRecipeExecutor.firstCall;
-      assert.equal(args[0][0].model_type, "nb");
+      await instance.generateRecipeExecutor();
+      assert.calledOnce(RecipeExecutorStub);
+      assert.calledOnce(NaiveBayesTextTaggerStub);
+      assert.notCalled(NmfTextTaggerStub);
+
+      const {args} = RecipeExecutorStub.firstCall;
+      assert.equal(args[0].length, 1);
       assert.equal(Object.keys(args[1]).length, 0);
     });
     it("should skip any models not defined", async () => {
       instance.modelKeys = ["nb_model_sports", "nmf_model_sports"];
-      sinon.stub(instance, "getRecipeExecutor");
 
-      instance.getRemoteSettings = async name => [
+      instance.getFromRemoteSettings = async name => [
         {key: "nb_model_sports", data: {model_type: "nb"}},
       ];
-      instance.getNaiveBayesTextTagger = model => model;
-      instance.getNmfTextTagger = model => model;
       await instance.generateRecipeExecutor();
+      assert.calledOnce(RecipeExecutorStub);
+      assert.calledOnce(NaiveBayesTextTaggerStub);
+      assert.notCalled(NmfTextTaggerStub);
 
-      const {args} = instance.getRecipeExecutor.firstCall;
-      assert.equal(args[0][0].model_type, "nb");
+      const {args} = RecipeExecutorStub.firstCall;
+      assert.equal(args[0].length, 1);
       assert.equal(Object.keys(args[1]).length, 0);
     });
   });
   describe("#recipe", () => {
     it("should get and fetch a new recipe on first getRecipe", () => {
-      sinon.stub(instance, "getRemoteSettings");
+      sinon.stub(instance, "getFromRemoteSettings");
       instance.getRecipe();
-      assert.calledOnce(instance.getRemoteSettings);
-      assert.calledWith(instance.getRemoteSettings, "personality-provider-recipe");
+      assert.calledOnce(instance.getFromRemoteSettings);
+      assert.calledWith(instance.getFromRemoteSettings, "personality-provider-recipe");
     });
     it("should not fetch a recipe on getRecipe if cached", () => {
-      sinon.stub(instance, "getRemoteSettings");
+      sinon.stub(instance, "getFromRemoteSettings");
       instance.recipe = {};
       instance.getRecipe();
-      assert.notCalled(instance.getRemoteSettings);
+      assert.notCalled(instance.getFromRemoteSettings);
     });
   });
   describe("#createInterestVector", () => {
@@ -313,7 +296,6 @@ describe("Personality Provider", () => {
   });
   describe("#fetchHistory", () => {
     it("should return a history object for fetchHistory", async () => {
-      instance.getNewTabUtils = () => ({activityStreamProvider: {executePlacesQuery: async (sql, options) => ({sql, options})}});
       const history = await instance.fetchHistory(["requiredColumn"], 1, 1);
       assert.equal(history.sql, `SELECT *\n    FROM moz_places\n    WHERE last_visit_date >= 1000000\n    AND last_visit_date < 1000000 AND requiredColumn <> ""`);
       assert.equal(history.options.columns.length, 1);

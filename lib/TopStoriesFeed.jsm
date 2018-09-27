@@ -526,6 +526,13 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.init();
   }
 
+  /**
+   * Decides if we need to change the personality provider version or not.
+   * Changes the version if it determines we need to.
+   *
+   * @param data {object} The top stories pref, we need version and model_keys
+   * @return {boolean} Returns true only if the version was changed.
+   */
   processAffinityProividerVersion(data) {
     const version2 = data.version === 2 && !this.affinityProviderV2;
     const version1 = data.version === 1 && this.affinityProviderV2;
