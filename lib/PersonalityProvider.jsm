@@ -53,7 +53,8 @@ this.PersonalityProvider = class PersonalityProvider {
   }
 
   async getFromRemoteSettings(name) {
-    return (await RemoteSettings(name).get()) || [];
+    const result = await RemoteSettings(name).get();
+    return result || [];
   }
 
   /**
