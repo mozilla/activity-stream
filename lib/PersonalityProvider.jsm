@@ -52,24 +52,8 @@ this.PersonalityProvider = class PersonalityProvider {
     this.initialized = true;
   }
 
-  getRemoteSettings(name) {
-    return RemoteSettings(name).get();
-  }
-
-  getRecipeExecutor(nbTaggers, nmfTaggers) {
-    return new RecipeExecutor(nbTaggers, nmfTaggers);
-  }
-
-  getNaiveBayesTextTagger(model) {
-    return new NaiveBayesTextTagger(model);
-  }
-
-  getNmfTextTagger(model) {
-    return new NmfTextTagger(model);
-  }
-
-  getNewTabUtils() {
-    return NewTabUtils;
+  async getFromRemoteSettings(name) {
+    return (await RemoteSettings(name).get()) || [];
   }
 
   /**
@@ -78,9 +62,9 @@ this.PersonalityProvider = class PersonalityProvider {
    */
   async getRecipe() {
     if (!this.recipe) {
-      this.recipe = await this.getRemoteSettings("personality-provider-recipe");
+      this.recipe = await this.getFromRemoteSettings("personality-provider-recipe");
     }
-    return this.recipe[0];
+    return this.recipe[0] || {};
   }
 
   /**
@@ -91,7 +75,7 @@ this.PersonalityProvider = class PersonalityProvider {
   async generateRecipeExecutor() {
     let nbTaggers = [];
     let nmfTaggers = {};
-    const models = await this.getRemoteSettings("personality-provider-models");
+    const models = await this.getFromRemoteSettings("personality-provider-models");
 
     for (let model of models) {
       if (!model || !this.modelKeys.includes(model.key)) {
@@ -99,12 +83,12 @@ this.PersonalityProvider = class PersonalityProvider {
       }
 
       if (model.data.model_type === "nb") {
-        nbTaggers.push(this.getNaiveBayesTextTagger(model.data));
+        nbTaggers.push(new NaiveBayesTextTagger(model.data));
       } else if (model.data.model_type === "nmf") {
-        nmfTaggers[model.data.parent_tag] = this.getNmfTextTagger(model.data);
+        nmfTaggers[model.data.parent_tag] = new NmfTextTagger(model.data);
       }
     }
-    return this.getRecipeExecutor(nbTaggers, nmfTaggers);
+    return new RecipeExecutor(nbTaggers, nmfTaggers);
   }
 
   /**
@@ -119,7 +103,7 @@ this.PersonalityProvider = class PersonalityProvider {
       sql += ` AND ${requiredColumn} <> ""`;
     });
 
-    const {activityStreamProvider} = this.getNewTabUtils();
+    const {activityStreamProvider} = NewTabUtils;
     const history = await activityStreamProvider.executePlacesQuery(sql, {
       columns,
       params: {},
