@@ -51,6 +51,10 @@ export class ASRouterAdmin extends React.PureComponent {
     return () => ASRouterUtils.overrideMessage(id);
   }
 
+  expireCache() {
+    ASRouterUtils.sendMessage({type: "EXPIRE_QUERY_CACHE"});
+  }
+
   renderMessageItem(msg) {
     const isCurrent = msg.id === this.state.lastMessageId;
     const isBlocked = this.state.messageBlockList.includes(msg.id);
@@ -113,6 +117,8 @@ export class ASRouterAdmin extends React.PureComponent {
   render() {
     return (<div className="asrouter-admin outer-wrapper">
       <h1>AS Router Admin</h1>
+      <h2>Targeting Utilities</h2>
+      <button className="button" onClick={this.expireCache}>Expire Cache</button> (This expires the cache in ASR Targeting for bookmarks and top sites)
       <h2>Message Providers</h2>
       {this.state.providers ? this.renderProviders() : null}
       <h2>Messages</h2>
