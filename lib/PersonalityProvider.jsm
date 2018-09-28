@@ -39,13 +39,22 @@ this.PersonalityProvider = class PersonalityProvider {
 
   async init() {
     this.interestConfig = await this.getRecipe();
+    if (!this.interestConfig) {
+      return;
+    }
     this.recipeExecutor = await this.generateRecipeExecutor();
+    if (!this.recipeExecutor) {
+      return;
+    }
     this.interestVector = await this.store.get("interest-vector");
 
     // Fetch a new one if none exists or every set update time.
     if (!this.interestVector ||
       (Date.now() - this.interestVector.lastUpdate) >= STORE_UPDATE_TIME) {
       this.interestVector = await this.createInterestVector();
+      if (!this.interestVector) {
+        return;
+      }
       this.interestVector.lastUpdate = Date.now();
       this.store.set("interest-vector", this.interestVector);
     }
@@ -65,7 +74,7 @@ this.PersonalityProvider = class PersonalityProvider {
     if (!this.recipe) {
       this.recipe = await this.getFromRemoteSettings("personality-provider-recipe");
     }
-    return this.recipe[0] || {};
+    return this.recipe[0];
   }
 
   /**
@@ -77,6 +86,10 @@ this.PersonalityProvider = class PersonalityProvider {
     let nbTaggers = [];
     let nmfTaggers = {};
     const models = await this.getFromRemoteSettings("personality-provider-models");
+
+    if (models.length === 0) {
+      return null;
+    }
 
     for (let model of models) {
       if (!model || !this.modelKeys.includes(model.key)) {
@@ -146,6 +159,9 @@ this.PersonalityProvider = class PersonalityProvider {
    * is populated.
    */
   calculateItemRelevanceScore(pocketItem) {
+    if (!this.initialized) {
+      return pocketItem.item_score || 1;
+    }
     let scorableItem = this.recipeExecutor.executeRecipe(pocketItem, this.interestConfig.item_to_rank_builder);
     if (scorableItem === null) {
       return -1;

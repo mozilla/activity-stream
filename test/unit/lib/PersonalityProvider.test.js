@@ -117,10 +117,35 @@ describe("Personality Provider", () => {
       assert.isDefined(affinities.timeSegments);
       assert.isDefined(affinities.parameterSets);
     });
-    it("should do generic init stuff when calling init with no cache", async () => {
+    it("should return early and not initialize if getRecipe fails", async () => {
       sinon.stub(instance, "getRecipe").returns(Promise.resolve());
-      instance.createInterestVector = async () => ({});
+      await instance.init();
+      assert.isUndefined(instance.initialized);
+    });
+    it("should return early and not initialize if generateRecipeExecutor fails", async () => {
+      sinon.stub(instance, "getRecipe").returns(Promise.resolve(true));
       sinon.stub(instance, "generateRecipeExecutor").returns(Promise.resolve());
+      await instance.init();
+      assert.calledOnce(instance.getRecipe);
+      assert.isUndefined(instance.initialized);
+    });
+    it("should return early and not initialize if createInterestVector fails", async () => {
+      sinon.stub(instance, "getRecipe").returns(Promise.resolve(true));
+      sinon.stub(instance, "generateRecipeExecutor").returns(Promise.resolve(true));
+      instance.createInterestVector = async () => (null);
+      sinon.stub(instance.store, "get").returns(Promise.resolve());
+      sinon.stub(instance.store, "set").returns(Promise.resolve());
+      await instance.init();
+      assert.calledOnce(instance.getRecipe);
+      assert.calledOnce(instance.generateRecipeExecutor);
+      assert.calledOnce(instance.store.get);
+      assert.notCalled(instance.store.set);
+      assert.isUndefined(instance.initialized);
+    });
+    it("should do generic init stuff when calling init with no cache", async () => {
+      sinon.stub(instance, "getRecipe").returns(Promise.resolve(true));
+      instance.createInterestVector = async () => ({});
+      sinon.stub(instance, "generateRecipeExecutor").returns(Promise.resolve(true));
       sinon.stub(instance.store, "get").returns(Promise.resolve());
       sinon.stub(instance.store, "set").returns(Promise.resolve());
       await instance.init();
@@ -134,10 +159,10 @@ describe("Personality Provider", () => {
     });
     it("should make new interest vector when called with out dated cache", async () => {
       const startTime = Date.now() - (24 * 60 * 60 * 1000); // 24 hours
-      instance.getRecipe = async () => {};
+      instance.getRecipe = async () => true;
       instance.createInterestVector = async () => ({});
       instance.store.get = async () => ({lastUpdate: startTime});
-      instance.generateRecipeExecutor = async () => {};
+      instance.generateRecipeExecutor = async () => true;
       sinon.stub(instance.store, "set").returns(Promise.resolve());
       await instance.init();
       assert.isTrue(instance.interestVector.lastUpdate > startTime);
@@ -145,10 +170,10 @@ describe("Personality Provider", () => {
     });
     it("should use interest vector when called with cache", async () => {
       const startTime = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
-      instance.getRecipe = async () => {};
+      instance.getRecipe = async () => true;
       instance.createInterestVector = async () => ({});
       instance.store.get = async () => ({lastUpdate: startTime});
-      instance.generateRecipeExecutor = async () => {};
+      instance.generateRecipeExecutor = async () => true;
       sinon.stub(instance.store, "set").returns(Promise.resolve());
       await instance.init();
       assert.isFalse(instance.interestVector.lastUpdate > startTime);
@@ -170,6 +195,9 @@ describe("Personality Provider", () => {
     });
   });
   describe("#executor", () => {
+    it("should return null if generateRecipeExecutor has no models", async () => {
+      assert.isNull(await instance.generateRecipeExecutor());
+    });
     it("should pass recipe models to getRecipeExecutor on generateRecipeExecutor", async () => {
       instance.modelKeys = ["nb_model_sports", "nmf_model_sports"];
 
@@ -281,15 +309,26 @@ describe("Personality Provider", () => {
   });
 
   describe("#calculateItemRelevanceScore", () => {
+    it("it should return score for uninitialized provider", () => {
+      instance.initialized = false;
+      assert.equal(instance.calculateItemRelevanceScore({item_score: 2}), 2);
+    });
+    it("it should return 1 for uninitialized provider and no score", () => {
+      instance.initialized = false;
+      assert.equal(instance.calculateItemRelevanceScore({}), 1);
+    });
     it("it should return -1 for busted item", () => {
+      instance.initialized = true;
       assert.equal(instance.calculateItemRelevanceScore({title: "fail"}), -1);
     });
     it("it should return -1 for a busted ranking", () => {
+      instance.initialized = true;
       instance.interestVector = {title: "fail", score: 10};
       assert.equal(instance.calculateItemRelevanceScore({title: "some item", score: 6}), -1);
     });
     it("it should return a score, and not change with interestVector", () => {
       instance.interestVector = {score: 10};
+      instance.initialized = true;
       assert.equal(instance.calculateItemRelevanceScore({score: 2}), 20);
       assert.deepEqual(instance.interestVector, {score: 10});
     });
