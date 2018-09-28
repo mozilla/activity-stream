@@ -20,6 +20,8 @@ ChromeUtils.defineModuleGetter(this, "ASRouterPreferences",
   "resource://activity-stream/lib/ASRouterPreferences.jsm");
 ChromeUtils.defineModuleGetter(this, "ASRouterTargeting",
   "resource://activity-stream/lib/ASRouterTargeting.jsm");
+ChromeUtils.defineModuleGetter(this, "QueryCache",
+  "resource://activity-stream/lib/ASRouterTargeting.jsm");
 ChromeUtils.defineModuleGetter(this, "ASRouterTriggerListeners",
   "resource://activity-stream/lib/ASRouterTriggerListeners.jsm");
 
@@ -1017,6 +1019,9 @@ class _ASRouter {
         if (this.dispatchToAS) {
           this.dispatchToAS(ac.ASRouterUserEvent(action.data));
         }
+        break;
+      case "EXPIRE_QUERY_CACHE":
+        QueryCache.expireAll();
         break;
     }
   }

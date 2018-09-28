@@ -16,6 +16,7 @@ import {ASRouterTriggerListeners} from "lib/ASRouterTriggerListeners.jsm";
 import {CFRPageActions} from "lib/CFRPageActions.jsm";
 import {GlobalOverrider} from "test/unit/utils";
 import ProviderResponseSchema from "content-src/asrouter/schemas/provider-response.schema.json";
+import {QueryCache} from "lib/ASRouterTargeting.jsm";
 
 const MESSAGE_PROVIDER_PREF_NAME = "browser.newtabpage.activity-stream.asrouter.messageProviders";
 const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
@@ -860,6 +861,17 @@ describe("ASRouter", () => {
       const [action] = dispatchStub.firstCall.args;
       assert.equal(action.type, "AS_ROUTER_TELEMETRY_USER_EVENT");
       assert.equal(action.data.message_id, "foo");
+    });
+  });
+
+  describe("#onMessage: EXPIRE_QUERY_CACHE", () => {
+    it("should clear all QueryCache getters", async () => {
+      const msg = fakeAsyncMessage({type: "EXPIRE_QUERY_CACHE"});
+      sandbox.stub(QueryCache, "expireAll");
+
+      await Router.onMessage(msg);
+
+      assert.calledOnce(QueryCache.expireAll);
     });
   });
 
