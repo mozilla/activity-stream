@@ -3,7 +3,13 @@ import {NewsletterSnippet} from "content-src/asrouter/templates/NewsletterSnippe
 import React from "react";
 import schema from "content-src/asrouter/templates/NewsletterSnippet/NewsletterSnippet.schema.json";
 
-const DEFAULT_CONTENT = {text: "foo", button_label: "Sign Up"};
+const DEFAULT_CONTENT = {
+  text: "foo",
+  scene2_text: "bar",
+  button_label: "Sign Up",
+  form_action: "foo.com",
+  hidden_inputs: {"foo": "foo"},
+};
 
 describe("NewsletterSnippet", () => {
   let sandbox;
@@ -67,12 +73,8 @@ describe("NewsletterSnippet", () => {
     beforeEach(() => {
       wrapper = mountAndCheckProps({
         text: "bar",
-        form: {
-          input: {type: "email"},
-          heading: {text: "signup"},
-          hidden_inputs: [{name: "foo", value: "foo"}],
-          action: {url: "foo.com"},
-        },
+        scene2_email_placeholder_text: "Email",
+        scene2_text: "signup",
       });
     });
 
@@ -84,7 +86,7 @@ describe("NewsletterSnippet", () => {
     it("should render hidden inputs + email input", () => {
       wrapper.setState({expanded: true});
 
-      assert.lengthOf(wrapper.find("input"), 2);
+      assert.lengthOf(wrapper.find("input[type='hidden']"), 1);
     });
     it("should open the SignupView when the action button is clicked", () => {
       assert.isFalse(wrapper.find("form").exists());

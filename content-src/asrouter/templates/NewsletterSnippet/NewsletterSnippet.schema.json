@@ -39,87 +39,29 @@
       "type": "string",
       "description": "Small icon that shows up before the title / text. 16x16px. SVG or PNG preferred. Grayscale."
     },
-    "form": {
+    "form_action": {
+      "type": "string",
+      "description": "Endpoint to submit form data."
+    },
+    "scene2_text": {
+      "type": "string",
+      "description": "Main body of the snippet in the second scene."
+    },
+    "scene2_email_placeholder_text": {
+      "type": "string",
+      "description": "Value to show while input is empty."
+    },
+    "scene2_button_label": {
+      "type": "string",
+      "description": "Label for form submit button"
+    },
+    "scene2_privacy_html": {
+      "type": "string",
+      "description": "Information about how the form data is used."
+    },
+    "hidden_inputs": {
       "type": "object",
-      "properties": {
-        "action": {
-          "type": "object",
-          "properties": {
-            "url": "string",
-            "description": "Endpoint to submit form data"
-          }
-        },
-        "heading": {
-          "type": "object",
-          "properties": {
-            "text": {
-              "type": "string",
-              "description": "Explanation about the form submission"
-            }
-          }
-        },
-        "input": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "description": "HTML attribute value"
-            },
-            "name": {
-              "type": "string",
-              "description": "HTML attribute value"
-            },
-            "placeholder": {
-              "type": "string",
-              "description": "Value to show while input is empty"
-            }
-          }
-        },
-        "button_submit_label": {
-          "type": "string",
-          "description": "Label for form submit button"
-        },
-        "privacy_notice": {
-          "type": "object",
-          "properties": {
-            "text": {
-              "type": "string",
-              "description": "Information about how the form data is used"
-            },
-            "links": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "url": {
-                    "allOf": [
-                      {"$ref": "#/definitions/link_url"},
-                      {"description": "The url where the link points to."}
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        },
-        "hidden_inputs": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "HTML attribute value"
-              },
-              "value": {
-                "type": "string",
-                "description": "HTML attribute value"
-              }
-            }
-          }
-        }
-      },
-      "required": ["input", "heading", "action", "hidden_inputs"]
+      "description": "Each entry represents a hidden input, key is used as value for the name property."
     },
     "button_label": {
       "allOf": [
@@ -159,7 +101,7 @@
     }
   },
   "additionalProperties": false,
-  "required": ["text", "button_label"],
+  "required": ["text", "form_action", "scene2_text", "hidden_inputs"],
   "dependencies": {
     "button_color": ["button_label"],
     "button_background_color": ["button_label"]
