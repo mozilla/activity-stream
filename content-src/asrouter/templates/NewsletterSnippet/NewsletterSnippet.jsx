@@ -1,4 +1,3 @@
-import {Button} from "../../components/Button/Button";
 import React from "react";
 import {SimpleSnippet} from "../SimpleSnippet/SimpleSnippet";
 import {SnippetBase} from "../../components/SnippetBase/SnippetBase";
