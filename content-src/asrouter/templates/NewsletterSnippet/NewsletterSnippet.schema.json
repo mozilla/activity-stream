@@ -43,6 +43,14 @@
       "type": "string",
       "description": "Endpoint to submit form data."
     },
+    "success_text": {
+      "type": "string",
+      "description": "Message shown on successful registration."
+    },
+    "error_text": {
+      "type": "string",
+      "description": "Message shown if registration failed."
+    },
     "scene2_text": {
       "type": "string",
       "description": "Main body of the snippet in the second scene."
