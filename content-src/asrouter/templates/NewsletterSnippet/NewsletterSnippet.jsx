@@ -72,7 +72,10 @@ export class NewsletterSnippet extends React.PureComponent {
     const message = this.state.signupSuccess ? this.props.content.success_text : this.props.content.error_text;
     const onButtonClick = !this.state.signupSuccess ? this.expandSnippet : null;
 
-    return <SimpleSnippet {...this.props} richText={message} onButtonClick={onButtonClick} />;
+    return (<SimpleSnippet className={this.props.className}
+      onButtonClick={onButtonClick}
+      provider={this.props.provider}
+      content={{button_label: this.props.content.button_label, text: message}} />);
   }
 
   renderSignupView() {
