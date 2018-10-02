@@ -22,6 +22,7 @@ export class NewsletterSnippet extends React.PureComponent {
     };
 
     event.preventDefault();
+    this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "conversion-subscribe-activation", id: "NEWTAB_FOOTER_BAR_CONTENT"});
 
     try {
       const fetchRequest = new Request(this.refs.newsletterForm.action, fetchConfig);
@@ -33,8 +34,10 @@ export class NewsletterSnippet extends React.PureComponent {
     if (json && json.status === "ok") {
       this.setState({signupSuccess: true, signupSubmitted: true});
       this.props.onBlock({preventDismiss: true});
+      this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "subscribe-success", id: "NEWTAB_FOOTER_BAR_CONTENT"});
     } else {
       this.setState({signupSuccess: false, signupSubmitted: true});
+      this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "subscribe-error", id: "NEWTAB_FOOTER_BAR_CONTENT"});
     }
   }
 

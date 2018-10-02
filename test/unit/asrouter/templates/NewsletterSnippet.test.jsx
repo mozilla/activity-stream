@@ -103,6 +103,13 @@ describe("NewsletterSnippet", () => {
       wrapper.find("form").simulate("submit");
       assert.calledOnce(window.fetch);
     });
+    it("should send user telemetry when submitted", () => {
+      wrapper.setState({expanded: true});
+
+      wrapper.find("form").simulate("submit");
+
+      assert.equal(wrapper.props().sendUserActionTelemetry.firstCall.args[0].value, "conversion-subscribe-activation");
+    });
     it("should set signupSuccess when submission status is ok", async () => {
       sandbox.stub(window, "fetch").resolves(fetchOk);
       wrapper.setState({expanded: true});
@@ -113,6 +120,13 @@ describe("NewsletterSnippet", () => {
       assert.calledOnce(onBlockStub);
       assert.calledWithExactly(onBlockStub, {preventDismiss: true});
     });
+    it("should send user telemetry when submission status is ok", async () => {
+      sandbox.stub(window, "fetch").resolves(fetchOk);
+      wrapper.setState({expanded: true});
+      await wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});
+
+      assert.equal(wrapper.props().sendUserActionTelemetry.secondCall.args[0].value, "subscribe-success");
+    });
     it("should not block the snippet if submission failed", async () => {
       sandbox.stub(window, "fetch").resolves(fetchFail);
       wrapper.setState({expanded: true});
@@ -121,6 +135,13 @@ describe("NewsletterSnippet", () => {
       assert.equal(wrapper.state().signupSuccess, false);
       assert.equal(wrapper.state().signupSubmitted, true);
       assert.notCalled(onBlockStub);
+    });
+    it("should send user telemetry if submission failed", async () => {
+      sandbox.stub(window, "fetch").resolves(fetchFail);
+      wrapper.setState({expanded: true});
+      await wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});
+
+      assert.equal(wrapper.props().sendUserActionTelemetry.secondCall.args[0].value, "subscribe-error");
     });
     it("should render the signup success message", () => {
       wrapper.setProps({content: {success_text: "success"}});
