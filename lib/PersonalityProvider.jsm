@@ -109,10 +109,11 @@ this.PersonalityProvider = class PersonalityProvider {
    * Grabs a slice of browse history for building a interest vector
    */
   async fetchHistory(columns, beginTimeSecs, endTimeSecs) {
-    let sql = `SELECT *
+    let sql = `SELECT url, title, visit_count, frecency, last_visit_date, description
     FROM moz_places
     WHERE last_visit_date >= ${beginTimeSecs * 1000000}
-    AND last_visit_date < ${endTimeSecs * 1000000}`;
+    AND last_visit_date < ${endTimeSecs * 1000000}
+    LIMIT 30000`;
     columns.forEach(requiredColumn => {
       sql += ` AND ${requiredColumn} <> ""`;
     });

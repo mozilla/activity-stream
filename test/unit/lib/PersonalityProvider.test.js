@@ -336,7 +336,7 @@ describe("Personality Provider", () => {
   describe("#fetchHistory", () => {
     it("should return a history object for fetchHistory", async () => {
       const history = await instance.fetchHistory(["requiredColumn"], 1, 1);
-      assert.equal(history.sql, `SELECT *\n    FROM moz_places\n    WHERE last_visit_date >= 1000000\n    AND last_visit_date < 1000000 AND requiredColumn <> ""`);
+      assert.equal(history.sql, `SELECT url, title, visit_count, frecency, last_visit_date, description\n    FROM moz_places\n    WHERE last_visit_date >= 1000000\n    AND last_visit_date < 1000000 AND requiredColumn <> ""`);
       assert.equal(history.options.columns.length, 1);
       assert.equal(Object.keys(history.options.params).length, 0);
     });
