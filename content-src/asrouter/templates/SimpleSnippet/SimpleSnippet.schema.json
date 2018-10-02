@@ -71,6 +71,10 @@
       "type": "string",
       "description": "The background color of the button. Valid CSS color."
     },
+    "block_button_text": {
+      "type": "string",
+      "description": "Tooltip text used for dismiss button."
+    },
     "tall": {
       "type": "boolean",
       "description": "To be used by fundraising only, increases height to roughly 120px. Defaults to false."
