@@ -19,7 +19,7 @@ export class SnippetBase extends React.PureComponent {
       return (
         <div className="footer">
           <div className="footer-content">
-            <button className="ASRouterButton secondary" onClick={this.onBlockClicked}>{this.props.content.dismiss_button_label}</button>
+            <button className="ASRouterButton secondary" onClick={this.props.onDismiss}>{this.props.content.dismiss_button_label}</button>
           </div>
         </div>
       );

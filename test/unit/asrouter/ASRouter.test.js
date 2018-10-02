@@ -580,6 +580,16 @@ describe("ASRouter", () => {
     });
   });
 
+  describe("#onMessage: DISMISS_MESSAGE_BY_ID", () => {
+    it("should reply with CLEAR_MESSAGE with the correct id", async () => {
+      const msg = fakeAsyncMessage({type: "DISMISS_MESSAGE_BY_ID", data: {id: "foo"}});
+
+      await Router.onMessage(msg);
+
+      assert.calledWith(channel.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_MESSAGE", data: {id: "foo"}});
+    });
+  });
+
   describe("#onMessage: BLOCK_PROVIDER_BY_ID", () => {
     it("should add the provider id to the providerBlockList and broadcast a CLEAR_PROVIDER with the provider id", async () => {
       const msg = fakeAsyncMessage({type: "BLOCK_PROVIDER_BY_ID", data: {id: "bar"}});

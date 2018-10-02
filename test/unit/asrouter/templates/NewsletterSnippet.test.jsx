@@ -25,6 +25,7 @@ describe("NewsletterSnippet", () => {
     const props = {
       content: Object.assign({}, DEFAULT_CONTENT, content),
       onBlock: onBlockStub,
+      onDismiss: sandbox.stub(),
       sendUserActionTelemetry: sandbox.stub(),
       onAction: sandbox.stub(),
     };
@@ -82,6 +83,13 @@ describe("NewsletterSnippet", () => {
       wrapper.setState({expanded: true});
 
       assert.isTrue(wrapper.find("form").exists());
+    });
+    it("should dismiss the snippet", () => {
+      wrapper.setState({expanded: true});
+
+      wrapper.find(".ASRouterButton.secondary").simulate("click");
+
+      assert.calledOnce(wrapper.props().onDismiss);
     });
     it("should render hidden inputs + email input", () => {
       wrapper.setState({expanded: true});

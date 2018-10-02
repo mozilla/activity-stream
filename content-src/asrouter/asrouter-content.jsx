@@ -33,6 +33,9 @@ export const ASRouterUtils = {
   blockById(id, options) {
     ASRouterUtils.sendMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id, ...options}});
   },
+  dismissById(id) {
+    ASRouterUtils.sendMessage({type: "DISMISS_MESSAGE_BY_ID", data: {id}});
+  },
   blockBundle(bundle) {
     ASRouterUtils.sendMessage({type: "BLOCK_BUNDLE", data: {bundle}});
   },
@@ -176,6 +179,10 @@ export class ASRouterUISurface extends React.PureComponent {
     return options => ASRouterUtils.blockById(id, options);
   }
 
+  onDismissById(id) {
+    return () => ASRouterUtils.dismissById(id);
+  }
+
   clearBundle(bundle) {
     return () => ASRouterUtils.blockBundle(bundle);
   }
@@ -257,6 +264,7 @@ export class ASRouterUISurface extends React.PureComponent {
               privacyNoticeRichText={privacyNoticeRichText}
               UISurface="NEWTAB_FOOTER_BAR"
               onBlock={this.onBlockById(this.state.message.id)}
+              onDismiss={this.onDismissById(this.state.message.id)}
               onAction={ASRouterUtils.executeAction}
               sendUserActionTelemetry={this.sendUserActionTelemetry} />
           </LocalizationProvider>

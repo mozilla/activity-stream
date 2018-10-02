@@ -972,6 +972,9 @@ class _ASRouter {
         }
         this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_MESSAGE", data: {id: action.data.id}});
         break;
+      case "DISMISS_MESSAGE_BY_ID":
+        this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_MESSAGE", data: {id: action.data.id}});
+        break;
       case "BLOCK_PROVIDER_BY_ID":
         await this.blockProviderById(action.data.id);
         this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_PROVIDER", data: {id: action.data.id}});
