@@ -198,6 +198,7 @@ const TEST_GLOBAL = {
     defineLazyModuleGetter() {},
     defineLazyModuleGetters() {},
     defineLazyServiceGetter() {},
+    defineLazyServiceGetters() {},
     generateQI() { return {}; },
   },
   EventEmitter,

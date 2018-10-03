@@ -24,6 +24,8 @@ describe("TelemetryFeed", () => {
   let browser = {getAttribute() { return "true"; }};
   let instance;
   let clock;
+  let fakeHomePageUrl;
+  let fakeHomePage;
   class PingCentre {sendPing() {} uninit() {}}
   class UTEventReporting {sendUserEvent() {} sendSessionEndEvent() {} uninit() {}}
   class PerfService {
@@ -48,8 +50,19 @@ describe("TelemetryFeed", () => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     clock = sinon.useFakeTimers();
+    fakeHomePageUrl = "about:home";
+    fakeHomePage = {
+      get() {
+        return fakeHomePageUrl;
+      },
+    };
     sandbox.spy(global.Cu, "reportError");
     globals.set("gUUIDGenerator", {generateUUID: () => FAKE_UUID});
+    globals.set("aboutNewTabService", {
+      overridden: false,
+      newTabURL: "",
+    });
+    globals.set("HomePage", fakeHomePage);
     globals.set("PingCentre", PingCentre);
     globals.set("UTEventReporting", UTEventReporting);
     sandbox.stub(ASRouterPreferences, "providers").get(() => FAKE_ROUTER_MESSAGE_PROVIDER);
@@ -794,11 +807,13 @@ describe("TelemetryFeed", () => {
       FakePrefs.prototype.prefs = {};
     });
     it("should call .init() on an INIT action", () => {
-      const stub = sandbox.stub(instance, "init");
+      const init = sandbox.stub(instance, "init");
+      const sendPageTakeoverData = sandbox.stub(instance, "sendPageTakeoverData");
 
       instance.onAction({type: at.INIT});
 
-      assert.calledOnce(stub);
+      assert.calledOnce(init);
+      assert.calledOnce(sendPageTakeoverData);
     });
     it("should call .uninit() on an UNINIT action", () => {
       const stub = sandbox.stub(instance, "uninit");
@@ -951,6 +966,88 @@ describe("TelemetryFeed", () => {
       }));
 
       assert.ok(!session.perf.is_preloaded);
+    });
+  });
+  describe("#sendPageTakeoverData", () => {
+    let fakePrefs = {"browser.newtabpage.enabled": true};
+
+    beforeEach(() => {
+      globals.set("Services", Object.assign({}, Services, {prefs: {getBoolPref: key => fakePrefs[key]}}));
+      // Services.prefs = {getBoolPref: key => fakePrefs[key]};
+    });
+    it("should send correct event data for default prefs", async () => {
+      instance._prefs.set(TELEMETRY_PREF, true);
+      const sendEvent = sandbox.stub(instance, "sendEvent");
+
+      await instance.sendPageTakeoverData();
+      assert.calledOnce(sendEvent);
+      assert.equal(sendEvent.firstCall.args[0].event, "PAGE_TAKEOVER_DATA");
+      assert.deepEqual(sendEvent.firstCall.args[0].value, {
+        home_pref: "default",
+        home_url_category: undefined,
+        newtab_pref: "default",
+        newtab_url_category: undefined,
+      });
+    });
+    it("should send correct event data for about:{home,newtab} set to about:blank", async () => {
+      fakePrefs["browser.newtabpage.enabled"] = false;
+      globals.set("aboutNewTabService", {
+        overridden: true,
+        newTabURL: "",
+      });
+      fakeHomePageUrl = "about:blank";
+      instance._prefs.set(TELEMETRY_PREF, true);
+      const sendEvent = sandbox.stub(instance, "sendEvent");
+
+      await instance.sendPageTakeoverData();
+      assert.calledOnce(sendEvent);
+      assert.equal(sendEvent.firstCall.args[0].event, "PAGE_TAKEOVER_DATA");
+      assert.deepEqual(sendEvent.firstCall.args[0].value, {
+        home_pref: "about-blank",
+        home_url_category: undefined,
+        newtab_pref: "about-blank",
+        newtab_url_category: undefined,
+      });
+    });
+    it("should send correct event data for about:{home,newtab} set to by web extensions", async () => {
+      fakePrefs["browser.newtabpage.enabled"] = true;
+      globals.set("aboutNewTabService", {
+        overridden: true,
+        newTabURL: "moz-extension://foo-bar",
+      });
+      fakeHomePageUrl = "moz-extension://foo-bar";
+      instance._prefs.set(TELEMETRY_PREF, true);
+      const sendEvent = sandbox.stub(instance, "sendEvent");
+
+      await instance.sendPageTakeoverData();
+      assert.calledOnce(sendEvent);
+      assert.equal(sendEvent.firstCall.args[0].event, "PAGE_TAKEOVER_DATA");
+      assert.deepEqual(sendEvent.firstCall.args[0].value, {
+        home_pref: "web-extension",
+        home_url_category: undefined,
+        newtab_pref: "web-extension",
+        newtab_url_category: undefined,
+      });
+    });
+    it("should send correct event data for about:{home,newtab} set to custom URL", async () => {
+      globals.set("aboutNewTabService", {
+        overridden: true,
+        newTabURL: "https://searchprovider.com",
+      });
+      fakeHomePageUrl = "https://searchprovider.com";
+      instance._prefs.set(TELEMETRY_PREF, true);
+      instance._classifySite = () => Promise.resolve("other");
+      const sendEvent = sandbox.stub(instance, "sendEvent");
+
+      await instance.sendPageTakeoverData();
+      assert.calledOnce(sendEvent);
+      assert.equal(sendEvent.firstCall.args[0].event, "PAGE_TAKEOVER_DATA");
+      assert.deepEqual(sendEvent.firstCall.args[0].value, {
+        home_pref: "custom-url",
+        home_url_category: "other",
+        newtab_pref: "custom-url",
+        newtab_url_category: "other",
+      });
     });
   });
 });
