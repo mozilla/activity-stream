@@ -129,6 +129,10 @@ module.exports = function(config) {
             },
           },
           {
+            test: /\.md$/,
+            use: "raw-loader",
+          },
+          {
             enforce: "post",
             test: /\.jsm?$/,
             loader: "istanbul-instrumenter-loader",
