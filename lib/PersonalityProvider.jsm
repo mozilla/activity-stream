@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 "use strict";
 
-const {PersistentCache} = ChromeUtils.import("resource://activity-stream/lib/PersistentCache.jsm", {});
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js", {});
 
 const {NaiveBayesTextTagger} = ChromeUtils.import("resource://activity-stream/lib/NaiveBayesTextTagger.jsm", {});
@@ -12,8 +11,6 @@ const {RecipeExecutor} = ChromeUtils.import("resource://activity-stream/lib/Reci
 
 ChromeUtils.defineModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
-
-const STORE_UPDATE_TIME = 24 * 60 * 60 * 1000; // 24 hours
 
 /**
  * V2 provider builds and ranks an interest profile (also called an “interest vector”) off the browse history.
@@ -33,12 +30,13 @@ this.PersonalityProvider = class PersonalityProvider {
     this.parameterSets = parameterSets;
     this.maxHistoryQueryResults = maxHistoryQueryResults;
     this.version = version;
-    this.scores = scores;
-    this.store = new PersistentCache("personality-provider", true);
+    this.scores = scores || {};
+    this.interestConfig = this.scores.interestConfig;
+    this.interestVector = this.scores.interestVector;
   }
 
-  async init() {
-    this.interestConfig = await this.getRecipe();
+  async init(callback) {
+    this.interestConfig = this.interestConfig || await this.getRecipe();
     if (!this.interestConfig) {
       return;
     }
@@ -46,24 +44,20 @@ this.PersonalityProvider = class PersonalityProvider {
     if (!this.recipeExecutor) {
       return;
     }
-    this.interestVector = await this.store.get("interest-vector");
-
-    // Fetch a new one if none exists or every set update time.
-    if (!this.interestVector ||
-      (Date.now() - this.interestVector.lastUpdate) >= STORE_UPDATE_TIME) {
-      this.interestVector = await this.createInterestVector();
-      if (!this.interestVector) {
-        return;
-      }
-      this.interestVector.lastUpdate = Date.now();
-      this.store.set("interest-vector", this.interestVector);
+    this.interestVector = this.interestVector || await this.createInterestVector();
+    if (!this.interestVector) {
+      return;
     }
+
     this.initialized = true;
+    if (callback) {
+      callback();
+    }
   }
 
   async getFromRemoteSettings(name) {
     const result = await RemoteSettings(name).get();
-    return result || [];
+    return result;
   }
 
   /**
@@ -83,6 +77,10 @@ this.PersonalityProvider = class PersonalityProvider {
    * The Recipe determines the order and specifics of which the actions are called.
    */
   async generateRecipeExecutor() {
+    if (this.taggers) {
+      return new RecipeExecutor(this.taggers.nbTaggers, this.taggers.nmfTaggers);
+    }
+
     let nbTaggers = [];
     let nmfTaggers = {};
     const models = await this.getFromRemoteSettings("personality-provider-models");
@@ -95,13 +93,14 @@ this.PersonalityProvider = class PersonalityProvider {
       if (!model || !this.modelKeys.includes(model.key)) {
         continue;
       }
-
       if (model.data.model_type === "nb") {
         nbTaggers.push(new NaiveBayesTextTagger(model.data));
       } else if (model.data.model_type === "nmf") {
         nmfTaggers[model.data.parent_tag] = new NmfTextTagger(model.data);
       }
     }
+
+    this.taggers = {nbTaggers, nmfTaggers};
     return new RecipeExecutor(nbTaggers, nmfTaggers);
   }
 
@@ -138,7 +137,9 @@ this.PersonalityProvider = class PersonalityProvider {
     let history = await this.fetchHistory(this.interestConfig.history_required_fields, beginTimeSecs, endTimeSecs);
 
     for (let historyRec of history) {
-      let ivItem = this.recipeExecutor.executeRecipe(historyRec, this.interestConfig.history_item_builder);
+      let ivItem = this.recipeExecutor.executeRecipe(
+        historyRec,
+        this.interestConfig.history_item_builder);
       if (ivItem === null) {
         continue;
       }
@@ -151,7 +152,9 @@ this.PersonalityProvider = class PersonalityProvider {
       }
     }
 
-    return this.recipeExecutor.executeRecipe(interestVector, this.interestConfig.interest_finalizer);
+    return this.recipeExecutor.executeRecipe(
+      interestVector,
+      this.interestConfig.interest_finalizer);
   }
 
   /**
@@ -163,7 +166,9 @@ this.PersonalityProvider = class PersonalityProvider {
     if (!this.initialized) {
       return pocketItem.item_score || 1;
     }
-    let scorableItem = this.recipeExecutor.executeRecipe(pocketItem, this.interestConfig.item_to_rank_builder);
+    let scorableItem = this.recipeExecutor.executeRecipe(
+      pocketItem,
+      this.interestConfig.item_to_rank_builder);
     if (scorableItem === null) {
       return -1;
     }
@@ -174,7 +179,9 @@ this.PersonalityProvider = class PersonalityProvider {
       rankingVector[key] = scorableItem[key];
     });
 
-    rankingVector = this.recipeExecutor.executeRecipe(rankingVector, this.interestConfig.item_ranker);
+    rankingVector = this.recipeExecutor.executeRecipe(
+      rankingVector,
+      this.interestConfig.item_ranker);
 
     if (rankingVector === null) {
       return -1;
@@ -191,7 +198,11 @@ this.PersonalityProvider = class PersonalityProvider {
       parameterSets: this.parameterSets,
       maxHistoryQueryResults: this.maxHistoryQueryResults,
       version: this.version,
-      scores: true,
+      scores: {
+        interestConfig: this.interestConfig,
+        interestVector: this.interestVector,
+        taggers: this.taggers,
+      },
     };
   }
 };

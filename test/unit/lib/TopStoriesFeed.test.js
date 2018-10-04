@@ -569,15 +569,28 @@ describe("Top Stories Feed", () => {
       instance.affinityProviderV2 = {use_v2: true};
       sinon.stub(instance, "UserDomainAffinityProvider");
       sinon.stub(instance, "PersonalityProvider");
-      instance.PersonalityProvider = () => {
-        let retObj = {init: async () => {}};
-        sinon.stub(retObj, "init").returns(Promise.resolve());
-        return retObj;
-      };
+      instance.PersonalityProvider = () => ({init: sinon.stub()});
 
-      const provider = await instance.affinityProividerSwitcher();
+      const provider = instance.affinityProividerSwitcher();
       assert.calledOnce(provider.init);
       assert.notCalled(instance.UserDomainAffinityProvider);
+    });
+    it("should use init and callback from affinityProividerSwitcher using v2", async () => {
+      sinon.stub(instance, "doContentUpdate");
+      sinon.stub(instance, "rotate");
+      sinon.stub(instance, "transform");
+      const stories = {recommendations: {}};
+      instance.cache.get = () => ({stories});
+      instance.cache.set = sinon.spy();
+      instance.affinityProvider = {getAffinities: () => ({})};
+      await instance.onPersonalityProviderInit();
+
+      assert.calledOnce(instance.doContentUpdate);
+      assert.calledOnce(instance.rotate);
+      assert.calledOnce(instance.transform);
+      const {args} = instance.cache.set.firstCall;
+      assert.equal(args[0], "domainAffinities");
+      assert.equal(args[1]._timestamp, 0);
     });
     it("should return an object for UserDomainAffinityProvider", () => {
       assert.equal(typeof instance.UserDomainAffinityProvider(), "object");

@@ -122,69 +122,57 @@ describe("Personality Provider", () => {
       await instance.init();
       assert.isUndefined(instance.initialized);
     });
+    it("should return early if get recipe fails", async () => {
+      sinon.stub(instance, "getRecipe").returns(Promise.resolve());
+      sinon.stub(instance, "generateRecipeExecutor").returns(Promise.resolve());
+      instance.interestConfig = undefined;
+      await instance.init();
+      assert.calledOnce(instance.getRecipe);
+      assert.notCalled(instance.generateRecipeExecutor);
+      assert.isUndefined(instance.initialized);
+      assert.isUndefined(instance.interestConfig);
+    });
+    it("should call callback on successful init", async () => {
+      sinon.stub(instance, "getRecipe").returns(Promise.resolve(true));
+      instance.interestConfig = undefined;
+      const callback = globals.sandbox.stub();
+      instance.createInterestVector = async () => ({});
+      sinon.stub(instance, "generateRecipeExecutor").returns(Promise.resolve(true));
+      await instance.init(callback);
+      assert.calledOnce(instance.getRecipe);
+      assert.calledOnce(instance.generateRecipeExecutor);
+      assert.calledOnce(callback);
+      assert.isDefined(instance.interestVector);
+      assert.isTrue(instance.initialized);
+    });
     it("should return early and not initialize if generateRecipeExecutor fails", async () => {
       sinon.stub(instance, "getRecipe").returns(Promise.resolve(true));
       sinon.stub(instance, "generateRecipeExecutor").returns(Promise.resolve());
+      instance.interestConfig = undefined;
       await instance.init();
       assert.calledOnce(instance.getRecipe);
       assert.isUndefined(instance.initialized);
     });
     it("should return early and not initialize if createInterestVector fails", async () => {
       sinon.stub(instance, "getRecipe").returns(Promise.resolve(true));
+      instance.interestConfig = undefined;
       sinon.stub(instance, "generateRecipeExecutor").returns(Promise.resolve(true));
       instance.createInterestVector = async () => (null);
-      sinon.stub(instance.store, "get").returns(Promise.resolve());
-      sinon.stub(instance.store, "set").returns(Promise.resolve());
       await instance.init();
       assert.calledOnce(instance.getRecipe);
       assert.calledOnce(instance.generateRecipeExecutor);
-      assert.calledOnce(instance.store.get);
-      assert.notCalled(instance.store.set);
       assert.isUndefined(instance.initialized);
     });
     it("should do generic init stuff when calling init with no cache", async () => {
       sinon.stub(instance, "getRecipe").returns(Promise.resolve(true));
+      instance.interestConfig = undefined;
       instance.createInterestVector = async () => ({});
       sinon.stub(instance, "generateRecipeExecutor").returns(Promise.resolve(true));
-      sinon.stub(instance.store, "get").returns(Promise.resolve());
-      sinon.stub(instance.store, "set").returns(Promise.resolve());
       await instance.init();
       assert.calledOnce(instance.getRecipe);
       assert.calledOnce(instance.generateRecipeExecutor);
-      assert.calledOnce(instance.store.get);
-      assert.calledOnce(instance.store.set);
       assert.isDefined(instance.interestVector);
-      assert.isDefined(instance.interestVector.lastUpdate);
       assert.isTrue(instance.initialized);
-    });
-    it("should make new interest vector when called with out dated cache", async () => {
-      const startTime = Date.now() - (24 * 60 * 60 * 1000); // 24 hours
-      instance.getRecipe = async () => true;
-      instance.createInterestVector = async () => ({});
-      instance.store.get = async () => ({lastUpdate: startTime});
-      instance.generateRecipeExecutor = async () => true;
-      sinon.stub(instance.store, "set").returns(Promise.resolve());
-      await instance.init();
-      assert.isTrue(instance.interestVector.lastUpdate > startTime);
-      assert.calledOnce(instance.store.set);
-    });
-    it("should use interest vector when called with cache", async () => {
-      const startTime = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
-      instance.getRecipe = async () => true;
-      instance.createInterestVector = async () => ({});
-      instance.store.get = async () => ({lastUpdate: startTime});
-      instance.generateRecipeExecutor = async () => true;
-      sinon.stub(instance.store, "set").returns(Promise.resolve());
-      await instance.init();
-      assert.isFalse(instance.interestVector.lastUpdate > startTime);
-      assert.notCalled(instance.store.set);
-    });
-  });
-  describe("#store", () => {
-    it("should have a personality-provider store", () => {
-      assert.equal(instance.store.name, "personality-provider");
-      // The is to make sure prelaod is set to true.
-      assert.equal(!!instance.store._cache, true);
     });
   });
   describe("#remote-settings", () => {
@@ -197,6 +185,18 @@ describe("Personality Provider", () => {
   describe("#executor", () => {
     it("should return null if generateRecipeExecutor has no models", async () => {
       assert.isNull(await instance.generateRecipeExecutor());
+    });
+    it("should not generate taggers if already available", async () => {
+      instance.taggers = {
+        nbTaggers: ["first"],
+        nmfTaggers: {first: "first"},
+      };
+      await instance.generateRecipeExecutor();
+      assert.calledOnce(RecipeExecutorStub);
+      const {args} = RecipeExecutorStub.firstCall;
+      assert.equal(args[0].length, 1);
+      assert.equal(args[0], "first");
+      assert.equal(args[1].first, "first");
     });
     it("should pass recipe models to getRecipeExecutor on generateRecipeExecutor", async () => {
       instance.modelKeys = ["nb_model_sports", "nmf_model_sports"];

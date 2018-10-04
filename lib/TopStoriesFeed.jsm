@@ -82,10 +82,10 @@ this.TopStoriesFeed = class TopStoriesFeed {
     SectionsManager.onceInitialized(this.onInit.bind(this));
   }
 
-  async observe(subject, topic, data) {
+  observe(subject, topic, data) {
     switch (topic) {
       case "idle-daily":
-        await this.updateDomainAffinityScores();
+        this.updateDomainAffinityScores();
         break;
     }
   }
@@ -125,11 +125,23 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.dispatchUpdateEvent(shouldBroadcast, updateProps);
   }
 
-  async affinityProividerSwitcher(...args) {
+  async onPersonalityProviderInit() {
+    const data = await this.cache.get();
+    let stories = data.stories && data.stories.recommendations;
+    this.stories = this.rotate(this.transform(stories));
+    this.doContentUpdate(false);
+
+    const affinities = this.affinityProvider.getAffinities();
+    this.domainAffinitiesLastUpdated = Date.now();
+    affinities._timestamp = this.domainAffinitiesLastUpdated;
+    this.cache.set("domainAffinities", affinities);
+  }
+
+  affinityProividerSwitcher(...args) {
     const {affinityProviderV2} = this;
     if (affinityProviderV2 && affinityProviderV2.use_v2) {
       const provider = this.PersonalityProvider(...args, affinityProviderV2.model_keys);
-      await provider.init();
+      provider.init(this.onPersonalityProviderInit.bind(this));
       return provider;
     }
     return this.UserDomainAffinityProvider(...args);
@@ -178,7 +190,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
     let affinities = data.domainAffinities;
     if (this.personalized && affinities && affinities.scores) {
-      this.affinityProvider = await this.affinityProividerSwitcher(affinities.timeSegments,
+      this.affinityProvider = this.affinityProividerSwitcher(affinities.timeSegments,
         affinities.parameterSets, affinities.maxHistoryQueryResults, affinities.version, affinities.scores);
       this.domainAffinitiesLastUpdated = affinities._timestamp;
     }
@@ -269,7 +281,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     }
   }
 
-  async updateDomainAffinityScores() {
+  updateDomainAffinityScores() {
     if (!this.personalized || !this.domainAffinityParameterSets ||
       Date.now() - this.domainAffinitiesLastUpdated < MIN_DOMAIN_AFFINITIES_UPDATE_TIME) {
       return;
@@ -277,7 +289,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
     const start = perfService.absNow();
 
-    this.affinityProvider = await this.affinityProividerSwitcher(
+    this.affinityProvider = this.affinityProividerSwitcher(
       this.timeSegments,
       this.domainAffinityParameterSets,
       this.maxHistoryQueryResults,
