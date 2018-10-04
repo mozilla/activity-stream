@@ -34,7 +34,6 @@ const DEFAULT_WHITELIST_HOSTS = {
   "activity-stream-icons.services.mozilla.com": "production",
   "snippets-admin.mozilla.org": "preview",
 };
-const ONBOARDING_FINISHED_PREF = "browser.onboarding.notification.finished";
 const SNIPPETS_ENDPOINT_WHITELIST = "browser.newtab.activity-stream.asrouter.whitelistHosts";
 // Max possible impressions cap for any message
 const MAX_MESSAGE_LIFETIME_CAP = 100;
@@ -250,17 +249,6 @@ const MessageLoaderUtils = {
 this.MessageLoaderUtils = MessageLoaderUtils;
 
 /**
- * hasLegacyOnboardingConflict - Checks if we need to turn off snippets because of
- *                               legacy onboarding using the same UI space
- *
- * @param {Provider} provider
- * @returns {boolean} Is there a conflict with legacy onboarding?
- */
-function hasLegacyOnboardingConflict(provider) {
-  return provider.id === "snippets" && !Services.prefs.getBoolPref(ONBOARDING_FINISHED_PREF, false);
-}
-
-/**
  * @class _ASRouter - Keeps track of all messages, UI surfaces, and
  * handles blocking, rotation, etc. Inspecting ASRouter.state will
  * tell you what the current displayed message is in all UI surfaces.
@@ -291,38 +279,9 @@ class _ASRouter {
     this.onPrefChange = this.onPrefChange.bind(this);
   }
 
-  /**
-   * Turns legacy onboarding off or on using the ONBOARDING_FINISHED_PREF.
-   * This is required since ASRouter also shows snippets and onboarding, which
-   * interferes with legacy onboarding.
-   *
-   * Note that when this pref is true, legacy onboarding does NOT show up;
-   * when it is false, iegacy onboarding may show up if the profile age etc.
-   * is appropriate for the user to see it.
-   */
-  overrideOrEnableLegacyOnboarding() {
-    const {allowLegacyOnboarding} = ASRouterPreferences.specialConditions;
-    const onboardingFinished = Services.prefs.getBoolPref(ONBOARDING_FINISHED_PREF, true);
-
-    if (!allowLegacyOnboarding && onboardingFinished === false) {
-      Services.prefs.setBoolPref(ONBOARDING_FINISHED_PREF, true);
-    } else if (allowLegacyOnboarding && onboardingFinished === true) {
-      Services.prefs.setBoolPref(ONBOARDING_FINISHED_PREF, false);
-    }
-  }
-
-  // This will be removed when legacy onboarding is removed.
-  async observe(aSubject, aTopic, aPrefName) {
-    if (aPrefName === ONBOARDING_FINISHED_PREF) {
-      this._updateMessageProviders();
-      await this.loadMessagesFromAllProviders();
-    }
-  }
-
   // Update message providers and fetch new messages on pref change
   async onPrefChange() {
     this._updateMessageProviders();
-    this.overrideOrEnableLegacyOnboarding();
     await this.loadMessagesFromAllProviders();
     this.dispatchToAS(ac.BroadcastToContent({type: at.AS_ROUTER_PREF_CHANGED, data: ASRouterPreferences.specialConditions}));
   }
@@ -348,9 +307,7 @@ class _ASRouter {
       // The provider should be enabled and not have a user preference set to false
       ...ASRouterPreferences.providers.filter(p => (
         p.enabled &&
-        ASRouterPreferences.getUserPreference(p.id) !== false) &&
-        // sorry this is crappy. will remove soon
-        !hasLegacyOnboardingConflict(p)
+        ASRouterPreferences.getUserPreference(p.id) !== false)
       ),
     ].map(_provider => {
       // make a copy so we don't modify the source of the pref
@@ -477,8 +434,6 @@ class _ASRouter {
     this.dispatchToAS = dispatchToAS;
     this.dispatch = this.dispatch.bind(this);
 
-    // For watching legacy onboarding. To be removed when legacy onboarding is gone.
-    Services.prefs.addObserver(ONBOARDING_FINISHED_PREF, this);
     ASRouterPreferences.init();
     ASRouterPreferences.addListener(this.onPrefChange);
 
@@ -489,7 +444,6 @@ class _ASRouter {
     const previousSessionEnd = await this._storage.get("previousSessionEnd") || 0;
     await this.setState({messageBlockList, providerBlockList, messageImpressions, providerImpressions, previousSessionEnd});
     this._updateMessageProviders();
-    this.overrideOrEnableLegacyOnboarding();
     await this.loadMessagesFromAllProviders();
     await MessageLoaderUtils.cleanupCache(this.state.providers, storage);
 
@@ -508,10 +462,6 @@ class _ASRouter {
     this.messageChannel = null;
     this.dispatchToAS = null;
 
-    this.overrideOrEnableLegacyOnboarding();
-
-    // For watching legacy onboarding. To be removed when legacy onboarding is gone.
-    Services.prefs.removeObserver(ONBOARDING_FINISHED_PREF, this);
     ASRouterPreferences.removeListener(this.onPrefChange);
     ASRouterPreferences.uninit();
 

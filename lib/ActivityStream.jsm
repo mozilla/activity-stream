@@ -209,8 +209,7 @@ const PREFS_CONFIG = new Map([
       id: "onboarding",
       type: "local",
       localProvider: "OnboardingMessageProvider",
-      enabled: false,
-      cohort: 0,
+      enabled: true,
     }, {
       id: "snippets",
       type: "remote",
