@@ -965,6 +965,14 @@ class _ASRouter {
         break;
       case "BLOCK_MESSAGE_BY_ID":
         await this.blockMessageById(action.data.id);
+        // Block the message but don't dismiss it in case the action taken has
+        // another state that needs to be visible
+        if (action.data.preventDismiss) {
+          break;
+        }
+        this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_MESSAGE", data: {id: action.data.id}});
+        break;
+      case "DISMISS_MESSAGE_BY_ID":
         this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_MESSAGE", data: {id: action.data.id}});
         break;
       case "BLOCK_PROVIDER_BY_ID":

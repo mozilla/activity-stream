@@ -55,6 +55,13 @@
   &:hover .blockButton {
     display: block;
   }
+
+  .icon {
+    height: 42px;
+    width: 42px;
+    margin-inline-end: 12px;
+    flex-shrink: 0;
+  }
 }
 
 .snippets-preview-banner {

@@ -33,12 +33,12 @@ export class SimpleSnippet extends React.PureComponent {
 
   renderButton() {
     const {props} = this;
-    if (!props.content.button_action) {
+    if (!props.content.button_action && !props.onButtonClick) {
       return null;
     }
 
     return (<Button
-      onClick={this.onButtonClick}
+      onClick={props.onButtonClick || this.onButtonClick}
       color={props.content.button_color}
       backgroundColor={props.content.button_background_color}>
       {props.content.button_label}

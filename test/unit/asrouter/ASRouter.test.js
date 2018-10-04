@@ -572,6 +572,22 @@ describe("ASRouter", () => {
       assert.isTrue(Router.state.messageBlockList.includes("foo"));
       assert.calledWith(channel.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_MESSAGE", data: {id: "foo"}});
     });
+    it("should not broadcast CLEAR_MESSAGE if preventDismiss is true", async () => {
+      const msg = fakeAsyncMessage({type: "BLOCK_MESSAGE_BY_ID", data: {id: "foo", preventDismiss: true}});
+      await Router.onMessage(msg);
+
+      assert.notCalled(channel.sendAsyncMessage);
+    });
+  });
+
+  describe("#onMessage: DISMISS_MESSAGE_BY_ID", () => {
+    it("should reply with CLEAR_MESSAGE with the correct id", async () => {
+      const msg = fakeAsyncMessage({type: "DISMISS_MESSAGE_BY_ID", data: {id: "foo"}});
+
+      await Router.onMessage(msg);
+
+      assert.calledWith(channel.sendAsyncMessage, PARENT_TO_CHILD_MESSAGE_NAME, {type: "CLEAR_MESSAGE", data: {id: "foo"}});
+    });
   });
 
   describe("#onMessage: BLOCK_PROVIDER_BY_ID", () => {
