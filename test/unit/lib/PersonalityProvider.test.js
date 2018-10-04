@@ -257,7 +257,7 @@ describe("Personality Provider", () => {
     });
     it("should not fetch a recipe on getRecipe if cached", () => {
       sinon.stub(instance, "getFromRemoteSettings");
-      instance.recipe = {};
+      instance.recipe = {"blah": 1};
       instance.getRecipe();
       assert.notCalled(instance.getFromRemoteSettings);
     });
