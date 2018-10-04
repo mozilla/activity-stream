@@ -111,11 +111,11 @@ this.PersonalityProvider = class PersonalityProvider {
     let sql = `SELECT url, title, visit_count, frecency, last_visit_date, description
     FROM moz_places
     WHERE last_visit_date >= ${beginTimeSecs * 1000000}
-    AND last_visit_date < ${endTimeSecs * 1000000}
-    LIMIT 30000`;
+    AND last_visit_date < ${endTimeSecs * 1000000}`;
     columns.forEach(requiredColumn => {
-      sql += ` AND ${requiredColumn} <> ""`;
+      sql += ` AND IFNULL(${requiredColumn}, "") <> ""`;
     });
+    sql += " LIMIT 30000";
 
     const {activityStreamProvider} = NewTabUtils;
     const history = await activityStreamProvider.executePlacesQuery(sql, {
