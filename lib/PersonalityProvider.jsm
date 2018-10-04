@@ -65,7 +65,7 @@ this.PersonalityProvider = class PersonalityProvider {
    * A Recipe is a set of instructions on how to processes a RecipeExecutor.
    */
   async getRecipe() {
-    if (!this.recipe) {
+    if (!this.recipe || !this.recipe.length) {
       this.recipe = await this.getFromRemoteSettings("personality-provider-recipe");
     }
     return this.recipe[0];
