@@ -105,6 +105,7 @@ export function convertLinks(links, sendClick) {
   if (links) {
     return Object.keys(links).reduce((acc, linkTag) => {
       const {action} = links[linkTag];
+      // Setting the value to false will not include the attribute in the anchor
       const url = action ? false : safeURI(links[linkTag].url);
 
       acc[linkTag] = (<a href={url}
