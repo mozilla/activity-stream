@@ -839,6 +839,24 @@ describe("ASRouter", () => {
     });
   });
 
+  describe("#onMessage: SHOW_FIREFOX_ACCOUNTS", () => {
+    let globals;
+    beforeEach(() => {
+      globals = new GlobalOverrider();
+      globals.set("FxAccounts", {config: {promiseSignUpURI: sandbox.stub().resolves("some/url")}});
+    });
+    it("should call openLinkIn with the correct params on OPEN_URL", async () => {
+      let [testMessage] = Router.state.messages;
+      testMessage.button_action = {type: "SHOW_FIREFOX_ACCOUNTS"};
+      const msg = fakeExecuteUserAction(testMessage.button_action);
+      await Router.onMessage(msg);
+
+      assert.calledOnce(msg.target.browser.ownerGlobal.openLinkIn);
+      assert.calledWith(msg.target.browser.ownerGlobal.openLinkIn,
+        "some/url", "tabshifted", {"private": false, "triggeringPrincipal": undefined});
+    });
+  });
+
   describe("#onMessage: INSTALL_ADDON_FROM_URL", () => {
     it("should call installAddonFromURL with correct arguments", async () => {
       sandbox.stub(MessageLoaderUtils, "installAddonFromURL").resolves(null);
