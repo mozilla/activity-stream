@@ -104,7 +104,14 @@ const ALLOWED_TAGS = {
 export function convertLinks(links, sendClick) {
   if (links) {
     return Object.keys(links).reduce((acc, linkTag) => {
-      acc[linkTag] = <a href={safeURI(links[linkTag].url)} data-metric={links[linkTag].metric} onClick={sendClick} />;
+      const {action} = links[linkTag];
+      const url = action ? false : safeURI(links[linkTag].url);
+
+      acc[linkTag] = (<a href={url}
+        data-metric={links[linkTag].metric}
+        data-action={action}
+        data-target={links[linkTag].target}
+        onClick={sendClick} />);
       return acc;
     }, {});
   }
@@ -166,12 +173,18 @@ export class ASRouterUISurface extends React.PureComponent {
       // from other snippet or onboarding events that may occur.
       id: "NEWTAB_FOOTER_BAR_CONTENT",
     };
-
-    if (this.state.message.provider !== "preview") {
-      this.sendUserActionTelemetry({event: "CLICK_BUTTON", ...metric});
+    const action = {
+      type: event.target.dataset.action,
+      data: {target: event.target.dataset.target},
+    };
+    if (action.type) {
+      ASRouterUtils.executeAction(action);
     }
     if (!this.state.message.content.do_not_autoblock) {
       ASRouterUtils.blockById(this.state.message.id);
+    }
+    if (this.state.message.provider !== "preview") {
+      this.sendUserActionTelemetry({event: "CLICK_BUTTON", ...metric});
     }
   }
 
