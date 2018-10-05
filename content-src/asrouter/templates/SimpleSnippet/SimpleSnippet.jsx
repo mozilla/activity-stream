@@ -17,7 +17,7 @@ export class SimpleSnippet extends React.PureComponent {
     }
     this.props.onAction({
       type: this.props.content.button_action,
-      data: {target: this.props.content.button_action_target},
+      data: {args: this.props.content.button_action_args},
     });
     if (!this.props.content.do_not_autoblock) {
       this.props.onBlock();

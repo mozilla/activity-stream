@@ -111,7 +111,7 @@ export function convertLinks(links, sendClick) {
       acc[linkTag] = (<a href={url}
         data-metric={links[linkTag].metric}
         data-action={action}
-        data-target={links[linkTag].target}
+        data-args={links[linkTag].args}
         onClick={sendClick} />);
       return acc;
     }, {});
@@ -176,7 +176,7 @@ export class ASRouterUISurface extends React.PureComponent {
     };
     const action = {
       type: event.target.dataset.action,
-      data: {target: event.target.dataset.target},
+      data: {args: event.target.dataset.args},
     };
     if (action.type) {
       ASRouterUtils.executeAction(action);

@@ -58,7 +58,7 @@ describe("SimpleSnippet", () => {
     const wrapper = mountAndCheckProps({
       button_label: "Click here",
       button_action: "OPEN_APPLICATIONS_MENU",
-      button_action_target: "appMenu",
+      button_action_args: "appMenu",
     });
 
     const button = wrapper.find("button.ASRouterButton");
@@ -67,7 +67,7 @@ describe("SimpleSnippet", () => {
     assert.equal(button.text(), "Click here");
     assert.equal(button.prop("className"), "ASRouterButton");
     assert.calledOnce(wrapper.props().onAction);
-    assert.calledWithExactly(wrapper.props().onAction, {type: "OPEN_APPLICATIONS_MENU", data: {target: "appMenu"}});
+    assert.calledWithExactly(wrapper.props().onAction, {type: "OPEN_APPLICATIONS_MENU", data: {args: "appMenu"}});
   });
   it("should call props.onBlock and sendUserActionTelemetry when CTA button is clicked", () => {
     const wrapper = mountAndCheckProps({text: "bar"});
