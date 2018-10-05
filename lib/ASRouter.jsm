@@ -880,19 +880,19 @@ class _ASRouter {
         target.browser.ownerGlobal.OpenBrowserWindow({private: true});
         break;
       case ra.OPEN_URL:
-        target.browser.ownerGlobal.openLinkIn(action.data.url, "tabshifted", {
+        target.browser.ownerGlobal.openLinkIn(action.data.args, "tabshifted", {
           private: false,
           triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}),
         });
         break;
       case ra.OPEN_ABOUT_PAGE:
-        target.browser.ownerGlobal.openTrustedLinkIn(`about:${action.data.page}`, "tab");
+        target.browser.ownerGlobal.openTrustedLinkIn(`about:${action.data.args}`, "tab");
         break;
       case ra.OPEN_APPLICATIONS_MENU:
-        UITour.showMenu(target.browser.ownerGlobal, action.data.target);
+        UITour.showMenu(target.browser.ownerGlobal, action.data.args);
         break;
       case ra.INSTALL_ADDON_FROM_URL:
-        await MessageLoaderUtils.installAddonFromURL(target.browser, action.data.url);
+        await MessageLoaderUtils.installAddonFromURL(target.browser, action.data.args);
         break;
       case ra.SHOW_FIREFOX_ACCOUNTS:
         const url = await FxAccounts.config.promiseSignUpURI("snippets");

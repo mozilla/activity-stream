@@ -753,7 +753,7 @@ describe("ASRouter", () => {
     });
     it("should call openLinkIn with the correct params on OPEN_URL", async () => {
       let [testMessage] = Router.state.messages;
-      testMessage.button_action = {type: "OPEN_URL", data: {url: "some/url.com"}};
+      testMessage.button_action = {type: "OPEN_URL", data: {args: "some/url.com"}};
       const msg = fakeExecuteUserAction(testMessage.button_action);
       await Router.onMessage(msg);
 
@@ -763,7 +763,7 @@ describe("ASRouter", () => {
     });
     it("should call openLinkIn with the correct params on OPEN_ABOUT_PAGE", async () => {
       let [testMessage] = Router.state.messages;
-      testMessage.button_action = {type: "OPEN_ABOUT_PAGE", data: {page: "something"}};
+      testMessage.button_action = {type: "OPEN_ABOUT_PAGE", data: {args: "something"}};
       const msg = fakeExecuteUserAction(testMessage.button_action);
       await Router.onMessage(msg);
 
@@ -793,7 +793,7 @@ describe("ASRouter", () => {
   describe("#onMessage: INSTALL_ADDON_FROM_URL", () => {
     it("should call installAddonFromURL with correct arguments", async () => {
       sandbox.stub(MessageLoaderUtils, "installAddonFromURL").resolves(null);
-      const msg = fakeExecuteUserAction({type: "INSTALL_ADDON_FROM_URL", data: {url: "foo.com"}});
+      const msg = fakeExecuteUserAction({type: "INSTALL_ADDON_FROM_URL", data: {args: "foo.com"}});
 
       await Router.onMessage(msg);
 
@@ -862,7 +862,7 @@ describe("ASRouter", () => {
       globals.set("UITour", {showMenu: showMenuStub});
     });
     it("should call UITour.showMenu with the correct params on OPEN_APPLICATIONS_MENU", async () => {
-      const msg = fakeExecuteUserAction({type: "OPEN_APPLICATIONS_MENU", data: {target: "appMenu"}});
+      const msg = fakeExecuteUserAction({type: "OPEN_APPLICATIONS_MENU", data: {args: "appMenu"}});
       await Router.onMessage(msg);
 
       assert.calledOnce(showMenuStub);
