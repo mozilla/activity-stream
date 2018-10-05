@@ -140,11 +140,19 @@ this.TopStoriesFeed = class TopStoriesFeed {
   affinityProividerSwitcher(...args) {
     const {affinityProviderV2} = this;
     if (affinityProviderV2 && affinityProviderV2.use_v2) {
-      const provider = this.PersonalityProvider(...args, affinityProviderV2.model_keys);
+      const provider = this.PersonalityProvider(...args, {modelKeys: affinityProviderV2.model_keys, dispatch: this.store.dispatch});
       provider.init(this.onPersonalityProviderInit.bind(this));
       return provider;
     }
-    return this.UserDomainAffinityProvider(...args);
+
+    const start = perfService.absNow();
+    const v1Provider = this.UserDomainAffinityProvider(...args);
+    this.store.dispatch(ac.PerfEvent({
+      event: "topstories.domain.affinity.calculation.ms",
+      value: Math.round(perfService.absNow() - start),
+    }));
+
+    return v1Provider;
   }
 
   PersonalityProvider(...args) {
@@ -287,18 +295,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
       return;
     }
 
-    const start = perfService.absNow();
-
     this.affinityProvider = this.affinityProividerSwitcher(
       this.timeSegments,
       this.domainAffinityParameterSets,
       this.maxHistoryQueryResults,
       this.version, undefined);
-
-    this.store.dispatch(ac.PerfEvent({
-      event: "topstories.domain.affinity.calculation.ms",
-      value: Math.round(perfService.absNow() - start),
-    }));
 
     const affinities = this.affinityProvider.getAffinities();
     this.domainAffinitiesLastUpdated = Date.now();

@@ -5,6 +5,9 @@
 
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js", {});
 
+const {actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
+ChromeUtils.defineModuleGetter(this, "perfService", "resource://activity-stream/common/PerfService.jsm");
+
 const {NaiveBayesTextTagger} = ChromeUtils.import("resource://activity-stream/lib/NaiveBayesTextTagger.jsm", {});
 const {NmfTextTagger} = ChromeUtils.import("resource://activity-stream/lib/NmfTextTagger.jsm", {});
 const {RecipeExecutor} = ChromeUtils.import("resource://activity-stream/lib/RecipeExecutor.jsm", {});
@@ -24,8 +27,11 @@ this.PersonalityProvider = class PersonalityProvider {
     maxHistoryQueryResults,
     version,
     scores,
-    modelKeys) {
-    this.modelKeys = modelKeys;
+    v2Params) {
+    this.v2Params = v2Params || {};
+    this.dispatch = this.v2Params.dispatch || (() => {});
+    this.perfStart = perfService.absNow();
+    this.modelKeys = this.v2Params.modelKeys;
     this.timeSegments = timeSegments;
     this.parameterSets = parameterSets;
     this.maxHistoryQueryResults = maxHistoryQueryResults;
@@ -38,16 +44,33 @@ this.PersonalityProvider = class PersonalityProvider {
   async init(callback) {
     this.interestConfig = this.interestConfig || await this.getRecipe();
     if (!this.interestConfig) {
+      this.dispatch(ac.PerfEvent({
+        event: "topstories.domain.personalization.error",
+        value: "Failed: getRecipe",
+      }));
       return;
     }
     this.recipeExecutor = await this.generateRecipeExecutor();
     if (!this.recipeExecutor) {
+      this.dispatch(ac.PerfEvent({
+        event: "topstories.domain.personalization.error",
+        value: "Failed: generateRecipeExecutor",
+      }));
       return;
     }
     this.interestVector = this.interestVector || await this.createInterestVector();
     if (!this.interestVector) {
+      this.dispatch(ac.PerfEvent({
+        event: "topstories.domain.personalization.error",
+        value: "Failed: createInterestVector",
+      }));
       return;
     }
+
+    this.dispatch(ac.PerfEvent({
+      event: "topstories.domain.personalization.calculation.ms",
+      value: Math.round(perfService.absNow() - this.perfStart),
+    }));
 
     this.initialized = true;
     if (callback) {
