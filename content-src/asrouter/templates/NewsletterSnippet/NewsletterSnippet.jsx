@@ -11,18 +11,30 @@ export class NewsletterSnippet extends React.PureComponent {
       expanded: false,
       signupSubmitted: false,
       signupSuccess: false,
+      disableForm: false,
     };
   }
 
   async handleSubmit(event) {
     let json;
+
+    if (this.state.disableForm) {
+      return;
+    }
+
+    event.preventDefault();
+    this.setState({disableForm: true});
+    this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "conversion-subscribe-activation", id: "NEWTAB_FOOTER_BAR_CONTENT"});
+
+    if (this.props.content.form_method.toUpperCase() === "GET") {
+      this.refs.newsletterForm.submit();
+      return;
+    }
+
     const fetchConfig = {
       body: new FormData(this.refs.newsletterForm),
       method: "POST",
     };
-
-    event.preventDefault();
-    this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "conversion-subscribe-activation", id: "NEWTAB_FOOTER_BAR_CONTENT"});
 
     try {
       const fetchRequest = new Request(this.refs.newsletterForm.action, fetchConfig);
@@ -39,6 +51,8 @@ export class NewsletterSnippet extends React.PureComponent {
       this.setState({signupSuccess: false, signupSubmitted: true});
       this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "subscribe-error", id: "NEWTAB_FOOTER_BAR_CONTENT"});
     }
+
+    this.setState({disableForm: false});
   }
 
   expandSnippet() {
@@ -60,7 +74,7 @@ export class NewsletterSnippet extends React.PureComponent {
   }
 
   renderFormPrivacyNotice() {
-    return (<label className="privacy-notice" htmlFor="id_privacy">
+    return this.props.privacyNoticeRichText && (<label className="privacy-notice" htmlFor="id_privacy">
         <p>
           <input type="checkbox" id="id_privacy" name="privacy" required="required" />
           <span>{this.props.privacyNoticeRichText}</span>
@@ -85,7 +99,7 @@ export class NewsletterSnippet extends React.PureComponent {
         <div className="message">
           <p>{content.scene2_text}</p>
         </div>
-        <form action={content.form_action} method="POST" onSubmit={this.handleSubmit} ref="newsletterForm">
+        <form action={content.form_action} method={content.form_method} onSubmit={this.handleSubmit} ref="newsletterForm">
           {this.renderHiddenFormInputs()}
           <div>
             <input type="email" name="email" required="required" placeholder={content.scene2_email_placeholder_text} autoFocus={true} />

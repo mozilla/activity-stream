@@ -14,6 +14,7 @@ import {SimpleSnippet} from "./templates/SimpleSnippet/SimpleSnippet";
 const SnippetComponents = {
   simple_snippet: SimpleSnippet,
   newsletter_snippet: NewsletterSnippet,
+  fxa_signup_snippet: NewsletterSnippet,
 };
 
 const INCOMING_MESSAGE_NAME = "ASRouter:parent-to-child";
