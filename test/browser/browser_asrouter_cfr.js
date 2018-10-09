@@ -30,8 +30,8 @@ function trigger_cfr_panel(browser, trigger, action) {
             },
             action: {
               type: action.type,
-              data: {url: action.url}
-            }
+              data: {url: action.url},
+            },
           },
           secondary: {
             label: {
@@ -42,6 +42,7 @@ function trigger_cfr_panel(browser, trigger, action) {
         },
       },
     },
+    // Use the real AS dispatch method to trigger real notifications
     ASRouter.dispatch
   );
 }
@@ -52,6 +53,7 @@ add_task(async function test_cfr_notification_show() {
   await BrowserTestUtils.loadURI(browser, "http://example.com/");
   await BrowserTestUtils.browserLoaded(browser, false, "http://example.com/");
 
+  // Passing in a fake action type will result in the action being ignored
   const response = await trigger_cfr_panel(browser, "example.com", {type: "FOO"});
   Assert.ok(response, "Should return true if addRecommendation checks were successful");
 
@@ -75,9 +77,10 @@ add_task(async function test_cfr_notification_show() {
 });
 
 add_task(async function test_cfr_addon_install() {
-  // addRecommendation checks that scheme starts with http and host matches
+  // Prevent fetching the real addon url and making a network request
   CFRPageActions._maybeAddAddonInstallURL = x => x;
 
+  // addRecommendation checks that scheme starts with http and host matches
   const browser = gBrowser.selectedBrowser;
   await BrowserTestUtils.loadURI(browser, "http://example.com/");
   await BrowserTestUtils.browserLoaded(browser, false, "http://example.com/");
@@ -101,7 +104,9 @@ add_task(async function test_cfr_addon_install() {
 
   await BrowserTestUtils.waitForEvent(PopupNotifications.panel, "popupshown");
 
-  let notification = PopupNotifications.panel.childNodes[0];
+  let [notification] = PopupNotifications.panel.childNodes;
+  // Trying to install the addon will trigger a progress popup or an error popup if
+  // running the test multiple times in a row
   Assert.ok(notification.id === "addon-progress-notification" ||
     notification.id === "addon-install-failed-notification", "Should try to install the addon");
 });
