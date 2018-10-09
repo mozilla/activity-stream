@@ -496,7 +496,7 @@ This reports the user's interaction with those Pocket tiles.
 
 These pings are captured to record performance related events i.e. how long certain operations take to execute.
 
-### Domain affinity calculation
+### Domain affinity calculation v1
 
 This reports the duration of the domain affinity calculation in milliseconds.
 
@@ -509,6 +509,150 @@ This reports the duration of the domain affinity calculation in milliseconds.
   "user_prefs": 7,
   "event": "topstories.domain.affinity.calculation.ms",
   "value": 43
+}
+```
+
+### Domain affinity calculation v2
+
+These report the duration of the domain affinity v2 calculations in milliseconds.
+
+#### Total calculation in ms
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_TOTAL_DURATION",
+  "value": 43
+}
+```
+
+#### getRecipe calculation in ms
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_GET_RECIPE_DURATION",
+  "value": 43
+}
+```
+
+#### RecipeExecutor calculation in ms
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_RECIPE_EXECUTOR_DURATION",
+  "value": 43
+}
+```
+
+#### taggers calculation in ms
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_TAGGERS_DURATION",
+  "value": 43
+}
+```
+
+#### createInterestVector calculation in ms
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_CREATE_INTEREST_VECTOR_DURATION",
+  "value": 43
+}
+```
+
+#### calculateItemRelevanceScore calculation in ms
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_ITEM_RELEVANCE_SCORE_DURATION",
+  "value": 43
+}
+```
+
+### History size used for v2 calculation
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_HISTORY_SIZE",
+}
+```
+
+### Error events for v2 calculation
+
+These report any failures during domain affinity v2 calculations, and where it failed.
+
+#### getRecipe error
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_GET_RECIPE_ERROR"
+}
+```
+
+#### generateRecipeExecutor error
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_GENERATE_RECIPE_EXECUTOR_ERROR"
+}
+```
+
+#### createInterestVector error
+
+```js
+{
+  "action": "activity_stream_performance_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": "PERSONALIZATION_V2_CREATE_INTEREST_VECTOR_ERROR"
 }
 ```
 
