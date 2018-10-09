@@ -610,6 +610,7 @@ These report the duration of the domain affinity v2 calculations in milliseconds
   "locale": "en-US",
   "user_prefs": 7,
   "event": "PERSONALIZATION_V2_HISTORY_SIZE",
+  "value": 43
 }
 ```
 
