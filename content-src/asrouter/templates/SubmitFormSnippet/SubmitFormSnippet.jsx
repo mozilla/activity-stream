@@ -110,13 +110,22 @@ export class SubmitFormSnippet extends React.PureComponent {
       </SnippetBase>);
   }
 
+  getFirstSceneContent() {
+    return Object.keys(this.props.content).filter(key => key.includes("scene1")).reduce((acc, key) => {
+      acc[key.substr(7)] = this.props.content[key];
+      return acc;
+    }, {});
+  }
+
   render() {
+    const content = {...this.props.content, ...this.getFirstSceneContent()};
+
     if (this.state.signupSubmitted) {
       return this.renderSignupSubmitted();
     }
     if (this.state.expanded) {
       return this.renderSignupView();
     }
-    return <SimpleSnippet {...this.props} onButtonClick={this.expandSnippet} />;
+    return <SimpleSnippet {...this.props} content={content} onButtonClick={this.expandSnippet} />;
   }
 }
