@@ -1,5 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content-src/lib/init-store";
+import {EOYSnippet} from "./templates/EOYSnippet/EOYSnippet";
 import {generateMessages} from "./rich-text-strings";
 import {ImpressionsWrapper} from "./components/ImpressionsWrapper/ImpressionsWrapper";
 import {LocalizationProvider} from "fluent-react";
@@ -16,6 +17,7 @@ const SnippetComponents = {
   newsletter_snippet: props => <SubmitFormSnippet {...props} form_method="POST" />,
   fxa_signup_snippet: props => <SubmitFormSnippet {...props} form_method="GET" />,
   send_to_device_snippet: SendToDeviceSnippet,
+  eoy_snippet: EOYSnippet,
 };
 
 const INCOMING_MESSAGE_NAME = "ASRouter:parent-to-child";

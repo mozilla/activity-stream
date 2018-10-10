@@ -1,0 +1,47 @@
+.EOYSnippetForm {
+  margin-top: 12px;
+  align-self: start;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+
+  .donation-amount,
+  .donation-form-url {
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 5px 14px;
+    border-radius: 2px;
+  }
+
+  .donation-amount {
+    margin-inline-end: 18px;
+    border: 1px solid var(--newtab-border-primary-color);
+    background: var(--newtab-button-secondary-color);
+    cursor: pointer;
+  }
+
+  input {
+    &[type='radio'] {
+      display: none;
+
+      &:checked+.donation-amount {
+        background: $grey-90-70;
+        color: $white;
+        border: 1px solid var(--newtab-border-primary-color);
+      }
+    }
+  }
+
+  .monthly-checkbox-container {
+    width: 100%;
+  }
+
+  .donation-form-url {
+    margin-inline-start: 18px;
+    background: var(--newtab-button-primary-color);
+    border: solid 1px var(--newtab-button-primary-color);
+    color: $white;
+    align-self: flex-end;
+    display: flex;
+  }
+}

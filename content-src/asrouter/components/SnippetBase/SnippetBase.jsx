@@ -39,7 +39,7 @@ export class SnippetBase extends React.PureComponent {
 
     const containerClassName = `SnippetBaseContainer${props.className ? ` ${props.className}` : ""}`;
 
-    return (<div className={containerClassName}>
+    return (<div className={containerClassName} style={this.props.textStyle}>
       <div className="innerWrapper">
         {props.children}
       </div>

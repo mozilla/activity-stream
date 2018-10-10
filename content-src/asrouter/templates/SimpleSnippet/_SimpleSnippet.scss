@@ -25,6 +25,10 @@
     margin: 0;
   }
 
+  .icon {
+    align-self: flex-start;
+  }
+
   &.tall .icon {
     margin-inline-end: 20px;
   }

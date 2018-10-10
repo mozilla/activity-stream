@@ -63,10 +63,11 @@ export class SimpleSnippet extends React.PureComponent {
   render() {
     const {props} = this;
     const className = `SimpleSnippet${props.content.tall ? " tall" : ""}`;
-    return (<SnippetBase {...props} className={className}>
+    return (<SnippetBase {...props} className={className} textStyle={this.props.textStyle}>
       <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" />
       <div>
         {this.renderTitleIcon()} {this.renderTitle()} <p className="body">{this.renderText()}</p>
+        {this.props.extraContent}
       </div>
       {<div>{this.renderButton()}</div>}
     </SnippetBase>);
