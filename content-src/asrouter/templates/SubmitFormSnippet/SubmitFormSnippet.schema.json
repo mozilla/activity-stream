@@ -25,12 +25,6 @@
         {"description": "snippet title displayed before snippet text"}
       ]
     },
-    "scene2_text": {
-      "allOf": [
-        {"$ref": "#/definitions/richText"},
-        {"description": "Main body text of snippet. HTML subset allowed: i, b, u, strong, em, br"}
-      ]
-    },
     "scene1_text": {
       "allOf": [
         {"$ref": "#/definitions/richText"},
@@ -62,10 +56,6 @@
     "error_text": {
       "type": "string",
       "description": "Message shown if registration failed."
-    },
-    "scene2_text": {
-      "type": "string",
-      "description": "Main body of the snippet in the second scene."
     },
     "scene2_email_placeholder_text": {
       "type": "string",

@@ -268,11 +268,11 @@ export class ASRouterUISurface extends React.PureComponent {
         document={this.props.document}>
           <LocalizationProvider messages={generateMessages({
             privacy_notice: content.scene2_privacy_html,
-            snippet_text: content.text,
+            snippet_text: content.text || content.scene1_text,
           })}>
             <SnippetComponent
               {...this.state.message}
-              richText={<RichText text={this.state.message.content.text}
+              richText={<RichText text={content.text || content.scene1_text}
                                   localization_id="snippet_text"
                                   links={this.state.message.content.links}
                                   sendClick={this.sendClick} />}

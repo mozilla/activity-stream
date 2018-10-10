@@ -89,7 +89,7 @@ export class SubmitFormSnippet extends React.PureComponent {
     return (<SimpleSnippet className={this.props.className}
       onButtonClick={onButtonClick}
       provider={this.props.provider}
-      content={{button_label: this.props.content.button_label, text: message}} />);
+      content={{button_label: this.props.content.scene1_button_label, text: message}} />);
   }
 
   renderSignupView() {
