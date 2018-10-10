@@ -680,6 +680,7 @@ describe("Top Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
+      instance.dispatchRelevanceScore = () => {};
 
       const response = {
         "settings": {"spocsPerNewTabs": 0.5},
@@ -740,6 +741,7 @@ describe("Top Stories Feed", () => {
     });
     it("should delay inserting spoc if stories haven't been fetched", async () => {
       let fetchStub = globals.sandbox.stub();
+      instance.dispatchRelevanceScore = () => {};
       instance.dispatchSpocDone = () => {};
       sectionsManagerStub.sections.set("topstories", {
         options: {
@@ -823,6 +825,7 @@ describe("Top Stories Feed", () => {
     });
     it("should not insert spoc if user opted out", async () => {
       let fetchStub = globals.sandbox.stub();
+      instance.dispatchRelevanceScore = () => {};
       instance.dispatchSpocDone = () => {};
       sectionsManagerStub.sections.set("topstories", {
         options: {
@@ -980,6 +983,7 @@ describe("Top Stories Feed", () => {
     });
     it("should maintain frequency caps when inserting spocs", async () => {
       let fetchStub = globals.sandbox.stub();
+      instance.dispatchRelevanceScore = () => {};
       instance.dispatchSpocDone = () => {};
       sectionsManagerStub.sections.set("topstories", {
         options: {
@@ -1047,6 +1051,7 @@ describe("Top Stories Feed", () => {
     });
     it("should maintain client-side MAX_LIFETIME_CAP", async () => {
       let fetchStub = globals.sandbox.stub();
+      instance.dispatchRelevanceScore = () => {};
       instance.dispatchSpocDone = () => {};
       sectionsManagerStub.sections.set("topstories", {
         options: {

@@ -164,12 +164,10 @@ this.PersonalityProvider = class PersonalityProvider {
     let beginTimeSecs = endTimeSecs - this.interestConfig.history_limit_secs;
     let history = await this.fetchHistory(this.interestConfig.history_required_fields, beginTimeSecs, endTimeSecs);
 
-    if (history) {
-      this.dispatch(ac.PerfEvent({
-        event: "PERSONALIZATION_V2_HISTORY_SIZE",
-        value: history.length || 0,
-      }));
-    }
+    this.dispatch(ac.PerfEvent({
+      event: "PERSONALIZATION_V2_HISTORY_SIZE",
+      value: history.length,
+    }));
 
     for (let historyRec of history) {
       let ivItem = this.recipeExecutor.executeRecipe(
@@ -207,7 +205,6 @@ this.PersonalityProvider = class PersonalityProvider {
     if (!this.initialized) {
       return pocketItem.item_score || 1;
     }
-    const scoreStart = perfService.absNow();
     let scorableItem = this.recipeExecutor.executeRecipe(
       pocketItem,
       this.interestConfig.item_to_rank_builder);
@@ -228,11 +225,6 @@ this.PersonalityProvider = class PersonalityProvider {
     if (rankingVector === null) {
       return -1;
     }
-
-    this.dispatch(ac.PerfEvent({
-      event: "PERSONALIZATION_V2_ITEM_RELEVANCE_SCORE_DURATION",
-      value: Math.round(perfService.absNow() - scoreStart),
-    }));
     return rankingVector.score;
   }
 

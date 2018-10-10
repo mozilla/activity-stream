@@ -218,12 +218,20 @@ this.TopStoriesFeed = class TopStoriesFeed {
     }
   }
 
+  dispatchRelevanceScore(start) {
+    this.store.dispatch(ac.PerfEvent({
+      event: "PERSONALIZATION_V2_ITEM_RELEVANCE_SCORE_DURATION",
+      value: Math.round(perfService.absNow() - start),
+    }));
+  }
+
   transform(items) {
     if (!items) {
       return [];
     }
 
-    return items
+    const scoreStart = perfService.absNow();
+    const calcResult = items
       .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.url}))
       .map(s => ({
         "guid": s.id,
@@ -241,6 +249,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
         "spoc_meta": this.show_spocs ? {campaign_id: s.campaign_id, caps: s.caps} : {},
       }))
       .sort(this.personalized ? this.compareScore : (a, b) => 0);
+
+    this.dispatchRelevanceScore(scoreStart);
+    return calcResult;
   }
 
   async fetchTopics() {
