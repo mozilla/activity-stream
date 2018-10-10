@@ -267,7 +267,7 @@ export class ASRouterUISurface extends React.PureComponent {
         // This helps with testing
         document={this.props.document}>
           <LocalizationProvider messages={generateMessages({
-            privacy_notice: content.privacy_notice_text,
+            privacy_notice: content.scene2_privacy_html,
             snippet_text: content.text,
           })}>
             <SnippetComponent

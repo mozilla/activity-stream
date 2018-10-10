@@ -1,14 +1,13 @@
 import {mount} from "enzyme";
-import {SubmitFormSnippet} from "content-src/asrouter/templates/SubmitFormSnippet/SubmitFormSnippet.jsx";
 import React from "react";
 import schema from "content-src/asrouter/templates/SubmitFormSnippet/SubmitFormSnippet.schema.json";
+import {SubmitFormSnippet} from "content-src/asrouter/templates/SubmitFormSnippet/SubmitFormSnippet.jsx";
 
 const DEFAULT_CONTENT = {
   text: "foo",
   scene2_text: "bar",
   button_label: "Sign Up",
   form_action: "foo.com",
-  form_method: "POST",
   hidden_inputs: {"foo": "foo"},
 };
 
@@ -29,6 +28,7 @@ describe("SubmitFormSnippet", () => {
       onDismiss: sandbox.stub(),
       sendUserActionTelemetry: sandbox.stub(),
       onAction: sandbox.stub(),
+      form_method: "POST",
     };
     assert.jsonSchema(props.content, schema);
     return mount(<SubmitFormSnippet {...props} />);
@@ -181,7 +181,7 @@ describe("SubmitFormSnippet", () => {
     });
     it("should not call fetch if form_method is GET", async () => {
       sandbox.stub(window, "fetch").resolves(fetchOk);
-      wrapper = mountAndCheckProps({form_method: "GET"});
+      wrapper.setProps({form_method: "GET"});
       wrapper.setState({expanded: true});
 
       await wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});

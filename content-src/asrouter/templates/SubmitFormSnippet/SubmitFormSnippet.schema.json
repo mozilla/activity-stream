@@ -43,11 +43,6 @@
       "type": "string",
       "description": "Endpoint to submit form data."
     },
-    "form_method": {
-      "type": "string",
-      "enum": ["POST", "GET"],
-      "description": "Method used to submit the form"
-    },
     "success_text": {
       "type": "string",
       "description": "Message shown on successful registration."
@@ -110,7 +105,7 @@
     }
   },
   "additionalProperties": false,
-  "required": ["text", "form_action", "form_method", "scene2_text", "hidden_inputs"],
+  "required": ["text", "form_action", "scene2_text", "hidden_inputs"],
   "dependencies": {
     "button_color": ["button_label"],
     "button_background_color": ["button_label"]

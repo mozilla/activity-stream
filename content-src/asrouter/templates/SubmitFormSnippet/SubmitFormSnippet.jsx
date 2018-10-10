@@ -26,7 +26,7 @@ export class SubmitFormSnippet extends React.PureComponent {
     this.setState({disableForm: true});
     this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "conversion-subscribe-activation", id: "NEWTAB_FOOTER_BAR_CONTENT"});
 
-    if (this.props.content.form_method.toUpperCase() === "GET") {
+    if (this.props.form_method.toUpperCase() === "GET") {
       this.refs.form.submit();
       return;
     }
@@ -99,7 +99,7 @@ export class SubmitFormSnippet extends React.PureComponent {
         <div className="message">
           <p>{content.scene2_text}</p>
         </div>
-        <form action={content.form_action} method={content.form_method} onSubmit={this.handleSubmit} ref="form">
+        <form action={content.form_action} method={this.props.form_method} onSubmit={this.handleSubmit} ref="form">
           {this.renderHiddenFormInputs()}
           <div>
             <input type="email" name="email" required="required" placeholder={content.scene2_email_placeholder_text} autoFocus={true} />
