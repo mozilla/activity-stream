@@ -44,31 +44,22 @@ this.PersonalityProvider = class PersonalityProvider {
   async init(callback) {
     this.interestConfig = this.interestConfig || await this.getRecipe();
     if (!this.interestConfig) {
-      this.dispatch(ac.PerfEvent({
-        event: "topstories.domain.personalization.error",
-        value: "Failed: getRecipe",
-      }));
+      this.dispatch(ac.PerfEvent({event: "PERSONALIZATION_V2_GET_RECIPE_ERROR"}));
       return;
     }
     this.recipeExecutor = await this.generateRecipeExecutor();
     if (!this.recipeExecutor) {
-      this.dispatch(ac.PerfEvent({
-        event: "topstories.domain.personalization.error",
-        value: "Failed: generateRecipeExecutor",
-      }));
+      this.dispatch(ac.PerfEvent({event: "PERSONALIZATION_V2_GENERATE_RECIPE_EXECUTOR_ERROR"}));
       return;
     }
     this.interestVector = this.interestVector || await this.createInterestVector();
     if (!this.interestVector) {
-      this.dispatch(ac.PerfEvent({
-        event: "topstories.domain.personalization.error",
-        value: "Failed: createInterestVector",
-      }));
+      this.dispatch(ac.PerfEvent({event: "PERSONALIZATION_V2_CREATE_INTEREST_VECTOR_ERROR"}));
       return;
     }
 
     this.dispatch(ac.PerfEvent({
-      event: "topstories.domain.personalization.calculation.ms",
+      event: "PERSONALIZATION_V2_TOTAL_DURATION",
       value: Math.round(perfService.absNow() - this.perfStart),
     }));
 
@@ -89,7 +80,12 @@ this.PersonalityProvider = class PersonalityProvider {
    */
   async getRecipe() {
     if (!this.recipe || !this.recipe.length) {
+      const start = perfService.absNow();
       this.recipe = await this.getFromRemoteSettings("personality-provider-recipe");
+      this.dispatch(ac.PerfEvent({
+        event: "PERSONALIZATION_V2_GET_RECIPE_DURATION",
+        value: Math.round(perfService.absNow() - start),
+      }));
     }
     return this.recipe[0];
   }
@@ -100,31 +96,39 @@ this.PersonalityProvider = class PersonalityProvider {
    * The Recipe determines the order and specifics of which the actions are called.
    */
   async generateRecipeExecutor() {
-    if (this.taggers) {
-      return new RecipeExecutor(this.taggers.nbTaggers, this.taggers.nmfTaggers);
-    }
+    if (!this.taggers) {
+      const startTaggers = perfService.absNow();
+      let nbTaggers = [];
+      let nmfTaggers = {};
+      const models = await this.getFromRemoteSettings("personality-provider-models");
 
-    let nbTaggers = [];
-    let nmfTaggers = {};
-    const models = await this.getFromRemoteSettings("personality-provider-models");
-
-    if (models.length === 0) {
-      return null;
-    }
-
-    for (let model of models) {
-      if (!model || !this.modelKeys.includes(model.key)) {
-        continue;
+      if (models.length === 0) {
+        return null;
       }
-      if (model.data.model_type === "nb") {
-        nbTaggers.push(new NaiveBayesTextTagger(model.data));
-      } else if (model.data.model_type === "nmf") {
-        nmfTaggers[model.data.parent_tag] = new NmfTextTagger(model.data);
-      }
-    }
 
-    this.taggers = {nbTaggers, nmfTaggers};
-    return new RecipeExecutor(nbTaggers, nmfTaggers);
+      for (let model of models) {
+        if (!model || !this.modelKeys.includes(model.key)) {
+          continue;
+        }
+        if (model.data.model_type === "nb") {
+          nbTaggers.push(new NaiveBayesTextTagger(model.data));
+        } else if (model.data.model_type === "nmf") {
+          nmfTaggers[model.data.parent_tag] = new NmfTextTagger(model.data);
+        }
+      }
+      this.dispatch(ac.PerfEvent({
+        event: "PERSONALIZATION_V2_TAGGERS_DURATION",
+        value: Math.round(perfService.absNow() - startTaggers),
+      }));
+      this.taggers = {nbTaggers, nmfTaggers};
+    }
+    const startRecipeExecutor = perfService.absNow();
+    const recipeExecutor = new RecipeExecutor(this.taggers.nbTaggers, this.taggers.nmfTaggers);
+    this.dispatch(ac.PerfEvent({
+      event: "PERSONALIZATION_V2_RECIPE_EXECUTOR_DURATION",
+      value: Math.round(perfService.absNow() - startRecipeExecutor),
+    }));
+    return recipeExecutor;
   }
 
   /**
@@ -154,10 +158,18 @@ this.PersonalityProvider = class PersonalityProvider {
    * describes the topics the user frequently browses.
    */
   async createInterestVector() {
+    const start = perfService.absNow();
     let interestVector = {};
     let endTimeSecs = ((new Date()).getTime() / 1000);
     let beginTimeSecs = endTimeSecs - this.interestConfig.history_limit_secs;
     let history = await this.fetchHistory(this.interestConfig.history_required_fields, beginTimeSecs, endTimeSecs);
+
+    if (history) {
+      this.dispatch(ac.PerfEvent({
+        event: "PERSONALIZATION_V2_HISTORY_SIZE",
+        value: history.length || 0,
+      }));
+    }
 
     for (let historyRec of history) {
       let ivItem = this.recipeExecutor.executeRecipe(
@@ -175,9 +187,15 @@ this.PersonalityProvider = class PersonalityProvider {
       }
     }
 
-    return this.recipeExecutor.executeRecipe(
+    const finalResult = this.recipeExecutor.executeRecipe(
       interestVector,
       this.interestConfig.interest_finalizer);
+
+    this.dispatch(ac.PerfEvent({
+      event: "PERSONALIZATION_V2_CREATE_INTEREST_VECTOR_DURATION",
+      value: Math.round(perfService.absNow() - start),
+    }));
+    return finalResult;
   }
 
   /**
@@ -189,6 +207,7 @@ this.PersonalityProvider = class PersonalityProvider {
     if (!this.initialized) {
       return pocketItem.item_score || 1;
     }
+    const scoreStart = perfService.absNow();
     let scorableItem = this.recipeExecutor.executeRecipe(
       pocketItem,
       this.interestConfig.item_to_rank_builder);
@@ -209,6 +228,11 @@ this.PersonalityProvider = class PersonalityProvider {
     if (rankingVector === null) {
       return -1;
     }
+
+    this.dispatch(ac.PerfEvent({
+      event: "PERSONALIZATION_V2_ITEM_RELEVANCE_SCORE_DURATION",
+      value: Math.round(perfService.absNow() - scoreStart),
+    }));
     return rankingVector.score;
   }
 

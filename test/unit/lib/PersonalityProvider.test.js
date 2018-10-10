@@ -249,16 +249,16 @@ describe("Personality Provider", () => {
     });
   });
   describe("#recipe", () => {
-    it("should get and fetch a new recipe on first getRecipe", () => {
-      sinon.stub(instance, "getFromRemoteSettings");
-      instance.getRecipe();
+    it("should get and fetch a new recipe on first getRecipe", async () => {
+      sinon.stub(instance, "getFromRemoteSettings").returns(Promise.resolve([]));
+      await instance.getRecipe();
       assert.calledOnce(instance.getFromRemoteSettings);
       assert.calledWith(instance.getFromRemoteSettings, "personality-provider-recipe");
     });
-    it("should not fetch a recipe on getRecipe if cached", () => {
-      sinon.stub(instance, "getFromRemoteSettings");
+    it("should not fetch a recipe on getRecipe if cached", async () => {
+      sinon.stub(instance, "getFromRemoteSettings").returns(Promise.resolve());
       instance.recipe = ["blah"];
-      instance.getRecipe();
+      await instance.getRecipe();
       assert.notCalled(instance.getFromRemoteSettings);
     });
   });
