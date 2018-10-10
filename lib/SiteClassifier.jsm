@@ -21,14 +21,36 @@ function _hasParams(criteria, params) {
 /**
  * classifySite
  * Classifies a given URL into a category based on classification data from RemoteSettings.
+ * The data from remote settings can match a category by one of the following:
+ *  - match the exact URL
+ *  - match the hostname
+ *  - match query parameter(s), and optionally their values
+ *  - match both hostname and query parameter(s)
  *
+ * The data looks like:
+ * [{
+ *    "type": "hostname-and-params-match",
+ *    "criteria": [
+ *      {
+ *        "url": "https://matchurl.com",
+ *        "hostname": "matchhostname.com",
+ *        "params": [
+ *          {
+ *            "key": "matchparam",
+ *            "value": "matchvalue",
+ *          },
+ *        ],
+ *      },
+ *    ],
+ *    "weight": 300,
+ *  },...]
  */
 async function classifySite(url, RS = RemoteSettings) {
   let category = "other";
   let parsedURL;
 
   // Try to parse the url.
-  for (let _url of [url, `http://${url}`]) {
+  for (let _url of [url, `https://${url}`]) {
     try {
       parsedURL = new URL(_url);
       break;
@@ -39,6 +61,8 @@ async function classifySite(url, RS = RemoteSettings) {
     // If we parsed successfully, find a match.
     const hostname = parsedURL.hostname.replace(/^www\./i, "");
     const params = parsedURL.searchParams;
+    // NOTE: there will be an initial/default local copy of the data in m-c.
+    // Therefore, this should never return an empty list [].
     const siteTypes = await RS("sites-classification").get();
     const sortedSiteTypes = siteTypes.sort((x, y) => y.weight - x.weight);
     for (let type of sortedSiteTypes) {

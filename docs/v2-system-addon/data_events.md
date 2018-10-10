@@ -33,16 +33,14 @@ Two encoded integers for about:newtab and about:home are combined in a bitwise f
 
 ## Page takeover ping
 
-This is a ping indicating whether Activity Stream is currently being used on about:home and about:newtab. If either about:home or about:newtab is set to a custom URL, the category of the URL is included. It's submitted once upon Activity Stream initialization.
+This ping is submitted once upon Activity Stream initialization if either about:home or about:newtab are set to a custom URL. It sends the category of the custom URL.
 
 ```js
 {
   "event": "PAGE_TAKEOVER_DATA",
   "value": {
-    "home_pref": ["default", "about-blank", "web-extension", "custom-url"],
-    "home_url_category": [undefined, "search-engine", "search-engine-mozilla-tag", "search-engine-other-tag", "news-portal", "ecommerce", "social-media", "other"],
-    "newtab_pref": ["default", "about-blank", "web-extension", "custom-url"],
-    "newtab_url_category": [undefined, "search-engine", "search-engine-mozilla-tag", "search-engine-other-tag", "news-portal", "ecommerce", "social-media", "other"],,
+    "home_url_category": ["search-engine" | "search-engine-mozilla-tag" | "search-engine-other-tag" | "news-portal" | "ecommerce" | "social-media", "other"],
+    "newtab_url_category": ["search-engine" | "search-engine-mozilla-tag" | "search-engine-other-tag" | "news-portal" | "ecommerce" | "social-media" | "other"],
   },
 
   // Basic metadata

@@ -491,49 +491,33 @@ this.TelemetryFeed = class TelemetryFeed {
 
   async sendPageTakeoverData() {
     if (this.telemetryEnabled) {
-      let newTabSetting;
-      let newTabUrlCategory;
-      let homeSetting;
-      let homeUrlCategory;
+      const value = {};
 
-      // Check whether or not about:home and about:newtab have been overridden at this point.
-      if (Services.prefs.getBoolPref("browser.newtabpage.enabled") && !aboutNewTabService.overridden) {
-        newTabSetting = "default";
-      } else if (aboutNewTabService.newTabURL.startsWith("moz-extension://")) {
-        newTabSetting = "web-extension";
-      } else if (!Services.prefs.getBoolPref("browser.newtabpage.enabled")) {
-        newTabSetting = "about-blank";
-      } else {
-        newTabSetting = "custom-url";
-        newTabUrlCategory = await this._classifySite(aboutNewTabService.newTabURL);
+      // Check whether or not about:home and about:newtab are set to a custom URL.
+      // If so, classify them.
+      if (Services.prefs.getBoolPref("browser.newtabpage.enabled") &&
+          aboutNewTabService.overridden &&
+          !aboutNewTabService.newTabURL.startsWith("moz-extension://")) {
+        value.newtab_url_category = await this._classifySite(aboutNewTabService.newTabURL);
       }
 
       const homePageURL = HomePage.get();
-      if (homePageURL === "about:home") {
-        homeSetting = "default";
-      } else if (homePageURL === "about:blank") {
-        homeSetting = "about-blank";
-      } else if (homePageURL.startsWith("moz-extension://")) {
-        homeSetting = "web-extension";
-      } else {
-        homeSetting = "custom-url";
-        homeUrlCategory = await this._classifySite(homePageURL);
+      if (!["about:home", "about:blank"].includes(homePageURL) &&
+          !homePageURL.startsWith("moz-extension://")) {
+        value.home_url_category = await this._classifySite(homePageURL);
       }
 
-      const event = Object.assign(
-        this.createPing(),
-        {
-          action: "activity_stream_user_event",
-          event: "PAGE_TAKEOVER_DATA",
-          value: {
-            "home_pref": homeSetting,
-            "newtab_pref": newTabSetting,
-            "home_url_category": homeUrlCategory,
-            "newtab_url_category": newTabUrlCategory,
+      if (value.newtab_url_category || value.home_url_category) {
+        const event = Object.assign(
+          this.createPing(),
+          {
+            action: "activity_stream_user_event",
+            event: "PAGE_TAKEOVER_DATA",
+            value,
           },
-        },
-      );
-      this.sendEvent(event);
+        );
+        this.sendEvent(event);
+      }
     }
   }
 

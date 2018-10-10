@@ -93,7 +93,7 @@ describe("SiteClassifier", () => {
   function RemoteSettings() {
     return {
       get() {
-        return Promise.resolve(FAKE_CLASSIFIER_DATA.sort((x, y) => y.weight - x.weight));
+        return Promise.resolve(FAKE_CLASSIFIER_DATA);
       },
     };
   }

@@ -975,60 +975,6 @@ describe("TelemetryFeed", () => {
       globals.set("Services", Object.assign({}, Services, {prefs: {getBoolPref: key => fakePrefs[key]}}));
       // Services.prefs = {getBoolPref: key => fakePrefs[key]};
     });
-    it("should send correct event data for default prefs", async () => {
-      instance._prefs.set(TELEMETRY_PREF, true);
-      const sendEvent = sandbox.stub(instance, "sendEvent");
-
-      await instance.sendPageTakeoverData();
-      assert.calledOnce(sendEvent);
-      assert.equal(sendEvent.firstCall.args[0].event, "PAGE_TAKEOVER_DATA");
-      assert.deepEqual(sendEvent.firstCall.args[0].value, {
-        home_pref: "default",
-        home_url_category: undefined,
-        newtab_pref: "default",
-        newtab_url_category: undefined,
-      });
-    });
-    it("should send correct event data for about:{home,newtab} set to about:blank", async () => {
-      fakePrefs["browser.newtabpage.enabled"] = false;
-      globals.set("aboutNewTabService", {
-        overridden: true,
-        newTabURL: "",
-      });
-      fakeHomePageUrl = "about:blank";
-      instance._prefs.set(TELEMETRY_PREF, true);
-      const sendEvent = sandbox.stub(instance, "sendEvent");
-
-      await instance.sendPageTakeoverData();
-      assert.calledOnce(sendEvent);
-      assert.equal(sendEvent.firstCall.args[0].event, "PAGE_TAKEOVER_DATA");
-      assert.deepEqual(sendEvent.firstCall.args[0].value, {
-        home_pref: "about-blank",
-        home_url_category: undefined,
-        newtab_pref: "about-blank",
-        newtab_url_category: undefined,
-      });
-    });
-    it("should send correct event data for about:{home,newtab} set to by web extensions", async () => {
-      fakePrefs["browser.newtabpage.enabled"] = true;
-      globals.set("aboutNewTabService", {
-        overridden: true,
-        newTabURL: "moz-extension://foo-bar",
-      });
-      fakeHomePageUrl = "moz-extension://foo-bar";
-      instance._prefs.set(TELEMETRY_PREF, true);
-      const sendEvent = sandbox.stub(instance, "sendEvent");
-
-      await instance.sendPageTakeoverData();
-      assert.calledOnce(sendEvent);
-      assert.equal(sendEvent.firstCall.args[0].event, "PAGE_TAKEOVER_DATA");
-      assert.deepEqual(sendEvent.firstCall.args[0].value, {
-        home_pref: "web-extension",
-        home_url_category: undefined,
-        newtab_pref: "web-extension",
-        newtab_url_category: undefined,
-      });
-    });
     it("should send correct event data for about:{home,newtab} set to custom URL", async () => {
       globals.set("aboutNewTabService", {
         overridden: true,
@@ -1043,11 +989,16 @@ describe("TelemetryFeed", () => {
       assert.calledOnce(sendEvent);
       assert.equal(sendEvent.firstCall.args[0].event, "PAGE_TAKEOVER_DATA");
       assert.deepEqual(sendEvent.firstCall.args[0].value, {
-        home_pref: "custom-url",
         home_url_category: "other",
-        newtab_pref: "custom-url",
         newtab_url_category: "other",
       });
+    });
+    it("should not send an event if neither about:{home,newtab} are set to custom URL", async () => {
+      instance._prefs.set(TELEMETRY_PREF, true);
+      const sendEvent = sandbox.stub(instance, "sendEvent");
+
+      await instance.sendPageTakeoverData();
+      assert.notCalled(sendEvent);
     });
   });
 });
