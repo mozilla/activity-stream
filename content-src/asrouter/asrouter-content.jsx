@@ -17,7 +17,7 @@ const SnippetComponents = {
   newsletter_snippet: props => <SubmitFormSnippet {...props} form_method="POST" />,
   fxa_signup_snippet: props => <SubmitFormSnippet {...props} form_method="GET" />,
   send_to_device_snippet: SendToDeviceSnippet,
-  eoy_snippet: EOYSnippet,
+  eoy_snippet: props => <EOYSnippet form_method="GET" {...props} />,
 };
 
 const INCOMING_MESSAGE_NAME = "ASRouter:parent-to-child";

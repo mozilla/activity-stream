@@ -38,7 +38,7 @@ export class EOYSnippet extends React.PureComponent {
       backgroundColor: this.props.content.button_background_color,
     };
 
-    return (<form className="EOYSnippetForm" action={this.props.content.form_action} method={this.props.method} onSubmit={this.handleSubmit} ref="form">
+    return (<form className="EOYSnippetForm" action={this.props.content.donation_form_url} method={this.props.form_method} onSubmit={this.handleSubmit} ref="form">
       {fieldNames.map((field, idx) => {
         const amount = this.props.content[`donation_amount_${field}`];
         return (<React.Fragment key={idx}>
