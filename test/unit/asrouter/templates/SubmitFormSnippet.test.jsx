@@ -1,7 +1,7 @@
 import {mount} from "enzyme";
-import {NewsletterSnippet} from "content-src/asrouter/templates/NewsletterSnippet/NewsletterSnippet.jsx";
+import {SubmitFormSnippet} from "content-src/asrouter/templates/SubmitFormSnippet/SubmitFormSnippet.jsx";
 import React from "react";
-import schema from "content-src/asrouter/templates/NewsletterSnippet/NewsletterSnippet.schema.json";
+import schema from "content-src/asrouter/templates/SubmitFormSnippet/SubmitFormSnippet.schema.json";
 
 const DEFAULT_CONTENT = {
   text: "foo",
@@ -12,12 +12,12 @@ const DEFAULT_CONTENT = {
   hidden_inputs: {"foo": "foo"},
 };
 
-describe("NewsletterSnippet", () => {
+describe("SubmitFormSnippet", () => {
   let sandbox;
   let onBlockStub;
 
   /**
-   * mountAndCheckProps - Mounts a NewsletterSnippet with DEFAULT_CONTENT extended with any props
+   * mountAndCheckProps - Mounts a SubmitFormSnippet with DEFAULT_CONTENT extended with any props
    *                      passed in the content param and validates props against the schema.
    * @param {obj} content Object containing custom message content (e.g. {text, icon, title})
    * @returns enzyme wrapper for SimpleSnippet
@@ -31,7 +31,7 @@ describe("NewsletterSnippet", () => {
       onAction: sandbox.stub(),
     };
     assert.jsonSchema(props.content, schema);
-    return mount(<NewsletterSnippet {...props} />);
+    return mount(<SubmitFormSnippet {...props} />);
   }
 
   beforeEach(() => {

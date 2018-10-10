@@ -3,18 +3,18 @@ import {actionCreators as ac} from "common/Actions.jsm";
 import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content-src/lib/init-store";
 import {ImpressionsWrapper} from "./components/ImpressionsWrapper/ImpressionsWrapper";
 import {MessageContext} from "fluent";
-import {NewsletterSnippet} from "./templates/NewsletterSnippet/NewsletterSnippet";
 import {OnboardingMessage} from "./templates/OnboardingMessage/OnboardingMessage";
 import React from "react";
 import ReactDOM from "react-dom";
 import {safeURI} from "./template-utils";
 import {SimpleSnippet} from "./templates/SimpleSnippet/SimpleSnippet";
+import {SubmitFormSnippet} from "./templates/SubmitFormSnippet/SubmitFormSnippet";
 
 // Key names matching schema name of templates
 const SnippetComponents = {
   simple_snippet: SimpleSnippet,
-  newsletter_snippet: NewsletterSnippet,
-  fxa_signup_snippet: NewsletterSnippet,
+  newsletter_snippet: props => <SubmitFormSnippet {...props} form_method="POST" />,
+  fxa_signup_snippet: props => <SubmitFormSnippet {...props} form_method="GET" />,
 };
 
 const INCOMING_MESSAGE_NAME = "ASRouter:parent-to-child";

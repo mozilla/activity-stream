@@ -2,7 +2,7 @@ import React from "react";
 import {SimpleSnippet} from "../SimpleSnippet/SimpleSnippet";
 import {SnippetBase} from "../../components/SnippetBase/SnippetBase";
 
-export class NewsletterSnippet extends React.PureComponent {
+export class SubmitFormSnippet extends React.PureComponent {
   constructor(props) {
     super(props);
     this.expandSnippet = this.expandSnippet.bind(this);
@@ -27,17 +27,17 @@ export class NewsletterSnippet extends React.PureComponent {
     this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "conversion-subscribe-activation", id: "NEWTAB_FOOTER_BAR_CONTENT"});
 
     if (this.props.content.form_method.toUpperCase() === "GET") {
-      this.refs.newsletterForm.submit();
+      this.refs.form.submit();
       return;
     }
 
     const fetchConfig = {
-      body: new FormData(this.refs.newsletterForm),
+      body: new FormData(this.refs.form),
       method: "POST",
     };
 
     try {
-      const fetchRequest = new Request(this.refs.newsletterForm.action, fetchConfig);
+      const fetchRequest = new Request(this.refs.form.action, fetchConfig);
       const response = await fetch(fetchRequest);
       json = await response.json();
     } catch (err) {
@@ -95,11 +95,11 @@ export class NewsletterSnippet extends React.PureComponent {
   renderSignupView() {
     const {content} = this.props;
 
-    return (<SnippetBase {...this.props} className="NewsletterSnippet" footerDismiss={true}>
+    return (<SnippetBase {...this.props} className="SubmitFormSnippet" footerDismiss={true}>
         <div className="message">
           <p>{content.scene2_text}</p>
         </div>
-        <form action={content.form_action} method={content.form_method} onSubmit={this.handleSubmit} ref="newsletterForm">
+        <form action={content.form_action} method={content.form_method} onSubmit={this.handleSubmit} ref="form">
           {this.renderHiddenFormInputs()}
           <div>
             <input type="email" name="email" required="required" placeholder={content.scene2_email_placeholder_text} autoFocus={true} />
