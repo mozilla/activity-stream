@@ -489,6 +489,32 @@ describe("Top Stories Feed", () => {
       let rotated = instance.rotate(items);
       assert.deepEqual(items, rotated);
     });
+    it("should not dispatch ITEM_RELEVANCE_SCORE_DURATION metrics for not personalized", () => {
+      instance.personalized = false;
+      instance.dispatchRelevanceScore(50);
+      assert.notCalled(instance.store.dispatch);
+    });
+    it("should not dispatch v2 ITEM_RELEVANCE_SCORE_DURATION until initialized", () => {
+      instance.personalized = true;
+      instance.affinityProviderV2 = {use_v2: true};
+      instance.affinityProvider = {};
+      instance.dispatchRelevanceScore(50);
+      assert.notCalled(instance.store.dispatch);
+      instance.affinityProvider = {initialized: true};
+      instance.dispatchRelevanceScore(50);
+      assert.calledOnce(instance.store.dispatch);
+      const [action] = instance.store.dispatch.firstCall.args;
+      assert.equal(action.type, "TELEMETRY_PERFORMANCE_EVENT");
+      assert.equal(action.data.event, "PERSONALIZATION_V2_ITEM_RELEVANCE_SCORE_DURATION");
+    });
+    it("should dispatch v1 ITEM_RELEVANCE_SCORE_DURATION", () => {
+      instance.personalized = true;
+      instance.dispatchRelevanceScore(50);
+      assert.calledOnce(instance.store.dispatch);
+      const [action] = instance.store.dispatch.firstCall.args;
+      assert.equal(action.type, "TELEMETRY_PERFORMANCE_EVENT");
+      assert.equal(action.data.event, "PERSONALIZATION_V1_ITEM_RELEVANCE_SCORE_DURATION");
+    });
     it("should record top story impressions", async () => {
       instance._prefs = {get: pref => undefined, set: sinon.spy()};
       instance.personalized = true;

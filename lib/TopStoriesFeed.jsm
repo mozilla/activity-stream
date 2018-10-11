@@ -219,10 +219,30 @@ this.TopStoriesFeed = class TopStoriesFeed {
   }
 
   dispatchRelevanceScore(start) {
-    this.store.dispatch(ac.PerfEvent({
-      event: "PERSONALIZATION_V2_ITEM_RELEVANCE_SCORE_DURATION",
-      value: Math.round(perfService.absNow() - start),
-    }));
+    let event = "PERSONALIZATION_V1_ITEM_RELEVANCE_SCORE_DURATION";
+    let initialized = true;
+    if (!this.personalized) {
+      return;
+    }
+    const {affinityProviderV2} = this;
+    if (affinityProviderV2 && affinityProviderV2.use_v2) {
+      if (this.affinityProvider) {
+        initialized = this.affinityProvider.initialized;
+        event = "PERSONALIZATION_V2_ITEM_RELEVANCE_SCORE_DURATION";
+      }
+    }
+
+    // If v2 is not yet initialized we don't bother tracking yet.
+    // Before it is initialized it doesn't do any ranking.
+    // Once it's initialized it ensures ranking is done.
+    // v1 doesn't have any initialized issues around ranking,
+    // and should be ready right away.
+    if (initialized) {
+      this.store.dispatch(ac.PerfEvent({
+        event,
+        value: Math.round(perfService.absNow() - start),
+      }));
+    }
   }
 
   transform(items) {
