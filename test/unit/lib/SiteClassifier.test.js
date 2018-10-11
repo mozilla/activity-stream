@@ -42,6 +42,20 @@ const FAKE_CLASSIFIER_DATA = [
     "weight": 200,
   },
   {
+    "type": "params-prefix-match",
+    "criteria": [
+      {
+        "params": [
+          {
+            "key": "client",
+            "prefix": "fir",
+          },
+        ],
+      },
+    ],
+    "weight": 200,
+  },
+  {
     "type": "has-params",
     "criteria": [
       {
@@ -56,7 +70,7 @@ const FAKE_CLASSIFIER_DATA = [
   {
     "type": "search-engine",
     "criteria": [
-      {"hostname": "google.com"},
+      {"sld": "google"},
       {"hostname": "bing.com"},
       {"hostname": "duckduckgo.com"},
     ],
@@ -82,7 +96,7 @@ const FAKE_CLASSIFIER_DATA = [
   {
     "type": "ecommerce",
     "criteria": [
-      {"hostname": "amazon.com"},
+      {"sld": "amazon"},
       {"hostname": "ebay.com"},
     ],
     "weight": 1,
@@ -113,6 +127,10 @@ describe("SiteClassifier", () => {
     assert.equal("other", await classifySite("https://example.com?param1=val2&param2=val1", RemoteSettings));
     assert.equal("other", await classifySite("https://example.com?param1&param2", RemoteSettings));
 
+    assert.equal("params-prefix-match", await classifySite("https://search.com?client=firefox", RemoteSettings));
+    assert.equal("params-prefix-match", await classifySite("https://search.com?client=fir", RemoteSettings));
+    assert.equal("other", await classifySite("https://search.com?client=mozillafirefox", RemoteSettings));
+
     assert.equal("has-params", await classifySite("https://example.com?has-param1=val1&has-param2=val2", RemoteSettings));
     assert.equal("has-params", await classifySite("https://example.com?has-param1&has-param2", RemoteSettings));
     assert.equal("has-params", await classifySite("https://example.com?has-param1&has-param2&other=other", RemoteSettings));
@@ -120,6 +138,7 @@ describe("SiteClassifier", () => {
     assert.equal("other", await classifySite("https://example.com?has-param2", RemoteSettings));
 
     assert.equal("search-engine", await classifySite("https://google.com", RemoteSettings));
+    assert.equal("search-engine", await classifySite("https://google.de", RemoteSettings));
     assert.equal("search-engine", await classifySite("http://bing.com/?q=firefox", RemoteSettings));
 
     assert.equal("news-portal", await classifySite("https://yahoo.com", RemoteSettings));
@@ -127,5 +146,7 @@ describe("SiteClassifier", () => {
     assert.equal("social-media", await classifySite("http://twitter.com/firefox", RemoteSettings));
 
     assert.equal("ecommerce", await classifySite("https://amazon.com", RemoteSettings));
+    assert.equal("ecommerce", await classifySite("https://amazon.ca", RemoteSettings));
+    assert.equal("ecommerce", await classifySite("https://ebay.com", RemoteSettings));
   });
 });

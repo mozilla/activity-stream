@@ -11,7 +11,9 @@ const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote
 function _hasParams(criteria, params) {
   for (let param of criteria) {
     const val = params.get(param.key);
-    if (val === null || (param.value && param.value !== val)) {
+    if (val === null ||
+        (param.value && param.value !== val) ||
+        (param.prefix && !val.startsWith(param.prefix))) {
       return false;
     }
   }
@@ -23,9 +25,9 @@ function _hasParams(criteria, params) {
  * Classifies a given URL into a category based on classification data from RemoteSettings.
  * The data from remote settings can match a category by one of the following:
  *  - match the exact URL
- *  - match the hostname
- *  - match query parameter(s), and optionally their values
- *  - match both hostname and query parameter(s)
+ *  - match the hostname or second level domain (sld)
+ *  - match query parameter(s), and optionally their values or prefixes
+ *  - match both (hostname or sld) and query parameter(s)
  *
  * The data looks like:
  * [{
@@ -34,10 +36,12 @@ function _hasParams(criteria, params) {
  *      {
  *        "url": "https://matchurl.com",
  *        "hostname": "matchhostname.com",
+ *        "sld": "secondleveldomain",
  *        "params": [
  *          {
  *            "key": "matchparam",
  *            "value": "matchvalue",
+ *            "prefix": "matchpPrefix",
  *          },
  *        ],
  *      },
@@ -64,13 +68,16 @@ async function classifySite(url, RS = RemoteSettings) {
     // NOTE: there will be an initial/default local copy of the data in m-c.
     // Therefore, this should never return an empty list [].
     const siteTypes = await RS("sites-classification").get();
-    const sortedSiteTypes = siteTypes.sort((x, y) => y.weight - x.weight);
+    const sortedSiteTypes = siteTypes.sort((x, y) => (y.weight || 0) - (x.weight || 0));
     for (let type of sortedSiteTypes) {
       for (let criteria of type.criteria) {
         if (criteria.url && criteria.url !== url) {
           continue;
         }
         if (criteria.hostname && criteria.hostname !== hostname) {
+          continue;
+        }
+        if (criteria.sld && criteria.sld !== hostname.split(".")[0]) {
           continue;
         }
         if (criteria.params && !_hasParams(criteria.params, params)) {
