@@ -27,6 +27,7 @@ Please note that some targeting attributes require stricter controls on the tele
 * [topFrecentSites](#topfrecentsites)
 * [totalBookmarksCount](#totalbookmarkscount)
 * [xpinstallEnabled](#xpinstallEnabled)
+* [isUpdated](#isupdated)
 
 ## Detailed usage
 
@@ -383,4 +384,12 @@ Pref used by system administrators to disallow add-ons from installed altogether
 
 ```ts
 declare const xpinstallEnabled: boolean;
+```
+
+### `isUpdated`
+
+Does the client have the latest available version installed
+
+```ts
+declare const isUpdated: boolean;
 ```
