@@ -30,7 +30,6 @@ this.PersonalityProvider = class PersonalityProvider {
     v2Params) {
     this.v2Params = v2Params || {};
     this.dispatch = this.v2Params.dispatch || (() => {});
-    this.perfStart = perfService.absNow();
     this.modelKeys = this.v2Params.modelKeys;
     this.timeSegments = timeSegments;
     this.parameterSets = parameterSets;
@@ -42,6 +41,7 @@ this.PersonalityProvider = class PersonalityProvider {
   }
 
   async init(callback) {
+    const perfStart = perfService.absNow();
     this.interestConfig = this.interestConfig || await this.getRecipe();
     if (!this.interestConfig) {
       this.dispatch(ac.PerfEvent({event: "PERSONALIZATION_V2_GET_RECIPE_ERROR"}));
@@ -60,7 +60,7 @@ this.PersonalityProvider = class PersonalityProvider {
 
     this.dispatch(ac.PerfEvent({
       event: "PERSONALIZATION_V2_TOTAL_DURATION",
-      value: Math.round(perfService.absNow() - this.perfStart),
+      value: Math.round(perfService.absNow() - perfStart),
     }));
 
     this.initialized = true;
@@ -158,7 +158,6 @@ this.PersonalityProvider = class PersonalityProvider {
    * describes the topics the user frequently browses.
    */
   async createInterestVector() {
-    const start = perfService.absNow();
     let interestVector = {};
     let endTimeSecs = ((new Date()).getTime() / 1000);
     let beginTimeSecs = endTimeSecs - this.interestConfig.history_limit_secs;
@@ -169,6 +168,7 @@ this.PersonalityProvider = class PersonalityProvider {
       value: history.length,
     }));
 
+    const start = perfService.absNow();
     for (let historyRec of history) {
       let ivItem = this.recipeExecutor.executeRecipe(
         historyRec,
