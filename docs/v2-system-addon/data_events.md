@@ -31,6 +31,28 @@ where the "value" is encoded as:
   * Value 3: other custom URL(s)
 Two encoded integers for about:newtab and about:home are combined in a bitwise fashion. For instance, if both about:home and about:newtab were set to about:blank, then `value = 5 = (1 | (1 << 2))`, i.e `value = (bitfield of about:newtab) | (bitfield of about:newhome << 2)`.
 
+## Page takeover ping
+
+This ping is submitted once upon Activity Stream initialization if either about:home or about:newtab are set to a custom URL. It sends the category of the custom URL.
+
+```js
+{
+  "event": "PAGE_TAKEOVER_DATA",
+  "value": {
+    "home_url_category": ["search-engine" | "search-engine-mozilla-tag" | "search-engine-other-tag" | "news-portal" | "ecommerce" | "social-media" | "known-hijacker" | "other"],
+    "newtab_url_category": ["search-engine" | "search-engine-mozilla-tag" | "search-engine-other-tag" | "news-portal" | "ecommerce" | "social-media" | "known-hijacker" | "other"],
+  },
+
+  // Basic metadata
+  "action": "activity_stream_event",
+  "client_id": "26288a14-5cc4-d14f-ae0a-bb01ef45be9c",
+  "session_id": "005deed0-e3e4-4c02-a041-17405fd703f6",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7
+}
+```
+
 ## User event pings
 
 These pings are captured when a user **performs some kind of interaction** in the add-on.
