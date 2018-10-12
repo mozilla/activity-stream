@@ -1,6 +1,50 @@
 .SimpleSnippet {
+  p em {
+    font-style: normal;
+    background: #FFE900;
+  }
+
   &.tall {
     padding: 27px 0;
+  }
+
+  &.bold,
+  &.takeover {
+    .donation-form-url,
+    .donation-amount {
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+  }
+
+  &.bold {
+    height: 176px;
+
+    .body {
+      font-size: 14px;
+      line-height: 20px;
+      margin-bottom: 20px;
+    }
+
+    .icon {
+      width: 71px;
+      height: 71px;
+    }
+  }
+
+  &.takeover {
+    height: 344px;
+
+    .body {
+      font-size: 16px;
+      line-height: 24px;
+      margin-bottom: 35px;
+    }
+
+    .icon {
+      width: 79px;
+      height: 79px;
+    }
   }
 
   .title {

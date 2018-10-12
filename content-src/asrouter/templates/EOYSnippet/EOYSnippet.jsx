@@ -32,7 +32,7 @@ export class EOYSnippet extends React.PureComponent {
       minimumFractionDigits: 0,
     });
     // Default to `second` button
-    const selected_button = this.props.content.selected_button || 2;
+    const {selected_button} = this.props.content;
     const btnStyle = {
       color: this.props.content.button_color,
       backgroundColor: this.props.content.button_background_color,
