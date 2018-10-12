@@ -3,7 +3,7 @@ const {CFRPageActions} =
 const {ASRouter} =
   ChromeUtils.import("resource://activity-stream/lib/ASRouter.jsm", {});
 
-function trigger_cfr_panel(browser, trigger, action) {
+function trigger_cfr_panel(browser, trigger, action = {type: "FOO"}) { // a fake action type will result in the action being ignored
   return CFRPageActions.addRecommendation(
     browser,
     trigger,
@@ -47,14 +47,24 @@ function trigger_cfr_panel(browser, trigger, action) {
   );
 }
 
+add_task(async function setup() {
+  // Store it in order to restore to the original value
+  const {_maybeAddAddonInstallURL} = CFRPageActions;
+  // Prevent fetching the real addon url and making a network request
+  CFRPageActions._maybeAddAddonInstallURL = x => x;
+
+  registerCleanupFunction(() => {
+    CFRPageActions._maybeAddAddonInstallURL = _maybeAddAddonInstallURL;
+  });
+});
+
 add_task(async function test_cfr_notification_show() {
   // addRecommendation checks that scheme starts with http and host matches
   let browser = gBrowser.selectedBrowser;
   await BrowserTestUtils.loadURI(browser, "http://example.com/");
   await BrowserTestUtils.browserLoaded(browser, false, "http://example.com/");
 
-  // Passing in a fake action type will result in the action being ignored
-  const response = await trigger_cfr_panel(browser, "example.com", {type: "FOO"});
+  const response = await trigger_cfr_panel(browser, "example.com");
   Assert.ok(response, "Should return true if addRecommendation checks were successful");
 
   const showPanel = BrowserTestUtils.waitForEvent(PopupNotifications.panel, "popupshown");
@@ -77,9 +87,6 @@ add_task(async function test_cfr_notification_show() {
 });
 
 add_task(async function test_cfr_addon_install() {
-  // Prevent fetching the real addon url and making a network request
-  CFRPageActions._maybeAddAddonInstallURL = x => x;
-
   // addRecommendation checks that scheme starts with http and host matches
   const browser = gBrowser.selectedBrowser;
   await BrowserTestUtils.loadURI(browser, "http://example.com/");
