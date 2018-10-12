@@ -60,12 +60,16 @@ function CachedTargetingGetter(property, options = null, updateInterval = FRECEN
   };
 }
 
-function CheckBrowserVersion(updateInterval = FRECENT_SITES_UPDATE_INTERVAL) {
+function CheckBrowserNeedsUpdate(updateInterval = FRECENT_SITES_UPDATE_INTERVAL) {
   const UpdateChecker = Cc["@mozilla.org/updates/update-checker;1"].createInstance(Ci.nsIUpdateChecker);
   const checker = {
     _lastUpdated: 0,
     _value: null,
-    // For testing
+    // For testing. Avoid update check network call.
+    setUp(value) {
+      this._lastUpdated = Date.now();
+      this._value = value;
+    },
     expire() {
       this._lastUpdated = 0;
       this._value = null;
@@ -75,7 +79,7 @@ function CheckBrowserVersion(updateInterval = FRECENT_SITES_UPDATE_INTERVAL) {
         const now = Date.now();
         const updateServiceListener = {
           onCheckComplete(request, updates, updateCount) {
-            checker._value = updateCount;
+            checker._value = updateCount > 0;
             resolve(checker._value);
           },
           onError(request, update) {
@@ -116,7 +120,7 @@ const QueryCache = {
       }
     ),
     TotalBookmarksCount: new CachedTargetingGetter("getTotalBookmarksCount"),
-    UpdateCountCheck: new CheckBrowserVersion(),
+    CheckBrowserNeedsUpdate: new CheckBrowserNeedsUpdate(),
   },
 };
 
@@ -258,7 +262,7 @@ const TargetingGetters = {
     return Services.prefs.getStringPref(SEARCH_REGION_PREF, "");
   },
   get needsUpdate() {
-    return QueryCache.queries.UpdateCountCheck.get() > 0;
+    return QueryCache.queries.CheckBrowserNeedsUpdate.get();
   },
 };
 
