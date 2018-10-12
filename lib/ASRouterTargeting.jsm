@@ -75,7 +75,7 @@ function CheckBrowserVersion(updateInterval = FRECENT_SITES_UPDATE_INTERVAL) {
         const now = Date.now();
         const updateServiceListener = {
           onCheckComplete(request, updates, updateCount) {
-            checker._value = updateCount === 0;
+            checker._value = updateCount;
             resolve(checker._value);
           },
           onError(request, update) {
@@ -116,7 +116,7 @@ const QueryCache = {
       }
     ),
     TotalBookmarksCount: new CachedTargetingGetter("getTotalBookmarksCount"),
-    UpdateCheck: new CheckBrowserVersion(),
+    UpdateCountCheck: new CheckBrowserVersion(),
   },
 };
 
@@ -257,8 +257,8 @@ const TargetingGetters = {
   get region() {
     return Services.prefs.getStringPref(SEARCH_REGION_PREF, "");
   },
-  get isUpdated() {
-    return QueryCache.queries.UpdateCheck.get();
+  get needsUpdate() {
+    return QueryCache.queries.UpdateCountCheck.get() > 0;
   },
 };
 
