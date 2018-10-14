@@ -495,14 +495,22 @@ class _ASRouter {
     }
   }
 
-  _updateAdminState(target) {
+  async _updateAdminState(target) {
     const channel = target || this.messageChannel;
+    const targetingParameters = {};
+    for (const param of Object.keys(ASRouterTargeting.Environment)) {
+      targetingParameters[param] = await ASRouterTargeting.Environment[param];
+    }
+    for (const param of Object.keys(this._getMessagesContext())) {
+      targetingParameters[param] = await this._getMessagesContext()[param];
+    }
     channel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {
       type: "ADMIN_SET_STATE",
       data: {
         ...this.state,
         providerPrefs: ASRouterPreferences.providers,
         userPrefs: ASRouterPreferences.getAllUserPreferences(),
+        targetingParameters,
       },
     });
   }
@@ -536,6 +544,13 @@ class _ASRouter {
      // Find a message that matches the targeting context as well as the trigger context (if one is provided)
      // If no trigger is provided, we should find a message WITHOUT a trigger property defined.
     return ASRouterTargeting.findMatchingMessage({messages, trigger, context, onError: this._handleTargetingError});
+  }
+
+  async evaluateExpression(target, {expression, context}) {
+    const channel = target || this.messageChannel;
+    const evaluationStatus = await ASRouterTargeting.isMatch(expression, context);
+
+    channel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: {...this.state, evaluationStatus}});
   }
 
   _orderBundle(bundle) {
@@ -1018,6 +1033,8 @@ class _ASRouter {
       case "SET_PROVIDER_USER_PREF":
         ASRouterPreferences.setUserPreference(action.data.id, action.data.value);
         break;
+      case "EVALUATE_JEXL_EXPRESSION":
+        this.evaluateExpression(target, action.data);
     }
   }
 }
