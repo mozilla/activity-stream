@@ -176,7 +176,7 @@ describe("SubmitFormSnippet", () => {
     it("should not block if do_not_autoblock is true", async () => {
       sandbox.stub(window, "fetch").resolves(fetchOk);
       wrapper = mountAndCheckProps({
-        text: "bar",
+        scene1_text: "bar",
         scene2_email_placeholder_text: "Email",
         scene2_text: "signup",
         do_not_autoblock: true,
