@@ -99,6 +99,10 @@
       "type": "string",
       "description": "Label text for monthly checkbox."
     },
+    "test": {
+      "type": "string",
+      "description": "Different styles for the snippet. Options are bold and takeover."
+    },
     "do_not_autoblock": {
       "type": "boolean",
       "description": "Used to prevent blocking the snippet after the CTA (link or button) has been clicked"
