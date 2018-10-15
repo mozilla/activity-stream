@@ -124,7 +124,7 @@
     @media(max-width: 850px) {
       float: right;
       margin-top: -60px;
-      margin-right: -10px;
+      margin-inline-end: -10px;
     }
 
     @media(max-width: 650px) {
@@ -148,7 +148,7 @@
     position: absolute;
     background-color: $grey-30;
     margin-top: 40px;
-    margin-left: 215px;
+    margin-inline-start: 215px;
 
     // at 850px, the line goes from vertical to horizontal
     @media(max-width: 850px) {
