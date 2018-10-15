@@ -39,8 +39,7 @@
 
   .donation-form-url {
     margin-inline-start: 18px;
-    background: var(--newtab-button-primary-color);
-    border: solid 1px var(--newtab-button-primary-color);
+    background-color: $snippets-donation-button-bg;
     color: $white;
     align-self: flex-end;
     display: flex;
