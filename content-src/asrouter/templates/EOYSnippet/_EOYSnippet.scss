@@ -14,6 +14,7 @@
   }
 
   .donation-amount {
+    color: $grey-90;
     margin-inline-end: 18px;
     border: 1px solid $grey-40;
     background: $grey-10;
@@ -40,6 +41,7 @@
   .donation-form-url {
     margin-inline-start: 18px;
     background-color: $snippets-donation-button-bg;
+    border: 0;
     color: $white;
     align-self: flex-end;
     display: flex;

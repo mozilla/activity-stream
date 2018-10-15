@@ -62,7 +62,7 @@ export class EOYSnippet extends React.PureComponent {
       <input type="hidden" name="frequency" value="single" />
       <input type="hidden" name="currency" value={this.props.content.currency_code} />
       <input type="hidden" name="presets" value={fieldNames.map(field => this.props.content[`donation_amount_${field}`])} />
-      <button style={btnStyle} type="submit" className="donation-form-url">{this.props.content.button_label}</button>
+      <button style={btnStyle} type="submit" className="ASRouterButton donation-form-url">{this.props.content.button_label}</button>
     </form>);
   }
 
