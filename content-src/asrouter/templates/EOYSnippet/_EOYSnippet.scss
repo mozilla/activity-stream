@@ -15,8 +15,8 @@
 
   .donation-amount {
     margin-inline-end: 18px;
-    border: 1px solid var(--newtab-border-primary-color);
-    background: var(--newtab-button-secondary-color);
+    border: 1px solid $grey-40;
+    background: $grey-10;
     cursor: pointer;
   }
 
@@ -26,9 +26,9 @@
       margin-right: -18px;
 
       &:checked+.donation-amount {
-        background: $grey-90-70;
+        background: $grey-50;
         color: $white;
-        border: 1px solid var(--newtab-border-primary-color);
+        border: 1px solid $grey-60;
       }
     }
   }

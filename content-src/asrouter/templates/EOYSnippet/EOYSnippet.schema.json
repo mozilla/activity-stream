@@ -61,10 +61,6 @@
       "type": "number",
       "description": "Fourth button amount."
     },
-    "currency_code": {
-      "type": "string",
-      "description": "The code for the currency. Example gbp, cad, usd."
-    },
     "selected_button": {
       "type": "number",
       "description": "Default donation_amount_second. Donation amount button that's selected by default."
