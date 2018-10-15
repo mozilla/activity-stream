@@ -55,4 +55,23 @@ describe("EOYSnippet", () => {
 
     assert.equal(wrapper.instance().refs.form.querySelector("[name='frequency']").value, "monthly");
   });
+
+  it("should block after submitting the form", () => {
+    const onBlockStub = sandbox.stub();
+    wrapper.setProps({onBlock: onBlockStub});
+
+    wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});
+
+    assert.calledOnce(onBlockStub);
+  });
+
+  it("should not block if do_not_autoblock is true", () => {
+    const onBlockStub = sandbox.stub();
+    wrapper = mountAndCheckProps({do_not_autoblock: true});
+    wrapper.setProps({onBlock: onBlockStub});
+
+    wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});
+
+    assert.notCalled(onBlockStub);
+  });
 });
