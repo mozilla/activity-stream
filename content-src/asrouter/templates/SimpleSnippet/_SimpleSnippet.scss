@@ -4,10 +4,6 @@
     background: #FFE900;
   }
 
-  &.tall {
-    padding: 27px 0;
-  }
-
   &.bold,
   &.takeover {
     .donation-form-url,
@@ -71,10 +67,6 @@
 
   .icon {
     align-self: flex-start;
-  }
-
-  &.tall .icon {
-    margin-inline-end: 20px;
   }
 
   .ASRouterButton {

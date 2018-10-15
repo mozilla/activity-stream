@@ -61,6 +61,10 @@
       "type": "number",
       "description": "Fourth button amount."
     },
+    "currency_code": {
+      "type": "string",
+      "description": "The code for the currency. Example gbp, cad, usd."
+    },
     "selected_button": {
       "type": "number",
       "description": "Default donation_amount_second. Donation amount button that's selected by default."
@@ -91,9 +95,9 @@
       "type": "string",
       "description": "Tooltip text used for dismiss button."
     },
-    "tall": {
-      "type": "boolean",
-      "description": "To be used by fundraising only, increases height to roughly 120px. Defaults to false."
+    "monthly_checkbox_label_text": {
+      "type": "string",
+      "description": "Label text for monthly checkbox."
     },
     "do_not_autoblock": {
       "type": "boolean",
