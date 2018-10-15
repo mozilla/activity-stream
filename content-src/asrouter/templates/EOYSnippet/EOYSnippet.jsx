@@ -22,6 +22,9 @@ export class EOYSnippet extends React.PureComponent {
     event.preventDefault();
     this.setFrequencyValue();
     this.refs.form.submit();
+    if (!this.props.content.do_not_autoblock) {
+      this.props.onBlock();
+    }
   }
 
   renderDonations() {

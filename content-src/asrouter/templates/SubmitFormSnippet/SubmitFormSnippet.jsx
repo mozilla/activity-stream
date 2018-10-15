@@ -48,7 +48,9 @@ export class SubmitFormSnippet extends React.PureComponent {
 
     if (json && json.status === "ok") {
       this.setState({signupSuccess: true, signupSubmitted: true});
-      this.props.onBlock({preventDismiss: true});
+      if (!this.props.content.do_not_autoblock) {
+        this.props.onBlock({preventDismiss: true});
+      }
       this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "subscribe-success", id: "NEWTAB_FOOTER_BAR_CONTENT"});
     } else {
       console.error("There was a problem submitting the form", json || "[No JSON response]"); // eslint-disable-line no-console
