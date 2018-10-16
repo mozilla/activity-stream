@@ -66,6 +66,14 @@
     margin: 0;
   }
 
+
+  &.takeover,
+  &.bold {
+    .icon {
+      margin-inline-end: 20px;
+    }
+  }
+
   .icon {
     align-self: flex-start;
   }
