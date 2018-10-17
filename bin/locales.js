@@ -1,4 +1,6 @@
-exports.DEFAULT_LOCALE = "en-US";
+exports.DEFAULT_LOCALE = process.env.npm_package_config_default_locale;
+
+exports.LOCALES_SOURCE_DIRECTORY = process.env.npm_package_config_locales_dir;
 
 // This locales list is to find any similar locales that we can reuse strings
 // instead of falling back to the default, e.g., use bn-BD strings for bn-IN.
