@@ -17,6 +17,17 @@ const MESSAGES = () => ([
     },
   },
   {
+    "id": "SIMPLE_TEST_BUTTON_URL_1",
+    "template": "simple_snippet",
+    "content": {
+      "icon": TEST_ICON,
+      "button_label": "Get one now!",
+      "button_url": "https://www.mozilla.org/en-US/firefox/accounts",
+      "text": "Sync it, link it, take it with you. All this and more with a Firefox Account.",
+      "block_button_text": "Block",
+    },
+  },
+  {
     "id": "SIMPLE_WITH_TITLE_TEST_1",
     "template": "simple_snippet",
     "content": {
