@@ -1,3 +1,7 @@
+if (!process.env.npm_lifecycle_event) {
+  throw Error("You should only run this from npm script contexts");
+}
+
 exports.DEFAULT_LOCALE = process.env.npm_package_config_default_locale;
 
 exports.LOCALES_SOURCE_DIRECTORY = process.env.npm_package_config_locales_dir;
