@@ -17,6 +17,7 @@ export class SimpleSnippet extends React.PureComponent {
       this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", id: this.props.UISurface});
     }
     const {button_url} = this.props.content;
+    // If button_url is defined handle it as OPEN_URL action
     const type = this.props.content.button_action || (button_url && "OPEN_URL");
     this.props.onAction({
       type,
