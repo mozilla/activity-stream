@@ -73,6 +73,7 @@ export class EOYSnippet extends React.PureComponent {
     };
     const customElement = <em style={{backgroundColor: this.props.content.highlight_color}} />;
     return (<SimpleSnippet {...this.props}
+      className={this.props.content.test}
       customElements={{em: customElement}}
       textStyle={textStyle}
       extraContent={this.renderDonations()} />);
