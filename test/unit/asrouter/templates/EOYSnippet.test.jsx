@@ -1,4 +1,5 @@
 import {EOYSnippet} from "content-src/asrouter/templates/EOYSnippet/EOYSnippet";
+import {GlobalOverrider} from "test/unit/utils";
 import {mount} from "enzyme";
 import React from "react";
 import schema from "content-src/asrouter/templates/EOYSnippet/EOYSnippet.schema.json";
@@ -73,5 +74,35 @@ describe("EOYSnippet", () => {
     wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});
 
     assert.notCalled(onBlockStub);
+  });
+
+  describe("locale", () => {
+    let stub;
+    let globals;
+    beforeEach(() => {
+      globals = new GlobalOverrider();
+      stub = sandbox.stub().returns({format: () => {}});
+
+      globals = new GlobalOverrider();
+      globals.set({"Intl": {NumberFormat: stub}});
+    });
+    afterEach(() => {
+      globals.restore();
+    });
+
+    it("should use content.locale for Intl", () => {
+      // triggers component rendering and calls the function we're testing
+      wrapper.setProps({content: {locale: "locale-foo"}});
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, "locale-foo", sinon.match.object);
+    });
+
+    it("should use navigator.language as locale fallback", () => {
+      wrapper.instance().renderDonations();
+
+      assert.calledOnce(stub);
+      assert.calledWithExactly(stub, navigator.language, sinon.match.object);
+    });
   });
 });

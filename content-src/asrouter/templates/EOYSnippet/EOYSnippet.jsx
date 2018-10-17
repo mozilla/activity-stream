@@ -29,7 +29,7 @@ export class EOYSnippet extends React.PureComponent {
 
   renderDonations() {
     const fieldNames = ["first", "second", "third", "fourth"];
-    const numberFormat = new Intl.NumberFormat(navigator.language, {
+    const numberFormat = new Intl.NumberFormat(this.props.content.locale || navigator.language, {
       style: "currency",
       currency: this.props.content.currency_code,
       minimumFractionDigits: 0,

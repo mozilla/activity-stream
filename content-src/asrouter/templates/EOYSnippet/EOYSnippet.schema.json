@@ -27,6 +27,10 @@
       "type": "string",
       "description": "The code for the currency. Examle gbp, cad, usd."
     },
+    "locale": {
+      "type": "string",
+      "description": "String for the locale code."
+    },
     "text": {
       "allOf": [
         {"$ref": "#/definitions/richText"},
