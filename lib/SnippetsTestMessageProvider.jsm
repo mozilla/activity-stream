@@ -131,6 +131,8 @@ const MESSAGES = () => ([
     "id": "EOY_TEST_1",
     "template": "eoy_snippet",
     "content": {
+      "highlight_color": "#f05",
+      "selected_button": 1,
       "icon": TEST_ICON,
       "button_label": "Donate",
       "monthly_checkbox_label_text": "Make my donation monthly",
@@ -148,6 +150,7 @@ const MESSAGES = () => ([
     "template": "eoy_snippet",
     "content": {
       "icon": TEST_ICON,
+      "selected_button": 2,
       "button_label": "Donate",
       "monthly_checkbox_label_text": "Make my donation monthly",
       "currency_code": "usd",

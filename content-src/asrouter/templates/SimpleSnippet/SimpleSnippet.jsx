@@ -55,6 +55,7 @@ export class SimpleSnippet extends React.PureComponent {
   renderText() {
     const {props} = this;
     return (<RichText text={props.content.text}
+      customElements={this.props.customElements}
       localization_id="text"
       links={props.content.links}
       sendClick={props.sendClick} />);
