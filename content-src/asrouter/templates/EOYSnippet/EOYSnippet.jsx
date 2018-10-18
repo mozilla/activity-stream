@@ -43,9 +43,10 @@ export class EOYSnippet extends React.PureComponent {
 
     return (<form className="EOYSnippetForm" action={this.props.content.donation_form_url} method={this.props.form_method} onSubmit={this.handleSubmit} ref="form">
       {fieldNames.map((field, idx) => {
-        const amount = this.props.content[`donation_amount_${field}`];
+        const button_name = `donation_amount_${field}`;
+        const amount = this.props.content[button_name];
         return (<React.Fragment key={idx}>
-            <input type="radio" name="amount" value={amount} id={field} defaultChecked={idx + 1 === selected_button} />
+            <input type="radio" name="amount" value={amount} id={field} defaultChecked={button_name === selected_button} />
             <label htmlFor={field} className="donation-amount">
               {numberFormat.format(amount)}
             </label>

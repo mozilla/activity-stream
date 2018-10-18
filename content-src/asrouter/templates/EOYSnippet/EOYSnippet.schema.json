@@ -66,7 +66,7 @@
       "description": "Fourth button amount."
     },
     "selected_button": {
-      "type": "number",
+      "type": "string",
       "description": "Default donation_amount_second. Donation amount button that's selected by default."
     },
     "icon": {

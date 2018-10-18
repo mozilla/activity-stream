@@ -48,6 +48,12 @@ describe("EOYSnippet", () => {
     assert.lengthOf(wrapper.find("input[type='radio']"), 4);
   });
 
+  it("should select the second donation option", () => {
+    wrapper = mountAndCheckProps({selected_button: "donation_amount_second"});
+
+    assert.propertyVal(wrapper.find("input[type='radio']").get(1).props, "defaultChecked", true);
+  });
+
   it("should set frequency value to monthly", () => {
     assert.equal(wrapper.instance().refs.form.querySelector("[name='frequency']").value, "single");
 
