@@ -10,6 +10,10 @@
   color: inherit;
   cursor: pointer;
 
+  .tall & {
+    margin-inline-start: 20px;
+  }
+
   &.primary {
     border: 1px solid var(--newtab-button-primary-color);
     background-color: var(--newtab-button-primary-color);

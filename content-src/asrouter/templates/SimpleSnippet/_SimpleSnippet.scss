@@ -1,4 +1,8 @@
 .SimpleSnippet {
+  &.tall {
+    padding: 27px 0;
+  }
+
   p em {
     color: $grey-90;
     font-style: normal;
@@ -66,6 +70,9 @@
     margin: 0;
   }
 
+  &.tall .icon {
+    margin-inline-end: 20px;
+  }
 
   &.takeover,
   &.bold {

@@ -17,6 +17,19 @@ const MESSAGES = () => ([
     },
   },
   {
+    "id": "SIMPLE_TEST_TALL",
+    "template": "simple_snippet",
+    "content": {
+      "icon": TEST_ICON,
+      "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
+      "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
+      "button_label": "Get one now!",
+      "button_url": "https://www.mozilla.org/en-US/firefox/accounts",
+      "block_button_text": "Block",
+      "tall": true,
+    },
+  },
+  {
     "id": "SIMPLE_TEST_BUTTON_URL_1",
     "template": "simple_snippet",
     "content": {
