@@ -46,7 +46,7 @@ export function RichText(props) {
     throw new Error(`ASRouter: ${props.localization_id} is not a valid rich text property. If you want it to be processed, you need to add it to asrouter/rich-text-strings.js`);
   }
   return (
-    <Localized id={props.localization_id} {...ALLOWED_TAGS} {...convertLinks(props.links, props.sendClick, props.autoBlock)}>
+    <Localized id={props.localization_id} {...ALLOWED_TAGS} {...props.customElements} {...convertLinks(props.links, props.sendClick, props.autoBlock)}>
       <span>{props.text}</span>
     </Localized>
   );

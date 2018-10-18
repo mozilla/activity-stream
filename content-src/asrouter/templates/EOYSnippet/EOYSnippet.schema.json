@@ -1,7 +1,7 @@
 {
-  "title": "SimpleSnippet",
-  "description": "A simple template with an icon, text, and optional button.",
-  "version": "1.1.1",
+  "title": "EOYSnippet",
+  "description": "Fundraising Snippet",
+  "version": "1.0.0",
   "type": "object",
   "definitions": {
     "plainText": {
@@ -19,17 +19,55 @@
     }
   },
   "properties": {
-    "title": {
-      "allOf": [
-        {"$ref": "#/definitions/plainText"},
-        {"description": "Snippet title displayed before snippet text"}
-      ]
+    "donation_form_url": {
+      "type": "string",
+      "description": "Url to the donation form."
+    },
+    "currency_code": {
+      "type": "string",
+      "description": "The code for the currency. Examle gbp, cad, usd."
+    },
+    "locale": {
+      "type": "string",
+      "description": "String for the locale code."
     },
     "text": {
       "allOf": [
         {"$ref": "#/definitions/richText"},
         {"description": "Main body text of snippet. HTML subset allowed: i, b, u, strong, em, br"}
       ]
+    },
+    "text_color": {
+      "type": "string",
+      "description": "Modify the text message color"
+    },
+    "background_color": {
+      "type": "string",
+      "description": "Snippet background color."
+    },
+    "highlight_color": {
+      "type": "string",
+      "description": "Paragraph em highlight color."
+    },
+    "donation_amount_first": {
+      "type": "number",
+      "description": "First button amount."
+    },
+    "donation_amount_second": {
+      "type": "number",
+      "description": "Second button amount."
+    },
+    "donation_amount_third": {
+      "type": "number",
+      "description": "Third button amount."
+    },
+    "donation_amount_fourth": {
+      "type": "number",
+      "description": "Fourth button amount."
+    },
+    "selected_button": {
+      "type": "string",
+      "description": "Default donation_amount_second. Donation amount button that's selected by default."
     },
     "icon": {
       "type": "string",
@@ -38,20 +76,6 @@
     "title_icon": {
       "type": "string",
       "description": "Small icon that shows up before the title / text. 16x16px. SVG or PNG preferred. Grayscale."
-    },
-    "button_action": {
-      "type": "string",
-      "description": "The type of action the button should trigger."
-    },
-    "button_url": {
-      "allOf": [
-        {"$ref": "#/definitions/link_url"},
-        {"description": "A url, button_label links to this"}
-      ]
-    },
-    "button_action_args": {
-      "type": "string",
-      "description": "Additional parameters for button action, example which specific menu the button should open"
     },
     "button_label": {
       "allOf": [
@@ -70,6 +94,14 @@
     "block_button_text": {
       "type": "string",
       "description": "Tooltip text used for dismiss button."
+    },
+    "monthly_checkbox_label_text": {
+      "type": "string",
+      "description": "Label text for monthly checkbox."
+    },
+    "test": {
+      "type": "string",
+      "description": "Different styles for the snippet. Options are bold and takeover."
     },
     "do_not_autoblock": {
       "type": "boolean",
@@ -95,11 +127,10 @@
     }
   },
   "additionalProperties": false,
-  "required": ["text"],
+  "required": ["text", "donation_form_url", "donation_amount_first", "donation_amount_second", "donation_amount_third", "donation_amount_fourth", "button_label", "currency_code"],
   "dependencies": {
-    "button_action": ["button_label"],
-    "button_url": ["button_label"],
     "button_color": ["button_label"],
     "button_background_color": ["button_label"]
   }
 }
+
