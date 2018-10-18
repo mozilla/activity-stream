@@ -97,11 +97,6 @@ const MESSAGES = () => ([
       "scene2_button_label": "Continue",
       "scene2_dismiss_button_text": "Dismiss",
       "form_action": "https://basket.mozilla.org/subscribe.json",
-
-      // TODO: This should not be required
-      "success_text": "Check your inbox for the confirmation!",
-      "error_text": "Error!",
-      "hidden_inputs": {},
     },
   },
   {
@@ -137,7 +132,6 @@ const MESSAGES = () => ([
 
       // TODO: Not actually defined in the send to device schema
       form_action: "https://basket.mozilla.org/subscribe.json",
-      hidden_inputs: {},
     },
   },
   {

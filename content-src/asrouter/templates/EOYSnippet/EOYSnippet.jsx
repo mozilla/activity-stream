@@ -1,7 +1,7 @@
 import React from "react";
 import {SimpleSnippet} from "../SimpleSnippet/SimpleSnippet";
 
-export class EOYSnippet extends React.PureComponent {
+class EOYSnippetBase extends React.PureComponent {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -80,3 +80,18 @@ export class EOYSnippet extends React.PureComponent {
       extraContent={this.renderDonations()} />);
   }
 }
+
+export const EOYSnippet = props => {
+  const extendedContent = {
+    monthly_checkbox_label_text: "Make my donation monthly",
+    locale: "en-US",
+    currency_code: "usd",
+    selected_button: "donation_amount_second",
+    ...props.content,
+  };
+
+  return (<EOYSnippetBase
+    {...props}
+    content={extendedContent}
+    form_method="GET" />);
+};

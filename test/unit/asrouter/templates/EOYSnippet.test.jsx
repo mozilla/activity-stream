@@ -30,6 +30,7 @@ describe("EOYSnippet", () => {
       content: Object.assign({}, DEFAULT_CONTENT, content),
       provider,
       onAction: sandbox.stub(),
+      onBlock: sandbox.stub(),
     };
     assert.jsonSchema(props.content, schema);
     return mount(<EOYSnippet {...props} />);
@@ -55,19 +56,20 @@ describe("EOYSnippet", () => {
   });
 
   it("should set frequency value to monthly", () => {
-    assert.equal(wrapper.instance().refs.form.querySelector("[name='frequency']").value, "single");
+    const form = wrapper.find("form").instance();
+    assert.equal(form.querySelector("[name='frequency']").value, "single");
 
-    wrapper.instance().refs.form.querySelector("#monthly-checkbox").checked = true;
-    wrapper.instance().setFrequencyValue();
+    form.querySelector("#monthly-checkbox").checked = true;
+    wrapper.find("form").simulate("submit");
 
-    assert.equal(wrapper.instance().refs.form.querySelector("[name='frequency']").value, "monthly");
+    assert.equal(form.querySelector("[name='frequency']").value, "monthly");
   });
 
   it("should block after submitting the form", () => {
     const onBlockStub = sandbox.stub();
     wrapper.setProps({onBlock: onBlockStub});
 
-    wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});
+    wrapper.find("form").simulate("submit");
 
     assert.calledOnce(onBlockStub);
   });
@@ -77,7 +79,7 @@ describe("EOYSnippet", () => {
     wrapper = mountAndCheckProps({do_not_autoblock: true});
     wrapper.setProps({onBlock: onBlockStub});
 
-    wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});
+    wrapper.find("form").simulate("submit");
 
     assert.notCalled(onBlockStub);
   });
@@ -105,7 +107,8 @@ describe("EOYSnippet", () => {
     });
 
     it("should use navigator.language as locale fallback", () => {
-      wrapper.instance().renderDonations();
+      // triggers component rendering and calls the function we're testing
+      wrapper.setProps({content: {locale: null}});
 
       assert.calledOnce(stub);
       assert.calledWithExactly(stub, navigator.language, sinon.match.object);
