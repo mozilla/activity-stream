@@ -88,7 +88,7 @@ export class SubmitFormSnippet extends React.PureComponent {
       <RichText text={content.scene2_disclaimer_html}
         localization_id="disclaimer_html"
         links={content.links}
-        autoBlock={false}
+        doNotAutoBlock={true}
         sendClick={this.props.sendClick} />
     </p>);
   }
@@ -104,7 +104,7 @@ export class SubmitFormSnippet extends React.PureComponent {
           <span><RichText text={content.scene2_privacy_html}
             localization_id="privacy_html"
             links={content.links}
-            autoBlock={false}
+            doNotAutoBlock={true}
             sendClick={this.props.sendClick} />
           </span>
         </p>
