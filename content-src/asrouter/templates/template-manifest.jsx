@@ -10,5 +10,5 @@ export const SnippetsTemplates = {
   newsletter_snippet: NewsletterSnippet,
   fxa_signup_snippet: FXASignupSnippet,
   send_to_device_snippet: SendToDeviceSnippet,
-  eoy_snippet: props => <EOYSnippet {...props} form_method="GET" />,
+  eoy_snippet: EOYSnippet,
 };

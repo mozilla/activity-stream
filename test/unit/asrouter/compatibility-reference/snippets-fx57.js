@@ -95,4 +95,31 @@ export const expectedValues = {
     error_text: "error",
     success_text: "all good",
   },
+
+  // EOY Snippet (https://github.com/mozmeao/snippets/blob/master/activity-stream/mofo-eoy-2017.html)
+  eoy_snippet: {
+    block_button_text: "Block",
+
+    donation_form_url: "https://donate.mozilla.org/",
+    text: "Big corporations want to restrict how we access the web. Fake news is making it harder for us to find the truth. Online bullies are silencing inspired voices. The not-for-profit Mozilla Foundation fights for a healthy internet with programs like our Tech Policy Fellowships and Internet Health Report; will you donate today?",
+    icon: DATA_URI_IMAGE,
+    button_label: "Donate",
+    monthly_checkbox_label_text: "Make my donation monthly",
+    button_background_color: "#0060DF",
+    button_color: "#FFFFFF",
+    background_color: "#FFFFFF",
+    text_color: "#000000",
+    highlight_color: "#FFE900",
+
+    locale: "en-US",
+    currency_code: "usd",
+
+    donation_amount_first: 50,
+    donation_amount_second: 25,
+    donation_amount_third: 10,
+    donation_amount_fourth: 3,
+    selected_button: "donation_amount_second",
+
+    test: "bold",
+  },
 };

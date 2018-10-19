@@ -97,11 +97,6 @@ const MESSAGES = () => ([
       "scene2_button_label": "Continue",
       "scene2_dismiss_button_text": "Dismiss",
       "form_action": "https://basket.mozilla.org/subscribe.json",
-
-      // TODO: This should not be required
-      "success_text": "Check your inbox for the confirmation!",
-      "error_text": "Error!",
-      "hidden_inputs": {},
     },
   },
   {
@@ -134,10 +129,6 @@ const MESSAGES = () => ([
       success_title: "Your download link was sent.",
       success_text: "Check your device for the email message!",
       links: {"privacyLink": {"url": "https://www.mozilla.org/privacy/websites/?sample_rate=0.001&snippet_name=7894"}},
-
-      // TODO: Not actually defined in the send to device schema
-      form_action: "https://basket.mozilla.org/subscribe.json",
-      hidden_inputs: {},
     },
   },
   {

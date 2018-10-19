@@ -1,8 +1,10 @@
+import EOYSnippetSchema from "content-src/asrouter/templates/EOYSnippet/EOYSnippet.schema.json";
 import {expectedValues} from "./snippets-fx57";
 import SimpleSnippetSchema from "content-src/asrouter/templates/SimpleSnippet/SimpleSnippet.schema.json";
 import SubmitFormSchema from "content-src/asrouter/templates/SubmitFormSnippet/SubmitFormSnippet.schema.json";
 
 export const SnippetsSchemas = {
+  eoy_snippet: EOYSnippetSchema,
   simple_snippet: SimpleSnippetSchema,
   newsletter_snippet: SubmitFormSchema,
   fxa_signup_snippet: SubmitFormSchema,
