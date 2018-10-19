@@ -196,10 +196,11 @@ describe("ASRouterPreferences", () => {
     });
   });
   describe("#resetProviderPref", () => {
-    it("should reset the pref", () => {
+    it("should reset the pref and user prefs", () => {
       const resetStub = sandbox.stub(global.Services.prefs, "clearUserPref");
       ASRouterPreferences.resetProviderPref();
       assert.calledWith(resetStub, PROVIDER_PREF);
+      assert.calledWith(resetStub, SNIPPETS_USER_PREF);
     });
   });
   describe("observer, listeners", () => {
