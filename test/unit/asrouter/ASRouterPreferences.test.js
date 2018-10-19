@@ -9,8 +9,9 @@ const SNIPPETS_USER_PREF = "browser.newtabpage.activity-stream.feeds.snippets";
  *  1. asrouter.messageProvider
  *  2. asrouter.devtoolsEnabled
  *  3. browser.newtabpage.activity-stream.feeds.snippets (user preference - snippets)
+ *  4. browser.newtabpage.activity-stream.asrouter.userprefs.cfr (user preference - cfr)
  */
-const NUMBER_OF_PREFS_TO_OBSERVE = 3;
+const NUMBER_OF_PREFS_TO_OBSERVE = 4;
 
 describe("ASRouterPreferences", () => {
   let ASRouterPreferences;
