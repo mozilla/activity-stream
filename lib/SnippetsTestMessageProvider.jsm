@@ -129,9 +129,6 @@ const MESSAGES = () => ([
       success_title: "Your download link was sent.",
       success_text: "Check your device for the email message!",
       links: {"privacyLink": {"url": "https://www.mozilla.org/privacy/websites/?sample_rate=0.001&snippet_name=7894"}},
-
-      // TODO: Not actually defined in the send to device schema
-      form_action: "https://basket.mozilla.org/subscribe.json",
     },
   },
   {
