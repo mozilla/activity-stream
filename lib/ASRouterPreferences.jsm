@@ -78,6 +78,9 @@ class _ASRouterPreferences {
 
   resetProviderPref() {
     Services.prefs.clearUserPref(this._providerPref);
+    for (const id of Object.keys(USER_PREFERENCES)) {
+      Services.prefs.clearUserPref(USER_PREFERENCES[id]);
+    }
   }
 
   get devtoolsEnabled() {
