@@ -18,6 +18,7 @@ const DEFAULT_STATE = {
 
 const USER_PREFERENCES = {
   snippets: "browser.newtabpage.activity-stream.feeds.snippets",
+  cfr: "browser.newtabpage.activity-stream.asrouter.userprefs.cfr",
 };
 
 const TEST_PROVIDER = {
