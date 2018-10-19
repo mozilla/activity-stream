@@ -6,6 +6,7 @@ Targeting information must be captured in [an expression](./targeting-guide.md) 
 
 Please note that some targeting attributes require stricter controls on the telemetry than can be colleted, so when in doubt, ask for review.
 
+
 ## Available attributes
 
 * [addonsInfo](#addonsinfo)
