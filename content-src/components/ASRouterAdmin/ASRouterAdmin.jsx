@@ -27,7 +27,7 @@ export class ASRouterAdmin extends React.PureComponent {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     // Update the evaluation status for the JEXL expression
     this.refs.evaluationStatus.innerText = this.state.evaluationStatus ? "True ✅" : "False ❌";
   }
