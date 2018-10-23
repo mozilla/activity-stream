@@ -11,7 +11,7 @@ export class ASRouterAdmin extends React.PureComponent {
     this.findOtherBundledMessagesOfSameTemplate = this.findOtherBundledMessagesOfSameTemplate.bind(this);
     this.handleExpressionEval = this.handleExpressionEval.bind(this);
     this.onChangeTargetingParameters = this.onChangeTargetingParameters.bind(this);
-    this.state = {messageFilter: "all", evaluationStatus: true, stringTargetingParameters: null};
+    this.state = {messageFilter: "all", evaluationStatus: {}, stringTargetingParameters: null};
   }
 
   onMessage({data: action}) {
@@ -25,11 +25,6 @@ export class ASRouterAdmin extends React.PureComponent {
         this.setState({stringTargetingParameters});
       }
     }
-  }
-
-  componentDidUpdate() {
-    // Update the evaluation status for the JEXL expression
-    this.refs.evaluationStatus.innerText = this.state.evaluationStatus ? "True ✅" : "False ❌";
   }
 
   componentWillMount() {
@@ -242,12 +237,15 @@ export class ASRouterAdmin extends React.PureComponent {
   }
 
   renderTargetingParameters() {
+    // There was no error and the result is truthy
+    const success = this.state.evaluationStatus.success && !!this.state.evaluationStatus.result;
+
     return (<table><tbody>
       <tr><td><h2>Evaluate JEXL expression</h2></td></tr>
       <tr>
         <td>
           <p><textarea ref="expressionInput" rows="10" cols="60" placeholder="Evaluate JEXL expressions and mock parameters by changing their values below" /></p>
-          <p>Status: <span ref="evaluationStatus" /></p>
+          <p>Status: <span ref="evaluationStatus">{success ? "✅" : "❌"}, Result: {JSON.stringify(this.state.evaluationStatus.result, null, 2)}</span></p>
         </td>
         <td>
            <button className="ASRouterButton secondary" onClick={this.handleExpressionEval}>Evaluate</button>

@@ -548,7 +548,12 @@ class _ASRouter {
 
   async evaluateExpression(target, {expression, context}) {
     const channel = target || this.messageChannel;
-    const evaluationStatus = await ASRouterTargeting.isMatch(expression, context);
+    let evaluationStatus;
+    try {
+      evaluationStatus = {result: await ASRouterTargeting.isMatch(expression, context), success: true};
+    } catch (e) {
+      evaluationStatus = {result: e, success: false};
+    }
 
     channel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: {...this.state, evaluationStatus}});
   }
