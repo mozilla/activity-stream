@@ -495,8 +495,7 @@ class _ASRouter {
     }
   }
 
-  async _updateAdminState(target) {
-    const channel = target || this.messageChannel;
+  async _getTargetingParameters() {
     const targetingParameters = {};
     for (const param of Object.keys(ASRouterTargeting.Environment)) {
       targetingParameters[param] = await ASRouterTargeting.Environment[param];
@@ -504,13 +503,19 @@ class _ASRouter {
     for (const param of Object.keys(this._getMessagesContext())) {
       targetingParameters[param] = await this._getMessagesContext()[param];
     }
+
+    return targetingParameters;
+  }
+
+  async _updateAdminState(target) {
+    const channel = target || this.messageChannel;
     channel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {
       type: "ADMIN_SET_STATE",
       data: {
         ...this.state,
         providerPrefs: ASRouterPreferences.providers,
         userPrefs: ASRouterPreferences.getAllUserPreferences(),
-        targetingParameters,
+        targetingParameters: await this._getTargetingParameters(),
       },
     });
   }
@@ -1012,7 +1017,7 @@ class _ASRouter {
           this._addPreviewEndpoint(action.data.endpoint.url, target.portID);
           await this.loadMessagesFromAllProviders();
         } else {
-          this._updateAdminState(target);
+          await this._updateAdminState(target);
         }
         break;
       case "IMPRESSION":
