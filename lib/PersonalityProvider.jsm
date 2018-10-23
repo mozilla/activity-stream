@@ -15,6 +15,28 @@ const {RecipeExecutor} = ChromeUtils.import("resource://activity-stream/lib/Reci
 ChromeUtils.defineModuleGetter(this, "NewTabUtils",
   "resource://gre/modules/NewTabUtils.jsm");
 
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
+XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
+
+XPCOMUtils.defineLazyGetter(this, "gTextDecoder", () => new TextDecoder());
+
+// This doesn't work currently, the fetch wasn't returning the expected
+// data structure from https://kinto.dev.mozaws.net/v1/, failing on
+// capabilities not being defined.
+
+XPCOMUtils.defineLazyGetter(this, "baseAttachmentsURL", async () => {
+  const server = Services.prefs.getCharPref("services.settings.server");
+  const serverInfo = await (await fetch(`${server}/`)).json();
+  const {capabilities: {attachments: {base_url}}} = serverInfo;
+  return base_url;
+});
+
+const PERSONALITY_PROVIDER_DIR_NAME = "personality-provider";
+const RECIPE_NAME = "personality-provider-recipe-attachment";
+const MODELS_NAME = "personality-provider-models-attachment";
+
 /**
  * V2 provider builds and ranks an interest profile (also called an “interest vector”) off the browse history.
  * This allows Firefox to classify pages into topics, by examining the text found on the page.
@@ -38,6 +60,60 @@ this.PersonalityProvider = class PersonalityProvider {
     this.scores = scores || {};
     this.interestConfig = this.scores.interestConfig;
     this.interestVector = this.scores.interestVector;
+    this.setupSyncAttachment(RECIPE_NAME);
+    this.setupSyncAttachment(MODELS_NAME);
+  }
+
+  setupSyncAttachment(collection) {
+    RemoteSettings(collection).on("sync", async event => {
+      const {
+        data: {created, updated, deleted},
+      } = event;
+
+      // Remove every removed attachment.
+      const toRemove = deleted.concat(updated.map(u => u.old));
+      await Promise.all(toRemove.map(record => this.deleteAttachment(record)));
+
+      // Download every new/updated attachment.
+      const toDownload = created.concat(updated.map(u => u.new));
+      await Promise.all(toDownload.map(record => this.downloadAttachment(record)));
+    });
+  }
+
+  async downloadAttachment(record) {
+    const {attachment: {location, filename}} = record;
+    const headers = new Headers();
+    headers.set("Accept-Encoding", "gzip");
+    const resp = await fetch((await baseAttachmentsURL) + location, {headers});
+    const buffer = await resp.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
+    const path = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
+    return OS.File.writeAtomic(path, bytes, {tmpPath: `${path}.tmp`});
+  }
+
+  async deleteAttachment(record) {
+    const {attachment: {filename}} = record;
+    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
+    const path = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
+    return OS.File.remove(path, {ignoreAbsent: true});
+  }
+
+  async getAttachment(record) {
+    const {attachment: {filename}} = record;
+    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
+    const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
+    try {
+      const fileExists = await OS.File.exists(filepath);
+      if (fileExists) {
+        const binaryData = await OS.File.read(filepath);
+        const json = gTextDecoder.decode(binaryData);
+        return JSON.parse(json);
+      }
+    } catch (error) {
+      Cu.reportError(`Failed to load ${filepath}: ${error.message}`);
+    }
+    return null;
   }
 
   async init(callback) {
@@ -71,7 +147,18 @@ this.PersonalityProvider = class PersonalityProvider {
 
   async getFromRemoteSettings(name) {
     const result = await RemoteSettings(name).get();
-    return result;
+    return Promise.all(result.map(async record => {
+      const {attachment: {filename, size}} = record;
+      // Figure out hash + md5sum check.
+      // const {attachment: {filename, hash, size}} = record;
+      await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
+      const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
+      // Figure out hash + md5sum check.
+      if (!await OS.File.exists(filepath) || await OS.File.stat(filepath).size !== size) {
+        await this.downloadAttachment(record);
+      }
+      return {...await this.getAttachment(record), recordKey: record.key};
+    }));
   }
 
   /**
@@ -81,7 +168,7 @@ this.PersonalityProvider = class PersonalityProvider {
   async getRecipe() {
     if (!this.recipe || !this.recipe.length) {
       const start = perfService.absNow();
-      this.recipe = await this.getFromRemoteSettings("personality-provider-recipe");
+      this.recipe = await this.getFromRemoteSettings(RECIPE_NAME);
       this.dispatch(ac.PerfEvent({
         event: "PERSONALIZATION_V2_GET_RECIPE_DURATION",
         value: Math.round(perfService.absNow() - start),
@@ -100,20 +187,20 @@ this.PersonalityProvider = class PersonalityProvider {
       const startTaggers = perfService.absNow();
       let nbTaggers = [];
       let nmfTaggers = {};
-      const models = await this.getFromRemoteSettings("personality-provider-models");
+      const models = await this.getFromRemoteSettings(MODELS_NAME);
 
       if (models.length === 0) {
         return null;
       }
 
       for (let model of models) {
-        if (!model || !this.modelKeys.includes(model.key)) {
+        if (!this.modelKeys.includes(model.recordKey)) {
           continue;
         }
-        if (model.data.model_type === "nb") {
-          nbTaggers.push(new NaiveBayesTextTagger(model.data));
-        } else if (model.data.model_type === "nmf") {
-          nmfTaggers[model.data.parent_tag] = new NmfTextTagger(model.data);
+        if (model.model_type === "nb") {
+          nbTaggers.push(new NaiveBayesTextTagger(model));
+        } else if (model.model_type === "nmf") {
+          nmfTaggers[model.parent_tag] = new NmfTextTagger(model);
         }
       }
       this.dispatch(ac.PerfEvent({
