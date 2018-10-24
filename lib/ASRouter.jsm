@@ -495,13 +495,17 @@ class _ASRouter {
     }
   }
 
-  async _getTargetingParameters() {
+  /**
+   * Used by ASRouter Admin returns all ASRouterTargeting.Environment
+   * and ASRouter._getMessagesContext parameters and values
+   */
+  async getTargetingParameters(environment, localContext) {
     const targetingParameters = {};
-    for (const param of Object.keys(ASRouterTargeting.Environment)) {
-      targetingParameters[param] = await ASRouterTargeting.Environment[param];
+    for (const param of Object.keys(environment)) {
+      targetingParameters[param] = await environment[param];
     }
-    for (const param of Object.keys(this._getMessagesContext())) {
-      targetingParameters[param] = await this._getMessagesContext()[param];
+    for (const param of Object.keys(localContext)) {
+      targetingParameters[param] = await localContext[param];
     }
 
     return targetingParameters;
@@ -515,7 +519,7 @@ class _ASRouter {
         ...this.state,
         providerPrefs: ASRouterPreferences.providers,
         userPrefs: ASRouterPreferences.getAllUserPreferences(),
-        targetingParameters: await this._getTargetingParameters(),
+        targetingParameters: await this.getTargetingParameters(ASRouterTargeting.Environment, this._getMessagesContext()),
       },
     });
   }

@@ -206,7 +206,7 @@ describe("ASRouter", () => {
   describe("setState", () => {
     it("should broadcast a message to update the admin tool on a state change if the asrouter.devtoolsEnabled pref is", async () => {
       sandbox.stub(ASRouterPreferences, "devtoolsEnabled").get(() => true);
-      sandbox.stub(Router, "_getTargetingParameters").resolves({});
+      sandbox.stub(Router, "getTargetingParameters").resolves({});
       await Router.setState({foo: 123});
 
       assert.calledOnce(channel.sendAsyncMessage);
@@ -220,6 +220,18 @@ describe("ASRouter", () => {
       await Router.setState({foo: 123});
 
       assert.notCalled(channel.sendAsyncMessage);
+    });
+  });
+
+  describe("getTargetingParameters", () => {
+    it("should return the targeting parameters", async () => {
+      const stub = sandbox.stub().resolves("foo");
+      const obj = {foo: 1};
+      sandbox.stub(obj, "foo").get(stub);
+      const result = await Router.getTargetingParameters(obj, obj);
+
+      assert.calledTwice(stub);
+      assert.propertyVal(result, "foo", "foo");
     });
   });
 
@@ -631,7 +643,7 @@ describe("ASRouter", () => {
 
     describe("#onMessage: ADMIN_CONNECT_STATE", () => {
       it("should send a message containing the whole state", async () => {
-        sandbox.stub(Router, "_getTargetingParameters").resolves({});
+        sandbox.stub(Router, "getTargetingParameters").resolves({});
         const msg = fakeAsyncMessage({type: "ADMIN_CONNECT_STATE"});
 
         await Router.onMessage(msg);
