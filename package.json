@@ -71,7 +71,7 @@
     "sinon": "4.5.0",
     "webpack": "4.15.0",
     "webpack-cli": "3.0.8",
-    "yamscripts": "0.0.3"
+    "yamscripts": "0.1.0"
   },
   "engines": {
     "firefox": ">=45.0 <=*",
