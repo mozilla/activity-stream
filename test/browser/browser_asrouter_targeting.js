@@ -385,9 +385,6 @@ add_task(async function check_region() {
 });
 
 add_task(async function check_browserSettings() {
-  is(await ASRouterTargeting.Environment.browserSettings.attribution, TelemetryEnvironment.currentEnvironment.settings.attribution,
-    "should return correct attribution info");
-
   is(await JSON.stringify(ASRouterTargeting.Environment.browserSettings.update), JSON.stringify(TelemetryEnvironment.currentEnvironment.settings.update),
       "should return correct update info");
 });
