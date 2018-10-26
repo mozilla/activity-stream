@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "es6",
+    "moduleResolution": "node",
+    "target": "esnext",
+    "jsx": "react",
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": [
+    "content-src/asrouter/components"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

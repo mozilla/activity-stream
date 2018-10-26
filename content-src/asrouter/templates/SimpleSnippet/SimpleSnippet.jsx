@@ -46,8 +46,10 @@ export class SimpleSnippet extends React.PureComponent {
 
     return (<Button
       onClick={props.onButtonClick || this.onButtonClick}
-      color={props.content.button_color}
-      backgroundColor={props.content.button_background_color}>
+      style={{
+        color: props.content.button_color,
+        backgroundColor: props.content.button_background_color,
+      }}>
       {props.content.button_label}
     </Button>);
   }

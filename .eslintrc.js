@@ -105,6 +105,7 @@ module.exports = {
     "lines-around-comment": ["error", {
       "allowClassStart": true,
       "allowObjectStart": true,
+      "allowBlockStart": true,
       "beforeBlockComment": true
     }],
     "lines-between-class-members": 2,
