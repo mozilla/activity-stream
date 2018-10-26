@@ -30,7 +30,6 @@
 //     sandbox.stub(as.store, "init");
 //     sandbox.stub(as.store, "uninit");
 //     sandbox.stub(as._defaultPrefs, "init");
-//     sandbox.stub(as._defaultPrefs, "reset");
 //   });
 
 //   afterEach(() => sandbox.restore());
