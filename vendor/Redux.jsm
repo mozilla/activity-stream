@@ -1,7 +1,16 @@
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.Redux = {})));
+/**
+ * Redux v.4.0.1
+ *
+ * This file was imported from https://unpkg.com/redux@4.0.1/dist/redux.js
+ * and reformatted as a Javascript Core Module
+ */
+var EXPORTED_SYMBOLS = ["redux"];
+var self = this;
+
+this.redux = (function (global, factory) {
+  var exports = {};
+  factory(exports);
+  return exports;
   }(this, (function (exports) { 'use strict';
 
   function symbolObservablePonyfill(root) {
@@ -24,18 +33,14 @@
 
   /* global window */
 
+  // This is edited to prevent Function being present in this code.
+  // See https://bugzilla.mozilla.org/show_bug.cgi?id=1486375
   var root;
 
   if (typeof self !== 'undefined') {
     root = self;
-  } else if (typeof window !== 'undefined') {
-    root = window;
   } else if (typeof global !== 'undefined') {
     root = global;
-  } else if (typeof module !== 'undefined') {
-    root = module;
-  } else {
-    root = Function('return this')();
   }
 
   var result = symbolObservablePonyfill(root);
