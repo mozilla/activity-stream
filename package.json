@@ -14,7 +14,7 @@
     "react-dom": "16.2.0",
     "react-intl": "2.4.0",
     "react-redux": "5.0.6",
-    "redux": "3.6.0"
+    "redux": "4.0.1"
   },
   "devDependencies": {
     "@octokit/rest": "15.3.0",
