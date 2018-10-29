@@ -221,7 +221,7 @@ const PREFS_CONFIG = new Map([
       type: "remote",
       url: "https://snippets.cdn.mozilla.net/%STARTPAGE_VERSION%/%NAME%/%VERSION%/%APPBUILDID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/",
       updateCycleInMs: ONE_HOUR_IN_MS * 4,
-      enabled: false,
+      enabled: true,
     }, {
       id: "cfr",
       type: "local",
