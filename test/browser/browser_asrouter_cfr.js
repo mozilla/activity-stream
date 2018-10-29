@@ -144,6 +144,7 @@ add_task(async function test_onLocationChange_cb() {
   Assert.equal(count, 1, "Count navigation to example.com");
 
   // Anchor scroll triggers a location change event with the same document
+  // https://searchfox.org/mozilla-central/rev/8848b9741fc4ee4e9bc3ae83ea0fc048da39979f/uriloader/base/nsIWebProgressListener.idl#400-403
   await BrowserTestUtils.loadURI(browser, "http://example.com/#foo");
   await BrowserTestUtils.waitForLocationChange(gBrowser, "http://example.com/#foo");
 
