@@ -11,7 +11,15 @@ export class ASRouterAdmin extends React.PureComponent {
     this.findOtherBundledMessagesOfSameTemplate = this.findOtherBundledMessagesOfSameTemplate.bind(this);
     this.handleExpressionEval = this.handleExpressionEval.bind(this);
     this.onChangeTargetingParameters = this.onChangeTargetingParameters.bind(this);
-    this.state = {messageFilter: "all", evaluationStatus: {}, stringTargetingParameters: null};
+    this.onCopyTargetingParams = this.onCopyTargetingParams.bind(this);
+    this.onPasteTargetingParams = this.onPasteTargetingParams.bind(this);
+    this.state = {
+      messageFilter: "all",
+      evaluationStatus: {},
+      stringTargetingParameters: null,
+      copiedToClipboard: false,
+      pasteFromClipboard: false,
+    };
   }
 
   onMessage({data: action}) {
@@ -104,6 +112,68 @@ export class ASRouterAdmin extends React.PureComponent {
 
       return {stringTargetingParameters: updatedParameters, targetingParametersError};
     });
+  }
+
+  handleEnabledToggle(event) {
+    const provider = this.state.providerPrefs.find(p => p.id === event.target.dataset.provider);
+    const userPrefInfo = this.state.userPrefs;
+
+    const isUserEnabled = provider.id in userPrefInfo ? userPrefInfo[provider.id] : true;
+    const isSystemEnabled = provider.enabled;
+    const isEnabling = event.target.checked;
+
+    if (isEnabling) {
+      if (!isUserEnabled) {
+        ASRouterUtils.sendMessage({type: "SET_PROVIDER_USER_PREF", data: {id: provider.id, value: true}});
+      }
+      if (!isSystemEnabled) {
+        ASRouterUtils.sendMessage({type: "ENABLE_PROVIDER", data: provider.id});
+      }
+    } else {
+      ASRouterUtils.sendMessage({type: "DISABLE_PROVIDER", data: provider.id});
+    }
+
+    this.setState({messageFilter: "all"});
+  }
+
+  handleUserPrefToggle(event) {
+    const action = {type: "SET_PROVIDER_USER_PREF", data: {id: event.target.dataset.provider, value: event.target.checked}};
+    ASRouterUtils.sendMessage(action);
+    this.setState({messageFilter: "all"});
+  }
+
+  onChangeMessageFilter(event) {
+    this.setState({messageFilter: event.target.value});
+  }
+
+  onCopyTargetingParams(event) {
+    const stringTargetingParameters = {...this.state.stringTargetingParameters};
+    for (const key of Object.keys(stringTargetingParameters)) {
+      if (stringTargetingParameters[key] === undefined) {
+        stringTargetingParameters[key] = null;
+      }
+    }
+    const setClipboardData = e => {
+      e.preventDefault();
+      e.clipboardData.setData("text", JSON.stringify(stringTargetingParameters, null, 2));
+      document.removeEventListener("copy", setClipboardData);
+      this.setState({copiedToClipboard: true});
+    };
+
+    document.addEventListener("copy", setClipboardData);
+
+    document.execCommand("copy");
+  }
+
+  onPasteTargetingParams(event) {
+    const pasteClipboardData = e => {
+      e.preventDefault();
+      const stringTargetingParameters = JSON.parse((e.clipboardData || window.clipboardData).getData("text"));
+      this.setState({stringTargetingParameters});
+    };
+
+    this.setState({pasteFromClipboard: true});
+    document.addEventListener("paste", pasteClipboardData);
   }
 
   renderMessageItem(msg) {
@@ -221,6 +291,16 @@ export class ASRouterAdmin extends React.PureComponent {
         </td>
       </tr>
       <tr><td><h2>Modify targeting parameters</h2></td></tr>
+      <tr>
+        <td>
+          <button className="ASRouterButton secondary" onClick={this.onCopyTargetingParams} disabled={this.state.copiedToClipboard}>
+            {this.state.copiedToClipboard ? "Parameters copied!" : "Copy parameters"}
+          </button>
+          <button className="ASRouterButton secondary" onClick={this.onPasteTargetingParams} disabled={this.state.pasteFromClipboard}>
+            {this.state.pasteFromClipboard ? "Paste enabled" : "Enable parameter paste"}
+          </button>
+        </td>
+      </tr>
       {this.state.stringTargetingParameters && Object.keys(this.state.stringTargetingParameters).map((param, i) => {
         const value = this.state.stringTargetingParameters[param];
         const errorState = this.state.targetingParametersError && this.state.targetingParametersError.id === param;
