@@ -138,10 +138,6 @@ export class ASRouterAdmin extends React.PureComponent {
     </tbody></table>);
   }
 
-  onChangeMessageFilter(event) {
-    this.setState({messageFilter: event.target.value});
-  }
-
   renderMessageFilter() {
     if (!this.state.providers) {
       return null;
@@ -161,34 +157,6 @@ export class ASRouterAdmin extends React.PureComponent {
         <td>Last Updated</td>
       </tr>
     </thead>);
-  }
-
-  handleEnabledToggle(event) {
-    const provider = this.state.providerPrefs.find(p => p.id === event.target.dataset.provider);
-    const userPrefInfo = this.state.userPrefs;
-
-    const isUserEnabled = provider.id in userPrefInfo ? userPrefInfo[provider.id] : true;
-    const isSystemEnabled = provider.enabled;
-    const isEnabling = event.target.checked;
-
-    if (isEnabling) {
-      if (!isUserEnabled) {
-        ASRouterUtils.sendMessage({type: "SET_PROVIDER_USER_PREF", data: {id: provider.id, value: true}});
-      }
-      if (!isSystemEnabled) {
-        ASRouterUtils.sendMessage({type: "ENABLE_PROVIDER", data: provider.id});
-      }
-    } else {
-      ASRouterUtils.sendMessage({type: "DISABLE_PROVIDER", data: provider.id});
-    }
-
-    this.setState({messageFilter: "all"});
-  }
-
-  handleUserPrefToggle(event) {
-    const action = {type: "SET_PROVIDER_USER_PREF", data: {id: event.target.dataset.provider, value: event.target.checked}};
-    ASRouterUtils.sendMessage(action);
-    this.setState({messageFilter: "all"});
   }
 
   renderProviders() {
