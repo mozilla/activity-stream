@@ -6,11 +6,11 @@
     "moduleResolution": "node",
     "target": "esnext",
     "jsx": "react",
-    "allowJs": true,
     "noEmit": true
   },
   "include": [
-    "content-src/asrouter/components"
+    "content-src/asrouter/components",
+    "lib/*.jsm"
   ],
   "exclude": [
     "node_modules"

@@ -8,7 +8,7 @@ export interface ButtonCustomStyles {
 
 export interface ButtonProps {
   onClick: () => {},
-  // className: string;
+  className: string;
   style?: ButtonCustomStyles;
   children: React.ReactNode;
 }

@@ -48,7 +48,7 @@ scripts:
   importmc: rsync --exclude-from .mcignore -a $npm_package_config_mc_dir/browser/components/newtab/ .
 
 # tsc: Run typescript checks
-  tsc: tsc
+  tsc: tsc -p jsconfig.json
 
   testmc:
     lint: =>lint
