@@ -146,9 +146,11 @@ export class ASRouterAdmin extends React.PureComponent {
     this.setState({messageFilter: event.target.value});
   }
 
+  // Simulate a copy event that sets to clipboard all targeting paramters and values
   onCopyTargetingParams(event) {
     const stringTargetingParameters = {...this.state.stringTargetingParameters};
     for (const key of Object.keys(stringTargetingParameters)) {
+      // If the value is not set the parameter will be lost when we stringify
       if (stringTargetingParameters[key] === undefined) {
         stringTargetingParameters[key] = null;
       }
@@ -165,11 +167,12 @@ export class ASRouterAdmin extends React.PureComponent {
     document.execCommand("copy");
   }
 
+  // Copy all clipboard data to targeting parameters
   onPasteTargetingParams(event) {
     const pasteClipboardData = e => {
       e.preventDefault();
       const stringTargetingParameters = JSON.parse((e.clipboardData || window.clipboardData).getData("text"));
-      this.setState({stringTargetingParameters});
+      this.setState({stringTargetingParameters, pasteFromClipboard: false});
     };
 
     this.setState({pasteFromClipboard: true});
