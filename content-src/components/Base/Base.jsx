@@ -82,7 +82,7 @@ export class _Base extends React.PureComponent {
 
     const prefs = props.Prefs.values;
     if (prefs["asrouter.devtoolsEnabled"]) {
-      if (window.location.hash === "#asrouter") {
+      if (window.location.hash.startsWith("#asrouter")) {
         return (<ASRouterAdmin />);
       }
       console.log("ASRouter devtools enabled. To access visit %cabout:newtab#asrouter", "font-weight: bold"); // eslint-disable-line no-console

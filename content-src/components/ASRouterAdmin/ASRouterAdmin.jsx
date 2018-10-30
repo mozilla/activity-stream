@@ -1,8 +1,9 @@
 import {ASRouterUtils} from "../../asrouter/asrouter-content";
 import {ModalOverlay} from "../../asrouter/components/ModalOverlay/ModalOverlay";
 import React from "react";
+import {SimpleHashRouter} from "./SimpleHashRouter";
 
-export class ASRouterAdmin extends React.PureComponent {
+export class ASRouterAdminInner extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onMessage = this.onMessage.bind(this);
@@ -399,9 +400,39 @@ export class ASRouterAdmin extends React.PureComponent {
       </div>);
   }
 
+  getSection() {
+    const [section] = this.props.location.routes;
+    switch (section) {
+      case "targeting":
+        return (<React.Fragment>
+          <h2>Targeting Utilities</h2>
+          <button className="button" onClick={this.expireCache}>Expire Cache</button> (This expires the cache in ASR Targeting for bookmarks and top sites)
+          {this.renderTargetingParameters()}
+          {this.renderAttributionParamers()}
+        </React.Fragment>);
+      default:
+        return (<React.Fragment>
+          <h2>Message Providers <button title="Restore all provider settings that ship with Firefox" className="button" onClick={this.resetPref}>Restore default prefs</button></h2>
+          {this.state.providers ? this.renderProviders() : null}
+          <h2>Messages</h2>
+          {this.renderMessageFilter()}
+          {this.renderMessages()}
+          {this.renderPasteModal()}
+        </React.Fragment>);
+    }
+  }
+
   render() {
-    return (<div className="asrouter-admin outer-wrapper">
+    return (<div className="asrouter-admin">
+      <aside className="sidebar">
+        <ul>
+          <li><a href="#asrouter">General</a></li>
+          <li><a href="#asrouter-targeting">Targeting</a></li>
+        </ul>
+      </aside>
+      <main className="main-panel">
       <h1>AS Router Admin</h1>
+
       <p className="helpLink">
         <span className="icon icon-small-spacer icon-info" />
         {" "}
@@ -409,17 +440,11 @@ export class ASRouterAdmin extends React.PureComponent {
           Need help using these tools? Check out our <a target="blank" href="https://github.com/mozilla/activity-stream/blob/master/content-src/asrouter/docs/debugging-docs.md">documentation</a>
         </span>
       </p>
-      <h2>Targeting Utilities</h2>
-      <button className="button" onClick={this.expireCache}>Expire Cache</button> (This expires the cache in ASR Targeting for bookmarks and top sites)
-      <h2>Message Providers <button title="Restore all provider settings that ship with Firefox" className="button" onClick={this.resetPref}>Restore default prefs</button></h2>
 
-      {this.state.providers ? this.renderProviders() : null}
-      <h2>Messages</h2>
-      {this.renderMessageFilter()}
-      {this.renderMessages()}
-      {this.renderPasteModal()}
-      {this.renderTargetingParameters()}
-      {this.renderAttributionParamers()}
+      {this.getSection()}
+      </main>
     </div>);
   }
 }
+
+export const ASRouterAdmin = props => (<SimpleHashRouter><ASRouterAdminInner {...props} /></SimpleHashRouter>);
