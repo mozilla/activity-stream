@@ -96,7 +96,9 @@ this.PersonalityProvider = class PersonalityProvider {
     const {attachment: {filename}} = record;
     await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
     const path = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
-    return OS.File.remove(path, {ignoreAbsent: true});
+
+    await OS.File.remove(path, {ignoreAbsent: true});
+    return OS.File.removeEmptyDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME), { ignoreAbsent: true });
   }
 
   async getAttachment(record) {
