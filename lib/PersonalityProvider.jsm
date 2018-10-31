@@ -37,6 +37,23 @@ const PERSONALITY_PROVIDER_DIR_NAME = "personality-provider";
 const RECIPE_NAME = "personality-provider-recipe-attachment";
 const MODELS_NAME = "personality-provider-models-attachment";
 
+function getHash(aStr) {
+  // return the two-digit hexadecimal code for a byte
+  let toHexString = charCode => ("0" + charCode.toString(16)).slice(-2);
+
+  let hasher = Cc["@mozilla.org/security/hash;1"].
+               createInstance(Ci.nsICryptoHash);
+  hasher.init(Ci.nsICryptoHash.MD5);
+  let stringStream = Cc["@mozilla.org/io/string-input-stream;1"].
+                     createInstance(Ci.nsIStringInputStream);
+  stringStream.data = aStr;
+  hasher.updateFromStream(stringStream, -1);
+
+  // convert the binary hash data to a hex string.
+  let binary = hasher.finish(false);
+  return Array.from(binary, (c, i) => toHexString(binary.charCodeAt(i))).join("").toLowerCase();
+}
+
 /**
  * V2 provider builds and ranks an interest profile (also called an “interest vector”) off the browse history.
  * This allows Firefox to classify pages into topics, by examining the text found on the page.
@@ -84,9 +101,15 @@ this.PersonalityProvider = class PersonalityProvider {
     const {attachment: {location, filename}} = record;
     const headers = new Headers();
     headers.set("Accept-Encoding", "gzip");
-    const resp = await fetch((await baseAttachmentsURL) + location, {headers});
+    const filepath = (await baseAttachmentsURL) + location;
+    const resp = await fetch(filepath, {headers});
+    if (!resp.ok) {
+      Cu.reportError(`Failed to fetch ${filepath}: ${resp.status}`);
+      return;
+    }
     const buffer = await resp.arrayBuffer();
     const bytes = new Uint8Array(buffer);
+    console.log(bytes);
     await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
     const path = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
     return OS.File.writeAtomic(path, bytes, {tmpPath: `${path}.tmp`});
@@ -102,9 +125,42 @@ this.PersonalityProvider = class PersonalityProvider {
   }
 
   async getAttachment(record) {
-    const {attachment: {filename}} = record;
-    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
+/*
+      // Figure out hash + md5sum check.
+      // const {attachment: {filename, size}} = record;
+      // Figure out hash + md5sum check.
+      const {attachment: {filename, hash, size}} = record;
+
+      if (!await OS.File.exists(filepath) || await OS.File.stat(filepath).size !== size) {
+        await this.downloadAttachment(record);
+      } else {
+        attachment = await this.getAttachment(record);
+        if () {
+          await this.downloadAttachment(record);
+          attachment = await this.getAttachment(record);
+        }
+      }
+      attachment = attachment || await this.getAttachment(record);
+      console.log(attachment);
+      console.log(getHash(JSON.stringify(attachment)), hash);
+      console.log(getHash(JSON.stringify(attachment)) === hash);
+      //if (!await ) {
+      //  await this.downloadAttachment(record);
+      //}
+*/
+    const {attachment: {filename, hash, size}} = record;
     const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
+
+    if (!await OS.File.exists(filepath) || await OS.File.stat(filepath).size !== size) {
+      await this.downloadAttachment(record);
+    }
+
+
+
+
+
+    //const {attachment: {filename}} = record;
+    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
     try {
       const fileExists = await OS.File.exists(filepath);
       if (fileExists) {
@@ -150,15 +206,9 @@ this.PersonalityProvider = class PersonalityProvider {
   async getFromRemoteSettings(name) {
     const result = await RemoteSettings(name).get();
     return Promise.all(result.map(async record => {
-      const {attachment: {filename, size}} = record;
-      // Figure out hash + md5sum check.
-      // const {attachment: {filename, hash, size}} = record;
+      const {attachment: {filename}} = record;
       await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
       const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
-      // Figure out hash + md5sum check.
-      if (!await OS.File.exists(filepath) || await OS.File.stat(filepath).size !== size) {
-        await this.downloadAttachment(record);
-      }
       return {...await this.getAttachment(record), recordKey: record.key};
     }));
   }
