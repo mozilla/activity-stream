@@ -90,3 +90,4 @@
   "additionalProperties": false,
   "required": ["title", "text", "icon", "button_label", "button_action"]
 }
+
