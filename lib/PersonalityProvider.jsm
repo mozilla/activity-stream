@@ -113,7 +113,7 @@ this.PersonalityProvider = class PersonalityProvider {
     } catch (error) {
       Cu.reportError(`Failed to load ${filepath}: ${error.message}`);
     }
-    return null;
+    return {};
   }
 
   async init(callback) {
@@ -166,15 +166,15 @@ this.PersonalityProvider = class PersonalityProvider {
    * A Recipe is a set of instructions on how to processes a RecipeExecutor.
    */
   async getRecipe() {
-    if (!this.recipe || !this.recipe.length) {
+    if (!this.recipes || !this.recipes.length) {
       const start = perfService.absNow();
-      this.recipe = await this.getFromRemoteSettings(RECIPE_NAME);
+      this.recipes = await this.getFromRemoteSettings(RECIPE_NAME);
       this.dispatch(ac.PerfEvent({
         event: "PERSONALIZATION_V2_GET_RECIPE_DURATION",
         value: Math.round(perfService.absNow() - start),
       }));
     }
-    return this.recipe[0];
+    return this.recipes[0];
   }
 
   /**
