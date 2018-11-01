@@ -1,3 +1,11 @@
+%inputs-shared {
+  background: $white;
+  border: $input-border;
+  margin: 8px 0;
+  padding: 8px;
+  width: 100%;
+  font-size: 15px;
+}
 
 .asrouter-admin {
   $border-color: var(--newtab-border-secondary-color);
@@ -24,6 +32,32 @@
   table {
     border-collapse: collapse;
     width: 100%;
+  }
+
+  textarea {
+    @extend %inputs-shared;
+  }
+
+  input {
+    &[type='text'] {
+      @extend %inputs-shared;
+
+      &:focus {
+        border: $input-border-active;
+        box-shadow: var(--newtab-textbox-focus-boxshadow);
+      }
+
+      &[disabled] {
+        border: $input-border;
+        box-shadow: none;
+        opacity: 0.4;
+      }
+
+      &.errorState {
+        border: $input-error-border;
+        box-shadow: $input-error-boxshadow;
+      }
+    }
   }
 
   .sourceLabel {

@@ -555,13 +555,13 @@ class _ASRouter {
     return ASRouterTargeting.findMatchingMessage({messages, trigger, context, onError: this._handleTargetingError});
   }
 
-  async evaluateExpression(target, {expression, context}) {
+  async evaluateExpression(target, {id, expression, context}) {
     const channel = target || this.messageChannel;
     let evaluationStatus;
     try {
-      evaluationStatus = {result: await ASRouterTargeting.isMatch(expression, context), success: true};
+      evaluationStatus = {result: await ASRouterTargeting.isMatch(expression, context), success: true, id};
     } catch (e) {
-      evaluationStatus = {result: e.message, success: false};
+      evaluationStatus = {result: e.message, success: false, id};
     }
 
     channel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "ADMIN_SET_STATE", data: {...this.state, evaluationStatus}});

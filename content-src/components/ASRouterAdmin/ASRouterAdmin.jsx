@@ -11,6 +11,7 @@ export class ASRouterAdmin extends React.PureComponent {
     this.onChangeMessageFilter = this.onChangeMessageFilter.bind(this);
     this.findOtherBundledMessagesOfSameTemplate = this.findOtherBundledMessagesOfSameTemplate.bind(this);
     this.handleExpressionEval = this.handleExpressionEval.bind(this);
+    this.handleMessageFiltering = this.handleMessageFiltering.bind(this);
     this.onChangeTargetingParameters = this.onChangeTargetingParameters.bind(this);
     this.onCopyTargetingParams = this.onCopyTargetingParams.bind(this);
     this.onPasteTargetingParams = this.onPasteTargetingParams.bind(this);
@@ -22,6 +23,8 @@ export class ASRouterAdmin extends React.PureComponent {
       newStringTargetingParameters: null,
       copiedToClipboard: false,
       pasteFromClipboard: false,
+      jexlMessageFilter: false,
+      jexlMatchingMessages: [],
     };
   }
 
@@ -34,6 +37,18 @@ export class ASRouterAdmin extends React.PureComponent {
           stringTargetingParameters[param] = JSON.stringify(action.data.targetingParameters[param], null, 2);
         }
         this.setState({stringTargetingParameters});
+      }
+      if (this.state.jexlMessageFilter && action.data.evaluationStatus) {
+        this.setState(({jexlMatchingMessages}) => {
+          const success = action.data.evaluationStatus.success && !!action.data.evaluationStatus.result;
+          if (!success) {
+            return jexlMatchingMessages;
+          }
+
+          const messages = [...jexlMatchingMessages];
+          messages.push(action.data.evaluationStatus.id);
+          return {jexlMatchingMessages: messages};
+        });
       }
     }
   }
@@ -82,7 +97,7 @@ export class ASRouterAdmin extends React.PureComponent {
     ASRouterUtils.sendMessage({type: "RESET_PROVIDER_PREF"});
   }
 
-  handleExpressionEval() {
+  handleExpressionEval(event, id, expression) {
     const context = {};
     for (const param of Object.keys(this.state.stringTargetingParameters)) {
       const value = this.state.stringTargetingParameters[param];
@@ -91,15 +106,28 @@ export class ASRouterAdmin extends React.PureComponent {
     ASRouterUtils.sendMessage({
       type: "EVALUATE_JEXL_EXPRESSION",
       data: {
-        expression: this.refs.expressionInput.value,
+        id,
+        expression: expression || this.refs.expressionInput.value,
         context,
       },
     });
   }
 
+  handleMessageFiltering(event) {
+    if (this.state.jexlMessageFilter) {
+      return this.clearJEXLMessageFiltering();
+    }
+
+    this.setState({jexlMessageFilter: true});
+    this.state.messages.forEach(({id, targeting}) => targeting && this.handleExpressionEval(event, id, targeting));
+    return null;
+  }
+
   onChangeTargetingParameters(event) {
-    const {name} = event.target;
-    const {value} = event.target;
+    const {target} = event;
+    const {name} = target;
+    const {value} = target;
+    this.clearJEXLMessageFiltering(event);
 
     this.setState(({stringTargetingParameters}) => {
       let targetingParametersError = null;
@@ -107,9 +135,11 @@ export class ASRouterAdmin extends React.PureComponent {
       updatedParameters[name] = value;
       try {
         JSON.parse(value);
-      } catch (e) {
+      } catch ({message}) {
         console.log(`Error parsing value of parameter ${name}`); // eslint-disable-line no-console
         targetingParametersError = {id: name};
+        target.setCustomValidity(message);
+        target.reportValidity();
       }
 
       return {
@@ -196,10 +226,20 @@ export class ASRouterAdmin extends React.PureComponent {
     }
   }
 
+  clearJEXLMessageFiltering(event) {
+    event.target.setCustomValidity("");
+    this.setState({jexlMessageFilter: false, jexlMatchingMessages: []});
+  }
+
   renderMessageItem(msg) {
     const isCurrent = msg.id === this.state.lastMessageId;
     const isBlocked = this.state.messageBlockList.includes(msg.id) || this.state.messageBlockList.includes(msg.campaign);
+    const isJEXLFiltered = this.state.jexlMessageFilter && !this.state.jexlMatchingMessages.includes(msg.id);
     const impressions = this.state.messageImpressions[msg.id] ? this.state.messageImpressions[msg.id].length : 0;
+
+    if (isJEXLFiltered) {
+      return null;
+    }
 
     let itemClassName = "message-item";
     if (isCurrent) { itemClassName += " current"; }
@@ -232,10 +272,18 @@ export class ASRouterAdmin extends React.PureComponent {
     if (!this.state.providers) {
       return null;
     }
-    return (<p>Show messages from <select value={this.state.messageFilter} onChange={this.onChangeMessageFilter}>
+    return (<React.Fragment>
+      <p>Show messages from <select value={this.state.messageFilter} onChange={this.onChangeMessageFilter}>
       <option value="all">all providers</option>
       {this.state.providers.map(provider => (<option key={provider.id} value={provider.id}>{provider.id}</option>))}
-    </select></p>);
+      </select></p>
+      <p>
+        Filter all messages based on the targeting parameters below
+        <button className="ASRouterButton secondary" onClick={this.handleMessageFiltering}>
+        {this.state.jexlMessageFilter ? "Clear Message Filtering" : "Filter Messages"}
+        </button>
+      </p>
+    </React.Fragment>);
   }
 
   renderTableHead() {
@@ -322,7 +370,10 @@ export class ASRouterAdmin extends React.PureComponent {
           <p>Status: <span ref="evaluationStatus">{success ? "✅" : "❌"}, Result: {result}</span></p>
         </td>
         <td>
-           <button className="ASRouterButton secondary" onClick={this.handleExpressionEval}>Evaluate</button>
+           <tr>
+             <td><button className="ASRouterButton secondary" onClick={this.handleExpressionEval}>Evaluate</button></td>
+             <td>Evaluate the value of the JEXL expression based on the targeting parameters below</td>
+           </tr>
         </td>
       </tr>
       <tr><td><h2>Modify targeting parameters</h2></td></tr>
@@ -342,7 +393,7 @@ export class ASRouterAdmin extends React.PureComponent {
         const className = errorState ? "errorState" : "";
         const inputComp = (value && value.length) > 30 ?
           <textarea name={param} className={className} value={value} rows="10" cols="60" onChange={this.onChangeTargetingParameters} /> :
-          <input name={param} className={className} value={value} onChange={this.onChangeTargetingParameters} />;
+          <input ref={param} type="text" name={param} className={className} value={value} onChange={this.onChangeTargetingParameters} />;
 
         return (<tr key={i}>
           <td>{param}</td>
