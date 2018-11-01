@@ -39,13 +39,10 @@ const MODELS_NAME = "personality-provider-models-attachment";
 
 function getHash(aStr) {
   // return the two-digit hexadecimal code for a byte
-  let toHexString = charCode => ("0" + charCode.toString(16)).slice(-2);
-
-  let hasher = Cc["@mozilla.org/security/hash;1"].
-               createInstance(Ci.nsICryptoHash);
-  hasher.init(Ci.nsICryptoHash.MD5);
-  let stringStream = Cc["@mozilla.org/io/string-input-stream;1"].
-                     createInstance(Ci.nsIStringInputStream);
+  let toHexString = charCode => (`0${charCode.toString(16)}`).slice(-2);
+  let hasher = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
+  hasher.init(Ci.nsICryptoHash.SHA256);
+  let stringStream = Cc["@mozilla.org/io/string-input-stream;1"].createInstance(Ci.nsIStringInputStream);
   stringStream.data = aStr;
   hasher.updateFromStream(stringStream, -1);
 
@@ -105,7 +102,7 @@ this.PersonalityProvider = class PersonalityProvider {
     const resp = await fetch(filepath, {headers});
     if (!resp.ok) {
       Cu.reportError(`Failed to fetch ${filepath}: ${resp.status}`);
-      return;
+      return false;
     }
     const buffer = await resp.arrayBuffer();
     const bytes = new Uint8Array(buffer);
@@ -120,7 +117,7 @@ this.PersonalityProvider = class PersonalityProvider {
     const path = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
 
     await OS.File.remove(path, {ignoreAbsent: true});
-    return OS.File.removeEmptyDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME), { ignoreAbsent: true });
+    return OS.File.removeEmptyDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME), {ignoreAbsent: true});
   }
 
   async getAttachment(record) {
@@ -130,24 +127,20 @@ this.PersonalityProvider = class PersonalityProvider {
     let jsonStr = "{}";
 
     try {
-      if (!await OS.File.exists(filepath) || await OS.File.stat(filepath).size !== size) {
+      if (!await OS.File.exists(filepath) ||
+          await OS.File.stat(filepath).size !== size ||
+          getHash(await this._getFileStr(filepath)) !== hash) {
         await this.downloadAttachment(record);
       }
-
       jsonStr = await this._getFileStr(filepath);
-      // File has changed, redownload.
-      // if (hash !== getHash(jsonStr)) {
-      if (false) {
-        await this.downloadAttachment(record);
-        jsonStr = await this._getFileStr(filepath);
-      }
     } catch (error) {
       Cu.reportError(`Failed to load ${filepath}: ${error.message}`);
     }
     return JSON.parse(jsonStr);
   }
 
-  // A helper function, it shouldn't be used on it's own.
+  // A helper function to read and decode a file, it isn't a stand alone function.
+  // If you use this, ensure you check the file exists and you have a try catch.
   async _getFileStr(filepath) {
     const binaryData = await OS.File.read(filepath);
     return gTextDecoder.decode(binaryData);
@@ -184,12 +177,7 @@ this.PersonalityProvider = class PersonalityProvider {
 
   async getFromRemoteSettings(name) {
     const result = await RemoteSettings(name).get();
-    return Promise.all(result.map(async record => {
-      const {attachment: {filename}} = record;
-      await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
-      const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
-      return {...await this.getAttachment(record), recordKey: record.key};
-    }));
+    return Promise.all(result.map(async record => ({...await this.getAttachment(record), recordKey: record.key})));
   }
 
   /**
