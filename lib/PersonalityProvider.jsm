@@ -109,7 +109,6 @@ this.PersonalityProvider = class PersonalityProvider {
     }
     const buffer = await resp.arrayBuffer();
     const bytes = new Uint8Array(buffer);
-    console.log(bytes);
     await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
     const path = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
     return OS.File.writeAtomic(path, bytes, {tmpPath: `${path}.tmp`});
@@ -125,53 +124,33 @@ this.PersonalityProvider = class PersonalityProvider {
   }
 
   async getAttachment(record) {
-/*
-      // Figure out hash + md5sum check.
-      // const {attachment: {filename, size}} = record;
-      // Figure out hash + md5sum check.
-      const {attachment: {filename, hash, size}} = record;
+    const {attachment: {filename, hash, size}} = record;
+    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
+    const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
+    let jsonStr = "{}";
 
+    try {
       if (!await OS.File.exists(filepath) || await OS.File.stat(filepath).size !== size) {
         await this.downloadAttachment(record);
-      } else {
-        attachment = await this.getAttachment(record);
-        if () {
-          await this.downloadAttachment(record);
-          attachment = await this.getAttachment(record);
-        }
       }
-      attachment = attachment || await this.getAttachment(record);
-      console.log(attachment);
-      console.log(getHash(JSON.stringify(attachment)), hash);
-      console.log(getHash(JSON.stringify(attachment)) === hash);
-      //if (!await ) {
-      //  await this.downloadAttachment(record);
-      //}
-*/
-    const {attachment: {filename, hash, size}} = record;
-    const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
 
-    if (!await OS.File.exists(filepath) || await OS.File.stat(filepath).size !== size) {
-      await this.downloadAttachment(record);
-    }
-
-
-
-
-
-    //const {attachment: {filename}} = record;
-    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
-    try {
-      const fileExists = await OS.File.exists(filepath);
-      if (fileExists) {
-        const binaryData = await OS.File.read(filepath);
-        const json = gTextDecoder.decode(binaryData);
-        return JSON.parse(json);
+      jsonStr = await this._getFileStr(filepath);
+      // File has changed, redownload.
+      // if (hash !== getHash(jsonStr)) {
+      if (false) {
+        await this.downloadAttachment(record);
+        jsonStr = await this._getFileStr(filepath);
       }
     } catch (error) {
       Cu.reportError(`Failed to load ${filepath}: ${error.message}`);
     }
-    return {};
+    return JSON.parse(jsonStr);
+  }
+
+  // A helper function, it shouldn't be used on it's own.
+  async _getFileStr(filepath) {
+    const binaryData = await OS.File.read(filepath);
+    return gTextDecoder.decode(binaryData);
   }
 
   async init(callback) {
