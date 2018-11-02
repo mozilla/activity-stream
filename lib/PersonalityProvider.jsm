@@ -22,10 +22,6 @@ XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
 XPCOMUtils.defineLazyGetter(this, "gTextDecoder", () => new TextDecoder());
 
-// This doesn't work currently, the fetch wasn't returning the expected
-// data structure from https://kinto.dev.mozaws.net/v1/, failing on
-// capabilities not being defined.
-
 XPCOMUtils.defineLazyGetter(this, "baseAttachmentsURL", async () => {
   const server = Services.prefs.getCharPref("services.settings.server");
   const serverInfo = await (await fetch(`${server}/`)).json();
@@ -33,9 +29,9 @@ XPCOMUtils.defineLazyGetter(this, "baseAttachmentsURL", async () => {
   return base_url;
 });
 
-const PERSONALITY_PROVIDER_DIR_NAME = "personality-provider";
-const RECIPE_NAME = "personality-provider-recipe-attachment";
-const MODELS_NAME = "personality-provider-models-attachment";
+const PERSONALITY_PROVIDER_DIR = OS.Path.join(OS.Constants.Path.localProfileDir, "personality-provider");
+const RECIPE_NAME = "personality-provider-recipe";
+const MODELS_NAME = "personality-provider-models";
 
 function getHash(aStr) {
   // return the two-digit hexadecimal code for a byte
@@ -90,53 +86,71 @@ this.PersonalityProvider = class PersonalityProvider {
 
       // Download every new/updated attachment.
       const toDownload = created.concat(updated.map(u => u.new));
-      await Promise.all(toDownload.map(record => this.downloadAttachment(record)));
+      await Promise.all(toDownload.map(record => this.maybeDownloadAttachment(record)));
     });
   }
 
-  async downloadAttachment(record) {
+  /**
+   * Downloads the attachment to disk assuming the dir already exists
+   * and any existing files matching the filename are clobbered.
+   */
+  async _downloadAttachment(record) {
     const {attachment: {location, filename}} = record;
+    const remoteFilePath = (await baseAttachmentsURL) + location;
+    const localFilePath = OS.Path.join(PERSONALITY_PROVIDER_DIR, filename);
     const headers = new Headers();
     headers.set("Accept-Encoding", "gzip");
-    const filepath = (await baseAttachmentsURL) + location;
-    const resp = await fetch(filepath, {headers});
+    const resp = await fetch(remoteFilePath, {headers});
     if (!resp.ok) {
-      Cu.reportError(`Failed to fetch ${filepath}: ${resp.status}`);
-      return false;
+      Cu.reportError(`Failed to fetch ${remoteFilePath}: ${resp.status}`);
+      return;
     }
     const buffer = await resp.arrayBuffer();
     const bytes = new Uint8Array(buffer);
-    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
-    const path = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
-    return OS.File.writeAtomic(path, bytes, {tmpPath: `${path}.tmp`});
+    await OS.File.writeAtomic(localFilePath, bytes, {tmpPath: `${localFilePath}.tmp`});
+  }
+
+  /**
+   * Attempts to download the attachment, but only if it doesn't already exist.
+   */
+  async maybeDownloadAttachment(record, retries = 3) {
+    const {attachment: {filename, hash, size}} = record;
+    await OS.File.makeDir(PERSONALITY_PROVIDER_DIR);
+    const localFilePath = OS.Path.join(PERSONALITY_PROVIDER_DIR, filename);
+
+    let retry = 0;
+    while ((!await OS.File.exists(localFilePath) ||
+        await OS.File.stat(localFilePath).size !== size ||
+        getHash(await this._getFileStr(localFilePath)) !== hash) &&
+        (retry++ < retries)) {
+      await this._downloadAttachment(record);
+    }
   }
 
   async deleteAttachment(record) {
     const {attachment: {filename}} = record;
-    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
-    const path = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
+    await OS.File.makeDir(PERSONALITY_PROVIDER_DIR);
+    const path = OS.Path.join(PERSONALITY_PROVIDER_DIR, filename);
 
     await OS.File.remove(path, {ignoreAbsent: true});
-    return OS.File.removeEmptyDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME), {ignoreAbsent: true});
+    return OS.File.removeEmptyDir(PERSONALITY_PROVIDER_DIR, {ignoreAbsent: true});
   }
 
+  /**
+   * Gets contents of the attachment if it already exists on file,
+   * and if not attempts to download it.
+   */
   async getAttachment(record) {
-    const {attachment: {filename, hash, size}} = record;
-    await OS.File.makeDir(OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME));
-    const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, PERSONALITY_PROVIDER_DIR_NAME, filename);
-    let jsonStr = "{}";
+    const {attachment: {filename}} = record;
+    const filepath = OS.Path.join(PERSONALITY_PROVIDER_DIR, filename);
 
     try {
-      if (!await OS.File.exists(filepath) ||
-          await OS.File.stat(filepath).size !== size ||
-          getHash(await this._getFileStr(filepath)) !== hash) {
-        await this.downloadAttachment(record);
-      }
-      jsonStr = await this._getFileStr(filepath);
+      await this.maybeDownloadAttachment(record);
+      return JSON.parse(await this._getFileStr(filepath));
     } catch (error) {
       Cu.reportError(`Failed to load ${filepath}: ${error.message}`);
     }
-    return JSON.parse(jsonStr);
+    return {};
   }
 
   // A helper function to read and decode a file, it isn't a stand alone function.
