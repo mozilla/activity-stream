@@ -239,7 +239,7 @@ export class ASRouterAdmin extends React.PureComponent {
   renderTargetingParameters() {
     // There was no error and the result is truthy
     const success = this.state.evaluationStatus.success && !!this.state.evaluationStatus.result;
-    const result = JSON.stringify(this.state.evaluationStatus.result, null, 2) || "undefined";
+    const result = JSON.stringify(this.state.evaluationStatus.result, null, 2) || "(Empty result)";
 
     return (<table><tbody>
       <tr><td><h2>Evaluate JEXL expression</h2></td></tr>
