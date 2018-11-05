@@ -100,7 +100,6 @@ export class ASRouterAdmin extends React.PureComponent {
   onChangeTargetingParameters(event) {
     const {name} = event.target;
     const {value} = event.target;
-    this.refs.evaluationStatus.innerText = "";
 
     this.setState(({stringTargetingParameters}) => {
       let targetingParametersError = null;
@@ -113,7 +112,12 @@ export class ASRouterAdmin extends React.PureComponent {
         targetingParametersError = {id: name};
       }
 
-      return {stringTargetingParameters: updatedParameters, targetingParametersError};
+      return {
+        copiedToClipboard: false,
+        evaluationStatus: {},
+        stringTargetingParameters: updatedParameters,
+        targetingParametersError,
+      };
     });
   }
 
@@ -294,8 +298,9 @@ export class ASRouterAdmin extends React.PureComponent {
     if (!this.state.pasteFromClipboard) {
       return null;
     }
+    const errors = this.refs.targetingParamsEval && this.refs.targetingParamsEval.innerText.length;
     return (
-      <ModalOverlay title="Paste targeting parameters" button_label="Done" onDoneButton={this.onPasteTargetingParams}>
+      <ModalOverlay title="New targeting parameters" button_label={errors ? "Cancel" : "Done"} onDoneButton={this.onPasteTargetingParams}>
         <div className="onboardingMessage">
           <p>
             <textarea onChange={this.onNewTargetingParams} value={this.state.newStringTargetingParameters} autoFocus={true} rows="20" cols="60" />
