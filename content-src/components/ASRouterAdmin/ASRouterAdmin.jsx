@@ -1,4 +1,5 @@
 import {ASRouterUtils} from "../../asrouter/asrouter-content";
+import {ModalOverlay} from "../../asrouter/components/ModalOverlay/ModalOverlay";
 import React from "react";
 
 export class ASRouterAdmin extends React.PureComponent {
@@ -13,10 +14,12 @@ export class ASRouterAdmin extends React.PureComponent {
     this.onChangeTargetingParameters = this.onChangeTargetingParameters.bind(this);
     this.onCopyTargetingParams = this.onCopyTargetingParams.bind(this);
     this.onPasteTargetingParams = this.onPasteTargetingParams.bind(this);
+    this.onNewTargetingParams = this.onNewTargetingParams.bind(this);
     this.state = {
       messageFilter: "all",
       evaluationStatus: {},
       stringTargetingParameters: null,
+      newStringTargetingParameters: null,
       copiedToClipboard: false,
       pasteFromClipboard: false,
     };
@@ -169,14 +172,24 @@ export class ASRouterAdmin extends React.PureComponent {
 
   // Copy all clipboard data to targeting parameters
   onPasteTargetingParams(event) {
-    const pasteClipboardData = e => {
-      e.preventDefault();
-      const stringTargetingParameters = JSON.parse((e.clipboardData || window.clipboardData).getData("text"));
-      this.setState({stringTargetingParameters, pasteFromClipboard: false});
-    };
+    this.setState(({pasteFromClipboard}) => ({
+      pasteFromClipboard: !pasteFromClipboard,
+      newStringTargetingParameters: "",
+    }));
+  }
 
-    this.setState({pasteFromClipboard: true});
-    document.addEventListener("paste", pasteClipboardData);
+  onNewTargetingParams(event) {
+    this.setState({newStringTargetingParameters: event.target.value});
+    event.target.classList.remove("errorState");
+    this.refs.targetingParamsEval.innerText = "";
+
+    try {
+      const stringTargetingParameters = JSON.parse(event.target.value);
+      this.setState({stringTargetingParameters});
+    } catch (e) {
+      event.target.classList.add("errorState");
+      this.refs.targetingParamsEval.innerText = e.message;
+    }
   }
 
   renderMessageItem(msg) {
@@ -277,6 +290,22 @@ export class ASRouterAdmin extends React.PureComponent {
     </tbody></table>);
   }
 
+  renderPasteModal() {
+    if (!this.state.pasteFromClipboard) {
+      return null;
+    }
+    return (
+      <ModalOverlay title="Paste targeting parameters" button_label="Done" onDoneButton={this.onPasteTargetingParams}>
+        <div className="onboardingMessage">
+          <p>
+            <textarea onChange={this.onNewTargetingParams} value={this.state.newStringTargetingParameters} autoFocus={true} rows="20" cols="60" />
+          </p>
+          <p ref="targetingParamsEval" />
+        </div>
+      </ModalOverlay>
+    );
+  }
+
   renderTargetingParameters() {
     // There was no error and the result is truthy
     const success = this.state.evaluationStatus.success && !!this.state.evaluationStatus.result;
@@ -300,7 +329,7 @@ export class ASRouterAdmin extends React.PureComponent {
             {this.state.copiedToClipboard ? "Parameters copied!" : "Copy parameters"}
           </button>
           <button className="ASRouterButton secondary" onClick={this.onPasteTargetingParams} disabled={this.state.pasteFromClipboard}>
-            {this.state.pasteFromClipboard ? "Paste enabled" : "Enable parameter paste"}
+            Paste parameters
           </button>
         </td>
       </tr>
@@ -331,6 +360,7 @@ export class ASRouterAdmin extends React.PureComponent {
       <h2>Messages</h2>
       {this.renderMessageFilter()}
       {this.renderMessages()}
+      {this.renderPasteModal()}
       {this.renderTargetingParameters()}
     </div>);
   }
