@@ -259,7 +259,8 @@ export class ASRouterContent {
   }
 
   _mount() {
-    this.containerElement = global.document.getElementById("snippets-container");
+    this.containerElement = document.createElement("asr-container");
+    global.document.body.appendChild(this.containerElement);
     ReactDOM.render(<ASRouterUISurface />, this.containerElement);
   }
 
