@@ -254,6 +254,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     const calcResult = items
       .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.url}))
       .map(s => ({
+        "expiration_timestamp": s.expiration_timestamp,
         "guid": s.id,
         "hostname": s.domain || shortURL(Object.assign({}, s, {url: s.url})),
         "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
@@ -420,7 +421,17 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
       // Filter spocs based on frequency caps
       const impressions = this.readImpressionsPref(SPOC_IMPRESSION_TRACKING_PREF);
-      const spocs = this.spocs.filter(s => this.isBelowFrequencyCap(impressions, s));
+      let spocs = this.spocs.filter(s => this.isBelowFrequencyCap(impressions, s));
+
+      // Filter out expired spocs based on `expiration_timestamp`
+      spocs = spocs.filter(spoc => {
+        // If cached data is so old it doesn't contain this property, assume the spoc is expired
+        if (typeof spoc.expiration_timestamp === `undefined`) {
+          return false;
+        }
+        // `expiration_timestamp` is the number of seconds elapsed since January 1, 1970 00:00:00 UTC
+        return spoc.expiration_timestamp * 1000 > Date.now();
+      });
 
       if (!spocs.length) {
         // There's currently no spoc left to display
