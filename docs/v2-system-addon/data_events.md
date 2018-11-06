@@ -840,7 +840,7 @@ This reports the user's interaction with Activity Stream Router.
   "source": "CFR",
   // message_id could be the ID of the recommendation, such as "wikipedia_addon"
   "message_id": "wikipedia_addon",
-  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE | LEARN_MORE | CLICK_DOORHANGER]"
+  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE | LEARN_MORE | CLICK_DOORHANGER | MANAGE]"
 }
 ```
 
@@ -856,7 +856,7 @@ This reports the user's interaction with Activity Stream Router.
   // message_id should be a bucket ID in the release channel, we may not use the
   // individual ID, such as addon ID, per legal's request
   "message_id": "bucket_id",
-  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE | LEARN_MORE | CLICK_DOORHANGER]"
+  "event": "[INSTALL | BLOCK | DISMISS | RATIONALE | LEARN_MORE | CLICK_DOORHANGER | MANAGE]"
 }
 ```
 
