@@ -26,7 +26,7 @@ describe("asrouter", () => {
     // Dispatch another irrelevant event to make sure we don't initialize twice.
     store.dispatch({type: at.PREF_CHANGED, data: {name: "foo", value: "bar"}});
 
-    assert.calledOnce(asrouterContent.init);
+    assert.calledWith(asrouterContent.init, store);
   });
   it("should do nothing if ASRouter is not initialized", () => {
     const addStub = sandbox.stub(global.document.body.classList, "add");
