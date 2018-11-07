@@ -244,7 +244,8 @@ export class ASRouterAdmin extends React.PureComponent {
         <td className="min" />
         <td className="min">Provider ID</td>
         <td>Source</td>
-        <td>Last Updated</td>
+        <td className="min">Cohort</td>
+        <td className="min">Last Updated</td>
       </tr>
     </thead>);
   }
@@ -263,11 +264,7 @@ export class ASRouterAdmin extends React.PureComponent {
 
         let label = "local";
         if (provider.type === "remote") {
-          let displayUrl = "";
-          try {
-            displayUrl = `(${new URL(info.url).hostname})`;
-          } catch (err) {}
-          label = (<span>endpoint <a target="_blank" href={info.url}>{displayUrl}</a></span>);
+          label = (<span>endpoint (<a className="providerUrl" target="_blank" href={info.url}>{info.url}</a>)</span>);
         } else if (provider.type === "remote-settings") {
           label = `remote settings (${provider.bucket})`;
         }
@@ -288,6 +285,7 @@ export class ASRouterAdmin extends React.PureComponent {
           <td>{isTestProvider ? <input type="checkbox" disabled={true} readOnly={true} checked={true} /> : <input type="checkbox" data-provider={provider.id} checked={isUserEnabled && isSystemEnabled} onChange={this.handleEnabledToggle} />}</td>
           <td>{provider.id}</td>
           <td><span className={`sourceLabel${(isUserEnabled && isSystemEnabled) ? "" : " isDisabled"}`}>{label}</span></td>
+          <td>{provider.cohort}</td>
           <td style={{whiteSpace: "nowrap"}}>{info.lastUpdated ? new Date(info.lastUpdated).toLocaleString() : ""}</td>
         </tr>);
       })}
