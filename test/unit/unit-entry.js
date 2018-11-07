@@ -91,6 +91,14 @@ const TEST_GLOBAL = {
       executePlacesQuery: async (sql, options) => ({sql, options}),
     },
   },
+  OS: {
+    Path: {
+      join() {return "/"}
+    },
+    Constants: {
+      Path: "/"
+    },
+  },
   PlacesUtils: {
     get bookmarks() {
       return TEST_GLOBAL.Cc["@mozilla.org/browser/nav-bookmarks-service;1"];
@@ -145,6 +153,7 @@ const TEST_GLOBAL = {
       setStringPref() {},
       getIntPref() {},
       getBoolPref() {},
+      getCharPref() {},
       setBoolPref() {},
       setIntPref() {},
       getBranch() {},
@@ -213,7 +222,7 @@ const TEST_GLOBAL = {
   EventEmitter,
   ShellService: {isDefaultBrowser: () => true},
   FilterExpressions: {eval() { return Promise.resolve(false); }},
-  RemoteSettings() { return {get() { return Promise.resolve([]); }}; },
+  RemoteSettings() { return {get() { return Promise.resolve([]); }, on() {}}; },
   Localization: class {},
 };
 overrider.set(TEST_GLOBAL);

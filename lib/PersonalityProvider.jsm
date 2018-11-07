@@ -70,24 +70,27 @@ this.PersonalityProvider = class PersonalityProvider {
     this.scores = scores || {};
     this.interestConfig = this.scores.interestConfig;
     this.interestVector = this.scores.interestVector;
+    this.onSync = this.onSync.bind(this);
     this.setupSyncAttachment(RECIPE_NAME);
     this.setupSyncAttachment(MODELS_NAME);
   }
 
+  async onSync(event) {
+    const {
+      data: {created, updated, deleted},
+    } = event;
+
+    // Remove every removed attachment.
+    const toRemove = deleted.concat(updated.map(u => u.old));
+    await Promise.all(toRemove.map(record => this.deleteAttachment(record)));
+
+    // Download every new/updated attachment.
+    const toDownload = created.concat(updated.map(u => u.new));
+    await Promise.all(toDownload.map(record => this.maybeDownloadAttachment(record)));
+  }
+
   setupSyncAttachment(collection) {
-    RemoteSettings(collection).on("sync", async event => {
-      const {
-        data: {created, updated, deleted},
-      } = event;
-
-      // Remove every removed attachment.
-      const toRemove = deleted.concat(updated.map(u => u.old));
-      await Promise.all(toRemove.map(record => this.deleteAttachment(record)));
-
-      // Download every new/updated attachment.
-      const toDownload = created.concat(updated.map(u => u.new));
-      await Promise.all(toDownload.map(record => this.maybeDownloadAttachment(record)));
-    });
+    RemoteSettings(collection).on("sync", this.onSync);
   }
 
   /**

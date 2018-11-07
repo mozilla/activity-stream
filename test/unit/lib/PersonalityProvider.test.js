@@ -37,7 +37,7 @@ describe("Personality Provider", () => {
   let NmfTextTaggerStub;
   let RecipeExecutorStub;
 
-  beforeEach(() => {
+  function setup() {
     globals = new GlobalOverrider();
 
     const testUrl = "www.somedomain.com";
@@ -107,10 +107,14 @@ describe("Personality Provider", () => {
         return null;
       },
     };
-  });
-  afterEach(() => {
+  }
+
+  function tearDown() {
     globals.restore();
-  });
+  }
+
+  beforeEach(setup);
+  afterEach(tearDown);
   describe("#init", () => {
     it("should return correct data for getAffinities", () => {
       const affinities = instance.getAffinities();
@@ -202,8 +206,8 @@ describe("Personality Provider", () => {
       instance.modelKeys = ["nb_model_sports", "nmf_model_sports"];
 
       instance.getFromRemoteSettings = async name => [
-        {key: "nb_model_sports", data: {model_type: "nb"}},
-        {key: "nmf_model_sports", data: {model_type: "nmf", parent_tag: "nmf_sports_parent_tag"}},
+        {recordKey: "nb_model_sports", model_type: "nb"},
+        {recordKey: "nmf_model_sports", model_type: "nmf", parent_tag: "nmf_sports_parent_tag"},
       ];
 
       await instance.generateRecipeExecutor();
@@ -219,8 +223,8 @@ describe("Personality Provider", () => {
       instance.modelKeys = ["nb_model_sports"];
 
       instance.getFromRemoteSettings = async name => [
-        {key: "nb_model_sports", data: {model_type: "nb"}},
-        {key: "nmf_model_sports", data: {model_type: "nmf", parent_tag: "nmf_sports_parent_tag"}},
+        {recordKey: "nb_model_sports", model_type: "nb"},
+        {recordKey: "nmf_model_sports", model_type: "nmf", parent_tag: "nmf_sports_parent_tag"},
       ];
 
       await instance.generateRecipeExecutor();
@@ -236,7 +240,7 @@ describe("Personality Provider", () => {
       instance.modelKeys = ["nb_model_sports", "nmf_model_sports"];
 
       instance.getFromRemoteSettings = async name => [
-        {key: "nb_model_sports", data: {model_type: "nb"}},
+        {recordKey: "nb_model_sports", model_type: "nb"},
       ];
       await instance.generateRecipeExecutor();
       assert.calledOnce(RecipeExecutorStub);
@@ -256,8 +260,8 @@ describe("Personality Provider", () => {
       assert.calledWith(instance.getFromRemoteSettings, "personality-provider-recipe");
     });
     it("should not fetch a recipe on getRecipe if cached", async () => {
-      sinon.stub(instance, "getFromRemoteSettings").returns(Promise.resolve());
-      instance.recipe = ["blah"];
+      sinon.stub(instance, "getFromRemoteSettings").returns(Promise.resolve([]));
+      instance.recipes = ["blah"];
       await instance.getRecipe();
       assert.notCalled(instance.getFromRemoteSettings);
     });
@@ -339,6 +343,34 @@ describe("Personality Provider", () => {
       assert.equal(history.sql, `SELECT url, title, visit_count, frecency, last_visit_date, description\n    FROM moz_places\n    WHERE last_visit_date >= 1000000\n    AND last_visit_date < 1000000 AND IFNULL(requiredColumn, "") <> "" LIMIT 30000`);
       assert.equal(history.options.columns.length, 1);
       assert.equal(Object.keys(history.options.params).length, 0);
+    });
+  });
+  describe("#attachments", () => {
+    it("should sync remote settings collection from onSync", async () => {
+      sinon.stub(instance, "deleteAttachment").returns(Promise.resolve({}));
+      sinon.stub(instance, "maybeDownloadAttachment").returns(Promise.resolve({}));
+
+      await instance.onSync({data: {
+        created: ["create-1", "create-2"],
+        updated: [{old: "update-old-1", new: "update-new-1"}, {old: "update-old-2", new: "update-new-2"}],
+        deleted: ["delete-2", "delete-1"]
+      }});
+
+      assert(instance.maybeDownloadAttachment.withArgs("create-1").calledOnce);
+      assert(instance.maybeDownloadAttachment.withArgs("create-2").calledOnce);
+      assert(instance.maybeDownloadAttachment.withArgs("update-new-1").calledOnce);
+      assert(instance.maybeDownloadAttachment.withArgs("update-new-2").calledOnce);
+
+      assert(instance.deleteAttachment.withArgs("delete-1").calledOnce);
+      assert(instance.deleteAttachment.withArgs("delete-2").calledOnce);
+      assert(instance.deleteAttachment.withArgs("update-old-1").calledOnce);
+      assert(instance.deleteAttachment.withArgs("update-old-2").calledOnce);
+    });
+    it.only("should write a file from _downloadAttachment", async () => {
+      tearDown();
+      setup();
+
+      await instance._downloadAttachment({attachment: {location: "", filename: ""}});
     });
   });
 });
