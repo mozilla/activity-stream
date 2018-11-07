@@ -711,7 +711,8 @@ describe("Top Stories Feed", () => {
       const response = {
         "settings": {"spocsPerNewTabs": 0.5},
         "recommendations": [{"guid": "rec1"}, {"guid": "rec2"}, {"guid": "rec3"}],
-        "spocs": [{"id": "spoc1"}, {"id": "spoc2"}],
+        // Include one spoc with a expiration in the very distant future
+        "spocs": [{"id": "spoc1", "expiration_timestamp": 9999999999999}, {"id": "spoc2"}],
       };
 
       instance.personalized = true;
@@ -788,7 +789,8 @@ describe("Top Stories Feed", () => {
       const response = {
         "settings": {"spocsPerNewTabs": 0.5},
         "recommendations": [{"id": "rec1"}, {"id": "rec2"}, {"id": "rec3"}],
-        "spocs": [{"id": "spoc1"}, {"id": "spoc2"}],
+        // Include one spoc with a expiration in the very distant future
+        "spocs": [{"id": "spoc1", "expiration_timestamp": 9999999999999}, {"id": "spoc2"}],
       };
 
       instance.onAction({type: at.NEW_TAB_REHYDRATED, meta: {fromTarget: {}}});
@@ -1027,8 +1029,9 @@ describe("Top Stories Feed", () => {
         "settings": {"spocsPerNewTabs": 1},
         "recommendations": [{"guid": "rec1"}, {"guid": "rec2"}, {"guid": "rec3"}],
         "spocs": [
-          {"id": "spoc1", "campaign_id": 1, "caps": {"lifetime": 3, "campaign": {"count": 2, "period": 3600}}},
-          {"id": "spoc2", "campaign_id": 2, "caps": {"lifetime": 1}},
+          // Set spoc `expiration_timestamp`s in the very distant future to ensure they show up
+          {"id": "spoc1", "campaign_id": 1, "caps": {"lifetime": 3, "campaign": {"count": 2, "period": 3600}}, "expiration_timestamp": 999999999999},
+          {"id": "spoc2", "campaign_id": 2, "caps": {"lifetime": 1}, "expiration_timestamp": 999999999999},
         ],
       };
 

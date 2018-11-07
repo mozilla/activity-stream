@@ -253,22 +253,30 @@ this.TopStoriesFeed = class TopStoriesFeed {
     const scoreStart = perfService.absNow();
     const calcResult = items
       .filter(s => !NewTabUtils.blockedLinks.isBlocked({"url": s.url}))
-      .map(s => ({
-        "expiration_timestamp": s.expiration_timestamp,
-        "guid": s.id,
-        "hostname": s.domain || shortURL(Object.assign({}, s, {url: s.url})),
-        "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
-        "context": s.context,
-        "icon": s.icon,
-        "title": s.title,
-        "description": s.excerpt,
-        "image": this.normalizeUrl(s.image_src),
-        "referrer": this.stories_referrer,
-        "url": s.url,
-        "min_score": s.min_score || 0,
-        "score": this.personalized && this.affinityProvider ? this.affinityProvider.calculateItemRelevanceScore(s) : s.item_score || 1,
-        "spoc_meta": this.show_spocs ? {campaign_id: s.campaign_id, caps: s.caps} : {},
-      }))
+      .map(s => {
+        let mapped = {
+          "guid": s.id,
+          "hostname": s.domain || shortURL(Object.assign({}, s, {url: s.url})),
+          "type": (Date.now() - (s.published_timestamp * 1000)) <= STORIES_NOW_THRESHOLD ? "now" : "trending",
+          "context": s.context,
+          "icon": s.icon,
+          "title": s.title,
+          "description": s.excerpt,
+          "image": this.normalizeUrl(s.image_src),
+          "referrer": this.stories_referrer,
+          "url": s.url,
+          "min_score": s.min_score || 0,
+          "score": this.personalized && this.affinityProvider ? this.affinityProvider.calculateItemRelevanceScore(s) : s.item_score || 1,
+          "spoc_meta": this.show_spocs ? {campaign_id: s.campaign_id, caps: s.caps} : {},
+        };
+
+        // Very old cached spocs may not contain an `expiration_timestamp` property
+        if (s.expiration_timestamp) {
+          mapped.expiration_timestamp = s.expiration_timestamp;
+        }
+
+        return mapped;
+      })
       .sort(this.personalized ? this.compareScore : (a, b) => 0);
 
     this.dispatchRelevanceScore(scoreStart);
