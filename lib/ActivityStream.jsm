@@ -227,8 +227,8 @@ const PREFS_CONFIG = new Map([
       id: "cfr",
       type: "local",
       localProvider: "CFRMessageProvider",
-      enabled: IS_NIGHTLY_OR_UNBRANDED_BUILD,
-      cohort: IS_NIGHTLY_OR_UNBRANDED_BUILD ? "nightly" : "",
+      frequency: {custom: [{period: "daily", cap: 1}]},
+      enabled: true,
     }),
   }],
 ]);
