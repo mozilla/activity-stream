@@ -711,8 +711,11 @@ describe("Top Stories Feed", () => {
       const response = {
         "settings": {"spocsPerNewTabs": 0.5},
         "recommendations": [{"guid": "rec1"}, {"guid": "rec2"}, {"guid": "rec3"}],
-        // Include one spoc with a expiration in the very distant future
-        "spocs": [{"id": "spoc1", "expiration_timestamp": 9999999999999}, {"id": "spoc2"}],
+        // Include spocs with a expiration in the very distant future
+        "spocs": [
+          {"id": "spoc1", "expiration_timestamp": 9999999999999},
+          {"id": "spoc2", "expiration_timestamp": 9999999999999}
+        ],
       };
 
       instance.personalized = true;
