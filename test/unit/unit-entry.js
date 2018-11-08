@@ -93,10 +93,12 @@ const TEST_GLOBAL = {
   },
   OS: {
     Path: {
-      join() {return "/"}
+      join() {
+        return "/";
+      },
     },
     Constants: {
-      Path: "/"
+      Path: "/",
     },
   },
   PlacesUtils: {

@@ -122,11 +122,17 @@ this.PersonalityProvider = class PersonalityProvider {
     const localFilePath = OS.Path.join(PERSONALITY_PROVIDER_DIR, filename);
 
     let retry = 0;
+    console.log("exists???", await OS.File.exists(localFilePath));
     while ((!await OS.File.exists(localFilePath) ||
         await OS.File.stat(localFilePath).size !== size ||
         getHash(await this._getFileStr(localFilePath)) !== hash) &&
         (retry++ < retries)) {
-      await this._downloadAttachment(record);
+      console.log("?????????????????????");
+      try {
+        await this._downloadAttachment(record);
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 

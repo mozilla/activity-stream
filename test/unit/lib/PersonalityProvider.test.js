@@ -37,7 +37,7 @@ describe("Personality Provider", () => {
   let NmfTextTaggerStub;
   let RecipeExecutorStub;
 
-  function setup() {
+  beforeEach(() => {
     globals = new GlobalOverrider();
 
     const testUrl = "www.somedomain.com";
@@ -50,6 +50,27 @@ describe("Personality Provider", () => {
     NaiveBayesTextTaggerStub = globals.sandbox.stub();
     NmfTextTaggerStub = globals.sandbox.stub();
     RecipeExecutorStub = globals.sandbox.stub();
+
+    globals.set("baseAttachmentsURL", new Promise(resolve => resolve("/")));
+
+    const fetchStub = async (server) => {
+      return {
+        ok: true,
+        json: async () => {
+          if (server === "services.settings.server/") {
+            return {capabilities: {attachments: {base_url: ""}}};
+          };
+          return {};
+        },
+      };
+    };
+    globals.set("fetch", fetchStub);
+
+    globals.set("Services", {
+      prefs: {
+        getCharPref: pref => pref,
+      }
+    });
 
     ({PersonalityProvider} = injector({
       "lib/NaiveBayesTextTagger.jsm": {NaiveBayesTextTagger: NaiveBayesTextTaggerStub},
@@ -107,14 +128,11 @@ describe("Personality Provider", () => {
         return null;
       },
     };
-  }
+  });
 
-  function tearDown() {
+  afterEach(() => {
     globals.restore();
-  }
-
-  beforeEach(setup);
-  afterEach(tearDown);
+  });
   describe("#init", () => {
     it("should return correct data for getAffinities", () => {
       const affinities = instance.getAffinities();
@@ -350,11 +368,16 @@ describe("Personality Provider", () => {
       sinon.stub(instance, "deleteAttachment").returns(Promise.resolve({}));
       sinon.stub(instance, "maybeDownloadAttachment").returns(Promise.resolve({}));
 
-      await instance.onSync({data: {
-        created: ["create-1", "create-2"],
-        updated: [{old: "update-old-1", new: "update-new-1"}, {old: "update-old-2", new: "update-new-2"}],
-        deleted: ["delete-2", "delete-1"]
-      }});
+      await instance.onSync({
+        data: {
+          created: ["create-1", "create-2"],
+          updated: [
+            {old: "update-old-1", new: "update-new-1"},
+            {old: "update-old-2", new: "update-new-2"},
+          ],
+          deleted: ["delete-2", "delete-1"],
+        },
+      });
 
       assert(instance.maybeDownloadAttachment.withArgs("create-1").calledOnce);
       assert(instance.maybeDownloadAttachment.withArgs("create-2").calledOnce);
@@ -366,11 +389,62 @@ describe("Personality Provider", () => {
       assert(instance.deleteAttachment.withArgs("update-old-1").calledOnce);
       assert(instance.deleteAttachment.withArgs("update-old-2").calledOnce);
     });
-    it.only("should write a file from _downloadAttachment", async () => {
-      tearDown();
-      setup();
+    it("should write a file from _downloadAttachment", async () => {
+      const fetchStub = globals.sandbox.stub();
+      globals.set("fetch", fetchStub);
+      fetchStub.resolves({
+        ok: true,
+        arrayBuffer: async () => {},
+      });
 
-      await instance._downloadAttachment({attachment: {location: "", filename: ""}});
+      const writeAtomicStub = globals.sandbox.stub();
+      globals.set("OS", {
+        File: {writeAtomic: writeAtomicStub},
+        Path: {join: (first, second) => first + second},
+      });
+      writeAtomicStub.resolves(Promise.resolve());
+      await instance._downloadAttachment({attachment: {location: "location", filename: "filename"}});
+
+      assert.calledWith(fetchStub, "/location", {headers: new Headers()});
+      assert.calledWith(writeAtomicStub, "/filename", new Uint8Array(), {tmpPath: "/filename.tmp"});
+    });
+    it("should call reportError from _downloadAttachment if not valid response", async () => {
+      const fetchStub = globals.sandbox.stub();
+      globals.set("fetch", fetchStub);
+      fetchStub.resolves({ok: false});
+      globals.sandbox.spy(global.Cu, "reportError");
+
+      await instance._downloadAttachment({attachment: {location: "location", filename: "filename"}});
+      assert.calledWith(Cu.reportError, "Failed to fetch /location: undefined");
+    });
+    it.only("should call _downloadAttachment for record from maybeDownloadAttachment", async () => {
+      sinon.stub(instance, "_downloadAttachment").returns(Promise.resolve());
+      //instance._getFileStr = sinon.stub.returns("1");
+      const makeDirStub = globals.sandbox.stub().resolves(Promise.resolve());
+      globals.set("OS", {
+        File: {
+          makeDir: makeDirStub,
+          exists: async () => false,
+        },
+        Path: {join: (first, second) => first + second},
+      });
+
+      instance.maybeDownloadAttachment({attachment: {filename: "file", hash: "1", size: "1"}});
+
+      assert.calledWith(makeDirStub, "/");
+      assert.calledOnce(instance._downloadAttachment);
+    });
+    it("should call retry 3 times in maybeDownloadAttachment if file doesn't exist", async () => {
+      instance.maybeDownloadAttachment({});
+    });
+    it("should call retry 3 times in maybeDownloadAttachment if file isn't correct size", async () => {
+      instance.maybeDownloadAttachment({});
+    });
+    it("should call retry 3 times in maybeDownloadAttachment if file hash doesn't match", async () => {
+      instance.maybeDownloadAttachment({});
+    });
+    it("should call retry x times in maybeDownloadAttachment if configured", async () => {
+      instance.maybeDownloadAttachment({}, 6);
     });
   });
 });
