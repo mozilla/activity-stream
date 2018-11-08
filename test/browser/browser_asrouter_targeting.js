@@ -344,9 +344,15 @@ add_task(async function check_pinned_sites() {
   const originalPin = JSON.stringify(NewTabUtils.pinnedLinks.links);
   const sitesToPin = [
     {url: "https://foo.com"},
+    {url: "https://bloo.com"},
     {url: "https://floogle.com", searchTopSite: true},
   ];
   sitesToPin.forEach((site => NewTabUtils.pinnedLinks.pin(site, NewTabUtils.pinnedLinks.links.length)));
+
+  // Unpinning adds null to the list of pinned sites, which we should test that we handle gracefully for our targeting
+  NewTabUtils.pinnedLinks.unpin(sitesToPin[1]);
+  ok(NewTabUtils.pinnedLinks.links.includes(null),
+    "should have set an item in pinned links to null via unpinning for testing");
 
   let message;
 
