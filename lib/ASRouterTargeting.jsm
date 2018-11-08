@@ -255,11 +255,11 @@ const TargetingGetters = {
     )));
   },
   get pinnedSites() {
-    return NewTabUtils.pinnedLinks.links.map(site => ({
+    return NewTabUtils.pinnedLinks.links.map(site => (site ? {
       url: site.url,
       host: (new URL(site.url)).hostname,
       searchTopSite: site.searchTopSite,
-    }));
+    } : {}));
   },
   get providerCohorts() {
     return ASRouterPreferences.providers.reduce((prev, current) => {
