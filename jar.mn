@@ -41,9 +41,7 @@ browser.jar:
 #endif
   res/activity-stream/prerendered/static/activity-stream-initial-state.js (./prerendered/static/activity-stream-initial-state.js)
 #ifndef RELEASE_OR_BETA
-  res/activity-stream/prerendered/static/activity-stream-debug-noscripts.html (./prerendered/static/activity-stream-debug-noscripts.html)
   res/activity-stream/prerendered/static/activity-stream-debug.html (./prerendered/static/activity-stream-debug.html)
-  res/activity-stream/prerendered/static/activity-stream-prerendered-debug-noscripts.html (./prerendered/static/activity-stream-prerendered-debug-noscripts.html)
   res/activity-stream/prerendered/static/activity-stream-prerendered-debug.html (./prerendered/static/activity-stream-prerendered-debug.html)
 #endif
   res/activity-stream/prerendered/ (./prerendered/locales/*)
