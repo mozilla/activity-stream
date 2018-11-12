@@ -57,7 +57,7 @@
     "loader-utils": "0.2.16",
     "minimist": "1.2.0",
     "mocha": "5.2.0",
-    "mock-raf": "1.0.0",
+    "mock-raf": "1.0.1",
     "node-fetch": "2.1.2",
     "node-sass": "4.9.4",
     "npm-run-all": "4.1.2",
