@@ -67,7 +67,7 @@
     "rimraf": "2.6.2",
     "sass": "1.14.3",
     "sass-lint": "1.12.1",
-    "shelljs": "0.8.1",
+    "shelljs": "0.8.2",
     "simple-git": "1.92.0",
     "sinon": "4.5.0",
     "webpack": "4.15.0",
