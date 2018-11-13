@@ -70,7 +70,7 @@
     "shelljs": "0.8.2",
     "simple-git": "1.107.0",
     "sinon": "7.1.1",
-    "webpack": "4.15.0",
+    "webpack": "4.25.1",
     "webpack-cli": "3.0.8",
     "yamscripts": "0.1.0"
   },
