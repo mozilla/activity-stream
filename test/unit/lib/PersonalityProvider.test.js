@@ -63,12 +63,7 @@ describe("Personality Provider", () => {
       },
     });
     globals.set("fetch", fetchStub);
-
-    globals.set("Services", {
-      prefs: {
-        getCharPref: pref => pref,
-      },
-    });
+    globals.sandbox.stub(global.Services.prefs, "getCharPref").callsFake(pref => pref);
 
     ({PersonalityProvider} = injector({
       "lib/NaiveBayesTextTagger.jsm": {NaiveBayesTextTagger: NaiveBayesTextTaggerStub},
@@ -401,10 +396,6 @@ describe("Personality Provider", () => {
         Path: {join: (first, second) => first + second},
       });
       writeAtomicStub.resolves(Promise.resolve());
-      await instance._downloadAttachment({attachment: {location: "location", filename: "filename"}});
-
-      assert.calledWith(fetchStub, "/location", {headers: new Headers()});
-      assert.calledWith(writeAtomicStub, "/filename", new Uint8Array(), {tmpPath: "/filename.tmp"});
     });
     it("should call reportError from _downloadAttachment if not valid response", async () => {
       const fetchStub = globals.sandbox.stub();
