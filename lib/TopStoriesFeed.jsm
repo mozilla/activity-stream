@@ -446,7 +446,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     const updateContent = () => {
       let spocs = this.filterSpocs();
 
-      if(!spocs.length) {
+      if (!spocs.length) {
         this.dispatchSpocDone(target);
         return false;
       }
