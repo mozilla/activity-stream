@@ -194,7 +194,6 @@ this.PersonalityProvider = class PersonalityProvider {
 
   async getFromRemoteSettings(name) {
     const result = await RemoteSettings(name).get();
-    console.log(result, "==============");
     return Promise.all(result.map(async record => ({...await this.getAttachment(record), recordKey: record.key})));
   }
 
