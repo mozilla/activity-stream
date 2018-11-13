@@ -89,6 +89,7 @@ export class SubmitFormSnippet extends React.PureComponent {
         localization_id="disclaimer_html"
         links={content.links}
         doNotAutoBlock={true}
+        openNewWindow={true}
         sendClick={this.props.sendClick} />
     </p>);
   }
@@ -105,6 +106,7 @@ export class SubmitFormSnippet extends React.PureComponent {
             localization_id="privacy_html"
             links={content.links}
             doNotAutoBlock={true}
+            openNewWindow={true}
             sendClick={this.props.sendClick} />
           </span>
         </p>
