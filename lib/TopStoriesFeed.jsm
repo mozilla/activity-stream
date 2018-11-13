@@ -410,39 +410,43 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.store.dispatch(ac.OnlyToOneContent(action, target));
   }
 
+  filterSpocs() {
+    if (!this.shouldShowSpocs()) {
+      return [];
+    }
+
+    if (Math.random() > this.spocsPerNewTabs) {
+      return [];
+    }
+
+    if (!this.spocs || !this.spocs.length) {
+      // We have stories but no spocs so there's nothing to do and this update can be
+      // removed from the queue.
+      return [];
+    }
+
+    // Filter spocs based on frequency caps
+    const impressions = this.readImpressionsPref(SPOC_IMPRESSION_TRACKING_PREF);
+    let spocs = this.spocs.filter(s => this.isBelowFrequencyCap(impressions, s));
+
+    // Filter out expired spocs based on `expiration_timestamp`
+    spocs = spocs.filter(spoc => {
+      // If cached data is so old it doesn't contain this property, assume the spoc is expired
+      if (typeof spoc.expiration_timestamp === `undefined`) {
+        return false;
+      }
+      // `expiration_timestamp` is the number of seconds elapsed since January 1, 1970 00:00:00 UTC
+      return spoc.expiration_timestamp * 1000 > Date.now();
+    });
+
+    return spocs;
+  }
+
   maybeAddSpoc(target) {
     const updateContent = () => {
-      if (!this.shouldShowSpocs()) {
-        this.dispatchSpocDone(target);
-        return false;
-      }
-      if (Math.random() > this.spocsPerNewTabs) {
-        this.dispatchSpocDone(target);
-        return false;
-      }
-      if (!this.spocs || !this.spocs.length) {
-        // We have stories but no spocs so there's nothing to do and this update can be
-        // removed from the queue.
-        this.dispatchSpocDone(target);
-        return false;
-      }
+      let spocs = this.filterSpocs();
 
-      // Filter spocs based on frequency caps
-      const impressions = this.readImpressionsPref(SPOC_IMPRESSION_TRACKING_PREF);
-      let spocs = this.spocs.filter(s => this.isBelowFrequencyCap(impressions, s));
-
-      // Filter out expired spocs based on `expiration_timestamp`
-      spocs = spocs.filter(spoc => {
-        // If cached data is so old it doesn't contain this property, assume the spoc is expired
-        if (typeof spoc.expiration_timestamp === `undefined`) {
-          return false;
-        }
-        // `expiration_timestamp` is the number of seconds elapsed since January 1, 1970 00:00:00 UTC
-        return spoc.expiration_timestamp * 1000 > Date.now();
-      });
-
-      if (!spocs.length) {
-        // There's currently no spoc left to display
+      if(!spocs.length) {
         this.dispatchSpocDone(target);
         return false;
       }
