@@ -80,7 +80,7 @@ describe("ASRouter", () => {
     messageImpressions = {};
     providerImpressions = {};
     previousSessionEnd = 100;
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
 
     sandbox.spy(ASRouterPreferences, "init");
     sandbox.spy(ASRouterPreferences, "uninit");

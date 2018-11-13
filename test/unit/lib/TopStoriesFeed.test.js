@@ -781,6 +781,7 @@ describe("Top Stories Feed", () => {
       globals.set("Math", {
         random: () => 0.4,
         min: Math.min,
+        floor: Math.floor,
       });
       instance.getPocketState = () => {};
       instance.dispatchPocketCta = () => {};
@@ -914,6 +915,7 @@ describe("Top Stories Feed", () => {
       globals.set("Math", {
         random: () => 0.4,
         min: Math.min,
+        floor: Math.floor,
       });
 
       const response = {

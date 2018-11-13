@@ -8,7 +8,7 @@ describe("asrouter", () => {
   let store;
   let asrouterContent;
   beforeEach(() => {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
     store = createStore(combineReducers(reducers));
     sandbox.spy(store, "subscribe");
   });

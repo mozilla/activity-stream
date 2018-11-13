@@ -26,7 +26,7 @@ describe("OnboardingMessage", () => {
   let sandbox;
   beforeEach(() => {
     globals = new GlobalOverrider();
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
     globals.set("FxAccountsConfig", {promiseEmailFirstURI: sandbox.stub().resolves("some/url")});
   });
   afterEach(() => {
