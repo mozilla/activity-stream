@@ -122,17 +122,11 @@ this.PersonalityProvider = class PersonalityProvider {
     const localFilePath = OS.Path.join(PERSONALITY_PROVIDER_DIR, filename);
 
     let retry = 0;
-    console.log("exists???", await OS.File.exists(localFilePath));
-    while ((!await OS.File.exists(localFilePath) ||
-        await OS.File.stat(localFilePath).size !== size ||
-        getHash(await this._getFileStr(localFilePath)) !== hash) &&
-        (retry++ < retries)) {
-      console.log("?????????????????????");
-      try {
-        await this._downloadAttachment(record);
-      } catch (e) {
-        console.log(e);
-      }
+    while ((retry++ < retries) &&
+        (!await OS.File.exists(localFilePath) ||
+        (await OS.File.stat(localFilePath)).size !== size ||
+        getHash(await this._getFileStr(localFilePath)) !== hash)) {
+      await this._downloadAttachment(record);
     }
   }
 
@@ -200,6 +194,7 @@ this.PersonalityProvider = class PersonalityProvider {
 
   async getFromRemoteSettings(name) {
     const result = await RemoteSettings(name).get();
+    console.log(result, "==============");
     return Promise.all(result.map(async record => ({...await this.getAttachment(record), recordKey: record.key})));
   }
 

@@ -53,23 +53,21 @@ describe("Personality Provider", () => {
 
     globals.set("baseAttachmentsURL", new Promise(resolve => resolve("/")));
 
-    const fetchStub = async (server) => {
-      return {
-        ok: true,
-        json: async () => {
-          if (server === "services.settings.server/") {
-            return {capabilities: {attachments: {base_url: ""}}};
-          };
-          return {};
-        },
-      };
-    };
+    const fetchStub = async server => ({
+      ok: true,
+      json: async () => {
+        if (server === "services.settings.server/") {
+          return {capabilities: {attachments: {base_url: ""}}};
+        }
+        return {};
+      },
+    });
     globals.set("fetch", fetchStub);
 
     globals.set("Services", {
       prefs: {
         getCharPref: pref => pref,
-      }
+      },
     });
 
     ({PersonalityProvider} = injector({
@@ -199,9 +197,9 @@ describe("Personality Provider", () => {
   });
   describe("#remote-settings", () => {
     it("should return a remote setting for getFromRemoteSettings", async () => {
-      const settings = await instance.getFromRemoteSettings("test");
+      const settings = await instance.getFromRemoteSettings("attachment");
       assert.equal(typeof settings, "object");
-      assert.equal(settings.length, 0);
+      assert.equal(settings.length, 1);
     });
   });
   describe("#executor", () => {
@@ -417,34 +415,136 @@ describe("Personality Provider", () => {
       await instance._downloadAttachment({attachment: {location: "location", filename: "filename"}});
       assert.calledWith(Cu.reportError, "Failed to fetch /location: undefined");
     });
-    it.only("should call _downloadAttachment for record from maybeDownloadAttachment", async () => {
+    it("should attempt _downloadAttachment three times for maybeDownloadAttachment", async () => {
+      let existsStub;
+      let statStub;
+      let attachmentStub;
       sinon.stub(instance, "_downloadAttachment").returns(Promise.resolve());
-      //instance._getFileStr = sinon.stub.returns("1");
-      const makeDirStub = globals.sandbox.stub().resolves(Promise.resolve());
+      sinon.stub(instance, "_getFileStr").returns(Promise.resolve("1"));
+      const makeDirStub = globals.sandbox.stub().returns(Promise.resolve());
+
+      existsStub = globals.sandbox.stub().returns(Promise.resolve(true));
+      statStub = globals.sandbox.stub().returns(Promise.resolve({size: "1"}));
       globals.set("OS", {
         File: {
           makeDir: makeDirStub,
-          exists: async () => false,
+          exists: existsStub,
+          stat: statStub,
         },
         Path: {join: (first, second) => first + second},
       });
+      attachmentStub = {
+        attachment: {
+          filename: "file",
+          hash: "30",
+          size: "1",
+        },
+      };
 
-      instance.maybeDownloadAttachment({attachment: {filename: "file", hash: "1", size: "1"}});
-
+      await instance.maybeDownloadAttachment(attachmentStub);
       assert.calledWith(makeDirStub, "/");
-      assert.calledOnce(instance._downloadAttachment);
+      assert.calledOnce(existsStub);
+      assert.calledOnce(statStub);
+      assert.calledOnce(instance._getFileStr);
+      assert.notCalled(instance._downloadAttachment);
+
+      instance._getFileStr.resetHistory();
+      existsStub = globals.sandbox.stub().returns(Promise.resolve(true));
+      statStub = globals.sandbox.stub().returns(Promise.resolve({size: "1"}));
+      globals.set("OS", {
+        File: {
+          makeDir: makeDirStub,
+          exists: existsStub,
+          stat: statStub,
+        },
+        Path: {join: (first, second) => first + second},
+      });
+      attachmentStub = {
+        attachment: {
+          filename: "file",
+          hash: "31",
+          size: "1",
+        },
+      };
+
+      await instance.maybeDownloadAttachment(attachmentStub);
+      assert.calledThrice(existsStub);
+      assert.calledThrice(statStub);
+      assert.calledThrice(instance._getFileStr);
+      assert.calledThrice(instance._downloadAttachment);
     });
-    it("should call retry 3 times in maybeDownloadAttachment if file doesn't exist", async () => {
-      instance.maybeDownloadAttachment({});
+    it("should remove attachments when calling deleteAttachment", async () => {
+      const makeDirStub = globals.sandbox.stub().returns(Promise.resolve());
+      const removeStub = globals.sandbox.stub().returns(Promise.resolve());
+      const removeEmptyDirStub = globals.sandbox.stub().returns(Promise.resolve());
+      globals.set("OS", {
+        File: {
+          makeDir: makeDirStub,
+          remove: removeStub,
+          removeEmptyDir: removeEmptyDirStub,
+        },
+        Path: {join: (first, second) => first + second},
+      });
+      await instance.deleteAttachment({attachment: {filename: "filename"}});
+      assert.calledOnce(makeDirStub);
+      assert.calledOnce(removeStub);
+      assert.calledOnce(removeEmptyDirStub);
+      assert.calledWith(removeStub, "/filename", {ignoreAbsent: true});
     });
-    it("should call retry 3 times in maybeDownloadAttachment if file isn't correct size", async () => {
-      instance.maybeDownloadAttachment({});
+    it("should return JSON when calling getAttachment", async () => {
+      sinon.stub(instance, "maybeDownloadAttachment").returns(Promise.resolve());
+      sinon.stub(instance, "_getFileStr").returns(Promise.resolve("{}"));
+      const parseSpy = globals.sandbox.spy(JSON, "parse");
+      const reportErrorStub = globals.sandbox.stub();
+      globals.set("OS", {
+        Path: {join: (first, second) => first + second},
+      });
+      globals.set("JSON", {
+        parse: parseSpy,
+      });
+      globals.set("Cu", {
+        reportError: reportErrorStub,
+      });
+      const record = {attachment: {filename: "filename"}};
+      let returnValue = await instance.getAttachment(record);
+
+      assert.notCalled(reportErrorStub);
+      assert.calledOnce(parseSpy);
+      assert.calledWith(parseSpy, "{}");
+      assert.calledOnce(instance._getFileStr);
+      assert.calledWith(instance._getFileStr, "/filename");
+      assert.calledOnce(instance.maybeDownloadAttachment);
+      assert.calledWith(instance.maybeDownloadAttachment, record);
+      assert.deepEqual(returnValue, {});
+
+      instance._getFileStr.restore();
+      sinon.stub(instance, "_getFileStr").returns(Promise.resolve({}));
+      returnValue = await instance.getAttachment(record);
+      assert.calledOnce(reportErrorStub);
+      assert.calledWith(reportErrorStub, "Failed to load /filename: JSON.parse: unexpected character at line 1 column 2 of the JSON data");
+      assert.deepEqual(returnValue, {});
     });
-    it("should call retry 3 times in maybeDownloadAttachment if file hash doesn't match", async () => {
-      instance.maybeDownloadAttachment({});
-    });
-    it("should call retry x times in maybeDownloadAttachment if configured", async () => {
-      instance.maybeDownloadAttachment({}, 6);
+    it("should read and decode a file with _getFileStr", async () => {
+      globals.set("OS", {
+        File: {
+          read: async path => {
+            if (path === "/filename") {
+              return "binaryData";
+            }
+            return "";
+          },
+        },
+      });
+      globals.set("gTextDecoder", {
+        decode: async binaryData => {
+          if (binaryData === "binaryData") {
+            return "binaryData";
+          }
+          return "";
+        },
+      });
+      const returnValue = await instance._getFileStr("/filename");
+      assert.equal(returnValue, "binaryData");
     });
   });
 });

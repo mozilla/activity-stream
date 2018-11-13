@@ -136,8 +136,8 @@ describe("Top Stories Feed", () => {
       globals.sandbox.spy(global.Cu, "reportError");
       sectionsManagerStub.sections.set("topstories", {
         options: {
-         api_key_pref: "invalid",
-         stories_endpoint: "https://invalid.com/?apiKey=$apiKey",
+          api_key_pref: "invalid",
+          stories_endpoint: "https://invalid.com/?apiKey=$apiKey",
         },
       });
       instance.init();
