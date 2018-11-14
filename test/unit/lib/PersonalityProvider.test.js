@@ -464,18 +464,12 @@ describe("Personality Provider", () => {
     it("should return JSON when calling getAttachment", async () => {
       sinon.stub(instance, "maybeDownloadAttachment").returns(Promise.resolve());
       sinon.stub(instance, "_getFileStr").returns(Promise.resolve("{}"));
-      const parseSpy = globals.sandbox.spy(JSON, "parse");
       const reportErrorStub = globals.sandbox.stub(global.Cu, "reportError");
       globals.sandbox.stub(global.OS.Path, "join").callsFake((first, second) => first + second);
-      globals.set("JSON", {
-        parse: parseSpy,
-      });
       const record = {attachment: {filename: "filename"}};
       let returnValue = await instance.getAttachment(record);
 
       assert.notCalled(reportErrorStub);
-      assert.calledOnce(parseSpy);
-      assert.calledWith(parseSpy, "{}");
       assert.calledOnce(instance._getFileStr);
       assert.calledWith(instance._getFileStr, "/filename");
       assert.calledOnce(instance.maybeDownloadAttachment);
