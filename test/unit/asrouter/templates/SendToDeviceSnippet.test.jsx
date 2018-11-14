@@ -28,7 +28,7 @@ function openFormAndSetValue(wrapper, value, setCustomValidity = () => {}) {
   wrapper.find("form").simulate("submit");
 }
 
-describe("SendToDeviceSnippet", () => {
+describe.only("SendToDeviceSnippet", () => {
   let sandbox;
   let fetchStub;
   let jsonResponse;
@@ -57,25 +57,49 @@ describe("SendToDeviceSnippet", () => {
     sandbox.restore();
   });
 
+  it("should have the correct defaults", () => {
+    const defaults = {
+      id: "foo123",
+      onBlock() {},
+      content: {},
+      onDismiss: sandbox.stub(),
+      sendUserActionTelemetry: sandbox.stub(),
+      onAction: sandbox.stub(),
+      form_method: "POST",
+    };
+    const wrapper = mount(<SendToDeviceSnippet {...defaults} />);
+    // SendToDeviceSnippet is a wrapper around SubmitFormSnippet
+    const {props} = wrapper.children().get(0);
+
+    assert.propertyVal(props.content, "scene1_button_label", "Learn More");
+    assert.propertyVal(props.content, "scene2_dismiss_button_text", "Dismiss");
+    assert.propertyVal(props.content, "scene2_button_label", "Send");
+    assert.propertyVal(props.content, "scene2_input_placeholder", "YOUR EMAIL HERE");
+    assert.propertyVal(props.content, "locale", "en-US");
+    assert.propertyVal(props.content, "country", "us");
+    assert.propertyVal(props.content, "newsletter", "");
+    assert.propertyVal(props.content, "include_sms", "False");
+  });
+
   describe("form input", () => {
     it("should set the input type to text if content.include_sms is true", () => {
-      const wrapper = mountAndCheckProps({include_sms: true});
+      const wrapper = mountAndCheckProps({include_sms: "True"});
       wrapper.find(".ASRouterButton").simulate("click");
       assert.equal(wrapper.find(".mainInput").instance().type, "text");
     });
     it("should set the input type to email if content.include_sms is false", () => {
-      const wrapper = mountAndCheckProps({include_sms: false});
+      const wrapper = mountAndCheckProps({include_sms: "False"});
       wrapper.find(".ASRouterButton").simulate("click");
       assert.equal(wrapper.find(".mainInput").instance().type, "email");
     });
     it("should validate the input with isEmailOrPhoneNumber if include_sms is true", () => {
-      const wrapper = mountAndCheckProps({include_sms: true});
+      const wrapper = mountAndCheckProps({include_sms: "True"});
       const setCustomValidity = sandbox.stub();
       openFormAndSetValue(wrapper, "foo", setCustomValidity);
       assert.calledWith(setCustomValidity, "Must be an email or a phone number.");
     });
     it("should not custom validate the input if include_sms is false", () => {
-      const wrapper = mountAndCheckProps({include_sms: false});
+      const wrapper = mountAndCheckProps({include_sms: "False"});
       const setCustomValidity = sandbox.stub();
       openFormAndSetValue(wrapper, "foo", setCustomValidity);
       assert.notCalled(setCustomValidity);
@@ -86,7 +110,7 @@ describe("SendToDeviceSnippet", () => {
     it("should send the right information to basket.mozilla.org/news/subscribe for an email", async () => {
       const wrapper = mountAndCheckProps({
         locale: "fr-CA",
-        include_sms: true,
+        include_sms: "True",
         message_id_email: "foo",
       });
 
@@ -106,7 +130,7 @@ describe("SendToDeviceSnippet", () => {
     it("should send the right information for an sms", async () => {
       const wrapper = mountAndCheckProps({
         locale: "fr-CA",
-        include_sms: true,
+        include_sms: "True",
         message_id_sms: "foo",
         country: "CA",
       });

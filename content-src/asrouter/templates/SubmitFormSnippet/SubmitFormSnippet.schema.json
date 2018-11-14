@@ -130,7 +130,8 @@
       "description": "Used to prevent blocking the snippet after the CTA (link or button) has been clicked"
     },
     "include_sms": {
-      "type": "boolean",
+      "type": "string",
+      "enum": ["True", "False"],
       "description": "(send to device) Allow users to send an SMS message with the form?"
     },
     "message_id_sms": {
