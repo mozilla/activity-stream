@@ -36,7 +36,7 @@
 
     max-width: $wrapper-max-width-large;
     @media (min-width: $break-point-widest) {
-      max-width: $wrapper-max-width-widest;
+      width: 100%;
     }
   }
 

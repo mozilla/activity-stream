@@ -6,6 +6,11 @@
   &.send_to_device_snippet {
     text-align: center;
 
+    .ASRouterButton.primary {
+      font-weight: normal;
+      font-size: 15px;
+    }
+
     .message {
       font-size: 16px;
     }
