@@ -109,6 +109,14 @@ const TEST_GLOBAL = {
     },
   },
   OS: {
+    File: {
+      writeAtomic() {},
+      makeDir() {},
+      stat() {},
+      exists() {},
+      remove() {},
+      removeEmptyDir() {},
+    },
     Path: {
       join() {
         return "/";

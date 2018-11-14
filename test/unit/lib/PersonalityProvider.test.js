@@ -53,7 +53,7 @@ describe("Personality Provider", () => {
 
     globals.set("baseAttachmentsURL", new Promise(resolve => resolve("/")));
 
-    const fetchStub = async server => ({
+    global.fetch = async server => ({
       ok: true,
       json: async () => {
         if (server === "services.settings.server/") {
@@ -62,7 +62,6 @@ describe("Personality Provider", () => {
         return {};
       },
     });
-    globals.set("fetch", fetchStub);
     globals.sandbox.stub(global.Services.prefs, "getCharPref").callsFake(pref => pref);
 
     ({PersonalityProvider} = injector({
@@ -390,12 +389,12 @@ describe("Personality Provider", () => {
         arrayBuffer: async () => {},
       });
 
-      const writeAtomicStub = globals.sandbox.stub();
-      globals.set("OS", {
-        File: {writeAtomic: writeAtomicStub},
-        Path: {join: (first, second) => first + second},
-      });
-      writeAtomicStub.resolves(Promise.resolve());
+      const writeAtomicStub = globals.sandbox.stub(global.OS.File, "writeAtomic").resolves(Promise.resolve());
+      globals.sandbox.stub(global.OS.Path, "join").callsFake((first, second) => first + second);
+      await instance._downloadAttachment({attachment: {location: "location", filename: "filename"}});
+
+      assert.calledWith(fetchStub, "/location", {headers: new Headers()});
+      assert.calledWith(writeAtomicStub, "/filename", new Uint8Array(), {tmpPath: "/filename.tmp"});
     });
     it("should call reportError from _downloadAttachment if not valid response", async () => {
       const fetchStub = globals.sandbox.stub();
@@ -412,18 +411,12 @@ describe("Personality Provider", () => {
       let attachmentStub;
       sinon.stub(instance, "_downloadAttachment").returns(Promise.resolve());
       sinon.stub(instance, "_getFileStr").returns(Promise.resolve("1"));
-      const makeDirStub = globals.sandbox.stub().returns(Promise.resolve());
+      const makeDirStub = globals.sandbox.stub(global.OS.File, "makeDir").returns(Promise.resolve());
+      globals.sandbox.stub(global.OS.Path, "join").callsFake((first, second) => first + second);
 
-      existsStub = globals.sandbox.stub().returns(Promise.resolve(true));
-      statStub = globals.sandbox.stub().returns(Promise.resolve({size: "1"}));
-      globals.set("OS", {
-        File: {
-          makeDir: makeDirStub,
-          exists: existsStub,
-          stat: statStub,
-        },
-        Path: {join: (first, second) => first + second},
-      });
+      existsStub = globals.sandbox.stub(global.OS.File, "exists").returns(Promise.resolve(true));
+      statStub = globals.sandbox.stub(global.OS.File, "stat").returns(Promise.resolve({size: "1"}));
+
       attachmentStub = {
         attachment: {
           filename: "file",
@@ -440,16 +433,9 @@ describe("Personality Provider", () => {
       assert.notCalled(instance._downloadAttachment);
 
       instance._getFileStr.resetHistory();
-      existsStub = globals.sandbox.stub().returns(Promise.resolve(true));
-      statStub = globals.sandbox.stub().returns(Promise.resolve({size: "1"}));
-      globals.set("OS", {
-        File: {
-          makeDir: makeDirStub,
-          exists: existsStub,
-          stat: statStub,
-        },
-        Path: {join: (first, second) => first + second},
-      });
+      existsStub.resetHistory();
+      statStub.resetHistory();
+
       attachmentStub = {
         attachment: {
           filename: "file",
@@ -465,17 +451,10 @@ describe("Personality Provider", () => {
       assert.calledThrice(instance._downloadAttachment);
     });
     it("should remove attachments when calling deleteAttachment", async () => {
-      const makeDirStub = globals.sandbox.stub().returns(Promise.resolve());
-      const removeStub = globals.sandbox.stub().returns(Promise.resolve());
-      const removeEmptyDirStub = globals.sandbox.stub().returns(Promise.resolve());
-      globals.set("OS", {
-        File: {
-          makeDir: makeDirStub,
-          remove: removeStub,
-          removeEmptyDir: removeEmptyDirStub,
-        },
-        Path: {join: (first, second) => first + second},
-      });
+      const makeDirStub = globals.sandbox.stub(global.OS.File, "makeDir").returns(Promise.resolve());
+      const removeStub = globals.sandbox.stub(global.OS.File, "remove").returns(Promise.resolve());
+      const removeEmptyDirStub = globals.sandbox.stub(global.OS.File, "removeEmptyDir").returns(Promise.resolve());
+      globals.sandbox.stub(global.OS.Path, "join").callsFake((first, second) => first + second);
       await instance.deleteAttachment({attachment: {filename: "filename"}});
       assert.calledOnce(makeDirStub);
       assert.calledOnce(removeStub);
@@ -487,9 +466,7 @@ describe("Personality Provider", () => {
       sinon.stub(instance, "_getFileStr").returns(Promise.resolve("{}"));
       const parseSpy = globals.sandbox.spy(JSON, "parse");
       const reportErrorStub = globals.sandbox.stub();
-      globals.set("OS", {
-        Path: {join: (first, second) => first + second},
-      });
+      globals.sandbox.stub(global.OS.Path, "join").callsFake((first, second) => first + second);
       globals.set("JSON", {
         parse: parseSpy,
       });
@@ -516,16 +493,12 @@ describe("Personality Provider", () => {
       assert.deepEqual(returnValue, {});
     });
     it("should read and decode a file with _getFileStr", async () => {
-      globals.set("OS", {
-        File: {
-          read: async path => {
-            if (path === "/filename") {
-              return "binaryData";
-            }
-            return "";
-          },
-        },
-      });
+      global.OS.File.read = async path => {
+        if (path === "/filename") {
+          return "binaryData";
+        }
+        return "";
+      };
       globals.set("gTextDecoder", {
         decode: async binaryData => {
           if (binaryData === "binaryData") {
