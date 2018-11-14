@@ -382,9 +382,7 @@ describe("Personality Provider", () => {
       assert(instance.deleteAttachment.withArgs("update-old-2").calledOnce);
     });
     it("should write a file from _downloadAttachment", async () => {
-      const fetchStub = globals.sandbox.stub();
-      globals.set("fetch", fetchStub);
-      fetchStub.resolves({
+      const fetchStub = globals.sandbox.stub(global, "fetch").resolves({
         ok: true,
         arrayBuffer: async () => {},
       });
@@ -397,9 +395,7 @@ describe("Personality Provider", () => {
       assert.calledWith(writeAtomicStub, "/filename", new Uint8Array(), {tmpPath: "/filename.tmp"});
     });
     it("should call reportError from _downloadAttachment if not valid response", async () => {
-      const fetchStub = globals.sandbox.stub();
-      globals.set("fetch", fetchStub);
-      fetchStub.resolves({ok: false});
+      globals.sandbox.stub(global, "fetch").resolves({ok: false});
       globals.sandbox.spy(global.Cu, "reportError");
 
       await instance._downloadAttachment({attachment: {location: "location", filename: "filename"}});
