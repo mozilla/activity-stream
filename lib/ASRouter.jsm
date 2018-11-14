@@ -928,7 +928,7 @@ class _ASRouter {
         target.browser.ownerGlobal.OpenBrowserWindow({private: true});
         break;
       case ra.OPEN_URL:
-        target.browser.ownerGlobal.openLinkIn(action.data.args, "current", {
+        target.browser.ownerGlobal.openLinkIn(action.data.args, action.data.where || "current", {
           private: false,
           triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}),
         });
