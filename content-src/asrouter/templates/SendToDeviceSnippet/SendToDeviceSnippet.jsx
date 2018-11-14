@@ -39,6 +39,7 @@ function addDefaultValues(props) {
       locale: props.content.locale || "en-US",
       country: props.content.country || "us",
       include_sms: (props.content.include_sms || "false").toLowerCase(),
+      message_id_email: props.content.message_id_email || "",
     },
   };
 }

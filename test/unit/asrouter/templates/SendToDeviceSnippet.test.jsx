@@ -28,7 +28,7 @@ function openFormAndSetValue(wrapper, value, setCustomValidity = () => {}) {
   wrapper.find("form").simulate("submit");
 }
 
-describe.only("SendToDeviceSnippet", () => {
+describe("SendToDeviceSnippet", () => {
   let sandbox;
   let fetchStub;
   let jsonResponse;
@@ -80,6 +80,7 @@ describe.only("SendToDeviceSnippet", () => {
     assert.propertyVal(props.content, "locale", "en-US");
     assert.propertyVal(props.content, "country", "us");
     assert.propertyVal(props.content, "include_sms", "false");
+    assert.propertyVal(props.content, "message_id_email", "");
   });
 
   describe("form input", () => {
