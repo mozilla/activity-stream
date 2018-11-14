@@ -381,6 +381,22 @@ describe("Personality Provider", () => {
       assert(instance.deleteAttachment.withArgs("update-old-1").calledOnce);
       assert(instance.deleteAttachment.withArgs("update-old-2").calledOnce);
     });
+    it("should write a file from _downloadAttachment", async () => {
+      const fetchStub = globals.sandbox.stub(global, "fetch").resolves({
+        ok: true,
+        arrayBuffer: async () => {},
+      });
+
+      const writeAtomicStub = globals.sandbox.stub(global.OS.File, "writeAtomic").resolves(Promise.resolve());
+      globals.sandbox.stub(global.OS.Path, "join").callsFake((first, second) => first + second);
+      await instance._downloadAttachment({attachment: {location: "location", filename: "filename"}});
+
+      const fetchArgs = fetchStub.firstCall.args;
+      assert.equal(fetchArgs[0], "/location");
+      const writeArgs = writeAtomicStub.firstCall.args;
+      assert.equal(writeArgs[0], "/filename");
+      assert.equal(writeArgs[2].tmpPath, "/filename.tmp");
+    });
     it("should call reportError from _downloadAttachment if not valid response", async () => {
       globals.sandbox.stub(global, "fetch").resolves({ok: false});
       globals.sandbox.spy(global.Cu, "reportError");

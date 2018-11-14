@@ -97,7 +97,6 @@ this.PersonalityProvider = class PersonalityProvider {
    * Downloads the attachment to disk assuming the dir already exists
    * and any existing files matching the filename are clobbered.
    */
-  /* istanbul ignore next */
   async _downloadAttachment(record) {
     const {attachment: {location, filename}} = record;
     const remoteFilePath = (await baseAttachmentsURL) + location;
