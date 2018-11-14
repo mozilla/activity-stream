@@ -45,7 +45,6 @@ describe.only("SendToDeviceSnippet", () => {
     };
     const comp = mount(<SendToDeviceSnippet {...props} />);
     // Check schema with the final props the component receives (including defaults)
-    debugger;
     assert.jsonSchema(comp.children().get(0).props.content, schema);
     return comp;
   }
