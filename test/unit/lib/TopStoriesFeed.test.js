@@ -711,7 +711,7 @@ describe("Top Stories Feed", () => {
 
       // NOTE: `expiration_timestamp` is seconds since UNIX epoch
       instance.spocs = [
-        // No timestamp gets filtered out
+        // No timestamp stays visible
         {
           id: "spoc1",
         },
@@ -731,8 +731,9 @@ describe("Top Stories Feed", () => {
 
       instance.filterSpocs();
 
-      assert.equal(instance.filterSpocs.firstCall.returnValue.length, 1);
-      assert.equal(instance.filterSpocs.firstCall.returnValue[0].id, "spoc3");
+      assert.equal(instance.filterSpocs.firstCall.returnValue.length, 2);
+      assert.equal(instance.filterSpocs.firstCall.returnValue[0].id, "spoc1");
+      assert.equal(instance.filterSpocs.firstCall.returnValue[1].id, "spoc3");
     });
     it("should insert spoc with provided probability", async () => {
       let fetchStub = globals.sandbox.stub();
