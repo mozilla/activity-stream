@@ -43,8 +43,11 @@ describe.only("SendToDeviceSnippet", () => {
       onAction: sandbox.stub(),
       form_method: "POST",
     };
-    assert.jsonSchema(props.content, schema);
-    return mount(<SendToDeviceSnippet {...props} />);
+    const comp = mount(<SendToDeviceSnippet {...props} />);
+    // Check schema with the final props the component receives (including defaults)
+    debugger;
+    assert.jsonSchema(comp.children().get(0).props.content, schema);
+    return comp;
   }
 
   beforeEach(() => {
@@ -77,8 +80,7 @@ describe.only("SendToDeviceSnippet", () => {
     assert.propertyVal(props.content, "scene2_input_placeholder", "YOUR EMAIL HERE");
     assert.propertyVal(props.content, "locale", "en-US");
     assert.propertyVal(props.content, "country", "us");
-    assert.propertyVal(props.content, "newsletter", "");
-    assert.propertyVal(props.content, "include_sms", "False");
+    assert.propertyVal(props.content, "include_sms", "false");
   });
 
   describe("form input", () => {

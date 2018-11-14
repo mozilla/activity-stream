@@ -38,8 +38,7 @@ function addDefaultValues(props) {
       scene2_input_placeholder: props.content.scene2_input_placeholder || "YOUR EMAIL HERE",
       locale: props.content.locale || "en-US",
       country: props.content.country || "us",
-      newsletter: props.content.newsletter || "",
-      include_sms: props.content.include_sms || "False",
+      include_sms: (props.content.include_sms || "false").toLowerCase(),
     },
   };
 }
@@ -50,7 +49,7 @@ export const SendToDeviceSnippet = props => {
   return (<SubmitFormSnippet {...propsWithDefaults}
     form_method="POST"
     className="send_to_device_snippet"
-    inputType={propsWithDefaults.content.include_sms === "True" ? "text" : "email"}
-    validateInput={propsWithDefaults.content.include_sms === "True" ? validateInput : null}
+    inputType={propsWithDefaults.content.include_sms === "true" ? "text" : "email"}
+    validateInput={propsWithDefaults.content.include_sms === "true" ? validateInput : null}
     processFormData={processFormData} />);
 };

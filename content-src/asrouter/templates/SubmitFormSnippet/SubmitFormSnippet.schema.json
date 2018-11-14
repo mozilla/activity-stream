@@ -131,7 +131,7 @@
     },
     "include_sms": {
       "type": "string",
-      "enum": ["True", "False"],
+      "enum": ["true", "false"],
       "description": "(send to device) Allow users to send an SMS message with the form?"
     },
     "message_id_sms": {
