@@ -389,6 +389,9 @@ describe("Personality Provider", () => {
 
       const writeAtomicStub = globals.sandbox.stub(global.OS.File, "writeAtomic").resolves(Promise.resolve());
       globals.sandbox.stub(global.OS.Path, "join").callsFake((first, second) => first + second);
+
+      globals.set("Uint8Array", class Uint8Array {});
+
       await instance._downloadAttachment({attachment: {location: "location", filename: "filename"}});
 
       const fetchArgs = fetchStub.firstCall.args;
