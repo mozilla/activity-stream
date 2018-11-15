@@ -41,6 +41,7 @@ describe("OnboardingMessage", () => {
   });
   it("should validate all messages from OnboardingMessageProvider", async () => {
     const messages = await OnboardingMessageProvider.getUntranslatedMessages();
-    messages.forEach(msg => assert.jsonSchema(msg.content, schema));
+    // FXA_1 doesn't have content - so filter it out
+    messages.filter(msg => msg.content).forEach(msg => assert.jsonSchema(msg.content, schema));
   });
 });
