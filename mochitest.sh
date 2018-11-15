@@ -13,7 +13,6 @@ cd /activity-stream && npm install . && npm run buildmc
 
 # Build latest m-c with Activity Stream changes
 cd /mozilla-central && ./mach build \
-  && MOZ_AUTOMATION=1 ./mach package \
   && ./mach lint -l codespell browser/components/newtab \
   && ./mach test browser/components/newtab/test/browser --headless \
   && ./mach test browser/components/newtab/test/xpcshell \
@@ -24,4 +23,5 @@ cd /mozilla-central && ./mach build \
   browser/components/enterprisepolicies/tests/browser/browser_policy_set_homepage.js \
   browser/components/preferences/in-content/tests/browser_search_subdialogs_within_preferences_1.js \
   && ! grep -q TEST-UNEXPECTED test_run_log \
-  && ! ./mach test all_files_referenced | grep activity-stream
+  && ! ./mach test all_files_referenced | grep activity-stream \
+  && MH_BRANCH=central MOZ_BUILD_DATE=$(date +"%Y%m%d%H%M%S") MOZ_AUTOMATION=1 ./mach package
