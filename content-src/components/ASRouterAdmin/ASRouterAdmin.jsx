@@ -115,12 +115,11 @@ export class ASRouterAdmin extends React.PureComponent {
 
   handleMessageFiltering(event) {
     if (this.state.jexlMessageFilter) {
-      return this.clearJEXLMessageFiltering();
+      this.clearJEXLMessageFiltering();
+    } else {
+      this.setState({jexlMessageFilter: true});
+      this.state.messages.forEach(({id, targeting}) => targeting && this.handleExpressionEval(event, id, targeting));
     }
-
-    this.setState({jexlMessageFilter: true});
-    this.state.messages.forEach(({id, targeting}) => targeting && this.handleExpressionEval(event, id, targeting));
-    return null;
   }
 
   onChangeTargetingParameters(event) {
@@ -135,8 +134,8 @@ export class ASRouterAdmin extends React.PureComponent {
       updatedParameters[name] = value;
       try {
         JSON.parse(value);
+        target.setCustomValidity("");
       } catch ({message}) {
-        console.log(`Error parsing value of parameter ${name}`); // eslint-disable-line no-console
         targetingParametersError = {id: name};
         target.setCustomValidity(message);
         target.reportValidity();
@@ -180,6 +179,9 @@ export class ASRouterAdmin extends React.PureComponent {
   }
 
   onChangeMessageFilter(event) {
+    if (this.state.jexlMessageFilter) {
+      this.clearJEXLMessageFiltering();
+    }
     this.setState({messageFilter: event.target.value});
   }
 
@@ -227,7 +229,6 @@ export class ASRouterAdmin extends React.PureComponent {
   }
 
   clearJEXLMessageFiltering(event) {
-    event.target.setCustomValidity("");
     this.setState({jexlMessageFilter: false, jexlMatchingMessages: []});
   }
 
@@ -272,10 +273,16 @@ export class ASRouterAdmin extends React.PureComponent {
     if (!this.state.providers) {
       return null;
     }
+    const options = this.state.providers.map(provider => (<option key={provider.id} value={provider.id}>{provider.id}</option>));
+    let selected = this.state.messageFilter;
+    if (this.state.jexlMessageFilter) {
+      selected = "JEXL Targeting";
+      options.push(<option key="jexlMessageFilter" value={selected}>{selected}</option>);
+    }
     return (<React.Fragment>
-      <p>Show messages from <select value={this.state.messageFilter} onChange={this.onChangeMessageFilter}>
+      <p>Show messages from <select value={selected} onChange={this.onChangeMessageFilter}>
       <option value="all">all providers</option>
-      {this.state.providers.map(provider => (<option key={provider.id} value={provider.id}>{provider.id}</option>))}
+        {options}
       </select></p>
       <p>
         Filter all messages based on the targeting parameters below
