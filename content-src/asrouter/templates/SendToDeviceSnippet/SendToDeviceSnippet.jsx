@@ -31,15 +31,16 @@ function addDefaultValues(props) {
   return {
     ...props,
     content: {
+      scene1_button_label: "Learn More",
+      scene2_dismiss_button_text: "Dismiss",
+      scene2_button_label: "Send",
+      scene2_input_placeholder: "YOUR EMAIL HERE",
+      locale: "en-US",
+      country: "us",
+      message_id_email: "",
       ...props.content,
-      scene1_button_label: props.content.scene1_button_label || "Learn More",
-      scene2_dismiss_button_text: props.content.scene2_dismiss_button_text || "Dismiss",
-      scene2_button_label: props.content.scene2_button_label || "Send",
-      scene2_input_placeholder: props.content.scene2_input_placeholder || "YOUR EMAIL HERE",
-      locale: props.content.locale || "en-US",
-      country: props.content.country || "us",
+      // Endpoint can send a reply that can start with an uppercase letter
       include_sms: (props.content.include_sms || "false").toLowerCase(),
-      message_id_email: props.content.message_id_email || "",
     },
   };
 }
