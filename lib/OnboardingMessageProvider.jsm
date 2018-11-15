@@ -38,7 +38,7 @@ const ONBOARDING_MESSAGES = async () => ([
       button_label: {string_id: "onboarding-button-label-try-now"},
       button_action: {
         type: "OPEN_URL",
-        data: {args: "https://screenshots.firefox.com/#tour"},
+        data: {args: "https://screenshots.firefox.com/#tour", where: "tabshifted"},
       },
     },
     trigger: {id: "firstRun"},
@@ -73,7 +73,7 @@ const ONBOARDING_MESSAGES = async () => ([
       button_label: {string_id: "onboarding-button-label-try-now"},
       button_action: {
         type: "OPEN_URL",
-        data: {args: "https://addons.mozilla.org/en-US/firefox/addon/ghostery/"},
+        data: {args: "https://addons.mozilla.org/en-US/firefox/addon/ghostery/", where: "tabshifted"},
       },
     },
     targeting: "providerCohorts.onboarding == 'ghostery'",
@@ -91,7 +91,7 @@ const ONBOARDING_MESSAGES = async () => ([
       button_label: {string_id: "onboarding-button-label-get-started"},
       button_action: {
         type: "OPEN_URL",
-        data: {args: await FxAccountsConfig.promiseEmailFirstURI("onboarding")},
+        data: {args: await FxAccountsConfig.promiseEmailFirstURI("onboarding"), where: "tabshifted"},
       },
     },
     targeting: "attributionData.campaign == 'non-fx-button' && attributionData.source == 'addons.mozilla.org'",
