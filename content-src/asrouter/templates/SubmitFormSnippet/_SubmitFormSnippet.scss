@@ -3,11 +3,17 @@
   flex: 1 1 100%;
   width: 100%;
 
+  .disclaimerText {
+    margin: 20px 0 0 0;
+    font-size: 12px;
+  }
+
   &.send_to_device_snippet {
     text-align: center;
 
     .message {
       font-size: 16px;
+      margin-bottom: 20px;
     }
   }
 
@@ -17,7 +23,6 @@
 
       &[type='submit'] {
         font-weight: normal;
-        font-size: 15px;
       }
     }
   }
@@ -49,9 +54,10 @@
     font-size: 14px;
     align-self: stretch;
     flex: 0 0 100%;
+    margin-bottom: 10px;
 
     p {
-      margin-top: 0;
+      margin: 0;
     }
   }
 
@@ -94,7 +100,7 @@
       border: $input-border;
       padding: 0 8px;
       height: 100%;
-      font-size: 15px;
+      font-size: 14px;
       width: 50%;
 
       &:focus {

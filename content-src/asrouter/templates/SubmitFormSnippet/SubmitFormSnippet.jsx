@@ -152,6 +152,7 @@ export class SubmitFormSnippet extends React.PureComponent {
         <div className="message">
           <p>
             {content.scene2_title ? <h3 className="scene2Title">{content.scene2_title}</h3> : null}
+            {" "}
             <RichText scene2_text={content.scene2_text} localization_id="scene2_text" />
           </p>
         </div>
