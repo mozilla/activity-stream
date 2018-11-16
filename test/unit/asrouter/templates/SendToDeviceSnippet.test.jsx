@@ -79,29 +79,29 @@ describe("SendToDeviceSnippet", () => {
     assert.propertyVal(props.content, "scene2_input_placeholder", "YOUR EMAIL HERE");
     assert.propertyVal(props.content, "locale", "en-US");
     assert.propertyVal(props.content, "country", "us");
-    assert.propertyVal(props.content, "include_sms", "false");
+    assert.propertyVal(props.content, "include_sms", false);
     assert.propertyVal(props.content, "message_id_email", "");
   });
 
   describe("form input", () => {
     it("should set the input type to text if content.include_sms is true", () => {
-      const wrapper = mountAndCheckProps({include_sms: "True"});
+      const wrapper = mountAndCheckProps({include_sms: true});
       wrapper.find(".ASRouterButton").simulate("click");
       assert.equal(wrapper.find(".mainInput").instance().type, "text");
     });
     it("should set the input type to email if content.include_sms is false", () => {
-      const wrapper = mountAndCheckProps({include_sms: "False"});
+      const wrapper = mountAndCheckProps({include_sms: false});
       wrapper.find(".ASRouterButton").simulate("click");
       assert.equal(wrapper.find(".mainInput").instance().type, "email");
     });
     it("should validate the input with isEmailOrPhoneNumber if include_sms is true", () => {
-      const wrapper = mountAndCheckProps({include_sms: "True"});
+      const wrapper = mountAndCheckProps({include_sms: true});
       const setCustomValidity = sandbox.stub();
       openFormAndSetValue(wrapper, "foo", setCustomValidity);
       assert.calledWith(setCustomValidity, "Must be an email or a phone number.");
     });
     it("should not custom validate the input if include_sms is false", () => {
-      const wrapper = mountAndCheckProps({include_sms: "False"});
+      const wrapper = mountAndCheckProps({include_sms: false});
       const setCustomValidity = sandbox.stub();
       openFormAndSetValue(wrapper, "foo", setCustomValidity);
       assert.notCalled(setCustomValidity);
@@ -112,7 +112,7 @@ describe("SendToDeviceSnippet", () => {
     it("should send the right information to basket.mozilla.org/news/subscribe for an email", async () => {
       const wrapper = mountAndCheckProps({
         locale: "fr-CA",
-        include_sms: "True",
+        include_sms: true,
         message_id_email: "foo",
       });
 
@@ -132,7 +132,7 @@ describe("SendToDeviceSnippet", () => {
     it("should send the right information for an sms", async () => {
       const wrapper = mountAndCheckProps({
         locale: "fr-CA",
-        include_sms: "True",
+        include_sms: true,
         message_id_sms: "foo",
         country: "CA",
       });

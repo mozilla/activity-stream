@@ -135,7 +135,7 @@ const MESSAGES = () => ([
     id: "SNIPPETS_SEND_TO_DEVICE_TEST",
     template: "send_to_device_snippet",
     content: {
-      include_sms: "true",
+      include_sms: true,
       locale: "en-CA",
       country: "us",
       message_id_sms: "ff-mobilesn-download",

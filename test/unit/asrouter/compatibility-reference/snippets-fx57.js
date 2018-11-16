@@ -45,7 +45,7 @@ export const expectedValues = {
 
   // Send To Device Snippet (https://github.com/mozmeao/snippets/blob/master/activity-stream/send-to-device.html)
   send_to_device_snippet: {
-    include_sms: "true",
+    include_sms: true,
     locale: "de",
     country: "DE",
     message_id_sms: "foo",

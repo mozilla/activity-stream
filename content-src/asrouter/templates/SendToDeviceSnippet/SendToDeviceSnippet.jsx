@@ -38,9 +38,8 @@ function addDefaultValues(props) {
       locale: "en-US",
       country: "us",
       message_id_email: "",
+      include_sms: false,
       ...props.content,
-      // Endpoint can send a reply that can start with an uppercase letter
-      include_sms: (props.content.include_sms || "false").toLowerCase(),
     },
   };
 }
@@ -51,7 +50,7 @@ export const SendToDeviceSnippet = props => {
   return (<SubmitFormSnippet {...propsWithDefaults}
     form_method="POST"
     className="send_to_device_snippet"
-    inputType={propsWithDefaults.content.include_sms === "true" ? "text" : "email"}
-    validateInput={propsWithDefaults.content.include_sms === "true" ? validateInput : null}
+    inputType={propsWithDefaults.content.include_sms ? "text" : "email"}
+    validateInput={propsWithDefaults.content.include_sms ? validateInput : null}
     processFormData={processFormData} />);
 };
