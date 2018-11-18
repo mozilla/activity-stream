@@ -27,7 +27,6 @@
     display: flex;
     align-items: center;
     padding: 12px $section-horizontal-padding;
-    width: $wrapper-max-width-large;
 
     // This is to account for the block button on smaller screens
     padding-inline-end: 36px;
@@ -35,8 +34,9 @@
       padding-inline-end: $section-horizontal-padding;
     }
 
+    max-width: $wrapper-max-width-large;
     @media (min-width: $break-point-widest) {
-      width: $wrapper-max-width-widest;
+      max-width: $wrapper-max-width-widest;
     }
   }
 
