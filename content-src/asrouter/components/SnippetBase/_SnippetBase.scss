@@ -22,6 +22,14 @@
     }
   }
 
+  input {
+    &[type='checkbox'] {
+      margin-inline-start: 0;
+      height: 16px;
+      width: 16px;
+    }
+  }
+
   .innerWrapper {
     margin: 0 auto;
     display: flex;

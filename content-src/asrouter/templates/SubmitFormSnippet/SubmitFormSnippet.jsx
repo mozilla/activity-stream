@@ -101,12 +101,11 @@ export class SubmitFormSnippet extends React.PureComponent {
     return (<label className="privacyNotice" htmlFor="id_privacy">
         <p>
           <input type="checkbox" id="id_privacy" name="privacy" required="required" />
-          <span><RichText text={content.scene2_privacy_html}
+          <RichText text={content.scene2_privacy_html}
             localization_id="privacy_html"
             links={content.links}
             doNotAutoBlock={true}
             sendClick={this.props.sendClick} />
-          </span>
         </p>
       </label>);
   }
