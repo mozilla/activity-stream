@@ -24,4 +24,4 @@ cd /mozilla-central && ./mach build \
   browser/components/preferences/in-content/tests/browser_search_subdialogs_within_preferences_1.js \
   && ! grep -q TEST-UNEXPECTED test_run_log \
   && ! ./mach test all_files_referenced | grep activity-stream \
-  && MH_BRANCH=central MOZ_BUILD_DATE=$(date +"%Y%m%d%H%M%S") MOZ_AUTOMATION=1 ./mach package
+  && RUN_FIND_DUPES=1 ./mach package
