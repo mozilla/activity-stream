@@ -103,12 +103,35 @@
           "description": "(fxa) Value to pass through to GA as utm_term."
         },
         "additionalProperties": false
+      }
     },
     "scene1_button_label": {
       "allOf": [
         {"$ref": "#/definitions/plainText"},
         {"description": "Text for a button next to main snippet text that links to button_url. Requires button_url."}
-      ]
+      ],
+      "default": "Learn more"
+    },
+    "scene1_button_color": {
+      "type": "string",
+      "description": "The text color of the button. Valid CSS color."
+    },
+    "scene1_button_background_color": {
+      "type": "string",
+      "description": "The background color of the button. Valid CSS color."
+    },
+    "do_not_autoblock": {
+      "type": "boolean",
+      "description": "Used to prevent blocking the snippet after the CTA (link or button) has been clicked",
+      "default": false
+    },
+    "utm_campaign": {
+      "type": "string",
+      "description": "(fxa) Value to pass through to GA as utm_campaign."
+    },
+    "utm_term": {
+      "type": "string",
+      "description": "(fxa) Value to pass through to GA as utm_term."
     },
     "scene1_button_color": {
       "type": "string",
