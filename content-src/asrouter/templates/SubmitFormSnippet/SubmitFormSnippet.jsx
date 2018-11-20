@@ -9,13 +9,21 @@ export class SubmitFormSnippet extends React.PureComponent {
     super(props);
     this.expandSnippet = this.expandSnippet.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubmitAttempt = this.handleSubmitAttempt.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
     this.state = {
       expanded: false,
+      submitAttempted: false,
       signupSubmitted: false,
       signupSuccess: false,
       disableForm: false,
     };
+  }
+
+  handleSubmitAttempt() {
+    if (!this.state.submitAttempted) {
+      this.setState({submitAttempted: true});
+    }
   }
 
   async handleSubmit(event) {
@@ -137,7 +145,7 @@ export class SubmitFormSnippet extends React.PureComponent {
     return (<input
       ref="mainInput"
       type={this.props.inputType || "email"}
-      className="mainInput"
+      className={`mainInput${(this.state.submitAttempted ? "" : " clean")}`}
       name="email"
       required={true}
       placeholder={placholder}
@@ -160,7 +168,7 @@ export class SubmitFormSnippet extends React.PureComponent {
           {this.renderHiddenFormInputs()}
           <div>
             {this.renderInput()}
-            <button type="submit" className="ASRouterButton primary" ref="formSubmitBtn">{content.scene2_button_label}</button>
+            <button type="submit" className="ASRouterButton primary" onClick={this.handleSubmitAttempt} ref="formSubmitBtn">{content.scene2_button_label}</button>
           </div>
           {this.renderFormPrivacyNotice() || this.renderDisclaimer()}
         </form>
