@@ -75,7 +75,7 @@ describe("SendToDeviceSnippet", () => {
     assert.propertyVal(props.content, "scene1_button_label", "Learn More");
     assert.propertyVal(props.content, "scene2_dismiss_button_text", "Dismiss");
     assert.propertyVal(props.content, "scene2_button_label", "Send");
-    assert.propertyVal(props.content, "scene2_input_placeholder", "YOUR EMAIL HERE");
+    assert.propertyVal(props.content, "scene2_input_placeholder", "Your Email Here");
     assert.propertyVal(props.content, "locale", "en-US");
     assert.propertyVal(props.content, "country", "us");
     assert.propertyVal(props.content, "include_sms", false);

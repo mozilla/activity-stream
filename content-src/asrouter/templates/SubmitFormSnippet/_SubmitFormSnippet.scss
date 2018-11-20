@@ -6,6 +6,18 @@
   .disclaimerText {
     margin: 20px 0 0;
     font-size: 12px;
+    color: var(--newtab-text-secondary-color);
+  }
+
+
+  $checkbox-offset: 0;
+
+  [type='checkbox']:not(:checked) + label::before,
+  [type='checkbox']:checked + label::before,
+  [type='checkbox']:not(:checked) + label::after,
+  [type='checkbox']:checked + label::after {
+    width: 16px;
+    height: 16px;
   }
 
   p {
@@ -68,7 +80,8 @@
     flex: 0 0 100%;
 
     span {
-      vertical-align: top;
+      // Room for the checkbox
+      padding-inline-start: 20px;
     }
   }
 

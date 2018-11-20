@@ -107,28 +107,31 @@ export class SubmitFormSnippet extends React.PureComponent {
     if (!content.scene2_privacy_html) {
       return null;
     }
-    return (<label className="privacyNotice" htmlFor="id_privacy">
-        <p>
-          <input type="checkbox" id="id_privacy" name="privacy" required="required" />
+    return (<p className="privacyNotice">
+        <input type="checkbox" id="id_privacy" name="privacy" required="required" />
+        <label htmlFor="id_privacy">
           <RichText text={content.scene2_privacy_html}
-            localization_id="privacy_html"
-            links={content.links}
-            doNotAutoBlock={true}
-            openNewWindow={true}
-            sendClick={this.props.sendClick} />
-        </p>
-      </label>);
+          localization_id="privacy_html"
+          links={content.links}
+          doNotAutoBlock={true}
+          openNewWindow={true}
+          sendClick={this.props.sendClick} />
+        </label>
+      </p>);
   }
 
   renderSignupSubmitted() {
     const {content} = this.props;
     const isSuccess = this.state.signupSuccess;
     const successTitle = isSuccess && content.success_title;
-    const bodyText = isSuccess ? content.success_text : content.error_text;
+    const bodyText = isSuccess ? {success_text: content.success_text} : {error_text: content.error_text};
     const retryButtonText = content.scene1_button_label;
     return (<SnippetBase {...this.props}><div className="submissionStatus">
       {successTitle ? <h2 className="submitStatusTitle">{successTitle}</h2> : null}
-      <p>{bodyText}{isSuccess ? null : <Button onClick={this.expandSnippet}>{retryButtonText}</Button>}</p>
+      <p>
+        <RichText {...bodyText} localization_id={isSuccess ? "success_text" : "error_text"} />
+        {isSuccess ? null : <Button onClick={this.expandSnippet}>{retryButtonText}</Button>}
+      </p>
     </div></SnippetBase>);
   }
 
@@ -160,9 +163,9 @@ export class SubmitFormSnippet extends React.PureComponent {
         {content.scene2_icon ? <div className="scene2Icon"><img src={content.scene2_icon} /></div> : null}
         <div className="message">
           <p>
-            {content.scene2_title ? <h3 className="scene2Title">{content.scene2_title}</h3> : null}
+            {content.scene2_title && <h3 className="scene2Title">{content.scene2_title}</h3>}
             {" "}
-            <RichText scene2_text={content.scene2_text} localization_id="scene2_text" />
+            {content.scene2_text && <RichText scene2_text={content.scene2_text} localization_id="scene2_text" />}
           </p>
         </div>
         <form action={this.props.form_action} method={this.props.form_method} onSubmit={this.handleSubmit} ref="form">

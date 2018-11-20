@@ -57,6 +57,7 @@
   .titleIcon {
     background-repeat: no-repeat;
     background-size: 14px;
+    background-position: center;
     height: 16px;
     width: 16px;
     margin-top: 2px;
@@ -83,9 +84,5 @@
 
   .icon {
     align-self: flex-start;
-  }
-
-  .ASRouterButton {
-    cursor: pointer;
   }
 }

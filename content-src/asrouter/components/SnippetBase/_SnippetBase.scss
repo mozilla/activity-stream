@@ -80,6 +80,28 @@
     margin-inline-end: 12px;
     flex-shrink: 0;
   }
+
+  $checkbox-offset: 0;
+
+  [type='checkbox']:not(:checked) + label::before,
+  [type='checkbox']:checked + label::before {
+    left: $checkbox-offset;
+    top: $checkbox-offset;
+
+    [dir='rtl'] & {
+      right: $checkbox-offset;
+    }
+  }
+
+  [type='checkbox']:not(:checked) + label::after,
+  [type='checkbox']:checked + label::after {
+    left: $checkbox-offset;
+    top: $checkbox-offset;
+
+    [dir='rtl'] & {
+      right: $checkbox-offset;
+    }
+  }
 }
 
 .snippets-preview-banner {

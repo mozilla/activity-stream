@@ -31,7 +31,7 @@ describe("NewsletterSnippet", () => {
     sandbox.restore();
   });
 
-  describe.only("schema test", () => {
+  describe("schema test", () => {
     it("should validate the schema and defaults", () => {
       const wrapper = mountAndCheckProps();
       wrapper.find(".ASRouterButton").simulate("click");

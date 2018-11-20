@@ -126,6 +126,7 @@
           "description": "(fxa) Value to pass through to GA as utm_term."
         },
         "additionalProperties": false
+      }
     },
     "scene1_button_label": {
       "allOf": [
@@ -161,7 +162,8 @@
     },
     "include_sms": {
       "type": "boolean",
-      "description": "(send to device) Allow users to send an SMS message with the form?"
+      "description": "(send to device) Allow users to send an SMS message with the form?",
+      "default": false
     },
     "message_id_sms": {
       "type": "string",
