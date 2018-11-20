@@ -151,7 +151,7 @@ export class SubmitFormSnippet extends React.PureComponent {
     return (<SnippetBase {...this.props} className={containerClass} footerDismiss={true}>
         {content.scene2_icon ? <div className="scene2Icon"><img src={content.scene2_icon} /></div> : null}
         <div className="message">
-          {content.scene2_title ? <h3 className="scene2Title">{content.scene2_title}</h3> : null}
+          {content.scene2_title ? <h3 className="scene2Title">{`${content.scene2_title} `}</h3> : null}
           <p>
             <RichText scene2_text={content.scene2_text} localization_id="scene2_text" />
           </p>

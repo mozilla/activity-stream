@@ -10,6 +10,7 @@
 
   p {
     margin: 0;
+    display: inline;
   }
 
   &.send_to_device_snippet {
@@ -18,6 +19,14 @@
     .message {
       font-size: 16px;
       margin-bottom: 20px;
+    }
+
+    .scene2Title {
+      display: block;
+      font-size: 24px;
+      font-weight: 400;
+      text-align: center;
+      margin: 0 0 10px;
     }
   }
 
@@ -42,10 +51,9 @@
   }
 
   .scene2Title {
-    font-size: 24px;
-    margin: 0 0 10px;
-    font-weight: 400;
-    text-align: center;
+    display: inline;
+    font-size: inherit;
+    font-weight: bold;
   }
 
   form {
