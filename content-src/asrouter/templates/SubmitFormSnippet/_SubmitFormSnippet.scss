@@ -105,6 +105,13 @@
       font-size: 14px;
       width: 50%;
 
+      &.clean {
+        &:invalid,
+        &:required {
+          box-shadow: none;
+        }
+      }
+
       &:focus {
         border: $input-border-active;
         box-shadow: var(--newtab-textbox-focus-boxshadow);
