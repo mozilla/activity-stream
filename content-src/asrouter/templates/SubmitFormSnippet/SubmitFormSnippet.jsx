@@ -157,7 +157,7 @@ export class SubmitFormSnippet extends React.PureComponent {
             <RichText scene2_text={content.scene2_text} localization_id="scene2_text" />
           </p>
         </div>
-        <form action={content.form_action} method={this.props.form_method} onSubmit={this.handleSubmit} ref="form">
+        <form action={this.props.form_action} method={this.props.form_method} onSubmit={this.handleSubmit} ref="form">
           {this.renderHiddenFormInputs()}
           <div>
             {this.renderInput()}

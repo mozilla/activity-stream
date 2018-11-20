@@ -4,7 +4,6 @@ import {SubmitFormSnippet} from "../SubmitFormSnippet/SubmitFormSnippet.jsx";
 
 export const NewsletterSnippet = props => {
   const extendedContent = {
-    form_action: "https://basket.mozilla.org/subscribe.json",
     scene2_email_placeholder_text: schema.properties.scene2_email_placeholder_text.default,
     scene2_button_label: schema.properties.scene2_button_label.default,
     ...props.content,
@@ -20,5 +19,6 @@ export const NewsletterSnippet = props => {
   return (<SubmitFormSnippet
     {...props}
     content={extendedContent}
+    form_action={"https://basket.mozilla.org/subscribe.json"}
     form_method="POST" />);
 };

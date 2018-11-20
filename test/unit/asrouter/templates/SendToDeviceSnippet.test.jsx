@@ -41,7 +41,6 @@ describe("SendToDeviceSnippet", () => {
       onDismiss: sandbox.stub(),
       sendUserActionTelemetry: sandbox.stub(),
       onAction: sandbox.stub(),
-      form_method: "POST",
     };
     const comp = mount(<SendToDeviceSnippet {...props} />);
     // Check schema with the final props the component receives (including defaults)
