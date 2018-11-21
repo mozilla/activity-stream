@@ -128,4 +128,11 @@
       overflow: hidden;
     }
   }
+
+  // Hide first story card for the medium breakpoint to prevent orphaned third story
+  &[data-section-id='topstories'] .card-outer:first-child {
+    @media (min-width: $break-point-medium) and (max-width: $break-point-large) {
+      display: none;
+    }
+  }
 }
