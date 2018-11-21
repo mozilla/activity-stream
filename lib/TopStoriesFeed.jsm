@@ -432,7 +432,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     // Filter out expired spocs based on `expiration_timestamp`
     spocs = spocs.filter(spoc => {
       // If cached data is so old it doesn't contain this property, assume the spoc is ok to show
-      if (typeof spoc.expiration_timestamp === `undefined`) {
+      if (!(`expiration_timestamp` in spoc)) {
         return true;
       }
       // `expiration_timestamp` is the number of seconds elapsed since January 1, 1970 00:00:00 UTC
