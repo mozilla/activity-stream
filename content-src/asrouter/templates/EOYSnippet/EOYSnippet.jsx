@@ -55,7 +55,7 @@ class EOYSnippetBase extends React.PureComponent {
       })}
 
       <div className="monthly-checkbox-container">
-        <input id="monthly-checkbox" type="checkbox" className="checkbox" />
+        <input id="monthly-checkbox" type="checkbox" />
         <label htmlFor="monthly-checkbox">
           {this.props.content.monthly_checkbox_label_text}
         </label>

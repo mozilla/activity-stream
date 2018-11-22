@@ -9,17 +9,6 @@
     color: var(--newtab-text-secondary-color);
   }
 
-
-  $checkbox-offset: 0;
-
-  .checkbox:not(:checked) + label::before,
-  .checkbox:checked + label::before,
-  .checkbox:not(:checked) + label::after,
-  .checkbox:checked + label::after {
-    width: 16px;
-    height: 16px;
-  }
-
   p {
     margin: 0;
   }
@@ -79,11 +68,6 @@
     color: var(--newtab-text-secondary-color);
     margin-top: 10px;
     flex: 0 0 100%;
-
-    span {
-      // Room for the checkbox
-      padding-inline-start: 20px;
-    }
   }
 
   .innerWrapper {
