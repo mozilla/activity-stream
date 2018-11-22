@@ -15,7 +15,10 @@
   a {
     cursor: pointer;
     color: var(--newtab-link-primary-color);
-    text-decoration: underline;
+
+    &:hover {
+      text-decoration: underline;
+    }
 
     [lwt-newtab-brighttext] & {
       font-weight: bold;
