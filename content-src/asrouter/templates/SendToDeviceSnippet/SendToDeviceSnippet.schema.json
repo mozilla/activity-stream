@@ -68,7 +68,7 @@
     "scene2_email_placeholder_text": {
       "type": "string",
       "description": "Value to show while input is empty.",
-      "default": "Your Email Here"
+      "default": "Your email here"
     },
     "scene2_button_label": {
       "type": "string",
@@ -78,7 +78,7 @@
     "scene2_input_placeholder": {
       "type": "string",
       "description": "(send to device) Value to show while input is empty.",
-      "default": "Your Email Here"
+      "default": "Your email here"
     },
     "scene2_disclaimer_html": {
       "type": "string",
@@ -133,7 +133,7 @@
         {"$ref": "#/definitions/plainText"},
         {"description": "Text for a button next to main snippet text that links to button_url. Requires button_url."}
       ],
-      "default": "Learn More"
+      "default": "Learn more"
     },
     "scene1_button_color": {
       "type": "string",

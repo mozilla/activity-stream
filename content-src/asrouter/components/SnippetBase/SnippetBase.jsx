@@ -21,7 +21,7 @@ export class SnippetBase extends React.PureComponent {
         <div className="footer">
           <div className="footer-content">
             <button
-              className="ASRouterButton"
+              className="ASRouterButton secondary"
               onClick={this.props.onDismiss}>
               {this.props.content.scene2_dismiss_button_text}
             </button>

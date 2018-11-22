@@ -47,7 +47,7 @@ describe("FXASignupSnippet", () => {
     assert.propertyVal(props.content, "form_action", "https://accounts.firefox.com/");
     assert.propertyVal(props.content, "scene1_button_label", "Learn More");
     assert.propertyVal(props.content, "scene2_button_label", "Sign Me Up");
-    assert.propertyVal(props.content, "scene2_email_placeholder_text", "Your Email Here");
+    assert.propertyVal(props.content, "scene2_email_placeholder_text", "Your email here");
     assert.propertyVal(props.content.hidden_inputs, "action", "email");
     assert.propertyVal(props.content.hidden_inputs, "context", "fx_desktop_v3");
     assert.propertyVal(props.content.hidden_inputs, "entrypoint", "snippets");
