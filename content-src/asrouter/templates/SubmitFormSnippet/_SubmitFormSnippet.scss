@@ -12,10 +12,10 @@
 
   $checkbox-offset: 0;
 
-  [type='checkbox']:not(:checked) + label::before,
-  [type='checkbox']:checked + label::before,
-  [type='checkbox']:not(:checked) + label::after,
-  [type='checkbox']:checked + label::after {
+  .checkbox:not(:checked) + label::before,
+  .checkbox:checked + label::before,
+  .checkbox:not(:checked) + label::after,
+  .checkbox:checked + label::after {
     width: 16px;
     height: 16px;
   }

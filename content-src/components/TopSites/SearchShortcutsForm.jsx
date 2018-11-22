@@ -9,7 +9,7 @@ class SelectableSearchShortcut extends React.PureComponent {
     const imageStyle = {backgroundImage: `url("${shortcut.tippyTopIcon}")`};
     return (
       <div className="top-site-outer search-shortcut">
-        <input type="checkbox" id={shortcut.keyword} name={shortcut.keyword} checked={selected} onChange={this.props.onChange} />
+        <input type="checkbox" className="checkbox" id={shortcut.keyword} name={shortcut.keyword} checked={selected} onChange={this.props.onChange} />
         <label htmlFor={shortcut.keyword}>
           <div className="top-site-inner">
             <span>
