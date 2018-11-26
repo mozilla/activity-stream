@@ -244,7 +244,7 @@ export class Section extends React.PureComponent {
           </div>}
         {id === "topstories" &&
           <div className="top-stories-bottom-container">
-            <div className={`${ shouldShowTopics ? `wrapper-topics` : `wrapper-cta` }`}>
+            <div className={`${shouldShowTopics ? `wrapper-topics` : `wrapper-cta`}`}>
               {shouldShowTopics && <Topics topics={this.props.topics} />}
               {shouldShowPocketCta && <PocketLoggedInCta />}
             </div>
