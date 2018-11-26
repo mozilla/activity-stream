@@ -180,7 +180,7 @@ const MESSAGES = () => ([
       "donation_amount_second": 25,
       "donation_amount_third": 10,
       "donation_amount_fourth": 5,
-      "donation_form_url": "https://donate.mozilla.org",
+      "donation_form_url": "https://donate.mozilla.org/pl/?utm_source=desktop-snippet&amp;utm_medium=snippet&amp;utm_campaign=donate&amp;utm_term=7556",
       "text": "Big corporations want to restrict how we access the web. Fake news is making it harder for us to find the truth. Online bullies are silencing inspired voices. The <em>not-for-profit Mozilla Foundation</em> fights for a healthy internet with programs like our Tech Policy Fellowships and Internet Health Report; <b>will you donate today</b>?",
     },
   },
