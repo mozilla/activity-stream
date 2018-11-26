@@ -84,6 +84,13 @@
       font-size: 13px;
     }
   }
+
+  .wrapper-topics,
+  .wrapper-cta + .wrapper-more-recommendations {
+    @media (max-width: $break-point-large) {
+      display: none;
+    }
+  }
 }
 
 @media (min-width: $break-point-widest) {
