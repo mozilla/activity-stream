@@ -264,7 +264,7 @@ export class ASRouterAdmin extends React.PureComponent {
 
         let label = "local";
         if (provider.type === "remote") {
-          label = (<span>endpoint (<a className="providerUrl" target="_blank" href={info.url}>{info.url}</a>)</span>);
+          label = (<span>endpoint (<a className="providerUrl" target="_blank" href={info.url} rel="noopener noreferrer">{info.url}</a>)</span>);
         } else if (provider.type === "remote-settings") {
           label = `remote settings (${provider.bucket})`;
         }
