@@ -78,6 +78,7 @@ const MESSAGES = () => ([
       "scene1_button_color": "#712b00",
       "scene1_button_background_color": "#ff9400",
       "scene2_title": "Let's do this!",
+      "locale": "en-CA",
       "scene2_dismiss_button_text": "Dismiss",
       "scene2_text": "Sign up for the Mozilla newsletter and we will keep you updated on how you can help.",
       "scene2_privacy_html": "I'm okay with Mozilla handling my info as explained in this <privacyLink>Privacy Notice</privacyLink>.",
@@ -129,7 +130,6 @@ const MESSAGES = () => ([
       "scene2_email_placeholder_text": "Your email",
       "scene2_button_label": "Continue",
       "scene2_dismiss_button_text": "Dismiss",
-      "form_action": "https://basket.mozilla.org/subscribe.json",
     },
   },
   {
