@@ -10,6 +10,7 @@ export const FXASignupSnippet = props => {
     scene1_button_label: schema.properties.scene1_button_label.default,
     scene2_email_placeholder_text: schema.properties.scene2_email_placeholder_text.default,
     scene2_button_label: schema.properties.scene2_button_label.default,
+    scene2_dismiss_button_text: schema.properties.scene2_dismiss_button_text.default,
     ...props.content,
     hidden_inputs: {
       action: "email",
