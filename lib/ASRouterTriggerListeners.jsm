@@ -24,6 +24,10 @@ this.ASRouterTriggerListeners = new Map([
     _triggerHandler: null,
     _hosts: null,
 
+    /**
+     * Wait for browser startup to finish to avoid accessing uninitialized
+     * properties
+     */
     async _checkStartupFinished(win) {
       if (!win.gBrowserInit.delayedStartupFinished) {
         await new Promise(resolve => {
