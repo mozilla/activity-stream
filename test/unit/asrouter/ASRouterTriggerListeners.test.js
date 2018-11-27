@@ -135,6 +135,9 @@ describe("ASRouterTriggerListeners", () => {
         existingWindow.gBrowserInit.delayedStartupFinished = false;
         sandbox.stub(global.Services.obs, "addObserver").callsFake(fn => fn());
       });
+      afterEach(() => {
+        openURLListener.uninit();
+      });
 
       it("should wait for startup and then add the tabs listener", async () => {
         await openURLListener.init(triggerHandler, hosts);
