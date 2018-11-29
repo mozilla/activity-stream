@@ -63,6 +63,7 @@ scripts:
 
 # lint: Run eslint and sass-lint
   lint:
+    jsx-a11y: esw --plugin=jsx-a11y --config=.eslintrc.jsx-a11y.js --ext=.jsx .
     eslint: esw --ext=.js,.jsm,.json,.jsx .
     sasslint: sass-lint -v -q
 
