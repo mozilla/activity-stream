@@ -87,12 +87,12 @@
 
   .wrapper-topics,
   .wrapper-cta + .wrapper-more-recommendations {
-    @media (max-width: $break-point-large) {
+    @media (max-width: $break-point-large - 1) {
       display: none;
     }
   }
 
-  @media (max-width: $break-point-medium) {
+  @media (max-width: $break-point-medium - 1) {
     .wrapper-cta {
       text-align: center;
 
