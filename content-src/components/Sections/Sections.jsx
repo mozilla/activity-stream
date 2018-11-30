@@ -248,11 +248,19 @@ export class Section extends React.PureComponent {
           </div>}
         {id === "topstories" &&
           <div className="top-stories-bottom-container">
-            <div>
-              {shouldShowTopics && <Topics topics={this.props.topics} />}
-              {shouldShowPocketCta && <PocketLoggedInCta />}
-            </div>
-            <div>
+            {shouldShowTopics &&
+              <div className="wrapper-topics">
+                <Topics topics={this.props.topics} />
+              </div>
+            }
+
+            {shouldShowPocketCta &&
+              <div className="wrapper-cta">
+                <PocketLoggedInCta />
+              </div>
+            }
+
+            <div className="wrapper-more-recommendations">
               {shouldShowReadMore &&
                 <MoreRecommendations read_more_endpoint={read_more_endpoint} />}
             </div>
