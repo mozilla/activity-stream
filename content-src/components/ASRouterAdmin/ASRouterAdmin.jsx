@@ -1,4 +1,5 @@
 import {ASRouterUtils} from "../../asrouter/asrouter-content";
+import {connect} from "react-redux";
 import {ModalOverlay} from "../../asrouter/components/ModalOverlay/ModalOverlay";
 import React from "react";
 import {SimpleHashRouter} from "./SimpleHashRouter";
@@ -375,6 +376,23 @@ export class ASRouterAdminInner extends React.PureComponent {
     ASRouterUtils.sendMessage({type: "FORCE_ATTRIBUTION", data: this.state.attributionParameters});
   }
 
+  renderPocketStory(story) {
+    return (<tr className="message-item" key={story.guid}>
+      <td className="message-id"><span>{story.guid} <br /></span></td>
+      <td className="message-summary">
+        <pre>{JSON.stringify(story, null, 2)}</pre>
+      </td>
+    </tr>);
+  }
+
+  renderPocketStories() {
+    const topstories = this.props.Sections.filter(Section => Section.id === "topstories");
+
+    return (<table><tbody>
+      {topstories[0].rows.map(story => this.renderPocketStory(story))}
+    </tbody></table>);
+  }
+
   renderAttributionParamers() {
     return (
       <div>
@@ -410,9 +428,14 @@ export class ASRouterAdminInner extends React.PureComponent {
           {this.renderTargetingParameters()}
           {this.renderAttributionParamers()}
         </React.Fragment>);
+      case "pocket":
+        return (<React.Fragment>
+          <h2>Pocket</h2>
+          {this.renderPocketStories()}
+        </React.Fragment>);
       default:
         return (<React.Fragment>
-          <h2>Message Providers <button title="Restore all provider settings that ship with Firefox" className="button" onClick={this.resetPref}>Restore default prefs</button></h2>
+          <h2>Message Providers <button title="Restore all provider settings that ship with Firefox" className="button" onClick={this.resetPref}>Restorear default prefs</button></h2>
           {this.state.providers ? this.renderProviders() : null}
           <h2>Messages</h2>
           {this.renderMessageFilter()}
@@ -428,6 +451,7 @@ export class ASRouterAdminInner extends React.PureComponent {
         <ul>
           <li><a href="#asrouter">General</a></li>
           <li><a href="#asrouter-targeting">Targeting</a></li>
+          <li><a href="#asrouter-pocket">Pocket</a></li>
         </ul>
       </aside>
       <main className="main-panel">
@@ -447,4 +471,5 @@ export class ASRouterAdminInner extends React.PureComponent {
   }
 }
 
-export const ASRouterAdmin = props => (<SimpleHashRouter><ASRouterAdminInner {...props} /></SimpleHashRouter>);
+export const _ASRouterAdmin = props => (<SimpleHashRouter><ASRouterAdminInner {...props} /></SimpleHashRouter>);
+export const ASRouterAdmin = connect(state => ({Sections: state.Sections}))(_ASRouterAdmin);
