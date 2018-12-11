@@ -68,8 +68,7 @@ class PageAction {
     // Wait for layout to flush to avoid a synchronous reflow then calculate the
     // label width. We can safely get the width even though the recommendation is
     // collapsed; the label itself remains full width (with its overflow hidden)
-    await this.window.promiseDocumentFlushed;
-    const [{width}] = this.label.getClientRects();
+    let [{width}] = await this.window.promiseDocumentFlushed(() => this.label.getClientRects());
     this.urlbar.style.setProperty("--cfr-label-width", `${width}px`);
 
     this.container.addEventListener("click", this._handleClick);
