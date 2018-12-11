@@ -13,6 +13,7 @@ async function getAddonName() {
     if (!content) {
       return null;
     }
+    // Attribution data can be double encoded
     while (content.includes("%")) {
       try {
         const result = decodeURIComponent(content);
