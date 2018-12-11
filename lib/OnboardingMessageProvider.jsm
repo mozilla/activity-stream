@@ -9,9 +9,12 @@ ChromeUtils.import("resource://gre/modules/addons/AddonRepository.jsm");
 
 async function getAddonName() {
   try {
-    const {content} = await AttributionCode.getAttrDataAsync();
+    let {content} = await AttributionCode.getAttrDataAsync();
     if (!content) {
       return null;
+    }
+    while (content.includes("%")) {
+      content = decodeURIComponent(content);
     }
     const addons = await AddonRepository.getAddonsByIDs([content]);
     return addons[0].name;

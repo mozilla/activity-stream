@@ -48,4 +48,12 @@ describe("OnboardingMessage", () => {
     // FXA_1 doesn't have content - so filter it out
     messages.filter(msg => msg.content).forEach(msg => assert.jsonSchema(msg.content, schema));
   });
+  it("should decode the content field (double decoding)", async () => {
+    const fakeContent = "foo%2540bar.org";
+    globals.set("AttributionCode", {getAttrDataAsync: sandbox.stub().resolves({content: fakeContent})});
+    globals.set("AddonRepository", {getAddonsByIDs: ([content]) => [{name: content}]});
+
+    const [returnToAMOMsg] = (await OnboardingMessageProvider.getUntranslatedMessages()).filter(({id}) => id === "RETURN_TO_AMO_1");
+    assert.propertyVal(returnToAMOMsg.content.text.args, "addon-name", "foo@bar.org");
+  });
 });
