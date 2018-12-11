@@ -14,7 +14,15 @@ async function getAddonName() {
       return null;
     }
     while (content.includes("%")) {
-      content = decodeURIComponent(content);
+      try {
+        const result = decodeURIComponent(content);
+        if (result === content) {
+          break;
+        }
+        content = result;
+      } catch (e) {
+        break;
+      }
     }
     const addons = await AddonRepository.getAddonsByIDs([content]);
     return addons[0].name;

@@ -56,4 +56,12 @@ describe("OnboardingMessage", () => {
     const [returnToAMOMsg] = (await OnboardingMessageProvider.getUntranslatedMessages()).filter(({id}) => id === "RETURN_TO_AMO_1");
     assert.propertyVal(returnToAMOMsg.content.text.args, "addon-name", "foo@bar.org");
   });
+  it("should catch any decoding exceptions", async () => {
+    const fakeContent = "foo%bar.org";
+    globals.set("AttributionCode", {getAttrDataAsync: sandbox.stub().resolves({content: fakeContent})});
+    globals.set("AddonRepository", {getAddonsByIDs: ([content]) => [{name: content}]});
+
+    const [returnToAMOMsg] = (await OnboardingMessageProvider.getUntranslatedMessages()).filter(({id}) => id === "RETURN_TO_AMO_1");
+    assert.propertyVal(returnToAMOMsg.content.text.args, "addon-name", fakeContent);
+  });
 });
