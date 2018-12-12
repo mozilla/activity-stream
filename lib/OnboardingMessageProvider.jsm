@@ -9,8 +9,8 @@ ChromeUtils.import("resource://gre/modules/addons/AddonRepository.jsm");
 
 async function getAddonName() {
   try {
-    let {content} = await AttributionCode.getAttrDataAsync();
-    if (!content) {
+    let {content, source} = await AttributionCode.getAttrDataAsync();
+    if (!content || source !== "addons.mozilla.org") {
       return null;
     }
     // Attribution data can be double encoded
