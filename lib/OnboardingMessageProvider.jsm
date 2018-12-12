@@ -200,13 +200,20 @@ const OnboardingMessageProvider = {
       // We need some addon info if we are showing return to amo overlay, so fetch
       // that, and update the message accordingly
       if (msg.template === "return_to_amo_overlay") {
-        const addonInfo = await getAddonInfo();
-        if (!addonInfo) {
+        try {
+          const {name, iconURL, url} = await getAddonInfo();
+          // If we do not have all the data from the AMO api to indicate to the user
+          // what they are installing we don't want to show the message
+          if (!name || !iconURL || !url) {
+            continue;
+          }
+
+          msg.content.text.args["addon-name"] = name;
+          msg.content.addon_icon = iconURL;
+          msg.content.primary_button.action.data.url = url;
+        } catch (e) {
           continue;
         }
-        msg.content.text.args["addon-name"] = addonInfo.name;
-        msg.content.addon_icon = addonInfo.iconURL;
-        msg.content.primary_button.action.data.url = addonInfo.url;
       }
 
       const [primary_button_string, title_string, text_string] = await L10N.formatMessages([

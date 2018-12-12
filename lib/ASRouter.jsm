@@ -808,14 +808,6 @@ class _ASRouter {
       message = await this._findMessage(msgs, trigger);
     }
 
-    if (message && message.template === "return_to_amo_overlay") {
-      // If we failed to get this info, we do not want to show this message
-      if (!message.content.primary_button.action.data.url ||
-          !message.content.addon_icon) {
-        return;
-      }
-    }
-
     if (previewMsgs.length) {
       // We don't want to cache preview messages, remove them after we selected the message to show
       await this.setState(state => ({

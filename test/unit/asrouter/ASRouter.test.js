@@ -797,15 +797,6 @@ describe("ASRouter", () => {
       it("should have previousSessionEnd in the message context", () => {
         assert.propertyVal(Router._getMessagesContext(), "previousSessionEnd", 100);
       });
-      it("should return early and not send a message if we failed to get addon info for return to amo template", async () => {
-        let message = [
-          {id: "foo1", template: "return_to_amo_overlay", trigger: {id: "foo"}, content: {addon_icon: null, primary_button: {action: {data: {url: null}}}, title: "Foo1", body: "Foo123-1"}},
-        ];
-        await Router.setState({messages: message});
-        sandbox.spy(Router, "_sendMessageToTarget");
-        await Router.sendNextMessage({sendAsyncMessage: sandbox.stub()}, {id: "foo"});
-        assert.notCalled(Router._sendMessageToTarget);
-      });
     });
 
     describe("#onMessage: OVERRIDE_MESSAGE", () => {

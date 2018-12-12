@@ -82,6 +82,33 @@ describe("OnboardingMessage", () => {
     assert.propertyVal(translatedMessage.content, "addon_icon", "icon");
     assert.propertyVal(translatedMessage.content.primary_button.action.data, "url", "foo");
   });
+  it("should skip return_to_amo_overlay if any addon fields are missing", async () => {
+    const fakeContent = "foo%bar.org";
+    globals.set("AttributionCode", {getAttrDataAsync: sandbox.stub().resolves({content: fakeContent})});
+    globals.set("AddonRepository", {getAddonsByIDs: ([content]) => [{name: content, sourceURI: {spec: "foo"}, icons: {64: null}}]});
+
+    const msgs = (await OnboardingMessageProvider.getUntranslatedMessages()).filter(({id}) => id === "RETURN_TO_AMO_1");
+    const translatedMessages = await OnboardingMessageProvider.translateMessages(msgs);
+    assert.lengthOf(translatedMessages, 0);
+  });
+  it("should skip return_to_amo_overlay if any addon fields are missing", async () => {
+    const fakeContent = "foo%bar.org";
+    globals.set("AttributionCode", {getAttrDataAsync: sandbox.stub().resolves({content: fakeContent})});
+    globals.set("AddonRepository", {getAddonsByIDs: ([content]) => [{name: content, sourceURI: {spec: null}, icons: {64: "icon"}}]});
+
+    const msgs = (await OnboardingMessageProvider.getUntranslatedMessages()).filter(({id}) => id === "RETURN_TO_AMO_1");
+    const translatedMessages = await OnboardingMessageProvider.translateMessages(msgs);
+    assert.lengthOf(translatedMessages, 0);
+  });
+  it("should skip return_to_amo_overlay if any addon fields are missing", async () => {
+    const fakeContent = "foo%bar.org";
+    globals.set("AttributionCode", {getAttrDataAsync: sandbox.stub().resolves({content: fakeContent})});
+    globals.set("AddonRepository", {getAddonsByIDs: ([content]) => [{name: null, sourceURI: {spec: "foo"}, icons: {64: "icon"}}]});
+
+    const msgs = (await OnboardingMessageProvider.getUntranslatedMessages()).filter(({id}) => id === "RETURN_TO_AMO_1");
+    const translatedMessages = await OnboardingMessageProvider.translateMessages(msgs);
+    assert.lengthOf(translatedMessages, 0);
+  });
   it("should skip return_to_amo_overlay if getAddonInfo fails", async () => {
     globals.set("AttributionCode", {getAttrDataAsync: sandbox.stub().rejects()});
 
