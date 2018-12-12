@@ -7,7 +7,7 @@ ChromeUtils.import("resource://gre/modules/FxAccountsConfig.jsm");
 ChromeUtils.import("resource:///modules/AttributionCode.jsm");
 ChromeUtils.import("resource://gre/modules/addons/AddonRepository.jsm");
 
-async function getAddonName() {
+async function getAddonInfo() {
   try {
     let {content, source} = await AttributionCode.getAttrDataAsync();
     if (!content || source !== "addons.mozilla.org") {
@@ -25,8 +25,12 @@ async function getAddonName() {
         break;
       }
     }
-    const addons = await AddonRepository.getAddonsByIDs([content]);
-    return addons[0].name;
+    const [addon] = await AddonRepository.getAddonsByIDs([content]);
+    return {
+      name: addon.name,
+      url: addon.sourceURI.spec,
+      iconURL: addon.icons["64"],
+    };
   } catch (e) {
     return null;
   }
@@ -148,7 +152,7 @@ const ONBOARDING_MESSAGES = async () => ([
       title: {string_id: "return-to-amo-sub-header"},
       addon_icon: null, // to be dynamically filled in, in ASRouter.jsm
       icon: "gift-extension",
-      text: {string_id: "return-to-amo-addon-header", args: {"addon-name": await getAddonName()}},
+      text: {string_id: "return-to-amo-addon-header", args: {"addon-name": null}},
       primary_button: {
         label: {string_id: "return-to-amo-extension-button"},
         action: {
@@ -191,6 +195,18 @@ const OnboardingMessageProvider = {
       if (!translatedMessage.content) {
         translatedMessages.push(translatedMessage);
         continue;
+      }
+
+      // We need some addon info if we are showing return to amo overlay, so fetch
+      // that, and update the message accordingly
+      if (msg.template === "return_to_amo_overlay") {
+        const addonInfo = await getAddonInfo();
+        if (!addonInfo) {
+          continue;
+        }
+        msg.content.text.args["addon-name"] = addonInfo.name;
+        msg.content.addon_icon = addonInfo.iconURL;
+        msg.content.primary_button.action.data.url = addonInfo.url;
       }
 
       const [primary_button_string, title_string, text_string] = await L10N.formatMessages([
