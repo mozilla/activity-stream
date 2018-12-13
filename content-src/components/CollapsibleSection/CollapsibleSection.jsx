@@ -24,6 +24,7 @@ export class _CollapsibleSection extends React.PureComponent {
     this.onMenuButtonMouseLeave = this.onMenuButtonMouseLeave.bind(this);
     this.onMenuUpdate = this.onMenuUpdate.bind(this);
     this.state = {enableAnimation: true, isAnimating: false, menuButtonHover: false, showContextMenu: false};
+    this.setContextMenuButtonRef = this.setContextMenuButtonRef.bind(this);
   }
 
   componentWillMount() {
@@ -41,8 +42,19 @@ export class _CollapsibleSection extends React.PureComponent {
     }
   }
 
+  setContextMenuButtonRef(element) {
+    this.contextMenuButtonRef = element;
+  }
+
+  componentDidMount() {
+    this.contextMenuButtonRef.addEventListener("mouseenter", this.onMenuButtonMouseEnter);
+    this.contextMenuButtonRef.addEventListener("mouseleave", this.onMenuButtonMouseLeave);
+  }
+
   componentWillUnmount() {
     this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this.enableOrDisableAnimation);
+    this.contextMenuButtonRef.removeEventListener("mouseenter", this.onMenuButtonMouseEnter);
+    this.contextMenuButtonRef.removeEventListener("mouseleave", this.onMenuButtonMouseLeave);
   }
 
   enableOrDisableAnimation() {
@@ -164,8 +176,7 @@ export class _CollapsibleSection extends React.PureComponent {
               className="context-menu-button icon"
               title={this.props.intl.formatMessage({id: "context_menu_title"})}
               onClick={this.onMenuButtonClick}
-              onMouseEnter={this.onMenuButtonMouseEnter}
-              onMouseLeave={this.onMenuButtonMouseLeave}>
+              ref={this.setContextMenuButtonRef}>
               <span className="sr-only">
                 <FormattedMessage id="section_context_menu_button_sr" />
               </span>
