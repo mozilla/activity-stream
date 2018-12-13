@@ -150,14 +150,14 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       header: {string_id: "onboarding-welcome-header"},
       title: {string_id: "return-to-amo-sub-header"},
-      addon_icon: null, // to be dynamically filled in, in ASRouter.jsm
+      addon_icon: null,
       icon: "gift-extension",
       text: {string_id: "return-to-amo-addon-header", args: {"addon-name": null}},
       primary_button: {
         label: {string_id: "return-to-amo-extension-button"},
         action: {
           type: "INSTALL_ADDON_FROM_URL",
-          data: {url: null}, // to be dynamically filled in, in ASRouter.jsm
+          data: {url: null},
         },
       },
       secondary_button: {

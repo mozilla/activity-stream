@@ -121,8 +121,10 @@ describe("OnboardingMessage", () => {
     globals.set("AttributionCode", {getAttrDataAsync: sandbox.stub().resolves({content: fakeContent})});
     globals.set("AddonRepository", {getAddonsByIDs: sandbox.stub().rejects()});
 
-    const msgs = (await OnboardingMessageProvider.getUntranslatedMessages()).filter(({id}) => id === "RETURN_TO_AMO_1");
+    const msgs = await OnboardingMessageProvider.getUntranslatedMessages();
     const translatedMessages = await OnboardingMessageProvider.translateMessages(msgs);
-    assert.lengthOf(translatedMessages, 0);
+    const returnToAMOMsgs = translatedMessages.filter(({id}) => id === "RETURN_TO_AMO_1");
+    assert.lengthOf(translatedMessages, msgs.length - 1);
+    assert.lengthOf(returnToAMOMsgs, 0);
   });
 });
