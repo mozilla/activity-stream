@@ -29,7 +29,7 @@ async function getAddonInfo() {
     return {
       name: addon.name,
       url: addon.sourceURI.spec,
-      iconURL: addon.icons["64"],
+      iconURL: addon.icons["64"] || addon.icons["32"],
     };
   } catch (e) {
     return null;
