@@ -307,6 +307,7 @@ export class _Sections extends React.PureComponent {
   }
 
   render() {
+    console.log(this.props.Layout);
     return (
       <div className="sections-list">
         {this.renderSections()}
@@ -315,4 +316,4 @@ export class _Sections extends React.PureComponent {
   }
 }
 
-export const Sections = connect(state => ({Sections: state.Sections, Prefs: state.Prefs}))(_Sections);
+export const Sections = connect(state => ({Sections: state.Sections, Prefs: state.Prefs, Layout: state.Layout}))(_Sections);
