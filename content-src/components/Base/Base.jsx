@@ -141,6 +141,7 @@ export class BaseContent extends React.PureComponent {
     const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
     const noSectionsEnabled = !prefs["feeds.topsites"] && props.Sections.filter(section => section.enabled).length === 0;
     const isDiscoveryStream = props.DiscoveryStream.config && props.DiscoveryStream.config.enabled;
+    const searchHandoffEnabled = prefs["improvesearch.handoffToAwesomebar"];
 
     const outerClassName = [
       "outer-wrapper",
@@ -156,7 +157,7 @@ export class BaseContent extends React.PureComponent {
             {prefs.showSearch &&
               <div className="non-collapsible-section">
                 <ErrorBoundary>
-                  <Search showLogo={noSectionsEnabled} />
+                  <Search showLogo={noSectionsEnabled} handoffEnabled={searchHandoffEnabled} {...props.Search} />
                 </ErrorBoundary>
               </div>
             }
@@ -176,4 +177,10 @@ export class BaseContent extends React.PureComponent {
   }
 }
 
-export const Base = connect(state => ({App: state.App, Prefs: state.Prefs, Sections: state.Sections, DiscoveryStream: state.DiscoveryStream}))(_Base);
+export const Base = connect(state => ({
+  App: state.App,
+  Prefs: state.Prefs,
+  Sections: state.Sections,
+  DiscoveryStream: state.DiscoveryStream,
+  Search: state.Search,
+}))(_Base);
