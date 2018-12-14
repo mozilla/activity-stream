@@ -205,7 +205,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
     let stories = data.stories && data.stories.recommendations;
     let topics = data.topics && data.topics.topics;
 
-
     if (this.use_layout && data.layout && data.layout.length) {
       this.dispatchLayout(data.layout);
     }
