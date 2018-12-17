@@ -203,8 +203,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
   async loadCachedData() {
     const data = await this.cache.get();
     let stories = data.stories && data.stories.recommendations;
+    let layout = data.stories && data.stories.layout;
     let topics = data.topics && data.topics.topics;
-    this.dispatchLayoutUpdate(data.layout);
+    this.dispatchLayoutUpdate(layout);
 
     let affinities = data.domainAffinities;
     if (this.personalized && affinities && affinities.scores) {

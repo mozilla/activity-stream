@@ -1475,16 +1475,24 @@ describe("Top Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
 
       const response = {
-        "layout": [],
+        "layout": [1, 2],
       };
       globals.set("fetch", fetchStub);
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
-
       sinon.spy(instance, "dispatchLayoutUpdate");
+      instance.cache.get = () => ({stories: {layout: [2, 3]}});
+
       await instance.loadCachedData();
       assert.calledOnce(instance.dispatchLayoutUpdate);
+      const firstCallArgs = instance.dispatchLayoutUpdate.firstCall.args;
+      assert.equal(firstCallArgs[0][0], 2);
+      assert.equal(firstCallArgs[0][1], 3);
+
       await instance.fetchStories();
       assert.calledTwice(instance.dispatchLayoutUpdate);
+      const secondCallArgs = instance.dispatchLayoutUpdate.secondCall.args;
+      assert.equal(secondCallArgs[0][0], 1);
+      assert.equal(secondCallArgs[0][1], 2);
     });
     it("should call dispatch from dispatchLayoutUpdate if preffed on and with available data", () => {
       instance.use_layout = true;
