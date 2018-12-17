@@ -49,7 +49,6 @@ this.TopStoriesFeed = class TopStoriesFeed {
       this.stories_referrer = options.stories_referrer;
       this.personalized = options.personalized;
       this.show_spocs = options.show_spocs;
-      this.use_layout = options.use_layout;
       this.maxHistoryQueryResults = options.maxHistoryQueryResults;
       this.storiesLastUpdated = 0;
       this.topicsLastUpdated = 0;
@@ -114,7 +113,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
   }
 
   dispatchLayoutUpdate(data, shouldBroadcast) {
-    if (this.use_layout && data && data.length) {
+    if (data && data.length) {
       const action = {type: at.CONTENT_LAYOUT, data};
       this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
     }
