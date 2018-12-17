@@ -113,9 +113,11 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
   }
 
-  dispatchLayout(data, shouldBroadcast) {
-    const action = {type: at.CONTENT_LAYOUT, data};
-    this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
+  dispatchLayoutUpdate(data, shouldBroadcast) {
+    if (this.use_layout && data && data.length) {
+      const action = {type: at.CONTENT_LAYOUT, data};
+      this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
+    }
   }
 
   doContentUpdate(shouldBroadcast) {
@@ -180,9 +182,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       }
 
       const body = await response.json();
-      if (this.use_layout && body.layout && body.layout.length) {
-        this.dispatchLayout(body.layout);
-      }
+      this.dispatchLayoutUpdate(body.layout);
       this.updateSettings(body.settings);
       this.stories = this.rotate(this.transform(body.recommendations));
       this.cleanUpTopRecImpressionPref();
@@ -204,10 +204,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     const data = await this.cache.get();
     let stories = data.stories && data.stories.recommendations;
     let topics = data.topics && data.topics.topics;
-
-    if (this.use_layout && data.layout && data.layout.length) {
-      this.dispatchLayout(data.layout);
-    }
+    this.dispatchLayoutUpdate(data.layout);
 
     let affinities = data.domainAffinities;
     if (this.personalized && affinities && affinities.scores) {

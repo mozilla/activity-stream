@@ -307,7 +307,6 @@ export class _Sections extends React.PureComponent {
   }
 
   render() {
-    // console.log(this.props.Layout);
     return (
       <div className="sections-list">
         {this.renderSections()}
