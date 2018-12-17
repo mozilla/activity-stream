@@ -267,7 +267,7 @@ describe("Top Stories Feed", () => {
 
       assert.calledOnce(fetchStub);
       assert.calledOnce(shortURLStub);
-      assert.calledWithExactly(fetchStub, instance.stories_endpoint);
+      assert.calledWithExactly(fetchStub, instance.stories_endpoint, {credentials: "omit"});
       assert.calledOnce(sectionsManagerStub.updateSection);
       assert.calledWith(sectionsManagerStub.updateSection, SECTION_ID, {rows: stories});
       assert.calledOnce(instance.cache.set);
@@ -335,7 +335,7 @@ describe("Top Stories Feed", () => {
       await instance.onInit();
 
       assert.calledOnce(fetchStub);
-      assert.calledWithExactly(fetchStub, instance.stories_endpoint);
+      assert.calledWithExactly(fetchStub, instance.stories_endpoint, {credentials: "omit"});
       assert.equal(instance.storiesLastUpdated, 0);
       assert.called(Cu.reportError);
     });
@@ -397,7 +397,7 @@ describe("Top Stories Feed", () => {
       await instance.onInit();
 
       assert.calledOnce(fetchStub);
-      assert.calledWithExactly(fetchStub, instance.topics_endpoint);
+      assert.calledWithExactly(fetchStub, instance.topics_endpoint, {credentials: "omit"});
       assert.calledOnce(sectionsManagerStub.updateSection);
       assert.calledWithMatch(sectionsManagerStub.updateSection, SECTION_ID, {topics});
       assert.calledOnce(instance.cache.set);
@@ -413,7 +413,7 @@ describe("Top Stories Feed", () => {
       await instance.fetchTopics();
 
       assert.calledOnce(fetchStub);
-      assert.calledWithExactly(fetchStub, instance.topics_endpoint);
+      assert.calledWithExactly(fetchStub, instance.topics_endpoint, {credentials: "omit"});
       assert.notCalled(instance.store.dispatch);
       assert.called(Cu.reportError);
     });

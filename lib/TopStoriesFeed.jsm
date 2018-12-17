@@ -168,7 +168,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       return;
     }
     try {
-      const response = await fetch(this.stories_endpoint);
+      const response = await fetch(this.stories_endpoint, {credentials: "omit"});
       if (!response.ok) {
         throw new Error(`Stories endpoint returned unexpected status: ${response.status}`);
       }
@@ -288,7 +288,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       return;
     }
     try {
-      const response = await fetch(this.topics_endpoint);
+      const response = await fetch(this.topics_endpoint, {credentials: "omit"});
       if (!response.ok) {
         throw new Error(`Topics endpoint returned unexpected status: ${response.status}`);
       }
