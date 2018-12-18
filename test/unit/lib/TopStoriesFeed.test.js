@@ -1461,7 +1461,7 @@ describe("Top Stories Feed", () => {
     assert.calledOnce(instance.init);
   });
   describe("#layout", () => {
-    it("should call dispatchLayoutUpdate from loadCachedData and fetchStories", async () => {
+    it("should call dispatchLayoutUpdate from fetchStories", async () => {
       instance.stories_endpoint = "stories-endpoint";
       let fetchStub = globals.sandbox.stub();
 
@@ -1471,27 +1471,30 @@ describe("Top Stories Feed", () => {
       globals.set("fetch", fetchStub);
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       sinon.spy(instance, "dispatchLayoutUpdate");
+
+      await instance.fetchStories();
+      assert.calledOnce(instance.dispatchLayoutUpdate);
+      assert.calledWith(instance.dispatchLayoutUpdate, [1, 2]);
+    });
+    it("should call dispatchLayoutUpdate from loadCachedData", async () => {
+      sinon.spy(instance, "dispatchLayoutUpdate");
       instance.cache.get = () => ({stories: {layout: [2, 3]}});
 
       await instance.loadCachedData();
       assert.calledOnce(instance.dispatchLayoutUpdate);
-      const firstCallArgs = instance.dispatchLayoutUpdate.firstCall.args;
-      assert.equal(firstCallArgs[0][0], 2);
-      assert.equal(firstCallArgs[0][1], 3);
-
-      await instance.fetchStories();
-      assert.calledTwice(instance.dispatchLayoutUpdate);
-      const secondCallArgs = instance.dispatchLayoutUpdate.secondCall.args;
-      assert.equal(secondCallArgs[0][0], 1);
-      assert.equal(secondCallArgs[0][1], 2);
+      assert.calledWith(instance.dispatchLayoutUpdate, [2, 3]);
     });
-    it("should call dispatch from dispatchLayoutUpdate if preffed on and with available data", () => {
+    it("should call dispatch from dispatchLayoutUpdate with available data", () => {
       instance.dispatchLayoutUpdate([1, 2]);
       assert.calledOnce(instance.store.dispatch);
       const [action] = instance.store.dispatch.firstCall.args;
       assert.equal(action.type, "CONTENT_LAYOUT");
       assert.equal(action.data[0], 1);
       assert.equal(action.data[1], 2);
+    });
+    it("should not call dispatch from dispatchLayoutUpdate with no available data", () => {
+      instance.dispatchLayoutUpdate([]);
+      assert.notCalled(instance.store.dispatch);
     });
   });
 });
