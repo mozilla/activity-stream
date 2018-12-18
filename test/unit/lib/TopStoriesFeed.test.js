@@ -1489,7 +1489,7 @@ describe("Top Stories Feed", () => {
       assert.calledOnce(instance.store.dispatch);
       const [action] = instance.store.dispatch.firstCall.args;
       assert.equal(action.type, "CONTENT_LAYOUT");
-      assert.equal(action.data, [1, 2]);
+      assert.deepEqual(action.data, [1, 2]);
     });
     it("should not call dispatch from maybeDispatchLayoutUpdate with no available data", () => {
       instance.maybeDispatchLayoutUpdate([]);
