@@ -112,7 +112,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
   }
 
-  dispatchLayoutUpdate(data, shouldBroadcast) {
+  maybeDispatchLayoutUpdate(data, shouldBroadcast) {
     if (data && data.length) {
       const action = {type: at.CONTENT_LAYOUT, data};
       this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
@@ -181,7 +181,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
       }
 
       const body = await response.json();
-      this.dispatchLayoutUpdate(body.layout);
+      this.maybeDispatchLayoutUpdate(body.layout);
       this.updateSettings(body.settings);
       this.stories = this.rotate(this.transform(body.recommendations));
       this.cleanUpTopRecImpressionPref();
@@ -204,7 +204,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     let stories = data.stories && data.stories.recommendations;
     let layout = data.stories && data.stories.layout;
     let topics = data.topics && data.topics.topics;
-    this.dispatchLayoutUpdate(layout);
+    this.maybeDispatchLayoutUpdate(layout);
 
     let affinities = data.domainAffinities;
     if (this.personalized && affinities && affinities.scores) {

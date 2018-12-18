@@ -659,7 +659,7 @@ describe("Reducers", () => {
     it("should return INITIAL_STATE by default", () => {
       assert.equal(Layout(undefined, {type: "some_action"}), INITIAL_STATE.Layout);
     });
-    it("should set layout with CONTENT_LAYOUT", () => {
+    it("should set layout data with layout.type CONTENT_LAYOUT", () => {
       const state = Layout(undefined, {type: at.CONTENT_LAYOUT, data: ["test"]});
       assert.equal(state[0], "test");
     });
