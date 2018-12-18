@@ -315,4 +315,4 @@ export class _Sections extends React.PureComponent {
   }
 }
 
-export const Sections = connect(state => ({Sections: state.Sections, Prefs: state.Prefs}))(_Sections);
+export const Sections = connect(state => ({Sections: state.Sections, Prefs: state.Prefs, Layout: state.Layout}))(_Sections);
