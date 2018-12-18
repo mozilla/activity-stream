@@ -309,24 +309,15 @@ export class _Sections extends React.PureComponent {
   renderLayout() {
     return (
       <div className="sections-list layout">
-        {this.props.Layout.map((section, sectionIndex) => {
-          let sectionClassName = "full";
-          if (section.width === 8) {
-            sectionClassName = "left";
-          } else if (section.width === 4) {
-            sectionClassName = "right";
-          }
-          return (
-            <div key={`section-${sectionIndex}`} className={sectionClassName}>
-              {section.components.map((component, componentIndex) => (
-                <div key={`component-${componentIndex}`}>
-                  <div>{component.type}</div>
-                </div>
-              ))}
-              <br />
-            </div>
-          );
-        })}
+        {this.props.Layout.map((section, sectionIndex) => (
+          <div key={`section-${sectionIndex}`} className={`column column-${section.width}`}>
+            {section.components.map((component, componentIndex) => (
+              <div key={`component-${componentIndex}`}>
+                <div>{component.type}</div>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     );
   }

@@ -1,27 +1,18 @@
 .sections-list {
   &.layout {
+    $columns: 12;
     display: grid;
-    grid-template-columns: repeat(12, auto);
+    grid-template-columns: repeat($columns, (100% / $columns));
     grid-row-gap: 10px;
     grid-column-gap: 10px;
 
-    .full,
-    .left,
-    .right {
-      border: 1px solid $black;
-      padding: 6px;
-    }
+    @while $columns > 0 {
+      .column-#{$columns} {
+        grid-column-start: auto;
+        grid-column-end: span $columns;
+      }
 
-    .full {
-      grid-column: 1 / span 12;
-    }
-
-    .left {
-      grid-column: 1 / span 8;
-    }
-
-    .right {
-      grid-column: 9 / span 4;
+      $columns: $columns - 1;
     }
   }
 
