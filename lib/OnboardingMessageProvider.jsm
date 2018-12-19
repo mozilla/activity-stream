@@ -26,12 +26,16 @@ async function getAddonInfo() {
       }
     }
     const [addon] = await AddonRepository.getAddonsByIDs([content]);
+    if (addon.sourceURI.scheme !== "https") {
+      return null;
+    }
     return {
       name: addon.name,
       url: addon.sourceURI.spec,
       iconURL: addon.icons["64"] || addon.icons["32"],
     };
   } catch (e) {
+    Cu.reportError("Failed to get the latest add-on version for Return to AMO");
     return null;
   }
 }
