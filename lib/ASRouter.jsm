@@ -213,8 +213,30 @@ const MessageLoaderUtils = {
     };
   },
 
+  /**
+   * _loadAddonIconInURLBar - load addons-notification icon by displaying
+   * box containing addons icon in urlbar. See Bug 1513882
+   *
+   * @param  {XULElement} Target browser element for showing addons icon
+   */
+  _loadAddonIconInURLBar(browser) {
+    if (!browser) {
+      return;
+    }
+    const chromeDoc = browser.ownerDocument;
+    let notificationPopupBox = chromeDoc.getElementById("notification-popup-box");
+    if (!notificationPopupBox) {
+      return;
+    }
+    if (notificationPopupBox.style.display === "none" ||
+        notificationPopupBox.style.display === "") {
+      notificationPopupBox.style.display = "block";
+    }
+  },
+
   async installAddonFromURL(browser, url) {
     try {
+      MessageLoaderUtils._loadAddonIconInURLBar(browser);
       const aUri = Services.io.newURI(url);
       const systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
 
