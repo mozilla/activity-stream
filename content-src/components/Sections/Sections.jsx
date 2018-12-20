@@ -1,13 +1,13 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {Card, PlaceholderCard} from "content-src/components/Card/Card";
 import {FormattedMessage, injectIntl} from "react-intl";
+import {Topics, TopicsHeader} from "content-src/components/Topics/Topics";
 import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {ComponentPerfTimer} from "content-src/components/ComponentPerfTimer/ComponentPerfTimer";
 import {connect} from "react-redux";
 import {MoreRecommendations} from "content-src/components/MoreRecommendations/MoreRecommendations";
 import {PocketLoggedInCta} from "content-src/components/PocketLoggedInCta/PocketLoggedInCta";
 import React from "react";
-import {Topics} from "content-src/components/Topics/Topics";
 import {TopSites} from "content-src/components/TopSites/TopSites";
 
 const VISIBLE = "visible";
@@ -306,6 +306,24 @@ export class _Sections extends React.PureComponent {
     return sections;
   }
 
+  renderComponent(component) {
+    const {props} = component;
+    if (component.type === "TopicsHeader") {
+      const {topics} = this.props.Sections.find(section => section.id === "topstories") || {};
+      return (
+        <TopicsHeader
+          topics={topics}
+          headerText={props.headerText}
+          moreRecommendationsText={props.moreRecommendationsText}
+          moreRecommendationsLink={props.moreRecommendationsLink}
+          learnMoreText={props.learnMoreText}
+          learnMoreLink={props.learnMoreLink}
+          learnMoreMessage={props.learnMoreMessage} />
+      );
+    }
+    return (<div>{component.type}</div>);
+  }
+
   renderLayout() {
     return (
       <div className="sections-list layout">
@@ -313,7 +331,7 @@ export class _Sections extends React.PureComponent {
           <div key={`section-${sectionIndex}`} className={`column column-${section.width}`}>
             {section.components.map((component, componentIndex) => (
               <div key={`component-${componentIndex}`}>
-                <div>{component.type}</div>
+                {this.renderComponent(component)}
               </div>
             ))}
           </div>
