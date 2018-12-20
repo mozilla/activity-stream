@@ -24,10 +24,10 @@ const TOPICS_UPDATE_TIME = 3 * 60 * 60 * 1000; // 3 hours
 const STORIES_NOW_THRESHOLD = 24 * 60 * 60 * 1000; // 24 hours
 const MIN_DOMAIN_AFFINITIES_UPDATE_TIME = 12 * 60 * 60 * 1000; // 12 hours
 const DEFAULT_RECS_EXPIRE_TIME = 60 * 60 * 1000; // 1 hour
-const SECTION_ID = "topstories";
-const SPOC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.spoc.impressions";
-const REC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.rec.impressions";
-const OPTIONS_PREF = "feeds.section.topstories.options";
+const SECTION_ID = "layoutandstories";
+const SPOC_IMPRESSION_TRACKING_PREF = "feeds.section.layoutandstories.spoc.impressions";
+const REC_IMPRESSION_TRACKING_PREF = "feeds.section.layoutandstories.rec.impressions";
+const OPTIONS_PREF = "feeds.section.layoutandstories.options";
 const MAX_LIFETIME_CAP = 500; // Guard against misconfiguration on the server
 
 this.LayoutAndStoriesFeed = class LayoutAndStoriesFeed {
@@ -155,7 +155,7 @@ this.LayoutAndStoriesFeed = class LayoutAndStoriesFeed {
     const start = perfService.absNow();
     const v1Provider = this.UserDomainAffinityProvider(...args);
     this.store.dispatch(ac.PerfEvent({
-      event: "topstories.domain.affinity.calculation.ms",
+      event: "layoutandstories.domain.affinity.calculation.ms",
       value: Math.round(perfService.absNow() - start),
     }));
 

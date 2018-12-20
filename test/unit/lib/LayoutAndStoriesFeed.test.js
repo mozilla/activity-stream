@@ -47,7 +47,7 @@ describe("Layout and Stories Feed", () => {
       enableSection: sinon.spy(),
       disableSection: sinon.spy(),
       updateSection: sinon.spy(),
-      sections: new Map([["topstories", {options: FAKE_OPTIONS}]]),
+      sections: new Map([["layoutandstories", {options: FAKE_OPTIONS}]]),
     };
 
     class FakeUserDomainAffinityProvider {
@@ -128,13 +128,13 @@ describe("Layout and Stories Feed", () => {
     it("should not fetch if endpoint not configured", () => {
       let fetchStub = globals.sandbox.stub();
       globals.set("fetch", fetchStub);
-      sectionsManagerStub.sections.set("topstories", {options: {}});
+      sectionsManagerStub.sections.set("layoutandstories", {options: {}});
       instance.init();
       assert.notCalled(fetchStub);
     });
     it("should report error for invalid configuration", () => {
       globals.sandbox.spy(global.Cu, "reportError");
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           api_key_pref: "invalid",
           stories_endpoint: "https://invalid.com/?apiKey=$apiKey",
@@ -146,7 +146,7 @@ describe("Layout and Stories Feed", () => {
     });
     it("should report error for missing api key", () => {
       globals.sandbox.spy(global.Cu, "reportError");
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           "stories_endpoint": "https://somedomain.org/stories?key=$apiKey",
           "topics_endpoint": "https://somedomain.org/topics?key=$apiKey",
@@ -224,7 +224,7 @@ describe("Layout and Stories Feed", () => {
   describe("#fetch", () => {
     it("should fetch stories, send event and cache results", async () => {
       let fetchStub = globals.sandbox.stub();
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           stories_endpoint: "stories-endpoint",
           stories_referrer: "referrer",
@@ -275,7 +275,7 @@ describe("Layout and Stories Feed", () => {
     });
     it("should use domain as hostname, if present", async () => {
       let fetchStub = globals.sandbox.stub();
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           stories_endpoint: "stories-endpoint",
           stories_referrer: "referrer",
@@ -327,7 +327,7 @@ describe("Layout and Stories Feed", () => {
     });
     it("should report error for unexpected stories response", async () => {
       let fetchStub = globals.sandbox.stub();
-      sectionsManagerStub.sections.set("topstories", {options: {stories_endpoint: "stories-endpoint"}});
+      sectionsManagerStub.sections.set("layoutandstories", {options: {stories_endpoint: "stories-endpoint"}});
       globals.set("fetch", fetchStub);
       globals.sandbox.spy(global.Cu, "reportError");
 
@@ -341,7 +341,7 @@ describe("Layout and Stories Feed", () => {
     });
     it("should exclude blocked (dismissed) URLs", async () => {
       let fetchStub = globals.sandbox.stub();
-      sectionsManagerStub.sections.set("topstories", {options: {stories_endpoint: "stories-endpoint"}});
+      sectionsManagerStub.sections.set("layoutandstories", {options: {stories_endpoint: "stories-endpoint"}});
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: site => site.url === "blocked"}});
 
@@ -357,7 +357,7 @@ describe("Layout and Stories Feed", () => {
     });
     it("should mark stories as new", async () => {
       let fetchStub = globals.sandbox.stub();
-      sectionsManagerStub.sections.set("topstories", {options: {stories_endpoint: "stories-endpoint"}});
+      sectionsManagerStub.sections.set("layoutandstories", {options: {stories_endpoint: "stories-endpoint"}});
       globals.set("fetch", fetchStub);
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: globals.sandbox.spy()}});
       clock.restore();
@@ -380,7 +380,7 @@ describe("Layout and Stories Feed", () => {
     });
     it("should fetch topics, send event and cache results", async () => {
       let fetchStub = globals.sandbox.stub();
-      sectionsManagerStub.sections.set("topstories", {options: {topics_endpoint: "topics-endpoint"}});
+      sectionsManagerStub.sections.set("layoutandstories", {options: {topics_endpoint: "topics-endpoint"}});
       globals.set("fetch", fetchStub);
 
       const response = {"topics": [{"name": "topic1", "url": "url-topic1"}, {"name": "topic2", "url": "url-topic2"}]};
@@ -573,7 +573,7 @@ describe("Layout and Stories Feed", () => {
       sinon.stub(instance, "uninit");
       sinon.stub(instance, "init");
       sinon.stub(instance, "clearCache").returns(Promise.resolve());
-      await instance.onAction({type: at.PREF_CHANGED, data: {name: "feeds.section.topstories.options", value: JSON.stringify({version: 2})}});
+      await instance.onAction({type: at.PREF_CHANGED, data: {name: "feeds.section.layoutandstories.options", value: JSON.stringify({version: 2})}});
       assert.calledOnce(instance.uninit);
       assert.calledOnce(instance.init);
       assert.calledOnce(instance.clearCache);
@@ -591,7 +591,7 @@ describe("Layout and Stories Feed", () => {
       sinon.stub(instance, "uninit");
       sinon.stub(instance, "init");
       sinon.stub(instance, "clearCache").returns(Promise.resolve());
-      await instance.onAction({type: at.PREF_CHANGED, data: {name: "feeds.section.topstories.options", value: "{version: 2}"}});
+      await instance.onAction({type: at.PREF_CHANGED, data: {name: "feeds.section.layoutandstories.options", value: "{version: 2}"}});
       assert.notCalled(instance.uninit);
       assert.notCalled(instance.init);
       assert.notCalled(instance.clearCache);
@@ -763,7 +763,7 @@ describe("Layout and Stories Feed", () => {
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.fetchStories();
 
-      instance.store.getState = () => ({Sections: [{id: "topstories", rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
+      instance.store.getState = () => ({Sections: [{id: "layoutandstories", rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
 
       globals.set("Math", {
         random: () => 0.4,
@@ -811,7 +811,7 @@ describe("Layout and Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       instance.dispatchRelevanceScore = () => {};
       instance.dispatchSpocDone = () => {};
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           show_spocs: true,
           personalized: true,
@@ -840,7 +840,7 @@ describe("Layout and Stories Feed", () => {
       assert.equal(instance.contentUpdateQueue.length, 1);
 
       instance.spocsPerNewTabs = 0.5;
-      instance.store.getState = () => ({Sections: [{id: "topstories", rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
+      instance.store.getState = () => ({Sections: [{id: "layoutandstories", rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
 
       await instance.onInit();
@@ -852,7 +852,7 @@ describe("Layout and Stories Feed", () => {
     it("should not insert spoc if preffed off", async () => {
       let fetchStub = globals.sandbox.stub();
       instance.dispatchSpocDone = () => {};
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           show_spocs: false,
           personalized: true,
@@ -897,7 +897,7 @@ describe("Layout and Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       instance.dispatchRelevanceScore = () => {};
       instance.dispatchSpocDone = () => {};
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           show_spocs: true,
           personalized: true,
@@ -914,7 +914,7 @@ describe("Layout and Stories Feed", () => {
         "spocs": [{"id": "spoc1"}, {"id": "spoc2"}],
       };
 
-      instance.store.getState = () => ({Sections: [{id: "topstories", rows: response.recommendations}], Prefs: {values: {showSponsored: false}}});
+      instance.store.getState = () => ({Sections: [{id: "layoutandstories", rows: response.recommendations}], Prefs: {values: {showSponsored: false}}});
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.onInit();
 
@@ -924,7 +924,7 @@ describe("Layout and Stories Feed", () => {
     it("should not fail if there is no spoc", async () => {
       let fetchStub = globals.sandbox.stub();
       instance.dispatchSpocDone = () => {};
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           show_spocs: true,
           personalized: true,
@@ -989,7 +989,7 @@ describe("Layout and Stories Feed", () => {
     });
     it("should not record spoc/campaign impressions for non-view impressions", async () => {
       let fetchStub = globals.sandbox.stub();
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           show_spocs: true,
           stories_endpoint: "stories-endpoint",
@@ -1056,7 +1056,7 @@ describe("Layout and Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       instance.dispatchRelevanceScore = () => {};
       instance.dispatchSpocDone = () => {};
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           show_spocs: true,
           personalized: true,
@@ -1078,7 +1078,7 @@ describe("Layout and Stories Feed", () => {
         ],
       };
 
-      instance.store.getState = () => ({Sections: [{id: "topstories", rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
+      instance.store.getState = () => ({Sections: [{id: "layoutandstories", rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.onInit();
       instance.spocsPerNewTabs = 1;
@@ -1125,7 +1125,7 @@ describe("Layout and Stories Feed", () => {
       let fetchStub = globals.sandbox.stub();
       instance.dispatchRelevanceScore = () => {};
       instance.dispatchSpocDone = () => {};
-      sectionsManagerStub.sections.set("topstories", {
+      sectionsManagerStub.sections.set("layoutandstories", {
         options: {
           show_spocs: true,
           personalized: true,
@@ -1145,7 +1145,7 @@ describe("Layout and Stories Feed", () => {
         ],
       };
 
-      instance.store.getState = () => ({Sections: [{id: "topstories", rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
+      instance.store.getState = () => ({Sections: [{id: "layoutandstories", rows: response.recommendations}], Prefs: {values: {showSponsored: true}}});
       fetchStub.resolves({ok: true, status: 200, json: () => Promise.resolve(response)});
       await instance.onInit();
 
@@ -1235,7 +1235,7 @@ describe("Layout and Stories Feed", () => {
       assert.calledOnce(instance.store.dispatch);
       let [action] = instance.store.dispatch.firstCall.args;
       assert.equal(action.type, at.TELEMETRY_PERFORMANCE_EVENT);
-      assert.equal(action.data.event, "topstories.domain.affinity.calculation.ms");
+      assert.equal(action.data.event, "layoutandstories.domain.affinity.calculation.ms");
     });
     it("should add idle-daily observer right away, before waiting on init data", async () => {
       const addObserver = globals.sandbox.stub();
@@ -1257,7 +1257,7 @@ describe("Layout and Stories Feed", () => {
       sinon.stub(instance, "clearCache").returns(Promise.resolve());
       sinon.spy(instance, "init");
       sinon.spy(instance, "uninit");
-      await instance.onAction({type: at.SECTION_OPTIONS_CHANGED, data: "topstories"});
+      await instance.onAction({type: at.SECTION_OPTIONS_CHANGED, data: "layoutandstories"});
       assert.calledOnce(sectionsManagerStub.disableSection);
       assert.calledOnce(sectionsManagerStub.enableSection);
       assert.calledOnce(instance.clearCache);
@@ -1293,7 +1293,7 @@ describe("Layout and Stories Feed", () => {
   });
   describe("#loadCachedData", () => {
     it("should update section with cached stories and topics if available", async () => {
-      sectionsManagerStub.sections.set("topstories", {options: {stories_referrer: "referrer"}});
+      sectionsManagerStub.sections.set("layoutandstories", {options: {stories_referrer: "referrer"}});
       const stories = {
         "_timestamp": 123,
         "recommendations": [{
@@ -1341,7 +1341,7 @@ describe("Layout and Stories Feed", () => {
       assert.notCalled(sectionsManagerStub.updateSection);
     });
     it("should broadcast in doContentUpdate when updating from cache", async () => {
-      sectionsManagerStub.sections.set("topstories", {options: {stories_referrer: "referrer"}});
+      sectionsManagerStub.sections.set("layoutandstories", {options: {stories_referrer: "referrer"}});
       globals.set("NewTabUtils", {blockedLinks: {isBlocked: () => {}}});
       const stories = {"recommendations": [{}]};
       const topics = {"topics": [{}]};
