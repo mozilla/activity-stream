@@ -49,6 +49,39 @@ const BUILT_IN_SECTIONS = {
     shouldSendImpressionStats: true,
     dedupeFrom: ["highlights"],
   }),
+  "feeds.section.layoutandstories": options => ({
+    id: "layoutandstories",
+    pref: {
+      titleString: {id: "header_recommended_by", values: {provider: options.provider_name}},
+      descString: {id: "prefs_layoutandstories_description2"},
+      nestedPrefs: options.show_spocs ? [{
+        name: "showSponsored",
+        titleString: "prefs_layoutandstories_options_sponsored_label",
+        icon: "icon-info",
+      }] : [],
+    },
+    shouldHidePref: options.hidden,
+    eventSource: "LAYOUT_AND_STORIES",
+    icon: options.provider_icon,
+    title: {id: "header_recommended_by", values: {provider: options.provider_name}},
+    learnMore: {
+      link: {
+        href: "https://getpocket.com/firefox/new_tab_learn_more",
+        id: "pocket_how_it_works",
+      },
+    },
+    privacyNoticeURL: "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
+    compactCards: false,
+    rowsPref: "section.layoutandstories.rows",
+    maxRows: 4,
+    availableLinkMenuOptions: ["CheckBookmarkOrArchive", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"],
+    emptyState: {
+      message: {id: "layoutandstories_empty_state", values: {provider: options.provider_name}},
+      icon: "check",
+    },
+    shouldSendImpressionStats: true,
+    dedupeFrom: ["highlights"],
+  }),
   "feeds.section.highlights": options => ({
     id: "highlights",
     pref: {

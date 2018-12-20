@@ -44,8 +44,9 @@ describe("SectionsManager", () => {
       SectionsManager.sections.clear();
       SectionsManager.initialized = false;
       await SectionsManager.init({}, storage);
-      assert.equal(SectionsManager.sections.size, 2);
+      assert.equal(SectionsManager.sections.size, 3);
       assert.ok(SectionsManager.sections.has("topstories"));
+      assert.ok(SectionsManager.sections.has("layoutandstories"));
       assert.ok(SectionsManager.sections.has("highlights"));
     });
     it("should set .initialized to true", async () => {
