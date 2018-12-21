@@ -386,10 +386,10 @@ export class ASRouterAdminInner extends React.PureComponent {
   }
 
   renderPocketStories() {
-    const topstories = this.props.Sections.filter(Section => Section.id === "topstories");
+    const {rows} = this.props.Sections.find(Section => Section.id === "topstories") || {};
 
     return (<table><tbody>
-      {topstories[0].rows.map(story => this.renderPocketStory(story))}
+      {rows && rows.map(story => this.renderPocketStory(story))}
     </tbody></table>);
   }
 
@@ -449,9 +449,9 @@ export class ASRouterAdminInner extends React.PureComponent {
     return (<div className="asrouter-admin">
       <aside className="sidebar">
         <ul>
-          <li><a href="#asrouter">General</a></li>
-          <li><a href="#asrouter-targeting">Targeting</a></li>
-          <li><a href="#asrouter-pocket">Pocket</a></li>
+          <li><a href="#devtools">General</a></li>
+          <li><a href="#devtools-targeting">Targeting</a></li>
+          <li><a href="#devtools-pocket">Pocket</a></li>
         </ul>
       </aside>
       <main className="main-panel">

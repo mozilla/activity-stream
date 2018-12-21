@@ -55,6 +55,19 @@ describe("ASRouterAdmin", () => {
     wrapper.unmount();
     assert.calledOnce(removeListenerStub);
   });
+  describe("#getSection", () => {
+    it("should render a message provider section by default", () => {
+      assert.equal(wrapper.find("h2").at(1).text(), "Messages");
+    });
+    it("should render a targeting section for targeting route", () => {
+      wrapper = shallow(<ASRouterAdminInner location={{routes: ["targeting"]}} />);
+      assert.equal(wrapper.find("h2").at(0).text(), "Targeting Utilities");
+    });
+    it("should render a pocket section for pocket route", () => {
+      wrapper = shallow(<ASRouterAdminInner location={{routes: ["pocket"]}} Sections={[]} />);
+      assert.equal(wrapper.find("h2").at(0).text(), "Pocket");
+    });
+  });
   describe("#render", () => {
     beforeEach(() => {
       wrapper.setState({
