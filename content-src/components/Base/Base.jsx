@@ -82,10 +82,11 @@ export class _Base extends React.PureComponent {
 
     const prefs = props.Prefs.values;
     if (prefs["asrouter.devtoolsEnabled"]) {
-      if (window.location.hash.startsWith("#asrouter")) {
+      if (window.location.hash.startsWith("#asrouter") ||
+          window.location.hash.startsWith("#devtools")) {
         return (<ASRouterAdmin />);
       }
-      console.log("ASRouter devtools enabled. To access visit %cabout:newtab#asrouter", "font-weight: bold"); // eslint-disable-line no-console
+      console.log("Activity Stream devtools enabled. To access visit %cabout:newtab#devtools", "font-weight: bold"); // eslint-disable-line no-console
     }
 
     if (!props.isPrerendered && !initialized) {
