@@ -341,7 +341,7 @@ class _ASRouter {
     }
 
     const messageBlockList = ASRouterPreferences.providers.filter(p => p.exclude)
-      .reduce((blocked, p) => blocked.concat(p.exclude), []);
+      .reduce((blocked, p) => blocked.concat(p.exclude), this.state.messageBlockList);
 
     this.setState(prevState => ({
       providers,
