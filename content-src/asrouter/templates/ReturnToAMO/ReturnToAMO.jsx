@@ -8,6 +8,10 @@ export class ReturnToAMO extends React.PureComponent {
     this.onBlockButton = this.onBlockButton.bind(this);
   }
 
+  componentDidMount() {
+    this.props.onReady();
+  }
+
   onClickAddExtension() {
     this.props.onAction(this.props.content.primary_button.action);
     this.props.onBlock();
