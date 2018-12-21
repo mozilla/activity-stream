@@ -8,6 +8,7 @@
   display: flex;
 
   .sidebar {
+    position: fixed;
     width: 240px;
     padding: 30px 20px;
 
@@ -22,7 +23,7 @@
       display: block;
 
       &:hover {
-        background: $red-60;
+        background: $grey-20;
       }
     }
   }
