@@ -49,7 +49,6 @@ export class _StartupOverlay extends React.PureComponent {
     // to trigger the animation.
     setTimeout(() => {
       this.setState({show: true});
-      this.props.onReady();
     }, 10);
   }
 

@@ -144,10 +144,6 @@ export class ASRouterUISurface extends React.PureComponent {
     return () => ASRouterUtils.dismissBundle(bundle);
   }
 
-  triggerOnboarding() {
-    ASRouterUtils.sendMessage({type: "TRIGGER", data: {trigger: {id: "showOnboarding"}}});
-  }
-
   onMessageFromParent({data: action}) {
     switch (action.type) {
       case "SET_MESSAGE":
@@ -245,7 +241,6 @@ export class ASRouterUISurface extends React.PureComponent {
       return (
         <IntlProvider locale={global.document.documentElement.lang} messages={global.gActivityStreamStrings}>
           <StartupOverlay
-            onReady={this.triggerOnboarding}
             onBlock={this.onDismissById(message.id)}
             dispatch={this.props.activityStreamStore.dispatch}
             store={this.props.activityStreamStore} />
@@ -257,7 +252,6 @@ export class ASRouterUISurface extends React.PureComponent {
         <LocalizationProvider messages={generateMessages({"amo_html": message.content.text})}>
           <ReturnToAMO
             {...message}
-            onReady={this.triggerOnboarding}
             onBlock={this.onDismissById(message.id)}
             onAction={ASRouterUtils.executeAction} />
         </LocalizationProvider>
