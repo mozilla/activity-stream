@@ -1,5 +1,5 @@
 import {INITIAL_STATE, insertPinned, reducers} from "common/Reducers.jsm";
-const {TopSites, App, Snippets, Prefs, Dialog, Sections, Pocket, Layout} = reducers;
+const {TopSites, App, Snippets, Prefs, Dialog, Sections, Pocket, DiscoveryStream} = reducers;
 import {actionTypes as at} from "common/Actions.jsm";
 
 describe("Reducers", () => {
@@ -655,13 +655,17 @@ describe("Reducers", () => {
       assert.equal(state.pocketCta.useCta, data.use_cta);
     });
   });
-  describe("Layout", () => {
+  describe("DiscoveryStream", () => {
     it("should return INITIAL_STATE by default", () => {
-      assert.equal(Layout(undefined, {type: "some_action"}), INITIAL_STATE.Layout);
+      assert.equal(DiscoveryStream(undefined, {type: "some_action"}), INITIAL_STATE.DiscoveryStream);
     });
-    it("should set layout data with layout.type CONTENT_LAYOUT", () => {
-      const state = Layout(undefined, {type: at.CONTENT_LAYOUT, data: ["test"]});
-      assert.equal(state[0], "test");
+    it("should set layout data with DISCOVERY_STREAM_LAYOUT_UPDATE", () => {
+      const state = DiscoveryStream(undefined, {type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: ["test"]});
+      assert.equal(state.layout[0], "test");
+    });
+    it("should set config data with DISCOVERY_STREAM_CONFIG_CHANGE", () => {
+      const state = DiscoveryStream(undefined, {type: at.DISCOVERY_STREAM_CONFIG_CHANGE, data: {enabled: true}});
+      assert.deepEqual(state.config, {enabled: true});
     });
   });
 });

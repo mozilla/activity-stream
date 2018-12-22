@@ -47,7 +47,12 @@ const INITIAL_STATE = {
     pocketCta: {},
     waitingForSpoc: true,
   },
-  Layout: [],
+  // This is the new pocket configurable layout state.
+  DiscoveryStream: {
+    // This is a JSON-parsed copy of the discoverystream.config pref value.
+    config: {enabled: false, layout_endpoint: ""},
+    layout: [],
+  },
 };
 
 function App(prevState = INITIAL_STATE.App, action) {
@@ -430,10 +435,14 @@ function Pocket(prevState = INITIAL_STATE.Pocket, action) {
   }
 }
 
-function Layout(prevState = INITIAL_STATE.Layout, action) {
+function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
   switch (action.type) {
-    case at.CONTENT_LAYOUT:
-      return action.data;
+    case at.DISCOVERY_STREAM_CONFIG_CHANGE:
+    // The reason this is a separate action is so it doesn't trigger a listener update on init
+    case at.DISCOVERY_STREAM_CONFIG_SETUP:
+      return {...prevState, config: action.data || {}};
+    case at.DISCOVERY_STREAM_LAYOUT_UPDATE:
+      return {...prevState, layout: action.data || []};
     default:
       return prevState;
   }
@@ -443,6 +452,6 @@ this.INITIAL_STATE = INITIAL_STATE;
 this.TOP_SITES_DEFAULT_ROWS = TOP_SITES_DEFAULT_ROWS;
 this.TOP_SITES_MAX_SITES_PER_ROW = TOP_SITES_MAX_SITES_PER_ROW;
 
-this.reducers = {TopSites, App, ASRouter, Snippets, Prefs, Dialog, Sections, Pocket, Layout};
+this.reducers = {TopSites, App, ASRouter, Snippets, Prefs, Dialog, Sections, Pocket, DiscoveryStream};
 
 const EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned", "TOP_SITES_DEFAULT_ROWS", "TOP_SITES_MAX_SITES_PER_ROW"];
