@@ -53,6 +53,12 @@ const INITIAL_STATE = {
     config: {enabled: false, layout_endpoint: ""},
     layout: [],
   },
+  Search: {
+    // Pretend the search box is focused after handing off to AwesomeBar.
+    focus: false,
+    // Hide the search box after handing off to AwesomeBar and user starts typing.
+    hide: false,
+  },
 };
 
 function App(prevState = INITIAL_STATE.App, action) {
@@ -448,10 +454,40 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
   }
 }
 
+function Search(prevState = INITIAL_STATE.Search, action) {
+  switch (action.type) {
+    case at.HIDE_SEARCH:
+      return Object.assign({...prevState, hide: true});
+    case at.FOCUS_SEARCH:
+      return Object.assign({...prevState, focus: true});
+    case at.SHOW_SEARCH:
+      return Object.assign({...prevState, hide: false, focus: false});
+    default:
+      return prevState;
+  }
+}
+
 this.INITIAL_STATE = INITIAL_STATE;
 this.TOP_SITES_DEFAULT_ROWS = TOP_SITES_DEFAULT_ROWS;
 this.TOP_SITES_MAX_SITES_PER_ROW = TOP_SITES_MAX_SITES_PER_ROW;
 
-this.reducers = {TopSites, App, ASRouter, Snippets, Prefs, Dialog, Sections, Pocket, DiscoveryStream};
+this.reducers = {
+  TopSites,
+  App,
+  ASRouter,
+  Snippets,
+  Prefs,
+  Dialog,
+  Sections,
+  Pocket,
+  DiscoveryStream,
+  Search,
+};
 
-const EXPORTED_SYMBOLS = ["reducers", "INITIAL_STATE", "insertPinned", "TOP_SITES_DEFAULT_ROWS", "TOP_SITES_MAX_SITES_PER_ROW"];
+const EXPORTED_SYMBOLS = [
+  "reducers",
+  "INITIAL_STATE",
+  "insertPinned",
+  "TOP_SITES_DEFAULT_ROWS",
+  "TOP_SITES_MAX_SITES_PER_ROW",
+];
