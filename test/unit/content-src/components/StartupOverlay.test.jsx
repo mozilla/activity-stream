@@ -27,7 +27,7 @@ describe("<StartupOverlay>", () => {
     assert.isTrue(wrapper.isEmptyRender());
   });
 
-  it.only("should call prop.onReady after mount + timeout", async () => {
+  it("should call prop.onReady after mount + timeout", async () => {
     const clock = sandbox.useFakeTimers();
     wrapper = mountWithIntl(<StartupOverlay onBlock={onBlock} onReady={onReady} dispatch={dispatch} />);
     wrapper.setState({overlayRemoved: false});
