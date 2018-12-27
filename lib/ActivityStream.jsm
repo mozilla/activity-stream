@@ -212,6 +212,7 @@ const PREFS_CONFIG = new Map([
       type: "local",
       localProvider: "OnboardingMessageProvider",
       enabled: true,
+      // Block specific messages from this local provider
       exclude: ["RETURN_TO_AMO_1"],
     }),
   }],
