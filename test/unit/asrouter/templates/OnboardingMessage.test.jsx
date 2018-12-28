@@ -32,7 +32,7 @@ describe("OnboardingMessage", () => {
     globals = new GlobalOverrider();
     sandbox = sinon.createSandbox();
     globals.set("FxAccountsConfig", {promiseEmailFirstURI: sandbox.stub().resolves("some/url")});
-    globals.set("AddonRepository", {getAddonsByIDs: ([content]) => [{name: content, sourceURI: {spec: "foo"}, icons: {64: "icon"}}]});
+    globals.set("AddonRepository", {getAddonsByIDs: ([content]) => [{name: content, sourceURI: {spec: "foo", scheme: "https"}, icons: {64: "icon"}}]});
   });
   afterEach(() => {
     sandbox.restore();
