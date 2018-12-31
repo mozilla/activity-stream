@@ -219,7 +219,7 @@ const PREFS_CONFIG = new Map([
     title: "Configuration for the new pocket new tab",
     value: JSON.stringify({
       enabled: false,
-      // Set this to https://gist.githubusercontent.com/ScottDowne/164995d9535b4203846048bdee29d169/raw/0cf538411e6ee898eb116208d70842c62c8d52f1/spoc.json to test
+      // Set this to https://gist.githubusercontent.com/ScottDowne/3dc0a631a442e223aef9cede8b7f9d86/raw/833d0d44fd77b38c81cd00b36d866c576f45e734/layout.json to test
       layout_endpoint: "",
     }),
   }],
