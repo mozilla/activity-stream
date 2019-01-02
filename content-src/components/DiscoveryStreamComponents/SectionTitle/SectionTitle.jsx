@@ -1,4 +1,3 @@
-import {FormattedMessage} from "react-intl";
 import React from "react";
 
 export class Topic extends React.PureComponent {
@@ -12,9 +11,11 @@ export class SectionTitle extends React.PureComponent {
   render() {
     const {topics} = this.props;
     return (
-      <span className="topics">
-        <span><FormattedMessage id="pocket_read_more" /></span>
-        <ul>{topics && topics.map(t => <Topic key={t.name} url={t.url} name={t.name} />)}</ul>
+      <span className="section-title">
+        <ul>
+          {topics && topics.map(t => <Topic key={t.name} url={t.url} name={t.name} />)}
+          <li><a className="ds-more-recommendations">More Recommendations</a></li>
+        </ul>
       </span>
     );
   }
