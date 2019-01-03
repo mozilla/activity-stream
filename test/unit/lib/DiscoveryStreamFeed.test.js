@@ -117,6 +117,17 @@ describe("DiscoveryStreamFeed", () => {
     });
   });
 
+  describe("#onAction: DISCOVERY_STREAM_CONFIG_SET_VALUE", () => {
+    it("should add the new value to the pref without changing the existing values", async () => {
+      sandbox.stub(global.Services.prefs, "setStringPref");
+      configPrefStub.returns(JSON.stringify({enabled: true}));
+
+      await feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_SET_VALUE, data: {name: "layout_endpoint", value: "foo.com"}});
+
+      assert.calledWith(global.Services.prefs.setStringPref, CONFIG_PREF_NAME, JSON.stringify({enabled: true, layout_endpoint: "foo.com"}));
+    });
+  });
+
   describe("#onAction: DISCOVERY_STREAM_CONFIG_CHANGE", () => {
     it("should call this.loadCachedData if config.enabled changes to true ", async () => {
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
