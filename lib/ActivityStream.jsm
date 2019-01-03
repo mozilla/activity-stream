@@ -219,8 +219,8 @@ const PREFS_CONFIG = new Map([
     title: "Configuration for the new pocket new tab",
     value: JSON.stringify({
       enabled: false,
-      // Set this to https://gist.githubusercontent.com/ScottDowne/3dc0a631a442e223aef9cede8b7f9d86/raw/833d0d44fd77b38c81cd00b36d866c576f45e734/layout.json to test
-      layout_endpoint: "",
+      // This is currently an exmple layout used for dev purposes.
+      layout_endpoint: "https://getpocket.com/v3/newtab/layout?version=1&consumer_key=40249-e88c401e1b1f2242d9e441c4&layout_variant=dev-test-1",
     }),
   }],
 ]);
