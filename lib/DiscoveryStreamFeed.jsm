@@ -84,7 +84,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const cachedData = await this.cache.get() || {};
 
     let {layout: layoutResponse} = cachedData;
-    if (!layoutResponse || !(Date.now() - layoutResponse._timestamp > LAYOUT_UPDATE_TIME)) {
+    if (!layoutResponse || !(Date.now() - layoutResponse._timestamp < LAYOUT_UPDATE_TIME)) {
       layoutResponse = await this.fetchLayout();
       if (layoutResponse && layoutResponse.layout) {
         layoutResponse._timestamp = Date.now();
@@ -105,16 +105,21 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async disable() {
-    // Clear cache
-    await this.cache.set("layout", {});
+    await this.clearCache();
     // Reset reducer
     this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: []}));
     this.loaded = false;
   }
 
+  async clearCache() {
+    await this.cache.set("layout", {});
+  }
+
   async onPrefChange() {
-    // Load data from all endpoints if our config.enabled = true.
     if (this.config.enabled) {
+      // We always want to clear the cache if the pref has changed
+      await this.clearCache();
+      // Load data from all endpoints
       await this.enable();
     }
 
