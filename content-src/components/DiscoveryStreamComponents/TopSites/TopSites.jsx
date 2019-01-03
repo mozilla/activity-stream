@@ -1,11 +1,14 @@
+import {connect} from "react-redux";
 import React from "react";
 
-export class TopSites extends React.PureComponent {
+export class _TopSites extends React.PureComponent {
   render() {
     return (
-      <div>
+      <div className="ds-topsites">
         Top Sites
       </div>
     );
   }
 }
+
+export const TopSites = connect(state => ({TopSites: state.TopSites}))(_TopSites);
