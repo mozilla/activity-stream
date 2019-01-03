@@ -11,17 +11,17 @@ export class _DiscoveryStreamBase extends React.PureComponent {
   renderComponent(component) {
     switch (component.type) {
       case "TopSites":
-        return (<TopSites {...component.properties} />);
+        return (<TopSites />);
       case "SectionTitle":
-        return (<SectionTitle {...component.properties} />);
+        return (<SectionTitle />);
       case "CardGrid":
-        return (<CardGrid {...component.properties} />);
+        return (<CardGrid />);
       case "Hero":
-        return (<Hero {...component.properties} />);
+        return (<Hero />);
       case "HorizontalRule":
-        return (<HorizontalRule {...component.properties} />);
+        return (<HorizontalRule />);
       case "List":
-        return (<List {...component.properties} />);
+        return (<List />);
       default:
         return (<div>{component.type}</div>);
     }
