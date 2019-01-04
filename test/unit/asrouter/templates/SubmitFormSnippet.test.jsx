@@ -242,5 +242,14 @@ describe("SubmitFormSnippet", () => {
 
       assert.notCalled(window.fetch);
     });
+    it("should block the snippet when form_method is GET", () => {
+      wrapper.setProps({form_method: "GET"});
+      wrapper.setState({expanded: true});
+
+      wrapper.instance().handleSubmit({preventDefault: sandbox.stub()});
+
+      assert.calledOnce(onBlockStub);
+      assert.calledWithExactly(onBlockStub, {preventDismiss: true});
+    });
   });
 });
