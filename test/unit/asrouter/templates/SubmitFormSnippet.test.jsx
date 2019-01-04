@@ -121,6 +121,13 @@ describe("SubmitFormSnippet", () => {
 
       assert.calledOnce(wrapper.props().onDismiss);
     });
+    it("should send a DISMISS event ping", () => {
+      wrapper.setState({expanded: true});
+
+      wrapper.find(".ASRouterButton.secondary").simulate("click");
+
+      assert.equal(wrapper.props().sendUserActionTelemetry.firstCall.args[0].event, "DISMISS");
+    });
     it("should render hidden inputs + email input", () => {
       wrapper.setState({expanded: true});
 
