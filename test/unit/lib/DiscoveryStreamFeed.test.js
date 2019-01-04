@@ -89,6 +89,77 @@ describe("DiscoveryStreamFeed", () => {
     });
   });
 
+  describe("#getComponentFeeds", () => {
+    it("should populate feeds cache", async () => {
+      const fakeComponents = {components: [{feed: {url: "foo.com"}}]};
+      const fakeLayout = [fakeComponents, {components: [{}]}, {}];
+      const fakeDiscoveryStream = {DiscoveryStream: {layout: fakeLayout}};
+      sandbox.stub(feed.store, "getState").returns(fakeDiscoveryStream);
+      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
+      const fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+
+      await feed.getComponentFeeds();
+
+      assert.calledWith(feed.cache.set, "feeds", {"foo.com": {"data": "data", "lastUpdated": 0}});
+    });
+  });
+
+  describe("#getComponentFeed", () => {
+    it("should fetch fresh data if cache is empty", async () => {
+      const fakeCache = {};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+      sandbox.stub(feed, "fetchComponentFeed").returns(Promise.resolve("data"));
+
+      const feedResp = await feed.getComponentFeed("foo.com");
+
+      assert.deepEqual(feedResp.data, "data");
+    });
+    it("should fetch fresh data if cache is old", async () => {
+      const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now()}}};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+      sandbox.stub(feed, "fetchComponentFeed").returns(Promise.resolve("data"));
+      clock.tick(THIRTY_MINUTES + 1);
+
+      const feedResp = await feed.getComponentFeed("foo.com");
+
+      assert.equal(feedResp.data, "data");
+    });
+    it("should return data from cache if it is fresh", async () => {
+      const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "data"}}};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+      sandbox.stub(feed, "fetchComponentFeed").returns(Promise.resolve("old data"));
+      clock.tick(THIRTY_MINUTES - 1);
+
+      const feedResp = await feed.getComponentFeed("foo.com");
+
+      assert.equal(feedResp.data, "data");
+    });
+  });
+
+  describe("#fetchComponentFeed", () => {
+    it("should return old feed if fetch failed", async () => {
+      fetchStub.resolves({ok: false, json: () => Promise.resolve({})});
+      const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "old data"}}};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+      clock.tick(THIRTY_MINUTES + 1);
+
+      const feedResp = await feed.getComponentFeed("foo.com");
+
+      assert.equal(feedResp.data, "old data");
+    });
+    it("should return new feed if fetch succeeds", async () => {
+      fetchStub.resolves({ok: true, json: () => Promise.resolve("data")});
+      const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "old data"}}};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+      clock.tick(THIRTY_MINUTES + 1);
+
+      const feedResp = await feed.getComponentFeed("foo.com");
+
+      assert.equal(feedResp.data, "data");
+    });
+  });
+
   describe("#clearCache", () => {
     it("should set .layout to {}", async () => {
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
@@ -105,6 +176,7 @@ describe("DiscoveryStreamFeed", () => {
       assert.isFalse(feed.loaded);
     });
     it("should load data, add pref observer, and set .loaded=true if config.enabled is true", async () => {
+      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
       configPrefStub.returns(JSON.stringify({enabled: true}));
       sandbox.stub(feed, "loadCachedData").returns(Promise.resolve());
       sandbox.stub(global.Services.prefs, "addObserver");
@@ -148,6 +220,7 @@ describe("DiscoveryStreamFeed", () => {
       assert.isTrue(feed.loaded);
     });
     it("should clear the cache if a config change happens and config.enabled is true", async () => {
+      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
       // force clear cached pref value
       feed._prefCache = {};
       configPrefStub.returns(JSON.stringify({enabled: true}));
