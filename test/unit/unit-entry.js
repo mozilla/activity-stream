@@ -270,6 +270,11 @@ const TEST_GLOBAL = {
       return Promise.resolve(stringsIds.map(({id, args}) => ({value: {string_id: id, args}})));
     }
   },
+  FxAccountsConfig: {
+    promiseEmailFirstURI(id) {
+      return Promise.resolve(id);
+    },
+  },
 };
 overrider.set(TEST_GLOBAL);
 
