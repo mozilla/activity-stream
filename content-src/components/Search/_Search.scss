@@ -164,6 +164,10 @@ $glyph-forward: url('chrome://browser/skin/forward.svg');
   .search-active & {
     border: $input-border-active;
     box-shadow: var(--newtab-textbox-focus-boxshadow);
+
+    .fake-caret {
+      display: block;
+    }
   }
 
   .search-hidden & {
@@ -190,10 +194,6 @@ $glyph-forward: url('chrome://browser/skin/forward.svg');
       to {
         visibility: hidden;
       }
-    }
-
-    .search-active & {
-      display: block;
     }
   }
 }
