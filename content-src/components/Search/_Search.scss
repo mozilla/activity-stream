@@ -196,24 +196,6 @@ $glyph-forward: url('chrome://browser/skin/forward.svg');
       display: block;
     }
   }
-
-  .fake-button {
-    background: $glyph-forward no-repeat center center;
-    background-size: 16px 16px;
-    border: 0;
-    border-radius: 0 $border-radius $border-radius 0;
-    -moz-context-properties: fill;
-    fill: var(--newtab-search-icon-color);
-    height: 100%;
-    inset-inline-end: 0;
-    position: absolute;
-    top: 1px;
-    width: $search-button-width;
-
-    &:dir(rtl) {
-      transform: scaleX(-1);
-    }
-  }
 }
 
 @media (min-height: 701px) {
