@@ -66,6 +66,9 @@ const CUSTOM_CSS = `
   margin-top: 0;
   margin-bottom: 0;
 }
+#homeContentsGroup .contentDiscoveryButton {
+  margin-inline-start: 0;
+}
 `;
 
 this.AboutPreferences = class AboutPreferences {
@@ -97,7 +100,7 @@ this.AboutPreferences = class AboutPreferences {
 
   async observe(window) {
     this.renderPreferences(window, await this.strings, [...PREFS_BEFORE_SECTIONS,
-      ...this.store.getState().Sections, ...PREFS_AFTER_SECTIONS]);
+      ...this.store.getState().Sections, ...PREFS_AFTER_SECTIONS], this.store.getState().Prefs);
   }
 
   /**
@@ -125,7 +128,7 @@ this.AboutPreferences = class AboutPreferences {
    * Render preferences to an about:preferences content window with the provided
    * strings and preferences structure.
    */
-  renderPreferences({document, Preferences, gHomePane}, strings, prefStructure) {
+  renderPreferences({document, Preferences, gHomePane}, strings, prefStructure, ASPreferences) {
     // Helper to create a new element and append it
     const createAppend = (tag, parent) => parent.appendChild(
       document.createXULElement(tag));
@@ -256,6 +259,36 @@ this.AboutPreferences = class AboutPreferences {
         linkPref(subcheck, nested.name, "bool");
       });
     });
+
+    try {
+      const discoveryStreamPref = JSON.parse(ASPreferences.values["discoverystream.config"]);
+      if (discoveryStreamPref.enabled) {
+        // If Discovery Stream is enabled hide Home Content options
+        contentsGroup.style.visibility = "hidden";
+
+        const discoveryGroup = homeGroup.insertAdjacentElement("afterend", homeGroup.cloneNode());
+        discoveryGroup.id = "homeContentsGroup";
+        discoveryGroup.setAttribute("data-subcategory", "contents");
+        createAppend("label", discoveryGroup)
+          .appendChild(document.createElementNS(HTML_NS, "h2"))
+          .textContent = formatString("prefs_content_discovery_header");
+        createAppend("description", discoveryGroup)
+          .textContent = formatString("prefs_content_discovery_description");
+
+        const contentDiscoveryButton = document.createElementNS(HTML_NS, "button");
+        contentDiscoveryButton.classList.add("contentDiscoveryButton");
+        contentDiscoveryButton.textContent = formatString("prefs_content_discovery_button");
+        createAppend("hbox", discoveryGroup)
+          .appendChild(contentDiscoveryButton)
+          .addEventListener("click", () => {
+            discoveryGroup.style.display = "none";
+            contentsGroup.style.visibility = "visible";
+            Services.prefs.clearUserPref("browser.newtabpage.activity-stream.discoverystream.config");
+          }, {once: true});
+      }
+    } catch (e) {
+      Cu.reportError("Could not parse discoverystream.config pref");
+    }
 
     // Update the visibility of the Restore Defaults btn based on checked prefs
     gHomePane.toggleRestoreDefaultsBtn();
