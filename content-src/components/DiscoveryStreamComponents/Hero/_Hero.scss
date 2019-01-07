@@ -1,0 +1,25 @@
+.ds-hero {
+  .wrapper {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 66%;
+      height: auto;
+    }
+
+    .meta {
+      width: 33%;
+      padding: 24px;
+
+      header {
+        font-size: 22px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+    }
+
+  }
+}
