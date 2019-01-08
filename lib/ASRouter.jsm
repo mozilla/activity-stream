@@ -205,6 +205,10 @@ const MessageLoaderUtils = {
       messages = [];
       Cu.reportError(new Error(`Tried to load messages for ${provider.id} but the result was not an Array.`));
     }
+    // Filter out messages we temporarily want to exclude
+    if (provider.exclude && provider.exclude.length) {
+      messages = messages.filter(message => !provider.exclude.includes(message.id));
+    }
     const lastUpdated = Date.now();
     return {
       messages: messages.map(msg => ({weight: 100, ...msg, provider: provider.id}))
@@ -340,15 +344,10 @@ class _ASRouter {
       }
     }
 
-    // Group existing blocked messages with messages blocked through preferences
-    const excludeList = ASRouterPreferences.providers.filter(p => p.exclude)
-      .reduce((blocked, p) => blocked.concat(p.exclude.filter(id => !blocked.includes(id))), [...this.state.messageBlockList]);
-
     this.setState(prevState => ({
       providers,
       // Clear any messages from removed providers
       messages: [...prevState.messages.filter(message => providerIDs.includes(message.provider))],
-      messageBlockList: excludeList,
     }));
   }
 
