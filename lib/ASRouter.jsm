@@ -342,7 +342,7 @@ class _ASRouter {
 
     // Group existing blocked messages with messages blocked through preferences
     const excludeList = ASRouterPreferences.providers.filter(p => p.exclude)
-      .reduce((blocked, p) => blocked.concat(p.exclude), this.state.messageBlockList);
+      .reduce((blocked, p) => blocked.concat(p.exclude.filter(id => !blocked.includes(id))), [...this.state.messageBlockList]);
 
     this.setState(prevState => ({
       providers,
