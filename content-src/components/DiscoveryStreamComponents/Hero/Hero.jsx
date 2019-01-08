@@ -3,16 +3,27 @@ import React from "react";
 
 export class _Hero extends React.PureComponent {
 // TODO: Un-hardcode all these values
+  constructor(props) {
+    super(props);
+
+    const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
+
+    this.state = {
+      recommendations: feed.data.recommendations
+    };
+  }
+
   render() {
-    // const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
+    let heroRec = this.state.recommendations[0];
+
     return (
       <div className={`ds-hero ds-hero-${this.props.style}`}>
         <div className="wrapper">
-          <img src="https://placekitten.com/576/324" />
+          <img src={heroRec.image_src} />
           <div className="meta">
-            <header>Lorem Ipsum</header>
-            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel quod, adipisci culpa ad ex officia totam quas animi non esse in quaerat consectetur sint at veritatis! Voluptatibus incidunt quidem facere!</p>
-            <p>Source</p>
+            <header>{heroRec.title}</header>
+            <p>{heroRec.excerpt}</p>
+            <p>TODO: Source?</p>
           </div>
         </div>
       </div>
