@@ -1,9 +1,16 @@
 import React from "react";
 
 export class Hero extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    console.log(this.props);
+  }
+
+  // TODO: Un-hardcode all these values
   render() {
     return (
-      <div className="ds-hero">
+      <div className={`ds-hero ds-hero-${this.props.style}`}>
         <div className="wrapper">
           <img src="https://placekitten.com/576/324"/>
           <div className="meta">
@@ -16,3 +23,8 @@ export class Hero extends React.PureComponent {
     );
   }
 }
+
+Hero.defaultProps = {
+  style: `border`,
+  items: 1
+};

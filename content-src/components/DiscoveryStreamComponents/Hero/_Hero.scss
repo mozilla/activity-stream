@@ -1,4 +1,8 @@
 .ds-hero {
+  &.ds-hero-border {
+    border: 1px solid gray;
+  }
+
   .wrapper {
     display: flex;
     align-items: center;
