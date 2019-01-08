@@ -130,5 +130,21 @@ describe("<Search>", () => {
       wrapper.find(".search-handoff-button").simulate("keydown", {key: "f", metaKey: true});
       assert.notCalled(dispatch);
     });
+    it("should hand-off search on paste", () => {
+      const dispatch = sinon.spy();
+      const wrapper = mountWithIntl(<Search {...DEFAULT_PROPS} handoffEnabled={true} dispatch={dispatch} />);
+      wrapper.instance()._searchHandoffButton = {contains: () => true};
+      wrapper.instance().onSearchHandoffPaste({
+        clipboardData: {
+          getData: () => "some copied text",
+        },
+        preventDefault: () => {},
+      });
+      assert.calledWith(dispatch, {
+        data: {text: "some copied text"},
+        meta: {from: "ActivityStream:Content", skipLocal: true, to: "ActivityStream:Main"},
+        type: "HANDOFF_SEARCH_TO_AWESOMEBAR",
+      });
+    });
   });
 });

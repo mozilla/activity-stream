@@ -297,17 +297,21 @@ class PlacesFeed {
     if (data.text) {
       // Pass the provided text to the awesomebar.
       urlBar.search(data.text);
+      this.store.dispatch(ac.OnlyToOneContent({type: at.HIDE_SEARCH}, meta.fromTarget));
     } else {
       // Focus the awesomebar without the style changes.
       urlBar.hiddenFocus();
     }
 
-    const onKeydown = () => {
-      // Once the user starts typing, we want to hide the in content search box
-      // and show the focus styles on the awesomebar.
-      this.store.dispatch(ac.OnlyToOneContent({type: at.HIDE_SEARCH}, meta.fromTarget));
-      urlBar.removeHiddenFocus();
-      urlBar.removeEventListener("keydown", onKeydown);
+    const onKeydown = event => {
+      // We only care about key strokes that will produce a character.
+      if (event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
+        // Once the user starts typing, we want to hide the in content search box
+        // and show the focus styles on the awesomebar.
+        this.store.dispatch(ac.OnlyToOneContent({type: at.HIDE_SEARCH}, meta.fromTarget));
+        urlBar.removeHiddenFocus();
+        urlBar.removeEventListener("keydown", onKeydown);
+      }
     };
     const onDone = () => {
       // When done, let's cleanup everything.
