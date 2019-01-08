@@ -66,7 +66,7 @@ const CUSTOM_CSS = `
   margin-top: 0;
   margin-bottom: 0;
 }
-#homeContentsGroup .contentDiscoveryButton {
+#discoveryContentsGroup .contentDiscoveryButton {
   margin-inline-start: 0;
 }
 `;
@@ -267,7 +267,7 @@ this.AboutPreferences = class AboutPreferences {
         contentsGroup.style.visibility = "hidden";
 
         const discoveryGroup = homeGroup.insertAdjacentElement("afterend", homeGroup.cloneNode());
-        discoveryGroup.id = "homeContentsGroup";
+        discoveryGroup.id = "discoveryContentsGroup";
         discoveryGroup.setAttribute("data-subcategory", "contents");
         createAppend("label", discoveryGroup)
           .appendChild(document.createElementNS(HTML_NS, "h2"))
