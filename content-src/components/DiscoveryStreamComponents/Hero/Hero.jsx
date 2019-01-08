@@ -1,10 +1,6 @@
 import React from "react";
 
 export class Hero extends React.PureComponent {
-  constructor(props) {
-    super(props);
-  }
-
   // TODO: Un-hardcode all these values
   render() {
     return (
