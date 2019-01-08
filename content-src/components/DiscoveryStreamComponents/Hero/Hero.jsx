@@ -2,7 +2,6 @@ import {connect} from "react-redux";
 import React from "react";
 
 export class _Hero extends React.PureComponent {
-// TODO: Un-hardcode all these values
   constructor(props) {
     super(props);
 
