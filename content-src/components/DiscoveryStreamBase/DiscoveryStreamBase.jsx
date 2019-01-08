@@ -15,16 +15,16 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "SectionTitle":
         return (<SectionTitle />);
       case "CardGrid":
-        return (<CardGrid />);
+        return (<CardGrid feed={component.feed} />);
       case "Hero":
         return (<Hero
-          feed={component.feed.url}
+          feed={component.feed}
           style={component.properties.style}
           items={component.properties.items} />);
       case "HorizontalRule":
         return (<HorizontalRule />);
       case "List":
-        return (<List />);
+        return (<List feed={component.feed} />);
       default:
         return (<div>{component.type}</div>);
     }
