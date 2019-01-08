@@ -20,7 +20,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
         return (<Hero
           feed={component.feed.url}
           style={component.properties.style}
-          items={component.properties.items}/>);
+          items={component.properties.items} />);
       case "HorizontalRule":
         return (<HorizontalRule />);
       case "List":
