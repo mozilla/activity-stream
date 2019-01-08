@@ -81,7 +81,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return null;
   }
 
-  async loadCachedData() {
+  async loadLayout() {
     const cachedData = await this.cache.get() || {};
     let {layout: layoutResponse} = cachedData;
     if (!layoutResponse || !(Date.now() - layoutResponse._timestamp < LAYOUT_UPDATE_TIME)) {
@@ -105,7 +105,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
-  async getComponentFeeds() {
+  async loadComponentFeeds() {
     const {DiscoveryStream} = this.store.getState();
     const newFeeds = {};
     if (DiscoveryStream && DiscoveryStream.layout) {
@@ -162,8 +162,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async enable() {
-    await this.loadCachedData();
-    await this.getComponentFeeds();
+    await this.loadLayout();
+    await this.loadComponentFeeds();
     this.loaded = true;
   }
 
@@ -176,6 +176,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   async clearCache() {
     await this.cache.set("layout", {});
+    await this.cache.set("feeds", {});
   }
 
   async onPrefChange() {
