@@ -12,6 +12,7 @@ export class _Search extends React.PureComponent {
     super(props);
     this.onSearchClick = this.onSearchClick.bind(this);
     this.onSearchHandoffClick = this.onSearchHandoffClick.bind(this);
+    this.onSearchHandoffKeyDown = this.onSearchHandoffKeyDown.bind(this);
     this.onInputMount = this.onInputMount.bind(this);
   }
 
@@ -40,6 +41,16 @@ export class _Search extends React.PureComponent {
     this.props.dispatch({type: at.FOCUS_SEARCH});
 
     // TODO: Send a telemetry ping. BUG 1514732
+  }
+
+  onSearchHandoffKeyDown(event) {
+    if (event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
+      // We only care about key strokes that will produce a character.
+      const text = event.key;
+      this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
+
+      // TODO: Send a telemetry ping. BUG 1514732
+    }
   }
 
   componentWillUnmount() {
@@ -119,6 +130,7 @@ export class _Search extends React.PureComponent {
           <button
             className="search-handoff-button"
             onClick={this.onSearchHandoffClick}
+            onKeyDown={this.onSearchHandoffKeyDown}
             title={this.props.intl.formatMessage({id: "search_web_placeholder"})}>
             <div className="fake-textbox">{this.props.intl.formatMessage({id: "search_web_placeholder"})}</div>
             <div className="fake-caret" />
