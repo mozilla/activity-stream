@@ -1,3 +1,24 @@
 .ds-card {
-  background: pink;
+  img {
+    width: 100%;
+    border: 0.5px solid rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+
+  .meta {
+    padding: 16px;
+  }
+
+  header {
+    line-height: 24px;
+    font-size: 17px;
+    color: #0C0C0D;
+  }
+
+  p {
+    font-size: 13px;
+    line-height: 20px;
+    color: #737373;
+  }
 }

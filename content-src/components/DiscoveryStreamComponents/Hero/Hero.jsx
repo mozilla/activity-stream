@@ -14,21 +14,34 @@ export class _Hero extends React.PureComponent {
   }
 
   render() {
+    console.log(this.state.recommendations);
+
     let heroRec = this.state.recommendations[0];
+
+    // TODO: Let this count be determined by the endpoint
+    let cards = this.state.recommendations.slice(1,5).map((rec, index) => {
+      return (
+        <DSCard
+          image_src={rec.image_src}
+          title={rec.title}
+          excerpt={rec.excerpt}
+          source="TODO: SOURCE">
+        </DSCard>
+      );
+    });
 
     return (
       <div className={`ds-hero ds-hero-${this.props.style}`}>
         <div className="wrapper">
-          <img src={heroRec.image_src} />
           <div className="meta">
             <header>{heroRec.title}</header>
             <p>{heroRec.excerpt}</p>
-            <p>TODO: Source?</p>
+            <p>TODO: SOURCE</p>
           </div>
+          <img src={heroRec.image_src} />
         </div>
         <div className="cards">
-          <DSCard></DSCard>
-
+          { cards }
         </div>
       </div>
     );
