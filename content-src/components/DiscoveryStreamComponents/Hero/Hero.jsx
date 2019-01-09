@@ -1,6 +1,6 @@
 import {connect} from "react-redux";
+import {DSCard} from "../DSCard/DSCard.jsx";
 import React from "react";
-import {DSCard} from "../DSCard/DSCard.jsx"
 
 export class _Hero extends React.PureComponent {
   constructor(props) {
@@ -9,26 +9,22 @@ export class _Hero extends React.PureComponent {
     const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
 
     this.state = {
-      recommendations: feed.data.recommendations
+      recommendations: feed.data.recommendations,
     };
   }
 
   render() {
-    console.log(this.state.recommendations);
-
-    let heroRec = this.state.recommendations[0];
+    let [heroRec] = this.state.recommendations;
 
     // TODO: Let this count be determined by the endpoint
-    let cards = this.state.recommendations.slice(1,5).map((rec, index) => {
-      return (
-        <DSCard
-          image_src={rec.image_src}
-          title={rec.title}
-          excerpt={rec.excerpt}
-          source="TODO: SOURCE">
-        </DSCard>
-      );
-    });
+    let cards = this.state.recommendations.slice(1, 5).map((rec, index) => (
+      <DSCard
+        key={`dscard-${index}`}
+        image_src={rec.image_src}
+        title={rec.title}
+        excerpt={rec.excerpt}
+        source="TODO: SOURCE" />
+    ));
 
     return (
       <div className={`ds-hero ds-hero-${this.props.style}`}>
