@@ -1,5 +1,6 @@
 import {connect} from "react-redux";
 import React from "react";
+import {DSCard} from "../DSCard/DSCard.jsx"
 
 export class _Hero extends React.PureComponent {
   constructor(props) {
@@ -24,6 +25,10 @@ export class _Hero extends React.PureComponent {
             <p>{heroRec.excerpt}</p>
             <p>TODO: Source?</p>
           </div>
+        </div>
+        <div className="cards">
+          <DSCard></DSCard>
+
         </div>
       </div>
     );
