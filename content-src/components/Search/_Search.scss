@@ -175,6 +175,20 @@ $glyph-forward: url('chrome://browser/skin/forward.svg');
     visibility: hidden;
   }
 
+  .fake-editable:focus {
+    outline: none;
+    caret-color: transparent;
+  }
+
+  .fake-editable {
+    color: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
   .fake-textbox {
     opacity: 0.54;
     text-align: start;

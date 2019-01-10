@@ -365,9 +365,21 @@ describe("PlacesFeed", () => {
       assert.notCalled(fakeUrlBar.focus);
       assert.notCalled(feed.store.dispatch);
 
-      // Now call keydown listener.
+      // Now call keydown listener with "Ctrl".
       feed.store.dispatch.resetHistory();
-      listeners.keydown();
+      listeners.keydown({key: "Ctrl"});
+      assert.notCalled(fakeUrlBar.removeHiddenFocus);
+      assert.notCalled(feed.store.dispatch);
+
+      // Now call keydown listener with "Ctrl+f".
+      feed.store.dispatch.resetHistory();
+      listeners.keydown({key: "f", ctrlKey: true});
+      assert.notCalled(fakeUrlBar.removeHiddenFocus);
+      assert.notCalled(feed.store.dispatch);
+
+      // Now call keydown listener with "f".
+      feed.store.dispatch.resetHistory();
+      listeners.keydown({key: "f"});
       assert.calledOnce(fakeUrlBar.removeHiddenFocus);
       assert.calledOnce(feed.store.dispatch);
       assert.calledWith(feed.store.dispatch, {
@@ -406,7 +418,16 @@ describe("PlacesFeed", () => {
       assert.calledWith(fakeUrlBar.search, "f");
       assert.notCalled(fakeUrlBar.hiddenFocus);
       assert.notCalled(fakeUrlBar.focus);
-      assert.notCalled(feed.store.dispatch);
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWith(feed.store.dispatch, {
+        meta: {
+          from: "ActivityStream:Main",
+          skipMain: true,
+          to: "ActivityStream:Content",
+          toTarget: {},
+        },
+        type: "HIDE_SEARCH",
+      });
     });
   });
 
