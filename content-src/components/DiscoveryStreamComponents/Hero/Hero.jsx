@@ -3,21 +3,12 @@ import {DSCard} from "../DSCard/DSCard.jsx";
 import React from "react";
 
 export class _Hero extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
-
-    this.state = {
-      recommendations: feed.data.recommendations,
-    };
-  }
-
   render() {
-    let [heroRec] = this.state.recommendations;
+    const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
+    let [heroRec, ...otherRecs] = feed.data.recommendations;
 
     // TODO: Let this count be determined by the endpoint
-    let cards = this.state.recommendations.slice(1, 5).map((rec, index) => (
+    let cards = otherRecs.slice(1, 5).map((rec, index) => (
       <DSCard
         key={`dscard-${index}`}
         image_src={rec.image_src}
