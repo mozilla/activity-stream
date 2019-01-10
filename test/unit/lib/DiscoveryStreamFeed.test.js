@@ -161,16 +161,18 @@ describe("DiscoveryStreamFeed", () => {
   });
 
   describe("#clearCache", () => {
-    it("should set .layout and .feeds to {}", async () => {
+    it("should set .layout, .feeds and .spocs to {}", async () => {
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
 
       await feed.clearCache();
 
-      assert.calledTwice(feed.cache.set);
+      assert.calledThrice(feed.cache.set);
       const {firstCall} = feed.cache.set;
       const {secondCall} = feed.cache.set;
+      const {thirdCall} = feed.cache.set;
       assert.deepEqual(firstCall.args, ["layout", {}]);
       assert.deepEqual(secondCall.args, ["feeds", {}]);
+      assert.deepEqual(thirdCall.args, ["spocs", {}]);
     });
   });
 
