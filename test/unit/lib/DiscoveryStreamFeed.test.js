@@ -87,6 +87,18 @@ describe("DiscoveryStreamFeed", () => {
       assert.notCalled(fetchStub);
       assert.notCalled(feed.cache.set);
     });
+    it("should set spocs_endpoint from layout", async () => {
+      const resp = {layout: ["foo", "bar"], spocs: {url: "foo.com"}};
+      const fakeCache = {};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
+
+      fetchStub.resolves({ok: true, json: () => Promise.resolve(resp)});
+
+      await feed.loadLayout();
+
+      assert.deepEqual(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "foo.com");
+    });
   });
 
   describe("#loadComponentFeeds", () => {
@@ -157,6 +169,43 @@ describe("DiscoveryStreamFeed", () => {
       const feedResp = await feed.getComponentFeed("foo.com");
 
       assert.equal(feedResp.data, "data");
+    });
+  });
+
+  describe("#loadSpocs", () => {
+    it("should fetch fresh data if cache is empty", async () => {
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve());
+      sandbox.stub(feed, "fetchSpocs").returns(Promise.resolve("data"));
+      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
+
+      await feed.loadSpocs();
+
+      assert.calledWith(feed.cache.set, "spocs", {"data": "data", "lastUpdated": 0});
+      assert.deepEqual(feed.store.getState().DiscoveryStream.spocs.data, "data");
+    });
+    it("should fetch fresh data if cache is old", async () => {
+      const cachedSpoc = {"data": "old", "lastUpdated": Date.now()};
+      const cachedData = {"spocs": cachedSpoc};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(cachedData));
+      sandbox.stub(feed, "fetchSpocs").returns(Promise.resolve("new"));
+      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
+      clock.tick(THIRTY_MINUTES + 1);
+
+      await feed.loadSpocs();
+
+      assert.deepEqual(feed.store.getState().DiscoveryStream.spocs.data, "new");
+    });
+    it("should return data from cache if it is fresh", async () => {
+      const cachedSpoc = {"data": "old", "lastUpdated": Date.now()};
+      const cachedData = {"spocs": cachedSpoc};
+      sandbox.stub(feed.cache, "get").returns(Promise.resolve(cachedData));
+      sandbox.stub(feed, "fetchSpocs").returns(Promise.resolve("new"));
+      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
+      clock.tick(THIRTY_MINUTES - 1);
+
+      await feed.loadSpocs();
+
+      assert.deepEqual(feed.store.getState().DiscoveryStream.spocs.data, "old");
     });
   });
 
