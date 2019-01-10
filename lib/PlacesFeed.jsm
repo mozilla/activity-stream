@@ -286,15 +286,22 @@ class PlacesFeed {
   handoffSearchToAwesomebar({_target, data, meta}) {
     const urlBar = _target.browser.ownerGlobal.gURLBar;
 
-    if (!data.hiddenFocus) {
+    if (!data.hiddenFocus && !data.text) {
       // Do a normal focus of awesomebar and reset the in content search (remove fake focus styles).
       urlBar.focus();
       this.store.dispatch(ac.OnlyToOneContent({type: at.SHOW_SEARCH}, meta.fromTarget));
+      // We are done here. return early.
       return;
     }
 
-    // Focus the awesomebar without the style changes.
-    urlBar.hiddenFocus();
+    if (data.text) {
+      // Pass the provided text to the awesomebar.
+      urlBar.search(data.text);
+    } else {
+      // Focus the awesomebar without the style changes.
+      urlBar.hiddenFocus();
+    }
+
     const onKeydown = () => {
       // Once the user starts typing, we want to hide the in content search box
       // and show the focus styles on the awesomebar.
