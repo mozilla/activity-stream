@@ -5,6 +5,14 @@ import React from "react";
 export class _Hero extends React.PureComponent {
   render() {
     const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
+
+    // Handle a render before feed has been fetched by displaying nothing
+    if (!feed) {
+      return (
+        <div />
+      );
+    }
+
     let [heroRec, ...otherRecs] = feed.data.recommendations;
 
     // TODO: Let this count be determined by the endpoint
