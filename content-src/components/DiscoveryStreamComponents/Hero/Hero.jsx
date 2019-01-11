@@ -27,7 +27,9 @@ export class _Hero extends React.PureComponent {
     return (
       <div className={`ds-hero ds-hero-${this.props.style}`}>
         <div className="wrapper">
-          <img src={heroRec.image_src} />
+          <div className="img-wrapper">
+            <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`, border: `1px solid pink`}} />
+          </div>
           <div className="meta">
             <header>{heroRec.title}</header>
             <p>{heroRec.excerpt}</p>
