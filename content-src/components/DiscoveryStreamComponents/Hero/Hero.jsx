@@ -15,8 +15,7 @@ export class _Hero extends React.PureComponent {
 
     let [heroRec, ...otherRecs] = feed.data.recommendations;
 
-    // TODO: Let this count be determined by the endpoint
-    let cards = otherRecs.slice(1, 5).map((rec, index) => (
+    let cards = otherRecs.slice(1, this.props.items).map((rec, index) => (
       <DSCard
         key={`dscard-${index}`}
         image_src={rec.image_src}
