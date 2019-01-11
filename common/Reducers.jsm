@@ -466,8 +466,8 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
       return {
         ...prevState,
         spocs: {
-          spocs_endpoint: action.data || prevState.spocs.spocs_endpoint,
-          data: prevState.spocs.data,
+          ...INITIAL_STATE.DiscoveryStream.spocs,
+          spocs_endpoint: action.data || INITIAL_STATE.DiscoveryStream.spocs.spocs_endpoint,
         },
       };
     case at.DISCOVERY_STREAM_SPOCS_UPDATE:
@@ -475,9 +475,9 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
         return {
           ...prevState,
           spocs: {
-            spocs_endpoint: prevState.spocs.spocs_endpoint,
-            lastUpdated: action.data.lastUpdated || prevState.spocs.lastUpdated,
-            data: action.data.spocs || prevState.spocs.data,
+            ...prevState.spocs,
+            lastUpdated: action.data.lastUpdated,
+            data: action.data.spocs,
           },
         };
       }
