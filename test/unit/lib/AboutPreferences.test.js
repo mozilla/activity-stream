@@ -7,14 +7,16 @@ describe("AboutPreferences Feed", () => {
   let globals;
   let sandbox;
   let Sections;
+  let DiscoveryStream;
   let instance;
 
   beforeEach(() => {
     globals = new GlobalOverrider();
     sandbox = globals.sandbox;
     Sections = [];
+    DiscoveryStream = {config: {enabled: false}};
     instance = new AboutPreferences();
-    instance.store = {getState: () => ({Sections})};
+    instance.store = {getState: () => ({Sections, DiscoveryStream})};
   });
   afterEach(() => {
     globals.restore();
@@ -130,7 +132,6 @@ describe("AboutPreferences Feed", () => {
     let prefStructure;
     let Preferences;
     let gHomePane;
-    let discoveryStreamExperiment;
     const testRender = () => instance.renderPreferences({
       document: {
         createXULElement: sandbox.stub().returns(node),
@@ -141,7 +142,7 @@ describe("AboutPreferences Feed", () => {
       },
       Preferences,
       gHomePane,
-    }, strings, prefStructure, {values: {"discoverystream.config": discoveryStreamExperiment}});
+    }, strings, prefStructure, DiscoveryStream.config.enabled);
     beforeEach(() => {
       node = {
         appendChild: sandbox.stub().returnsArg(0),
@@ -154,7 +155,6 @@ describe("AboutPreferences Feed", () => {
       };
       strings = {};
       prefStructure = [];
-      discoveryStreamExperiment = JSON.stringify({enabled: false});
       Preferences = {
         add: sandbox.stub(),
         get: sandbox.stub().returns({}),
@@ -294,14 +294,12 @@ describe("AboutPreferences Feed", () => {
     });
     describe("#DiscoveryStream", () => {
       it("should not render the Discovery Stream section", () => {
-        discoveryStreamExperiment = JSON.stringify({enabled: false});
-
         testRender();
 
         assert.isFalse(node.textContent.includes("prefs_content_discovery"));
       });
       it("should render the Discovery Stream section", () => {
-        discoveryStreamExperiment = JSON.stringify({enabled: true});
+        DiscoveryStream = {config: {enabled: true}};
         const spy = sandbox.spy(instance, "renderPreferences");
 
         testRender();
@@ -315,7 +313,7 @@ describe("AboutPreferences Feed", () => {
         assert.propertyVal(node.style, "visibility", "hidden");
       });
       it("should toggle the Discovery Stream pref on button click", () => {
-        discoveryStreamExperiment = JSON.stringify({enabled: true});
+        DiscoveryStream = {config: {enabled: true}};
         const stub = sandbox.stub(Services.prefs, "clearUserPref");
 
         testRender();
@@ -326,15 +324,6 @@ describe("AboutPreferences Feed", () => {
 
         assert.calledOnce(stub);
         assert.calledWithExactly(stub, "browser.newtabpage.activity-stream.discoverystream.config");
-      });
-      it("should guard against invalid JSON", () => {
-        sandbox.stub(Cu, "reportError");
-
-        discoveryStreamExperiment = {enabled: true};
-
-        testRender();
-
-        assert.calledOnce(Cu.reportError);
       });
     });
   });
