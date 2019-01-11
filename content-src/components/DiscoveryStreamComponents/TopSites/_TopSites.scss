@@ -10,5 +10,73 @@
     .section-top-bar {
       display: none;
     }
+
+    .top-site-outer {
+      padding: 0 12px;
+    }
+
+    .top-sites-list {
+      margin: 0 -12px;
+    }
+  }
+
+  .hide-for-narrow {
+    display: none;
+  }
+}
+
+.ds-column-12 {
+  .ds-top-sites {
+    .hide-for-narrow {
+      display: inline-block;
+    }
+  }
+}
+
+.ds-column-8 {
+  .ds-top-sites {
+
+    .top-site-outer {
+      padding: 0 6px;
+    }
+
+    .top-sites-list {
+      margin: 0 -6px;
+    }
+
+    .top-site-inner {
+      .tile {
+        width: 78.67px;
+        height: 78.67px;
+      }
+
+      .title {
+        width: 78.67px;
+      }
+    }
+  }
+}
+
+.ds-column-4 {
+  .ds-top-sites {
+
+    .top-site-outer {
+      padding: 0 8px;
+    }
+
+    .top-sites-list {
+      margin: 0 -8px;
+    }
+
+    .top-site-inner {
+      .tile {
+        width: 82.67px;
+        height: 82.67px;
+      }
+
+      .title {
+        width: 82.67px;
+      }
+    }
   }
 }
