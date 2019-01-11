@@ -45,7 +45,7 @@ export class _Hero extends React.PureComponent {
 
 _Hero.defaultProps = {
   style: `border`,
-  items: 1,
+  items: 1, // Number of stories to display
 };
 
 export const Hero = connect(state => ({DiscoveryStream: state.DiscoveryStream}))(_Hero);
