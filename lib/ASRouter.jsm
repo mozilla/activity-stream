@@ -10,6 +10,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   AddonManager: "resource://gre/modules/AddonManager.jsm",
   UITour: "resource:///modules/UITour.jsm",
   FxAccounts: "resource://gre/modules/FxAccounts.jsm",
+  AppConstants: "resource://gre/modules/AppConstants.jsm",
+  OS: "resource://gre/modules/osfile.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm", {});
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm", {});
@@ -948,6 +950,20 @@ class _ASRouter {
     }
   }
 
+  // Windows specific calls to write attribution data
+  async _writeAttributionFile(data) {
+    let appDir = Services.dirsvc.get("LocalAppData", Ci.nsIFile);
+    let file = appDir.clone();
+    file.append(Services.appinfo.vendor || "mozilla");
+    file.append(AppConstants.MOZ_APP_NAME);
+
+    await OS.File.makeDir(file.path,
+        {from: appDir.path, ignoreExisting: true});
+
+    file.append("postSigningData");
+    await OS.File.writeAtomic(file.path, data);
+  }
+
   /**
    * forceAttribution - this function should only be called from within about:newtab#asrouter.
    * It forces the browser attribution to be set to something specified in asrouter admin
@@ -958,14 +974,21 @@ class _ASRouter {
   async forceAttribution(data) {
     // Extract the parameters from data that will make up the referrer url
     const {source, campaign, content} = data;
-    let appPath = Services.dirsvc.get("GreD", Ci.nsIFile).parent.parent.path;
-    let attributionSvc = Cc["@mozilla.org/mac-attribution;1"]
-                            .getService(Ci.nsIMacAttributionService);
+    if (AppConstants.platform === "win") {
+      const attributionData = `source=${source}&campaign=${campaign}&content=${content}`;
+      this._writeAttributionFile(encodeURIComponent(attributionData));
+    } else if (AppConstants.platform === "macosx") {
+      let appPath = Services.dirsvc.get("GreD", Ci.nsIFile).parent.parent.path;
+      let attributionSvc = Cc["@mozilla.org/mac-attribution;1"]
+        .getService(Ci.nsIMacAttributionService);
 
-    let referrer = `https://www.mozilla.org/anything/?utm_campaign=${campaign}&utm_source=${source}&utm_content=${encodeURIComponent(content)}`;
+      let referrer = `https://www.mozilla.org/anything/?utm_campaign=${campaign}&utm_source=${source}&utm_content=${encodeURIComponent(content)}`;
 
-    // This sets the Attribution to be the referrer
-    attributionSvc.setReferrerUrl(appPath, referrer, true);
+      // This sets the Attribution to be the referrer
+      attributionSvc.setReferrerUrl(appPath, referrer, true);
+    }
+
+    // Clear cache call is only possible in a testing environment
     let env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
     env.set("XPCSHELL_TEST_PROFILE_DIR", "testing");
 
