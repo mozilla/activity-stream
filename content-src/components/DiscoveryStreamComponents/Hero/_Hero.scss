@@ -18,10 +18,10 @@
   }
 
   // "2/3 width layout"
-  .column-5 &,
-  .column-6 &,
-  .column-7 &,
-  .column-8 & {
+  .ds-column-5 &,
+  .ds-column-6 &,
+  .ds-column-7 &,
+  .ds-column-8 & {
     .wrapper {
       display: flex;
       align-items: flex-start;
@@ -57,10 +57,10 @@
   }
 
   // "Full width layout"
-  .column-9 &,
-  .column-10 &,
-  .column-11 &,
-  .column-12 & {
+  .ds-column-9 &,
+  .ds-column-10 &,
+  .ds-column-11 &,
+  .ds-column-12 & {
     .wrapper {
       display: flex;
       align-items: flex-start;
