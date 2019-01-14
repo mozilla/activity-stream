@@ -20,7 +20,6 @@ export class _Hero extends React.PureComponent {
         key={`dscard-${index}`}
         image_src={rec.image_src}
         title={rec.title}
-        excerpt={rec.excerpt}
         source="TODO: SOURCE" />
     ));
 
