@@ -25,19 +25,22 @@ export class _Hero extends React.PureComponent {
     ));
 
     return (
-      <div className={`ds-hero ds-hero-${this.props.style}`}>
-        <a href={heroRec.url} className="wrapper">
-          <div className="img-wrapper">
-            <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
+      <div>
+        <div className="ds-header">{this.props.title}</div>
+        <div className={`ds-hero ds-hero-${this.props.style}`}>
+          <a href={heroRec.url} className="wrapper">
+            <div className="img-wrapper">
+              <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
+            </div>
+            <div className="meta">
+              <header>{heroRec.title}</header>
+              <p>{heroRec.excerpt}</p>
+              <p>TODO: SOURCE</p>
+            </div>
+          </a>
+          <div className="cards">
+            { cards }
           </div>
-          <div className="meta">
-            <header>{heroRec.title}</header>
-            <p>{heroRec.excerpt}</p>
-            <p>TODO: SOURCE</p>
-          </div>
-        </a>
-        <div className="cards">
-          { cards }
         </div>
       </div>
     );
