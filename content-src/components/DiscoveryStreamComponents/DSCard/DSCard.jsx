@@ -2,8 +2,10 @@ import React from "react";
 
 export class DSCard extends React.PureComponent {
   render() {
+    console.log(this.props);
+
     return (
-      <div className="ds-card">
+      <a href={this.props.url} className="ds-card">
         <div className="img-wrapper">
           <div className="img" style={{backgroundImage: `url(${this.props.image_src}`}} />
         </div>
@@ -12,7 +14,7 @@ export class DSCard extends React.PureComponent {
           <p>{this.props.excerpt}</p>
           <p>{this.props.source}</p>
         </div>
-      </div>
+      </a>
     );
   }
 }

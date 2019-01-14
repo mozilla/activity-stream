@@ -20,12 +20,13 @@ export class _Hero extends React.PureComponent {
         key={`dscard-${index}`}
         image_src={rec.image_src}
         title={rec.title}
+        url={rec.url}
         source="TODO: SOURCE" />
     ));
 
     return (
       <div className={`ds-hero ds-hero-${this.props.style}`}>
-        <div className="wrapper">
+        <a href={heroRec.url} className="wrapper">
           <div className="img-wrapper">
             <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
           </div>
@@ -34,7 +35,7 @@ export class _Hero extends React.PureComponent {
             <p>{heroRec.excerpt}</p>
             <p>TODO: SOURCE</p>
           </div>
-        </div>
+        </a>
         <div className="cards">
           { cards }
         </div>
