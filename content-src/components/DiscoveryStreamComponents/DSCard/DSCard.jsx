@@ -2,8 +2,6 @@ import React from "react";
 
 export class DSCard extends React.PureComponent {
   render() {
-    console.log(this.props);
-
     return (
       <a href={this.props.url} className="ds-card">
         <div className="img-wrapper">
