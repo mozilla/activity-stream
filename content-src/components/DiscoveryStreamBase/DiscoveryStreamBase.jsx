@@ -17,7 +17,10 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "CardGrid":
         return (<CardGrid feed={component.feed} />);
       case "Hero":
-        return (<Hero feed={component.feed} />);
+        return (<Hero
+          feed={component.feed}
+          style={component.properties.style}
+          items={component.properties.items} />);
       case "HorizontalRule":
         return (<HorizontalRule />);
       case "List":
@@ -30,9 +33,9 @@ export class _DiscoveryStreamBase extends React.PureComponent {
   render() {
     const {layout} = this.props.DiscoveryStream;
     return (
-      <div className="discovery-stream layout">
+      <div className="discovery-stream ds-layout">
         {layout.map((row, rowIndex) => (
-          <div key={`row-${rowIndex}`} className={`column column-${row.width}`}>
+          <div key={`row-${rowIndex}`} className={`ds-column ds-column-${row.width}`}>
             {row.components.map((component, componentIndex) => (
               <div key={`component-${componentIndex}`}>
                 {this.renderComponent(component)}
