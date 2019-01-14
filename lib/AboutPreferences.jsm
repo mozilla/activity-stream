@@ -260,7 +260,6 @@ this.AboutPreferences = class AboutPreferences {
       });
     });
 
-    console.log("DiscoveryStream enabled", discoveryStreamEnabled);
     if (discoveryStreamEnabled) {
       // If Discovery Stream is enabled hide Home Content options
       contentsGroup.style.visibility = "hidden";
