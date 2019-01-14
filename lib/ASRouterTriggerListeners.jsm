@@ -31,9 +31,11 @@ this.ASRouterTriggerListeners = new Map([
     async _checkStartupFinished(win) {
       if (!win.gBrowserInit.delayedStartupFinished) {
         await new Promise(resolve => {
-          let delayedStartupObserver = () => {
-            Services.obs.removeObserver(delayedStartupObserver, "browser-delayed-startup-finished");
-            resolve();
+          let delayedStartupObserver = (subject, topic) => {
+            if (topic === "browser-delayed-startup-finished" && subject === win) {
+              Services.obs.removeObserver(delayedStartupObserver, "browser-delayed-startup-finished");
+              resolve();
+            }
           };
 
           Services.obs.addObserver(delayedStartupObserver, "browser-delayed-startup-finished");

@@ -133,7 +133,7 @@ describe("ASRouterTriggerListeners", () => {
     describe("delayed startup finished", () => {
       beforeEach(() => {
         existingWindow.gBrowserInit.delayedStartupFinished = false;
-        sandbox.stub(global.Services.obs, "addObserver").callsFake(fn => fn());
+        sandbox.stub(global.Services.obs, "addObserver").callsFake(fn => fn(existingWindow, "browser-delayed-startup-finished"));
       });
       afterEach(() => {
         openURLListener.uninit();
