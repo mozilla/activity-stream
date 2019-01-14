@@ -13,6 +13,7 @@ XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 const HTML_NS = "http://www.w3.org/1999/xhtml";
 
 const PREFERENCES_LOADED_EVENT = "home-pane-loaded";
+const DISCOVERY_STREAM_CONFIG_PREF_NAME = "browser.newtabpage.activity-stream.discoverystream.config";
 
 // These "section" objects are formatted in a way to be similar to the ones from
 // SectionsManager to construct the preferences view.
@@ -281,7 +282,7 @@ this.AboutPreferences = class AboutPreferences {
         .addEventListener("click", () => {
           discoveryGroup.style.display = "none";
           contentsGroup.style.visibility = "visible";
-          Services.prefs.clearUserPref("browser.newtabpage.activity-stream.discoverystream.config");
+          Services.prefs.clearUserPref(DISCOVERY_STREAM_CONFIG_PREF_NAME);
         }, {once: true});
     }
 
