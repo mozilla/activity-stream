@@ -14,10 +14,7 @@ export class _Hero extends React.PureComponent {
     }
 
     let [heroRec, ...otherRecs] = feed.data.recommendations;
-
-    let truncateText = (text, cap) => {
-      return `${text.substring(0, cap)}${text.length > cap ? `...` : ``}`;
-    }
+    let truncateText = (text, cap) => `${text.substring(0, cap)}${text.length > cap ? `...` : ``}`;
 
     let cards = otherRecs.slice(1, this.props.items).map((rec, index) => (
       <DSCard
