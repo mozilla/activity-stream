@@ -30,15 +30,13 @@ $excerpt-line-height: 20;
     padding: 16px;
 
     .title {
-      // 2x line height (2 lines visible)
-      max-height: 2em * $header-line-height / $header-font-size;
-      overflow: hidden;
+      // show only 2 lines of copy
+      @include limit-visibile-lines(2, $header-line-height, $header-font-size);
     }
 
     .excerpt {
-      // 4x line height (4 lines visible)
-      max-height: 4em * $excerpt-line-height / $excerpt-font-size;
-      overflow: hidden;
+      // show only 4 lines of copy
+      @include limit-visibile-lines(4, $excerpt-line-height, $excerpt-font-size);
     }
   }
 
