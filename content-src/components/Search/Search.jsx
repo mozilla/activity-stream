@@ -41,8 +41,7 @@ export class _Search extends React.PureComponent {
     const hiddenFocus =  !isKeyboardClick;
     this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {hiddenFocus}}));
     this.props.dispatch({type: at.FOCUS_SEARCH});
-
-    // TODO: Send a telemetry ping. BUG 1514732
+    this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
   }
 
   onSearchHandoffKeyDown(event) {
@@ -50,8 +49,7 @@ export class _Search extends React.PureComponent {
       // We only care about key strokes that will produce a character.
       const text = event.key;
       this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
-
-      // TODO: Send a telemetry ping. BUG 1514732
+      this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
     }
   }
 
@@ -65,8 +63,7 @@ export class _Search extends React.PureComponent {
     event.preventDefault();
     const text = event.clipboardData.getData("Text");
     this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
-
-    // TODO: Send a telemetry ping. BUG 1514732
+    this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
   }
 
   componentWillMount() {
