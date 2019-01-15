@@ -6,23 +6,22 @@ export class _CardGrid extends React.PureComponent {
   render() {
     const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
 
-    let truncateText = (text, cap) => `${text.substring(0, cap)}${text.length > cap ? `...` : ``}`;
-
-    let cards = feed.data.recommendations.slice(1, this.props.items).map((rec, index) => (
-      <DSCard
-        key={`dscard-${index}`}
-        image_src={rec.image_src}
-        title={truncateText(rec.title, 44)}
-        url={rec.url}
-        source={truncateText(`TODO: SOURCE`, 22)} />
-    ));
-
     // Handle a render before feed has been fetched by displaying nothing
     if (!feed) {
       return (
         <div />
       );
     }
+
+    let cards = feed.data.recommendations.slice(0, this.props.items).map((rec, index) => (
+      <DSCard
+        key={`dscard-${index}`}
+        image_src={rec.image_src}
+        title={rec.title}
+        excerpt={rec.title}
+        url={rec.url}
+        source={`TODO: SOURCE`} />
+    ));
 
     return (
       <div className="ds-card-grid">
@@ -31,5 +30,10 @@ export class _CardGrid extends React.PureComponent {
     );
   }
 }
+
+_CardGrid.defaultProps = {
+  style: `border`,
+  items: 4, // Number of stories to display
+};
 
 export const CardGrid = connect(state => ({DiscoveryStream: state.DiscoveryStream}))(_CardGrid);
