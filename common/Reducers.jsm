@@ -60,6 +60,7 @@ const INITIAL_STATE = {
       spocs_endpoint: "",
       lastUpdated: null,
       data: [],
+      loaded: false,
     },
   },
   Search: {
@@ -478,6 +479,7 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
             ...prevState.spocs,
             lastUpdated: action.data.lastUpdated,
             data: action.data.spocs,
+            loaded: true,
           },
         };
       }

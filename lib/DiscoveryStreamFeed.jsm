@@ -160,15 +160,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     let {spocs} = cachedData;
     if (!spocs || !(Date.now() - spocs.lastUpdated < SPOCS_FEEDS_UPDATE_TIME)) {
       const spocsResponse = await this.fetchSpocs();
-      if (spocsResponse) {
-        spocs = {
-          lastUpdated: Date.now(),
-          data: spocsResponse,
-        };
-        await this.cache.set("spocs", spocs);
-      } else {
+      if (!spocsResponse) {
         Cu.reportError("No response for spocs_endpoint prop");
       }
+      spocs = {
+        lastUpdated: Date.now(),
+        data: spocsResponse || [],
+      };
+      await this.cache.set("spocs", spocs);
     }
 
     if (spocs) {
