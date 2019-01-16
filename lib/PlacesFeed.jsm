@@ -302,6 +302,13 @@ class PlacesFeed {
       urlBar.removeEventListener("mousedown", onDone);
       urlBar.removeEventListener("blur", onDone);
     };
+    const onKeydown = event => {
+      // If the Esc button is pressed, we are done. Show in-content search and cleanup.
+      if (event.key === "Escape") {
+        onDone();
+      }
+    };
+    urlBar.addEventListener("keydown", onKeydown);
     urlBar.addEventListener("mousedown", onDone);
     urlBar.addEventListener("blur", onDone);
   }
