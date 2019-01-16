@@ -26,7 +26,11 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "SectionTitle":
         return (<SectionTitle />);
       case "CardGrid":
-        return (<CardGrid feed={component.feed} />);
+        return (<CardGrid
+          title={component.header.title}
+          feed={component.feed}
+          style={component.properties.style}
+          items={component.properties.items} />);
       case "Hero":
         const feed = this.props.DiscoveryStream.feeds[component.feed.url];
         const items = Math.min(component.properties.items, MAX_ROWS_HERO);

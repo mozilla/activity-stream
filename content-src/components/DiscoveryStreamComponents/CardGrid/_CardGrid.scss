@@ -1,0 +1,11 @@
+.ds-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 24px;
+
+  .ds-card {
+    background: $white;
+    box-shadow: 0 1px 4px $grey-10-10;
+    border-radius: 4px;
+  }
+}
