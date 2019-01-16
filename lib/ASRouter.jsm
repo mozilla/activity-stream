@@ -951,6 +951,9 @@ class _ASRouter {
   }
 
   // Windows specific calls to write attribution data
+  // Used by `forceAttribution` to set required targeting attributes for
+  // RTAMO messages. This should only be called from within about:newtab#asrouter
+  /* istanbul ignore next */
   async _writeAttributionFile(data) {
     let appDir = Services.dirsvc.get("LocalAppData", Ci.nsIFile);
     let file = appDir.clone();
@@ -968,9 +971,10 @@ class _ASRouter {
    * forceAttribution - this function should only be called from within about:newtab#asrouter.
    * It forces the browser attribution to be set to something specified in asrouter admin
    * tools, and reloads the providers in order to get messages that are dependant on this
-   * attribution data (see Return to AMO flow in bug 1475354 for example). Note - only works with OSX
+   * attribution data (see Return to AMO flow in bug 1475354 for example). Note - OSX and Windows only
    * @param {data} Object an object containing the attribtion data that came from asrouter admin page
    */
+  /* istanbul ignore next */
   async forceAttribution(data) {
     // Extract the parameters from data that will make up the referrer url
     const {source, campaign, content} = data;
