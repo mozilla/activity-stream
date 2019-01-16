@@ -2,10 +2,21 @@ import {CardGrid} from "content-src/components/DiscoveryStreamComponents/CardGri
 import {connect} from "react-redux";
 import {Hero} from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
 import {HorizontalRule} from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
+import {ImpressionStats} from "content-src/components/DiscoveryStreamImpressionStats/ImpressionStats";
 import {List} from "content-src/components/DiscoveryStreamComponents/List/List";
 import React from "react";
 import {SectionTitle} from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
 import {TopSites} from "content-src/components/DiscoveryStreamComponents/TopSites/TopSites";
+
+// According to the Pocket API endpoint specs, `component.properties.items` is a required property with following values:
+//   - Lists 1-5 items
+//   - Hero 1-5 items
+//   - CardGrid 1-8 items
+// To enforce that, we define various maximium items for individual components as an extra check.
+// Note that these values are subject to the future changes of the specs.
+const MAX_ROWS_HERO = 5;
+// const MAX_ROWS_LISTS = 5;
+// const MAX_ROWS_CARDGRID = 8;
 
 export class _DiscoveryStreamBase extends React.PureComponent {
   renderComponent(component) {
@@ -17,11 +28,18 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "CardGrid":
         return (<CardGrid feed={component.feed} />);
       case "Hero":
-        return (<Hero
-          title={component.header.title}
-          feed={component.feed}
-          style={component.properties.style}
-          items={component.properties.items} />);
+        const feed = this.props.DiscoveryStream.feeds[component.feed.url];
+        const items = Math.min(component.properties.items, MAX_ROWS_HERO);
+        const rows = feed ? feed.data.recommendations.slice(0, items) : [];
+        return (
+          <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
+            <Hero
+              title={component.header.title}
+              feed={component.feed}
+              style={component.properties.style}
+              items={items} />
+          </ImpressionStats>
+        );
       case "HorizontalRule":
         return (<HorizontalRule />);
       case "List":
