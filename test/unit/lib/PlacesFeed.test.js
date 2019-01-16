@@ -309,7 +309,7 @@ describe("PlacesFeed", () => {
     it("should call handoffSearchToAwesomebar on HANDOFF_SEARCH_TO_AWESOMEBAR", () => {
       const action = {
         type: at.HANDOFF_SEARCH_TO_AWESOMEBAR,
-        data: {hiddenFocus: false},
+        data: {text: "f"},
         meta: {fromTarget: {}},
         _target: {browser: {ownerGlobal: {gURLBar: {focus: () => {}}}}},
       };
@@ -357,6 +357,29 @@ describe("PlacesFeed", () => {
 
       // Now call blur listener.
       listeners.blur();
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWith(feed.store.dispatch, {
+        meta: {
+          from: "ActivityStream:Main",
+          skipMain: true,
+          to: "ActivityStream:Content",
+          toTarget: {},
+        },
+        type: "SHOW_SEARCH",
+      });
+    });
+    it("should SHOW_SEARCH on ESC keydown", () => {
+      feed.handoffSearchToAwesomebar({
+        _target: {browser: {ownerGlobal: {gURLBar: fakeUrlBar}}},
+        data: {text: "f"},
+        meta: {fromTarget: {}},
+      });
+      assert.calledOnce(fakeUrlBar.search);
+      assert.calledWith(fakeUrlBar.search, "f");
+      assert.notCalled(fakeUrlBar.focus);
+
+      // Now call ESC keydown.
+      listeners.keydown({key: "Escape"});
       assert.calledOnce(feed.store.dispatch);
       assert.calledWith(feed.store.dispatch, {
         meta: {

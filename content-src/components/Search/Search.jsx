@@ -29,6 +29,15 @@ export class _Search extends React.PureComponent {
     window.gContentSearchController.search(event);
   }
 
+  doSearchHandoff(text) {
+    this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
+    this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
+    if (text) {
+      // We don't hide the in-content search if there is no text (user hit <Enter>)
+      this.props.dispatch({type: at.HIDE_SEARCH});
+    }
+  }
+
   onSearchHandoffClick(event) {
     // When search hand-off is enabled, we render a big button that is styled to
     // look like a search textbox. If the button is clicked with the mouse, we
@@ -39,8 +48,7 @@ export class _Search extends React.PureComponent {
     event.preventDefault();
     const isKeyboardClick = event.clientX === 0 && event.clientY === 0;
     if (isKeyboardClick) {
-      this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR}));
-      this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
+      this.doSearchHandoff();
     } else {
       this._searchHandoffButton.focus();
     }
@@ -49,10 +57,7 @@ export class _Search extends React.PureComponent {
   onSearchHandoffKeyDown(event) {
     if (event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
       // We only care about key strokes that will produce a character.
-      const text = event.key;
-      this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
-      this.props.dispatch({type: at.HIDE_SEARCH});
-      this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
+      this.doSearchHandoff(event.key);
     }
   }
 
@@ -64,10 +69,7 @@ export class _Search extends React.PureComponent {
       return;
     }
     event.preventDefault();
-    const text = event.clipboardData.getData("Text");
-    this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
-    this.props.dispatch({type: at.HIDE_SEARCH});
-    this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
+    this.doSearchHandoff(event.clipboardData.getData("Text"));
   }
 
   componentWillMount() {
