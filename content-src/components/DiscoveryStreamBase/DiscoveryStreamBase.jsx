@@ -47,7 +47,9 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "HorizontalRule":
         return (<HorizontalRule />);
       case "List":
-        return (<List feed={component.feed} />);
+        return (<List
+          feed={component.feed}
+          header={component.header} />);
       default:
         return (<div>{component.type}</div>);
     }
