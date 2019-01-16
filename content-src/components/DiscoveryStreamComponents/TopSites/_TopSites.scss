@@ -29,9 +29,9 @@
 
 // Only show 8 cards for the full row.
 // XXX hide-for-narrow is wrapping a previous functionality, can do better.
-.ds-column-9 &,
-.ds-column-10 &,
-.ds-column-11 &,
+.ds-column-9,
+.ds-column-10,
+.ds-column-11,
 .ds-column-12 {
   .ds-top-sites {
     .hide-for-narrow {
@@ -41,9 +41,9 @@
 }
 
 // Size overrides for topsites in the 2/3 view.
-.ds-column-5 &,
-.ds-column-6 &,
-.ds-column-7 &,
+.ds-column-5,
+.ds-column-6,
+.ds-column-7,
 .ds-column-8 {
   .ds-top-sites {
 
@@ -71,9 +71,9 @@
 }
 
 // Size overrides for topsites in the 1/3 view.
-.ds-column-1 &,
-.ds-column-2 &,
-.ds-column-3 &,
+.ds-column-1,
+.ds-column-2,
+.ds-column-3,
 .ds-column-4 {
   .ds-top-sites {
 
