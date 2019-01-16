@@ -32,9 +32,12 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           data={component.data}
           feed={component.feed}
           style={component.properties.style}
+          type={component.type}
+          dispatch={this.props.dispatch}
           items={component.properties.items} />);
       case "Hero":
-        const items = Math.min(component.properties.items, MAX_ROWS_HERO);
+        const items = Math.min(MAX_ROWS_HERO,
+          component.properties.items || component.data ? component.data.recommendations.length : 0);
         const rows = component.data ? component.data.recommendations.slice(0, items) : [];
         return (
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
@@ -42,6 +45,8 @@ export class _DiscoveryStreamBase extends React.PureComponent {
               title={component.header && component.header.title}
               data={component.data}
               style={component.properties.style}
+              type={component.type}
+              dispatch={this.props.dispatch}
               items={items} />
           </ImpressionStats>
         );
