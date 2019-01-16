@@ -19,7 +19,7 @@ export class CardGrid extends React.PureComponent {
         title={rec.title}
         excerpt={rec.title}
         url={rec.url}
-        source={`TODO: SOURCE`} />
+        source={rec.domain} />
     ));
 
     return (
