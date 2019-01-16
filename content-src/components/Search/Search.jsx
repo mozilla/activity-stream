@@ -31,17 +31,19 @@ export class _Search extends React.PureComponent {
 
   onSearchHandoffClick(event) {
     // When search hand-off is enabled, we render a big button that is styled to
-    // look like a search textbox. If the button is clicked with the mouse, we style
-    // the button as if it was a focused search box and show a fake cursor but
-    // really focus the awesomebar without the focus styles.
+    // look like a search textbox. If the button is clicked with the mouse, we
+    // focus it. If the user types, transfer focus to awesomebar.
     // If the button is clicked from the keyboard, we focus the awesomebar normally.
     // This is to minimize confusion with users navigating with the keyboard and
     // users using assistive technologoy.
+    event.preventDefault();
     const isKeyboardClick = event.clientX === 0 && event.clientY === 0;
-    const hiddenFocus =  !isKeyboardClick;
-    this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {hiddenFocus}}));
-    this.props.dispatch({type: at.FOCUS_SEARCH});
-    this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
+    if (isKeyboardClick) {
+      this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR}));
+      this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
+    } else {
+      this._searchHandoffButton.focus();
+    }
   }
 
   onSearchHandoffKeyDown(event) {
@@ -49,6 +51,7 @@ export class _Search extends React.PureComponent {
       // We only care about key strokes that will produce a character.
       const text = event.key;
       this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
+      this.props.dispatch({type: at.HIDE_SEARCH});
       this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
     }
   }
@@ -63,6 +66,7 @@ export class _Search extends React.PureComponent {
     event.preventDefault();
     const text = event.clipboardData.getData("Text");
     this.props.dispatch(ac.OnlyToMain({type: at.HANDOFF_SEARCH_TO_AWESOMEBAR, data: {text}}));
+    this.props.dispatch({type: at.HIDE_SEARCH});
     this.props.dispatch(ac.UserEvent({event: "SEARCH_HANDOFF"}));
   }
 
@@ -124,7 +128,6 @@ export class _Search extends React.PureComponent {
     const wrapperClassName = [
       "search-wrapper",
       this.props.hide && "search-hidden",
-      this.props.focus && "search-active",
     ].filter(v => v).join(" ");
 
     return (<div className={wrapperClassName}>
