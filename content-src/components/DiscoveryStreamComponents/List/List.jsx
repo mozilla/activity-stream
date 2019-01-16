@@ -46,7 +46,7 @@ export function _List(props) {
 
   return (
     <div>
-      <h3 className="ds-list-title">{props.header.title}</h3>
+      <h3 className="ds-list-title">{props.header && props.header.title}</h3>
       <hr className="ds-list-border" />
       <ul className="ds-list">{recMarkup}</ul>
     </div>

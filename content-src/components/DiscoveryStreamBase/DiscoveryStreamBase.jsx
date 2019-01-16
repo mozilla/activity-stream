@@ -37,7 +37,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           items={component.properties.items} />);
       case "Hero":
         const items = Math.min(MAX_ROWS_HERO,
-          component.properties.items || component.data ? component.data.recommendations.length : 0);
+          component.properties.items || (component.data ? component.data.recommendations.length : 0));
         const rows = component.data ? component.data.recommendations.slice(0, items) : [];
         return (
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
