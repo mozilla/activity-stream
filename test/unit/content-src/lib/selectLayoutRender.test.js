@@ -1,5 +1,6 @@
 import {combineReducers, createStore} from "redux";
 import {actionTypes as at} from "common/Actions.jsm";
+import {GlobalOverrider} from "test/unit/utils";
 import {reducers} from "common/Reducers.jsm";
 import {selectLayoutRender} from "content-src/lib/selectLayoutRender";
 
@@ -8,9 +9,15 @@ const FAKE_FEEDS = {"foo.com": {data: ["foo", "bar"]}};
 
 describe("selectLayoutRender", () => {
   let store;
+  let globals;
 
   beforeEach(() => {
+    globals = new GlobalOverrider();
     store = createStore(combineReducers(reducers));
+  });
+
+  afterEach(() => {
+    globals.restore();
   });
 
   it("should return an empty array given initial state", () => {
@@ -38,5 +45,39 @@ describe("selectLayoutRender", () => {
     assert.lengthOf(result, 1);
     assert.propertyVal(result[0], "width", 3);
     assert.deepEqual(result[0].components[0], FAKE_LAYOUT[0].components[0]);
+  });
+
+  it("should return spoc result for rolls below the probability", () => {
+    const fakeSpocConfig = {positions: [{index: 0}, {index: 1}], probability: 0.5};
+    const fakeLayout = [{width: 3, components: [{type: "foo", feed: {url: "foo.com"}, spocs: fakeSpocConfig}]}];
+    const fakeSpocsData = {lastUpdated: 0, spocs: {spocs: ["foo", "bar"]}};
+
+    store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
+    store.dispatch({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: FAKE_FEEDS});
+    store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: fakeSpocsData});
+    globals.sandbox.stub(global.Math, "random").returns(0.1);
+
+    const result = selectLayoutRender(store.getState());
+
+    assert.lengthOf(result, 1);
+    assert.deepEqual(result[0].components[0].spocs.positions[0], {index: 0, result: "foo"});
+    assert.deepEqual(result[0].components[0].spocs.positions[1], {index: 1, result: "bar"});
+  });
+
+  it("should not return spoc result for rolls above the probability", () => {
+    const fakeSpocConfig = {positions: [{index: 0}, {index: 1}], probability: 0.5};
+    const fakeLayout = [{width: 3, components: [{type: "foo", feed: {url: "foo.com"}, spocs: fakeSpocConfig}]}];
+    const fakeSpocsData = {lastUpdated: 0, spocs: {spocs: ["foo", "bar"]}};
+
+    store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
+    store.dispatch({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: FAKE_FEEDS});
+    store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: fakeSpocsData});
+    globals.sandbox.stub(global.Math, "random").returns(0.6);
+
+    const result = selectLayoutRender(store.getState());
+
+    assert.lengthOf(result, 1);
+    assert.deepEqual(result[0].components[0].spocs.positions[0], {index: 0});
+    assert.deepEqual(result[0].components[0].spocs.positions[1], {index: 1});
   });
 });

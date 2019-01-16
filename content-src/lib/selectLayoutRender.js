@@ -1,5 +1,19 @@
 import {createSelector} from "reselect";
 
+function calculateSpocs(component, spocs) {
+  let spocIndex = 0;
+  return component.spocs.positions.map(position => {
+    const rickRoll = Math.random();
+    if (rickRoll <= component.spocs.probability) {
+      return {
+        ...position,
+        result: spocs.data.spocs[spocIndex++],
+      };
+    }
+    return position;
+  });
+}
+
 export const selectLayoutRender = createSelector(
   // Selects layout, feeds, spocs so that we only recompute if
   // any of these values change.
@@ -21,6 +35,15 @@ export const selectLayoutRender = createSelector(
         if (!component.feed || !feeds[component.feed.url]) {
           return component;
         }
+
+        // Calculate if we should display a spoc or not.
+        if (component.spocs) {
+          component.spocs = {
+            ...component.spocs,
+            positions: calculateSpocs(component, spocs),
+          };
+        }
+
         return {...component, data: feeds[component.feed.url].data};
       }),
     }));
