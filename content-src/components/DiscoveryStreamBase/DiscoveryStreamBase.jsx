@@ -6,6 +6,7 @@ import {ImpressionStats} from "content-src/components/DiscoveryStreamImpressionS
 import {List} from "content-src/components/DiscoveryStreamComponents/List/List";
 import React from "react";
 import {SectionTitle} from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
+import {selectLayoutRender} from "content-src/lib/selectLayoutRender";
 import {TopSites} from "content-src/components/DiscoveryStreamComponents/TopSites/TopSites";
 
 // According to the Pocket API endpoint specs, `component.properties.items` is a required property with following values:
@@ -27,19 +28,19 @@ export class _DiscoveryStreamBase extends React.PureComponent {
         return (<SectionTitle />);
       case "CardGrid":
         return (<CardGrid
-          title={component.header.title}
+          title={component.header && component.header.title}
+          data={component.data}
           feed={component.feed}
           style={component.properties.style}
           items={component.properties.items} />);
       case "Hero":
-        const feed = this.props.DiscoveryStream.feeds[component.feed.url];
         const items = Math.min(component.properties.items, MAX_ROWS_HERO);
-        const rows = feed ? feed.data.recommendations.slice(0, items) : [];
+        const rows = component.data ? component.data.recommendations.slice(0, items) : [];
         return (
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
             <Hero
-              title={component.header.title}
-              feed={component.feed}
+              title={component.header && component.header.title}
+              data={component.data}
               style={component.properties.style}
               items={items} />
           </ImpressionStats>
@@ -56,10 +57,10 @@ export class _DiscoveryStreamBase extends React.PureComponent {
   }
 
   render() {
-    const {layout} = this.props.DiscoveryStream;
+    const {layoutRender} = this.props.DiscoveryStream;
     return (
       <div className="discovery-stream ds-layout">
-        {layout.map((row, rowIndex) => (
+        {layoutRender.map((row, rowIndex) => (
           <div key={`row-${rowIndex}`} className={`ds-column ds-column-${row.width}`}>
             {row.components.map((component, componentIndex) => (
               <div key={`component-${componentIndex}`}>
@@ -73,4 +74,13 @@ export class _DiscoveryStreamBase extends React.PureComponent {
   }
 }
 
-export const DiscoveryStreamBase = connect(state => ({DiscoveryStream: state.DiscoveryStream}))(_DiscoveryStreamBase);
+function transform(state) {
+  return {
+    DiscoveryStream: {
+      ...state.DiscoveryStream,
+      layoutRender: selectLayoutRender(state),
+    },
+  };
+}
+
+export const DiscoveryStreamBase = connect(transform)(_DiscoveryStreamBase);

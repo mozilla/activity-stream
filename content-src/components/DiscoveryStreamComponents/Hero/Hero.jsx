@@ -1,19 +1,18 @@
-import {connect} from "react-redux";
 import {DSCard} from "../DSCard/DSCard.jsx";
 import React from "react";
 
-export class _Hero extends React.PureComponent {
+export class Hero extends React.PureComponent {
   render() {
-    const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
+    const {data} = this.props;
 
     // Handle a render before feed has been fetched by displaying nothing
-    if (!feed) {
+    if (!data || !data.recommendations) {
       return (
         <div />
       );
     }
 
-    let [heroRec, ...otherRecs] = feed.data.recommendations;
+    let [heroRec, ...otherRecs] = data.recommendations;
     let truncateText = (text, cap) => `${text.substring(0, cap)}${text.length > cap ? `...` : ``}`;
 
     let cards = otherRecs.slice(1, this.props.items).map((rec, index) => (
@@ -48,9 +47,8 @@ export class _Hero extends React.PureComponent {
   }
 }
 
-_Hero.defaultProps = {
+Hero.defaultProps = {
+  data: {},
   style: `border`,
   items: 1, // Number of stories to display
 };
-
-export const Hero = connect(state => ({DiscoveryStream: state.DiscoveryStream}))(_Hero);
