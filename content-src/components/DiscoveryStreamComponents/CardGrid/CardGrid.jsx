@@ -1,19 +1,18 @@
-import {connect} from "react-redux";
 import {DSCard} from "../DSCard/DSCard.jsx";
 import React from "react";
 
-export class _CardGrid extends React.PureComponent {
+export class CardGrid extends React.PureComponent {
   render() {
-    const feed = this.props.DiscoveryStream.feeds[this.props.feed.url];
+    const {data} = this.props;
 
     // Handle a render before feed has been fetched by displaying nothing
-    if (!feed) {
+    if (!data) {
       return (
         <div />
       );
     }
 
-    let cards = feed.data.recommendations.slice(0, this.props.items).map((rec, index) => (
+    let cards = data.recommendations.slice(0, this.props.items).map((rec, index) => (
       <DSCard
         key={`dscard-${index}`}
         image_src={rec.image_src}
@@ -31,9 +30,7 @@ export class _CardGrid extends React.PureComponent {
   }
 }
 
-_CardGrid.defaultProps = {
+CardGrid.defaultProps = {
   style: `border`,
   items: 4, // Number of stories to display
 };
-
-export const CardGrid = connect(state => ({DiscoveryStream: state.DiscoveryStream}))(_CardGrid);
