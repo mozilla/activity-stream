@@ -84,33 +84,45 @@ describe("<Search>", () => {
       const dispatch = sinon.spy();
       const wrapper = shallowWithIntl(<Search {...DEFAULT_PROPS} handoffEnabled={true} dispatch={dispatch} />);
       wrapper.find(".search-handoff-button").simulate("click", {clientX: 101, clientY: 102});
+      assert.calledThrice(dispatch);
       assert.calledWith(dispatch, {
         data: {hiddenFocus: true},
         meta: {from: "ActivityStream:Content", skipLocal: true, to: "ActivityStream:Main"},
         type: "HANDOFF_SEARCH_TO_AWESOMEBAR",
       });
       assert.calledWith(dispatch, {type: "FOCUS_SEARCH"});
+      const [action] = dispatch.thirdCall.args;
+      assert.isUserEventAction(action);
+      assert.propertyVal(action.data, "event", "SEARCH_HANDOFF");
     });
     it("should hand-off search when button is clicked with keyboard", () => {
       const dispatch = sinon.spy();
       const wrapper = shallowWithIntl(<Search {...DEFAULT_PROPS} handoffEnabled={true} dispatch={dispatch} />);
       wrapper.find(".search-handoff-button").simulate("click", {clientX: 0, clientY: 0});
+      assert.calledThrice(dispatch);
       assert.calledWith(dispatch, {
         data: {hiddenFocus: false},
         meta: {from: "ActivityStream:Content", skipLocal: true, to: "ActivityStream:Main"},
         type: "HANDOFF_SEARCH_TO_AWESOMEBAR",
       });
       assert.calledWith(dispatch, {type: "FOCUS_SEARCH"});
+      const [action] = dispatch.thirdCall.args;
+      assert.isUserEventAction(action);
+      assert.propertyVal(action.data, "event", "SEARCH_HANDOFF");
     });
     it("should hand-off search when user types", () => {
       const dispatch = sinon.spy();
       const wrapper = shallowWithIntl(<Search {...DEFAULT_PROPS} handoffEnabled={true} dispatch={dispatch} />);
       wrapper.find(".search-handoff-button").simulate("keydown", {key: "f"});
+      assert.calledTwice(dispatch);
       assert.calledWith(dispatch, {
         data: {text: "f"},
         meta: {from: "ActivityStream:Content", skipLocal: true, to: "ActivityStream:Main"},
         type: "HANDOFF_SEARCH_TO_AWESOMEBAR",
       });
+      const [action] = dispatch.secondCall.args;
+      assert.isUserEventAction(action);
+      assert.propertyVal(action.data, "event", "SEARCH_HANDOFF");
     });
     it("should NOT hand-off search when user types with with ctrl pressed", () => {
       const dispatch = sinon.spy();
@@ -140,11 +152,15 @@ describe("<Search>", () => {
         },
         preventDefault: () => {},
       });
+      assert.calledTwice(dispatch);
       assert.calledWith(dispatch, {
         data: {text: "some copied text"},
         meta: {from: "ActivityStream:Content", skipLocal: true, to: "ActivityStream:Main"},
         type: "HANDOFF_SEARCH_TO_AWESOMEBAR",
       });
+      const [action] = dispatch.secondCall.args;
+      assert.isUserEventAction(action);
+      assert.propertyVal(action.data, "event", "SEARCH_HANDOFF");
     });
   });
 });
