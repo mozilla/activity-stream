@@ -75,7 +75,6 @@ export class _Search extends React.PureComponent {
 
   cancelEvent(event) {
     event.preventDefault();
-    return false;
   }
 
   componentWillMount() {
