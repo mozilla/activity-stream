@@ -9,17 +9,19 @@ export class Hero extends React.PureComponent {
   }
 
   onLinkClick(event) {
-    this.props.dispatch(ac.UserEvent({
-      event: "CLICK",
-      source: this.props.type.toUpperCase(),
-      action_position: 0,
-    }));
+    if (this.props.dispatch) {
+      this.props.dispatch(ac.UserEvent({
+        event: "CLICK",
+        source: this.props.type.toUpperCase(),
+        action_position: 0,
+      }));
 
-    this.props.dispatch(ac.ImpressionStats({
-      source: this.props.type.toUpperCase(),
-      click: 0,
-      tiles: [{id: this.heroRec.id, pos: 0}],
-    }));
+      this.props.dispatch(ac.ImpressionStats({
+        source: this.props.type.toUpperCase(),
+        click: 0,
+        tiles: [{id: this.heroRec.id, pos: 0}],
+      }));
+    }
   }
 
   render() {
