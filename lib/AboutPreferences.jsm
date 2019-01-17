@@ -10,6 +10,10 @@ const {actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/
 
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
+XPCOMUtils.defineLazyModuleGetters(this, {
+  PreferenceExperiments: "resource://normandy/lib/PreferenceExperiments.jsm",
+});
+
 const HTML_NS = "http://www.w3.org/1999/xhtml";
 
 const PREFERENCES_LOADED_EVENT = "home-pane-loaded";
@@ -279,10 +283,18 @@ this.AboutPreferences = class AboutPreferences {
       contentDiscoveryButton.textContent = formatString("prefs_content_discovery_button");
       createAppend("hbox", discoveryGroup)
         .appendChild(contentDiscoveryButton)
-        .addEventListener("click", () => {
-          discoveryGroup.style.display = "none";
-          contentsGroup.style.visibility = "visible";
-          Services.prefs.clearUserPref(DISCOVERY_STREAM_CONFIG_PREF_NAME);
+        .addEventListener("click", async () => {
+          const activeExperiments = await PreferenceExperiments.getAllActive();
+          const experiment = activeExperiments.find(exp => exp.preferenceName === DISCOVERY_STREAM_CONFIG_PREF_NAME);
+          if (experiment) {
+            await PreferenceExperiments.stop(experiment.name, {
+              resetValue: true,
+              reason: "individual-opt-out",
+            });
+
+            discoveryGroup.style.display = "none";
+            contentsGroup.style.visibility = "visible";
+          }
         }, {once: true});
     }
 
