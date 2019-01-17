@@ -10,13 +10,13 @@ import {selectLayoutRender} from "content-src/lib/selectLayoutRender";
 import {TopSites} from "content-src/components/DiscoveryStreamComponents/TopSites/TopSites";
 
 // According to the Pocket API endpoint specs, `component.properties.items` is a required property with following values:
-//   - Lists 1-5 items
+//   - List 1-6 items
 //   - Hero 1-5 items
 //   - CardGrid 1-8 items
 // To enforce that, we define various maximium items for individual components as an extra check.
 // Note that these values are subject to the future changes of the specs.
 const MAX_ROWS_HERO = 5;
-const MAX_ROWS_LISTS = 5;
+const MAX_ROWS_LIST = 6;
 const MAX_ROWS_CARDGRID = 8;
 
 const ALLOWED_CSS_URL_PREFIXES = ["chrome://", "resource://", "https://img-getpocket.cdn.mozilla.net/"];
@@ -140,7 +140,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "HorizontalRule":
         return (<HorizontalRule />);
       case "List":
-        rows = this.extractRows(component, MAX_ROWS_LISTS);
+        rows = this.extractRows(component, MAX_ROWS_LIST);
         return (
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
             <List
