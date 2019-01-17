@@ -4,7 +4,7 @@ function calculateSpocs(component, spocs) {
   let spocIndex = 0;
   return component.spocs.positions.map(position => {
     const rickRoll = Math.random();
-    if (rickRoll <= component.spocs.probability) {
+    if (spocs.data.spocs[spocIndex] && rickRoll <= component.spocs.probability) {
       return {
         ...position,
         result: spocs.data.spocs[spocIndex++],
@@ -37,7 +37,7 @@ export const selectLayoutRender = createSelector(
         }
 
         // Calculate if we should display a spoc or not.
-        if (component.spocs) {
+        if (component.spocs && spocs.data.spocs && spocs.data.spocs.length) {
           component.spocs = {
             ...component.spocs,
             positions: calculateSpocs(component, spocs),

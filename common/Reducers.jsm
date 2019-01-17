@@ -59,7 +59,7 @@ const INITIAL_STATE = {
     spocs: {
       spocs_endpoint: "",
       lastUpdated: null,
-      data: [],
+      data: {}, // {spocs: []}
     },
   },
   Search: {
