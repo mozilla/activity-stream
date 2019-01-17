@@ -31,7 +31,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           title={component.header && component.header.title}
           data={component.data}
           feed={component.feed}
-          style={component.properties.style}
+          border={component.properties.border}
           type={component.type}
           dispatch={this.props.dispatch}
           items={component.properties.items} />);
@@ -44,7 +44,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             <Hero
               title={component.header && component.header.title}
               data={component.data}
-              style={component.properties.style}
+              border={component.properties.border}
               type={component.type}
               dispatch={this.props.dispatch}
               items={items} />

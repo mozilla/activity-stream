@@ -53,7 +53,7 @@ export class Hero extends React.PureComponent {
     return (
       <div>
         <div className="ds-header">{this.props.title}</div>
-        <div className={`ds-hero ds-hero-${this.props.style}`}>
+        <div className={`ds-hero ds-hero-${this.props.border}`}>
           <a href={heroRec.url} className="wrapper" onClick={this.onLinkClick}>
             <div className="img-wrapper">
               <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
@@ -75,6 +75,6 @@ export class Hero extends React.PureComponent {
 
 Hero.defaultProps = {
   data: {},
-  style: `border`,
+  border: `border`,
   items: 1, // Number of stories to display
 };
