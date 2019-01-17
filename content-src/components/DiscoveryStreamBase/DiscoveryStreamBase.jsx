@@ -16,29 +16,43 @@ import {TopSites} from "content-src/components/DiscoveryStreamComponents/TopSite
 // To enforce that, we define various maximium items for individual components as an extra check.
 // Note that these values are subject to the future changes of the specs.
 const MAX_ROWS_HERO = 5;
-// const MAX_ROWS_LISTS = 5;
-// const MAX_ROWS_CARDGRID = 8;
+const MAX_ROWS_LISTS = 5;
+const MAX_ROWS_CARDGRID = 8;
 
 export class _DiscoveryStreamBase extends React.PureComponent {
+  extractRows(component, limit) {
+    if (component.data && component.data.recommendations) {
+      const items = Math.min(limit, component.properties.items || component.data.recommendations.length);
+      return component.data.recommendations.slice(0, items);
+    }
+
+    return [];
+  }
+
   renderComponent(component) {
+    let rows;
+
     switch (component.type) {
       case "TopSites":
         return (<TopSites />);
       case "SectionTitle":
         return (<SectionTitle />);
       case "CardGrid":
-        return (<CardGrid
-          title={component.header && component.header.title}
-          data={component.data}
-          feed={component.feed}
-          style={component.properties.style}
-          type={component.type}
-          dispatch={this.props.dispatch}
-          items={component.properties.items} />);
+        rows = this.extractRows(component, MAX_ROWS_CARDGRID);
+        return (
+          <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
+            <CardGrid
+              title={component.header && component.header.title}
+              data={component.data}
+              feed={component.feed}
+              style={component.properties.style}
+              type={component.type}
+              dispatch={this.props.dispatch}
+              items={component.properties.items} />
+          </ImpressionStats>
+        );
       case "Hero":
-        const items = Math.min(MAX_ROWS_HERO,
-          component.properties.items || (component.data ? component.data.recommendations.length : 0));
-        const rows = component.data ? component.data.recommendations.slice(0, items) : [];
+        rows = this.extractRows(component, MAX_ROWS_HERO);
         return (
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
             <Hero
@@ -47,15 +61,21 @@ export class _DiscoveryStreamBase extends React.PureComponent {
               style={component.properties.style}
               type={component.type}
               dispatch={this.props.dispatch}
-              items={items} />
+              items={component.properties.items} />
           </ImpressionStats>
         );
       case "HorizontalRule":
         return (<HorizontalRule />);
       case "List":
-        return (<List
-          feed={component.feed}
-          header={component.header} />);
+        rows = this.extractRows(component, MAX_ROWS_LISTS);
+        return (
+          <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
+            <List
+              feed={component.feed}
+              type={component.type}
+              header={component.header} />
+          </ImpressionStats>
+        );
       default:
         return (<div>{component.type}</div>);
     }
