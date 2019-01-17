@@ -19,9 +19,13 @@
 
   // "Full width layout"
   .ds-column-9 &,
-  .dscolumn-10 &,
+  .ds-column-10 &,
   .ds-column-11 &,
   .ds-column-12 & {
+    &.ds-card-grid-count-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 24px;
   }

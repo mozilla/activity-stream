@@ -27,7 +27,7 @@ export class CardGrid extends React.PureComponent {
     ));
 
     return (
-      <div className="ds-card-grid">
+      <div className={`ds-card-grid ds-card-grid-count-${this.props.items}`}>
         {cards}
       </div>
     );
