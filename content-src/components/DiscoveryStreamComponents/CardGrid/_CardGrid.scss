@@ -22,11 +22,11 @@
   .ds-column-10 &,
   .ds-column-11 &,
   .ds-column-12 & {
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 24px;
+
     &.ds-card-grid-count-3 {
       grid-template-columns: repeat(3, 1fr);
     }
-
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 24px;
   }
 }
