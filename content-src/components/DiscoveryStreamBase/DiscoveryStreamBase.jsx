@@ -40,7 +40,7 @@ export function isAllowedCSS(property, value) {
 }
 
 function maybeInjectSpocs(data, spocs) {
-  if (!data || !spocs.positions || !spocs.positions.length) {
+  if (!data || !spocs || !spocs.positions || !spocs.positions.length) {
     return data;
   }
 
