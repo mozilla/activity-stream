@@ -4,6 +4,7 @@ import {Hero} from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
 import {HorizontalRule} from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
 import {ImpressionStats} from "content-src/components/DiscoveryStreamImpressionStats/ImpressionStats";
 import {List} from "content-src/components/DiscoveryStreamComponents/List/List";
+import {Navigation} from "content-src/components/DiscoveryStreamComponents/Navigation/Navigation";
 import React from "react";
 import {SectionTitle} from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
 import {selectLayoutRender} from "content-src/lib/selectLayoutRender";
@@ -130,7 +131,9 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "TopSites":
         return (<TopSites />);
       case "SectionTitle":
-        return (<SectionTitle />);
+        return (<SectionTitle header={component.header} />);
+      case "Navigation":
+        return (<Navigation links={component.properties.links} alignment={component.properties.alignment} />);
       case "CardGrid":
         rows = this.extractRows(component, MAX_ROWS_CARDGRID);
         return (

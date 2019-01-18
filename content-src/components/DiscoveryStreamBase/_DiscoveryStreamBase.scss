@@ -1,8 +1,3 @@
-.outer-wrapper .discovery-stream.ds-layout a {
-  // XXX note that this only looks right in the light theme
-  color: $grey-90;
-}
-
 .discovery-stream.ds-layout {
   $columns: 12;
   display: grid;

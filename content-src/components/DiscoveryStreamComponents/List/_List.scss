@@ -53,6 +53,10 @@ $item-line-height: 20;
     grid-row-gap: 18px;
   }
 
+  a {
+    // XXX note that this only looks right in the light theme
+    color: $grey-90;
+  }
 }
 
 // XXX this is gross, and attaches the bottom-border to the item above.
