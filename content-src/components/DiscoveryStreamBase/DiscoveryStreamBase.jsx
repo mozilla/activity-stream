@@ -39,27 +39,6 @@ export function isAllowedCSS(property, value) {
     url.slice(5).startsWith(prefix)));
 }
 
-function maybeInjectSpocs(data, spocs) {
-  if (!data || !spocs || !spocs.positions || !spocs.positions.length) {
-    return data;
-  }
-
-  const recommendations = [...data.recommendations];
-
-  for (let position of spocs.positions) {
-    const {result} = position;
-    if (result) {
-      // Insert spoc into the desired index.
-      recommendations.splice(position.index, 0, result);
-    }
-  }
-
-  return {
-    ...data,
-    recommendations,
-  };
-}
-
 export class _DiscoveryStreamBase extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -137,7 +116,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
             <CardGrid
               title={component.header && component.header.title}
-              data={maybeInjectSpocs(component.data, component.spocs)}
+              data={component.data}
               feed={component.feed}
               border={component.properties.border}
               type={component.type}
@@ -151,7 +130,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
             <Hero
               title={component.header && component.header.title}
-              data={maybeInjectSpocs(component.data, component.spocs)}
+              data={component.data}
               border={component.properties.border}
               type={component.type}
               dispatch={this.props.dispatch}
