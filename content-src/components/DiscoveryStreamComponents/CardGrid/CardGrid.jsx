@@ -26,10 +26,18 @@ export class CardGrid extends React.PureComponent {
         source={rec.domain} />
     ));
 
+    let divisibility = ``;
+
+    if (this.props.items % 4 === 0) {
+      divisibility = `divisible-by-4`;
+    } else if (this.props.items % 3 === 0) {
+      divisibility = `divisible-by-3`;
+    }
+
     return (
       <div>
         <div className="ds-header">{this.props.title}</div>
-        <div className={`ds-card-grid ds-card-grid-count-${this.props.items}`}>
+        <div className={`ds-card-grid ds-card-grid-${divisibility}`}>
           {cards}
         </div>
       </div>
