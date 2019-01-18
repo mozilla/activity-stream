@@ -286,14 +286,15 @@ this.AboutPreferences = class AboutPreferences {
         .addEventListener("click", async () => {
           const activeExperiments = await PreferenceExperiments.getAllActive();
           const experiment = activeExperiments.find(exp => exp.preferenceName === DISCOVERY_STREAM_CONFIG_PREF_NAME);
+          // Unconditionally update the UI for a fast user response and in
+          // order to help with testing
+          discoveryGroup.style.display = "none";
+          contentsGroup.style.visibility = "visible";
           if (experiment) {
             await PreferenceExperiments.stop(experiment.name, {
               resetValue: true,
               reason: "individual-opt-out",
             });
-
-            discoveryGroup.style.display = "none";
-            contentsGroup.style.visibility = "visible";
           }
         }, {once: true});
     }
