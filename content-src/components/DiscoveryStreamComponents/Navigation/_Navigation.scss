@@ -26,7 +26,24 @@
     }
 
     a {
-      color: $blue-60;
+      &:hover {
+        // text-decoration: underline; didn't quite match comps.
+        border-bottom: 1px solid var(--newtab-link-primary-color);
+
+        &:active,
+        &:visited {
+          border-bottom: 1px solid $blue-70;
+        }
+      }
+
+      &:active,
+      &:visited {
+        color: $blue-70;
+
+        &.ds-more-recommendations::after {
+          fill: $blue-70;
+        }
+      }
     }
   }
 
@@ -34,7 +51,7 @@
     background: url('../data/content/assets/topic-show-more-12.svg') no-repeat center center;
     content: '';
     -moz-context-properties: fill;
-    fill: $blue-60;
+    fill: var(--newtab-link-primary-color);
     display: inline-block;
     height: 16px;
     margin-inline-start: 5px;
