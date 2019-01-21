@@ -107,7 +107,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
 
     switch (component.type) {
       case "TopSites":
-        return (<TopSites />);
+        return (<TopSites header={component.header} />);
       case "SectionTitle":
         return (<SectionTitle />);
       case "CardGrid":
