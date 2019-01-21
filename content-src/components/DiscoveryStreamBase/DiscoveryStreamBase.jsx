@@ -170,12 +170,14 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       <div className="discovery-stream ds-layout">
         {layoutRender.map((row, rowIndex) => (
           <div key={`row-${rowIndex}`} className={`ds-column ds-column-${row.width}`}>
-            {row.components.map((component, componentIndex) => {
-              styles[rowIndex] = [...styles[rowIndex] || [], component.styles];
-              return (<div key={`component-${componentIndex}`}>
-                {this.renderComponent(component)}
-              </div>);
-            })}
+            <div className="ds-column-grid">
+              {row.components.map((component, componentIndex) => {
+                styles[rowIndex] = [...styles[rowIndex] || [], component.styles];
+                return (<div key={`component-${componentIndex}`}>
+                  {this.renderComponent(component)}
+                </div>);
+              })}
+            </div>
           </div>
         ))}
         {this.renderStyles(styles)}
