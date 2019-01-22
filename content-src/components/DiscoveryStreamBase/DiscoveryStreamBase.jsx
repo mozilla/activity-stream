@@ -46,6 +46,16 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     this.onStyleMount = this.onStyleMount.bind(this);
   }
 
+  /**
+   * Extracts the recommendation rows from component for the impression ping.
+   * If `component.data.recommendations` is unset, returns an empty array.
+   *
+   * The row size is determined by the following rules:
+   *   - Use `component.properties.items` from the endpoint if it's specified
+   *   - Otherwise, use the length of recommendation array
+   *   - The row size is capped by the argument `limit`, which could be one of
+   *     [`MAX_ROW_HERO`, `MAX_ROWS_LIST`, `MAX_ROWS_CARDGRID`]
+   */
   extractRows(component, limit) {
     if (component.data && component.data.recommendations) {
       const items = Math.min(limit, component.properties.items || component.data.recommendations.length);
@@ -150,8 +160,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "HorizontalRule":
         return (<HorizontalRule />);
       case "List":
-        rows = this.extractRows(component,
-          Math.min(component.properties.items, MAX_ROWS_LIST));
+        rows = this.extractRows(component, MAX_ROWS_LIST);
         return (
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
             <List
