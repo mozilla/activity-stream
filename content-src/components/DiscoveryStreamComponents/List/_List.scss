@@ -44,6 +44,12 @@ $item-line-height: 20;
   }
 }
 
+.ds-list-images {
+  .ds-list-item .ds-list-image {
+    display: block;
+  }
+}
+
 .ds-list-numbers {
   $counter-whitespace: ($item-line-height - $item-font-size) * 1px;
   $counter-size: ($item-font-size) * 2px + $counter-whitespace;
@@ -128,6 +134,7 @@ $item-line-height: 20;
   }
 
   .ds-list-image {
+    display: none;
     width: 72px;
     height: 72px;
     object-fit: cover;
