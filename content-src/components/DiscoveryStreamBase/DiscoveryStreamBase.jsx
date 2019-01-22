@@ -131,9 +131,16 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       case "TopSites":
         return (<TopSites />);
       case "SectionTitle":
-        return (<SectionTitle header={component.header} />);
+        return (
+          <SectionTitle
+            header={component.header} />
+        );
       case "Navigation":
-        return (<Navigation links={component.properties.links} alignment={component.properties.alignment} />);
+        return (
+          <Navigation
+            links={component.properties.links}
+            alignment={component.properties.alignment} />
+        );
       case "CardGrid":
         rows = this.extractRows(component, MAX_ROWS_CARDGRID);
         return (
