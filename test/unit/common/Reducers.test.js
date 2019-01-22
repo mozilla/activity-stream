@@ -699,8 +699,13 @@ describe("Reducers", () => {
       const nextState = Search(undefined, {type: "HIDE_SEARCH"});
       assert.propertyVal(nextState, "hide", true);
     });
+    it("should set focus to true on FAKE_FOCUS_SEARCH", () => {
+      const nextState = Search(undefined, {type: "FAKE_FOCUS_SEARCH"});
+      assert.propertyVal(nextState, "fakeFocus", true);
+    });
     it("should set focus and hide to false on SHOW_SEARCH", () => {
       const nextState = Search(undefined, {type: "SHOW_SEARCH"});
+      assert.propertyVal(nextState, "fakeFocus", false);
       assert.propertyVal(nextState, "hide", false);
     });
   });
