@@ -91,7 +91,7 @@ export class SimpleSnippet extends React.PureComponent {
           <h3 className="section-title">
             <ConditionalWrapper condition={sectionTitleURL} wrap={this.wrapSectionHeader(sectionTitleURL)}>
               <span className="icon icon-small-spacer" style={{backgroundImage: `url("${sectionTitleIcon}")`}} />
-              <span>{props.content.section_title_text}</span>
+              <span className="section-title-text">{props.content.section_title_text}</span>
             </ConditionalWrapper>
           </h3>
         </div>
