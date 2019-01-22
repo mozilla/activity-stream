@@ -66,6 +66,10 @@
 
       p {
         font-size: 13px;
+
+        &.context {
+          color: $teal-70;
+        }
       }
     }
   }
@@ -85,7 +89,6 @@
         padding-top: 100%; // 1:1 aspect ratio
       }
     }
-
 
     .cards {
       display: grid;

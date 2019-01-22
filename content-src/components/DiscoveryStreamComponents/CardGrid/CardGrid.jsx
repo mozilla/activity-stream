@@ -22,6 +22,7 @@ export class CardGrid extends React.PureComponent {
         id={rec.id}
         index={index}
         type={this.props.type}
+        context={rec.context}
         dispatch={this.props.dispatch}
         source={rec.domain} />
     ));
