@@ -39,23 +39,7 @@
       &:active,
       &:visited {
         color: $blue-70;
-
-        &.ds-more-recommendations::after {
-          fill: $blue-70;
-        }
       }
     }
-  }
-
-  .ds-more-recommendations::after {
-    background: url('../data/content/assets/topic-show-more-12.svg') no-repeat center center;
-    content: '';
-    -moz-context-properties: fill;
-    fill: var(--newtab-link-primary-color);
-    display: inline-block;
-    height: 16px;
-    margin-inline-start: 5px;
-    vertical-align: top;
-    width: 12px;
   }
 }
