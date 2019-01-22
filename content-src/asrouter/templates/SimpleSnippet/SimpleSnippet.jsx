@@ -75,26 +75,33 @@ export class SimpleSnippet extends React.PureComponent {
     if (props.content.section_title_icon && props.content.section_title_text) {
       const sectionTitleIcon = safeURI(props.content.section_title_icon);
       const sectionTitleURL = props.content.section_title_url;
+      const wrapFunction = function(children) {
+        return <a href={sectionTitleURL}>{children}</a>;
+      };
 
       return (
         <div className="section-header">
           <h3 className="section-title">
-            <ConditionalWrapper condition={sectionTitleURL} wrap={children => <a href={sectionTitleURL}>{children}</a>}>
+            <ConditionalWrapper condition={sectionTitleURL} wrap={wrapFunction}>
               <span className="icon icon-small-spacer" style={{backgroundImage: `url("${sectionTitleIcon}")`}} />
               <span>{props.content.section_title_text}</span>
             </ConditionalWrapper>
           </h3>
         </div>
       );
-    } else {
-      return null;
     }
+
+    return null;
   }
 
   render() {
     const {props} = this;
     const sectionHeader = this.renderSectionHeader();
+    const wrapFunction = function(children) {
+      return <div className="innerContentWrapper">{children}</div>;
+    };
     let className = "SimpleSnippet";
+    
     if (props.className) {
       className += ` ${props.className}`;
     }
@@ -104,9 +111,10 @@ export class SimpleSnippet extends React.PureComponent {
     if (sectionHeader) {
       className += " has-section-header";
     }
+
     return (<SnippetBase {...props} className={className} textStyle={this.props.textStyle}>
       {sectionHeader}
-      <ConditionalWrapper condition={sectionHeader} wrap={children => <div className="innerContentWrapper">{children}</div>}>
+      <ConditionalWrapper condition={sectionHeader} wrap={wrapFunction}>
         <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" />
         <div>
           {this.renderTitle()} <p className="body">{this.renderText()}</p>

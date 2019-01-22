@@ -228,7 +228,7 @@ const MESSAGES = () => ([
       "icon": TEST_ICON,
       "title": "Firefox Account!",
       "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
-      "links": { "syncLink": { "url": "https://www.mozilla.org/en-US/firefox/accounts" } },
+      "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
       "block_button_text": "Block",
       "section_title_icon": TEST_ICON_16,
       "section_title_text": "Messages from Mozilla",
