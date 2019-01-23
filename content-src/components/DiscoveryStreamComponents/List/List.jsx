@@ -68,6 +68,7 @@ export function _List(props) {
 
   const listStyles = [
     "ds-list",
+    props.hasImages ? "ds-list-images" : "",
     props.hasNumbers ? "ds-list-numbers" : "",
   ];
   return (
@@ -80,6 +81,7 @@ export function _List(props) {
 }
 
 _List.defaultProps = {
+  hasImages: false, // Display images for each item
   hasNumbers: false, // Display numbers for each item
   items: 6, // Number of stories to display.  TODO: get from endpoint
 };
