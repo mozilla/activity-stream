@@ -3,7 +3,12 @@ $item-font-size: 13;
 $item-line-height: 20;
 
 .ds-list-border {
-  border: 1px solid $grey-40-36;
+  border: 1px solid $grey-30;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+
+  padding-top: 1px;
 
   // Instead of using margin, we need to use these to override stuff that comes
   // by default from <hr>.
@@ -88,8 +93,8 @@ $item-line-height: 20;
 // Unfortunately the border needs to go _above_ the row gap as currently
 // set up, which means that some refactoring will be required to do this.
 .ds-list-item:nth-child(-n+3) { // all but the last three items
-  border-bottom: 2px solid $grey-40-36;
-  margin-bottom: -2px;  // cancel out the 2 pixels we used for the border
+  border-bottom: 1px solid $grey-30;
+  margin-bottom: -1px;  // cancel out the pixel we used for the border
 
   padding-bottom: 2px;
 }
