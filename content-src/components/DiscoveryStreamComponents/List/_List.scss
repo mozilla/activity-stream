@@ -44,6 +44,39 @@ $item-line-height: 20;
   }
 }
 
+.ds-list-numbers {
+  $counter-whitespace: ($item-line-height - $item-font-size) * 1px;
+  $counter-size: ($item-font-size) * 2px + $counter-whitespace;
+  $counter-padded-size: $counter-size + $counter-whitespace * 1.5;
+
+  .ds-list-item {
+    counter-increment: list;
+  }
+
+  .ds-list-item-link {
+    padding-inline-start: $counter-padded-size;
+
+    &::before {
+      background-color: var(--newtab-link-secondary-color);
+      border-radius: $counter-size;
+      color: $white;
+      content: counter(list);
+      font-size: 1.2em;
+      height: $counter-size;
+      line-height: $counter-size;
+      margin-inline-start: -$counter-padded-size;
+      margin-top: $counter-whitespace / 2;
+      position: absolute;
+      text-align: center;
+      width: $counter-size;
+    }
+
+    &:hover::before {
+      background-color: var(--newtab-link-primary-color);
+    }
+  }
+}
+
 // XXX this is gross, and attaches the bottom-border to the item above.
 // Ideally, we'd attach the top-border to the item that needs it.
 // Unfortunately the border needs to go _above_ the row gap as currently
