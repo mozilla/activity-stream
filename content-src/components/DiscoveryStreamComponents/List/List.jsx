@@ -68,7 +68,7 @@ export function _List(props) {
 
   return (
     <div>
-      <h3 className="ds-list-title">{props.header && props.header.title}</h3>
+      {props.header && props.header.title ? <div className="ds-header">{props.header.title}</div> : null }
       <hr className="ds-list-border" />
       <ul className="ds-list">{recMarkup}</ul>
     </div>
