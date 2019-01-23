@@ -77,6 +77,16 @@
       grid-template-columns: repeat(2, 1fr);
       grid-column-gap: 24px;
 
+      .img-wrapper {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .meta {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
       .img {
         height: 0;
         padding-top: 100%; // 1:1 aspect ratio
