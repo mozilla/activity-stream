@@ -31,6 +31,14 @@
     border-top: 1px solid transparentize($grey-40, 0.64);
     border-bottom: 1px solid transparentize($grey-40, 0.64);
 
+    &:hover .meta header {
+      color: $blue-60;
+    }
+
+    &:active .meta header {
+      color: $blue-70;
+    }
+
     .img-wrapper {
       width: 100%;
     }
@@ -47,14 +55,6 @@
       header {
         font-size: 22px;
         color: $grey-90;
-
-        &:hover {
-          color: $blue-60;
-        }
-
-        &:active {
-          color: $blue-70;
-        }
       }
 
       p {
