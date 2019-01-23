@@ -908,6 +908,7 @@ class _ASRouter {
     }
   }
 
+  // Ensure we switch to the Onboarding message after RTAMO addon was installed
   _updateOnboardingState() {
     let addonInstallObs = (subject, topic) => {
       Services.obs.removeObserver(addonInstallObs, "webextension-install-notify");
