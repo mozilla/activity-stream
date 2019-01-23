@@ -28,8 +28,8 @@
     color: $grey-50;
     margin: 18px 0;
     padding: 20px 0;
-    border-top: 1px solid transparentize($grey-40, 0.64);
-    border-bottom: 1px solid transparentize($grey-40, 0.64);
+    border-top: $border-secondary;
+    border-bottom: $border-secondary;
 
     &:hover .meta header {
       color: $blue-60;
