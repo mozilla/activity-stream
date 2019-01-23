@@ -95,6 +95,7 @@ $icon-width: 54px; // width of primary icon + margin
   &.has-section-header .innerWrapper {
     // account for section header being 100% width
     flex-wrap: wrap;
+    padding-top: 7px;
   }
 
   // wrapper div added if section-header is displayed that allows icon/text/button
@@ -107,7 +108,7 @@ $icon-width: 54px; // width of primary icon + margin
 
   .section-header {
     flex: 0 0 100%;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .section-title {
