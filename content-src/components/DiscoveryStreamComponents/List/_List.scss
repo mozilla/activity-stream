@@ -143,15 +143,12 @@ $item-line-height: 20;
   .ds-list-image {
     $image-size: 72px;
 
-    border-radius: 4px;
-    border: 0.5px solid $black-12;
-    box-sizing: border-box;
+    @include image-as-background;
     display: none;
     height: $image-size;
     margin-inline-start: $item-font-size * 1px;
     min-height: $image-size;
     min-width: $image-size;
-    object-fit: cover;
     width: $image-size;
   }
 
