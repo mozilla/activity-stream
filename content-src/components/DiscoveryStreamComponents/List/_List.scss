@@ -141,6 +141,7 @@ $item-line-height: 20;
     box-sizing: border-box;
     display: none;
     height: $image-size;
+    margin-inline-start: $item-font-size * 1px;
     min-height: $image-size;
     min-width: $image-size;
     object-fit: cover;
