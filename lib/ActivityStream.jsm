@@ -215,9 +215,9 @@ const PREFS_CONFIG = new Map([
   // See browser/app/profile/firefox.js for other ASR preferences. They must be defined there to enable roll-outs.
   ["discoverystream.config", {
     title: "Configuration for the new pocket new tab",
-    getValue: args => JSON.stringify({
+    value: JSON.stringify({
       enabled: false,
-      show_spocs: showSpocs(args),
+      show_spocs: true,
       // This is currently an exmple layout used for dev purposes.
       layout_endpoint: "https://getpocket.com/v3/newtab/layout?version=1&consumer_key=40249-e88c401e1b1f2242d9e441c4&layout_variant=control",
     }),
