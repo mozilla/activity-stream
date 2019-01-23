@@ -77,10 +77,8 @@ $item-line-height: 20;
       width: $counter-size;
     }
 
-    &:hover {
-      &::before {
-        background-color: var(--newtab-link-primary-color);
-      }
+    &:hover::before {
+      background-color: var(--newtab-link-primary-color);
     }
 
     &:active::before {
