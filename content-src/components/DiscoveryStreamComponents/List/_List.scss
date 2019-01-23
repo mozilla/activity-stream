@@ -83,6 +83,10 @@ $item-line-height: 20;
     &:hover::before {
       background-color: var(--newtab-link-primary-color);
     }
+
+    &:active::before {
+      background-color: $blue-70;
+    }
   }
 }
 
@@ -149,5 +153,17 @@ $item-line-height: 20;
     min-width: $image-size;
     object-fit: cover;
     width: $image-size;
+  }
+
+  &:hover {
+    .ds-list-item-title {
+      color: var(--newtab-link-primary-color);
+    }
+  }
+
+  &:active {
+    .ds-list-item-title {
+      color: $blue-70;
+    }
   }
 }
