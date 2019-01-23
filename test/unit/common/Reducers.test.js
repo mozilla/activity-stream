@@ -682,6 +682,7 @@ describe("Reducers", () => {
         spocs_endpoint: "",
         data: [1, 2, 3],
         lastUpdated: 123,
+        loaded: true,
       });
     });
     it("should handle no data from DISCOVERY_STREAM_SPOCS_UPDATE", () => {
