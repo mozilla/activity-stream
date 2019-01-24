@@ -113,7 +113,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     });
   }
 
-  renderComponent(component) {
+  renderComponent(component, embedWidth) {
     let rows;
     const {spocs} = this.props.DiscoveryStream;
 
@@ -157,6 +157,8 @@ export class _DiscoveryStreamBase extends React.PureComponent {
         return (
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
             <Hero
+              subComponentType={embedWidth >= 9 ? `cards` : `list`}
+              feed={component.feed}
               title={component.header && component.header.title}
               data={component.data}
               border={component.properties.border}
@@ -204,7 +206,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
               {row.components.map((component, componentIndex) => {
                 styles[rowIndex] = [...styles[rowIndex] || [], component.styles];
                 return (<div key={`component-${componentIndex}`}>
-                  {this.renderComponent(component)}
+                  {this.renderComponent(component, row.width)}
                 </div>);
               })}
             </div>
