@@ -87,10 +87,41 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return null;
   }
 
-  async loadLayout() {
+  /**
+   * Returns true if data in the cache for a particular key has expired or is missing.
+   * @param {{}} cacheData data returned from cache.get()
+   * @param {string} key a cache key
+   * @param {string?} url for "feed" only, the URL of the feed.
+   */
+  isExpired(cacheData, key, url) {
+    const {layout, spocs, feeds} = cacheData;
+    switch (key) {
+      case "layout":
+        return (!layout || !(Date.now() - layout._timestamp < LAYOUT_UPDATE_TIME));
+      case "spocs":
+        return (!spocs || !(Date.now() - spocs.lastUpdated < SPOCS_FEEDS_UPDATE_TIME));
+      case "feed":
+        return (!feeds || !feeds[url] || !(Date.now() - feeds[url].lastUpdated < COMPONENT_FEEDS_UPDATE_TIME));
+      default:
+        throw new Error(`${key} is not a valid key`);
+    }
+  }
+
+  /**
+   * Returns true if any data for the cached endpoints has expired or is missing.
+   */
+  async checkIfAnyCacheExpired() {
+    const cachedData = await this.cache.get() || {};
+    const {feeds} = cachedData;
+    return this.isExpired(cachedData, "layout") ||
+      this.isExpired(cachedData, "spocs") ||
+      !feeds || Object.keys(feeds).some(url => this.isExpired(cachedData, "feed", url));
+  }
+
+  async loadLayout(sendUpdate) {
     const cachedData = await this.cache.get() || {};
     let {layout: layoutResponse} = cachedData;
-    if (!layoutResponse || !(Date.now() - layoutResponse._timestamp < LAYOUT_UPDATE_TIME)) {
+    if (this.isExpired(cachedData, "layout")) {
       layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
       if (layoutResponse && layoutResponse.layout) {
         layoutResponse._timestamp = Date.now();
@@ -101,23 +132,23 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
 
     if (layoutResponse && layoutResponse.layout) {
-      this.store.dispatch(ac.BroadcastToContent({
+      sendUpdate({
         type: at.DISCOVERY_STREAM_LAYOUT_UPDATE,
         data: {
           layout: layoutResponse.layout,
           lastUpdated: layoutResponse._timestamp,
         },
-      }));
+      });
     }
     if (layoutResponse && layoutResponse.spocs && layoutResponse.spocs.url) {
-      this.store.dispatch(ac.BroadcastToContent({
+      sendUpdate({
         type: at.DISCOVERY_STREAM_SPOCS_ENDPOINT,
         data: layoutResponse.spocs.url,
-      }));
+      });
     }
   }
 
-  async loadComponentFeeds() {
+  async loadComponentFeeds(sendUpdate) {
     const {DiscoveryStream} = this.store.getState();
     const newFeeds = {};
     if (DiscoveryStream && DiscoveryStream.layout) {
@@ -134,17 +165,17 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       }
 
       await this.cache.set("feeds", newFeeds);
-      this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: newFeeds}));
+      sendUpdate({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: newFeeds});
     }
   }
 
-  async loadSpocs() {
+  async loadSpocs(sendUpdate) {
     const cachedData = await this.cache.get() || {};
     let spocs;
 
     if (this.showSpocs) {
       spocs = cachedData.spocs;
-      if (!spocs || !(Date.now() - spocs.lastUpdated < SPOCS_FEEDS_UPDATE_TIME)) {
+      if (this.isExpired(cachedData, "spocs")) {
         const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
         const spocsResponse = await this.fetchFromEndpoint(endpoint);
         if (spocsResponse) {
@@ -168,20 +199,20 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       data: {},
     };
 
-    this.store.dispatch(ac.BroadcastToContent({
+    sendUpdate({
       type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
       data: {
         lastUpdated: spocs.lastUpdated,
         spocs: spocs.data,
       },
-    }));
+    });
   }
 
   async getComponentFeed(feedUrl) {
     const cachedData = await this.cache.get() || {};
     const {feeds} = cachedData;
-    let feed = feeds && feeds[feedUrl];
-    if (!feed || !(Date.now() - feed.lastUpdated < COMPONENT_FEEDS_UPDATE_TIME)) {
+    let feed = feeds ? feeds[feedUrl] : null;
+    if (this.isExpired(cachedData, "feed", feedUrl)) {
       const feedResponse = await this.fetchFromEndpoint(feedUrl);
       if (feedResponse) {
         feed = {
@@ -190,18 +221,33 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         };
       } else {
         Cu.reportError("No response for feed");
-        feed = null;
       }
     }
 
     return feed;
   }
 
-  async enable() {
-    await this.loadLayout();
-    await this.loadComponentFeeds();
-    await this.loadSpocs();
+  /**
+   * @typedef {Object} RefreshAllOptions
+   * @property {boolean} updateOpenTabs - Sends updates to open tabs immediately if true,
+   *                                      updates in background if false
+
+   * Refreshes layout, component feeds, and spocs in order if caches have expired.
+   * @param {RefreshAllOptions} options
+   */
+  async refreshAll(options = {}) {
+    const dispatch = options.updateOpenTabs ?
+      action => this.store.dispatch(ac.BroadcastToContent(action)) :
+      this.store.dispatch;
+
+    await this.loadLayout(dispatch);
+    await this.loadComponentFeeds(dispatch);
+    await this.loadSpocs(dispatch);
     this.loaded = true;
+  }
+
+  async enable() {
+    await this.refreshAll({updateOpenTabs: true});
   }
 
   async disable() {
@@ -240,6 +286,12 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         // 2. If config.enabled is true, start loading data.
         if (this.config.enabled) {
           await this.enable();
+        }
+        break;
+      case at.SYSTEM_TICK:
+        // Only refresh if we loaded once in .enable()
+        if (this.config.enabled && this.loaded && await this.checkIfAnyCacheExpired()) {
+          await this.refreshAll({updateOpenTabs: false});
         }
         break;
       case at.DISCOVERY_STREAM_CONFIG_SET_VALUE:
