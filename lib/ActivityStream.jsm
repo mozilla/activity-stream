@@ -176,8 +176,14 @@ const PREFS_CONFIG = new Map([
         return "";
       }
       const searchShortcuts = [];
-      if (["DE", "FR", "GB", "IT", "JP", "US"].includes(geo)) {
+      if (geo === "CN") {
+        searchShortcuts.push("baidu");
+      } else if (["BY", "KZ", "RU", "TR"].includes(geo)) {
+        searchShortcuts.push("yandex");
+      } else {
         searchShortcuts.push("google");
+      }
+      if (["DE", "FR", "GB", "IT", "JP", "US"].includes(geo)) {
         searchShortcuts.push("amazon");
       }
       return searchShortcuts.join(",");
