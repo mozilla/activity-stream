@@ -61,7 +61,7 @@ export class Hero extends React.PureComponent {
         hasImages={true}
         hasBorders={this.props.border === `border`}
         items={this.props.items}
-        type={`List`} />
+        type={`Hero`} />
     );
 
     return (
