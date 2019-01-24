@@ -2,6 +2,19 @@
 $item-font-size: 13;
 $item-line-height: 20;
 
+// XXX this is gross, and attaches the bottom-border to the item above.
+// Ideally, we'd attach the top-border to the item that needs it.
+// Unfortunately the border needs to go _above_ the row gap as currently
+// set up, which means that some refactoring will be required to do this.
+@mixin bottom-border-except-last-grid-row($columns) {
+  .ds-list-item:not(:nth-last-child(-n+#{$columns})) {
+    border-bottom: $border-secondary;
+    margin-bottom: -1px;  // cancel out the pixel we used for the border
+
+    padding-bottom: 2px;
+  }
+}
+
 .ds-list {
   display: grid;
   grid-row-gap: 24px;
@@ -17,7 +30,6 @@ $item-line-height: 20;
   .ds-column-7 &,
   .ds-column-8 & {
     grid-template-columns: repeat(2, 1fr);
-    grid-row-gap: 24px;
   }
 
   // "Full width layout"
@@ -82,16 +94,29 @@ $item-line-height: 20;
   border-top: $border-secondary;
   padding-top: $item-line-height * 1px;
 
-  // XXX this is gross, and attaches the bottom-border to the item above.
-  // Ideally, we'd attach the top-border to the item that needs it.
-  // Unfortunately the border needs to go _above_ the row gap as currently
-  // set up, which means that some refactoring will be required to do this.
-  .ds-list-item:nth-child(-n+3) { // all but the last three items
-    border-bottom: $border-secondary;
-    margin-bottom: -1px;  // cancel out the pixel we used for the border
-
-    padding-bottom: 2px;
+  .ds-column-1 &,
+  .ds-column-2 &,
+  .ds-column-3 &,
+  .ds-column-4 & {
+    @include bottom-border-except-last-grid-row(1);
   }
+
+  // "2/3 width layout"
+  .ds-column-5 &,
+  .ds-column-6 &,
+  .ds-column-7 &,
+  .ds-column-8 & {
+    @include bottom-border-except-last-grid-row(2);
+  }
+
+  // "Full width layout"
+  .ds-column-9 &,
+  .ds-column-10 &,
+  .ds-column-11 &,
+  .ds-column-12 & {
+    @include bottom-border-except-last-grid-row(3);
+  }
+
 }
 
 .ds-list-item {
