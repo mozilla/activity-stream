@@ -121,7 +121,7 @@ describe("DiscoveryStreamFeed", () => {
     it("should fetch fresh data if cache is empty", async () => {
       const fakeCache = {};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-      sandbox.stub(feed, "fetchComponentFeed").returns(Promise.resolve("data"));
+      sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
 
       const feedResp = await feed.getComponentFeed("foo.com");
 
@@ -130,7 +130,7 @@ describe("DiscoveryStreamFeed", () => {
     it("should fetch fresh data if cache is old", async () => {
       const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now()}}};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-      sandbox.stub(feed, "fetchComponentFeed").returns(Promise.resolve("data"));
+      sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
       clock.tick(THIRTY_MINUTES + 1);
 
       const feedResp = await feed.getComponentFeed("foo.com");
@@ -140,7 +140,7 @@ describe("DiscoveryStreamFeed", () => {
     it("should return data from cache if it is fresh", async () => {
       const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "data"}}};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-      sandbox.stub(feed, "fetchComponentFeed").returns(Promise.resolve("old data"));
+      sandbox.stub(feed, "fetchFromEndpoint").resolves("old data");
       clock.tick(THIRTY_MINUTES - 1);
 
       const feedResp = await feed.getComponentFeed("foo.com");
@@ -148,37 +148,34 @@ describe("DiscoveryStreamFeed", () => {
       assert.equal(feedResp.data, "data");
     });
   });
+  it("should return null if no response was received", async () => {
+    sandbox.stub(feed, "fetchFromEndpoint").resolves(null);
 
-  describe("#fetchComponentFeed", () => {
-    it("should return old feed if fetch failed", async () => {
-      fetchStub.resolves({ok: false, json: () => Promise.resolve({})});
-      const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "old data"}}};
-      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-      clock.tick(THIRTY_MINUTES + 1);
+    const feedResp = await feed.getComponentFeed("foo.com");
 
-      const feedResp = await feed.getComponentFeed("foo.com");
-
-      assert.equal(feedResp.data, "old data");
-    });
-    it("should return new feed if fetch succeeds", async () => {
-      fetchStub.resolves({ok: true, json: () => Promise.resolve("data")});
-      const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "old data"}}};
-      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-      clock.tick(THIRTY_MINUTES + 1);
-
-      const feedResp = await feed.getComponentFeed("foo.com");
-
-      assert.equal(feedResp.data, "data");
-    });
+    assert.isNull(feedResp);
   });
 
   describe("#loadSpocs", () => {
     beforeEach(() => {
       Object.defineProperty(feed, "showSpocs", {get: () => true});
     });
+    it("should not fetch or update cache if no spocs endpoint is defined", async () => {
+      feed.store.dispatch(ac.BroadcastToContent({
+        type: at.DISCOVERY_STREAM_SPOCS_ENDPOINT,
+        data: "",
+      }));
+
+      sandbox.spy(feed.cache, "set");
+
+      await feed.loadSpocs();
+
+      assert.notCalled(global.fetch);
+      assert.notCalled(feed.cache.set);
+    });
     it("should fetch fresh data if cache is empty", async () => {
       sandbox.stub(feed.cache, "get").returns(Promise.resolve());
-      sandbox.stub(feed, "fetchSpocs").returns(Promise.resolve("data"));
+      sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
 
       await feed.loadSpocs();
@@ -190,7 +187,7 @@ describe("DiscoveryStreamFeed", () => {
       const cachedSpoc = {"data": "old", "lastUpdated": Date.now()};
       const cachedData = {"spocs": cachedSpoc};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(cachedData));
-      sandbox.stub(feed, "fetchSpocs").returns(Promise.resolve("new"));
+      sandbox.stub(feed, "fetchFromEndpoint").resolves("new");
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
       clock.tick(THIRTY_MINUTES + 1);
 
@@ -202,7 +199,7 @@ describe("DiscoveryStreamFeed", () => {
       const cachedSpoc = {"data": "old", "lastUpdated": Date.now()};
       const cachedData = {"spocs": cachedSpoc};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(cachedData));
-      sandbox.stub(feed, "fetchSpocs").returns(Promise.resolve("new"));
+      sandbox.stub(feed, "fetchFromEndpoint").resolves("new");
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
       clock.tick(THIRTY_MINUTES - 1);
 
@@ -212,51 +209,6 @@ describe("DiscoveryStreamFeed", () => {
     });
   });
 
-  describe("#fetchSpocs", () => {
-    beforeEach(() => {
-      Object.defineProperty(feed, "showSpocs", {get: () => true});
-    });
-    it("should return null for fetchSpocs with no spocs_endpoint", async () => {
-      feed.store.dispatch(ac.BroadcastToContent({
-        type: at.DISCOVERY_STREAM_SPOCS_ENDPOINT,
-        data: "",
-      }));
-
-      const result = await feed.fetchSpocs();
-
-      assert.isNull(result);
-    });
-    it("should return old spocs if fetch failed", async () => {
-      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
-      feed.store.dispatch(ac.BroadcastToContent({
-        type: at.DISCOVERY_STREAM_SPOCS_ENDPOINT,
-        data: "foo.com",
-      }));
-      fetchStub.resolves({ok: false, json: () => Promise.resolve({})});
-      const fakeCache = {spocs: {lastUpdated: Date.now(), data: "old data"}};
-      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-      clock.tick(THIRTY_MINUTES + 1);
-
-      await feed.loadSpocs();
-
-      assert.equal(feed.store.getState().DiscoveryStream.spocs.data, "old data");
-    });
-    it("should return new spocs if fetch succeeds", async () => {
-      sandbox.stub(feed.cache, "set").returns(Promise.resolve());
-      feed.store.dispatch(ac.BroadcastToContent({
-        type: at.DISCOVERY_STREAM_SPOCS_ENDPOINT,
-        data: "foo.com",
-      }));
-      fetchStub.resolves({ok: true, json: () => Promise.resolve("new data")});
-      const fakeCache = {spocs: {lastUpdated: Date.now(), data: "old data"}};
-      sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-      clock.tick(THIRTY_MINUTES + 1);
-
-      await feed.loadSpocs();
-
-      assert.equal(feed.store.getState().DiscoveryStream.spocs.data, "new data");
-    });
-  });
   describe("#showSpocs", () => {
     it("should return false from showSpocs if user pref showSponsored is false", async () => {
       feed.store.getState = () => ({
@@ -266,7 +218,7 @@ describe("DiscoveryStreamFeed", () => {
 
       assert.isFalse(feed.showSpocs);
     });
-    it("should return false from showSpocs if DiscoveryStrea pref show_spocs is false", async () => {
+    it("should return false from showSpocs if DiscoveryStream pref show_spocs is false", async () => {
       feed.store.getState = () => ({
         Prefs: {values: {showSponsored: true}},
       });
