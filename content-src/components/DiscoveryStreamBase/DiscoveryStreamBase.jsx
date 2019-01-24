@@ -175,6 +175,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           <ImpressionStats rows={rows} dispatch={this.props.dispatch} source={component.type}>
             <List
               feed={component.feed}
+              fullWidth={component.properties.full_width}
               hasBorders={component.properties.border === "border"}
               hasImages={component.properties.has_images}
               hasNumbers={component.properties.has_numbers}
