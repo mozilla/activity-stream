@@ -1,3 +1,6 @@
+$col4-header-line-height: 20;
+$col4-header-font-size: 13;
+
 .ds-card-grid {
   display: grid;
 
@@ -25,8 +28,19 @@
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 24px;
 
+    .title {
+      @include limit-visibile-lines(2, $col4-header-line-height, $col4-header-font-size);
+      line-height: $col4-header-line-height * 1px;
+      font-size: $col4-header-font-size * 1px;
+    }
+
     &.ds-card-grid-divisible-by-3 {
       grid-template-columns: repeat(3, 1fr);
+
+      .title {
+        font-size: 17px;
+        line-height: 24px;
+      }
     }
   }
 }
