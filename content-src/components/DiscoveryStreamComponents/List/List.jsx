@@ -66,19 +66,20 @@ export function _List(props) {
 
   const listStyles = [
     "ds-list",
+    props.hasBorders ? "ds-list-borders" : "",
     props.hasImages ? "ds-list-images" : "",
     props.hasNumbers ? "ds-list-numbers" : "",
   ];
   return (
     <div>
       {props.header && props.header.title ? <div className="ds-header">{props.header.title}</div> : null }
-      <hr className="ds-list-border" />
       <ul className={listStyles.join(" ")}>{recMarkup}</ul>
     </div>
   );
 }
 
 _List.defaultProps = {
+  hasBorders: false, // Display lines separating each item
   hasImages: false, // Display images for each item
   hasNumbers: false, // Display numbers for each item
   items: 6, // Number of stories to display.  TODO: get from endpoint

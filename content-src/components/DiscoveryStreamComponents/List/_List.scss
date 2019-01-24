@@ -2,18 +2,6 @@
 $item-font-size: 13;
 $item-line-height: 20;
 
-.ds-list-border {
-  border: 0;
-  border-top: $border-secondary;
-
-  padding-top: 1px;
-
-  // Instead of using margin, we need to use these to override stuff that comes
-  // by default from <hr>.
-  margin-block-start: 8px;
-  margin-block-end: 8px;
-}
-
 .ds-list {
   display: grid;
   grid-row-gap: 24px;
@@ -90,15 +78,20 @@ $item-line-height: 20;
   }
 }
 
-// XXX this is gross, and attaches the bottom-border to the item above.
-// Ideally, we'd attach the top-border to the item that needs it.
-// Unfortunately the border needs to go _above_ the row gap as currently
-// set up, which means that some refactoring will be required to do this.
-.ds-list-item:nth-child(-n+3) { // all but the last three items
-  border-bottom: $border-secondary;
-  margin-bottom: -1px;  // cancel out the pixel we used for the border
+.ds-list-borders {
+  border-top: $border-secondary;
+  padding-top: $item-line-height * 1px;
 
-  padding-bottom: 2px;
+  // XXX this is gross, and attaches the bottom-border to the item above.
+  // Ideally, we'd attach the top-border to the item that needs it.
+  // Unfortunately the border needs to go _above_ the row gap as currently
+  // set up, which means that some refactoring will be required to do this.
+  .ds-list-item:nth-child(-n+3) { // all but the last three items
+    border-bottom: $border-secondary;
+    margin-bottom: -1px;  // cancel out the pixel we used for the border
+
+    padding-bottom: 2px;
+  }
 }
 
 .ds-list-item {
