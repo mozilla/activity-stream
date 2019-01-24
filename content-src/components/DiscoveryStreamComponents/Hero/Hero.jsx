@@ -1,6 +1,7 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {DSCard} from "../DSCard/DSCard.jsx";
 import React from "react";
+import {truncateText} from "content-src/lib/truncate-text";
 
 export class Hero extends React.PureComponent {
   constructor(props) {
@@ -36,7 +37,6 @@ export class Hero extends React.PureComponent {
 
     let [heroRec, ...otherRecs] = data.recommendations.slice(0, this.props.items);
     this.heroRec = heroRec;
-    let truncateText = (text, cap) => `${text.substring(0, cap)}${text.length > cap ? `...` : ``}`;
 
     // Note that `{index + 1}` is necessary below for telemetry since we treat heroRec as index 0.
     let cards = otherRecs.map((rec, index) => (
@@ -49,7 +49,7 @@ export class Hero extends React.PureComponent {
         index={index + 1}
         type={this.props.type}
         dispatch={this.props.dispatch}
-        context={truncateText(rec.context || "", 22)}
+        context={truncateText(rec.context, 22)}
         source={truncateText(rec.domain, 22)} />
     ));
 
