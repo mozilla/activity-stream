@@ -171,7 +171,10 @@ export class BaseContent extends React.PureComponent {
                   <ManualMigration />
                 </div>
                 }
-              {isDiscoveryStream ? <DiscoveryStreamBase /> : <Sections />}
+              {isDiscoveryStream ? (
+                <ErrorBoundary className="borderless-error">
+                  <DiscoveryStreamBase />
+                </ErrorBoundary>) : <Sections />}
               <PrefsButton onClick={this.openPreferences} />
             </div>
             <ConfirmDialog />
