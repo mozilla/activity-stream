@@ -1,3 +1,6 @@
+$card-header-in-hero-font-size: 13;
+$card-header-in-hero-line-height: 20;
+
 .ds-hero {
   .img {
     @include image-as-background;
@@ -14,6 +17,13 @@
 
     .meta {
       padding: 0;
+
+      .title {
+        // show only 2 lines of copy
+        @include limit-visibile-lines(2, $card-header-in-hero-line-height, $card-header-in-hero-font-size);
+        font-size: $card-header-in-hero-font-size * 1px;
+        line-height: $card-header-in-hero-line-height * 1px;
+      }
     }
 
     .img-wrapper {
