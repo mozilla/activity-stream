@@ -67,44 +67,21 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
-  async fetchLayout() {
-    const endpoint = this.config.layout_endpoint;
+  async fetchFromEndpoint(endpoint) {
     if (!endpoint) {
-      Cu.reportError("No endpoint configured for pocket, so could not fetch layout");
+      Cu.reportError("Tried to fetch endpoint but none was configured.");
       return null;
     }
     try {
       const response = await fetch(endpoint, {credentials: "omit"});
       if (!response.ok) {
         // istanbul ignore next
-        throw new Error(`Layout endpoint returned unexpected status: ${response.status}`);
+        throw new Error(`${endpoint} returned unexpected status: ${response.status}`);
       }
       return response.json();
     } catch (error) {
       // istanbul ignore next
-      Cu.reportError(`Failed to fetch layout: ${error.message}`);
-    }
-    // istanbul ignore next
-    return null;
-  }
-
-  async fetchSpocs() {
-    const {DiscoveryStream} = this.store.getState();
-    const endpoint = DiscoveryStream.spocs.spocs_endpoint;
-    if (!endpoint) {
-      Cu.reportError("No endpoint configured for pocket, so could not fetch spocs");
-      return null;
-    }
-    try {
-      const response = await fetch(endpoint, {credentials: "omit"});
-      if (!response.ok) {
-        // istanbul ignore next
-        throw new Error(`Spocs endpoint returned unexpected status: ${response.status}`);
-      }
-      return response.json();
-    } catch (error) {
-      // istanbul ignore next
-      Cu.reportError(`Failed to fetch spocs: ${error.message}`);
+      Cu.reportError(`Failed to fetch ${endpoint}: ${error.message}`);
     }
     // istanbul ignore next
     return null;
@@ -114,7 +91,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const cachedData = await this.cache.get() || {};
     let {layout: layoutResponse} = cachedData;
     if (!layoutResponse || !(Date.now() - layoutResponse._timestamp < LAYOUT_UPDATE_TIME)) {
-      layoutResponse = await this.fetchLayout();
+      layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
       if (layoutResponse && layoutResponse.layout) {
         layoutResponse._timestamp = Date.now();
         await this.cache.set("layout", layoutResponse);
@@ -168,7 +145,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     if (this.showSpocs) {
       spocs = cachedData.spocs;
       if (!spocs || !(Date.now() - spocs.lastUpdated < SPOCS_FEEDS_UPDATE_TIME)) {
-        const spocsResponse = await this.fetchSpocs();
+        const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
+        const spocsResponse = await this.fetchFromEndpoint(endpoint);
         if (spocsResponse) {
           spocs = {
             lastUpdated: Date.now(),
@@ -204,7 +182,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const {feeds} = cachedData;
     let feed = feeds && feeds[feedUrl];
     if (!feed || !(Date.now() - feed.lastUpdated < COMPONENT_FEEDS_UPDATE_TIME)) {
-      const feedResponse = await this.fetchComponentFeed(feedUrl);
+      const feedResponse = await this.fetchFromEndpoint(feedUrl);
       if (feedResponse) {
         feed = {
           lastUpdated: Date.now(),
@@ -212,26 +190,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         };
       } else {
         Cu.reportError("No response for feed");
+        feed = null;
       }
     }
 
     return feed;
-  }
-
-  async fetchComponentFeed(feedUrl) {
-    try {
-      const response = await fetch(feedUrl, {credentials: "omit"});
-      if (!response.ok) {
-        // istanbul ignore next
-        throw new Error(`Component feed endpoint returned unexpected status: ${response.status}`);
-      }
-      return response.json();
-    } catch (error) {
-      // istanbul ignore next
-      Cu.reportError(`Failed to fetch Component feed: ${error.message}`);
-    }
-    // istanbul ignore next
-    return null;
   }
 
   async enable() {
