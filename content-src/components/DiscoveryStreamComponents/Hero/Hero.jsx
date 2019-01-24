@@ -50,7 +50,7 @@ export class Hero extends React.PureComponent {
         type={this.props.type}
         dispatch={this.props.dispatch}
         context={truncateText(rec.context || "", 22)}
-        source={truncateText(`TODO: SOURCE`, 22)} />
+        source={truncateText(rec.domain, 22)} />
     ));
 
     return (
@@ -67,7 +67,7 @@ export class Hero extends React.PureComponent {
               {heroRec.context ? (
                 <p className="context">{truncateText(heroRec.context, 22)}</p>
               ) : (
-                <p>{truncateText(`TODO: SOURCE`, 22)}</p>
+                <p>{truncateText(heroRec.domain, 22)}</p>
               )}
             </div>
           </a>
