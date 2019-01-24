@@ -10,6 +10,10 @@ $card-header-in-hero-line-height: 20;
     font-weight: 600;
   }
 
+  p {
+    line-height: 1.538;
+  }
+
   .ds-list {
     border-top: 0;
     padding-top: 0;
@@ -154,6 +158,7 @@ $card-header-in-hero-line-height: 20;
 
         p {
           font-size: 15px;
+          line-height: 1.6;
         }
       }
     }
