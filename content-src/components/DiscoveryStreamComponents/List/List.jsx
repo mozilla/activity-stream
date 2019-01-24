@@ -79,7 +79,7 @@ export function _List(props) {
 }
 
 _List.defaultProps = {
-  recStartingPoint: 0,
+  recStartingPoint: 0, // Index of recommendations to start displaying from
   hasBorders: false, // Display lines separating each item
   hasImages: false, // Display images for each item
   hasNumbers: false, // Display numbers for each item

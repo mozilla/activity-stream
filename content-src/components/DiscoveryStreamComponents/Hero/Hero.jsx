@@ -59,7 +59,7 @@ export class Hero extends React.PureComponent {
         recStartingPoint={1}
         feed={this.props.feed}
         hasImages={true}
-        hasBorders={true}
+        hasBorders={this.props.border === `border`}
         items={this.props.items}
         type={`List`} />
     );

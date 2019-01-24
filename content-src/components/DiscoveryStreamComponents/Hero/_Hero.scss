@@ -41,7 +41,7 @@ $card-header-in-hero-line-height: 20;
   }
 
   .img-wrapper {
-    margin: 0;
+    margin: 0 0 12px;
   }
 
   // "1/3 width layout" (aka "Mobile First")
@@ -101,6 +101,7 @@ $card-header-in-hero-line-height: 20;
       grid-column-gap: 24px;
 
       .img-wrapper {
+        margin: 0;
         grid-column: 2;
         grid-row: 1;
       }
@@ -135,6 +136,7 @@ $card-header-in-hero-line-height: 20;
 
       .img-wrapper {
         width: 67%;
+        margin: 0;
       }
 
       .img {
