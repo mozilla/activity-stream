@@ -47,6 +47,11 @@ $card-header-in-hero-line-height: 20;
     border-top: $border-secondary;
     border-bottom: $border-secondary;
 
+    @at-root .ds-hero-no-border .wrapper {
+      border-top: 0;
+      border-bottom: 0;
+    }
+
     &:hover .meta header {
       color: $blue-60;
     }
