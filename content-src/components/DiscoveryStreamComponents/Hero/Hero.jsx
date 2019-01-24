@@ -1,5 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {DSCard} from "../DSCard/DSCard.jsx";
+import {List} from "../List/List.jsx";
 import React from "react";
 
 export class Hero extends React.PureComponent {
@@ -53,6 +54,16 @@ export class Hero extends React.PureComponent {
         source={truncateText(rec.domain, 22)} />
     ));
 
+    let list = (
+      <List
+        recStartingPoint={1}
+        feed={this.props.feed}
+        hasImages={true}
+        hasBorders={true}
+        items={this.props.items}
+        type={`List`} />
+    );
+
     return (
       <div>
         <div className="ds-header">{this.props.title}</div>
@@ -71,8 +82,8 @@ export class Hero extends React.PureComponent {
               )}
             </div>
           </a>
-          <div className="cards">
-            { cards }
+          <div className={`${this.props.subComponentType}`}>
+            { this.props.subComponentType === `cards` ? cards : list }
           </div>
         </div>
       </div>

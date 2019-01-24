@@ -60,7 +60,7 @@ export function _List(props) {
 
   const recs = feed.data.recommendations;
 
-  let recMarkup = recs.slice(0, props.items).map((rec, index) => (
+  let recMarkup = recs.slice(props.recStartingPoint, props.items).map((rec, index) => (
     <ListItem {...rec} key={`ds-list-item-${index}`} index={index} type={props.type} dispatch={props.dispatch} />)
   );
 
@@ -79,6 +79,7 @@ export function _List(props) {
 }
 
 _List.defaultProps = {
+  recStartingPoint: 0,
   hasBorders: false, // Display lines separating each item
   hasImages: false, // Display images for each item
   hasNumbers: false, // Display numbers for each item
