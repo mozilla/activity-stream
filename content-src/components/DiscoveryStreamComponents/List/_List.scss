@@ -89,7 +89,7 @@ $item-line-height: 20;
 
 .ds-list-numbers {
   $counter-whitespace: ($item-line-height - $item-font-size) * 1px;
-  $counter-size: ($item-font-size) * 2px + $counter-whitespace;
+  $counter-size: 32px;
   $counter-padded-size: $counter-size + $counter-whitespace * 1.5;
 
   .ds-list-item {
@@ -185,6 +185,7 @@ $item-line-height: 20;
   }
 
   .ds-list-item-title {
+    font-weight: 600;
     margin-bottom: 8px;
   }
 

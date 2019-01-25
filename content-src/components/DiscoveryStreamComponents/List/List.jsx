@@ -35,11 +35,7 @@ export class ListItem extends React.PureComponent {
       <li className="ds-list-item">
         <a className="ds-list-item-link" href={this.props.url} onClick={this.onLinkClick}>
           <div className="ds-list-item-text">
-            <div className="ds-list-item-title">
-              <b>
-                {this.props.title}
-              </b>
-            </div>
+            <div className="ds-list-item-title">{this.props.title}</div>
             {this.props.excerpt && <div className="ds-list-item-excerpt">{truncateText(this.props.excerpt, 90)}</div>}
             <div className="ds-list-item-info">{this.props.domain}</div>
           </div>
