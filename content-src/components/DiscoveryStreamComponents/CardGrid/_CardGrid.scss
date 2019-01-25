@@ -3,6 +3,7 @@ $col4-header-font-size: 13;
 
 .ds-card-grid {
   display: grid;
+  grid-gap: 24px;
 
   .ds-card {
     background: $white;
@@ -41,7 +42,6 @@ $col4-header-font-size: 13;
   .ds-column-7 &,
   .ds-column-8 & {
     grid-template-columns: repeat(2, 1fr);
-    grid-gap: 24px;
   }
 
   // "Full width layout"
@@ -50,7 +50,6 @@ $col4-header-font-size: 13;
   .ds-column-11 &,
   .ds-column-12 & {
     grid-template-columns: repeat(4, 1fr);
-    grid-gap: 24px;
 
     .meta .title {
       @include limit-visibile-lines(2, $col4-header-line-height, $col4-header-font-size);
