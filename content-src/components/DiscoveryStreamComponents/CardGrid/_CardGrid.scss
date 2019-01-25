@@ -1,3 +1,6 @@
+$col4-header-line-height: 20;
+$col4-header-font-size: 13;
+
 .ds-card-grid {
   display: grid;
 
@@ -5,7 +8,16 @@
     background: $white;
     box-shadow: 0 1px 4px $grey-10-10;
     border-radius: 4px;
-    margin-bottom: 24px;
+  }
+
+  &.ds-card-grid-no-border {
+    .ds-card {
+      background: none;
+
+      .meta {
+        padding: 16px 0;
+      }
+    }
   }
 
   // "2/3 width layout"
@@ -25,8 +37,17 @@
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 24px;
 
+    .meta .title {
+      @include limit-visibile-lines(2, $col4-header-line-height, $col4-header-font-size);
+    }
+
     &.ds-card-grid-divisible-by-3 {
       grid-template-columns: repeat(3, 1fr);
+
+      .title {
+        font-size: 17px;
+        line-height: 24px;
+      }
     }
   }
 }

@@ -39,6 +39,7 @@ $excerpt-line-height: 20;
     .title {
       // show only 2 lines of copy
       @include limit-visibile-lines(2, $header-line-height, $header-font-size);
+      font-weight: 600;
     }
 
     .excerpt {
