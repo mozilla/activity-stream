@@ -12,11 +12,11 @@ export class Navigation extends React.PureComponent {
     const {links} = this.props || [];
     const {alignment} = this.props || "centered";
     return (
-      <span className={`ds-navigation ds-navigation-${alignment}`}>
+      <div className={`ds-navigation ds-navigation-${alignment}`}>
         <ul>
           {links && links.map(t => <Topic key={t.name} url={t.url} name={t.name} />)}
         </ul>
-      </span>
+      </div>
     );
   }
 }
