@@ -78,7 +78,7 @@ export class Hero extends React.PureComponent {
               {heroRec.context ? (
                 <p className="context">{truncateText(heroRec.context, 22)}</p>
               ) : (
-                <p>{truncateText(heroRec.domain, 22)}</p>
+                <p className="source">{truncateText(heroRec.domain, 22)}</p>
               )}
             </div>
           </a>
