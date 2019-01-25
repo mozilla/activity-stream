@@ -23,14 +23,6 @@ $item-line-height: 20;
     line-height: $line-height * 1px;
   }
 
-  .ds-list-item-excerpt {
-    @include limit-visibile-lines(2, $line-height, $font-size);
-  }
-
-  .ds-list-item-info {
-    @include limit-visibile-lines(1, $line-height, $font-size);
-  }
-
   .ds-list-item-title {
     @include limit-visibile-lines(2, $line-height, $font-size);
   }
@@ -103,7 +95,7 @@ $item-line-height: 20;
       border-radius: $counter-size;
       color: $white;
       content: counter(list);
-      font-size: 1.2em;
+      font-size: 17px;
       height: $counter-size;
       line-height: $counter-size;
       margin-inline-start: -$counter-padded-size;
@@ -173,11 +165,13 @@ $item-line-height: 20;
   }
 
   .ds-list-item-excerpt {
+    @include limit-visibile-lines(2, $item-line-height, $item-font-size);
     color: var(--newtab-text-secondary-color);
     margin-bottom: 8px;
   }
 
   .ds-list-item-info {
+    @include limit-visibile-lines(1, $item-line-height, $item-font-size);
     color: var(--newtab-text-secondary-color);
     text-overflow: ellipsis;
   }
