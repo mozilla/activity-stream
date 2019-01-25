@@ -2,11 +2,16 @@ import React from "react";
 
 export class SectionTitle extends React.PureComponent {
   render() {
-    const {header: {title, subtitle}} = this.props;
+    const {header} = this.props;
+
+    if (!header) {
+      return null;
+    }
+
     return (
       <div className="ds-section-title">
-        <div className="title">{title}</div>
-        {subtitle ? <div className="subtitle">{subtitle}</div> : null}
+        <div className="title">{header.title}</div>
+        {header.subtitle ? <div className="subtitle">{header.subtitle}</div> : null}
       </div>
     );
   }
