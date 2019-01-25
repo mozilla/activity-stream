@@ -5,6 +5,9 @@ $excerpt-font-size: 13;
 $excerpt-line-height: 20;
 
 .ds-card {
+  display: flex;
+  flex-direction: column;
+
   &:hover {
     header {
       color: $blue-60;
@@ -28,7 +31,14 @@ $excerpt-line-height: 20;
   }
 
   .meta {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     padding: 16px;
+
+    .info-wrap {
+      flex-grow: 1;
+    }
 
     .title {
       // show only 2 lines of copy
@@ -53,7 +63,7 @@ $excerpt-line-height: 20;
     font-size: $excerpt-font-size * 1px;
     line-height: $excerpt-line-height * 1px;
     color: $grey-50;
-    margin: 8px 0;
+    margin: 8px 0 0;
   }
 
   .context {
