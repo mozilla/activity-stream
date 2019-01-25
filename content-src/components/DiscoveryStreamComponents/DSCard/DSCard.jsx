@@ -1,10 +1,67 @@
-import {actionCreators as ac} from "common/Actions.jsm";
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import React from "react";
+
+const VISIBLE = "visible";
+const VISIBILITY_CHANGE_EVENT = "visibilitychange";
+const INTERSECTION_RATIO = 0.5;
 
 export class DSCard extends React.PureComponent {
   constructor(props) {
     super(props);
+
+    this.setupIntersectionObserver = this.setupIntersectionObserver.bind(this);
+    this.onIntersectionObserve = this.onIntersectionObserve.bind(this);
+    this.isIntersecting = this.isIntersecting.bind(this);
+    this.cardElementRef = this.cardElementRef.bind(this);
     this.onLinkClick = this.onLinkClick.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.document.visibilityState === VISIBLE) {
+      this.setupIntersectionObserver();
+    } else {
+      this._onVisibilityChange = () => {
+        if (this.props.document.visibilityState === VISIBLE) {
+          this.setupIntersectionObserver();
+          this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
+        }
+      };
+      this.props.document.addEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._onVisibilityChange) {
+      this.props.document.removeEventListener(VISIBILITY_CHANGE_EVENT, this._onVisibilityChange);
+    }
+    if (this._intersectionObserver) {
+      this._intersectionObserver.unobserve(this.cardElement);
+    }
+  }
+
+  setupIntersectionObserver() {
+    const options = {threshold: INTERSECTION_RATIO};
+    this._intersectionObserver = new IntersectionObserver(this.onIntersectionObserve, options);
+    this._intersectionObserver.observe(this.cardElement);
+  }
+
+  onIntersectionObserve(entries) {
+    for (let entry of entries) {
+      if (entry.isIntersecting && entry.intersectionRatio >= INTERSECTION_RATIO) {
+        this.isIntersecting();
+      }
+    }
+  }
+
+  isIntersecting() {
+    if (this.props.campaignId) {
+      this.props.dispatch(ac.OnlyToMain({type: at.DISCOVERY_STREAM_SPOC_IMPRESSION, data: {campaignId: this.props.campaignId}}));
+    }
+    this._intersectionObserver.unobserve(this.cardElement);
+  }
+
+  cardElementRef(element) {
+    this.cardElement = element;
   }
 
   onLinkClick(event) {
@@ -25,7 +82,7 @@ export class DSCard extends React.PureComponent {
 
   render() {
     return (
-      <a href={this.props.url} className="ds-card" onClick={this.onLinkClick}>
+      <a href={this.props.url} className="ds-card" onClick={this.onLinkClick} ref={this.cardElementRef}>
         <div className="img-wrapper">
           <div className="img" style={{backgroundImage: `url(${this.props.image_src}`}} />
         </div>
@@ -48,3 +105,7 @@ export class DSCard extends React.PureComponent {
     );
   }
 }
+
+DSCard.defaultProps = {
+  document: global.document,
+};
