@@ -5,13 +5,7 @@ $excerpt-font-size: 13;
 $excerpt-line-height: 20;
 
 .ds-card {
-  border: 5px solid transparent;
-
   &:hover {
-    border: 5px solid $grey-30;
-    box-shadow: 0 1px 4px $grey-30;
-    border-radius: 4px;
-
     header {
       color: $blue-60;
     }
