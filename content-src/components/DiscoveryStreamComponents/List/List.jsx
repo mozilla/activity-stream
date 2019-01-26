@@ -58,7 +58,8 @@ export function _List(props) {
 
   const recs = feed.data.recommendations;
 
-  let recMarkup = recs.slice(0, props.items).map((rec, index) => (
+  let recMarkup = recs.slice(props.recStartingPoint,
+                             props.recStartingPoint + props.items).map((rec, index) => (
     <ListItem key={`ds-list-item-${index}`}
       dispatch={props.dispatch}
       domain={rec.domain}
