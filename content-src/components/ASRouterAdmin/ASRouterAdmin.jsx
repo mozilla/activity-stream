@@ -111,9 +111,11 @@ export class ASRouterAdminInner extends React.PureComponent {
     this.onChangeTargetingParameters = this.onChangeTargetingParameters.bind(this);
     this.onChangeAttributionParameters = this.onChangeAttributionParameters.bind(this);
     this.setAttribution = this.setAttribution.bind(this);
+    this.setExperimentPref = this.setExperimentPref.bind(this);
     this.onCopyTargetingParams = this.onCopyTargetingParams.bind(this);
     this.onPasteTargetingParams = this.onPasteTargetingParams.bind(this);
     this.onNewTargetingParams = this.onNewTargetingParams.bind(this);
+    this.onChangeExperimentParameter = this.onChangeExperimentParameter.bind(this);
     this.state = {
       messageFilter: "all",
       evaluationStatus: {},
@@ -125,6 +127,10 @@ export class ASRouterAdminInner extends React.PureComponent {
         source: "addons.mozilla.org",
         campaign: "non-fx-button",
         content: "iridium@particlecore.github.io",
+      },
+      experimentParameters: {
+        preferenceName: "browser.newtabpage.activity-stream.discoverystream.config",
+        preferenceValue: "",
       },
     };
   }
@@ -198,6 +204,17 @@ export class ASRouterAdminInner extends React.PureComponent {
         expression: this.refs.expressionInput.value,
         context,
       },
+    });
+  }
+
+  onChangeExperimentParameter(event) {
+    const {name, value} = event.target;
+
+    this.setState(({experimentParameters}) => {
+      const updatedParameters = {...experimentParameters};
+      updatedParameters[name] = value;
+
+      return {experimentParameters: updatedParameters};
     });
   }
 
@@ -471,6 +488,10 @@ export class ASRouterAdminInner extends React.PureComponent {
     ASRouterUtils.sendMessage({type: "FORCE_ATTRIBUTION", data: this.state.attributionParameters});
   }
 
+  setExperimentPref() {
+    ASRouterUtils.sendMessage({type: "FORCE_EXPERIMENT", data: this.state.experimentParameters});
+  }
+
   renderPocketStory(story) {
     return (<tr className="message-item" key={story.guid}>
       <td className="message-id"><span>{story.guid} <br /></span></td>
@@ -524,6 +545,28 @@ export class ASRouterAdminInner extends React.PureComponent {
       </div>);
   }
 
+  renderExperimentsParameters() {
+    return (
+      <div>
+        <h2>Preference Experiment</h2>
+        <p>Simulate a Normady experiment enrollment that sets the value of a preference</p>
+        <table>
+          <tr>
+            <td>Preference name</td>
+            <td><input type="text" name="preferenceName" onChange={this.onChangeExperimentParameter} value={this.state.experimentParameters.preferenceName} /></td>
+          </tr>
+          <tr>
+            <td>Preference value</td>
+            <td><input type="text" name="preferenceValue" onChange={this.onChangeExperimentParameter} value={this.state.experimentParameters.preferenceValue} /></td>
+          </tr>
+          <tr>
+            <td><button className="ASRouterButton primary button" onClick={this.setExperimentPref}>Force Preference Experiment</button></td>
+          </tr>
+        </table>
+      </div>
+    );
+  }
+
   getSection() {
     const [section] = this.props.location.routes;
     switch (section) {
@@ -533,6 +576,7 @@ export class ASRouterAdminInner extends React.PureComponent {
           <button className="button" onClick={this.expireCache}>Expire Cache</button> (This expires the cache in ASR Targeting for bookmarks and top sites)
           {this.renderTargetingParameters()}
           {this.renderAttributionParamers()}
+          {this.renderExperimentsParameters()}
         </React.Fragment>);
       case "pocket":
         return (<React.Fragment>

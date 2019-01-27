@@ -12,6 +12,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   FxAccounts: "resource://gre/modules/FxAccounts.jsm",
   AppConstants: "resource://gre/modules/AppConstants.jsm",
   OS: "resource://gre/modules/osfile.jsm",
+  PreferenceExperimentAction: "resource://normandy/actions/PreferenceExperimentAction.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm");
@@ -1014,6 +1015,36 @@ class _ASRouter {
     await this.loadMessagesFromAllProviders();
   }
 
+  /**
+   * Force Normady experiment enrollment by setting a specific preference value
+   */
+  async forceExperimentEnrollment({preferenceName, preferenceValue}) {
+    function argumentsFactory() {
+      return {
+        slug: "asrouter-test",
+        preferenceName,
+        preferenceType: "string",
+        preferenceBranchType: "default",
+        branches: [
+          {slug: "asrouter-test", value: preferenceValue, ratio: 1},
+        ],
+        isHighPopulation: false,
+      };
+    }
+    function preferenceExperimentFactory(args) {
+      return {
+        id: 42,
+        name: "preference-experiment",
+        arguments: argumentsFactory(),
+      };
+    }
+
+    const action = new PreferenceExperimentAction();
+    const recipe = preferenceExperimentFactory();
+    await action.runRecipe(recipe);
+    return action.finalize();
+  }
+
   async handleUserAction({data: action, target}) {
     switch (action.type) {
       case ra.OPEN_PRIVATE_BROWSER_WINDOW:
@@ -1162,6 +1193,10 @@ class _ASRouter {
         break;
       case "FORCE_ATTRIBUTION":
         this.forceAttribution(action.data);
+        break;
+      case "FORCE_EXPERIMENT":
+        this.forceExperimentEnrollment(action.data);
+        break;
     }
   }
 }

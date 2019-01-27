@@ -1056,6 +1056,32 @@ describe("ASRouter", () => {
     });
   });
 
+  describe("#onMessage: FORCE_EXPERIMENT", () => {
+    it("should call forceExperimentEnrollment", async () => {
+      const stub = sandbox.stub(Router, "forceExperimentEnrollment");
+      const msg = fakeAsyncMessage({type: "FORCE_EXPERIMENT"});
+
+      await Router.onMessage(msg);
+
+      assert.calledOnce(stub);
+    });
+    it("should run a PreferenceExperimentAction", async () => {
+      const runRecipeStub = sandbox.stub().resolves();
+      const finalizeStub = sandbox.stub().resolves();
+      class PrefExpStub {
+        async runRecipe() { return runRecipeStub(); }
+        async finalize() { return finalizeStub(); }
+      }
+      globals.set("PreferenceExperimentAction", PrefExpStub);
+      const msg = fakeAsyncMessage({type: "FORCE_EXPERIMENT", data: {}});
+
+      await Router.onMessage(msg);
+
+      assert.calledOnce(runRecipeStub);
+      assert.calledOnce(finalizeStub);
+    });
+  });
+
   describe("_triggerHandler", () => {
     it("should call #onMessage with the correct trigger", () => {
       sinon.spy(Router, "onMessage");
