@@ -1,4 +1,5 @@
 import {DSCard} from "../DSCard/DSCard.jsx";
+import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 
 export class CardGrid extends React.PureComponent {
@@ -13,19 +14,21 @@ export class CardGrid extends React.PureComponent {
     }
 
     let cards = data.recommendations.slice(0, this.props.items).map((rec, index) => (
-      <DSCard
-        campaignId={rec.campaign_id}
-        key={`dscard-${index}`}
-        image_src={rec.image_src}
-        title={rec.title}
-        excerpt={rec.excerpt}
-        url={rec.url}
-        id={rec.id}
-        index={index}
-        type={this.props.type}
-        context={rec.context}
-        dispatch={this.props.dispatch}
-        source={rec.domain} />
+      <ImpressionStats key={`ds-cardgrid-imp-${index}`} rows={[rec]} dispatch={this.props.dispatch} source={this.props.type}>
+        <DSCard
+          campaignId={rec.campaign_id}
+          key={`dscard-${index}`}
+          image_src={rec.image_src}
+          title={rec.title}
+          excerpt={rec.excerpt}
+          url={rec.url}
+          id={rec.id}
+          index={index}
+          type={this.props.type}
+          context={rec.context}
+          dispatch={this.props.dispatch}
+          source={rec.domain} />
+      </ImpressionStats>
     ));
 
     let divisibility = ``;

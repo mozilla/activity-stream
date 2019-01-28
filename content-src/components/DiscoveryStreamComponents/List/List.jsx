@@ -1,5 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {connect} from "react-redux";
+import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 import {SafeAnchor} from "../SafeAnchor/SafeAnchor";
 import {SpocIntersectionObserver} from "content-src/components/DiscoveryStreamComponents/SpocIntersectionObserver/SpocIntersectionObserver";
@@ -68,18 +69,20 @@ export function _List(props) {
   const recs = feed.recommendations;
   let recMarkup = recs.slice(props.recStartingPoint,
                              props.recStartingPoint + props.items).map((rec, index) => (
-    <ListItem key={`ds-list-item-${index}`}
-      campaignId={rec.campaign_id}
-      dispatch={props.dispatch}
-      domain={rec.domain}
-      excerpt={rec.excerpt}
-      id={rec.id}
-      image_src={rec.image_src}
-      index={index}
-      title={rec.title}
-      context={rec.context}
-      type={props.type}
-      url={rec.url} />)
+    <ImpressionStats key={`ds-list-imp-${index}`} rows={[rec]} dispatch={props.dispatch} source={props.type}>
+      <ListItem key={`ds-list-item-${index}`}
+        campaignId={rec.campaign_id}
+        dispatch={props.dispatch}
+        domain={rec.domain}
+        excerpt={rec.excerpt}
+        id={rec.id}
+        image_src={rec.image_src}
+        index={index}
+        title={rec.title}
+        context={rec.context}
+        type={props.type}
+        url={rec.url} />
+    </ImpressionStats>)
   );
   const listStyles = [
     "ds-list",
