@@ -37,12 +37,7 @@ const TEST_GLOBAL = {
   ChromeUtils: {
     defineModuleGetter() {},
     generateQI() { return {}; },
-    import(str) {
-      if (str === "resource://services-settings/remote-settings.js") {
-        return {RemoteSettings: TEST_GLOBAL.RemoteSettings};
-      }
-      return {};
-    },
+    import() { return global; },
   },
   Components: {isSuccessCode: () => true},
   // eslint-disable-next-line object-shorthand
