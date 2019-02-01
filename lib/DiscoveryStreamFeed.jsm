@@ -15,6 +15,8 @@ const LAYOUT_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const COMPONENT_FEEDS_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const SPOCS_FEEDS_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const CONFIG_PREF_NAME = "browser.newtabpage.activity-stream.discoverystream.config";
+const PREF_SHOW_SPONSORED = "showSponsored";
+const PREF_OPT_OUT  = "discoverystream.optOut.0";
 
 this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   constructor() {
@@ -42,10 +44,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return this._prefCache.config;
   }
 
+  get active() {
+    // Combine user-set discovery opt-out with Mozilla-set config
+    return !this.store.getState().Prefs.values[PREF_OPT_OUT] && this.config.enabled;
+  }
+
   get showSpocs() {
-    // showSponsored is generally a use set spoc opt out,
-    // show_spocs is generally a mozilla set value.
-    return this.store.getState().Prefs.values.showSponsored && this.config.show_spocs;
+    // Combine user-set sponsored opt-out with Mozilla-set config
+    return this.store.getState().Prefs.values[PREF_SHOW_SPONSORED] && this.config.show_spocs;
   }
 
   setupPrefs() {
@@ -264,15 +270,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async onPrefChange() {
-    if (this.config.enabled) {
+    if (this.active) {
       // We always want to clear the cache if the pref has changed
       await this.clearCache();
       // Load data from all endpoints
       await this.enable();
-    }
-
-    // Clear state and relevant listeners if config.enabled = false.
-    if (this.loaded && !this.config.enabled) {
+    // Clear state and relevant listeners if we should no longer be active
+    } else if (this.loaded) {
       await this.disable();
     }
   }
@@ -283,14 +287,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         // During the initialization of Firefox:
         // 1. Set-up listeners and initialize the redux state for config;
         this.setupPrefs();
-        // 2. If config.enabled is true, start loading data.
-        if (this.config.enabled) {
+        // 2. If we should be active, start loading data.
+        if (this.active) {
           await this.enable();
         }
         break;
       case at.SYSTEM_TICK:
         // Only refresh if we loaded once in .enable()
-        if (this.config.enabled && this.loaded && await this.checkIfAnyCacheExpired()) {
+        if (this.active && this.loaded && await this.checkIfAnyCacheExpired()) {
           await this.refreshAll({updateOpenTabs: false});
         }
         break;
@@ -301,14 +305,22 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         // When the config pref changes, load or unload data as needed.
         await this.onPrefChange();
         break;
+      case at.DISCOVERY_STREAM_OPT_OUT:
+        this.store.dispatch(ac.SetPref(PREF_OPT_OUT, true));
+        break;
       case at.UNINIT:
         // When this feed is shutting down:
         this.uninitPrefs();
         break;
       case at.PREF_CHANGED:
-        // Check if spocs was disabled. Remove them if they were.
-        if (action.data.name === "showSponsored") {
-          await this.loadSpocs();
+        switch (action.data.name) {
+          case PREF_OPT_OUT:
+            await this.onPrefChange();
+            break;
+          // Check if spocs was disabled. Remove them if they were.
+          case PREF_SHOW_SPONSORED:
+            await this.loadSpocs();
+            break;
         }
         break;
     }

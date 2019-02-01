@@ -6,7 +6,7 @@
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 ChromeUtils.defineModuleGetter(this, "PluralForm", "resource://gre/modules/PluralForm.jsm");
-const {actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
+const {actionCreators: ac, actionTypes: at} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
@@ -105,7 +105,8 @@ this.AboutPreferences = class AboutPreferences {
 
   async observe(window) {
     this.renderPreferences(window, await this.strings, [...PREFS_BEFORE_SECTIONS,
-      ...this.store.getState().Sections, ...PREFS_AFTER_SECTIONS], this.store.getState().DiscoveryStream.config.enabled);
+      ...this.store.getState().Sections, ...PREFS_AFTER_SECTIONS],
+      this.store.getState().DiscoveryStream.active);
   }
 
   /**
@@ -133,7 +134,7 @@ this.AboutPreferences = class AboutPreferences {
    * Render preferences to an about:preferences content window with the provided
    * strings and preferences structure.
    */
-  renderPreferences({document, Preferences, gHomePane}, strings, prefStructure, discoveryStreamEnabled) {
+  renderPreferences({document, Preferences, gHomePane}, strings, prefStructure, discoveryStreamActive) {
     // Helper to create a new element and append it
     const createAppend = (tag, parent) => parent.appendChild(
       document.createXULElement(tag));
@@ -265,7 +266,7 @@ this.AboutPreferences = class AboutPreferences {
       });
     });
 
-    if (discoveryStreamEnabled) {
+    if (discoveryStreamActive) {
       // If Discovery Stream is enabled hide Home Content options
       contentsGroup.style.visibility = "hidden";
 
@@ -284,6 +285,7 @@ this.AboutPreferences = class AboutPreferences {
       createAppend("hbox", discoveryGroup)
         .appendChild(contentDiscoveryButton)
         .addEventListener("click", async () => {
+          this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_OPT_OUT}));
           const activeExperiments = await PreferenceExperiments.getAllActive();
           const experiment = activeExperiments.find(exp => exp.preferenceName === DISCOVERY_STREAM_CONFIG_PREF_NAME);
           // Unconditionally update the UI for a fast user response and in

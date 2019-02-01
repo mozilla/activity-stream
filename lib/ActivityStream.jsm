@@ -222,6 +222,10 @@ const PREFS_CONFIG = new Map([
       layout_endpoint: "https://getpocket.com/v3/newtab/layout?version=1&consumer_key=40249-e88c401e1b1f2242d9e441c4&layout_variant=basic",
     }),
   }],
+  ["discoverystream.optOut.0", {
+    title: "Opt out of new layout v0",
+    value: false,
+  }],
 ]);
 
 // Array of each feed's FEEDS_CONFIG factory and values to add to PREFS_CONFIG

@@ -664,6 +664,11 @@ describe("Reducers", () => {
       assert.equal(state.layout[0], "test");
       assert.equal(state.lastUpdated, 123);
     });
+    it("should set active to false with DISCOVERY_STREAM_OPT_OUT", () => {
+      const state = DiscoveryStream(undefined, {type: at.DISCOVERY_STREAM_OPT_OUT, data: {active: true}});
+
+      assert.isFalse(state.active);
+    });
     it("should set config data with DISCOVERY_STREAM_CONFIG_CHANGE", () => {
       const state = DiscoveryStream(undefined, {type: at.DISCOVERY_STREAM_CONFIG_CHANGE, data: {enabled: true}});
       assert.deepEqual(state.config, {enabled: true});

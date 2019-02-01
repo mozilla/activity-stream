@@ -153,7 +153,7 @@ export class BaseContent extends React.PureComponent {
 
     const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
     const noSectionsEnabled = !prefs["feeds.topsites"] && props.Sections.filter(section => section.enabled).length === 0;
-    const isDiscoveryStream = props.DiscoveryStream.config && props.DiscoveryStream.config.enabled;
+    const isDiscoveryStream = props.DiscoveryStream.active;
     const searchHandoffEnabled = prefs["improvesearch.handoffToAwesomebar"];
 
     if (isDiscoveryStream) {

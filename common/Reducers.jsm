@@ -49,6 +49,8 @@ const INITIAL_STATE = {
   },
   // This is the new pocket configurable layout state.
   DiscoveryStream: {
+    // Indicates whether the user should see the new layout
+    active: false,
     // This is a JSON-parsed copy of the discoverystream.config pref value.
     config: {enabled: false, layout_endpoint: ""},
     layout: [],
@@ -461,9 +463,11 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
     case at.DISCOVERY_STREAM_CONFIG_SETUP:
       return {...prevState, config: action.data || {}};
     case at.DISCOVERY_STREAM_LAYOUT_UPDATE:
-      return {...prevState, lastUpdated: action.data.lastUpdated || null, layout: action.data.layout || []};
+      return {...prevState, active: true, lastUpdated: action.data.lastUpdated || null, layout: action.data.layout || []};
     case at.DISCOVERY_STREAM_LAYOUT_RESET:
-      return {...prevState, lastUpdated: INITIAL_STATE.DiscoveryStream.lastUpdated, layout: INITIAL_STATE.DiscoveryStream.layout};
+      return {...prevState, active: INITIAL_STATE.DiscoveryStream.active, lastUpdated: INITIAL_STATE.DiscoveryStream.lastUpdated, layout: INITIAL_STATE.DiscoveryStream.layout};
+    case at.DISCOVERY_STREAM_OPT_OUT:
+      return {...prevState, active: false};
     case at.DISCOVERY_STREAM_FEEDS_UPDATE:
       return {...prevState, feeds: action.data || prevState.feeds};
     case at.DISCOVERY_STREAM_SPOCS_ENDPOINT:

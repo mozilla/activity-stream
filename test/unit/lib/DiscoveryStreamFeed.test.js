@@ -234,11 +234,6 @@ describe("DiscoveryStreamFeed", () => {
 
       assert.isTrue(feed.showSpocs);
     });
-    it("should fire loadSpocs is showSponsored pref changes", async () => {
-      sandbox.stub(feed, "loadSpocs").returns(Promise.resolve());
-      await feed.onAction({type: at.PREF_CHANGED, data: {name: "showSponsored"}});
-      assert.calledOnce(feed.loadSpocs);
-    });
   });
 
   describe("#clearCache", () => {
@@ -336,12 +331,43 @@ describe("DiscoveryStreamFeed", () => {
       assert.isFalse(feed.loaded);
     });
   });
+
+  describe("#onAction: DISCOVERY_STREAM_OPT_OUT", () => {
+    it("should update opt-out pref", async () => {
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({type: at.DISCOVERY_STREAM_OPT_OUT});
+
+      assert.calledWithMatch(feed.store.dispatch, {
+        data: {value: true},
+        type: at.SET_PREF,
+      });
+    });
+  });
+
   describe("#onAction: UNINIT", () => {
     it("should remove pref listeners", async () => {
       sandbox.stub(global.Services.prefs, "removeObserver");
 
       await feed.onAction({type: at.UNINIT});
       assert.calledWith(global.Services.prefs.removeObserver, CONFIG_PREF_NAME, feed);
+    });
+  });
+
+  describe("#onAction: PREF_CHANGED", () => {
+    it("should handle pref changes when opt out changes", async () => {
+      sandbox.stub(feed, "onPrefChange").returns(Promise.resolve());
+
+      await feed.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.optOut.0"}});
+
+      assert.calledOnce(feed.onPrefChange);
+    });
+    it("should fire loadSpocs is showSponsored pref changes", async () => {
+      sandbox.stub(feed, "loadSpocs").returns(Promise.resolve());
+
+      await feed.onAction({type: at.PREF_CHANGED, data: {name: "showSponsored"}});
+
+      assert.calledOnce(feed.loadSpocs);
     });
   });
 
