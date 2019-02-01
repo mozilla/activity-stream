@@ -1,9 +1,20 @@
 .ds-message {
   .title {
-    line-height: 24px;
-    font-size: 17px;
-    color: $grey-90;
-    font-weight: 600;
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 16px;
+      height: 16px;
+      margin: 0 6px 0 0;
+    }
+
+    span {
+      line-height: 24px;
+      font-size: 17px;
+      color: $grey-90;
+      font-weight: 600;
+    }
   }
 
   .subtitle {
@@ -12,8 +23,13 @@
     color: $grey-50;
     margin: 0;
 
-    a::before {
+    span::after {
       content: ' ';
+    }
+
+    a:hover,
+    a:focus {
+      text-decoration: underline;
     }
   }
 }
