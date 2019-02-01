@@ -1,0 +1,19 @@
+.ds-message {
+  .title {
+    line-height: 24px;
+    font-size: 17px;
+    color: $grey-90;
+    font-weight: 600;
+  }
+
+  .subtitle {
+    line-height: 20px;
+    font-size: 13px;
+    color: $grey-50;
+    margin: 0;
+
+    a::before {
+      content: ' ';
+    }
+  }
+}
