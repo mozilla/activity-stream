@@ -657,6 +657,10 @@ this.TopStoriesFeed = class TopStoriesFeed {
         }
         break;
       case at.TELEMETRY_IMPRESSION_STATS: {
+        // We want to make sure we only track impressions from Top Stories,
+        // otherwise unexpected things that are not properly handled can happen.
+        // Example: Impressions from spocs on Discovery Stream can cause the
+        // Top Stories impressions pref to continuously grow, see bug #1523408
         if (action.data.source === IMPRESSION_SOURCE) {
           const payload = action.data;
           const viewImpression = !("click" in payload || "block" in payload || "pocket" in payload);
