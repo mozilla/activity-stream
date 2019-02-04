@@ -3,23 +3,29 @@ import {combineReducers, createStore} from "redux";
 import {DiscoveryStreamFeed} from "lib/DiscoveryStreamFeed.jsm";
 import {reducers} from "common/Reducers.jsm";
 
-const CONFIG_PREF_NAME = "browser.newtabpage.activity-stream.discoverystream.config";
-const SPOC_IMPRESSION_TRACKING_PREF = "browser.newtabpage.activity-stream.discoverystream.spoc.impressions";
+const CONFIG_PREF_NAME = "discoverystream.config";
+const SPOC_IMPRESSION_TRACKING_PREF = "discoverystream.spoc.impressions";
 const THIRTY_MINUTES = 30 * 60 * 1000;
 
 describe("DiscoveryStreamFeed", () => {
   let feed;
   let sandbox;
-  let configPrefStub;
   let fetchStub;
   let clock;
+  const setPref = (name, value) => {
+    const action = {
+      type: at.PREF_CHANGED,
+      data: {
+        name,
+        value: typeof value === "object" ? JSON.stringify(value) : value,
+      },
+    };
+    feed.store.dispatch(action);
+    feed.onAction(action);
+  };
 
   beforeEach(() => {
-    // Pref
     sandbox = sinon.createSandbox();
-    configPrefStub = sandbox.stub(global.Services.prefs, "getStringPref")
-      .withArgs(CONFIG_PREF_NAME)
-      .returns(JSON.stringify({enabled: false, show_spocs: false, layout_endpoint: "foo.com"}));
 
     // Fetch
     fetchStub = sandbox.stub(global, "fetch");
@@ -29,22 +35,18 @@ describe("DiscoveryStreamFeed", () => {
 
     // Feed
     feed = new DiscoveryStreamFeed();
-    feed.store = createStore(combineReducers(reducers));
+    feed.store = createStore(combineReducers(reducers), {
+      Prefs: {
+        values: {
+          [CONFIG_PREF_NAME]: JSON.stringify({enabled: false, show_spocs: false, layout_endpoint: "foo"}),
+        },
+      },
+    });
   });
 
   afterEach(() => {
     clock.restore();
     sandbox.restore();
-  });
-
-  describe("#observe", () => {
-    it("should update state.DiscoveryStream.config when the pref changes", async () => {
-      configPrefStub.returns(JSON.stringify({enabled: true, show_spocs: false, layout_endpoint: "foo"}));
-
-      feed.observe(null, null, CONFIG_PREF_NAME);
-
-      assert.deepEqual(feed.store.getState().DiscoveryStream.config, {enabled: true, show_spocs: false, layout_endpoint: "foo"});
-    });
   });
 
   describe("#loadLayout", () => {
@@ -235,11 +237,6 @@ describe("DiscoveryStreamFeed", () => {
 
       assert.isTrue(feed.showSpocs);
     });
-    it("should fire loadSpocs is showSponsored pref changes", async () => {
-      sandbox.stub(feed, "loadSpocs").returns(Promise.resolve());
-      await feed.onAction({type: at.PREF_CHANGED, data: {name: "showSponsored"}});
-      assert.calledOnce(feed.loadSpocs);
-    });
   });
 
   describe("#clearCache", () => {
@@ -425,7 +422,7 @@ describe("DiscoveryStreamFeed", () => {
 
   describe("#writeImpressionsPref", () => {
     it("should call Services.prefs.setStringPref", () => {
-      sandbox.stub(global.Services.prefs, "setStringPref").returns();
+      sandbox.spy(feed.store, "dispatch");
       const fakeImpressions = {
         "foo": [Date.now() - 1],
         "bar": [Date.now() - 1],
@@ -433,7 +430,13 @@ describe("DiscoveryStreamFeed", () => {
 
       feed.writeImpressionsPref(SPOC_IMPRESSION_TRACKING_PREF, fakeImpressions);
 
-      assert.calledWith(global.Services.prefs.setStringPref, SPOC_IMPRESSION_TRACKING_PREF, JSON.stringify(fakeImpressions));
+      assert.calledWithMatch(feed.store.dispatch, {
+        data: {
+          name: SPOC_IMPRESSION_TRACKING_PREF,
+          value: JSON.stringify(fakeImpressions),
+        },
+        type: at.SET_PREF,
+      });
     });
   });
 
@@ -443,7 +446,7 @@ describe("DiscoveryStreamFeed", () => {
         "foo": [Date.now() - 1],
         "bar": [Date.now() - 1],
       };
-      configPrefStub.withArgs(SPOC_IMPRESSION_TRACKING_PREF).returns(JSON.stringify(fakeImpressions));
+      setPref(SPOC_IMPRESSION_TRACKING_PREF, fakeImpressions);
 
       const result = feed.readImpressionsPref(SPOC_IMPRESSION_TRACKING_PREF);
 
@@ -513,28 +516,45 @@ describe("DiscoveryStreamFeed", () => {
     it("should be .loaded=false before initialization", () => {
       assert.isFalse(feed.loaded);
     });
-    it("should load data, add pref observer, and set .loaded=true if config.enabled is true", async () => {
+    it("should load data and set .loaded=true if config.enabled is true", async () => {
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      setPref(CONFIG_PREF_NAME, {enabled: true});
       sandbox.stub(feed, "loadLayout").returns(Promise.resolve());
-      sandbox.stub(global.Services.prefs, "addObserver");
 
       await feed.onAction({type: at.INIT});
 
       assert.calledOnce(feed.loadLayout);
-      assert.calledWith(global.Services.prefs.addObserver, CONFIG_PREF_NAME, feed);
       assert.isTrue(feed.loaded);
     });
   });
 
-  describe("#onAction: DISCOVERY_STREAM_CONFIG_SET_VALUE", () => {
+  describe("#onAction: DISCOVERY_STREAM_CONFIG_SET_VALUE", async () => {
     it("should add the new value to the pref without changing the existing values", async () => {
-      sandbox.stub(global.Services.prefs, "setStringPref");
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      sandbox.spy(feed.store, "dispatch");
+      setPref(CONFIG_PREF_NAME, {enabled: true, other: "value"});
 
       await feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_SET_VALUE, data: {name: "layout_endpoint", value: "foo.com"}});
 
-      assert.calledWith(global.Services.prefs.setStringPref, CONFIG_PREF_NAME, JSON.stringify({enabled: true, layout_endpoint: "foo.com"}));
+      assert.calledWithMatch(feed.store.dispatch, {
+        data: {
+          name: CONFIG_PREF_NAME,
+          value: JSON.stringify({enabled: true, other: "value", layout_endpoint: "foo.com"}),
+        },
+        type: at.SET_PREF,
+      });
+    });
+    it("should disable opt-out when setting config enabled", () => {
+      sandbox.spy(feed.store, "dispatch");
+
+      feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_SET_VALUE, data: {name: "enabled", value: true}});
+
+      assert.calledWithMatch(feed.store.dispatch, {
+        data: {
+          name: "discoverystream.optOut.0",
+          value: false,
+        },
+        type: at.SET_PREF,
+      });
     });
   });
 
@@ -547,7 +567,7 @@ describe("DiscoveryStreamFeed", () => {
 
       // force clear cached pref value
       feed._prefCache = {};
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      setPref(CONFIG_PREF_NAME, {enabled: true});
 
       sandbox.stub(feed, "clearCache").returns(Promise.resolve());
       sandbox.stub(feed, "loadLayout").returns(Promise.resolve());
@@ -561,7 +581,7 @@ describe("DiscoveryStreamFeed", () => {
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
       // force clear cached pref value
       feed._prefCache = {};
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      setPref(CONFIG_PREF_NAME, {enabled: true});
 
       sandbox.stub(feed, "clearCache").returns(Promise.resolve());
       await feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_CHANGE});
@@ -572,13 +592,13 @@ describe("DiscoveryStreamFeed", () => {
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
       // force clear cached pref value
       feed._prefCache = {};
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      setPref(CONFIG_PREF_NAME, {enabled: true});
 
       await feed.onAction({type: at.INIT});
       assert.isTrue(feed.loaded);
 
       feed._prefCache = {};
-      configPrefStub.returns(JSON.stringify({enabled: false}));
+      setPref(CONFIG_PREF_NAME, {enabled: false});
       sandbox.stub(feed, "clearCache").returns(Promise.resolve());
       sandbox.stub(feed, "loadLayout").returns(Promise.resolve());
       await feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_CHANGE});
@@ -588,19 +608,59 @@ describe("DiscoveryStreamFeed", () => {
       assert.isFalse(feed.loaded);
     });
   });
+
+  describe("#onAction: DISCOVERY_STREAM_OPT_OUT", () => {
+    it("should update opt-out pref", async () => {
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({type: at.DISCOVERY_STREAM_OPT_OUT});
+
+      assert.calledWithMatch(feed.store.dispatch, {
+        data: {
+          name: "discoverystream.optOut.0",
+          value: true,
+        },
+        type: at.SET_PREF,
+      });
+    });
+  });
+
   describe("#onAction: UNINIT", () => {
-    it("should remove pref listeners", async () => {
-      sandbox.stub(global.Services.prefs, "removeObserver");
+    it("should reset pref cache", async () => {
+      feed._prefCache = {cached: "value"};
 
       await feed.onAction({type: at.UNINIT});
-      assert.calledWith(global.Services.prefs.removeObserver, CONFIG_PREF_NAME, feed);
+
+      assert.deepEqual(feed._prefCache, {});
+    });
+  });
+
+  describe("#onAction: PREF_CHANGED", () => {
+    it("should update state.DiscoveryStream.config when the pref changes", async () => {
+      setPref(CONFIG_PREF_NAME, {enabled: true, show_spocs: false, layout_endpoint: "foo"});
+
+      assert.deepEqual(feed.store.getState().DiscoveryStream.config, {enabled: true, show_spocs: false, layout_endpoint: "foo"});
+    });
+    it("should handle pref changes when opt out changes", async () => {
+      setPref(CONFIG_PREF_NAME, {enabled: true, show_spocs: false, layout_endpoint: "foo"});
+
+      setPref("discoverystream.optOut.0", true);
+
+      assert.deepEqual(feed.store.getState().DiscoveryStream.config, {enabled: false, show_spocs: false, layout_endpoint: "foo"});
+    });
+    it("should fire loadSpocs is showSponsored pref changes", async () => {
+      sandbox.stub(feed, "loadSpocs").returns(Promise.resolve());
+
+      await feed.onAction({type: at.PREF_CHANGED, data: {name: "showSponsored"}});
+
+      assert.calledOnce(feed.loadSpocs);
     });
   });
 
   describe("#onAction: SYSTEM_TICK", () => {
     it("should not refresh if DiscoveryStream has not been loaded", async () => {
       sandbox.stub(feed, "refreshAll").resolves();
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      setPref(CONFIG_PREF_NAME, {enabled: true});
 
       await feed.onAction({type: at.SYSTEM_TICK});
       assert.notCalled(feed.refreshAll);
@@ -608,7 +668,7 @@ describe("DiscoveryStreamFeed", () => {
 
     it("should not refresh if no caches are expired", async () => {
       sandbox.stub(feed.cache, "set").resolves();
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      setPref(CONFIG_PREF_NAME, {enabled: true});
 
       await feed.onAction({type: at.INIT});
 
@@ -621,7 +681,7 @@ describe("DiscoveryStreamFeed", () => {
 
     it("should refresh if DiscoveryStream has been loaded at least once and a cache has expired", async () => {
       sandbox.stub(feed.cache, "set").resolves();
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      setPref(CONFIG_PREF_NAME, {enabled: true});
 
       await feed.onAction({type: at.INIT});
 
@@ -634,7 +694,7 @@ describe("DiscoveryStreamFeed", () => {
 
     it("should refresh and not update open tabs if DiscoveryStream has been loaded at least once", async () => {
       sandbox.stub(feed.cache, "set").resolves();
-      configPrefStub.returns(JSON.stringify({enabled: true}));
+      setPref(CONFIG_PREF_NAME, {enabled: true});
 
       await feed.onAction({type: at.INIT});
 
