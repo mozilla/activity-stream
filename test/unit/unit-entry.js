@@ -218,8 +218,8 @@ const TEST_GLOBAL = {
       }),
     },
     search: {
-      init(cb) { cb(); },
-      getVisibleEngines: () => [{identifier: "google"}, {identifier: "bing"}],
+      init() { return Promise.resolve(); },
+      getVisibleEngines: () => Promise.resolve([{identifier: "google"}, {identifier: "bing"}]),
       defaultEngine: {
         identifier: "google",
         searchForm: "https://www.google.com/search?q=&ie=utf-8&oe=utf-8&client=firefox-b",
