@@ -34,11 +34,7 @@ Please note that some targeting attributes require stricter controls on the tele
 ## Detailed usage
 
 ### `addonsInfo`
-Provides information about the add-ons the user has installed.
-
-Note that the `name`, `userDisabled`, and `installDate` is only available if `isFullData` is `true` (this is usually not the case right at start-up).
-
-**Due to an existing bug, `userDisabled` is not currently available**
+Provides information about the add-ons the user has installed
 
 #### Examples
 * Has the user installed the unicorn addon?
@@ -48,15 +44,13 @@ addonsInfo.addons["unicornaddon@mozilla.org"]
 
 * Has the user installed and disabled the unicorn addon?
 ```java
-addonsInfo.isFullData && addonsInfo.addons["unicornaddon@mozilla.org"].userDisabled
+addonsInfo.addons["unicornaddon@mozilla.org"].userDisabled
 ```
 
 #### Definition
 ```ts
 declare const addonsInfo: Promise<AddonsInfoResponse>;
 interface AddonsInfoResponse {
-  // Does this include extra information requiring I/O?
-  isFullData: boolean;
   // addonId should be something like activity-stream@mozilla.org
   [addonId: string]: {
     // Version of the add-on
@@ -70,7 +64,6 @@ interface AddonsInfoResponse {
     // The name of the add-on
     name: string;
     // Is the add-on disabled?
-    // CURRENTLY UNAVAILABLE due to an outstanding bug
     userDisabled: boolean;
     // When was it installed? e.g. "2018-03-10T03:41:06.000Z"
     installDate: string;

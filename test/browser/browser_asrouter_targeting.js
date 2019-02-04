@@ -251,9 +251,9 @@ add_task(async function checkAddonsInfo() {
     AddonManager.installTemporaryAddon(xpi),
   ]);
 
-  const {addons} = await AddonManager.getActiveAddons(["extension", "service"]);
+  const addons = await AddonManager.getAddonsByTypes(["extension", "service"]);
 
-  const {addons: asRouterAddons, isFullData} = await ASRouterTargeting.Environment.addonsInfo;
+  const {addons: asRouterAddons} = await ASRouterTargeting.Environment.addonsInfo;
 
   ok(addons.every(({id}) => asRouterAddons[id]), "should contain every addon");
 
@@ -273,11 +273,6 @@ add_task(async function checkAddonsInfo() {
 
   ok(Object.prototype.hasOwnProperty.call(testAddon, "isWebExtension") && testAddon.isWebExtension === true,
     "should correctly provide `isWebExtension` property");
-
-  // As we installed our test addon the addons database must be initialised, so
-  // (in this test environment) we expect to receive "full" data
-
-  ok(isFullData, "should receive full data");
 
   ok(Object.prototype.hasOwnProperty.call(testAddon, "name") && testAddon.name === FAKE_NAME,
     "should correctly provide `name` property from full data");

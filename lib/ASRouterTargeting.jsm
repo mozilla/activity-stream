@@ -214,8 +214,8 @@ const TargetingGetters = {
     return Services.prefs.getBoolPref("xpinstall.enabled", true);
   },
   get addonsInfo() {
-    return AddonManager.getActiveAddons(["extension", "service"])
-      .then(({addons, fullData}) => {
+    return AddonManager.getAddonsByTypes(["extension", "service"])
+      .then(addons => {
         const info = {};
         for (const addon of addons) {
           info[addon.id] = {
@@ -223,16 +223,12 @@ const TargetingGetters = {
             type: addon.type,
             isSystem: addon.isSystem,
             isWebExtension: addon.isWebExtension,
+            name: addon.name,
+            userDisabled: addon.userDisabled,
+            installDate: addon.installDate,
           };
-          if (fullData) {
-            Object.assign(info[addon.id], {
-              name: addon.name,
-              userDisabled: addon.userDisabled,
-              installDate: addon.installDate,
-            });
-          }
         }
-        return {addons: info, isFullData: fullData};
+        return {addons: info};
       });
   },
   get searchEngines() {
