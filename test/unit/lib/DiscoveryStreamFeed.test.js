@@ -370,11 +370,11 @@ describe("DiscoveryStreamFeed", () => {
   });
 
   describe("#cleanUpCampaignImpressionPref", () => {
-    it("should remove impressions no longer being used", async () => {
+    it("should remove campaign-3 because it is no longer being used", async () => {
       const fakeSpocs = {
         spocs: [
           {
-            campaign_id: 1,
+            campaign_id: "campaign-1",
             caps: {
               lifetime: 3,
               campaign: {
@@ -384,7 +384,7 @@ describe("DiscoveryStreamFeed", () => {
             },
           },
           {
-            campaign_id: 2,
+            campaign_id: "campaign-2",
             caps: {
               lifetime: 3,
               campaign: {
@@ -396,15 +396,15 @@ describe("DiscoveryStreamFeed", () => {
         ],
       };
       const fakeImpressions = {
-        3: [Date.now() - 1],
-        4: [Date.now() - 1],
+        "campaign-2": [Date.now() - 1],
+        "campaign-3": [Date.now() - 1],
       };
       sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
       sandbox.stub(feed, "writeImpressionsPref").returns();
 
       feed.cleanUpCampaignImpressionPref(fakeSpocs);
 
-      assert.calledWith(feed.writeImpressionsPref, SPOC_IMPRESSION_TRACKING_PREF, {});
+      assert.calledWith(feed.writeImpressionsPref, SPOC_IMPRESSION_TRACKING_PREF, { "campaign-2": [-1] });
     });
   });
 

@@ -339,8 +339,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   cleanUpCampaignImpressionPref(data) {
     if (data.spocs && data.spocs.length) {
-      const campaignIds = new Set(new Map().set(data.spocs.map(s => `${s.campaign_id}`)).values());
-      this.cleanUpImpressionPref(id => !campaignIds.has(id), SPOC_IMPRESSION_TRACKING_PREF);
+      const campaignIds = data.spocs.map(s => `${s.campaign_id}`);
+      this.cleanUpImpressionPref(id => !campaignIds.includes(id), SPOC_IMPRESSION_TRACKING_PREF);
     }
   }
 
