@@ -106,7 +106,7 @@ this.AboutPreferences = class AboutPreferences {
   async observe(window) {
     this.renderPreferences(window, await this.strings, [...PREFS_BEFORE_SECTIONS,
       ...this.store.getState().Sections, ...PREFS_AFTER_SECTIONS],
-      this.store.getState().DiscoveryStream.active);
+      this.store.getState().DiscoveryStream.config.active);
   }
 
   /**

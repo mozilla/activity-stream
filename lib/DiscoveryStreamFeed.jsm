@@ -35,6 +35,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
     try {
       this._prefCache.config = JSON.parse(Services.prefs.getStringPref(CONFIG_PREF_NAME, ""));
+      // Combine user-set discovery opt-out with Mozilla-set config
+      this._prefCache.config.active = !this.store.getState().Prefs.values[PREF_OPT_OUT] && this.config.enabled;
     } catch (e) {
       // istanbul ignore next
       this._prefCache.config = {};
@@ -44,11 +46,6 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return this._prefCache.config;
   }
 
-  get active() {
-    // Combine user-set discovery opt-out with Mozilla-set config
-    return !this.store.getState().Prefs.values[PREF_OPT_OUT] && this.config.enabled;
-  }
-
   get showSpocs() {
     // Combine user-set sponsored opt-out with Mozilla-set config
     return this.store.getState().Prefs.values[PREF_SHOW_SPONSORED] && this.config.show_spocs;
@@ -56,18 +53,20 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   setupPrefs() {
     Services.prefs.addObserver(CONFIG_PREF_NAME, this);
+    Services.prefs.addObserver(PREF_OPT_OUT, this);
     // Send the initial state of the pref on our reducer
     this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_CONFIG_SETUP, data: this.config}));
   }
 
   uninitPrefs() {
     Services.prefs.removeObserver(CONFIG_PREF_NAME, this);
+    Services.prefs.removeObserver(PREF_OPT_OUT, this);
     // Reset in-memory cache
     this._prefCache = {};
   }
 
   observe(aSubject, aTopic, aPrefName) {
-    if (aPrefName === CONFIG_PREF_NAME) {
+    if (aPrefName === CONFIG_PREF_NAME || aPrefName === PREF_OPT_OUT) {
       this._prefCache.config = null;
       this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_CONFIG_CHANGE, data: this.config}));
     }
@@ -270,7 +269,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async onPrefChange() {
-    if (this.active) {
+    if (this.config.active) {
       // We always want to clear the cache if the pref has changed
       await this.clearCache();
       // Load data from all endpoints
@@ -288,13 +287,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         // 1. Set-up listeners and initialize the redux state for config;
         this.setupPrefs();
         // 2. If we should be active, start loading data.
-        if (this.active) {
+        if (this.config.active) {
           await this.enable();
         }
         break;
       case at.SYSTEM_TICK:
         // Only refresh if we loaded once in .enable()
-        if (this.active && this.loaded && await this.checkIfAnyCacheExpired()) {
+        if (this.config.active && this.loaded && await this.checkIfAnyCacheExpired()) {
           await this.refreshAll({updateOpenTabs: false});
         }
         break;
