@@ -374,7 +374,7 @@ describe("DiscoveryStreamFeed", () => {
       const fakeSpocs = {
         spocs: [
           {
-            campaign_id: "new-1",
+            campaign_id: 1,
             caps: {
               lifetime: 3,
               campaign: {
@@ -384,7 +384,7 @@ describe("DiscoveryStreamFeed", () => {
             },
           },
           {
-            campaign_id: "new-2",
+            campaign_id: 2,
             caps: {
               lifetime: 3,
               campaign: {
@@ -396,8 +396,8 @@ describe("DiscoveryStreamFeed", () => {
         ],
       };
       const fakeImpressions = {
-        "old-1": [Date.now() - 1],
-        "old-2": [Date.now() - 1],
+        3: [Date.now() - 1],
+        4: [Date.now() - 1],
       };
       sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
       sandbox.stub(feed, "writeImpressionsPref").returns();
