@@ -291,8 +291,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       this.store.dispatch;
 
     await this.loadLayout(dispatch);
-    await this.loadComponentFeeds(dispatch);
-    await this.loadSpocs(dispatch);
+    await Promise.all([
+      this.loadComponentFeeds(dispatch),
+      this.loadSpocs(dispatch),
+    ]);
     this.loaded = true;
   }
 
