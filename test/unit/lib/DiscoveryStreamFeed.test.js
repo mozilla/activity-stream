@@ -370,7 +370,7 @@ describe("DiscoveryStreamFeed", () => {
   });
 
   describe("#cleanUpCampaignImpressionPref", () => {
-    it("should remove impressions no longer being used", () => {
+    it("should remove impressions no longer being used", async () => {
       const fakeSpocs = {
         spocs: [
           {
