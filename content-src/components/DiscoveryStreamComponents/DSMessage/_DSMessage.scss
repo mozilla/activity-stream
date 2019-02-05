@@ -1,4 +1,6 @@
 .ds-message {
+  margin: 8px 0 0;
+
   .title {
     display: flex;
     align-items: center;
@@ -19,7 +21,7 @@
 
   .subtitle {
     line-height: 20px;
-    font-size: 13px;
+    font-size: 14px;
     color: $grey-50;
     margin: 0;
 
@@ -31,5 +33,9 @@
     a:focus {
       text-decoration: underline;
     }
+  }
+
+  .ds-hr {
+    margin: 16px 0 8px 0;
   }
 }
