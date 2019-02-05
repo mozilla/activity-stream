@@ -1162,7 +1162,7 @@ describe("Top Sites Feed", () => {
     });
     it("should call refresh and set ._currentSearchHostname to the new engine hostname when the the default search engine has been set", () => {
       sinon.stub(feed, "refresh");
-      global.Services.search.getDefault = async () => ({identifier: "ddg", searchForm: "duckduckgo.com"});
+      sandbox.stub(global.Services.search, "defaultEngine").value({identifier: "ddg", searchForm: "duckduckgo.com"});
       feed.observe(null, "browser-search-engine-modified", "engine-current");
       assert.equal(feed._currentSearchHostname, "duckduckgo");
       assert.calledOnce(feed.refresh);
