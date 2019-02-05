@@ -11,7 +11,7 @@ export class DSCard extends React.PureComponent {
 
     this.setupIntersectionObserver = this.setupIntersectionObserver.bind(this);
     this.onIntersectionObserve = this.onIntersectionObserve.bind(this);
-    this.isIntersecting = this.isIntersecting.bind(this);
+    this.dispatchSpocImpression = this.dispatchSpocImpression.bind(this);
     this.cardElementRef = this.cardElementRef.bind(this);
     this.onLinkClick = this.onLinkClick.bind(this);
   }
@@ -48,12 +48,13 @@ export class DSCard extends React.PureComponent {
   onIntersectionObserve(entries) {
     for (let entry of entries) {
       if (entry.isIntersecting && entry.intersectionRatio >= INTERSECTION_RATIO) {
-        this.isIntersecting();
+        this.dispatchSpocImpression();
+        break;
       }
     }
   }
 
-  isIntersecting() {
+  dispatchSpocImpression() {
     if (this.props.campaignId) {
       this.props.dispatch(ac.OnlyToMain({type: at.DISCOVERY_STREAM_SPOC_IMPRESSION, data: {campaignId: this.props.campaignId}}));
     }
