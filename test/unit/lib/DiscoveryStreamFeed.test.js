@@ -316,6 +316,21 @@ describe("DiscoveryStreamFeed", () => {
 
       assert.isTrue(result);
     });
+    it("should return true if there are no campaign caps", () => {
+      const fakeImpressions = {
+        "seen": [Date.now() - 1],
+      };
+      const fakeSpoc = {
+        campaign_id: "seen",
+        caps: {
+          lifetime: 3,
+        },
+      };
+
+      const result = feed.isBelowFrequencyCap(fakeImpressions, fakeSpoc);
+
+      assert.isTrue(result);
+    });
 
     it("should return false if lifetime cap is hit", () => {
       const fakeImpressions = {

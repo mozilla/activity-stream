@@ -231,7 +231,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   // - period: Indicates how many times spocs from a campaign can be shown within a period
   //
   // So, for example, the feed configuration below defines that for campaign 1 no more
-  // than 5 spocs can be show in total, and no more than 2 per hour.
+  // than 5 spocs can be shown in total, and no more than 2 per hour.
   // "campaign_id": 1,
   // "caps": {
   //  "lifetime": 5,
@@ -246,16 +246,21 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       return true;
     }
 
-    const lifeTimeCap = Math.min(spoc.caps && spoc.caps.lifetime, MAX_LIFETIME_CAP);
+    const lifetime = spoc.caps && spoc.caps.lifetime;
+
+    const lifeTimeCap = Math.min(lifetime || MAX_LIFETIME_CAP, MAX_LIFETIME_CAP);
     const lifeTimeCapExceeded = campaignImpressions.length >= lifeTimeCap;
     if (lifeTimeCapExceeded) {
       return false;
     }
 
-    const campaignCap = (spoc.caps && spoc.caps.campaign) || {};
-    const campaignCapExceeded = campaignImpressions
-      .filter(i => (Date.now() - i) < (campaignCap.period * 1000)).length >= campaignCap.count;
-    return !campaignCapExceeded;
+    const campaignCap = spoc.caps && spoc.caps.campaign;
+    if (campaignCap) {
+      const campaignCapExceeded = campaignImpressions
+        .filter(i => (Date.now() - i) < (campaignCap.period * 1000)).length >= campaignCap.count;
+      return !campaignCapExceeded;
+    }
+    return true;
   }
 
   async getComponentFeed(feedUrl) {
