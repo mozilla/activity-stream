@@ -337,7 +337,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
     const timeStamps = impressions[campaignId] || [];
     timeStamps.push(Date.now());
-    impressions = Object.assign(impressions, {[campaignId]: timeStamps});
+    impressions = {...impressions, [campaignId]: timeStamps};
 
     this.writeImpressionsPref(SPOC_IMPRESSION_TRACKING_PREF, impressions);
   }
