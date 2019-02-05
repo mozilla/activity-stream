@@ -9,9 +9,6 @@ export class DSCard extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    this.setupIntersectionObserver = this.setupIntersectionObserver.bind(this);
-    this.onIntersectionObserve = this.onIntersectionObserve.bind(this);
-    this.dispatchSpocImpression = this.dispatchSpocImpression.bind(this);
     this.cardElementRef = this.cardElementRef.bind(this);
     this.onLinkClick = this.onLinkClick.bind(this);
   }
@@ -41,17 +38,15 @@ export class DSCard extends React.PureComponent {
 
   setupIntersectionObserver() {
     const options = {threshold: INTERSECTION_RATIO};
-    this._intersectionObserver = new IntersectionObserver(this.onIntersectionObserve, options);
-    this._intersectionObserver.observe(this.cardElement);
-  }
-
-  onIntersectionObserve(entries) {
-    for (let entry of entries) {
-      if (entry.isIntersecting && entry.intersectionRatio >= INTERSECTION_RATIO) {
-        this.dispatchSpocImpression();
-        break;
+    this._intersectionObserver = new IntersectionObserver(entries => {
+      for (let entry of entries) {
+        if (entry.isIntersecting && entry.intersectionRatio >= INTERSECTION_RATIO) {
+          this.dispatchSpocImpression();
+          break;
+        }
       }
-    }
+    }, options);
+    this._intersectionObserver.observe(this.cardElement);
   }
 
   dispatchSpocImpression() {
