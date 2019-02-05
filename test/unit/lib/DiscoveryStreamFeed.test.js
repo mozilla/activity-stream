@@ -404,7 +404,7 @@ describe("DiscoveryStreamFeed", () => {
 
       feed.cleanUpCampaignImpressionPref(fakeSpocs);
 
-      assert.calledWith(feed.writeImpressionsPref, SPOC_IMPRESSION_TRACKING_PREF, { "campaign-2": [-1] });
+      assert.calledWith(feed.writeImpressionsPref, SPOC_IMPRESSION_TRACKING_PREF, {"campaign-2": [-1]});
     });
   });
 
