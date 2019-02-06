@@ -167,7 +167,7 @@ $item-line-height: 20;
   .ds-list-item-excerpt {
     @include limit-visibile-lines(2, $item-line-height, $item-font-size);
     color: var(--newtab-text-secondary-color);
-    margin-bottom: 4px;
+    margin: 4px 0 8px;
   }
 
   .ds-list-item-info {

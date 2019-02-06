@@ -50,6 +50,11 @@ $excerpt-line-height: 20;
       // show only 4 lines of copy
       @include limit-visibile-lines(4, $excerpt-line-height, $excerpt-font-size);
     }
+
+    .context,
+    .source {
+      font-size: 13px;
+    }
   }
 
   header {
@@ -63,6 +68,6 @@ $excerpt-line-height: 20;
     font-size: $excerpt-font-size * 1px;
     line-height: $excerpt-line-height * 1px;
     color: $grey-50;
-    margin: 4px 0 0;
+    margin: 8px 0 0;
   }
 }
