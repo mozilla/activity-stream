@@ -292,8 +292,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
     await this.loadLayout(dispatch);
     await Promise.all([
-      this.loadComponentFeeds(dispatch),
-      this.loadSpocs(dispatch),
+      this.loadComponentFeeds(dispatch).catch(error => Cu.reportError(`Error trying to load component feeds: ${error}`)),
+      this.loadSpocs(dispatch).catch(error => Cu.reportError(`Error trying to load spocs feed: ${error}`)),
     ]);
     this.loaded = true;
   }

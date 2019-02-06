@@ -54,8 +54,10 @@ main {
 
 }
 
-.discovery-stream-outer-wrapper {
+.ds-outer-wrapper-search-alignment {
   main {
+    // This override is to ensure while Discovery Stream loads,
+    // the search bar does not jump around. (it sticks to the top)
     margin: 0 auto;
   }
 }
