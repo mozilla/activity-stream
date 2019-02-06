@@ -334,9 +334,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this.loaded = true;
   }
 
-  async enable(options = {}) {
-    const {isStartup} = options;
-    await this.refreshAll({updateOpenTabs: true, isStartup});
+  async enable() {
+    await this.refreshAll({updateOpenTabs: true, isStartup: true});
   }
 
   async disable() {
@@ -418,7 +417,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         this.setupPrefs();
         // 2. If config.enabled is true, start loading data.
         if (this.config.enabled) {
-          await this.enable({isStartup: true});
+          await this.enable();
         }
         break;
       case at.SYSTEM_TICK:
