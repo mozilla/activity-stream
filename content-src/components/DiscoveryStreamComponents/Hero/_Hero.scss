@@ -103,8 +103,10 @@ $card-header-in-hero-line-height: 20;
       }
 
       .source {
-        font-size: 13px !important;
+        font-size: 13px;
         margin-bottom: 0;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
