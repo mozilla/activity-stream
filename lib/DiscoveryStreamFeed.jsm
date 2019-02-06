@@ -11,7 +11,7 @@ const {PersistentCache} = ChromeUtils.import("resource://activity-stream/lib/Per
 
 const CACHE_KEY = "discovery_stream";
 const LAYOUT_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
-const LAYOUT_CACHE_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000; // 1 week
+const STARTUP_CACHE_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000; // 1 week
 const COMPONENT_FEEDS_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const SPOCS_FEEDS_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const MAX_LIFETIME_CAP = 500; // Guard against misconfiguration on the server
@@ -94,35 +94,43 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    */
   isExpired({cachedData, key, url, isStartup}) {
     const {layout, spocs, feeds} = cachedData;
+    const updateTimePerComponent = {
+      "layout": LAYOUT_UPDATE_TIME,
+      "spocs": SPOCS_FEEDS_UPDATE_TIME,
+      "feed": COMPONENT_FEEDS_UPDATE_TIME,
+    };
+    const EXPIRATION_TIME = isStartup ? STARTUP_CACHE_EXPIRE_TIME : updateTimePerComponent[key];
     switch (key) {
       case "layout":
-        switch (isStartup) {
-          case true:
-            // Special case for startup where we want to load the cached content if
-            // it is less than a week old
-            return (!layout || !(Date.now() - layout._timestamp < LAYOUT_CACHE_EXPIRE_TIME));
-          default:
-            return (!layout || !(Date.now() - layout._timestamp < LAYOUT_UPDATE_TIME));
-        }
+        return (!layout || !(Date.now() - layout._timestamp < EXPIRATION_TIME));
       case "spocs":
-        return (!spocs || !(Date.now() - spocs.lastUpdated < SPOCS_FEEDS_UPDATE_TIME));
+        return (!spocs || !(Date.now() - spocs.lastUpdated < EXPIRATION_TIME));
       case "feed":
-        return (!feeds || !feeds[url] || !(Date.now() - feeds[url].lastUpdated < COMPONENT_FEEDS_UPDATE_TIME));
+        return (!feeds || !feeds[url] || !(Date.now() - feeds[url].lastUpdated < EXPIRATION_TIME));
       default:
         // istanbul ignore next
         throw new Error(`${key} is not a valid key`);
     }
   }
 
+  async _checkExpirationPerComponent() {
+    const cachedData = await this.cache.get() || {};
+    const {feeds} = cachedData;
+    return {
+      layout: this.isExpired({cachedData, key: "layout"}),
+      spocs: this.isExpired({cachedData, key: "spocs"}),
+      feeds: !feeds || Object.keys(feeds).some(url => this.isExpired({cachedData, key: "feed", url})),
+    };
+  }
+
   /**
    * Returns true if any data for the cached endpoints has expired or is missing.
    */
   async checkIfAnyCacheExpired() {
-    const cachedData = await this.cache.get() || {};
-    const {feeds} = cachedData;
-    return this.isExpired({cachedData, key: "layout"}) ||
-      this.isExpired({cachedData, key: "spocs"}) ||
-      !feeds || Object.keys(feeds).some(url => this.isExpired({cachedData, key: "feed", url}));
+    const expirationPerComponent = await this._checkExpirationPerComponent();
+    return expirationPerComponent.layout ||
+      expirationPerComponent.spocs ||
+      expirationPerComponent.feeds;
   }
 
   async _fetchLayoutAndCache() {
@@ -159,11 +167,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         data: layoutResponse.spocs.url,
       });
     }
-
-    return layoutResponse;
   }
 
-  async loadComponentFeeds(sendUpdate) {
+  async loadComponentFeeds(sendUpdate, isStartup) {
     const {DiscoveryStream} = this.store.getState();
     const newFeeds = {};
     if (DiscoveryStream && DiscoveryStream.layout) {
@@ -174,7 +180,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         for (let component of row.components) {
           if (component && component.feed) {
             const {url} = component.feed;
-            newFeeds[url] = await this.getComponentFeed(url);
+            newFeeds[url] = await this.getComponentFeed(url, isStartup);
           }
         }
       }
@@ -184,26 +190,33 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
-  async loadSpocs(sendUpdate) {
+  async _fetchSpocsAndCache() {
+    const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
+    const spocsResponse = await this.fetchFromEndpoint(endpoint);
+    let spocs;
+    if (spocsResponse) {
+      spocs = {
+        lastUpdated: Date.now(),
+        data: spocsResponse,
+      };
+
+      this.cleanUpCampaignImpressionPref(spocs.data);
+      await this.cache.set("spocs", spocs);
+    } else {
+      Cu.reportError("No response for spocs_endpoint prop");
+    }
+
+    return spocs;
+  }
+
+  async loadSpocs(sendUpdate, isStartup) {
     const cachedData = await this.cache.get() || {};
     let spocs;
 
     if (this.showSpocs) {
       spocs = cachedData.spocs;
-      if (this.isExpired({cachedData, key: "spocs"})) {
-        const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
-        const spocsResponse = await this.fetchFromEndpoint(endpoint);
-        if (spocsResponse) {
-          spocs = {
-            lastUpdated: Date.now(),
-            data: spocsResponse,
-          };
-
-          this.cleanUpCampaignImpressionPref(spocs.data);
-          await this.cache.set("spocs", spocs);
-        } else {
-          Cu.reportError("No response for spocs_endpoint prop");
-        }
+      if (this.isExpired({cachedData, key: "spocs", isStartup})) {
+        spocs = await this._fetchSpocsAndCache();
       }
     }
 
@@ -276,11 +289,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return true;
   }
 
-  async getComponentFeed(feedUrl) {
+  async getComponentFeed(feedUrl, isStartup) {
     const cachedData = await this.cache.get() || {};
     const {feeds} = cachedData;
     let feed = feeds ? feeds[feedUrl] : null;
-    if (this.isExpired({cachedData, key: "feed", url: feedUrl})) {
+    if (this.isExpired({cachedData, key: "feed", url: feedUrl, isStartup})) {
       const feedResponse = await this.fetchFromEndpoint(feedUrl);
       if (feedResponse) {
         feed = {
@@ -295,10 +308,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return feed;
   }
 
-  async _maybeUpdateLayout(isStartup, layout) {
-    // If we dispatched cached layout data we need to trigger a request to
-    // refresh it for future page loads.
-    if (isStartup && (Date.now() - layout._timestamp > LAYOUT_UPDATE_TIME)) {
+  async _maybeUpdateCachedData() {
+    const expirationPerComponent = await this._checkExpirationPerComponent();
+    if (expirationPerComponent.layout) {
       const layoutResponse = await this._fetchLayoutAndCache();
       this.store.dispatch(ac.OnlyToMain({
         type: at.DISCOVERY_STREAM_LAYOUT_UPDATE,
@@ -308,6 +320,20 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         },
       }));
     }
+    if (expirationPerComponent.spocs) {
+      const spocsResponse = await this._fetchSpocsAndCache();
+      this.store.dispatch(ac.OnlyToMain({
+        type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
+        data: {
+          lastUpdated: spocsResponse.lastUpdated,
+          spocs: this.filterSpocs(spocsResponse.data),
+        },
+      }));
+    }
+    if (expirationPerComponent.feeds) {
+      await this.loadComponentFeeds(action => this.store.dispatch(ac.OnlyToMain(action)));
+    }
+
   }
 
   /**
@@ -324,12 +350,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       action => this.store.dispatch(ac.BroadcastToContent(action)) :
       this.store.dispatch;
 
-    await this.loadLayout(dispatch);
+    await this.loadLayout(dispatch, isStartup);
     await Promise.all([
-      this.loadComponentFeeds(dispatch).catch(error => Cu.reportError(`Error trying to load component feeds: ${error}`)),
-      this.loadSpocs(dispatch).catch(error => Cu.reportError(`Error trying to load spocs feed: ${error}`)),
+      this.loadComponentFeeds(dispatch, isStartup).catch(error => Cu.reportError(`Error trying to load component feeds: ${error}`)),
+      this.loadSpocs(dispatch, isStartup).catch(error => Cu.reportError(`Error trying to load spocs feed: ${error}`)),
     ]);
-    await this._maybeUpdateLayout(isStartup);
+    if (isStartup) {
+      await this._maybeUpdateCachedData();
+    }
 
     this.loaded = true;
   }

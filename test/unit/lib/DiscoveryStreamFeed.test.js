@@ -44,7 +44,7 @@ describe("DiscoveryStreamFeed", () => {
       },
     });
 
-    sandbox.stub(feed, "_maybeUpdateLayout").resolves();
+    sandbox.stub(feed, "_maybeUpdateCachedData").resolves();
   });
 
   afterEach(() => {
@@ -721,7 +721,7 @@ describe("DiscoveryStreamFeed", () => {
 
       assert.isFalse(result);
     });
-    it("should return true for layout on startup for isStartup=false", () => {
+    it("should return true for layout for isStartup=false", () => {
       const layout = {_timestamp: Date.now()};
       clock.tick(THIRTY_MINUTES + 1);
       const result = feed.isExpired({cachedData: {layout}, key: "layout"});
@@ -846,24 +846,73 @@ describe("DiscoveryStreamFeed", () => {
       const {args} = global.Promise.all.firstCall;
       assert.equal(args[0].length, 2);
     });
-    it("should refresh layout on startup if it was served from cache", async () => {
-      sandbox.stub(feed, "_fetchLayoutAndCache").resolves({});
-      feed._maybeUpdateLayout.restore();
-      feed.loadLayout.resolves({_timestamp: Date.now()});
-      clock.tick(THIRTY_MINUTES + 1);
+    describe("test startup cache behaviour", () => {
+      beforeEach(() => {
+        feed._maybeUpdateCachedData.restore();
+        sandbox.stub(feed, "_fetchLayoutAndCache").resolves({});
+        sandbox.stub(feed, "_fetchSpocsAndCache").resolves({});
+      });
+      it("should refresh layout on startup if it was served from cache", async () => {
+        sandbox.stub(feed.cache, "get").resolves({layout: {_timestamp: Date.now()}});
+        clock.tick(THIRTY_MINUTES + 1);
 
-      await feed.refreshAll({updateOpenTabs: false, isStartup: true});
+        await feed.refreshAll({updateOpenTabs: false, isStartup: true});
 
-      assert.calledOnce(feed._fetchLayoutAndCache);
-    });
-    it("should not refresh layout on startup if it is under THIRTY_MINUTES", async () => {
-      feed._maybeUpdateLayout.restore();
-      sandbox.stub(feed, "_fetchLayoutAndCache").resolves({});
-      feed.loadLayout.resolves({_timestamp: Date.now()});
+        assert.calledOnce(feed._fetchLayoutAndCache);
+      });
+      it("should not refresh layout on startup if it is under THIRTY_MINUTES", async () => {
+        sandbox.stub(feed.cache, "get").resolves({layout: {_timestamp: Date.now()}});
 
-      await feed.refreshAll({updateOpenTabs: false, isStartup: true});
+        await feed.refreshAll({updateOpenTabs: false, isStartup: true});
 
-      assert.notCalled(feed._fetchLayoutAndCache);
+        assert.notCalled(feed._fetchLayoutAndCache);
+      });
+      it("should refresh spocs on startup if it was served from cache", async () => {
+        sandbox.stub(feed.cache, "get").resolves({spocs: {lastUpdated: Date.now()}});
+        clock.tick(THIRTY_MINUTES + 1);
+
+        await feed.refreshAll({updateOpenTabs: false, isStartup: true});
+
+        assert.calledOnce(feed._fetchSpocsAndCache);
+      });
+      it("should not refresh spocs on startup if it is under THIRTY_MINUTES", async () => {
+        sandbox.stub(feed.cache, "get").resolves({spocs: {lastUpdated: Date.now()}});
+
+        await feed.refreshAll({updateOpenTabs: false, isStartup: true});
+
+        assert.notCalled(feed._fetchSpocsAndCache);
+      });
+      it("should refresh an old feed on startup", async () => {
+        const fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
+        sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+        clock.tick(ONE_WEEK + 1);
+        sandbox.stub(feed, "fetchFromEndpoint").resolves();
+
+        await feed.getComponentFeed("foo.com", true);
+
+        assert.calledOnce(feed.fetchFromEndpoint);
+      });
+      it("should broadcast feed updates only to main", async () => {
+        feed.loadComponentFeeds.restore();
+        sandbox.stub(feed, "_checkExpirationPerComponent").resolves({feeds: true});
+
+        const fakeComponents = {components: [{feed: {url: "foo.com"}}]};
+        const fakeLayout = [fakeComponents];
+        const fakeDiscoveryStream = {DiscoveryStream: {layout: fakeLayout}};
+        sandbox.stub(feed.store, "getState").returns(fakeDiscoveryStream);
+
+        const fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
+        sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+        sandbox.stub(feed.cache, "set").resolves();
+        clock.tick(THIRTY_MINUTES + 1);
+        sandbox.stub(feed, "fetchFromEndpoint").resolves();
+
+        await feed._maybeUpdateCachedData();
+
+        assert.calledOnce(feed.fetchFromEndpoint);
+        assert.calledOnce(feed.store.dispatch);
+        assert.equal(feed.store.dispatch.firstCall.args[0].meta.to, "ActivityStream:Main");
+      });
     });
   });
 });
