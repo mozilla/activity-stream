@@ -247,9 +247,8 @@ const MessageLoaderUtils = {
       const systemPrincipal = Services.scriptSecurityManager.getSystemPrincipal();
 
       // AddonManager installation source associated to the addons installed from activitystream's CFR
-      const amTelemetryInfo = {source: "amo"};
-      const install = await AddonManager.getInstallForURL(aUri.spec, "application/x-xpinstall", null,
-                                                          null, null, null, null, amTelemetryInfo);
+      const telemetryInfo = {source: "amo"};
+      const install = await AddonManager.getInstallForURL(aUri.spec, {telemetryInfo});
       await AddonManager.installAddonFromWebpage("application/x-xpinstall", browser,
         systemPrincipal, install);
     } catch (e) {
