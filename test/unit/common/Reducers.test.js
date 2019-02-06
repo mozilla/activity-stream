@@ -672,7 +672,9 @@ describe("Reducers", () => {
       const data = {
         "https://foo.com/feed1": {lastUpdated: 123, data: [1, 2, 3]},
       };
+
       const state = DiscoveryStream(undefined, {type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data});
+
       assert.deepEqual(state.feeds, {
         data,
         loaded: true,
