@@ -8,7 +8,7 @@ const SPOC_IMPRESSION_TRACKING_PREF = "discoverystream.spoc.impressions";
 const THIRTY_MINUTES = 30 * 60 * 1000;
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 1 week
 
-describe("DiscoveryStreamFeed", () => {
+describe.only("DiscoveryStreamFeed", () => {
   let feed;
   let sandbox;
   let fetchStub;
@@ -110,12 +110,19 @@ describe("DiscoveryStreamFeed", () => {
   });
 
   describe("#loadComponentFeeds", () => {
-    it("should populate feeds cache", async () => {
+    beforeEach(() => {
       const fakeComponents = {components: [{feed: {url: "foo.com"}}]};
       const fakeLayout = [fakeComponents, {components: [{}]}, {}];
       const fakeDiscoveryStream = {DiscoveryStream: {layout: fakeLayout}};
       sandbox.stub(feed.store, "getState").returns(fakeDiscoveryStream);
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    it("should populate feeds cache", async () => {
       const fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
 
@@ -123,6 +130,11 @@ describe("DiscoveryStreamFeed", () => {
 
       assert.calledWith(feed.cache.set, "feeds", {"foo.com": {"data": "data", "lastUpdated": 0}});
     });
+
+    // it("should send at.DISCOVERY_STREAM_FEEDS_UPDATE with new feed data",
+    //   async () => {
+
+    //   });
   });
 
   describe("#getComponentFeed", () => {
