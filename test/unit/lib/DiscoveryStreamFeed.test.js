@@ -6,6 +6,7 @@ import {reducers} from "common/Reducers.jsm";
 const CONFIG_PREF_NAME = "discoverystream.config";
 const SPOC_IMPRESSION_TRACKING_PREF = "discoverystream.spoc.impressions";
 const THIRTY_MINUTES = 30 * 60 * 1000;
+const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 1 week
 
 describe("DiscoveryStreamFeed", () => {
   let feed;
@@ -42,6 +43,8 @@ describe("DiscoveryStreamFeed", () => {
         },
       },
     });
+
+    sandbox.stub(feed, "_maybeUpdateLayout").resolves();
   });
 
   afterEach(() => {
@@ -712,6 +715,26 @@ describe("DiscoveryStreamFeed", () => {
         feed.isExpired({}, "foo");
       });
     });
+    it("should return false for layout on startup for content under 1 week", () => {
+      const layout = {_timestamp: Date.now()};
+      const result = feed.isExpired({cachedData: {layout}, key: "layout", isStartup: true});
+
+      assert.isFalse(result);
+    });
+    it("should return true for layout on startup for isStartup=false", () => {
+      const layout = {_timestamp: Date.now()};
+      clock.tick(THIRTY_MINUTES + 1);
+      const result = feed.isExpired({cachedData: {layout}, key: "layout"});
+
+      assert.isTrue(result);
+    });
+    it("should return true for layout on startup for content over 1 week", () => {
+      const layout = {_timestamp: Date.now()};
+      clock.tick(ONE_WEEK + 1);
+      const result = feed.isExpired({cachedData: {layout}, key: "layout", isStartup: true});
+
+      assert.isTrue(result);
+    });
   });
 
   describe("#checkIfAnyCacheExpired", () => {
@@ -822,6 +845,25 @@ describe("DiscoveryStreamFeed", () => {
       assert.calledOnce(global.Promise.all);
       const {args} = global.Promise.all.firstCall;
       assert.equal(args[0].length, 2);
+    });
+    it("should refresh layout on startup if it was served from cache", async () => {
+      sandbox.stub(feed, "_fetchLayoutAndCache").resolves({});
+      feed._maybeUpdateLayout.restore();
+      feed.loadLayout.resolves({_timestamp: Date.now()});
+      clock.tick(THIRTY_MINUTES + 1);
+
+      await feed.refreshAll({updateOpenTabs: false, isStartup: true});
+
+      assert.calledOnce(feed._fetchLayoutAndCache);
+    });
+    it("should not refresh layout on startup if it is under THIRTY_MINUTES", async () => {
+      feed._maybeUpdateLayout.restore();
+      sandbox.stub(feed, "_fetchLayoutAndCache").resolves({});
+      feed.loadLayout.resolves({_timestamp: Date.now()});
+
+      await feed.refreshAll({updateOpenTabs: false, isStartup: true});
+
+      assert.notCalled(feed._fetchLayoutAndCache);
     });
   });
 });

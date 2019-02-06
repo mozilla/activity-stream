@@ -11,6 +11,7 @@ const {PersistentCache} = ChromeUtils.import("resource://activity-stream/lib/Per
 
 const CACHE_KEY = "discovery_stream";
 const LAYOUT_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
+const LAYOUT_CACHE_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000; // 1 week
 const COMPONENT_FEEDS_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const SPOCS_FEEDS_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const MAX_LIFETIME_CAP = 500; // Guard against misconfiguration on the server
@@ -89,17 +90,26 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * @param {{}} cacheData data returned from cache.get()
    * @param {string} key a cache key
    * @param {string?} url for "feed" only, the URL of the feed.
+   * @param {boolean} is this check done at initial browser load
    */
-  isExpired(cacheData, key, url) {
-    const {layout, spocs, feeds} = cacheData;
+  isExpired({cachedData, key, url, isStartup}) {
+    const {layout, spocs, feeds} = cachedData;
     switch (key) {
       case "layout":
-        return (!layout || !(Date.now() - layout._timestamp < LAYOUT_UPDATE_TIME));
+        switch (isStartup) {
+          case true:
+            // Special case for startup where we want to load the cached content if
+            // it is less than a week old
+            return (!layout || !(Date.now() - layout._timestamp < LAYOUT_CACHE_EXPIRE_TIME));
+          default:
+            return (!layout || !(Date.now() - layout._timestamp < LAYOUT_UPDATE_TIME));
+        }
       case "spocs":
         return (!spocs || !(Date.now() - spocs.lastUpdated < SPOCS_FEEDS_UPDATE_TIME));
       case "feed":
         return (!feeds || !feeds[url] || !(Date.now() - feeds[url].lastUpdated < COMPONENT_FEEDS_UPDATE_TIME));
       default:
+        // istanbul ignore next
         throw new Error(`${key} is not a valid key`);
     }
   }
@@ -110,22 +120,28 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   async checkIfAnyCacheExpired() {
     const cachedData = await this.cache.get() || {};
     const {feeds} = cachedData;
-    return this.isExpired(cachedData, "layout") ||
-      this.isExpired(cachedData, "spocs") ||
-      !feeds || Object.keys(feeds).some(url => this.isExpired(cachedData, "feed", url));
+    return this.isExpired({cachedData, key: "layout"}) ||
+      this.isExpired({cachedData, key: "spocs"}) ||
+      !feeds || Object.keys(feeds).some(url => this.isExpired({cachedData, key: "feed", url}));
   }
 
-  async loadLayout(sendUpdate) {
+  async _fetchLayoutAndCache() {
+    const layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
+    if (layoutResponse && layoutResponse.layout) {
+      layoutResponse._timestamp = Date.now();
+      await this.cache.set("layout", layoutResponse);
+    } else {
+      Cu.reportError("No response for response.layout prop");
+    }
+
+    return layoutResponse;
+  }
+
+  async loadLayout(sendUpdate, isStartup) {
     const cachedData = await this.cache.get() || {};
     let {layout: layoutResponse} = cachedData;
-    if (this.isExpired(cachedData, "layout")) {
-      layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
-      if (layoutResponse && layoutResponse.layout) {
-        layoutResponse._timestamp = Date.now();
-        await this.cache.set("layout", layoutResponse);
-      } else {
-        Cu.reportError("No response for response.layout prop");
-      }
+    if (this.isExpired({cachedData, key: "layout", isStartup})) {
+      layoutResponse = await this._fetchLayoutAndCache();
     }
 
     if (layoutResponse && layoutResponse.layout) {
@@ -143,6 +159,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         data: layoutResponse.spocs.url,
       });
     }
+
+    return layoutResponse;
   }
 
   async loadComponentFeeds(sendUpdate) {
@@ -172,7 +190,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
     if (this.showSpocs) {
       spocs = cachedData.spocs;
-      if (this.isExpired(cachedData, "spocs")) {
+      if (this.isExpired({cachedData, key: "spocs"})) {
         const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
         const spocsResponse = await this.fetchFromEndpoint(endpoint);
         if (spocsResponse) {
@@ -262,7 +280,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const cachedData = await this.cache.get() || {};
     const {feeds} = cachedData;
     let feed = feeds ? feeds[feedUrl] : null;
-    if (this.isExpired(cachedData, "feed", feedUrl)) {
+    if (this.isExpired({cachedData, key: "feed", url: feedUrl})) {
       const feedResponse = await this.fetchFromEndpoint(feedUrl);
       if (feedResponse) {
         feed = {
@@ -277,6 +295,21 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return feed;
   }
 
+  async _maybeUpdateLayout(isStartup, layout) {
+    // If we dispatched cached layout data we need to trigger a request to
+    // refresh it for future page loads.
+    if (isStartup && (Date.now() - layout._timestamp > LAYOUT_UPDATE_TIME)) {
+      const layoutResponse = await this._fetchLayoutAndCache();
+      this.store.dispatch(ac.OnlyToMain({
+        type: at.DISCOVERY_STREAM_LAYOUT_UPDATE,
+        data: {
+          layout: layoutResponse.layout,
+          lastUpdated: layoutResponse._timestamp,
+        },
+      }));
+    }
+  }
+
   /**
    * @typedef {Object} RefreshAllOptions
    * @property {boolean} updateOpenTabs - Sends updates to open tabs immediately if true,
@@ -286,7 +319,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * @param {RefreshAllOptions} options
    */
   async refreshAll(options = {}) {
-    const dispatch = options.updateOpenTabs ?
+    const {updateOpenTabs, isStartup} = options;
+    const dispatch = updateOpenTabs ?
       action => this.store.dispatch(ac.BroadcastToContent(action)) :
       this.store.dispatch;
 
@@ -295,11 +329,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       this.loadComponentFeeds(dispatch).catch(error => Cu.reportError(`Error trying to load component feeds: ${error}`)),
       this.loadSpocs(dispatch).catch(error => Cu.reportError(`Error trying to load spocs feed: ${error}`)),
     ]);
+    await this._maybeUpdateLayout(isStartup);
+
     this.loaded = true;
   }
 
-  async enable() {
-    await this.refreshAll({updateOpenTabs: true});
+  async enable(options = {}) {
+    const {isStartup} = options;
+    await this.refreshAll({updateOpenTabs: true, isStartup});
   }
 
   async disable() {
@@ -381,7 +418,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         this.setupPrefs();
         // 2. If config.enabled is true, start loading data.
         if (this.config.enabled) {
-          await this.enable();
+          await this.enable({isStartup: true});
         }
         break;
       case at.SYSTEM_TICK:
