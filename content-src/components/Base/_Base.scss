@@ -25,7 +25,7 @@
 }
 
 main {
-  margin: 0 auto;
+  margin: auto;
   // Offset the snippets container so things at the bottom of the page are still
   // visible when snippets are visible. Adjust for other spacing.
   padding-bottom: $snippets-container-height - $section-spacing - $base-gutter;
