@@ -73,8 +73,8 @@ export class Hero extends React.PureComponent {
               <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
             </div>
             <div className="meta">
-              <header>{truncateText(heroRec.title, 28)}</header>
-              <p>{truncateText(heroRec.excerpt, 114)}</p>
+              <header>{heroRec.title}</header>
+              <p className="excerpt">{heroRec.excerpt}</p>
               {heroRec.context ? (
                 <p className="context">{truncateText(heroRec.context, 22)}</p>
               ) : (
