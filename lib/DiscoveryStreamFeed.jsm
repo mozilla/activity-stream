@@ -166,26 +166,43 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   async loadComponentFeeds(sendUpdate, isStartup) {
     const {DiscoveryStream} = this.store.getState();
+    const newFeedsPromises = [];
     const newFeeds = {};
-    if (DiscoveryStream && DiscoveryStream.layout) {
-      for (let row of DiscoveryStream.layout) {
-        if (!row || !row.components) {
-          continue;
-        }
-        for (let component of row.components) {
-          if (component && component.feed) {
-            const {url} = component.feed;
-            newFeeds[url] = this.getComponentFeed(url, isStartup);
+
+    if (!DiscoveryStream || !DiscoveryStream.layout) {
+      // istanbul ignore next
+      return;
+    }
+
+    for (let row of DiscoveryStream.layout) {
+      if (!row || !row.components) {
+        continue;
+      }
+      for (let component of row.components) {
+        if (component && component.feed) {
+          const {url} = component.feed;
+          if (!newFeeds[url]) {
+            // We initially stub this out so we don't fetch dupes,
+            // we then fill in with the proper object inside the promise.
+            newFeeds[url] = {};
+
+            const feedPromise = this.getComponentFeed(url, isStartup);
+
+            feedPromise.then(data => {
+              newFeeds[url] = data;
+            }).catch(/* istanbul ignore next */ error => {
+              Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
+            });
+
+            newFeedsPromises.push(feedPromise);
           }
         }
       }
-
-      let rv = await Promise.all(Object.values(newFeeds));
-      console.log("rv: ", rv);
-      console.log("newFeeds: ", newFeeds);
-      await this.cache.set("feeds", newFeeds);
-      sendUpdate({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: newFeeds});
     }
+
+    await Promise.all(newFeedsPromises);
+    await this.cache.set("feeds", newFeeds);
+    sendUpdate({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: newFeeds});
   }
 
   async loadSpocs(sendUpdate, isStartup) {

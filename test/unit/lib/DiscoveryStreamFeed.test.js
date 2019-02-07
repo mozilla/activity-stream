@@ -8,7 +8,7 @@ const SPOC_IMPRESSION_TRACKING_PREF = "discoverystream.spoc.impressions";
 const THIRTY_MINUTES = 30 * 60 * 1000;
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 1 week
 
-describe.only("DiscoveryStreamFeed", () => {
+describe("DiscoveryStreamFeed", () => {
   let feed;
   let sandbox;
   let fetchStub;
@@ -153,16 +153,27 @@ describe.only("DiscoveryStreamFeed", () => {
         });
       });
 
-    it("",
+    it("should return number of promises equal to unique urls",
       async () => {
         sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
         sandbox.stub(global.Promise, "all").resolves();
+        fakeDiscoveryStream = {
+          DiscoveryStream: {
+            layout: [
+              {components: [{feed: {url: "foo.com"}}, {feed: {url: "bar.com"}}]},
+              {components: [{feed: {url: "foo.com"}}]},
+              {},
+              {components: [{feed: {url: "baz.com"}}]},
+            ],
+          },
+        };
+        feed.store.getState.returns(fakeDiscoveryStream);
 
         await feed.loadComponentFeeds(feed.store.dispatch);
 
         assert.calledOnce(global.Promise.all);
         const {args} = global.Promise.all.firstCall;
-        assert.equal(args[0].length, 2);
+        assert.equal(args[0].length, 3);
       }
     );
   });
