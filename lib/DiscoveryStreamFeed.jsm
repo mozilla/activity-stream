@@ -175,11 +175,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         for (let component of row.components) {
           if (component && component.feed) {
             const {url} = component.feed;
-            newFeeds[url] = await this.getComponentFeed(url, isStartup);
+            newFeeds[url] = this.getComponentFeed(url, isStartup);
           }
         }
       }
 
+      let rv = await Promise.all(Object.values(newFeeds));
+      console.log("rv: ", rv);
+      console.log("newFeeds: ", newFeeds);
       await this.cache.set("feeds", newFeeds);
       sendUpdate({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: newFeeds});
     }

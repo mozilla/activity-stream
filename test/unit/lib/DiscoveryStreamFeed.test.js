@@ -110,10 +110,19 @@ describe.only("DiscoveryStreamFeed", () => {
   });
 
   describe("#loadComponentFeeds", () => {
+    let fakeCache;
+    let fakeDiscoveryStream;
     beforeEach(() => {
-      const fakeComponents = {components: [{feed: {url: "foo.com"}}]};
-      const fakeLayout = [fakeComponents, {components: [{}]}, {}];
-      const fakeDiscoveryStream = {DiscoveryStream: {layout: fakeLayout}};
+      fakeDiscoveryStream = {
+        DiscoveryStream: {
+          layout: [
+            {components: [{feed: {url: "foo.com"}}]},
+            {components: [{}]},
+            {},
+          ],
+        },
+      };
+      fakeCache = {};
       sandbox.stub(feed.store, "getState").returns(fakeDiscoveryStream);
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
     });
@@ -123,7 +132,7 @@ describe.only("DiscoveryStreamFeed", () => {
     });
 
     it("should populate feeds cache", async () => {
-      const fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
+      fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
 
       await feed.loadComponentFeeds(feed.store.dispatch);
@@ -131,10 +140,31 @@ describe.only("DiscoveryStreamFeed", () => {
       assert.calledWith(feed.cache.set, "feeds", {"foo.com": {"data": "data", "lastUpdated": 0}});
     });
 
-    // it("should send at.DISCOVERY_STREAM_FEEDS_UPDATE with new feed data",
-    //   async () => {
+    it("should send at.DISCOVERY_STREAM_FEEDS_UPDATE with new feed data",
+      async () => {
+        sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+        sandbox.spy(feed.store, "dispatch");
 
-    //   });
+        await feed.loadComponentFeeds(feed.store.dispatch);
+
+        assert.calledWith(feed.store.dispatch, {
+          type: at.DISCOVERY_STREAM_FEEDS_UPDATE,
+          data: {"foo.com": null},
+        });
+      });
+
+    it("",
+      async () => {
+        sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
+        sandbox.stub(global.Promise, "all").resolves();
+
+        await feed.loadComponentFeeds(feed.store.dispatch);
+
+        assert.calledOnce(global.Promise.all);
+        const {args} = global.Promise.all.firstCall;
+        assert.equal(args[0].length, 2);
+      }
+    );
   });
 
   describe("#getComponentFeed", () => {
