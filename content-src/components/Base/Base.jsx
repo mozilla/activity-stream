@@ -161,18 +161,13 @@ export class BaseContent extends React.PureComponent {
       this.disableDarkTheme();
     }
 
-    let outerClassName = [];
-    if (isDiscoveryStream) {
-      outerClassName.append("discovery-stream-vertical-pin")
-    }
-
-    outerClassName.append([
+    const outerClassName = [
       "outer-wrapper",
       isDiscoveryStream && "ds-outer-wrapper-search-alignment",
       shouldBeFixedToTop && "fixed-to-top",
       prefs.showSearch && this.state.fixedSearch && !noSectionsEnabled && "fixed-search",
       prefs.showSearch && noSectionsEnabled && "only-search",
-    ].filter(v => v).join(" "));
+    ].filter(v => v).join(" ");
 
     return (
       <div>
