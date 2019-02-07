@@ -102,7 +102,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const EXPIRATION_TIME = isStartup ? STARTUP_CACHE_EXPIRE_TIME : updateTimePerComponent[key];
     switch (key) {
       case "layout":
-        return (!layout || !(Date.now() - layout._timestamp < EXPIRATION_TIME));
+        return (!layout || !(Date.now() - layout.lastUpdated < EXPIRATION_TIME));
       case "spocs":
         return (!spocs || !(Date.now() - spocs.lastUpdated < EXPIRATION_TIME));
       case "feed":
@@ -135,30 +135,31 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   async loadLayout(sendUpdate, isStartup) {
     const cachedData = await this.cache.get() || {};
-    let {layout: layoutResponse} = cachedData;
+    let {layout} = cachedData;
     if (this.isExpired({cachedData, key: "layout", isStartup})) {
-      layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
+      const layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
       if (layoutResponse && layoutResponse.layout) {
-        layoutResponse._timestamp = Date.now();
-        await this.cache.set("layout", layoutResponse);
+        layout = {
+          lastUpdated: layoutResponse._timestamp,
+          spocs: layoutResponse.spocs,
+          layout: layoutResponse.layout,
+        };
+        await this.cache.set("layout", layout);
       } else {
         Cu.reportError("No response for response.layout prop");
       }
     }
 
-    if (layoutResponse && layoutResponse.layout) {
+    if (layout && layout.layout) {
       sendUpdate({
         type: at.DISCOVERY_STREAM_LAYOUT_UPDATE,
-        data: {
-          layout: layoutResponse.layout,
-          lastUpdated: layoutResponse._timestamp,
-        },
+        data: layout,
       });
     }
-    if (layoutResponse && layoutResponse.spocs && layoutResponse.spocs.url) {
+    if (layout && layout.spocs && layout.spocs.url) {
       sendUpdate({
         type: at.DISCOVERY_STREAM_SPOCS_ENDPOINT,
-        data: layoutResponse.spocs.url,
+        data: layout.spocs.url,
       });
     }
   }

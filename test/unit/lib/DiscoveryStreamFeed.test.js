@@ -64,11 +64,12 @@ describe("DiscoveryStreamFeed", () => {
       await feed.loadLayout(feed.store.dispatch);
 
       assert.calledOnce(fetchStub);
-      assert.calledWith(feed.cache.set, "layout", resp);
+      assert.equal(feed.cache.set.firstCall.args[0], "layout");
+      assert.deepEqual(feed.cache.set.firstCall.args[1].layout, resp.layout);
     });
     it("should fetch data and populate the cache if the cached data is older than 30 mins", async () => {
       const resp = {layout: ["foo", "bar"]};
-      const fakeCache = {layout: {layout: ["hello"], _timestamp: Date.now()}};
+      const fakeCache = {layout: {layout: ["hello"], lastUpdated: Date.now()}};
 
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
@@ -79,10 +80,11 @@ describe("DiscoveryStreamFeed", () => {
       await feed.loadLayout(feed.store.dispatch);
 
       assert.calledOnce(fetchStub);
-      assert.calledWith(feed.cache.set, "layout", resp);
+      assert.equal(feed.cache.set.firstCall.args[0], "layout");
+      assert.deepEqual(feed.cache.set.firstCall.args[1].layout, resp.layout);
     });
     it("should use the cached data and not fetch if the cached data is less than 30 mins old", async () => {
-      const fakeCache = {layout: {layout: ["hello"], _timestamp: Date.now()}};
+      const fakeCache = {layout: {layout: ["hello"], lastUpdated: Date.now()}};
 
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
@@ -741,7 +743,7 @@ describe("DiscoveryStreamFeed", () => {
     let cache;
     beforeEach(() => {
       cache = {
-        layout: {_timestamp: Date.now()},
+        layout: {lastUpdated: Date.now()},
         feeds: {"foo.com": {lastUpdated: Date.now()}},
         spocs: {lastUpdated: Date.now()},
       };
@@ -773,7 +775,7 @@ describe("DiscoveryStreamFeed", () => {
     it("should return true if .spocs is expired", async () => {
       clock.tick(THIRTY_MINUTES + 1);
       // Update other caches we aren't testing
-      cache.layout._timestamp = Date.now();
+      cache.layout.lastUpdated = Date.now();
       cache.feeds["foo.com"].lastUpdate = Date.now();
 
       assert.isTrue(await feed.checkIfAnyCacheExpired());
@@ -790,7 +792,7 @@ describe("DiscoveryStreamFeed", () => {
     it("should return true if data for .feeds[url] is expired", async () => {
       clock.tick(THIRTY_MINUTES + 1);
       // Update other caches we aren't testing
-      cache.layout._timestamp = Date.now();
+      cache.layout.lastUpdated = Date.now();
       cache.spocs.lastUpdate = Date.now();
       assert.isTrue(await feed.checkIfAnyCacheExpired());
     });
