@@ -802,6 +802,7 @@ describe("DiscoveryStreamFeed", () => {
       sandbox.stub(feed, "loadComponentFeeds").resolves();
       sandbox.stub(feed, "loadSpocs").resolves();
       sandbox.spy(feed.store, "dispatch");
+      Object.defineProperty(feed, "showSpocs", {get: () => true});
     });
 
     it("should call layout, component, spocs update functions", async () => {
@@ -849,69 +850,71 @@ describe("DiscoveryStreamFeed", () => {
     describe("test startup cache behaviour", () => {
       beforeEach(() => {
         feed._maybeUpdateCachedData.restore();
-        sandbox.stub(feed, "_fetchLayoutAndCache").resolves({});
-        sandbox.stub(feed, "_fetchSpocsAndCache").resolves({});
+        sandbox.stub(feed.cache, "set").resolves();
       });
       it("should refresh layout on startup if it was served from cache", async () => {
-        sandbox.stub(feed.cache, "get").resolves({layout: {_timestamp: Date.now()}});
+        feed.loadLayout.restore();
+        sandbox.stub(feed.cache, "get").resolves({layout: {_timestamp: Date.now(), layout: {}}});
+        sandbox.stub(feed, "fetchFromEndpoint").resolves({layout: {}});
         clock.tick(THIRTY_MINUTES + 1);
 
-        await feed.refreshAll({updateOpenTabs: false, isStartup: true});
-
-        assert.calledOnce(feed._fetchLayoutAndCache);
-      });
-      it("should not refresh layout on startup if it is under THIRTY_MINUTES", async () => {
-        sandbox.stub(feed.cache, "get").resolves({layout: {_timestamp: Date.now()}});
-
-        await feed.refreshAll({updateOpenTabs: false, isStartup: true});
-
-        assert.notCalled(feed._fetchLayoutAndCache);
-      });
-      it("should refresh spocs on startup if it was served from cache", async () => {
-        sandbox.stub(feed.cache, "get").resolves({spocs: {lastUpdated: Date.now()}});
-        clock.tick(THIRTY_MINUTES + 1);
-
-        await feed.refreshAll({updateOpenTabs: false, isStartup: true});
-
-        assert.calledOnce(feed._fetchSpocsAndCache);
-      });
-      it("should not refresh spocs on startup if it is under THIRTY_MINUTES", async () => {
-        sandbox.stub(feed.cache, "get").resolves({spocs: {lastUpdated: Date.now()}});
-
-        await feed.refreshAll({updateOpenTabs: false, isStartup: true});
-
-        assert.notCalled(feed._fetchSpocsAndCache);
-      });
-      it("should refresh an old feed on startup", async () => {
-        const fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
-        sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-        clock.tick(ONE_WEEK + 1);
-        sandbox.stub(feed, "fetchFromEndpoint").resolves();
-
-        await feed.getComponentFeed("foo.com", true);
+        await feed.refreshAll({isStartup: true});
 
         assert.calledOnce(feed.fetchFromEndpoint);
+        // Once from cache, once to update the store
+        assert.calledTwice(feed.store.dispatch);
+        assert.equal(feed.store.dispatch.firstCall.args[0].type, at.DISCOVERY_STREAM_LAYOUT_UPDATE);
       });
-      it("should broadcast feed updates only to main", async () => {
+      it("should not refresh layout on startup if it is under THIRTY_MINUTES", async () => {
+        feed.loadLayout.restore();
+        sandbox.stub(feed.cache, "get").resolves({layout: {_timestamp: Date.now(), layout: {}}});
+        sandbox.stub(feed, "fetchFromEndpoint").resolves({layout: {}});
+
+        await feed.refreshAll({isStartup: true});
+
+        assert.notCalled(feed.fetchFromEndpoint);
+      });
+      it("should refresh spocs on startup if it was served from cache", async () => {
+        feed.loadSpocs.restore();
+        sandbox.stub(feed.cache, "get").resolves({spocs: {lastUpdated: Date.now()}});
+        sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
+        clock.tick(THIRTY_MINUTES + 1);
+
+        await feed.refreshAll({isStartup: true});
+
+        assert.calledOnce(feed.fetchFromEndpoint);
+        // Once from cache, once to update the store
+        assert.calledTwice(feed.store.dispatch);
+        assert.equal(feed.store.dispatch.firstCall.args[0].type, at.DISCOVERY_STREAM_SPOCS_UPDATE);
+      });
+      it("should not refresh spocs on startup if it is under THIRTY_MINUTES", async () => {
+        feed.loadSpocs.restore();
+        sandbox.stub(feed.cache, "get").resolves({spocs: {lastUpdated: Date.now()}});
+        sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
+
+        await feed.refreshAll({isStartup: true});
+
+        assert.notCalled(feed.fetchFromEndpoint);
+      });
+      it("should refresh feeds on startup if it was served from cache", async () => {
         feed.loadComponentFeeds.restore();
-        sandbox.stub(feed, "_checkExpirationPerComponent").resolves({feeds: true});
 
         const fakeComponents = {components: [{feed: {url: "foo.com"}}]};
         const fakeLayout = [fakeComponents];
         const fakeDiscoveryStream = {DiscoveryStream: {layout: fakeLayout}};
         sandbox.stub(feed.store, "getState").returns(fakeDiscoveryStream);
 
-        const fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
-        sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-        sandbox.stub(feed.cache, "set").resolves();
+        const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "data"}}};
+        sandbox.stub(feed.cache, "get").resolves(fakeCache);
         clock.tick(THIRTY_MINUTES + 1);
-        sandbox.stub(feed, "fetchFromEndpoint").resolves();
+        sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
 
-        await feed._maybeUpdateCachedData();
+        await feed.refreshAll({isStartup: true});
 
         assert.calledOnce(feed.fetchFromEndpoint);
-        assert.calledOnce(feed.store.dispatch);
-        assert.equal(feed.store.dispatch.firstCall.args[0].meta.to, "ActivityStream:Main");
+        // Once from cache, once to update the store
+        assert.calledTwice(feed.store.dispatch);
+        assert.equal(feed.store.dispatch.firstCall.args[0].type, at.DISCOVERY_STREAM_FEEDS_UPDATE);
       });
     });
   });

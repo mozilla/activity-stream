@@ -87,7 +87,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   /**
    * Returns true if data in the cache for a particular key has expired or is missing.
-   * @param {{}} cacheData data returned from cache.get()
+   * @param {object} cachedData data returned from cache.get()
    * @param {string} key a cache key
    * @param {string?} url for "feed" only, the URL of the feed.
    * @param {boolean} is this check done at initial browser load
@@ -133,23 +133,17 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       expirationPerComponent.feeds;
   }
 
-  async _fetchLayoutAndCache() {
-    const layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
-    if (layoutResponse && layoutResponse.layout) {
-      layoutResponse._timestamp = Date.now();
-      await this.cache.set("layout", layoutResponse);
-    } else {
-      Cu.reportError("No response for response.layout prop");
-    }
-
-    return layoutResponse;
-  }
-
   async loadLayout(sendUpdate, isStartup) {
     const cachedData = await this.cache.get() || {};
     let {layout: layoutResponse} = cachedData;
     if (this.isExpired({cachedData, key: "layout", isStartup})) {
-      layoutResponse = await this._fetchLayoutAndCache();
+      layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
+      if (layoutResponse && layoutResponse.layout) {
+        layoutResponse._timestamp = Date.now();
+        await this.cache.set("layout", layoutResponse);
+      } else {
+        Cu.reportError("No response for response.layout prop");
+      }
     }
 
     if (layoutResponse && layoutResponse.layout) {
@@ -190,25 +184,6 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
-  async _fetchSpocsAndCache() {
-    const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
-    const spocsResponse = await this.fetchFromEndpoint(endpoint);
-    let spocs;
-    if (spocsResponse) {
-      spocs = {
-        lastUpdated: Date.now(),
-        data: spocsResponse,
-      };
-
-      this.cleanUpCampaignImpressionPref(spocs.data);
-      await this.cache.set("spocs", spocs);
-    } else {
-      Cu.reportError("No response for spocs_endpoint prop");
-    }
-
-    return spocs;
-  }
-
   async loadSpocs(sendUpdate, isStartup) {
     const cachedData = await this.cache.get() || {};
     let spocs;
@@ -216,7 +191,19 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     if (this.showSpocs) {
       spocs = cachedData.spocs;
       if (this.isExpired({cachedData, key: "spocs", isStartup})) {
-        spocs = await this._fetchSpocsAndCache();
+        const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
+        const spocsResponse = await this.fetchFromEndpoint(endpoint);
+        if (spocsResponse) {
+          spocs = {
+            lastUpdated: Date.now(),
+            data: spocsResponse,
+          };
+
+          this.cleanUpCampaignImpressionPref(spocs.data);
+          await this.cache.set("spocs", spocs);
+        } else {
+          Cu.reportError("No response for spocs_endpoint prop");
+        }
       }
     }
 
@@ -311,29 +298,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   async _maybeUpdateCachedData() {
     const expirationPerComponent = await this._checkExpirationPerComponent();
     if (expirationPerComponent.layout) {
-      const layoutResponse = await this._fetchLayoutAndCache();
-      this.store.dispatch(ac.OnlyToMain({
-        type: at.DISCOVERY_STREAM_LAYOUT_UPDATE,
-        data: {
-          layout: layoutResponse.layout,
-          lastUpdated: layoutResponse._timestamp,
-        },
-      }));
+      await this.loadLayout(this.store.dispatch);
     }
     if (expirationPerComponent.spocs) {
-      const spocsResponse = await this._fetchSpocsAndCache();
-      this.store.dispatch(ac.OnlyToMain({
-        type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
-        data: {
-          lastUpdated: spocsResponse.lastUpdated,
-          spocs: this.filterSpocs(spocsResponse.data),
-        },
-      }));
+      await this.loadSpocs(this.store.dispatch);
     }
     if (expirationPerComponent.feeds) {
-      await this.loadComponentFeeds(action => this.store.dispatch(ac.OnlyToMain(action)));
+      await this.loadComponentFeeds(this.store.dispatch);
     }
-
   }
 
   /**
