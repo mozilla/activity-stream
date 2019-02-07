@@ -226,6 +226,10 @@ const PREFS_CONFIG = new Map([
     title: "Opt out of new layout v0",
     value: false,
   }],
+  ["discoverystream.spoc.impressions", {
+    title: "Track spoc impressions",
+    value: "{}",
+  }],
   ["darkModeMessage", {
     title: "Boolean flag that decides whether to show the dark Mode message or not.",
     value: IS_NIGHTLY_OR_UNBRANDED_BUILD,
