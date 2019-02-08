@@ -169,8 +169,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    *                    and populates newFeeds with the result.
    * @param {Object} Has both newFeedsPromises (Array) and newFeeds (Object)
    * @param {Boolean} isStartup We have different cache handling for startup.
-   * @returns {Function} A for each function, we return it so we can
-   *                     contain the scope for isStartup and the promises object.
+   * @returns {Function} We return a function so we can contain
+   *                     the scope for isStartup and the promises object.
+   *                     Combines feed results and promises for each component with a feed.
    */
   buildFeedPromise({newFeedsPromises, newFeeds}, isStartup) {
     return component => {
@@ -198,8 +199,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * reduceFeedComponents - Filters out components with no feeds, and combines
    *                        all feeds on this component with the feeds from other components.
    * @param {Boolean} isStartup We have different cache handling for startup.
-   * @returns {Function} A reducer function for the actual reducer,
-   *                     we return it so we can contain the scope for isStartup.
+   * @returns {Function} We return a function so we can contain the scope for isStartup.
+   *                     Reduces feeds into promises and feed data.
    */
   reduceFeedComponents(isStartup) {
     return (accumulator, row) => {
@@ -232,7 +233,6 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const {DiscoveryStream} = this.store.getState();
 
     if (!DiscoveryStream || !DiscoveryStream.layout) {
-      // istanbul ignore next
       return;
     }
 

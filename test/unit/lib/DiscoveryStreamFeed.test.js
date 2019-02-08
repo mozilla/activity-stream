@@ -131,6 +131,18 @@ describe("DiscoveryStreamFeed", () => {
       sandbox.restore();
     });
 
+    it("should not dispatch updates when layout is not defined", async () => {
+      fakeDiscoveryStream = {
+        DiscoveryStream: {},
+      };
+      feed.store.getState.returns(fakeDiscoveryStream);
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.loadComponentFeeds(feed.store.dispatch);
+
+      assert.notCalled(feed.store.dispatch);
+    });
+
     it("should populate feeds cache", async () => {
       fakeCache = {feeds: {"foo.com": {"lastUpdated": Date.now(), "data": "data"}}};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
