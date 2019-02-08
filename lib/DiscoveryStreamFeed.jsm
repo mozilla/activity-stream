@@ -166,40 +166,40 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   async loadComponentFeeds(sendUpdate, isStartup) {
     const {DiscoveryStream} = this.store.getState();
-    const newFeedsPromises = [];
-    const newFeeds = {};
 
     if (!DiscoveryStream || !DiscoveryStream.layout) {
       // istanbul ignore next
       return;
     }
 
-    for (let row of DiscoveryStream.layout) {
-      if (!row || !row.components) {
-        continue;
-      }
-      for (let component of row.components) {
-        if (component && component.feed) {
-          const {url} = component.feed;
-          if (!newFeeds[url]) {
-            // We initially stub this out so we don't fetch dupes,
-            // we then fill in with the proper object inside the promise.
-            newFeeds[url] = {};
+    const {
+      promises: newFeedsPromises,
+      feeds: newFeeds,
+    } = DiscoveryStream.layout.filter(row => row && row.components).reduce(({promises, feeds}, row) => {
+      row.components.filter(component => component && component.feed).forEach(component => {
+        const {url} = component.feed;
+        if (!feeds[url]) {
+          // We initially stub this out so we don't fetch dupes,
+          // we then fill in with the proper object inside the promise.
+          feeds[url] = {};
 
-            const feedPromise = this.getComponentFeed(url, isStartup);
+          const feedPromise = this.getComponentFeed(url, isStartup);
 
-            feedPromise.then(data => {
-              newFeeds[url] = data;
-            }).catch(/* istanbul ignore next */ error => {
-              Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
-            });
-
-            newFeedsPromises.push(feedPromise);
-          }
+          feedPromise.then(data => {
+            feeds[url] = data;
+          }).catch(/* istanbul ignore next */ error => {
+            Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
+          });
+          promises.push(feedPromise);
         }
-      }
-    }
+      });
+      return {promises, feeds};
+    }, {
+      promises: [],
+      feeds: {},
+    });
 
+    // Each promise has a catch already built in, no need to catch here.
     await Promise.all(newFeedsPromises);
     await this.cache.set("feeds", newFeeds);
     sendUpdate({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: newFeeds});
