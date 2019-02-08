@@ -164,6 +164,37 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
+  buildFeedPromises(layout, isStartup) {
+    const initialData = {
+      newFeedsPromises: [],
+      newFeeds: {},
+    };
+
+    return layout.filter(row => row && row.components).reduce(({newFeedsPromises, newFeeds}, row) => {
+      row.components.filter(component => component && component.feed).forEach(component => {
+        const {url} = component.feed;
+
+        if (!newFeeds[url]) {
+          // We initially stub this out so we don't fetch dupes,
+          // we then fill in with the proper object inside the promise.
+          newFeeds[url] = {};
+
+          const feedPromise = this.getComponentFeed(url, isStartup);
+
+          feedPromise.then(data => {
+            newFeeds[url] = data;
+          }).catch(/* istanbul ignore next */ error => {
+            Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
+          });
+
+          newFeedsPromises.push(feedPromise);
+        }
+      });
+
+      return {newFeedsPromises, newFeeds};
+    }, initialData);
+  }
+
   async loadComponentFeeds(sendUpdate, isStartup) {
     const {DiscoveryStream} = this.store.getState();
 
@@ -172,32 +203,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       return;
     }
 
-    const {
-      promises: newFeedsPromises,
-      feeds: newFeeds,
-    } = DiscoveryStream.layout.filter(row => row && row.components).reduce(({promises, feeds}, row) => {
-      row.components.filter(component => component && component.feed).forEach(component => {
-        const {url} = component.feed;
-        if (!feeds[url]) {
-          // We initially stub this out so we don't fetch dupes,
-          // we then fill in with the proper object inside the promise.
-          feeds[url] = {};
-
-          const feedPromise = this.getComponentFeed(url, isStartup);
-
-          feedPromise.then(data => {
-            feeds[url] = data;
-          }).catch(/* istanbul ignore next */ error => {
-            Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
-          });
-          promises.push(feedPromise);
-        }
-      });
-      return {promises, feeds};
-    }, {
-      promises: [],
-      feeds: {},
-    });
+    const {newFeedsPromises, newFeeds} = this.buildFeedPromises(DiscoveryStream.layout, isStartup);
 
     // Each promise has a catch already built in, no need to catch here.
     await Promise.all(newFeedsPromises);
