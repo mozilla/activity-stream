@@ -164,35 +164,43 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
+  buildFeedPromise({newFeedsPromises, newFeeds}, isStartup) {
+    return component => {
+      const {url} = component.feed;
+
+      if (!newFeeds[url]) {
+        // We initially stub this out so we don't fetch dupes,
+        // we then fill in with the proper object inside the promise.
+        newFeeds[url] = {};
+
+        const feedPromise = this.getComponentFeed(url, isStartup);
+
+        feedPromise.then(data => {
+          newFeeds[url] = data;
+        }).catch(/* istanbul ignore next */ error => {
+          Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
+        });
+
+        newFeedsPromises.push(feedPromise);
+      }
+    };
+  }
+
+  reduceFeedComponents(isStartup) {
+    return (accumulator, row) => {
+      row.components
+        .filter(component => component && component.feed)
+        .forEach(this.buildFeedPromise(accumulator, isStartup));
+      return accumulator;
+    };
+  }
+
   buildFeedPromises(layout, isStartup) {
     const initialData = {
       newFeedsPromises: [],
       newFeeds: {},
     };
-
-    return layout.filter(row => row && row.components).reduce(({newFeedsPromises, newFeeds}, row) => {
-      row.components.filter(component => component && component.feed).forEach(component => {
-        const {url} = component.feed;
-
-        if (!newFeeds[url]) {
-          // We initially stub this out so we don't fetch dupes,
-          // we then fill in with the proper object inside the promise.
-          newFeeds[url] = {};
-
-          const feedPromise = this.getComponentFeed(url, isStartup);
-
-          feedPromise.then(data => {
-            newFeeds[url] = data;
-          }).catch(/* istanbul ignore next */ error => {
-            Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
-          });
-
-          newFeedsPromises.push(feedPromise);
-        }
-      });
-
-      return {newFeedsPromises, newFeeds};
-    }, initialData);
+    return layout.filter(row => row && row.components).reduce(this.reduceFeedComponents(isStartup), initialData);
   }
 
   async loadComponentFeeds(sendUpdate, isStartup) {
