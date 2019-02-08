@@ -200,7 +200,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       newFeedsPromises: [],
       newFeeds: {},
     };
-    return layout.filter(row => row && row.components).reduce(this.reduceFeedComponents(isStartup), initialData);
+    return layout
+      .filter(row => row && row.components)
+      .reduce(this.reduceFeedComponents(isStartup), initialData);
   }
 
   async loadComponentFeeds(sendUpdate, isStartup) {
