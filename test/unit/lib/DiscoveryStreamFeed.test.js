@@ -718,20 +718,20 @@ describe("DiscoveryStreamFeed", () => {
       });
     });
     it("should return false for layout on startup for content under 1 week", () => {
-      const layout = {_timestamp: Date.now()};
+      const layout = {lastUpdated: Date.now()};
       const result = feed.isExpired({cachedData: {layout}, key: "layout", isStartup: true});
 
       assert.isFalse(result);
     });
     it("should return true for layout for isStartup=false", () => {
-      const layout = {_timestamp: Date.now()};
+      const layout = {lastUpdated: Date.now()};
       clock.tick(THIRTY_MINUTES + 1);
       const result = feed.isExpired({cachedData: {layout}, key: "layout"});
 
       assert.isTrue(result);
     });
     it("should return true for layout on startup for content over 1 week", () => {
-      const layout = {_timestamp: Date.now()};
+      const layout = {lastUpdated: Date.now()};
       clock.tick(ONE_WEEK + 1);
       const result = feed.isExpired({cachedData: {layout}, key: "layout", isStartup: true});
 
@@ -856,7 +856,7 @@ describe("DiscoveryStreamFeed", () => {
       });
       it("should refresh layout on startup if it was served from cache", async () => {
         feed.loadLayout.restore();
-        sandbox.stub(feed.cache, "get").resolves({layout: {_timestamp: Date.now(), layout: {}}});
+        sandbox.stub(feed.cache, "get").resolves({layout: {lastUpdated: Date.now(), layout: {}}});
         sandbox.stub(feed, "fetchFromEndpoint").resolves({layout: {}});
         clock.tick(THIRTY_MINUTES + 1);
 
@@ -869,7 +869,7 @@ describe("DiscoveryStreamFeed", () => {
       });
       it("should not refresh layout on startup if it is under THIRTY_MINUTES", async () => {
         feed.loadLayout.restore();
-        sandbox.stub(feed.cache, "get").resolves({layout: {_timestamp: Date.now(), layout: {}}});
+        sandbox.stub(feed.cache, "get").resolves({layout: {lastUpdated: Date.now(), layout: {}}});
         sandbox.stub(feed, "fetchFromEndpoint").resolves({layout: {}});
 
         await feed.refreshAll({isStartup: true});
