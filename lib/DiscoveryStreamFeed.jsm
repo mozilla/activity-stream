@@ -140,7 +140,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       const layoutResponse = await this.fetchFromEndpoint(this.config.layout_endpoint);
       if (layoutResponse && layoutResponse.layout) {
         layout = {
-          lastUpdated: layoutResponse._timestamp,
+          lastUpdated: Date.now(),
           spocs: layoutResponse.spocs,
           layout: layoutResponse.layout,
         };
