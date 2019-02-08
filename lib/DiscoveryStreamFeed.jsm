@@ -164,6 +164,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
+  /**
+   * buildFeedPromise - Creates a promise for a single unique feed
+   *                    and populates newFeeds with the result.
+   * @param {Object} Has both newFeedsPromises (Array) and newFeeds (Object)
+   * @param {Boolean} isStartup We have different cache handling for startup.
+   * @returns {Function} A for each function, we return it so we can
+   *                     contain the scope for isStartup and the promises object.
+   */
   buildFeedPromise({newFeedsPromises, newFeeds}, isStartup) {
     return component => {
       const {url} = component.feed;
@@ -186,6 +194,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     };
   }
 
+  /**
+   * reduceFeedComponents - Filters out components with no feeds, and combines
+   *                        all feeds on this component with the feeds from other components.
+   * @param {Boolean} isStartup We have different cache handling for startup.
+   * @returns {Function} A reducer function for the actual reducer,
+   *                     we return it so we can contain the scope for isStartup.
+   */
   reduceFeedComponents(isStartup) {
     return (accumulator, row) => {
       row.components
@@ -195,6 +210,14 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     };
   }
 
+  /**
+   * buildFeedPromises - Filters out rows with no components,
+   *                     and gets us a promise for each unique feed.
+   * @param {Object} layout This is the Discovery Stream layout object.
+   * @param {Boolean} isStartup We have different cache handling for startup.
+   * @returns {Object} An object with newFeedsPromises (Array) and newFeeds (Object),
+   *                   we can Promise.all newFeedsPromises to get completed data in newFeeds.
+   */
   buildFeedPromises(layout, isStartup) {
     const initialData = {
       newFeedsPromises: [],
