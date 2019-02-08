@@ -205,7 +205,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
     const {newFeedsPromises, newFeeds} = this.buildFeedPromises(DiscoveryStream.layout, isStartup);
 
-    // Each promise has a catch already built in, no need to catch here.
+    // Each promise has a catch already built in, so no need to catch here.
     await Promise.all(newFeedsPromises);
     await this.cache.set("feeds", newFeeds);
     sendUpdate({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: newFeeds});
