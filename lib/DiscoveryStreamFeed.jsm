@@ -295,8 +295,12 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return feed;
   }
 
+  /**
+   * Called at startup to update cached data in the background.
+   */
   async _maybeUpdateCachedData() {
     const expirationPerComponent = await this._checkExpirationPerComponent();
+    // Pass in `store.dispatch` to send the updates only to main
     if (expirationPerComponent.layout) {
       await this.loadLayout(this.store.dispatch);
     }
@@ -312,7 +316,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * @typedef {Object} RefreshAllOptions
    * @property {boolean} updateOpenTabs - Sends updates to open tabs immediately if true,
    *                                      updates in background if false
-
+   * @property {boolean} isStartup - When the function is called at browser startup
+   *
    * Refreshes layout, component feeds, and spocs in order if caches have expired.
    * @param {RefreshAllOptions} options
    */
