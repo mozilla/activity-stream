@@ -165,8 +165,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   /**
-   * buildFeedPromise - Creates a promise for a single unique feed
-   *                    and populates newFeeds with the result.
+   * buildFeedPromise - Adds the promise result to newFeeds and
+   *                    pushes a promise to newsFeedsPromises.
    * @param {Object} Has both newFeedsPromises (Array) and newFeeds (Object)
    * @param {Boolean} isStartup We have different cache handling for startup.
    * @returns {Function} We return a function so we can contain
