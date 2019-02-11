@@ -18,6 +18,7 @@ const HTML_NS = "http://www.w3.org/1999/xhtml";
 
 const PREFERENCES_LOADED_EVENT = "home-pane-loaded";
 const DISCOVERY_STREAM_CONFIG_PREF_NAME = "browser.newtabpage.activity-stream.discoverystream.config";
+const PREF_SHOW_SPONSORED = "showSponsored";
 
 // These "section" objects are formatted in a way to be similar to the ones from
 // SectionsManager to construct the preferences view.
@@ -105,7 +106,7 @@ this.AboutPreferences = class AboutPreferences {
 
   async observe(window) {
     this.renderPreferences(window, await this.strings, [...PREFS_BEFORE_SECTIONS,
-      ...this.store.getState().Sections, ...PREFS_AFTER_SECTIONS], this.store.getState().DiscoveryStream.config.enabled);
+      ...this.store.getState().Sections, ...PREFS_AFTER_SECTIONS], this.store.getState().DiscoveryStream.config);
   }
 
   /**
@@ -133,7 +134,7 @@ this.AboutPreferences = class AboutPreferences {
    * Render preferences to an about:preferences content window with the provided
    * strings and preferences structure.
    */
-  renderPreferences({document, Preferences, gHomePane}, strings, prefStructure, discoveryStreamEnabled) {
+  renderPreferences({document, Preferences, gHomePane}, strings, prefStructure, discoveryStreamConfig) {
     // Helper to create a new element and append it
     const createAppend = (tag, parent) => parent.appendChild(
       document.createXULElement(tag));
@@ -268,7 +269,7 @@ this.AboutPreferences = class AboutPreferences {
       });
     });
 
-    if (discoveryStreamEnabled) {
+    if (discoveryStreamConfig.enabled) {
       // If Discovery Stream is enabled hide Home Content options
       contentsGroup.style.visibility = "hidden";
 
@@ -280,6 +281,13 @@ this.AboutPreferences = class AboutPreferences {
         .textContent = formatString("prefs_content_discovery_header");
       createAppend("description", discoveryGroup)
         .textContent = formatString("prefs_content_discovery_description");
+
+      if (discoveryStreamConfig.show_spocs) {
+        const discoveryDetails = createAppend("vbox", discoveryGroup);
+        const subcheck = createAppend("checkbox", discoveryDetails);
+        subcheck.setAttribute("label", formatString("prefs_sponsored_stories_status_label"));
+        linkPref(subcheck, PREF_SHOW_SPONSORED, "bool");
+      }
 
       const contentDiscoveryButton = document.createElementNS(HTML_NS, "button");
       contentDiscoveryButton.classList.add("contentDiscoveryButton");
