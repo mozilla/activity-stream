@@ -145,7 +145,7 @@ describe("AboutPreferences Feed", () => {
       },
       Preferences,
       gHomePane,
-    }, strings, prefStructure, DiscoveryStream.config.enabled);
+    }, strings, prefStructure, DiscoveryStream.config);
     beforeEach(() => {
       node = {
         appendChild: sandbox.stub().returnsArg(0),
@@ -298,7 +298,7 @@ describe("AboutPreferences Feed", () => {
     describe("#DiscoveryStream", () => {
       let PreferenceExperimentsStub;
       beforeEach(() => {
-        DiscoveryStream = {config: {enabled: true}};
+        DiscoveryStream = {config: {enabled: true, show_spocs: false}};
         PreferenceExperimentsStub = {
           getAllActive: sandbox.stub().resolves([{name: "discoverystream", preferenceName: "browser.newtabpage.activity-stream.discoverystream.config"}]),
           stop: sandbox.stub().resolves(),
@@ -344,6 +344,24 @@ describe("AboutPreferences Feed", () => {
         assert.calledOnce(PreferenceExperimentsStub.getAllActive);
         assert.calledOnce(PreferenceExperimentsStub.stop);
         assert.calledWithExactly(PreferenceExperimentsStub.stop, "discoverystream", {resetValue: true, reason: "individual-opt-out"});
+      });
+      it("should render the spocs opt out checkbox if show_spocs is true", () => {
+        const spy = sandbox.spy(instance, "renderPreferences");
+        DiscoveryStream = {config: {enabled: true, show_spocs: true}};
+        testRender();
+
+        const {createXULElement} = spy.firstCall.args[0].document;
+        assert.calledWith(createXULElement, "checkbox");
+        assert.calledWith(Preferences.add, {id: "browser.newtabpage.activity-stream.showSponsored", type: "bool"});
+      });
+      it("should not render the spocs opt out checkbox if show_spocs is false", () => {
+        const spy = sandbox.spy(instance, "renderPreferences");
+        DiscoveryStream = {config: {enabled: true, show_spocs: false}};
+        testRender();
+
+        const {createXULElement} = spy.firstCall.args[0].document;
+        assert.neverCalledWith(createXULElement, "checkbox");
+        assert.neverCalledWith(Preferences.add, {id: "browser.newtabpage.activity-stream.showSponsored", type: "bool"});
       });
     });
   });
