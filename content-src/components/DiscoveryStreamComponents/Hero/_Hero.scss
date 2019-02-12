@@ -153,6 +153,16 @@ $card-header-in-hero-line-height: 20;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: 24px;
+    padding: 20px 0;
+
+    &.ds-hero-border {
+      border-top: $border-secondary;
+
+      .ds-card:nth-child(-n+2) {
+        border-bottom: $border-secondary;
+        margin-bottom: 20px;
+      }
+    }
 
     .wrapper {
       border-top: 0;
@@ -182,7 +192,7 @@ $card-header-in-hero-line-height: 20;
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       grid-column-gap: 24px;
     }
   }
