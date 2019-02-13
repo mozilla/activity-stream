@@ -264,7 +264,19 @@ export class SnippetsProvider {
       throw new Error("Snippet payload was incorrectly formatted");
     }
 
-    console.log("Legacy snippets have been removed; this function no longer inserts snippets."); // eslint-disable-line no-console
+    // Note that injecting snippets can throw if they're invalid XML.
+    // eslint-disable-next-line no-unsanitized/property
+    snippetsEl.innerHTML = payload;
+
+    this._logIfDevtools("Successfully added snippets.");
+
+    // Scripts injected by innerHTML are inactive, so we have to relocate them
+    // through DOM manipulation to activate their contents.
+    for (const scriptEl of snippetsEl.getElementsByTagName("script")) {
+      const relocatedScript = document.createElement("script");
+      relocatedScript.text = scriptEl.text;
+      scriptEl.parentNode.replaceChild(relocatedScript, scriptEl);
+    }
   }
 
   _onAction(msg) {
