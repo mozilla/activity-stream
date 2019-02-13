@@ -308,7 +308,7 @@ this.AboutPreferences = class AboutPreferences {
         // If there is no element to reuse create one
         const discoveryDetails = createAppend("vbox", discoveryGroup);
         const subcheck = createAppend("checkbox", discoveryDetails);
-        subcheck.setAttribute("label", formatString("prefs_sponsored_stories_status_label"));
+        subcheck.setAttribute("label", formatString("prefs_topstories_options_sponsored_label"));
         linkPref(subcheck, PREF_SHOW_SPONSORED, "bool");
       }
 
