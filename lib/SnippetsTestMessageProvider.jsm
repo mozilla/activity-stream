@@ -8,6 +8,32 @@ const TEST_ICON_16 = "chrome://branding/content/icon16.png";
 
 const MESSAGES = () => ([
   {
+    "weight": 100,
+    "id": "SIMPLE_TEST_1_LightDark",
+    "template": "simple_snippet",
+    "campaign": "test_campaign_blocking",
+    "content": {
+      "icon": {
+        "dark": "chrome://branding/content/icon64.png",
+        "light": "chrome://branding/content/icon64.png",
+      },
+      "title": "Firefox Account!",
+      "title_icon": {
+        "dark": "chrome://branding/content/icon16.png",
+        "light": "chrome://branding/content/icon16.png",
+      },
+      "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
+      "links": {
+        "syncLink": {
+          "url": "https://www.mozilla.org/en-US/firefox/accounts",
+        },
+      },
+      "block_button_text": "Block",
+    },
+    "targeting": "providerCohorts.snippets_local_testing == \"SHOW_TEST\"",
+    "provider": "snippets_local_testing",
+  },
+  {
     "id": "SIMPLE_TEST_1",
     "template": "simple_snippet",
     "campaign": "test_campaign_blocking",
