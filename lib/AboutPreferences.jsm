@@ -278,7 +278,7 @@ this.AboutPreferences = class AboutPreferences {
 
     if (discoveryStreamConfig.enabled) {
       // If Discovery Stream is enabled hide Home Content options
-      contentsGroup.style.visibility = "hidden";
+      contentsGroup.style.visibility = "collapse";
 
       const discoveryGroup = homeGroup.insertAdjacentElement("afterend", homeGroup.cloneNode());
       discoveryGroup.id = "discoveryContentsGroup";
@@ -324,7 +324,7 @@ this.AboutPreferences = class AboutPreferences {
           // Unconditionally update the UI for a fast user response and in
           // order to help with testing
           discoveryGroup.style.display = "none";
-          contentsGroup.style.visibility = "visible";
+          contentsGroup.style.visibility = "";
           if (sponsoredStoriesCheckbox) {
             // If we reused the checkbox element we need to restore it
             sponsoredStoriesCheckbox.remove();

@@ -323,9 +323,9 @@ describe("AboutPreferences Feed", () => {
 
         assert.equal(node.textContent, "prefs_content_discovery_button");
         assert.calledWith(documentStub.createElementNS, "http://www.w3.org/1999/xhtml", "button");
-        // node points to contentsGroup, style is set to hidden if Discovery
+        // node points to contentsGroup, style is set to collapse if Discovery
         // Stream is enabled
-        assert.propertyVal(node.style, "visibility", "hidden");
+        assert.propertyVal(node.style, "visibility", "collapse");
       });
       it("should request Discovery Stream opt-out on button click", async () => {
         testRender();
