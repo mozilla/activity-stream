@@ -168,6 +168,10 @@ this.AboutPreferences = class AboutPreferences {
       `href="data:text/css,${encodeURIComponent(CUSTOM_CSS)}" type="text/css"`),
       document.documentElement);
 
+    // Both Topstories and Discovery Stream need to toggle the same pref but
+    // we can't have two elements linked to the same pref so we reuse the same.
+    let sponsoredStoriesCheckbox = null;
+
     // Insert a new group immediately after the homepage one
     const homeGroup = document.getElementById("homepageGroup");
     const contentsGroup = homeGroup.insertAdjacentElement("afterend", homeGroup.cloneNode());
@@ -266,6 +270,9 @@ this.AboutPreferences = class AboutPreferences {
         subcheck.classList.add("indent");
         subcheck.setAttribute("label", formatString(nested.titleString));
         linkPref(subcheck, nested.name, "bool");
+        if (nested.name === "showSponsored") {
+          sponsoredStoriesCheckbox = subcheck;
+        }
       });
     });
 
@@ -282,7 +289,11 @@ this.AboutPreferences = class AboutPreferences {
       createAppend("description", discoveryGroup)
         .textContent = formatString("prefs_content_discovery_description");
 
-      if (discoveryStreamConfig.show_spocs) {
+      if (discoveryStreamConfig.show_spocs && sponsoredStoriesCheckbox) {
+        sponsoredStoriesCheckbox.remove();
+        sponsoredStoriesCheckbox.classList.remove("indent");
+        discoveryGroup.appendChild(sponsoredStoriesCheckbox);
+      } else if (discoveryStreamConfig.show_spocs) {
         const discoveryDetails = createAppend("vbox", discoveryGroup);
         const subcheck = createAppend("checkbox", discoveryDetails);
         subcheck.setAttribute("label", formatString("prefs_sponsored_stories_status_label"));
@@ -302,6 +313,11 @@ this.AboutPreferences = class AboutPreferences {
           // order to help with testing
           discoveryGroup.style.display = "none";
           contentsGroup.style.visibility = "visible";
+          if (sponsoredStoriesCheckbox) {
+            sponsoredStoriesCheckbox.remove();
+            sponsoredStoriesCheckbox.classList.add("indent");
+            document.querySelector("[data-subcategory='topstories'] .indent").appendChild(sponsoredStoriesCheckbox);
+          }
           if (experiment) {
             await PreferenceExperiments.stop(experiment.name, {
               resetValue: true,
