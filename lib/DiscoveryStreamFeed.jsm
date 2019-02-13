@@ -641,7 +641,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
             break;
           // Check if spocs was disabled. Remove them if they were.
           case PREF_SHOW_SPONSORED:
-            await this.loadSpocs();
+            await this.loadSpocs(update => this.store.dispatch(ac.BroadcastToContent(update)));
             break;
         }
         break;
