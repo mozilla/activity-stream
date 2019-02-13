@@ -142,6 +142,7 @@ describe("AboutPreferences Feed", () => {
         createElementNS: sandbox.stub().callsFake((NS, el) => node),
         getElementById: sandbox.stub().returns(node),
         insertBefore: sandbox.stub().returnsArg(0),
+        querySelector: sandbox.stub().returns({appendChild: sandbox.stub()}),
       },
       Preferences,
       gHomePane,
@@ -150,10 +151,11 @@ describe("AboutPreferences Feed", () => {
       node = {
         appendChild: sandbox.stub().returnsArg(0),
         addEventListener: sandbox.stub(),
-        classList: {add: sandbox.stub()},
+        classList: {add: sandbox.stub(), remove: sandbox.stub()},
         cloneNode: sandbox.stub().returnsThis(),
         insertAdjacentElement: sandbox.stub().returnsArg(1),
         setAttribute: sandbox.stub(),
+        remove: sandbox.stub(),
         style: {},
       };
       strings = {};
@@ -362,6 +364,31 @@ describe("AboutPreferences Feed", () => {
         const {createXULElement} = spy.firstCall.args[0].document;
         assert.neverCalledWith(createXULElement, "checkbox");
         assert.neverCalledWith(Preferences.add, {id: "browser.newtabpage.activity-stream.showSponsored", type: "bool"});
+      });
+      describe("spocs pref checkbox", () => {
+        beforeEach(() => {
+          DiscoveryStream = {config: {enabled: true, show_spocs: true}};
+          prefStructure = [{pref: {nestedPrefs: [{titleString: "spocs", name: "showSponsored"}]}}];
+        });
+        it("should remove the topstories spocs checkbox", () => {
+          testRender();
+
+          assert.calledOnce(node.remove);
+          assert.calledOnce(node.classList.remove);
+          assert.calledWith(node.classList.remove, "indent");
+        });
+        it("should restore the checkbox when leaving the experiment", async () => {
+          const spy = sandbox.spy(instance, "renderPreferences");
+
+          testRender();
+
+          const [{document}] = spy.firstCall.args;
+
+          // Trigger the button click listener
+          await node.addEventListener.firstCall.args[1]();
+          assert.calledOnce(document.querySelector);
+          assert.calledWith(document.querySelector, "[data-subcategory='topstories'] .indent");
+        });
       });
     });
   });
