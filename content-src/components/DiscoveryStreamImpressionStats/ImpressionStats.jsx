@@ -1,4 +1,4 @@
-import {actionCreators as ac} from "common/Actions.jsm";
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import React from "react";
 
 const VISIBLE = "visible";
@@ -46,6 +46,10 @@ export class ImpressionStats extends React.PureComponent {
   _dispatchImpressionStats() {
     const {props} = this;
     const cards = props.rows;
+
+    if (this.props.campaignId) {
+      this.props.dispatch(ac.OnlyToMain({type: at.DISCOVERY_STREAM_SPOC_IMPRESSION, data: {campaignId: this.props.campaignId}}));
+    }
 
     if (this._needsImpressionStats(cards)) {
       props.dispatch(ac.DiscoveryStreamImpressionStats({

@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 import {SafeAnchor} from "../SafeAnchor/SafeAnchor";
-import {SpocIntersectionObserver} from "content-src/components/DiscoveryStreamComponents/SpocIntersectionObserver/SpocIntersectionObserver";
 
 /**
  * @note exported for testing only
@@ -35,24 +34,22 @@ export class ListItem extends React.PureComponent {
   render() {
     return (
       <li className="ds-list-item">
-        <SpocIntersectionObserver campaignId={this.props.campaignId} dispatch={this.props.dispatch}>
-          <SafeAnchor url={this.props.url} className="ds-list-item-link" onLinkClick={this.onLinkClick}>
-            <div className="ds-list-item-text">
-              <div className="ds-list-item-title">{this.props.title}</div>
-              {this.props.excerpt && <div className="ds-list-item-excerpt">{this.props.excerpt}</div>}
-              <p>
-                {this.props.context && (
-                  <span>
-                    <span className="ds-list-item-context">{this.props.context}</span>
-                    <br />
-                  </span>
-                )}
-                <span className="ds-list-item-info">{this.props.domain}</span>
-              </p>
-            </div>
-            <div className="ds-list-image" style={{backgroundImage: `url(${this.props.image_src})`}} />
-          </SafeAnchor>
-        </SpocIntersectionObserver>
+        <SafeAnchor url={this.props.url} className="ds-list-item-link" onLinkClick={this.onLinkClick}>
+          <div className="ds-list-item-text">
+            <div className="ds-list-item-title">{this.props.title}</div>
+            {this.props.excerpt && <div className="ds-list-item-excerpt">{this.props.excerpt}</div>}
+            <p>
+              {this.props.context && (
+                <span>
+                  <span className="ds-list-item-context">{this.props.context}</span>
+                  <br />
+                </span>
+              )}
+              <span className="ds-list-item-info">{this.props.domain}</span>
+            </p>
+          </div>
+          <div className="ds-list-image" style={{backgroundImage: `url(${this.props.image_src})`}} />
+        </SafeAnchor>
       </li>
     );
   }
@@ -69,19 +66,23 @@ export function _List(props) {
   const recs = feed.recommendations;
   let recMarkup = recs.slice(props.recStartingPoint,
                              props.recStartingPoint + props.items).map((rec, index) => (
-    <ImpressionStats key={`ds-list-imp-${index}`} rows={[rec]} dispatch={props.dispatch} source={props.type}>
-      <ListItem key={`ds-list-item-${index}`}
-        campaignId={rec.campaign_id}
-        dispatch={props.dispatch}
-        domain={rec.domain}
-        excerpt={rec.excerpt}
-        id={rec.id}
-        image_src={rec.image_src}
-        index={index}
-        title={rec.title}
-        context={rec.context}
-        type={props.type}
-        url={rec.url} />
+    <ImpressionStats
+      key={`ds-list-imp-${index}`}
+      campaignId={rec.campaign_id}
+      rows={[rec]}
+      dispatch={props.dispatch}
+      source={props.type}>
+        <ListItem key={`ds-list-item-${index}`}
+          dispatch={props.dispatch}
+          domain={rec.domain}
+          excerpt={rec.excerpt}
+          id={rec.id}
+          image_src={rec.image_src}
+          index={index}
+          title={rec.title}
+          context={rec.context}
+          type={props.type}
+          url={rec.url} />
     </ImpressionStats>)
   );
   const listStyles = [

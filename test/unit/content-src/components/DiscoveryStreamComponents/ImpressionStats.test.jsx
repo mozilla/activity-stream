@@ -89,6 +89,18 @@ describe("<ImpressionStats>", () => {
     assert.equal(action.data.source, SOURCE);
     assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}, {id: 3}]);
   });
+  it("should send a DISCOVERY_STREAM_SPOC_IMPRESSION when the wrapped item has a campaignId", () => {
+    const dispatch = sinon.spy();
+    const campaignId = "a_campaign_id";
+    const props = {dispatch, campaignId, IntersectionObserver: buildIntersectionObserver(FullIntersectEntries)};
+    renderImpressionStats(props);
+
+    assert.calledTwice(dispatch);
+
+    const [action] = dispatch.firstCall.args;
+    assert.equal(action.type, at.DISCOVERY_STREAM_SPOC_IMPRESSION);
+    assert.deepEqual(action.data, {campaignId});
+  });
   it("should send an impression when the wrapped item transiting from invisible to visible", () => {
     const dispatch = sinon.spy();
     const props = {dispatch, IntersectionObserver: buildIntersectionObserver(ZeroIntersectEntries, false)};

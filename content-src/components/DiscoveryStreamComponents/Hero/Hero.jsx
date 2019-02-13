@@ -42,19 +42,23 @@ export class Hero extends React.PureComponent {
 
     // Note that `{index + 1}` is necessary below for telemetry since we treat heroRec as index 0.
     let cards = otherRecs.map((rec, index) => (
-      <ImpressionStats key={`ds-hero-imp-${index}`} rows={[rec]} dispatch={this.props.dispatch} source={this.props.type}>
-        <DSCard
-          campaignId={rec.campaign_id}
-          key={`dscard-${index}`}
-          image_src={rec.image_src}
-          title={rec.title}
-          url={rec.url}
-          id={rec.id}
-          index={index + 1}
-          type={this.props.type}
-          dispatch={this.props.dispatch}
-          context={rec.context}
-          source={rec.domain} />
+      <ImpressionStats
+        key={`ds-hero-imp-${index}`}
+        campaignId={rec.campaign_id}
+        rows={[rec]}
+        dispatch={this.props.dispatch}
+        source={this.props.type}>
+          <DSCard
+            key={`dscard-${index}`}
+            image_src={rec.image_src}
+            title={rec.title}
+            url={rec.url}
+            id={rec.id}
+            index={index + 1}
+            type={this.props.type}
+            dispatch={this.props.dispatch}
+            context={rec.context}
+            source={rec.domain} />
       </ImpressionStats>
     ));
 
