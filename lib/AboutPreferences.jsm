@@ -286,8 +286,19 @@ this.AboutPreferences = class AboutPreferences {
       createAppend("label", discoveryGroup)
         .appendChild(document.createElementNS(HTML_NS, "h2"))
         .textContent = formatString("prefs_content_discovery_header");
-      createAppend("description", discoveryGroup)
-        .textContent = formatString("prefs_content_discovery_description");
+      const descriptionHbox = createAppend("hbox", discoveryGroup);
+      const discoveryGroupDescription = createAppend("description", descriptionHbox);
+      discoveryGroupDescription.textContent = formatString("prefs_content_discovery_description");
+      discoveryGroupDescription.classList.add("tail-with-learn-more");
+
+      // Add the Learn more link in the description
+      const topstoriesSection = prefStructure.find(s => s.id === "topstories");
+      const learnMoreURL = topstoriesSection && topstoriesSection.learnMore.link.href;
+      const link = createAppend("label", descriptionHbox);
+      link.classList.add("learn-sponsored");
+      link.classList.add("text-link");
+      link.setAttribute("href", learnMoreURL);
+      link.textContent = formatString("prefs_topstories_sponsored_learn_more");
 
       if (discoveryStreamConfig.show_spocs && sponsoredStoriesCheckbox) {
         sponsoredStoriesCheckbox.remove();
