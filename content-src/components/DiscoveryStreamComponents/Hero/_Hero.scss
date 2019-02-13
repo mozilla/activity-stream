@@ -89,6 +89,10 @@ $card-header-in-hero-line-height: 20;
     }
 
     .meta {
+      display: block;
+      flex-direction: column;
+      justify-content: space-between;
+
       header {
         @include limit-visibile-lines(4, 28, 22);
         color: $grey-90;
@@ -130,6 +134,7 @@ $card-header-in-hero-line-height: 20;
       .meta {
         grid-column: 1;
         grid-row: 1;
+        display: flex;
       }
 
       .img {
@@ -181,11 +186,16 @@ $card-header-in-hero-line-height: 20;
       }
 
       .meta {
+        display: flex;
         padding: 0 24px 0 0;
 
         header {
           @include limit-visibile-lines(3, 28, 22);
           margin: 0 0 8px;
+        }
+
+        .source {
+          margin: 0;
         }
       }
     }
