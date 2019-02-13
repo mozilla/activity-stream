@@ -85,7 +85,7 @@ describe("<ImpressionStats>", () => {
     assert.calledOnce(dispatch);
 
     const [action] = dispatch.firstCall.args;
-    assert.equal(action.type, at.TELEMETRY_IMPRESSION_STATS);
+    assert.equal(action.type, at.DISCOVERY_STREAM_IMPRESSION_STATS);
     assert.equal(action.data.source, SOURCE);
     assert.deepEqual(action.data.tiles, [{id: 1}, {id: 2}, {id: 3}]);
   });

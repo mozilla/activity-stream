@@ -48,7 +48,7 @@ export class ImpressionStats extends React.PureComponent {
     const cards = props.rows;
 
     if (this._needsImpressionStats(cards)) {
-      props.dispatch(ac.ImpressionStats({
+      props.dispatch(ac.DiscoveryStreamImpressionStats({
         source: props.source.toUpperCase(),
         tiles: cards.map(link => ({id: link.id})),
       }));
