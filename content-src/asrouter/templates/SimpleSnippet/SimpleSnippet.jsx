@@ -43,8 +43,15 @@ export class SimpleSnippet extends React.PureComponent {
   }
 
   renderTitleIcon() {
-    const titleIcon = safeURI(this.props.content.title_icon);
-    return titleIcon ? <span className="titleIcon" style={{backgroundImage: `url("${titleIcon}")`}} /> : null;
+    const titleIconLight = safeURI(this.props.content.title_icon.light);
+    const titleIconDark = safeURI(this.props.content.title_icon.dark);
+    if (!titleIconLight && !titleIconDark) {
+      return null;
+    }
+
+    return (<React.Fragment>
+      <span className="titleIcon icon-light-theme" style={{backgroundImage: `url("${titleIconLight}")`}} /><span className="titleIcon icon-dark-theme" style={{backgroundImage: `url("${titleIconDark}")`}} />
+      </React.Fragment>);
   }
 
   renderButton() {
@@ -85,14 +92,16 @@ export class SimpleSnippet extends React.PureComponent {
 
     // an icon and text must be specified to render the section header
     if (props.content.section_title_icon && props.content.section_title_text) {
-      const sectionTitleIcon = safeURI(props.content.section_title_icon);
+      const sectionTitleIconLight = safeURI(props.content.section_title_icon.light);
+      const sectionTitleIconDark = safeURI(props.content.section_title_icon.dark);
       const sectionTitleURL = props.content.section_title_url;
 
       return (
         <div className="section-header">
           <h3 className="section-title">
             <ConditionalWrapper condition={sectionTitleURL} wrap={this.wrapSectionHeader(sectionTitleURL)}>
-              <span className="icon icon-small-spacer" style={{backgroundImage: `url("${sectionTitleIcon}")`}} />
+              <span className="icon icon-small-spacer icon-light-theme" style={{backgroundImage: `url("${sectionTitleIconLight}")`}} />
+              <span className="icon icon-small-spacer icon-dark-theme" style={{backgroundImage: `url("${sectionTitleIconDark}")`}} />
               <span className="section-title-text">{props.content.section_title_text}</span>
             </ConditionalWrapper>
           </h3>
@@ -121,7 +130,8 @@ export class SimpleSnippet extends React.PureComponent {
     return (<SnippetBase {...props} className={className} textStyle={this.props.textStyle}>
       {sectionHeader}
       <ConditionalWrapper condition={sectionHeader} wrap={this.wrapSnippetContent}>
-        <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" alt={ICON_ALT_TEXT} />
+        <img src={safeURI(props.content.icon.light) || DEFAULT_ICON_PATH} className="icon icon-light-theme" alt={ICON_ALT_TEXT} />
+        <img src={safeURI(props.content.icon.dark) || DEFAULT_ICON_PATH} className="icon icon-dark-theme" alt={ICON_ALT_TEXT} />
         <div>
           {this.renderTitle()} <p className="body">{this.renderText()}</p>
           {this.props.extraContent}
