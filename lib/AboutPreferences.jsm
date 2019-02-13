@@ -270,7 +270,7 @@ this.AboutPreferences = class AboutPreferences {
         subcheck.classList.add("indent");
         subcheck.setAttribute("label", formatString(nested.titleString));
         linkPref(subcheck, nested.name, "bool");
-        if (nested.name === "showSponsored") {
+        if (nested.name === PREF_SHOW_SPONSORED) {
           sponsoredStoriesCheckbox = subcheck;
         }
       });
@@ -294,6 +294,7 @@ this.AboutPreferences = class AboutPreferences {
         sponsoredStoriesCheckbox.classList.remove("indent");
         discoveryGroup.appendChild(sponsoredStoriesCheckbox);
       } else if (discoveryStreamConfig.show_spocs) {
+        // If there is no element to reuse create one
         const discoveryDetails = createAppend("vbox", discoveryGroup);
         const subcheck = createAppend("checkbox", discoveryDetails);
         subcheck.setAttribute("label", formatString("prefs_sponsored_stories_status_label"));
@@ -314,9 +315,11 @@ this.AboutPreferences = class AboutPreferences {
           discoveryGroup.style.display = "none";
           contentsGroup.style.visibility = "visible";
           if (sponsoredStoriesCheckbox) {
+            // If we reused the checkbox element we need to restore it
             sponsoredStoriesCheckbox.remove();
             sponsoredStoriesCheckbox.classList.add("indent");
-            document.querySelector("[data-subcategory='topstories'] .indent").appendChild(sponsoredStoriesCheckbox);
+            const topstoriesDetails = document.querySelector("[data-subcategory='topstories'] .indent");
+            topstoriesDetails.appendChild(sponsoredStoriesCheckbox);
           }
           if (experiment) {
             await PreferenceExperiments.stop(experiment.name, {
