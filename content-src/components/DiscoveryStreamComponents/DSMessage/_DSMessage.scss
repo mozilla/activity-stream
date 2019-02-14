@@ -5,10 +5,15 @@
     display: flex;
     align-items: center;
 
-    img {
+    .glyph {
       width: 16px;
       height: 16px;
       margin: 0 6px 0 0;
+      -moz-context-properties: fill;
+      fill: var(--newtab-icon-secondary-color);
+      background-position: center center;
+      background-size: 16px;
+      background-repeat: no-repeat;
     }
 
     span {

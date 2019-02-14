@@ -9,7 +9,7 @@ export class DSMessage extends React.PureComponent {
       <div className="ds-message">
         {this.props.title && (
           <header className="title">
-            {this.props.icon && (<img src={this.props.icon} />)}
+            {this.props.icon && (<div className="glyph" style={{backgroundImage: `url(${this.props.icon})`}} />)}
             <span>{this.props.title}</span>
           </header>
         )}
