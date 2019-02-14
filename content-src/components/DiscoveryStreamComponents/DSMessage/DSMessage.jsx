@@ -19,7 +19,6 @@ export class DSMessage extends React.PureComponent {
             {this.props.link_text && this.props.link_url && (<a href={this.props.link_url}>{this.props.link_text}</a>)}
           </p>
         )}
-        <hr className="ds-hr" />
       </div>
     );
   }

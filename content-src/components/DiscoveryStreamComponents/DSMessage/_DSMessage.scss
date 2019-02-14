@@ -12,16 +12,16 @@
     }
 
     span {
-      line-height: 24px;
-      font-size: 17px;
-      color: $grey-90;
+      line-height: 20px;
+      font-size: 13px;
+      color: $grey-50;
       font-weight: 600;
     }
   }
 
   .subtitle {
     line-height: 20px;
-    font-size: 14px;
+    font-size: 13px;
     color: $grey-50;
     margin: 0;
 
@@ -33,9 +33,5 @@
     a:focus {
       text-decoration: underline;
     }
-  }
-
-  .ds-hr {
-    margin: 16px 0 8px;
   }
 }
