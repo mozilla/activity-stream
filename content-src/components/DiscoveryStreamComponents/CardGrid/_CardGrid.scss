@@ -51,10 +51,6 @@ $col4-header-font-size: 14;
   .ds-column-12 & {
     grid-template-columns: repeat(4, 1fr);
 
-    .meta .title {
-      @include limit-visibile-lines(2, $col4-header-line-height, $col4-header-font-size);
-    }
-
     &.ds-card-grid-divisible-by-3 {
       grid-template-columns: repeat(3, 1fr);
 

@@ -24,7 +24,7 @@ $item-line-height: 20;
   }
 
   .ds-list-item-title {
-    @include limit-visibile-lines(2, $line-height, $font-size);
+    @include limit-visibile-lines(3, $line-height, $font-size);
   }
 
   .ds-list-image {

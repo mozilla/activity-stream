@@ -27,6 +27,7 @@ $card-header-in-hero-line-height: 20;
 
   .ds-card {
     border: 0;
+    padding-bottom: 20px;
 
     p {
       margin-top: 4px;
@@ -41,10 +42,10 @@ $card-header-in-hero-line-height: 20;
     .meta {
       padding: 0;
 
-      .title {
-        // show only 2 lines of copy
-        @include limit-visibile-lines(2, $card-header-in-hero-line-height, $card-header-in-hero-font-size);
-      }
+      // .title {
+      //   // show only 3 lines of copy
+      //   @include limit-visibile-lines(3, $card-header-in-hero-line-height, $card-header-in-hero-font-size);
+      // }
     }
 
     .img-wrapper {
@@ -196,7 +197,7 @@ $card-header-in-hero-line-height: 20;
         }
 
         .source {
-          margin: 0;
+          margin-bottom: 0;
         }
       }
     }
