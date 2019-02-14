@@ -2,9 +2,6 @@ import React from "react";
 
 export class DSMessage extends React.PureComponent {
   render() {
-    let hasSubtitleAndOrLink = this.props.link_text && this.props.link_url;
-    hasSubtitleAndOrLink = hasSubtitleAndOrLink || this.props.subtitle;
-
     return (
       <div className="ds-message">
         <header className="title">
