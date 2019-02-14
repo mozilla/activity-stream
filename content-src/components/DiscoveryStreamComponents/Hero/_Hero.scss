@@ -151,10 +151,10 @@ $card-header-in-hero-line-height: 20;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: 24px;
-    padding: 20px 0;
 
     &.ds-hero-border {
       border-top: $border-secondary;
+      padding: 20px 0;
 
       .ds-card:nth-child(-n+2) {
         border-bottom: $border-secondary;
@@ -200,6 +200,10 @@ $card-header-in-hero-line-height: 20;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       grid-column-gap: 24px;
+
+      .title {
+        @include limit-visibile-lines(3, 20, 14);
+      }
     }
   }
 }
