@@ -7,18 +7,11 @@ export class DSMessage extends React.PureComponent {
 
     return (
       <div className="ds-message">
-        {this.props.title && (
-          <header className="title">
-            {this.props.icon && (<div className="glyph" style={{backgroundImage: `url(${this.props.icon})`}} />)}
-            <span>{this.props.title}</span>
-          </header>
-        )}
-        { hasSubtitleAndOrLink && (
-          <p className="subtitle">
-            {this.props.subtitle && (<span>{this.props.subtitle}</span>)}
-            {this.props.link_text && this.props.link_url && (<a href={this.props.link_url}>{this.props.link_text}</a>)}
-          </p>
-        )}
+        <header className="title">
+          {this.props.icon && (<div className="glyph" style={{backgroundImage: `url(${this.props.icon})`}} />)}
+          {this.props.title && (<span className="title-text">{this.props.title}</span>)}
+          {this.props.link_text && this.props.link_url && (<a className="link" href={this.props.link_url}>{this.props.link_text}</a>)}
+        </header>
       </div>
     );
   }
