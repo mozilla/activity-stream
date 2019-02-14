@@ -70,8 +70,10 @@ main {
     width: 1042px;
   }
 
-  .search-wrapper .search-inner-wrapper {
-    width: 736px;
+  &:not(.fixed-search) {
+    .search-wrapper .search-inner-wrapper {
+      width: $searchbar-width-large;
+    }
   }
 }
 
