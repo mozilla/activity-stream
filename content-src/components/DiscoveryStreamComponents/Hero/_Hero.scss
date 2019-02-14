@@ -41,11 +41,6 @@ $card-header-in-hero-line-height: 20;
 
     .meta {
       padding: 0;
-
-      // .title {
-      //   // show only 3 lines of copy
-      //   @include limit-visibile-lines(3, $card-header-in-hero-line-height, $card-header-in-hero-font-size);
-      // }
     }
 
     .img-wrapper {
@@ -99,12 +94,8 @@ $card-header-in-hero-line-height: 20;
         color: $grey-90;
       }
 
-      p {
-        font-size: 14px;
-
-        &.context {
-          color: $teal-70;
-        }
+      .context {
+        color: $teal-70;
       }
 
       .source {
@@ -175,7 +166,9 @@ $card-header-in-hero-line-height: 20;
       border-top: 0;
       border-bottom: 0;
       margin: 0;
-      padding: 0;
+      padding: 0 0 20px;
+      display: flex;
+      flex-direction: column;
 
       .img-wrapper {
         margin: 0;
@@ -188,6 +181,7 @@ $card-header-in-hero-line-height: 20;
       }
 
       .meta {
+        flex-grow: 1;
         display: flex;
         padding: 0 24px 0 0;
 
