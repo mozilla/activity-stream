@@ -380,7 +380,8 @@ class PageAction {
 }
 
 function isHostMatch(browser, host) {
-  return browser.documentURI.spec === host;
+  return (browser.documentURI.scheme.startsWith("http") &&
+    browser.documentURI.host === host);
 }
 
 const CFRPageActions = {
