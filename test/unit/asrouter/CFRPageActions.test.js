@@ -523,8 +523,9 @@ describe("CFRPageActions", () => {
             event: "DISMISS",
           },
         });
-        // Should remove the recommendation
-        assert.isFalse(CFRPageActions.RecommendationMap.has(fakeBrowser));
+        // Don't remove the recommendation on `DISMISS` action
+        assert.isTrue(CFRPageActions.RecommendationMap.has(fakeBrowser));
+        assert.notCalled(pageAction.hide);
       });
       it("should send right telemetry for BLOCK secondary action", async () => {
         await pageAction._handleClick();
@@ -571,8 +572,9 @@ describe("CFRPageActions", () => {
             event: "MANAGE",
           },
         });
-        // Should remove the recommendation
-        assert.isFalse(CFRPageActions.RecommendationMap.has(fakeBrowser));
+        // Don't remove the recommendation on `MANAGE` action
+        assert.isTrue(CFRPageActions.RecommendationMap.has(fakeBrowser));
+        assert.notCalled(pageAction.hide);
       });
       it("should call PopupNotifications.show with the right arguments", async () => {
         await pageAction._handleClick();
