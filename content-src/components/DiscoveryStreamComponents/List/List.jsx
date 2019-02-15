@@ -1,10 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {connect} from "react-redux";
-<<<<<<< HEAD
 import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
-=======
-import {IntersectionObserverComponent} from "content-src/components/DiscoveryStreamComponents/IntersectionObserver/IntersectionObserver";
->>>>>>> 2c39e365... Bug 1527702 - Rotate based on impressions for recs.
 import React from "react";
 import {SafeAnchor} from "../SafeAnchor/SafeAnchor";
 
