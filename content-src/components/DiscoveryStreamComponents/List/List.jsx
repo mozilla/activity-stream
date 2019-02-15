@@ -49,6 +49,11 @@ export class ListItem extends React.PureComponent {
             </p>
           </div>
           <div className="ds-list-image" style={{backgroundImage: `url(${this.props.image_src})`}} />
+          <ImpressionStats
+            campaignId={this.props.campaignId}
+            rows={[{id: this.props.id}]}
+            dispatch={this.props.dispatch}
+            source={this.props.type} />
         </SafeAnchor>
       </li>
     );
@@ -66,25 +71,19 @@ export function _List(props) {
   const recs = feed.recommendations;
   let recMarkup = recs.slice(props.recStartingPoint,
                              props.recStartingPoint + props.items).map((rec, index) => (
-    <ImpressionStats
-      key={`ds-list-imp-${index}`}
-      campaignId={rec.campaign_id}
-      rows={[rec]}
+    <ListItem key={`ds-list-item-${index}`}
       dispatch={props.dispatch}
-      source={props.type}>
-        <ListItem key={`ds-list-item-${index}`}
-          dispatch={props.dispatch}
-          domain={rec.domain}
-          excerpt={rec.excerpt}
-          id={rec.id}
-          image_src={rec.image_src}
-          index={index}
-          title={rec.title}
-          context={rec.context}
-          type={props.type}
-          url={rec.url} />
-    </ImpressionStats>)
-  );
+      campaignId={rec.campaign_id}
+      domain={rec.domain}
+      excerpt={rec.excerpt}
+      id={rec.id}
+      image_src={rec.image_src}
+      index={index}
+      title={rec.title}
+      context={rec.context}
+      type={props.type}
+      url={rec.url} />
+  ));
   const listStyles = [
     "ds-list",
     props.fullWidth ? "ds-list-full-width" : "",

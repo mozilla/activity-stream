@@ -135,7 +135,7 @@ export class ImpressionStats extends React.PureComponent {
   }
 
   render() {
-    return (<div ref={"impression"}>
+    return (<div ref={"impression"} className="impression-observer">
       {this.props.children}
     </div>);
   }

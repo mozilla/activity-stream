@@ -1,4 +1,5 @@
 import {actionCreators as ac} from "common/Actions.jsm";
+import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 import {SafeAnchor} from "../SafeAnchor/SafeAnchor";
 
@@ -46,6 +47,11 @@ export class DSCard extends React.PureComponent {
             <span className="source">{this.props.source}</span>
           </p>
         </div>
+        <ImpressionStats
+          campaignId={this.props.campaignId}
+          rows={[{id: this.props.id}]}
+          dispatch={this.props.dispatch}
+          source={this.props.type} />
       </SafeAnchor>
     );
   }

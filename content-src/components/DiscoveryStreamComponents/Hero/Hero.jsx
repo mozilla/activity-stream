@@ -42,24 +42,17 @@ export class Hero extends React.PureComponent {
 
     // Note that `{index + 1}` is necessary below for telemetry since we treat heroRec as index 0.
     let cards = otherRecs.map((rec, index) => (
-      <ImpressionStats
-        key={`ds-hero-imp-${index}`}
-        campaignId={rec.campaign_id}
-        rows={[rec]}
+      <DSCard
+        key={`dscard-${index}`}
+        image_src={rec.image_src}
+        title={rec.title}
+        url={rec.url}
+        id={rec.id}
+        index={index + 1}
+        type={this.props.type}
         dispatch={this.props.dispatch}
-        source={this.props.type}>
-          <DSCard
-            key={`dscard-${index}`}
-            image_src={rec.image_src}
-            title={rec.title}
-            url={rec.url}
-            id={rec.id}
-            index={index + 1}
-            type={this.props.type}
-            dispatch={this.props.dispatch}
-            context={rec.context}
-            source={rec.domain} />
-      </ImpressionStats>
+        context={rec.context}
+        source={rec.domain} />
     ));
 
     let list = (
@@ -76,22 +69,25 @@ export class Hero extends React.PureComponent {
       <div>
         <div className="ds-header">{this.props.title}</div>
         <div className={`ds-hero ds-hero-${this.props.border}`}>
-          <ImpressionStats rows={[heroRec]} dispatch={this.props.dispatch} source={this.props.type}>
-            <SafeAnchor url={heroRec.url} className="wrapper" onLinkClick={this.onLinkClick}>
-              <div className="img-wrapper">
-                <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
-              </div>
-              <div className="meta">
-                <header>{heroRec.title}</header>
-                <p className="excerpt">{heroRec.excerpt}</p>
-                {heroRec.context ? (
-                  <p className="context">{heroRec.context}</p>
-                ) : (
-                  <p className="source">{heroRec.domain}</p>
-                )}
-              </div>
-            </SafeAnchor>
-          </ImpressionStats>
+          <SafeAnchor url={heroRec.url} className="wrapper" onLinkClick={this.onLinkClick}>
+            <div className="img-wrapper">
+              <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
+            </div>
+            <div className="meta">
+              <header>{heroRec.title}</header>
+              <p className="excerpt">{heroRec.excerpt}</p>
+              {heroRec.context ? (
+                <p className="context">{heroRec.context}</p>
+              ) : (
+                <p className="source">{heroRec.domain}</p>
+              )}
+            </div>
+            <ImpressionStats
+              campaignId={heroRec.campaignId}
+              rows={[{id: heroRec.id}]}
+              dispatch={this.props.dispatch}
+              source={this.props.type} />
+          </SafeAnchor>
           <div className={`${this.props.subComponentType}`}>
             { this.props.subComponentType === `cards` ? cards : list }
           </div>
