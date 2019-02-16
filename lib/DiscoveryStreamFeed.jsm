@@ -670,8 +670,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       case at.DISCOVERY_STREAM_OPT_OUT:
         this.store.dispatch(ac.SetPref(PREF_OPT_OUT, true));
         break;
-      case at.DISCOVERY_STREAM_REC_IMPRESSION:
-        this.recordTopRecImpressions(action.data.recId);
+      case at.DISCOVERY_STREAM_IMPRESSION_STATS:
+        if (action.data.tiles && action.data.tiles[0] && action.data.tiles[0].id) {
+          this.recordTopRecImpressions(action.data.tiles[0].id);
+        }
         break;
       case at.DISCOVERY_STREAM_SPOC_IMPRESSION:
         if (this.showSpocs) {
