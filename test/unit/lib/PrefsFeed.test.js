@@ -14,7 +14,7 @@ describe("PrefsFeed", () => {
   let sandbox;
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    FAKE_PREFS = new Map([["foo", 1], ["bar", 2], ["false", false], ["zero", 0]]);
+    FAKE_PREFS = new Map([["foo", 1], ["bar", 2]]);
     feed = new PrefsFeed(FAKE_PREFS);
     const storage = {
       getAll: sandbox.stub().resolves(),
@@ -59,8 +59,6 @@ describe("PrefsFeed", () => {
     const [{data}] = feed.store.dispatch.firstCall.args;
     assert.equal(data.foo, 1);
     assert.equal(data.bar, 2);
-    assert.equal(data.false, false);
-    assert.equal(data.zero, 0);
     assert.isTrue(data.isPrivateBrowsingEnabled);
   });
   it("should add one branch observer on init", () => {
@@ -82,12 +80,6 @@ describe("PrefsFeed", () => {
   it("should send a PREF_CHANGED action when onPrefChanged is called", () => {
     feed.onPrefChanged("foo", 2);
     assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.PREF_CHANGED, data: {name: "foo", value: 2}}));
-    feed.store.dispatch.resetHistory();
-    feed.onPrefChanged("false", 2);
-    assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.PREF_CHANGED, data: {name: "false", value: 2}}));
-    feed.store.dispatch.resetHistory();
-    feed.onPrefChanged("zero", 2);
-    assert.calledWith(feed.store.dispatch, ac.BroadcastToContent({type: at.PREF_CHANGED, data: {name: "zero", value: 2}}));
   });
   describe("INIT prerendering", () => {
     it("should set a prerender pref on init", async () => {
