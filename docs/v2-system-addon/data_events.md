@@ -376,6 +376,8 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
   "addon_version": "20190218094427",
   "locale": "en-US",
   "user_prefs": 59,
+  "page": "n/a",
+  "session_id": "n/a",
 }
 ```
 
