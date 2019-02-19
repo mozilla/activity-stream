@@ -180,7 +180,7 @@ describe("TelemetryFeed", () => {
   });
   describe("#handleEvent", () => {
     it("should dispatch a TAB_PINNED_EVENT", () => {
-      sandbox.stub(instance, "onAction");
+      sandbox.stub(instance, "sendEvent");
       globals.set({
         Services: {
           ...Services,
@@ -190,15 +190,15 @@ describe("TelemetryFeed", () => {
 
       instance.handleEvent({type: "TabPinned"});
 
-      assert.calledOnce(instance.onAction);
-      assert.calledWithExactly(instance.onAction, ac.UserEvent({
-        event: "TABPINNED",
-        source: "TAB_CONTEXT_MENU",
-        value: {max_concurrent_pinned_tabs: 1},
-      }));
+      assert.calledOnce(instance.sendEvent);
+      const [ping] = instance.sendEvent.firstCall.args;
+      assert.propertyVal(ping, "event", "TABPINNED");
+      assert.propertyVal(ping, "source", "TAB_CONTEXT_MENU");
+      assert.propertyVal(ping, "session_id", "n/a");
+      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 1);
     });
     it("should skip private windows", () => {
-      sandbox.stub(instance, "onAction");
+      sandbox.stub(instance, "sendEvent");
       sandbox.stub(instance, "_maxPinnedTabs").value(0);
       globals.set({PrivateBrowsingUtils: {isWindowPrivate: () => true}});
       globals.set({
@@ -210,15 +210,15 @@ describe("TelemetryFeed", () => {
 
       instance.handleEvent({type: "TabPinned"});
 
-      assert.calledOnce(instance.onAction);
-      assert.calledWithExactly(instance.onAction, ac.UserEvent({
-        event: "TABPINNED",
-        source: "TAB_CONTEXT_MENU",
-        value: {max_concurrent_pinned_tabs: 0},
-      }));
+      assert.calledOnce(instance.sendEvent);
+      const [ping] = instance.sendEvent.firstCall.args;
+      assert.propertyVal(ping, "event", "TABPINNED");
+      assert.propertyVal(ping, "source", "TAB_CONTEXT_MENU");
+      assert.propertyVal(ping, "session_id", "n/a");
+      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 0);
     });
     it("should return the correct value for max_concurrent_pinned_tabs", () => {
-      sandbox.stub(instance, "onAction");
+      sandbox.stub(instance, "sendEvent");
       sandbox.stub(instance, "_maxPinnedTabs").value(4);
       globals.set({
         Services: {
@@ -233,12 +233,12 @@ describe("TelemetryFeed", () => {
 
       instance.handleEvent({type: "TabPinned"});
 
-      assert.calledOnce(instance.onAction);
-      assert.calledWithExactly(instance.onAction, ac.UserEvent({
-        event: "TABPINNED",
-        source: "TAB_CONTEXT_MENU",
-        value: {max_concurrent_pinned_tabs: 4},
-      }));
+      assert.calledOnce(instance.sendEvent);
+      const [ping] = instance.sendEvent.firstCall.args;
+      assert.propertyVal(ping, "event", "TABPINNED");
+      assert.propertyVal(ping, "source", "TAB_CONTEXT_MENU");
+      assert.propertyVal(ping, "session_id", "n/a");
+      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 4);
     });
     it("should unregister the event listeners", () => {
       const stub = {removeEventListener: sandbox.stub()};

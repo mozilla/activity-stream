@@ -8,7 +8,7 @@
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-const {actionTypes: at, actionUtils: au, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
+const {actionTypes: at, actionUtils: au} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {Prefs} = ChromeUtils.import("resource://activity-stream/lib/ActivityStreamPrefs.jsm");
 const {classifySite} = ChromeUtils.import("resource://activity-stream/lib/SiteClassifier.jsm");
 
@@ -108,11 +108,19 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   countPinnedTab(source = "TAB_CONTEXT_MENU") {
-    this.onAction(ac.UserEvent({
-      event: TAB_PINNED_EVENT.toUpperCase(),
-      source,
-      value: {max_concurrent_pinned_tabs: this.countMaxConcurrentPinnedTabs()},
-    }));
+    const event = Object.assign(
+      this.createPing(),
+      {
+        action: "activity_stream_user_event",
+        event: TAB_PINNED_EVENT.toUpperCase(),
+        value: {max_concurrent_pinned_tabs: this.countMaxConcurrentPinnedTabs()},
+        source,
+        // These fields are required but not relevant for this ping
+        page: "n/a",
+        session_id: "n/a",
+      },
+    );
+    this.sendEvent(event);
   }
 
   countMaxConcurrentPinnedTabs() {
