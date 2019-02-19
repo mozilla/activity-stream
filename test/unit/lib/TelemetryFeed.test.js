@@ -97,9 +97,18 @@ describe("TelemetryFeed", () => {
 
       instance.init();
 
-      assert.calledOnce(Services.obs.addObserver);
+      assert.calledTwice(Services.obs.addObserver);
       assert.calledWithExactly(Services.obs.addObserver,
         instance.browserOpenNewtabStart, "browser-open-newtab-start");
+    });
+    it("should add window open listener", () => {
+      sandbox.spy(Services.obs, "addObserver");
+
+      instance.init();
+
+      assert.calledTwice(Services.obs.addObserver);
+      assert.calledWithExactly(Services.obs.addObserver,
+        instance._addWindowListeners, "domwindowopened");
     });
     it("should create impression id if none exists", () => {
       assert.equal(instance._impressionId, FAKE_UUID);
@@ -108,6 +117,35 @@ describe("TelemetryFeed", () => {
       FakePrefs.prototype.prefs = {};
       FakePrefs.prototype.prefs[PREF_IMPRESSION_ID] = "fakeImpressionId";
       assert.equal(new TelemetryFeed()._impressionId, "fakeImpressionId");
+    });
+    it("should register listeners on existing windows", () => {
+      const stub = sandbox.stub();
+      globals.set({
+        Services: {
+          ...Services,
+          wm: {getEnumerator: () => [{addEventListener: stub}]},
+        },
+      });
+
+      instance.init();
+
+      assert.calledTwice(stub);
+      assert.calledWithExactly(stub, "unload", instance.handleEvent);
+      assert.calledWithExactly(stub, "TabPinned", instance.handleEvent);
+    });
+    it("should skip private windows", () => {
+      const stub = sandbox.stub();
+      globals.set({PrivateBrowsingUtils: {isWindowPrivate: () => true}});
+      globals.set({
+        Services: {
+          ...Services,
+          wm: {getEnumerator: () => [{addEventListener: stub}]},
+        },
+      });
+
+      instance.init();
+
+      assert.notCalled(stub);
     });
     describe("telemetry pref changes from false to true", () => {
       beforeEach(() => {
@@ -138,6 +176,28 @@ describe("TelemetryFeed", () => {
 
         assert.propertyVal(instance, "eventTelemetryEnabled", true);
       });
+    });
+  });
+  describe("#handleEvent", () => {
+    it("should dispatch a TAB_PINNED_EVENT", () => {
+      sandbox.stub(instance, "onAction");
+
+      instance.handleEvent({type: "TabPinned"});
+
+      assert.calledOnce(instance.onAction);
+      assert.calledWithExactly(instance.onAction, ac.UserEvent({
+        event: "TabPinned",
+        source: "TAB_CONTEXT_MENU",
+      }));
+    });
+    it("should unregister the event listeners", () => {
+      const stub = {removeEventListener: sandbox.stub()};
+
+      instance.handleEvent({type: "unload", target: stub});
+
+      assert.calledTwice(stub.removeEventListener);
+      assert.calledWithExactly(stub.removeEventListener, "unload", instance.handleEvent);
+      assert.calledWithExactly(stub.removeEventListener, "TabPinned", instance.handleEvent);
     });
   });
   describe("#addSession", () => {
@@ -816,16 +876,18 @@ describe("TelemetryFeed", () => {
 
       assert.called(global.Cu.reportError);
     });
-    it("should make this.browserOpenNewtabStart() stop observing browser-open-newtab-start", async () => {
+    it("should make this.browserOpenNewtabStart() stop observing browser-open-newtab-start and domwindowopened", async () => {
       await instance.init();
       sandbox.spy(Services.obs, "removeObserver");
       sandbox.stub(instance.pingCentre, "uninit");
 
       await instance.uninit();
 
-      assert.calledOnce(Services.obs.removeObserver);
+      assert.calledTwice(Services.obs.removeObserver);
       assert.calledWithExactly(Services.obs.removeObserver,
         instance.browserOpenNewtabStart, "browser-open-newtab-start");
+      assert.calledWithExactly(Services.obs.removeObserver,
+        instance._addWindowListeners, "domwindowopened");
     });
   });
   describe("#onAction", () => {
