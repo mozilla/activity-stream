@@ -59,6 +59,7 @@ this.TelemetryFeed = class TelemetryFeed {
   constructor(options) {
     this.sessions = new Map();
     this._prefs = new Prefs();
+    this._maxPinnedTabs = 0;
     this._impressionId = this.getOrCreateImpressionId();
     this.telemetryEnabled = this._prefs.get(TELEMETRY_PREF);
     this.eventTelemetryEnabled = this._prefs.get(EVENTS_TELEMETRY_PREF);
@@ -110,7 +111,23 @@ this.TelemetryFeed = class TelemetryFeed {
     this.onAction(ac.UserEvent({
       event: TAB_PINNED_EVENT.toUpperCase(),
       source,
+      value: {max_concurrent_pinned_tabs: this.countMaxConcurrentPinnedTabs()},
     }));
+  }
+
+  countMaxConcurrentPinnedTabs() {
+    let pinnedTabs = 0;
+    for (let win of Services.wm.getEnumerator("navigator:browser")) {
+      if (win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
+        continue;
+      }
+      for (let tab of win.gBrowser.tabs) {
+        pinnedTabs += tab.pinned ? 1 : 0;
+      }
+    }
+
+    this._maxPinnedTabs = Math.max(this._maxPinnedTabs, pinnedTabs);
+    return this._maxPinnedTabs;
   }
 
   getOrCreateImpressionId() {

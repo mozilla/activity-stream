@@ -181,6 +181,12 @@ describe("TelemetryFeed", () => {
   describe("#handleEvent", () => {
     it("should dispatch a TAB_PINNED_EVENT", () => {
       sandbox.stub(instance, "onAction");
+      globals.set({
+        Services: {
+          ...Services,
+          wm: {getEnumerator: () => [{gBrowser: {tabs: [{pinned: true}]}}]},
+        },
+      });
 
       instance.handleEvent({type: "TabPinned"});
 
@@ -188,6 +194,50 @@ describe("TelemetryFeed", () => {
       assert.calledWithExactly(instance.onAction, ac.UserEvent({
         event: "TABPINNED",
         source: "TAB_CONTEXT_MENU",
+        value: {max_concurrent_pinned_tabs: 1},
+      }));
+    });
+    it("should skip private windows", () => {
+      sandbox.stub(instance, "onAction");
+      sandbox.stub(instance, "_maxPinnedTabs").value(0);
+      globals.set({PrivateBrowsingUtils: {isWindowPrivate: () => true}});
+      globals.set({
+        Services: {
+          ...Services,
+          wm: {getEnumerator: () => [{gBrowser: {tabs: [{pinned: true}, {pinned: true}]}}]},
+        },
+      });
+
+      instance.handleEvent({type: "TabPinned"});
+
+      assert.calledOnce(instance.onAction);
+      assert.calledWithExactly(instance.onAction, ac.UserEvent({
+        event: "TABPINNED",
+        source: "TAB_CONTEXT_MENU",
+        value: {max_concurrent_pinned_tabs: 0},
+      }));
+    });
+    it("should return the correct value for max_concurrent_pinned_tabs", () => {
+      sandbox.stub(instance, "onAction");
+      sandbox.stub(instance, "_maxPinnedTabs").value(4);
+      globals.set({
+        Services: {
+          ...Services,
+          wm: {
+            getEnumerator: () => [{
+              gBrowser: {tabs: [{pinned: true}, {pinned: false}]},
+            }],
+          },
+        },
+      });
+
+      instance.handleEvent({type: "TabPinned"});
+
+      assert.calledOnce(instance.onAction);
+      assert.calledWithExactly(instance.onAction, ac.UserEvent({
+        event: "TABPINNED",
+        source: "TAB_CONTEXT_MENU",
+        value: {max_concurrent_pinned_tabs: 4},
       }));
     });
     it("should unregister the event listeners", () => {
