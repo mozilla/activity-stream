@@ -186,7 +186,7 @@ describe("TelemetryFeed", () => {
 
       assert.calledOnce(instance.onAction);
       assert.calledWithExactly(instance.onAction, ac.UserEvent({
-        event: "TabPinned",
+        event: "TABPINNED",
         source: "TAB_CONTEXT_MENU",
       }));
     });

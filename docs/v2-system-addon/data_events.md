@@ -366,7 +366,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 
 ```js
 {
-  "event": "TabPinned",
+  "event": "TABPINNED",
   "source": "TAB_CONTEXT_MENU",
 
   // Basic metadata

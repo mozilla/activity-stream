@@ -108,7 +108,7 @@ this.TelemetryFeed = class TelemetryFeed {
 
   countPinnedTab(source = "TAB_CONTEXT_MENU") {
     this.onAction(ac.UserEvent({
-      event: TAB_PINNED_EVENT,
+      event: TAB_PINNED_EVENT.toUpperCase(),
       source,
     }));
   }
