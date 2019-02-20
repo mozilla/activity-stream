@@ -212,14 +212,6 @@ describe("TelemetryFeed", () => {
       assert.calledWithExactly(stub.removeEventListener, "unload", instance.handleEvent);
       assert.calledWithExactly(stub.removeEventListener, "TabPinned", instance.handleEvent);
     });
-    it("should skip private windows for unregistering TabPinned", () => {
-      globals.set({PrivateBrowsingUtils: {isWindowPrivate: () => true}});
-      const stub = {removeEventListener: sandbox.stub()};
-
-      instance.handleEvent({type: "unload", target: stub});
-
-      assert.notCalled(stub.removeEventListener);
-    });
   });
   describe("#addSession", () => {
     it("should add a session and return it", () => {
