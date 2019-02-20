@@ -113,7 +113,7 @@ this.TelemetryFeed = class TelemetryFeed {
       {
         action: "activity_stream_user_event",
         event: TAB_PINNED_EVENT.toUpperCase(),
-        value: {total_pinned_tabs: this.countMaxConcurrentPinnedTabs()},
+        value: {total_pinned_tabs: this.countTotalPinnedTabs()},
         source,
         // These fields are required but not relevant for this ping
         page: "n/a",
@@ -123,7 +123,7 @@ this.TelemetryFeed = class TelemetryFeed {
     this.sendEvent(event);
   }
 
-  countMaxConcurrentPinnedTabs() {
+  countTotalPinnedTabs() {
     let pinnedTabs = 0;
     for (let win of Services.wm.getEnumerator("navigator:browser")) {
       if (win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
