@@ -194,7 +194,7 @@ describe("TelemetryFeed", () => {
       assert.propertyVal(ping, "event", "TABPINNED");
       assert.propertyVal(ping, "source", "TAB_CONTEXT_MENU");
       assert.propertyVal(ping, "session_id", "n/a");
-      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 1);
+      assert.propertyVal(ping.value, "total_pinned_tabs", 1);
     });
     it("should skip private windows", () => {
       sandbox.stub(instance, "sendEvent");
@@ -204,7 +204,7 @@ describe("TelemetryFeed", () => {
 
       assert.notCalled(instance.sendEvent);
     });
-    it("should return the correct value for max_concurrent_pinned_tabs", () => {
+    it("should return the correct value for total_pinned_tabs", () => {
       sandbox.stub(instance, "sendEvent");
       globals.set({
         Services: {
@@ -224,9 +224,9 @@ describe("TelemetryFeed", () => {
       assert.propertyVal(ping, "event", "TABPINNED");
       assert.propertyVal(ping, "source", "TAB_CONTEXT_MENU");
       assert.propertyVal(ping, "session_id", "n/a");
-      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 1);
+      assert.propertyVal(ping.value, "total_pinned_tabs", 1);
     });
-    it("should return the correct value for max_concurrent_pinned_tabs (when private windows are open)", () => {
+    it("should return the correct value for total_pinned_tabs (when private windows are open)", () => {
       sandbox.stub(instance, "sendEvent");
       const privateWinStub = sandbox.stub().onCall(0).returns(false)
         .onCall(1)
@@ -247,7 +247,7 @@ describe("TelemetryFeed", () => {
 
       assert.calledOnce(instance.sendEvent);
       const [ping] = instance.sendEvent.firstCall.args;
-      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 0);
+      assert.propertyVal(ping.value, "total_pinned_tabs", 0);
     });
     it("should unregister the event listeners", () => {
       const stub = {removeEventListener: sandbox.stub()};

@@ -113,7 +113,7 @@ this.TelemetryFeed = class TelemetryFeed {
       {
         action: "activity_stream_user_event",
         event: TAB_PINNED_EVENT.toUpperCase(),
-        value: {max_concurrent_pinned_tabs: this.countMaxConcurrentPinnedTabs()},
+        value: {total_pinned_tabs: this.countMaxConcurrentPinnedTabs()},
         source,
         // These fields are required but not relevant for this ping
         page: "n/a",
