@@ -59,7 +59,6 @@ this.TelemetryFeed = class TelemetryFeed {
   constructor(options) {
     this.sessions = new Map();
     this._prefs = new Prefs();
-    this._maxPinnedTabs = 0;
     this._impressionId = this.getOrCreateImpressionId();
     this.telemetryEnabled = this._prefs.get(TELEMETRY_PREF);
     this.eventTelemetryEnabled = this._prefs.get(EVENTS_TELEMETRY_PREF);
@@ -135,8 +134,7 @@ this.TelemetryFeed = class TelemetryFeed {
       }
     }
 
-    this._maxPinnedTabs = Math.max(this._maxPinnedTabs, pinnedTabs);
-    return this._maxPinnedTabs;
+    return pinnedTabs;
   }
 
   getOrCreateImpressionId() {

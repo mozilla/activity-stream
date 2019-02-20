@@ -206,7 +206,6 @@ describe("TelemetryFeed", () => {
     });
     it("should return the correct value for max_concurrent_pinned_tabs", () => {
       sandbox.stub(instance, "sendEvent");
-      sandbox.stub(instance, "_maxPinnedTabs").value(4);
       globals.set({
         Services: {
           ...Services,
@@ -225,7 +224,7 @@ describe("TelemetryFeed", () => {
       assert.propertyVal(ping, "event", "TABPINNED");
       assert.propertyVal(ping, "source", "TAB_CONTEXT_MENU");
       assert.propertyVal(ping, "session_id", "n/a");
-      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 4);
+      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 1);
     });
     it("should return the correct value for max_concurrent_pinned_tabs (when private windows are open)", () => {
       sandbox.stub(instance, "sendEvent");
@@ -233,14 +232,11 @@ describe("TelemetryFeed", () => {
         .onCall(1)
         .returns(true);
       globals.set({PrivateBrowsingUtils: {isWindowPrivate: privateWinStub}});
-      sandbox.stub(instance, "_maxPinnedTabs").value(1);
       globals.set({
         Services: {
           ...Services,
           wm: {
             getEnumerator: () => [{
-              // 2 pinned tabs > _maxPinnedTabs = 1
-              // but this is a private window
               gBrowser: {tabs: [{pinned: true}, {pinned: true}]},
             }],
           },
@@ -251,7 +247,7 @@ describe("TelemetryFeed", () => {
 
       assert.calledOnce(instance.sendEvent);
       const [ping] = instance.sendEvent.firstCall.args;
-      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 1);
+      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 0);
     });
     it("should unregister the event listeners", () => {
       const stub = {removeEventListener: sandbox.stub()};
