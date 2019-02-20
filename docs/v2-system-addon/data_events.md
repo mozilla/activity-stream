@@ -368,6 +368,7 @@ A user event ping includes some basic metadata (tab id, addon version, etc.) as 
 {
   "event": "TABPINNED",
   "source": "TAB_CONTEXT_MENU",
+  "value": "{\"max_concurrent_pinned_tabs\":2}",
 
   // Basic metadata
   "action": "activity_stream_user_event",
