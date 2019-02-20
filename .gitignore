@@ -9,9 +9,8 @@ dist/
 firefox/
 *.update.rdf
 data/content/activity-stream.bundle.js
-data/content/*.js.map
 data/locales.json
-css/
+css/*.css
 prerendered/
 bin/prerender.js
 bin/prerender.js.map
