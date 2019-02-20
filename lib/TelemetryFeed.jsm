@@ -95,7 +95,8 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   _removeWindowListeners(win) {
-    if (!win.docShell || PrivateBrowsingUtils.isWindowPrivate(win)) {
+    // Skip private windows or hidden windows
+    if (!(win instanceof Ci.nsIDOMWindow) || PrivateBrowsingUtils.isWindowPrivate(win)) {
       return;
     }
     win.removeEventListener(DOMWINDOW_UNLOAD_TOPIC, this.handleEvent);

@@ -254,7 +254,7 @@ describe("TelemetryFeed", () => {
       assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 1);
     });
     it("should unregister the event listeners", () => {
-      const stub = {removeEventListener: sandbox.stub(), docShell: true};
+      const stub = {removeEventListener: sandbox.stub()};
 
       instance.handleEvent({type: "unload", target: stub});
 
