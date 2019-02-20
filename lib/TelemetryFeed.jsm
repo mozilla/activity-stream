@@ -79,9 +79,6 @@ this.TelemetryFeed = class TelemetryFeed {
     Services.obs.addObserver(this._addWindowListeners, DOMWINDOW_OPENED_TOPIC);
     // Listen for pin tab events on all open windows
     for (let win of Services.wm.getEnumerator("navigator:browser")) {
-      if (win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
-        continue;
-      }
       this._addWindowListeners(win);
     }
   }
@@ -89,7 +86,7 @@ this.TelemetryFeed = class TelemetryFeed {
   handleEvent(event) {
     switch (event.type) {
       case TAB_PINNED_EVENT:
-        this.countPinnedTab();
+        this.countPinnedTab(event.target);
         break;
       case DOMWINDOW_UNLOAD_TOPIC:
         this._removeWindowListeners(event.target);
@@ -98,6 +95,9 @@ this.TelemetryFeed = class TelemetryFeed {
   }
 
   _removeWindowListeners(win) {
+    if (!win.docShell || PrivateBrowsingUtils.isWindowPrivate(win)) {
+      return;
+    }
     win.removeEventListener(DOMWINDOW_UNLOAD_TOPIC, this.handleEvent);
     win.removeEventListener(TAB_PINNED_EVENT, this.handleEvent);
   }
@@ -107,7 +107,11 @@ this.TelemetryFeed = class TelemetryFeed {
     win.addEventListener(TAB_PINNED_EVENT, this.handleEvent);
   }
 
-  countPinnedTab(source = "TAB_CONTEXT_MENU") {
+  countPinnedTab(target, source = "TAB_CONTEXT_MENU") {
+    const win = target.ownerGlobal;
+    if (PrivateBrowsingUtils.isWindowPrivate(win)) {
+      return;
+    }
     const event = Object.assign(
       this.createPing(),
       {

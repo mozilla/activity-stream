@@ -110,6 +110,19 @@ describe("TelemetryFeed", () => {
       assert.calledWithExactly(Services.obs.addObserver,
         instance._addWindowListeners, "domwindowopened");
     });
+    it("should add TabPinned event listener on new windows", () => {
+      const stub = {addEventListener: sandbox.stub()};
+      sandbox.spy(Services.obs, "addObserver");
+
+      instance.init();
+
+      assert.calledTwice(Services.obs.addObserver);
+      const [cb] = Services.obs.addObserver.secondCall.args;
+      cb(stub);
+      assert.calledTwice(stub.addEventListener);
+      assert.calledWithExactly(stub.addEventListener, "unload", instance.handleEvent);
+      assert.calledWithExactly(stub.addEventListener, "TabPinned", instance.handleEvent);
+    });
     it("should create impression id if none exists", () => {
       assert.equal(instance._impressionId, FAKE_UUID);
     });
@@ -132,20 +145,6 @@ describe("TelemetryFeed", () => {
       assert.calledTwice(stub);
       assert.calledWithExactly(stub, "unload", instance.handleEvent);
       assert.calledWithExactly(stub, "TabPinned", instance.handleEvent);
-    });
-    it("should skip private windows", () => {
-      const stub = sandbox.stub();
-      globals.set({PrivateBrowsingUtils: {isWindowPrivate: () => true}});
-      globals.set({
-        Services: {
-          ...Services,
-          wm: {getEnumerator: () => [{addEventListener: stub}]},
-        },
-      });
-
-      instance.init();
-
-      assert.notCalled(stub);
     });
     describe("telemetry pref changes from false to true", () => {
       beforeEach(() => {
@@ -188,7 +187,7 @@ describe("TelemetryFeed", () => {
         },
       });
 
-      instance.handleEvent({type: "TabPinned"});
+      instance.handleEvent({type: "TabPinned", target: {}});
 
       assert.calledOnce(instance.sendEvent);
       const [ping] = instance.sendEvent.firstCall.args;
@@ -199,23 +198,11 @@ describe("TelemetryFeed", () => {
     });
     it("should skip private windows", () => {
       sandbox.stub(instance, "sendEvent");
-      sandbox.stub(instance, "_maxPinnedTabs").value(0);
       globals.set({PrivateBrowsingUtils: {isWindowPrivate: () => true}});
-      globals.set({
-        Services: {
-          ...Services,
-          wm: {getEnumerator: () => [{gBrowser: {tabs: [{pinned: true}, {pinned: true}]}}]},
-        },
-      });
 
-      instance.handleEvent({type: "TabPinned"});
+      instance.handleEvent({type: "TabPinned", target: {}});
 
-      assert.calledOnce(instance.sendEvent);
-      const [ping] = instance.sendEvent.firstCall.args;
-      assert.propertyVal(ping, "event", "TABPINNED");
-      assert.propertyVal(ping, "source", "TAB_CONTEXT_MENU");
-      assert.propertyVal(ping, "session_id", "n/a");
-      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 0);
+      assert.notCalled(instance.sendEvent);
     });
     it("should return the correct value for max_concurrent_pinned_tabs", () => {
       sandbox.stub(instance, "sendEvent");
@@ -231,7 +218,7 @@ describe("TelemetryFeed", () => {
         },
       });
 
-      instance.handleEvent({type: "TabPinned"});
+      instance.handleEvent({type: "TabPinned", target: {}});
 
       assert.calledOnce(instance.sendEvent);
       const [ping] = instance.sendEvent.firstCall.args;
@@ -240,14 +227,48 @@ describe("TelemetryFeed", () => {
       assert.propertyVal(ping, "session_id", "n/a");
       assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 4);
     });
+    it("should return the correct value for max_concurrent_pinned_tabs (when private windows are open)", () => {
+      sandbox.stub(instance, "sendEvent");
+      const privateWinStub = sandbox.stub().onCall(0).returns(false)
+        .onCall(1)
+        .returns(true);
+      globals.set({PrivateBrowsingUtils: {isWindowPrivate: privateWinStub}});
+      sandbox.stub(instance, "_maxPinnedTabs").value(1);
+      globals.set({
+        Services: {
+          ...Services,
+          wm: {
+            getEnumerator: () => [{
+              // 2 pinned tabs > _maxPinnedTabs = 1
+              // but this is a private window
+              gBrowser: {tabs: [{pinned: true}, {pinned: true}]},
+            }],
+          },
+        },
+      });
+
+      instance.handleEvent({type: "TabPinned", target: {}});
+
+      assert.calledOnce(instance.sendEvent);
+      const [ping] = instance.sendEvent.firstCall.args;
+      assert.propertyVal(ping.value, "max_concurrent_pinned_tabs", 1);
+    });
     it("should unregister the event listeners", () => {
-      const stub = {removeEventListener: sandbox.stub()};
+      const stub = {removeEventListener: sandbox.stub(), docShell: true};
 
       instance.handleEvent({type: "unload", target: stub});
 
       assert.calledTwice(stub.removeEventListener);
       assert.calledWithExactly(stub.removeEventListener, "unload", instance.handleEvent);
       assert.calledWithExactly(stub.removeEventListener, "TabPinned", instance.handleEvent);
+    });
+    it("should skip private windows for unregistering TabPinned", () => {
+      globals.set({PrivateBrowsingUtils: {isWindowPrivate: () => true}});
+      const stub = {removeEventListener: sandbox.stub()};
+
+      instance.handleEvent({type: "unload", target: stub});
+
+      assert.notCalled(stub.removeEventListener);
     });
   });
   describe("#addSession", () => {
