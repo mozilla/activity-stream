@@ -49,7 +49,7 @@ class PageAction {
 
     this._popupStateChange = this._popupStateChange.bind(this);
     this._collapse = this._collapse.bind(this);
-    this._handleClick = this._handleClick.bind(this);
+    this._showPopupOnClick = this._showPopupOnClick.bind(this);
     this.dispatchUserAction = this.dispatchUserAction.bind(this);
 
     this._l10n = new Localization([
@@ -71,7 +71,7 @@ class PageAction {
     let [{width}] = await this.window.promiseDocumentFlushed(() => this.label.getClientRects());
     this.urlbar.style.setProperty("--cfr-label-width", `${width}px`);
 
-    this.container.addEventListener("click", this._handleClick);
+    this.container.addEventListener("click", this._showPopupOnClick);
     // Collapse the recommendation on url bar focus in order to free up more
     // space to display and edit the url
     this.urlbar.addEventListener("focus", this._collapse);
@@ -97,7 +97,7 @@ class PageAction {
     this.container.hidden = true;
     this._clearScheduledStateChanges();
     this.urlbar.removeAttribute("cfr-recommendation-state");
-    this.container.removeEventListener("click", this._handleClick);
+    this.container.removeEventListener("click", this._showPopupOnClick);
     this.urlbar.removeEventListener("focus", this._collapse);
     if (this.currentNotification) {
       this.window.PopupNotifications.remove(this.currentNotification);
@@ -225,7 +225,7 @@ class PageAction {
    * Respond to a user click on the recommendation by showing a doorhanger/
    * popup notification
    */
-  async _handleClick(event) { // eslint-disable-line max-statements
+  async _showPopupOnClick(event) { // eslint-disable-line max-statements
     const browser = this.window.gBrowser.selectedBrowser;
     if (!RecommendationMap.has(browser)) {
       // There's no recommendation for this browser, so the user shouldn't have
