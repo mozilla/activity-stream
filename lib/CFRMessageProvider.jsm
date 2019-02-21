@@ -296,6 +296,52 @@ const CFR_MESSAGES = [
       (${JSON.stringify(REDDIT_ENHANCEMENT_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${REDDIT_ENHANCEMENT_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
     trigger: {id: "openURL", params: REDDIT_ENHANCEMENT_PARAMS.open_urls},
   },
+  {
+    id: "PIN_TAB",
+    template: "cfr_doorhanger",
+    content: {
+      bucket_id: "CFR_M1",
+      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
+      heading_text: {string_id: "cfr-doorhanger-extension-heading"},
+      info_icon: {
+        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
+        sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path,
+      },
+      addon: {
+        id: "387429",
+        title: "Reddit Enhancement Suite",
+        icon: "resource://activity-stream/data/content/assets/cfr_reddit_enhancement.png",
+        rating: 4.6,
+        users: 258129,
+        author: "honestbleeps",
+        amo_url: "https://addons.mozilla.org/en-US/firefox/addon/reddit-enhancement-suite/",
+      },
+      text: "New features include Inline Image Viewer, Never Ending Reddit (never click 'next page' again), Keyboard Navigation, Account Switcher, and User Tagger.",
+      buttons: {
+        primary: {
+          label: {string_id: "cfr-doorhanger-extension-ok-button"},
+          action: {
+            type: "INSTALL_ADDON_FROM_URL",
+            data: {url: null},
+          },
+        },
+        secondary: [{
+          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
+          action: {type: "CANCEL"},
+        }, {
+          label: {string_id: "cfr-doorhanger-extension-never-show-recommendation"},
+        }, {
+          label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
+          action: {
+            type: "OPEN_PREFERENCES_PAGE",
+            data: {category: "general-cfr", origin: "CFR"},
+          },
+        }],
+      },
+    },
+    targeting: `recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 5)]|mapToProperty('host')|length >= 1`,
+    trigger: {id: "frequentVisits", params: ["wikipedia.org", "www.wikipedia.org"]},
+  },
 ];
 
 const CFRMessageProvider = {

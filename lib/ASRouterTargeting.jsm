@@ -362,6 +362,7 @@ this.ASRouterTargeting = {
   async findMatchingMessage({messages, trigger, context, onError}) {
     const weightSortedMessages = sortMessagesByWeightedRank([...messages]);
     const sortedMessages = sortMessagesByTargeting(weightSortedMessages);
+    const triggerContext = trigger.context;
 
     for (const candidate of sortedMessages) {
       if (
@@ -369,7 +370,7 @@ this.ASRouterTargeting = {
         (trigger ? this.isTriggerMatch(trigger, candidate.trigger) : !candidate.trigger) &&
         // If a trigger expression was passed to this function, the message should match it.
         // Otherwise, we should choose a message with no trigger property (i.e. a message that can show up at any time)
-        await this.checkMessageTargeting(candidate, context, onError)
+        await this.checkMessageTargeting(candidate, {context, ...triggerContext}, onError)
       ) {
         return candidate;
       }
