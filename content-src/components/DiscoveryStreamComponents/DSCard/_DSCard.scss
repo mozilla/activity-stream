@@ -36,6 +36,7 @@ $excerpt-line-height: 20;
     flex-direction: column;
     flex-grow: 1;
     padding: 16px;
+    overflow-wrap: anywhere;
 
     .info-wrap {
       flex-grow: 1;
@@ -56,6 +57,10 @@ $excerpt-line-height: 20;
     .source {
       font-size: 13px;
       color: $teal-80;
+    }
+
+    .source {
+      @include truncate-with-ellipsis($domain-width);
     }
   }
 

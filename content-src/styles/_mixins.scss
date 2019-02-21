@@ -15,3 +15,11 @@
   max-height: 1em * $line-count * $line-height / $font-size;
   overflow: hidden;
 }
+
+@mixin truncate-with-ellipsis($text-width) {
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: $text-width;
+}

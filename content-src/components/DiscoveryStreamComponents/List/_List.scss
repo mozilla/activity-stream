@@ -150,6 +150,14 @@ $item-line-height: 20;
 
 .ds-list-full-width {
   @include set-item-sizes(17, 24, $item-image-size * 2);
+
+  .ds-list-item-info {
+    @include truncate-with-ellipsis(2 * $domain-width);
+  }
+}
+
+.ds-list:not(.ds-list-full-width) .ds-list-item-info {
+  @include truncate-with-ellipsis($domain-width);
 }
 
 .ds-list-item {
@@ -157,6 +165,7 @@ $item-line-height: 20;
   // regression detection?
   display: block;
   text-align: start;
+  overflow-wrap: anywhere;
 
   .ds-list-item-link {
     mix-blend-mode: normal;
@@ -183,7 +192,6 @@ $item-line-height: 20;
     @include limit-visibile-lines(1, $item-line-height, $item-font-size);
     color: $teal-80;
     font-size: 13px;
-    text-overflow: ellipsis;
   }
 
   .ds-list-item-title {

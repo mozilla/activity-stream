@@ -102,11 +102,10 @@ $card-header-in-hero-line-height: 20;
       }
 
       .source {
+        @include truncate-with-ellipsis(1.5 * $domain-width);
         font-size: 13px;
         color: $teal-80;
         margin-bottom: 0;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
       }
     }
   }
@@ -187,12 +186,14 @@ $card-header-in-hero-line-height: 20;
         flex-grow: 1;
         display: flex;
         padding: 0 24px 0 0;
+        overflow-wrap: anywhere;
 
         header {
           @include limit-visibile-lines(3, 28, 22);
         }
 
         .source {
+          @include truncate-with-ellipsis(2 * $domain-width);
           margin-bottom: 0;
         }
       }
