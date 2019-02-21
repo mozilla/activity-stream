@@ -60,7 +60,7 @@ class PageAction {
     this.stateTransitionTimeoutIDs = [];
   }
 
-  async show(recommendation, shouldExpand = false) {
+  async showAddressBarNotifier(recommendation, shouldExpand = false) {
     this.container.hidden = false;
 
     this.label.value = await this.getStrings(recommendation.content.notification_text);
@@ -404,7 +404,7 @@ const CFRPageActions = {
       if (isHostMatch(browser, recommendation.host)) {
         // The browser has a recommendation specified with this host, so show
         // the page action
-        pageAction.show(recommendation);
+        pageAction.showAddressBarNotifier(recommendation);
       } else if (recommendation.retain) {
         // Keep the recommendation first time the user navigates away just in
         // case they will go back to the previous page
@@ -456,7 +456,7 @@ const CFRPageActions = {
     if (!PageActionMap.has(win)) {
       PageActionMap.set(win, new PageAction(win, dispatchToASRouter));
     }
-    await PageActionMap.get(win).show(recommendation, true);
+    await PageActionMap.get(win).showAddressBarNotifier(recommendation, true);
     return true;
   },
 
@@ -481,7 +481,7 @@ const CFRPageActions = {
     if (!PageActionMap.has(win)) {
       PageActionMap.set(win, new PageAction(win, dispatchToASRouter));
     }
-    await PageActionMap.get(win).show(recommendation, true);
+    await PageActionMap.get(win).showAddressBarNotifier(recommendation, true);
     return true;
   },
 

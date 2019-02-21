@@ -124,22 +124,22 @@ describe("CFRPageActions", () => {
       getStringsStub = sandbox.stub(pageAction, "getStrings").resolves("");
     });
 
-    describe("#show", () => {
+    describe("#showAddressBarNotifier", () => {
       it("should un-hide the element and set the right label value", async () => {
         const FAKE_NOTIFICATION_TEXT = "FAKE_NOTIFICATION_TEXT";
         getStringsStub.withArgs(fakeRecommendation.content.notification_text).resolves(FAKE_NOTIFICATION_TEXT);
-        await pageAction.show(fakeRecommendation);
+        await pageAction.showAddressBarNotifier(fakeRecommendation);
         assert.isFalse(pageAction.container.hidden);
         assert.equal(pageAction.label.value, FAKE_NOTIFICATION_TEXT);
       });
       it("should wait for the document layout to flush", async () => {
         sandbox.spy(pageAction.label, "getClientRects");
-        await pageAction.show(fakeRecommendation);
+        await pageAction.showAddressBarNotifier(fakeRecommendation);
         assert.calledOnce(global.promiseDocumentFlushed);
         assert.callOrder(global.promiseDocumentFlushed, pageAction.label.getClientRects);
       });
       it("should set the CSS variable --cfr-label-width correctly", async () => {
-        await pageAction.show(fakeRecommendation);
+        await pageAction.showAddressBarNotifier(fakeRecommendation);
         const expectedWidth = pageAction.label.getClientRects()[0].width;
         assert.equal(pageAction.urlbar.style.getPropertyValue("--cfr-label-width"),
           `${expectedWidth}px`);
@@ -149,12 +149,12 @@ describe("CFRPageActions", () => {
         sandbox.spy(pageAction, "_expand");
         sandbox.spy(pageAction, "_dispatchImpression");
 
-        await pageAction.show(fakeRecommendation);
+        await pageAction.showAddressBarNotifier(fakeRecommendation);
         assert.notCalled(pageAction._dispatchImpression);
         clock.tick(1001);
         assert.notEqual(pageAction.urlbar.getAttribute("cfr-recommendation-state"), "expanded");
 
-        await pageAction.show(fakeRecommendation, true);
+        await pageAction.showAddressBarNotifier(fakeRecommendation, true);
         assert.calledOnce(pageAction._clearScheduledStateChanges);
         clock.tick(1001);
         assert.equal(pageAction.urlbar.getAttribute("cfr-recommendation-state"), "expanded");
@@ -162,7 +162,7 @@ describe("CFRPageActions", () => {
         assert.calledWith(pageAction._dispatchImpression, fakeRecommendation);
       });
       it("should send telemetry if `expand` is true and the id and bucket_id are provided", async () => {
-        await pageAction.show(fakeRecommendation, true);
+        await pageAction.showAddressBarNotifier(fakeRecommendation, true);
         assert.calledWith(dispatchStub, {
           type: "DOORHANGER_TELEMETRY",
           data: {
@@ -597,7 +597,7 @@ describe("CFRPageActions", () => {
   describe("CFRPageActions", () => {
     beforeEach(() => {
       // Spy on the prototype methods to inspect calls for any PageAction instance
-      sandbox.spy(PageAction.prototype, "show");
+      sandbox.spy(PageAction.prototype, "showAddressBarNotifier");
       sandbox.spy(PageAction.prototype, "hide");
     });
 
@@ -620,13 +620,13 @@ describe("CFRPageActions", () => {
         const win = fakeBrowser.ownerGlobal;
         CFRPageActions.PageActionMap.delete(win);
         CFRPageActions.updatePageActions(fakeBrowser);
-        assert.notCalled(PageAction.prototype.show);
+        assert.notCalled(PageAction.prototype.showAddressBarNotifier);
         assert.notCalled(PageAction.prototype.hide);
       });
       it("should do nothing if the browser is not the `selectedBrowser`", () => {
         const someOtherFakeBrowser = {};
         CFRPageActions.updatePageActions(someOtherFakeBrowser);
-        assert.notCalled(PageAction.prototype.show);
+        assert.notCalled(PageAction.prototype.showAddressBarNotifier);
         assert.notCalled(PageAction.prototype.hide);
       });
       it("should hide the pageAction if a recommendation doesn't exist for the given browser", () => {
@@ -636,8 +636,8 @@ describe("CFRPageActions", () => {
       });
       it("should show the pageAction if a recommendation exists and the host matches", () => {
         CFRPageActions.updatePageActions(fakeBrowser);
-        assert.calledOnce(PageAction.prototype.show);
-        assert.calledWith(PageAction.prototype.show, savedRec);
+        assert.calledOnce(PageAction.prototype.showAddressBarNotifier);
+        assert.calledWith(PageAction.prototype.showAddressBarNotifier, savedRec);
       });
       it("should hide the pageAction and delete the recommendation if the recommendation exists but the host doesn't match", () => {
         const someOtherFakeHost = "subdomain.mozilla.com";
@@ -684,7 +684,7 @@ describe("CFRPageActions", () => {
         const pageAction = CFRPageActions.PageActionMap.get(win);
         assert.equal(win, pageAction.window);
         assert.equal(dispatchStub, pageAction._dispatchToASRouter);
-        assert.calledOnce(PageAction.prototype.show);
+        assert.calledOnce(PageAction.prototype.showAddressBarNotifier);
       });
     });
 
@@ -717,7 +717,7 @@ describe("CFRPageActions", () => {
         const pageAction = CFRPageActions.PageActionMap.get(win);
         assert.equal(win, pageAction.window);
         assert.equal(dispatchStub, pageAction._dispatchToASRouter);
-        assert.calledOnce(PageAction.prototype.show);
+        assert.calledOnce(PageAction.prototype.showAddressBarNotifier);
       });
       it("should add the right url if we fetched and addon install URL", async () => {
         fakeRecommendation.template = "cfr_doorhanger";
