@@ -66,32 +66,54 @@ this.ASRouterTriggerListeners = new Map([
       }
     },
 
-    // Store visit timestamp if it's been more than FEW_MINUTES since the last
-    // visit
+    /* Record visit timestamps for websites that match `this._hosts` and only
+     * if it's been more than FEW_MINUTES since the last visit.
+     */
     _updateVisits(host) {
       const visits = this._visits.get(host);
+
       if (visits && Date.now() - visits[0] > FEW_MINUTES) {
         this._visits.set(host, [Date.now(), ...visits]);
+        return true;
       }
       if (!visits) {
         this._visits.set(host, [Date.now()]);
+        return true;
       }
+
+      return false;
     },
 
     onTabSwitch(event) {
-      const host = (new URL(event.currentTarget.gBrowser.currentURI.spec)).hostname;
-      const aBrowser = event.currentTarget.gBrowser.selectedBrowser;
-      if (this._hosts.has(host)) {
-        this._updateVisits(host);
+      let host;
+      const aBrowser = event.target.gBrowser.selectedBrowser;
+      try {
+        // nsIURI.host can throw for non-nsStandardURL nsIURIs.
+        host = event.target.gBrowser.currentURI.host;
+      } catch (e) {} // Couldn't parse location URL
+
+      if (host && this._hosts.has(host)) {
         this.triggerHandler(aBrowser, host);
       }
     },
 
     triggerHandler(aBrowser, host) {
+      const updated = this._updateVisits(host);
+
+      // If the previous visit happend less than FEW_MINUTES ago
+      // no updates were made, no need to trigger the handler
+      if (!updated) {
+        return;
+      }
+
       this._triggerHandler(aBrowser, {
         id: "frequentVisits",
         param: host,
-        context: {recentVisits: this._visits.get(host).map(timestamp => ({host, timestamp}))},
+        context: {
+          // Remapped to {host, timestamp} because JEXL operators can only
+          // filter over collections (arrays of objects)
+          recentVisits: this._visits.get(host).map(timestamp => ({host, timestamp})),
+        },
       });
     },
 
@@ -104,8 +126,7 @@ this.ASRouterTriggerListeners = new Map([
       if (location && aWebProgress.isTopLevel && !isSameDocument) {
         try {
           const host = (new URL(location)).hostname;
-          if (this._hosts.has(host)) {
-            this._updateVisits(host);
+          if (host && this._hosts.has(host)) {
             this.triggerHandler(aBrowser, host);
           }
         } catch (e) {} // Couldn't parse location URL
