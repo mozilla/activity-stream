@@ -1178,19 +1178,18 @@ describe("Top Stories Feed", () => {
     it("should return updated stories and topics on system tick", async () => {
       await instance.onInit();
       sinon.spy(instance, "dispatchUpdateEvent");
-      instance.stories = [{"guid": "rec1"}, {"guid": "rec2"}, {"guid": "rec3"}];
-      instance.topics = {
-        "_timestamp": 123,
-        "topics": [{"name": "topic1", "url": "url-topic1"}, {"name": "topic2", "url": "url-topic2"}],
-      };
+      const stories = [{"guid": "rec1"}, {"guid": "rec2"}, {"guid": "rec3"}];
+      const topics = [{"name": "topic1", "url": "url-topic1"}, {"name": "topic2", "url": "url-topic2"}];
+      clock.tick(TOPICS_UPDATE_TIME);
+      globals.sandbox.stub(instance, "fetchStories").resolves(stories);
+      globals.sandbox.stub(instance, "fetchTopics").resolves(topics);
+
       await instance.onAction({type: at.SYSTEM_TICK});
+
       assert.calledOnce(instance.dispatchUpdateEvent);
       assert.calledWith(instance.dispatchUpdateEvent, false, {
         rows: [{"guid": "rec1"}, {"guid": "rec2"}, {"guid": "rec3"}],
-        topics: {
-          _timestamp: 123,
-          topics: [{"name": "topic1", "url": "url-topic1"}, {"name": "topic2", "url": "url-topic2"}],
-        },
+        topics: [{"name": "topic1", "url": "url-topic1"}, {"name": "topic2", "url": "url-topic2"}],
         read_more_endpoint: undefined,
       });
     });
@@ -1349,7 +1348,24 @@ describe("Top Stories Feed", () => {
       instance.cache.get = () => ({stories, topics});
       await instance.onInit();
       assert.calledOnce(instance.doContentUpdate);
-      assert.calledWith(instance.doContentUpdate, true);
+      assert.calledWith(instance.doContentUpdate, {
+        stories: [{
+          context: undefined,
+          description: undefined,
+          guid: undefined,
+          hostname: undefined,
+          icon: undefined,
+          image: undefined,
+          min_score: 0,
+          referrer: "referrer",
+          score: 1,
+          spoc_meta: {  },
+          title: undefined,
+          type: "trending",
+          url: undefined,
+        }],
+        topics: [{}],
+      }, true);
     });
     it("should initialize user domain affinity provider from cache if personalization is preffed on", async () => {
       const domainAffinities = {

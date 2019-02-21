@@ -62,14 +62,14 @@ this.TopStoriesFeed = class TopStoriesFeed {
       // Cache is used for new page loads, which shouldn't have changed data.
       // If we have changed data, cache should be cleared,
       // and last updated should be 0, and we can fetch.
-      await this.loadCachedData();
+      let {stories, topics} = await this.loadCachedData();
       if (this.storiesLastUpdated === 0) {
-        await this.fetchStories();
+        stories = await this.fetchStories();
       }
       if (this.topicsLastUpdated === 0) {
-        await this.fetchTopics();
+        topics = await this.fetchTopics();
       }
-      this.doContentUpdate(true);
+      this.doContentUpdate({stories, topics}, true);
       this.storiesLoaded = true;
 
       // This is filtered so an update function can return true to retry on the next run
@@ -113,13 +113,18 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
   }
 
-  doContentUpdate(shouldBroadcast) {
+  doContentUpdate({stories, topics}, shouldBroadcast) {
     let updateProps = {};
-    if (this.stories) {
-      updateProps.rows = this.stories;
+    if (stories) {
+      updateProps.rows = stories;
+    } else {
+      const Sections = this.store.getState();
+      if (Sections && Sections.find) {
+        updateProps.rows = Sections.find(s => s.id === SECTION_ID).rows;
+      }
     }
-    if (this.topics) {
-      Object.assign(updateProps, {topics: this.topics, read_more_endpoint: this.read_more_endpoint});
+    if (topics) {
+      Object.assign(updateProps, {topics, read_more_endpoint: this.read_more_endpoint});
     }
 
     // We should only be calling this once per init.
@@ -130,7 +135,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     const data = await this.cache.get();
     let stories = data.stories && data.stories.recommendations;
     this.stories = this.rotate(this.transform(stories));
-    this.doContentUpdate(false);
+    this.doContentUpdate({stories: this.stories}, false);
 
     const affinities = this.affinityProvider.getAffinities();
     this.domainAffinitiesLastUpdated = Date.now();
@@ -166,7 +171,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
   async fetchStories() {
     if (!this.stories_endpoint) {
-      return;
+      return null;
     }
     try {
       const response = await fetch(this.stories_endpoint, {credentials: "omit"});
@@ -190,6 +195,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     } catch (error) {
       Cu.reportError(`Failed to fetch content: ${error.message}`);
     }
+    return this.stories;
   }
 
   async loadCachedData() {
@@ -217,6 +223,8 @@ this.TopStoriesFeed = class TopStoriesFeed {
       this.topics = topics;
       this.topicsLastUpdated = data.topics._timestamp;
     }
+
+    return {topics: this.topics, stories: this.stories};
   }
 
   dispatchRelevanceScore(start) {
@@ -286,7 +294,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
   async fetchTopics() {
     if (!this.topics_endpoint) {
-      return;
+      return null;
     }
     try {
       const response = await fetch(this.topics_endpoint, {credentials: "omit"});
@@ -304,6 +312,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     } catch (error) {
       Cu.reportError(`Failed to fetch topics: ${error.message}`);
     }
+    return this.topics;
   }
 
   dispatchUpdateEvent(shouldBroadcast, data) {
@@ -623,14 +632,15 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.init();
         break;
       case at.SYSTEM_TICK:
+        let stories;
+        let topics;
         if (Date.now() - this.storiesLastUpdated >= STORIES_UPDATE_TIME) {
-          await this.fetchStories();
+          stories = await this.fetchStories();
         }
         if (Date.now() - this.topicsLastUpdated >= TOPICS_UPDATE_TIME) {
-          await this.fetchTopics();
+          topics = await this.fetchTopics();
         }
-
-        this.doContentUpdate(false);
+        this.doContentUpdate({stories, topics}, false);
         break;
       case at.UNINIT:
         this.uninit();
