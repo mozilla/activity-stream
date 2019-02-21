@@ -118,7 +118,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     if (stories) {
       updateProps.rows = stories;
     } else {
-      const Sections = this.store.getState();
+      const {Sections} = this.store.getState();
       if (Sections && Sections.find) {
         updateProps.rows = Sections.find(s => s.id === SECTION_ID).rows;
       }
