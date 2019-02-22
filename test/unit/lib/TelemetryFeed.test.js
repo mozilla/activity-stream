@@ -27,7 +27,7 @@ describe("TelemetryFeed", () => {
   let fakeHomePageUrl;
   let fakeHomePage;
   let fakeExtensionSettingsStore;
-  class PingCentre {sendPing() {} uninit() {}}
+  class PingCentre {sendPing() {} uninit() {} sendStructuredIngestionPing() {}}
   class UTEventReporting {sendUserEvent() {} sendSessionEndEvent() {} uninit() {}}
   class PerfService {
     getMostRecentAbsMarkStartByName() { return 1234; }
@@ -42,6 +42,8 @@ describe("TelemetryFeed", () => {
     PREF_IMPRESSION_ID,
     TELEMETRY_PREF,
     EVENTS_TELEMETRY_PREF,
+    STRUCTURED_INGESTION_TELEMETRY_PREF,
+    STRUCTURED_INGESTION_ENDPOINT_PREF,
   } = injector({
     "common/PerfService.jsm": {perfService},
     "lib/UTEventReporting.jsm": {UTEventReporting},
@@ -174,6 +176,21 @@ describe("TelemetryFeed", () => {
         instance._prefs.set(EVENTS_TELEMETRY_PREF, true);
 
         assert.propertyVal(instance, "eventTelemetryEnabled", true);
+      });
+    });
+    describe("Structured Ingestion telemetry pref changes from false to true", () => {
+      beforeEach(() => {
+        FakePrefs.prototype.prefs = {};
+        FakePrefs.prototype.prefs[STRUCTURED_INGESTION_TELEMETRY_PREF] = false;
+        instance = new TelemetryFeed();
+
+        assert.propertyVal(instance, "structuredIngestionTelemetryEnabled", false);
+      });
+
+      it("should set the enabled property to true", () => {
+        instance._prefs.set(STRUCTURED_INGESTION_TELEMETRY_PREF, true);
+
+        assert.propertyVal(instance, "structuredIngestionTelemetryEnabled", true);
       });
     });
   });
@@ -787,6 +804,19 @@ describe("TelemetryFeed", () => {
       assert.calledWith(instance.utEvents.sendUserEvent, event);
     });
   });
+  describe("#sendStructuredIngestionEvent", () => {
+    it("should call PingCentre sendStructuredIngestionPing", async () => {
+      FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
+      FakePrefs.prototype.prefs[STRUCTURED_INGESTION_TELEMETRY_PREF] = true;
+      const event = {};
+      instance = new TelemetryFeed();
+      sandbox.stub(instance.pingCentre, "sendStructuredIngestionPing");
+
+      await instance.sendStructuredIngestionEvent(event, "http://foo.com/base/");
+
+      assert.calledWith(instance.pingCentre.sendStructuredIngestionPing, event);
+    });
+  });
   describe("#sendASRouterEvent", () => {
     it("should call PingCentre for AS Router", async () => {
       FakePrefs.prototype.prefs.telemetry = true;
@@ -926,6 +956,16 @@ describe("TelemetryFeed", () => {
       instance.uninit();
 
       assert.notProperty(instance._prefs.observers, EVENTS_TELEMETRY_PREF);
+    });
+    it("should remove the Structured Ingestion telemetry pref listener", () => {
+      FakePrefs.prototype.prefs[STRUCTURED_INGESTION_TELEMETRY_PREF] = true;
+      instance = new TelemetryFeed();
+
+      assert.property(instance._prefs.observers, STRUCTURED_INGESTION_TELEMETRY_PREF);
+
+      instance.uninit();
+
+      assert.notProperty(instance._prefs.observers, STRUCTURED_INGESTION_TELEMETRY_PREF);
     });
     it("should call Cu.reportError if this._prefs.ignore throws", () => {
       globals.sandbox.stub(FakePrefs.prototype, "ignore").throws("Some Error");
@@ -1234,6 +1274,20 @@ describe("TelemetryFeed", () => {
       assert.equal(Object.keys(session.impressionSets).length, 2);
       assert.deepEqual(session.impressionSets.foo, [{id: 1}, {id: 2}]);
       assert.deepEqual(session.impressionSets.bar, [{id: 3}]);
+    });
+  });
+  describe("#_generateStructuredIngestionEndpoint", () => {
+    it("should generate a valid endpoint", () => {
+      const fakeEndpoint = "http://fakeendpoint.com/base/";
+      const fakeUUID = "{34f24486-f01a-9749-9c5b-21476af1fa77}";
+      const fakeUUIDWithoutBraces = fakeUUID.substring(1, fakeUUID.length - 1);
+      FakePrefs.prototype.prefs = {};
+      FakePrefs.prototype.prefs[STRUCTURED_INGESTION_ENDPOINT_PREF] = fakeEndpoint;
+      sandbox.stub(global.gUUIDGenerator, "generateUUID").returns(fakeUUID);
+      const feed = new TelemetryFeed();
+      const url = feed._generateStructuredIngestionEndpoint("testPingType", "1");
+
+      assert.equal(url, `${fakeEndpoint}/testPingType/1/${fakeUUIDWithoutBraces}`);
     });
   });
 });

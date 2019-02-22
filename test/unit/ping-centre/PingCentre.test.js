@@ -296,6 +296,27 @@ describe("PingCentre", () => {
     });
   });
 
+  describe("#_createPing", () => {
+    it("should create a ping with expected properties", async () => {
+      tSender = new PingCentre({topic: "activity-stream"});
+      const ping = await tSender._createPing(fakePingJSON);
+
+      const EXPECTED_SHIELD_STRING =
+        "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
+      let EXPECTED_RESULT = Object.assign({
+        locale: FAKE_LOCALE,
+        topic: "activity-stream",
+        client_id: FAKE_TELEMETRY_ID,
+        release_channel: FAKE_UPDATE_CHANNEL,
+      }, fakePingJSON);
+      EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
+      EXPECTED_RESULT.profile_creation_date = FAKE_PROFILE_CREATION_DATE;
+      EXPECTED_RESULT.region = "UNSET";
+
+      assert.equal(JSON.stringify(ping), JSON.stringify(EXPECTED_RESULT));
+    });
+  });
+
   describe("#sendPing()", () => {
     let prefStub;
     let getStub;
@@ -387,6 +408,83 @@ describe("PingCentre", () => {
       await tSender.sendPing(fakePingJSON);
 
       assert.called(global.Services.console.logStringMessage); // eslint-disable-line no-console
+    });
+  });
+
+  describe("#sendStructuredIngestionPing()", () => {
+    let prefStub;
+    let getStub;
+
+    beforeEach(() => {
+      FakePrefs.prototype.prefs = {};
+      FakePrefs.prototype.prefs[FHR_UPLOAD_ENABLED_PREF] = true;
+      FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
+      FakePrefs.prototype.prefs[FAKE_AS_ENDPOINT_PREF] = fakeEndpointUrl;
+
+      prefStub = sinon.stub(global.Services.prefs, "prefHasUserValue")
+          .returns(true);
+      getStub = sinon.stub(global.Services.prefs, "getStringPref")
+          .returns(FAKE_BROWSER_SEARCH_REGION);
+
+      tSender = new PingCentre({
+        topic: "activity-stream",
+        overrideEndpointPref: FAKE_AS_ENDPOINT_PREF,
+      });
+    });
+
+    afterEach(() => {
+      prefStub.restore();
+      getStub.restore();
+    });
+
+    it("should not send if the PingCentre is disabled", async () => {
+      FakePrefs.prototype.prefs[TELEMETRY_PREF] = false;
+      tSender = new PingCentre({
+        topic: "activity-stream",
+        overrideEndpointPref: fakeEndpointUrl,
+      });
+
+      await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
+
+      assert.notCalled(fetchStub);
+    });
+
+    it("should POST given ping data to telemetry.ping.endpoint pref w/fetch",
+    async () => {
+      fetchStub.resolves(fakeFetchSuccessResponse);
+      await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
+
+      const EXPECTED_SHIELD_STRING =
+        "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
+      let EXPECTED_RESULT = Object.assign({
+        locale: FAKE_LOCALE,
+        topic: "activity-stream",
+        client_id: FAKE_TELEMETRY_ID,
+        release_channel: FAKE_UPDATE_CHANNEL,
+      }, fakePingJSON);
+      EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
+      EXPECTED_RESULT.profile_creation_date = FAKE_PROFILE_CREATION_DATE;
+      EXPECTED_RESULT.region = FAKE_BROWSER_SEARCH_REGION;
+
+      assert.calledOnce(fetchStub);
+      assert.calledWithExactly(fetchStub, fakeEndpointUrl,
+        {method: "POST", body: JSON.stringify(EXPECTED_RESULT)});
+    });
+
+    it("should log HTTP failures using Cu.reportError", async () => {
+      fetchStub.resolves(fakeFetchHttpErrorResponse);
+
+      await tSender.sendStructuredIngestionPing(fakePingJSON);
+
+      assert.called(Cu.reportError);
+    });
+
+    it("should log an error using Cu.reportError if fetch rejects", async () => {
+      fetchStub.rejects("Oh noes!");
+
+      await tSender.sendStructuredIngestionPing(fakePingJSON, fakeEndpointUrl);
+
+      assert.called(Cu.reportError);
     });
   });
 
