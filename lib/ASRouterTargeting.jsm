@@ -374,7 +374,7 @@ this.ASRouterTargeting = {
   async findMatchingMessage({messages, trigger, context, onError}) {
     const weightSortedMessages = sortMessagesByWeightedRank([...messages]);
     const sortedMessages = sortMessagesByTargeting(weightSortedMessages);
-    const triggerContext = trigger.context;
+    const triggerContext = trigger ? trigger.context : {};
 
     for (const candidate of sortedMessages) {
       if (
