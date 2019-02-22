@@ -292,6 +292,18 @@ const TargetingGetters = {
   get needsUpdate() {
     return QueryCache.queries.CheckBrowserNeedsUpdate.get();
   },
+  get hasPinnedTabs() {
+    for (let win of Services.wm.getEnumerator("navigator:browser")) {
+      if (win.closed) {
+        continue;
+      }
+      if (win.ownerGlobal.gBrowser.visibleTabs.filter(t => t.pinned).length) {
+        return true;
+      }
+    }
+
+    return false;
+  },
 };
 
 this.ASRouterTargeting = {

@@ -37,6 +37,7 @@ const REDDIT_ENHANCEMENT_PARAMS = {
   sumo_path: "extensionrecommendations",
   min_frecency: 10000,
 };
+const PINNED_TABS_TARGET_SITES = ["trello.com", "www.trello.com", "wunderlist.com", "www.wunderlist.com", "docs.google.com", "www.docs.google.com", "calendar.google.com", "www.calendar.google.com", "simplenote.com", "www.simplenote.com", "airtable.com", "www.airtable.com", "todoist.com", "www.todoist.com", "slack.com", "www.slack.com", "irccloud.com", "www.irccloud.com", "products.office.com", "www.products.office.com", "messenger.com", "www.messenger.com", "discordapp.com", "www.discordapp.com", "web.wechat.com", "www.web.wechat.com", "web.whatsapp.com", "www.web.whatsapp.com", "gmail.com", "www.gmail.com", "mail.yahoo.com", "www.mail.yahoo.com", "outlook.com", "www.outlook.com", "polymail.io", "www.polymail.io", "icloud.com", "www.icloud.com", "mail.aol.com", "www.mail.aol.com", "lightroom.adobe.com", "www.lightroom.adobe.com", "facebook.com", "www.facebook.com", "twitter.com", "www.twitter.com", "instagram.com", "www.instagram.com", "pinterest.com", "www.pinterest.com", "deddit.com", "www.deddit.com", "coursera.com", "www.coursera.com", "edx.org", "www.edx.org", "udemy.com", "www.udemy.com", "skillshare.com", "www.skillshare.com", "pluralsight.com", "www.pluralsight.com", "udacity.com", "www.udacity.com", "tumblr.com", "www.tumblr.com", "quora.com", "www.quora.com", "deviantart.com", "www.deviantart.com", "github.com", "www.github.com", "kaggle.com", "www.kaggle.com", "dropbox.com", "www.dropbox.com", "drive.google.com", "www.drive.google.com", "box.com", "www.box.com", "netflix.com", "www.netflix.com", "primevideo.com", "www.primevideo.com", "hulu.com", "www.hulu.com", "crave.ca", "www.crave.ca", "twitch.tv", "www.twitch.tv", "youtube.com", "www.youtube.com", "craigslist.org", "www.craigslist.org", "kijiji.ca", "www.kijiji.ca"];
 
 const CFR_MESSAGES = [
   {
@@ -332,8 +333,8 @@ const CFR_MESSAGES = [
         }],
       },
     },
-    targeting: `recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 5)]|mapToProperty('host')|length >= 1`,
-    trigger: {id: "frequentVisits", params: ["wikipedia.org", "www.wikipedia.org"]},
+    targeting: `!hasPinnedTabs && recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 1)]|length >= 1`,
+    trigger: {id: "frequentVisits", params: PINNED_TABS_TARGET_SITES},
   },
 ];
 
