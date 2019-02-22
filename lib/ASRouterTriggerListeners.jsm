@@ -151,6 +151,7 @@ this.ASRouterTriggerListeners = new Map([
           onLoad = () => {
             // Ignore non-browser windows.
             if (win.document.documentElement.getAttribute("windowtype") === "navigator:browser") {
+              win.addEventListener("TabSelect", this.onTabSwitch);
               win.gBrowser.addTabsProgressListener(this);
             }
           };
@@ -160,13 +161,32 @@ this.ASRouterTriggerListeners = new Map([
         case "domwindowclosed":
           if ((win instanceof Ci.nsIDOMWindow) &&
               win.document.documentElement.getAttribute("windowtype") === "navigator:browser") {
+            win.removeEventListener("TabSelect", this.onTabSwitch);
             win.gBrowser.removeTabsProgressListener(this);
           }
           break;
       }
     },
 
-    uninit() {},
+    uninit() {
+      if (this._initialized) {
+        Services.ww.unregisterNotification(this);
+
+        for (let win of Services.wm.getEnumerator("navigator:browser")) {
+          if (win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
+            continue;
+          }
+
+          win.removeEventListener("TabSelect", this.onTabSwitch);
+          win.gBrowser.removeTabsProgressListener(this);
+        }
+
+        this._initialized = false;
+        this._triggerHandler = null;
+        this._hosts = null;
+        this._visits = null;
+      }
+    },
   }],
 
   /**
