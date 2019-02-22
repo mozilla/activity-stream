@@ -221,27 +221,8 @@ class PageAction {
     return subAttribute ? mainString.attributes[subAttribute] : mainString;
   }
 
-  /**
-   * Respond to a user click on the recommendation by showing a doorhanger/
-   * popup notification
-   */
-  async _showPopupOnClick(event) { // eslint-disable-line max-statements
-    const browser = this.window.gBrowser.selectedBrowser;
-    if (!RecommendationMap.has(browser)) {
-      // There's no recommendation for this browser, so the user shouldn't have
-      // been able to click
-      this.hideAddressBarNotifier();
-      return;
-    }
-    const {id, content} = RecommendationMap.get(browser);
-
-    // The recommendation should remain either collapsed or expanded while the
-    // doorhanger is showing
-    this._clearScheduledStateChanges();
-
-    // A hacky way of setting the popup anchor outside the usual url bar icon box
-    // See https://searchfox.org/mozilla-central/rev/847b64cc28b74b44c379f9bff4f415b97da1c6d7/toolkit/modules/PopupNotifications.jsm#42
-    browser.cfrpopupnotificationanchor = this.container;
+  async _renderPopup(message, browser) { // eslint-disable-line max-statements
+    const {id, content} = message;
 
     const headerLabel = this.window.document.getElementById("cfr-notification-header-label");
     const headerLink = this.window.document.getElementById("cfr-notification-header-link");
@@ -366,7 +347,7 @@ class PageAction {
       eventCallback: this._popupStateChange,
     };
 
-    this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "CLICK_DOORHANGER"});
+    // Actually show the notification
     this.currentNotification = this.window.PopupNotifications.show(
       browser,
       POPUP_NOTIFICATION_ID,
@@ -376,6 +357,33 @@ class PageAction {
       secondaryActions,
       options
     );
+  }
+
+  /**
+   * Respond to a user click on the recommendation by showing a doorhanger/
+   * popup notification
+   */
+  async _showPopupOnClick(event) {
+    const browser = this.window.gBrowser.selectedBrowser;
+    if (!RecommendationMap.has(browser)) {
+      // There's no recommendation for this browser, so the user shouldn't have
+      // been able to click
+      this.hideAddressBarNotifier();
+      return;
+    }
+    const message = RecommendationMap.get(browser);
+    const {id, content} = message;
+
+    // The recommendation should remain either collapsed or expanded while the
+    // doorhanger is showing
+    this._clearScheduledStateChanges(browser, message);
+
+    // A hacky way of setting the popup anchor outside the usual url bar icon box
+    // See https://searchfox.org/mozilla-central/rev/847b64cc28b74b44c379f9bff4f415b97da1c6d7/toolkit/modules/PopupNotifications.jsm#42
+    browser.cfrpopupnotificationanchor = this.container;
+
+    this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "CLICK_DOORHANGER"});
+    await this._renderPopup(message, browser);
   }
 }
 
