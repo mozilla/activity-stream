@@ -158,7 +158,7 @@ export class BaseContent extends React.PureComponent {
     const searchHandoffEnabled = prefs["improvesearch.handoffToAwesomebar"];
 
     if (isDiscoveryStream) {
-      this.disableDarkTheme();
+      // this.disableDarkTheme();
     }
 
     const outerClassName = [
