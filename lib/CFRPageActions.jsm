@@ -93,7 +93,7 @@ class PageAction {
     }
   }
 
-  hide() {
+  hideAddressBarNotifier() {
     this.container.hidden = true;
     this._clearScheduledStateChanges();
     this.urlbar.removeAttribute("cfr-recommendation-state");
@@ -230,7 +230,7 @@ class PageAction {
     if (!RecommendationMap.has(browser)) {
       // There's no recommendation for this browser, so the user shouldn't have
       // been able to click
-      this.hide();
+      this.hideAddressBarNotifier();
       return;
     }
     const {id, content} = RecommendationMap.get(browser);
@@ -329,7 +329,7 @@ class PageAction {
         primary.action.data.url = await CFRPageActions._fetchLatestAddonVersion(content.addon.id); // eslint-disable-line no-use-before-define
         this._blockMessage(id);
         this.dispatchUserAction(primary.action);
-        this.hide();
+        this.hideAddressBarNotifier();
         this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "INSTALL"});
         RecommendationMap.delete(browser);
       },
@@ -347,7 +347,7 @@ class PageAction {
       accessKey: secondaryBtnStrings[1].attributes.accesskey,
       callback: () => {
         this._blockMessage(id);
-        this.hide();
+        this.hideAddressBarNotifier();
         this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "BLOCK"});
         RecommendationMap.delete(browser);
       },
@@ -408,17 +408,17 @@ const CFRPageActions = {
       } else if (recommendation.retain) {
         // Keep the recommendation first time the user navigates away just in
         // case they will go back to the previous page
-        pageAction.hide();
+        pageAction.hideAddressBarNotifier();
         recommendation.retain = false;
       } else {
         // The user has navigated away from the specified host in the given
         // browser, so the recommendation is no longer valid and should be removed
         RecommendationMap.delete(browser);
-        pageAction.hide();
+        pageAction.hideAddressBarNotifier();
       }
     } else {
       // There's no recommendation specified for this browser, so hide the page action
-      pageAction.hide();
+      pageAction.hideAddressBarNotifier();
     }
   },
 
@@ -494,7 +494,7 @@ const CFRPageActions = {
       if (win.closed || !PageActionMap.has(win)) {
         continue;
       }
-      PageActionMap.get(win).hide();
+      PageActionMap.get(win).hideAddressBarNotifier();
     }
     // WeakMaps don't have a `clear` method
     PageActionMap = new WeakMap();
