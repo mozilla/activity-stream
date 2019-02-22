@@ -300,29 +300,22 @@ const CFR_MESSAGES = [
     id: "PIN_TAB",
     template: "cfr_doorhanger",
     content: {
-      bucket_id: "CFR_M1",
+      bucket_id: "CFR_PIN_TAB",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
-      heading_text: {string_id: "cfr-doorhanger-extension-heading"},
+      heading_text: {
+        string_id: "cfr-doorhanger-pintab-heading",
+        args: {action: "cfr-pintab-action-name"},
+      },
       info_icon: {
         label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path,
       },
-      addon: {
-        id: "387429",
-        title: "Reddit Enhancement Suite",
-        icon: "resource://activity-stream/data/content/assets/cfr_reddit_enhancement.png",
-        rating: 4.6,
-        users: 258129,
-        author: "honestbleeps",
-        amo_url: "https://addons.mozilla.org/en-US/firefox/addon/reddit-enhancement-suite/",
-      },
-      text: "New features include Inline Image Viewer, Never Ending Reddit (never click 'next page' again), Keyboard Navigation, Account Switcher, and User Tagger.",
+      text: "Get easy access to your most-used sites. Keep sites open in a tab (even when you restart).",
       buttons: {
         primary: {
-          label: {string_id: "cfr-doorhanger-extension-ok-button"},
+          label: {string_id: "cfr-doorhanger-pintab-ok-button"},
           action: {
-            type: "INSTALL_ADDON_FROM_URL",
-            data: {url: null},
+            type: "PIN_CURRENT_TAB",
           },
         },
         secondary: [{

@@ -66,8 +66,10 @@ this.ASRouterTriggerListeners = new Map([
       }
     },
 
-    /* Record visit timestamps for websites that match `this._hosts` and only
+    /* _updateVisits - Record visit timestamps for websites that match `this._hosts` and only
      * if it's been more than FEW_MINUTES since the last visit.
+     * @param {string} host - Location host of current selected tab
+     * @returns {boolean} - If the new visit has been recorded
      */
     _updateVisits(host) {
       const visits = this._visits.get(host);
@@ -85,15 +87,20 @@ this.ASRouterTriggerListeners = new Map([
     },
 
     onTabSwitch(event) {
+      if (!event.target.gBrowser) {
+        return;
+      }
+
       let host;
-      const aBrowser = event.target.gBrowser.selectedBrowser;
+      const {gBrowser} = event.target;
+
       try {
         // nsIURI.host can throw for non-nsStandardURL nsIURIs.
-        host = event.target.gBrowser.currentURI.host;
+        host = gBrowser.currentURI.host;
       } catch (e) {} // Couldn't parse location URL
 
       if (host && this._hosts.has(host)) {
-        this.triggerHandler(aBrowser, host);
+        this.triggerHandler(gBrowser.selectedBrowser, host);
       }
     },
 
