@@ -21,7 +21,7 @@ describe("ASRouterTriggerListeners", () => {
     sandbox = sinon.createSandbox();
     registerWindowNotificationStub = sandbox.stub(global.Services.ww, "registerNotification");
     unregisterWindoNotificationStub = sandbox.stub(global.Services.ww, "unregisterNotification");
-    existingWindow = {gBrowser: {addTabsProgressListener: sandbox.stub(), removeTabsProgressListener: sandbox.stub()}, gBrowserInit: {delayedStartupFinished: true}, addEventListener: sinon.stub(), removeEventListener: sinon.stub()};
+    existingWindow = {gBrowser: {addTabsProgressListener: sandbox.stub(), removeTabsProgressListener: sandbox.stub(), currentURI: {host: ""}}, gBrowserInit: {delayedStartupFinished: true}, addEventListener: sinon.stub(), removeEventListener: sinon.stub()};
     windowEnumeratorStub = sandbox.stub(global.Services.wm, "getEnumerator");
     resetEnumeratorStub([existingWindow]);
     sandbox.spy(openURLListener, "init");
@@ -66,6 +66,22 @@ describe("ASRouterTriggerListeners", () => {
       frequentVisitsListener.triggerHandler({}, "www.mozilla.com");
 
       assert.calledTwice(_triggerHandler);
+    });
+    it("should call triggerHandler on valid hosts", () => {
+      const stub = sandbox.stub(frequentVisitsListener, "triggerHandler");
+      existingWindow.gBrowser.currentURI.host = hosts[0]; // eslint-disable-line prefer-destructuring
+
+      frequentVisitsListener.onTabSwitch({target: {ownerGlobal: existingWindow}});
+
+      assert.calledOnce(stub);
+    });
+    it("should not call triggerHandler on invalid hosts", () => {
+      const stub = sandbox.stub(frequentVisitsListener, "triggerHandler");
+      existingWindow.gBrowser.currentURI.host = "foo.com";
+
+      frequentVisitsListener.onTabSwitch({target: {ownerGlobal: existingWindow}});
+
+      assert.notCalled(stub);
     });
   });
 

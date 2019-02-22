@@ -87,12 +87,12 @@ this.ASRouterTriggerListeners = new Map([
     },
 
     onTabSwitch(event) {
-      if (!event.target.gBrowser) {
+      if (!event.target.ownerGlobal.gBrowser) {
         return;
       }
 
       let host;
-      const {gBrowser} = event.target;
+      const {gBrowser} = event.target.ownerGlobal;
 
       try {
         // nsIURI.host can throw for non-nsStandardURL nsIURIs.
