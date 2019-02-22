@@ -866,6 +866,9 @@ describe("DiscoveryStreamFeed", () => {
       assert.calledOnce(feed.clearCache);
       assert.isFalse(feed.loaded);
     });
+    it("should ", async () => {
+      
+    });
   });
 
   describe("#onAction: DISCOVERY_STREAM_OPT_OUT", () => {

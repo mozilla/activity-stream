@@ -537,7 +537,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this.clearImpressionPrefs();
     await this.clearCache();
     // Reset reducer
-    await this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_LAYOUT_RESET}));
+    this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_LAYOUT_RESET}));
     this.loaded = false;
     this.layoutRequestTime = undefined;
     this.spocsRequestTime = undefined;
