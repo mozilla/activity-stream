@@ -534,9 +534,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async disable() {
+    this.clearImpressionPrefs();
     await this.clearCache();
     // Reset reducer
-    this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_LAYOUT_RESET}));
+    await this.store.dispatch(ac.BroadcastToContent({type: at.DISCOVERY_STREAM_LAYOUT_RESET}));
     this.loaded = false;
     this.layoutRequestTime = undefined;
     this.spocsRequestTime = undefined;
@@ -556,17 +557,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async onPrefChange() {
-    this.clearImpressionPrefs();
+    // We always want to clear the cache/state if the pref has changed
+    await this.disable();
     if (this.config.enabled) {
-      // We always want to clear the cache if the pref has changed
-      await this.clearCache();
       // Load data from all endpoints
       await this.enable();
-    }
-
-    // Clear state and relevant listeners if config.enabled = false.
-    if (this.loaded && !this.config.enabled) {
-      await this.disable();
     }
   }
 
