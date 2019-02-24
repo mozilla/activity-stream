@@ -488,7 +488,7 @@ describe("DiscoveryStreamFeed", () => {
       const result = feed.transform({
         spocs: [
           {campaign_id: 2, item_score: 0.8, min_score: 0.1},
-          {campaign_id: 3, item_score: 0.7, min_score: 0.1},
+          {campaign_id: 3, item_score: 0.6, min_score: 0.1},
           {campaign_id: 1, item_score: 0.9, min_score: 0.1},
           {campaign_id: 3, item_score: 0.7, min_score: 0.1},
           {campaign_id: 1, item_score: 0.9, min_score: 0.1},
@@ -511,25 +511,25 @@ describe("DiscoveryStreamFeed", () => {
       const result = feed.transform({
         spocs: [
           {campaign_id: 2, item_score: 0.8, min_score: 0.1},
+          {campaign_id: 3, item_score: 0.6, min_score: 0.1},
+          {campaign_id: 1, item_score: 0.6, min_score: 0.1},
           {campaign_id: 3, item_score: 0.7, min_score: 0.1},
           {campaign_id: 1, item_score: 0.9, min_score: 0.1},
+          {campaign_id: 2, item_score: 0.6, min_score: 0.1},
           {campaign_id: 3, item_score: 0.7, min_score: 0.1},
-          {campaign_id: 1, item_score: 0.9, min_score: 0.1},
-          {campaign_id: 2, item_score: 0.8, min_score: 0.1},
+          {campaign_id: 1, item_score: 0.8, min_score: 0.1},
           {campaign_id: 3, item_score: 0.7, min_score: 0.1},
-          {campaign_id: 1, item_score: 0.9, min_score: 0.1},
-          {campaign_id: 3, item_score: 0.7, min_score: 0.1},
-          {campaign_id: 1, item_score: 0.9, min_score: 0.1},
+          {campaign_id: 1, item_score: 0.8, min_score: 0.1},
         ],
       });
 
       assert.deepEqual(result.spocs, [
         {campaign_id: 1, item_score: 0.9, score: 0.9, min_score: 0.1},
-        {campaign_id: 1, item_score: 0.9, score: 0.9, min_score: 0.1},
         {campaign_id: 2, item_score: 0.8, score: 0.8, min_score: 0.1},
-        {campaign_id: 2, item_score: 0.8, score: 0.8, min_score: 0.1},
+        {campaign_id: 1, item_score: 0.8, score: 0.8, min_score: 0.1},
         {campaign_id: 3, item_score: 0.7, score: 0.7, min_score: 0.1},
         {campaign_id: 3, item_score: 0.7, score: 0.7, min_score: 0.1},
+        {campaign_id: 2, item_score: 0.6, score: 0.6, min_score: 0.1},
       ]);
     });
   });
