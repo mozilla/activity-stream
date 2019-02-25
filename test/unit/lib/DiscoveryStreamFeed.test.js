@@ -847,6 +847,19 @@ describe("DiscoveryStreamFeed", () => {
 
       assert.calledOnce(feed.clearCache);
     });
+    it("should dispatch DISCOVERY_STREAM_LAYOUT_RESET from DISCOVERY_STREAM_CONFIG_CHANGE", async () => {
+      sandbox.stub(feed, "clearImpressionPrefs");
+      sandbox.stub(feed, "clearCache").resolves();
+      sandbox.stub(feed, "enable").resolves();
+      setPref(CONFIG_PREF_NAME, {enabled: true});
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_CHANGE});
+
+      assert.calledWithMatch(feed.store.dispatch, {
+        type: at.DISCOVERY_STREAM_LAYOUT_RESET,
+      });
+    });
     it("should not call this.loadLayout if config.enabled changes to false", async () => {
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
       // force clear cached pref value
@@ -865,9 +878,6 @@ describe("DiscoveryStreamFeed", () => {
       assert.notCalled(feed.loadLayout);
       assert.calledOnce(feed.clearCache);
       assert.isFalse(feed.loaded);
-    });
-    it("should ", async () => {
-      
     });
   });
 

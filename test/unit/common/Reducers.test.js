@@ -664,7 +664,7 @@ describe("Reducers", () => {
       assert.equal(state.layout[0], "test");
       assert.equal(state.lastUpdated, 123);
     });
-    it.only("should reset layout data with DISCOVERY_STREAM_LAYOUT_RESET", () => {
+    it("should reset layout data with DISCOVERY_STREAM_LAYOUT_RESET", () => {
       const layoutData = {layout: ["test"], lastUpdated: 123};
       const feedsData = {
         "https://foo.com/feed1": {lastUpdated: 123, data: [1, 2, 3]},
