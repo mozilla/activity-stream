@@ -113,6 +113,23 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.store.dispatch(shouldBroadcast ? ac.BroadcastToContent(action) : ac.AlsoToPreloaded(action));
   }
 
+  /**
+   * doContentUpdate - Updates topics and stories in the topstories section.
+   *
+   *                   Sections have one update action for the whole section.
+   *                   Redux creates a state race condition if you call the same action,
+   *                   twice, concurrently. Because of this, doContentUpdate is
+   *                   one place to update both topics and stories in a single action.
+   *
+   *                   Section updates used old topics if none are available,
+   *                   but clear stories if none are available. Because of this, if no
+   *                   stories are passed, we instead use the existing stories in state.
+   *
+   * @param {Object} This is an object with potential new stories or topics.
+   * @param {Boolean} shouldBroadcast If we should update existing tabs or not. For first page
+   *                  loads or pref changes, we want to update existing tabs,
+   *                  for system tick or other updates we do not.
+   */
   doContentUpdate({stories, topics}, shouldBroadcast) {
     let updateProps = {};
     if (stories) {
