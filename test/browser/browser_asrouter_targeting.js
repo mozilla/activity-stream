@@ -423,3 +423,12 @@ add_task(async function check_xpinstall_enabled() {
   await pushPrefs(["xpinstall.enabled", true]);
   is(await ASRouterTargeting.Environment.xpinstallEnabled, true);
 });
+
+add_task(async function check_pinned_tabs() {
+  await BrowserTestUtils.withNewTab({gBrowser, url: "about:blank"}, async browser => {
+    let tab = gBrowser.getTabForBrowser(browser);
+    gBrowser.pinTab(tab);
+
+    is(await ASRouterTargeting.hasPinnedTabs, true, "Should detect pinned tab");
+  });
+});
