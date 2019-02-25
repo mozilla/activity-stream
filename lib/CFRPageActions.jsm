@@ -242,7 +242,7 @@ class PageAction {
     footerUsers.setAttribute("hidden", true);
     footerSpacer.setAttribute("hidden", true);
 
-    footerLink.value = await this.getStrings({string_id: "cfr-doorhanger-sumo-link-text"});
+    footerLink.value = await this.getStrings({string_id: "cfr-doorhanger-extension-learn-more-link"});
     footerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "LEARN_MORE"});
 
     const {primary, secondary} = content.buttons;

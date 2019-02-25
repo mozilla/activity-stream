@@ -303,10 +303,7 @@ const CFR_MESSAGES = [
     content: {
       bucket_id: "CFR_PIN_TAB",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
-      heading_text: {
-        string_id: "cfr-doorhanger-pintab-heading",
-        args: {action: "cfr-pintab-action-name"},
-      },
+      heading_text: {string_id: "cfr-doorhanger-pintab-heading"},
       info_icon: {
         label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path,
