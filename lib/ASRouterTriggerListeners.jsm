@@ -29,6 +29,10 @@ async function checkStartupFinished(win) {
   }
 }
 
+function isPrivateWindow(win) {
+  return !(win instanceof Ci.nsIDOMWindow) || win.closed || PrivateBrowsingUtils.isWindowPrivate(win);
+}
+
 /**
  * A Map from trigger IDs to singleton trigger listeners. Each listener must
  * have idempotent `init` and `uninit` methods.
@@ -48,7 +52,7 @@ this.ASRouterTriggerListeners = new Map([
 
       // Add listeners to all existing browser windows
       for (let win of Services.wm.getEnumerator("navigator:browser")) {
-        if (win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
+        if (isPrivateWindow(win)) {
           continue;
         }
         await checkStartupFinished(win);
@@ -145,7 +149,7 @@ this.ASRouterTriggerListeners = new Map([
 
       switch (topic) {
         case "domwindowopened":
-          if (!(win instanceof Ci.nsIDOMWindow) || win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
+          if (isPrivateWindow(win)) {
             break;
           }
           onLoad = () => {
@@ -173,7 +177,7 @@ this.ASRouterTriggerListeners = new Map([
         Services.ww.unregisterNotification(this);
 
         for (let win of Services.wm.getEnumerator("navigator:browser")) {
-          if (win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
+          if (isPrivateWindow(win)) {
             continue;
           }
 
@@ -212,7 +216,7 @@ this.ASRouterTriggerListeners = new Map([
 
         // Add listeners to all existing browser windows
         for (let win of Services.wm.getEnumerator("navigator:browser")) {
-          if (win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
+          if (isPrivateWindow(win)) {
             continue;
           }
           await checkStartupFinished(win);
@@ -234,7 +238,7 @@ this.ASRouterTriggerListeners = new Map([
         Services.ww.unregisterNotification(this);
 
         for (let win of Services.wm.getEnumerator("navigator:browser")) {
-          if (win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
+          if (isPrivateWindow(win)) {
             continue;
           }
 
@@ -268,7 +272,7 @@ this.ASRouterTriggerListeners = new Map([
 
       switch (topic) {
         case "domwindowopened":
-          if (!(win instanceof Ci.nsIDOMWindow) || win.closed || PrivateBrowsingUtils.isWindowPrivate(win)) {
+          if (isPrivateWindow(win)) {
             break;
           }
           onLoad = () => {
