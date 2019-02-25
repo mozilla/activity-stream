@@ -429,6 +429,6 @@ add_task(async function check_pinned_tabs() {
     let tab = gBrowser.getTabForBrowser(browser);
     gBrowser.pinTab(tab);
 
-    is(await ASRouterTargeting.hasPinnedTabs, true, "Should detect pinned tab");
+    is(await ASRouterTargeting.Environment.hasPinnedTabs, true, "Should detect pinned tab");
   });
 });
