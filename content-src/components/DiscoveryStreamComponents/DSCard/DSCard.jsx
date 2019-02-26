@@ -1,4 +1,5 @@
 import {actionCreators as ac} from "common/Actions.jsm";
+import {DSLinkMenu} from "../DSLinkMenu/DSLinkMenu";
 import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 import {SafeAnchor} from "../SafeAnchor/SafeAnchor";
@@ -28,31 +29,34 @@ export class DSCard extends React.PureComponent {
 
   render() {
     return (
-      <SafeAnchor url={this.props.url} className="ds-card" onLinkClick={this.onLinkClick}>
-        <div className="img-wrapper">
-          <div className="img" style={{backgroundImage: `url(${this.props.image_src}`}} />
-        </div>
-        <div className="meta">
-          <div className="info-wrap">
-            <header className="title">{this.props.title}</header>
-            {this.props.excerpt && <p className="excerpt">{this.props.excerpt}</p>}
+      <div className="ds-card">
+        <SafeAnchor className="ds-card-link" url={this.props.url} onLinkClick={this.onLinkClick}>
+          <div className="img-wrapper">
+            <div className="img" style={{backgroundImage: `url(${this.props.image_src}`}} />
           </div>
-          <p>
-            {this.props.context && (
-              <span>
-                <span className="context">{this.props.context}</span>
-                <br />
-              </span>
-            )}
-            <span className="source">{this.props.source}</span>
-          </p>
-        </div>
-        <ImpressionStats
-          campaignId={this.props.campaignId}
-          rows={[{id: this.props.id, pos: this.props.pos}]}
-          dispatch={this.props.dispatch}
-          source={this.props.type} />
-      </SafeAnchor>
+          <div className="meta">
+            <div className="info-wrap">
+              <header className="title">{this.props.title}</header>
+              {this.props.excerpt && <p className="excerpt">{this.props.excerpt}</p>}
+            </div>
+            <p>
+              {this.props.context && (
+                <span>
+                  <span className="context">{this.props.context}</span>
+                  <br />
+                </span>
+              )}
+              <span className="source">{this.props.source}</span>
+            </p>
+          </div>
+          <ImpressionStats
+            campaignId={this.props.campaignId}
+            rows={[{id: this.props.id, pos: this.props.pos}]}
+            dispatch={this.props.dispatch}
+            source={this.props.type} />
+        </SafeAnchor>
+        <DSLinkMenu {...this.props} />
+      </div>
     );
   }
 }

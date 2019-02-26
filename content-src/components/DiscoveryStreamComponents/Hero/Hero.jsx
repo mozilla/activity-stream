@@ -1,5 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {DSCard} from "../DSCard/DSCard.jsx";
+import {DSLinkMenu} from "../DSLinkMenu/DSLinkMenu";
 import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import {List} from "../List/List.jsx";
 import React from "react";
@@ -69,27 +70,30 @@ export class Hero extends React.PureComponent {
       <div>
         <div className="ds-header">{this.props.title}</div>
         <div className={`ds-hero ds-hero-${this.props.border}`}>
-          <SafeAnchor url={heroRec.url} className="wrapper" onLinkClick={this.onLinkClick}>
-            <div className="img-wrapper">
-              <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
-            </div>
-            <div className="meta">
-              <div className="header-and-excerpt">
-                <header>{heroRec.title}</header>
-                <p className="excerpt">{heroRec.excerpt}</p>
+          <div className="ds-hero-item">
+            <SafeAnchor url={heroRec.url} className="wrapper" onLinkClick={this.onLinkClick}>
+              <div className="img-wrapper">
+                <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
               </div>
-              {heroRec.context ? (
-                <p className="context">{heroRec.context}</p>
-              ) : (
-                <p className="source">{heroRec.domain}</p>
-              )}
-            </div>
-            <ImpressionStats
-              campaignId={heroRec.campaignId}
-              rows={[{id: heroRec.id, pos: heroRec.pos}]}
-              dispatch={this.props.dispatch}
-              source={this.props.type} />
-          </SafeAnchor>
+              <div className="meta">
+                <div className="header-and-excerpt">
+                  <header>{heroRec.title}</header>
+                  <p className="excerpt">{heroRec.excerpt}</p>
+                </div>
+                {heroRec.context ? (
+                  <p className="context">{heroRec.context}</p>
+                ) : (
+                  <p className="source">{heroRec.domain}</p>
+                )}
+              </div>
+              <ImpressionStats
+                campaignId={heroRec.campaignId}
+                rows={[{id: heroRec.id, pos: heroRec.pos}]}
+                dispatch={this.props.dispatch}
+                source={this.props.type} />
+            </SafeAnchor>
+            <DSLinkMenu {...this.props} />
+          </div>
           <div className={`${this.props.subComponentType}`}>
             { this.props.subComponentType === `cards` ? cards : list }
           </div>

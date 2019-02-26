@@ -35,6 +35,13 @@ $excerpt-line-height: 20;
     padding-top: 50%; // 2:1 aspect ratio
   }
 
+  .ds-card-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
   .meta {
     display: flex;
     flex-direction: column;
