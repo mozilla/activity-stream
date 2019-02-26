@@ -937,44 +937,6 @@ describe("TelemetryFeed", () => {
 
       assert.calledOnce(stub);
     });
-    it("should remove the a-s telemetry pref listener", () => {
-      FakePrefs.prototype.prefs[TELEMETRY_PREF] = true;
-      instance = new TelemetryFeed();
-
-      assert.property(instance._prefs.observers, TELEMETRY_PREF);
-
-      instance.uninit();
-
-      assert.notProperty(instance._prefs.observers, TELEMETRY_PREF);
-    });
-    it("should remove the a-s ut telemetry pref listener", () => {
-      FakePrefs.prototype.prefs[EVENTS_TELEMETRY_PREF] = true;
-      instance = new TelemetryFeed();
-
-      assert.property(instance._prefs.observers, EVENTS_TELEMETRY_PREF);
-
-      instance.uninit();
-
-      assert.notProperty(instance._prefs.observers, EVENTS_TELEMETRY_PREF);
-    });
-    it("should remove the Structured Ingestion telemetry pref listener", () => {
-      FakePrefs.prototype.prefs[STRUCTURED_INGESTION_TELEMETRY_PREF] = true;
-      instance = new TelemetryFeed();
-
-      assert.property(instance._prefs.observers, STRUCTURED_INGESTION_TELEMETRY_PREF);
-
-      instance.uninit();
-
-      assert.notProperty(instance._prefs.observers, STRUCTURED_INGESTION_TELEMETRY_PREF);
-    });
-    it("should call Cu.reportError if this._prefs.ignore throws", () => {
-      globals.sandbox.stub(FakePrefs.prototype, "ignore").throws("Some Error");
-      instance = new TelemetryFeed();
-
-      instance.uninit();
-
-      assert.called(global.Cu.reportError);
-    });
     it("should make this.browserOpenNewtabStart() stop observing browser-open-newtab-start and domwindowopened", async () => {
       await instance.init();
       sandbox.spy(Services.obs, "removeObserver");
