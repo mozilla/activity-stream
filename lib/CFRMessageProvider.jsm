@@ -43,6 +43,7 @@ const CFR_MESSAGES = [
   {
     id: "FACEBOOK_CONTAINER_3",
     template: "cfr_doorhanger",
+    category: "cfrAddons",
     content: {
       bucket_id: "CFR_M1",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
@@ -94,6 +95,7 @@ const CFR_MESSAGES = [
   {
     id: "GOOGLE_TRANSLATE_3",
     template: "cfr_doorhanger",
+    category: "cfrAddons",
     content: {
       bucket_id: "CFR_M1",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
@@ -145,6 +147,7 @@ const CFR_MESSAGES = [
   {
     id: "YOUTUBE_ENHANCE_3",
     template: "cfr_doorhanger",
+    category: "cfrAddons",
     content: {
       bucket_id: "CFR_M1",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
@@ -196,6 +199,7 @@ const CFR_MESSAGES = [
   {
     id: "WIKIPEDIA_CONTEXT_MENU_SEARCH_3",
     template: "cfr_doorhanger",
+    category: "cfrAddons",
     exclude: true,
     content: {
       bucket_id: "CFR_M1",
@@ -248,6 +252,7 @@ const CFR_MESSAGES = [
   {
     id: "REDDIT_ENHANCEMENT_3",
     template: "cfr_doorhanger",
+    category: "cfrAddons",
     exclude: true,
     content: {
       bucket_id: "CFR_M1",
@@ -301,6 +306,7 @@ const CFR_MESSAGES = [
     id: "PIN_TAB",
     template: "cfr_doorhanger",
     exclude: true,
+    category: "cfrFeatures",
     content: {
       bucket_id: "CFR_PIN_TAB",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
