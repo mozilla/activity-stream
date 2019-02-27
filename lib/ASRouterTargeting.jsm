@@ -316,6 +316,11 @@ this.ASRouterTargeting = {
 
   // Combines the getter properties of two objects without evaluating them
   combineContexts(contextA = {}, contextB = {}) {
+    const sameProperty = Object.keys(contextA).find(p => Object.keys(contextB).includes(p));
+    if (sameProperty) {
+      Cu.reportError(`Property ${sameProperty} exists in both contexts and is overwritten.`);
+    }
+
     const context = {};
     Object.defineProperties(context, Object.getOwnPropertyDescriptors(contextA));
     Object.defineProperties(context, Object.getOwnPropertyDescriptors(contextB));

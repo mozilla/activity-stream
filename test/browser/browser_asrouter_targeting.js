@@ -426,6 +426,8 @@ add_task(async function check_xpinstall_enabled() {
 
 add_task(async function check_pinned_tabs() {
   await BrowserTestUtils.withNewTab({gBrowser, url: "about:blank"}, async browser => {
+    is(await ASRouterTargeting.Environment.hasPinnedTabs, false, "No pin tabs yet");
+
     let tab = gBrowser.getTabForBrowser(browser);
     gBrowser.pinTab(tab);
 
