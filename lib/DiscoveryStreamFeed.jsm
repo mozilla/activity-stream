@@ -19,6 +19,7 @@ const SPOCS_FEEDS_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
 const DEFAULT_RECS_EXPIRE_TIME = 60 * 60 * 1000; // 1 hour
 const MAX_LIFETIME_CAP = 500; // Guard against misconfiguration on the server
 const PREF_CONFIG = "discoverystream.config";
+const PREF_ENDPOINTS = "discoverystream.endpoints";
 const PREF_OPT_OUT = "discoverystream.optOut.0";
 const PREF_SHOW_SPONSORED = "showSponsored";
 const PREF_SPOC_IMPRESSIONS = "discoverystream.spoc.impressions";
@@ -88,17 +89,20 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       return null;
     }
     try {
+      // Make sure the requested endpoint is allowed
+      const allowed = this.store.getState().Prefs.values[PREF_ENDPOINTS].split(",");
+      if (!allowed.some(prefix => endpoint.startsWith(prefix))) {
+        throw new Error(`Not one of allowed prefixes (${allowed})`);
+      }
+
       const response = await fetch(endpoint, {credentials: "omit"});
       if (!response.ok) {
-        // istanbul ignore next
-        throw new Error(`${endpoint} returned unexpected status: ${response.status}`);
+        throw new Error(`Unexpected status (${response.status})`);
       }
       return response.json();
     } catch (error) {
-      // istanbul ignore next
       Cu.reportError(`Failed to fetch ${endpoint}: ${error.message}`);
     }
-    // istanbul ignore next
     return null;
   }
 
