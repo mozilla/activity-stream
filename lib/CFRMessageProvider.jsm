@@ -79,7 +79,7 @@ const CFR_MESSAGES = [
           label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
           action: {
             type: "OPEN_PREFERENCES_PAGE",
-            data: {category: "general-cfr", origin: "CFR"},
+            data: {category: "general-cfraddons", origin: "CFR"},
           },
         }],
       },
@@ -131,7 +131,7 @@ const CFR_MESSAGES = [
           label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
           action: {
             type: "OPEN_PREFERENCES_PAGE",
-            data: {category: "general-cfr", origin: "CFR"},
+            data: {category: "general-cfraddons", origin: "CFR"},
           },
         }],
       },
@@ -183,7 +183,7 @@ const CFR_MESSAGES = [
           label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
           action: {
             type: "OPEN_PREFERENCES_PAGE",
-            data: {category: "general-cfr", origin: "CFR"},
+            data: {category: "general-cfraddons", origin: "CFR"},
           },
         }],
       },
@@ -236,7 +236,7 @@ const CFR_MESSAGES = [
           label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
           action: {
             type: "OPEN_PREFERENCES_PAGE",
-            data: {category: "general-cfr", origin: "CFR"},
+            data: {category: "general-cfraddons", origin: "CFR"},
           },
         }],
       },
@@ -289,7 +289,7 @@ const CFR_MESSAGES = [
           label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
           action: {
             type: "OPEN_PREFERENCES_PAGE",
-            data: {category: "general-cfr", origin: "CFR"},
+            data: {category: "general-cfraddons", origin: "CFR"},
           },
         }],
       },
@@ -305,8 +305,8 @@ const CFR_MESSAGES = [
   {
     id: "PIN_TAB",
     template: "cfr_doorhanger",
-    exclude: true,
     category: "cfrFeatures",
+    exclude: true,
     content: {
       bucket_id: "CFR_PIN_TAB",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
@@ -332,7 +332,7 @@ const CFR_MESSAGES = [
           label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
           action: {
             type: "OPEN_PREFERENCES_PAGE",
-            data: {category: "general-cfr", origin: "CFR"},
+            data: {category: "general-cfrfeatures", origin: "CFR"},
           },
         }],
       },
