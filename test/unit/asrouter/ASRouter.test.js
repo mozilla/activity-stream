@@ -382,6 +382,44 @@ describe("ASRouter", () => {
       assert.equal(Router.state.providers.length, 1);
       assert.equal(Router.state.providers[0].id, providers[1].id);
     });
+    it("should only add the providers that are enabled", () => {
+      const providers = [
+        {id: "foo", enabled: true, categories: ["cfrFeatures", "cfrAddons"], type: "remote", url: "https://www.foo.com/"},
+      ];
+      sandbox.stub(ASRouterPreferences, "providers").value(providers);
+      sandbox.stub(ASRouterPreferences, "getUserPreference")
+        .withArgs("cfrFeatures").returns(true)
+        .withArgs("cfrAddons")
+        .returns(true);
+      Router._updateMessageProviders();
+      assert.equal(Router.state.providers.length, 1);
+      assert.equal(Router.state.providers[0].id, providers[0].id);
+    });
+    it("should only add the providers that are enabled", () => {
+      const providers = [
+        {id: "foo", enabled: true, categories: ["cfrFeatures", "cfrAddons"], type: "remote", url: "https://www.foo.com/"},
+      ];
+      sandbox.stub(ASRouterPreferences, "providers").value(providers);
+      sandbox.stub(ASRouterPreferences, "getUserPreference")
+        .withArgs("cfrFeatures").returns(false)
+        .withArgs("cfrAddons")
+        .returns(true);
+      Router._updateMessageProviders();
+      assert.equal(Router.state.providers.length, 1);
+      assert.equal(Router.state.providers[0].id, providers[0].id);
+    });
+    it("should only add the providers that are enabled", () => {
+      const providers = [
+        {id: "foo", enabled: true, categories: ["cfrFeatures", "cfrAddons"], type: "remote", url: "https://www.foo.com/"},
+      ];
+      sandbox.stub(ASRouterPreferences, "providers").value(providers);
+      sandbox.stub(ASRouterPreferences, "getUserPreference")
+        .withArgs("cfrFeatures").returns(false)
+        .withArgs("cfrAddons")
+        .returns(false);
+      Router._updateMessageProviders();
+      assert.equal(Router.state.providers.length, 0);
+    });
   });
 
   describe("blocking", () => {
