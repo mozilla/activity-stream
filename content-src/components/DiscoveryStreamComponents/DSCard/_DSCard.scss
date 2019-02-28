@@ -10,11 +10,11 @@ $excerpt-line-height: 20;
   position: relative;
 
   &:hover {
-    @include dark-theme-only {
-      background: $grey-70;
-    }
-
     header {
+      @include dark-theme-only {
+        color: $blue-40;
+      }
+
       color: $blue-60;
     }
   }
@@ -59,7 +59,7 @@ $excerpt-line-height: 20;
     .context,
     .source {
       @include dark-theme-only {
-        color: $teal-60;
+        color: $teal-10;
       }
 
       font-size: 13px;
@@ -69,7 +69,7 @@ $excerpt-line-height: 20;
 
   header {
     @include dark-theme-only {
-      color: $blue-40;
+      color: $grey-10;
     }
 
     line-height: $header-line-height * 1px;

@@ -95,6 +95,10 @@ $item-line-height: 20;
     padding-inline-start: $counter-padded-size;
 
     &::before {
+      @include dark-theme-only {
+        background-color: $teal-70;
+      }
+
       background-color: $pocket-teal;
       border-radius: $counter-size;
       color: $white;
@@ -110,10 +114,18 @@ $item-line-height: 20;
     }
 
     &:hover::before {
+      @include dark-theme-only {
+        background-color: $blue-40;
+      }
+
       background-color: $blue-40;
     }
 
     &:active::before {
+      @include dark-theme-only {
+        background-color: $blue-60;
+      }
+
       background-color: $blue-70;
     }
   }
