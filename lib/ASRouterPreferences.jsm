@@ -56,6 +56,8 @@ class _ASRouterPreferences {
     }, []);
   }
 
+  // XXX Bug 1531734
+  // Required for 67 when the pref change will happen
   _migratePrefs() {
     for (let [oldPref, newPref] of MIGRATE_PREFS) {
       if (!Services.prefs.prefHasUserValue(oldPref)) {
@@ -63,6 +65,7 @@ class _ASRouterPreferences {
       }
       // If the pref was user modified we assume it was set to false
       const oldValue = Services.prefs.getBoolPref(oldPref, false);
+      Services.prefs.clearUserPref(oldPref);
       Services.prefs.setBoolPref(newPref, oldValue);
     }
   }

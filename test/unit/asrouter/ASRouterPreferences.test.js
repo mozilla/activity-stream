@@ -310,6 +310,7 @@ describe("ASRouterPreferences", () => {
   describe("_migratePrefs", () => {
     beforeEach(() => {
       sandbox.stub(global.Services.prefs, "setBoolPref");
+      sandbox.stub(global.Services.prefs, "clearUserPref");
     });
     it("should not do anything if userpref was not modified", () => {
       ASRouterPreferences.init();
@@ -326,6 +327,8 @@ describe("ASRouterPreferences", () => {
       assert.calledWith(global.Services.prefs.getBoolPref, "browser.newtabpage.activity-stream.asrouter.userprefs.cfr");
       assert.calledOnce(global.Services.prefs.setBoolPref);
       assert.calledWith(global.Services.prefs.setBoolPref, CFR_USER_PREF_ADDONS, false);
+      assert.calledOnce(global.Services.prefs.clearUserPref);
+      assert.calledWith(global.Services.prefs.clearUserPref, "browser.newtabpage.activity-stream.asrouter.userprefs.cfr");
     });
   });
 });
