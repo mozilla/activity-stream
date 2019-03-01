@@ -424,11 +424,11 @@ describe("DiscoveryStreamFeed", () => {
     });
   });
 
-  describe("#clearCache", () => {
+  describe("#resetCache", () => {
     it("should set .layout, .feeds and .spocs to {}", async () => {
       sandbox.stub(feed.cache, "set").returns(Promise.resolve());
 
-      await feed.clearCache();
+      await feed.resetCache();
 
       assert.calledThrice(feed.cache.set);
       const {firstCall} = feed.cache.set;
@@ -828,12 +828,12 @@ describe("DiscoveryStreamFeed", () => {
       feed._prefCache = {};
       setPref(CONFIG_PREF_NAME, {enabled: true});
 
-      sandbox.stub(feed, "clearCache").returns(Promise.resolve());
+      sandbox.stub(feed, "resetCache").returns(Promise.resolve());
       sandbox.stub(feed, "loadLayout").returns(Promise.resolve());
       await feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_CHANGE});
 
       assert.calledOnce(feed.loadLayout);
-      assert.calledOnce(feed.clearCache);
+      assert.calledOnce(feed.resetCache);
       assert.isTrue(feed.loaded);
     });
     it("should clear the cache if a config change happens and config.enabled is true", async () => {
@@ -842,14 +842,14 @@ describe("DiscoveryStreamFeed", () => {
       feed._prefCache = {};
       setPref(CONFIG_PREF_NAME, {enabled: true});
 
-      sandbox.stub(feed, "clearCache").returns(Promise.resolve());
+      sandbox.stub(feed, "resetCache").returns(Promise.resolve());
       await feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_CHANGE});
 
-      assert.calledOnce(feed.clearCache);
+      assert.calledOnce(feed.resetCache);
     });
     it("should dispatch DISCOVERY_STREAM_LAYOUT_RESET from DISCOVERY_STREAM_CONFIG_CHANGE", async () => {
-      sandbox.stub(feed, "clearImpressionPrefs");
-      sandbox.stub(feed, "clearCache").resolves();
+      sandbox.stub(feed, "resetImpressionPrefs");
+      sandbox.stub(feed, "resetCache").resolves();
       sandbox.stub(feed, "enable").resolves();
       setPref(CONFIG_PREF_NAME, {enabled: true});
       sandbox.spy(feed.store, "dispatch");
@@ -871,12 +871,12 @@ describe("DiscoveryStreamFeed", () => {
 
       feed._prefCache = {};
       setPref(CONFIG_PREF_NAME, {enabled: false});
-      sandbox.stub(feed, "clearCache").returns(Promise.resolve());
+      sandbox.stub(feed, "resetCache").returns(Promise.resolve());
       sandbox.stub(feed, "loadLayout").returns(Promise.resolve());
       await feed.onAction({type: at.DISCOVERY_STREAM_CONFIG_CHANGE});
 
       assert.notCalled(feed.loadLayout);
-      assert.calledOnce(feed.clearCache);
+      assert.calledOnce(feed.resetCache);
       assert.isFalse(feed.loaded);
     });
   });
