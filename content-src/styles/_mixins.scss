@@ -21,3 +21,19 @@
     @content;
   }
 }
+
+@mixin ds-border-top {
+  @include dark-theme-only {
+    border-top: 1px solid $grey-60;
+  }
+
+  border-top: 1px solid $grey-30;
+}
+
+@mixin ds-border-bottom {
+  @include dark-theme-only {
+    border-bottom: 1px solid $grey-60;
+  }
+
+  border-bottom: 1px solid $grey-30;
+}

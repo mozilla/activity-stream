@@ -1,5 +1,5 @@
 .ds-hr {
+  @include ds-border-top;
   border: 0;
   height: 0;
-  border-top: $border-secondary;
 }

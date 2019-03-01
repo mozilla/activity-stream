@@ -10,7 +10,7 @@ $item-line-height: 20;
 // set up, which means that some refactoring will be required to do this.
 @mixin bottom-border-except-last-grid-row($columns) {
   .ds-list-item:not(:nth-last-child(-n+#{$columns})) {
-    border-bottom: $border-secondary;
+    @include ds-border-bottom;
     margin-bottom: -1px;  // cancel out the pixel we used for the border
     padding-bottom: $bordered-spacing;
   }
@@ -132,7 +132,7 @@ $item-line-height: 20;
 }
 
 .ds-list-borders {
-  border-top: $border-secondary;
+  @include ds-border-top;
   grid-row-gap: $bordered-spacing;
   padding-top: $bordered-spacing;
 
