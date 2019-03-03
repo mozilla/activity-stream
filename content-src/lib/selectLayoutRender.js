@@ -58,13 +58,17 @@ export const selectLayoutRender = createSelector(
           };
         }
 
-        // loop through `component` cards/items
         data = maybeInjectSpocs(data, component.spocs);
 
-        const items = Math.min(component.properties.items || 0, data.recommendations.length);
+        let items = 0;
+        if (component.properties && component.properties.items) {
+          items = Math.min(component.properties.items, data.recommendations.length);
+        }
+
+        // loop through a component items
         // Store the items position sequentially for multiple components of the same type.
+        // Example: A second card grid starts pos offset from the last card grid.
         for (let i = 0; i < items; i++) {
-          // plus plus the pos sequentially for all types of this component, so the second card grid starts offset from the first.
           data.recommendations[i].pos = positions[component.type]++;
         }
 
