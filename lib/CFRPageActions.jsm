@@ -221,107 +221,11 @@ class PageAction {
     return subAttribute ? mainString.attributes[subAttribute] : mainString;
   }
 
-  async _showCFRFeatureRecommendation(id, content, browser) { // eslint-disable-line max-statements
-    // A hacky way of setting the popup anchor outside the usual url bar icon box
-    // See https://searchfox.org/mozilla-central/rev/847b64cc28b74b44c379f9bff4f415b97da1c6d7/toolkit/modules/PopupNotifications.jsm#42
-    browser.cfrpopupnotificationanchor = this.container;
-
-    const headerLabel = this.window.document.getElementById("cfr-notification-header-label");
-    const headerImage = this.window.document.getElementById("cfr-notification-header-image");
-    const footerText = this.window.document.getElementById("cfr-notification-footer-text");
-    const footerUsers = this.window.document.getElementById("cfr-notification-footer-users");
-    const footerSpacer = this.window.document.getElementById("cfr-notification-footer-spacer");
-    const footerLink = this.window.document.getElementById("cfr-notification-footer-learn-more-link");
-
-    headerLabel.value = await this.getStrings(content.heading_text);
-    // Removing the element affects the height of the header
-    headerImage.style.visibility = "hidden";
-
-    footerText.textContent = await this.getStrings(content.text);
-    // Prevent whitespace around empty label from affecting other spacing
-    footerUsers.setAttribute("hidden", true);
-    footerSpacer.setAttribute("hidden", true);
-
-    footerLink.value = await this.getStrings({string_id: "cfr-doorhanger-extension-learn-more-link"});
-    footerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "LEARN_MORE"});
-
-    const {primary, secondary} = content.buttons;
-    const primaryBtnStrings = await this.getStrings(primary.label);
-
-    // For each secondary action, get the strings and attributes
-    const secondaryBtnStrings = [];
-    for (let button of secondary) {
-      let label = await this.getStrings(button.label);
-      secondaryBtnStrings.push({label, attributes: label.attributes});
-    }
-
-    const mainAction = {
-      label: primaryBtnStrings,
-      accessKey: primaryBtnStrings.attributes.accesskey,
-      callback: () => {
-        this._blockMessage(id);
-        this.dispatchUserAction(primary.action);
-        this.hide();
-        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "PIN_CURRENT_TAB"});
-        RecommendationMap.delete(browser);
-      },
-    };
-
-    const secondaryActions = [{
-      label: secondaryBtnStrings[0].label,
-      accessKey: secondaryBtnStrings[0].attributes.accesskey,
-      callback: () => {
-        this.dispatchUserAction(secondary[0].action);
-        this.hide();
-        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "DISMISS"});
-        RecommendationMap.delete(browser);
-      },
-    }, {
-      label: secondaryBtnStrings[1].label,
-      accessKey: secondaryBtnStrings[1].attributes.accesskey,
-      callback: () => {
-        this._blockMessage(id);
-        this.hide();
-        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "BLOCK"});
-        RecommendationMap.delete(browser);
-      },
-    }, {
-      label: secondaryBtnStrings[2].label,
-      accessKey: secondaryBtnStrings[2].attributes.accesskey,
-      callback: () => {
-        this.dispatchUserAction(secondary[2].action);
-        this.hide();
-        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "MANAGE"});
-        RecommendationMap.delete(browser);
-      },
-    }];
-
-    const options = {
-      hideClose: true,
-      eventCallback: this._popupStateChange,
-    };
-
-    this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "CLICK_DOORHANGER"});
-    this.currentNotification = this.window.PopupNotifications.show(
-      browser,
-      POPUP_NOTIFICATION_ID,
-      await this.getStrings(content.heading_text),
-      "cfr",
-      mainAction,
-      secondaryActions,
-      options
-    );
-
-    // XXX Hide the body of the notification which normally contains the
-    // addon icon, name and author
-    this.window.document.querySelector(".popup-notification-body-container").setAttribute("hidden", true);
-  }
-
   /**
    * Respond to a user click on the recommendation by showing a doorhanger/
    * popup notification
    */
-  async _handleClick(event) {
+  async _handleClick(event) { // eslint-disable-line max-statements
     const browser = this.window.gBrowser.selectedBrowser;
     if (!RecommendationMap.has(browser)) {
       // There's no recommendation for this browser, so the user shouldn't have
@@ -334,14 +238,7 @@ class PageAction {
     // The recommendation should remain either collapsed or expanded while the
     // doorhanger is showing
     this._clearScheduledStateChanges();
-    if (content.addon) {
-      await this._showCFRAddonRecommendation(id, content, browser);
-    } else {
-      await this._showCFRFeatureRecommendation(id, content, browser);
-    }
-  }
 
-  async _showCFRAddonRecommendation(id, content, browser) { // eslint-disable-line max-statements
     // A hacky way of setting the popup anchor outside the usual url bar icon box
     // See https://searchfox.org/mozilla-central/rev/847b64cc28b74b44c379f9bff4f415b97da1c6d7/toolkit/modules/PopupNotifications.jsm#42
     browser.cfrpopupnotificationanchor = this.container;
