@@ -4,7 +4,7 @@
 "use strict";
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-const {Localization} = ChromeUtils.import("resource://gre/modules/Localization.jsm");
+const {DOMLocalization} = ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm");
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
@@ -52,7 +52,7 @@ class PageAction {
     this._showPopupOnClick = this._showPopupOnClick.bind(this);
     this.dispatchUserAction = this.dispatchUserAction.bind(this);
 
-    this._l10n = new Localization([
+    this._l10n = new DOMLocalization([
       "browser/newtab/asrouter.ftl",
     ]);
 
@@ -221,32 +221,17 @@ class PageAction {
     return subAttribute ? mainString.attributes[subAttribute] : mainString;
   }
 
-  async _renderPopup(message, browser) { // eslint-disable-line max-statements
-    const {id, content} = message;
-
-    const headerLabel = this.window.document.getElementById("cfr-notification-header-label");
-    const headerLink = this.window.document.getElementById("cfr-notification-header-link");
-    const headerImage = this.window.document.getElementById("cfr-notification-header-image");
+  async _setAddonAuthorAndRating(document, content) {
     const author = this.window.document.getElementById("cfr-notification-author");
-    const footerText = this.window.document.getElementById("cfr-notification-footer-text");
     const footerFilledStars = this.window.document.getElementById("cfr-notification-footer-filled-stars");
     const footerEmptyStars = this.window.document.getElementById("cfr-notification-footer-empty-stars");
     const footerUsers = this.window.document.getElementById("cfr-notification-footer-users");
     const footerSpacer = this.window.document.getElementById("cfr-notification-footer-spacer");
-    const footerLink = this.window.document.getElementById("cfr-notification-footer-learn-more-link");
-
-    headerLabel.value = await this.getStrings(content.heading_text);
-    headerLink.setAttribute("href", SUMO_BASE_URL + content.info_icon.sumo_path);
-    headerLink.setAttribute(this.window.RTL_UI ? "left" : "right", 0);
-    headerImage.setAttribute("tooltiptext", await this.getStrings(content.info_icon.label, "tooltiptext"));
-    headerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "RATIONALE"});
 
     author.textContent = await this.getStrings({
       string_id: "cfr-doorhanger-extension-author",
       args: {name: content.addon.author},
     });
-
-    footerText.textContent = await this.getStrings(content.text);
 
     const {rating} = content.addon;
     if (rating) {
@@ -288,13 +273,85 @@ class PageAction {
     } else {
       footerSpacer.setAttribute("hidden", true);
     }
+  }
 
-    footerLink.value = await this.getStrings({string_id: "cfr-doorhanger-extension-learn-more-link"});
-    footerLink.setAttribute("href", content.addon.amo_url);
-    footerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "LEARN_MORE"});
+  async _renderPopup(message, browser) {
+    const {id, content} = message;
 
+    const headerLabel = this.window.document.getElementById("cfr-notification-header-label");
+    const headerLink = this.window.document.getElementById("cfr-notification-header-link");
+    const headerImage = this.window.document.getElementById("cfr-notification-header-image");
+    const footerText = this.window.document.getElementById("cfr-notification-footer-text");
+    const footerLink = this.window.document.getElementById("cfr-notification-footer-learn-more-link");
     const {primary, secondary} = content.buttons;
+    let primaryActionCallback;
+    let options = {};
+    let panelTitle;
+
+    // Use the message category as a CSS selector to hide different parts of the
+    // notification template markup
+    this.window.document.getElementById("contextual-feature-recommendation-notification")
+      .setAttribute("data-notification-category", message.content.category);
+
+    headerLabel.value = await this.getStrings(content.heading_text);
+    headerLink.setAttribute("href", SUMO_BASE_URL + content.info_icon.sumo_path);
+    headerLink.setAttribute(this.window.RTL_UI ? "left" : "right", 0);
+    headerImage.setAttribute("tooltiptext", await this.getStrings(content.info_icon.label, "tooltiptext"));
+    headerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "RATIONALE"});
+
+    footerText.textContent = await this.getStrings(content.text);
+
+    if (content.addon) {
+      await this._setAddonAuthorAndRating(this.window.document, content);
+      panelTitle = await this.getStrings(content.addon.title);
+      options = {popupIconURL: content.addon.icon};
+
+      footerLink.value = await this.getStrings({string_id: "cfr-doorhanger-extension-learn-more-link"});
+      footerLink.setAttribute("href", content.addon.amo_url);
+      footerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "LEARN_MORE"});
+
+      primaryActionCallback = async () => {
+        primary.action.data.url = await CFRPageActions._fetchLatestAddonVersion(content.addon.id); // eslint-disable-line no-use-before-define
+        this._blockMessage(id);
+        this.dispatchUserAction(primary.action);
+        this.hideAddressBarNotifier();
+        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "INSTALL"});
+        RecommendationMap.delete(browser);
+      };
+    } else {
+      const stepsContainerId = "cfr-notification-feature-steps";
+      let stepsContainer = this.window.document.getElementById(stepsContainerId);
+      primaryActionCallback = () => {
+        this._blockMessage(id);
+        this.dispatchUserAction(primary.action);
+        this.hideAddressBarNotifier();
+        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "PIN"});
+        RecommendationMap.delete(browser);
+      };
+      panelTitle = await this.getStrings(content.heading_text);
+
+      if (stepsContainer) { // If it exists we need to empty it
+        stepsContainer.remove();
+        stepsContainer = stepsContainer.cloneNode(false);
+      } else {
+        stepsContainer = this.window.document.createElement("vbox");
+        stepsContainer.setAttribute("id", stepsContainerId);
+      }
+      footerText.parentNode.appendChild(stepsContainer);
+      for (let step of content.descriptionDetails.steps) {
+        const li = this.window.document.createElement("li");
+        this._l10n.setAttributes(li, step.string_id);
+        stepsContainer.appendChild(li);
+      }
+      await this._l10n.translateElements([...stepsContainer.children]);
+    }
+
     const primaryBtnStrings = await this.getStrings(primary.label);
+    const mainAction = {
+      label: primaryBtnStrings,
+      accessKey: primaryBtnStrings.attributes.accesskey,
+      callback: primaryActionCallback,
+    };
 
     // For each secondary action, get the strings and attributes
     const secondaryBtnStrings = [];
@@ -302,20 +359,6 @@ class PageAction {
       let label = await this.getStrings(button.label);
       secondaryBtnStrings.push({label, attributes: label.attributes});
     }
-
-    const mainAction = {
-      label: primaryBtnStrings,
-      accessKey: primaryBtnStrings.attributes.accesskey,
-      callback: async () => {
-        primary.action.data.url = await CFRPageActions._fetchLatestAddonVersion(content.addon.id); // eslint-disable-line no-use-before-define
-        this._blockMessage(id);
-        this.dispatchUserAction(primary.action);
-        this.hideAddressBarNotifier();
-        this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "INSTALL"});
-        RecommendationMap.delete(browser);
-      },
-    };
-
     const secondaryActions = [{
       label: secondaryBtnStrings[0].label,
       accessKey: secondaryBtnStrings[0].attributes.accesskey,
@@ -341,21 +384,19 @@ class PageAction {
       },
     }];
 
-    const options = {
-      popupIconURL: content.addon.icon,
-      hideClose: true,
-      eventCallback: this._popupStateChange,
-    };
-
     // Actually show the notification
     this.currentNotification = this.window.PopupNotifications.show(
       browser,
       POPUP_NOTIFICATION_ID,
-      await this.getStrings(content.addon.title),
+      panelTitle,
       "cfr",
       mainAction,
       secondaryActions,
-      options
+      {
+        ...options,
+        hideClose: true,
+        eventCallback: this._popupStateChange,
+      }
     );
   }
 
