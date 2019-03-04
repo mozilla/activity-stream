@@ -382,7 +382,7 @@ describe("ASRouter", () => {
       assert.equal(Router.state.providers.length, 1);
       assert.equal(Router.state.providers[0].id, providers[1].id);
     });
-    it("should only add the providers that are enabled", () => {
+    it("should return provider `foo` because both categories are enabled", () => {
       const providers = [
         {id: "foo", enabled: true, categories: ["cfrFeatures", "cfrAddons"], type: "remote", url: "https://www.foo.com/"},
       ];
@@ -395,7 +395,7 @@ describe("ASRouter", () => {
       assert.equal(Router.state.providers.length, 1);
       assert.equal(Router.state.providers[0].id, providers[0].id);
     });
-    it("should only add the providers that are enabled", () => {
+    it("should return provider `foo` because at least 1 category is enabled", () => {
       const providers = [
         {id: "foo", enabled: true, categories: ["cfrFeatures", "cfrAddons"], type: "remote", url: "https://www.foo.com/"},
       ];
@@ -408,7 +408,7 @@ describe("ASRouter", () => {
       assert.equal(Router.state.providers.length, 1);
       assert.equal(Router.state.providers[0].id, providers[0].id);
     });
-    it("should only add the providers that are enabled", () => {
+    it("should not return provider `foo` because no categories are enabled", () => {
       const providers = [
         {id: "foo", enabled: true, categories: ["cfrFeatures", "cfrAddons"], type: "remote", url: "https://www.foo.com/"},
       ];
