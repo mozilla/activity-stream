@@ -63,6 +63,10 @@ class _ASRouterPreferences {
       if (!Services.prefs.prefHasUserValue(oldPref)) {
         continue;
       }
+      if (Services.prefs.prefHasUserValue(newPref)) {
+        Services.prefs.clearUserPref(oldPref);
+        continue;
+      }
       // If the pref was user modified we assume it was set to false
       const oldValue = Services.prefs.getBoolPref(oldPref, false);
       Services.prefs.clearUserPref(oldPref);

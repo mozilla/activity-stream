@@ -318,8 +318,20 @@ describe("ASRouterPreferences", () => {
       assert.notCalled(global.Services.prefs.getBoolPref);
       assert.notCalled(global.Services.prefs.setBoolPref);
     });
-    it("should migrate userprefs.cfr", () => {
+    it("should not do migration if newPref was modified", () => {
       sandbox.stub(global.Services.prefs, "prefHasUserValue").returns(true);
+
+      ASRouterPreferences.init();
+
+      assert.notCalled(global.Services.prefs.getBoolPref);
+      assert.notCalled(global.Services.prefs.setBoolPref);
+      assert.calledOnce(global.Services.prefs.clearUserPref);
+      assert.calledWith(global.Services.prefs.clearUserPref, "browser.newtabpage.activity-stream.asrouter.userprefs.cfr");
+    });
+    it("should migrate userprefs.cfr", () => {
+      const hasUserValueStub = sandbox.stub(global.Services.prefs, "prefHasUserValue");
+      hasUserValueStub.onCall(0).returns(true);
+      hasUserValueStub.returns(false);
 
       ASRouterPreferences.init();
 
