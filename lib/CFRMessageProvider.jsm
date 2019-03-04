@@ -43,8 +43,8 @@ const CFR_MESSAGES = [
   {
     id: "FACEBOOK_CONTAINER_3",
     template: "cfr_doorhanger",
-    category: "cfrAddons",
     content: {
+      category: "cfrAddons",
       bucket_id: "CFR_M1",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
       heading_text: {string_id: "cfr-doorhanger-extension-heading"},
@@ -95,8 +95,8 @@ const CFR_MESSAGES = [
   {
     id: "GOOGLE_TRANSLATE_3",
     template: "cfr_doorhanger",
-    category: "cfrAddons",
     content: {
+      category: "cfrAddons",
       bucket_id: "CFR_M1",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
       heading_text: {string_id: "cfr-doorhanger-extension-heading"},
@@ -147,8 +147,8 @@ const CFR_MESSAGES = [
   {
     id: "YOUTUBE_ENHANCE_3",
     template: "cfr_doorhanger",
-    category: "cfrAddons",
     content: {
+      category: "cfrAddons",
       bucket_id: "CFR_M1",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
       heading_text: {string_id: "cfr-doorhanger-extension-heading"},
@@ -199,9 +199,9 @@ const CFR_MESSAGES = [
   {
     id: "WIKIPEDIA_CONTEXT_MENU_SEARCH_3",
     template: "cfr_doorhanger",
-    category: "cfrAddons",
     exclude: true,
     content: {
+      category: "cfrAddons",
       bucket_id: "CFR_M1",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
       heading_text: {string_id: "cfr-doorhanger-extension-heading"},
@@ -252,9 +252,9 @@ const CFR_MESSAGES = [
   {
     id: "REDDIT_ENHANCEMENT_3",
     template: "cfr_doorhanger",
-    category: "cfrAddons",
     exclude: true,
     content: {
+      category: "cfrAddons",
       bucket_id: "CFR_M1",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
       heading_text: {string_id: "cfr-doorhanger-extension-heading"},
@@ -305,9 +305,9 @@ const CFR_MESSAGES = [
   {
     id: "PIN_TAB",
     template: "cfr_doorhanger",
-    category: "cfrFeatures",
     exclude: true,
     content: {
+      category: "cfrFeatures",
       bucket_id: "CFR_PIN_TAB",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},
       heading_text: {string_id: "cfr-doorhanger-pintab-heading"},
@@ -315,7 +315,14 @@ const CFR_MESSAGES = [
         label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path,
       },
-      text: "Get easy access to your most-used sites. Keep sites open in a tab (even when you restart).",
+      text: {string_id: "cfr-doorhanger-pintab-description"},
+      descriptionDetails: {
+        steps: [
+          {"string_id": "cfr-doorhanger-pintab-step1"},
+          {"string_id": "cfr-doorhanger-pintab-step2"},
+          {"string_id": "cfr-doorhanger-pintab-step3"},
+        ],
+      },
       buttons: {
         primary: {
           label: {string_id: "cfr-doorhanger-pintab-ok-button"},
@@ -337,7 +344,8 @@ const CFR_MESSAGES = [
         }],
       },
     },
-    targeting: `!hasPinnedTabs && recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 1)]|length >= 1`,
+    frequency: {lifetime: 3},
+    targeting: `!hasPinnedTabs && recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 1)]|length >= 5`,
     trigger: {id: "frequentVisits", params: PINNED_TABS_TARGET_SITES},
   },
 ];
