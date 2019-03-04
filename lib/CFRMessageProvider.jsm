@@ -315,7 +315,14 @@ const CFR_MESSAGES = [
         label: {string_id: "cfr-doorhanger-extension-sumo-link"},
         sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path,
       },
-      text: "Get easy access to your most-used sites. Keep sites open in a tab (even when you restart).",
+      text: {string_id: "cfr-doorhanger-pintab-description"},
+      descriptionDetails: {
+        steps: [
+          {"string_id": "cfr-doorhanger-pintab-step1"},
+          {"string_id": "cfr-doorhanger-pintab-step2"},
+          {"string_id": "cfr-doorhanger-pintab-step3"},
+        ],
+      },
       buttons: {
         primary: {
           label: {string_id: "cfr-doorhanger-pintab-ok-button"},

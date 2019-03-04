@@ -166,6 +166,26 @@
         }
       ]
     },
+    "descriptionDetails": {
+      "description": "Additional information and steps on how to use",
+      "type": "object",
+      "properties": {
+        "steps": {
+          "description": "Array of messages or string_ids",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "string_id": {
+                "type": "string",
+                "description": "Id of string to localized addon description"
+              }
+            }
+          }
+        }
+      },
+      "required": ["steps"]
+    },
     "buttons": {
       "description": "The label and functionality for the buttons in the pop-over.",
       "type": "object",
