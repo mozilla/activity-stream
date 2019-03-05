@@ -29,6 +29,9 @@ describe("CFRPageActions", () => {
     "cfr-notification-footer-spacer",
     "cfr-notification-footer-learn-more-link",
   ];
+  const elementClassNames = [
+    "popup-notification-body-container",
+  ];
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
@@ -51,6 +54,9 @@ describe("CFRPageActions", () => {
           rating: 4.2,
           users: 1234,
           amo_url: "a_path_to_amo",
+        },
+        descriptionDetails: {
+          steps: [{string_id: "cfr-features-step1"}],
         },
         text: "Here is the recommendation text body",
         buttons: {
@@ -86,7 +92,7 @@ describe("CFRPageActions", () => {
 
     globals = new GlobalOverrider();
     globals.set({
-      Localization: class {},
+      DOMLocalization: class {},
       promiseDocumentFlushed: sandbox.stub().callsFake(fn => Promise.resolve(fn())),
       PopupNotifications: {
         show: sandbox.stub(),
@@ -105,6 +111,12 @@ describe("CFRPageActions", () => {
       elem.setAttribute("id", id);
       containerElem.appendChild(elem);
       elements[id] = elem;
+    }
+    for (const className of elementClassNames) {
+      const elem = document.createElement("div");
+      elem.setAttribute("class", className);
+      containerElem.appendChild(elem);
+      elements[className] = elem;
     }
   });
 
@@ -341,7 +353,7 @@ describe("CFRPageActions", () => {
         formatMessagesStub = sandbox.stub()
           .withArgs({id: "hello_world"})
           .resolves(localeStrings);
-        global.Localization.prototype.formatMessages = formatMessagesStub;
+        global.DOMLocalization.prototype.formatMessages = formatMessagesStub;
       });
 
       it("should return the argument if a string_id is not defined", async () => {
@@ -398,6 +410,7 @@ describe("CFRPageActions", () => {
     });
 
     describe("#_showPopupOnClick", () => {
+      let translateElementsStub;
       beforeEach(async () => {
         CFRPageActions.PageActionMap.set(fakeBrowser.ownerGlobal, pageAction);
         await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, fakeRecommendation, dispatchStub);
@@ -414,6 +427,9 @@ describe("CFRPageActions", () => {
           .resolves("Learn more")
           .withArgs(sinon.match({string_id: "cfr-doorhanger-extension-total-users"}))
           .callsFake(async ({args}) => `${args.total} users`); // eslint-disable-line max-nested-callbacks
+
+        translateElementsStub = sandbox.stub().resolves();
+        global.DOMLocalization.prototype.translateElements = translateElementsStub;
       });
 
       it("should call `.hideAddressBarNotifier` and do nothing if there is no recommendation for the selected browser", async () => {
@@ -590,6 +606,36 @@ describe("CFRPageActions", () => {
             eventCallback: pageAction._popupStateChange,
           }
         );
+      });
+      it("should show the bullet list details", async () => {
+        delete fakeRecommendation.content.addon;
+        await pageAction._showPopupOnClick();
+
+        assert.calledOnce(translateElementsStub);
+      });
+      it("should set the data-l10n-id on the list element", async () => {
+        delete fakeRecommendation.content.addon;
+        await pageAction._showPopupOnClick();
+
+        assert.calledOnce(translateElementsStub);
+        assert.equal(translateElementsStub.firstCall.args[0][0].dataset.l10nId, fakeRecommendation.content.descriptionDetails.steps[0].string_id);
+      });
+      it("should hide popup-notification-body-container", async () => {
+        delete fakeRecommendation.content.addon;
+        await pageAction._showPopupOnClick();
+
+        assert.equal(elements["popup-notification-body-container"].getAttribute("hidden"), "true");
+      });
+      it("should send PIN event on primary action click", async () => {
+        sandbox.stub(pageAction, "_sendTelemetry");
+        delete fakeRecommendation.content.addon;
+        await pageAction._showPopupOnClick();
+
+        const [, , , , {callback}] = global.PopupNotifications.show.firstCall.args;
+        callback();
+
+        // First call is triggered by `_showPopupOnClick`
+        assert.propertyVal(pageAction._sendTelemetry.secondCall.args[0], "event", "PIN");
       });
     });
   });
