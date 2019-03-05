@@ -96,9 +96,9 @@ export class Hero extends React.PureComponent {
               index={this.props.index}
               dispatch={this.props.dispatch}
               intl={this.props.intl}
-              url={heroRec.domain}
-              title={this.props.title}
-              source={this.props.source}
+              url={heroRec.url}
+              title={heroRec.title}
+              source={heroRec.domain}
               type={this.props.type} />
           </div>
           <div className={`${this.props.subComponentType}`}>
