@@ -14,6 +14,7 @@ ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
 const SUMO_BASE_URL = Services.urlFormatter.formatURLPref("app.support.baseURL");
 const ADDONS_API_URL = "https://services.addons.mozilla.org/api/v3/addons/addon";
+const ANIMATIONS_ENABLED_PREF = "toolkit.cosmeticAnimations.enabled";
 
 const DELAY_BEFORE_EXPAND_MS = 1000;
 
@@ -275,6 +276,50 @@ class PageAction {
     }
   }
 
+  _createElement({type, id}, parent) {
+    let element = this.window.document.createElement(type);
+    if (id) {
+      element.setAttribute("id", id);
+    }
+    parent.appendChild(element);
+    return element;
+  }
+
+  async _renderPinTabAnimation() {
+    const footer = this.window.document.getElementById("cfr-notification-footer");
+    const ANIMATION_CONTAINER_ID = "cfr-notification-footer-pintab-animation-container";
+    let animationsEnabled = Services.prefs.getBoolPref(ANIMATIONS_ENABLED_PREF, true);
+    let animationContainer = this.window.document.getElementById(ANIMATION_CONTAINER_ID);
+    if (animationContainer) {
+      animationContainer.toggleAttribute("animate", animationsEnabled);
+      animationContainer.removeAttribute("paused");
+    } else {
+      animationContainer = this._createElement({type: "vbox", id: ANIMATION_CONTAINER_ID}, footer);
+      animationContainer.toggleAttribute("animate", animationsEnabled);
+
+      // spacer
+      this._createElement("vbox", animationContainer).setAttribute("flex", 1);
+
+      let controlsContainer = this._createElement({type: "hbox", id: "cfr-notification-footer-animation-controls"}, animationContainer);
+
+      // spacer
+      this._createElement({type: "vbox"}, controlsContainer).setAttribute("flex", 1);
+
+      let pauseButton = this._createElement({type: "hbox", id: "cfr-notification-footer-pause-button"}, controlsContainer);
+      let onPauseClick = () => { animationContainer.setAttribute("paused", true); };
+      pauseButton.addEventListener("click", onPauseClick);
+      this.window.addEventListener("unload", () => {
+        pauseButton.removeEventListener("click", onPauseClick);
+      }, {once: true});
+
+      let pauseLabel = this._createElement({type: "label", id: "cfr-notification-footer-pause-label"}, pauseButton);
+      pauseLabel.textContent = await this.getStrings({"string_id": "cfr-doorhanger-pintab-animation-pause"});
+
+      // pause icon
+      this._createElement({type: "image", id: "cfr-notification-footer-pause-icon"}, pauseButton);
+    }
+  }
+
   async _renderPopup(message, browser) {
     const {id, content} = message;
 
@@ -344,6 +389,8 @@ class PageAction {
         stepsContainer.appendChild(li);
       }
       await this._l10n.translateElements([...stepsContainer.children]);
+
+      await this._renderPinTabAnimation();
     }
 
     const primaryBtnStrings = await this.getStrings(primary.label);
