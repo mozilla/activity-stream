@@ -4,7 +4,7 @@
 "use strict";
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-const {Localization} = ChromeUtils.import("resource://gre/modules/Localization.jsm");
+const {DOMLocalization} = ChromeUtils.import("resource://gre/modules/DOMLocalization.jsm");
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
@@ -52,7 +52,7 @@ class PageAction {
     this._showPopupOnClick = this._showPopupOnClick.bind(this);
     this.dispatchUserAction = this.dispatchUserAction.bind(this);
 
-    this._l10n = new Localization([
+    this._l10n = new DOMLocalization([
       "browser/newtab/asrouter.ftl",
     ]);
 
@@ -328,21 +328,23 @@ class PageAction {
         this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "PIN"});
         RecommendationMap.delete(browser);
       };
-
       panelTitle = await this.getStrings(content.heading_text);
-
       let stepsContainer = this.window.document.getElementById("feature-details-steps");
+
+      // Container for bullet point list
       if (!stepsContainer) {
         stepsContainer = this.window.document.createElement("vbox");
         stepsContainer.setAttribute("id", "feature-details-steps");
         for (let step of content.descriptionDetails.steps) {
           const li = this.window.document.createElement("li");
-          li.textContent = await this.getStrings(step);
+          li.setAttribute("data-l10n-id", step.string_id);
           stepsContainer.appendChild(li);
         }
+        await this._l10n.translateElements([...stepsContainer.children]);
         footerText.parentNode.appendChild(stepsContainer);
       }
 
+      // Hide the section related to author information and rating
       footerLink.parentNode.style.display = "none";
     }
 
