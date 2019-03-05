@@ -92,7 +92,7 @@ export class Hero extends React.PureComponent {
                 dispatch={this.props.dispatch}
                 source={this.props.type} />
             </SafeAnchor>
-            <DSLinkMenu {...this.props} />
+            <DSLinkMenu url={heroRec.domain} {...this.props} />
           </div>
           <div className={`${this.props.subComponentType}`}>
             { this.props.subComponentType === `cards` ? cards : list }
