@@ -343,7 +343,8 @@ const CFR_MESSAGES = [
         }],
       },
     },
-    targeting: `!hasPinnedTabs && recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 1)]|length >= 1`,
+    frequency: {lifetime: 3},
+    targeting: `!hasPinnedTabs && recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 1)]|length >= 5`,
     trigger: {id: "frequentVisits", params: PINNED_TABS_TARGET_SITES},
   },
 ];
