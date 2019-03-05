@@ -18,6 +18,10 @@ const ADDONS_API_URL = "https://services.addons.mozilla.org/api/v3/addons/addon"
 const ANIMATIONS_ENABLED_PREF = "toolkit.cosmeticAnimations.enabled";
 
 const DELAY_BEFORE_EXPAND_MS = 1000;
+const CATEGORY_ICONS = {
+  "cfrAddons": "webextensions-icon",
+  "cfrFeatures": "recommendations-icon",
+};
 
 /**
  * A WeakMap from browsers to {host, recommendation} pairs. Recommendations are
@@ -66,6 +70,7 @@ class PageAction {
     this.container.hidden = false;
 
     this.label.value = await this.getStrings(recommendation.content.notification_text);
+    this.button.setAttribute("data-cfr-icon", CATEGORY_ICONS[recommendation.category]);
 
     // Wait for layout to flush to avoid a synchronous reflow then calculate the
     // label width. We can safely get the width even though the recommendation is
