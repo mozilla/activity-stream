@@ -306,7 +306,7 @@ const CFR_MESSAGES = [
     id: "PIN_TAB",
     template: "cfr_doorhanger",
     category: "cfrFeatures",
-    exclude: true,
+    // exclude: true,
     content: {
       bucket_id: "CFR_PIN_TAB",
       notification_text: {string_id: "cfr-doorhanger-extension-notification"},

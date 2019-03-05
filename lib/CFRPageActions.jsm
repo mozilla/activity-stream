@@ -61,9 +61,20 @@ class PageAction {
   }
 
   async showAddressBarNotifier(recommendation, shouldExpand = false) {
+    const addonsRecommendationClassName = "cfr-addons-recommendation-icon";
+    const featuresRecommendationClassName = "cfr-features-recommendation-icon";
     this.container.hidden = false;
 
     this.label.value = await this.getStrings(recommendation.content.notification_text);
+
+    if (recommendation.category === "cfrAddons") {
+      this.button.classList.remove(featuresRecommendationClassName);
+      this.button.classList.add(addonsRecommendationClassName);
+    }
+    if (recommendation.category === "cfrFeatures") {
+      this.button.classList.remove(addonsRecommendationClassName);
+      this.button.classList.add(featuresRecommendationClassName);
+    }
 
     // Wait for layout to flush to avoid a synchronous reflow then calculate the
     // label width. We can safely get the width even though the recommendation is
