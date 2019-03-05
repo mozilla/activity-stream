@@ -321,6 +321,7 @@ class PageAction {
       };
 
     } else {
+      const stepsContainerId = "cfr-notification-feature-steps";
       primaryActionCallback = () => {
         this._blockMessage(id);
         this.dispatchUserAction(primary.action);
@@ -329,12 +330,12 @@ class PageAction {
         RecommendationMap.delete(browser);
       };
       panelTitle = await this.getStrings(content.heading_text);
-      let stepsContainer = this.window.document.getElementById("feature-details-steps");
+      let stepsContainer = this.window.document.getElementById(stepsContainerId);
 
       // Container for bullet point list
       if (!stepsContainer) {
         stepsContainer = this.window.document.createElement("vbox");
-        stepsContainer.setAttribute("id", "feature-details-steps");
+        stepsContainer.setAttribute("id", stepsContainerId);
         for (let step of content.descriptionDetails.steps) {
           const li = this.window.document.createElement("li");
           li.setAttribute("data-l10n-id", step.string_id);
