@@ -22,12 +22,15 @@ describe("CFRPageActions", () => {
     "cfr-notification-header-link",
     "cfr-notification-header-image",
     "cfr-notification-author",
+    "cfr-notification-footer",
     "cfr-notification-footer-text",
     "cfr-notification-footer-filled-stars",
     "cfr-notification-footer-empty-stars",
     "cfr-notification-footer-users",
     "cfr-notification-footer-spacer",
     "cfr-notification-footer-learn-more-link",
+    "cfr-notification-footer-pintab-animation-container",
+    "cfr-notification-footer-pause-button",
   ];
   const elementClassNames = [
     "popup-notification-body-container",
@@ -110,6 +113,8 @@ describe("CFRPageActions", () => {
     for (const id of elementIDs) {
       const elem = document.createElement("div");
       elem.setAttribute("id", id);
+      // TODO: Remove this once travis is on Firefox 63+
+      elem.toggleAttribute = () => {};
       containerElem.appendChild(elem);
       elements[id] = elem;
     }
