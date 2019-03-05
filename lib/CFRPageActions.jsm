@@ -14,6 +14,7 @@ ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
 const SUMO_BASE_URL = Services.urlFormatter.formatURLPref("app.support.baseURL");
 const ADDONS_API_URL = "https://services.addons.mozilla.org/api/v3/addons/addon";
+const ANIMATIONS_ENABLED_PREF = "toolkit.cosmeticAnimations.enabled";
 
 const DELAY_BEFORE_EXPAND_MS = 1000;
 
@@ -275,6 +276,53 @@ class PageAction {
     }
   }
 
+  async _renderPinTabAnimation() {
+    const footer = this.window.document.getElementById("cfr-notification-footer");
+    const ANIMATION_CONTAINER_ID = "cfr-notification-footer-pintab-animation-container";
+    let animationsEnabled = Services.prefs.getBoolPref(ANIMATIONS_ENABLED_PREF);
+    let animationContainer = this.window.document.getElementById(ANIMATION_CONTAINER_ID);
+    if (animationContainer) {
+      animationContainer.toggleAttribute("animate", animationsEnabled);
+      animationContainer.removeAttribute("paused");
+    } else {
+      animationContainer = this.window.document.createElement("vbox");
+      animationContainer.setAttribute("id", ANIMATION_CONTAINER_ID);
+      animationContainer.toggleAttribute("animate", animationsEnabled);
+
+      let spacer = this.window.document.createElement("vbox");
+      spacer.setAttribute("flex", 1);
+      animationContainer.appendChild(spacer);
+
+      let controlsContainer = this.window.document.createElement("hbox");
+      controlsContainer.setAttribute("id", "cfr-notification-footer-animation-controls");
+
+      spacer = this.window.document.createElement("vbox");
+      spacer.setAttribute("flex", 1);
+      controlsContainer.appendChild(spacer);
+
+      let pauseButton = this.window.document.createElement("hbox");
+      pauseButton.setAttribute("id", "cfr-notification-footer-pause-button");
+      pauseButton.addEventListener("click", () => {
+        animationContainer.setAttribute("paused", true);
+      }, {once: true});
+
+      let pauseLabel = this.window.document.createElement("label");
+      pauseLabel.setAttribute("id", "cfr-notification-footer-pause-label");
+      // pauseLabel.style.cursor = "pointer";
+      pauseLabel.textContent = await this.getStrings({"string_id": "cfr-doorhanger-pintab-animation-pause"});
+      pauseButton.appendChild(pauseLabel);
+
+      let pauseIcon = this.window.document.createElement("image");
+      pauseIcon.setAttribute("id", "cfr-notification-footer-pause-icon");
+      pauseButton.appendChild(pauseIcon);
+
+      controlsContainer.appendChild(pauseButton);
+      animationContainer.appendChild(controlsContainer);
+
+      footer.appendChild(animationContainer);
+    }
+  }
+
   async _renderPopup(message, browser) {
     const {id, content} = message;
 
@@ -344,6 +392,8 @@ class PageAction {
         stepsContainer.appendChild(li);
       }
       await this._l10n.translateElements([...stepsContainer.children]);
+
+      await this._renderPinTabAnimation();
     }
 
     const primaryBtnStrings = await this.getStrings(primary.label);
