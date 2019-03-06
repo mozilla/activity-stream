@@ -40,6 +40,7 @@ describe("CFRPageActions", () => {
     fakeRecommendation = {
       id: "fake_id",
       content: {
+        category: "cfrDummy",
         bucket_id: "fake_bucket_id",
         notification_text: "Fake Notification Text",
         info_icon: {
