@@ -305,6 +305,7 @@ const CFR_MESSAGES = [
   {
     id: "PIN_TAB",
     template: "cfr_doorhanger",
+    exclude: true,
     content: {
       category: "cfrFeatures",
       bucket_id: "CFR_PIN_TAB",
