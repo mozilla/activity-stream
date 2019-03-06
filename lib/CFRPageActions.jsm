@@ -284,6 +284,11 @@ class PageAction {
     const footerText = this.window.document.getElementById("cfr-notification-footer-text");
     const footerLink = this.window.document.getElementById("cfr-notification-footer-learn-more-link");
 
+    // Use the message category as a CSS selector to hide different parts of the
+    // notification template markup
+    this.window.document.getElementById("contextual-feature-recommendation-notification")
+      .setAttribute("data-notification-category", message.content.category);
+
     headerLabel.value = await this.getStrings(content.heading_text);
     headerLink.setAttribute("href", SUMO_BASE_URL + content.info_icon.sumo_path);
     headerLink.setAttribute(this.window.RTL_UI ? "left" : "right", 0);
@@ -300,6 +305,7 @@ class PageAction {
     if (content.addon) {
       await this._setAddonAuthorAndRating(this.window.document, content);
       panelTitle = await this.getStrings(content.addon.title);
+      options = {popupIconURL: content.addon.icon};
 
       footerLink.value = await this.getStrings({string_id: "cfr-doorhanger-extension-learn-more-link"});
       footerLink.setAttribute("href", content.addon.amo_url);
@@ -313,13 +319,6 @@ class PageAction {
         this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "INSTALL"});
         RecommendationMap.delete(browser);
       };
-
-      options = {
-        popupIconURL: content.addon.icon,
-        hideClose: true,
-        eventCallback: this._popupStateChange,
-      };
-
     } else {
       const stepsContainerId = "cfr-notification-feature-steps";
       primaryActionCallback = () => {
@@ -344,9 +343,6 @@ class PageAction {
         await this._l10n.translateElements([...stepsContainer.children]);
         footerText.parentNode.appendChild(stepsContainer);
       }
-
-      // Hide the section related to author information and rating
-      footerLink.parentNode.style.display = "none";
     }
 
     const primaryBtnStrings = await this.getStrings(primary.label);
@@ -397,14 +393,12 @@ class PageAction {
       "cfr",
       mainAction,
       secondaryActions,
-      options
+      {
+        ...options,
+        hideClose: true,
+        eventCallback: this._popupStateChange,
+      }
     );
-
-    // XXX Find a better way to do this
-    // This piece of content is added dinamically when PopupNotifications.show is called
-    if (!content.addon) {
-      this.window.document.querySelector(".popup-notification-body-container").setAttribute("hidden", true);
-    }
   }
 
   /**
