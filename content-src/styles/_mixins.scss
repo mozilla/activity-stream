@@ -23,6 +23,8 @@
 }
 
 @mixin ds-border-top {
+  @content;
+
   @include dark-theme-only {
     border-top: 1px solid $grey-60;
   }
@@ -31,6 +33,8 @@
 }
 
 @mixin ds-border-bottom {
+  @content;
+
   @include dark-theme-only {
     border-bottom: 1px solid $grey-60;
   }
