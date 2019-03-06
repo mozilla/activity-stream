@@ -1,4 +1,4 @@
-From 5877ac74b2bf6a9d3a7b9b482250dbff79715fbf Mon Sep 17 00:00:00 2001
+From bc361ea5f1bab19fcc5a4b3bc12741be404b787a Mon Sep 17 00:00:00 2001
 From: Ricky Rosario <rickyrosario@gmail.com>
 Date: Tue, 5 Mar 2019 14:41:11 -0500
 Subject: [PATCH] Bug 1529340 - CFR Pinned tabs popup animation
@@ -6,8 +6,8 @@ Subject: [PATCH] Bug 1529340 - CFR Pinned tabs popup animation
 MozReview-Commit-ID: FTr5Pi7ySbY
 ---
  browser/base/content/popup-notifications.inc | 18 ++++---
- browser/themes/shared/browser.inc.css        | 56 +++++++++++++++++++-
- 2 files changed, 65 insertions(+), 9 deletions(-)
+ browser/themes/shared/browser.inc.css        | 57 +++++++++++++++++++-
+ 2 files changed, 66 insertions(+), 9 deletions(-)
 
 diff --git a/browser/base/content/popup-notifications.inc b/browser/base/content/popup-notifications.inc
 index 880203a83a64b..b29dafb451e56 100644
@@ -39,19 +39,20 @@ index 880203a83a64b..b29dafb451e56 100644
      </popupnotification>
  
 diff --git a/browser/themes/shared/browser.inc.css b/browser/themes/shared/browser.inc.css
-index 8ad166e70b730..875a1900e59b8 100644
+index 8ad166e70b730..173356cff8412 100644
 --- a/browser/themes/shared/browser.inc.css
 +++ b/browser/themes/shared/browser.inc.css
-@@ -232,7 +232,7 @@
+@@ -232,7 +232,8 @@
    margin-bottom: 0;
  }
  
 -#cfr-notification-footer {
 +#cfr-notification-footer-text-and-addon-info {
++  display: block;
    padding: 10px var(--arrowpanel-padding);
  }
  
-@@ -282,6 +282,60 @@
+@@ -282,6 +283,60 @@
    flex-grow: 1;
  }
  
