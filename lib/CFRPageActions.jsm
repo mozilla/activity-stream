@@ -304,7 +304,7 @@ class PageAction {
       pauseButton.setAttribute("id", "cfr-notification-footer-pause-button");
       pauseButton.addEventListener("click", () => {
         animationContainer.setAttribute("paused", true);
-      }, {once: true});
+      });
 
       let pauseLabel = this.window.document.createElement("label");
       pauseLabel.setAttribute("id", "cfr-notification-footer-pause-label");
