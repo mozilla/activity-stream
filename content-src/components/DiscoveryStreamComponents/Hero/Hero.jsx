@@ -71,7 +71,11 @@ export class Hero extends React.PureComponent {
         <div className="ds-header">{this.props.title}</div>
         <div className={`ds-hero ds-hero-${this.props.border}`}>
           <div className="ds-hero-item">
-            <SafeAnchor url={heroRec.url} className="wrapper" onLinkClick={this.onLinkClick}>
+            <SafeAnchor
+              className="wrapper"
+              dispatch={this.props.dispatch}
+              onLinkClick={this.onLinkClick}
+              url={heroRec.url}>
               <div className="img-wrapper">
                 <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
               </div>

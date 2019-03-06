@@ -63,7 +63,12 @@ export class _DSLinkMenu extends React.PureComponent {
           onUpdate={this.onMenuUpdate}
           onShow={this.onMenuShow}
           options={TOP_STORIES_CONTEXT_MENU_OPTIONS}
-          site={{url: this.props.url, title: this.props.title, type: this.props.type}} />
+          site={{
+            referrer: "https://getpocket.com/recommendations",
+            title: this.props.title,
+            type: this.props.type,
+            url: this.props.url,
+          }} />
       }
     </div>);
   }
