@@ -411,6 +411,7 @@ describe("CFRPageActions", () => {
 
     describe("#_showPopupOnClick", () => {
       let translateElementsStub;
+      let setAttributesStub;
       beforeEach(async () => {
         CFRPageActions.PageActionMap.set(fakeBrowser.ownerGlobal, pageAction);
         await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, fakeRecommendation, dispatchStub);
@@ -429,6 +430,8 @@ describe("CFRPageActions", () => {
           .callsFake(async ({args}) => `${args.total} users`); // eslint-disable-line max-nested-callbacks
 
         translateElementsStub = sandbox.stub().resolves();
+        setAttributesStub = sandbox.stub();
+        global.DOMLocalization.prototype.setAttributes = setAttributesStub;
         global.DOMLocalization.prototype.translateElements = translateElementsStub;
       });
 
@@ -617,14 +620,14 @@ describe("CFRPageActions", () => {
         delete fakeRecommendation.content.addon;
         await pageAction._showPopupOnClick();
 
-        assert.calledOnce(translateElementsStub);
-        assert.equal(translateElementsStub.firstCall.args[0][0].dataset.l10nId, fakeRecommendation.content.descriptionDetails.steps[0].string_id);
+        assert.calledOnce(setAttributesStub);
+        assert.calledWith(setAttributesStub, sinon.match.any, fakeRecommendation.content.descriptionDetails.steps[0].string_id);
       });
-      it("should hide popup-notification-body-container", async () => {
+      it("should set the correct data-notification-category", async () => {
         delete fakeRecommendation.content.addon;
         await pageAction._showPopupOnClick();
 
-        assert.equal(elements["popup-notification-body-container"].getAttribute("hidden"), "true");
+        assert.equal(elements["contextual-feature-recommendation-notification"].dataset.notificationCategory, fakeRecommendation.content.category);
       });
       it("should send PIN event on primary action click", async () => {
         sandbox.stub(pageAction, "_sendTelemetry");
