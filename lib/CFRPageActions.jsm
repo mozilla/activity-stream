@@ -283,6 +283,10 @@ class PageAction {
     const headerImage = this.window.document.getElementById("cfr-notification-header-image");
     const footerText = this.window.document.getElementById("cfr-notification-footer-text");
     const footerLink = this.window.document.getElementById("cfr-notification-footer-learn-more-link");
+    const {primary, secondary} = content.buttons;
+    let primaryActionCallback;
+    let options = {};
+    let panelTitle;
 
     // Use the message category as a CSS selector to hide different parts of the
     // notification template markup
@@ -294,11 +298,6 @@ class PageAction {
     headerLink.setAttribute(this.window.RTL_UI ? "left" : "right", 0);
     headerImage.setAttribute("tooltiptext", await this.getStrings(content.info_icon.label, "tooltiptext"));
     headerLink.onclick = () => this._sendTelemetry({message_id: id, bucket_id: content.bucket_id, event: "RATIONALE"});
-
-    let primaryActionCallback;
-    let options = {};
-    let panelTitle;
-    const {primary, secondary} = content.buttons;
 
     footerText.textContent = await this.getStrings(content.text);
 
@@ -346,6 +345,11 @@ class PageAction {
     }
 
     const primaryBtnStrings = await this.getStrings(primary.label);
+    const mainAction = {
+      label: primaryBtnStrings,
+      accessKey: primaryBtnStrings.attributes.accesskey,
+      callback: primaryActionCallback,
+    };
 
     // For each secondary action, get the strings and attributes
     const secondaryBtnStrings = [];
@@ -353,13 +357,6 @@ class PageAction {
       let label = await this.getStrings(button.label);
       secondaryBtnStrings.push({label, attributes: label.attributes});
     }
-
-    const mainAction = {
-      label: primaryBtnStrings,
-      accessKey: primaryBtnStrings.attributes.accesskey,
-      callback: primaryActionCallback,
-    };
-
     const secondaryActions = [{
       label: secondaryBtnStrings[0].label,
       accessKey: secondaryBtnStrings[0].attributes.accesskey,
