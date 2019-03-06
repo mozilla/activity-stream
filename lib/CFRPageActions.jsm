@@ -320,6 +320,7 @@ class PageAction {
       };
     } else {
       const stepsContainerId = "cfr-notification-feature-steps";
+      let stepsContainer = this.window.document.getElementById(stepsContainerId);
       primaryActionCallback = () => {
         this._blockMessage(id);
         this.dispatchUserAction(primary.action);
@@ -328,20 +329,21 @@ class PageAction {
         RecommendationMap.delete(browser);
       };
       panelTitle = await this.getStrings(content.heading_text);
-      let stepsContainer = this.window.document.getElementById(stepsContainerId);
 
-      // Container for bullet point list
-      if (!stepsContainer) {
+      if (stepsContainer) { // If it exists we need to empty it
+        stepsContainer.remove();
+        stepsContainer = stepsContainer.cloneNode(false);
+      } else {
         stepsContainer = this.window.document.createElement("vbox");
         stepsContainer.setAttribute("id", stepsContainerId);
-        for (let step of content.descriptionDetails.steps) {
-          const li = this.window.document.createElement("li");
-          li.setAttribute("data-l10n-id", step.string_id);
-          stepsContainer.appendChild(li);
-        }
-        await this._l10n.translateElements([...stepsContainer.children]);
-        footerText.parentNode.appendChild(stepsContainer);
       }
+      footerText.parentNode.appendChild(stepsContainer);
+      for (let step of content.descriptionDetails.steps) {
+        const li = this.window.document.createElement("li");
+        this._l10n.setAttributes(li, step.string_id);
+        stepsContainer.appendChild(li);
+      }
+      await this._l10n.translateElements([...stepsContainer.children]);
     }
 
     const primaryBtnStrings = await this.getStrings(primary.label);
