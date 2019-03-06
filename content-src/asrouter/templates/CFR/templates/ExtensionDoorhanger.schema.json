@@ -184,7 +184,8 @@
                 "type": "string",
                 "description": "Id of string to localized addon description"
               }
-            }
+            },
+            "required": ["string_id"]
           }
         }
       },
