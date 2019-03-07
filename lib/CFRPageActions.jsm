@@ -284,7 +284,7 @@ class PageAction {
     }
   }
 
-  _createElement({type, id}, parent) {
+  _createElementAndAppend({type, id}, parent) {
     let element = this.window.document.createElement(type);
     if (id) {
       element.setAttribute("id", id);
@@ -298,23 +298,25 @@ class PageAction {
     const footer = this.window.document.getElementById("cfr-notification-footer");
     let animationContainer = this.window.document.getElementById(ANIMATION_CONTAINER_ID);
     if (!animationContainer) {
-      animationContainer = this._createElement({type: "vbox", id: ANIMATION_CONTAINER_ID}, footer);
+      animationContainer = this._createElementAndAppend({type: "vbox", id: ANIMATION_CONTAINER_ID}, footer);
 
       // spacer
-      this._createElement("vbox", animationContainer).setAttribute("flex", 1);
+      this._createElementAndAppend("vbox", animationContainer).setAttribute("flex", 1);
 
-      let controlsContainer = this._createElement({type: "hbox", id: "cfr-notification-footer-animation-controls"}, animationContainer);
+      let controlsContainer = this._createElementAndAppend(
+        {type: "hbox", id: "cfr-notification-footer-animation-controls"}, animationContainer);
 
       // spacer
-      this._createElement({type: "vbox"}, controlsContainer).setAttribute("flex", 1);
+      this._createElementAndAppend({type: "vbox"}, controlsContainer).setAttribute("flex", 1);
 
-      let pauseButton = this._createElement({type: "hbox", id: PAUSE_BUTTON_ID}, controlsContainer);
+      let pauseButton = this._createElementAndAppend({type: "hbox", id: PAUSE_BUTTON_ID}, controlsContainer);
 
-      let pauseLabel = this._createElement({type: "label", id: "cfr-notification-footer-pause-label"}, pauseButton);
+      let pauseLabel = this._createElementAndAppend(
+        {type: "label", id: "cfr-notification-footer-pause-label"}, pauseButton);
       pauseLabel.textContent = await this.getStrings({"string_id": "cfr-doorhanger-pintab-animation-pause"});
 
       // pause icon
-      this._createElement({type: "image", id: "cfr-notification-footer-pause-icon"}, pauseButton);
+      this._createElementAndAppend({type: "image", id: "cfr-notification-footer-pause-icon"}, pauseButton);
     }
 
     animationContainer.toggleAttribute("animate", Services.prefs.getBoolPref(ANIMATIONS_ENABLED_PREF, true));
