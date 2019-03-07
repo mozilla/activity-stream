@@ -12,6 +12,7 @@ ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm");
 
 const POPUP_NOTIFICATION_ID = "contextual-feature-recommendation";
+const PAUSE_BUTTON_ID = "cfr-notification-footer-pause-button";
 const SUMO_BASE_URL = Services.urlFormatter.formatURLPref("app.support.baseURL");
 const ADDONS_API_URL = "https://services.addons.mozilla.org/api/v3/addons/addon";
 const ANIMATIONS_ENABLED_PREF = "toolkit.cosmeticAnimations.enabled";
@@ -131,6 +132,13 @@ class PageAction {
       if (this.urlbar.getAttribute("cfr-recommendation-state") === "expanded") {
         this.urlbar.setAttribute("cfr-recommendation-state", "collapsed");
       }
+    }
+
+    // TODO: FIXME: find a nicer way of cleaning this up. Maybe listening to "popuphidden"?
+    // Remove click listener on pause button;
+    if (this.onPauseClick) {
+      this.window.document.getElementById(PAUSE_BUTTON_ID).removeEventListener("click", this.onPauseClick);
+      delete this.onPauseClick;
     }
   }
 
@@ -286,16 +294,11 @@ class PageAction {
   }
 
   async _renderPinTabAnimation() {
-    const footer = this.window.document.getElementById("cfr-notification-footer");
     const ANIMATION_CONTAINER_ID = "cfr-notification-footer-pintab-animation-container";
-    let animationsEnabled = Services.prefs.getBoolPref(ANIMATIONS_ENABLED_PREF, true);
+    const footer = this.window.document.getElementById("cfr-notification-footer");
     let animationContainer = this.window.document.getElementById(ANIMATION_CONTAINER_ID);
-    if (animationContainer) {
-      animationContainer.toggleAttribute("animate", animationsEnabled);
-      animationContainer.removeAttribute("paused");
-    } else {
+    if (!animationContainer) {
       animationContainer = this._createElement({type: "vbox", id: ANIMATION_CONTAINER_ID}, footer);
-      animationContainer.toggleAttribute("animate", animationsEnabled);
 
       // spacer
       this._createElement("vbox", animationContainer).setAttribute("flex", 1);
@@ -305,12 +308,7 @@ class PageAction {
       // spacer
       this._createElement({type: "vbox"}, controlsContainer).setAttribute("flex", 1);
 
-      let pauseButton = this._createElement({type: "hbox", id: "cfr-notification-footer-pause-button"}, controlsContainer);
-      let onPauseClick = () => { animationContainer.setAttribute("paused", true); };
-      pauseButton.addEventListener("click", onPauseClick);
-      this.window.addEventListener("unload", () => {
-        pauseButton.removeEventListener("click", onPauseClick);
-      }, {once: true});
+      let pauseButton = this._createElement({type: "hbox", id: PAUSE_BUTTON_ID}, controlsContainer);
 
       let pauseLabel = this._createElement({type: "label", id: "cfr-notification-footer-pause-label"}, pauseButton);
       pauseLabel.textContent = await this.getStrings({"string_id": "cfr-doorhanger-pintab-animation-pause"});
@@ -318,6 +316,13 @@ class PageAction {
       // pause icon
       this._createElement({type: "image", id: "cfr-notification-footer-pause-icon"}, pauseButton);
     }
+
+    animationContainer.toggleAttribute("animate", Services.prefs.getBoolPref(ANIMATIONS_ENABLED_PREF, true));
+    animationContainer.removeAttribute("paused");
+
+    let pauseButton = this.window.document.getElementById(PAUSE_BUTTON_ID);
+    this.onPauseClick = () => { animationContainer.setAttribute("paused", true); };
+    pauseButton.addEventListener("click", this.onPauseClick);
   }
 
   async _renderPopup(message, browser) {
