@@ -320,9 +320,11 @@ class PageAction {
     animationContainer.toggleAttribute("animate", Services.prefs.getBoolPref(ANIMATIONS_ENABLED_PREF, true));
     animationContainer.removeAttribute("paused");
 
-    let pauseButton = this.window.document.getElementById(PAUSE_BUTTON_ID);
-    this.onPauseClick = () => { animationContainer.setAttribute("paused", true); };
-    pauseButton.addEventListener("click", this.onPauseClick);
+    if (!this.onPauseClick) {
+      let pauseButton = this.window.document.getElementById(PAUSE_BUTTON_ID);
+      this.onPauseClick = () => { animationContainer.setAttribute("paused", true); };
+      pauseButton.addEventListener("click", this.onPauseClick);
+    }
   }
 
   async _renderPopup(message, browser) {
