@@ -41,6 +41,43 @@ const PINNED_TABS_TARGET_SITES = ["docs.google.com", "www.docs.google.com", "cal
 
 const CFR_MESSAGES = [
   {
+    id: "PIN_TAB",
+    template: "cfr_doorhanger",
+    category: "cfrFeatures",
+    content: {
+      bucket_id: "CFR_PIN_TAB",
+      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
+      heading_text: {string_id: "cfr-doorhanger-pintab-heading"},
+      info_icon: {
+        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
+        sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path,
+      },
+      text: "Get easy access to your most-used sites. Keep sites open in a tab (even when you restart).",
+      buttons: {
+        primary: {
+          label: {string_id: "cfr-doorhanger-pintab-ok-button"},
+          action: {
+            type: "PIN_CURRENT_TAB",
+          },
+        },
+        secondary: [{
+          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
+          action: {type: "CANCEL"},
+        }, {
+          label: {string_id: "cfr-doorhanger-extension-never-show-recommendation"},
+        }, {
+          label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
+          action: {
+            type: "OPEN_PREFERENCES_PAGE",
+            data: {category: "general-cfrfeatures", origin: "CFR"},
+          },
+        }],
+      },
+    },
+    targeting: `localeLanguageCode == "en" && !hasPinnedTabs && recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 1)]|length >= 3`,
+    trigger: {id: "frequentVisits", params: PINNED_TABS_TARGET_SITES},
+  },
+  {
     id: "FACEBOOK_CONTAINER_3",
     template: "cfr_doorhanger",
     category: "cfrAddons",
@@ -301,43 +338,6 @@ const CFR_MESSAGES = [
       (${JSON.stringify(REDDIT_ENHANCEMENT_PARAMS.existing_addons)} intersect addonsInfo.addons|keys)|length == 0 &&
       (${JSON.stringify(REDDIT_ENHANCEMENT_PARAMS.open_urls)} intersect topFrecentSites[.frecency >= ${REDDIT_ENHANCEMENT_PARAMS.min_frecency}]|mapToProperty('host'))|length > 0`,
     trigger: {id: "openURL", params: REDDIT_ENHANCEMENT_PARAMS.open_urls},
-  },
-  {
-    id: "PIN_TAB",
-    template: "cfr_doorhanger",
-    category: "cfrFeatures",
-    content: {
-      bucket_id: "CFR_PIN_TAB",
-      notification_text: {string_id: "cfr-doorhanger-extension-notification"},
-      heading_text: {string_id: "cfr-doorhanger-pintab-heading"},
-      info_icon: {
-        label: {string_id: "cfr-doorhanger-extension-sumo-link"},
-        sumo_path: REDDIT_ENHANCEMENT_PARAMS.sumo_path,
-      },
-      text: "Get easy access to your most-used sites. Keep sites open in a tab (even when you restart).",
-      buttons: {
-        primary: {
-          label: {string_id: "cfr-doorhanger-pintab-ok-button"},
-          action: {
-            type: "PIN_CURRENT_TAB",
-          },
-        },
-        secondary: [{
-          label: {string_id: "cfr-doorhanger-extension-cancel-button"},
-          action: {type: "CANCEL"},
-        }, {
-          label: {string_id: "cfr-doorhanger-extension-never-show-recommendation"},
-        }, {
-          label: {string_id: "cfr-doorhanger-extension-manage-settings-button"},
-          action: {
-            type: "OPEN_PREFERENCES_PAGE",
-            data: {category: "general-cfrfeatures", origin: "CFR"},
-          },
-        }],
-      },
-    },
-    targeting: `localeLanguageCode == "en" && !hasPinnedTabs && recentVisits[.timestamp > (currentDate|date - 3600 * 1000 * 1)]|length >= 3`,
-    trigger: {id: "frequentVisits", params: PINNED_TABS_TARGET_SITES},
   },
 ];
 
