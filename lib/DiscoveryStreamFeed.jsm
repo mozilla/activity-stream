@@ -4,6 +4,7 @@
 "use strict";
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const {NewTabUtils} = ChromeUtils.import("resource://gre/modules/NewTabUtils.jsm");
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 ChromeUtils.defineModuleGetter(this, "perfService", "resource://activity-stream/common/PerfService.jsm");
@@ -204,11 +205,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         // We initially stub this out so we don't fetch dupes,
         // we then fill in with the proper object inside the promise.
         newFeeds[url] = {};
-
         const feedPromise = this.getComponentFeed(url, isStartup);
-
-        feedPromise.then(data => {
-          newFeeds[url] = data;
+        feedPromise.then(feed => {
+          newFeeds[url] = this.filterRecommendations(feed);
         }).catch(/* istanbul ignore next */ error => {
           Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
         });
@@ -216,6 +215,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         newFeedsPromises.push(feedPromise);
       }
     };
+  }
+
+  filterRecommendations(feed) {
+    if (feed && feed.data && feed.data.recommendations && feed.data.recommendations.length) {
+      return {data: this.filterBlocked(feed.data, "recommendations")};
+    }
+    return feed;
   }
 
   /**
@@ -313,12 +319,24 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
       data: {
         lastUpdated: spocs.lastUpdated,
-        spocs: this.transform(this.filterSpocs(spocs.data)),
+        spocs: this.transform(this.frequencyCapSpocs(spocs.data)),
       },
     });
   }
 
-  transform(data) {
+  filterBlocked(data, type) {
+    if (data && data[type] && data[type].length) {
+      const filteredItems = data[type].filter(item => !NewTabUtils.blockedLinks.isBlocked({"url": item.url}));
+      return {
+        ...data,
+        [type]: filteredItems,
+      };
+    }
+    return data;
+  }
+
+  transform(spocs) {
+    const data = this.filterBlocked(spocs, "spocs");
     if (data && data.spocs && data.spocs.length) {
       const spocsPerDomain = this.store.getState().DiscoveryStream.spocs.spocs_per_domain || 1;
       const campaignMap = {};
@@ -344,7 +362,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   // Filter spocs based on frequency caps
-  filterSpocs(data) {
+  frequencyCapSpocs(data) {
     if (data && data.spocs && data.spocs.length) {
       const {spocs} = data;
       const impressions = this.readImpressionsPref(PREF_SPOC_IMPRESSIONS);
@@ -715,7 +733,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
             type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
             data: {
               lastUpdated: spocs.lastUpdated,
-              spocs: this.transform(this.filterSpocs(spocs.data)),
+              spocs: this.transform(this.frequencyCapSpocs(spocs.data)),
             },
           }));
         }
