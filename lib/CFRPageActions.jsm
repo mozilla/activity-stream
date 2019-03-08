@@ -70,7 +70,7 @@ class PageAction {
     this.container.hidden = false;
 
     this.label.value = await this.getStrings(recommendation.content.notification_text);
-    this.button.setAttribute("data-cfr-icon", CATEGORY_ICONS[recommendation.category]);
+    this.button.setAttribute("data-cfr-icon", CATEGORY_ICONS[recommendation.content.category]);
 
     // Wait for layout to flush to avoid a synchronous reflow then calculate the
     // label width. We can safely get the width even though the recommendation is
