@@ -4,6 +4,8 @@ import {DiscoveryStreamFeed} from "lib/DiscoveryStreamFeed.jsm";
 import {reducers} from "common/Reducers.jsm";
 
 const CONFIG_PREF_NAME = "discoverystream.config";
+const DUMMY_ENDPOINT = "https://getpocket.cdn.mozilla.net/dummy";
+const ENDPOINTS_PREF_NAME = "discoverystream.endpoints";
 const SPOC_IMPRESSION_TRACKING_PREF = "discoverystream.spoc.impressions";
 const REC_IMPRESSION_TRACKING_PREF = "discoverystream.rec.impressions";
 const THIRTY_MINUTES = 30 * 60 * 1000;
@@ -40,7 +42,8 @@ describe("DiscoveryStreamFeed", () => {
     feed.store = createStore(combineReducers(reducers), {
       Prefs: {
         values: {
-          [CONFIG_PREF_NAME]: JSON.stringify({enabled: false, show_spocs: false, layout_endpoint: "foo"}),
+          [CONFIG_PREF_NAME]: JSON.stringify({enabled: false, show_spocs: false, layout_endpoint: DUMMY_ENDPOINT}),
+          [ENDPOINTS_PREF_NAME]: DUMMY_ENDPOINT,
         },
       },
     });
@@ -51,6 +54,50 @@ describe("DiscoveryStreamFeed", () => {
   afterEach(() => {
     clock.restore();
     sandbox.restore();
+  });
+
+  describe("#fetchFromEndpoint", () => {
+    beforeEach(() => {
+      fetchStub.resolves({
+        json: () => Promise.resolve("hi"),
+        ok: true,
+      });
+    });
+    it("should get a response", async () => {
+      const response = await feed.fetchFromEndpoint(DUMMY_ENDPOINT);
+
+      assert.equal(response, "hi");
+    });
+    it("should not send cookies", async () => {
+      await feed.fetchFromEndpoint(DUMMY_ENDPOINT);
+
+      assert.propertyVal(fetchStub.firstCall.args[1], "credentials", "omit");
+    });
+    it("should allow unexpected response", async () => {
+      fetchStub.resolves({ok: false});
+
+      const response = await feed.fetchFromEndpoint(DUMMY_ENDPOINT);
+
+      assert.equal(response, null);
+    });
+    it("should disallow unexpected endpoints", async () => {
+      feed.store.getState = () => ({
+        Prefs: {values: {[ENDPOINTS_PREF_NAME]: "https://other.site"}},
+      });
+
+      const response = await feed.fetchFromEndpoint(DUMMY_ENDPOINT);
+
+      assert.equal(response, null);
+    });
+    it("should allow multiple endpoints", async () => {
+      feed.store.getState = () => ({
+        Prefs: {values: {[ENDPOINTS_PREF_NAME]: `https://other.site,${DUMMY_ENDPOINT}`}},
+      });
+
+      const response = await feed.fetchFromEndpoint(DUMMY_ENDPOINT);
+
+      assert.equal(response, "hi");
+    });
   });
 
   describe("#loadLayout", () => {
