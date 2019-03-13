@@ -92,9 +92,6 @@ module.exports = function(config) {
                 plugins: [
                   // Converts .jsm files into common-js modules
                   ["jsm-to-commonjs", {basePath: PATHS.resourcePathRegEx, removeOtherImports: true, replace: true}], // require("babel-plugin-jsm-to-commonjs")
-                  ["transform-async-to-module-method", {module: "co-task", method: "async"}], // require("babel-plugin-transform-async-to-module-method")
-                  "transform-es2015-modules-commonjs", // require("babel-plugin-transform-es2015-modules-commonjs")
-                  ["transform-object-rest-spread", {"useBuiltIns": true}], // require("babel-plugin-transform-object-rest-spread")
                 ],
               },
             }],
@@ -102,26 +99,14 @@ module.exports = function(config) {
           {
             test: /\.js$/,
             exclude: [/node_modules\/(?!(fluent|fluent-react)\/).*/, /test/],
-            use: [{
-              loader: "babel-loader",
-              options: {
-                plugins: [
-                  ["transform-async-to-module-method", {module: "co-task", method: "async"}],
-                  "transform-es2015-modules-commonjs",
-                  ["transform-object-rest-spread", {"useBuiltIns": true}],
-                  ["transform-async-to-generator"],
-                  ["transform-async-generator-functions"],
-                ],
-              },
-            }],
+            loader: "babel-loader",
           },
           {
             test: /\.jsx$/,
             exclude: /node_modules/,
             loader: "babel-loader",
             options: {
-              presets: ["react"], // require("babel-preset-react")
-              plugins: [["transform-object-rest-spread", {"useBuiltIns": true}]],
+              presets: ["@babel/preset-react"],
             },
           },
           {
@@ -132,6 +117,9 @@ module.exports = function(config) {
             enforce: "post",
             test: /\.jsm?$/,
             loader: "istanbul-instrumenter-loader",
+            query: {
+              esModules: true,
+            },
             include: [
               path.resolve("content-src"),
               path.resolve("lib"),

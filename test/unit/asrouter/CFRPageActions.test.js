@@ -72,8 +72,6 @@ describe("CFRPageActions", () => {
     for (const id of elementIDs) {
       const elem = document.createElement("div");
       elem.setAttribute("id", id);
-      // TODO: Remove this once travis is on Firefox 63+
-      elem.toggleAttribute = () => {};
       containerElem.appendChild(elem);
       elements[id] = elem;
     }
