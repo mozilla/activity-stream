@@ -72,7 +72,7 @@ $card-header-in-hero-line-height: 20;
     padding: 16px 0;
     height: 100%;
 
-    @at-root .ds-hero-no-border .wrapper {
+    @at-root .ds-hero-no-border .ds-hero-item .wrapper {
       border-top: 0;
       border-bottom: 0;
       padding: 0 0 8px;
