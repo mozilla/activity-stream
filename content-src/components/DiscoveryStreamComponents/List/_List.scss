@@ -132,6 +132,7 @@ $item-line-height: 20;
 }
 
 .ds-list-borders {
+  @include ds-border-top;
   grid-row-gap: $bordered-spacing;
   padding-top: $bordered-spacing;
 
