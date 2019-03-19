@@ -34,6 +34,42 @@ function isPrivateWindow(win) {
 }
 
 /**
+ * Check current location against the list of whitelisted hosts
+ * Additionally verify for redirects and check original request URL against
+ * the whitelist.
+ *
+ * @returns {string} - the host of the URL that matched
+ */
+function checkHost(location, hosts, aRequest) {
+  let host;
+  // Check current location against whitelisted hosts
+  try {
+    host = (new URL(location)).hostname;
+  } catch (e) {
+    Cu.reportError(e);
+  }
+
+  if (hosts.has(host)) {
+    return host;
+  }
+
+  // The original URL at the start of the request
+  const originalLocation = aRequest.QueryInterface(Ci.nsIChannel).originalURI.spec;
+  // We have been redirected
+  if (originalLocation !== location) {
+    try {
+      host = (new URL(originalLocation)).hostname;
+    } catch (e) {
+      Cu.reportError(e);
+    }
+
+    return hosts.has(host) && host;
+  }
+
+  return false;
+}
+
+/**
  * A Map from trigger IDs to singleton trigger listeners. Each listener must
  * have idempotent `init` and `uninit` methods.
  */
@@ -135,12 +171,10 @@ this.ASRouterTriggerListeners = new Map([
       // events to be fired twice.
       const isSameDocument = !!(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
       if (location && aWebProgress.isTopLevel && !isSameDocument) {
-        try {
-          const host = (new URL(location)).hostname;
-          if (host && this._hosts.has(host)) {
-            this.triggerHandler(aBrowser, host);
-          }
-        } catch (e) {} // Couldn't parse location URL
+        const host = checkHost(location, this._hosts, aRequest);
+        if (host) {
+          this.triggerHandler(aBrowser, host);
+        }
       }
     },
 
@@ -258,12 +292,10 @@ this.ASRouterTriggerListeners = new Map([
       // events to be fired twice.
       const isSameDocument = !!(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
       if (location && aWebProgress.isTopLevel && !isSameDocument) {
-        try {
-          const host = (new URL(location)).hostname;
-          if (this._hosts.has(host)) {
-            this._triggerHandler(aBrowser, {id: "openURL", param: host});
-          }
-        } catch (e) {} // Couldn't parse location URL
+        const host = checkHost(location, this._hosts, aRequest);
+        if (host) {
+          this._triggerHandler(aBrowser, {id: "openURL", param: host});
+        }
       }
     },
 
