@@ -29,7 +29,8 @@ module.exports = {
   ],
   "globals": {
     // Remove this when m-c updates their eslint: See https://github.com/mozilla/activity-stream/pull/4219
-    "RPMSendAsyncMessage": true
+    "RPMSendAsyncMessage": true,
+    "NewTabPagePreloading": true,
   },
   "overrides": [{
     // Use a configuration that's more appropriate for JSMs
