@@ -85,9 +85,7 @@ function trigger_cfr_panel(browser, trigger, {action = {type: "FOO"}, heading_te
     delete recommendation.content.addon;
   }
 
-  registerCleanupFunction(() => {
-    clearNotifications();
-  });
+  clearNotifications();
 
   return CFRPageActions.addRecommendation(
     browser,
