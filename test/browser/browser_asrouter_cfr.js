@@ -73,6 +73,10 @@ function clearNotifications() {
   for (let notification of PopupNotifications._currentNotifications) {
     notification.remove();
   }
+
+  // Clicking the primary action also removes the notification
+  Assert.equal(PopupNotifications._currentNotifications.length, 0,
+    "Should have removed the notification");
 }
 
 function trigger_cfr_panel(browser, trigger, {action = {type: "FOO"}, heading_text, category = "cfrAddons"} = {}) { // a fake action type will result in the action being ignored
