@@ -69,11 +69,21 @@ function checkCFRAddonsElements(notification) {
   Assert.ok(notification.querySelector("#cfr-notification-author"), "Panel should have author info");
 }
 
+function clearNotifications() {
+  for (let notification of PopupNotifications._currentNotifications) {
+    notification.remove();
+  }
+}
+
 function trigger_cfr_panel(browser, trigger, {action = {type: "FOO"}, heading_text, category = "cfrAddons"} = {}) { // a fake action type will result in the action being ignored
   const recommendation = createDummyRecommendation({action, category, heading_text});
   if (category !== "cfrAddons") {
     delete recommendation.content.addon;
   }
+
+  registerCleanupFunction(() => {
+    clearNotifications();
+  });
 
   return CFRPageActions.addRecommendation(
     browser,
