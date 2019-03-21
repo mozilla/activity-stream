@@ -1,5 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {DSCard} from "../DSCard/DSCard.jsx";
+import {DSImage} from "../DSImage/DSImage.jsx";
 import {DSLinkMenu} from "../DSLinkMenu/DSLinkMenu";
 import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import {List} from "../List/List.jsx";
@@ -77,7 +78,7 @@ export class Hero extends React.PureComponent {
               onLinkClick={this.onLinkClick}
               url={heroRec.url}>
               <div className="img-wrapper">
-                <div className="img" style={{backgroundImage: `url(${heroRec.image_src})`}} />
+                <DSImage extraClassNames="img" source={heroRec.image_src} asBackground={true}></DSImage>
               </div>
               <div className="meta">
                 <div className="header-and-excerpt">
