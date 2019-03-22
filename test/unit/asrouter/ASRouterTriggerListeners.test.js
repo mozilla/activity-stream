@@ -200,6 +200,22 @@ describe("ASRouterTriggerListeners", () => {
         assert.calledOnce(newTriggerHandler);
         assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "mozilla.org"});
       });
+      it("should fail for subdomains (not redirect)", async () => {
+        const newTriggerHandler = sinon.stub();
+        await openURLListener.init(newTriggerHandler, hosts);
+
+        const browser = {};
+        const webProgress = {isTopLevel: true};
+        const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+        const aRequest = {
+          QueryInterface: sandbox.stub().returns({
+            originalURI: {spec: "subdomain.mozilla.org", host: "subdomain.mozilla.org"},
+          }),
+        };
+        openURLListener.onLocationChange(browser, webProgress, aRequest, aLocationURI);
+        assert.calledOnce(aRequest.QueryInterface);
+        assert.notCalled(newTriggerHandler);
+      });
     });
 
     describe("delayed startup finished", () => {
