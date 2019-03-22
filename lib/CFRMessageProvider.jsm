@@ -38,12 +38,10 @@ const REDDIT_ENHANCEMENT_PARAMS = {
   min_frecency: 10000,
 };
 const PINNED_TABS_TARGET_SITES = [
-  "docs.google.com", "www.docs.google.com", "calendar.google.com",
-  "messenger.com", "www.messenger.com", "web.whatsapp.com", "mail.google.com",
-  "outlook.live.com", "facebook.com", "www.facebook.com", "twitter.com", "www.twitter.com",
-  "reddit.com", "www.reddit.com", "github.com", "www.github.com", "youtube.com", "www.youtube.com",
-  "feedly.com", "www.feedly.com", "drive.google.com", "amazon.com", "www.amazon.com",
-  "messages.android.com",
+  "docs.google.com", "calendar.google.com",
+  "messenger.com", "web.whatsapp.com", "mail.google.com", "outlook.live.com",
+  "facebook.com", "twitter.com", "twitter.com", "reddit.com", "github.com",
+  "youtube.com", "feedly.com", "drive.google.com", "amazon.com", "messages.android.com",
 ];
 
 const CFR_MESSAGES = [
