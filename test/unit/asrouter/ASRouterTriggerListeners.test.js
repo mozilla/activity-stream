@@ -183,7 +183,25 @@ describe("ASRouterTriggerListeners", () => {
         assert.calledOnce(newTriggerHandler);
         assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "mozilla.org"});
       });
-      it("should call triggerHandler for a redirect", async () => {
+      it("should call triggerHandler for a redirect (openURL + frequentVisits)", async () => {
+        for (let trigger of [openURLListener, frequentVisitsListener]) {
+          const newTriggerHandler = sinon.stub();
+          await trigger.init(newTriggerHandler, hosts);
+
+          const browser = {};
+          const webProgress = {isTopLevel: true};
+          const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+          const aRequest = {
+            QueryInterface: sandbox.stub().returns({
+              originalURI: {spec: "mozilla.org", host: "mozilla.org"},
+            }),
+          };
+          trigger.onLocationChange(browser, webProgress, aRequest, aLocationURI);
+          assert.calledOnce(aRequest.QueryInterface);
+          assert.calledOnce(newTriggerHandler);
+        }
+      });
+      it("should call triggerHandler with the right arguments (redirect)", async () => {
         const newTriggerHandler = sinon.stub();
         await openURLListener.init(newTriggerHandler, hosts);
 
@@ -196,8 +214,6 @@ describe("ASRouterTriggerListeners", () => {
           }),
         };
         openURLListener.onLocationChange(browser, webProgress, aRequest, aLocationURI);
-        assert.calledOnce(aRequest.QueryInterface);
-        assert.calledOnce(newTriggerHandler);
         assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "mozilla.org"});
       });
       it("should fail for subdomains (not redirect)", async () => {
