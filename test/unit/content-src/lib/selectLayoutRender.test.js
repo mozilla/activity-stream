@@ -65,10 +65,11 @@ describe("selectLayoutRender", () => {
     store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
     store.dispatch({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: FAKE_FEEDS});
     store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: fakeSpocsData});
-    globals.sandbox.stub(global.Math, "random").returns(0.1);
+    const randomStub = globals.sandbox.stub(global.Math, "random").returns(0.1);
 
     const result = selectLayoutRender(store.getState().DiscoveryStream, []);
 
+    assert.calledTwice(randomStub);
     assert.lengthOf(result, 1);
     assert.deepEqual(result[0].components[0].data.recommendations[0], "fooSpoc");
     assert.deepEqual(result[0].components[0].data.recommendations[1], "barSpoc");
@@ -84,13 +85,71 @@ describe("selectLayoutRender", () => {
     store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
     store.dispatch({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: FAKE_FEEDS});
     store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: fakeSpocsData});
-    globals.sandbox.stub(global.Math, "random").returns(0.6);
+    const randomStub = globals.sandbox.stub(global.Math, "random").returns(0.6);
 
     const result = selectLayoutRender(store.getState().DiscoveryStream, []);
 
+    assert.calledTwice(randomStub);
     assert.lengthOf(result, 1);
     assert.deepEqual(result[0].components[0].data.recommendations[0], "foo");
     assert.deepEqual(result[0].components[0].data.recommendations[1], "bar");
+  });
+
+  it("Subsequent render should return spoc result for cached rolls below the probability", () => {
+    const fakeSpocConfig = {positions: [{index: 0}, {index: 1}], probability: 0.5};
+    const fakeLayout = [{width: 3, components: [{type: "foo", feed: {url: "foo.com"}, spocs: fakeSpocConfig}]}];
+    const fakeSpocsData = {lastUpdated: 0, spocs: {spocs: ["fooSpoc", "barSpoc"]}};
+
+    store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
+    store.dispatch({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: FAKE_FEEDS});
+    store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: fakeSpocsData});
+    const randomStub = globals.sandbox.stub(global.Math, "random");
+
+    const result = selectLayoutRender(store.getState().DiscoveryStream, [0.4, 0.3]);
+
+    assert.notCalled(randomStub);
+    assert.lengthOf(result, 1);
+    assert.deepEqual(result[0].components[0].data.recommendations[0], "fooSpoc");
+    assert.deepEqual(result[0].components[0].data.recommendations[1], "barSpoc");
+    assert.deepEqual(result[0].components[0].data.recommendations[2], "foo");
+    assert.deepEqual(result[0].components[0].data.recommendations[3], "bar");
+  });
+
+  it("Subsequent render should not return spoc result for cached rolls above the probability", () => {
+    const fakeSpocConfig = {positions: [{index: 0}, {index: 1}], probability: 0.5};
+    const fakeLayout = [{width: 3, components: [{type: "foo", feed: {url: "foo.com"}, spocs: fakeSpocConfig}]}];
+    const fakeSpocsData = {lastUpdated: 0, spocs: {spocs: ["fooSpoc", "barSpoc"]}};
+
+    store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
+    store.dispatch({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: FAKE_FEEDS});
+    store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: fakeSpocsData});
+    const randomStub = globals.sandbox.stub(global.Math, "random");
+
+    const result = selectLayoutRender(store.getState().DiscoveryStream, [0.6, 0.7]);
+
+    assert.notCalled(randomStub);
+    assert.lengthOf(result, 1);
+    assert.deepEqual(result[0].components[0].data.recommendations[0], "foo");
+    assert.deepEqual(result[0].components[0].data.recommendations[1], "bar");
+  });
+
+  it("Subsequent render should return spoc result by cached rolls probability", () => {
+    const fakeSpocConfig = {positions: [{index: 0}, {index: 1}], probability: 0.5};
+    const fakeLayout = [{width: 3, components: [{type: "foo", feed: {url: "foo.com"}, spocs: fakeSpocConfig}]}];
+    const fakeSpocsData = {lastUpdated: 0, spocs: {spocs: ["fooSpoc", "barSpoc"]}};
+
+    store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
+    store.dispatch({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: FAKE_FEEDS});
+    store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: fakeSpocsData});
+    const randomStub = globals.sandbox.stub(global.Math, "random");
+
+    const result = selectLayoutRender(store.getState().DiscoveryStream, [0.7, 0.2]);
+
+    assert.notCalled(randomStub);
+    assert.lengthOf(result, 1);
+    assert.deepEqual(result[0].components[0].data.recommendations[0], "foo");
+    assert.deepEqual(result[0].components[0].data.recommendations[1], "fooSpoc");
+    assert.deepEqual(result[0].components[0].data.recommendations[2], "bar");
   });
 
   it("should return a layout with feeds of items length with positions", () => {

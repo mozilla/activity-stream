@@ -1,6 +1,11 @@
 export const selectLayoutRender = (state, rickRollCache) => {
   const {layout, feeds, spocs} = state;
   let spocIndex = 0;
+  let bufferRollCache = [];
+
+  // rickRollCache stores random probability values for each spoc position. This cache is empty
+  // on page refresh and gets filled with random values on first render inside maybeInjectSpocs.
+  const isFirstRun = !rickRollCache.length;
 
   function maybeInjectSpocs(data, spocsConfig) {
     if (data &&
@@ -9,11 +14,16 @@ export const selectLayoutRender = (state, rickRollCache) => {
       const recommendations = [...data.recommendations];
       for (let position of spocsConfig.positions) {
         // Cache random number for a position
-        if (!rickRollCache[position.index]) {
-          rickRollCache[position.index] = Math.random();
+        let rickRoll;
+        if (isFirstRun) {
+          rickRoll = Math.random();
+          rickRollCache.push(rickRoll);
+        } else {
+          rickRoll = rickRollCache.shift();
+          bufferRollCache.push(rickRoll);
         }
 
-        if (spocs.data.spocs[spocIndex] && rickRollCache[position.index] <= spocsConfig.probability) {
+        if (spocs.data.spocs[spocIndex] && rickRoll <= spocsConfig.probability) {
           recommendations.splice(position.index, 0, spocs.data.spocs[spocIndex++]);
         }
       }
@@ -51,6 +61,11 @@ export const selectLayoutRender = (state, rickRollCache) => {
       }
 
       data = maybeInjectSpocs(data, component.spocs);
+
+      // If empty, fill rickRollCache with random probability values from bufferRollCache
+      if (!rickRollCache.length) {
+        rickRollCache.push(...bufferRollCache);
+      }
 
       let items = 0;
       if (component.properties && component.properties.items) {
