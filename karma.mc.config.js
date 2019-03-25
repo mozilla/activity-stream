@@ -115,7 +115,7 @@ module.exports = function(config) {
           },
           {
             enforce: "post",
-            test: /\.jsm?$/,
+            test: /\.js[mx]?$/,
             loader: "istanbul-instrumenter-loader",
             options: {esModules: true},
             include: [
