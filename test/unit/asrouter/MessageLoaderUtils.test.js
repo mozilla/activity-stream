@@ -135,7 +135,7 @@ describe("MessageLoaderUtils", () => {
         fetchStub.resolves({ok: true, status: 200, json: sandbox.stub().rejects(err), headers: FAKE_RESPONSE_HEADERS});
         await MessageLoaderUtils.loadMessagesForProvider(provider, FAKE_STORAGE);
 
-        assert.calledTwice(MessageLoaderUtils.reportError);
+        assert.calledOnce(MessageLoaderUtils.reportError);
         // Report that json parsing failed
         assert.calledWith(MessageLoaderUtils.reportError, err);
       });

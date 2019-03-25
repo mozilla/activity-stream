@@ -133,6 +133,7 @@ const MessageLoaderUtils = {
           jsonResponse = await response.json();
         } catch (e) {
           MessageLoaderUtils.reportError(e);
+          return remoteMessages;
         }
         if (jsonResponse && jsonResponse.messages) {
           remoteMessages = jsonResponse.messages
