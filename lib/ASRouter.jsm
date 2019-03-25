@@ -128,13 +128,14 @@ const MessageLoaderUtils = {
         response.status !== 304 &&
         (response.ok || response.status === 302)
       ) {
+        let jsonResponse;
         try {
-          response = await response.json();
+          jsonResponse = await response.json();
         } catch (e) {
           MessageLoaderUtils.reportError(e);
         }
-        if (response.messages) {
-          remoteMessages = response.messages
+        if (jsonResponse && jsonResponse.messages) {
+          remoteMessages = jsonResponse.messages
             .map(msg => ({...msg, provider_url: provider.url}));
 
           // Cache the results if this isn't a preview URL.
