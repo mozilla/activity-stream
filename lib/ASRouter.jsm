@@ -149,9 +149,11 @@ const MessageLoaderUtils = {
 
             storage.set(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY, {...allCached, [provider.id]: cacheInfo});
           }
+        } else {
+          MessageLoaderUtils.reportError(`No messages returned from ${provider.url}.`);
         }
       } else if (response) {
-        MessageLoaderUtils.reportError(`Invalid response status ${response.status}`);
+        MessageLoaderUtils.reportError(`Invalid response status ${response.status} from ${provider.url}.`);
       }
     }
     return remoteMessages;
@@ -436,7 +438,7 @@ class _ASRouter {
     return [...this.state.errors, ...MessageLoaderUtils.errors]
       .map(({timestamp, error}) => ({
         timestamp,
-        error: {message: error.message, stack: error.stack, fileName: error.fileName},
+        error: {message: error.toString(), stack: error.stack},
       }
       ));
   }
