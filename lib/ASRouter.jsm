@@ -104,17 +104,27 @@ const MessageLoaderUtils = {
         headers.set("If-None-Match", etag);
       }
 
+      let response;
       try {
-        const response = await fetch(provider.url, {headers});
-        if (
-          // Empty response
-          response.status !== 204 &&
-          // Not modified
-          response.status !== 304 &&
-          (response.ok || response.status === 302)
-        ) {
-          remoteMessages = (await response.json())
-            .messages
+        response = await fetch(provider.url, {headers});
+      } catch (e) {
+        Cu.reportError(e);
+      }
+      if (
+        response &&
+        // Empty response
+        response.status !== 204 &&
+        // Not modified
+        response.status !== 304 &&
+        (response.ok || response.status === 302)
+      ) {
+        try {
+          remoteMessages = await response.json();
+        } catch (e) {
+          Cu.reportError(e);
+        }
+        if (remoteMessages.messages) {
+          remoteMessages = remoteMessages.messages
             .map(msg => ({...msg, provider_url: provider.url}));
 
           // Cache the results if this isn't a preview URL.
@@ -130,8 +140,8 @@ const MessageLoaderUtils = {
             storage.set(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY, {...allCached, [provider.id]: cacheInfo});
           }
         }
-      } catch (e) {
-        Cu.reportError(e);
+      } else if (response) {
+        Cu.reportError(`Invalid response status ${response.status}`);
       }
     }
     return remoteMessages;
