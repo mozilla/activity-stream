@@ -152,7 +152,6 @@ export class ASRouterAdminInner extends React.PureComponent {
     this.onCopyTargetingParams = this.onCopyTargetingParams.bind(this);
     this.onPasteTargetingParams = this.onPasteTargetingParams.bind(this);
     this.onNewTargetingParams = this.onNewTargetingParams.bind(this);
-    this.renderErrorMessage = this.renderErrorMessage.bind(this);
     this.state = {
       messageFilter: "all",
       evaluationStatus: {},
@@ -563,12 +562,8 @@ export class ASRouterAdminInner extends React.PureComponent {
       </div>);
   }
 
-  reportErrorToConsole(error) {
-    return () => console.log(error); // eslint-disable-line no-console
-  }
-
   renderErrorMessage({timestamp, error}) {
-    return (<tr onClick={this.reportErrorToConsole(error)}>
+    return (<tr>
       <td>{error.message}</td>
       <td>{relativeTime(timestamp)}</td>
     </tr>);
