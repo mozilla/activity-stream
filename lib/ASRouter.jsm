@@ -49,6 +49,16 @@ const STARTPAGE_VERSION = "6";
 const MessageLoaderUtils = {
   STARTPAGE_VERSION,
   REMOTE_LOADER_CACHE_KEY: "RemoteLoaderCache",
+  _errors: [],
+
+  reportError(e) {
+    Cu.reportError(e);
+    this._errors = [{timestamp: new Date(), error: e}, ...this._errors];
+  },
+
+  get errors() {
+    return this._errors;
+  },
 
   /**
    * _localLoader - Loads messages for a local provider (i.e. one that lives in mozilla central)
@@ -67,7 +77,7 @@ const MessageLoaderUtils = {
       allCached = await storage.get(MessageLoaderUtils.REMOTE_LOADER_CACHE_KEY) || {};
     } catch (e) {
       // istanbul ignore next
-      Cu.reportError(e);
+      MessageLoaderUtils.reportError(e);
       // istanbul ignore next
       allCached = {};
     }
@@ -108,7 +118,7 @@ const MessageLoaderUtils = {
       try {
         response = await fetch(provider.url, {headers});
       } catch (e) {
-        Cu.reportError(e);
+        MessageLoaderUtils.reportError(e);
       }
       if (
         response &&
@@ -119,12 +129,12 @@ const MessageLoaderUtils = {
         (response.ok || response.status === 302)
       ) {
         try {
-          remoteMessages = await response.json();
+          response = await response.json();
         } catch (e) {
-          Cu.reportError(e);
+          MessageLoaderUtils.reportError(e);
         }
-        if (remoteMessages.messages) {
-          remoteMessages = remoteMessages.messages
+        if (response.messages) {
+          remoteMessages = response.messages
             .map(msg => ({...msg, provider_url: provider.url}));
 
           // Cache the results if this isn't a preview URL.
@@ -141,7 +151,7 @@ const MessageLoaderUtils = {
           }
         }
       } else if (response) {
-        Cu.reportError(`Invalid response status ${response.status}`);
+        MessageLoaderUtils.reportError(`Invalid response status ${response.status}`);
       }
     }
     return remoteMessages;
@@ -160,7 +170,7 @@ const MessageLoaderUtils = {
       try {
         messages = await MessageLoaderUtils._getRemoteSettingsMessages(provider.bucket);
       } catch (e) {
-        Cu.reportError(e);
+        MessageLoaderUtils.reportError(e);
       }
     }
     return messages;
@@ -215,7 +225,7 @@ const MessageLoaderUtils = {
     // istanbul ignore if
     if (!messages) {
       messages = [];
-      Cu.reportError(new Error(`Tried to load messages for ${provider.id} but the result was not an Array.`));
+      MessageLoaderUtils.reportError(new Error(`Tried to load messages for ${provider.id} but the result was not an Array.`));
     }
     // Filter out messages we temporarily want to exclude
     if (provider.exclude && provider.exclude.length) {
@@ -262,7 +272,7 @@ const MessageLoaderUtils = {
       await AddonManager.installAddonFromWebpage("application/x-xpinstall", browser,
         systemPrincipal, install);
     } catch (e) {
-      Cu.reportError(e);
+      MessageLoaderUtils.reportError(e);
     }
   },
 
@@ -312,6 +322,7 @@ class _ASRouter {
       messageImpressions: {},
       providerImpressions: {},
       messages: [],
+      errors: [],
     };
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
@@ -414,6 +425,20 @@ class _ASRouter {
         resolve();
       };
     });
+  }
+
+  reportError(e) {
+    Cu.reportError(e);
+    this.setState(({errors}) => ({errors: [{timestamp: new Date(), error: e}, ...errors]}));
+  }
+
+  get errors() {
+    return [...this.state.errors, ...MessageLoaderUtils.errors]
+      .map(({timestamp, error}) => ({
+        timestamp,
+        error: {message: error.message, stack: error.stack, fileName: error.fileName},
+      }
+      ));
   }
 
   /**
@@ -565,12 +590,13 @@ class _ASRouter {
         providerPrefs: ASRouterPreferences.providers,
         userPrefs: ASRouterPreferences.getAllUserPreferences(),
         targetingParameters: await this.getTargetingParameters(ASRouterTargeting.Environment, this._getMessagesContext()),
+        errors: this.errors,
       },
     });
   }
 
   _handleTargetingError(type, error, message) {
-    Cu.reportError(error);
+    this.reportError(error);
     if (this.dispatchToAS) {
       this.dispatchToAS(ac.ASRouterUserEvent({
         message_id: message.id,
@@ -912,10 +938,10 @@ class _ASRouter {
     try {
       const endpoint = new URL(url);
       if (!this.WHITELIST_HOSTS[endpoint.host]) {
-        Cu.reportError(`The preview URL host ${endpoint.host} is not in the whitelist.`);
+        this.reportError(`The preview URL host ${endpoint.host} is not in the whitelist.`);
       }
       if (endpoint.protocol !== "https:") {
-        Cu.reportError("The URL protocol is not https.");
+        this.reportError("The URL protocol is not https.");
       }
       return (endpoint.protocol === "https:" && this.WHITELIST_HOSTS[endpoint.host]);
     } catch (e) {
@@ -940,7 +966,7 @@ class _ASRouter {
       additionalHosts = JSON.parse(whitelistPrefValue);
     } catch (e) {
       if (whitelistPrefValue) {
-        Cu.reportError(`Pref ${SNIPPETS_ENDPOINT_WHITELIST} value is not valid JSON`);
+        this.reportError(`Pref ${SNIPPETS_ENDPOINT_WHITELIST} value is not valid JSON`);
       }
     }
 
