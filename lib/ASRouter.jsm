@@ -53,11 +53,13 @@ const MessageLoaderUtils = {
 
   reportError(e) {
     Cu.reportError(e);
-    this._errors.push({timestamp: new Date(), error: e});
+    this._errors.push({timestamp: new Date(), error: {message: e.toString(), stack: e.stack}});
   },
 
   get errors() {
-    return this._errors;
+    const errors = this._errors;
+    this._errors = [];
+    return errors;
   },
 
   /**
@@ -240,6 +242,7 @@ const MessageLoaderUtils = {
       messages: messages.map(msg => ({weight: 100, ...msg, provider: provider.id}))
                         .filter(message => message.weight > 0),
       lastUpdated,
+      errors: MessageLoaderUtils.errors,
     };
   },
 
@@ -276,7 +279,7 @@ const MessageLoaderUtils = {
       await AddonManager.installAddonFromWebpage("application/x-xpinstall", browser,
         systemPrincipal, install);
     } catch (e) {
-      MessageLoaderUtils.reportError(e);
+      Cu.reportError(e);
     }
   },
 
@@ -431,21 +434,6 @@ class _ASRouter {
     });
   }
 
-  reportError(e) {
-    Cu.reportError(e);
-    this.setState(({errors}) => ({errors: [{timestamp: new Date(), error: e}, ...errors]}));
-  }
-
-  get errors() {
-    return [...this.state.errors, ...MessageLoaderUtils.errors]
-      .map(({timestamp, error}) => ({
-        timestamp,
-        // Can't send error object to content process
-        error: {message: error.toString(), stack: error.stack},
-      }
-      ));
-  }
-
   /**
    * loadMessagesFromAllProviders - Loads messages from all providers if they require updates.
    *                                Checks the .lastUpdated field on each provider to see if updates are needed
@@ -458,9 +446,9 @@ class _ASRouter {
       let newState = {messages: [], providers: []};
       for (const provider of this.state.providers) {
         if (needsUpdate.includes(provider)) {
-          let {messages, lastUpdated} = await MessageLoaderUtils.loadMessagesForProvider(provider, this._storage);
+          let {messages, lastUpdated, errors} = await MessageLoaderUtils.loadMessagesForProvider(provider, this._storage);
           messages = messages.filter(({content}) => !content || !content.category || ASRouterPreferences.getUserPreference(content.category));
-          newState.providers.push({...provider, lastUpdated});
+          newState.providers.push({...provider, lastUpdated, errors});
           newState.messages = [...newState.messages, ...messages];
         } else {
           // Skip updating this provider's messages if no update is required
@@ -601,7 +589,7 @@ class _ASRouter {
   }
 
   _handleTargetingError(type, error, message) {
-    this.reportError(error);
+    Cu.reportError(error);
     if (this.dispatchToAS) {
       this.dispatchToAS(ac.ASRouterUserEvent({
         message_id: message.id,
@@ -943,10 +931,10 @@ class _ASRouter {
     try {
       const endpoint = new URL(url);
       if (!this.WHITELIST_HOSTS[endpoint.host]) {
-        this.reportError(`The preview URL host ${endpoint.host} is not in the whitelist.`);
+        Cu.reportError(`The preview URL host ${endpoint.host} is not in the whitelist.`);
       }
       if (endpoint.protocol !== "https:") {
-        this.reportError("The URL protocol is not https.");
+        Cu.reportError("The URL protocol is not https.");
       }
       return (endpoint.protocol === "https:" && this.WHITELIST_HOSTS[endpoint.host]);
     } catch (e) {
@@ -971,7 +959,7 @@ class _ASRouter {
       additionalHosts = JSON.parse(whitelistPrefValue);
     } catch (e) {
       if (whitelistPrefValue) {
-        this.reportError(`Pref ${SNIPPETS_ENDPOINT_WHITELIST} value is not valid JSON`);
+        Cu.reportError(`Pref ${SNIPPETS_ENDPOINT_WHITELIST} value is not valid JSON`);
       }
     }
 

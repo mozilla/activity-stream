@@ -562,28 +562,32 @@ export class ASRouterAdminInner extends React.PureComponent {
       </div>);
   }
 
-  renderErrorMessage({timestamp, error}, idx) {
-    return (<tr key={idx}>
+  renderErrorMessage({id, errors}) {
+    const providerId = <td rowSpan={errors.length}>{id}</td>;
+    return errors.map(({error, timestamp}, cellKey) => (<tr key={cellKey}>
+      {cellKey === 0 ? providerId : null}
       <td>{error.message}</td>
       <td>{relativeTime(timestamp)}</td>
-    </tr>);
+      </tr>)
+    );
   }
 
   renderErrors() {
     // sorts tA first if tA < tB, most recent timestamp will come first
-    const sortFn = (a, b) => a.timestamp - b.timestamp;
+    // const sortFn = (a, b) => a.timestamp - b.timestamp;
+    const providersWithErrors = this.state.providers && this.state.providers
+      .filter(p => p.errors && p.errors.length);
 
-    if (this.state.errors && this.state.errors.length) {
-      return (<table>
+    if (providersWithErrors && providersWithErrors.length) {
+      return (<table className="errorReporting">
         <thead>
           <tr>
+            <th>Provider ID</th>
             <th>Message</th>
             <th>Timestamp</th>
           </tr>
         </thead>
-        <tbody>
-          {this.state.errors.sort(sortFn).map(this.renderErrorMessage)}
-        </tbody>
+        <tbody>{providersWithErrors.map(this.renderErrorMessage)}</tbody>
         </table>);
     }
 
