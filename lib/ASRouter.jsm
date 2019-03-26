@@ -116,7 +116,7 @@ const MessageLoaderUtils = {
 
       let response;
       try {
-        response = await fetch(provider.url, {headers});
+        response = await fetch(provider.url, {headers, credentials: "omit"});
       } catch (e) {
         MessageLoaderUtils.reportError(e);
       }
