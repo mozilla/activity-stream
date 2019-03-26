@@ -53,7 +53,7 @@ const MessageLoaderUtils = {
 
   reportError(e) {
     Cu.reportError(e);
-    this._errors = [{timestamp: new Date(), error: e}, ...this._errors];
+    this._errors.push({timestamp: new Date(), error: e});
   },
 
   get errors() {
