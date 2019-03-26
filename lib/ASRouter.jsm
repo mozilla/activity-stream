@@ -440,6 +440,7 @@ class _ASRouter {
     return [...this.state.errors, ...MessageLoaderUtils.errors]
       .map(({timestamp, error}) => ({
         timestamp,
+        // Can't send error object to content process
         error: {message: error.toString(), stack: error.stack},
       }
       ));
