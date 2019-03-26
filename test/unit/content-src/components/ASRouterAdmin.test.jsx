@@ -77,6 +77,9 @@ describe("ASRouterAdmin", () => {
         .at(0)
         .text(), "foo");
       assert.lengthOf(wrapper.find("tbody tr"), 2);
+      assert.equal(wrapper.find("tbody tr").at(0).find("td")
+        .at(1)
+        .text(), secondError.error.message);
     });
   });
   describe("#render", () => {
