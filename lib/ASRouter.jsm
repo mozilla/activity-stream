@@ -124,10 +124,7 @@ const MessageLoaderUtils = {
       }
       if (
         response &&
-        // Empty response
-        response.status !== 204 &&
-        // Not modified
-        response.status !== 304 &&
+        (response.status >= 200 && response.status < 400) &&
         (response.ok || response.status === 302)
       ) {
         let jsonResponse;

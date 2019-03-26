@@ -67,7 +67,7 @@ describe("ASRouterAdmin", () => {
       wrapper = shallow(<ASRouterAdminInner location={{routes: ["pocket"]}} Sections={[]} />);
       assert.equal(wrapper.find("h2").at(0).text(), "Pocket");
     });
-    it.only("should render two error messages", () => {
+    it("should render two error messages", () => {
       wrapper = shallow(<ASRouterAdminInner location={{routes: ["errors"]}} Sections={[]} />);
       const firstError = {timestamp: Date.now() + 100, error: {message: "first"}};
       const secondError = {timestamp: Date.now(), error: {message: "second"}};
