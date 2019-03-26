@@ -25,7 +25,7 @@ describe("ASRouterAdmin", () => {
   }];
   beforeEach(() => {
     globals = new GlobalOverrider();
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
     sendMessageStub = sandbox.stub();
     addListenerStub = sandbox.stub();
     removeListenerStub = sandbox.stub();
