@@ -576,10 +576,14 @@ export class ASRouterAdminInner extends React.PureComponent {
     if (this.state.errors && this.state.errors.length) {
       return (<table>
         <thead>
-          <td>Message</td>
-          <td>Timestamp</td>
+          <tr>
+            <th>Message</th>
+            <th>Timestamp</th>
+          </tr>
         </thead>
-        {this.state.errors.sort(sortFn).map(this.renderErrorMessage)}
+        <tbody>
+          {this.state.errors.sort(sortFn).map(this.renderErrorMessage)}
+        </tbody>
         </table>);
     }
 
