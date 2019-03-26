@@ -25,39 +25,31 @@ export class DSImage extends React.PureComponent {
   render() {
     const classNames = `ds-image${this.props.extraClassNames ? ` ${this.props.extraClassNames}` : ``}`;
 
-    let element;
-    let source;
+    let source, source2x;
 
     if (this.state && this.state.parentContainerWidth) {
-      console.log(`parentContainerWidth is defined: ${this.state.parentContainerWidth}`);
       source = this.reformatImageURL(this.props.source, this.state.parentContainerWidth);
+      source2x = this.reformatImageURL(this.props.source, this.state.parentContainerWidth * 2);
     }
 
-    if (this.props.asBackground) {
-      element = (
-        <div className={classNames} style={{border: `1px solid red`, backgroundImage: `url(${source})`}} />
-      )
-    } else {
-      element = (
-        <img className={classNames} src={source} />
-      )
-    }
-
-    return element;
+    return (
+      <picture className={classNames}>
+        <img src={source} srcset={`${source2x} 2x`} />
+      </picture>
+    )
   }
 }
 
 DSImage.defaultProps = {
-  extraClassNames: null,
-  asBackground: false
+  extraClassNames: null
 }
 
 /*
 
 TODO:
 
-- switch over to Picture element
-- detect retina and use 1x if not present
++ switch over to Picture element
++ detect retina and use 1x if not present
 - force jpeg (?)
 - enable lazy loading
 - memoize images so that smaller versions aren't fetched unnecissarily
