@@ -5,6 +5,7 @@ import {
   FAKE_LOCAL_MESSAGES,
   FAKE_LOCAL_PROVIDER,
   FAKE_LOCAL_PROVIDERS,
+  FAKE_RECOMMENDATION,
   FAKE_REMOTE_MESSAGES,
   FAKE_REMOTE_PROVIDER,
   FAKE_REMOTE_SETTINGS_PROVIDER,
@@ -1206,6 +1207,35 @@ describe("ASRouter", () => {
         await Router.onMessage(msg);
         assert.notProperty(Router.state.providerImpressions, "foo");
         assert.notCalled(Router._storage.set);
+      });
+      it("should only send impressions for one message", async () => {
+        const getElementById = sandbox.stub().returns({
+          setAttribute: sandbox.stub(),
+          style: {setProperty: sandbox.stub()},
+          addEventListener: sandbox.stub(),
+        });
+        const data = {param: "mozilla.com"};
+        const target = {
+          sendAsyncMessage: sandbox.stub(),
+          documentURI: {scheme: "https", host: "mozilla.com"},
+        };
+        target.ownerGlobal = {gBrowser: {selectedBrowser: target}, document: {getElementById}, promiseDocumentFlushed: sandbox.stub().resolves([{width: 0}]), setTimeout: sandbox.stub()};
+        const firstMessage = {...FAKE_RECOMMENDATION, id: "first_message"};
+        const secondMessage = {...FAKE_RECOMMENDATION, id: "second_message"};
+        await Router.setState({messages: [firstMessage, secondMessage]});
+        global.DOMLocalization = class DOMLocalization {};
+        sandbox.spy(CFRPageActions, "addRecommendation");
+        sandbox.stub(Router, "addImpression").resolves();
+
+        await Router.setMessageById("first_message", target, false, {data});
+        await Router.setMessageById("second_message", target, false, {data});
+
+        assert.calledTwice(CFRPageActions.addRecommendation);
+        const [firstReturn, secondReturn] = CFRPageActions.addRecommendation.returnValues;
+        assert.isTrue(await firstReturn);
+        // Adding the second message should fail.
+        assert.isFalse(await secondReturn);
+        assert.calledOnce(Router.addImpression);
       });
     });
 
