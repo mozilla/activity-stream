@@ -9,7 +9,7 @@ describe("ASRouterTriggerListeners", () => {
   const triggerHandler = () => {};
   const openURLListener = ASRouterTriggerListeners.get("openURL");
   const frequentVisitsListener = ASRouterTriggerListeners.get("frequentVisits");
-  const hosts = ["mozilla.com", "mozilla.org"];
+  const hosts = ["www.mozilla.com", "www.mozilla.org"];
 
   function resetEnumeratorStub(windows) {
     windowEnumeratorStub
@@ -181,7 +181,7 @@ describe("ASRouterTriggerListeners", () => {
         const location = "www.mozilla.org";
         openURLListener.onLocationChange(browser, webProgress, undefined, {host: location});
         assert.calledOnce(newTriggerHandler);
-        assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "mozilla.org"});
+        assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "www.mozilla.org"});
       });
       it("should call triggerHandler for a redirect (openURL + frequentVisits)", async () => {
         for (let trigger of [openURLListener, frequentVisitsListener]) {
@@ -193,7 +193,7 @@ describe("ASRouterTriggerListeners", () => {
           const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
           const aRequest = {
             QueryInterface: sandbox.stub().returns({
-              originalURI: {spec: "mozilla.org", host: "mozilla.org"},
+              originalURI: {spec: "www.mozilla.org", host: "www.mozilla.org"},
             }),
           };
           trigger.onLocationChange(browser, webProgress, aRequest, aLocationURI);
@@ -210,11 +210,11 @@ describe("ASRouterTriggerListeners", () => {
         const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
         const aRequest = {
           QueryInterface: sandbox.stub().returns({
-            originalURI: {spec: "mozilla.org", host: "mozilla.org"},
+            originalURI: {spec: "www.mozilla.org", host: "www.mozilla.org"},
           }),
         };
         openURLListener.onLocationChange(browser, webProgress, aRequest, aLocationURI);
-        assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "mozilla.org"});
+        assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "www.mozilla.org"});
       });
       it("should call triggerHandler for a redirect (openURL + frequentVisits)", async () => {
         for (let trigger of [openURLListener, frequentVisitsListener]) {
