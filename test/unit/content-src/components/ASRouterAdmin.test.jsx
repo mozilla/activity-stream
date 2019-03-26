@@ -67,19 +67,16 @@ describe("ASRouterAdmin", () => {
       wrapper = shallow(<ASRouterAdminInner location={{routes: ["pocket"]}} Sections={[]} />);
       assert.equal(wrapper.find("h2").at(0).text(), "Pocket");
     });
-    it("should render two sorted error messages", () => {
+    it.only("should render two error messages", () => {
       wrapper = shallow(<ASRouterAdminInner location={{routes: ["errors"]}} Sections={[]} />);
       const firstError = {timestamp: Date.now() + 100, error: {message: "first"}};
       const secondError = {timestamp: Date.now(), error: {message: "second"}};
-      wrapper.setState({errors: [firstError, secondError]});
+      wrapper.setState({providers: [{id: "foo", errors: [firstError, secondError]}]});
 
-      // secondError is more recent, it should be first (ascending order)
-      assert.equal(wrapper.find("tr").at(0).find("td")
+      assert.equal(wrapper.find("tbody tr").at(0).find("td")
         .at(0)
-        .text(), secondError.error.message);
-      assert.equal(wrapper.find("tr").at(1).find("td")
-        .at(0)
-        .text(), firstError.error.message);
+        .text(), "foo");
+      assert.lengthOf(wrapper.find("tbody tr"), 2);
     });
   });
   describe("#render", () => {

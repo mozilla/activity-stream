@@ -564,7 +564,7 @@ export class ASRouterAdminInner extends React.PureComponent {
 
   renderErrorMessage({id, errors}) {
     const providerId = <td rowSpan={errors.length}>{id}</td>;
-    return errors.map(({error, timestamp}, cellKey) => (<tr key={cellKey}>
+    return errors.reverse().map(({error, timestamp}, cellKey) => (<tr key={cellKey}>
       {cellKey === 0 ? providerId : null}
       <td>{error.message}</td>
       <td>{relativeTime(timestamp)}</td>
@@ -573,8 +573,6 @@ export class ASRouterAdminInner extends React.PureComponent {
   }
 
   renderErrors() {
-    // sorts tA first if tA < tB, most recent timestamp will come first
-    // const sortFn = (a, b) => a.timestamp - b.timestamp;
     const providersWithErrors = this.state.providers && this.state.providers
       .filter(p => p.errors && p.errors.length);
 
