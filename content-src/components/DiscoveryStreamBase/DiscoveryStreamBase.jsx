@@ -121,6 +121,8 @@ export class _DiscoveryStreamBase extends React.PureComponent {
             items={component.properties.items} />
         );
       case "Hero":
+        console.log(component);
+
         return (
           <Hero
             subComponentType={embedWidth >= 9 ? `cards` : `list`}

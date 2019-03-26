@@ -60,5 +60,6 @@ TODO:
 - detect retina and use 1x if not present
 - force jpeg (?)
 - enable lazy loading
+- memoize images so that smaller versions aren't fetched unnecissarily
 
 */
