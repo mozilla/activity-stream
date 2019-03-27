@@ -104,7 +104,7 @@ this.ASRouterTriggerListeners = new Map([
           this._matchPatternSet = new MatchPatternSet([
             ...this._matchPatternSet.patterns,
             ...patterns,
-          ]);
+          ], MATCH_PATTERN_OPTIONS);
         } else {
           this._matchPatternSet = new MatchPatternSet(patterns, MATCH_PATTERN_OPTIONS);
         }
