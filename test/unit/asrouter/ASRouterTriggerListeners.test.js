@@ -1,4 +1,5 @@
 import {ASRouterTriggerListeners} from "lib/ASRouterTriggerListeners.jsm";
+import {GlobalOverrider} from "test/unit/utils";
 
 describe("ASRouterTriggerListeners", () => {
   let sandbox;
@@ -82,6 +83,30 @@ describe("ASRouterTriggerListeners", () => {
       frequentVisitsListener.onTabSwitch({target: {ownerGlobal: existingWindow}});
 
       assert.notCalled(stub);
+    });
+    describe("MatchPattern", () => {
+      let globals;
+      beforeEach(() => {
+        globals = new GlobalOverrider();
+        globals.set("MatchPatternSet", sandbox.stub().callsFake(patterns => ({patterns})));
+      });
+      afterEach(() => {
+        globals.restore();
+        frequentVisitsListener.uninit();
+      });
+      it("should create a matchPatternSet", async () => {
+        await frequentVisitsListener.init(_triggerHandler, hosts, ["pattern"]);
+
+        assert.calledOnce(window.MatchPatternSet);
+        assert.calledWithExactly(window.MatchPatternSet, ["pattern"], {ignorePath: true});
+      });
+      it("should allow to add multiple patterns", async () => {
+        await frequentVisitsListener.init(_triggerHandler, hosts, ["pattern"]);
+        await frequentVisitsListener.init(_triggerHandler, hosts, ["foo"]);
+
+        assert.calledTwice(window.MatchPatternSet);
+        assert.calledWithExactly(window.MatchPatternSet, ["pattern", "foo"], {ignorePath: true});
+      });
     });
   });
 
