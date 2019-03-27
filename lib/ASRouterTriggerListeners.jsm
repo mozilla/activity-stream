@@ -152,7 +152,12 @@ this.ASRouterTriggerListeners = new Map([
     },
 
     onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI, aFlags) {
-      let host = aLocationURI ? aLocationURI.host : "";
+      let host;
+      try {
+        host = aLocationURI ? aLocationURI.host : "";
+      } catch (e) { // about: pages will throw errors
+        return;
+      }
       // Some websites trigger redirect events after they finish loading even
       // though the location remains the same. This results in onLocationChange
       // events to be fired twice.
@@ -273,7 +278,12 @@ this.ASRouterTriggerListeners = new Map([
     },
 
     onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI, aFlags) {
-      let host = aLocationURI ? aLocationURI.host : "";
+      let host;
+      try {
+        host = aLocationURI ? aLocationURI.host : "";
+      } catch (e) { // about: pages will throw errors
+        return;
+      }
       // Some websites trigger redirect events after they finish loading even
       // though the location remains the same. This results in onLocationChange
       // events to be fired twice.
