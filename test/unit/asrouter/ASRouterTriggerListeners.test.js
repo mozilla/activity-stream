@@ -195,6 +195,7 @@ describe("ASRouterTriggerListeners", () => {
     describe("#onLocationChange", () => {
       afterEach(() => {
         openURLListener.uninit();
+        frequentVisitsListener.uninit();
       });
 
       it("should call the ._triggerHandler with the right arguments", async () => {
