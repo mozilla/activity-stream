@@ -141,7 +141,9 @@ this.ASRouterTriggerListeners = new Map([
       try {
         // nsIURI.host can throw for non-nsStandardURL nsIURIs.
         host = gBrowser.currentURI.host;
-      } catch (e) {} // Couldn't parse location URL
+      } catch (e) {
+        return; // Couldn't parse location URL
+      }
 
       if (checkHost(gBrowser.currentURI, {hosts: this._hosts, matchPatternSet: this._matchPatternSet})) {
         this.triggerHandler(gBrowser.selectedBrowser, host);
