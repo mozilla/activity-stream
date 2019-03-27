@@ -32,11 +32,19 @@ export class DSImage extends React.PureComponent {
       source2x = this.reformatImageURL(this.props.source, this.state.parentContainerWidth * 2);
     }
 
-    return (
-      <picture className={classNames}>
-        <img src={source} srcset={`${source2x} 2x`} />
-      </picture>
-    )
+    let element = (
+      <picture className={classNames}></picture>
+    );
+
+    if (source && source2x) {
+      element = (
+        <picture className={classNames}>
+          <img src={source} srcset={`${source2x} 2x`} />
+        </picture>
+      );
+    }
+
+    return element;
   }
 }
 

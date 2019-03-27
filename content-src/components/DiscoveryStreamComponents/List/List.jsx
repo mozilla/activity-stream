@@ -1,6 +1,7 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {connect} from "react-redux";
 import {DSLinkMenu} from "../DSLinkMenu/DSLinkMenu";
+import {DSImage} from "../DSImage/DSImage.jsx";
 import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 import {SafeAnchor} from "../SafeAnchor/SafeAnchor";
@@ -55,7 +56,7 @@ export class ListItem extends React.PureComponent {
               <span className="ds-list-item-info">{this.props.domain}</span>
             </p>
           </div>
-          <div className="ds-list-image" style={{backgroundImage: `url(${this.props.image_src})`}} />
+          <DSImage extraClassNames="ds-list-image" source={this.props.image_src}></DSImage>
           <ImpressionStats
             campaignId={this.props.campaignId}
             rows={[{id: this.props.id, pos: this.props.pos}]}
