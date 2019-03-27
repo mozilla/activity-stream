@@ -82,26 +82,32 @@ this.ASRouterTriggerListeners = new Map([
     _visits: null,
 
     async init(triggerHandler, hosts = [], patterns) {
-      if (this._initialized) {
-        return;
-      }
-      this.onTabSwitch = this.onTabSwitch.bind(this);
+      if (!this._initialized) {
+        this.onTabSwitch = this.onTabSwitch.bind(this);
 
-      // Add listeners to all existing browser windows
-      for (let win of Services.wm.getEnumerator("navigator:browser")) {
-        if (isPrivateWindow(win)) {
-          continue;
+        // Add listeners to all existing browser windows
+        for (let win of Services.wm.getEnumerator("navigator:browser")) {
+          if (isPrivateWindow(win)) {
+            continue;
+          }
+          await checkStartupFinished(win);
+          win.addEventListener("TabSelect", this.onTabSwitch);
+          win.gBrowser.addTabsProgressListener(this);
         }
-        await checkStartupFinished(win);
-        win.addEventListener("TabSelect", this.onTabSwitch);
-        win.gBrowser.addTabsProgressListener(this);
-      }
 
-      this._initialized = true;
+        this._initialized = true;
+        this._visits = new Map();
+      }
       this._triggerHandler = triggerHandler;
-      this._visits = new Map();
       if (patterns) {
-        this._matchPatternSet = new MatchPatternSet(patterns, MATCH_PATTERN_OPTIONS);
+        if (this._matchPatternSet) {
+          this._matchPatternSet = new MatchPatternSet([
+            ...this._matchPatternSet.patterns,
+            ...patterns,
+          ]);
+        } else {
+          this._matchPatternSet = new MatchPatternSet(patterns, MATCH_PATTERN_OPTIONS);
+        }
       }
       if (this._hosts) {
         hosts.forEach(h => this._hosts.add(h));
