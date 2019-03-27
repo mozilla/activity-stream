@@ -664,6 +664,22 @@ describe("Reducers", () => {
       assert.equal(state.layout[0], "test");
       assert.equal(state.lastUpdated, 123);
     });
+    it("should reset layout data with DISCOVERY_STREAM_LAYOUT_RESET", () => {
+      const layoutData = {layout: ["test"], lastUpdated: 123};
+      const feedsData = {
+        "https://foo.com/feed1": {lastUpdated: 123, data: [1, 2, 3]},
+      };
+      const spocsData = {
+        lastUpdated: 123,
+        spocs: [1, 2, 3],
+      };
+      let state = DiscoveryStream(undefined, {type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: layoutData});
+      state = DiscoveryStream(state, {type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: feedsData});
+      state = DiscoveryStream(state, {type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: spocsData});
+      state = DiscoveryStream(state, {type: at.DISCOVERY_STREAM_LAYOUT_RESET});
+
+      assert.deepEqual(state, INITIAL_STATE.DiscoveryStream);
+    });
     it("should set config data with DISCOVERY_STREAM_CONFIG_CHANGE", () => {
       const state = DiscoveryStream(undefined, {type: at.DISCOVERY_STREAM_CONFIG_CHANGE, data: {enabled: true}});
       assert.deepEqual(state.config, {enabled: true});

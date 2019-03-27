@@ -466,7 +466,7 @@ function DiscoveryStream(prevState = INITIAL_STATE.DiscoveryStream, action) {
     case at.DISCOVERY_STREAM_LAYOUT_UPDATE:
       return {...prevState, lastUpdated: action.data.lastUpdated || null, layout: action.data.layout || []};
     case at.DISCOVERY_STREAM_LAYOUT_RESET:
-      return {...prevState, lastUpdated: INITIAL_STATE.DiscoveryStream.lastUpdated, layout: INITIAL_STATE.DiscoveryStream.layout};
+      return {...INITIAL_STATE.DiscoveryStream, config: prevState.config};
     case at.DISCOVERY_STREAM_FEEDS_UPDATE:
       return {
         ...prevState,
