@@ -300,7 +300,7 @@ this.ASRouterTriggerListeners = new Map([
       let host;
       try {
         host = aLocationURI ? aLocationURI.host : "";
-      } catch (e) { // about: pages will throw errors
+      } catch (e) { // about: pages throw errors
         return;
       }
       // Some websites trigger redirect events after they finish loading even
