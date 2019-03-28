@@ -41,15 +41,14 @@ function isPrivateWindow(win) {
  *
  * @returns {string} - the host that matched the whitelist
  */
-function checkHost(aLocationURI, {hosts, matchPatternSet}, aRequest) {
+function checkURLMatch(aLocationURI, {hosts, matchPatternSet}, aRequest) {
   // Check current location against whitelisted hosts
   if (hosts.has(aLocationURI.host)) {
     return aLocationURI.host;
   }
 
   if (matchPatternSet) {
-    const uri = Services.io.newURI(aLocationURI.spec);
-    if (matchPatternSet.matches(uri)) {
+    if (matchPatternSet.matches(aLocationURI.spec)) {
       return aLocationURI.host;
     }
   }
@@ -101,10 +100,10 @@ this.ASRouterTriggerListeners = new Map([
       this._triggerHandler = triggerHandler;
       if (patterns) {
         if (this._matchPatternSet) {
-          this._matchPatternSet = new MatchPatternSet([
+          this._matchPatternSet = new MatchPatternSet(new Set([
             ...this._matchPatternSet.patterns,
             ...patterns,
-          ], MATCH_PATTERN_OPTIONS);
+          ]), MATCH_PATTERN_OPTIONS);
         } else {
           this._matchPatternSet = new MatchPatternSet(patterns, MATCH_PATTERN_OPTIONS);
         }
@@ -151,7 +150,7 @@ this.ASRouterTriggerListeners = new Map([
         return; // Couldn't parse location URL
       }
 
-      if (checkHost(gBrowser.currentURI, {hosts: this._hosts, matchPatternSet: this._matchPatternSet})) {
+      if (checkURLMatch(gBrowser.currentURI, {hosts: this._hosts, matchPatternSet: this._matchPatternSet})) {
         this.triggerHandler(gBrowser.selectedBrowser, host);
       }
     },
@@ -188,7 +187,7 @@ this.ASRouterTriggerListeners = new Map([
       // events to be fired twice.
       const isSameDocument = !!(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
       if (host && aWebProgress.isTopLevel && !isSameDocument) {
-        host = checkHost(aLocationURI, {hosts: this._hosts, matchPatternSet: this._matchPatternSet}, aRequest);
+        host = checkURLMatch(aLocationURI, {hosts: this._hosts, matchPatternSet: this._matchPatternSet}, aRequest);
         if (host) {
           this.triggerHandler(aBrowser, host);
         }
@@ -315,7 +314,7 @@ this.ASRouterTriggerListeners = new Map([
       // events to be fired twice.
       const isSameDocument = !!(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
       if (host && aWebProgress.isTopLevel && !isSameDocument) {
-        host = checkHost(aLocationURI, {hosts: this._hosts}, aRequest);
+        host = checkURLMatch(aLocationURI, {hosts: this._hosts}, aRequest);
         if (host) {
           this._triggerHandler(aBrowser, {id: "openURL", param: host});
         }
