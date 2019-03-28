@@ -80,7 +80,7 @@ describe("MessageLoaderUtils", () => {
       });
 
       it("should return messages for a 302 response with json", async () => {
-        fetchStub.resolves({ok: false, status: 302, json: () => Promise.resolve(respJson), headers: FAKE_RESPONSE_HEADERS});
+        fetchStub.resolves({ok: true, status: 302, json: () => Promise.resolve(respJson), headers: FAKE_RESPONSE_HEADERS});
         assertReturnsCorrectMessages(await MessageLoaderUtils.loadMessagesForProvider(provider, FAKE_STORAGE));
       });
 

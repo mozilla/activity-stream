@@ -565,12 +565,12 @@ export class ASRouterAdminInner extends React.PureComponent {
   renderErrorMessage({id, errors}) {
     const providerId = <td rowSpan={errors.length}>{id}</td>;
     // .reverse() so that the last error (most recent) is first
-    return errors.reverse().map(({error, timestamp}, cellKey) => (<tr key={cellKey}>
-      {cellKey === 0 ? providerId : null}
+    return errors.map(({error, timestamp}, cellKey) => (<tr key={cellKey}>
+      {cellKey === errors.length - 1 ? providerId : null}
       <td>{error.message}</td>
       <td>{relativeTime(timestamp)}</td>
       </tr>)
-    );
+    ).reverse();
   }
 
   renderErrors() {

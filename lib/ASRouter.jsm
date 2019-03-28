@@ -124,8 +124,8 @@ const MessageLoaderUtils = {
       }
       if (
         response &&
-        (response.status >= 200 && response.status < 400) &&
-        (response.ok || response.status === 302)
+        response.ok &&
+        (response.status >= 200 && response.status < 400)
       ) {
         let jsonResponse;
         try {
