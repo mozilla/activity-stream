@@ -1,4 +1,5 @@
 import React from "react";
+import {cache} from "./cache";
 
 export class DSImage extends React.PureComponent {
   constructor(props) {
@@ -17,8 +18,14 @@ export class DSImage extends React.PureComponent {
   }
 
   componentDidMount() {
+    let parentMeasurement = ReactDOM.findDOMNode(this).parentNode.clientWidth;
+
+    // Quirk: Whenever the `Network` tab is open in devtools this is sometimes too large
+    // This will keep it from ever being larger than the overall container width in edge cases
+    parentMeasurement = parentMeasurement > 936 ? 936 : parentMeasurement;
+
     this.setState({
-      parentContainerWidth: ReactDOM.findDOMNode(this).parentNode.clientWidth
+      parentContainerWidth: parentMeasurement
     });
   }
 
@@ -28,23 +35,26 @@ export class DSImage extends React.PureComponent {
     let source, source2x;
 
     if (this.state && this.state.parentContainerWidth) {
-      source = this.reformatImageURL(this.props.source, this.state.parentContainerWidth);
-      source2x = this.reformatImageURL(this.props.source, this.state.parentContainerWidth * 2);
+      source = this.reformatImageURL(
+        this.props.source,
+        cache.query(this.props.source, this.state.parentContainerWidth, `1x`)
+      );
+
+      source2x = this.reformatImageURL(
+        this.props.source,
+        cache.query(this.props.source, this.state.parentContainerWidth * 2, `2x`)
+       );
     }
 
-    let element = (
-      <picture className={classNames}></picture>
-    );
+    let img = null;
 
     if (source && source2x) {
-      element = (
-        <picture className={classNames}>
-          <img src={source} srcset={`${source2x} 2x`} />
-        </picture>
-      );
+      img = (<img src={source} srcset={`${source2x} 2x`} />);
     }
 
-    return element;
+    return (
+      <picture className={classNames}>{img}</picture>
+    );
   }
 }
 
@@ -58,8 +68,9 @@ TODO:
 
 + switch over to Picture element
 + detect retina and use 1x if not present
-- force jpeg (?)
++ memoize images so that smaller versions aren't fetched unnecissarily
++ 2 caches for 1x and 2x (because one set will not get loaded)
+- force jpeg (need cleaner img urls - in progress)
 - enable lazy loading
-- memoize images so that smaller versions aren't fetched unnecissarily
 
 */
