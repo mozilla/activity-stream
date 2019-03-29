@@ -100,12 +100,12 @@ describe("ASRouterTriggerListeners", () => {
         assert.calledOnce(window.MatchPatternSet);
         assert.calledWithExactly(window.MatchPatternSet, ["pattern"], {ignorePath: true});
       });
-      it("should allow to add multiple patterns", async () => {
+      it("should allow to add multiple patterns and dedupe", async () => {
         await frequentVisitsListener.init(_triggerHandler, hosts, ["pattern"]);
         await frequentVisitsListener.init(_triggerHandler, hosts, ["foo"]);
 
         assert.calledTwice(window.MatchPatternSet);
-        assert.calledWithExactly(window.MatchPatternSet, ["pattern", "foo"], {ignorePath: true});
+        assert.calledWithExactly(window.MatchPatternSet, new Set(["pattern", "foo"]), {ignorePath: true});
       });
     });
   });
