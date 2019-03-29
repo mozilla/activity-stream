@@ -279,6 +279,32 @@ class PlacesFeed {
     }
   }
 
+  /**
+   * Deletes an item from a user's saved to Pocket feed
+   * @param {int} itemID
+   *  The unique ID given by Pocket for that item; used to look the item up when deleting
+   */
+  async deleteFromPocket(itemID) {
+    try {
+      await NewTabUtils.activityStreamLinks.deletePocketEntry(itemID);
+    } catch (err) {
+      Cu.reportError(err);
+    }
+  }
+
+  /**
+   * Archives an item from a user's saved to Pocket feed
+   * @param {int} itemID
+   *  The unique ID given by Pocket for that item; used to look the item up when archiving
+   */
+  async archiveFromPocket(itemID) {
+    try {
+      await NewTabUtils.activityStreamLinks.archivePocketEntry(itemID);
+    } catch (err) {
+      Cu.reportError(err);
+    }
+  }
+
   fillSearchTopSiteTerm({_target, data}) {
     _target.browser.ownerGlobal.gURLBar.search(`${data.label} `);
   }
@@ -384,6 +410,12 @@ class PlacesFeed {
         break;
       case at.SAVE_TO_POCKET:
         this.saveToPocket(action.data.site, action._target.browser);
+        break;
+      case at.DELETE_FROM_POCKET:
+        this.deleteFromPocket(action.data.pocket_id);
+        break;
+      case at.ARCHIVE_FROM_POCKET:
+        this.archiveFromPocket(action.data.pocket_id);
         break;
       case at.FILL_SEARCH_TERM:
         this.fillSearchTopSiteTerm(action);
