@@ -25,7 +25,10 @@ module.exports = {
   },
   "extends": [
     "eslint:recommended",
-    "plugin:mozilla/recommended" // require("eslint-plugin-mozilla")
+    "plugin:mozilla/recommended", // require("eslint-plugin-mozilla")
+    "plugin:mozilla/browser-test",
+    "plugin:mozilla/mochitest-test",
+    "plugin:mozilla/xpcshell-test"
   ],
   "globals": {
     // Remove this when m-c updates their eslint: See https://github.com/mozilla/activity-stream/pull/4219
