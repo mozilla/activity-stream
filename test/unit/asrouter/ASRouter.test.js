@@ -892,7 +892,7 @@ describe("ASRouter", () => {
 
         assert.calledOnce(msg.target.browser.ownerGlobal.openLinkIn);
         assert.calledWith(msg.target.browser.ownerGlobal.openLinkIn,
-          "some/url.com", "tabshifted", {"private": false, "triggeringPrincipal": undefined});
+          "some/url.com", "tabshifted", {"private": false, "triggeringPrincipal": undefined, "csp": null});
       });
       it("should call openLinkIn with the correct params on OPEN_ABOUT_PAGE", async () => {
         let [testMessage] = Router.state.messages;
@@ -917,7 +917,7 @@ describe("ASRouter", () => {
 
         assert.calledOnce(msg.target.browser.ownerGlobal.openLinkIn);
         assert.calledWith(msg.target.browser.ownerGlobal.openLinkIn,
-          "some/url", "current", {"private": false, "triggeringPrincipal": undefined});
+          "some/url", "current", {"private": false, "triggeringPrincipal": undefined, "csp": null});
       });
     });
 
