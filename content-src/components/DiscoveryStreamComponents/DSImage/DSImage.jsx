@@ -11,7 +11,7 @@ export class DSImage extends React.PureComponent {
     // Determine if URL matches Thumbor spec
     // https://thumbor.readthedocs.io/en/latest/usage.html
     if (url && width && url.match(/&resize=[^&]*/)) {
-      url = url.replace(/&resize=[^&]*/, `&resize=w${width}`);
+      url = url.replace(/&resize=[^&]*$/, `&resize=w${width}`);
     }
 
     return url;
@@ -71,6 +71,6 @@ TODO:
 + memoize images so that smaller versions aren't fetched unnecissarily
 + 2 caches for 1x and 2x (because one set will not get loaded)
 - force jpeg (need cleaner img urls - in progress)
-- enable lazy loading
+- enable lazy loading (probably follow-on ticket)
 
 */

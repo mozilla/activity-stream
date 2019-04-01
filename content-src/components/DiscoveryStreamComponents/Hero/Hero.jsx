@@ -67,6 +67,9 @@ export class Hero extends React.PureComponent {
         type={`Hero`} />
     );
 
+    console.log(heroRec);
+
+
     return (
       <div>
         <div className="ds-header">{this.props.title}</div>

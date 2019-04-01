@@ -1,3 +1,7 @@
+// This cache is for tracking queued image source requests from DSImage instances and leveraging
+//  larger sizes of images to scale down in the browser instead of making additional
+//  requests for smaller sizes from the server.
+
 let cache = {
   query(url, size, set) {
     // console.log(`query: ${url} – ${size}`);
@@ -18,12 +22,11 @@ let cache = {
       sizeToRequest = this.queuedImages[set][url];
     }
 
-    console.log(sizeToRequest);
     return sizeToRequest;
   },
   queuedImages: {}
 };
 
-window.imgcache = cache; // TODO: FOR DEBUG ONLY!
+// window.imgcache = cache; // TODO: FOR DEBUG ONLY!
 
 export { cache };
