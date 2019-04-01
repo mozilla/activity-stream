@@ -178,10 +178,59 @@ describe("ASRouterTriggerListeners", () => {
 
         const browser = {};
         const webProgress = {isTopLevel: true};
-        const location = "https://www.mozilla.org/something";
-        openURLListener.onLocationChange(browser, webProgress, undefined, {spec: location});
+        const location = "www.mozilla.org";
+        openURLListener.onLocationChange(browser, webProgress, undefined, {host: location});
         assert.calledOnce(newTriggerHandler);
         assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "www.mozilla.org"});
+      });
+      it("should call triggerHandler for a redirect (openURL + frequentVisits)", async () => {
+        for (let trigger of [openURLListener, frequentVisitsListener]) {
+          const newTriggerHandler = sinon.stub();
+          await trigger.init(newTriggerHandler, hosts);
+
+          const browser = {};
+          const webProgress = {isTopLevel: true};
+          const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+          const aRequest = {
+            QueryInterface: sandbox.stub().returns({
+              originalURI: {spec: "www.mozilla.org", host: "www.mozilla.org"},
+            }),
+          };
+          trigger.onLocationChange(browser, webProgress, aRequest, aLocationURI);
+          assert.calledOnce(aRequest.QueryInterface);
+          assert.calledOnce(newTriggerHandler);
+        }
+      });
+      it("should call triggerHandler with the right arguments (redirect)", async () => {
+        const newTriggerHandler = sinon.stub();
+        await openURLListener.init(newTriggerHandler, hosts);
+
+        const browser = {};
+        const webProgress = {isTopLevel: true};
+        const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+        const aRequest = {
+          QueryInterface: sandbox.stub().returns({
+            originalURI: {spec: "www.mozilla.org", host: "www.mozilla.org"},
+          }),
+        };
+        openURLListener.onLocationChange(browser, webProgress, aRequest, aLocationURI);
+        assert.calledWithExactly(newTriggerHandler, browser, {id: "openURL", param: "www.mozilla.org"});
+      });
+      it("should fail for subdomains (not redirect)", async () => {
+        const newTriggerHandler = sinon.stub();
+        await openURLListener.init(newTriggerHandler, hosts);
+
+        const browser = {};
+        const webProgress = {isTopLevel: true};
+        const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+        const aRequest = {
+          QueryInterface: sandbox.stub().returns({
+            originalURI: {spec: "subdomain.mozilla.org", host: "subdomain.mozilla.org"},
+          }),
+        };
+        openURLListener.onLocationChange(browser, webProgress, aRequest, aLocationURI);
+        assert.calledOnce(aRequest.QueryInterface);
+        assert.notCalled(newTriggerHandler);
       });
     });
 

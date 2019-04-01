@@ -34,6 +34,29 @@ function isPrivateWindow(win) {
 }
 
 /**
+ * Check current location against the list of whitelisted hosts
+ * Additionally verify for redirects and check original request URL against
+ * the whitelist.
+ *
+ * @returns {string} - the host that matched the whitelist
+ */
+function checkHost(aLocationURI, hosts, aRequest) {
+  // Check current location against whitelisted hosts
+  if (hosts.has(aLocationURI.host)) {
+    return aLocationURI.host;
+  }
+
+  // The original URL at the start of the request
+  const originalLocation = aRequest.QueryInterface(Ci.nsIChannel).originalURI;
+  // We have been redirected
+  if (originalLocation.spec !== aLocationURI.spec) {
+    return hosts.has(originalLocation.host) && originalLocation.host;
+  }
+
+  return false;
+}
+
+/**
  * A Map from trigger IDs to singleton trigger listeners. Each listener must
  * have idempotent `init` and `uninit` methods.
  */
@@ -129,18 +152,21 @@ this.ASRouterTriggerListeners = new Map([
     },
 
     onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI, aFlags) {
-      const location = aLocationURI ? aLocationURI.spec : "";
+      let host;
+      try {
+        host = aLocationURI ? aLocationURI.host : "";
+      } catch (e) { // about: pages will throw errors
+        return;
+      }
       // Some websites trigger redirect events after they finish loading even
       // though the location remains the same. This results in onLocationChange
       // events to be fired twice.
       const isSameDocument = !!(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
-      if (location && aWebProgress.isTopLevel && !isSameDocument) {
-        try {
-          const host = (new URL(location)).hostname;
-          if (host && this._hosts.has(host)) {
-            this.triggerHandler(aBrowser, host);
-          }
-        } catch (e) {} // Couldn't parse location URL
+      if (host && aWebProgress.isTopLevel && !isSameDocument) {
+        host = checkHost(aLocationURI, this._hosts, aRequest);
+        if (host) {
+          this.triggerHandler(aBrowser, host);
+        }
       }
     },
 
@@ -252,18 +278,21 @@ this.ASRouterTriggerListeners = new Map([
     },
 
     onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI, aFlags) {
-      const location = aLocationURI ? aLocationURI.spec : "";
+      let host;
+      try {
+        host = aLocationURI ? aLocationURI.host : "";
+      } catch (e) { // about: pages will throw errors
+        return;
+      }
       // Some websites trigger redirect events after they finish loading even
       // though the location remains the same. This results in onLocationChange
       // events to be fired twice.
       const isSameDocument = !!(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
-      if (location && aWebProgress.isTopLevel && !isSameDocument) {
-        try {
-          const host = (new URL(location)).hostname;
-          if (this._hosts.has(host)) {
-            this._triggerHandler(aBrowser, {id: "openURL", param: host});
-          }
-        } catch (e) {} // Couldn't parse location URL
+      if (host && aWebProgress.isTopLevel && !isSameDocument) {
+        host = checkHost(aLocationURI, this._hosts, aRequest);
+        if (host) {
+          this._triggerHandler(aBrowser, {id: "openURL", param: host});
+        }
       }
     },
 

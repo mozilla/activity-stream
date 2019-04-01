@@ -24,6 +24,7 @@ const FAKE_PROVIDERS = [FAKE_LOCAL_PROVIDER, FAKE_REMOTE_PROVIDER, FAKE_REMOTE_S
 const ALL_MESSAGE_IDS = [...FAKE_LOCAL_MESSAGES, ...FAKE_REMOTE_MESSAGES].map(message => message.id);
 const FAKE_BUNDLE = [FAKE_LOCAL_MESSAGES[1], FAKE_LOCAL_MESSAGES[2]];
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
+const FAKE_RESPONSE_HEADERS = {get() {}};
 
 // Creates a message object that looks like messages returned by
 // RemotePageManager listeners
@@ -94,7 +95,7 @@ describe("ASRouter", () => {
     clock = sandbox.useFakeTimers();
     fetchStub = sandbox.stub(global, "fetch")
       .withArgs("http://fake.com/endpoint")
-      .resolves({ok: true, status: 200, json: () => Promise.resolve({messages: FAKE_REMOTE_MESSAGES})});
+      .resolves({ok: true, status: 200, json: () => Promise.resolve({messages: FAKE_REMOTE_MESSAGES}), headers: FAKE_RESPONSE_HEADERS});
     getStringPrefStub = sandbox.stub(global.Services.prefs, "getStringPref");
 
     fakeAttributionCode = {
@@ -223,7 +224,7 @@ describe("ASRouter", () => {
       assert.calledOnce(channel.sendAsyncMessage);
       assert.deepEqual(channel.sendAsyncMessage.firstCall.args[1], {
         type: "ADMIN_SET_STATE",
-        data: Object.assign({}, Router.state, {providerPrefs: ASRouterPreferences.providers, userPrefs: ASRouterPreferences.getAllUserPreferences(), targetingParameters: {}}),
+        data: Object.assign({}, Router.state, {providerPrefs: ASRouterPreferences.providers, userPrefs: ASRouterPreferences.getAllUserPreferences(), targetingParameters: {}, errors: Router.errors}),
       });
     });
     it("should not send a message on a state change asrouter.devtoolsEnabled pref is on", async () => {
@@ -315,7 +316,7 @@ describe("ASRouter", () => {
       ]);
       fetchStub
         .withArgs("http://fake.com/endpoint")
-        .resolves({ok: true, status: 200, json: () => Promise.resolve({messages: NEW_MESSAGES})});
+        .resolves({ok: true, status: 200, json: () => Promise.resolve({messages: NEW_MESSAGES}), headers: FAKE_RESPONSE_HEADERS});
 
       clock.tick(301);
       await Router.loadMessagesFromAllProviders();
@@ -729,7 +730,7 @@ describe("ASRouter", () => {
         assert.calledOnce(msg.target.sendAsyncMessage);
         assert.deepEqual(msg.target.sendAsyncMessage.firstCall.args[1], {
           type: "ADMIN_SET_STATE",
-          data: Object.assign({}, Router.state, {providerPrefs: ASRouterPreferences.providers, userPrefs: ASRouterPreferences.getAllUserPreferences(), targetingParameters: {}}),
+          data: Object.assign({}, Router.state, {providerPrefs: ASRouterPreferences.providers, userPrefs: ASRouterPreferences.getAllUserPreferences(), targetingParameters: {}, errors: Router.errors}),
         });
       });
     });
