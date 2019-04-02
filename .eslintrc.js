@@ -16,7 +16,8 @@ module.exports = {
     "json", // require("eslint-plugin-json")
     "promise", // require("eslint-plugin-promise")
     "react", // require("eslint-plugin-react")
-    "react-hooks" // require("react-hooks")
+    "react-hooks", // require("react-hooks")
+    "fetch-options", // require("eslint-plugin-fetch-options")
   ],
   "settings": {
     "react": {
@@ -50,6 +51,8 @@ module.exports = {
   }],
   "rules": {
     "react-hooks/rules-of-hooks": 2,
+
+    "fetch-options/no-fetch-credentials": 2,
 
     "promise/catch-or-return": 2,
     "promise/param-names": 2,

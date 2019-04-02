@@ -374,7 +374,7 @@ describe("PingCentre", () => {
 
       assert.calledOnce(fetchStub);
       assert.calledWithExactly(fetchStub, fakeEndpointUrl,
-        {method: "POST", body: JSON.stringify(EXPECTED_RESULT)});
+        {method: "POST", body: JSON.stringify(EXPECTED_RESULT), credentials: "omit"});
     });
 
     it("should log HTTP failures using Cu.reportError", async () => {
@@ -468,7 +468,7 @@ describe("PingCentre", () => {
 
       assert.calledOnce(fetchStub);
       assert.calledWithExactly(fetchStub, fakeEndpointUrl,
-        {method: "POST", body: JSON.stringify(EXPECTED_RESULT)});
+        {method: "POST", body: JSON.stringify(EXPECTED_RESULT), credentials: "omit"});
     });
 
     it("should log HTTP failures using Cu.reportError", async () => {
