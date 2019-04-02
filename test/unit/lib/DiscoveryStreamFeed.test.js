@@ -85,7 +85,7 @@ describe("DiscoveryStreamFeed", () => {
     it("should not send cookies", async () => {
       await feed.fetchFromEndpoint(DUMMY_ENDPOINT);
 
-      assert.propertyVal(fetchStub.firstCall.args[1], "credentials", "omit");
+      assert.propertyVal(fetchStub.secondCall.args[1], "credentials", "omit");
     });
     it("should allow unexpected response", async () => {
       fetchStub.resolves({ok: false});
@@ -125,7 +125,7 @@ describe("DiscoveryStreamFeed", () => {
 
       await feed.loadLayout(feed.store.dispatch);
 
-      assert.calledOnce(fetchStub);
+      assert.calledTwice(fetchStub);
       assert.equal(feed.cache.set.firstCall.args[0], "layout");
       assert.deepEqual(feed.cache.set.firstCall.args[1].layout, resp.layout);
     });
@@ -141,7 +141,7 @@ describe("DiscoveryStreamFeed", () => {
       clock.tick(THIRTY_MINUTES + 1);
       await feed.loadLayout(feed.store.dispatch);
 
-      assert.calledOnce(fetchStub);
+      assert.calledTwice(fetchStub);
       assert.equal(feed.cache.set.firstCall.args[0], "layout");
       assert.deepEqual(feed.cache.set.firstCall.args[1].layout, resp.layout);
     });
@@ -154,7 +154,7 @@ describe("DiscoveryStreamFeed", () => {
       clock.tick(THIRTY_MINUTES - 1);
       await feed.loadLayout(feed.store.dispatch);
 
-      assert.notCalled(fetchStub);
+      assert.calledOnce(fetchStub); // Persistent cache attempts a fetch
       assert.notCalled(feed.cache.set);
     });
     it("should set spocs_endpoint from layout", async () => {
@@ -385,7 +385,7 @@ describe("DiscoveryStreamFeed", () => {
 
       await feed.loadSpocs(feed.store.dispatch);
 
-      assert.notCalled(global.fetch);
+      assert.calledOnce(global.fetch); // Persistent cache attempts a fetch
       assert.notCalled(feed.cache.set);
     });
     it("should fetch fresh data if cache is empty", async () => {

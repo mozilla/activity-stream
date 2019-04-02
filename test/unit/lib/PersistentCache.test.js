@@ -3,11 +3,10 @@ import {PersistentCache} from "lib/PersistentCache.jsm";
 
 describe("PersistentCache", () => {
   let fakeOS;
+  let fakeJsonParse;
   let fakeFetch;
-  let fetchData;
   let cache;
   let filename = "cache.json";
-  let reportErrorStub;
   let globals;
   let sandbox;
 
@@ -17,17 +16,14 @@ describe("PersistentCache", () => {
     fakeOS = {
       Constants: {Path: {localProfileDir: "/foo/bar"}},
       File: {
-        exists: async () => true,
         writeAtomic: sinon.stub().returns(Promise.resolve()),
       },
       Path: {join: () => filename},
     };
-    fetchData = {};
-    fakeFetch = sandbox.stub().resolves({json: () => Promise.resolve(fetchData)});
-    reportErrorStub = sandbox.stub();
+    fakeJsonParse = sandbox.stub().resolves({});
+    fakeFetch = sandbox.stub().resolves({json: fakeJsonParse});
     globals.set("OS", fakeOS);
     globals.set("fetch", fakeFetch);
-    globals.set("Cu", {reportError: reportErrorStub});
 
     cache = new PersistentCache(filename);
   });
@@ -37,14 +33,14 @@ describe("PersistentCache", () => {
   });
 
   describe("#get", () => {
-    it("tries to fetch the file on the first get", async () => {
+    it("tries to fetch the file", async () => {
       await cache.get("foo");
       assert.calledOnce(fakeFetch);
     });
-    it("doesnt try to fetch the file if it doesn't exist", async () => {
-      fakeOS.File.exists = async () => false;
+    it("doesnt try to parse file if it doesn't exist", async () => {
+      fakeFetch.throws();
       await cache.get("foo");
-      assert.notCalled(fakeFetch);
+      assert.notCalled(fakeJsonParse);
     });
     it("doesnt try to fetch the file if it was already loaded", async () => {
       await cache._load();
@@ -52,14 +48,8 @@ describe("PersistentCache", () => {
       await cache.get("foo");
       assert.notCalled(fakeFetch);
     });
-    it("should catch and report errors", async () => {
-      fakeFetch.throws();
-      await cache._load();
-
-      assert.calledOnce(reportErrorStub);
-    });
     it("returns data for a given cache key", async () => {
-      fetchData = {foo: "bar"};
+      fakeJsonParse.resolves({foo: "bar"});
       let value = await cache.get("foo");
       assert.equal(value, "bar");
     });
@@ -68,9 +58,9 @@ describe("PersistentCache", () => {
       assert.equal(value, undefined);
     });
     it("returns all the data if no cache key is specified", async () => {
-      fetchData = {foo: "bar"};
+      fakeJsonParse.resolves({foo: "bar"});
       let value = await cache.get();
-      assert.deepEqual(value, fetchData);
+      assert.deepEqual(value, {foo: "bar"});
     });
   });
 
