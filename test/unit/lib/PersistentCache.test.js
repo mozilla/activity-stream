@@ -6,27 +6,33 @@ describe("PersistentCache", () => {
   let fakeTextDecoder;
   let cache;
   let filename = "cache.json";
+  let reportErrorStub;
   let globals;
+  let sandbox;
 
   beforeEach(() => {
     globals = new GlobalOverrider();
+    sandbox = sinon.createSandbox();
     fakeOS = {
       Constants: {Path: {localProfileDir: "/foo/bar"}},
       File: {
         exists: async () => true,
-        read: async () => ({}),
+        read: sandbox.stub().resolves({}),
         writeAtomic: sinon.stub().returns(Promise.resolve()),
       },
       Path: {join: () => filename},
     };
     fakeTextDecoder = {decode: () => "{\"foo\": \"bar\"}"};
+    reportErrorStub = sandbox.stub();
     globals.set("OS", fakeOS);
     globals.set("gTextDecoder", fakeTextDecoder);
+    globals.set("Cu", {reportError: reportErrorStub});
 
     cache = new PersistentCache(filename);
   });
   afterEach(() => {
     globals.restore();
+    sandbox.restore();
   });
 
   describe("#get", () => {
@@ -47,6 +53,12 @@ describe("PersistentCache", () => {
       fakeOS.File.read.resetHistory();
       await cache.get("foo");
       assert.notCalled(fakeOS.File.read);
+    });
+    it("should catch and report errors", async () => {
+      fakeOS.File.read.throws();
+      await cache._load();
+
+      assert.calledOnce(reportErrorStub);
     });
     it("returns data for a given cache key", async () => {
       let value = await cache.get("foo");

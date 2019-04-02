@@ -72,8 +72,6 @@ describe("CFRPageActions", () => {
     for (const id of elementIDs) {
       const elem = document.createElement("div");
       elem.setAttribute("id", id);
-      // TODO: Remove this once travis is on Firefox 63+
-      elem.toggleAttribute = () => {};
       containerElem.appendChild(elem);
       elements[id] = elem;
     }
@@ -748,39 +746,37 @@ describe("CFRPageActions", () => {
 
         delete fakeRecommendation.template;
       });
-      describe("simultaneous recommendations", () => {
-        it("should prevent a second message if one is currently displayed", async () => {
-          const secondMessage = {...fakeRecommendation, id: "second_message"};
-          let messageAdded = await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, fakeRecommendation, dispatchStub);
+      it("should prevent a second message if one is currently displayed", async () => {
+        const secondMessage = {...fakeRecommendation, id: "second_message"};
+        let messageAdded = await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, fakeRecommendation, dispatchStub);
 
-          assert.isTrue(messageAdded);
-          assert.deepInclude(CFRPageActions.RecommendationMap.get(fakeBrowser), {
-            id: fakeRecommendation.id,
-            host: fakeHost,
-            content: fakeRecommendation.content,
-          });
-
-          messageAdded = await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, secondMessage, dispatchStub);
-          // Adding failed
-          assert.isFalse(messageAdded);
-          // First message is still there
-          assert.deepInclude(CFRPageActions.RecommendationMap.get(fakeBrowser), {
-            id: fakeRecommendation.id,
-            host: fakeHost,
-            content: fakeRecommendation.content,
-          });
+        assert.isTrue(messageAdded);
+        assert.deepInclude(CFRPageActions.RecommendationMap.get(fakeBrowser), {
+          id: fakeRecommendation.id,
+          host: fakeHost,
+          content: fakeRecommendation.content,
         });
-        it("should send impressions just for the first message", async () => {
-          const secondMessage = {...fakeRecommendation, id: "second_message"};
-          await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, fakeRecommendation, dispatchStub);
-          await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, secondMessage, dispatchStub);
 
-          // Doorhanger telemetry + Impression for just 1 message
-          assert.calledTwice(dispatchStub);
-          const [firstArgs] = dispatchStub.firstCall.args;
-          const [secondArgs] = dispatchStub.secondCall.args;
-          assert.equal(firstArgs.data.id, secondArgs.data.message_id);
+        messageAdded = await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, secondMessage, dispatchStub);
+        // Adding failed
+        assert.isFalse(messageAdded);
+        // First message is still there
+        assert.deepInclude(CFRPageActions.RecommendationMap.get(fakeBrowser), {
+          id: fakeRecommendation.id,
+          host: fakeHost,
+          content: fakeRecommendation.content,
         });
+      });
+      it("should send impressions just for the first message", async () => {
+        const secondMessage = {...fakeRecommendation, id: "second_message"};
+        await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, fakeRecommendation, dispatchStub);
+        await CFRPageActions.addRecommendation(fakeBrowser, fakeHost, secondMessage, dispatchStub);
+
+        // Doorhanger telemetry + Impression for just 1 message
+        assert.calledTwice(dispatchStub);
+        const [firstArgs] = dispatchStub.firstCall.args;
+        const [secondArgs] = dispatchStub.secondCall.args;
+        assert.equal(firstArgs.data.id, secondArgs.data.message_id);
       });
     });
 

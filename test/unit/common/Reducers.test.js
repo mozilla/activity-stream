@@ -1,5 +1,5 @@
 import {INITIAL_STATE, insertPinned, reducers} from "common/Reducers.jsm";
-const {TopSites, App, Snippets, Prefs, Dialog, Sections, Pocket, DiscoveryStream, Search} = reducers;
+const {TopSites, App, Snippets, Prefs, Dialog, Sections, Pocket, DiscoveryStream, Search, ASRouter} = reducers;
 import {actionTypes as at} from "common/Actions.jsm";
 
 describe("Reducers", () => {
@@ -1053,6 +1053,15 @@ describe("Reducers", () => {
       const nextState = Search(undefined, {type: "SHOW_SEARCH"});
       assert.propertyVal(nextState, "fakeFocus", false);
       assert.propertyVal(nextState, "hide", false);
+    });
+  });
+  describe("ASRouter", () => {
+    it("should listen for pref changes on AS_ROUTER_PREF_CHANGED", async () => {
+      const action = {data: {foo: "bar"}, type: at.AS_ROUTER_PREF_CHANGED};
+
+      const result = ASRouter({}, action);
+
+      assert.propertyVal(result, "foo", "bar");
     });
   });
 });
