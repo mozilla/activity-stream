@@ -24,7 +24,6 @@ module.exports = (env = {}) => ({
         options: {
           presets: ["@babel/preset-react"],
           plugins: [
-            ["@babel/plugin-transform-async-to-generator"],
             ["@babel/plugin-proposal-async-generator-functions"],
           ],
         },
