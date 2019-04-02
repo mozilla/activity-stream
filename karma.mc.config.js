@@ -51,10 +51,36 @@ module.exports = function(config) {
       // This will make karma fail if coverage reporting is less than the minimums here
       thresholds: !isTDD && {
         global: {
+          statements: 93,
+          lines: 93.1,
+          functions: 89.7,
+          branches: 87.8,
+        },
+        each: {
           statements: 100,
           lines: 100,
           functions: 100,
-          branches: 90,
+          branches: 66,
+          overrides: {
+            "content-src/components/DiscoveryStreamComponents/**/*.jsx": {
+              statements: 0,
+              lines: 0,
+              functions: 0,
+              branches: 0,
+            },
+            "content-src/asrouter/**/*.jsx": {
+              statements: 57,
+              lines: 58,
+              functions: 60,
+              branches: 50,
+            },
+            "content-src/components/**/*.jsx": {
+              statements: 0,
+              lines: 0,
+              functions: 0,
+              branches: 0,
+            },
+          },
         },
       },
     },
@@ -115,7 +141,7 @@ module.exports = function(config) {
           },
           {
             enforce: "post",
-            test: /\.jsm?$/,
+            test: /\.js[mx]?$/,
             loader: "istanbul-instrumenter-loader",
             options: {esModules: true},
             include: [
