@@ -117,9 +117,7 @@ module.exports = function(config) {
             enforce: "post",
             test: /\.jsm?$/,
             loader: "istanbul-instrumenter-loader",
-            query: {
-              esModules: true,
-            },
+            options: {esModules: true},
             include: [
               path.resolve("content-src"),
               path.resolve("lib"),
