@@ -1058,6 +1058,7 @@ describe("Reducers", () => {
   describe("ASRouter", () => {
     it("should listen for pref changes on AS_ROUTER_PREF_CHANGED", async () => {
       const action = {data: {foo: "bar"}, type: at.AS_ROUTER_PREF_CHANGED};
+
       const result = ASRouter({}, action);
 
       assert.propertyVal(result, "foo", "bar");
