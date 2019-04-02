@@ -6,7 +6,7 @@
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
-XPCOMUtils.defineLazyGetter(this, "gTextDecoder", () => new TextDecoder());
+XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
 
 /**
  * A file (disk) based persistent cache of a JSON serializable object.
@@ -59,9 +59,8 @@ this.PersistentCache = class PersistentCache {
         const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, this._filename);
         const fileExists = await OS.File.exists(filepath);
         if (fileExists) {
-          const binaryData = await OS.File.read(filepath);
-          const json = gTextDecoder.decode(binaryData);
-          data = JSON.parse(json);
+          const file = await fetch(`file://${filepath}`);
+          data = await file.json();
         }
       } catch (error) {
         Cu.reportError(`Failed to load ${this._filename}: ${error.message}`);

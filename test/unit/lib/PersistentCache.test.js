@@ -3,7 +3,8 @@ import {PersistentCache} from "lib/PersistentCache.jsm";
 
 describe("PersistentCache", () => {
   let fakeOS;
-  let fakeTextDecoder;
+  let fakeFetch;
+  let fetchData;
   let cache;
   let filename = "cache.json";
   let reportErrorStub;
@@ -17,15 +18,15 @@ describe("PersistentCache", () => {
       Constants: {Path: {localProfileDir: "/foo/bar"}},
       File: {
         exists: async () => true,
-        read: sandbox.stub().resolves({}),
         writeAtomic: sinon.stub().returns(Promise.resolve()),
       },
       Path: {join: () => filename},
     };
-    fakeTextDecoder = {decode: () => "{\"foo\": \"bar\"}"};
+    fetchData = {};
+    fakeFetch = sandbox.stub().resolves({json: () => Promise.resolve(fetchData)});
     reportErrorStub = sandbox.stub();
     globals.set("OS", fakeOS);
-    globals.set("gTextDecoder", fakeTextDecoder);
+    globals.set("fetch", fakeFetch);
     globals.set("Cu", {reportError: reportErrorStub});
 
     cache = new PersistentCache(filename);
@@ -36,31 +37,29 @@ describe("PersistentCache", () => {
   });
 
   describe("#get", () => {
-    it("tries to read the file on the first get", async () => {
-      fakeOS.File.read = sinon.spy();
+    it("tries to fetch the file on the first get", async () => {
       await cache.get("foo");
-      assert.calledOnce(fakeOS.File.read);
+      assert.calledOnce(fakeFetch);
     });
-    it("doesnt try to read the file if it doesn't exist", async () => {
-      fakeOS.File.read = sinon.spy();
+    it("doesnt try to fetch the file if it doesn't exist", async () => {
       fakeOS.File.exists = async () => false;
       await cache.get("foo");
-      assert.notCalled(fakeOS.File.read);
+      assert.notCalled(fakeFetch);
     });
-    it("doesnt try to read the file if it was already loaded", async () => {
-      fakeOS.File.read = sinon.spy();
+    it("doesnt try to fetch the file if it was already loaded", async () => {
       await cache._load();
-      fakeOS.File.read.resetHistory();
+      fakeFetch.resetHistory();
       await cache.get("foo");
-      assert.notCalled(fakeOS.File.read);
+      assert.notCalled(fakeFetch);
     });
     it("should catch and report errors", async () => {
-      fakeOS.File.read.throws();
+      fakeFetch.throws();
       await cache._load();
 
       assert.calledOnce(reportErrorStub);
     });
     it("returns data for a given cache key", async () => {
+      fetchData = {foo: "bar"};
       let value = await cache.get("foo");
       assert.equal(value, "bar");
     });
@@ -69,29 +68,27 @@ describe("PersistentCache", () => {
       assert.equal(value, undefined);
     });
     it("returns all the data if no cache key is specified", async () => {
+      fetchData = {foo: "bar"};
       let value = await cache.get();
-      assert.deepEqual(value, {foo: "bar"});
+      assert.deepEqual(value, fetchData);
     });
   });
 
   describe("#set", () => {
-    it("tries to read the file on the first set", async () => {
-      fakeOS.File.read = sinon.spy();
+    it("tries to fetch the file on the first set", async () => {
       await cache.set("foo", {x: 42});
-      assert.calledOnce(fakeOS.File.read);
+      assert.calledOnce(fakeFetch);
     });
-    it("doesnt try to read the file if it was already loaded", async () => {
-      fakeOS.File.read = sinon.spy();
+    it("doesnt try to fetch the file if it was already loaded", async () => {
       cache = new PersistentCache(filename, true);
       await cache._load();
-      fakeOS.File.read.resetHistory();
+      fakeFetch.resetHistory();
       await cache.set("foo", {x: 42});
-      assert.notCalled(fakeOS.File.read);
+      assert.notCalled(fakeFetch);
     });
-    it("tries to read the file on the first set", async () => {
-      fakeOS.File.read = sinon.spy();
+    it("tries to fetch the file on the first set", async () => {
       await cache.set("foo", {x: 42});
-      assert.calledOnce(fakeOS.File.read);
+      assert.calledOnce(fakeFetch);
     });
     it("sets a string value", async () => {
       const key = "testkey";
