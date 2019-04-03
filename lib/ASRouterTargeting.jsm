@@ -332,15 +332,20 @@ this.ASRouterTargeting = {
     return FilterExpressions.eval(filterExpression, this.combineContexts(this.Environment, customContext));
   },
 
-  isTriggerMatch(trigger = {}, candidateMessageTrigger = {}) {
+  isTriggerMatch(trigger = null, candidateMessageTrigger = {}) {
+    if (!trigger || !trigger.param) {
+      return false;
+    }
+
     if (trigger.id !== candidateMessageTrigger.id) {
       return false;
     } else if (!candidateMessageTrigger.params) {
       return true;
-    } else if (candidateMessageTrigger.patterns) {
+    } else if (!candidateMessageTrigger.patterns) {
       return true;
     }
-    return candidateMessageTrigger.params.includes(trigger.param);
+    return candidateMessageTrigger.params.includes(trigger.param.host) ||
+      new MatchPatternSet(candidateMessageTrigger.patterns).matches(trigger.param.url);
   },
 
   /**
