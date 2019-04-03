@@ -477,7 +477,7 @@ add_task(async function checkCFRPinnedTabsTargetting() {
 add_task(async function checkPatternMatches() {
   const now = Date.now();
   const timeMinutesAgo = numMinutes => now - numMinutes * 60 * 1000;
-  const messages = [{id: "message_with_pattern", targeting: "true", trigger: {id: "frequentVisits", patterns: ["*://*.github.com/"]}}]
+  const messages = [{id: "message_with_pattern", targeting: "true", trigger: {id: "frequentVisits", patterns: ["*://*.github.com/"]}}];
   const trigger = {
     id: "frequentVisits",
     context: {
@@ -497,6 +497,6 @@ add_task(async function checkPatternsValid() {
   const messages = CFRMessageProvider.getMessages().filter(m => m.trigger.patterns);
 
   for (const message of messages) {
-    new MatchPatternSet(message.trigger.patterns);
+    Assert.ok(new MatchPatternSet(message.trigger.patterns));
   }
 });
