@@ -54,12 +54,21 @@ this.PersistentCache = class PersistentCache {
    */
   _load() {
     return this._cache || (this._cache = new Promise(async resolve => {
+      let file;
       let data = {};
       const filepath = OS.Path.join(OS.Constants.Path.localProfileDir, this._filename);
 
       try {
-        data = await (await fetch(`file://${filepath}`)).json();
-      } catch (e) {} // Cache file doesn't exist yet.
+        file = await fetch(`file://${filepath}`);
+      } catch (error) {} // Cache file doesn't exist yet.
+
+      if (file) {
+        try {
+          data = await file.json();
+        } catch (error) {
+          Cu.reportError(`Failed to parse ${this._filename}: ${error.message}`);
+        }
+      }
 
       resolve(data);
     }));

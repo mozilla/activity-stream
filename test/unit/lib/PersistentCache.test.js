@@ -7,6 +7,7 @@ describe("PersistentCache", () => {
   let fakeFetch;
   let cache;
   let filename = "cache.json";
+  let reportErrorStub;
   let globals;
   let sandbox;
 
@@ -22,7 +23,9 @@ describe("PersistentCache", () => {
     };
     fakeJsonParse = sandbox.stub().resolves({});
     fakeFetch = sandbox.stub().resolves({json: fakeJsonParse});
+    reportErrorStub = sandbox.stub();
     globals.set("OS", fakeOS);
+    globals.set("Cu", {reportError: reportErrorStub});
     globals.set("fetch", fakeFetch);
 
     cache = new PersistentCache(filename);
@@ -47,6 +50,11 @@ describe("PersistentCache", () => {
       fakeFetch.resetHistory();
       await cache.get("foo");
       assert.notCalled(fakeFetch);
+    });
+    it("should catch and report errors", async () => {
+      fakeJsonParse.throws();
+      await cache._load();
+      assert.calledOnce(reportErrorStub);
     });
     it("returns data for a given cache key", async () => {
       fakeJsonParse.resolves({foo: "bar"});
