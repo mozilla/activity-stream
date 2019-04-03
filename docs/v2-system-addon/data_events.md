@@ -759,6 +759,30 @@ These report any failures during domain affinity v2 calculations, and where it f
 }
 ```
 
+### Discovery Stream loaded content
+
+This reports all the loaded content (a list of `id`s and positions) when the user opens a newtab page and the page becomes visible. Note that this ping is a superset of the Discovery Stream impression ping, as impression pings are also subject to the individual visibility.
+
+```js
+{
+  "action": "activity_stream_impression_stats",
+
+  // Both "client_id" and "session_id" are set to "n/a" in this ping.
+  "client_id": "n/a",
+  "session_id": "n/a",
+  "impression_id": "{005deed0-e3e4-4c02-a041-17405fd703f6}",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "source": ["HERO" | "CARDGRID" | "LIST"],
+  "page": ["about:newtab" | "about:home" | "about:welcome" | "unknown"],
+  "user_prefs": 7,
+
+  // Indicating this is a `loaded content` ping (as opposed to impression) as well as the size of `tiles`
+  "loaded": 3,
+  "tiles": [{"id": 10000, "pos": 0}, {"id": 10001, "pos": 1}, {"id": 10002, "pos": 2}]
+}
+```
+
 ### Discovery Stream performance pings
 
 #### Request time of layout feed in ms
