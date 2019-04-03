@@ -4,8 +4,6 @@
 
 let cache = {
   query(url, size, set) {
-    // console.log(`query: ${url} – ${size}`);
-
     // Create an empty set if none exists
     // Need multiple cache sets because the browser decides what set to use based on pixel density
     if (this.queuedImages[set] === undefined) {
@@ -24,9 +22,7 @@ let cache = {
 
     return sizeToRequest;
   },
-  queuedImages: {}
+  queuedImages: {},
 };
 
-// window.imgcache = cache; // TODO: FOR DEBUG ONLY!
-
-export { cache };
+export {cache};

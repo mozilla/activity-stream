@@ -1,6 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
-import {DSLinkMenu} from "../DSLinkMenu/DSLinkMenu";
 import {DSImage} from "../DSImage/DSImage.jsx";
+import {DSLinkMenu} from "../DSLinkMenu/DSLinkMenu";
 import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
 import React from "react";
 import {SafeAnchor} from "../SafeAnchor/SafeAnchor";
@@ -37,7 +37,7 @@ export class DSCard extends React.PureComponent {
           onLinkClick={this.onLinkClick}
           url={this.props.url}>
           <div className="img-wrapper">
-            <DSImage extraClassNames="img" source={this.props.image_src}></DSImage>
+            <DSImage extraClassNames="img" source={this.props.image_src} />
           </div>
           <div className="meta">
             <div className="info-wrap">

@@ -67,9 +67,6 @@ export class Hero extends React.PureComponent {
         type={`Hero`} />
     );
 
-    console.log(heroRec);
-
-
     return (
       <div>
         <div className="ds-header">{this.props.title}</div>
@@ -81,7 +78,7 @@ export class Hero extends React.PureComponent {
               onLinkClick={this.onLinkClick}
               url={heroRec.url}>
               <div className="img-wrapper">
-                <DSImage extraClassNames="img" source={heroRec.raw_image_src || heroRec.image_src}></DSImage>
+                <DSImage extraClassNames="img" source={heroRec.raw_image_src || heroRec.image_src} />
               </div>
               <div className="meta">
                 <div className="header-and-excerpt">
