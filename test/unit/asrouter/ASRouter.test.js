@@ -341,9 +341,9 @@ describe("ASRouter", () => {
 
       assert.calledTwice(ASRouterTriggerListeners.get("openURL").init);
       assert.calledWithExactly(ASRouterTriggerListeners.get("openURL").init,
-        Router._triggerHandler, ["www.mozilla.org", "www.mozilla.com"]);
+        Router._triggerHandler, ["www.mozilla.org", "www.mozilla.com"], undefined);
       assert.calledWithExactly(ASRouterTriggerListeners.get("openURL").init,
-        Router._triggerHandler, ["www.example.com"]);
+        Router._triggerHandler, ["www.example.com"], undefined);
     });
     it("should gracefully handle RemoteSettings blowing up", async () => {
       sandbox.stub(MessageLoaderUtils, "_getRemoteSettingsMessages").rejects("fake error");
