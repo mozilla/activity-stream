@@ -51,6 +51,7 @@ describe("DiscoveryStreamFeed", () => {
         },
       },
     });
+    global.fetch.resetHistory();
 
     sandbox.stub(feed, "_maybeUpdateCachedData").resolves();
 
