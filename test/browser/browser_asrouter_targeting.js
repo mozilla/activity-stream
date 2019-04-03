@@ -451,14 +451,14 @@ add_task(async function checkCFRPinnedTabsTargetting() {
         {timestamp: timeMinutesAgo(1)},
       ],
     },
-    param: "github.com",
+    param: {host: "github.com", url: "https://google.com"},
   };
 
   is(await ASRouterTargeting.findMatchingMessage({messages, trigger}), undefined,
     "should not select PIN_TAB mesage with only 2 visits in past hour");
 
   trigger.context.recentVisits.push({timestamp: timeMinutesAgo(59)});
-  is(await ASRouterTargeting.findMatchingMessage({messages, trigger}), messages.find(m => m.id === "PIN_TAB"),
+  is((await ASRouterTargeting.findMatchingMessage({messages, trigger})).id, "PIN_TAB",
     "should select PIN_TAB mesage");
 
   await BrowserTestUtils.withNewTab({gBrowser, url: "about:blank"}, async browser => {
@@ -469,7 +469,7 @@ add_task(async function checkCFRPinnedTabsTargetting() {
     gBrowser.unpinTab(tab);
   });
 
-  trigger.param = "foo.bar";
+  trigger.param = {host: "foo.bar", url: "https://foo.bar"};
   is(await ASRouterTargeting.findMatchingMessage({messages, trigger}), undefined,
     "should not select PIN_TAB mesage with a trigger param/host not in our hostlist");
 });
