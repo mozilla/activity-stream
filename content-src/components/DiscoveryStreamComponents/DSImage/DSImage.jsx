@@ -7,8 +7,10 @@ export class DSImage extends React.PureComponent {
   // Also: force JPEG, quality 60, no upscaling, no EXIF data
   // Uses Thumbor: https://thumbor.readthedocs.io/en/latest/usage.html
   reformatImageURL(url, width) {
-    // TODO: append:    https://img-getpocket.cdn.mozilla.net/direct?url=
-    return `https://pocket-image-cache.com/${width}x0/filters:format(jpeg):quality(60):no_upscale():strip_exif()/${encodeURIComponent(url)}`;
+    let image = `https://pocket-image-cache.com/${width}x0/filters:format(jpeg):quality(60):no_upscale():strip_exif()/${url}`;
+
+    // Use Mozilla CDN:
+    return `https://img-getpocket.cdn.mozilla.net/direct?url=${encodeURIComponent(image)}`;
   }
 
   measureParentElementWidth() {
