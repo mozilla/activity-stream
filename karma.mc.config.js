@@ -50,18 +50,36 @@ module.exports = function(config) {
       dir: PATHS.coverageReportingPath,
       // This will make karma fail if coverage reporting is less than the minimums here
       thresholds: !isTDD && {
-        global: {
-          statements: 93,
-          lines: 93.1,
-          functions: 89.7,
-          branches: 87.8,
-        },
         each: {
           statements: 100,
           lines: 100,
           functions: 100,
           branches: 66,
           overrides: {
+            "lib/ActivityStreamStorage.jsm": {
+              statements: 100,
+              lines: 100,
+              functions: 100,
+              branches: 83,
+            },
+            "lib/SnippetsFeed.jsm": {
+              statements: 100,
+              lines: 100,
+              functions: 100,
+              branches: 66,
+            },
+            "lib/UTEventReporting.jsm": {
+              statements: 100,
+              lines: 100,
+              functions: 100,
+              branches: 75,
+            },
+            "lib/*.jsm": {
+              statements: 100,
+              lines: 100,
+              functions: 100,
+              branches: 84,
+            },
             "content-src/components/DiscoveryStreamComponents/**/*.jsx": {
               statements: 0,
               lines: 0,
