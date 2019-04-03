@@ -473,3 +473,30 @@ add_task(async function checkCFRPinnedTabsTargetting() {
   is(await ASRouterTargeting.findMatchingMessage({messages, trigger}), undefined,
     "should not select PIN_TAB mesage with a trigger param/host not in our hostlist");
 });
+
+add_task(async function checkPatternMatches() {
+  const now = Date.now();
+  const timeMinutesAgo = numMinutes => now - numMinutes * 60 * 1000;
+  const messages = [{id: "message_with_pattern", targeting: "true", trigger: {id: "frequentVisits", patterns: ["*://*.github.com/"]}}]
+  const trigger = {
+    id: "frequentVisits",
+    context: {
+      recentVisits: [
+        {timestamp: timeMinutesAgo(33)},
+        {timestamp: timeMinutesAgo(17)},
+        {timestamp: timeMinutesAgo(1)},
+      ],
+    },
+    param: {host: "github.com", url: "https://gist.github.com"},
+  };
+
+  is((await ASRouterTargeting.findMatchingMessage({messages, trigger})).id, "message_with_pattern", "should select PIN_TAB mesage");
+});
+
+add_task(async function checkPatternsValid() {
+  const messages = CFRMessageProvider.getMessages().filter(m => m.trigger.patterns);
+
+  for (const message of messages) {
+    new MatchPatternSet(message.trigger.patterns);
+  }
+});
