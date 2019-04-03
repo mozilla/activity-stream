@@ -94,7 +94,7 @@ export function _List(props) {
       domain={rec.domain}
       excerpt={rec.excerpt}
       id={rec.id}
-      image_src={rec.image_src}
+      image_src={rec.raw_image_src || rec.image_src}
       pos={rec.pos}
       title={rec.title}
       context={rec.context}

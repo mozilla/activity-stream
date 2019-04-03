@@ -81,7 +81,7 @@ export class Hero extends React.PureComponent {
               onLinkClick={this.onLinkClick}
               url={heroRec.url}>
               <div className="img-wrapper">
-                <DSImage extraClassNames="img" source={heroRec.image_src}></DSImage>
+                <DSImage extraClassNames="img" source={heroRec.raw_image_src || heroRec.image_src}></DSImage>
               </div>
               <div className="meta">
                 <div className="header-and-excerpt">
