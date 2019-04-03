@@ -332,11 +332,7 @@ this.ASRouterTargeting = {
     return FilterExpressions.eval(filterExpression, this.combineContexts(this.Environment, customContext));
   },
 
-  isTriggerMatch(trigger = null, candidateMessageTrigger = {}) {
-    if (!trigger || !trigger.param) {
-      return false;
-    }
-
+  isTriggerMatch(trigger = {}, candidateMessageTrigger = {}) {
     if (trigger.id !== candidateMessageTrigger.id) {
       return false;
     } else if (!candidateMessageTrigger.params) {
@@ -344,6 +340,11 @@ this.ASRouterTargeting = {
     } else if (!candidateMessageTrigger.patterns) {
       return true;
     }
+
+    if (!trigger.param) {
+      return false;
+    }
+
     return candidateMessageTrigger.params.includes(trigger.param.host) ||
       new MatchPatternSet(candidateMessageTrigger.patterns).matches(trigger.param.url);
   },
