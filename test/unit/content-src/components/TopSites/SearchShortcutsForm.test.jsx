@@ -27,7 +27,8 @@ describe("<SearchShortcutsForm>", () => {
     wrapper.setState({shortcuts: [{}, {}]});
 
     assert.lengthOf(wrapper.find(".search-shortcuts-container div").children(), 2);
-    assert.equal(wrapper.find(".search-shortcuts-container div").children().at(0).type(), SelectableSearchShortcut);
+    assert.equal(wrapper.find(".search-shortcuts-container div").children().at(0)
+      .type(), SelectableSearchShortcut);
   });
 
   it("should render SelectableSearchShortcut components", () => {

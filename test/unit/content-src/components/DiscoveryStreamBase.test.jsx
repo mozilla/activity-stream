@@ -1,17 +1,14 @@
-import {isAllowedCSS} from "content-src/components/DiscoveryStreamBase/DiscoveryStreamBase";
-import {_DiscoveryStreamBase as DiscoveryStreamBase} from "content-src/components/DiscoveryStreamBase/DiscoveryStreamBase";
+import {_DiscoveryStreamBase as DiscoveryStreamBase, isAllowedCSS} from "content-src/components/DiscoveryStreamBase/DiscoveryStreamBase";
+import {GlobalOverrider, shallowWithIntl} from "test/unit/utils";
+import {CardGrid} from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
+import {DSMessage} from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
+import {Hero} from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
 import {HorizontalRule} from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
 import {List} from "content-src/components/DiscoveryStreamComponents/List/List";
-import {Hero} from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
-import {CardGrid} from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
 import {Navigation} from "content-src/components/DiscoveryStreamComponents/Navigation/Navigation";
-import {SectionTitle} from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
-import {DSMessage} from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
-import {TopSites} from "content-src/components/DiscoveryStreamComponents/TopSites/TopSites";
-import * as selectors from "content-src/lib/selectLayoutRender";
-import {GlobalOverrider} from "test/unit/utils";
 import React from "react";
-import {shallowWithIntl} from "test/unit/utils";
+import {SectionTitle} from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
+import {TopSites} from "content-src/components/DiscoveryStreamComponents/TopSites/TopSites";
 
 describe("<isAllowedCSS>", () => {
   it("should allow colors", () => {
@@ -51,7 +48,6 @@ describe("<DiscoveryStreamBase>", () => {
   let wrapper;
   let globals;
   let sandbox;
-  let selectLayoutRenderStub;
 
   function mountComponent(props = {}) {
     const defaultProps = {
@@ -59,7 +55,7 @@ describe("<DiscoveryStreamBase>", () => {
       feeds: {loaded: true},
       spocs: {
         loaded: true,
-        data: {spocs: null}
+        data: {spocs: null},
       },
       ...props,
     };
@@ -94,52 +90,60 @@ describe("<DiscoveryStreamBase>", () => {
     assert.ok(wrapper.find(".discovery-stream").exists());
   });
 
-  it("should render a HorizontalRule", () => {
+  it("should render a HorizontalRule component", () => {
     wrapper = mountComponent({layout: [{components: [{type: "HorizontalRule"}]}]});
 
-    assert.equal(wrapper.find(".ds-column-grid div").children().at(0).type(), HorizontalRule);
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), HorizontalRule);
   });
 
-  it("should render a List", () => {
+  it("should render a List component", () => {
     wrapper = mountComponent({layout: [{components: [{properties: {}, type: "List"}]}]});
 
-    assert.equal(wrapper.find(".ds-column-grid div").children().at(0).type(), List);
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), List);
   });
 
-  it("should render a Hero", () => {
+  it("should render a Hero component", () => {
     wrapper = mountComponent({layout: [{components: [{properties: {}, type: "Hero"}]}]});
 
-    assert.equal(wrapper.find(".ds-column-grid div").children().at(0).type(), Hero);
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), Hero);
   });
 
-  it("should render a CardGrid", () => {
+  it("should render a CardGrid component", () => {
     wrapper = mountComponent({layout: [{components: [{properties: {}, type: "CardGrid"}]}]});
 
-    assert.equal(wrapper.find(".ds-column-grid div").children().at(0).type(), CardGrid);
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), CardGrid);
   });
 
-  it("should render a Navigation", () => {
+  it("should render a Navigation component", () => {
     wrapper = mountComponent({layout: [{components: [{properties: {}, type: "Navigation"}]}]});
 
-    assert.equal(wrapper.find(".ds-column-grid div").children().at(0).type(), Navigation);
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), Navigation);
   });
 
-  it("should render a Message", () => {
+  it("should render a Message component", () => {
     wrapper = mountComponent({layout: [{components: [{properties: {}, type: "Message"}]}]});
 
-    assert.equal(wrapper.find(".ds-column-grid div").children().at(0).type(), DSMessage);
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), DSMessage);
   });
 
-  it("should render a SectionTitle", () => {
+  it("should render a SectionTitle component", () => {
     wrapper = mountComponent({layout: [{components: [{properties: {}, type: "SectionTitle"}]}]});
 
-    assert.equal(wrapper.find(".ds-column-grid div").children().at(0).type(), SectionTitle);
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), SectionTitle);
   });
 
   it("should render TopSites", () => {
     wrapper = mountComponent({layout: [{components: [{properties: {}, type: "TopSites"}]}]});
 
-    assert.equal(wrapper.find(".ds-column-grid div").children().at(0).type(), TopSites);
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), TopSites);
   });
 
   describe("#onStyleMount", () => {
@@ -153,7 +157,7 @@ describe("<DiscoveryStreamBase>", () => {
     afterEach(() => {
       sandbox.restore();
       globals.restore();
-    })
+    });
 
     it("should return if no style", () => {
       assert.isUndefined(wrapper.instance().onStyleMount());
@@ -166,16 +170,16 @@ describe("<DiscoveryStreamBase>", () => {
         [
           null,
           {
-            ".ds-message": "margin-bottom: -20px"
+            ".ds-message": "margin-bottom: -20px",
           },
           null,
-          null
-        ]
+          null,
+        ],
       ]);
-      wrapper.instance().onStyleMount({sheet: sheetStub, dataset: {}}); 
+      wrapper.instance().onStyleMount({sheet: sheetStub, dataset: {}});
 
       assert.calledOnce(sheetStub.insertRule);
       assert.calledWithExactly(sheetStub.insertRule, "DUMMY#CSS.SELECTOR {}");
-    }); 
+    });
   });
 });

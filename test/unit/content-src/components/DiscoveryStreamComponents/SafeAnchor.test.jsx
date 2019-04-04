@@ -38,7 +38,7 @@ describe("Discovery Stream <SafeAnchor>", () => {
   it("should dispatch an event on click", () => {
     const dispatchStub = sandbox.stub();
     const fakeEvent = {preventDefault: sandbox.stub(), currentTarget: {}};
-    const wrapper = shallow(<SafeAnchor dispatch={dispatchStub}/>);
+    const wrapper = shallow(<SafeAnchor dispatch={dispatchStub} />);
 
     wrapper.find("a").simulate("click", fakeEvent);
 
@@ -47,7 +47,7 @@ describe("Discovery Stream <SafeAnchor>", () => {
   });
   it("should call onLinkClick if provided", () => {
     const onLinkClickStub = sandbox.stub();
-    const wrapper = shallow(<SafeAnchor onLinkClick={onLinkClickStub}/>);
+    const wrapper = shallow(<SafeAnchor onLinkClick={onLinkClickStub} />);
 
     wrapper.find("a").simulate("click");
 

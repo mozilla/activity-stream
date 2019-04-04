@@ -1,6 +1,5 @@
 import {CardGrid} from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
 import {DSCard} from "content-src/components/DiscoveryStreamComponents/DSCard/DSCard";
-import {SafeAnchor} from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
 import React from "react";
 import {shallowWithIntl} from "test/unit/utils";
 
@@ -20,7 +19,8 @@ describe("<CardGrid>", () => {
     wrapper.setProps({items: 2, data: {recommendations: [{}, {}]}});
 
     assert.lengthOf(wrapper.find(".ds-card-grid").children(), 2);
-    assert.equal(wrapper.find(".ds-card-grid").children().at(0).type(), DSCard);
+    assert.equal(wrapper.find(".ds-card-grid").children().at(0)
+      .type(), DSCard);
   });
 
   it("should add divisible-by-4 to the grid", () => {

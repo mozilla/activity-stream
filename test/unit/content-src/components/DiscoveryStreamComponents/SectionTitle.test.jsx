@@ -1,5 +1,5 @@
-import {SectionTitle} from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
 import React from "react";
+import {SectionTitle} from "content-src/components/DiscoveryStreamComponents/SectionTitle/SectionTitle";
 import {shallowWithIntl} from "test/unit/utils";
 
 describe("<SectionTitle>", () => {

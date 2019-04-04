@@ -1,6 +1,6 @@
 import {Navigation, Topic} from "content-src/components/DiscoveryStreamComponents/Navigation/Navigation";
-import {SafeAnchor} from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
 import React from "react";
+import {SafeAnchor} from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
 import {shallowWithIntl} from "test/unit/utils";
 
 describe("<Navigation>", () => {
@@ -21,10 +21,12 @@ describe("<Navigation>", () => {
   });
 
   it("should render 2 Topics", () => {
-    wrapper.setProps({links: [
-      {url: "https://foo.com", name: "foo"},
-      {url: "https://bar.com", name: "bar"},
-    ]});
+    wrapper.setProps({
+      links: [
+        {url: "https://foo.com", name: "foo"},
+        {url: "https://bar.com", name: "bar"},
+      ],
+    });
 
     assert.lengthOf(wrapper.find("ul").children(), 2);
   });
@@ -36,7 +38,7 @@ describe("<Topic>", () => {
   beforeEach(() => {
     wrapper = shallowWithIntl(<Topic url="https://foo.com" name="foo" />);
   });
-  
+
   it("should render", () => {
     assert.ok(wrapper.exists());
     assert.equal(wrapper.type(), "li");

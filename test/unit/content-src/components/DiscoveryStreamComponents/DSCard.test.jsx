@@ -1,8 +1,8 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {DSCard} from "content-src/components/DiscoveryStreamComponents/DSCard/DSCard";
 import {DSLinkMenu} from "content-src/components/DiscoveryStreamComponents/DSLinkMenu/DSLinkMenu";
-import {SafeAnchor} from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
 import React from "react";
+import {SafeAnchor} from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
 import {shallowWithIntl} from "test/unit/utils";
 
 describe("<DSCard>", () => {
@@ -51,12 +51,12 @@ describe("<DSCard>", () => {
       assert.calledWith(dispatch, ac.UserEvent({
         event: "CLICK",
         source: "FOO",
-        action_position: 1
+        action_position: 1,
       }));
       assert.calledWith(dispatch, ac.ImpressionStats({
         click: 0,
         source: "FOO",
-        tiles: [{id: "fooidx", pos: 1}]
+        tiles: [{id: "fooidx", pos: 1}],
       }));
     });
   });

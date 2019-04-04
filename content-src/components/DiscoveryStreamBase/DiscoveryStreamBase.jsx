@@ -167,8 +167,6 @@ export class _DiscoveryStreamBase extends React.PureComponent {
 
   render() {
     // Select layout render data by adding spocs and position to recommendations
-    console.log(selectLayoutRender);
-    console.log(window.selectLayoutRender);
     const layoutRender = selectLayoutRender(this.props.DiscoveryStream, rickRollCache);
     const styles = [];
     const {spocs, feeds} = this.props.DiscoveryStream;

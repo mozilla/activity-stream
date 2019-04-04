@@ -1,6 +1,6 @@
 import {DSMessage} from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
-import {SafeAnchor} from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
 import React from "react";
+import {SafeAnchor} from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
 import {shallowWithIntl} from "test/unit/utils";
 
 describe("<DSMessage>", () => {
@@ -32,7 +32,7 @@ describe("<DSMessage>", () => {
   it("should render a SafeAnchor", () => {
     wrapper.setProps({link_text: "foo", link_url: "https://foo.com"});
 
-    assert.equal(wrapper.find(".title").children().at(0).type(), SafeAnchor);
+    assert.equal(wrapper.find(".title").children().at(0)
+      .type(), SafeAnchor);
   });
 });
-
