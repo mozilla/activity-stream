@@ -9,6 +9,7 @@ ChromeUtils.defineModuleGetter(this, "PrivateBrowsingUtils",
   "resource://gre/modules/PrivateBrowsingUtils.jsm");
 
 const FEW_MINUTES = 15 * 60 * 1000; // 15 mins
+const MATCH_PATTERN_OPTIONS = {ignorePath: true};
 
 /**
  * Wait for browser startup to finish to avoid accessing uninitialized
@@ -40,10 +41,21 @@ function isPrivateWindow(win) {
  *
  * @returns {string} - the host that matched the whitelist
  */
-function checkHost(aLocationURI, hosts, aRequest) {
+function checkURLMatch(aLocationURI, {hosts, matchPatternSet}, aRequest) {
   // Check current location against whitelisted hosts
   if (hosts.has(aLocationURI.host)) {
     return aLocationURI.host;
+  }
+
+  if (matchPatternSet) {
+    if (matchPatternSet.matches(aLocationURI.spec)) {
+      return aLocationURI.host;
+    }
+  }
+
+  // Nothing else to check, return early
+  if (!aRequest) {
+    return false;
   }
 
   // The original URL at the start of the request
@@ -65,27 +77,37 @@ this.ASRouterTriggerListeners = new Map([
     _initialized: false,
     _triggerHandler: null,
     _hosts: null,
+    _matchPatternSet: null,
     _visits: null,
 
-    async init(triggerHandler, hosts) {
-      if (this._initialized) {
-        return;
-      }
-      this.onTabSwitch = this.onTabSwitch.bind(this);
+    async init(triggerHandler, hosts = [], patterns) {
+      if (!this._initialized) {
+        this.onTabSwitch = this.onTabSwitch.bind(this);
 
-      // Add listeners to all existing browser windows
-      for (let win of Services.wm.getEnumerator("navigator:browser")) {
-        if (isPrivateWindow(win)) {
-          continue;
+        // Add listeners to all existing browser windows
+        for (let win of Services.wm.getEnumerator("navigator:browser")) {
+          if (isPrivateWindow(win)) {
+            continue;
+          }
+          await checkStartupFinished(win);
+          win.addEventListener("TabSelect", this.onTabSwitch);
+          win.gBrowser.addTabsProgressListener(this);
         }
-        await checkStartupFinished(win);
-        win.addEventListener("TabSelect", this.onTabSwitch);
-        win.gBrowser.addTabsProgressListener(this);
-      }
 
-      this._initialized = true;
+        this._initialized = true;
+        this._visits = new Map();
+      }
       this._triggerHandler = triggerHandler;
-      this._visits = new Map();
+      if (patterns) {
+        if (this._matchPatternSet) {
+          this._matchPatternSet = new MatchPatternSet(new Set([
+            ...this._matchPatternSet.patterns,
+            ...patterns,
+          ]), MATCH_PATTERN_OPTIONS);
+        } else {
+          this._matchPatternSet = new MatchPatternSet(patterns, MATCH_PATTERN_OPTIONS);
+        }
+      }
       if (this._hosts) {
         hosts.forEach(h => this._hosts.add(h));
       } else {
@@ -124,9 +146,11 @@ this.ASRouterTriggerListeners = new Map([
       try {
         // nsIURI.host can throw for non-nsStandardURL nsIURIs.
         host = gBrowser.currentURI.host;
-      } catch (e) {} // Couldn't parse location URL
+      } catch (e) {
+        return; // Couldn't parse location URL
+      }
 
-      if (host && this._hosts.has(host)) {
+      if (checkURLMatch(gBrowser.currentURI, {hosts: this._hosts, matchPatternSet: this._matchPatternSet})) {
         this.triggerHandler(gBrowser.selectedBrowser, host);
       }
     },
@@ -163,7 +187,7 @@ this.ASRouterTriggerListeners = new Map([
       // events to be fired twice.
       const isSameDocument = !!(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
       if (host && aWebProgress.isTopLevel && !isSameDocument) {
-        host = checkHost(aLocationURI, this._hosts, aRequest);
+        host = checkURLMatch(aLocationURI, {hosts: this._hosts, matchPatternSet: this._matchPatternSet}, aRequest);
         if (host) {
           this.triggerHandler(aBrowser, host);
         }
@@ -214,6 +238,7 @@ this.ASRouterTriggerListeners = new Map([
         this._initialized = false;
         this._triggerHandler = null;
         this._hosts = null;
+        this._matchPatternSet = null;
         this._visits = null;
       }
     },
@@ -233,7 +258,7 @@ this.ASRouterTriggerListeners = new Map([
      * If the listener is already initialised, `init` will replace the trigger
      * handler and add any new hosts to `this._hosts`.
      */
-    async init(triggerHandler, hosts = []) {
+    async init(triggerHandler, hosts = [], patterns) {
       if (!this._initialized) {
         this.onLocationChange = this.onLocationChange.bind(this);
 
@@ -281,7 +306,7 @@ this.ASRouterTriggerListeners = new Map([
       let host;
       try {
         host = aLocationURI ? aLocationURI.host : "";
-      } catch (e) { // about: pages will throw errors
+      } catch (e) { // about: pages throw errors
         return;
       }
       // Some websites trigger redirect events after they finish loading even
@@ -289,7 +314,7 @@ this.ASRouterTriggerListeners = new Map([
       // events to be fired twice.
       const isSameDocument = !!(aFlags & Ci.nsIWebProgressListener.LOCATION_CHANGE_SAME_DOCUMENT);
       if (host && aWebProgress.isTopLevel && !isSameDocument) {
-        host = checkHost(aLocationURI, this._hosts, aRequest);
+        host = checkURLMatch(aLocationURI, {hosts: this._hosts}, aRequest);
         if (host) {
           this._triggerHandler(aBrowser, {id: "openURL", param: host});
         }

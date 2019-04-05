@@ -463,7 +463,7 @@ class _ASRouter {
       const unseenListeners = new Set(ASRouterTriggerListeners.keys());
       for (const {trigger} of newState.messages) {
         if (trigger && ASRouterTriggerListeners.has(trigger.id)) {
-          await ASRouterTriggerListeners.get(trigger.id).init(this._triggerHandler, trigger.params);
+          await ASRouterTriggerListeners.get(trigger.id).init(this._triggerHandler, trigger.params, trigger.patterns);
           unseenListeners.delete(trigger.id);
         }
       }
@@ -1056,6 +1056,7 @@ class _ASRouter {
         target.browser.ownerGlobal.openLinkIn(action.data.args, action.data.where || "current", {
           private: false,
           triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}),
+          csp: null,
         });
         break;
       case ra.OPEN_ABOUT_PAGE:
@@ -1082,6 +1083,7 @@ class _ASRouter {
         target.browser.ownerGlobal.openLinkIn(url, "current", {
           private: false,
           triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}),
+          csp: null,
         });
         break;
     }
