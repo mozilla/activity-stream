@@ -60,8 +60,6 @@ export class DSImage extends React.PureComponent {
         img = (<img src={source} srcSet={`${source2x} 2x`} />);
       }
     } else {
-      console.log(`no raw source`);
-
       img = (<img src={this.props.source} />);
     }
 
@@ -72,10 +70,8 @@ export class DSImage extends React.PureComponent {
 }
 
 DSImage.defaultProps = {
-  source: null, // The current source style from Pocket API – always 450px
+  source: null, // The current source style from Pocket API (always 450px)
   rawSource: null, // Unadulterated image URL to filter through Thumbor
   extraClassNames: null, // Additional classnames to append to component
-
-  // TODO: Turn this on once raw source is available and sanitized
-  optimize: true // Measure parent container to request exact sizes
+  optimize: true, // Measure parent container to request exact sizes
 };
