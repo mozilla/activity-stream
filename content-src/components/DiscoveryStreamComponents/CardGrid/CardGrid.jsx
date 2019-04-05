@@ -17,7 +17,8 @@ export class CardGrid extends React.PureComponent {
         key={`dscard-${index}`}
         pos={rec.pos}
         campaignId={rec.campaign_id}
-        image_src={rec.raw_image_src || rec.image_src}
+        image_src={rec.image_src}
+        raw_image_src={rec.raw_image_src}
         title={rec.title}
         excerpt={rec.excerpt}
         url={rec.url}

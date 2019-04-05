@@ -37,7 +37,7 @@ export class DSCard extends React.PureComponent {
           onLinkClick={this.onLinkClick}
           url={this.props.url}>
           <div className="img-wrapper">
-            <DSImage extraClassNames="img" source={this.props.image_src} />
+            <DSImage extraClassNames="img" source={this.props.image_src} rawSource={this.props.raw_image_src} />
           </div>
           <div className="meta">
             <div className="info-wrap">
