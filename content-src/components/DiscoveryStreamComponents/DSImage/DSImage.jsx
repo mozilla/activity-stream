@@ -7,15 +7,15 @@ export class DSImage extends React.PureComponent {
     const urlIsEncoded = url !== decodeURI(url);
 
     // Encode the URL if it needs it
-    url = urlIsEncoded ? url : encodeURIComponent(url);
+    let constructedURL = urlIsEncoded ? url : encodeURIComponent(url);
 
     // Change the image URL to request a size tailored for the parent container width
     // Also: force JPEG, quality 60, no upscaling, no EXIF data
     // Uses Thumbor: https://thumbor.readthedocs.io/en/latest/usage.html
-    url = `https://pocket-image-cache.com/${width}x0/filters:format(jpeg):quality(60):no_upscale():strip_exif()/${(url)}`;
+    constructedURL = `https://pocket-image-cache.com/${width}x0/filters:format(jpeg):quality(60):no_upscale():strip_exif()/${(constructedURL)}`;
 
     // Use Mozilla CDN:
-    return (`https://img-getpocket.cdn.mozilla.net/direct?url=${encodeURIComponent(url)}`);
+    return `https://img-getpocket.cdn.mozilla.net/direct?url=${encodeURIComponent(constructedURL)}`;
   }
 
   measureElementWidth() {
