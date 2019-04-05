@@ -4,13 +4,19 @@ import ReactDOM from "react-dom";
 
 export class DSImage extends React.PureComponent {
   reformatImageURL(url, width) {
+    let urlIsEncoded = (url !== decodeURIComponent(url) && url !== decodeURI(url));
+
+    url = urlIsEncoded ? url : encodeURIComponent(url);
+
     // Change the image URL to request a size tailored for the parent container width
     // Also: force JPEG, quality 60, no upscaling, no EXIF data
     // Uses Thumbor: https://thumbor.readthedocs.io/en/latest/usage.html
-    let image = `https://pocket-image-cache.com/${width}x0/filters:format(jpeg):quality(60):no_upscale():strip_exif()/${encodeURIComponent(url)}`;
+    url = `https://pocket-image-cache.com/${width}x0/filters:format(jpeg):quality(60):no_upscale():strip_exif()/${(url)}`;
 
     // Use Mozilla CDN:
-    return encodeURI(`https://img-getpocket.cdn.mozilla.net/direct?url=${image}`);
+    // return (`https://img-getpocket.cdn.mozilla.net/direct?url=${(url)}`);
+
+    return url;
   }
 
   measureElementWidth() {
