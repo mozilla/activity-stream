@@ -4,8 +4,9 @@ import ReactDOM from "react-dom";
 
 export class DSImage extends React.PureComponent {
   reformatImageURL(url, width) {
-    let urlIsEncoded = (url !== decodeURIComponent(url) && url !== decodeURI(url));
+    const urlIsEncoded = url !== decodeURI(url);
 
+    // Encode the URL if it needs it
     url = urlIsEncoded ? url : encodeURIComponent(url);
 
     // Change the image URL to request a size tailored for the parent container width
@@ -14,9 +15,7 @@ export class DSImage extends React.PureComponent {
     url = `https://pocket-image-cache.com/${width}x0/filters:format(jpeg):quality(60):no_upscale():strip_exif()/${(url)}`;
 
     // Use Mozilla CDN:
-    // return (`https://img-getpocket.cdn.mozilla.net/direct?url=${(url)}`);
-
-    return url;
+    return (`https://img-getpocket.cdn.mozilla.net/direct?url=${encodeURIComponent(url)}`);
   }
 
   measureElementWidth() {
