@@ -7,10 +7,14 @@ describe("ActivityStream", () => {
   let ActivityStream;
   let PREFS_CONFIG;
   function Fake() {}
+  function FakeStore() {
+    return {init: () => {}, uninit: () => {}, feeds: {get: () => {}}};
+  }
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     ({ActivityStream, PREFS_CONFIG} = injector({
+      "lib/Store.jsm": {Store: FakeStore},
       "lib/AboutPreferences.jsm": {AboutPreferences: Fake},
       "lib/ManualMigration.jsm": {ManualMigration: Fake},
       "lib/NewTabInit.jsm": {NewTabInit: Fake},
