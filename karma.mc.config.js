@@ -56,6 +56,12 @@ module.exports = function(config) {
           functions: 100,
           branches: 66,
           overrides: {
+            "lib/Store.jsm": {
+              statements: 26.2,
+              lines: 25.4,
+              functions: 27.2,
+              branches: 0,
+            },
             "lib/ActivityStreamStorage.jsm": {
               statements: 100,
               lines: 100,
