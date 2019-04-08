@@ -249,12 +249,7 @@ this.HighlightsFeed = class HighlightsFeed {
       case at.PLACES_HISTORY_CLEARED:
       case at.PLACES_LINK_BLOCKED:
       case at.DOWNLOAD_CHANGED:
-        this.fetchHighlights({broadcast: true});
-        break;
-      case at.DELETE_FROM_POCKET:
-        this.fetchHighlights({broadcast: true});
-        break;
-      case at.ARCHIVE_FROM_POCKET:
+      case at.POCKET_LINK_DELETED_OR_ARCHIVED:
         this.fetchHighlights({broadcast: true});
         break;
       case at.PLACES_LINKS_CHANGED:

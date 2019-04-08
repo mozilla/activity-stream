@@ -617,16 +617,9 @@ describe("Highlights Feed", () => {
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWithExactly(feed.fetchHighlights, {broadcast: false});
     });
-    it("should call fetchHighlights when deleting from Pocket", async () => {
+    it("should call fetchHighlights when deleting or archiving from Pocket", async () => {
       feed.fetchHighlights = sinon.spy();
-      feed.onAction({type: at.DELETE_FROM_POCKET, data: {pocket_id: 12345}});
-
-      assert.calledOnce(feed.fetchHighlights);
-      assert.calledWithExactly(feed.fetchHighlights, {broadcast: true});
-    });
-    it("should call fetchHighlights when archiving from Pocket", async () => {
-      feed.fetchHighlights = sinon.spy();
-      feed.onAction({type: at.ARCHIVE_FROM_POCKET, data: {pocket_id: 12345}});
+      feed.onAction({type: at.POCKET_LINK_DELETED_OR_ARCHIVED, data: {pocket_id: 12345}});
 
       assert.calledOnce(feed.fetchHighlights);
       assert.calledWithExactly(feed.fetchHighlights, {broadcast: true});
