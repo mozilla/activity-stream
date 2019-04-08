@@ -1,6 +1,7 @@
 import {_DiscoveryStreamBase as DiscoveryStreamBase, isAllowedCSS} from "content-src/components/DiscoveryStreamBase/DiscoveryStreamBase";
 import {GlobalOverrider, shallowWithIntl} from "test/unit/utils";
 import {CardGrid} from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
+import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {DSMessage} from "content-src/components/DiscoveryStreamComponents/DSMessage/DSMessage";
 import {Hero} from "content-src/components/DiscoveryStreamComponents/Hero/Hero";
 import {HorizontalRule} from "content-src/components/DiscoveryStreamComponents/HorizontalRule/HorizontalRule";
@@ -51,6 +52,7 @@ describe("<DiscoveryStreamBase>", () => {
 
   function mountComponent(props = {}) {
     const defaultProps = {
+      config: {collapsible: true},
       layout: [],
       feeds: {loaded: true},
       spocs: {
@@ -97,9 +99,9 @@ describe("<DiscoveryStreamBase>", () => {
     assert.equal(wrapper.type(), null);
   });
 
-  it("should render", () => {
+  it("should render nothing with no layout", () => {
     assert.ok(wrapper.exists());
-    assert.ok(wrapper.find(".discovery-stream").exists());
+    assert.isEmpty(wrapper.children());
   });
 
   it("should render a HorizontalRule component", () => {
@@ -137,8 +139,28 @@ describe("<DiscoveryStreamBase>", () => {
       .type(), Navigation);
   });
 
+  it("should render nothing if there was only a Message", () => {
+    wrapper = mountComponent({layout: [{components: [{header: {}, properties: {}, type: "Message"}]}]});
+
+    assert.isEmpty(wrapper.children());
+  });
+
+  it("should render a regular Message when not collapsible", () => {
+    wrapper = mountComponent({config: {collapsible: false}, layout: [{components: [{header: {}, properties: {}, type: "Message"}]}]});
+
+    assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
+      .type(), DSMessage);
+  });
+
+  it("should convert first Message component to CollapsibleSection", () => {
+    wrapper = mountComponent({layout: [{components: [{header: {}, properties: {}, type: "Message"}, {type: "HorizontalRule"}]}]});
+
+    assert.equal(wrapper.children().at(0)
+      .type(), CollapsibleSection);
+  });
+
   it("should render a Message component", () => {
-    wrapper = mountComponent({layout: [{components: [{properties: {}, type: "Message"}]}]});
+    wrapper = mountComponent({layout: [{components: [{header: {}, type: "Message"}, {properties: {}, type: "Message"}]}]});
 
     assert.equal(wrapper.find(".ds-column-grid div").children().at(0)
       .type(), DSMessage);

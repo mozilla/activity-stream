@@ -236,6 +236,7 @@ const PREFS_CONFIG = new Map([
       const isEnabled = IS_NIGHTLY_OR_UNBRANDED_BUILD && locales && locales.includes(locale);
       return JSON.stringify({
         api_key_pref: "extensions.pocket.oAuthConsumerKey",
+        collapsible: true,
         enabled: isEnabled,
         show_spocs: showSpocs({geo}),
         personalized: false,

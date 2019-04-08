@@ -126,7 +126,7 @@ export class _TopSites extends React.PureComponent {
         className="top-sites"
         icon="topsites"
         id="topsites"
-        title={{id: "header_top_sites"}}
+        title={this.props.title || {id: "header_top_sites"}}
         extraMenuOptions={extraMenuOptions}
         showPrefName="feeds.topsites"
         eventSource={TOP_SITES_SOURCE}
