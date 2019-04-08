@@ -322,15 +322,18 @@ describe("PlacesFeed", () => {
 
       assert.calledWith(global.Cu.reportError, e);
     });
-    it("should call NewTabUtils.deletePocketEntry when deleting from Pocket", async () => {
+    it("should call NewTabUtils.deletePocketEntry and dispatch POCKET_LINK_DELETED_OR_ARCHIVED when deleting from Pocket", async () => {
       await feed.deleteFromPocket(12345);
 
       assert.calledOnce(global.NewTabUtils.activityStreamLinks.deletePocketEntry);
       assert.calledWith(global.NewTabUtils.activityStreamLinks.deletePocketEntry, 12345);
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWith(feed.store.dispatch, {type: at.POCKET_LINK_DELETED_OR_ARCHIVED});
     });
-    it("should call archiveFromPocket on ARCHIVE_FROM_POCKET", () => {
+    it("should call archiveFromPocket on ARCHIVE_FROM_POCKET", async () => {
       sandbox.stub(feed, "archiveFromPocket");
-      feed.onAction({type: at.ARCHIVE_FROM_POCKET, data: {pocket_id: 12345}});
+      await feed.onAction({type: at.ARCHIVE_FROM_POCKET, data: {pocket_id: 12345}});
 
       assert.calledOnce(feed.archiveFromPocket);
       assert.calledWithExactly(feed.archiveFromPocket, 12345);
@@ -342,11 +345,14 @@ describe("PlacesFeed", () => {
 
       assert.calledWith(global.Cu.reportError, e);
     });
-    it("should call NewTabUtils.archivePocketEntry when archiving from Pocket", async () => {
+    it("should call NewTabUtils.archivePocketEntry and dispatch POCKET_LINK_DELETED_OR_ARCHIVED when archiving from Pocket", async () => {
       await feed.archiveFromPocket(12345);
 
       assert.calledOnce(global.NewTabUtils.activityStreamLinks.archivePocketEntry);
       assert.calledWith(global.NewTabUtils.activityStreamLinks.archivePocketEntry, 12345);
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.calledWith(feed.store.dispatch, {type: at.POCKET_LINK_DELETED_OR_ARCHIVED});
     });
     it("should call handoffSearchToAwesomebar on HANDOFF_SEARCH_TO_AWESOMEBAR", () => {
       const action = {

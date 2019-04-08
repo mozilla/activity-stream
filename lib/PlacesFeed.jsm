@@ -287,6 +287,7 @@ class PlacesFeed {
   async deleteFromPocket(itemID) {
     try {
       await NewTabUtils.activityStreamLinks.deletePocketEntry(itemID);
+      this.store.dispatch({type: at.POCKET_LINK_DELETED_OR_ARCHIVED});
     } catch (err) {
       Cu.reportError(err);
     }
@@ -300,6 +301,7 @@ class PlacesFeed {
   async archiveFromPocket(itemID) {
     try {
       await NewTabUtils.activityStreamLinks.archivePocketEntry(itemID);
+      this.store.dispatch({type: at.POCKET_LINK_DELETED_OR_ARCHIVED});
     } catch (err) {
       Cu.reportError(err);
     }
