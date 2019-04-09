@@ -12,7 +12,7 @@ export class DSImage extends React.PureComponent {
   }
 
   onSeen(element) {
-    if (this.state && document.visibilityState === `visible` && element[0].isIntersecting) {
+    if (this.state && element[0].isIntersecting) {
       if (this.props.optimize) {
         this.setState({
           containerWidth: ReactDOM.findDOMNode(this).clientWidth,
