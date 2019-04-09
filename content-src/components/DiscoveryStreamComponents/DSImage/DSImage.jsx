@@ -3,6 +3,19 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 export class DSImage extends React.PureComponent {
+  onSeen(element) {
+    // console.log(element);
+
+    if (this.state && document.visibilityState === `visible` && ReactDOM.findDOMNode(this).clientHeight && element[0].isIntersecting) {
+      this.setState({
+        isSeen: true,
+        timesSeen: this.state.timesSeen + 1
+      });
+
+      console.log(this.state.timesSeen);
+    }
+  }
+
   reformatImageURL(url, width) {
     const urlIsEncoded = url !== decodeURI(url);
 
@@ -35,6 +48,21 @@ export class DSImage extends React.PureComponent {
   }
 
   componentDidMount() {
+    this.setState({
+      isSeen: false,
+      timesSeen: 0
+    });
+
+    let options = {
+      // rootMargin: `10px`,
+      root: document.querySelector(`document`),
+      threshold: 1,
+    }
+
+    this.observer = new IntersectionObserver(this.onSeen.bind(this), options);
+
+    this.observer.observe(ReactDOM.findDOMNode(this));
+
     if (this.props.optimize) {
       this.setContainerWidth(this.measureElementWidth());
     }
@@ -65,7 +93,10 @@ export class DSImage extends React.PureComponent {
         img = (<img src={source} srcSet={`${source2x} 2x`} />);
       }
     } else {
-      img = (<img src={this.props.source} />);
+      if (this.state && this.state.timesSeen > 0)
+        img = (<img src={this.props.source} />);
+      else
+        img = null;
     }
 
     return (
@@ -78,5 +109,5 @@ DSImage.defaultProps = {
   source: null, // The current source style from Pocket API (always 450px)
   rawSource: null, // Unadulterated image URL to filter through Thumbor
   extraClassNames: null, // Additional classnames to append to component
-  optimize: true, // Measure parent container to request exact sizes
+  optimize: false, // Measure parent container to request exact sizes
 };
