@@ -3,6 +3,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 export class DSImage extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isSeen: false,
+    };
+  }
+
   onSeen(element) {
     if (this.state && document.visibilityState === `visible` && element[0].isIntersecting) {
       if (this.props.optimize) {
@@ -12,7 +20,7 @@ export class DSImage extends React.PureComponent {
       }
 
       this.setState({
-        isSeen: true
+        isSeen: true,
       });
     }
   }
@@ -33,15 +41,10 @@ export class DSImage extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.setState({
-      isSeen: false,
-    });
-
     let options = {
-      // rootMargin: `10px`,
       root: document.querySelector(`document`),
       threshold: 1,
-    }
+    };
 
     this.observer = new IntersectionObserver(this.onSeen.bind(this), options);
 
