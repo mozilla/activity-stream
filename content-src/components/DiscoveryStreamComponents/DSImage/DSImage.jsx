@@ -6,6 +6,8 @@ export class DSImage extends React.PureComponent {
   constructor(props) {
     super(props);
 
+    this.onOptimizedImageError = this.onOptimizedImageError.bind(this);
+
     this.state = {
       isSeen: false,
       optimizedImageFailed: false,
@@ -79,7 +81,7 @@ export class DSImage extends React.PureComponent {
             cache.query(baseSource, this.state.containerWidth * 2, `2x`)
           );
 
-          img = (<img onError={this.onOptimizedImageError.bind(this)} src={source} srcSet={`${source2x} 2x`} />);
+          img = (<img onError={this.onOptimizedImageError} src={source} srcSet={`${source2x} 2x`} />);
         }
       } else {
         img = (<img src={this.props.source} />);
@@ -92,8 +94,6 @@ export class DSImage extends React.PureComponent {
   }
 
   onOptimizedImageError() {
-    console.error(`Optimized image failed to load. URL: ${this.props.rawSource}`);
-
     // This will trigger a re-render and the normal 450px image will be used as a fallback
     this.setState({
       optimizedImageFailed: true,
