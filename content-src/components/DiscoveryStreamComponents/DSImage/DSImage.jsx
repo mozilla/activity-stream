@@ -4,7 +4,13 @@ import ReactDOM from "react-dom";
 
 export class DSImage extends React.PureComponent {
   onSeen(element) {
-    if (this.state && document.visibilityState === `visible` && ReactDOM.findDOMNode(this).clientHeight && element[0].isIntersecting) {
+    if (this.state && document.visibilityState === `visible` && element[0].isIntersecting) {
+      if (this.props.optimize) {
+        this.setState({
+          containerWidth: ReactDOM.findDOMNode(this).clientWidth,
+        });
+      }
+
       this.setState({
         isSeen: true
       });
@@ -26,22 +32,6 @@ export class DSImage extends React.PureComponent {
     return `https://img-getpocket.cdn.mozilla.net/direct?url=${encodeURIComponent(constructedURL)}`;
   }
 
-  measureElementWidth() {
-    let width = ReactDOM.findDOMNode(this).clientWidth;
-
-    // Quirk: Whenever the `Network` tab is open in devtools this is sometimes too large (eg: resolves to window width)
-    // This will keep it from ever being larger than the overall *container width* in these edge cases
-    width = width > 936 ? 936 : width;
-
-    return width;
-  }
-
-  setContainerWidth(width) {
-    this.setState({
-      containerWidth: width,
-    });
-  }
-
   componentDidMount() {
     this.setState({
       isSeen: false,
@@ -56,10 +46,6 @@ export class DSImage extends React.PureComponent {
     this.observer = new IntersectionObserver(this.onSeen.bind(this), options);
 
     this.observer.observe(ReactDOM.findDOMNode(this));
-
-    if (this.props.optimize) {
-      this.setContainerWidth(this.measureElementWidth());
-    }
   }
 
   render() {
