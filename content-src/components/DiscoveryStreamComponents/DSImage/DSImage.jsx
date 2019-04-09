@@ -43,7 +43,7 @@ export class DSImage extends React.PureComponent {
   componentDidMount() {
     let options = {
       root: document.querySelector(`document`),
-      threshold: 1,
+      threshold: 0.5,
     };
 
     this.observer = new IntersectionObserver(this.onSeen.bind(this), options);
@@ -91,5 +91,5 @@ DSImage.defaultProps = {
   source: null, // The current source style from Pocket API (always 450px)
   rawSource: null, // Unadulterated image URL to filter through Thumbor
   extraClassNames: null, // Additional classnames to append to component
-  optimize: true, // Measure parent container to request exact sizes
+  optimize: false, // Measure parent container to request exact sizes
 };
