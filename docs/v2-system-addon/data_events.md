@@ -874,6 +874,7 @@ This reports when the addon fails to initialize
   "value": -1
 }
 ```
+
 ## Activity Stream Router pings
 
 These pings record the impression and user interactions within Activity Stream Router.
@@ -1007,5 +1008,22 @@ This reports when an error has occurred when parsing/evaluating a JEXL targeting
   "message_id": "some_message_id",
   "event": "TARGETING_EXPRESSION_ERROR",
   "value": ["MALFORMED_EXPRESSION" | "OTHER_ERROR"]
+}
+```
+
+### Remote Settings error pings
+
+This reports a failure in the Remote Settings loader to load messages for Activity Stream Router.
+
+```js
+{
+  "action": "asrouter_undesired_event",
+  "client_id": "n/a",
+  "addon_version": "20180710100040",
+  "locale": "en-US",
+  "user_prefs": 7,
+  "event": ["ASR_RS_NO_MESSAGES" | "ASR_RS_ERROR"],
+  // The value is set to the ID of the message provider. For example: remote-cfr, remote-onboarding, etc.
+  "value": "REMOTE_PROVIDER_ID"
 }
 ```
