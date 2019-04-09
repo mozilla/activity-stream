@@ -8,6 +8,7 @@ export class DSImage extends React.PureComponent {
 
     this.state = {
       isSeen: false,
+      optimizedImageFailed: false,
     };
   }
 
@@ -28,8 +29,10 @@ export class DSImage extends React.PureComponent {
   reformatImageURL(url, width) {
     const urlIsEncoded = url !== decodeURI(url);
 
+    let constructedURL = url;
+
     // Encode the URL if it needs it
-    let constructedURL = urlIsEncoded ? url : encodeURIComponent(url);
+    constructedURL = urlIsEncoded ? url : encodeURIComponent(url);
 
     // Change the image URL to request a size tailored for the parent container width
     // Also: force JPEG, quality 60, no upscaling, no EXIF data
@@ -37,7 +40,9 @@ export class DSImage extends React.PureComponent {
     constructedURL = `https://pocket-image-cache.com/${width}x0/filters:format(jpeg):quality(60):no_upscale():strip_exif()/${(constructedURL)}`;
 
     // Use Mozilla CDN:
-    return `https://img-getpocket.cdn.mozilla.net/direct?url=${encodeURIComponent(constructedURL)}`;
+    constructedURL = `https://img-getpocket.cdn.mozilla.net/direct?url=${encodeURIComponent(constructedURL)}`;
+
+    return constructedURL;
   }
 
   componentDidMount() {
@@ -57,7 +62,7 @@ export class DSImage extends React.PureComponent {
     let img;
 
     if (this.state && this.state.isSeen) {
-      if (this.props.optimize && this.props.rawSource) {
+      if (this.props.optimize && this.props.rawSource && !this.state.optimizedImageFailed) {
         let source;
         let source2x;
 
@@ -74,7 +79,7 @@ export class DSImage extends React.PureComponent {
             cache.query(baseSource, this.state.containerWidth * 2, `2x`)
           );
 
-          img = (<img src={source} srcSet={`${source2x} 2x`} />);
+          img = (<img onError={this.onOptimizedImageError.bind(this)} src={source} srcSet={`${source2x} 2x`} />);
         }
       } else {
         img = (<img src={this.props.source} />);
@@ -84,6 +89,15 @@ export class DSImage extends React.PureComponent {
     return (
       <picture className={classNames}>{img}</picture>
     );
+  }
+
+  onOptimizedImageError() {
+    console.error(`Optimized image failed to load. URL: ${this.props.rawSource}`);
+
+    // This will trigger a re-render and the normal 450px image will be used as a fallback
+    this.setState({
+      optimizedImageFailed: true,
+    });
   }
 }
 
