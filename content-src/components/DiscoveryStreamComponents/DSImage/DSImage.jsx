@@ -49,6 +49,13 @@ export class DSImage extends React.PureComponent {
     this.observer.observe(ReactDOM.findDOMNode(this));
   }
 
+  componentWillUnmount() {
+    // Remove observer on unmount
+    if (this.observer) {
+      this.observer.unobserve(ReactDOM.findDOMNode(this));
+    }
+  }
+
   render() {
     const classNames = `ds-image${this.props.extraClassNames ? ` ${this.props.extraClassNames}` : ``}`;
 
