@@ -38,7 +38,7 @@ export class DSImage extends React.PureComponent {
   componentDidMount() {
     let options = {
       root: document.querySelector(`document`),
-      threshold: 0.5,
+      threshold: 0, // Load as soon as the first pixel crosses into view
     };
 
     this.observer = new IntersectionObserver(this.onSeen.bind(this), options);
