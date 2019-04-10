@@ -59,7 +59,19 @@ describe("<DiscoveryStreamBase>", () => {
       },
       ...props,
     };
-    return shallowWithIntl(<DiscoveryStreamBase DiscoveryStream={defaultProps} />);
+    return shallowWithIntl(<DiscoveryStreamBase
+      DiscoveryStream={defaultProps}
+      Prefs={{
+        values: {
+          "feeds.section.topstories": true,
+          "feeds.topsites": true,
+        },
+      }}
+      Sections={[{
+        id: "topstories",
+        learnMore: {link: {}},
+        pref: {},
+      }]} />);
   }
 
   beforeEach(() => {
