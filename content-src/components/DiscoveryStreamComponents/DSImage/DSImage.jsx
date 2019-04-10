@@ -25,6 +25,9 @@ export class DSImage extends React.PureComponent {
       this.setState({
         isSeen: true,
       });
+
+      // Stop observing since element has been seen
+      this.observer.unobserve(ReactDOM.findDOMNode(this));
     }
   }
 
