@@ -223,6 +223,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
           dispatch={this.props.dispatch}
           icon={topStories.icon}
           id={topStories.id}
+          isFixed={true}
           learnMore={{
             link: {
               href: message.header.link_url,

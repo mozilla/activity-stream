@@ -7,7 +7,9 @@ export class _TopSites extends React.PureComponent {
     const header = this.props.header || {};
     return (
       <div className="ds-top-sites">
-        <OldTopSites title={header.title} />
+        <OldTopSites
+          isFixed={true}
+          title={header.title} />
       </div>
     );
   }

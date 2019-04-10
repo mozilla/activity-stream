@@ -131,6 +131,7 @@ export class _TopSites extends React.PureComponent {
         showPrefName="feeds.topsites"
         eventSource={TOP_SITES_SOURCE}
         collapsed={props.TopSites.pref ? props.TopSites.pref.collapsed : undefined}
+        isFixed={props.isFixed}
         isFirst={props.isFirst}
         isLast={props.isLast}
         dispatch={props.dispatch}>
