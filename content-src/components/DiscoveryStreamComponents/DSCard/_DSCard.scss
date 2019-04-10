@@ -9,6 +9,20 @@ $excerpt-line-height: 20;
   flex-direction: column;
   position: relative;
 
+  &.placeholder {
+    background: transparent;
+    box-shadow: inset $inner-box-shadow;
+    border-radius: 4px;
+
+    .ds-card-link {
+      cursor: default;
+    }
+
+    .img-wrapper {
+      opacity: 0;
+    }
+  }
+
   &:hover {
     header {
       @include dark-theme-only {

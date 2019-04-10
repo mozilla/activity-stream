@@ -179,7 +179,6 @@ describe("ASRouter", () => {
       assert.equal(Router.state.previousSessionEnd, previousSessionEnd);
     });
     it("should dispatch a AS_ROUTER_INITIALIZED event to AS with ASRouterPreferences.specialConditions", async () => {
-      assert.calledOnce(Router.dispatchToAS);
       assert.calledWith(Router.dispatchToAS, ac.BroadcastToContent({type: "AS_ROUTER_INITIALIZED", data: ASRouterPreferences.specialConditions}));
     });
   });
@@ -345,9 +344,23 @@ describe("ASRouter", () => {
       assert.calledWithExactly(ASRouterTriggerListeners.get("openURL").init,
         Router._triggerHandler, ["www.example.com"], undefined);
     });
-    it("should gracefully handle RemoteSettings blowing up", async () => {
+    it("should gracefully handle RemoteSettings blowing up and dispatch undesired event", async () => {
       sandbox.stub(MessageLoaderUtils, "_getRemoteSettingsMessages").rejects("fake error");
       await createRouterAndInit();
+      assert.calledWith(Router.dispatchToAS, {
+        data: {action: "asrouter_undesired_event", event: "ASR_RS_ERROR", value: "remotey-settingsy"},
+        meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+        type: "AS_ROUTER_TELEMETRY_USER_EVENT",
+      });
+    });
+    it("should dispatch undesired event if RemoteSettings returns no messages", async () => {
+      sandbox.stub(MessageLoaderUtils, "_getRemoteSettingsMessages").resolves([]);
+      await createRouterAndInit();
+      assert.calledWith(Router.dispatchToAS, {
+        data: {action: "asrouter_undesired_event", event: "ASR_RS_NO_MESSAGES", value: "remotey-settingsy"},
+        meta: {from: "ActivityStream:Content", to: "ActivityStream:Main"},
+        type: "AS_ROUTER_TELEMETRY_USER_EVENT",
+      });
     });
   });
 
