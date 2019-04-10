@@ -225,7 +225,7 @@ const PREFS_CONFIG = new Map([
       exclude: [],
     }),
   }],
-  ["asrouter.providers.fxa", {
+  ["asrouter.providers.cfr-fxa", {
     title: "Configuration for CFR FxA Messages provider",
     value: JSON.stringify({
       id: "cfr-fxa",
