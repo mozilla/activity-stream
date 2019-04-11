@@ -777,7 +777,7 @@ class _ASRouter {
       if (force) {
         CFRPageActions.forceRecommendation(target, message, this.dispatch);
       } else {
-        CFRPageActions.addRecommendation(target, trigger.param, message, this.dispatch);
+        CFRPageActions.addRecommendation(target, trigger.param.host, message, this.dispatch);
       }
 
     // New tab single messages

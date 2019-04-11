@@ -876,7 +876,7 @@ describe("ASRouter", () => {
         sandbox.stub(CFRPageActions, "addRecommendation");
         const testMessage = {id: "foo", template: "cfr_doorhanger"};
         await Router.setState({messages: [testMessage]});
-        await Router._sendMessageToTarget(testMessage, {}, {}, false);
+        await Router._sendMessageToTarget(testMessage, {}, {param: {}}, false);
 
         assert.calledOnce(CFRPageActions.addRecommendation);
       });
@@ -1228,7 +1228,7 @@ describe("ASRouter", () => {
           style: {setProperty: sandbox.stub()},
           addEventListener: sandbox.stub(),
         });
-        const data = {param: "mozilla.com"};
+        const data = {param: {host: "mozilla.com", url: "https://mozilla.com"}};
         const target = {
           sendAsyncMessage: sandbox.stub(),
           documentURI: {scheme: "https", host: "mozilla.com"},
