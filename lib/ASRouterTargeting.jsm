@@ -17,6 +17,8 @@ ChromeUtils.defineModuleGetter(this, "AppConstants",
   "resource://gre/modules/AppConstants.jsm");
 ChromeUtils.defineModuleGetter(this, "AttributionCode",
   "resource:///modules/AttributionCode.jsm");
+ChromeUtils.defineModuleGetter(this, "UIState",
+  "resource://services-sync/UIState.jsm");
 
 const FXA_USERNAME_PREF = "services.sync.username";
 const SEARCH_REGION_PREF = "browser.search.region";
@@ -200,6 +202,12 @@ const TargetingGetters = {
     return ProfileAge().then(times => times.reset);
   },
   get usesFirefoxSync() {
+    if (UIState.isReady()) {
+      const {status} = UIState.get();
+      if (status !== UIState.STATUS_NOT_CONFIGURED) {
+        return status === UIState.STATUS_SIGNED_IN || status === UIState.STATUS_NOT_VERIFIED;
+      }
+    }
     return Services.prefs.prefHasUserValue(FXA_USERNAME_PREF);
   },
   get sync() {
