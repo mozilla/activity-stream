@@ -131,13 +131,6 @@ describe("<ListItem> presentation component", () => {
     assert.lengthOf(anchors, 1);
   });
 
-  it("should include an background image of props.image_src", () => {
-    const wrapper = shallow(<ListItem {...ValidListItemProps} />);
-
-    const imageStyle = wrapper.find(".ds-list-image").prop("style");
-    assert.propertyVal(imageStyle, "backgroundImage", `url(${ValidListItemProps.image_src})`);
-  });
-
   it("should not contain 'span.ds-list-item-context' without props.context", () => {
     const wrapper = shallow(<ListItem {...ValidListItemProps} />);
 
