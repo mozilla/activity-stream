@@ -14,20 +14,22 @@ export class DSImage extends React.PureComponent {
     };
   }
 
-  onSeen(element) {
-    if (this.state && element[0].isIntersecting) {
-      if (this.props.optimize) {
+  onSeen(entries) {
+    if (this.state) {
+      if (entries.some(entry => entry.isIntersecting)) {
+        if (this.props.optimize) {
+          this.setState({
+            containerWidth: ReactDOM.findDOMNode(this).clientWidth,
+          });
+        }
+
         this.setState({
-          containerWidth: ReactDOM.findDOMNode(this).clientWidth,
+          isSeen: true,
         });
+
+        // Stop observing since element has been seen
+        this.observer.unobserve(ReactDOM.findDOMNode(this));
       }
-
-      this.setState({
-        isSeen: true,
-      });
-
-      // Stop observing since element has been seen
-      this.observer.unobserve(ReactDOM.findDOMNode(this));
     }
   }
 
