@@ -236,6 +236,7 @@ const PREFS_CONFIG = new Map([
       const isEnabled = IS_NIGHTLY_OR_UNBRANDED_BUILD && locales && locales.includes(locale);
       return JSON.stringify({
         api_key_pref: "extensions.pocket.oAuthConsumerKey",
+        collapsible: true,
         enabled: isEnabled,
         show_spocs: showSpocs({geo}),
         personalized: false,
@@ -261,10 +262,6 @@ const PREFS_CONFIG = new Map([
     title: "Track rec impressions",
     skipBroadcast: true,
     value: "{}",
-  }],
-  ["darkModeMessage", {
-    title: "Boolean flag that decides whether to show the dark Mode message or not.",
-    value: IS_NIGHTLY_OR_UNBRANDED_BUILD,
   }],
 ]);
 
