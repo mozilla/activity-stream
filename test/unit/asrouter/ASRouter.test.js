@@ -942,7 +942,7 @@ describe("ASRouter", () => {
         await Router.onMessage(msg);
 
         assert.calledOnce(msg.target.browser.ownerGlobal.openPreferences);
-        assert.calledWith(msg.target.browser.ownerGlobal.openPreferences, "something", {origin: "o"});
+        assert.calledWith(msg.target.browser.ownerGlobal.openPreferences, "something");
       });
     });
 
