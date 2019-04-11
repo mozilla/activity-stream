@@ -123,5 +123,6 @@
       "required": ["tooltiptext"]
     }
   },
+  "additionalProperties": false,
   "required": ["title", "text", "link", "info_icon"]
 }
