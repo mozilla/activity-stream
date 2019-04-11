@@ -937,7 +937,7 @@ describe("ASRouter", () => {
     describe("#onMessage: OPEN_PREFERENCES_PAGE", () => {
       it("should call openPreferences with the correct params on OPEN_PREFERENCES_PAGE", async () => {
         let [testMessage] = Router.state.messages;
-        testMessage.button_action = {type: "OPEN_PREFERENCES_PAGE", data: {category: "something", origin: "o"}};
+        testMessage.button_action = {type: "OPEN_PREFERENCES_PAGE", data: {category: "something"}};
         const msg = fakeExecuteUserAction(testMessage.button_action);
         await Router.onMessage(msg);
 
