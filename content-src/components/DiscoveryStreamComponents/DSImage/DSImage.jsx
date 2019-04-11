@@ -39,13 +39,7 @@ export class DSImage extends React.PureComponent {
   }
 
   componentDidMount() {
-    let options = {
-      root: document.querySelector(`document`),
-      threshold: 0, // Load as soon as the first pixel crosses into view
-    };
-
-    this.observer = new IntersectionObserver(this.onSeen.bind(this), options);
-
+    this.observer = new IntersectionObserver(this.onSeen.bind(this));
     this.observer.observe(ReactDOM.findDOMNode(this));
   }
 
@@ -92,7 +86,7 @@ export class DSImage extends React.PureComponent {
   }
 
   onOptimizedImageError() {
-    // This will trigger a re-render and the normal 450px image will be used as a fallback
+    // This will trigger a re-render and the unoptimized 450px image will be used as a fallback
     this.setState({
       optimizedImageFailed: true,
     });
