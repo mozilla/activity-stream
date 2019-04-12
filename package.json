@@ -25,6 +25,7 @@
     "@storybook/addon-links": "^5.0.6",
     "@storybook/addons": "^5.0.6",
     "@storybook/react": "^5.0.6",
+    "@storybook/storybook-deployer": "^2.8.1",
     "acorn": "6.1.1",
     "babel-eslint": "10.0.1",
     "babel-loader": "8.0.5",
@@ -151,7 +152,8 @@
     "yamscripts": "yamscripts compile",
     "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!",
     "storybook": "start-storybook -p 6006 --debug-webpack",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "deploy-storybook": "storybook-to-ghpages"
   },
   "title": "Activity Stream",
   "permissions": {

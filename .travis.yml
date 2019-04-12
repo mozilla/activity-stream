@@ -24,8 +24,8 @@ before_install:
 
 install:
   - npm config set spin false
-  - npm install
-
+  - npm install 
+  - npm run deploy-storybook -- --ci
 script:
   - npm test
 
