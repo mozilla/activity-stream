@@ -44,6 +44,11 @@ module.exports = (env = {}) => ({
       "node_modules",
       ".",
     ],
+    alias: {
+      'core-js': '/Users/dmose/r/activity-stream/node_modules/core-js',
+      react: '/Users/dmose/r/activity-stream/node_modules/react',
+      'react-dom': '/Users/dmose/r/activity-stream/node_modules/react-dom',
+    }
   },
   externals: {
     "prop-types": "PropTypes",

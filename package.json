@@ -17,15 +17,19 @@
     "reselect": "4.0.0"
   },
   "devDependencies": {
-    "@octokit/rest": "16.17.0",
-    "acorn": "6.1.1",
     "@babel/core": "7.3.4",
+    "@babel/plugin-proposal-async-generator-functions": "7.2.0",
+    "@babel/preset-react": "7.0.0",
+    "@octokit/rest": "16.17.0",
+    "@storybook/addon-actions": "^5.0.6",
+    "@storybook/addon-links": "^5.0.6",
+    "@storybook/addons": "^5.0.6",
+    "@storybook/react": "^5.0.6",
+    "acorn": "6.1.1",
     "babel-eslint": "10.0.1",
     "babel-loader": "8.0.5",
-    "@babel/preset-react": "7.0.0",
     "babel-plugin-jsm-to-commonjs": "0.5.0",
     "babel-plugin-jsm-to-esmodules": "0.6.0",
-    "@babel/plugin-proposal-async-generator-functions": "7.2.0",
     "chai": "4.2.0",
     "chai-json-schema": "1.5.0",
     "co-task": "1.0.0",
@@ -71,6 +75,7 @@
     "shelljs": "0.8.3",
     "simple-git": "1.107.0",
     "sinon": "7.2.7",
+    "style-loader": "^0.23.1",
     "webpack": "4.29.6",
     "webpack-cli": "3.2.3",
     "yamscripts": "0.1.0"
@@ -144,7 +149,9 @@
     "vendor:react": "node ./bin/vendor-react.js",
     "help": "yamscripts help",
     "yamscripts": "yamscripts compile",
-    "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
+    "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!",
+    "storybook": "start-storybook -p 6006 --debug-webpack",
+    "build-storybook": "build-storybook"
   },
   "title": "Activity Stream",
   "permissions": {
