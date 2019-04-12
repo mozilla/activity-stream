@@ -1,16 +1,15 @@
-import {addDecorator, configure, storiesOf} from "@storybook/react";
-import {Button, Welcome} from "@storybook/react/demo";
+import "css/asm.css";
 
-import {action} from "@storybook/addon-actions";
+import {addDecorator, configure} from "@storybook/react";
+
+// import {action} from "@storybook/addon-actions";
 import {IntlProvider} from "react-intl";
-import {linkTo} from "@storybook/addon-links";
+// import {linkTo} from "@storybook/addon-links";
 import React from "react";
 
 const req = require.context("../content-src/components/", true, /\.stories\.jsx$/);
 
 const messages = require("data/locales.json")["en-US"]; // eslint-disable-line import/no-commonjs
-
-import "css/asm.css";
 
 function loadStories() {
   req.keys().forEach(filename => req(filename));

@@ -150,10 +150,7 @@
     "vendor:react": "node ./bin/vendor-react.js",
     "help": "yamscripts help",
     "yamscripts": "yamscripts compile",
-    "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!",
-    "storybook": "start-storybook -p 6006 --debug-webpack",
-    "build-storybook": "build-storybook",
-    "deploy-storybook": "storybook-to-ghpages"
+    "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!"
   },
   "title": "Activity Stream",
   "permissions": {
