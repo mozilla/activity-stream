@@ -347,7 +347,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const apiKeyPref = this._prefCache.config.api_key_pref;
     const apiKey = Services.prefs.getCharPref(apiKeyPref, "");
 
-    // The server somtimes returns this value already replaced, but we do this check for two reasons:
+    // The server somtimes returns this value already replaced, but we try this for two reasons:
     // 1. Layout endpoints are not from the server.
     // 2. Hardcoded layouts don't have this already done for us.
     const endpoint = rawEndpoint.replace("$apiKey", apiKey);
