@@ -286,35 +286,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this._prefCache = {};
   }
 
-  replaceEndpointApiKey(url, apiKey) {
-    return url.replace("$apiKey", apiKey);
-  }
-
   finalLayoutEndpoint(url, apiKey) {
     if (url.includes("$apiKey") && !apiKey) {
       throw new Error(`Layout Endpoint - An API key was specified but none configured: ${url}`);
     }
-    return this.replaceEndpointApiKey(url, apiKey);
-  }
-
-  replaceDefaultLayoutApiKey(apiKey) {
-    if (!apiKey) {
-      throw new Error(`Default Layout - An API key was specified but none configured`);
-    }
-
-    const spocsUrl = DEFAULT_LAYOUT_RESP.spocs.url;
-    DEFAULT_LAYOUT_RESP.spocs.url = this.replaceEndpointApiKey(spocsUrl, apiKey);
-
-    DEFAULT_LAYOUT_RESP.layout
-      .filter(row => row && row.components)
-      .forEach(row => {
-        row.components
-          .filter(component => component && component.feed)
-          .forEach(component => {
-            const feedUrl = component.feed.url;
-            component.feed.url = this.replaceEndpointApiKey(feedUrl, apiKey);
-          });
-      });
+    return url.replace("$apiKey", apiKey);
   }
 
   get config() {
@@ -323,19 +299,12 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
     try {
       this._prefCache.config = JSON.parse(this.store.getState().Prefs.values[PREF_CONFIG]);
+      const layoutUrl = this._prefCache.config.layout_endpoint;
 
       const apiKeyPref = this._prefCache.config.api_key_pref;
-      if (this._prefCache.config.hardcoded_layout) {
-        if (apiKeyPref) {
-          const apiKey = Services.prefs.getCharPref(apiKeyPref, "");
-          this.replaceDefaultLayoutApiKey(apiKey);
-        }
-      } else {
-        const layoutUrl = this._prefCache.config.layout_endpoint;
-        if (layoutUrl && apiKeyPref) {
-          const apiKey = Services.prefs.getCharPref(apiKeyPref, "");
-          this._prefCache.config.layout_endpoint = this.finalLayoutEndpoint(layoutUrl, apiKey);
-        }
+      if (layoutUrl && apiKeyPref) {
+        const apiKey = Services.prefs.getCharPref(apiKeyPref, "");
+        this._prefCache.config.layout_endpoint = this.finalLayoutEndpoint(layoutUrl, apiKey);
       }
 
       // Modify the cached config with the user set opt-out for other consumers
@@ -369,11 +338,20 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this._prefCache = {};
   }
 
-  async fetchFromEndpoint(endpoint) {
-    if (!endpoint) {
+  async fetchFromEndpoint(rawEndpoint) {
+    if (!rawEndpoint) {
       Cu.reportError("Tried to fetch endpoint but none was configured.");
       return null;
     }
+
+    const apiKeyPref = this._prefCache.config.api_key_pref;
+    const apiKey = Services.prefs.getCharPref(apiKeyPref, "");
+
+    // The server somtimes returns this value already replaced, but we do this check for two reasons:
+    // 1. Layout endpoints are not from the server.
+    // 2. Hardcoded layouts don't have this already done for us.
+    const endpoint = rawEndpoint.replace("$apiKey", apiKey);
+
     try {
       // Make sure the requested endpoint is allowed
       const allowed = this.store.getState().Prefs.values[PREF_ENDPOINTS].split(",");
