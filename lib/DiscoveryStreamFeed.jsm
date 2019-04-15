@@ -29,251 +29,7 @@ const PREF_SHOW_SPONSORED = "showSponsored";
 const PREF_SPOC_IMPRESSIONS = "discoverystream.spoc.impressions";
 const PREF_REC_IMPRESSIONS = "discoverystream.rec.impressions";
 
-const DEFAULT_LAYOUT_RESP = {
-  "spocs": {
-    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey",
-    "spocs_per_domain": 1,
-  },
-  "layout": [
-    {
-      "width": 12,
-      "components": [
-        {
-          "type": "TopSites",
-          "header": {
-            "title": "Top Sites",
-          },
-          "properties": {},
-        },
-      ],
-    },
-    {
-      "width": 12,
-      "components": [
-        {
-          "type": "Message",
-          "header": {
-            "title": "Recommended by Pocket",
-            "subtitle": "",
-            "link_text": "How it works",
-            "link_url": "https://getpocket.com/firefox/new_tab_learn_more",
-            "icon": "resource://activity-stream/data/content/assets/glyph-pocket-16.svg",
-          },
-          "properties": {},
-          "styles": {
-            ".ds-message": "margin-bottom: -20px",
-          },
-        },
-      ],
-    },
-    {
-      "width": 8,
-      "components": [
-        {
-          "type": "List",
-          "header": {
-            "title": "",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US",
-          },
-          "properties": {
-            "items": 8,
-            "has_numbers": false,
-            "has_images": true,
-            "border": "no-border",
-          },
-          "styles": {
-            ".ds-list": "margin-right: -12px",
-          },
-        },
-      ],
-    },
-    {
-      "width": 4,
-      "components": [
-        {
-          "type": "CardGrid",
-          "properties": {
-            "items": 1,
-            "border": "no-border",
-            "offset": 8,
-          },
-          "header": {
-            "title": "",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US",
-          },
-          "styles": {
-            ".ds-card": "margin-left: -12px;",
-            ".ds-card .meta .excerpt": "max-height: 100px;",
-          },
-          "spocs": {
-            "probability": 1,
-            "positions": [
-              {
-                "index": 0,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      "width": 12,
-      "components": [
-        {
-          "type": "List",
-          "header": {
-            "title": "Health & Fitness 💪",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=4&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
-          },
-          "properties": {
-            "items": 6,
-            "has_numbers": false,
-            "has_images": true,
-            "border": "no-border",
-          },
-          "spocs": {
-            "probability": 1,
-            "positions": [
-              {
-                "index": 5,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      "width": 12,
-      "components": [
-        {
-          "type": "List",
-          "header": {
-            "title": "Tech 🖥",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=5&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
-          },
-          "properties": {
-            "items": 6,
-            "has_numbers": false,
-            "has_images": true,
-            "border": "no-border",
-          },
-        },
-      ],
-    },
-    {
-      "width": 12,
-      "components": [
-        {
-          "type": "List",
-          "header": {
-            "title": "Entertainment 🍿",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=8&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
-          },
-          "properties": {
-            "items": 6,
-            "has_numbers": false,
-            "has_images": true,
-            "border": "no-border",
-          },
-          "spocs": {
-            "probability": 1,
-            "positions": [
-              {
-                "index": 5,
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      "width": 12,
-      "components": [
-        {
-          "type": "List",
-          "header": {
-            "title": "Personal Finance 💰",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=2&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
-          },
-          "properties": {
-            "items": 6,
-            "has_numbers": false,
-            "has_images": true,
-            "border": "no-border",
-          },
-        },
-      ],
-    },
-    {
-      "width": 12,
-      "components": [
-        {
-          "type": "List",
-          "header": {
-            "title": "Business 💼",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=1&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
-          },
-          "properties": {
-            "items": 6,
-            "has_numbers": false,
-            "has_images": true,
-            "border": "no-border",
-          },
-        },
-      ],
-    },
-    {
-      "width": 12,
-      "components": [
-        {
-          "type": "List",
-          "header": {
-            "title": "Science 🔬",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=7&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
-          },
-          "properties": {
-            "items": 6,
-            "has_numbers": false,
-            "has_images": true,
-            "border": "no-border",
-          },
-          "spocs": {
-            "probability": 1,
-            "positions": [
-              {
-                "index": 5,
-              },
-            ],
-          },
-        },
-      ],
-    },
-  ],
-};
+let defaultLayoutResp;
 
 this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   constructor() {
@@ -443,7 +199,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   async loadLayout(sendUpdate, isStartup) {
     let layout = {};
     if (this.config.hardcoded_layout) {
-      layout = {lastUpdate: Date.now(), ...DEFAULT_LAYOUT_RESP};
+      layout = {lastUpdate: Date.now(), ...defaultLayoutResp};
     } else {
       layout = await this.fetchLayout(isStartup);
     }
@@ -1126,6 +882,252 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         break;
     }
   }
+};
+
+defaultLayoutResp = {
+  "spocs": {
+    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey",
+    "spocs_per_domain": 1,
+  },
+  "layout": [
+    {
+      "width": 12,
+      "components": [
+        {
+          "type": "TopSites",
+          "header": {
+            "title": "Top Sites",
+          },
+          "properties": {},
+        },
+      ],
+    },
+    {
+      "width": 12,
+      "components": [
+        {
+          "type": "Message",
+          "header": {
+            "title": "Recommended by Pocket",
+            "subtitle": "",
+            "link_text": "How it works",
+            "link_url": "https://getpocket.com/firefox/new_tab_learn_more",
+            "icon": "resource://activity-stream/data/content/assets/glyph-pocket-16.svg",
+          },
+          "properties": {},
+          "styles": {
+            ".ds-message": "margin-bottom: -20px",
+          },
+        },
+      ],
+    },
+    {
+      "width": 8,
+      "components": [
+        {
+          "type": "List",
+          "header": {
+            "title": "",
+          },
+          "feed": {
+            "embed_reference": null,
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US",
+          },
+          "properties": {
+            "items": 8,
+            "has_numbers": false,
+            "has_images": true,
+            "border": "no-border",
+          },
+          "styles": {
+            ".ds-list": "margin-right: -12px",
+          },
+        },
+      ],
+    },
+    {
+      "width": 4,
+      "components": [
+        {
+          "type": "CardGrid",
+          "properties": {
+            "items": 1,
+            "border": "no-border",
+            "offset": 8,
+          },
+          "header": {
+            "title": "",
+          },
+          "feed": {
+            "embed_reference": null,
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US",
+          },
+          "styles": {
+            ".ds-card": "margin-left: -12px;",
+            ".ds-card .meta .excerpt": "max-height: 100px;",
+          },
+          "spocs": {
+            "probability": 1,
+            "positions": [
+              {
+                "index": 0,
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      "width": 12,
+      "components": [
+        {
+          "type": "List",
+          "header": {
+            "title": "Health & Fitness 💪",
+          },
+          "feed": {
+            "embed_reference": null,
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=4&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+          },
+          "properties": {
+            "items": 6,
+            "has_numbers": false,
+            "has_images": true,
+            "border": "no-border",
+          },
+          "spocs": {
+            "probability": 1,
+            "positions": [
+              {
+                "index": 5,
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      "width": 12,
+      "components": [
+        {
+          "type": "List",
+          "header": {
+            "title": "Tech 🖥",
+          },
+          "feed": {
+            "embed_reference": null,
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=5&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+          },
+          "properties": {
+            "items": 6,
+            "has_numbers": false,
+            "has_images": true,
+            "border": "no-border",
+          },
+        },
+      ],
+    },
+    {
+      "width": 12,
+      "components": [
+        {
+          "type": "List",
+          "header": {
+            "title": "Entertainment 🍿",
+          },
+          "feed": {
+            "embed_reference": null,
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=8&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+          },
+          "properties": {
+            "items": 6,
+            "has_numbers": false,
+            "has_images": true,
+            "border": "no-border",
+          },
+          "spocs": {
+            "probability": 1,
+            "positions": [
+              {
+                "index": 5,
+              },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      "width": 12,
+      "components": [
+        {
+          "type": "List",
+          "header": {
+            "title": "Personal Finance 💰",
+          },
+          "feed": {
+            "embed_reference": null,
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=2&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+          },
+          "properties": {
+            "items": 6,
+            "has_numbers": false,
+            "has_images": true,
+            "border": "no-border",
+          },
+        },
+      ],
+    },
+    {
+      "width": 12,
+      "components": [
+        {
+          "type": "List",
+          "header": {
+            "title": "Business 💼",
+          },
+          "feed": {
+            "embed_reference": null,
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=1&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+          },
+          "properties": {
+            "items": 6,
+            "has_numbers": false,
+            "has_images": true,
+            "border": "no-border",
+          },
+        },
+      ],
+    },
+    {
+      "width": 12,
+      "components": [
+        {
+          "type": "List",
+          "header": {
+            "title": "Science 🔬",
+          },
+          "feed": {
+            "embed_reference": null,
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=7&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+          },
+          "properties": {
+            "items": 6,
+            "has_numbers": false,
+            "has_images": true,
+            "border": "no-border",
+          },
+          "spocs": {
+            "probability": 1,
+            "positions": [
+              {
+                "index": 5,
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ],
 };
 
 const EXPORTED_SYMBOLS = ["DiscoveryStreamFeed"];
