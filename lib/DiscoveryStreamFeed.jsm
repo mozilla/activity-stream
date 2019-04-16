@@ -388,7 +388,15 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     }
   }
 
-  scoreItems(item) {
+  scoreItems(items) {
+    return items.map(item => this.scoreItem(item))
+      // Remove spocs that are scored too low.
+      .filter(s => s.score >= s.min_score)
+      // Sort by highest scores.
+      .sort((a, b) => b.score - a.score);
+  }
+
+  scoreItem(item) {
     item.score = item.item_score;
     if (item.score !== 0 && !item.score) {
       item.score = 1;
@@ -420,14 +428,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       const campaignMap = {};
       return {
         ...data,
-        spocs: data.spocs
-          // This order of operations is intended.
-          // scoreItems must be first because it creates this.score.
-          .map(item => this.scoreItems(item))
-          // Remove spocs that are scored too low.
-          .filter(s => s.score >= s.min_score)
-          // Sort by highest scores.
-          .sort((a, b) => b.score - a.score)
+        // This order of operations is intended.
+        // scoreItems must be first because it creates this.score.
+        spocs: this.scoreItems(data.spocs)
           // This removes campaign dupes.
           // We do this only after scoring and sorting because that way
           // we can keep the first item we see, and end up keeping the highest scored.
@@ -513,11 +516,17 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     let feed = feeds ? feeds[feedUrl] : null;
     if (this.isExpired({cachedData, key: "feed", url: feedUrl, isStartup})) {
       const feedResponse = await this.fetchFromEndpoint(feedUrl);
+      const scoredItems = this.scoreItems(feedResponse.recommendations);
+      const {recsExpireTime} = feedResponse.settings;
+      const recommendations = this.rotate(scoredItems, recsExpireTime);
       if (feedResponse) {
         this.componentFeedFetched = true;
         feed = {
           lastUpdated: Date.now(),
-          data: this.rotate(feedResponse),
+          data: {
+            ...feedResponse,
+            recommendations,
+          },
         };
       } else {
         Cu.reportError("No response for feed");
@@ -573,10 +582,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   // We have to rotate stories on the client so that
   // active stories are at the front of the list, followed by stories that have expired
   // impressions i.e. have been displayed for longer than recsExpireTime.
-  rotate(feedResponse) {
-    const {recommendations} = feedResponse;
-
-    const maxImpressionAge = Math.max(feedResponse.settings.recsExpireTime * 1000 || DEFAULT_RECS_EXPIRE_TIME, DEFAULT_RECS_EXPIRE_TIME);
+  rotate(recommendations, recsExpireTime) {
+    const maxImpressionAge = Math.max(recsExpireTime * 1000 || DEFAULT_RECS_EXPIRE_TIME, DEFAULT_RECS_EXPIRE_TIME);
     const impressions = this.readImpressionsPref(PREF_REC_IMPRESSIONS);
     const expired = [];
     const active = [];
@@ -587,7 +594,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         active.push(item);
       }
     }
-    return {...feedResponse, recommendations: active.concat(expired)};
+    return active.concat(expired);
   }
 
   /**
