@@ -21,7 +21,6 @@ const {SectionsFeed} = ChromeUtils.import("resource://activity-stream/lib/Sectio
 const {PlacesFeed} = ChromeUtils.import("resource://activity-stream/lib/PlacesFeed.jsm");
 const {PrefsFeed} = ChromeUtils.import("resource://activity-stream/lib/PrefsFeed.jsm");
 const {Store} = ChromeUtils.import("resource://activity-stream/lib/Store.jsm");
-const {SnippetsFeed} = ChromeUtils.import("resource://activity-stream/lib/SnippetsFeed.jsm");
 const {SystemTickFeed} = ChromeUtils.import("resource://activity-stream/lib/SystemTickFeed.jsm");
 const {TelemetryFeed} = ChromeUtils.import("resource://activity-stream/lib/TelemetryFeed.jsm");
 const {FaviconFeed} = ChromeUtils.import("resource://activity-stream/lib/FaviconFeed.jsm");
@@ -114,9 +113,9 @@ const PREFS_CONFIG = new Map([
     title: "Show the Search bar",
     value: true,
   }],
-  ["disableSnippets", {
-    title: "Disable snippets on activity stream",
-    value: false,
+  ["feeds.snippets", {
+    title: "Show snippets on activity stream",
+    value: true,
   }],
   ["topSitesRows", {
     title: "Number of rows of Top Sites to display",
@@ -322,12 +321,6 @@ const FEEDS_DATA = [
       })[geo];
       return !!locales && locales.includes(locale);
     },
-  },
-  {
-    name: "snippets",
-    factory: () => new SnippetsFeed(),
-    title: "Gets snippets data",
-    value: true,
   },
   {
     name: "systemtick",
