@@ -224,6 +224,16 @@ const PREFS_CONFIG = new Map([
       exclude: [],
     }),
   }],
+  ["asrouter.providers.cfr-fxa", {
+    title: "Configuration for CFR FxA Messages provider",
+    value: JSON.stringify({
+      id: "cfr-fxa",
+      enabled: false,
+      type: "remote-settings",
+      bucket: "cfr-fxa",
+      frequency: {custom: [{period: "daily", cap: 1}]},
+    }),
+  }],
   // See browser/app/profile/firefox.js for other ASR preferences. They must be defined there to enable roll-outs.
   ["discoverystream.config", {
     title: "Configuration for the new pocket new tab",
