@@ -423,7 +423,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
   // fail to render them properly as part of the card template.
   normalizeUrl(url) {
     if (url) {
-      return url.replace(/\(/g, "%28").replace(/\)/g, "%29");
+      return url.replace(/\(/g, "\\(").replace(/\)/g, "\\)");
     }
     return url;
   }
