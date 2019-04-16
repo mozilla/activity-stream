@@ -12,8 +12,6 @@ import React from "react";
 import {Search} from "content-src/components/Search/Search";
 import {Sections} from "content-src/components/Sections/Sections";
 
-let didLogDevtoolsHelpText = false;
-
 const PrefsButton = injectIntl(props => (
   <div className="prefs-button">
     <button className="icon icon-settings" onClick={props.onClick} title={props.intl.formatMessage({id: "settings_pane_button_label"})} />
@@ -83,30 +81,20 @@ export class _Base extends React.PureComponent {
     const {props} = this;
     const {App, locale, strings} = props;
     const {initialized} = App;
-
-    const prefs = props.Prefs.values;
-    if (prefs["asrouter.devtoolsEnabled"]) {
-      if (window.location.hash.startsWith("#asrouter") ||
-          window.location.hash.startsWith("#devtools")) {
-        return (<div>
-          <ASRouterAdmin />
-          <ASRouterUISurface dispatch={this.props.dispatch} />
-        </div>);
-      } else if (!didLogDevtoolsHelpText) {
-        console.log("Activity Stream devtools enabled. To access visit %cabout:newtab#devtools", "font-weight: bold"); // eslint-disable-line no-console
-        didLogDevtoolsHelpText = true;
-      }
-    }
+    const isDevtoolsEnabled = props.Prefs.values["asrouter.devtoolsEnabled"];
 
     if (!props.isPrerendered && !initialized) {
       return null;
     }
 
     return (<IntlProvider locale={locale} messages={strings}>
-        <ErrorBoundary className="base-content-fallback">
+      <ErrorBoundary className="base-content-fallback">
+        <React.Fragment>
           <BaseContent {...this.props} />
-        </ErrorBoundary>
-      </IntlProvider>);
+          {isDevtoolsEnabled ? <ASRouterAdmin /> : null}
+        </React.Fragment>
+      </ErrorBoundary>
+    </IntlProvider>);
   }
 }
 
