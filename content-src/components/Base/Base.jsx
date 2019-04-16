@@ -1,6 +1,7 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {addLocaleData, injectIntl, IntlProvider} from "react-intl";
 import {ASRouterAdmin} from "content-src/components/ASRouterAdmin/ASRouterAdmin";
+import {ASRouterUISurface} from "../../asrouter/asrouter-content";
 import {ConfirmDialog} from "content-src/components/ConfirmDialog/ConfirmDialog";
 import {connect} from "react-redux";
 import {DarkModeMessage} from "content-src/components/DarkModeMessage/DarkModeMessage";
@@ -88,7 +89,10 @@ export class _Base extends React.PureComponent {
     if (prefs["asrouter.devtoolsEnabled"]) {
       if (window.location.hash.startsWith("#asrouter") ||
           window.location.hash.startsWith("#devtools")) {
-        return (<ASRouterAdmin />);
+        return (<div>
+          <ASRouterAdmin />
+          <ASRouterUISurface dispatch={this.props.dispatch} />
+        </div>);
       } else if (!didLogDevtoolsHelpText) {
         console.log("Activity Stream devtools enabled. To access visit %cabout:newtab#devtools", "font-weight: bold"); // eslint-disable-line no-console
         didLogDevtoolsHelpText = true;
@@ -184,6 +188,7 @@ export class BaseContent extends React.PureComponent {
             <ConfirmDialog />
           </main>
         </div>
+        <ASRouterUISurface dispatch={this.props.dispatch} />
       </div>);
   }
 }
