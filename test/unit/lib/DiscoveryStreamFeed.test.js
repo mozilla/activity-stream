@@ -358,22 +358,34 @@ describe("DiscoveryStreamFeed", () => {
       const fakeCache = {};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
       sandbox.stub(feed, "rotate").callsFake(val => val);
-      sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
+      sandbox.stub(feed, "scoreItems").callsFake(val => val);
+      sandbox.stub(feed, "fetchFromEndpoint").resolves({
+        recommendations: "data",
+        settings: {
+          recsExpireTime: 1,
+        },
+      });
 
       const feedResp = await feed.getComponentFeed("foo.com");
 
-      assert.equal(feedResp.data, "data");
+      assert.equal(feedResp.data.recommendations, "data");
     });
     it("should fetch fresh data if cache is old", async () => {
       const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now()}}};
       sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
-      sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
+      sandbox.stub(feed, "fetchFromEndpoint").resolves({
+        recommendations: "data",
+        settings: {
+          recsExpireTime: 1,
+        },
+      });
       sandbox.stub(feed, "rotate").callsFake(val => val);
+      sandbox.stub(feed, "scoreItems").callsFake(val => val);
       clock.tick(THIRTY_MINUTES + 1);
 
       const feedResp = await feed.getComponentFeed("foo.com");
 
-      assert.equal(feedResp.data, "data");
+      assert.equal(feedResp.data.recommendations, "data");
     });
     it("should return data from cache if it is fresh", async () => {
       const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "data"}}};

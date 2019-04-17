@@ -516,10 +516,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     let feed = feeds ? feeds[feedUrl] : null;
     if (this.isExpired({cachedData, key: "feed", url: feedUrl, isStartup})) {
       const feedResponse = await this.fetchFromEndpoint(feedUrl);
-      const scoredItems = this.scoreItems(feedResponse.recommendations);
-      const {recsExpireTime} = feedResponse.settings;
-      const recommendations = this.rotate(scoredItems, recsExpireTime);
       if (feedResponse) {
+        const scoredItems = this.scoreItems(feedResponse.recommendations);
+        const {recsExpireTime} = feedResponse.settings;
+        const recommendations = this.rotate(scoredItems, recsExpireTime);
         this.componentFeedFetched = true;
         feed = {
           lastUpdated: Date.now(),
