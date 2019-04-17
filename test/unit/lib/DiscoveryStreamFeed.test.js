@@ -1602,8 +1602,23 @@ describe("DiscoveryStreamFeed", () => {
       assert.isTrue(!feed.affinityProvider);
     });
   });
-
   describe("#scoreItems", () => {
+    it("should score items using item_score and min_score", () => {
+      const result = feed.scoreItems([
+        {item_score: 0.8, min_score: 0.1},
+        {item_score: 0.5, min_score: 0.6},
+        {item_score: 0.7, min_score: 0.1},
+        {item_score: 0.9, min_score: 0.1},
+      ]);
+      assert.deepEqual(result, [
+        {item_score: 0.9, score: 0.9, min_score: 0.1},
+        {item_score: 0.8, score: 0.8, min_score: 0.1},
+        {item_score: 0.7, score: 0.7, min_score: 0.1},
+      ]);
+    });
+  });
+
+  describe("#scoreItem", () => {
     it("should use personalized score with affinity provider", () => {
       const item = {};
       feed._prefCache.config = {
