@@ -1643,5 +1643,16 @@ describe("DiscoveryStreamFeed", () => {
       const result = feed.scoreItem(item);
       assert.equal(result.score, 0.6);
     });
+    it("should add min_score of 0 if undefined", () => {
+      const item = {};
+      feed._prefCache.config = {
+        personalized: true,
+      };
+      feed.affinityProvider = {
+        calculateItemRelevanceScore: () => 0.5,
+      };
+      const result = feed.scoreItem(item);
+      assert.equal(result.min_score, 0);
+    });
   });
 });

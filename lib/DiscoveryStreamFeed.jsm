@@ -398,6 +398,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   scoreItem(item) {
     item.score = item.item_score;
+    item.min_score = item.min_score || 0;
     if (item.score !== 0 && !item.score) {
       item.score = 1;
     }
