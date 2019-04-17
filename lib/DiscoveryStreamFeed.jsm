@@ -484,8 +484,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           return isBelow;
         }),
       };
-      // send caps to redux
-      this.store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_CAPS, data: caps});
+      // send caps to redux if any.
+      if (caps.length) {
+        this.store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_CAPS, data: caps});
+      }
       return result;
     }
     return data;
@@ -847,16 +849,19 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         if (this.showSpocs) {
           this.recordCampaignImpression(action.data.campaignId);
 
-          const cachedData = await this.cache.get() || {};
-          const {spocs} = cachedData;
-
-          this.store.dispatch(ac.AlsoToPreloaded({
-            type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
-            data: {
-              lastUpdated: spocs.lastUpdated,
-              spocs: this.transform(this.frequencyCapSpocs(spocs.data)),
-            },
-          }));
+          // Apply frequency capping to SPOCs in the redux store, only update the
+          // store if the SPOCs are changed.
+          const {spocs} = this.store.getState().DiscoveryStream;
+          const newSpocs = this.frequencyCapSpocs(spocs.data);
+          if (spocs.data.spocs.length !== newSpocs.spocs.length) {
+            this.store.dispatch(ac.AlsoToPreloaded({
+              type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
+              data: {
+                lastUpdated: spocs.lastUpdated,
+                spocs: newSpocs,
+              },
+            }));
+          }
         }
         break;
       case at.UNINIT:
