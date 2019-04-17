@@ -95,6 +95,11 @@ describe("DiscoveryStreamFeed", () => {
 
   describe("#fetchFromEndpoint", () => {
     beforeEach(() => {
+      feed._prefCache = {
+        config: {
+          api_key_pref: "",
+        },
+      };
       fetchStub.resolves({
         json: () => Promise.resolve("hi"),
         ok: true,
@@ -134,6 +139,13 @@ describe("DiscoveryStreamFeed", () => {
       const response = await feed.fetchFromEndpoint(DUMMY_ENDPOINT);
 
       assert.equal(response, "hi");
+    });
+    it("should replace urls with $apiKey", async () => {
+      sandbox.stub(global.Services.prefs, "getCharPref").returns("replaced");
+
+      await feed.fetchFromEndpoint("https://getpocket.cdn.mozilla.net/dummy?consumer_key=$apiKey");
+
+      assert.calledWith(fetchStub, "https://getpocket.cdn.mozilla.net/dummy?consumer_key=replaced", {credentials: "omit"});
     });
   });
 
@@ -191,6 +203,15 @@ describe("DiscoveryStreamFeed", () => {
       await feed.loadLayout(feed.store.dispatch);
 
       assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "foo.com");
+    });
+    it("should use local layout with hardcoded_layout being true", async () => {
+      feed.config.hardcoded_layout = true;
+      sandbox.stub(feed, "fetchLayout").returns(Promise.resolve(""));
+
+      await feed.loadLayout(feed.store.dispatch);
+
+      assert.notCalled(feed.fetchLayout);
+      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey");
     });
   });
 
@@ -306,6 +327,11 @@ describe("DiscoveryStreamFeed", () => {
       async () => {
         sandbox.stub(feed.cache, "get").returns(Promise.resolve(fakeCache));
         sandbox.spy(feed.store, "dispatch");
+        feed._prefCache = {
+          config: {
+            api_key_pref: "",
+          },
+        };
 
         await feed.loadComponentFeeds(feed.store.dispatch);
 
