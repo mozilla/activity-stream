@@ -514,9 +514,9 @@ describe("DiscoveryStreamFeed", () => {
       };
       sandbox.stub(feed, "readImpressionsPref").returns(fakeImpressions);
 
-      const result = feed.rotate(feedResponse);
+      const result = feed.rotate(feedResponse.recommendations, feedResponse.settings.recsExpireTime);
 
-      assert.equal(result.recommendations[3].id, "first");
+      assert.equal(result[3].id, "first");
     });
   });
 
@@ -1459,12 +1459,18 @@ describe("DiscoveryStreamFeed", () => {
         const fakeDiscoveryStream = {DiscoveryStream: {layout: fakeLayout}};
         sandbox.stub(feed.store, "getState").returns(fakeDiscoveryStream);
         sandbox.stub(feed, "rotate").callsFake(val => val);
+        sandbox.stub(feed, "scoreItems").callsFake(val => val);
         sandbox.stub(feed, "cleanUpTopRecImpressionPref").callsFake(val => val);
 
         const fakeCache = {feeds: {"foo.com": {lastUpdated: Date.now(), data: "data"}}};
         sandbox.stub(feed.cache, "get").resolves(fakeCache);
         clock.tick(THIRTY_MINUTES + 1);
-        sandbox.stub(feed, "fetchFromEndpoint").resolves("data");
+        sandbox.stub(feed, "fetchFromEndpoint").resolves({
+          recommendations: "data",
+          settings: {
+            recsExpireTime: 1,
+          },
+        });
 
         await feed.refreshAll({isStartup: true});
 
@@ -1606,7 +1612,7 @@ describe("DiscoveryStreamFeed", () => {
       feed.affinityProvider = {
         calculateItemRelevanceScore: () => 0.5,
       };
-      const result = feed.scoreItems(item);
+      const result = feed.scoreItem(item);
       assert.equal(result.score, 0.5);
     });
     it("should use item_score score without affinity provider score", () => {
@@ -1619,7 +1625,7 @@ describe("DiscoveryStreamFeed", () => {
       feed.affinityProvider = {
         calculateItemRelevanceScore: () => {},
       };
-      const result = feed.scoreItems(item);
+      const result = feed.scoreItem(item);
       assert.equal(result.score, 0.6);
     });
   });
