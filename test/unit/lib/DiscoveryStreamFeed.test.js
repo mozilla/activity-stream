@@ -705,6 +705,7 @@ describe("DiscoveryStreamFeed", () => {
       fakeNewTabUtils.blockedLinks.isBlocked = site => (fakeNewTabUtils.blockedLinks.links[0].url === site.url);
 
       const result = feed.filterRecommendations({
+        lastUpdated: 4,
         data: {
           recommendations: [
             {url: "https://foo.com"},
@@ -713,6 +714,7 @@ describe("DiscoveryStreamFeed", () => {
         },
       });
 
+      assert.equal(result.lastUpdated, 4);
       assert.lengthOf(result.data.recommendations, 1);
       assert.equal(result.data.recommendations[0].url, "test.com");
       assert.notInclude(result.data.recommendations, fakeNewTabUtils.blockedLinks.links[0]);
