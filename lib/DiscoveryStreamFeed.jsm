@@ -262,7 +262,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   filterRecommendations(feed) {
     if (feed && feed.data && feed.data.recommendations && feed.data.recommendations.length) {
-      return {data: this.filterBlocked(feed.data, "recommendations")};
+      return {
+        ...feed,
+        data: this.filterBlocked(feed.data, "recommendations"),
+      };
     }
     return feed;
   }
