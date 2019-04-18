@@ -16,21 +16,33 @@ export class DSImage extends React.PureComponent {
   onSeen(entries) {
     if (this.state) {
       if (entries.some(entry => entry.isIntersecting)) {
-        if (this.props.optimize) {
-          this.setState({
-            containerWidth: ReactDOM.findDOMNode(this).clientWidth,
-            containerHeight: ReactDOM.findDOMNode(this).clientHeight,
-          });
-        }
-
-        this.setState({
-          isReady: true,
-        });
-
-        // Stop observing since element has been seen
-        this.observer.unobserve(ReactDOM.findDOMNode(this));
+        this.loadImage();
       }
     }
+  }
+
+  idleCallback() {
+    this.loadImage();
+  }
+
+  loadImage() {
+    if (this.state.isReady) {
+      return;
+    }
+    if (this.props.optimize) {
+      this.setState({
+        containerWidth: ReactDOM.findDOMNode(this).clientWidth,
+        containerHeight: ReactDOM.findDOMNode(this).clientHeight,
+      });
+    }
+
+    this.setState({
+      isReady: true,
+    });
+
+    // Stop observing since element has been seen
+    this.observer.unobserve(ReactDOM.findDOMNode(this));
+    window.cancelIdleCallback(this.idleCallbackId);
   }
 
   reformatImageURL(url, width, height) {
@@ -41,21 +53,7 @@ export class DSImage extends React.PureComponent {
   }
 
   componentDidMount() {
-    window.requestIdleCallback(() => {
-      if (this.props.optimize) {
-        this.setState({
-          containerWidth: ReactDOM.findDOMNode(this).clientWidth,
-          containerHeight: ReactDOM.findDOMNode(this).clientHeight,
-        });
-      }
-
-      this.setState({
-        isReady: true,
-      });
-
-      // Stop observing since element has been loaded
-      this.observer.unobserve(ReactDOM.findDOMNode(this));
-    });
+    this.idleCallbackId = window.requestIdleCallback(this.loadImage.bind(this));
     this.observer = new IntersectionObserver(this.onSeen.bind(this));
     this.observer.observe(ReactDOM.findDOMNode(this));
   }
