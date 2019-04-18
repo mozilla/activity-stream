@@ -101,6 +101,14 @@ export class DiscoveryStreamAdmin extends React.PureComponent {
     return isMatch;
   }
 
+  renderFeedData() {
+
+    return (
+      <React.Fragment>
+      </React.Fragment>
+    );
+  }
+
   renderSpocs() {
     const {spocs} = this.props.state;
     let spocsData = [];
@@ -211,6 +219,9 @@ export class DiscoveryStreamAdmin extends React.PureComponent {
           ))}
         </div>
       ))}
+
+      <h3>Feeds</h3>
+      {this.renderFeedData()}
 
       <h3>Spocs</h3>
       {this.renderSpocs()}
