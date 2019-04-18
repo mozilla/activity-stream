@@ -8,7 +8,7 @@ export class DSImage extends React.PureComponent {
     this.onOptimizedImageError = this.onOptimizedImageError.bind(this);
 
     this.state = {
-      isSeen: false,
+      isReady: false,
       optimizedImageFailed: false,
     };
   }
@@ -24,7 +24,7 @@ export class DSImage extends React.PureComponent {
         }
 
         this.setState({
-          isSeen: true,
+          isReady: true,
         });
 
         // Stop observing since element has been seen
@@ -41,6 +41,21 @@ export class DSImage extends React.PureComponent {
   }
 
   componentDidMount() {
+    window.requestIdleCallback(() => {
+      if (this.props.optimize) {
+        this.setState({
+          containerWidth: ReactDOM.findDOMNode(this).clientWidth,
+          containerHeight: ReactDOM.findDOMNode(this).clientHeight,
+        });
+      }
+
+      this.setState({
+        isReady: true,
+      });
+
+      // Stop observing since element has been loaded
+      this.observer.unobserve(ReactDOM.findDOMNode(this));
+    });
     this.observer = new IntersectionObserver(this.onSeen.bind(this));
     this.observer.observe(ReactDOM.findDOMNode(this));
   }
@@ -57,7 +72,7 @@ export class DSImage extends React.PureComponent {
 
     let img;
 
-    if (this.state && this.state.isSeen) {
+    if (this.state && this.state.isReady) {
       if (this.props.optimize && this.props.rawSource && !this.state.optimizedImageFailed) {
         let source;
         let source2x;
