@@ -88,7 +88,7 @@ describe("ASRouterAdmin", () => {
 
       assert.equal(wrapper.find("tbody tr").at(0).find("td")
         .at(0)
-Steps to test in         .text(), "foo");
+        .text(), "foo");
       assert.lengthOf(wrapper.find("tbody tr"), 2);
       assert.equal(wrapper.find("tbody tr").at(0).find("td")
         .at(1)
