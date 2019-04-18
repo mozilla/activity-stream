@@ -21,10 +21,6 @@ export class DSImage extends React.PureComponent {
     }
   }
 
-  idleCallback() {
-    this.loadImage();
-  }
-
   loadImage() {
     if (this.state.isReady) {
       return;
