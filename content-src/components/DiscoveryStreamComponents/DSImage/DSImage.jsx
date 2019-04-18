@@ -9,7 +9,7 @@ export class DSImage extends React.PureComponent {
     this.onNonOptimizedImageError = this.onNonOptimizedImageError.bind(this);
 
     this.state = {
-      isSeen: false,
+      isReady: false,
       optimizedImageFailed: false,
     };
   }
@@ -17,21 +17,29 @@ export class DSImage extends React.PureComponent {
   onSeen(entries) {
     if (this.state) {
       if (entries.some(entry => entry.isIntersecting)) {
-        if (this.props.optimize) {
-          this.setState({
-            containerWidth: ReactDOM.findDOMNode(this).clientWidth,
-            containerHeight: ReactDOM.findDOMNode(this).clientHeight,
-          });
-        }
-
-        this.setState({
-          isSeen: true,
-        });
-
-        // Stop observing since element has been seen
-        this.observer.unobserve(ReactDOM.findDOMNode(this));
+        this.loadImage();
       }
     }
+  }
+
+  loadImage() {
+    if (this.state.isReady) {
+      return;
+    }
+    if (this.props.optimize) {
+      this.setState({
+        containerWidth: ReactDOM.findDOMNode(this).clientWidth,
+        containerHeight: ReactDOM.findDOMNode(this).clientHeight,
+      });
+    }
+
+    this.setState({
+      isReady: true,
+    });
+
+    // Stop observing since element has been seen
+    this.observer.unobserve(ReactDOM.findDOMNode(this));
+    window.cancelIdleCallback(this.idleCallbackId);
   }
 
   reformatImageURL(url, width, height) {
@@ -42,6 +50,7 @@ export class DSImage extends React.PureComponent {
   }
 
   componentDidMount() {
+    this.idleCallbackId = window.requestIdleCallback(this.loadImage.bind(this));
     this.observer = new IntersectionObserver(this.onSeen.bind(this));
     this.observer.observe(ReactDOM.findDOMNode(this));
   }
@@ -58,7 +67,7 @@ export class DSImage extends React.PureComponent {
 
     let img;
 
-    if (this.state && this.state.isSeen) {
+    if (this.state && this.state.isReady) {
       if (this.props.optimize && this.props.rawSource && !this.state.optimizedImageFailed) {
         let source;
         let source2x;
