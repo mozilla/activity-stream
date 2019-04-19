@@ -142,11 +142,16 @@ $glyph-forward: url('chrome://browser/skin/forward.svg');
   @media (min-width: $break-point-large) {
     width: $searchbar-width-large;
   }
+
+  // Disable breakpoints for now if discovery stream is enabled.
+  .ds-outer-wrapper-breakpoint-override & {
+    width: $searchbar-width-large;
+  }
 }
 
 .non-collapsible-section + .below-search-snippet {
   // If search is enabled, we need to invade its large bottom padding.
-  margin-top: -34px;
+  margin-top: -50px;
 }
 
 @media (max-height: 700px) {
@@ -156,7 +161,7 @@ $glyph-forward: url('chrome://browser/skin/forward.svg');
 
   .non-collapsible-section + .below-search-snippet {
     // In shorter windows, search doesn't have such a large padding.
-    margin-top: 0;
+    margin-top: -16px;
   }
 
   .below-search-snippet {
