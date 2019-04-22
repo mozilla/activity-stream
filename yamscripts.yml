@@ -82,3 +82,7 @@ scripts:
   # Utility scripts for use when vendoring in Node packages
   vendor:
     react: node ./bin/vendor-react.js
+
+  # For use locally by devs, and by CI scriptage to show visual
+  # storybook of components
+  deploy-storybook: "storybook-to-ghpages"
