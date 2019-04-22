@@ -930,38 +930,12 @@ defaultLayoutResp = {
       ],
     },
     {
-      "width": 8,
-      "components": [
-        {
-          "type": "List",
-          "header": {
-            "title": "",
-          },
-          "feed": {
-            "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US",
-          },
-          "properties": {
-            "items": 8,
-            "has_numbers": false,
-            "has_images": true,
-            "border": "no-border",
-          },
-          "styles": {
-            ".ds-list": "margin-right: -12px",
-          },
-        },
-      ],
-    },
-    {
-      "width": 4,
+      "width": 12,
       "components": [
         {
           "type": "CardGrid",
           "properties": {
-            "items": 1,
-            "border": "no-border",
-            "offset": 8,
+            "items": 4,
           },
           "header": {
             "title": "",
@@ -969,16 +943,12 @@ defaultLayoutResp = {
           "feed": {
             "embed_reference": null,
             "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?version=3&consumer_key=$apiKey&locale_lang=en-US",
-          },
-          "styles": {
-            ".ds-card": "margin-left: -12px;",
-            ".ds-card .meta .excerpt": "max-height: 100px;",
           },
           "spocs": {
             "probability": 1,
             "positions": [
               {
-                "index": 0,
+                "index": 3,
               },
             ],
           },
@@ -989,7 +959,7 @@ defaultLayoutResp = {
       "width": 12,
       "components": [
         {
-          "type": "List",
+          "type": "CardGrid",
           "header": {
             "title": "Health & Fitness 💪",
           },
@@ -998,7 +968,7 @@ defaultLayoutResp = {
             "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=4&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
-            "items": 6,
+            "items": 4,
             "has_numbers": false,
             "has_images": true,
             "border": "no-border",
@@ -1007,7 +977,7 @@ defaultLayoutResp = {
             "probability": 1,
             "positions": [
               {
-                "index": 5,
+                "index": 3,
               },
             ],
           },
@@ -1018,7 +988,7 @@ defaultLayoutResp = {
       "width": 12,
       "components": [
         {
-          "type": "List",
+          "type": "CardGrid",
           "header": {
             "title": "Tech 🖥",
           },
@@ -1027,7 +997,7 @@ defaultLayoutResp = {
             "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=5&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
-            "items": 6,
+            "items": 4,
             "has_numbers": false,
             "has_images": true,
             "border": "no-border",
@@ -1039,7 +1009,7 @@ defaultLayoutResp = {
       "width": 12,
       "components": [
         {
-          "type": "List",
+          "type": "CardGrid",
           "header": {
             "title": "Entertainment 🍿",
           },
@@ -1048,7 +1018,7 @@ defaultLayoutResp = {
             "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=8&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
-            "items": 6,
+            "items": 4,
             "has_numbers": false,
             "has_images": true,
             "border": "no-border",
@@ -1057,7 +1027,7 @@ defaultLayoutResp = {
             "probability": 1,
             "positions": [
               {
-                "index": 5,
+                "index": 3,
               },
             ],
           },
@@ -1068,7 +1038,7 @@ defaultLayoutResp = {
       "width": 12,
       "components": [
         {
-          "type": "List",
+          "type": "CardGrid",
           "header": {
             "title": "Personal Finance 💰",
           },
@@ -1077,7 +1047,7 @@ defaultLayoutResp = {
             "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=2&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
-            "items": 6,
+            "items": 4,
             "has_numbers": false,
             "has_images": true,
             "border": "no-border",
@@ -1089,7 +1059,7 @@ defaultLayoutResp = {
       "width": 12,
       "components": [
         {
-          "type": "List",
+          "type": "CardGrid",
           "header": {
             "title": "Business 💼",
           },
@@ -1098,7 +1068,7 @@ defaultLayoutResp = {
             "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=1&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
-            "items": 6,
+            "items": 4,
             "has_numbers": false,
             "has_images": true,
             "border": "no-border",
@@ -1110,7 +1080,7 @@ defaultLayoutResp = {
       "width": 12,
       "components": [
         {
-          "type": "List",
+          "type": "CardGrid",
           "header": {
             "title": "Science 🔬",
           },
@@ -1119,7 +1089,7 @@ defaultLayoutResp = {
             "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=7&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
-            "items": 6,
+            "items": 4,
             "has_numbers": false,
             "has_images": true,
             "border": "no-border",
@@ -1128,7 +1098,7 @@ defaultLayoutResp = {
             "probability": 1,
             "positions": [
               {
-                "index": 5,
+                "index": 3,
               },
             ],
           },
