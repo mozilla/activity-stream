@@ -149,7 +149,7 @@
     "vendor": "npm-run-all vendor:*",
     "vendor:react": "node ./bin/vendor-react.js",
     "storybook": "start-storybook",
-    "build-storybook": "build-storybook -c .storybook",
+    "build-storybook": "cp utils.js node_modules/@storybook/storybook-deployer/src && build-storybook -c .storybook",
     "deploy-storybook": "storybook-to-ghpages",
     "help": "yamscripts help",
     "yamscripts": "yamscripts compile",
