@@ -87,5 +87,5 @@ scripts:
   storybook: start-storybook
 
   # For use by CI scriptage to show visual storybook of components
-  build-storybook: cp utils.js node_modules/@storybook/storybook-deployer/src && build-storybook -c .storybook
-  deploy-storybook: storybook-to-ghpages
+  build-storybook: build-storybook -c .storybook
+  deploy-storybook: cp utils.js node_modules/@storybook/storybook-deployer/src && storybook-to-ghpages
