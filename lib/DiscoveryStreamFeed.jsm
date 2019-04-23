@@ -856,8 +856,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           // store if the SPOCs are changed.
           const {spocs} = this.store.getState().DiscoveryStream;
           const newSpocs = this.frequencyCapSpocs(spocs.data);
-          if (spocs.data.spocs && newSpocs.spocs &&
-            spocs.data.spocs.length !== newSpocs.spocs.length) {
+          const prevSpocs = spocs.data.spocs || [];
+          const currentSpocs = newSpocs.spocs || [];
+          if (prevSpocs.length !== currentSpocs.length) {
             this.store.dispatch(ac.AlsoToPreloaded({
               type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
               data: {
