@@ -83,6 +83,9 @@ scripts:
   vendor:
     react: node ./bin/vendor-react.js
 
-  # For use locally by devs, and by CI scriptage to show visual
-  # storybook of components
+  # For use locally by devs, to show visual storybook of components
+  storybook: "start-storybook"
+
+  # For use by CI scriptage to show visual storybook of components
+  build-storybook: "build-storybook -c .storybook -o .out"
   deploy-storybook: "storybook-to-ghpages"
