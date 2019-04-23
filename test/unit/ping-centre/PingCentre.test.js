@@ -317,6 +317,24 @@ describe("PingCentre", () => {
     });
   });
 
+  describe("#_createStructuredIngestionPing", () => {
+    it("should create a ping for structured ingestion with expected properties", async () => {
+      tSender = new PingCentre({topic: "activity-stream"});
+      const ping = await tSender._createStructuredIngestionPing(fakePingJSON);
+
+      const EXPECTED_SHIELD_STRING =
+        "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
+      let EXPECTED_RESULT = Object.assign({
+        locale: FAKE_LOCALE,
+        client_id: FAKE_TELEMETRY_ID,
+        release_channel: FAKE_UPDATE_CHANNEL,
+      }, fakePingJSON);
+      EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
+
+      assert.equal(JSON.stringify(ping), JSON.stringify(EXPECTED_RESULT));
+    });
+  });
+
   describe("#sendPing()", () => {
     let prefStub;
     let getStub;
@@ -458,13 +476,10 @@ describe("PingCentre", () => {
         "pref-flip-quantum-css-style-r1-1381147:stylo;nightly-nothing-burger-1-pref:Control;";
       let EXPECTED_RESULT = Object.assign({
         locale: FAKE_LOCALE,
-        topic: "activity-stream",
         client_id: FAKE_TELEMETRY_ID,
         release_channel: FAKE_UPDATE_CHANNEL,
       }, fakePingJSON);
       EXPECTED_RESULT.shield_id = EXPECTED_SHIELD_STRING;
-      EXPECTED_RESULT.profile_creation_date = FAKE_PROFILE_CREATION_DATE;
-      EXPECTED_RESULT.region = FAKE_BROWSER_SEARCH_REGION;
 
       assert.calledOnce(fetchStub);
       assert.calledWithExactly(fetchStub, fakeEndpointUrl,
