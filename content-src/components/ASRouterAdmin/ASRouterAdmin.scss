@@ -5,11 +5,18 @@
   position: fixed;
   top: 0;
   left: 43px;
+  opacity: 0;
   padding: 5px 10px;
+  transition: opacity 1s $photon-easing 333ms;
   border-radius: 0 0 3px 3px;
   border: 1px solid $black-10;
   border-top: 0;
   z-index: 3000;
+
+  &:hover,
+  &.asrouter-collapse {
+    opacity: 1;
+  }
 }
 
 .asrouter-admin {

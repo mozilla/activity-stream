@@ -782,7 +782,9 @@ export class CollapseToggle extends React.PureComponent {
     const {renderAdmin} = this;
     const action = (this.state.collapsed || !renderAdmin) ? "Expand" : "Collapse";
     return (<React.Fragment>
-      <a href="#devtools" className="asrouter-toggle" onClick={this.renderAdmin ? this.onCollapseToggle : null}>{action} Devtools</a>
+      <a href="#devtools"
+        className={`asrouter-toggle asrouter-${action.toLowerCase()}`}
+        onClick={this.renderAdmin ? this.onCollapseToggle : null}>{action} Devtools</a>
       {renderAdmin ? <ASRouterAdminInner {...props} collapsed={this.state.collapsed} /> : null}
     </React.Fragment>);
   }
