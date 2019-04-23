@@ -1,4 +1,4 @@
-import "css/asm.css";
+import "css/activity-stream-mac.css";
 
 import {addDecorator, configure} from "@storybook/react";
 
