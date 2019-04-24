@@ -1,3 +1,4 @@
+import {actionCreators as ac} from "common/Actions.jsm";
 import {CardGrid} from "content-src/components/DiscoveryStreamComponents/CardGrid/CardGrid";
 import {CollapsibleSection} from "content-src/components/CollapsibleSection/CollapsibleSection";
 import {connect} from "react-redux";
@@ -168,7 +169,7 @@ export class _DiscoveryStreamBase extends React.PureComponent {
 
   render() {
     // Select layout render data by adding spocs and position to recommendations
-    const layoutRender = selectLayoutRender(this.props.DiscoveryStream, this.props.Prefs.values, rickRollCache);
+    const {layoutRender, spocsFill} = selectLayoutRender(this.props.DiscoveryStream, this.props.Prefs.values, rickRollCache);
     const {config, feeds, spocs} = this.props.DiscoveryStream;
     if (!spocs.loaded || !feeds.loaded) {
       return null;
@@ -177,6 +178,11 @@ export class _DiscoveryStreamBase extends React.PureComponent {
     // Allow rendering without extracting special components
     if (!config.collapsible) {
       return this.renderLayout(layoutRender);
+    }
+
+    // Send SPOCS Fill if any.
+    if (spocsFill.length) {
+      this.props.dispatch(ac.DiscoveryStreamSpocsFill({spoc_fills: spocsFill}));
     }
 
     // Find the first component of a type and remove it from layout

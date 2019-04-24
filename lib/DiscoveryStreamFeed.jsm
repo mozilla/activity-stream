@@ -40,6 +40,24 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this.cache = new PersistentCache(CACHE_KEY, true);
     // Internal in-memory cache for parsing json prefs.
     this._prefCache = {};
+    // For SPOCS Fill telemetry
+    this._spocsFill = [];
+  }
+
+  _addSpocsFill(id, reason, displayed, fullRecalc) {
+    this._spocsFill.push({
+      id,
+      reason,
+      displayed,
+      full_recalc: fullRecalc,
+    });
+  }
+
+  _handleSpocsFill() {
+    if (this._spocsFill.length) {
+      this.store.dispatch(ac.DiscoveryStreamSpocsFill({spoc_fills: this._spocsFill}));
+      this._spocsFill = [];
+    }
   }
 
   finalLayoutEndpoint(url, apiKey) {
@@ -370,9 +388,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       type: at.DISCOVERY_STREAM_SPOCS_UPDATE,
       data: {
         lastUpdated: spocs.lastUpdated,
-        spocs: this.transform(this.frequencyCapSpocs(spocs.data)),
+        spocs: this.transform(this.frequencyCapSpocs(spocs.data, true)),
       },
     });
+    this._handleSpocsFill();
   }
 
   async loadAffinityScoresCache() {
@@ -420,7 +439,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   scoreItems(items) {
     return items.map(item => this.scoreItem(item))
       // Remove spocs that are scored too low.
-      .filter(s => s.score >= s.min_score)
+      .filter(s => {
+        if (s.score >= s.min_score) {
+          return true;
+        }
+        this._addSpocsFill(s.id, "below_min_score", 0, 1);
+        return false;
+      })
       // Sort by highest scores.
       .sort((a, b) => b.score - a.score);
   }
@@ -442,7 +467,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   filterBlocked(data, type) {
     if (data && data[type] && data[type].length) {
-      const filteredItems = data[type].filter(item => !NewTabUtils.blockedLinks.isBlocked({"url": item.url}));
+      const filteredItems = data[type].filter(item => {
+        const blocked = NewTabUtils.blockedLinks.isBlocked({"url": item.url});
+        if (blocked) {
+          this._addSpocsFill(item.id, "blocked_by_user", 0, 1);
+        }
+        return !blocked;
+      });
       return {
         ...data,
         [type]: filteredItems,
@@ -472,6 +503,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
               campaignMap[s.campaign_id]++;
               return true;
             }
+            this._addSpocsFill(s.id, "campaign_duplicate", 0, 1);
             return false;
           }),
       };
@@ -480,7 +512,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   // Filter spocs based on frequency caps
-  frequencyCapSpocs(data) {
+  //
+  // @param {Object} data  An object that might have a SPOCS array.
+  // @param {bool} fullRecalc A boolean indicating if it's a full recalculation.
+  //               Applying frequency capping to the whole SPOCS set will be treated
+  //               as a full recalculation. Whereas, responding the action
+  //               "DISCOVERY_STREAM_SPOC_IMPRESSION" is not a full recalculation.
+  frequencyCapSpocs(data, fullRecalc) {
     if (data && data.spocs && data.spocs.length) {
       const {spocs} = data;
       const impressions = this.readImpressionsPref(PREF_SPOC_IMPRESSIONS);
@@ -491,6 +529,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           const isBelow = this.isBelowFrequencyCap(impressions, s);
           if (!isBelow) {
             caps.push(s);
+            this._addSpocsFill(s.id, "frequency_cap", 0, fullRecalc ? 1 : 0);
           }
           return isBelow;
         }),
@@ -867,7 +906,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           // Apply frequency capping to SPOCs in the redux store, only update the
           // store if the SPOCs are changed.
           const {spocs} = this.store.getState().DiscoveryStream;
-          const newSpocs = this.frequencyCapSpocs(spocs.data);
+          const newSpocs = this.frequencyCapSpocs(spocs.data, false);
           const prevSpocs = spocs.data.spocs || [];
           const currentSpocs = newSpocs.spocs || [];
           if (prevSpocs.length !== currentSpocs.length) {
@@ -878,6 +917,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
                 spocs: newSpocs,
               },
             }));
+            this._handleSpocsFill();
           }
         }
         break;
