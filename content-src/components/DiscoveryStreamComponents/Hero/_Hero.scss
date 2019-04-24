@@ -61,6 +61,10 @@ $card-header-in-hero-line-height: 20;
       color: $grey-30;
     }
 
+    &:focus {
+      @include ds-fade-in;
+    }
+
     color: $grey-50;
     display: block;
     margin: 12px 0 16px;
