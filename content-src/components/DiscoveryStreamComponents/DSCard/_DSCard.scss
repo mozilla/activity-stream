@@ -58,14 +58,14 @@ $excerpt-line-height: 20;
   }
 
   .ds-card-link {
-    &:focus {
-      @include ds-fade-in;
-    }
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+
+    &:focus {
+      @include ds-fade-in;
+    }
   }
 
   .meta {
