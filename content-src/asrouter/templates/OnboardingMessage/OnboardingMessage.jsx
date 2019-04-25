@@ -1,5 +1,6 @@
 import {ModalOverlay} from "../../components/ModalOverlay/ModalOverlay";
 import React from "react";
+import {Trailhead} from "./Trailhead";
 
 class OnboardingCard extends React.PureComponent {
   constructor(props) {
@@ -21,7 +22,7 @@ class OnboardingCard extends React.PureComponent {
   render() {
     const {content} = this.props;
     return (
-      <div className="onboardingMessage">
+      <div className={`onboardingMessage${this.props.className ? ` ${this.props.className}` : ""}`}>
         <div className={`onboardingMessageImage ${content.icon}`} />
         <div className="onboardingContent">
           <span>
@@ -38,7 +39,7 @@ class OnboardingCard extends React.PureComponent {
 }
 
 export class OnboardingMessage extends React.PureComponent {
-  render() {
+  renderStandard() {
     const {props} = this;
     const {button_label, header} = props.extraTemplateStrings;
     return (
@@ -54,5 +55,25 @@ export class OnboardingMessage extends React.PureComponent {
         </div>
       </ModalOverlay>
     );
+  }
+
+  renderTrailHead() {
+    const {props} = this;
+    return (<Trailhead>
+       <div className="onboardingMessageContainer">
+          {props.bundle.map(message => (
+            <OnboardingCard key={message.id}
+              className="trailheadCard"
+              sendUserActionTelemetry={props.sendUserActionTelemetry}
+              onAction={props.onAction}
+              UISurface={props.UISurface}
+              {...message} />
+          ))}
+        </div>
+    </Trailhead>);
+  }
+
+  render() {
+    return this.props.trailheadCohort > 0 ? this.renderTrailHead() : this.renderStandard();
   }
 }

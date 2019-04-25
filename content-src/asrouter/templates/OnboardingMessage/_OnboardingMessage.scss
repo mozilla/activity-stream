@@ -145,7 +145,7 @@
   }
 
 
-  &::before {
+  &:not(.trailheadCard)::before {
     content: '';
     height: 230px;
     width: 1px;
@@ -163,4 +163,36 @@
   &:last-child::before {
     content: none;
   }
+
+  &.trailheadCard {
+    background: $white;
+    box-shadow: 0 1px 4px $shadow-10;
+    border-radius: 3px;
+    height: 370px;
+
+    .onboardingContent > span > p {
+      height: 140px;
+    }
+  }
+}
+
+
+.overlay-wrapper.trailhead {
+  padding: 40px;
+  background: var(--newtab-background-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.trailheadInner {
+  width: 960px;
+}
+
+.trailheadContent {
+  padding: 0 30px;
+}
+
+.trailheadCards {
+  padding-top: 40px;
 }

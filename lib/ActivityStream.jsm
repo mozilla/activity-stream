@@ -188,6 +188,10 @@ const PREFS_CONFIG = new Map([
     title: "A comma-delimited list of search shortcuts that have previously been pinned",
     value: "",
   }],
+  ["asrouter.trailhead.cohort", {
+    title: "What trailhead cohort are we in?",
+    value: 0,
+  }],
   ["asrouter.devtoolsEnabled", {
     title: "Are the asrouter devtools enabled?",
     value: false,

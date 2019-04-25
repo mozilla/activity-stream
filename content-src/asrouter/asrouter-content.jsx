@@ -207,7 +207,11 @@ export class ASRouterUISurface extends React.PureComponent {
     ASRouterUtils.addListener(this.onMessageFromParent);
 
     // If we are loading about:welcome we want to trigger the onboarding messages
-    if (this.props.document && this.props.document.location.href === "about:welcome") {
+    const isAboutWelcome = this.props.document && this.props.document.location.href === "about:welcome";
+    const isTrailHead = this.props.trailheadCohort > 0;
+    if (isAboutWelcome && isTrailHead) {
+      this.triggerOnboarding();
+    } else if (isAboutWelcome) {
       ASRouterUtils.sendMessage({type: "TRIGGER", data: {trigger: {id: "firstRun"}}});
     } else {
       ASRouterUtils.sendMessage({type: "SNIPPETS_REQUEST", data: {endpoint}});
@@ -254,6 +258,7 @@ export class ASRouterUISurface extends React.PureComponent {
         <OnboardingMessage
           {...this.state.bundle}
           UISurface="NEWTAB_OVERLAY"
+          trailheadCohort={this.props.trailheadCohort}
           onAction={ASRouterUtils.executeAction}
           onDoneButton={this.dismissBundle(this.state.bundle.bundle)}
           sendUserActionTelemetry={this.sendUserActionTelemetry} />);
@@ -262,6 +267,10 @@ export class ASRouterUISurface extends React.PureComponent {
   }
 
   renderFirstRunOverlay() {
+    // Never render if trailhead is active
+    if (this.props.trailheadCohort > 0) {
+      return null;
+    }
     const {message} = this.state;
     if (message.template === "fxa_overlay") {
       global.document.body.classList.add("fxa");

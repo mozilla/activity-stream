@@ -158,7 +158,7 @@ export class BaseContent extends React.PureComponent {
                 </ErrorBoundary>
               </div>
             }
-            <ASRouterUISurface dispatch={this.props.dispatch} />
+            <ASRouterUISurface trailheadCohort={prefs["asrouter.trailhead.cohort"]} dispatch={this.props.dispatch} />
             <div className={`body-wrapper${(initialized ? " on" : "")}`}>
               {isDiscoveryStream ? (
                 <ErrorBoundary className="borderless-error">
