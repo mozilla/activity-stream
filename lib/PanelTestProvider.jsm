@@ -13,6 +13,12 @@ const MESSAGES = () => ([
         "text": "cfr-doorhanger-bookmark-fxa-link-text",
         "url": "https://mozilla.com",
       },
+      "info_icon": {
+        "tooltiptext": "cfr-doorhanger-bookmark-fxa-info-icon-tooltip",
+      },
+      "close_button": {
+        "tooltiptext": "cfr-doorhanger-bookmark-fxa-close-btn-tooltip",
+      },
     },
     "trigger": {"id": "bookmark-panel"},
   },
@@ -22,7 +28,6 @@ const PanelTestProvider = {
   getMessages() {
     return MESSAGES()
       // Ensures we never actually show test except when triggered by debug tools
-      // TODO where is this coming from
       .map(message => ({...message, targeting: `providerCohorts.panel_local_testing == "SHOW_TEST"`}));
   },
 };
