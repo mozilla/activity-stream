@@ -1,4 +1,4 @@
-import {_ASRouterPreferences, ASRouterPreferences as ASRouterPreferencesSingleton, TEST_PROVIDER} from "lib/ASRouterPreferences.jsm";
+import {_ASRouterPreferences, ASRouterPreferences as ASRouterPreferencesSingleton, TEST_PROVIDERS} from "lib/ASRouterPreferences.jsm";
 const FAKE_PROVIDERS = [{id: "foo"}, {id: "bar"}];
 
 const PROVIDER_PREF_BRANCH = "browser.newtabpage.activity-stream.asrouter.providers.";
@@ -130,11 +130,11 @@ describe("ASRouterPreferences", () => {
 
       assert.deepEqual(ASRouterPreferences.providers, [{id: "bar"}]);
     });
-    it("should include TEST_PROVIDER if devtools is turned on", () => {
+    it("should include TEST_PROVIDERS if devtools is turned on", () => {
       boolPrefStub.withArgs(DEVTOOLS_PREF).returns(true);
       ASRouterPreferences.init();
 
-      assert.deepEqual(ASRouterPreferences.providers, [TEST_PROVIDER, ...FAKE_PROVIDERS]);
+      assert.deepEqual(ASRouterPreferences.providers, [...TEST_PROVIDERS, ...FAKE_PROVIDERS]);
     });
   });
   describe(".devtoolsEnabled", () => {
@@ -277,7 +277,7 @@ describe("ASRouterPreferences", () => {
       // Cache should be invalidated so we access the new value of the pref now
       // Note that providers needs to be invalidated because devtools adds test content to it.
       assert.isTrue(ASRouterPreferences.devtoolsEnabled);
-      assert.deepEqual(ASRouterPreferences.providers, [TEST_PROVIDER]);
+      assert.deepEqual(ASRouterPreferences.providers, TEST_PROVIDERS);
     });
     it("should call listeners added with .addListener", () => {
       const callback1 = sinon.stub();

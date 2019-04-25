@@ -13,11 +13,12 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   AppConstants: "resource://gre/modules/AppConstants.jsm",
   OS: "resource://gre/modules/osfile.jsm",
   BookmarkPanelHub: "resource://activity-stream/lib/BookmarkPanelHub.jsm",
+  SnippetsTestMessageProvider: "resource://activity-stream/lib/SnippetsTestMessageProvider.jsm",
+  PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm");
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm");
-const {SnippetsTestMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/SnippetsTestMessageProvider.jsm");
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js");
 const {CFRPageActions} = ChromeUtils.import("resource://activity-stream/lib/CFRPageActions.jsm");
 
@@ -44,7 +45,7 @@ const SNIPPETS_ENDPOINT_WHITELIST = "browser.newtab.activity-stream.asrouter.whi
 // Max possible impressions cap for any message
 const MAX_MESSAGE_LIFETIME_CAP = 100;
 
-const LOCAL_MESSAGE_PROVIDERS = {OnboardingMessageProvider, CFRMessageProvider, SnippetsTestMessageProvider};
+const LOCAL_MESSAGE_PROVIDERS = {OnboardingMessageProvider, CFRMessageProvider};
 const STARTPAGE_VERSION = "6";
 
 const MessageLoaderUtils = {
@@ -523,6 +524,15 @@ class _ASRouter {
     ASRouterPreferences.init();
     ASRouterPreferences.addListener(this.onPrefChange);
     BookmarkPanelHub.init(this.handleMessageRequest, this.addImpression);
+
+    // If we're in ASR debug mode add the local test providers
+    if (ASRouterPreferences.devtoolsEnabled) {
+      this._localProviders = {
+        ...this._localProviders,
+        SnippetsTestMessageProvider,
+        PanelTestProvider,
+      };
+    }
 
     const messageBlockList = await this._storage.get("messageBlockList") || [];
     const providerBlockList = await this._storage.get("providerBlockList") || [];

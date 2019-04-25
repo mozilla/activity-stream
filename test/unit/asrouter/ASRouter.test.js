@@ -17,7 +17,9 @@ import {ASRouterPreferences} from "lib/ASRouterPreferences.jsm";
 import {ASRouterTriggerListeners} from "lib/ASRouterTriggerListeners.jsm";
 import {CFRPageActions} from "lib/CFRPageActions.jsm";
 import {GlobalOverrider} from "test/unit/utils";
+import {PanelTestProvider} from "lib/PanelTestProvider.jsm";
 import ProviderResponseSchema from "content-src/asrouter/schemas/provider-response.schema.json";
+import {SnippetsTestMessageProvider} from "lib/SnippetsTestMessageProvider.jsm";
 
 const MESSAGE_PROVIDER_PREF_NAME = "browser.newtabpage.activity-stream.asrouter.providers.snippets";
 const FAKE_PROVIDERS = [FAKE_LOCAL_PROVIDER, FAKE_REMOTE_PROVIDER, FAKE_REMOTE_SETTINGS_PROVIDER];
@@ -75,7 +77,8 @@ describe("ASRouter", () => {
     setMessageProviderPref(providers);
     channel = new FakeRemotePageManager();
     dispatchStub = sandbox.stub();
-    Router = new _ASRouter(FAKE_LOCAL_PROVIDERS);
+    // `.freeze` to catch any attempts at modifying the object
+    Router = new _ASRouter(Object.freeze(FAKE_LOCAL_PROVIDERS));
     await Router.init(channel, createFakeStorage(), dispatchStub);
   }
 
@@ -108,8 +111,14 @@ describe("ASRouter", () => {
       uninit: sandbox.stub(),
       _forceShowMessage: sandbox.stub(),
     };
-    globals.set("AttributionCode", fakeAttributionCode);
-    globals.set("BookmarkPanelHub", FakeBookmarkPanelHub);
+    globals.set({
+      AttributionCode: fakeAttributionCode,
+      // Testing framework doesn't know how to `defineLazyModuleGetter` so we're
+      // importing these modules into the global scope ourselves.
+      SnippetsTestMessageProvider,
+      PanelTestProvider,
+      BookmarkPanelHub: FakeBookmarkPanelHub,
+    });
     await createRouterAndInit();
   });
   afterEach(() => {
@@ -151,7 +160,7 @@ describe("ASRouter", () => {
       assert.deepEqual(Router.state.messageImpressions, messageImpressions);
     });
     it("should await .loadMessagesFromAllProviders() and add messages from providers to state.messages", async () => {
-      Router = new _ASRouter(FAKE_LOCAL_PROVIDERS);
+      Router = new _ASRouter(Object.freeze(FAKE_LOCAL_PROVIDERS));
 
       const loadMessagesSpy = sandbox.spy(Router, "loadMessagesFromAllProviders");
       await Router.init(channel, createFakeStorage(), dispatchStub);
@@ -187,6 +196,27 @@ describe("ASRouter", () => {
     });
     it("should dispatch a AS_ROUTER_INITIALIZED event to AS with ASRouterPreferences.specialConditions", async () => {
       assert.calledWith(Router.dispatchToAS, ac.BroadcastToContent({type: "AS_ROUTER_INITIALIZED", data: ASRouterPreferences.specialConditions}));
+    });
+    describe("lazily loading local test providers", () => {
+      afterEach(() => {
+        Router.uninit();
+      });
+      it("should add the local test providers on init if devtools are enabled", async () => {
+        sandbox.stub(ASRouterPreferences, "devtoolsEnabled").get(() => true);
+
+        await createRouterAndInit();
+
+        assert.property(Router._localProviders, "SnippetsTestMessageProvider");
+        assert.property(Router._localProviders, "PanelTestProvider");
+      });
+      it("should not add the local test providers on init if devtools are disabled", async () => {
+        sandbox.stub(ASRouterPreferences, "devtoolsEnabled").get(() => false);
+
+        await createRouterAndInit();
+
+        assert.notProperty(Router._localProviders, "SnippetsTestMessageProvider");
+        assert.notProperty(Router._localProviders, "PanelTestProvider");
+      });
     });
   });
 

@@ -505,7 +505,7 @@ export class ASRouterAdminInner extends React.PureComponent {
 
     return (<table>{this.renderTableHead()}<tbody>
       {providersConfig.map((provider, i) => {
-        const isTestProvider = provider.id === "snippets_local_testing";
+        const isTestProvider = provider.id.includes("_local_testing");
         const info = providerInfo.find(p => p.id === provider.id) || {};
         const isUserEnabled = provider.id in userPrefInfo ? userPrefInfo[provider.id] : true;
         const isSystemEnabled = (isTestProvider || provider.enabled);
