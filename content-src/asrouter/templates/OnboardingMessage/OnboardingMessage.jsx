@@ -1,7 +1,7 @@
 import {ModalOverlay} from "../../components/ModalOverlay/ModalOverlay";
 import React from "react";
 
-class OnboardingCard extends React.PureComponent {
+export class OnboardingCard extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
