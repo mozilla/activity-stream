@@ -119,16 +119,6 @@ class _ASRouterPreferences {
     return this._devtoolsEnabled;
   }
 
-  get specialConditions() {
-    let allowLegacySnippets = true;
-    for (const provider of this.providers) {
-      if (provider.id === "snippets" && provider.enabled) {
-        allowLegacySnippets = false;
-      }
-    }
-    return {allowLegacySnippets};
-  }
-
   observe(aSubject, aTopic, aPrefName) {
     if (aPrefName && aPrefName.startsWith(this._providerPrefBranch)) {
       this._providers = null;

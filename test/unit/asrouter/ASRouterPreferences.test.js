@@ -161,25 +161,6 @@ describe("ASRouterPreferences", () => {
       assert.calledTwice(boolPrefStub);
     });
   });
-  describe(".specialConditions", () => {
-    it("should return .allowLegacySnippets=true if snippets is not present or disabled", () => {
-      ASRouterPreferences.init();
-      let testProviders = [];
-      sandbox.stub(ASRouterPreferences, "providers").get(() => testProviders);
-
-      testProviders = [{id: "foo"}];
-      assert.isTrue(ASRouterPreferences.specialConditions.allowLegacySnippets);
-
-      testProviders = [{id: "snippets", enabled: false}];
-      assert.isTrue(ASRouterPreferences.specialConditions.allowLegacySnippets);
-    });
-    it("should return .allowLegacySnippets=false if snippets is enabled", () => {
-      ASRouterPreferences.init();
-      sandbox.stub(ASRouterPreferences, "providers").get(() => [{id: "snippets", enabled: true}]);
-
-      assert.isFalse(ASRouterPreferences.specialConditions.allowLegacySnippets);
-    });
-  });
   describe("#getUserPreference(providerId)", () => {
     it("should return the user preference for snippets", () => {
       boolPrefStub.withArgs(SNIPPETS_USER_PREF).returns(true);

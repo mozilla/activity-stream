@@ -361,7 +361,6 @@ class _ASRouter {
   async onPrefChange() {
     this._updateMessageProviders();
     await this.loadMessagesFromAllProviders();
-    this.dispatchToAS(ac.BroadcastToContent({type: at.AS_ROUTER_PREF_CHANGED, data: ASRouterPreferences.specialConditions}));
   }
 
   // Replace all frequency time period aliases with their millisecond values
