@@ -121,6 +121,33 @@
         }
       },
       "required": ["tooltiptext"]
+    },
+    "close_button": {
+      "type": "object",
+      "description": "The small dissmiss icon displayed in the top right corner of the message. Not configurable, only the tooltip text." ,
+      "properties": {
+        "tooltiptext": {
+          "oneOf": [
+            {
+              "allOf": [
+                {"$ref": "#/definitions/plainText"},
+                {"description": "Message to be shown"}
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "string_id": {
+                  "type": "string",
+                  "description": "Fluent id of localized string"
+                }
+              },
+              "required": ["string_id"]
+            }
+          ]
+        }
+      },
+      "required": ["tooltiptext"]
     }
   },
   "additionalProperties": false,
