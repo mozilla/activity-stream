@@ -175,14 +175,14 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       return null;
     }
 
-    // Allow rendering without extracting special components
-    if (!config.collapsible) {
-      return this.renderLayout(layoutRender);
-    }
-
     // Send SPOCS Fill if any.
     if (spocsFill.length) {
       this.props.dispatch(ac.DiscoveryStreamSpocsFill({spoc_fills: spocsFill}));
+    }
+
+    // Allow rendering without extracting special components
+    if (!config.collapsible) {
+      return this.renderLayout(layoutRender);
     }
 
     // Find the first component of a type and remove it from layout
