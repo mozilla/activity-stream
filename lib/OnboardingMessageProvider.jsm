@@ -167,8 +167,11 @@ const ONBOARDING_MESSAGES = async () => ([
     targeting: "localeLanguageCode == 'en' && trailheadCohort > 0",
     trigger: {id: "firstRun"},
     content: {
-      title: "Hello world",
-      cards: ["foo", "bar", "baz"].map(getPlaceholderTrailheadCard),
+      title: "This is not a real thing",
+      subtitle: "It is just a test",
+      ctaHeader: "Join Firefox",
+      ctaText: "Because we're awesome obviously",
+      cards: ["Hello", "World", "Foo"].map(getPlaceholderTrailheadCard),
     },
   },
   {

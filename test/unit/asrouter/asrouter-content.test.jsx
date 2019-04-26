@@ -3,7 +3,10 @@ import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content
 import {FAKE_LOCAL_MESSAGES} from "./constants";
 import {GlobalOverrider} from "test/unit/utils";
 import {mount} from "enzyme";
+import {OnboardingMessageProvider} from "lib/OnboardingMessageProvider.jsm";
 import React from "react";
+import {Trailhead} from "../../../content-src/asrouter/templates/Trailhead/Trailhead";
+
 let [FAKE_MESSAGE] = FAKE_LOCAL_MESSAGES;
 const FAKE_NEWSLETTER_SNIPPET = FAKE_LOCAL_MESSAGES.find(msg => msg.id === "newsletter");
 const FAKE_FXA_SNIPPET = FAKE_LOCAL_MESSAGES.find(msg => msg.id === "fxa");
@@ -159,6 +162,14 @@ describe("ASRouterUISurface", () => {
 
       wrapper.find(".blockButton").simulate("click");
       assert.notCalled(ASRouterUtils.sendTelemetry);
+    });
+  });
+
+  describe("trailhead", () => {
+    it("should render trailhead if a trailhead message is received", async () => {
+      const message = (await OnboardingMessageProvider.getUntranslatedMessages()).find(msg => msg.template === "trailhead");
+      wrapper.setState({message});
+      assert.lengthOf(wrapper.find(Trailhead), 1);
     });
   });
 

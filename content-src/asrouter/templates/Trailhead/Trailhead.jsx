@@ -4,18 +4,17 @@ import React from "react";
 export class Trailhead extends React.PureComponent {
   render() {
     const {props} = this;
+    const {content} = props.message;
+
     return (<div className="overlay-wrapper show trailhead">
       <div className="trailheadInner">
         <div className="trailheadContent">
-          <h1>This is not the real design. <br /> It is just a functional prototype.</h1>
-          <p>This is just demonstrating a single-stage flow instead of the regular one.</p>
+          <h3>{content.title}</h3>
+          <p>{content.subtitle}</p>
         </div>
         <div className="trailheadCards">
-          <div className="trailheadContent">
-            <h2>More than just a browser</h2>
-          </div>
           <div className="onboardingMessageContainer">
-          {props.message.content.cards.map(card => (
+          {content.cards.map(card => (
             <OnboardingCard key={card.id}
               sendUserActionTelemetry={props.sendUserActionTelemetry}
               onAction={props.onAction}
@@ -23,6 +22,10 @@ export class Trailhead extends React.PureComponent {
               {...card} />
           ))}
           </div>
+        </div>
+        <div className="trailheadContent">
+          <h2>{content.ctaHeader}</h2>
+          <p>{content.ctaText}</p>
         </div>
       </div>
 

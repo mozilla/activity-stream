@@ -25,8 +25,8 @@ export class OnboardingCard extends React.PureComponent {
         <div className={`onboardingMessageImage ${content.icon}`} />
         <div className="onboardingContent">
           <span>
-            <h3> {content.title} </h3>
-            <p> {content.text} </p>
+            <h3> {content.title}</h3>
+            <p> {content.text}</p>
           </span>
           <span>
             <button tabIndex="1" className="button onboardingButton" onClick={this.onClick}> {content.primary_button.label} </button>
