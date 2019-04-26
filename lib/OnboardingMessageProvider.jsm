@@ -46,16 +46,16 @@ const L10N = new Localization([
   "browser/newtab/onboarding.ftl",
 ]);
 
-function getPlaceholderTrailheadCard(title) {
+function getPlaceholderTrailheadCard(id) {
   return {
     id: "ONBOARDING_2",
     template: "onboarding",
     content: {
-      title,
-      text: "Hello world blah",
+      title: `onboarding-card-${id}-title`,
+      text: `onboarding-card-${id}-text`,
       icon: "screenshots",
       primary_button: {
-        label: "Try now",
+        label: `onboarding-card-${id}-button`,
         action: {
           type: "OPEN_URL",
           data: {args: "https://screenshots.firefox.com/#tour", where: "tabshifted"},
@@ -167,11 +167,7 @@ const ONBOARDING_MESSAGES = async () => ([
     targeting: "localeLanguageCode == 'en' && trailheadCohort > 0",
     trigger: {id: "firstRun"},
     content: {
-      title: "This is not a real thing",
-      subtitle: "It is just a test",
-      ctaHeader: "Join Firefox",
-      ctaText: "Because we're awesome obviously",
-      cards: ["Hello", "World", "Foo"].map(getPlaceholderTrailheadCard),
+      cards: ["tracking-protection", "data-sync", "firefox-monitor"].map(getPlaceholderTrailheadCard),
     },
   },
   {
