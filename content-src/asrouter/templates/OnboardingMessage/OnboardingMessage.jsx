@@ -1,7 +1,7 @@
 import {ModalOverlay} from "../../components/ModalOverlay/ModalOverlay";
 import React from "react";
 
-class OnboardingCard extends React.PureComponent {
+export class OnboardingCard extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
@@ -25,8 +25,8 @@ class OnboardingCard extends React.PureComponent {
         <div className={`onboardingMessageImage ${content.icon}`} />
         <div className="onboardingContent">
           <span>
-            <h3> {content.title} </h3>
-            <p> {content.text} </p>
+            <h3> {content.title}</h3>
+            <p> {content.text}</p>
           </span>
           <span>
             <button tabIndex="1" className="button onboardingButton" onClick={this.onClick}> {content.primary_button.label} </button>

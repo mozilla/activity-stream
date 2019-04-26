@@ -46,6 +46,25 @@ const L10N = new Localization([
   "browser/newtab/onboarding.ftl",
 ]);
 
+function getPlaceholderTrailheadCard(title) {
+  return {
+    id: "ONBOARDING_2",
+    template: "onboarding",
+    content: {
+      title,
+      text: "Hello world blah",
+      icon: "screenshots",
+      primary_button: {
+        label: "Try now",
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://screenshots.firefox.com/#tour", where: "tabshifted"},
+        },
+      },
+    },
+  };
+}
+
 const ONBOARDING_MESSAGES = async () => ([
   {
     id: "ONBOARDING_1",
@@ -143,6 +162,19 @@ const ONBOARDING_MESSAGES = async () => ([
     trigger: {id: "showOnboarding"},
   },
   {
+    id: "TRAILHEAD",
+    template: "trailhead",
+    targeting: "localeLanguageCode == 'en' && trailheadCohort > 0",
+    trigger: {id: "firstRun"},
+    content: {
+      title: "This is not a real thing",
+      subtitle: "It is just a test",
+      ctaHeader: "Join Firefox",
+      ctaText: "Because we're awesome obviously",
+      cards: ["Hello", "World", "Foo"].map(getPlaceholderTrailheadCard),
+    },
+  },
+  {
     id: "FXA_1",
     template: "fxa_overlay",
     trigger: {id: "firstRun"},
@@ -219,14 +251,16 @@ const OnboardingMessageProvider = {
         }
       }
 
-      const [primary_button_string, title_string, text_string] = await L10N.formatMessages([
-        {id: msg.content.primary_button.label.string_id},
-        {id: msg.content.title.string_id},
-        {id: msg.content.text.string_id, args: msg.content.text.args},
-      ]);
-      translatedMessage.content.primary_button.label = primary_button_string.value;
-      translatedMessage.content.title = title_string.value;
-      translatedMessage.content.text = text_string.value;
+      if (msg.template === "onboarding") {
+        const [primary_button_string, title_string, text_string] = await L10N.formatMessages([
+          {id: msg.content.primary_button.label.string_id},
+          {id: msg.content.title.string_id},
+          {id: msg.content.text.string_id, args: msg.content.text.args},
+        ]);
+        translatedMessage.content.primary_button.label = primary_button_string.value;
+        translatedMessage.content.title = title_string.value;
+        translatedMessage.content.text = text_string.value;
+      }
 
       // Translate any secondary buttons separately
       if (msg.content.secondary_button) {
