@@ -51,11 +51,11 @@ function getPlaceholderTrailheadCard(id) {
     id: "ONBOARDING_2",
     template: "onboarding",
     content: {
-      title: `onboarding-card-${id}-title`,
-      text: `onboarding-card-${id}-text`,
+      title: `onboarding-${id}-title`,
+      text: `onboarding-${id}-text`,
       icon: "screenshots",
       primary_button: {
-        label: `onboarding-card-${id}-button`,
+        label: `onboarding-${id}-button`,
         action: {
           type: "OPEN_URL",
           data: {args: "https://screenshots.firefox.com/#tour", where: "tabshifted"},
@@ -167,7 +167,7 @@ const ONBOARDING_MESSAGES = async () => ([
     targeting: "localeLanguageCode == 'en' && trailheadCohort > 0",
     trigger: {id: "firstRun"},
     content: {
-      cards: ["tracking-protection", "data-sync", "firefox-monitor"].map(getPlaceholderTrailheadCard),
+      cards: ["tracking-protection", "data-sync", "firefox-monitor", "private-browsing", "firefox-send", "mobile-phone", "data-pledge", "send-tabs", "pocket-anywhere", "lockwise-passwords", "facebook-container"].map(getPlaceholderTrailheadCard),
     },
   },
   {
