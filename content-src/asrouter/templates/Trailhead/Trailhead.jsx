@@ -6,12 +6,9 @@ import React from "react";
 
 const FLUENT_FILES = [
   "branding/brand.ftl",
+  "browser/branding/brandings.ftl",
   "browser/branding/sync-brand.ftl",
-  // These are finalized strings exposed to localizers
   "browser/newtab/onboarding.ftl",
-  // These are WIP/in-development strings that only get used if the string
-  // doesn't already exist in onboarding.ftl above
-  "trailhead.ftl",
 ];
 
 export class _Trailhead extends React.PureComponent {

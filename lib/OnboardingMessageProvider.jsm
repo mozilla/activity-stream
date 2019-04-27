@@ -274,11 +274,11 @@ const ONBOARDING_MESSAGES = async () => ([
     bundled: 3,
     order: 1,
     content: {
-      title: {string_id: "onboarding-private-browsing-title"},
-      text: {string_id: "onboarding-private-browsing-text"},
+      title: {string_id: "onboarding-browse-privately-title"},
+      text: {string_id: "onboarding-browse-privately-text"},
       icon: "private",
       primary_button: {
-        label: {string_id: "onboarding-private-browsing-button"},
+        label: {string_id: "onboarding-browse-privately-button"},
         action: {type: "OPEN_PRIVATE_BROWSER_WINDOW"},
       },
     },
@@ -329,25 +329,6 @@ const ONBOARDING_MESSAGES = async () => ([
     id: "TRAILHEAD_CARD_7",
     template: "onboarding",
     bundled: 3,
-    content: {
-      title: {string_id: "onboarding-privacy-right-title"},
-      text: {string_id: "onboarding-privacy-right-text"},
-      icon: "pledge",
-      primary_button: {
-        label: {string_id: "onboarding-privacy-right-button"},
-        action: {
-          type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/?privacy-right", where: "tabshifted"},
-        },
-      },
-    },
-    targeting: "trailheadTriplet == 'unused'",
-    trigger: {id: "showOnboarding"},
-  },
-  {
-    id: "TRAILHEAD_CARD_8",
-    template: "onboarding",
-    bundled: 3,
     order: 3,
     content: {
       title: {string_id: "onboarding-send-tabs-title"},
@@ -365,7 +346,7 @@ const ONBOARDING_MESSAGES = async () => ([
     trigger: {id: "showOnboarding"},
   },
   {
-    id: "TRAILHEAD_CARD_9",
+    id: "TRAILHEAD_CARD_8",
     template: "onboarding",
     bundled: 3,
     order: 2,
@@ -385,7 +366,7 @@ const ONBOARDING_MESSAGES = async () => ([
     trigger: {id: "showOnboarding"},
   },
   {
-    id: "TRAILHEAD_CARD_10",
+    id: "TRAILHEAD_CARD_9",
     template: "onboarding",
     bundled: 3,
     order: 3,
@@ -405,7 +386,7 @@ const ONBOARDING_MESSAGES = async () => ([
     trigger: {id: "showOnboarding"},
   },
   {
-    id: "TRAILHEAD_CARD_11",
+    id: "TRAILHEAD_CARD_10",
     template: "onboarding",
     bundled: 3,
     order: 4,
