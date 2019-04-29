@@ -15,6 +15,7 @@ import {Trailhead} from "./templates/Trailhead/Trailhead";
 
 const INCOMING_MESSAGE_NAME = "ASRouter:parent-to-child";
 const OUTGOING_MESSAGE_NAME = "ASRouter:child-to-parent";
+const TEMPLATES_ABOVE_PAGE = ["trailhead"];
 const TEMPLATES_BELOW_SEARCH = ["simple_below_search_snippet"];
 
 export const ASRouterUtils = {
@@ -97,7 +98,8 @@ export class ASRouterUISurface extends React.PureComponent {
     this.sendUserActionTelemetry = this.sendUserActionTelemetry.bind(this);
     this.state = {message: {}, bundle: {}};
     if (props.document) {
-      this.portalContainer = props.document.getElementById("footer-snippets-container");
+      this.headerPortal = props.document.getElementById("header-asrouter-container");
+      this.footerPortal = props.document.getElementById("footer-asrouter-container");
     }
   }
 
@@ -319,6 +321,7 @@ export class ASRouterUISurface extends React.PureComponent {
     const {message, bundle} = this.state;
     if (!message.id && !bundle.template) { return null; }
     const shouldRenderBelowSearch = TEMPLATES_BELOW_SEARCH.includes(message.template);
+    const shouldRenderInHeader = TEMPLATES_ABOVE_PAGE.includes(message.template);
 
     return shouldRenderBelowSearch ?
       // Render special below search snippets in place;
@@ -333,7 +336,7 @@ export class ASRouterUISurface extends React.PureComponent {
           {this.renderOnboarding()}
           {this.renderSnippets()}
         </>,
-        this.portalContainer
+        shouldRenderInHeader ? this.headerPortal : this.footerPortal
       );
   }
 }

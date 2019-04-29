@@ -44,12 +44,14 @@ describe("ASRouterUISurface", () => {
   let wrapper;
   let global;
   let sandbox;
-  let portalContainer;
+  let headerPortal;
+  let footerPortal;
   let fakeDocument;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    portalContainer = document.createElement("div");
+    headerPortal = document.createElement("div");
+    footerPortal = document.createElement("div");
     fakeDocument = {
       location: {href: ""},
       _listeners: new Set(),
@@ -70,8 +72,8 @@ describe("ASRouterUISurface", () => {
       removeEventListener(event, listener) {
         this._listeners.delete(listener);
       },
-      getElementById() {
-        return portalContainer;
+      getElementById(id) {
+        return id === "header-asrouter-container" ? headerPortal : footerPortal;
       },
     };
     global = new GlobalOverrider();
@@ -125,14 +127,23 @@ describe("ASRouterUISurface", () => {
     assert.isFalse(wrapper.find(".snippets-preview-banner").exists());
   });
 
-  it("should render a SimpleSnippet in the portal", () => {
+  it("should render a SimpleSnippet in the footer portal", () => {
     wrapper.setState({message: FAKE_MESSAGE});
-    assert.isTrue(portalContainer.childElementCount > 0);
+    assert.isTrue(footerPortal.childElementCount > 0);
+    assert.equal(headerPortal.childElementCount, 0);
   });
 
-  it("should not render a SimpleBelowSearchSnippet in the portal", () => {
+  it("should not render a SimpleBelowSearchSnippet in a portal", () => {
     wrapper.setState({message: FAKE_BELOW_SEARCH_SNIPPET});
-    assert.equal(portalContainer.childElementCount, 0);
+    assert.equal(headerPortal.childElementCount, 0);
+    assert.equal(footerPortal.childElementCount, 0);
+  });
+
+  it("should render a trailhead message in the header portal", async () => {
+    const message = (await OnboardingMessageProvider.getUntranslatedMessages()).find(msg => msg.template === "trailhead");
+    wrapper.setState({message});
+    assert.isTrue(headerPortal.childElementCount > 0);
+    assert.equal(footerPortal.childElementCount, 0);
   });
 
   it("should dispatch an event to select the correct theme", () => {
