@@ -15,6 +15,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BookmarkPanelHub: "resource://activity-stream/lib/BookmarkPanelHub.jsm",
   SnippetsTestMessageProvider: "resource://activity-stream/lib/SnippetsTestMessageProvider.jsm",
   PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
+  BookmarkPanelHub: "resource://activity-stream/lib/BookmarkPanelHub.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm");
