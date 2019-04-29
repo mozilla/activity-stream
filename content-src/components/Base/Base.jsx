@@ -159,7 +159,7 @@ export class BaseContent extends React.PureComponent {
                 </ErrorBoundary>
               </div>
             }
-            <ASRouterUISurface dispatch={this.props.dispatch} />
+            <ASRouterUISurface fxaEndpoint={this.props.Prefs.values.fxa_endpoint} dispatch={this.props.dispatch} />
             <div className={`body-wrapper${(initialized ? " on" : "")}`}>
               {isDiscoveryStream ? (
                 <ErrorBoundary className="borderless-error">

@@ -80,6 +80,15 @@
     padding-top: $logo-size;
     text-align: center;
 
+    form {
+      position: relative;
+
+      .error.active {
+        inset-inline-start: 0;
+        z-index: 0;
+      }
+    }
+
     button,
     input {
       border: 0;

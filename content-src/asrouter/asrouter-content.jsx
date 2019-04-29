@@ -299,7 +299,9 @@ export class ASRouterUISurface extends React.PureComponent {
         message={message}
         onAction={ASRouterUtils.executeAction}
         onDoneButton={this.dismissBundle(this.state.bundle.bundle)}
-        sendUserActionTelemetry={this.sendUserActionTelemetry} />);
+        sendUserActionTelemetry={this.sendUserActionTelemetry}
+        dispatch={this.props.dispatch}
+        fxaEndpoint={this.props.fxaEndpoint} />);
     }
     return null;
   }
