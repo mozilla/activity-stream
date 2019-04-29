@@ -1,5 +1,12 @@
 import React from "react";
 
+export const ModalOverlayWrapper = props => (<>
+  <div className={`modalOverlayOuter ${props.active ? "active" : ""}`} />
+  <div className={`modalOverlayInner ${props.active ? "active" : ""} ${props.innerClassName || ""}`}>
+    {props.children}
+  </div>
+</>);
+
 export class ModalOverlay extends React.PureComponent {
   componentWillMount() {
     this.setState({active: true});
@@ -15,16 +22,12 @@ export class ModalOverlay extends React.PureComponent {
     const {active} = this.state;
     const {title, button_label} = this.props;
     return (
-      <div>
-        <div className={`modalOverlayOuter ${active ? "active" : ""}`} />
-        <div className={`modalOverlayInner ${active ? "active" : ""}`}>
-          <h2> {title} </h2>
-          {this.props.children}
-          <div className="footer">
-            <button tabIndex="2" onClick={this.props.onDoneButton} className="button primary modalButton"> {button_label} </button>
-          </div>
+      <ModalOverlayWrapper active={active}>
+        <h2> {title} </h2>
+        {this.props.children}
+        <div className="footer">
+          <button tabIndex="2" onClick={this.props.onDoneButton} className="button primary modalButton"> {button_label} </button>
         </div>
-      </div>
-    );
+      </ModalOverlayWrapper>);
   }
 }

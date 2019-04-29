@@ -1,4 +1,4 @@
-import {OnboardingCard} from "../OnboardingMessage/OnboardingMessage";
+import {ModalOverlayWrapper} from "../../components/ModalOverlay/ModalOverlay";
 import React from "react";
 
 const FLUENT_FILES = [
@@ -12,6 +12,12 @@ const FLUENT_FILES = [
 ];
 
 export class Trailhead extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {isModalOpen: true};
+    this.closeModal = this.closeModal.bind(this);
+  }
+
   componentWillMount() {
     FLUENT_FILES.forEach(file => {
       const link = document.head.appendChild(document.createElement("link"));
@@ -20,41 +26,33 @@ export class Trailhead extends React.PureComponent {
     });
   }
 
+  componentDidMount() {
+    // We need to remove hide-main since we should show it underneath everything that has rendered
+    global.document.body.classList.remove("hide-main");
+  }
+
+  closeModal() {
+    this.setState({isModalOpen: false});
+  }
+
   render() {
-    const {props} = this;
-    const {content} = props.message;
-
-    return (<div className="overlay-wrapper show trailhead">
-      <div className="trailheadInner">
-        <div className="trailheadContent">
-          <h3 data-l10n-id="onboarding-welcome-header" />
-          <p data-l10n-id="onboarding-welcome-body" />
-        </div>
-        <div className="trailheadCards">
-          <div className="onboardingMessageContainer">
-          {content.cards.map(card => (
-            <OnboardingCard key={card.id}
-              sendUserActionTelemetry={props.sendUserActionTelemetry}
-              onAction={props.onAction}
-              UISurface="TRAILHEAD"
-              {...card} />
-          ))}
-          </div>
-        </div>
-        <div className="trailheadContent">
-          <h2 data-l10n-id="onboarding-membership-form-header" />
-          <input type="email" data-l10n-id="onboarding-membership-form-email" />
-          <p data-l10n-id="onboarding-membership-form-legal-links">
-            <a data-l10n-name="terms"
-              href="https://accounts.firefox.com/legal/terms" />
-            <a data-l10n-name="privacy"
-              href="https://accounts.firefox.com/legal/privacy" />
-          </p>
-          <button data-l10n-id="onboarding-membership-form-continue" />
-        </div>
-        <button data-l10n-id="onboarding-start-browsing-button-label" />
+    return (<ModalOverlayWrapper innerClassName="trailheadInner" active={this.state.isModalOpen}>
+      <div className="trailheadContent">
+        <h3 data-l10n-id="onboarding-welcome-header" />
+        <p data-l10n-id="onboarding-welcome-body" />
       </div>
-
-    </div>);
+      <div className="trailheadContent">
+        <h2 data-l10n-id="onboarding-membership-form-header" />
+        <input type="email" data-l10n-id="onboarding-membership-form-email" />
+        <p data-l10n-id="onboarding-membership-form-legal-links">
+          <a data-l10n-name="terms"
+            href="https://accounts.firefox.com/legal/terms" />
+          <a data-l10n-name="privacy"
+            href="https://accounts.firefox.com/legal/privacy" />
+        </p>
+        <button data-l10n-id="onboarding-membership-form-continue" />
+      </div>
+      <button onClick={this.closeModal} data-l10n-id="onboarding-start-browsing-button-label" />
+    </ModalOverlayWrapper>);
   }
 }
