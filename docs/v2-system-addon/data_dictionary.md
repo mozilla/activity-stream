@@ -263,7 +263,7 @@ and losing focus. | :one:
 | `has_flow_params` | [required] One of [true, false]. A boolean identifier that indicates if Firefox Accounts flow parameters are set or unset. | :one:
 | `displayed` | [required] 1: a SPOC is displayed; 0: non-displayed | :one:
 | `reason` | [required] The reason if a SPOC is not displayed, "n/a" for the displayed, one of ("frequency_cap", "blocked_by_user", "campaign_duplicate", "probability_selection", "below_min_score", "out_of_position", "n/a") | :one:
-| `full_recalc` | [required] Is it a full recalculation: 0: false; 1: true | :one:
+| `full_recalc` | [required] Is it a full SPOCS recalculation: 0: false; 1: true. Recalculation case: 1). fetch SPOCS from Pocket endpoint. Non-recalculation cases: 1). An impression updates the SPOCS; 2). Any action that triggers the `selectLayoutRender ` | :one:
 
 **Where:**
 
