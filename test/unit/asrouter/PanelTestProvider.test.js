@@ -6,7 +6,7 @@ describe("PanelTestProvider", () => {
   it("should have a message", () => {
     assert.lengthOf(messages, 1);
   });
-  it("should be a validat message", () => {
+  it("should be a valid message", () => {
     assert.jsonSchema(messages[0].content, schema);
   });
 });
