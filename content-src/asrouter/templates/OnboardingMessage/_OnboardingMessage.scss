@@ -1,3 +1,4 @@
+// Note: this is also used by Trailhead
 .onboardingMessageContainer {
   display: grid;
   grid-column-gap: 21px;
@@ -145,7 +146,7 @@
   }
 
 
-  &::before {
+  &:not(.trailheadCard)::before {
     content: '';
     height: 230px;
     width: 1px;
@@ -162,5 +163,15 @@
 
   &:last-child::before {
     content: none;
+  }
+
+  &.trailheadCard {
+    background: $white;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px 0 $grey-90-10;
+
+    .onboardingContent > span > p {
+      height: 115px;
+    }
   }
 }

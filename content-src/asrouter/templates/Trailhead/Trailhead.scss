@@ -83,6 +83,24 @@
   }
 }
 
+$trailhead-cards-bg: #F0EFF4;
+$trailhead-cards-header-color: #110143;
+
 .trailheadCards {
-  display: flex;
+  background: $trailhead-cards-bg;
+  text-align: center;
+  padding: 40px 0;
+
+  h1 {
+    margin-top: 0;
+    color: $trailhead-cards-header-color;
+  }
+}
+
+.trailheadCardsInner {
+  margin: auto;
+
+  @media (min-width: $break-point-widest) {
+    width: $wrapper-max-width-widest;
+  }
 }
