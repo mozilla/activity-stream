@@ -38,28 +38,56 @@ export class Trailhead extends React.PureComponent {
   }
 
   render() {
+    // XXX temporary icons
+    const icon = {
+      productive: "topsites",
+      smarter: "pocket",
+      privacy: "highlights",
+    };
+
     const {props} = this;
     const {cards} = props.message.content;
     return (<>
-    <ModalOverlayWrapper innerClassName="trailheadInner" active={this.state.isModalOpen}>
-      <div className="trailheadContent">
-        <h3 data-l10n-id="onboarding-welcome-header" />
-        <p data-l10n-id="onboarding-welcome-body" />
+    <ModalOverlayWrapper innerClassName="trailhead" active={this.state.isModalOpen}>
+      <div className="trailheadInner">
+        <div className="trailheadContent">
+          <h1 data-l10n-id="onboarding-welcome-body" />
+          <ul className="trailheadBenefits">
+            {["productive", "smarter", "privacy"].map(id => (
+              <li key={id} style={{
+                backgroundImage: `url(resource://activity-stream/data/content/assets/glyph-${icon[id]}-16.svg)`,
+              }}>
+                <h3 data-l10n-id={`onboarding-benefit-${id}-title`} />
+                <p data-l10n-id={`onboarding-benefit-${id}-text`} />
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="trailheadForm">
+          <img src="chrome://branding/content/icon64.png" />
+          <h3 data-l10n-id="onboarding-join-form-header" />
+          <p data-l10n-id="onboarding-join-form-body">
+            <a data-l10n-name="benefits"
+              href="#" />
+          </p>
+          <input type="email" data-l10n-id="onboarding-join-form-email" />
+          <p data-l10n-id="onboarding-join-form-email-error" />
+          <p data-l10n-id="onboarding-join-form-legal">
+            <a data-l10n-name="terms"
+              href="https://accounts.firefox.com/legal/terms" />
+            <a data-l10n-name="privacy"
+              href="https://accounts.firefox.com/legal/privacy" />
+          </p>
+          <button data-l10n-id="onboarding-join-form-continue" />
+        </div>
       </div>
-      <div className="trailheadContent">
-        <h2 data-l10n-id="onboarding-membership-form-header" />
-        <input type="email" data-l10n-id="onboarding-membership-form-email" />
-        <p data-l10n-id="onboarding-membership-form-legal-links">
-          <a data-l10n-name="terms"
-            href="https://accounts.firefox.com/legal/terms" />
-          <a data-l10n-name="privacy"
-            href="https://accounts.firefox.com/legal/privacy" />
-        </p>
-        <button data-l10n-id="onboarding-membership-form-continue" />
-      </div>
-      <button onClick={this.closeModal} data-l10n-id="onboarding-start-browsing-button-label" />
+
+      <button className="trailheadStart"
+        data-l10n-id="onboarding-start-browsing-button-label"
+        onClick={this.closeModal} />
     </ModalOverlayWrapper>
-    <div className="trailheadCards" style={{display: "flex"}}>
+    <h1 data-l10n-id="onboarding-welcome-header" />
+    <div className="trailheadCards">
     {cards.map(card => (
       <OnboardingCard key={card.id}
         sendUserActionTelemetry={props.sendUserActionTelemetry}

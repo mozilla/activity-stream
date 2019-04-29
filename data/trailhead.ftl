@@ -1,66 +1,134 @@
-onboarding-welcome-body = You’ve got the browser. Let’s explore the rest of Firefox.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-onboarding-membership-form-header = Set Up Your Firefox Membership
-onboarding-membership-form-email =
-    .placeholder = Your email …
-onboarding-membership-form-legal-links = By proceeding, you agree to the <a data-l10n-name="terms">Terms of Service</a> and <a data-l10n-name="privacy">Privacy Notice</a>.
-onboarding-membership-form-continue = Continue
+## The following feature names must be treated as a brand, and kept in English.
+## They cannot be:
+## - Declined to adapt to grammatical case.
+## - Transliterated.
+## - Translated.
+
+-facebook-container-brand-name = Facebook Container
+-lockwise-brand-name = Firefox Lockwise
+-monitor-brand-name = Firefox Monitor
+-pocket-brand-name = Pocket
+-send-brand-name = Firefox Send
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+## UI strings for the simplified onboarding modal
+
+onboarding-button-label-learn-more = Learn More
+onboarding-button-label-try-now = Try It Now
+onboarding-button-label-get-started = Get Started
+
+onboarding-welcome-header = Welcome to { -brand-short-name }
+onboarding-welcome-body = You’ve got the browser. Let’s explore the rest of { -brand-short-name }.
+
+# "Firefox" does *not* refer to the web browser but instead the corporate brand,
+# which conveys its set of attributes, benefits, values, personality.
+onboarding-join-form-header = Join Firefox
+onboarding-join-form-body = Get the most out of { -brand-short-name } with an account. <a data-l10n-name="benefits">Read about all the benefits</a>.
+onboarding-join-form-email =
+    .placeholder = Your email…
+onboarding-join-form-email-error = Valid email required
+onboarding-join-form-legal = By proceeding, you agree to the <a data-l10n-name="terms">Terms of Service</a> and <a data-l10n-name="privacy">Privacy Notice</a>.
+onboarding-join-form-continue = Continue
+
+onboarding-start-browsing-button-label = Start Browsing
+
+## These are individual benefit messages shown with an image, title and
+## description.
+
+onboarding-benefit-productive-title = Be productive
+onboarding-benefit-productive-text = Get your everyday done with the browser, features, and apps.
+
+# "browser" is referring to the person using the web browser
+onboarding-benefit-smarter-title = Be a smarter browser
+onboarding-benefit-smarter-text = Get doable advice from world-class experts.
+
+onboarding-benefit-privacy-title = Keep your privacy
+onboarding-benefit-privacy-text = Everything we make respects your personal data. We take less and help keep it safe.
 
 
-## These are individual items shown with an image, title and description.
+## These strings belong to the individual onboarding messages.
 
-onboarding-subhead-productive-title = Be productive
-onboarding-subhead-productive-text = Get your everyday done with the browser, features, and apps.
+## Each message has a title and a description of what the browser feature is.
+## Each message also has an associated button for the user to try the feature.
+## The string for the button is found above, in the UI strings section
+onboarding-private-browsing-title = Private Browsing
+onboarding-private-browsing-text = Browse by yourself. Private Browsing with Content Blocking blocks online trackers that follow you around the web.
 
-onboarding-subhead-smarter-title = Be a smarter browser
-onboarding-subhead-smarter-text = Get doable advice from world-class experts.
+onboarding-screenshots-title = Screenshots
+onboarding-screenshots-text = Take, save and share screenshots - without leaving { -brand-short-name }. Capture a region or an entire page as you browse. Then save to the web for easy access and sharing.
 
-onboarding-subhead-privacy-title = Keep your privacy
-onboarding-subhead-privacy-text = Everything we make honors our Personal Data Pledge to you. We always ask, take less, and keep it safe.
+onboarding-addons-title = Add-ons
+onboarding-addons-text = Add even more features that make { -brand-short-name } work harder for you. Compare prices, check the weather or express your personality with a custom theme.
+
+onboarding-ghostery-title = Ghostery
+onboarding-ghostery-text = Browse faster, smarter, or safer with extensions like Ghostery, which lets you block annoying ads.
+
+# Note: "Sync" in this case is a generic verb, as in "to synchronize"
+onboarding-fxa-title = Sync
+onboarding-fxa-text = Sign up for a { -fxaccount-brand-name } and sync your bookmarks, passwords, and open tabs everywhere you use { -brand-short-name }.
+
+onboarding-tracking-protection-title = Control How You’re Tracked
+onboarding-tracking-protection-text = Don’t like when ads follow you around? { -brand-short-name } helps you control how advertisers track your activity online.
+onboarding-tracking-protection-button = Learn More
+
+onboarding-data-sync-title = Take Your Settings with You
+# "Sync" is short for synchronize.
+onboarding-data-sync-text = Sync your bookmarks and passwords everywhere you use { -brand-short-name }.
+onboarding-data-sync-button = Turn on { -sync-brand-short-name }
+
+onboarding-firefox-monitor-title = Watch Your Identity
+onboarding-firefox-monitor-text = { -monitor-brand-name } keeps track of whether your personal information has been in a publicly reported online data breach.
+onboarding-firefox-monitor-button = Sign up for Alerts
+
+onboarding-private-browsing-title = Browse Privately
+onboarding-private-browsing-text = Private Browsing clears your search and browsing history to keep it secret from anyone who uses your computer.
+onboarding-private-browsing-button = Open a Private Window
+
+onboarding-firefox-send-title = Keep Your Shared Files Private
+onboarding-firefox-send-text = { -send-brand-name } protects the files you share with end-to-end encryption and a link that automatically expires.
+onboarding-firefox-send-button = Try { -send-brand-name }
+
+onboarding-mobile-phone-title = Get { -brand-short-name } on Your Phone
+onboarding-mobile-phone-text = Download { -brand-short-name } for iOS or Android and sync your data across devices.
+# "Mobile" is short for mobile/cellular phone, "Browser" is short for web
+# browser.
+onboarding-mobile-phone-button = Download Mobile Browser
+
+onboarding-data-pledge-title = Privacy is Your Right
+onboarding-data-pledge-text = { -brand-short-name } treats your data with respect by taking less, protecting it, and being clear about how we use it.
+onboarding-data-pledge-button = Learn More
+
+onboarding-send-tabs-title = Instantly Send Yourself Tabs
+onboarding-send-tabs-text = Send Tabs instantly shares pages between your devices without having to copy, paste, or leave the browser.
+onboarding-send-tabs-button = Start Using Send Tabs
+
+onboarding-pocket-anywhere-title = Read and Listen Anywhere
+onboarding-pocket-anywhere-text = { -pocket-brand-name } saves your favorite stories so you can read, listen, and watch during your downtime, even if you’re offline.
+onboarding-pocket-anywhere-button = Try { -pocket-brand-name }
+
+onboarding-lockwise-passwords-title = Take Your Passwords Everywhere
+onboarding-lockwise-passwords-text = { -lockwise-brand-name } creates a single, secure place to store passwords that sync everywhere you use { -brand-short-name }.
+onboarding-lockwise-passwords-button = Get { -lockwise-brand-name }
+
+onboarding-facebook-container-title = Set Boundaries with Facebook
+onboarding-facebook-container-text = { -facebook-container-brand-name } keeps your Facebook identity separate from everything else, making it harder to track you across the web.
+onboarding-facebook-container-button = Add the Extension
 
 
-## These are individual cards shown with an image, title, description and button with some action.
+## Message strings belonging to the Return to AMO flow
+return-to-amo-sub-header = Great, you’ve got { -brand-short-name }
 
-onboarding-card-tracking-protection-title = Control How You’re Tracked
-onboarding-card-tracking-protection-text = Don’t like when ads follow you around? Firefox helps you control how advertisers track your activity online.
-onboarding-card-tracking-protection-button = Learn More
-
-onboarding-card-data-sync-title = Take Your Settings With You
-onboarding-card-data-sync-text = Sync your bookmarks and passwords everywhere you use Firefox.
-onboarding-card-data-sync-button = Turn on Sync
-
-onboarding-card-firefox-monitor-title = Watch Your Identity
-onboarding-card-firefox-monitor-text = Firefox Monitor keeps track of whether your personal information has been in a publicly reported online data breach.
-onboarding-card-firefox-monitor-button = Sign up for Alerts
-
-onboarding-card-private-browsing-title = Browse Privately
-onboarding-card-private-browsing-text = Private Browsing clears your search and browsing history to keep it secret from anyone who uses your computer.
-onboarding-card-private-browsing-button = Open a Private Window
-
-onboarding-card-firefox-send-title = Keep Your Shared Files Private
-onboarding-card-firefox-send-text = Firefox Send protects the files you share with end-to-end encryption and a link that automatically expires.
-onboarding-card-firefox-send-button = Try Firefox Send
-
-onboarding-card-mobile-phone-title = Get Firefox on Your Phone
-onboarding-card-mobile-phone-text = Download the browser for iOS or Android and sync your data across devices.
-onboarding-card-mobile-phone-button = Download Mobile Browser
-
-onboarding-card-personal-data-title = Privacy is Your Right
-onboarding-card-personal-data-text = Firefox will promise to take less and help keep you safe when it comes to your data. It’s not just a pledge, it’s in our DNA.
-onboarding-card-personal-data-button = Read the Personal Data Pledge
-
-onboarding-card-send-tabs-title = Instantly Send Yourself Tabs
-onboarding-card-send-tabs-text = Send Tabs instantly shares pages between your devices without having to copy, paste, or leave the browser.
-onboarding-card-send-tabs-button = Start Using Send Tabs
-
-onboarding-card-pocket-anywhere-title = Read and Listen Anywhere
-onboarding-card-pocket-anywhere-text = Pocket saves your favorite stories so you can read, listen, and watch during your downtime, even if you’re offline.
-onboarding-card-pocket-anywhere-button = Try Pocket
-
-onboarding-card-lockwise-passwords-title =  Take Your Passwords Everywhere
-onboarding-card-lockwise-passwords-text = Firefox Lockwise creates a single, secure place to store passwords that autofill everywhere you use Firefox.
-onboarding-card-lockwise-passwords-button = Get Firefox Lockwise
-
-onboarding-card-facebook-container-title = Set Boundaries With Facebook
-onboarding-card-facebook-container-text = Facebook Container keeps your Facebook identity separate from everything else, making it harder to track you across the web.
-onboarding-card-facebook-container-button = Add the Extension
+# <icon></icon> will be replaced with the icon belonging to the extension
+#
+# Variables:
+#   $addon-name (String) - Name of the add-on
+return-to-amo-addon-header = Now let’s get you <icon></icon><b>{ $addon-name }.</b>
+return-to-amo-extension-button = Add the Extension
+return-to-amo-get-started-button = Get Started with { -brand-short-name }
