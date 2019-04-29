@@ -1,6 +1,88 @@
-
-.trailheadInner {
-  background: $blue-50;
-  padding: 20px;
+.trailhead {
+  background-color: $purple-90;
   color: $white;
+
+  a {
+    color: $white;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  input,
+  button {
+    border-radius: 4px;
+    padding: 10px;
+  }
+
+  .trailheadInner {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+  }
+
+  .trailheadContent {
+    padding: 40px 50px;
+
+    h1 {
+      margin: 0;
+    }
+  }
+
+  .trailheadBenefits {
+    padding: 0;
+
+    li {
+      background-position: top left;
+      background-repeat: no-repeat;
+      background-size: 48px;
+      -moz-context-properties: fill;
+      fill: $blue-50;
+      list-style: none;
+      padding-inline-start: 64px;
+
+      &:dir(rtl) {
+        background-position-x: right;
+      }
+    }
+
+    h3 {
+      color: $purple-40;
+    }
+
+    p {
+      color: $white;
+    }
+  }
+
+  .trailheadForm {
+    padding: 40px;
+    text-align: center;
+
+    button,
+    input {
+      border: 0;
+      width: 100%;
+    }
+
+    input {
+      background-color: $white;
+      color: $grey-70;
+    }
+
+    button {
+      background-color: $purple-70;
+    }
+  }
+
+  .trailheadStart {
+    border: 2px solid $white;
+    display: block;
+    margin: auto;
+    min-width: 33%;
+  }
+}
+
+.trailheadCards {
+  display: flex;
 }

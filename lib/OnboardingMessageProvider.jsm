@@ -51,11 +51,11 @@ function getPlaceholderTrailheadCard(id) {
     id: "ONBOARDING_2",
     template: "onboarding",
     content: {
-      title: `onboarding-card-${id}-title`,
-      text: `onboarding-card-${id}-text`,
+      title: `onboarding-${id}-title`,
+      text: `onboarding-${id}-text`,
       icon: "screenshots",
       primary_button: {
-        label: `onboarding-card-${id}-button`,
+        label: `onboarding-${id}-button`,
         action: {
           type: "OPEN_URL",
           data: {args: "https://screenshots.firefox.com/#tour", where: "tabshifted"},
