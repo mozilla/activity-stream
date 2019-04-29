@@ -46,7 +46,7 @@ export class Trailhead extends React.PureComponent {
     };
 
     const {props} = this;
-    const {cards} = props.message.content;
+    const {bundle: cards} = props.message;
     return (<>
     <ModalOverlayWrapper innerClassName="trailhead" active={this.state.isModalOpen}>
       <div className="trailheadInner">
@@ -87,15 +87,15 @@ export class Trailhead extends React.PureComponent {
         onClick={this.closeModal} />
     </ModalOverlayWrapper>
     <h1 data-l10n-id="onboarding-welcome-header" />
-    <div className="trailheadCards">
-    {cards.map(card => (
-      <OnboardingCard key={card.id}
-        sendUserActionTelemetry={props.sendUserActionTelemetry}
-        onAction={props.onAction}
-        UISurface="TRAILHEAD"
-        {...card} />
-    ))}
-    </div>
+    {(cards && cards.length) ? <div className="trailheadCards">
+      {cards.map(card => (
+        <OnboardingCard key={card.id}
+          sendUserActionTelemetry={props.sendUserActionTelemetry}
+          onAction={props.onAction}
+          UISurface="TRAILHEAD"
+          {...card} />
+      ))}
+    </div> : null}
     </>);
   }
 }

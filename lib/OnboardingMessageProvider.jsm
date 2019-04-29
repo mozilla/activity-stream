@@ -46,25 +46,6 @@ const L10N = new Localization([
   "browser/newtab/onboarding.ftl",
 ]);
 
-function getPlaceholderTrailheadCard(id) {
-  return {
-    id: "ONBOARDING_2",
-    template: "onboarding",
-    content: {
-      title: `onboarding-${id}-title`,
-      text: `onboarding-${id}-text`,
-      icon: "screenshots",
-      primary_button: {
-        label: `onboarding-${id}-button`,
-        action: {
-          type: "OPEN_URL",
-          data: {args: "https://screenshots.firefox.com/#tour", where: "tabshifted"},
-        },
-      },
-    },
-  };
-}
-
 const ONBOARDING_MESSAGES = async () => ([
   {
     id: "ONBOARDING_1",
@@ -166,9 +147,8 @@ const ONBOARDING_MESSAGES = async () => ([
     template: "trailhead",
     targeting: "localeLanguageCode == 'en' && trailheadCohort > 0",
     trigger: {id: "firstRun"},
-    content: {
-      cards: ["tracking-protection", "data-sync", "firefox-monitor"].map(getPlaceholderTrailheadCard),
-    },
+    includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
+    content: {},
   },
   {
     id: "FXA_1",
