@@ -1,4 +1,5 @@
 import {ModalOverlayWrapper} from "../../components/ModalOverlay/ModalOverlay";
+import {OnboardingCard} from "../OnboardingMessage/OnboardingMessage";
 import React from "react";
 
 const FLUENT_FILES = [
@@ -32,11 +33,15 @@ export class Trailhead extends React.PureComponent {
   }
 
   closeModal() {
+    global.document.body.classList.remove("welcome");
     this.setState({isModalOpen: false});
   }
 
   render() {
-    return (<ModalOverlayWrapper innerClassName="trailheadInner" active={this.state.isModalOpen}>
+    const {props} = this;
+    const {cards} = props.message.content;
+    return (<>
+    <ModalOverlayWrapper innerClassName="trailheadInner" active={this.state.isModalOpen}>
       <div className="trailheadContent">
         <h3 data-l10n-id="onboarding-welcome-header" />
         <p data-l10n-id="onboarding-welcome-body" />
@@ -53,6 +58,16 @@ export class Trailhead extends React.PureComponent {
         <button data-l10n-id="onboarding-membership-form-continue" />
       </div>
       <button onClick={this.closeModal} data-l10n-id="onboarding-start-browsing-button-label" />
-    </ModalOverlayWrapper>);
+    </ModalOverlayWrapper>
+    <div className="trailheadCards" style={{display: "flex"}}>
+    {cards.map(card => (
+      <OnboardingCard key={card.id}
+        sendUserActionTelemetry={props.sendUserActionTelemetry}
+        onAction={props.onAction}
+        UISurface="TRAILHEAD"
+        {...card} />
+    ))}
+    </div>
+    </>);
   }
 }
