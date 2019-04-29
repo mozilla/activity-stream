@@ -30,6 +30,13 @@ export class Trailhead extends React.PureComponent {
   componentDidMount() {
     // We need to remove hide-main since we should show it underneath everything that has rendered
     global.document.body.classList.remove("hide-main");
+
+    // Add inline-onboarding class to disable fixed search header and fixed positioned settings icon
+    global.document.body.classList.add("inline-onboarding");
+  }
+
+  componentDidUnmount() {
+    global.document.body.classList.remove("inline-onboarding");
   }
 
   closeModal() {
