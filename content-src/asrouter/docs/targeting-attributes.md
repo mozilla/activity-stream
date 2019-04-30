@@ -29,6 +29,7 @@ Please note that some targeting attributes require stricter controls on the tele
 * [topFrecentSites](#topfrecentsites)
 * [totalBookmarksCount](#totalbookmarkscount)
 * [usesFirefoxSync](#usesfirefoxsync)
+* [isFxAEnabled](#isFxAEnabled)
 * [xpinstallEnabled](#xpinstallEnabled)
 * [hasPinnedTabs](#haspinnedtabs)
 
@@ -432,6 +433,16 @@ Does the user use Firefox sync?
 
 ```ts
 declare const usesFirefoxSync: boolean;
+```
+
+### `isFxAEnabled`
+
+Does the user have Firefox sync enabled? The service could potentially be turned off.
+
+#### Definition
+
+```ts
+declare const isFxAEnabled: boolean;
 ```
 
 ### `xpinstallEnabled`
