@@ -69,7 +69,6 @@
     "sass": "1.17.2",
     "sass-lint": "1.13.1",
     "shelljs": "0.8.3",
-    "simple-git": "1.107.0",
     "sinon": "7.2.7",
     "webpack": "4.30.0",
     "webpack-cli": "3.3.1",
