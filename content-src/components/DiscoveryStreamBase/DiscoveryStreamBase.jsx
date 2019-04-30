@@ -175,9 +175,11 @@ export class _DiscoveryStreamBase extends React.PureComponent {
       return null;
     }
 
-    // Send SPOCS Fill if any.
-    if (spocsFill.length) {
+    // Send SPOCS Fill if any. Note that it should not send it again if the same
+    // page gets re-rendered by state changes.
+    if (spocsFill.length && !this._spocsFillSent) {
       this.props.dispatch(ac.DiscoveryStreamSpocsFill({spoc_fills: spocsFill}));
+      this._spocsFillSent = true;
     }
 
     // Allow rendering without extracting special components

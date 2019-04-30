@@ -112,6 +112,31 @@ describe("selectLayoutRender", () => {
     ]);
   });
 
+  it("should report non-displayed spocs with reason as probability_selection and out_of_position", () => {
+    const fakeSpocConfig = {positions: [{index: 0}, {index: 1}, {index: 2}], probability: 0.5};
+    const fakeLayout = [{width: 3, components: [{type: "foo", feed: {url: "foo.com"}, spocs: fakeSpocConfig}]}];
+    const fakeSpocsData = {lastUpdated: 0, spocs: {spocs: ["fooSpoc", "barSpoc", "lastSpoc"]}};
+
+    store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
+    store.dispatch({type: at.DISCOVERY_STREAM_FEEDS_UPDATE, data: FAKE_FEEDS});
+    store.dispatch({type: at.DISCOVERY_STREAM_SPOCS_UPDATE, data: fakeSpocsData});
+    const randomStub = globals.sandbox.stub(global.Math, "random");
+
+    const {spocsFill, layoutRender} = selectLayoutRender(store.getState().DiscoveryStream, {}, [0.7, 0.3, 0.8]);
+
+    assert.notCalled(randomStub);
+    assert.lengthOf(layoutRender, 1);
+    assert.deepEqual(layoutRender[0].components[0].data.recommendations[0], "foo");
+    assert.deepEqual(layoutRender[0].components[0].data.recommendations[1], "fooSpoc");
+    assert.deepEqual(layoutRender[0].components[0].data.recommendations[2], "bar");
+
+    assert.deepEqual(spocsFill, [
+      {id: undefined, reason: "n/a", displayed: 1, full_recalc: 0},
+      {id: undefined, reason: "probability_selection", displayed: 0, full_recalc: 0},
+      {id: undefined, reason: "out_of_position", displayed: 0, full_recalc: 0},
+    ]);
+  });
+
   it("should not return spoc result for rolls above the probability", () => {
     const fakeSpocConfig = {positions: [{index: 0}, {index: 1}], probability: 0.5};
     const fakeLayout = [{width: 3, components: [{type: "foo", feed: {url: "foo.com"}, spocs: fakeSpocConfig}]}];
