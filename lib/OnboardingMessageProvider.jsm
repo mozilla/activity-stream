@@ -157,7 +157,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-tracking-protection-title"},
       text: {string_id: "onboarding-tracking-protection-text"},
-      icon: "sync",
+      icon: "tracking",
       primary_button: {
         label: {string_id: "onboarding-tracking-protection-button"},
         action: {
@@ -195,7 +195,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-firefox-monitor-title"},
       text: {string_id: "onboarding-firefox-monitor-text"},
-      icon: "sync",
+      icon: "ffmonitor",
       primary_button: {
         label: {string_id: "onboarding-firefox-monitor-button"},
         action: {
@@ -214,7 +214,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-private-browsing-title"},
       text: {string_id: "onboarding-private-browsing-text"},
-      icon: "sync",
+      icon: "private",
       primary_button: {
         label: {string_id: "onboarding-private-browsing-button"},
         action: {
@@ -233,7 +233,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-firefox-send-title"},
       text: {string_id: "onboarding-firefox-send-text"},
-      icon: "sync",
+      icon: "ffsend",
       primary_button: {
         label: {string_id: "onboarding-firefox-send-button"},
         action: {
@@ -252,7 +252,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-mobile-phone-title"},
       text: {string_id: "onboarding-mobile-phone-text"},
-      icon: "sync",
+      icon: "mobile",
       primary_button: {
         label: {string_id: "onboarding-mobile-phone-button"},
         action: {
@@ -271,7 +271,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-privacy-right-title"},
       text: {string_id: "onboarding-privacy-right-text"},
-      icon: "sync",
+      icon: "pledge",
       primary_button: {
         label: {string_id: "onboarding-privacy-right-button"},
         action: {
@@ -290,7 +290,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-send-tabs-title"},
       text: {string_id: "onboarding-send-tabs-text"},
-      icon: "sync",
+      icon: "sendtab",
       primary_button: {
         label: {string_id: "onboarding-send-tabs-button"},
         action: {
@@ -309,7 +309,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-pocket-anywhere-title"},
       text: {string_id: "onboarding-pocket-anywhere-text"},
-      icon: "sync",
+      icon: "pocket",
       primary_button: {
         label: {string_id: "onboarding-pocket-anywhere-button"},
         action: {
@@ -328,7 +328,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-lockwise-passwords-title"},
       text: {string_id: "onboarding-lockwise-passwords-text"},
-      icon: "sync",
+      icon: "lockwise",
       primary_button: {
         label: {string_id: "onboarding-lockwise-passwords-button"},
         action: {
@@ -347,7 +347,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-facebook-container-title"},
       text: {string_id: "onboarding-facebook-container-text"},
-      icon: "sync",
+      icon: "fbcont",
       primary_button: {
         label: {string_id: "onboarding-facebook-container-button"},
         action: {

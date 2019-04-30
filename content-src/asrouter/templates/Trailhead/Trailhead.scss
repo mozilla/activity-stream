@@ -1,7 +1,8 @@
 .trailhead {
-  $benefit-icon-spacing: 64px;
+  $benefit-icon-size: 64px;
+  $benefit-icon-spacing: $benefit-icon-size + 20px;
 
-  background-color: $purple-90;
+  background: url('#{$image-path}trailhead/accounts-form-bg.jpg') 100% 100%;
   color: $white;
 
   a {
@@ -16,13 +17,15 @@
   }
 
   .trailheadInner {
+    $content-spacing: 40px;
+
     display: grid;
+    grid-column-gap: $content-spacing;
     grid-template-columns: 3fr 2fr;
+    padding: $content-spacing;
   }
 
   .trailheadContent {
-    padding: 40px 50px;
-
     h1 {
       margin: 0;
     }
@@ -38,7 +41,7 @@
     li {
       background-position: top left;
       background-repeat: no-repeat;
-      background-size: 48px;
+      background-size: $benefit-icon-size;
       -moz-context-properties: fill;
       fill: $blue-50;
       list-style: none;
@@ -46,6 +49,18 @@
 
       &:dir(rtl) {
         background-position-x: right;
+      }
+
+      &.knowledge {
+        background-image: url('#{$image-path}trailhead/benefit-knowledge.png');
+      }
+
+      &.privacy {
+        background-image: url('#{$image-path}trailhead/benefit-privacy.png');
+      }
+
+      &.products {
+        background-image: url('#{$image-path}trailhead/benefit-products.png');
       }
     }
 
@@ -59,7 +74,10 @@
   }
 
   .trailheadForm {
-    padding: 40px;
+    $logo-size: 100px;
+
+    background: url('#{$image-path}trailhead/firefox-logo.png') top center / $logo-size no-repeat;
+    padding-top: $logo-size;
     text-align: center;
 
     button,
