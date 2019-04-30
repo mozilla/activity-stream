@@ -104,24 +104,103 @@
   }
 }
 
-$trailhead-cards-bg: #F0EFF4;
-$trailhead-cards-header-color: #110143;
-
 .trailheadCards {
-  background: $trailhead-cards-bg;
+  background: var(--trailhead-cards-background-color);
   text-align: center;
-  padding: 40px 0;
 
   h1 {
-    margin-top: 0;
-    color: $trailhead-cards-header-color;
+    font-size: 36px;
+    font-weight: 200;
+    margin: 0 0 40px;
+    color: var(--trailhead-header-text-color);
   }
 }
 
 .trailheadCardsInner {
   margin: auto;
+  padding: 40px $section-horizontal-padding;
+
+  @media (min-width: $break-point-medium) {
+    width: $wrapper-max-width-medium;
+  }
+
+  @media (min-width: $break-point-large) {
+    width: $wrapper-max-width-large;
+  }
 
   @media (min-width: $break-point-widest) {
     width: $wrapper-max-width-widest;
   }
+
 }
+
+.trailheadCardGrid {
+  display: grid;
+  grid-gap: $base-gutter;
+  margin: 0;
+
+  @media (min-width: $break-point-medium) {
+    grid-template-columns: repeat(auto-fit, $card-width);
+  }
+
+  @media (min-width: $break-point-widest) {
+    grid-template-columns: repeat(auto-fit, $card-width-large);
+  }
+}
+
+.trailheadCard {
+  position: relative;
+  background: var(--newtab-card-background-color);
+  border-radius: 4px;
+  box-shadow: var(--newtab-card-shadow);
+
+  font-size: 13px;
+  padding: 20px;
+
+  @media (min-width: $break-point-widest) {
+    font-size: 15px;
+    padding: 40px;
+  }
+
+  .onboardingTitle {
+    font-weight: normal;
+    color: var(--newtab-text-primary-color);
+    margin: 10px 0;
+    font-size: 15px;
+
+    @media (min-width: $break-point-widest) {
+      font-size: 18px;
+    }
+  }
+
+  .onboardingText {
+    margin: 0 0 60px;
+    color: var(--newtab-text-conditional-color);
+    line-height: 1.5;
+    font-weight: 200;
+  }
+
+  .onboardingButton {
+    color: var(--newtab-text-conditional-color);
+    background: var(--trailhead-card-button-background-color);
+    border: 0;
+    height: 30px;
+    min-width: 70%;
+    padding: 0 14px;
+
+    &:hover {
+      box-shadow: none;
+      background: var(--trailhead-card-button-background-hover-color);
+    }
+  }
+
+  .onboardingButtonContainer {
+    height: 60px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+  }
+}
+

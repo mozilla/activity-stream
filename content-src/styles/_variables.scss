@@ -58,6 +58,7 @@ $black-30: rgba($black, 0.3);
 // Other colors
 $white: #FFF;
 $white-10: rgba($white, 0.1);
+$white-60: rgba($white, 0.6);
 $pocket-teal: #50BCB6;
 $pocket-red: #EF4056;
 $shadow-10: rgba(12, 12, 13, 0.1);
@@ -73,6 +74,7 @@ $about-welcome-gradient: linear-gradient(to bottom, $blue-70 40%, $aw-extra-blue
 $about-welcome-extra-links: #676F7E;
 $firefox-wordmark-default-color: #363959;
 $firefox-wordmark-darktheme-color: $white;
+$trailhead-purple: #2B2156;
 
 // Photon transitions from http://design.firefox.com/photon/motion/duration-and-easing.html
 $photon-easing: cubic-bezier(0.07, 0.95, 0, 1);
