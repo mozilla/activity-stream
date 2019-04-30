@@ -151,6 +151,215 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {},
   },
   {
+    id: "TRAILHEAD_CARD_1",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-tracking-protection-title"},
+      text: {string_id: "onboarding-tracking-protection-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-tracking-protection-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_2",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-data-sync-title"},
+      text: {string_id: "onboarding-data-sync-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-data-sync-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_3",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-firefox-monitor-title"},
+      text: {string_id: "onboarding-firefox-monitor-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-firefox-monitor-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_4",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-private-browsing-title"},
+      text: {string_id: "onboarding-private-browsing-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-private-browsing-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_5",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-firefox-send-title"},
+      text: {string_id: "onboarding-firefox-send-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-firefox-send-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_6",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-mobile-phone-title"},
+      text: {string_id: "onboarding-mobile-phone-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-mobile-phone-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_7",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-privacy-right-title"},
+      text: {string_id: "onboarding-privacy-right-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-privacy-right-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_8",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-send-tabs-title"},
+      text: {string_id: "onboarding-send-tabs-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-send-tabs-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_9",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-pocket-anywhere-title"},
+      text: {string_id: "onboarding-pocket-anywhere-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-pocket-anywhere-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_10",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-lockwise-passwords-title"},
+      text: {string_id: "onboarding-lockwise-passwords-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-lockwise-passwords-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
+    id: "TRAILHEAD_CARD_11",
+    template: "onboarding",
+    bundled: 3,
+    content: {
+      title: {string_id: "onboarding-facebook-container-title"},
+      text: {string_id: "onboarding-facebook-container-text"},
+      icon: "sync",
+      primary_button: {
+        label: {string_id: "onboarding-facebook-container-button"},
+        action: {
+          type: "OPEN_URL",
+          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+        },
+      },
+    },
+    targeting: "trailheadCohort > 0",
+    trigger: {id: "showOnboarding"},
+  },
+  {
     id: "FXA_1",
     template: "fxa_overlay",
     trigger: {id: "firstRun"},
