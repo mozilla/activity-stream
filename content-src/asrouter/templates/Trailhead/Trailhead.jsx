@@ -38,13 +38,6 @@ export class Trailhead extends React.PureComponent {
   }
 
   render() {
-    // XXX temporary icons
-    const icon = {
-      products: "topsites",
-      knowledge: "pocket",
-      privacy: "highlights",
-    };
-
     const {props} = this;
     const {bundle: cards} = props.message;
     return (<>
@@ -54,9 +47,7 @@ export class Trailhead extends React.PureComponent {
           <h1 data-l10n-id="onboarding-welcome-body" />
           <ul className="trailheadBenefits">
             {["products", "knowledge", "privacy"].map(id => (
-              <li key={id} style={{
-                backgroundImage: `url(resource://activity-stream/data/content/assets/glyph-${icon[id]}-16.svg)`,
-              }}>
+              <li key={id} className={id}>
                 <h3 data-l10n-id={`onboarding-benefit-${id}-title`} />
                 <p data-l10n-id={`onboarding-benefit-${id}-text`} />
               </li>
@@ -67,7 +58,6 @@ export class Trailhead extends React.PureComponent {
             href="#" />
         </div>
         <div className="trailheadForm">
-          <img src="chrome://branding/content/icon64.png" />
           <h3 data-l10n-id="onboarding-join-form-header" />
           <p data-l10n-id="onboarding-join-form-body" />
           <input type="email" data-l10n-id="onboarding-join-form-email" />
