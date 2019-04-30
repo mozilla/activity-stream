@@ -67,7 +67,7 @@
     "react-test-renderer": "16.8.4",
     "rimraf": "2.6.3",
     "sass": "1.17.2",
-    "sass-lint": "1.12.1",
+    "sass-lint": "1.13.1",
     "shelljs": "0.8.3",
     "simple-git": "1.107.0",
     "sinon": "7.2.7",
