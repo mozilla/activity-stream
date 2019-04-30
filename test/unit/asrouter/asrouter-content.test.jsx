@@ -13,7 +13,7 @@ const FAKE_FXA_SNIPPET = FAKE_LOCAL_MESSAGES.find(msg => msg.id === "fxa");
 const FAKE_BELOW_SEARCH_SNIPPET = FAKE_LOCAL_MESSAGES.find(msg => msg.id === "belowsearch");
 
 FAKE_MESSAGE = Object.assign({}, FAKE_MESSAGE, {provider: "fakeprovider"});
-const FAKE_BUNDLED_MESSAGE = {bundle: [{id: "foo", template: "onboarding", content: {title: "Foo", primary_button: {}, body: "Foo123"}}], extraTemplateStrings: {}, template: "onboarding"};
+const FAKE_BUNDLED_MESSAGE = {bundle: [{id: "foo", template: "onboarding", content: {title: "Foo", primary_button: {label: "Bar"}, text: "Foo123"}}], extraTemplateStrings: {}, template: "onboarding"};
 
 describe("ASRouterUtils", () => {
   let global;
