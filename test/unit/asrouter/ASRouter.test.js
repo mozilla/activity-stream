@@ -943,7 +943,7 @@ describe("ASRouter", () => {
       });
 
       it("should call BookmarkPanelHub._forceShowMessage the provider is cfr-fxa", async () => {
-        const testMessage = {id: "foo", template: "cfr_doorhanger", provider: "cfr-fxa"};
+        const testMessage = {id: "foo", template: "fxa_bookmark_panel"};
         await Router.setState({messages: [testMessage]});
         const msg = fakeAsyncMessage({type: "OVERRIDE_MESSAGE", data: {id: testMessage.id}});
         await Router.onMessage(msg);

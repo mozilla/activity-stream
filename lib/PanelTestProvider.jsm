@@ -6,13 +6,14 @@
 const MESSAGES = () => ([
   {
     "id": "SIMPLE_FXA_BOOKMARK_TEST_1",
+    "template": "fxa_bookmark_panel",
     "content": {
       "title": "cfr-doorhanger-bookmark-fxa-header",
       "text": "cfr-doorhanger-bookmark-fxa-body",
-      "link": {
-        "text": "cfr-doorhanger-bookmark-fxa-link-text",
-        "url": "https://mozilla.com",
-      },
+      "cta": "cfr-doorhanger-bookmark-fxa-link-text",
+      "color": "white",
+      "background_color_1": "#7d31ae",
+      "background_color_2": "#5033be",
       "info_icon": {
         "tooltiptext": "cfr-doorhanger-bookmark-fxa-info-icon-tooltip",
       },

@@ -15,7 +15,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BookmarkPanelHub: "resource://activity-stream/lib/BookmarkPanelHub.jsm",
   SnippetsTestMessageProvider: "resource://activity-stream/lib/SnippetsTestMessageProvider.jsm",
   PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
-  BookmarkPanelHub: "resource://activity-stream/lib/BookmarkPanelHub.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm");
@@ -796,6 +795,29 @@ class _ASRouter {
     );
   }
 
+  /**
+   * Route messages based on template to the correct module that can display them
+   */
+  routeMessageToTarget(message, target, trigger, force = false) {
+    switch (message.template) {
+      case "cfr_doorhanger":
+        if (force) {
+          CFRPageActions.forceRecommendation(target, message, this.dispatch);
+        } else {
+          CFRPageActions.addRecommendation(target, trigger.param.host, message, this.dispatch);
+        }
+        break;
+      case "fxa_bookmark_panel":
+        if (force) {
+          BookmarkPanelHub._forceShowMessage(message);
+        }
+        break;
+      default:
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
+        break;
+    }
+  }
+
   async _sendMessageToTarget(message, target, trigger, force = false) {
     // No message is available, so send CLEAR_ALL.
     if (!message) {
@@ -807,29 +829,10 @@ class _ASRouter {
     } else if (message.bundled) {
       const bundledMessages = await this._getBundledMessages(message, target, trigger, force);
       const action = bundledMessages ? {type: "SET_BUNDLED_MESSAGES", data: bundledMessages} : {type: "CLEAR_ALL"};
-      try {
-        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
-      } catch (e) {}
-
-    // For nested bundled messages, look for the desired bundle
-    } else if (message.includeBundle) {
-      const bundledMessages = await this._getBundledMessages(message, target, message.includeBundle.trigger, force);
-      try {
-        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: {...message, bundle: bundledMessages && bundledMessages.bundle}});
-      } catch (e) {}
-
-    // CFR doorhanger
-    } else if (message.template === "cfr_doorhanger") {
-      if (force) {
-        CFRPageActions.forceRecommendation(target, message, this.dispatch);
-      } else {
-        CFRPageActions.addRecommendation(target, trigger.param.host, message, this.dispatch);
-      }
-
-    // New tab single messages
+      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
     } else {
       try {
-        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
+        this.routeMessageToTarget(message, target, trigger, force);
       } catch (e) {}
     }
   }
@@ -957,11 +960,7 @@ class _ASRouter {
     await this.setState({lastMessageId: id});
     const newMessage = this.getMessageById(id);
 
-    if (newMessage && newMessage.provider === "cfr-fxa") {
-      BookmarkPanelHub._forceShowMessage(newMessage);
-    } else {
-      await this._sendMessageToTarget(newMessage, target, action.data, force);
-    }
+    await this._sendMessageToTarget(newMessage, target, action.data, force);
   }
 
   async blockMessageById(idOrIds) {
