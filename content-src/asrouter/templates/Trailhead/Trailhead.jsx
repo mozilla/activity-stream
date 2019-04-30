@@ -86,15 +86,20 @@ export class Trailhead extends React.PureComponent {
         data-l10n-id="onboarding-start-browsing-button-label"
         onClick={this.closeModal} />
     </ModalOverlayWrapper>
-    <h1 data-l10n-id="onboarding-welcome-header" />
     {(cards && cards.length) ? <div className="trailheadCards">
-      {cards.map(card => (
-        <OnboardingCard key={card.id}
-          sendUserActionTelemetry={props.sendUserActionTelemetry}
-          onAction={props.onAction}
-          UISurface="TRAILHEAD"
-          {...card} />
-      ))}
+      <div className="trailheadCardsInner">
+        <h1 data-l10n-id="onboarding-welcome-header" />
+        <div className="onboardingMessageContainer">
+        {cards.map(card => (
+          <OnboardingCard key={card.id}
+            className="trailheadCard"
+            sendUserActionTelemetry={props.sendUserActionTelemetry}
+            onAction={props.onAction}
+            UISurface="TRAILHEAD"
+            {...card} />
+        ))}
+        </div>
+      </div>
     </div> : null}
     </>);
   }

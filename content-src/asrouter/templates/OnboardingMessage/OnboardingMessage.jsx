@@ -20,8 +20,9 @@ export class OnboardingCard extends React.PureComponent {
 
   render() {
     const {content} = this.props;
+    const className = `onboardingMessage ${this.props.className || ""}`;
     return (
-      <div className="onboardingMessage">
+      <div className={className}>
         <div className={`onboardingMessageImage ${content.icon}`} />
         <div className="onboardingContent">
           <span>
