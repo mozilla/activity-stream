@@ -107,6 +107,10 @@ export const selectLayoutRender = (state, prefs, rickRollCache) => {
     }),
   })).filter(row => row.components.length);
 
+  // Generate the payload for the SPOCS Fill ping. Note that a SPOC could be rejected
+  // by the `probability_selection` first, then gets chosen for the next position. For
+  // all other SPOCS that never went through the probabilistic selection, its reason will
+  // be "out_of_position".
   let spocsFill = [];
   if (spocs.data.spocs) {
     const chosenSpocsFill = [...chosenSpocs]
