@@ -72,6 +72,7 @@ export class _Base extends React.PureComponent {
       // we don't want to add them back to the Activity Stream view
       document.body.classList.contains("welcome") ? "welcome" : "",
       document.body.classList.contains("hide-main") ? "hide-main" : "",
+      document.body.classList.contains("inline-onboarding") ? "inline-onboarding" : "",
     ].filter(v => v).join(" ");
     global.document.body.className = bodyClassName;
   }

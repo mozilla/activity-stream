@@ -204,3 +204,14 @@
   }
 }
 
+.inline-onboarding {
+  .outer-wrapper {
+    position: relative;
+
+    .prefs-button {
+      button {
+        position: absolute;
+      }
+    }
+  }
+}
