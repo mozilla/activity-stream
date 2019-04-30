@@ -79,7 +79,7 @@ export class Trailhead extends React.PureComponent {
     {(cards && cards.length) ? <div className="trailheadCards">
       <div className="trailheadCardsInner">
         <h1 data-l10n-id="onboarding-welcome-header" />
-        <div className="onboardingMessageContainer">
+        <div className="trailheadCardGrid">
         {cards.map(card => (
           <OnboardingCard key={card.id}
             className="trailheadCard"
