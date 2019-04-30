@@ -1,6 +1,12 @@
 import {ModalOverlay} from "../../components/ModalOverlay/ModalOverlay";
 import React from "react";
 
+const FLUENT_FILES = [
+  "branding/brand.ftl",
+  "browser/branding/sync-brand.ftl",
+  "browser/newtab/onboarding.ftl",
+];
+
 export class OnboardingCard extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -26,14 +32,14 @@ export class OnboardingCard extends React.PureComponent {
         <div className={`onboardingMessageImage ${content.icon}`} />
         <div className="onboardingContent">
           <span>
-            <h3 data-l10n-id={content.title}>{content.title}</h3>
-            <p data-l10n-id={content.text}>{content.text}</p>
+            <h3 data-l10n-id={content.title.string_id} />
+            <p data-l10n-id={content.text.string_id} />
           </span>
           <span>
-            <button data-l10n-id={content.primary_button.label}
+            <button data-l10n-id={content.primary_button.label.string_id}
               tabIndex="1"
               className="button onboardingButton"
-              onClick={this.onClick}>{content.primary_button.label}</button>
+              onClick={this.onClick} />
           </span>
         </div>
       </div>
@@ -42,6 +48,14 @@ export class OnboardingCard extends React.PureComponent {
 }
 
 export class OnboardingMessage extends React.PureComponent {
+  componentWillMount() {
+    FLUENT_FILES.forEach(file => {
+      const link = document.head.appendChild(document.createElement("link"));
+      link.href = file;
+      link.rel = "localization";
+    });
+  }
+
   render() {
     const {props} = this;
     const {button_label, header} = props.extraTemplateStrings;

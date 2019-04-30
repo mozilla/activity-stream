@@ -227,17 +227,6 @@ const OnboardingMessageProvider = {
         }
       }
 
-      if (msg.template === "onboarding") {
-        const [primary_button_string, title_string, text_string] = await L10N.formatMessages([
-          {id: msg.content.primary_button.label.string_id},
-          {id: msg.content.title.string_id},
-          {id: msg.content.text.string_id, args: msg.content.text.args},
-        ]);
-        translatedMessage.content.primary_button.label = primary_button_string.value;
-        translatedMessage.content.title = title_string.value;
-        translatedMessage.content.text = text_string.value;
-      }
-
       // Translate any secondary buttons separately
       if (msg.content.secondary_button) {
         const [secondary_button_string] = await L10N.formatMessages([{id: msg.content.secondary_button.label.string_id}]);
