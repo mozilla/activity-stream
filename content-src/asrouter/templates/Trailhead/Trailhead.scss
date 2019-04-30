@@ -1,13 +1,12 @@
 .trailhead {
+  $benefit-icon-spacing: 64px;
+
   background-color: $purple-90;
   color: $white;
 
   a {
     color: $white;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    text-decoration: underline;
   }
 
   input,
@@ -27,6 +26,10 @@
     h1 {
       margin: 0;
     }
+
+    .trailheadLearn {
+      margin-inline-start: $benefit-icon-spacing;
+    }
   }
 
   .trailheadBenefits {
@@ -39,7 +42,7 @@
       -moz-context-properties: fill;
       fill: $blue-50;
       list-style: none;
-      padding-inline-start: 64px;
+      padding-inline-start: $benefit-icon-spacing;
 
       &:dir(rtl) {
         background-position-x: right;
@@ -71,12 +74,12 @@
     }
 
     button {
-      background-color: $purple-70;
+      background-color: $blue-60;
     }
   }
 
   .trailheadStart {
-    border: 2px solid $white;
+    border: 1px solid $white;
     display: block;
     margin: auto;
     min-width: 33%;

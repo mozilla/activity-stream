@@ -25,14 +25,13 @@ onboarding-button-label-try-now = Try It Now
 onboarding-button-label-get-started = Get Started
 
 onboarding-welcome-header = Welcome to { -brand-short-name }
-onboarding-welcome-body = You’ve got the browser. Let’s explore the rest of { -brand-short-name }.
+onboarding-welcome-body = You’ve got the browser.<br/>Meet the rest of { -brand-product-name }.
+onboarding-welcome-learn-more = Learn more about the benefits.
 
-# "Firefox" does *not* refer to the web browser but instead the corporate brand,
-# which conveys its set of attributes, benefits, values, personality.
-onboarding-join-form-header = Join Firefox
-onboarding-join-form-body = Get the most out of { -brand-short-name } with an account. <a data-l10n-name="benefits">Read about all the benefits</a>.
+onboarding-join-form-header = Join { -brand-product-name }
+onboarding-join-form-body = Enter your email address to get started.
 onboarding-join-form-email =
-    .placeholder = Your email…
+    .placeholder = Enter email
 onboarding-join-form-email-error = Valid email required
 onboarding-join-form-legal = By proceeding, you agree to the <a data-l10n-name="terms">Terms of Service</a> and <a data-l10n-name="privacy">Privacy Notice</a>.
 onboarding-join-form-continue = Continue
@@ -42,15 +41,18 @@ onboarding-start-browsing-button-label = Start Browsing
 ## These are individual benefit messages shown with an image, title and
 ## description.
 
-onboarding-benefit-productive-title = Be productive
-onboarding-benefit-productive-text = Get your everyday done with the browser, features, and apps.
+onboarding-benefit-products-title = Useful Products
+onboarding-benefit-products-text = Get things done with a family of tools that respects your privacy across your devices.
 
-# "browser" is referring to the person using the web browser
-onboarding-benefit-smarter-title = Be a smarter browser
-onboarding-benefit-smarter-text = Get doable advice from world-class experts.
+onboarding-benefit-knowledge-title = Practical Knowledge
+onboarding-benefit-knowledge-text = Learn everything you need to know to stay smarter and safer online.
 
-onboarding-benefit-privacy-title = Keep your privacy
-onboarding-benefit-privacy-text = Everything we make respects your personal data. We take less and help keep it safe.
+onboarding-benefit-privacy-title = True Privacy
+# "Personal Data Promise" refers to a concept shown elsewhere to the user: "The
+# Firefox Personal Data Promise is the way we honor your data in everything we
+# make and do. We take less data. We keep it safe. And we make sure that we are
+# transparent about how we use it."
+onboarding-benefit-privacy-text = Everything we do honors our Personal Data Promise: Take less. Keep it safe. No secrets.
 
 
 ## These strings belong to the individual onboarding messages.
@@ -80,11 +82,11 @@ onboarding-tracking-protection-button = Learn More
 
 onboarding-data-sync-title = Take Your Settings with You
 # "Sync" is short for synchronize.
-onboarding-data-sync-text = Sync your bookmarks and passwords everywhere you use { -brand-short-name }.
+onboarding-data-sync-text = Sync your bookmarks and passwords everywhere you use { -brand-product-name }.
 onboarding-data-sync-button = Turn on { -sync-brand-short-name }
 
-onboarding-firefox-monitor-title = Watch Your Identity
-onboarding-firefox-monitor-text = { -monitor-brand-name } keeps track of whether your personal information has been in a publicly reported online data breach.
+onboarding-firefox-monitor-title = Stay Alert to Data Breaches
+onboarding-firefox-monitor-text = { -monitor-brand-name } monitors if your email has appeared in a data breach and alerts you if it appears in a new breach.
 onboarding-firefox-monitor-button = Sign up for Alerts
 
 onboarding-private-browsing-title = Browse Privately
@@ -95,26 +97,30 @@ onboarding-firefox-send-title = Keep Your Shared Files Private
 onboarding-firefox-send-text = { -send-brand-name } protects the files you share with end-to-end encryption and a link that automatically expires.
 onboarding-firefox-send-button = Try { -send-brand-name }
 
-onboarding-mobile-phone-title = Get { -brand-short-name } on Your Phone
-onboarding-mobile-phone-text = Download { -brand-short-name } for iOS or Android and sync your data across devices.
+onboarding-mobile-phone-title = Get { -brand-product-name } on Your Phone
+onboarding-mobile-phone-text = Download { -brand-product-name } for iOS or Android and sync your data across devices.
 # "Mobile" is short for mobile/cellular phone, "Browser" is short for web
 # browser.
 onboarding-mobile-phone-button = Download Mobile Browser
 
-onboarding-data-pledge-title = Privacy is Your Right
-onboarding-data-pledge-text = { -brand-short-name } treats your data with respect by taking less, protecting it, and being clear about how we use it.
-onboarding-data-pledge-button = Learn More
+onboarding-privacy-right-title = Privacy is Your Right
+onboarding-privacy-right-text = { -brand-short-name } treats your data with respect by taking less, protecting it, and being clear about how we use it.
+onboarding-privacy-right-button = Learn More
 
 onboarding-send-tabs-title = Instantly Send Yourself Tabs
+# "Send Tabs" refers to "Send Tab to Device" feature that appears when opening a
+# tab's context menu.
 onboarding-send-tabs-text = Send Tabs instantly shares pages between your devices without having to copy, paste, or leave the browser.
 onboarding-send-tabs-button = Start Using Send Tabs
 
 onboarding-pocket-anywhere-title = Read and Listen Anywhere
+# "downtime" refers to the user's free/spare time.
 onboarding-pocket-anywhere-text = { -pocket-brand-name } saves your favorite stories so you can read, listen, and watch during your downtime, even if you’re offline.
 onboarding-pocket-anywhere-button = Try { -pocket-brand-name }
 
 onboarding-lockwise-passwords-title = Take Your Passwords Everywhere
-onboarding-lockwise-passwords-text = { -lockwise-brand-name } creates a single, secure place to store passwords that sync everywhere you use { -brand-short-name }.
+# "many places" conveys that Lockwise is available outside of Firefox.
+onboarding-lockwise-passwords-text = { -lockwise-brand-name } creates a single, secure place to store passwords that can sync many places you go online.
 onboarding-lockwise-passwords-button = Get { -lockwise-brand-name }
 
 onboarding-facebook-container-title = Set Boundaries with Facebook
