@@ -7,6 +7,8 @@ const {FxAccountsConfig} = ChromeUtils.import("resource://gre/modules/FxAccounts
 const {AttributionCode} = ChromeUtils.import("resource:///modules/AttributionCode.jsm");
 const {AddonRepository} = ChromeUtils.import("resource://gre/modules/addons/AddonRepository.jsm");
 
+const TRAILHEAD_LOCALES = ["en", "de", "fr"];
+
 async function getAddonInfo() {
   try {
     let {content, source} = await AttributionCode.getAttrDataAsync();
@@ -145,7 +147,7 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD",
     template: "trailhead",
-    targeting: "localeLanguageCode == 'en' && trailheadCohort > 0",
+    targeting: `localeLanguageCode in ${JSON.stringify(TRAILHEAD_LOCALES)} && trailheadCohort > 0`,
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     content: {},
