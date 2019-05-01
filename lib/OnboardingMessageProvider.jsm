@@ -99,7 +99,7 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "attributionData.campaign != 'non-fx-button' && attributionData.source != 'addons.mozilla.org'",
+    targeting: "trailheadCohort == 0 && attributionData.campaign != 'non-fx-button' && attributionData.source != 'addons.mozilla.org'",
     trigger: {id: "showOnboarding"},
   },
   {
@@ -119,7 +119,7 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "providerCohorts.onboarding == 'ghostery'",
+    targeting: "trailheadCohort == 0 && providerCohorts.onboarding == 'ghostery'",
     trigger: {id: "showOnboarding"},
   },
   {
@@ -139,7 +139,7 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "attributionData.campaign == 'non-fx-button' && attributionData.source == 'addons.mozilla.org'",
+    targeting: "trailheadCohort == 0 && attributionData.campaign == 'non-fx-button' && attributionData.source == 'addons.mozilla.org'",
     trigger: {id: "showOnboarding"},
   },
   {
@@ -176,7 +176,7 @@ const ONBOARDING_MESSAGES = async () => ([
     content: {
       title: {string_id: "onboarding-data-sync-title"},
       text: {string_id: "onboarding-data-sync-text"},
-      icon: "sync",
+      icon: "devices",
       primary_button: {
         label: {string_id: "onboarding-data-sync-button"},
         action: {
