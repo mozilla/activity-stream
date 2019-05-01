@@ -135,9 +135,9 @@ export class Trailhead extends React.PureComponent {
             <input name="utm_term" type="hidden" value="trailhead" />
             <input name="flow_id" type="hidden" value={this.state.flowId} />
             <input name="flow_begin_time" type="hidden" value={this.state.flowBeginTime} />
-            <span data-l10n-id="onboarding-join-form-email-error" className="error" />
+            <p data-l10n-id="onboarding-join-form-email-error" className="error" />
             <input data-l10n-id="onboarding-join-form-email" name="email" type="email" required="true" onInvalid={this.onInputInvalid} onChange={this.onInputChange} />
-            <p data-l10n-id="onboarding-join-form-legal">
+            <p className="trailheadTerms" data-l10n-id="onboarding-join-form-legal">
               <a data-l10n-name="terms"
                 href="https://accounts.firefox.com/legal/terms" />
               <a data-l10n-name="privacy"
