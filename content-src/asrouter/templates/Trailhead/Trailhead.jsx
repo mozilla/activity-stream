@@ -62,7 +62,7 @@ export class Trailhead extends React.PureComponent {
           </ul>
           <a className="trailheadLearn"
             data-l10n-id="onboarding-welcome-learn-more"
-            href="#" />
+            href="https://www.mozilla.org/firefox/accounts/" />
         </div>
         <div className="trailheadForm">
           <h3 data-l10n-id="onboarding-join-form-header" />
