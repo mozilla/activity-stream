@@ -89,6 +89,9 @@ export const selectLayoutRender = (state, prefs, rickRollCache) => {
       // Example: A second card grid starts pos offset from the last card grid.
       for (let i = 0; i < items; i++) {
         data.recommendations[i].pos = positions[component.type]++;
+        if (data.lazy) {
+          data.recommendations[i].image_src = `lazy ${component.feed.url}`;
+        }
       }
 
       return {...component, data};

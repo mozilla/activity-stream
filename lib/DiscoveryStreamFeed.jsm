@@ -231,7 +231,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    *                     the scope for isStartup and the promises object.
    *                     Combines feed results and promises for each component with a feed.
    */
-  buildFeedPromise({newFeedsPromises, newFeeds}, isStartup) {
+  buildFeedPromise({newFeedsPromises, newFeeds}, isStartup, mustLoad) {
     return component => {
       const {url} = component.feed;
 
@@ -239,7 +239,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         // We initially stub this out so we don't fetch dupes,
         // we then fill in with the proper object inside the promise.
         newFeeds[url] = {};
-        const feedPromise = this.getComponentFeed(url, isStartup);
+        const feedPromise = this.getComponentFeed(url, isStartup, mustLoad);
         feedPromise.then(feed => {
           newFeeds[url] = this.filterRecommendations(feed);
 
@@ -281,11 +281,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * @returns {Function} We return a function so we can contain the scope for isStartup.
    *                     Reduces feeds into promises and feed data.
    */
-  reduceFeedComponents(isStartup) {
+  reduceFeedComponents(isStartup, mustLoad) {
     return (accumulator, row) => {
       row.components
         .filter(component => component && component.feed)
-        .forEach(this.buildFeedPromise(accumulator, isStartup));
+        .forEach(this.buildFeedPromise(accumulator, isStartup, mustLoad));
       return accumulator;
     };
   }
@@ -298,17 +298,17 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * @returns {Object} An object with newFeedsPromises (Array) and newFeeds (Object),
    *                   we can Promise.all newFeedsPromises to get completed data in newFeeds.
    */
-  buildFeedPromises(layout, isStartup) {
+  buildFeedPromises(layout, isStartup, mustLoad) {
     const initialData = {
       newFeedsPromises: [],
       newFeeds: {},
     };
     return layout
       .filter(row => row && row.components)
-      .reduce(this.reduceFeedComponents(isStartup), initialData);
+      .reduce(this.reduceFeedComponents(isStartup, mustLoad), initialData);
   }
 
-  async loadComponentFeeds(sendUpdate, isStartup) {
+  async loadComponentFeeds(sendUpdate, isStartup, mustLoad) {
     const {DiscoveryStream} = this.store.getState();
 
     if (!DiscoveryStream || !DiscoveryStream.layout) {
@@ -319,7 +319,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     // was issued to fetch the component feed in `getComponentFeed()`.
     this.componentFeedFetched = false;
     const start = perfService.absNow();
-    const {newFeedsPromises, newFeeds} = this.buildFeedPromises(DiscoveryStream.layout, isStartup);
+    const {newFeedsPromises, newFeeds} = this.buildFeedPromises(DiscoveryStream.layout, isStartup, mustLoad);
 
     // Each promise has a catch already built in, so no need to catch here.
     await Promise.all(newFeedsPromises);
@@ -542,12 +542,15 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return true;
   }
 
-  async getComponentFeed(feedUrl, isStartup) {
+  async getComponentFeed(feedUrl, isStartup, mustLoad) {
     const cachedData = await this.cache.get() || {};
     const {feeds} = cachedData;
     let feed = feeds ? feeds[feedUrl] : null;
-    if (this.isExpired({cachedData, key: "feed", url: feedUrl, isStartup})) {
-      const feedResponse = await this.fetchFromEndpoint(feedUrl);
+    const skipExpired = feedUrl === mustLoad;
+    if (skipExpired || this.isExpired({cachedData, key: "feed", url: feedUrl, isStartup})) {
+      const feedResponse = skipExpired ?
+        await this.fetchFromEndpoint(feedUrl) :
+        {recommendations: [{}, {}, {}, {}], settings: {}, lazy: true};
       if (feedResponse) {
         const scoredItems = this.scoreItems(feedResponse.recommendations);
         const {recsExpireTime} = feedResponse.settings;
@@ -851,6 +854,12 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       case at.DISCOVERY_STREAM_CONFIG_CHANGE:
         // When the config pref changes, load or unload data as needed.
         await this.onPrefChange();
+        break;
+      case at.DISCOVERY_STREAM_FEED_REQUEST:
+        await this.loadComponentFeeds(
+          a => this.store.dispatch(ac.BroadcastToContent(a)),
+          false,
+          action.data);
         break;
       case at.DISCOVERY_STREAM_OPT_OUT:
         this.store.dispatch(ac.SetPref(PREF_OPT_OUT, true));

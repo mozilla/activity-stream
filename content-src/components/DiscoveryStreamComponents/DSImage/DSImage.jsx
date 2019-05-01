@@ -1,7 +1,9 @@
+import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {connect} from "react-redux";
 import React from "react";
 import ReactDOM from "react-dom";
 
-export class DSImage extends React.PureComponent {
+export class _DSImage extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -23,9 +25,16 @@ export class DSImage extends React.PureComponent {
           });
         }
 
-        this.setState({
-          isSeen: true,
-        });
+        const lazy = this.props.source.split(" ");
+        const isSeen = lazy.length === 1;
+        if (!isSeen) {
+          this.props.dispatch(ac.OnlyToMain({
+            type: at.DISCOVERY_STREAM_FEED_REQUEST,
+            data: lazy[1],
+          }));
+        }
+
+        this.setState({isSeen});
 
         // Stop observing since element has been seen
         this.observer.unobserve(ReactDOM.findDOMNode(this));
@@ -49,6 +58,12 @@ export class DSImage extends React.PureComponent {
     // Remove observer on unmount
     if (this.observer) {
       this.observer.unobserve(ReactDOM.findDOMNode(this));
+    }
+  }
+
+  componentWillUpdate(newProp) {
+    if (this.props.source.startsWith("lazy")) {
+      this.setState({isSeen: true});
     }
   }
 
@@ -97,9 +112,11 @@ export class DSImage extends React.PureComponent {
   }
 }
 
-DSImage.defaultProps = {
+_DSImage.defaultProps = {
   source: null, // The current source style from Pocket API (always 450px)
   rawSource: null, // Unadulterated image URL to filter through Thumbor
   extraClassNames: null, // Additional classnames to append to component
   optimize: true, // Measure parent container to request exact sizes
 };
+
+export const DSImage = connect(() => ({}))(_DSImage);
