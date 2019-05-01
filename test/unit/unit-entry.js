@@ -16,7 +16,7 @@ console.error = function(msg, ...args) { // eslint-disable-line no-console
   }
 };
 
-const req = require.context(".", true, /\.test\.jsx?$/);
+const req = require.context(".", true, /ModalOverlay\.test\.jsx?$/);
 const files = req.keys();
 
 // This exposes sinon assertions to chai.assert

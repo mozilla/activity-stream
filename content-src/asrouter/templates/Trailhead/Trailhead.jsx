@@ -106,7 +106,7 @@ export class Trailhead extends React.PureComponent {
     const {props} = this;
     const {bundle: cards} = props.message;
     return (<>
-    <ModalOverlayWrapper innerClassName="trailhead" active={this.state.isModalOpen}>
+    <ModalOverlayWrapper innerClassName="trailhead" active={this.state.isModalOpen} onClose={this.closeModal}>
       <div className="trailheadInner">
         <div className="trailheadContent">
           <h1 data-l10n-id="onboarding-welcome-body" />
