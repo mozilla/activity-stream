@@ -792,10 +792,17 @@ class _ASRouter {
     } else if (message.bundled) {
       const bundledMessages = await this._getBundledMessages(message, target, trigger, force);
       const action = bundledMessages ? {type: "SET_BUNDLED_MESSAGES", data: bundledMessages} : {type: "CLEAR_ALL"};
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
+      } catch (e) {}
+
+    // For nested bundled messages, look for the desired bundle
     } else if (message.includeBundle) {
       const bundledMessages = await this._getBundledMessages(message, target, message.includeBundle.trigger, force);
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: {...message, bundle: bundledMessages && bundledMessages.bundle}});
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: {...message, bundle: bundledMessages && bundledMessages.bundle}});
+      } catch (e) {}
+
     // CFR doorhanger
     } else if (message.template === "cfr_doorhanger") {
       if (force) {
@@ -806,7 +813,9 @@ class _ASRouter {
 
     // New tab single messages
     } else {
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
+      } catch (e) {}
     }
   }
 
