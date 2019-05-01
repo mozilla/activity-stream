@@ -145,7 +145,7 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD",
     template: "trailhead",
-    targeting: "localeLanguageCode == 'en' && trailheadCohort > 0",
+    targeting: "trailheadCohort > 0",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     content: {},
