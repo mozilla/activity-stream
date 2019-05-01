@@ -1108,6 +1108,56 @@ describe("DiscoveryStreamFeed", () => {
     });
   });
 
+  describe("#onAction: PLACES_LINK_BLOCKED", () => {
+    beforeEach(() => {
+      const data = {
+        spocs: [
+          {
+            id: 1,
+            campaign_id: "foo",
+            url: "foo.com",
+          },
+          {
+            id: 2,
+            campaign_id: "bar",
+            url: "bar.com",
+          },
+        ],
+      };
+      sandbox.stub(feed.store, "getState").returns({
+        DiscoveryStream: {
+          spocs: {data},
+        },
+      });
+    });
+
+    it("should call dispatch with the SPOCS Fill if found a blocked spoc", async () => {
+      Object.defineProperty(feed, "showSpocs", {get: () => true});
+      const spocFillResult = [{
+        id: 1,
+        reason: "blocked_by_user",
+        displayed: 0,
+        full_recalc: 0,
+      }];
+
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({type: at.PLACES_LINK_BLOCKED, data: {url: "foo.com"}});
+
+      assert.deepEqual(feed.store.dispatch.firstCall.args[0].data.spoc_fills, spocFillResult);
+      assert.deepEqual(feed.store.dispatch.secondCall.args[0].data.url, "foo.com");
+    });
+    it("should not call dispatch with the SPOCS Fill if the blocked is not a SPOC", async () => {
+      Object.defineProperty(feed, "showSpocs", {get: () => true});
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.onAction({type: at.PLACES_LINK_BLOCKED, data: {url: "not_a_spoc.com"}});
+
+      assert.calledOnce(feed.store.dispatch);
+      assert.deepEqual(feed.store.dispatch.firstCall.args[0].data.url, "not_a_spoc.com");
+    });
+  });
+
   describe("#onAction: INIT", () => {
     it("should be .loaded=false before initialization", () => {
       assert.isFalse(feed.loaded);

@@ -941,6 +941,20 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           }
         }
         break;
+      case at.PLACES_LINK_BLOCKED:
+        if (this.showSpocs) {
+          const {spocs} = this.store.getState().DiscoveryStream;
+          const spocsList = spocs.data.spocs || [];
+          const filtered = spocsList.filter(s => s.url === action.data.url);
+          if (filtered.length) {
+            this._sendSpocsFill({blocked_by_user: filtered}, false);
+          }
+        }
+        this.store.dispatch(ac.BroadcastToContent({
+          type: at.DISCOVERY_STREAM_LINK_BLOCKED,
+          data: action.data,
+        }));
+        break;
       case at.UNINIT:
         // When this feed is shutting down:
         this.uninitPrefs();
