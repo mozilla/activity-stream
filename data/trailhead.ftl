@@ -13,7 +13,6 @@
 -monitor-brand-name = Firefox Monitor
 -pocket-brand-name = Pocket
 -send-brand-name = Firefox Send
-
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -48,10 +47,10 @@ onboarding-benefit-knowledge-title = Practical Knowledge
 onboarding-benefit-knowledge-text = Learn everything you need to know to stay smarter and safer online.
 
 onboarding-benefit-privacy-title = True Privacy
-# "Personal Data Promise" refers to a concept shown elsewhere to the user: "The
-# Firefox Personal Data Promise is the way we honor your data in everything we
-# make and do. We take less data. We keep it safe. And we make sure that we are
-# transparent about how we use it."
+# "Personal Data Promise" should be treated as a brand and refers to a concept
+# shown elsewhere to the user: "The Firefox Personal Data Promise is the way we
+# honor your data in everything we make and do. We take less data. We keep it
+# safe. And we make sure that we are transparent about how we use it."
 onboarding-benefit-privacy-text = Everything we do honors our Personal Data Promise: Take less. Keep it safe. No secrets.
 
 
@@ -120,7 +119,7 @@ onboarding-pocket-anywhere-button = Try { -pocket-brand-name }
 
 onboarding-lockwise-passwords-title = Take Your Passwords Everywhere
 # "many places" conveys that Lockwise is available outside of Firefox.
-onboarding-lockwise-passwords-text = { -lockwise-brand-name } creates a single, secure place to store passwords that can sync many places you go online.
+onboarding-lockwise-passwords-text = { -lockwise-brand-name } saves your passwords in a secure place so you can easily log into your accounts.
 onboarding-lockwise-passwords-button = Get { -lockwise-brand-name }
 
 onboarding-facebook-container-title = Set Boundaries with Facebook
