@@ -106,7 +106,7 @@ export class Trailhead extends React.PureComponent {
     const {props} = this;
     const {bundle: cards} = props.message;
     return (<>
-    <ModalOverlayWrapper innerClassName="trailhead" active={this.state.isModalOpen}>
+    {this.state.isModalOpen ? <ModalOverlayWrapper innerClassName="trailhead" onClose={this.closeModal}>
       <div className="trailheadInner">
         <div className="trailheadContent">
           <h1 data-l10n-id="onboarding-welcome-body" />
@@ -151,7 +151,7 @@ export class Trailhead extends React.PureComponent {
       <button className="trailheadStart"
         data-l10n-id="onboarding-start-browsing-button-label"
         onClick={this.closeModal} />
-    </ModalOverlayWrapper>
+    </ModalOverlayWrapper> : null}
     {(cards && cards.length) ? <div className="trailheadCards">
       <div className="trailheadCardsInner">
         <h1 data-l10n-id="onboarding-welcome-header" />
