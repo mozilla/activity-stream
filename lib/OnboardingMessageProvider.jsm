@@ -161,8 +161,8 @@ const ONBOARDING_MESSAGES = async () => ([
       primary_button: {
         label: {string_id: "onboarding-tracking-protection-button"},
         action: {
-          type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          type: "OPEN_PREFERENCES_PAGE",
+          data: {category: "privacy-trackingprotection"},
         },
       },
     },
@@ -181,7 +181,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-data-sync-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://accounts.firefox.com/?service=sync&action=email&context=fx_desktop_v3&entrypoint=activity-stream-firstrun&utm_source=activity-stream&utm_campaign=firstrun", where: "tabshifted"},
         },
       },
     },
@@ -200,7 +200,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-firefox-monitor-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://monitor.firefox.com/", where: "tabshifted"},
         },
       },
     },
@@ -217,10 +217,7 @@ const ONBOARDING_MESSAGES = async () => ([
       icon: "private",
       primary_button: {
         label: {string_id: "onboarding-private-browsing-button"},
-        action: {
-          type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
-        },
+        action: {type: "OPEN_PRIVATE_BROWSER_WINDOW"},
       },
     },
     targeting: "trailheadCohort > 0",
@@ -238,7 +235,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-firefox-send-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://send.firefox.com/?utm_source=activity-stream?utm_medium=referral?utm_campaign=firstrun", where: "tabshifted"},
         },
       },
     },
@@ -257,7 +254,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-mobile-phone-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://www.mozilla.org/firefox/mobile/", where: "tabshifted"},
         },
       },
     },
@@ -276,7 +273,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-privacy-right-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://www.mozilla.org/?privacy-right", where: "tabshifted"},
         },
       },
     },
@@ -295,7 +292,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-send-tabs-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://blog.mozilla.org/firefox/send-tabs-a-better-way/", where: "tabshifted"},
         },
       },
     },
@@ -314,7 +311,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-pocket-anywhere-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://getpocket.com/firefox_learnmore", where: "tabshifted"},
         },
       },
     },
@@ -333,7 +330,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-lockwise-passwords-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://lockwise.firefox.com/", where: "tabshifted"},
         },
       },
     },
@@ -352,7 +349,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-facebook-container-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://www.mozilla.org/", where: "tabshifted"},
+          data: {args: "https://addons.mozilla.org/firefox/addon/facebook-container/", where: "tabshifted"},
         },
       },
     },
