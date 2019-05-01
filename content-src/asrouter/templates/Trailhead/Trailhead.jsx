@@ -104,27 +104,30 @@ export class Trailhead extends React.PureComponent {
 
   render() {
     const {props} = this;
-    const {bundle: cards} = props.message;
+    const {bundle: cards, content} = props.message;
     return (<>
-    {this.state.isModalOpen ? <ModalOverlayWrapper innerClassName="trailhead" onClose={this.closeModal}>
+    {this.state.isModalOpen ? <ModalOverlayWrapper innerClassName={`trailhead ${content.className}`} onClose={this.closeModal}>
       <div className="trailheadInner">
         <div className="trailheadContent">
-          <h1 data-l10n-id="onboarding-welcome-body" />
+          <h1 data-l10n-id={content.title.string_id}>{content.title.value}</h1>
+          {content.subtitle &&
+            <p data-l10n-id={content.subtitle.string_id}>{content.subtitle.value}</p>
+          }
           <ul className="trailheadBenefits">
-            {["products", "knowledge", "privacy"].map(id => (
-              <li key={id} className={id}>
-                <h3 data-l10n-id={`onboarding-benefit-${id}-title`} />
-                <p data-l10n-id={`onboarding-benefit-${id}-text`} />
+            {content.benefits.map(item => (
+              <li key={item.id} className={item.id}>
+                <h3 data-l10n-id={item.title.string_id}>{item.title.value}</h3>
+                <p data-l10n-id={item.text.string_id}>{item.text.value}</p>
               </li>
             ))}
           </ul>
-          <a className="trailheadLearn"
-            data-l10n-id="onboarding-welcome-learn-more"
-            href="https://www.mozilla.org/firefox/accounts/" />
+          <a className="trailheadLearn" data-l10n-id={content.learn.text.string_id} href={content.learn.url}>
+            {content.learn.text.value}
+          </a>
         </div>
         <div className="trailheadForm">
-          <h3 data-l10n-id="onboarding-join-form-header" />
-          <p data-l10n-id="onboarding-join-form-body" />
+          <h3 data-l10n-id={content.form.title.string_id}>{content.form.title.value}</h3>
+          <p data-l10n-id={content.form.text.string_id}>{content.form.text.value}</p>
           <form method="get" action={this.props.fxaEndpoint} target="_blank" rel="noopener noreferrer" onSubmit={this.onSubmit}>
             <input name="service" type="hidden" value="sync" />
             <input name="action" type="hidden" value="email" />
@@ -136,21 +139,30 @@ export class Trailhead extends React.PureComponent {
             <input name="flow_id" type="hidden" value={this.state.flowId} />
             <input name="flow_begin_time" type="hidden" value={this.state.flowBeginTime} />
             <p data-l10n-id="onboarding-join-form-email-error" className="error" />
-            <input data-l10n-id="onboarding-join-form-email" name="email" type="email" required="true" onInvalid={this.onInputInvalid} onChange={this.onInputChange} />
+            <input
+              data-l10n-id={content.form.email.string_id}
+              placeholder={content.form.email.placeholder}
+              name="email"
+              type="email"
+              required="true"
+              onInvalid={this.onInputInvalid}
+              onChange={this.onInputChange} />
             <p className="trailheadTerms" data-l10n-id="onboarding-join-form-legal">
               <a data-l10n-name="terms"
                 href="https://accounts.firefox.com/legal/terms" />
               <a data-l10n-name="privacy"
                 href="https://accounts.firefox.com/legal/privacy" />
             </p>
-            <button data-l10n-id="onboarding-join-form-continue" type="submit" />
+            <button data-l10n-id={content.form.button.string_id} type="submit">
+              {content.form.button.value}
+            </button>
           </form>
         </div>
       </div>
 
       <button className="trailheadStart"
-        data-l10n-id="onboarding-start-browsing-button-label"
-        onClick={this.closeModal} />
+        data-l10n-id={content.skipButton.string_id}
+        onClick={this.closeModal}>{content.skipButton.value}</button>
     </ModalOverlayWrapper> : null}
     {(cards && cards.length) ? <div className="trailheadCards">
       <div className="trailheadCardsInner">
