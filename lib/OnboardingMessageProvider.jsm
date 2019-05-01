@@ -143,12 +143,57 @@ const ONBOARDING_MESSAGES = async () => ([
     trigger: {id: "showOnboarding"},
   },
   {
-    id: "TRAILHEAD",
+    id: "TRAILHEAD_1",
     template: "trailhead",
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadCohort == 1",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
-    content: {},
+    content: {
+      className: "joinCohort",
+      title: {string_id: "onboarding-welcome-body"},
+      benefits: ["products", "knowledge", "privacy"].map(id => (
+        {
+          id,
+          title: {string_id: `onboarding-benefit-${id}-title`},
+          text: {string_id: `onboarding-benefit-${id}-text`},
+        }
+      )),
+      learn: {
+        text: {string_id: "onboarding-welcome-learn-more"},
+        url: "https://www.mozilla.org/firefox/accounts/",
+      },
+      form: {
+        title: {string_id: "onboarding-join-form-header"},
+        text: {string_id: "onboarding-join-form-body"},
+        email: {string_id: "onboarding-join-form-email"},
+        button: {string_id: "onboarding-join-form-continue"},
+      },
+      skipButton: {string_id: "onboarding-start-browsing-button-label"},
+    },
+  },
+  {
+    id: "TRAILHEAD_2",
+    template: "trailhead",
+    targeting: "localeLanguageCode == 'en' && trailheadCohort == 2",
+    trigger: {id: "firstRun"},
+    includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
+    content: {
+      className: "syncCohort",
+      title: {value: "Take Firefox with You"},
+      subtitle: {value: "Get your bookmarks, history, passwords and other settings on all your devices."},
+      benefits: [],
+      learn: {
+        text: {string_id: "onboarding-welcome-learn-more"},
+        url: "https://www.mozilla.org/firefox/accounts/",
+      },
+      form: {
+        title: {value: "Enter your email"},
+        text: {value: "to continue to Firefox Sync"},
+        email: {placeholder: "Email"},
+        button: {string_id: "onboarding-join-form-continue"},
+      },
+      skipButton: {value: "Skip this step"},
+    },
   },
   {
     id: "TRAILHEAD_CARD_1",
