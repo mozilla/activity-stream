@@ -12,6 +12,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   FxAccounts: "resource://gre/modules/FxAccounts.jsm",
   AppConstants: "resource://gre/modules/AppConstants.jsm",
   OS: "resource://gre/modules/osfile.jsm",
+  BookmarkPanelHub: "resource://activity-stream/lib/BookmarkPanelHub.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm");
@@ -349,6 +350,8 @@ class _ASRouter {
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
     this.onMessage = this.onMessage.bind(this);
+    this.handleMessageRequest = this.handleMessageRequest.bind(this);
+    this.addImpression = this.addImpression.bind(this);
     this._handleTargetingError = this._handleTargetingError.bind(this);
     this.onPrefChange = this.onPrefChange.bind(this);
   }
@@ -519,6 +522,7 @@ class _ASRouter {
 
     ASRouterPreferences.init();
     ASRouterPreferences.addListener(this.onPrefChange);
+    BookmarkPanelHub.init(this.handleMessageRequest, this.addImpression);
 
     const messageBlockList = await this._storage.get("messageBlockList") || [];
     const providerBlockList = await this._storage.get("providerBlockList") || [];
@@ -547,6 +551,7 @@ class _ASRouter {
 
     ASRouterPreferences.removeListener(this.onPrefChange);
     ASRouterPreferences.uninit();
+    BookmarkPanelHub.uninit();
 
     // Uninitialise all trigger listeners
     for (const listener of ASRouterTriggerListeners.values()) {
@@ -901,11 +906,20 @@ class _ASRouter {
     await this._sendMessageToTarget(message, target, trigger);
   }
 
+  handleMessageRequest(trigger) {
+    const msgs = this._getUnblockedMessages();
+    return this._findMessage(msgs.filter(m => m.trigger && m.trigger.id === trigger.id), trigger);
+  }
+
   async setMessageById(id, target, force = true, action = {}) {
     await this.setState({lastMessageId: id});
     const newMessage = this.getMessageById(id);
 
-    await this._sendMessageToTarget(newMessage, target, action.data, force);
+    if (newMessage && newMessage.provider === "cfr-fxa") {
+      BookmarkPanelHub._forceShowMessage(newMessage);
+    } else {
+      await this._sendMessageToTarget(newMessage, target, action.data, force);
+    }
   }
 
   async blockMessageById(idOrIds) {
@@ -1222,6 +1236,10 @@ class _ASRouter {
         break;
       case "FORCE_ATTRIBUTION":
         this.forceAttribution(action.data);
+        break;
+      default:
+        Cu.reportError("Unknown message received");
+        break;
     }
   }
 }
