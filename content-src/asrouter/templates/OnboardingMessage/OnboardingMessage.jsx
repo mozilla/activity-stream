@@ -37,7 +37,6 @@ export class OnboardingCard extends React.PureComponent {
           </span>
           <span className="onboardingButtonContainer">
             <button data-l10n-id={content.primary_button.label.string_id}
-              tabIndex="1"
               className="button onboardingButton"
               onClick={this.onClick} />
           </span>

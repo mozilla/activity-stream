@@ -43,7 +43,8 @@ export class ModalOverlay extends React.PureComponent {
         <h2> {title} </h2>
         {this.props.children}
         <div className="footer">
-          <button tabIndex="2" onClick={this.props.onDoneButton} className="button primary modalButton"> {button_label} </button>
+          <button className="button primary modalButton"
+            onClick={this.props.onDoneButton}> {button_label} </button>
         </div>
       </ModalOverlayWrapper>);
   }

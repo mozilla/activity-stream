@@ -270,6 +270,7 @@
     min-width: 70%;
     padding: 0 14px;
 
+    &:focus,
     &:hover {
       box-shadow: none;
       background: var(--trailhead-card-button-background-hover-color);
