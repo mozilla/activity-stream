@@ -174,7 +174,7 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD_2",
     template: "trailhead",
-    targeting: "localeLanguageCode == 'en' && trailheadCohort == 2",
+    targeting: "trailheadCohort == 2",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     content: {
@@ -194,6 +194,19 @@ const ONBOARDING_MESSAGES = async () => ([
       },
       skipButton: {value: "Skip this step"},
     },
+  },
+  {
+    id: "TRAILHEAD_3",
+    template: "trailhead",
+    targeting: "trailheadCohort == 3",
+    trigger: {id: "firstRun"},
+    includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
+  },
+  {
+    id: "TRAILHEAD_4",
+    template: "trailhead",
+    targeting: "trailheadCohort == 4",
+    trigger: {id: "firstRun"},
   },
   {
     id: "TRAILHEAD_CARD_1",

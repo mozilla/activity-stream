@@ -106,7 +106,7 @@ export class Trailhead extends React.PureComponent {
     const {props} = this;
     const {bundle: cards, content} = props.message;
     return (<>
-    {this.state.isModalOpen ? <ModalOverlayWrapper innerClassName={`trailhead ${content.className}`} onClose={this.closeModal}>
+    {this.state.isModalOpen && content ? <ModalOverlayWrapper innerClassName={`trailhead ${content.className}`} onClose={this.closeModal}>
       <div className="trailheadInner">
         <div className="trailheadContent">
           <h1 data-l10n-id={content.title.string_id}>{content.title.value}</h1>
