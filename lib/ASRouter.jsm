@@ -12,6 +12,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   FxAccounts: "resource://gre/modules/FxAccounts.jsm",
   AppConstants: "resource://gre/modules/AppConstants.jsm",
   OS: "resource://gre/modules/osfile.jsm",
+  BookmarkPanelHub: "resource://activity-stream/lib/BookmarkPanelHub.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm");
@@ -349,6 +350,8 @@ class _ASRouter {
     this._triggerHandler = this._triggerHandler.bind(this);
     this._localProviders = localProviders;
     this.onMessage = this.onMessage.bind(this);
+    this.handleMessageRequest = this.handleMessageRequest.bind(this);
+    this.addImpression = this.addImpression.bind(this);
     this._handleTargetingError = this._handleTargetingError.bind(this);
     this.onPrefChange = this.onPrefChange.bind(this);
   }
@@ -519,6 +522,7 @@ class _ASRouter {
 
     ASRouterPreferences.init();
     ASRouterPreferences.addListener(this.onPrefChange);
+    BookmarkPanelHub.init(this.handleMessageRequest, this.addImpression);
 
     const messageBlockList = await this._storage.get("messageBlockList") || [];
     const providerBlockList = await this._storage.get("providerBlockList") || [];
@@ -547,6 +551,7 @@ class _ASRouter {
 
     ASRouterPreferences.removeListener(this.onPrefChange);
     ASRouterPreferences.uninit();
+    BookmarkPanelHub.uninit();
 
     // Uninitialise all trigger listeners
     for (const listener of ASRouterTriggerListeners.values()) {
@@ -690,18 +695,34 @@ class _ASRouter {
   }
 
   async _getBundledMessages(originalMessage, target, trigger, force = false) {
-    let result = [{content: originalMessage.content, id: originalMessage.id, order: originalMessage.order || 0}];
+    let result = [];
+    let bundleLength;
+    let bundleTemplate;
+    let originalId;
+
+    if (originalMessage.includeBundle) {
+      // The original message is not part of the bundle, so don't include it
+      bundleLength = originalMessage.includeBundle.length;
+      bundleTemplate =  originalMessage.includeBundle.template;
+    } else {
+      // The original message is part of the bundle
+      bundleLength = originalMessage.bundled;
+      bundleTemplate =  originalMessage.template;
+      originalId = originalMessage.id;
+      // Add in a copy of the first message
+      result.push({content: originalMessage.content, id: originalMessage.id, order: originalMessage.order || 0});
+    }
 
     // First, find all messages of same template. These are potential matching targeting candidates
     let bundledMessagesOfSameTemplate = this._getUnblockedMessages()
-                                          .filter(msg => msg.bundled && msg.template === originalMessage.template && msg.id !== originalMessage.id);
+      .filter(msg => msg.bundled && msg.template === bundleTemplate && msg.id !== originalId);
 
     if (force) {
       // Forcefully show the messages without targeting matching - this is for about:newtab#asrouter to show the messages
       for (const message of bundledMessagesOfSameTemplate) {
         result.push({content: message.content, id: message.id});
         // Stop once we have enough messages to fill a bundle
-        if (result.length === originalMessage.bundled) {
+        if (result.length === bundleLength) {
           break;
         }
       }
@@ -718,14 +739,14 @@ class _ASRouter {
         result.push({content: message.content, id: message.id, order: message.order || 0});
         bundledMessagesOfSameTemplate.splice(bundledMessagesOfSameTemplate.findIndex(msg => msg.id === message.id), 1);
         // Stop once we have enough messages to fill a bundle
-        if (result.length === originalMessage.bundled) {
+        if (result.length === bundleLength) {
           break;
         }
       }
     }
 
     // If we did not find enough messages to fill the bundle, do not send the bundle down
-    if (result.length < originalMessage.bundled) {
+    if (result.length < bundleLength) {
       return null;
     }
 
@@ -734,7 +755,12 @@ class _ASRouter {
     // handle finding these strings on its own. See bug 1488973
     const extraTemplateStrings = await this._extraTemplateStrings(originalMessage);
 
-    return {bundle: this._orderBundle(result), ...(extraTemplateStrings && {extraTemplateStrings}), provider: originalMessage.provider, template: originalMessage.template};
+    return {
+      bundle: this._orderBundle(result),
+      ...(extraTemplateStrings && {extraTemplateStrings}),
+      provider: originalMessage.provider,
+      template: originalMessage.template,
+    };
   }
 
   async _extraTemplateStrings(originalMessage) {
@@ -771,7 +797,16 @@ class _ASRouter {
     } else if (message.bundled) {
       const bundledMessages = await this._getBundledMessages(message, target, trigger, force);
       const action = bundledMessages ? {type: "SET_BUNDLED_MESSAGES", data: bundledMessages} : {type: "CLEAR_ALL"};
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
+      } catch (e) {}
+
+    // For nested bundled messages, look for the desired bundle
+    } else if (message.includeBundle) {
+      const bundledMessages = await this._getBundledMessages(message, target, message.includeBundle.trigger, force);
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: {...message, bundle: bundledMessages && bundledMessages.bundle}});
+      } catch (e) {}
 
     // CFR doorhanger
     } else if (message.template === "cfr_doorhanger") {
@@ -783,7 +818,9 @@ class _ASRouter {
 
     // New tab single messages
     } else {
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
+      } catch (e) {}
     }
   }
 
@@ -901,11 +938,20 @@ class _ASRouter {
     await this._sendMessageToTarget(message, target, trigger);
   }
 
+  handleMessageRequest(trigger) {
+    const msgs = this._getUnblockedMessages();
+    return this._findMessage(msgs.filter(m => m.trigger && m.trigger.id === trigger.id), trigger);
+  }
+
   async setMessageById(id, target, force = true, action = {}) {
     await this.setState({lastMessageId: id});
     const newMessage = this.getMessageById(id);
 
-    await this._sendMessageToTarget(newMessage, target, action.data, force);
+    if (newMessage && newMessage.provider === "cfr-fxa") {
+      BookmarkPanelHub._forceShowMessage(newMessage);
+    } else {
+      await this._sendMessageToTarget(newMessage, target, action.data, force);
+    }
   }
 
   async blockMessageById(idOrIds) {
@@ -1222,6 +1268,10 @@ class _ASRouter {
         break;
       case "FORCE_ATTRIBUTION":
         this.forceAttribution(action.data);
+        break;
+      default:
+        Cu.reportError("Unknown message received");
+        break;
     }
   }
 }

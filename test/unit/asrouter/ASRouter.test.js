@@ -51,6 +51,7 @@ describe("ASRouter", () => {
   let getStringPrefStub;
   let dispatchStub;
   let fakeAttributionCode;
+  let FakeBookmarkPanelHub;
 
   function createFakeStorage() {
     const getStub = sandbox.stub();
@@ -102,7 +103,13 @@ describe("ASRouter", () => {
       _clearCache: () => sinon.stub(),
       getAttrDataAsync: () => (Promise.resolve({content: "addonID"})),
     };
+    FakeBookmarkPanelHub = {
+      init: sandbox.stub(),
+      uninit: sandbox.stub(),
+      _forceShowMessage: sandbox.stub(),
+    };
     globals.set("AttributionCode", fakeAttributionCode);
+    globals.set("BookmarkPanelHub", FakeBookmarkPanelHub);
     await createRouterAndInit();
   });
   afterEach(() => {
@@ -434,6 +441,19 @@ describe("ASRouter", () => {
         .returns(false);
       Router._updateMessageProviders();
       assert.equal(Router.state.providers.length, 0);
+    });
+  });
+
+  describe("#handleMessageRequest", () => {
+    it("should get unblocked messages that match the trigger", async () => {
+      const message = {id: "1", campaign: "foocampaign", trigger: {id: "foo"}};
+      await Router.setState({messages: [message]});
+      // Just return the first message provided as arg
+      sandbox.stub(Router, "_findMessage").callsFake(messages => messages[0]);
+
+      const result = Router.handleMessageRequest({id: "foo"});
+
+      assert.deepEqual(result, message);
     });
   });
 
@@ -852,6 +872,26 @@ describe("ASRouter", () => {
       });
     });
 
+    describe(".includeBundle", () => {
+      it("should send a message with .includeBundle property with specified length and template", async () => {
+        let messages = [
+          {id: "trailhead", template: "trailhead", includeBundle: {length: 2, template: "foo", trigger: {id: "foo"}}, trigger: {id: "firstRun"}, content: {}},
+          {id: "foo2", template: "foo", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo2", body: "Foo123-2"}},
+          {id: "foo3", template: "foo", bundled: 2, trigger: {id: "foo"}, content: {title: "Foo3", body: "Foo123-3"}},
+        ];
+        sandbox.stub(Router, "_findProvider").returns(null);
+        await Router.setState({messages});
+
+        const msg = fakeAsyncMessage({type: "TRIGGER", data: {trigger: {id: "firstRun"}}});
+        await Router.onMessage(msg);
+
+        const [, resp] = msg.target.sendAsyncMessage.firstCall.args;
+        assert.propertyVal(resp, "type", "SET_MESSAGE");
+        assert.isArray(resp.data.bundle, "resp.data.bundle");
+        assert.lengthOf(resp.data.bundle, 2, "resp.data.bundle");
+      });
+    });
+
     describe("#onMessage: OVERRIDE_MESSAGE", () => {
       it("should broadcast a SET_MESSAGE message to all clients with a particular id", async () => {
         const [testMessage] = Router.state.messages;
@@ -870,6 +910,16 @@ describe("ASRouter", () => {
 
         assert.notCalled(msg.target.sendAsyncMessage);
         assert.calledOnce(CFRPageActions.forceRecommendation);
+      });
+
+      it("should call BookmarkPanelHub._forceShowMessage the provider is cfr-fxa", async () => {
+        const testMessage = {id: "foo", template: "cfr_doorhanger", provider: "cfr-fxa"};
+        await Router.setState({messages: [testMessage]});
+        const msg = fakeAsyncMessage({type: "OVERRIDE_MESSAGE", data: {id: testMessage.id}});
+        await Router.onMessage(msg);
+
+        assert.notCalled(msg.target.sendAsyncMessage);
+        assert.calledOnce(FakeBookmarkPanelHub._forceShowMessage);
       });
 
       it("should call CFRPageActions.addRecommendation if the template is cfr_action and force is false", async () => {
@@ -1119,6 +1169,16 @@ describe("ASRouter", () => {
         assert.calledOnce(fakeAttributionCode.getAttrDataAsync);
         assert.calledOnce(Router._updateMessageProviders);
         assert.calledOnce(Router.loadMessagesFromAllProviders);
+      });
+    });
+    describe("#onMessage: default", () => {
+      it("should report unknown messages", () => {
+        const msg = fakeAsyncMessage({type: "FOO"});
+        sandbox.stub(Cu, "reportError");
+
+        Router.onMessage(msg);
+
+        assert.calledOnce(Cu.reportError);
       });
     });
   });

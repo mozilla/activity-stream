@@ -28,7 +28,9 @@ Please note that some targeting attributes require stricter controls on the tele
 * [sync](#sync)
 * [topFrecentSites](#topfrecentsites)
 * [totalBookmarksCount](#totalbookmarkscount)
+* [trailheadCohort](#trailheadcohort)
 * [usesFirefoxSync](#usesfirefoxsync)
+* [isFxAEnabled](#isFxAEnabled)
 * [xpinstallEnabled](#xpinstallEnabled)
 * [hasPinnedTabs](#haspinnedtabs)
 
@@ -424,6 +426,11 @@ Total number of bookmarks.
 declare const totalBookmarksCount: number;
 ```
 
+### `trailheadCohort`
+
+(67+ only) Experiment cohort for special trailhead project
+
+
 ### `usesFirefoxSync`
 
 Does the user use Firefox sync?
@@ -432,6 +439,16 @@ Does the user use Firefox sync?
 
 ```ts
 declare const usesFirefoxSync: boolean;
+```
+
+### `isFxAEnabled`
+
+Does the user have Firefox sync enabled? The service could potentially be turned off [for enterprise builds](https://searchfox.org/mozilla-central/rev/b59a99943de4dd314bae4e44ab43ce7687ccbbec/browser/components/enterprisepolicies/Policies.jsm#327).
+
+#### Definition
+
+```ts
+declare const isFxAEnabled: boolean;
 ```
 
 ### `xpinstallEnabled`
