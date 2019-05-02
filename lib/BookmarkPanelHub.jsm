@@ -97,6 +97,7 @@ class _BookmarkPanelHub {
       this.toggleRecommendation(false);
       return;
     }
+
     const createElement = elem => target.document.createElementNS("http://www.w3.org/1999/xhtml", elem);
 
     if (!target.container.querySelector("#cfrMessageContainer")) {
