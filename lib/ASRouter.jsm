@@ -359,6 +359,7 @@ class _ASRouter {
 
   // Update message providers and fetch new messages on pref change
   async onPrefChange() {
+    this._loadLocalProviders();
     this._updateMessageProviders();
     await this.loadMessagesFromAllProviders();
   }
@@ -524,14 +525,7 @@ class _ASRouter {
     ASRouterPreferences.addListener(this.onPrefChange);
     BookmarkPanelHub.init(this.handleMessageRequest, this.addImpression);
 
-    // If we're in ASR debug mode add the local test providers
-    if (ASRouterPreferences.devtoolsEnabled) {
-      this._localProviders = {
-        ...this._localProviders,
-        SnippetsTestMessageProvider,
-        PanelTestProvider,
-      };
-    }
+    this._loadLocalProviders();
 
     const messageBlockList = await this._storage.get("messageBlockList") || [];
     const providerBlockList = await this._storage.get("providerBlockList") || [];
@@ -587,6 +581,17 @@ class _ASRouter {
   _onStateChanged(state) {
     if (ASRouterPreferences.devtoolsEnabled) {
       this._updateAdminState();
+    }
+  }
+
+  _loadLocalProviders() {
+    // If we're in ASR debug mode add the local test providers
+    if (ASRouterPreferences.devtoolsEnabled) {
+      this._localProviders = {
+        ...this._localProviders,
+        SnippetsTestMessageProvider,
+        PanelTestProvider,
+      };
     }
   }
 
