@@ -28,8 +28,7 @@ const MESSAGES = () => ([
 const PanelTestProvider = {
   getMessages() {
     return MESSAGES()
-      // Ensures we never actually show test except when triggered by debug tools
-      .map(message => ({...message, targeting: `providerCohorts.panel_local_testing == "SHOW_TEST"`}));
+      .map(message => ({...message, targeting: `true`}));
   },
 };
 this.PanelTestProvider = PanelTestProvider;
