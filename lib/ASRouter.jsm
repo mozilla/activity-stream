@@ -825,11 +825,20 @@ class _ASRouter {
         target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "CLEAR_ALL"});
       } catch (e) {}
 
-    // For bundled messages, look for the rest of the bundle or else send CLEAR_ALL
+      // For bundled messages, look for the rest of the bundle or else send CLEAR_ALL
     } else if (message.bundled) {
       const bundledMessages = await this._getBundledMessages(message, target, trigger, force);
       const action = bundledMessages ? {type: "SET_BUNDLED_MESSAGES", data: bundledMessages} : {type: "CLEAR_ALL"};
-      target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, action);
+      } catch (e) {}
+
+      // For nested bundled messages, look for the desired bundle
+    } else if (message.includeBundle) {
+      const bundledMessages = await this._getBundledMessages(message, target, message.includeBundle.trigger, force);
+      try {
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: {...message, bundle: bundledMessages && bundledMessages.bundle}});
+      } catch (e) {}
     } else {
       try {
         this.routeMessageToTarget(message, target, trigger, force);
