@@ -1,4 +1,5 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {injectIntl} from "react-intl";
 import {ModalOverlayWrapper} from "../../components/ModalOverlay/ModalOverlay";
 import {OnboardingCard} from "../OnboardingMessage/OnboardingMessage";
 import React from "react";
@@ -13,7 +14,7 @@ const FLUENT_FILES = [
   "trailhead.ftl",
 ];
 
-export class Trailhead extends React.PureComponent {
+export class _Trailhead extends React.PureComponent {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
@@ -102,6 +103,13 @@ export class Trailhead extends React.PureComponent {
     e.target.focus();
   }
 
+  getStringValue(str) {
+    if (str.property_id) {
+      str.value = this.props.intl.formatMessage({id: str.property_id});
+    }
+    return str.value;
+  }
+
   render() {
     const {props} = this;
     const {bundle: cards, content} = props.message;
@@ -109,25 +117,25 @@ export class Trailhead extends React.PureComponent {
     {this.state.isModalOpen && content ? <ModalOverlayWrapper innerClassName={`trailhead ${content.className}`} onClose={this.closeModal}>
       <div className="trailheadInner">
         <div className="trailheadContent">
-          <h1 data-l10n-id={content.title.string_id}>{content.title.value}</h1>
+          <h1 data-l10n-id={content.title.string_id}>{this.getStringValue(content.title)}</h1>
           {content.subtitle &&
-            <p data-l10n-id={content.subtitle.string_id}>{content.subtitle.value}</p>
+            <p data-l10n-id={content.subtitle.string_id}>{this.getStringValue(content.subtitle)}</p>
           }
           <ul className="trailheadBenefits">
             {content.benefits.map(item => (
               <li key={item.id} className={item.id}>
-                <h3 data-l10n-id={item.title.string_id}>{item.title.value}</h3>
-                <p data-l10n-id={item.text.string_id}>{item.text.value}</p>
+                <h3 data-l10n-id={item.title.string_id}>{this.getStringValue(item.title)}</h3>
+                <p data-l10n-id={item.text.string_id}>{this.getStringValue(item.text)}</p>
               </li>
             ))}
           </ul>
           <a className="trailheadLearn" data-l10n-id={content.learn.text.string_id} href={content.learn.url}>
-            {content.learn.text.value}
+            {this.getStringValue(content.learn.text)}
           </a>
         </div>
         <div className="trailheadForm">
-          <h3 data-l10n-id={content.form.title.string_id}>{content.form.title.value}</h3>
-          <p data-l10n-id={content.form.text.string_id}>{content.form.text.value}</p>
+          <h3 data-l10n-id={content.form.title.string_id}>{this.getStringValue(content.form.title)}</h3>
+          <p data-l10n-id={content.form.text.string_id}>{this.getStringValue(content.form.text)}</p>
           <form method="get" action={this.props.fxaEndpoint} target="_blank" rel="noopener noreferrer" onSubmit={this.onSubmit}>
             <input name="service" type="hidden" value="sync" />
             <input name="action" type="hidden" value="email" />
@@ -141,7 +149,7 @@ export class Trailhead extends React.PureComponent {
             <p data-l10n-id="onboarding-join-form-email-error" className="error" />
             <input
               data-l10n-id={content.form.email.string_id}
-              placeholder={content.form.email.placeholder}
+              placeholder={this.getStringValue(content.form.email)}
               name="email"
               type="email"
               required="true"
@@ -154,7 +162,7 @@ export class Trailhead extends React.PureComponent {
                 href="https://accounts.firefox.com/legal/privacy" />
             </p>
             <button data-l10n-id={content.form.button.string_id} type="submit">
-              {content.form.button.value}
+              {this.getStringValue(content.form.button)}
             </button>
           </form>
         </div>
@@ -162,7 +170,7 @@ export class Trailhead extends React.PureComponent {
 
       <button className="trailheadStart"
         data-l10n-id={content.skipButton.string_id}
-        onClick={this.closeModal}>{content.skipButton.value}</button>
+        onClick={this.closeModal}>{this.getStringValue(content.skipButton)}</button>
     </ModalOverlayWrapper> : null}
     {(cards && cards.length) ? <div className="trailheadCards">
       <div className="trailheadCardsInner">
@@ -182,3 +190,5 @@ export class Trailhead extends React.PureComponent {
     </>);
   }
 }
+
+export const Trailhead = injectIntl(_Trailhead);
