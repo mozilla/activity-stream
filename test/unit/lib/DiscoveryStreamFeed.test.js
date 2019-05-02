@@ -145,7 +145,7 @@ describe("DiscoveryStreamFeed", () => {
 
       await feed.fetchFromEndpoint("https://getpocket.cdn.mozilla.net/dummy?consumer_key=$apiKey");
 
-      assert.calledWith(fetchStub, "https://getpocket.cdn.mozilla.net/dummy?consumer_key=replaced");
+      assert.calledWithMatch(fetchStub, "https://getpocket.cdn.mozilla.net/dummy?consumer_key=replaced", {credentials: "omit"});
     });
   });
 
