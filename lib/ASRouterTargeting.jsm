@@ -172,9 +172,6 @@ function sortMessagesByTargeting(messages) {
 }
 
 const TargetingGetters = {
-  get trailheadCohort() {
-    return Services.prefs.getIntPref("trailhead.firstrun.cohort", 0);
-  },
   get locale() {
     return Services.locale.appLocaleAsLangTag;
   },
