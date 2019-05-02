@@ -437,7 +437,7 @@ declare const usesFirefoxSync: boolean;
 
 ### `isFxAEnabled`
 
-Does the user have Firefox sync enabled? The service could potentially be turned off.
+Does the user have Firefox sync enabled? The service could potentially be turned off [for enterprise builds](https://searchfox.org/mozilla-central/rev/b59a99943de4dd314bae4e44ab43ce7687ccbbec/browser/components/enterprisepolicies/Policies.jsm#327).
 
 #### Definition
 
