@@ -844,7 +844,7 @@ this.TelemetryFeed = class TelemetryFeed {
    */
   handleDiscoveryStreamSpocsFill(data) {
     const payload = this.createSpocsFillPing(data);
-    this.sendStructuredIngestionEvent(payload, "spocs-fills", "1");
+    this.sendStructuredIngestionEvent(payload, "spoc-fills", "1");
   }
 
   /**
