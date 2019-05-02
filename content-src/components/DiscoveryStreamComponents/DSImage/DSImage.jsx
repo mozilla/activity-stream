@@ -84,7 +84,7 @@ export class DSImage extends React.PureComponent {
         img = (<img onError={this.onNonOptimizedImageError} src={this.props.source} />);
       } else {
         // Remove the img element if both sources fail. Render a placeholder instead.
-        img = (<div className="broken-image"></div>)
+        img = (<div className="broken-image" />);
       }
     }
 
