@@ -179,20 +179,20 @@ const ONBOARDING_MESSAGES = async () => ([
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     content: {
       className: "syncCohort",
-      title: {value: "Take Firefox with You"},
-      subtitle: {value: "Get your bookmarks, history, passwords and other settings on all your devices."},
+      title: {property_id: "firstrun_title"},
+      subtitle: {property_id: "firstrun_content"},
       benefits: [],
       learn: {
-        text: {string_id: "onboarding-welcome-learn-more"},
+        text: {property_id: "firstrun_learn_more_link"},
         url: "https://www.mozilla.org/firefox/accounts/",
       },
       form: {
-        title: {value: "Enter your email"},
-        text: {value: "to continue to Firefox Sync"},
-        email: {placeholder: "Email"},
-        button: {string_id: "onboarding-join-form-continue"},
+        title: {property_id: "firstrun_form_header"},
+        text: {property_id: "firstrun_form_sub_header"},
+        email: {property_id: "firstrun_email_input_placeholder"},
+        button: {property_id: "firstrun_continue_to_login"},
       },
-      skipButton: {value: "Skip this step"},
+      skipButton: {property_id: "firstrun_skip_login"},
     },
   },
   {
