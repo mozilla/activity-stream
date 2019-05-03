@@ -18,6 +18,7 @@ export class _Trailhead extends React.PureComponent {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
+    this.hideCardPanel = this.hideCardPanel.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onInputInvalid = this.onInputInvalid.bind(this);
@@ -25,6 +26,8 @@ export class _Trailhead extends React.PureComponent {
     this.state = {
       emailInput: "",
       isModalOpen: true,
+      showCardPanel: true,
+      showCards: false,
       flowId: "",
       flowBeginTime: 0,
     };
@@ -61,6 +64,15 @@ export class _Trailhead extends React.PureComponent {
 
     // Add inline-onboarding class to disable fixed search header and fixed positioned settings icon
     global.document.body.classList.add("inline-onboarding");
+
+    if (!this.props.message.content) {
+      // No modal overlay, let the user scroll and deal them some cards.
+      global.document.body.classList.remove("welcome");
+
+      if (this.props.message.includeBundle || this.props.message.cards) {
+        this.revealCards();
+      }
+    }
   }
 
   componentDidUnmount() {
@@ -84,6 +96,7 @@ export class _Trailhead extends React.PureComponent {
     global.removeEventListener("visibilitychange", this.closeModal);
     global.document.body.classList.remove("welcome");
     this.setState({isModalOpen: false});
+    this.revealCards();
     this.props.dispatch(ac.UserEvent({event: "SKIPPED_SIGNIN", ...this._getFormInfo()}));
   }
 
@@ -103,6 +116,14 @@ export class _Trailhead extends React.PureComponent {
     e.target.focus();
   }
 
+  hideCardPanel() {
+    this.setState({showCardPanel: false});
+  }
+
+  revealCards() {
+    this.setState({showCards: true});
+  }
+
   getStringValue(str) {
     if (str.property_id) {
       str.value = this.props.intl.formatMessage({id: str.property_id});
@@ -113,8 +134,12 @@ export class _Trailhead extends React.PureComponent {
   render() {
     const {props} = this;
     const {bundle: cards, content} = props.message;
+    const innerClassName = [
+      "trailhead",
+      content && content.className,
+    ].filter(v => v).join(" ");
     return (<>
-    {this.state.isModalOpen && content ? <ModalOverlayWrapper innerClassName={`trailhead ${content.className}`} onClose={this.closeModal}>
+    {this.state.isModalOpen && content ? <ModalOverlayWrapper innerClassName={innerClassName} onClose={this.closeModal}>
       <div className="trailheadInner">
         <div className="trailheadContent">
           <h1 data-l10n-id={content.title.string_id}>{this.getStringValue(content.title)}</h1>
@@ -172,10 +197,10 @@ export class _Trailhead extends React.PureComponent {
         data-l10n-id={content.skipButton.string_id}
         onClick={this.closeModal}>{this.getStringValue(content.skipButton)}</button>
     </ModalOverlayWrapper> : null}
-    {(cards && cards.length) ? <div className="trailheadCards">
+    {(cards && cards.length) ? <div className={`trailheadCards ${this.state.showCardPanel ? "expanded" : "collapsed"}`}>
       <div className="trailheadCardsInner">
         <h1 data-l10n-id="onboarding-welcome-header" />
-        <div className="trailheadCardGrid">
+        <div className={`trailheadCardGrid${this.state.showCards ? " show" : ""}`}>
         {cards.map(card => (
           <OnboardingCard key={card.id}
             className="trailheadCard"
@@ -185,6 +210,12 @@ export class _Trailhead extends React.PureComponent {
             {...card} />
         ))}
         </div>
+        {this.state.showCardPanel &&
+          <button
+            className="icon icon-dismiss" onClick={this.hideCardPanel}
+            title={props.intl.formatMessage({id: "menu_action_dismiss"})}
+            aria-label={props.intl.formatMessage({id: "menu_action_dismiss"})} />
+        }
       </div>
     </div> : null}
     </>);
