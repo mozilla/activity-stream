@@ -397,7 +397,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     // We can have no data if spocs set to off.
     // We can have no data if request fails and there is no good cache.
     // We want to send an update spocs or not, so client can render something.
-    spocs = spocs || {
+    spocs = spocs && spocs.data ? spocs : {
       lastUpdated: Date.now(),
       data: {},
     };
