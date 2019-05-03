@@ -146,7 +146,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       const controller = new AbortController();
       const {signal} = controller;
       const fetchPromise = fetch(endpoint, {credentials: "omit", signal});
-      const timeoutId = setTimeout(controller.abort, FETCH_TIMEOUT);
+      // istanbul ignore next
+      const timeoutId = setTimeout(() => { controller.abort(); }, FETCH_TIMEOUT);
 
       const response = await fetchPromise;
       if (!response.ok) {
