@@ -28,7 +28,8 @@ Please note that some targeting attributes require stricter controls on the tele
 * [sync](#sync)
 * [topFrecentSites](#topfrecentsites)
 * [totalBookmarksCount](#totalbookmarkscount)
-* [trailheadCohort](#trailheadcohort)
+* [trailheadInterrupt](#trailheadinterrupt)
+* [trailheadTriplet](#trailheadtriplet)
 * [usesFirefoxSync](#usesfirefoxsync)
 * [xpinstallEnabled](#xpinstallEnabled)
 * [hasPinnedTabs](#haspinnedtabs)
@@ -425,10 +426,13 @@ Total number of bookmarks.
 declare const totalBookmarksCount: number;
 ```
 
-### `trailheadCohort`
+### `trailheadInterrupt`
 
-(67+ only) Experiment cohort for special trailhead project
+(67.05+ only) Experiment branch for "interrupt" study
 
+### `trailheadTriplet`
+
+(67.05+ only) Experiment branch for "triplet" study
 
 ### `usesFirefoxSync`
 

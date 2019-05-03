@@ -82,6 +82,24 @@
     border-collapse: collapse;
     width: 100%;
 
+    &.minimal-table {
+      border-collapse: collapse;
+
+      td {
+        padding: 8px;
+        border: 1px solid $border-color;
+      }
+
+      td:first-child {
+        width: 1%;
+        white-space: nowrap;
+      }
+
+      td:not(:first-child) {
+        font-family: $monospace;
+      }
+    }
+
     &.errorReporting {
       tr {
         border: 1px solid var(--newtab-textbox-background-color);

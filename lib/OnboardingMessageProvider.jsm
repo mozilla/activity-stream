@@ -99,7 +99,7 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort == 0 && attributionData.campaign != 'non-fx-button' && attributionData.source != 'addons.mozilla.org'",
+    targeting: "trailheadInterrupt == 'control' && attributionData.campaign != 'non-fx-button' && attributionData.source != 'addons.mozilla.org'",
     trigger: {id: "showOnboarding"},
   },
   {
@@ -119,7 +119,7 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort == 0 && providerCohorts.onboarding == 'ghostery'",
+    targeting: "trailheadInterrupt == 'control' && providerCohorts.onboarding == 'ghostery'",
     trigger: {id: "showOnboarding"},
   },
   {
@@ -139,13 +139,13 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort == 0 && attributionData.campaign == 'non-fx-button' && attributionData.source == 'addons.mozilla.org'",
+    targeting: "trailheadInterrupt == 'control' && attributionData.campaign == 'non-fx-button' && attributionData.source == 'addons.mozilla.org'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_1",
     template: "trailhead",
-    targeting: "trailheadCohort == 1",
+    targeting: "trailheadInterrupt == 'join'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     content: {
@@ -174,7 +174,7 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD_2",
     template: "trailhead",
-    targeting: "trailheadCohort == 2",
+    targeting: "trailheadInterrupt == 'sync'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     content: {
@@ -198,20 +198,21 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD_3",
     template: "trailhead",
-    targeting: "trailheadCohort == 3",
+    targeting: "trailheadInterrupt == 'cards'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
   },
   {
     id: "TRAILHEAD_4",
     template: "trailhead",
-    targeting: "trailheadCohort == 4",
+    targeting: "trailheadInterrupt == 'nofirstrun'",
     trigger: {id: "firstRun"},
   },
   {
     id: "TRAILHEAD_CARD_1",
     template: "onboarding",
     bundled: 3,
+    order: 2,
     content: {
       title: {string_id: "onboarding-tracking-protection-title"},
       text: {string_id: "onboarding-tracking-protection-text"},
@@ -224,13 +225,14 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'privacy'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_2",
     template: "onboarding",
     bundled: 3,
+    order: 2,
     content: {
       title: {string_id: "onboarding-data-sync-title"},
       text: {string_id: "onboarding-data-sync-text"},
@@ -243,13 +245,14 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'supercharge'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_3",
     template: "onboarding",
     bundled: 3,
+    order: 3,
     content: {
       title: {string_id: "onboarding-firefox-monitor-title"},
       text: {string_id: "onboarding-firefox-monitor-text"},
@@ -262,13 +265,14 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet in ['payoff', 'supercharge']",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_4",
     template: "onboarding",
     bundled: 3,
+    order: 1,
     content: {
       title: {string_id: "onboarding-private-browsing-title"},
       text: {string_id: "onboarding-private-browsing-text"},
@@ -278,13 +282,14 @@ const ONBOARDING_MESSAGES = async () => ([
         action: {type: "OPEN_PRIVATE_BROWSER_WINDOW"},
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'privacy'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_5",
     template: "onboarding",
     bundled: 3,
+    order: 5,
     content: {
       title: {string_id: "onboarding-firefox-send-title"},
       text: {string_id: "onboarding-firefox-send-text"},
@@ -297,13 +302,14 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'payoff'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_6",
     template: "onboarding",
     bundled: 3,
+    order: 1,
     content: {
       title: {string_id: "onboarding-mobile-phone-title"},
       text: {string_id: "onboarding-mobile-phone-text"},
@@ -316,7 +322,7 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet in ['supercharge', 'multidevice']",
     trigger: {id: "showOnboarding"},
   },
   {
@@ -335,13 +341,14 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'unused'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_8",
     template: "onboarding",
     bundled: 3,
+    order: 3,
     content: {
       title: {string_id: "onboarding-send-tabs-title"},
       text: {string_id: "onboarding-send-tabs-text"},
@@ -354,13 +361,14 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'multidevice'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_9",
     template: "onboarding",
     bundled: 3,
+    order: 2,
     content: {
       title: {string_id: "onboarding-pocket-anywhere-title"},
       text: {string_id: "onboarding-pocket-anywhere-text"},
@@ -373,13 +381,14 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'multidevice'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_10",
     template: "onboarding",
     bundled: 3,
+    order: 3,
     content: {
       title: {string_id: "onboarding-lockwise-passwords-title"},
       text: {string_id: "onboarding-lockwise-passwords-text"},
@@ -392,13 +401,14 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'privacy'",
     trigger: {id: "showOnboarding"},
   },
   {
     id: "TRAILHEAD_CARD_11",
     template: "onboarding",
     bundled: 3,
+    order: 4,
     content: {
       title: {string_id: "onboarding-facebook-container-title"},
       text: {string_id: "onboarding-facebook-container-text"},
@@ -411,7 +421,7 @@ const ONBOARDING_MESSAGES = async () => ([
         },
       },
     },
-    targeting: "trailheadCohort > 0",
+    targeting: "trailheadTriplet == 'payoff'",
     trigger: {id: "showOnboarding"},
   },
   {
