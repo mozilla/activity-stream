@@ -21,6 +21,7 @@ const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm");
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js");
 const {CFRPageActions} = ChromeUtils.import("resource://activity-stream/lib/CFRPageActions.jsm");
+const {AttributionCode} = ChromeUtils.import("resource:///modules/AttributionCode.jsm");
 
 ChromeUtils.defineModuleGetter(this, "ASRouterPreferences",
   "resource://activity-stream/lib/ASRouterPreferences.jsm");
@@ -30,7 +31,38 @@ ChromeUtils.defineModuleGetter(this, "QueryCache",
   "resource://activity-stream/lib/ASRouterTargeting.jsm");
 ChromeUtils.defineModuleGetter(this, "ASRouterTriggerListeners",
   "resource://activity-stream/lib/ASRouterTriggerListeners.jsm");
-const {AttributionCode} = ChromeUtils.import("resource:///modules/AttributionCode.jsm");
+ChromeUtils.defineModuleGetter(this, "TelemetryEnvironment",
+  "resource://gre/modules/TelemetryEnvironment.jsm");
+ChromeUtils.defineModuleGetter(this, "ClientEnvironment",
+  "resource://normandy/lib/ClientEnvironment.jsm");
+ChromeUtils.defineModuleGetter(this, "Sampling",
+  "resource://gre/modules/components-utils/Sampling.jsm");
+
+const TRAILHEAD_CONFIG = {
+  OVERRIDE_PREF: "trailhead.firstrun.branches",
+  DID_SEE_ABOUT_WELCOME_PREF: "trailhead.firstrun.didSeeAboutWelcome",
+  BRANCHES: {
+    interrupts: [
+      ["control"],
+      ["join"],
+      ["sync"],
+      ["nofirstrun"],
+      ["cards"],
+    ],
+    triplets: [
+      ["supercharge"],
+      ["payoff"],
+      ["multidevice"],
+      ["privacy"],
+    ],
+  },
+  LOCALES: ["en-US", "en-GB", "en-CA", "de", "de-DE", "fr", "fr-FR"],
+  EXPERIMENT_RATIOS: [
+    ["", 1],
+    ["interrupts", 1],
+    ["triplets", 1],
+  ],
+};
 
 const INCOMING_MESSAGE_NAME = "ASRouter:child-to-parent";
 const OUTGOING_MESSAGE_NAME = "ASRouter:parent-to-child";
@@ -47,6 +79,17 @@ const MAX_MESSAGE_LIFETIME_CAP = 100;
 
 const LOCAL_MESSAGE_PROVIDERS = {OnboardingMessageProvider, CFRMessageProvider};
 const STARTPAGE_VERSION = "6";
+
+/**
+ * chooseBranch<T> -  Choose an item from a list of "branches" pseudorandomly using a seed / ratio configuration
+ * @param seed {string} A unique seed for the randomizer
+ * @param branches {Array<[T, number?]>} A list of branches, where branch[0] is any item and branch[1] is the ratio
+ * @returns {T} An randomly chosen item in a branch
+ */
+async function chooseBranch(seed, branches) {
+  const ratios = branches.map(([item, ratio]) => ((typeof ratio !== "undefined") ? ratio : 1));
+  return branches[await Sampling.ratioSample(seed, ratios)][0];
+}
 
 const MessageLoaderUtils = {
   STARTPAGE_VERSION,
@@ -345,6 +388,9 @@ class _ASRouter {
       providerBlockList: [],
       messageImpressions: {},
       providerImpressions: {},
+      trailheadInitialized: false,
+      trailheadInterrupt: "",
+      trailheadTriplet: "",
       messages: [],
       errors: [],
     };
@@ -527,6 +573,9 @@ class _ASRouter {
 
     this._loadLocalProviders();
 
+    // We need to check whether to set up telemetry for trailhead
+    await this.setupTrailhead();
+
     const messageBlockList = await this._storage.get("messageBlockList") || [];
     const providerBlockList = await this._storage.get("providerBlockList") || [];
     const messageImpressions = await this._storage.get("messageImpressions") || {};
@@ -637,12 +686,83 @@ class _ASRouter {
     }
   }
 
+  /**
+   * _generateTrailheadBranches - Generates and returns Trailhead configuration and chooses an experiment
+   *                             based on clientID and locale.
+   * @returns {{experiment: string, interrupt: string, triplet: string}}
+   */
+  async _generateTrailheadBranches() {
+    let experiment = "";
+    let interrupt;
+    let triplet;
+
+    // If a value is set in TRAILHEAD_OVERRIDE_PREF, it will be returned and no experiment will be set.
+    const overrideValue = Services.prefs.getStringPref(TRAILHEAD_CONFIG.OVERRIDE_PREF, "");
+    if (overrideValue) {
+      [interrupt, triplet] = overrideValue.split("-");
+      return {experiment, interrupt, triplet: triplet || ""};
+    }
+
+    const locale = Services.locale.appLocaleAsLangTag;
+
+    if (TRAILHEAD_CONFIG.LOCALES.includes(locale)) {
+      const {userId} = ClientEnvironment;
+      experiment = await chooseBranch(`${userId}-trailhead-experiments`, TRAILHEAD_CONFIG.EXPERIMENT_RATIOS);
+
+      // For the interrupts experiment,
+      // we randomly assign an interrupt and always use the "supercharge" triplet.
+      if (experiment === "interrupts") {
+        interrupt =  await chooseBranch(`${userId}-interrupts-branch`, TRAILHEAD_CONFIG.BRANCHES.interrupts);
+        if (["join", "sync", "cards"].includes(interrupt)) {
+          triplet = "supercharge";
+        }
+
+      // For the triplets experiment or non-experiment experience,
+      // we randomly assign a triplet and always use the "join" interrupt.
+      } else {
+        interrupt = "join";
+        triplet = await chooseBranch(`${userId}-triplets-branch`, TRAILHEAD_CONFIG.BRANCHES.triplets);
+      }
+    } else {
+      // If the user is not in a trailhead-compabtible locale, return the control experience and no experiment.
+      interrupt = "control";
+    }
+
+    return {experiment, interrupt, triplet};
+  }
+
+  async setupTrailhead() {
+    // Don't initialize
+    if (this.state.trailheadInitialized || !Services.prefs.getBoolPref(TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF, false)) {
+      return;
+    }
+
+    const {experiment, interrupt, triplet} = await this._generateTrailheadBranches();
+    await this.setState({trailheadInitialized: true, trailheadInterrupt: interrupt, trailheadTriplet: triplet});
+
+    if (experiment) {
+      TelemetryEnvironment.setExperimentActive(
+        // In order for ping centre to pick this up, it MUST start with activity-stream
+        `activity-stream-firstrun-trailhead-${experiment}`,
+        experiment === "interrupts" ? interrupt : triplet,
+        {type: "as-firstrun"}
+      );
+    }
+  }
+
   // Return an object containing targeting parameters used to select messages
   _getMessagesContext() {
-    const {previousSessionEnd} = this.state;
+    const {previousSessionEnd, trailheadInterrupt, trailheadTriplet} = this.state;
+
     return {
       get previousSessionEnd() {
         return previousSessionEnd;
+      },
+      get trailheadInterrupt() {
+        return trailheadInterrupt;
+      },
+      get trailheadTriplet() {
+        return trailheadTriplet;
       },
     };
   }
@@ -1183,6 +1303,7 @@ class _ASRouter {
     this.onMessage({data: action, target});
   }
 
+  /* eslint-disable complexity */
   async onMessage({data: action, target}) {
     switch (action.type) {
       case "USER_ACTION":
@@ -1197,6 +1318,13 @@ class _ASRouter {
         if (action.data && action.data.endpoint) {
           await this._addPreviewEndpoint(action.data.endpoint.url, target.portID);
         }
+
+        // Special experiment intialization for trailhead
+        if (action.data && action.data.trigger && action.data.trigger.id === "firstRun") {
+          Services.prefs.setBoolPref(TRAILHEAD_CONFIG.DID_SEE_ABOUT_WELCOME_PREF, true);
+          await this.setupTrailhead();
+        }
+
         // Check if any updates are needed first
         await this.loadMessagesFromAllProviders();
         await this.sendNextMessage(target, (action.data && action.data.trigger) || {});
@@ -1299,6 +1427,8 @@ class _ASRouter {
   }
 }
 this._ASRouter = _ASRouter;
+this.chooseBranch = chooseBranch;
+this.TRAILHEAD_CONFIG = TRAILHEAD_CONFIG;
 
 /**
  * ASRouter - singleton instance of _ASRouter that controls all messages
@@ -1306,4 +1436,4 @@ this._ASRouter = _ASRouter;
  */
 this.ASRouter = new _ASRouter();
 
-const EXPORTED_SYMBOLS = ["_ASRouter", "ASRouter", "MessageLoaderUtils"];
+const EXPORTED_SYMBOLS = ["_ASRouter", "ASRouter", "MessageLoaderUtils", "chooseBranch", "TRAILHEAD_CONFIG"];
