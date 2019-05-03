@@ -13,11 +13,12 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   AppConstants: "resource://gre/modules/AppConstants.jsm",
   OS: "resource://gre/modules/osfile.jsm",
   BookmarkPanelHub: "resource://activity-stream/lib/BookmarkPanelHub.jsm",
+  SnippetsTestMessageProvider: "resource://activity-stream/lib/SnippetsTestMessageProvider.jsm",
+  PanelTestProvider: "resource://activity-stream/lib/PanelTestProvider.jsm",
 });
 const {ASRouterActions: ra, actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {CFRMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/CFRMessageProvider.jsm");
 const {OnboardingMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/OnboardingMessageProvider.jsm");
-const {SnippetsTestMessageProvider} = ChromeUtils.import("resource://activity-stream/lib/SnippetsTestMessageProvider.jsm");
 const {RemoteSettings} = ChromeUtils.import("resource://services-settings/remote-settings.js");
 const {CFRPageActions} = ChromeUtils.import("resource://activity-stream/lib/CFRPageActions.jsm");
 
@@ -44,7 +45,7 @@ const SNIPPETS_ENDPOINT_WHITELIST = "browser.newtab.activity-stream.asrouter.whi
 // Max possible impressions cap for any message
 const MAX_MESSAGE_LIFETIME_CAP = 100;
 
-const LOCAL_MESSAGE_PROVIDERS = {OnboardingMessageProvider, CFRMessageProvider, SnippetsTestMessageProvider};
+const LOCAL_MESSAGE_PROVIDERS = {OnboardingMessageProvider, CFRMessageProvider};
 const STARTPAGE_VERSION = "6";
 
 const MessageLoaderUtils = {
@@ -358,9 +359,9 @@ class _ASRouter {
 
   // Update message providers and fetch new messages on pref change
   async onPrefChange() {
+    this._loadLocalProviders();
     this._updateMessageProviders();
     await this.loadMessagesFromAllProviders();
-    this.dispatchToAS(ac.BroadcastToContent({type: at.AS_ROUTER_PREF_CHANGED, data: ASRouterPreferences.specialConditions}));
   }
 
   // Replace all frequency time period aliases with their millisecond values
@@ -524,6 +525,8 @@ class _ASRouter {
     ASRouterPreferences.addListener(this.onPrefChange);
     BookmarkPanelHub.init(this.handleMessageRequest, this.addImpression);
 
+    this._loadLocalProviders();
+
     const messageBlockList = await this._storage.get("messageBlockList") || [];
     const providerBlockList = await this._storage.get("providerBlockList") || [];
     const messageImpressions = await this._storage.get("messageImpressions") || {};
@@ -578,6 +581,17 @@ class _ASRouter {
   _onStateChanged(state) {
     if (ASRouterPreferences.devtoolsEnabled) {
       this._updateAdminState();
+    }
+  }
+
+  _loadLocalProviders() {
+    // If we're in ASR debug mode add the local test providers
+    if (ASRouterPreferences.devtoolsEnabled) {
+      this._localProviders = {
+        ...this._localProviders,
+        SnippetsTestMessageProvider,
+        PanelTestProvider,
+      };
     }
   }
 
@@ -786,6 +800,29 @@ class _ASRouter {
     );
   }
 
+  /**
+   * Route messages based on template to the correct module that can display them
+   */
+  routeMessageToTarget(message, target, trigger, force = false) {
+    switch (message.template) {
+      case "cfr_doorhanger":
+        if (force) {
+          CFRPageActions.forceRecommendation(target, message, this.dispatch);
+        } else {
+          CFRPageActions.addRecommendation(target, trigger.param.host, message, this.dispatch);
+        }
+        break;
+      case "fxa_bookmark_panel":
+        if (force) {
+          BookmarkPanelHub._forceShowMessage(message);
+        }
+        break;
+      default:
+        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
+        break;
+    }
+  }
+
   async _sendMessageToTarget(message, target, trigger, force = false) {
     // No message is available, so send CLEAR_ALL.
     if (!message) {
@@ -807,19 +844,9 @@ class _ASRouter {
       try {
         target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: {...message, bundle: bundledMessages && bundledMessages.bundle}});
       } catch (e) {}
-
-    // CFR doorhanger
-    } else if (message.template === "cfr_doorhanger") {
-      if (force) {
-        CFRPageActions.forceRecommendation(target, message, this.dispatch);
-      } else {
-        CFRPageActions.addRecommendation(target, trigger.param.host, message, this.dispatch);
-      }
-
-    // New tab single messages
     } else {
       try {
-        target.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: "SET_MESSAGE", data: message});
+        this.routeMessageToTarget(message, target, trigger, force);
       } catch (e) {}
     }
   }
@@ -947,11 +974,7 @@ class _ASRouter {
     await this.setState({lastMessageId: id});
     const newMessage = this.getMessageById(id);
 
-    if (newMessage && newMessage.provider === "cfr-fxa") {
-      BookmarkPanelHub._forceShowMessage(newMessage);
-    } else {
-      await this._sendMessageToTarget(newMessage, target, action.data, force);
-    }
+    await this._sendMessageToTarget(newMessage, target, action.data, force);
   }
 
   async blockMessageById(idOrIds) {
