@@ -165,7 +165,7 @@ export class SubmitFormSnippet extends React.PureComponent {
     const {content} = this.props;
     const containerClass = `SubmitFormSnippet ${this.props.className}`;
     return (<SnippetBase {...this.props} className={containerClass} footerDismiss={true}>
-        {content.scene2_icon ? <div className="scene2Icon"><img src={content.scene2_icon.light} className="icon-light-theme" alt={ICON_ALT_TEXT} /><img src={content.scene2_icon.dark} className="icon-dark-theme" alt={ICON_ALT_TEXT} /></div> : null}
+        {content.scene2_icon ? <div className="scene2Icon"><img src={content.scene2_icon} className="icon-light-theme" alt={ICON_ALT_TEXT} /><img src={content.scene2_icon_dark_theme} className="icon-dark-theme" alt={ICON_ALT_TEXT} /></div> : null}
         <div className="message">
           <p>
             {content.scene2_title && <h3 className="scene2Title">{content.scene2_title}</h3>}
