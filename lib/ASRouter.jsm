@@ -569,7 +569,7 @@ class _ASRouter {
 
     ASRouterPreferences.init();
     ASRouterPreferences.addListener(this.onPrefChange);
-    BookmarkPanelHub.init(this.handleMessageRequest, this.addImpression);
+    BookmarkPanelHub.init(this.handleMessageRequest, this.addImpression, this.dispatch);
 
     this._loadLocalProviders();
 
