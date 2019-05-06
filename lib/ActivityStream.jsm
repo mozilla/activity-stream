@@ -215,7 +215,7 @@ const PREFS_CONFIG = new Map([
     title: "Configuration for CFR FxA Messages provider",
     value: JSON.stringify({
       id: "cfr-fxa",
-      enabled: false,
+      enabled: true,
       type: "remote-settings",
       bucket: "cfr-fxa",
       frequency: {custom: [{period: "daily", cap: 1}]},
