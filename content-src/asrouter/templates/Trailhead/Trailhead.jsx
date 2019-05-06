@@ -22,6 +22,7 @@ export class _Trailhead extends React.PureComponent {
     this.onInputChange = this.onInputChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onInputInvalid = this.onInputInvalid.bind(this);
+    this.onCardAction = this.onCardAction.bind(this);
 
     this.state = {
       emailInput: "",
@@ -44,8 +45,9 @@ export class _Trailhead extends React.PureComponent {
     if (this.props.fxaEndpoint && !this.didFetch) {
       try {
         this.didFetch = true;
-        const fxaParams = "entrypoint=activity-stream-firstrun&utm_source=activity-stream&utm_campaign=firstrun&utm_term=trailhead&form_type=email";
-        const response = await fetch(`${this.props.fxaEndpoint}/metrics-flow?${fxaParams}`, {credentials: "omit"});
+        const url = new URL(`${this.props.fxaEndpoint}/metrics-flow?entrypoint=activity-stream-firstrun&form_type=email`);
+        this.addUtmParams(url);
+        const response = await fetch(url, {credentials: "omit"});
         if (response.status === 200) {
           const {flowId, flowBeginTime} = await response.json();
           this.setState({flowId, flowBeginTime});
@@ -131,9 +133,45 @@ export class _Trailhead extends React.PureComponent {
     return str.value;
   }
 
+  /**
+   * Takes in a url as a string or URL object and returns a URL object with the
+   * utm_* parameters added to it. If a URL object is passed in, the paraemeters
+   * are added to it (the return value can be ignored in that case as it's the
+   * same object).
+   */
+  addUtmParams(url, isCard = false) {
+    let returnUrl = url;
+    if (typeof returnUrl === "string") {
+      returnUrl = new URL(url);
+    }
+    returnUrl.searchParams.append("utm_source", "activity-stream");
+    returnUrl.searchParams.append("utm_campaign", "firstrun");
+    returnUrl.searchParams.append("utm_medium", "referral");
+    returnUrl.searchParams.append("utm_term", `${this.props.message.utm_term}${isCard ? "-card" : ""}`);
+    return returnUrl;
+  }
+
+  onCardAction(action) {
+    let actionUpdates = {};
+
+    if (action.type === "OPEN_URL") {
+      let url = new URL(action.data.args);
+      this.addUtmParams(url, true);
+
+      if (action.addFlowParams) {
+        url.searchParams.append("flow_id", this.state.flowId);
+        url.searchParams.append("flow_begin_time", this.state.flowBeginTime);
+      }
+
+      actionUpdates = {data: {...action.data, args: url}};
+    }
+
+    this.props.onAction({...action, ...actionUpdates});
+  }
+
   render() {
     const {props} = this;
-    const {bundle: cards, content} = props.message;
+    const {bundle: cards, content, utm_term} = props.message;
     const innerClassName = [
       "trailhead",
       content && content.className,
@@ -154,7 +192,7 @@ export class _Trailhead extends React.PureComponent {
               </li>
             ))}
           </ul>
-          <a className="trailheadLearn" data-l10n-id={content.learn.text.string_id} href={content.learn.url}>
+          <a className="trailheadLearn" data-l10n-id={content.learn.text.string_id} href={this.addUtmParams(content.learn.url)}>
             {this.getStringValue(content.learn.text)}
           </a>
         </div>
@@ -168,9 +206,10 @@ export class _Trailhead extends React.PureComponent {
             <input name="entrypoint" type="hidden" value="activity-stream-firstrun" />
             <input name="utm_source" type="hidden" value="activity-stream" />
             <input name="utm_campaign" type="hidden" value="firstrun" />
-            <input name="utm_term" type="hidden" value="trailhead" />
+            <input name="utm_term" type="hidden" value={utm_term} />
             <input name="flow_id" type="hidden" value={this.state.flowId} />
             <input name="flow_begin_time" type="hidden" value={this.state.flowBeginTime} />
+            <input name="style" type="hidden" value="trailhead" />
             <p data-l10n-id="onboarding-join-form-email-error" className="error" />
             <input
               data-l10n-id={content.form.email.string_id}
@@ -182,9 +221,9 @@ export class _Trailhead extends React.PureComponent {
               onChange={this.onInputChange} />
             <p className="trailheadTerms" data-l10n-id="onboarding-join-form-legal">
               <a data-l10n-name="terms"
-                href="https://accounts.firefox.com/legal/terms" />
+                href={this.addUtmParams("https://accounts.firefox.com/legal/terms")} />
               <a data-l10n-name="privacy"
-                href="https://accounts.firefox.com/legal/privacy" />
+                href={this.addUtmParams("https://accounts.firefox.com/legal/privacy")} />
             </p>
             <button data-l10n-id={content.form.button.string_id} type="submit">
               {this.getStringValue(content.form.button)}
@@ -205,7 +244,7 @@ export class _Trailhead extends React.PureComponent {
           <OnboardingCard key={card.id}
             className="trailheadCard"
             sendUserActionTelemetry={props.sendUserActionTelemetry}
-            onAction={props.onAction}
+            onAction={this.onCardAction}
             UISurface="TRAILHEAD"
             {...card} />
         ))}
