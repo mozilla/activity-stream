@@ -1032,7 +1032,7 @@ defaultLayoutResp = {
         {
           "type": "CardGrid",
           "properties": {
-            "items": 4,
+            "items": 3,
           },
           "header": {
             "title": "",
@@ -1045,7 +1045,7 @@ defaultLayoutResp = {
             "probability": 1,
             "positions": [
               {
-                "index": 3,
+                "index": 2,
               },
             ],
           },
@@ -1062,19 +1062,21 @@ defaultLayoutResp = {
           },
           "feed": {
             "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=4&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=4&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
             "items": 4,
             "has_numbers": false,
             "has_images": true,
-            "border": "no-border",
+          },
+          "styles": {
+            ".ds-header": "margin-top: 4px;",
           },
           "spocs": {
             "probability": 1,
             "positions": [
               {
-                "index": 3,
+                "index": 2,
               },
             ],
           },
@@ -1091,13 +1093,15 @@ defaultLayoutResp = {
           },
           "feed": {
             "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=5&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=5&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
             "items": 4,
             "has_numbers": false,
             "has_images": true,
-            "border": "no-border",
+          },
+          "styles": {
+            ".ds-header": "margin-top: 4px;",
           },
         },
       ],
@@ -1112,13 +1116,15 @@ defaultLayoutResp = {
           },
           "feed": {
             "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=8&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=8&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
             "items": 4,
             "has_numbers": false,
             "has_images": true,
-            "border": "no-border",
+          },
+          "styles": {
+            ".ds-header": "margin-top: 4px;",
           },
           "spocs": {
             "probability": 1,
@@ -1141,13 +1147,15 @@ defaultLayoutResp = {
           },
           "feed": {
             "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=2&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=2&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+          },
+          "styles": {
+            ".ds-header": "margin-top: 4px;",
           },
           "properties": {
             "items": 4,
             "has_numbers": false,
             "has_images": true,
-            "border": "no-border",
           },
         },
       ],
@@ -1162,13 +1170,15 @@ defaultLayoutResp = {
           },
           "feed": {
             "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=1&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=1&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
             "items": 4,
             "has_numbers": false,
             "has_images": true,
-            "border": "no-border",
+          },
+          "styles": {
+            ".ds-header": "margin-top: 4px;",
           },
         },
       ],
@@ -1183,13 +1193,15 @@ defaultLayoutResp = {
           },
           "feed": {
             "embed_reference": null,
-            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=7&duration=2592000&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
+            "url": "https://getpocket.cdn.mozilla.net/v3/firefox/global-recs?topic_id=7&end_time_offset=172800&version=3&consumer_key=$apiKey&locale_lang=en-US&feed_variant=OptimalCuratedLinksForLocaleFeed&model_id=external_time_live",
           },
           "properties": {
             "items": 4,
             "has_numbers": false,
             "has_images": true,
-            "border": "no-border",
+          },
+          "styles": {
+            ".ds-header": "margin-top: 4px;",
           },
           "spocs": {
             "probability": 1,
