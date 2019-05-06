@@ -191,7 +191,7 @@ class _BookmarkPanelHub {
   }
 
   sendUserEventTelemetry(event) {
-    this._sendTelemetry({message_id: this._response.id, event});
+    this._sendTelemetry({message_id: this._response.id, bucket_id: this._response.id, event});
   }
 
   _sendTelemetry(ping) {
