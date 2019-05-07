@@ -160,7 +160,7 @@ const PREFS_CONFIG = new Map([
     value: "topsites,topstories,highlights",
   }],
   ["improvesearch.noDefaultSearchTile", {
-    title: "Experiment to remove tiles that are the same as the default search",
+    title: "Remove tiles that are the same as the default search",
     value: true,
   }],
   ["improvesearch.topSiteSearchShortcuts.searchEngines", {
