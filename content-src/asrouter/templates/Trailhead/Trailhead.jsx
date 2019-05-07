@@ -14,12 +14,24 @@ const FLUENT_FILES = [
   "trailhead.ftl",
 ];
 
+// From resource://devtools/client/shared/focus.js
+const FOCUSABLE_SELECTOR = [
+  "a[href]:not([tabindex='-1'])",
+  "button:not([disabled]):not([tabindex='-1'])",
+  "iframe:not([tabindex='-1'])",
+  "input:not([disabled]):not([tabindex='-1'])",
+  "select:not([disabled]):not([tabindex='-1'])",
+  "textarea:not([disabled]):not([tabindex='-1'])",
+  "[tabindex]:not([tabindex='-1'])",
+].join(", ");
+
 export class _Trailhead extends React.PureComponent {
   constructor(props) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
     this.hideCardPanel = this.hideCardPanel.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
+    this.onStartBlur = this.onStartBlur.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onInputInvalid = this.onInputInvalid.bind(this);
     this.onCardAction = this.onCardAction.bind(this);
@@ -33,6 +45,10 @@ export class _Trailhead extends React.PureComponent {
       flowBeginTime: 0,
     };
     this.didFetch = false;
+  }
+
+  get dialog() {
+    return this.props.document.getElementById("trailheadDialog");
   }
 
   async componentWillMount() {
@@ -62,14 +78,20 @@ export class _Trailhead extends React.PureComponent {
 
   componentDidMount() {
     // We need to remove hide-main since we should show it underneath everything that has rendered
-    global.document.body.classList.remove("hide-main");
+    this.props.document.body.classList.remove("hide-main");
 
     // Add inline-onboarding class to disable fixed search header and fixed positioned settings icon
-    global.document.body.classList.add("inline-onboarding");
+    this.props.document.body.classList.add("inline-onboarding");
 
-    if (!this.props.message.content) {
+    // The rest of the page is "hidden" when the modal is open
+    if (this.props.message.content) {
+      this.props.document.getElementById("root").setAttribute("aria-hidden", "true");
+
+      // Start with focus in the email input box
+      this.dialog.querySelector("input[name=email]").focus();
+    } else {
       // No modal overlay, let the user scroll and deal them some cards.
-      global.document.body.classList.remove("welcome");
+      this.props.document.body.classList.remove("welcome");
 
       if (this.props.message.includeBundle || this.props.message.cards) {
         this.revealCards();
@@ -77,8 +99,8 @@ export class _Trailhead extends React.PureComponent {
     }
   }
 
-  componentDidUnmount() {
-    global.document.body.classList.remove("inline-onboarding");
+  componentWillUnmount() {
+    this.props.document.body.classList.remove("inline-onboarding");
   }
 
   onInputChange(e) {
@@ -86,6 +108,16 @@ export class _Trailhead extends React.PureComponent {
     this.setState({emailInput: e.target.value});
     error.classList.remove("active");
     e.target.classList.remove("invalid");
+  }
+
+  onStartBlur(event) {
+    // Make sure focus stays within the dialog when tabbing from the button
+    const {dialog} = this;
+    if (event.relatedTarget &&
+        !(dialog.compareDocumentPosition(event.relatedTarget) &
+          dialog.DOCUMENT_POSITION_CONTAINED_BY)) {
+      dialog.querySelector(FOCUSABLE_SELECTOR).focus();
+    }
   }
 
   onSubmit() {
@@ -96,7 +128,8 @@ export class _Trailhead extends React.PureComponent {
 
   closeModal() {
     global.removeEventListener("visibilitychange", this.closeModal);
-    global.document.body.classList.remove("welcome");
+    this.props.document.body.classList.remove("welcome");
+    this.props.document.getElementById("root").removeAttribute("aria-hidden");
     this.setState({isModalOpen: false});
     this.revealCards();
     this.props.dispatch(ac.UserEvent({event: "SKIPPED_SIGNIN", ...this._getFormInfo()}));
@@ -177,10 +210,11 @@ export class _Trailhead extends React.PureComponent {
       content && content.className,
     ].filter(v => v).join(" ");
     return (<>
-    {this.state.isModalOpen && content ? <ModalOverlayWrapper innerClassName={innerClassName} onClose={this.closeModal}>
+    {this.state.isModalOpen && content ? <ModalOverlayWrapper innerClassName={innerClassName} onClose={this.closeModal} id="trailheadDialog" headerId="trailheadHeader">
       <div className="trailheadInner">
         <div className="trailheadContent">
-          <h1 data-l10n-id={content.title.string_id}>{this.getStringValue(content.title)}</h1>
+          <h1 data-l10n-id={content.title.string_id}
+            id="trailheadHeader">{this.getStringValue(content.title)}</h1>
           {content.subtitle &&
             <p data-l10n-id={content.subtitle.string_id}>{this.getStringValue(content.subtitle)}</p>
           }
@@ -234,10 +268,12 @@ export class _Trailhead extends React.PureComponent {
 
       <button className="trailheadStart"
         data-l10n-id={content.skipButton.string_id}
+        onBlur={this.onStartBlur}
         onClick={this.closeModal}>{this.getStringValue(content.skipButton)}</button>
     </ModalOverlayWrapper> : null}
     {(cards && cards.length) ? <div className={`trailheadCards ${this.state.showCardPanel ? "expanded" : "collapsed"}`}>
-      <div className="trailheadCardsInner">
+      <div className="trailheadCardsInner"
+        aria-hidden={!this.state.showCards}>
         <h1 data-l10n-id="onboarding-welcome-header" />
         <div className={`trailheadCardGrid${this.state.showCards ? " show" : ""}`}>
         {cards.map(card => (
