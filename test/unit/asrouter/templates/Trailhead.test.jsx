@@ -21,6 +21,7 @@ const CARDS = [{
 
 describe("<Trailhead>", () => {
   let wrapper;
+  let dummyNode;
   let dispatch;
   let onAction;
   let sandbox;
@@ -32,9 +33,20 @@ describe("<Trailhead>", () => {
     sandbox.stub(global, "fetch")
       .resolves({ok: true, status: 200, json: () => Promise.resolve({flowId: 123, flowBeginTime: 456})});
 
+    dummyNode = document.createElement("body");
+    sandbox.stub(dummyNode, "querySelector").returns(dummyNode);
+    const fakeDocument = {
+      get body() {
+        return dummyNode;
+      },
+      getElementById() {
+        return dummyNode;
+      },
+    };
+
     const message = (await OnboardingMessageProvider.getUntranslatedMessages()).find(msg => msg.id === "TRAILHEAD_1");
     message.cards = CARDS;
-    wrapper = mount(<Trailhead message={message} fxaEndpoint="https://accounts.firefox.com/endpoint" dispatch={dispatch} onAction={onAction} />);
+    wrapper = mount(<Trailhead message={message} fxaEndpoint="https://accounts.firefox.com/endpoint" dispatch={dispatch} onAction={onAction} document={fakeDocument} />);
   });
 
   afterEach(() => {
@@ -83,5 +95,14 @@ describe("<Trailhead>", () => {
     assert.calledOnce(onAction);
     const url = onAction.firstCall.args[0].data.args;
     assert.equal(url, "https://example.com/path?foo=bar&utm_source=activity-stream&utm_campaign=firstrun&utm_medium=referral&utm_term=trailhead-join-card&flow_id=123&flow_begin_time=456");
+  });
+
+  it("should keep focus in dialog when blurring start button", () => {
+    const skipButton = wrapper.find(".trailheadStart");
+    sandbox.stub(dummyNode, "focus");
+
+    skipButton.simulate("blur", {relatedTarget: dummyNode});
+
+    assert.calledOnce(dummyNode.focus);
   });
 });
