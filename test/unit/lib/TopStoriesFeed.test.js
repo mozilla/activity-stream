@@ -91,12 +91,55 @@ describe("Top Stories Feed", () => {
     globals.restore();
     clock.restore();
   });
+
+  describe("#lazyloading TopStories", () => {
+    it("should bind parseOptions to SectionsManager.onceInitialized when discovery stream is true", () => {
+      instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {"discoverystream.config": JSON.stringify({enabled: true})}});
+      assert.calledOnce(sectionsManagerStub.onceInitialized);
+    });
+    it("should bind parseOptions to SectionsManager.onceInitialized when discovery stream is false", () => {
+      instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {"discoverystream.config": JSON.stringify({enabled: false})}});
+      assert.calledOnce(sectionsManagerStub.onceInitialized);
+    });
+
+    it("should have early exit onInit when discovery is true", async () => {
+      instance.discoveryStreamEnabled = true;
+      instance.doContentUpdate = sinon.spy();
+      await instance.onInit();
+      assert.notCalled(instance.doContentUpdate);
+      assert.isUndefined(instance.storiesLoaded);
+    });
+
+    it("should complete onInit when discovery is false", async () => {
+      instance.discoveryStreamEnabled = false;
+      instance.doContentUpdate = sinon.spy();
+      await instance.onInit();
+      assert.calledOnce(instance.doContentUpdate);
+      assert.isTrue(instance.storiesLoaded);
+    });
+
+    it("should fire init on PREF_CHANGED", () => {
+      instance.onInit = sinon.spy();
+      instance.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.config", value: {}}});
+      assert.calledOnce(instance.onInit);
+    });
+
+    it("should not fire init on PREF_CHANGED if stories are loaded", () => {
+      instance.onInit = sinon.spy();
+      instance.lazyLoadTopStories = sinon.spy();
+      instance.storiesLoaded = true;
+      instance.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.config", value: {}}});
+      assert.notCalled(instance.lazyLoadTopStories);
+      assert.notCalled(instance.onInit);
+    });
+  });
+
   describe("#init", () => {
     it("should create a TopStoriesFeed", () => {
       assert.instanceOf(instance, TopStoriesFeed);
     });
     it("should bind parseOptions to SectionsManager.onceInitialized", () => {
-      instance.onAction({type: at.INIT});
+      instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {}});
       assert.calledOnce(sectionsManagerStub.onceInitialized);
     });
     it("should initialize endpoints based on options", async () => {
@@ -106,13 +149,13 @@ describe("Top Stories Feed", () => {
       assert.equal("https://somedomain.org/topics?key=test-api-key", instance.topics_endpoint);
     });
     it("should enable its section", () => {
-      instance.onAction({type: at.INIT});
+      instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {}});
       assert.calledOnce(sectionsManagerStub.enableSection);
       assert.calledWith(sectionsManagerStub.enableSection, SECTION_ID);
     });
     it("init should fire onInit", () => {
       instance.onInit = sinon.spy();
-      instance.onAction({type: at.INIT});
+      instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {}});
       assert.calledOnce(instance.onInit);
     });
     it("should fetch stories on init", async () => {

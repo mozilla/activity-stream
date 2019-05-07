@@ -30,17 +30,29 @@ const SPOC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.spoc.impressions
 const REC_IMPRESSION_TRACKING_PREF = "feeds.section.topstories.rec.impressions";
 const OPTIONS_PREF = "feeds.section.topstories.options";
 const MAX_LIFETIME_CAP = 500; // Guard against misconfiguration on the server
+const DISCOVERY_STREAM_PREF = "discoverystream.config";
 
 this.TopStoriesFeed = class TopStoriesFeed {
-  constructor() {
-    this.spocCampaignMap = new Map();
+  constructor(ds) {
+    this.discoveryStreamEnabled = ds && ds.value && JSON.parse(ds.value).enabled;
+    if (!this.discoveryStreamEnabled) {
+      this.initializeProperties();
+    }
+  }
+
+  initializeProperties() {
     this.contentUpdateQueue = [];
+    this.spocCampaignMap = new Map();
     this.cache = new PersistentCache(SECTION_ID, true);
     this._prefs = new Prefs();
   }
 
   async onInit() {
     SectionsManager.enableSection(SECTION_ID);
+    if (this.discoveryStreamEnabled) {
+      return;
+    }
+
     try {
       const {options} = SectionsManager.sections.get(SECTION_ID);
       const apiKey = this.getApiKeyFromPref(options.api_key_pref);
@@ -492,7 +504,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
     if (this.storiesLoaded) {
       updateContent();
-    } else {
+    } else if (this.contentUpdateQueue) {
       // Delay updating tab content until initial data has been fetched
       this.contentUpdateQueue.push(updateContent);
     }
@@ -643,10 +655,24 @@ this.TopStoriesFeed = class TopStoriesFeed {
     return false;
   }
 
+  lazyLoadTopStories(dsPref) {
+    try {
+      this.discoveryStreamEnabled = JSON.parse(dsPref).enabled;
+    } catch (e) {
+      // Load activity stream top stories if fail to determine discovery stream state
+      this.discoveryStreamEnabled = false;
+    }
+    if (!this.discoveryStreamEnabled) {
+      this.initializeProperties();
+    }
+    this.init();
+  }
+
   async onAction(action) {
     switch (action.type) {
-      case at.INIT:
-        this.init();
+      // Check for pref initial values to lazy load activity stream top stories
+      case at.PREFS_INITIAL_VALUES:
+        this.lazyLoadTopStories(action.data[DISCOVERY_STREAM_PREF]);
         break;
       case at.SYSTEM_TICK:
         let stories;
@@ -710,6 +736,9 @@ this.TopStoriesFeed = class TopStoriesFeed {
         break;
       }
       case at.PREF_CHANGED:
+        if (action.data.name === DISCOVERY_STREAM_PREF && action.data.value && !this.storiesLoaded) {
+          this.lazyLoadTopStories(action.data.value);
+        }
         // Check if spocs was disabled. Remove them if they were.
         if (action.data.name === "showSponsored" && !action.data.value) {
           await this.removeSpocs();
