@@ -148,6 +148,7 @@ const ONBOARDING_MESSAGES = async () => ([
     targeting: "trailheadInterrupt == 'join'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
+    utm_term: "trailhead-join",
     content: {
       className: "joinCohort",
       title: {string_id: "onboarding-welcome-body"},
@@ -177,6 +178,7 @@ const ONBOARDING_MESSAGES = async () => ([
     targeting: "trailheadInterrupt == 'sync'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
+    utm_term: "trailhead-sync",
     content: {
       className: "syncCohort",
       title: {property_id: "firstrun_title"},
@@ -201,6 +203,7 @@ const ONBOARDING_MESSAGES = async () => ([
     targeting: "trailheadInterrupt == 'cards'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
+    utm_term: "trailhead-cards",
   },
   {
     id: "TRAILHEAD_4",
@@ -241,7 +244,8 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-data-sync-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://accounts.firefox.com/?service=sync&action=email&context=fx_desktop_v3&entrypoint=activity-stream-firstrun&utm_source=activity-stream&utm_campaign=firstrun", where: "tabshifted"},
+          addFlowParams: true,
+          data: {args: "https://accounts.firefox.com/?service=sync&action=email&context=fx_desktop_v3&entrypoint=activity-stream-firstrun&style=trailhead", where: "tabshifted"},
         },
       },
     },
@@ -298,7 +302,7 @@ const ONBOARDING_MESSAGES = async () => ([
         label: {string_id: "onboarding-firefox-send-button"},
         action: {
           type: "OPEN_URL",
-          data: {args: "https://send.firefox.com/?utm_source=activity-stream?utm_medium=referral?utm_campaign=firstrun", where: "tabshifted"},
+          data: {args: "https://send.firefox.com/", where: "tabshifted"},
         },
       },
     },
