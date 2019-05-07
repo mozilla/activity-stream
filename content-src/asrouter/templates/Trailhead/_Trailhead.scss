@@ -10,11 +10,6 @@
   height: auto;
   top: 100px;
 
-  @media (max-height: 700px) {
-    position: absolute;
-    top: 20px;
-  }
-
   a {
     color: $white;
     text-decoration: underline;
@@ -421,9 +416,14 @@
   }
 }
 
-// If the window is too short, we need to allow scrolling so user can get to Start Browsing button.
-@media (max-height: 700px) {
+// If the window is too short or narrow, we need to allow scrolling so user can get to Start Browsing button.
+@media (max-height: 760px), (max-width: 924px) {
   .activity-stream.welcome.inline-onboarding {
     overflow: auto;
+  }
+
+  .trailhead {
+    position: absolute;
+    top: 20px;
   }
 }
