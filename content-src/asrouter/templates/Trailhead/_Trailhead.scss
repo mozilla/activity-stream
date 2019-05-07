@@ -183,18 +183,38 @@
 
     button,
     input {
-      border: 0;
       width: 100%;
     }
 
     input {
       background-color: $white;
+      border: 1px solid $grey-50;
+      box-shadow: none;
       color: $grey-70;
       font-size: 15px;
+      transition: border-color 150ms, box-shadow 150ms;
+
+      &:hover {
+        border-color: $grey-90;
+      }
+
+      &:focus {
+        border-color: $blue-50;
+        box-shadow: 0 0 0 3px $email-input-focus;
+      }
+
+      &.invalid {
+        border-color: $red-60;
+      }
+
+      &.invalid:focus {
+        box-shadow: 0 0 0 3px $email-input-invalid;
+      }
     }
 
     button {
       background-color: $blue-60;
+      border: 0;
       cursor: pointer;
       display: block;
       font-size: 15px;
