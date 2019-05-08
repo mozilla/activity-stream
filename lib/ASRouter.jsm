@@ -716,10 +716,10 @@ class _ASRouter {
 
   // Dispatch a TRAILHEAD_ENROLL_EVENT action
   _sendTrailheadEnrollEvent(data) {
-    this.dispatchToAS(ac.AlsoToMain({
+    this.dispatchToAS({
       type: at.TRAILHEAD_ENROLL_EVENT,
       data,
-    }));
+    });
   }
 
   async setupTrailhead() {

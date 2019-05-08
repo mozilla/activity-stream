@@ -1541,8 +1541,8 @@ describe("ASRouter", () => {
         setBoolPrefStub = sandbox.stub(global.Services.prefs, "setBoolPref");
       });
 
-      const configWithInterruptExpriment = {experiment: "interrupts", interrupt: "join", triplet: "privacy"};
-      const configWithTripletExpriment = {experiment: "triplets", interrupt: "join", triplet: "privacy"};
+      const configWithInterruptsExpriment = {experiment: "interrupts", interrupt: "join", triplet: "privacy"};
+      const configWithTripletsExpriment = {experiment: "triplets", interrupt: "join", triplet: "privacy"};
       const configWithoutExperiment = {experiment: "", interrupt: "control", triplet: ""};
 
       it("should generates an experiment/branch configuration and update Router.state", async () => {
@@ -1572,8 +1572,8 @@ describe("ASRouter", () => {
         sandbox.spy(Router, "setState");
         assert.notCalled(Router.setState);
       });
-      it("should set active interrupt experiment if one is defined", async () => {
-        sandbox.stub(Router, "_generateTrailheadBranches").resolves(configWithInterruptExpriment);
+      it("should set active interrupts experiment if one is defined", async () => {
+        sandbox.stub(Router, "_generateTrailheadBranches").resolves(configWithInterruptsExpriment);
         sandbox.stub(global.TelemetryEnvironment, "setExperimentActive");
         sandbox.spy(Router, "_sendTrailheadEnrollEvent");
 
@@ -1587,8 +1587,8 @@ describe("ASRouter", () => {
           branch: "join",
         });
       });
-      it("should set active triplet experiment if one is defined", async () => {
-        sandbox.stub(Router, "_generateTrailheadBranches").resolves(configWithTripletExpriment);
+      it("should set active triplets experiment if one is defined", async () => {
+        sandbox.stub(Router, "_generateTrailheadBranches").resolves(configWithTripletsExpriment);
         sandbox.stub(global.TelemetryEnvironment, "setExperimentActive");
         sandbox.spy(Router, "_sendTrailheadEnrollEvent");
 
