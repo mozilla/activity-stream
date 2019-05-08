@@ -1027,3 +1027,20 @@ This reports a failure in the Remote Settings loader to load messages for Activi
   "value": "REMOTE_PROVIDER_ID"
 }
 ```
+
+## Trailhead experiment enrollment ping
+
+This reports an enrollment ping when a user gets enrolled in a Trailhead experiment. Note that this ping is only collected through the Mozilla Events telemetry pipeline.
+
+```js
+{
+  "category": "activity_stream",
+  "method": "enroll",
+  "object": "preference_study"
+  "value": "activity-stream-firstup-trailhead-interrupts",
+  "extra_keys": {
+    "experimentType": "as-firstrun",
+    "branch": ["supercharge" | "join" | "sync" | "privacy" ...]
+  }
+}
+```
