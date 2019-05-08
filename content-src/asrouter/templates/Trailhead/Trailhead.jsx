@@ -123,13 +123,18 @@ export class _Trailhead extends React.PureComponent {
     global.addEventListener("visibilitychange", this.closeModal);
   }
 
-  closeModal() {
+  closeModal(ev) {
     global.removeEventListener("visibilitychange", this.closeModal);
     this.props.document.body.classList.remove("welcome");
     this.props.document.getElementById("root").removeAttribute("aria-hidden");
     this.setState({isModalOpen: false});
     this.revealCards();
-    this.props.dispatch(ac.UserEvent({event: "SKIPPED_SIGNIN", ...this._getFormInfo()}));
+
+    // If closeModal() was triggered by a visibilitychange event, the user actually
+    // submitted the email form so we don't send a SKIPPED_SIGNIN ping.
+    if (!ev || ev.type !== "visibilitychange") {
+      this.props.dispatch(ac.UserEvent({event: "SKIPPED_SIGNIN", ...this._getFormInfo()}));
+    }
   }
 
   /**
