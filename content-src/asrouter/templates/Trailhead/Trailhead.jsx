@@ -132,7 +132,7 @@ export class _Trailhead extends React.PureComponent {
 
     // If closeModal() was triggered by a visibilitychange event, the user actually
     // submitted the email form so we don't send a SKIPPED_SIGNIN ping.
-    if (ev && ev.type !== "visibilitychange") {
+    if (!ev || ev.type !== "visibilitychange") {
       this.props.dispatch(ac.UserEvent({event: "SKIPPED_SIGNIN", ...this._getFormInfo()}));
     }
   }
