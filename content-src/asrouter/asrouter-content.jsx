@@ -108,6 +108,7 @@ export class ASRouterUISurface extends React.PureComponent {
     if (!message && !extraProps.message_id) {
       throw new Error(`You must provide a message_id for bundled messages`);
     }
+    // snippets_user_event, onboarding_user_event
     const eventType = `${message.provider || bundle.provider}_user_event`;
     ASRouterUtils.sendTelemetry({
       message_id: message.id || extraProps.message_id,
@@ -283,9 +284,11 @@ export class ASRouterUISurface extends React.PureComponent {
         <LocalizationProvider messages={generateMessages({"amo_html": message.content.text})}>
           <ReturnToAMO
             {...message}
+            UISurface="NEWTAB_OVERLAY"
             onReady={this.triggerOnboarding}
             onBlock={this.onDismissById(message.id)}
-            onAction={ASRouterUtils.executeAction} />
+            onAction={ASRouterUtils.executeAction}
+            sendUserActionTelemetry={this.sendUserActionTelemetry} />
         </LocalizationProvider>
       );
     }
