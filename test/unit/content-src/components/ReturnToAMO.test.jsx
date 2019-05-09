@@ -8,49 +8,77 @@ describe("<ReturnToAMO>", () => {
   let sandbox;
   let wrapper;
   let sendUserActionTelemetryStub;
+  let content;
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     dispatch = sandbox.stub();
     onReady = sandbox.stub();
     sendUserActionTelemetryStub = sandbox.stub();
-    const content = {
+    content = {
       primary_button: {},
       secondary_button: {},
     };
-
-    wrapper = mountWithIntl(<ReturnToAMO onReady={onReady}
-      dispatch={dispatch}
-      content={content}
-      onBlock={sandbox.stub()}
-      onAction={sandbox.stub()}
-      UISurface="NEWTAB_OVERLAY"
-      sendUserActionTelemetry={sendUserActionTelemetryStub} />);
   });
 
   afterEach(() => {
     sandbox.restore();
   });
 
-  it("should call onReady on componentDidMount", () => {
-    assert.calledOnce(onReady);
-  });
+  describe("not mounted", () => {
+    it("should send an IMPRESSION on mount", () => {
+      assert.notCalled(sendUserActionTelemetryStub);
 
-  it("should send telemetry on block", () => {
-    wrapper.instance().onBlockButton();
+      wrapper = mountWithIntl(<ReturnToAMO onReady={onReady}
+        dispatch={dispatch}
+        content={content}
+        onBlock={sandbox.stub()}
+        onAction={sandbox.stub()}
+        UISurface="NEWTAB_OVERLAY"
+        sendUserActionTelemetry={sendUserActionTelemetryStub} />);
 
-    assert.calledOnce(sendUserActionTelemetryStub);
-    assert.calledWithExactly(sendUserActionTelemetryStub, {
-      event: "BLOCK",
-      id: wrapper.instance().props.UISurface,
+      assert.calledOnce(sendUserActionTelemetryStub);
+      assert.calledWithExactly(sendUserActionTelemetryStub, {
+        event: "IMPRESSION",
+        id: wrapper.instance().props.UISurface,
+      });
     });
   });
 
-  it("should send telemetry on install", () => {
-    wrapper.instance().onClickAddExtension();
+  describe("mounted", () => {
+    beforeEach(() => {
+      wrapper = mountWithIntl(<ReturnToAMO onReady={onReady}
+        dispatch={dispatch}
+        content={content}
+        onBlock={sandbox.stub()}
+        onAction={sandbox.stub()}
+        UISurface="NEWTAB_OVERLAY"
+        sendUserActionTelemetry={sendUserActionTelemetryStub} />);
 
-    assert.calledWithExactly(sendUserActionTelemetryStub, {
-      event: "INSTALL",
-      id: wrapper.instance().props.UISurface,
+      // Clear the IMPRESSION ping
+      sendUserActionTelemetryStub.reset();
+    });
+
+    it("should call onReady on componentDidMount", () => {
+      assert.calledOnce(onReady);
+    });
+
+    it("should send telemetry on block", () => {
+      wrapper.instance().onBlockButton();
+
+      assert.calledOnce(sendUserActionTelemetryStub);
+      assert.calledWithExactly(sendUserActionTelemetryStub, {
+        event: "BLOCK",
+        id: wrapper.instance().props.UISurface,
+      });
+    });
+
+    it("should send telemetry on install", () => {
+      wrapper.instance().onClickAddExtension();
+
+      assert.calledWithExactly(sendUserActionTelemetryStub, {
+        event: "INSTALL",
+        id: wrapper.instance().props.UISurface,
+      });
     });
   });
 });

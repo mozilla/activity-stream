@@ -10,6 +10,10 @@ export class ReturnToAMO extends React.PureComponent {
 
   componentDidMount() {
     this.props.onReady();
+    this.props.sendUserActionTelemetry({
+      event: "IMPRESSION",
+      id: this.props.UISurface,
+    });
   }
 
   onClickAddExtension() {
