@@ -35,8 +35,10 @@ const MESSAGES = () => ([
     "campaign": "test_campaign_blocking",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "title": "Firefox Account!",
       "title_icon": TEST_ICON_16,
+      "title_icon_dark_theme": TEST_ICON_16,
       "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
       "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
       "block_button_text": "Block",
@@ -48,6 +50,7 @@ const MESSAGES = () => ([
     "campaign": "test_campaign_blocking",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
       "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
       "block_button_text": "Block",
@@ -58,6 +61,7 @@ const MESSAGES = () => ([
     "template": "simple_snippet",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
       "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
       "button_label": "Get one now!",
@@ -71,6 +75,7 @@ const MESSAGES = () => ([
     "template": "simple_snippet",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "button_label": "Get one now!",
       "button_url": "https://www.mozilla.org/en-US/firefox/accounts",
       "text": "Sync it, link it, take it with you. All this and more with a Firefox Account.",
@@ -82,6 +87,7 @@ const MESSAGES = () => ([
     "template": "simple_snippet",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "title": "Ready to sync?",
       "text": "Get connected with a <syncLink>Firefox account</syncLink>.",
       "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
@@ -93,8 +99,10 @@ const MESSAGES = () => ([
     "template": "newsletter_snippet",
     "content": {
       "scene1_icon": TEST_ICON,
+      "scene1_icon_dark_theme": TEST_ICON,
       "scene1_title": "Be a part of a movement.",
       "scene1_title_icon": TEST_ICON_16,
+      "scene1_title_icon_dark_theme": TEST_ICON_16,
       "scene1_text": "Internet shutdowns, hackers, harassment &ndash; the health of the internet is on the line. Sign up and Mozilla will keep you updated on how you can help.",
       "scene1_button_label": "Continue",
       "scene1_button_color": "#712b00",
@@ -115,6 +123,7 @@ const MESSAGES = () => ([
     "template": "newsletter_snippet",
     "content": {
       "scene1_icon": TEST_ICON,
+      "scene1_icon_dark_theme": TEST_ICON,
       "scene1_title": "Be a part of a movement.",
       "scene1_title_icon": "",
       "scene1_text": "Internet shutdowns, hackers, harassment &ndash; the health of the internet is on the line. Sign up and Mozilla will keep you updated on how you can help.",
@@ -139,6 +148,7 @@ const MESSAGES = () => ([
     "template": "fxa_signup_snippet",
     "content": {
       "scene1_icon": TEST_ICON,
+      "scene1_icon_dark_theme": TEST_ICON,
       "scene1_button_label": "Get connected with sync!",
       "scene1_button_color": "#712b00",
       "scene1_button_background_color": "#ff9400",
@@ -146,6 +156,7 @@ const MESSAGES = () => ([
       "scene1_text": "Connect to Firefox by securely syncing passwords, bookmarks, and open tabs.",
       "scene1_title": "Browser better.",
       "scene1_title_icon": TEST_ICON_16,
+      "scene1_title_icon_dark_theme": TEST_ICON_16,
 
       "scene2_text": "Connect to your Firefox account to securely sync passwords, bookmarks, and open tabs.",
       "scene2_title": "Title 123",
@@ -168,14 +179,17 @@ const MESSAGES = () => ([
       scene1_button_color: "#FFFFFF",
       scene1_button_label: "Install now",
       scene1_icon: TEST_ICON,
+      scene1_icon_dark_theme: TEST_ICON,
       scene1_text: "Browse without compromise with Firefox Mobile.",
       scene1_title: "Full-featured. Customizable. Lightning fast",
       scene1_title_icon: TEST_ICON_16,
+      scene1_title_icon_dark_theme: TEST_ICON_16,
 
       scene2_button_label: "Send",
       scene2_disclaimer_html: "The intended recipient of the email must have consented. <privacyLink>Learn more</privacyLink>.",
       scene2_dismiss_button_text: "Dismiss",
       scene2_icon: TEST_ICON,
+      scene2_icon_dark_theme: TEST_ICON,
       scene2_input_placeholder: "Your email address or phone number",
       scene2_text: "Send Firefox to your phone and take a powerful independent browser with you.",
       scene2_title: "Let's do this!",
@@ -195,6 +209,7 @@ const MESSAGES = () => ([
       "text_color": "yellow",
       "selected_button": "donation_amount_first",
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "button_label": "Donate",
       "monthly_checkbox_label_text": "Make my donation monthly",
       "currency_code": "usd",
@@ -211,6 +226,7 @@ const MESSAGES = () => ([
     "template": "eoy_snippet",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "selected_button": "donation_amount_second",
       "button_label": "Donate",
       "monthly_checkbox_label_text": "Make my donation monthly",
@@ -229,6 +245,7 @@ const MESSAGES = () => ([
     "template": "eoy_snippet",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "button_label": "Donate",
       "monthly_checkbox_label_text": "Make my donation monthly",
       "currency_code": "usd",
@@ -248,6 +265,7 @@ const MESSAGES = () => ([
       "button_label": "Get one now!",
       "button_url": "https://www.mozilla.org/en-US/firefox/accounts",
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "title": "Firefox Account!",
       "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
       "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
@@ -261,6 +279,7 @@ const MESSAGES = () => ([
     "template": "simple_snippet",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "title": "Firefox Account!",
       "text": "Sync it, link it, take it with you. All this and more with a Firefox Account.",
       "block_button_text": "Block",
@@ -274,6 +293,7 @@ const MESSAGES = () => ([
     "template": "simple_below_search_snippet",
     "content": {
       "icon": TEST_ICON,
+      "icon_dark_theme": TEST_ICON,
       "text": "Securely store passwords, bookmarks, and more with a Firefox Account. <syncLink>Sign up</syncLink>",
       "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
       "block_button_text": "Block",

@@ -58,6 +58,10 @@ describe("SimpleSnippet", () => {
     const wrapper = mountAndCheckProps({icon_dark_theme: "data:image/gif;base64,R0lGODl"});
     assert.equal(wrapper.find(".icon-dark-theme").prop("src"), "data:image/gif;base64,R0lGODl");
   });
+  it("should render a light theme variant .icon as fallback", () => {
+    const wrapper = mountAndCheckProps({icon_dark_theme: "", icon: "data:image/gif;base64,R0lGODp"});
+    assert.equal(wrapper.find(".icon-dark-theme").prop("src"), "data:image/gif;base64,R0lGODp");
+  });
   it("should render .button_label and default className", () => {
     const wrapper = mountAndCheckProps({
       button_label: "Click here",
