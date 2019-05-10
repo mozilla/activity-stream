@@ -232,9 +232,9 @@ export class _Trailhead extends React.PureComponent {
             {this.getStringValue(content.learn.text)}
           </a>
         </div>
-        <div className="trailheadForm">
-          <h3 data-l10n-id={content.form.title.string_id}>{this.getStringValue(content.form.title)}</h3>
-          <p data-l10n-id={content.form.text.string_id}>{this.getStringValue(content.form.text)}</p>
+        <div role="group" aria-labelledby="joinFormHeader" aria-describedby="joinFormBody" className="trailheadForm">
+          <h3 id="joinFormHeader" data-l10n-id={content.form.title.string_id}>{this.getStringValue(content.form.title)}</h3>
+          <p id="joinFormBody" data-l10n-id={content.form.text.string_id}>{this.getStringValue(content.form.text)}</p>
           <form method="get" action={this.props.fxaEndpoint} target="_blank" rel="noopener noreferrer" onSubmit={this.onSubmit}>
             <input name="service" type="hidden" value="sync" />
             <input name="action" type="hidden" value="email" />
