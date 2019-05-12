@@ -45,6 +45,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.spocCampaignMap = new Map();
     this.cache = new PersistentCache(SECTION_ID, true);
     this._prefs = new Prefs();
+    this.isInitialized = true;
   }
 
   async onInit() {
@@ -111,7 +112,12 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
   uninit() {
     this.storiesLoaded = false;
-    Services.obs.removeObserver(this, "idle-daily");
+    try {
+      Services.obs.removeObserver(this, "idle-daily");
+    } catch (e) {
+      // Attempt to remove unassociated observer which is possible when discovery stream
+      // is enabled and user never used activity stream experience
+    }
     SectionsManager.disableSection(SECTION_ID);
   }
 
@@ -504,7 +510,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
 
     if (this.storiesLoaded) {
       updateContent();
-    } else if (this.contentUpdateQueue) {
+    } else {
       // Delay updating tab content until initial data has been fetched
       this.contentUpdateQueue.push(updateContent);
     }
@@ -662,15 +668,37 @@ this.TopStoriesFeed = class TopStoriesFeed {
       // Load activity stream top stories if fail to determine discovery stream state
       this.discoveryStreamEnabled = false;
     }
-    if (!this.discoveryStreamEnabled) {
+    if (!this.discoveryStreamEnabled && !this.isInitialized) {
       this.initializeProperties();
     }
     this.init();
   }
 
+  handleDisabled(action) {
+    switch (action.type) {
+      case at.PREFS_INITIAL_VALUES:
+        this.lazyLoadTopStories(action.data[DISCOVERY_STREAM_PREF]);
+        break;
+      case at.PREF_CHANGED:
+        if (action.data.name === DISCOVERY_STREAM_PREF && action.data.value && !this.storiesLoaded) {
+          this.lazyLoadTopStories(action.data.value);
+        }
+        break;
+      case at.UNINIT:
+        this.uninit();
+        break;
+    }
+  }
+
   async onAction(action) {
+    if (this.discoveryStreamEnabled) {
+      this.handleDisabled(action);
+      return;
+    }
     switch (action.type) {
       // Check for pref initial values to lazy load activity stream top stories
+      // Here we are not using usual INIT and relying on PREF_INITIAL_VALUES
+      // to check discoverystream pref and load activity stream top stories only if needed.
       case at.PREFS_INITIAL_VALUES:
         this.lazyLoadTopStories(action.data[DISCOVERY_STREAM_PREF]);
         break;

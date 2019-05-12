@@ -93,7 +93,11 @@ describe("Top Stories Feed", () => {
   });
 
   describe("#lazyloading TopStories", () => {
+    beforeEach(() => {
+      instance.discoveryStreamEnabled = true;
+    });
     it("should bind parseOptions to SectionsManager.onceInitialized when discovery stream is true", () => {
+      instance.discoveryStreamEnabled = false;
       instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {"discoverystream.config": JSON.stringify({enabled: true})}});
       assert.calledOnce(sectionsManagerStub.onceInitialized);
     });
@@ -101,32 +105,82 @@ describe("Top Stories Feed", () => {
       instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {"discoverystream.config": JSON.stringify({enabled: false})}});
       assert.calledOnce(sectionsManagerStub.onceInitialized);
     });
-
+    it("Should initialize properties once while lazy loading if not initialized earlier", () => {
+      instance.discoveryStreamEnabled = false;
+      instance.isInitialized = false;
+      sinon.stub(instance, "initializeProperties");
+      instance.lazyLoadTopStories();
+      assert.calledOnce(instance.initializeProperties);
+    });
+    it("should not re-initialize properties", () => {
+      // For discovery stream experience disabled TopStoriesFeed properties
+      // are initialized in constructor and should not be called again while lazy loading topstories
+      sinon.stub(instance, "initializeProperties");
+      instance.discoveryStreamEnabled = false;
+      instance.isInitialized = true;
+      instance.lazyLoadTopStories();
+      assert.notCalled(instance.initializeProperties);
+    });
     it("should have early exit onInit when discovery is true", async () => {
-      instance.discoveryStreamEnabled = true;
-      instance.doContentUpdate = sinon.spy();
+      sinon.stub(instance, "doContentUpdate");
       await instance.onInit();
       assert.notCalled(instance.doContentUpdate);
       assert.isUndefined(instance.storiesLoaded);
     });
-
     it("should complete onInit when discovery is false", async () => {
       instance.discoveryStreamEnabled = false;
-      instance.doContentUpdate = sinon.spy();
+      sinon.stub(instance, "doContentUpdate");
       await instance.onInit();
       assert.calledOnce(instance.doContentUpdate);
       assert.isTrue(instance.storiesLoaded);
     });
+    it("should handle limited actions when discoverystream is enabled", async () => {
+      sinon.spy(instance, "handleDisabled");
+      sinon.stub(instance, "getPocketState");
+      instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {"discoverystream.config": JSON.stringify({enabled: true})}});
+      assert.calledOnce(instance.handleDisabled);
 
+      instance.onAction({type: at.NEW_TAB_REHYDRATED, meta: {fromTarget: {}}});
+      assert.notCalled(instance.getPocketState);
+    });
+    it("should handle NEW_TAB_REHYDRATED when discoverystream is disabled", async () => {
+      instance.discoveryStreamEnabled = false;
+      sinon.spy(instance, "handleDisabled");
+      sinon.stub(instance, "getPocketState");
+      instance.onAction({type: at.PREFS_INITIAL_VALUES, data: {"discoverystream.config": JSON.stringify({enabled: false})}});
+      assert.notCalled(instance.handleDisabled);
+
+      instance.onAction({type: at.NEW_TAB_REHYDRATED, meta: {fromTarget: {}}});
+      assert.calledOnce(instance.getPocketState);
+    });
+    it("should handle UNINIT when discoverystream is enabled", async () => {
+      sinon.stub(instance, "uninit");
+      instance.onAction({type: at.UNINIT});
+      assert.calledOnce(instance.uninit);
+    });
     it("should fire init on PREF_CHANGED", () => {
-      instance.onInit = sinon.spy();
+      sinon.stub(instance, "onInit");
       instance.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.config", value: {}}});
       assert.calledOnce(instance.onInit);
     });
-
     it("should not fire init on PREF_CHANGED if stories are loaded", () => {
-      instance.onInit = sinon.spy();
-      instance.lazyLoadTopStories = sinon.spy();
+      sinon.stub(instance, "onInit");
+      sinon.stub(instance, "lazyLoadTopStories");
+      instance.storiesLoaded = true;
+      instance.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.config", value: {}}});
+      assert.notCalled(instance.lazyLoadTopStories);
+      assert.notCalled(instance.onInit);
+    });
+    it("should fire init on PREF_CHANGED when discoverystream is disabled", () => {
+      instance.discoveryStreamEnabled = false;
+      sinon.stub(instance, "onInit");
+      instance.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.config", value: {}}});
+      assert.calledOnce(instance.onInit);
+    });
+    it("should not fire init on PREF_CHANGED when discoverystream is disabled and stories are loaded", () => {
+      instance.discoveryStreamEnabled = false;
+      sinon.stub(instance, "onInit");
+      sinon.stub(instance, "lazyLoadTopStories");
       instance.storiesLoaded = true;
       instance.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.config", value: {}}});
       assert.notCalled(instance.lazyLoadTopStories);
