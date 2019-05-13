@@ -1,4 +1,5 @@
 import {actionCreators as ac} from "common/Actions.jsm";
+import {clampTitleExcerpt} from "content-src/lib/clamp-title-excerpt";
 import {connect} from "react-redux";
 import {DSEmptyState} from "../DSEmptyState/DSEmptyState.jsx";
 import {DSImage} from "../DSImage/DSImage.jsx";
@@ -44,7 +45,10 @@ export class ListItem extends React.PureComponent {
           url={this.props.url}>
           <div className="ds-list-item-text">
             <div>
-              <div className="ds-list-item-title">{this.props.title}</div>
+              <div className="ds-list-item-title"
+                data-title-lines="2"
+                data-total-lines="4"
+                ref={clampTitleExcerpt}>{this.props.title}</div>
               {this.props.excerpt && <div className="ds-list-item-excerpt">{this.props.excerpt}</div>}
             </div>
             <p>

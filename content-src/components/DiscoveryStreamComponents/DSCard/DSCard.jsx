@@ -1,4 +1,5 @@
 import {actionCreators as ac} from "common/Actions.jsm";
+import {clampTitleExcerpt} from "content-src/lib/clamp-title-excerpt";
 import {DSImage} from "../DSImage/DSImage.jsx";
 import {DSLinkMenu} from "../DSLinkMenu/DSLinkMenu";
 import {ImpressionStats} from "../../DiscoveryStreamImpressionStats/ImpressionStats";
@@ -42,7 +43,10 @@ export class DSCard extends React.PureComponent {
           <div className="meta">
             <div className="info-wrap">
               <p className="source">{this.props.source}</p>
-              <header className="title">{this.props.title}</header>
+              <header className="title"
+                data-title-lines="3"
+                data-total-lines="6"
+                ref={clampTitleExcerpt}>{this.props.title}</header>
               {this.props.excerpt && <p className="excerpt">{this.props.excerpt}</p>}
             </div>
             {this.props.context && (
