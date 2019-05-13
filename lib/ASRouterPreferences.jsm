@@ -187,6 +187,9 @@ class _ASRouterPreferences {
       for (const id of Object.keys(USER_PREFERENCES)) {
         Services.prefs.removeObserver(USER_PREFERENCES[id], this);
       }
+      for (const targetingPref of TARGETING_PREFERENCES) {
+        Services.prefs.removeObserver(targetingPref, this);
+      }
     }
     Object.assign(this, DEFAULT_STATE);
     this._callbacks.clear();

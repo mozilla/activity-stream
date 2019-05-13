@@ -408,16 +408,19 @@ class _ASRouter {
   }
 
   async onPrefChange(prefName) {
-    if (prefName in TARGETING_PREFERENCES) {
+    if (TARGETING_PREFERENCES.includes(prefName)) {
       // Notify all tabs of messages that have become invalid after pref change
       const invalidMessages = [];
       for (const msg of this._getUnblockedMessages()) {
+        if (!msg.targeting) {
+          continue;
+        }
         const isMatch = await ASRouterTargeting.isMatch(msg.targeting);
         if (!isMatch) {
           invalidMessages.push(msg.id);
         }
       }
-      this.dispatchToAS(ac.AlsoToPreloaded({type: at.AS_ROUTER_TARGETING_UPDATE, data: invalidMessages}));
+      this.messageChannel.sendAsyncMessage(OUTGOING_MESSAGE_NAME, {type: at.AS_ROUTER_TARGETING_UPDATE, data: invalidMessages});
     } else {
       // Update message providers and fetch new messages on pref change
       this._loadLocalProviders();
