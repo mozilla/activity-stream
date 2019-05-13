@@ -157,6 +157,7 @@ export class _Trailhead extends React.PureComponent {
 
   hideCardPanel() {
     this.setState({showCardPanel: false});
+    this.props.onDismissBundle();
   }
 
   revealCards() {
