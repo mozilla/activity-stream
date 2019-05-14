@@ -107,7 +107,7 @@ describe("Top Stories Feed", () => {
     });
     it("Should initialize properties once while lazy loading if not initialized earlier", () => {
       instance.discoveryStreamEnabled = false;
-      instance.isInitialized = false;
+      instance.propertiesInitialized = false;
       sinon.stub(instance, "initializeProperties");
       instance.lazyLoadTopStories();
       assert.calledOnce(instance.initializeProperties);
@@ -117,7 +117,7 @@ describe("Top Stories Feed", () => {
       // are initialized in constructor and should not be called again while lazy loading topstories
       sinon.stub(instance, "initializeProperties");
       instance.discoveryStreamEnabled = false;
-      instance.isInitialized = true;
+      instance.propertiesInitialized = true;
       instance.lazyLoadTopStories();
       assert.notCalled(instance.initializeProperties);
     });
@@ -165,10 +165,10 @@ describe("Top Stories Feed", () => {
     });
     it("should not fire init on PREF_CHANGED if stories are loaded", () => {
       sinon.stub(instance, "onInit");
-      sinon.stub(instance, "lazyLoadTopStories");
+      sinon.spy(instance, "lazyLoadTopStories");
       instance.storiesLoaded = true;
       instance.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.config", value: {}}});
-      assert.notCalled(instance.lazyLoadTopStories);
+      assert.calledOnce(instance.lazyLoadTopStories);
       assert.notCalled(instance.onInit);
     });
     it("should fire init on PREF_CHANGED when discoverystream is disabled", () => {
@@ -180,10 +180,10 @@ describe("Top Stories Feed", () => {
     it("should not fire init on PREF_CHANGED when discoverystream is disabled and stories are loaded", () => {
       instance.discoveryStreamEnabled = false;
       sinon.stub(instance, "onInit");
-      sinon.stub(instance, "lazyLoadTopStories");
+      sinon.spy(instance, "lazyLoadTopStories");
       instance.storiesLoaded = true;
       instance.onAction({type: at.PREF_CHANGED, data: {name: "discoverystream.config", value: {}}});
-      assert.notCalled(instance.lazyLoadTopStories);
+      assert.calledOnce(instance.lazyLoadTopStories);
       assert.notCalled(instance.onInit);
     });
   });

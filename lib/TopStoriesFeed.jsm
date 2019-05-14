@@ -34,6 +34,9 @@ const DISCOVERY_STREAM_PREF = "discoverystream.config";
 
 this.TopStoriesFeed = class TopStoriesFeed {
   constructor(ds) {
+    // Use discoverystream config pref default values for fast path and
+    // if needed lazy load activity stream top stories feed based on
+    // actual user preference when PREFS_INITIAL_VALUES and PREF_CHANGED is invoked
     this.discoveryStreamEnabled = ds && ds.value && JSON.parse(ds.value).enabled;
     if (!this.discoveryStreamEnabled) {
       this.initializeProperties();
@@ -45,7 +48,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     this.spocCampaignMap = new Map();
     this.cache = new PersistentCache(SECTION_ID, true);
     this._prefs = new Prefs();
-    this.isInitialized = true;
+    this.propertiesInitialized = true;
   }
 
   async onInit() {
@@ -668,7 +671,13 @@ this.TopStoriesFeed = class TopStoriesFeed {
       // Load activity stream top stories if fail to determine discovery stream state
       this.discoveryStreamEnabled = false;
     }
-    if (!this.discoveryStreamEnabled && !this.isInitialized) {
+
+    // Return without invoking initialization if top stories are loaded
+    if (this.storiesLoaded) {
+      return;
+    }
+
+    if (!this.discoveryStreamEnabled && !this.propertiesInitialized) {
       this.initializeProperties();
     }
     this.init();
@@ -680,7 +689,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         this.lazyLoadTopStories(action.data[DISCOVERY_STREAM_PREF]);
         break;
       case at.PREF_CHANGED:
-        if (action.data.name === DISCOVERY_STREAM_PREF && action.data.value && !this.storiesLoaded) {
+        if (action.data.name === DISCOVERY_STREAM_PREF) {
           this.lazyLoadTopStories(action.data.value);
         }
         break;
@@ -697,7 +706,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
     }
     switch (action.type) {
       // Check for pref initial values to lazy load activity stream top stories
-      // Here we are not using usual INIT and relying on PREF_INITIAL_VALUES
+      // Here we are not using usual INIT and relying on PREFS_INITIAL_VALUES
       // to check discoverystream pref and load activity stream top stories only if needed.
       case at.PREFS_INITIAL_VALUES:
         this.lazyLoadTopStories(action.data[DISCOVERY_STREAM_PREF]);
@@ -764,7 +773,7 @@ this.TopStoriesFeed = class TopStoriesFeed {
         break;
       }
       case at.PREF_CHANGED:
-        if (action.data.name === DISCOVERY_STREAM_PREF && action.data.value && !this.storiesLoaded) {
+        if (action.data.name === DISCOVERY_STREAM_PREF) {
           this.lazyLoadTopStories(action.data.value);
         }
         // Check if spocs was disabled. Remove them if they were.
