@@ -302,7 +302,7 @@ const FEEDS_DATA = [
   },
   {
     name: "section.topstories",
-    factory: () => new TopStoriesFeed(),
+    factory: () => new TopStoriesFeed(PREFS_CONFIG.get("discoverystream.config")),
     title: "Fetches content recommendations from a configurable content provider",
     // Dynamically determine if Pocket should be shown for a geo / locale
     getValue: ({geo, locale}) => {
