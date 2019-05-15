@@ -371,9 +371,10 @@
     color: var(--newtab-text-conditional-color);
     background: var(--trailhead-card-button-background-color);
     border: 0;
-    height: 30px;
+    margin: 30px;
     min-width: 70%;
-    padding: 0 14px;
+    padding: 6px 14px;
+    white-space: pre-wrap;
 
     &:focus,
     &:hover {
@@ -391,7 +392,6 @@
   }
 
   .onboardingButtonContainer {
-    height: 60px;
     position: absolute;
     bottom: 0;
     left: 0;
