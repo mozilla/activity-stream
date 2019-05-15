@@ -168,6 +168,14 @@ export class ASRouterUISurface extends React.PureComponent {
     ASRouterUtils.sendMessage({type: "TRIGGER", data: {trigger: {id: "showOnboarding"}}});
   }
 
+  clearMessage(id) {
+    if (id === this.state.message.id) {
+      this.setState({message: {}});
+      // Remove any styles related to the RTAMO message
+      document.body.classList.remove("welcome", "hide-main", "amo");
+    }
+  }
+
   onMessageFromParent({data: action}) {
     switch (action.type) {
       case "SET_MESSAGE":
@@ -177,11 +185,7 @@ export class ASRouterUISurface extends React.PureComponent {
         this.setState({bundle: action.data});
         break;
       case "CLEAR_MESSAGE":
-        if (action.data.id === this.state.message.id) {
-          this.setState({message: {}});
-          // Remove any styles related to the RTAMO message
-          document.body.classList.remove("welcome", "hide-main", "amo");
-        }
+        this.clearMessage(action.data.id);
         break;
       case "CLEAR_PROVIDER":
         if (action.data.id === this.state.message.provider) {
@@ -195,6 +199,10 @@ export class ASRouterUISurface extends React.PureComponent {
         break;
       case "CLEAR_ALL":
         this.setState({message: {}, bundle: {}});
+        break;
+      case "AS_ROUTER_TARGETING_UPDATE":
+        action.data.forEach(id => this.clearMessage(id));
+        break;
     }
   }
 
