@@ -161,7 +161,16 @@ export class ASRouterUISurface extends React.PureComponent {
   }
 
   dismissBundle(bundle) {
-    return () => ASRouterUtils.dismissBundle(bundle);
+    return () => {
+      ASRouterUtils.dismissBundle(bundle);
+      this.sendUserActionTelemetry({
+        event: "DISMISS",
+        id: "onboarding-cards",
+        message_id: bundle.map(m => m.id).join(","),
+        // Passing the action because some bundles (Trailhead) don't have a provider set
+        action: "onboarding_user_event",
+      });
+    };
   }
 
   triggerOnboarding() {
@@ -268,7 +277,7 @@ export class ASRouterUISurface extends React.PureComponent {
           {...this.state.bundle}
           UISurface="NEWTAB_OVERLAY"
           onAction={ASRouterUtils.executeAction}
-          onDoneButton={this.dismissBundle(this.state.bundle.bundle)}
+          onDismissBundle={this.dismissBundle(this.state.bundle.bundle)}
           sendUserActionTelemetry={this.sendUserActionTelemetry} />);
     }
     return null;
@@ -310,7 +319,7 @@ export class ASRouterUISurface extends React.PureComponent {
         document={this.props.document}
         message={message}
         onAction={ASRouterUtils.executeAction}
-        onDoneButton={this.dismissBundle(this.state.bundle.bundle)}
+        onDismissBundle={this.dismissBundle(this.state.message.bundle)}
         sendUserActionTelemetry={this.sendUserActionTelemetry}
         dispatch={this.props.dispatch}
         fxaEndpoint={this.props.fxaEndpoint} />);
