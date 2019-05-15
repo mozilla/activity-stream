@@ -4,6 +4,9 @@ import {RichText} from "../../components/RichText/RichText";
 import {SimpleSnippet} from "../SimpleSnippet/SimpleSnippet";
 import {SnippetBase} from "../../components/SnippetBase/SnippetBase";
 
+// Alt text if available; in the future this should come from the server. See bug 1551711
+const ICON_ALT_TEXT = "";
+
 export class SubmitFormSnippet extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -155,15 +158,14 @@ export class SubmitFormSnippet extends React.PureComponent {
       name="email"
       required={true}
       placeholder={placholder}
-      onChange={this.props.validateInput ? this.onInputChange : null}
-      autoFocus={true} />);
+      onChange={this.props.validateInput ? this.onInputChange : null} />);
   }
 
   renderSignupView() {
     const {content} = this.props;
     const containerClass = `SubmitFormSnippet ${this.props.className}`;
     return (<SnippetBase {...this.props} className={containerClass} footerDismiss={true}>
-        {content.scene2_icon ? <div className="scene2Icon"><img src={content.scene2_icon} /></div> : null}
+        {content.scene2_icon ? <div className="scene2Icon"><img src={content.scene2_icon} alt={ICON_ALT_TEXT} /></div> : null}
         <div className="message">
           <p>
             {content.scene2_title && <h3 className="scene2Title">{content.scene2_title}</h3>}

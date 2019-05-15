@@ -4,6 +4,8 @@ import {safeURI} from "../../template-utils";
 import {SnippetBase} from "../../components/SnippetBase/SnippetBase";
 
 const DEFAULT_ICON_PATH = "chrome://branding/content/icon64.png";
+// Alt text if available; in the future this should come from the server. See bug 1551711
+const ICON_ALT_TEXT = "";
 
 export class SimpleBelowSearchSnippet extends React.PureComponent {
   renderText() {
@@ -24,7 +26,7 @@ export class SimpleBelowSearchSnippet extends React.PureComponent {
     }
 
     return (<SnippetBase {...props} className={className} textStyle={this.props.textStyle}>
-      <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" />
+      <img src={safeURI(props.content.icon) || DEFAULT_ICON_PATH} className="icon" alt={ICON_ALT_TEXT} />
       <div>
         <p className="body">{this.renderText()}</p>
         {this.props.extraContent}
