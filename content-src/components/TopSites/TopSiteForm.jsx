@@ -164,7 +164,9 @@ export class TopSiteForm extends React.PureComponent {
       customScreenshotUrl && this.props.previewUrl === this.cleanUrl(customScreenshotUrl);
 
     if (!this.state.showCustomScreenshotForm) {
-      return (<A11yLinkButton onClick={this.onEnableScreenshotUrlForm} className="enable-custom-image-input" />);
+      return (<A11yLinkButton onClick={this.onEnableScreenshotUrlForm} className="enable-custom-image-input">
+                <FormattedMessage id="topsites_form_use_image_link" />
+              </A11yLinkButton>);
     }
     return (<div className="custom-image-input-container">
       <TopSiteFormInput
