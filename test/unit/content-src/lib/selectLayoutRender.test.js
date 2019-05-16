@@ -283,6 +283,8 @@ describe("selectLayoutRender", () => {
     assert.equal(layoutRender[0].components[0].type, "foo1");
     assert.equal(layoutRender[0].components[1].type, "foo2");
     assert.isTrue(layoutRender[0].components[2].data.recommendations[0].placeholder);
+    assert.lengthOf(layoutRender[0].components, 3);
+    assert.isUndefined(layoutRender[0].components[3]);
   });
   it("should render everything if everything is ready", () => {
     const fakeLayout = [{

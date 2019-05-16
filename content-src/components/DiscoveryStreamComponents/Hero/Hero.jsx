@@ -62,7 +62,7 @@ export class Hero extends React.PureComponent {
 
     if (!heroRec || heroRec.placeholder) {
       heroCard = (
-        <div className="ds-card placeholder" />
+        <PlaceholderDSCard/>
       );
     } else {
       heroCard = (
