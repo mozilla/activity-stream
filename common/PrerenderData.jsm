@@ -26,8 +26,6 @@ class _PrerenderData {
         return result;
       } else if (next && next.oneOf) {
         return result.concat(next.oneOf);
-      } else if (next && next.indexedDB) {
-        return result.concat(next.indexedDB);
       } else if (next && next.jsonPrefs) {
         return result.concat(next.jsonPrefs);
       }
@@ -44,26 +42,19 @@ class _PrerenderData {
     }
   }
 
-  arePrefsValid(getPref, indexedDBPrefs) {
+  arePrefsValid(getPref) {
     for (const prefs of this.validation) {
       // {oneOf: ["foo", "bar"]}
       if (prefs && prefs.oneOf && !prefs.oneOf.some(name => getPref(name) === this.initialPrefs[name])) {
         return false;
-
-        // {indexedDB: ["foo", "bar"]}
-      } else if (indexedDBPrefs && prefs && prefs.indexedDB) {
-        const anyModifiedPrefs = prefs.indexedDB.some(prefName => indexedDBPrefs.some(pref => pref && pref[prefName]));
-        if (anyModifiedPrefs) {
-          return false;
-        }
-        // {jsonPrefs: ["foo", "bar"]}
+      // {jsonPrefs: ["foo", "bar"]}
       } else if (prefs && prefs.jsonPrefs) {
         const isPrefModified =
           prefs.jsonPrefs.some(name => this._isPrefEnabled(getPref(name)) !== this.initialPrefs[name].enabled);
         if (isPrefModified) {
           return false;
         }
-        // "foo"
+      // "foo"
       } else if (getPref(prefs) !== this.initialPrefs[prefs]) {
         return false;
       }
@@ -74,14 +65,10 @@ class _PrerenderData {
 
 this.PrerenderData = new _PrerenderData({
   initialPrefs: {
-    "feeds.topsites": true,
     "showSearch": true,
-    "topSitesRows": 1,
+    "feeds.topsites": true,
     "feeds.section.topstories": true,
     "feeds.section.highlights": true,
-    "sectionOrder": "topsites,topstories,highlights",
-    "collapsed": false,
-    "discoverystream.config": {"enabled": false},
   },
   // Prefs listed as invalidating will prevent the prerendered version
   // of AS from being used if their value is something other than what is listed
@@ -90,35 +77,13 @@ this.PrerenderData = new _PrerenderData({
   // will result in users who have modified some of their preferences not being
   // able to get the benefits of prerendering.
   validation: [
-    "feeds.topsites",
     "showSearch",
-    "topSitesRows",
-    "sectionOrder",
     // This means if either of these are set to their default values,
     // prerendering can be used.
-    {oneOf: ["feeds.section.topstories", "feeds.section.highlights"]},
-    // If any component has the following preference set to `true` it will
-    // invalidate the prerendered version.
-    {indexedDB: ["collapsed"]},
+    {oneOf: ["feeds.topsites", "feeds.section.topstories", "feeds.section.highlights"]},
     // For below prefs, parse value to check enabled property. If enabled property
     // differs from initial prefs enabled value, prerendering cannot be used
-    {jsonPrefs: ["discoverystream.config"]},
-  ],
-  initialSections: [
-    {
-      enabled: true,
-      icon: "pocket",
-      id: "topstories",
-      order: 1,
-      title: {id: "header_recommended_by", values: {provider: "Pocket"}},
-    },
-    {
-      enabled: true,
-      id: "highlights",
-      icon: "highlights",
-      order: 2,
-      title: {id: "header_highlights"},
-    },
+    {jsonPrefs: []},
   ],
 });
 

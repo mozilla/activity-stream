@@ -16,16 +16,6 @@ describe("prerenderStore", () => {
     const state = store.getState();
     assert.equal(state.Prefs.values, PrerenderData.initialPrefs);
   });
-  it("should add TopStories as the first section", () => {
-    const store = prerenderStore();
-
-    const state = store.getState();
-    // TopStories
-    const [firstSection] = state.Sections;
-    assert.equal(firstSection.id, "topstories");
-    // it should start uninitialized
-    assert.equal(firstSection.initialized, false);
-  });
 });
 
 describe("prerender", () => {

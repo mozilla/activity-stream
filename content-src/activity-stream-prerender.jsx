@@ -15,7 +15,6 @@ import ReactDOMServer from "react-dom/server";
 export function prerenderStore() {
   const store = initStore(reducers, INITIAL_STATE);
   store.dispatch({type: at.PREFS_INITIAL_VALUES, data: PrerenderData.initialPrefs});
-  PrerenderData.initialSections.forEach(data => store.dispatch({type: at.SECTION_REGISTER, data}));
   return store;
 }
 
@@ -27,6 +26,7 @@ export function prerender(locale, strings,
     <Provider store={store}>
       <Base
         isPrerendered={true}
+        isStaticRender={true}
         locale={locale}
         strings={strings} />
     </Provider>);

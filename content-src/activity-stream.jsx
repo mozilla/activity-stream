@@ -22,6 +22,7 @@ ReactDOM.hydrate(<Provider store={store}>
   <Base
     isFirstrun={global.document.location.href === "about:welcome"}
     isPrerendered={!!global.gActivityStreamPrerenderedState}
+    isStaticRender={false}
     locale={global.document.documentElement.lang}
     strings={global.gActivityStreamStrings} />
 </Provider>, document.getElementById("root"));

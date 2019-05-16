@@ -103,54 +103,6 @@ describe("PrefsFeed", () => {
 
       assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, false);
     });
-    it("should set prerender pref to true if indexedDB prefs are unchanged", async () => {
-      setFakePrefsWithInitialValue();
-      feed._storage.getAll.resolves([{collapsed: false}, {collapsed: false}]);
-
-      await feed._setPrerenderPref();
-
-      assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, true);
-    });
-    it("should set prerender pref to false if a indexedDB pref changed value", async () => {
-      setFakePrefsWithInitialValue();
-      FAKE_PREFS.set("showSearch", false);
-      feed._storage.getAll.resolves([{collapsed: false}, {collapsed: true}]);
-
-      await feed._setPrerenderPref();
-
-      assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, false);
-    });
-  });
-  describe("indexedDB changes", () => {
-    it("should call _setIndexedDBPref on UPDATE_SECTION_PREFS", () => {
-      sandbox.stub(feed, "_setIndexedDBPref");
-
-      feed.onAction({type: at.UPDATE_SECTION_PREFS, data: {}});
-
-      assert.calledOnce(feed._setIndexedDBPref);
-    });
-    it("should store the pref value", async () => {
-      sandbox.stub(feed, "_setPrerenderPref");
-      await feed._setIndexedDBPref("topsites", "foo");
-
-      assert.calledOnce(feed._storage.set);
-      assert.calledWith(feed._storage.set, "topsites", "foo");
-    });
-    it("should call _setPrerenderPref", async () => {
-      sandbox.stub(feed, "_setPrerenderPref");
-      await feed._setIndexedDBPref("topsites", "foo");
-
-      assert.calledOnce(feed._setPrerenderPref);
-    });
-    it("should catch any save errors", () => {
-      const globals = new GlobalOverrider();
-      globals.sandbox.spy(global.Cu, "reportError");
-      feed._storage.set.throws(new Error());
-
-      assert.doesNotThrow(() => feed._setIndexedDBPref());
-      assert.calledOnce(Cu.reportError);
-      globals.restore();
-    });
   });
   describe("onPrefChanged prerendering", () => {
     it("should not change the prerender pref if the pref is not included in invalidatingPrefs", () => {
@@ -193,6 +145,29 @@ describe("PrefsFeed", () => {
       await feed._setPrerenderPref();
 
       assert.calledWith(feed._prefs.set, PRERENDER_PREF_NAME, false);
+    });
+    it("should set storage pref on UPDATE_SECTION_PREFS", async () => {
+      await feed.onAction({
+        type: at.UPDATE_SECTION_PREFS,
+        data: {id: "topsites", value: {collapsed: false}},
+      });
+      assert.calledWith(feed._storage.set, "topsites", {collapsed: false});
+    });
+    it("should set storage pref with section prefix on UPDATE_SECTION_PREFS", async () => {
+      await feed.onAction({
+        type: at.UPDATE_SECTION_PREFS,
+        data: {id: "topstories", value: {collapsed: false}},
+      });
+      assert.calledWith(feed._storage.set, "feeds.section.topstories", {collapsed: false});
+    });
+    it("should catch errors on UPDATE_SECTION_PREFS", async () => {
+      feed._storage.set.throws(new Error("foo"));
+      assert.doesNotThrow(async () => {
+        await feed.onAction({
+          type: at.UPDATE_SECTION_PREFS,
+          data: {id: "topstories", value: {collapsed: false}},
+        });
+      });
     });
   });
 });

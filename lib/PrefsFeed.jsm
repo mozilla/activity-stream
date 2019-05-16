@@ -22,9 +22,8 @@ this.PrefsFeed = class PrefsFeed {
 
   // If any of the prefs are set to something other than what the
   // prerendered version of AS expects, we can't use it.
-  async _setPrerenderPref() {
-    const indexedDBPrefs = await this._storage.getAll();
-    const prefsAreValid = PrerenderData.arePrefsValid(pref => this._prefs.get(pref), indexedDBPrefs);
+  _setPrerenderPref() {
+    const prefsAreValid = PrerenderData.arePrefsValid(pref => this._prefs.get(pref));
     this._prefs.set("prerender", prefsAreValid);
   }
 
@@ -96,7 +95,7 @@ this.PrefsFeed = class PrefsFeed {
     }
   }
 
-  onAction(action) {
+  async onAction(action) {
     switch (action.type) {
       case at.INIT:
         this.init();
@@ -108,7 +107,7 @@ this.PrefsFeed = class PrefsFeed {
         this._prefs.set(action.data.name, action.data.value);
         break;
       case at.UPDATE_SECTION_PREFS:
-        this._setIndexedDBPref(action.data.id, action.data.value);
+        await this._setIndexedDBPref(action.data.id, action.data.value);
         break;
     }
   }

@@ -8,12 +8,6 @@ describe("_PrerenderData", () => {
 
       assert.equal(instance.initialPrefs, initialPrefs);
     });
-    it("should set .initialSections", () => {
-      const initialSections = [{id: "foo"}];
-      const instance = new _PrerenderData({initialSections});
-
-      assert.equal(instance.initialSections, initialSections);
-    });
     it("should set .validation and .invalidatingPrefs in the constructor", () => {
       const validation = ["foo", "bar", {oneOf: ["baz", "qux"]}];
       const instance = new _PrerenderData({validation});
@@ -84,15 +78,6 @@ describe("_PrerenderData", () => {
       });
 
       assert.isFalse(instance.arePrefsValid(getPrefs));
-    });
-    it("should return false if an indexedDB pref is changed", () => {
-      FAKE_PREFS = {foo: true, bar: false};
-      const instance = new _PrerenderData({
-        initialPrefs: {foo: true, bar: true},
-        validation: ["foo", {indexedDB: ["collapsed"]}],
-      });
-
-      assert.isFalse(instance.arePrefsValid(getPrefs, [{collapsed: true}]));
     });
     it("should return false if any of jsonPrefs group enabled value not matches", () => {
       FAKE_PREFS = {foo: true, bar: "{\"enabled\": true}", baz: "{\"enabled\": true}"};

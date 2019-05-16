@@ -83,7 +83,7 @@ export class _Base extends React.PureComponent {
     const {initialized} = App;
     const isDevtoolsEnabled = props.Prefs.values["asrouter.devtoolsEnabled"];
 
-    if (!props.isPrerendered && !initialized) {
+    if (!props.isStaticRender && !initialized) {
       return null;
     }
 
@@ -134,6 +134,9 @@ export class BaseContent extends React.PureComponent {
     const {initialized} = App;
     const prefs = props.Prefs.values;
 
+    // For static rendering, only search should be returned
+    const {isStaticRender} = props;
+    const shouldShowSearch = isStaticRender || prefs.showSearch;
     const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
     const isDiscoveryStream = props.DiscoveryStream.config && props.DiscoveryStream.config.enabled;
     let filteredSections = props.Sections;
@@ -154,29 +157,29 @@ export class BaseContent extends React.PureComponent {
       prefs.showSearch && noSectionsEnabled && "only-search",
     ].filter(v => v).join(" ");
 
-    return (
-      <div>
-        <div className={outerClassName}>
-          <main>
-            {prefs.showSearch &&
-              <div className="non-collapsible-section">
-                <ErrorBoundary>
-                  <Search showLogo={noSectionsEnabled} handoffEnabled={searchHandoffEnabled} {...props.Search} />
-                </ErrorBoundary>
-              </div>
-            }
-            <ASRouterUISurface fxaEndpoint={this.props.Prefs.values.fxa_endpoint} dispatch={this.props.dispatch} />
-            <div className={`body-wrapper${(initialized ? " on" : "")}`}>
-              {isDiscoveryStream ? (
-                <ErrorBoundary className="borderless-error">
-                  <DiscoveryStreamBase />
-                </ErrorBoundary>) : <Sections />}
-              <PrefsButton onClick={this.openPreferences} />
-            </div>
-            <ConfirmDialog />
-          </main>
-        </div>
-      </div>);
+    return (<div className={outerClassName}>
+      <main>
+        {shouldShowSearch &&
+          <div className="non-collapsible-section">
+            <ErrorBoundary>
+              <Search showLogo={noSectionsEnabled} handoffEnabled={searchHandoffEnabled} {...props.Search} />
+            </ErrorBoundary>
+          </div>
+        }
+
+        {!isStaticRender && <>
+          <ASRouterUISurface fxaEndpoint={this.props.Prefs.values.fxa_endpoint} dispatch={this.props.dispatch} />
+          <div className={`body-wrapper${(initialized ? " on" : "")}`}>
+            {isDiscoveryStream ? (
+              <ErrorBoundary className="borderless-error">
+                <DiscoveryStreamBase />
+              </ErrorBoundary>) : <Sections />}
+            <PrefsButton onClick={this.openPreferences} />
+          </div>
+          <ConfirmDialog />
+        </>}
+    </main>
+  </div>);
   }
 }
 
