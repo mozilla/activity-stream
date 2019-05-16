@@ -27,9 +27,9 @@ You will need the following:
 To install dependencies, run the following from the root of the mozilla-central repository
 (or cd into browser/components/newtab to omit the `--prefix` in any of these commands):
 
-```
-npm install --prefix browser/components/newtab
-```
+.. code-block:: shell
+
+  npm install --prefix browser/components/newtab
 
 
 Which files should you edit?
@@ -44,18 +44,18 @@ Building assets and running Firefox
 
 To build assets and run Firefox, run the following from the root of the mozilla-central repository:
 
-```
-npm run bundle --prefix browser/components/newtab && ./mach run
-```
+.. code-block:: shell
+
+  npm run bundle --prefix browser/components/newtab && ./mach run
 
 Running tests
-`````````````````
+`````````````
 
 Mochi tests and xpcshell tests can be run normally. To run our additional unit tests, you can run the following:
 
-```
-npm test --prefix browser/components/newtab
-```
+.. code-block:: shell
+
+  npm test --prefix browser/components/newtab
 
 The Newtab team is currently responsible for fixing any test failures that result from changes
 until these tests are running in Try, so this is currently an optional step.
