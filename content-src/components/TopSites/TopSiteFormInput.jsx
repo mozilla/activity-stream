@@ -43,16 +43,26 @@ export class TopSiteFormInput extends React.PureComponent {
     this.input = input;
   }
 
-  render() {
+  renderLoadingOrCloseButton() {
     const showClearButton = this.props.value && this.props.onClear;
+
+    if (this.props.loading) {
+      return (<div className="loading-container"><div className="loading-animation" /></div>);
+    } else if (showClearButton) {
+      return (<button className="icon icon-clear-input"
+        onClick={this.props.onClear}
+        onKeyPress={this.onClearIconPress}
+        role="button" />);
+    }
+    return null;
+  }
+
+  render() {
     const {typeUrl} = this.props;
     const {validationError} = this.state;
 
     return (<label><FormattedMessage id={this.props.titleId} />
       <div className={`field ${typeUrl ? "url" : ""}${validationError ? " invalid" : ""}`}>
-        {this.props.loading ?
-          <div className="loading-container"><div className="loading-animation" /></div> :
-          showClearButton && <div className="icon icon-clear-input" onClick={this.props.onClear} onKeyPress={this.onClearIconPress} role="button" tabIndex="0" />}
         <input type="text"
           value={this.props.value}
           ref={this.onMount}
@@ -62,6 +72,7 @@ export class TopSiteFormInput extends React.PureComponent {
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus={this.props.shouldFocus}
           disabled={this.props.loading} />
+        {this.renderLoadingOrCloseButton()}
         {validationError &&
           <aside className="error-tooltip">
             <FormattedMessage id={this.props.errorMessageId} />
