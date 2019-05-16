@@ -9,28 +9,6 @@ const TEST_ICON_BW = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQA
 
 const MESSAGES = () => ([
   {
-    "weight": 100,
-    "id": "SIMPLE_TEST_1_LightDark",
-    "template": "simple_snippet",
-    "campaign": "test_campaign_blocking",
-    "content": {
-      "icon": "chrome://branding/content/icon64.png",
-      "icon_dark_theme": TEST_ICON_BW,
-      "title": "Firefox Account!",
-      "title_icon": "chrome://branding/content/icon16.png",
-      "title_icon_dark_theme": TEST_ICON_BW,
-      "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
-      "links": {
-        "syncLink": {
-          "url": "https://www.mozilla.org/en-US/firefox/accounts",
-        },
-      },
-      "block_button_text": "Block",
-    },
-    "targeting": "providerCohorts.snippets_local_testing == \"SHOW_TEST\"",
-    "provider": "snippets_local_testing",
-  },
-  {
     "id": "SIMPLE_TEST_1",
     "template": "simple_snippet",
     "campaign": "test_campaign_blocking",
@@ -40,6 +18,21 @@ const MESSAGES = () => ([
       "title": "Firefox Account!",
       "title_icon": TEST_ICON_16,
       "title_icon_dark_theme": TEST_ICON_BW,
+      "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
+      "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
+      "block_button_text": "Block",
+    },
+  },
+  {
+    "id": "SIMPLE_TEST_1_NO_DARK_THEME",
+    "template": "simple_snippet",
+    "campaign": "test_campaign_blocking",
+    "content": {
+      "icon": TEST_ICON,
+      "icon_dark_theme": "",
+      "title": "Firefox Account!",
+      "title_icon": TEST_ICON_16,
+      "title_icon_dark_theme": "",
       "text": "<syncLink>Sync it, link it, take it with you</syncLink>. All this and more with a Firefox Account.",
       "links": {"syncLink": {"url": "https://www.mozilla.org/en-US/firefox/accounts"}},
       "block_button_text": "Block",
