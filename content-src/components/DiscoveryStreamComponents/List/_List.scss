@@ -209,7 +209,7 @@ $item-line-height: 20;
     @include dark-theme-only {
       color: $grey-10-80;
     }
-    color: var(--newtab-text-secondary-color);
+    color: $grey-50;
     margin: 4px 0 8px;
   }
 
