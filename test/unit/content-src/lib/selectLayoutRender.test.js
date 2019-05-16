@@ -372,4 +372,19 @@ describe("selectLayoutRender", () => {
     assert.equal(layoutRender[0].components[0].type, "TopSites");
     assert.equal(layoutRender[1], undefined);
   });
+  it("should not render a component if filtered", () => {
+    const fakeLayout = [{
+      width: 3,
+      components: [
+        {type: "Message"},
+        {type: "TopSites"},
+      ],
+    }];
+    store.dispatch({type: at.DISCOVERY_STREAM_LAYOUT_UPDATE, data: {layout: fakeLayout}});
+
+    const {layoutRender} = selectLayoutRender(store.getState().DiscoveryStream, {"feeds.topsites": true}, []);
+
+    assert.equal(layoutRender[0].components[0].type, "TopSites");
+    assert.equal(layoutRender[0].components[1], undefined);
+  });
 });
