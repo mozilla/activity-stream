@@ -105,7 +105,7 @@ export const selectLayoutRender = (state, prefs, rickRollCache) => {
         ...row,
         components,
       });
-      for (const component of row.components) {
+      for (const component of row.components.filter(c => !filterArray.includes(c.type))) {
         if (component.feed) {
           const spocsConfig = component.spocs;
           // Are we still waiting on a feed/spocs, render what we have, and bail out early.
