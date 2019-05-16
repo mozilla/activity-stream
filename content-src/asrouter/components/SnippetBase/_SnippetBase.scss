@@ -103,13 +103,17 @@
 // based on which theme is currently active
 body {
   &:not([lwt-newtab-brighttext]) {
-    .icon-dark-theme {
+    .icon-dark-theme,
+    .icon.icon-dark-theme,
+    img.icon-dark-theme {
       display: none;
     }
   }
 
   &[lwt-newtab-brighttext] {
-    .icon-light-theme {
+    .icon-light-theme,
+    .icon.icon-light-theme,
+    img.icon-light-theme {
       display: none;
     }
   }
