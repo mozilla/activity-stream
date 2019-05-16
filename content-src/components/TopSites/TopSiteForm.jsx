@@ -1,4 +1,5 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
+import {A11yLinkButton} from "content-src/components/A11yLinkButton/A11yLinkButton";
 import {FormattedMessage} from "react-intl";
 import React from "react";
 import {TOP_SITES_SOURCE} from "./TopSitesConstants";
@@ -163,9 +164,7 @@ export class TopSiteForm extends React.PureComponent {
       customScreenshotUrl && this.props.previewUrl === this.cleanUrl(customScreenshotUrl);
 
     if (!this.state.showCustomScreenshotForm) {
-      return (<button className="enable-custom-image-input" onClick={this.onEnableScreenshotUrlForm}>
-        <FormattedMessage id="topsites_form_use_image_link" />
-      </button>);
+      return (<A11yLinkButton onClick={this.onEnableScreenshotUrlForm} className="enable-custom-image-input" />);
     }
     return (<div className="custom-image-input-container">
       <TopSiteFormInput

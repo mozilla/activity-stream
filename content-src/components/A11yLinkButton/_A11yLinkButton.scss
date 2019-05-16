@@ -1,1 +1,10 @@
-// CSS for the A11yLinkButton goes here!
+
+.a11y-link-button {
+  border: 0;
+  padding: unset;
+  color: var(--newtab-link-primary-color);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
