@@ -105,7 +105,7 @@ body {
   &:not([lwt-newtab-brighttext]) {
     .icon-dark-theme,
     .icon.icon-dark-theme,
-    img.icon-dark-theme {
+    .scene2Icon .icon-dark-theme {
       display: none;
     }
   }
@@ -113,7 +113,7 @@ body {
   &[lwt-newtab-brighttext] {
     .icon-light-theme,
     .icon.icon-light-theme,
-    img.icon-light-theme {
+    .scene2Icon .icon-light-theme {
       display: none;
     }
   }
