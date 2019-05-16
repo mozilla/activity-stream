@@ -49,7 +49,7 @@ export class TopSiteFormInput extends React.PureComponent {
     if (this.props.loading) {
       return (<div className="loading-container"><div className="loading-animation" /></div>);
     } else if (showClearButton) {
-      return (<button className="icon icon-clear-input"
+      return (<button className="icon icon-clear-input icon-button-style"
         onClick={this.props.onClear}
         onKeyPress={this.onClearIconPress}
         role="button" />);
