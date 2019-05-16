@@ -51,8 +51,7 @@ export class TopSiteFormInput extends React.PureComponent {
     } else if (showClearButton) {
       return (<button className="icon icon-clear-input icon-button-style"
         onClick={this.props.onClear}
-        onKeyPress={this.onClearIconPress}
-        role="button" />);
+        onKeyPress={this.onClearIconPress} />);
     }
     return null;
   }
