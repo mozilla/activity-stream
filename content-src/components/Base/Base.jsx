@@ -142,7 +142,7 @@ export class BaseContent extends React.PureComponent {
     if (isDiscoveryStream) {
       Sections = Sections.filter(section => section.id !== "highlights");
     }
-    const noSectionsEnabled = !prefs["feeds.topsites"] && Sections.filter(section => section.enabled)).length === 0;
+    const noSectionsEnabled = !prefs["feeds.topsites"] && Sections.filter(section => section.enabled).length === 0;
     const searchHandoffEnabled = prefs["improvesearch.handoffToAwesomebar"];
 
     const outerClassName = [
