@@ -3,6 +3,7 @@ import {GlobalOverrider, mountWithIntl, shallowWithIntl} from "test/unit/utils";
 import {MIN_CORNER_FAVICON_SIZE, MIN_RICH_FAVICON_SIZE} from "content-src/components/TopSites/TopSitesConstants";
 import {TOP_SITES_DEFAULT_ROWS, TOP_SITES_MAX_SITES_PER_ROW} from "common/Reducers.jsm";
 import {TopSite, TopSiteLink, _TopSiteList as TopSiteList, TopSitePlaceholder} from "content-src/components/TopSites/TopSite";
+import {A11yLinkButton} from "content-src/components/A11yLinkButton/A11yLinkButton";
 import {FormattedMessage} from "react-intl";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
@@ -867,7 +868,7 @@ describe("<TopSiteForm>", () => {
     it("should open the custom screenshot input", () => {
       assert.isFalse(wrapper.state().showCustomScreenshotForm);
 
-      wrapper.find(".enable-custom-image-input").simulate("click");
+      wrapper.find(A11yLinkButton).simulate("click");
 
       assert.isTrue(wrapper.state().showCustomScreenshotForm);
     });
