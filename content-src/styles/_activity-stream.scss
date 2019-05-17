@@ -132,6 +132,14 @@ input {
   }
 }
 
+// These styles are needed for -webkit-line-clamp to work correctly, so reuse
+// this class name while separately setting a clamp value via CSS or JS.
+.clamp {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  overflow: hidden;
+}
+
 // Components
 @import '../components/Base/Base';
 @import '../components/ErrorBoundary/ErrorBoundary';
