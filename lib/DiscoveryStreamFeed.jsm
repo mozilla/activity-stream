@@ -14,6 +14,7 @@ const { setTimeout, clearTimeout } = ChromeUtils.import(
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 XPCOMUtils.defineLazyGlobalGetters(this, ["fetch"]);
+
 ChromeUtils.defineModuleGetter(
   this,
   "perfService",
@@ -33,6 +34,10 @@ const { PersistentCache } = ChromeUtils.import(
 XPCOMUtils.defineLazyServiceGetters(this, {
   gUUIDGenerator: ["@mozilla.org/uuid-generator;1", "nsIUUIDGenerator"],
 });
+
+ChromeUtils.defineModuleGetter(this, "OS", "resource://gre/modules/osfile.jsm");
+
+const {KeyValueService} = ChromeUtils.import("resource://gre/modules/kvstore.jsm");
 
 const CACHE_KEY = "discovery_stream";
 const LAYOUT_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
@@ -60,9 +65,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     // Internal state for checking if we've intialized all our data
     this.loaded = false;
 
-    // Persistent cache for remote endpoint data.
-    this.cache = new PersistentCache(CACHE_KEY, true);
     this._impressionId = this.getOrCreateImpressionId();
+    this._kvstore = KeyValueService.getOrCreate(OS.Constants.Path.localProfileDir, CACHE_KEY);
+
     // Internal in-memory cache for parsing json prefs.
     this._prefCache = {};
   }
@@ -74,6 +79,20 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       Services.prefs.setCharPref(PREF_IMPRESSION_ID, impressionId);
     }
     return impressionId;
+  }
+
+  async kvstoreGet(...args) {
+    const kvstore = await this._kvstore;
+    return kvstore.get(...args);
+  }
+  async kvstoreSet(...args) {
+    const kvstore = await this._kvstore;
+    console.log(kvstore);
+    return kvstore.put(...args);
+  }
+  async kvstoreClear(...args) {
+    const kvstore = await this._kvstore;
+    return kvstore.clear(...args);
   }
 
   /**
@@ -219,13 +238,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   /**
    * Returns true if data in the cache for a particular key has expired or is missing.
-   * @param {object} cachedData data returned from cache.get()
+   * @param {object} data data returned from cache.get()
    * @param {string} key a cache key
    * @param {string?} url for "feed" only, the URL of the feed.
    * @param {boolean} is this check done at initial browser load
    */
-  isExpired({ cachedData, key, url, isStartup }) {
-    const { layout, spocs, feeds } = cachedData;
+  isExpired({data, key, url, isStartup}) {
+    const {layout, spocs, feeds} = data;
     const updateTimePerComponent = {
       layout: LAYOUT_UPDATE_TIME,
       spocs: SPOCS_FEEDS_UPDATE_TIME,
@@ -256,16 +275,13 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async _checkExpirationPerComponent() {
-    const cachedData = (await this.cache.get()) || {};
-    const { feeds } = cachedData;
+    const layout = await this.kvstoreGet("layout") || {};
+    const spocs = await this.kvstoreGet("spocs") || {};
+    const feeds = await this.kvstoreGet("feeds") || {};
     return {
-      layout: this.isExpired({ cachedData, key: "layout" }),
-      spocs: this.isExpired({ cachedData, key: "spocs" }),
-      feeds:
-        !feeds ||
-        Object.keys(feeds).some(url =>
-          this.isExpired({ cachedData, key: "feed", url })
-        ),
+      layout: this.isExpired({data: {layout: layout}, key: "layout"}),
+      spocs: this.isExpired({data: {spocs: spocs}, key: "spocs"}),
+      feeds: !feeds || Object.keys(feeds).some(url => this.isExpired({data: {feeds: feeds}, key: "feed", url})),
     };
   }
 
@@ -282,9 +298,8 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async fetchLayout(isStartup) {
-    const cachedData = (await this.cache.get()) || {};
-    let { layout } = cachedData;
-    if (this.isExpired({ cachedData, key: "layout", isStartup })) {
+    let layout = await this.kvstoreGet("layout") || {};
+    if (this.isExpired({data: {layout: layout}, key: "layout", isStartup})) {
       const start = perfService.absNow();
       const layoutResponse = await this.fetchFromEndpoint(
         this.config.layout_endpoint
@@ -298,7 +313,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           status: "success",
         };
 
-        await this.cache.set("layout", layout);
+        await this.kvstoreSet("layout", layout);
       } else {
         Cu.reportError("No response for response.layout prop");
       }
@@ -459,21 +474,18 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       this.cleanUpTopRecImpressionPref(newFeeds);
       this.componentFeedRequestTime = Math.round(perfService.absNow() - start);
     }
-    await this.cache.set("feeds", newFeeds);
+    await this.kvstoreSet("feeds", newFeeds);
     sendUpdate({
       type: at.DISCOVERY_STREAM_FEEDS_UPDATE,
     });
   }
 
   async loadSpocs(sendUpdate, isStartup) {
-    const cachedData = (await this.cache.get()) || {};
-    let spocs;
+    let spocs = await this.kvstoreGet("spocs") || {};
 
     if (this.showSpocs) {
-      spocs = cachedData.spocs;
-      if (this.isExpired({ cachedData, key: "spocs", isStartup })) {
-        const endpoint = this.store.getState().DiscoveryStream.spocs
-          .spocs_endpoint;
+      if (this.isExpired({data: {spocs: spocs}, key: "spocs", isStartup})) {
+        const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
         const start = perfService.absNow();
 
         const headers = new Headers();
@@ -500,7 +512,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           };
 
           this.cleanUpCampaignImpressionPref(spocs.data);
-          await this.cache.set("spocs", spocs);
+          await this.kvstoreSet("spocs", spocs);
         } else {
           Cu.reportError("No response for spocs_endpoint prop");
         }
@@ -554,8 +566,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async loadAffinityScoresCache() {
-    const cachedData = (await this.cache.get()) || {};
-    const { affinities } = cachedData;
+    const affinities = await this.kvstoreGet("affinities") || {};
     if (this.personalized && affinities && affinities.scores) {
       this.affinityProvider = new UserDomainAffinityProvider(
         affinities.timeSegments,
@@ -591,7 +602,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     const affinities = this.affinityProvider.getAffinities();
     this.domainAffinitiesLastUpdated = Date.now();
     affinities._timestamp = this.domainAffinitiesLastUpdated;
-    this.cache.set("affinities", affinities);
+    this.kvstoreSet("affinities", affinities);
   }
 
   observe(subject, topic, data) {
@@ -787,11 +798,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async getComponentFeed(feedUrl, isStartup) {
-    const cachedData = (await this.cache.get()) || {};
-    const { feeds } = cachedData;
+    const feeds = await this.kvstoreGet("feeds") || {};
 
     let feed = feeds ? feeds[feedUrl] : null;
-    if (this.isExpired({ cachedData, key: "feed", url: feedUrl, isStartup })) {
+    if (this.isExpired({data: {feeds: feeds}, key: "feed", url: feedUrl, isStartup})) {
       const feedResponse = await this.fetchFromEndpoint(feedUrl);
       if (feedResponse) {
         const { data: scoredItems } = this.scoreItems(
@@ -898,8 +908,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
    * Reports the cache age in second for Discovery Stream.
    */
   async reportCacheAge() {
-    const cachedData = (await this.cache.get()) || {};
-    const { layout, spocs, feeds } = cachedData;
+    const layout = await this.kvstoreGet("layout") || {};
+    const spocs = await this.kvstoreGet("spocs") || {};
+    const feeds = await this.kvstoreGet("feeds") || {};
     let cacheAge = Date.now();
     let updated = false;
 
@@ -1000,10 +1011,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   }
 
   async resetCache() {
-    await this.cache.set("layout", {});
-    await this.cache.set("feeds", {});
-    await this.cache.set("spocs", {});
-    await this.cache.set("affinities", {});
+    await this.kvstoreClear();
   }
 
   resetImpressionPrefs() {
