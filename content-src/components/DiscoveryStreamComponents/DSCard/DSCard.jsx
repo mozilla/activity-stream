@@ -45,7 +45,7 @@ export class DSCard extends React.PureComponent {
               data-total-lines="6"
               ref={clampTotalLines}>
               <p className="source">{this.props.source}</p>
-              <header className="title clamp">{this.props.title}</header>
+              <header className="title clamp" data-clamp="4">{this.props.title}</header>
               {this.props.excerpt && <p className="excerpt clamp">{this.props.excerpt}</p>}
             </div>
             {this.props.context && (

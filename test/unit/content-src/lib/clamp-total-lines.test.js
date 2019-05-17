@@ -9,22 +9,22 @@ describe("clampTotalLines", () => {
   let children;
 
   const node = () => document.createElement("div");
+  function child(lines, clamp) {
+    const ret = node();
+    ret.classList.add("clamp");
+    sandbox.stub(ret, "scrollHeight").get(() => lines * HEIGHT);
+    if (clamp) {
+      ret.dataset.clamp = clamp;
+    }
+    return ret;
+  }
   function test(totalLines) {
     const parentNode = node();
     parentNode.setAttribute("data-total-lines", totalLines);
 
     // Convert children line sizes into clamp nodes with appropriate height
-    children = children.map(childLines => {
-      // Skip children that don't need to be converted
-      if (typeof childLines !== "number") {
-        return childLines;
-      }
-
-      const child = parentNode.appendChild(node());
-      child.classList.add("clamp");
-      sandbox.stub(child, "scrollHeight").get(() => childLines * HEIGHT);
-      return child;
-    });
+    children = children.map(childLines => parentNode.appendChild(
+      typeof childLines === "number" ? child(childLines) : childLines));
 
     clampTotalLines(parentNode);
   }
@@ -90,6 +90,14 @@ describe("clampTotalLines", () => {
 
     check(0, 3);
     check(1, 1);
+  });
+  it("should allow explicit child clamp", () => {
+    children = [child(3, 2), 3];
+
+    test(4);
+
+    check(0, 2);
+    check(1, 2);
   });
   it("should skip non-clamp children", () => {
     children = [node(), 3, node(), 3];
