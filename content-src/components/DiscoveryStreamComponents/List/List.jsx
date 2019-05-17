@@ -56,7 +56,7 @@ export class ListItem extends React.PureComponent {
                   <br />
                 </span>
               )}
-              <span className="ds-list-item-info">{this.props.domain}</span>
+              <span className="ds-list-item-info clamp">{this.props.domain}</span>
             </p>
           </div>
           <DSImage extraClassNames="ds-list-image" source={this.props.image_src} rawSource={this.props.raw_image_src} />

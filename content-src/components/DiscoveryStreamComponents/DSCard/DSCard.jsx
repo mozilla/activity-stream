@@ -42,9 +42,9 @@ export class DSCard extends React.PureComponent {
           </div>
           <div className="meta">
             <div className="info-wrap"
-              data-total-lines="6"
+              data-total-lines="7"
               ref={clampTotalLines}>
-              <p className="source">{this.props.source}</p>
+              <p className="source clamp" data-clamp="1">{this.props.source}</p>
               <header className="title clamp" data-clamp="4">{this.props.title}</header>
               {this.props.excerpt && <p className="excerpt clamp">{this.props.excerpt}</p>}
             </div>

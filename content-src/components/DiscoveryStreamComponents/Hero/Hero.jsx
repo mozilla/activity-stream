@@ -78,12 +78,12 @@ export class Hero extends React.PureComponent {
             </div>
             <div className="meta">
               <div className="header-and-excerpt"
-                data-total-lines="6"
+                data-total-lines="7"
                 ref={clampTotalLines}>
                 {heroRec.context ? (
                   <p className="context">{heroRec.context}</p>
                 ) : (
-                  <p className="source">{heroRec.domain}</p>
+                  <p className="source clamp" data-clamp="1">{heroRec.domain}</p>
                 )}
                 <header className="clamp" data-clamp="4">{heroRec.title}</header>
                 <p className="excerpt clamp">{heroRec.excerpt}</p>
