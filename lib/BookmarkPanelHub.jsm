@@ -64,6 +64,10 @@ class _BookmarkPanelHub {
    * @returns {obj|null} response object or null if no messages matched
    */
   async messageRequest(target, win) {
+    if (!this._initalized) {
+      return false;
+    }
+
     if (this._response && this._response.win === win && this._response.url === target.url && this._response.content) {
       this.showMessage(this._response.content, target, win);
       return true;

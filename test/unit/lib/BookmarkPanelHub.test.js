@@ -87,6 +87,9 @@ describe("BookmarkPanelHub", () => {
     assert.ok(instance._l10n);
     assert.isTrue(instance._initalized);
   });
+  it("should return early if not initialized", async () => {
+    assert.isFalse(await instance.messageRequest());
+  });
   describe("#messageRequest", () => {
     beforeEach(() => {
       sandbox.stub(instance, "onResponse");
