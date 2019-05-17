@@ -27,6 +27,29 @@ export class TopSiteForm extends React.PureComponent {
     this.onPreviewButtonClick = this.onPreviewButtonClick.bind(this);
     this.onEnableScreenshotUrlForm = this.onEnableScreenshotUrlForm.bind(this);
     this.validateUrl = this.validateUrl.bind(this);
+    this.onFormSubmit = this.onFormSubmit.bind(this);
+  }
+
+  onFormSubmit(event) {
+    console.log(event.target);
+    switch (event.target) {
+      case 'add button':
+        console.log("this is the add branch.")
+        // call the add top site function
+        break;
+      case 'preview button':
+        console.log("this is the preview branch.")
+        // call tne image preview function
+        break;
+      case 'cancel button':
+        console.log("this is the cancel branch.")
+        // call the close function
+        break;
+      default:
+        console.log("this is the default branch.")
+        // call the add top site function, as a default behaviour
+    }
+
   }
 
   onLabelChange(event) {

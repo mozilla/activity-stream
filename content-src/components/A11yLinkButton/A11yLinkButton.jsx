@@ -2,7 +2,7 @@ import React from "react";
 
 export function A11yLinkButton(props) {
   return (
-    <button {...props} className="a11y-link-button">
+    <button className="a11y-link-button" type="button" {...props} >
       {props.children}
     </button>
   );
