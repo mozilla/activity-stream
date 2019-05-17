@@ -21,9 +21,9 @@ export function clampTotalLines(parentNode) {
   let maxLines = parentNode.dataset.totalLines - toClamp.length + 1;
   toClamp.forEach(child => {
     // Clamp to the remaining allowed, explicit limit or the natural line count
-    const lines = Math.min(maxLines,
+    const lines = Math.floor(Math.min(maxLines,
       child.dataset.clamp || Infinity,
-      child.scrollHeight / parseInt(global.getComputedStyle(child).lineHeight, 10));
+      child.scrollHeight / parseInt(global.getComputedStyle(child).lineHeight, 10)));
     child.style.webkitLineClamp = `${lines}`;
 
     // Update the remaining line allowance less the already reserved 1 line

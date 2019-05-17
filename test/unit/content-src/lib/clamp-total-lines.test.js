@@ -59,6 +59,27 @@ describe("clampTotalLines", () => {
 
     check(0, 2);
   });
+  it("should handle fractional total", () => {
+    children = [10];
+
+    test(2.5);
+
+    check(0, 2);
+  });
+  it("should handle fractional lines", () => {
+    children = [2.5];
+
+    test(6);
+
+    check(0, 2);
+  });
+  it("should handle fractional clamp", () => {
+    children = [child(10, 2.5)];
+
+    test(6);
+
+    check(0, 2);
+  });
   it("should clamp long children preferring first", () => {
     children = [10, 10];
 
