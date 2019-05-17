@@ -1,4 +1,5 @@
 import {actionCreators as ac} from "common/Actions.jsm";
+import {clampTotalLines} from "content-src/lib/clamp-total-lines";
 import {connect} from "react-redux";
 import {DSEmptyState} from "../DSEmptyState/DSEmptyState.jsx";
 import {DSImage} from "../DSImage/DSImage.jsx";
@@ -43,9 +44,10 @@ export class ListItem extends React.PureComponent {
           onLinkClick={!this.props.placeholder ? this.onLinkClick : undefined}
           url={this.props.url}>
           <div className="ds-list-item-text">
-            <div>
-              <div className="ds-list-item-title">{this.props.title}</div>
-              {this.props.excerpt && <div className="ds-list-item-excerpt">{this.props.excerpt}</div>}
+            <div data-total-lines="4"
+              ref={clampTotalLines}>
+              <div className="ds-list-item-title clamp">{this.props.title}</div>
+              {this.props.excerpt && <div className="ds-list-item-excerpt clamp">{this.props.excerpt}</div>}
             </div>
             <p>
               {this.props.context && (
