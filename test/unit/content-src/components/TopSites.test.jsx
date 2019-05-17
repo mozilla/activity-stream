@@ -753,7 +753,7 @@ describe("<TopSiteForm>", () => {
 
     it("should dispatch a PREVIEW_REQUEST", () => {
       wrapper.setState({customScreenshotUrl: "screenshot"});
-      wrapper.find(".preview").simulate("click");
+      wrapper.find(".preview").simulate("submit");
 
       assert.calledTwice(wrapper.props().dispatch);
       assert.calledWith(wrapper.props().dispatch, ac.AlsoToMain({
@@ -822,18 +822,18 @@ describe("<TopSiteForm>", () => {
     });
     it("should set validationError if url is empty", () => {
       assert.equal(wrapper.state().validationError, false);
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.equal(wrapper.state().validationError, true);
     });
     it("should set validationError if url is invalid", () => {
       wrapper.setState({"url": "not valid"});
       assert.equal(wrapper.state().validationError, false);
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.equal(wrapper.state().validationError, true);
     });
     it("should call onClose and dispatch with right args if URL is valid", () => {
       wrapper.setState({"url": "valid.com", "label": "a label"});
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.calledOnce(wrapper.instance().props.onClose);
       assert.calledWith(
         wrapper.instance().props.dispatch,
@@ -854,7 +854,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should not pass empty string label in dispatch data", () => {
       wrapper.setState({"url": "valid.com", "label": ""});
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {
@@ -893,7 +893,7 @@ describe("<TopSiteForm>", () => {
     it("should show error and not call onClose or dispatch if URL is empty", () => {
       wrapper.setState({"url": ""});
       assert.equal(wrapper.state().validationError, false);
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.equal(wrapper.state().validationError, true);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
@@ -901,13 +901,13 @@ describe("<TopSiteForm>", () => {
     it("should show error and not call onClose or dispatch if URL is invalid", () => {
       wrapper.setState({"url": "not valid"});
       assert.equal(wrapper.state().validationError, false);
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.equal(wrapper.state().validationError, true);
       assert.notCalled(wrapper.instance().props.onClose);
       assert.notCalled(wrapper.instance().props.dispatch);
     });
     it("should call onClose and dispatch with right args if URL is valid", () => {
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.calledOnce(wrapper.instance().props.onClose);
       assert.calledTwice(wrapper.instance().props.dispatch);
       assert.calledWith(
@@ -930,7 +930,7 @@ describe("<TopSiteForm>", () => {
     it("should set customScreenshotURL to null if it was removed", () => {
       wrapper.setState({customScreenshotUrl: ""});
 
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
 
       assert.calledWith(
         wrapper.instance().props.dispatch,
@@ -943,7 +943,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should call onClose and dispatch with right args if URL is valid (negative index)", () => {
       wrapper.setProps({index: -1});
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.calledOnce(wrapper.instance().props.onClose);
       assert.calledTwice(wrapper.instance().props.dispatch);
       assert.calledWith(
@@ -957,7 +957,7 @@ describe("<TopSiteForm>", () => {
     });
     it("should not pass empty string label in dispatch data", () => {
       wrapper.setState({"label": ""});
-      wrapper.find(".done").simulate("click");
+      wrapper.find(".done").simulate("submit");
       assert.calledWith(
         wrapper.instance().props.dispatch,
         {

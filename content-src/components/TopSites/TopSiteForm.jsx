@@ -27,29 +27,6 @@ export class TopSiteForm extends React.PureComponent {
     this.onPreviewButtonClick = this.onPreviewButtonClick.bind(this);
     this.onEnableScreenshotUrlForm = this.onEnableScreenshotUrlForm.bind(this);
     this.validateUrl = this.validateUrl.bind(this);
-    this.onFormSubmit = this.onFormSubmit.bind(this);
-  }
-
-  onFormSubmit(event) {
-    console.log(event.target);
-    switch (event.target) {
-      case 'add button':
-        console.log("this is the add branch.")
-        // call the add top site function
-        break;
-      case 'preview button':
-        console.log("this is the preview branch.")
-        // call tne image preview function
-        break;
-      case 'cancel button':
-        console.log("this is the cancel branch.")
-        // call the close function
-        break;
-      default:
-        console.log("this is the default branch.")
-        // call the add top site function, as a default behaviour
-    }
-
   }
 
   onLabelChange(event) {
@@ -222,8 +199,10 @@ export class TopSiteForm extends React.PureComponent {
       previewLink.screenshot = this.props.previewResponse;
       previewLink.customScreenshotURL = this.props.previewUrl;
     }
+    // Handles the form submit so an enter press performs the correct action
+    const onSubmit = previewMode ? this.onPreviewButtonClick : this.onDoneButtonClick;
     return (
-      <form className="topsite-form">
+      <form className="topsite-form" onSubmit={onSubmit}>
         <div className="form-input-container">
           <h3 className="section-title">
             <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
@@ -253,14 +232,14 @@ export class TopSiteForm extends React.PureComponent {
           </div>
         </div>
         <section className="actions">
-          <button className="cancel" type="button" onClick={this.onCancelButtonClick}>
+          <button className="cancel" type="button" onClick={this.onCancelButtonClick} >
             <FormattedMessage id="topsites_form_cancel_button" />
           </button>
           {previewMode ?
-            <button className="done preview" type="submit" onClick={this.onPreviewButtonClick}>
+            <button className="done preview" type="submit" >
               <FormattedMessage id="topsites_form_preview_button" />
             </button> :
-            <button className="done" type="submit" onClick={this.onDoneButtonClick}>
+            <button className="done" type="submit" >
               <FormattedMessage id={showAsAdd ? "topsites_form_add_button" : "topsites_form_save_button"} />
             </button>}
         </section>
