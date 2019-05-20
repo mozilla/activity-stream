@@ -25,7 +25,8 @@ $item-line-height: 20;
   }
 
   .ds-list-item-title {
-    @include limit-visibile-lines(3, $line-height, $font-size);
+    line-height: $line-height * 1px;
+    font-size: $font-size * 1px;
   }
 
   .ds-list-image {
@@ -205,10 +206,12 @@ $item-line-height: 20;
   }
 
   .ds-list-item-excerpt {
-    @include limit-visibile-lines(2, $item-line-height, $item-font-size);
     @include dark-theme-only {
       color: $grey-10-80;
     }
+
+    line-height: $item-line-height * 1px;
+    font-size: $item-font-size * 1px;
     color: $grey-50;
     margin: 4px 0 8px;
   }
@@ -221,11 +224,12 @@ $item-line-height: 20;
 
   .ds-list-item-info,
   .ds-list-item-context {
-    @include limit-visibile-lines(1, $item-line-height, $item-font-size);
     @include dark-theme-only {
       color: $grey-40;
     }
 
+    line-height: $item-line-height * 1px;
+    font-size: $item-font-size * 1px;
     color: $grey-50;
     font-size: 13px;
     -webkit-line-clamp: 1;

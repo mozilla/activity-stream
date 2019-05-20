@@ -1,8 +1,8 @@
 // Type sizes
-$header-font-size: 17;
-$header-line-height: 24;
-$excerpt-font-size: 14;
-$excerpt-line-height: 20;
+$header-font-size: 17px;
+$header-line-height: 24px;
+$excerpt-font-size: 14px;
+$excerpt-line-height: 20px;
 
 .ds-card {
   display: flex;
@@ -94,14 +94,14 @@ $excerpt-line-height: 20;
     }
 
     .title {
-      // show only 3 lines of copy
-      @include limit-visibile-lines(3, $header-line-height, $header-font-size);
+      line-height: $header-line-height;
+      font-size: $header-font-size;
       font-weight: 600;
     }
 
     .excerpt {
-      // show only 3 lines of copy
-      @include limit-visibile-lines(3, $excerpt-line-height, $excerpt-font-size);
+      line-height: $excerpt-line-height;
+      font-size: $excerpt-font-size;
     }
 
     .source {
@@ -124,8 +124,8 @@ $excerpt-line-height: 20;
       color: $grey-10;
     }
 
-    line-height: $header-line-height * 1px;
-    font-size: $header-font-size * 1px;
+    line-height: $header-line-height;
+    font-size: $header-font-size;
     color: $grey-90;
   }
 
@@ -134,8 +134,8 @@ $excerpt-line-height: 20;
       color: $grey-10;
     }
 
-    font-size: $excerpt-font-size * 1px;
-    line-height: $excerpt-line-height * 1px;
+    font-size: $excerpt-font-size;
+    line-height: $excerpt-line-height;
     color: $grey-90;
     margin: 0;
   }

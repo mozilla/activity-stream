@@ -14,11 +14,12 @@ $card-header-in-hero-line-height: 20;
   }
 
   .excerpt {
-    @include limit-visibile-lines(3, 20, 14);
     @include dark-theme-only {
       color: $grey-10;
     }
 
+    line-height: 20px;
+    font-size: 14px;
     color: $grey-90;
     margin: 0 0 10px;
   }
@@ -122,7 +123,8 @@ $card-header-in-hero-line-height: 20;
           color: $white;
         }
 
-        @include limit-visibile-lines(4, 28, 22);
+        line-height: 28px;
+        font-size: 22px;
         color: $grey-90;
         margin-bottom: 0;
       }
@@ -231,7 +233,8 @@ $card-header-in-hero-line-height: 20;
         padding: 0 24px 0 0;
 
         header {
-          @include limit-visibile-lines(3, 28, 22);
+          line-height: 28px;
+          font-size: 22px;
         }
 
         .source {
@@ -268,7 +271,8 @@ $card-header-in-hero-line-height: 20;
             color: $white;
           }
 
-          @include limit-visibile-lines(3, 20, 14);
+          line-height: 20px;
+          font-size: 14px;
         }
       }
     }
