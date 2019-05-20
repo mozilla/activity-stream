@@ -229,9 +229,8 @@ $item-line-height: 20;
     }
 
     line-height: $item-line-height * 1px;
-    font-size: $item-font-size * 1px;
-    color: $grey-50;
     font-size: 13px;
+    color: $grey-50;
     -webkit-line-clamp: 1;
   }
 
