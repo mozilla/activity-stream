@@ -219,7 +219,6 @@ $item-line-height: 20;
     margin: 0;
   }
 
-
   .ds-list-item-info,
   .ds-list-item-context {
     @include limit-visibile-lines(1, $item-line-height, $item-font-size);
