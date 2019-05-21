@@ -291,7 +291,7 @@ class PageAction {
   }
 
   _createElementAndAppend({type, id}, parent) {
-    let element = this.window.document.createElement(type);
+    let element = this.window.document.createXULElement(type);
     if (id) {
       element.setAttribute("id", id);
     }
@@ -397,7 +397,7 @@ class PageAction {
         stepsContainer.remove();
         stepsContainer = stepsContainer.cloneNode(false);
       } else {
-        stepsContainer = this.window.document.createElement("vbox");
+        stepsContainer = this.window.document.createXULElement("vbox");
         stepsContainer.setAttribute("id", stepsContainerId);
       }
       footerText.parentNode.appendChild(stepsContainer);
