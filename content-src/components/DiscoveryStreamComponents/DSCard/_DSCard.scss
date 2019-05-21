@@ -84,6 +84,7 @@ $excerpt-line-height: 20;
     display: flex;
 
     .info-wrap {
+      flex-grow: 1;
       margin: 0 0 12px;
     }
 
