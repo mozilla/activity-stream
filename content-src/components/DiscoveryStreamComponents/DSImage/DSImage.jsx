@@ -21,13 +21,16 @@ export class DSImage extends React.PureComponent {
           let clientWidth;
           let clientHeight;
           let nonZeroed = false;
+          let checks = 0;
+          const checkMax = 60;
 
           let checkMeasurements = () => {
             clientWidth = ReactDOM.findDOMNode(this).clientWidth;
             clientHeight = ReactDOM.findDOMNode(this).clientHeight;
+            checks++;
           }
 
-          while(!nonZeroed) {
+          while(!nonZeroed && checks < checkMax) {
             checkMeasurements();
 
             if (clientWidth && clientHeight) {
