@@ -13,6 +13,11 @@ const {UserDomainAffinityProvider} = ChromeUtils.import("resource://activity-str
 
 const {actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {PersistentCache} = ChromeUtils.import("resource://activity-stream/lib/PersistentCache.jsm");
+const {PREF_IMPRESSION_ID} = ChromeUtils.import("resource://activity-stream/lib/TelemetryFeed.jsm");
+
+XPCOMUtils.defineLazyServiceGetters(this, {
+  gUUIDGenerator: ["@mozilla.org/uuid-generator;1", "nsIUUIDGenerator"],
+});
 
 const CACHE_KEY = "discovery_stream";
 const LAYOUT_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
@@ -39,8 +44,18 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
     // Persistent cache for remote endpoint data.
     this.cache = new PersistentCache(CACHE_KEY, true);
+    this._impressionId = this.getOrCreateImpressionId();
     // Internal in-memory cache for parsing json prefs.
     this._prefCache = {};
+  }
+
+  getOrCreateImpressionId() {
+    let impressionId = Services.prefs.getCharPref(PREF_IMPRESSION_ID, "");
+    if (!impressionId) {
+      impressionId = String(gUUIDGenerator.generateUUID());
+      Services.prefs.getCharPref(PREF_IMPRESSION_ID, impressionId);
+    }
+    return impressionId;
   }
 
   /**
@@ -380,8 +395,10 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     if (this.showSpocs) {
       spocs = cachedData.spocs;
       if (this.isExpired({cachedData, key: "spocs", isStartup})) {
-        const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
+        const rawEndpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
         const start = perfService.absNow();
+        const endpoint = rawEndpoint.replace("$impressionId", this._impressionId);
+        console.log(endpoint);
         const spocsResponse = await this.fetchFromEndpoint(endpoint);
         if (spocsResponse) {
           this.spocsRequestTime = Math.round(perfService.absNow() - start);
@@ -1010,7 +1027,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
 defaultLayoutResp = {
   "spocs": {
-    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey",
+    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey&impression_id=$impressionId",
     "spocs_per_domain": 1,
   },
   "layout": [
