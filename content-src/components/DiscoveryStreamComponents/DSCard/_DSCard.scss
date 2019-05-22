@@ -86,7 +86,7 @@ $excerpt-line-height: 20;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    padding: 12px;
+    padding: 16px;
 
     .info-wrap {
       flex-grow: 1;
@@ -102,6 +102,10 @@ $excerpt-line-height: 20;
     .excerpt {
       // show only 3 lines of copy
       @include limit-visibile-lines(3, $excerpt-line-height, $excerpt-font-size);
+
+      @at-root .ds-card-grid-divisible-by-3 & {
+        @include limit-visibile-lines(3, 24, 15);
+      }
     }
 
     .source {
