@@ -1,3 +1,4 @@
+import {A11yLinkButton} from "content-src/components/A11yLinkButton/A11yLinkButton";
 import React from "react";
 
 export class ContextMenu extends React.PureComponent {
@@ -81,11 +82,11 @@ export class ContextMenuItem extends React.PureComponent {
   render() {
     const {option} = this.props;
     return (
-      <li role="menuitem" className="context-menu-item" onClick={this.onClick} onKeyDown={this.onKeyDown} tabIndex="0" >
-        <span className={option.disabled ? "disabled" : ""}>
+      <li role="menuitem" className="context-menu-item" >
+        <button className={option.disabled ? "disabled" : ""} onClick={this.onClick} onKeyDown={this.onKeyDown} tabIndex="0" >
           {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
           {option.label}
-        </span>
+        </button>
       </li>);
   }
 }
