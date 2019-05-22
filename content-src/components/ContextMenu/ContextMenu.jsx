@@ -1,4 +1,3 @@
-import {A11yLinkButton} from "content-src/components/A11yLinkButton/A11yLinkButton";
 import React from "react";
 
 export class ContextMenu extends React.PureComponent {
