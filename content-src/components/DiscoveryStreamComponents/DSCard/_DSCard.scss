@@ -80,8 +80,9 @@ $excerpt-line-height: 20;
   }
 
   .meta {
-    padding: 12px;
     display: flex;
+    flex-direction: column;
+    padding: 12px;
 
     .info-wrap {
       flex-grow: 1;
