@@ -39,9 +39,6 @@ $excerpt-line-height: 20;
   }
 
   .ds-card-link {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
     height: 100%;
 
     &:focus {
@@ -85,7 +82,6 @@ $excerpt-line-height: 20;
   .meta {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
     padding: 12px;
 
     .info-wrap {
