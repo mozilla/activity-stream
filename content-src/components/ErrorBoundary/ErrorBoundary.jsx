@@ -26,7 +26,7 @@ export class ErrorBoundaryFallback extends React.PureComponent {
       className = defaultClass;
     }
 
-    // href="#" to force normal link styling stuff (eg cursor on hover)
+    // "A11yLinkButton" to force normal link styling stuff (eg cursor on hover)
     return (
       <div className={className}>
         <div>
