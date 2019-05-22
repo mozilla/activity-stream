@@ -17,6 +17,7 @@ export class _CollapsibleSection extends React.PureComponent {
     super(props);
     this.onBodyMount = this.onBodyMount.bind(this);
     this.onHeaderClick = this.onHeaderClick.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
     this.enableOrDisableAnimation = this.enableOrDisableAnimation.bind(this);
     this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
@@ -91,6 +92,12 @@ export class _CollapsibleSection extends React.PureComponent {
     }));
   }
 
+  onKeyPress(event) {
+    if (event.key === "Enter" || event.key === " ") {
+      this.onHeaderClick();
+    }
+  }
+
   _getSectionBodyHeight() {
     const div = this.sectionBody;
     if (div.style.display === "none") {
@@ -153,11 +160,12 @@ export class _CollapsibleSection extends React.PureComponent {
         <div className="section-top-bar">
           <h3 className="section-title">
             <span className="click-target-container">
-              <span className="click-target" onClick={this.onHeaderClick}>
+            {/* Click-targets that toggle a collapsible section should have an aria-expanded attribute; see bug 1553234 */}
+              <span className="click-target" role="button" tabIndex="0" onKeyPress={this.onKeyPress} onClick={this.onHeaderClick}>
                 {this.renderIcon()}
                 {getFormattedMessage(title)}
               </span>
-              <span className="click-target" onClick={this.onHeaderClick}>
+              <span className="click-target" role="button" tabIndex="0" onKeyPress={this.onKeyPress} onClick={this.onHeaderClick}>
                 {isCollapsible && <span className={`collapsible-arrow icon ${collapsed ? "icon-arrowhead-forward-small" : "icon-arrowhead-down-small"}`} />}
               </span>
               <span className="learn-more-link-wrapper">
