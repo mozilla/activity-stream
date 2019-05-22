@@ -398,7 +398,6 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         const rawEndpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
         const start = perfService.absNow();
         const endpoint = rawEndpoint.replace("$impressionId", this._impressionId);
-        console.log(endpoint);
         const spocsResponse = await this.fetchFromEndpoint(endpoint);
         if (spocsResponse) {
           this.spocsRequestTime = Math.round(perfService.absNow() - start);
