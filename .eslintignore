@@ -1,6 +1,4 @@
-activity-streams-env/
 dist/
-firefox/
 logs/
 stats.json
 prerendered/
@@ -9,3 +7,5 @@ data/
 bin/prerender.js
 bin/prerender.js.map
 aboutlibrary/content/
+node_modules/
+**/*.json
