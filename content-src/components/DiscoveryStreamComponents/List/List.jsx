@@ -30,7 +30,11 @@ export class ListItem extends React.PureComponent {
       this.props.dispatch(ac.ImpressionStats({
         source: this.props.type.toUpperCase(),
         click: 0,
-        tiles: [{id: this.props.id, pos: this.props.pos}],
+        tiles: [{
+          id: this.props.id,
+          pos: this.props.pos,
+          ...(this.props.shim ? {shim: this.props.shim} : {}),
+        }],
       }));
     }
   }
@@ -62,7 +66,11 @@ export class ListItem extends React.PureComponent {
           <DSImage extraClassNames="ds-list-image" source={this.props.image_src} rawSource={this.props.raw_image_src} />
           <ImpressionStats
             campaignId={this.props.campaignId}
-            rows={[{id: this.props.id, pos: this.props.pos}]}
+            rows={[{
+              id: this.props.id,
+              pos: this.props.pos,
+              ...(this.props.shim ? {shim: this.props.shim} : {}),
+            }]}
             dispatch={this.props.dispatch}
             source={this.props.type} />
         </SafeAnchor>
@@ -98,20 +106,21 @@ export function _List(props) {
         <PlaceholderListItem key={`ds-list-item-${index}`} />
       ) : (
         <ListItem key={`ds-list-item-${index}`}
-        dispatch={props.dispatch}
-        campaignId={rec.campaign_id}
-        domain={rec.domain}
-        excerpt={rec.excerpt}
-        id={rec.id}
-        image_src={rec.image_src}
-        raw_image_src={rec.raw_image_src}
-        pos={rec.pos}
-        title={rec.title}
-        context={rec.context}
-        type={props.type}
-        url={rec.url}
-        pocket_id={rec.pocket_id}
-        bookmarkGuid={rec.bookmarkGuid} />
+          dispatch={props.dispatch}
+          campaignId={rec.campaign_id}
+          domain={rec.domain}
+          excerpt={rec.excerpt}
+          id={rec.id}
+          shim={rec.shim}
+          image_src={rec.image_src}
+          raw_image_src={rec.raw_image_src}
+          pos={rec.pos}
+          title={rec.title}
+          context={rec.context}
+          type={props.type}
+          url={rec.url}
+          pocket_id={rec.pocket_id}
+          bookmarkGuid={rec.bookmarkGuid} />
       ));
     }
 

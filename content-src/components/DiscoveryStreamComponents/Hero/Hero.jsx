@@ -26,7 +26,11 @@ export class Hero extends React.PureComponent {
       this.props.dispatch(ac.ImpressionStats({
         source: this.props.type.toUpperCase(),
         click: 0,
-        tiles: [{id: this.heroRec.id, pos: this.heroRec.pos}],
+        tiles: [{
+          id: this.heroRec.id,
+          pos: this.heroRec.pos,
+          ...(this.heroRec.shim ? {shim: this.heroRec.shim} : {}),
+        }],
       }));
     }
   }
@@ -42,20 +46,21 @@ export class Hero extends React.PureComponent {
         <PlaceholderDSCard key={`dscard-${index}`} />
       ) : (
         <DSCard
-        campaignId={rec.campaign_id}
-        key={`dscard-${index}`}
-        image_src={rec.image_src}
-        raw_image_src={rec.raw_image_src}
-        title={rec.title}
-        url={rec.url}
-        id={rec.id}
-        pos={rec.pos}
-        type={this.props.type}
-        dispatch={this.props.dispatch}
-        context={rec.context}
-        source={rec.domain}
-        pocket_id={rec.pocket_id}
-        bookmarkGuid={rec.bookmarkGuid} />
+          campaignId={rec.campaign_id}
+          key={`dscard-${index}`}
+          image_src={rec.image_src}
+          raw_image_src={rec.raw_image_src}
+          title={rec.title}
+          url={rec.url}
+          id={rec.id}
+          shim={rec.shim}
+          pos={rec.pos}
+          type={this.props.type}
+          dispatch={this.props.dispatch}
+          context={rec.context}
+          source={rec.domain}
+          pocket_id={rec.pocket_id}
+          bookmarkGuid={rec.bookmarkGuid} />
       ));
     }
 
@@ -91,7 +96,11 @@ export class Hero extends React.PureComponent {
             </div>
             <ImpressionStats
               campaignId={heroRec.campaignId}
-              rows={[{id: heroRec.id, pos: heroRec.pos}]}
+              rows={[{
+                id: heroRec.id,
+                pos: heroRec.pos,
+                ...(heroRec.shim ? {shim: heroRec.shim} : {}),
+              }]}
               dispatch={this.props.dispatch}
               source={this.props.type} />
           </SafeAnchor>
