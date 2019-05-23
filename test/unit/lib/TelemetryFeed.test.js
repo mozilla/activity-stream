@@ -639,6 +639,14 @@ describe("TelemetryFeed", () => {
       assert.propertyVal(ping, "pocket", 0);
       assert.propertyVal(ping, "tiles", tiles);
     });
+    it("should pass shim if it is available to impression ping", async () => {
+      const tiles = [{id: 10001, pos: 2, shim: 1234}];
+      const action = ac.ImpressionStats({source: "POCKET", tiles, pocket: 0});
+      const ping = await instance.createImpressionStats(au.getPortIdOfSender(action), action.data);
+
+      assert.propertyVal(ping, "pocket", 0);
+      assert.propertyVal(ping, "tiles", tiles);
+    });
   });
   describe("#createSpocsFillPing", () => {
     it("should create a valid SPOCS Fill ping", async () => {
