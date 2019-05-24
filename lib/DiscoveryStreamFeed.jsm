@@ -399,10 +399,20 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     if (this.showSpocs) {
       spocs = cachedData.spocs;
       if (this.isExpired({cachedData, key: "spocs", isStartup})) {
-        const rawEndpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
+        const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
         const start = perfService.absNow();
-        const endpoint = rawEndpoint.replace("$impressionId", this._impressionId);
-        const spocsResponse = await this.fetchFromEndpoint(endpoint, {method: "POST"});
+
+        const headers = new Headers();
+        headers.append("content-type", "application/json");
+
+        const spocsResponse = await this.fetchFromEndpoint(endpoint, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            impression_id: this._impressionId,
+          }),
+        });
+
         if (spocsResponse) {
           this.spocsRequestTime = Math.round(perfService.absNow() - start);
           spocs = {
@@ -1030,7 +1040,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
 defaultLayoutResp = {
   "spocs": {
-    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey&impression_id=$impressionId",
+    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey",
     "spocs_per_domain": 1,
   },
   "layout": [
