@@ -153,12 +153,10 @@ export class _TopSites extends React.PureComponent {
           {showSearchShortcutsForm &&
             <div className="edit-search-shortcuts">
               <ModalOverlayWrapper onClose={this.onSearchShortcutsFormClose} innerClassName="modal" >
-                <div className="modal">
-                  <SearchShortcutsForm
-                    TopSites={props.TopSites}
-                    onClose={this.onSearchShortcutsFormClose}
-                    dispatch={this.props.dispatch} />
-                </div>
+                <SearchShortcutsForm
+                  TopSites={props.TopSites}
+                  onClose={this.onSearchShortcutsFormClose}
+                  dispatch={this.props.dispatch} />
               </ModalOverlayWrapper>
             </div>
           }
