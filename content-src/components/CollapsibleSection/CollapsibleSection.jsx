@@ -155,6 +155,7 @@ export class _CollapsibleSection extends React.PureComponent {
     return (
       <section
         className={`collapsible-section ${this.props.className}${enableAnimation ? " animation-enabled" : ""}${collapsed ? " collapsed" : ""}${active ? " active" : ""}`}
+        aria-expanded={!collapsed}
         // Note: data-section-id is used for web extension api tests in mozilla central
         data-section-id={id}>
         <div className="section-top-bar">
