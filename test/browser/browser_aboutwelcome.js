@@ -34,7 +34,7 @@ async function test_trailhead_branch(branchName, expectedSelectors = [], unexpec
     {expectedSelectors, branchName, unexpectedSelectors},
     async ({expectedSelectors: expected, branchName: branch, unexpectedSelectors: unexpected}) => {
       for (let selector of expected) {
-        ok(content.document.querySelector(selector),
+        await ContentTaskUtils.waitForCondition(() => content.document.querySelector(selector),
           `Should render ${selector} in the ${branch} branch`);
       }
       for (let selector of unexpected) {
