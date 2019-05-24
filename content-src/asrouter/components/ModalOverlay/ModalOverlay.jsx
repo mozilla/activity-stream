@@ -26,7 +26,7 @@ export class ModalOverlayWrapper extends React.PureComponent {
     const {props} = this;
     return (<React.Fragment>
       <div className="modalOverlayOuter active" onClick={props.onClose} onKeyDown={this.onKeyDown} role="presentation" />
-      <div className={`modalOverlayInner active ${props.innerClassName || ""}`}
+      <div className={`${props.innerClassName || "modalOverlayInner active"}`}
         aria-labelledby={props.headerId}
         id={props.id}
         role="dialog">
