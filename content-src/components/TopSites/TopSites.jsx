@@ -140,7 +140,7 @@ export class _TopSites extends React.PureComponent {
         <div className="edit-topsites-wrapper">
           {editForm &&
             <div className="edit-topsites">
-              <ModalOverlayWrapper onClose={this.onEditFormClose} innerClassName="modal" >
+              <ModalOverlayWrapper unstyled={true} onClose={this.onEditFormClose} innerClassName="modal" >
                 <TopSiteForm
                   site={props.TopSites.rows[editForm.index]}
                   onClose={this.onEditFormClose}
@@ -152,7 +152,7 @@ export class _TopSites extends React.PureComponent {
           }
           {showSearchShortcutsForm &&
             <div className="edit-search-shortcuts">
-              <ModalOverlayWrapper onClose={this.onSearchShortcutsFormClose} innerClassName="modal" >
+              <ModalOverlayWrapper unstyled={true} onClose={this.onSearchShortcutsFormClose} innerClassName="modal" >
                 <SearchShortcutsForm
                   TopSites={props.TopSites}
                   onClose={this.onSearchShortcutsFormClose}
