@@ -132,7 +132,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this._prefCache = {};
   }
 
-  async fetchFromEndpoint(rawEndpoint) {
+  async fetchFromEndpoint(rawEndpoint, init = {}) {
     if (!rawEndpoint) {
       Cu.reportError("Tried to fetch endpoint but none was configured.");
       return null;
@@ -155,7 +155,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
       const controller = new AbortController();
       const {signal} = controller;
-      const fetchPromise = fetch(endpoint, {credentials: "omit", signal});
+      const fetchPromise = fetch(endpoint, {
+        ...init,
+        credentials: "omit",
+        signal,
+      });
       // istanbul ignore next
       const timeoutId = setTimeout(() => { controller.abort(); }, FETCH_TIMEOUT);
 
@@ -398,7 +402,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         const rawEndpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
         const start = perfService.absNow();
         const endpoint = rawEndpoint.replace("$impressionId", this._impressionId);
-        const spocsResponse = await this.fetchFromEndpoint(endpoint);
+        const spocsResponse = await this.fetchFromEndpoint(endpoint, {method: "POST"});
         if (spocsResponse) {
           this.spocsRequestTime = Math.round(perfService.absNow() - start);
           spocs = {
