@@ -15,7 +15,7 @@ function setTrailheadBranch(value) {
   ASRouter.setState({trailheadInitialized: false});
   ASRouter.setupTrailhead();
 
-  registerCleanupFunction(function() {
+  registerCleanupFunction(() => {
     Services.prefs.clearUserPref(BRANCH_PREF);
   });
 }
@@ -32,14 +32,14 @@ async function test_trailhead_branch(branchName, expectedSelectors = [], unexpec
   await ContentTask.spawn(
     browser,
     {expectedSelectors, branchName, unexpectedSelectors},
-    async function({expectedSelectors, branchName, unexpectedSelectors}) {
-      for (let selector of expectedSelectors) {
+    async ({expectedSelectors: expected, branchName: branch, unexpectedSelectors: unexpected}) => {
+      for (let selector of expected) {
         ok(content.document.querySelector(selector),
-          `Should render ${selector} in the ${branchName} branch`);
+          `Should render ${selector} in the ${branch} branch`);
       }
-      for (let selector of unexpectedSelectors) {
+      for (let selector of unexpected) {
         ok(!content.document.querySelector(selector),
-          `Should not render ${selector} in the ${branchName} branch`);
+          `Should not render ${selector} in the ${branch} branch`);
       }
     }
   );
@@ -53,57 +53,49 @@ async function test_trailhead_branch(branchName, expectedSelectors = [], unexpec
 add_task(async function test_trailhead_branches() {
   await test_trailhead_branch(
     "join-privacy",
-    [ // Expected selectors:
-      ".trailhead.joinCohort",
+    // Expected selectors:
+    [".trailhead.joinCohort",
       "button[data-l10n-id=onboarding-browse-privately-button]",
       "button[data-l10n-id=onboarding-tracking-protection-button2]",
-      "button[data-l10n-id=onboarding-lockwise-passwords-button2]",
-    ]);
+      "button[data-l10n-id=onboarding-lockwise-passwords-button2]"]);
 
   await test_trailhead_branch(
     "sync-supercharge",
-    [ // Expected selectors:
-      ".trailhead.syncCohort",
+    // Expected selectors:
+    [".trailhead.syncCohort",
       "button[data-l10n-id=onboarding-mobile-phone-button]",
       "button[data-l10n-id=onboarding-data-sync-button2]",
-      "button[data-l10n-id=onboarding-firefox-monitor-button]",
-    ]);
+      "button[data-l10n-id=onboarding-firefox-monitor-button]"]);
 
   await test_trailhead_branch(
     "cards-multidevice",
-    [ // Expected selectors:
-      "button[data-l10n-id=onboarding-mobile-phone-button]",
+    // Expected selectors:
+    ["button[data-l10n-id=onboarding-mobile-phone-button]",
       "button[data-l10n-id=onboarding-pocket-anywhere-button]",
-      "button[data-l10n-id=onboarding-send-tabs-button]",
-    ],
-    [ // Unexpected selectors:
-      "#trailheadDialog",
-    ]);
+      "button[data-l10n-id=onboarding-send-tabs-button]"],
+    // Unexpected selectors:
+    ["#trailheadDialog"]);
 
   await test_trailhead_branch(
     "join-payoff",
-    [ // Expected selectors:
-      ".trailhead.joinCohort",
+    // Expected selectors:
+    [".trailhead.joinCohort",
       "button[data-l10n-id=onboarding-firefox-monitor-button]",
       "button[data-l10n-id=onboarding-facebook-container-button]",
-      "button[data-l10n-id=onboarding-firefox-send-button]",
-    ]);
+      "button[data-l10n-id=onboarding-firefox-send-button]"]);
 
   await test_trailhead_branch(
     "nofirstrun",
     [],
-    [ // Unexpected selectors:
-      "#trailheadDialog",
-      ".trailheadCards",
-    ]);
+    // Unexpected selectors:
+    ["#trailheadDialog",
+      ".trailheadCards"]);
 
   await test_trailhead_branch(
     "control",
-    [ // Expected selectors:
-      ".firstrun-scene",
-    ],
-    [ // Unexpected selectors:
-      "#trailheadDialog",
-      ".trailheadCards",
-    ]);
+    // Expected selectors:
+    [".firstrun-scene"],
+    // Unexpected selectors:
+    ["#trailheadDialog",
+      ".trailheadCards"]);
 });
