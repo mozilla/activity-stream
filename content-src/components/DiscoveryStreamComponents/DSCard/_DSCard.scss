@@ -98,11 +98,6 @@ $excerpt-line-height: 20;
     .excerpt {
       // show only 3 lines of copy
       @include limit-visibile-lines(3, $excerpt-line-height, $excerpt-font-size);
-
-      // compiles to: `.ds-card-grid-divisible-by-3 .ds-card .meta .excerpt`
-      @at-root .ds-card-grid-divisible-by-3 & {
-        @include limit-visibile-lines(3, 24, 15);
-      }
     }
 
     .source {
