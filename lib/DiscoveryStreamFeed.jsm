@@ -132,7 +132,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this._prefCache = {};
   }
 
-  async fetchFromEndpoint(rawEndpoint, init = {}) {
+  async fetchFromEndpoint(rawEndpoint, options = {}) {
     if (!rawEndpoint) {
       Cu.reportError("Tried to fetch endpoint but none was configured.");
       return null;
@@ -155,8 +155,11 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
       const controller = new AbortController();
       const {signal} = controller;
+
       const fetchPromise = fetch(endpoint, {
-        ...init,
+        method: options.method || "GET",
+        body: options.body,
+        headers: options.headers,
         credentials: "omit",
         signal,
       });
