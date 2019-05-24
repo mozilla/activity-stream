@@ -7,13 +7,13 @@ const BRANCH_PREF = "trailhead.firstrun.branches";
 /**
  * Sets the trailhead branch pref to the passed value.
  */
-function setTrailheadBranch(value) {
+async function setTrailheadBranch(value) {
   Services.prefs.setCharPref(BRANCH_PREF, value);
 
   // Reset trailhead so it loads the new branch.
   Services.prefs.clearUserPref("trailhead.firstrun.didSeeAboutWelcome");
-  ASRouter.setState({trailheadInitialized: false});
-  ASRouter.setupTrailhead();
+  await ASRouter.setState({trailheadInitialized: false});
+  await ASRouter.setupTrailhead();
 
   registerCleanupFunction(() => {
     Services.prefs.clearUserPref(BRANCH_PREF);
@@ -24,7 +24,7 @@ function setTrailheadBranch(value) {
  * Test a specific trailhead branch.
  */
 async function test_trailhead_branch(branchName, expectedSelectors = [], unexpectedSelectors = []) {
-  setTrailheadBranch(branchName);
+  await setTrailheadBranch(branchName);
 
   let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, "about:welcome", false);
   let browser = tab.linkedBrowser;
