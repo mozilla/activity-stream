@@ -155,6 +155,40 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
 
       assert.calledWithMatch(fetchStub, "https://getpocket.cdn.mozilla.net/dummy?consumer_key=replaced", {credentials: "omit"});
     });
+    it("should allow POST and with other options", async () => {
+      await feed.fetchFromEndpoint("https://getpocket.cdn.mozilla.net/dummy", {
+        method: "POST",
+        body: "{}"
+      });
+
+      assert.calledWithMatch(fetchStub, "https://getpocket.cdn.mozilla.net/dummy", {
+        credentials: "omit",
+        method: "POST",
+        body: "{}",
+      });
+    });
+  });
+
+  describe("#getOrCreateImpressionId", () => {
+    it.only("should create impression id in constructor", async () => {
+      assert.equal(feed._impressionId, FAKE_UUID);
+    });
+    it.only("should create impression id if none exists", async () => {
+      sandbox.stub(global.Services.prefs, "setCharPref").returns();
+
+      const result = feed.getOrCreateImpressionId();
+
+      assert.equal(result, FAKE_UUID);
+      assert.calledOnce(global.Services.prefs.setCharPref);
+    });
+    it.only("should use impression id if exists", async () => {
+      sandbox.stub(global.Services.prefs, "getCharPref").returns("from get");
+
+      const result = feed.getOrCreateImpressionId();
+
+      assert.equal(result, "from get");
+      assert.calledOnce(global.Services.prefs.getCharPref);
+    });
   });
 
   describe("#loadLayout", () => {

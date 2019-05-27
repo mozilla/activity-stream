@@ -53,7 +53,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     let impressionId = Services.prefs.getCharPref(PREF_IMPRESSION_ID, "");
     if (!impressionId) {
       impressionId = String(gUUIDGenerator.generateUUID());
-      Services.prefs.getCharPref(PREF_IMPRESSION_ID, impressionId);
+      Services.prefs.setCharPref(PREF_IMPRESSION_ID, impressionId);
     }
     return impressionId;
   }
