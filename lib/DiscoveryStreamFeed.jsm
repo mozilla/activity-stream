@@ -157,9 +157,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       const {signal} = controller;
 
       const fetchPromise = fetch(endpoint, {
-        method: options.method || "GET",
-        body: options.body,
-        headers: options.headers,
+        ...options,
         credentials: "omit",
         signal,
       });

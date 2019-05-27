@@ -12,6 +12,8 @@ const REC_IMPRESSION_TRACKING_PREF = "discoverystream.rec.impressions";
 const THIRTY_MINUTES = 30 * 60 * 1000;
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 1 week
 
+const FAKE_UUID = "{foo-123-foo}";
+
 describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
   let DiscoveryStreamFeed;
   let feed;
@@ -63,6 +65,9 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       "lib/UserDomainAffinityProvider.jsm": {UserDomainAffinityProvider: FakeUserDomainAffinityProvider},
     }));
 
+    globals = new GlobalOverrider();
+    globals.set("gUUIDGenerator", {generateUUID: () => FAKE_UUID});
+
     // Feed
     feed = new DiscoveryStreamFeed();
     feed.store = createStore(combineReducers(reducers), {
@@ -79,6 +84,7 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
 
     globals = new GlobalOverrider();
     globals.set("setTimeout", callback => { callback(); });
+
     fakeNewTabUtils = {
       blockedLinks: {
         links: [],
