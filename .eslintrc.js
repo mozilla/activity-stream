@@ -17,8 +17,6 @@ module.exports = {
     "jsx-a11y" // require("eslint-plugin-jsx-a11y")
 
     // Temporarily disabled since they aren't vendored into in mozilla central yet
-    // "json", // require("eslint-plugin-json")
-    // "promise", // require("eslint-plugin-promise")
     // "react-hooks", // require("react-hooks")
     // "fetch-options", // require("eslint-plugin-fetch-options")
   ],
@@ -71,9 +69,6 @@ module.exports = {
     // "react-hooks/rules-of-hooks": 2,
 
     // "fetch-options/no-fetch-credentials": 2,
-
-    // "promise/catch-or-return": 2,
-    // "promise/param-names": 2,
 
     "react/jsx-boolean-value": [2, "always"],
     "react/jsx-closing-bracket-location": [2, "after-props"],
