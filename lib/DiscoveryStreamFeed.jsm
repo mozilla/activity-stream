@@ -410,7 +410,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           method: "POST",
           headers,
           body: JSON.stringify({
-            impression_id: this._impressionId,
+            pocket_id: this._impressionId,
           }),
         });
 
