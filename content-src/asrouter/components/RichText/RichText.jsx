@@ -1,4 +1,4 @@
-import {Localized} from "fluent-react";
+import {Localized} from "fluent-react/compat";
 import React from "react";
 import {RICH_TEXT_KEYS} from "../../rich-text-strings";
 import {safeURI} from "../../template-utils";
