@@ -30,6 +30,20 @@ async function checkStartupFinished(win) {
   }
 }
 
+/**
+ * Check if the current browser location matches the location received by the
+ * navigation listener.
+ */
+function isFocusedTab(aBrowser, aLocationURI) {
+  try {
+    if (aBrowser.ownerGlobal.gBrowser.currentURI.spec === aLocationURI.aLocationURI.spec) {
+      return true;
+    }
+  } catch (e) {} // nsIURI.host can throw for non-nsStandardURL nsIURIs
+
+  return false;
+}
+
 function isPrivateWindow(win) {
   return !(win instanceof Ci.nsIDOMWindow) || win.closed || PrivateBrowsingUtils.isWindowPrivate(win);
 }
@@ -179,6 +193,12 @@ this.ASRouterTriggerListeners = new Map([
     },
 
     onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI, aFlags) {
+      // If a new tab was opened in the background we don't want it to increment
+      // the visits count. That will happen anyway because of the `onTabSwitch`
+      // listener that fires when the tab is selected.
+      if (!isFocusedTab(aBrowser, aLocationURI)) {
+        return;
+      }
       // Some websites trigger redirect events after they finish loading even
       // though the location remains the same. This results in onLocationChange
       // events to be fired twice.
