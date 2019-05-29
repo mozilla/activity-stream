@@ -12,8 +12,6 @@ data/content/activity-stream.bundle.js
 data/locales.json
 css/*.css
 prerendered/
-bin/prerender.js
-bin/prerender.js.map
 aboutlibrary/content/aboutlibrary.bundle.js
 aboutlibrary/content/*.map
 aboutlibrary/content/*.css
