@@ -66,6 +66,12 @@ scripts:
     eslint: eslint --ext=.js,.jsm,.jsx .
     sasslint: sass-lint -v -q
 
+# we don't want this to be part of the lint target, because it triggers
+# a rule that "might" conflict with prettier, but we have configured not to.
+# meaning that it would always cause the build to break.  It's here more
+# as a utility to be invoked manually if we're having problems with eslint.
+  eslint-check: eslint --print-config . | eslint-config-prettier-check
+
 # strings-import: Replace local strings with those from l10n-central
   strings-import: node ./bin/strings-import.js
 
