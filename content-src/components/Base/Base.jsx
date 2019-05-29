@@ -6,7 +6,6 @@ import {ConfirmDialog} from "content-src/components/ConfirmDialog/ConfirmDialog"
 import {connect} from "react-redux";
 import {DiscoveryStreamBase} from "content-src/components/DiscoveryStreamBase/DiscoveryStreamBase";
 import {ErrorBoundary} from "content-src/components/ErrorBoundary/ErrorBoundary";
-import {PrerenderData} from "common/PrerenderData.jsm";
 import React from "react";
 import {Search} from "content-src/components/Search/Search";
 import {Sections} from "content-src/components/Sections/Sections";
@@ -134,7 +133,6 @@ export class BaseContent extends React.PureComponent {
     const {initialized} = App;
     const prefs = props.Prefs.values;
 
-    const shouldBeFixedToTop = PrerenderData.arePrefsValid(name => prefs[name]);
     const isDiscoveryStream = props.DiscoveryStream.config && props.DiscoveryStream.config.enabled;
     let filteredSections = props.Sections;
 
@@ -149,7 +147,6 @@ export class BaseContent extends React.PureComponent {
       "outer-wrapper",
       isDiscoveryStream && "ds-outer-wrapper-search-alignment",
       isDiscoveryStream && "ds-outer-wrapper-breakpoint-override",
-      shouldBeFixedToTop && "fixed-to-top",
       prefs.showSearch && this.state.fixedSearch && !noSectionsEnabled && "fixed-search",
       prefs.showSearch && noSectionsEnabled && "only-search",
     ].filter(v => v).join(" ");
