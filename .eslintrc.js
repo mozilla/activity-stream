@@ -15,6 +15,7 @@ module.exports = {
     "import", // require("eslint-plugin-import")
     "react", // require("eslint-plugin-react")
     "jsx-a11y", // require("eslint-plugin-jsx-a11y")
+    "prettier", // require("eslint-plugin-prettier")
 
     // Temporarily disabled since they aren't vendored into in mozilla central yet
     // "react-hooks", // require("react-hooks")
@@ -32,7 +33,10 @@ module.exports = {
     "plugin:mozilla/recommended", // require("eslint-plugin-mozilla")
     "plugin:mozilla/browser-test",
     "plugin:mozilla/mochitest-test",
-    "plugin:mozilla/xpcshell-test"
+    "plugin:mozilla/xpcshell-test",
+    "prettier",
+    "prettier/react",
+    "plugin:prettier/recommended",
   ],
   "globals": {
     // Remove this when m-c updates their eslint: See https://github.com/mozilla/activity-stream/pull/4219
