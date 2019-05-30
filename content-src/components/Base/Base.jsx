@@ -46,16 +46,6 @@ export class _Base extends React.PureComponent {
     }
   }
 
-  componentDidMount() {
-    // Request state AFTER the first render to ensure we don't cause the
-    // prerendered DOM to be unmounted. Otherwise, NEW_TAB_STATE_REQUEST is
-    // dispatched right after the store is ready.
-    if (this.props.isPrerendered) {
-      this.props.dispatch(ac.AlsoToMain({type: at.NEW_TAB_STATE_REQUEST}));
-      this.props.dispatch(ac.AlsoToMain({type: at.PAGE_PRERENDERED}));
-    }
-  }
-
   componentWillUnmount() {
     this.updateTheme();
   }
@@ -79,10 +69,9 @@ export class _Base extends React.PureComponent {
   render() {
     const {props} = this;
     const {App, locale, strings} = props;
-    const {initialized} = App;
     const isDevtoolsEnabled = props.Prefs.values["asrouter.devtoolsEnabled"];
 
-    if (!props.isPrerendered && !initialized) {
+    if (!App.initialized) {
       return null;
     }
 
