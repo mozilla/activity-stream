@@ -11,15 +11,11 @@ const store = initStore(reducers);
 
 new DetectUserSessionStart(store).sendEventOrAddListener();
 
-// If we are starting in a prerendered state, we must wait until the first render
-// to request state rehydration (see Base.jsx). If we are NOT in a prerendered state,
-// we can request it immedately.
 store.dispatch(ac.AlsoToMain({type: at.NEW_TAB_STATE_REQUEST}));
 
 ReactDOM.hydrate(<Provider store={store}>
   <Base
     isFirstrun={global.document.location.href === "about:welcome"}
-    isPrerendered={false}
     locale={global.document.documentElement.lang}
     strings={global.gActivityStreamStrings} />
 </Provider>, document.getElementById("root"));
