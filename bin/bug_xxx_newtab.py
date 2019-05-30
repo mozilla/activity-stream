@@ -57,5 +57,14 @@ def migrate(ctx):
 
 newtab-page-title = { COPY(from_path, "newtab_page_title") }
 
+newtab-search-box-search-text = { COPY(from_path, "search_button") }
+newtab-search-box-search-button =
+    .title = { COPY(from_path, "search_button") }
+
+newtab-search-box-search-the-web-text = { COPY(from_path, "search_web_placeholder") }
+newtab-search-box-search-the-web-input =
+    .placeholder = { COPY(from_path, "search_web_placeholder") }
+    .title = { COPY(from_path, "search_web_placeholder") }
+
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     )
