@@ -1,5 +1,5 @@
 import {convertLinks, RichText} from "content-src/asrouter/components/RichText/RichText";
-import {Localized} from "fluent-react/compat";
+import {Localized} from "fluent-react";
 import {mount} from "enzyme";
 import React from "react";
 

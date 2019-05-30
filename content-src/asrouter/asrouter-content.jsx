@@ -3,7 +3,7 @@ import {actionCreators as ac} from "common/Actions.jsm";
 import {OUTGOING_MESSAGE_NAME as AS_GENERAL_OUTGOING_MESSAGE_NAME} from "content-src/lib/init-store";
 import {generateBundles} from "./rich-text-strings";
 import {ImpressionsWrapper} from "./components/ImpressionsWrapper/ImpressionsWrapper";
-import {LocalizationProvider} from "fluent-react/compat";
+import {LocalizationProvider} from "fluent-react";
 import {NEWTAB_DARK_THEME} from "content-src/lib/constants";
 import {OnboardingMessage} from "./templates/OnboardingMessage/OnboardingMessage";
 import React from "react";
