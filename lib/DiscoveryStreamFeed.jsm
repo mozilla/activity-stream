@@ -220,6 +220,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           lastUpdated: Date.now(),
           spocs: layoutResponse.spocs,
           layout: layoutResponse.layout,
+          status: "success",
         };
 
         await this.cache.set("layout", layout);
@@ -616,6 +617,40 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     return true;
   }
 
+  retryFeed(feed) {
+    const {url} = feed;
+    this.store.dispatch(ac.BroadcastToContent({
+      type: at.DISCOVERY_STREAM_FEED_UPDATE,
+      data: {
+        feed: {
+          ...feed,
+          data: {
+            ...feed.data,
+            status: "waiting",
+          },
+        },
+        url,
+      },
+    }));
+
+    setTimeout(() => {
+      const feedPromise = this.getComponentFeed(url);
+
+      feedPromise.then(result => {
+        const newFeed = this.filterRecommendations(result);
+        this.store.dispatch(ac.BroadcastToContent({
+          type: at.DISCOVERY_STREAM_FEED_UPDATE,
+          data: {
+            feed: newFeed,
+            url,
+          },
+        }));
+      }).catch(/* istanbul ignore next */ error => {
+        Cu.reportError(`Error trying to load component feed ${url}: ${error}`);
+      });
+    }, 1000);
+  }
+
   async getComponentFeed(feedUrl, isStartup) {
     const cachedData = await this.cache.get() || {};
     const {feeds} = cachedData;
@@ -623,7 +658,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     let feed = feeds ? feeds[feedUrl] : null;
     if (this.isExpired({cachedData, key: "feed", url: feedUrl, isStartup})) {
       const feedResponse = await this.fetchFromEndpoint(feedUrl);
-      if (feedResponse) {
+      if (feedResponse && Math.random() < 0.5) {
         const {data: scoredItems} = this.scoreItems(feedResponse.recommendations);
         const {recsExpireTime} = feedResponse.settings;
         const recommendations = this.rotate(scoredItems, recsExpireTime);
@@ -633,6 +668,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           data: {
             settings: feedResponse.settings,
             recommendations,
+            status: "success",
           },
         };
       } else {
@@ -640,7 +676,12 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       }
     }
 
-    return feed;
+    // If we have no feed at this point, both fetch and cache failed for some reason.
+    return feed || {
+      data: {
+        status: "failed",
+      },
+    };
   }
 
   /**
@@ -859,7 +900,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
   // longer part of the response.
   cleanUpTopRecImpressionPref(newFeeds) {
     // Need to build a single list of stories.
-    const activeStories = Object.keys(newFeeds).reduce((accumulator, currentValue) => {
+    const activeStories = Object.keys(newFeeds).filter(currentValue => newFeeds[currentValue].data).reduce((accumulator, currentValue) => {
       const {recommendations} = newFeeds[currentValue].data;
       return accumulator.concat(recommendations.map(i => `${i.id}`));
     }, []);
@@ -917,6 +958,9 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
           ...JSON.parse(this.store.getState().Prefs.values[PREF_CONFIG]),
           [action.data.name]: action.data.value,
         })));
+        break;
+      case at.DISCOVERY_STREAM_RETRY_FEED:
+        this.retryFeed(action.data.feed);
         break;
       case at.DISCOVERY_STREAM_CONFIG_CHANGE:
         // When the config pref changes, load or unload data as needed.
