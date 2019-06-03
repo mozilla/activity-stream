@@ -110,6 +110,10 @@ $hover-transition-duration: 150ms;
   padding: 0 $half-base-gutter;
   display: inline-block;
 
+  .top-site-icon.rich-icon {
+    border-radius: 4px;
+  }
+
   // container for context menu
   .top-site-inner {
     position: relative;
