@@ -346,7 +346,7 @@ describe("DiscoveryStreamFeed", () => {
 
         assert.calledWith(feed.store.dispatch.firstCall, {
           type: at.DISCOVERY_STREAM_FEED_UPDATE,
-          data: {feed: null, url: "foo.com"},
+          data: {feed: {data: {status: "failed"}}, url: "foo.com"},
         });
         assert.calledWith(feed.store.dispatch.secondCall, {
           type: at.DISCOVERY_STREAM_FEEDS_UPDATE,
@@ -440,7 +440,7 @@ describe("DiscoveryStreamFeed", () => {
 
       const feedResp = await feed.getComponentFeed("foo.com");
 
-      assert.isNull(feedResp);
+      assert.deepEqual(feedResp, {data: {status: "failed"}});
     });
   });
 

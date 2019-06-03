@@ -14,9 +14,31 @@ describe("<DSEmptyState>", () => {
     assert.ok(wrapper.find(".section-empty-state").exists());
   });
 
-  it("should render message", () => {
+  it("should render defaultempty state message", () => {
     assert.ok(wrapper.find(".empty-state-message").exists());
     assert.ok(wrapper.find("h2").exists());
     assert.ok(wrapper.find("p").exists());
+  });
+
+  it("should render failed state message", () => {
+    wrapper = shallowWithIntl(<DSEmptyState status="failed" />);
+    assert.ok(wrapper.find("button.try-again-button").exists());
+  });
+
+  it("should render waiting state message", () => {
+    wrapper = shallowWithIntl(<DSEmptyState status="waiting" />);
+    assert.ok(wrapper.find("button.try-again-button.waiting").exists());
+  });
+
+  it("should dispatch DISCOVERY_STREAM_RETRY_FEED on failed state button click", () => {
+    const dispatch = sinon.spy();
+
+    wrapper = shallowWithIntl(<DSEmptyState status="failed" dispatch={dispatch} feed="https://foo.com" />);
+    wrapper.find("button.try-again-button").simulate("click");
+
+    assert.calledOnce(dispatch);
+    const [action] = dispatch.firstCall.args;
+    assert.equal(action.type, "DISCOVERY_STREAM_RETRY_FEED");
+    assert.equal(action.data.feed, "https://foo.com");
   });
 });

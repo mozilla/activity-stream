@@ -145,7 +145,7 @@ export class Hero extends React.PureComponent {
       <div>
         <div className="ds-header">{this.props.title}</div>
         {isEmpty ?
-          <div className="ds-card-grid empty">
+          <div className="ds-hero empty">
             <DSEmptyState status={data.status} dispatch={this.props.dispatch} feed={this.props.feed} />
           </div> :
           this.renderHero()

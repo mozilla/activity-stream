@@ -138,7 +138,7 @@ export function _List(props) {
     <div>
       {props.header && props.header.title ? <div className="ds-header">{props.header.title}</div> : null }
       {isEmpty ?
-        <div className="ds-card-grid empty">
+        <div className="ds-list empty">
           <DSEmptyState status={data.status} dispatch={props.dispatch} feed={props.feed} />
         </div> :
         renderList()

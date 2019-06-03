@@ -658,7 +658,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     let feed = feeds ? feeds[feedUrl] : null;
     if (this.isExpired({cachedData, key: "feed", url: feedUrl, isStartup})) {
       const feedResponse = await this.fetchFromEndpoint(feedUrl);
-      if (feedResponse && Math.random() < 0.5) {
+      if (feedResponse) {
         const {data: scoredItems} = this.scoreItems(feedResponse.recommendations);
         const {recsExpireTime} = feedResponse.settings;
         const recommendations = this.rotate(scoredItems, recsExpireTime);
