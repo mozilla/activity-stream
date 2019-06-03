@@ -12,7 +12,7 @@ const REC_IMPRESSION_TRACKING_PREF = "discoverystream.rec.impressions";
 const THIRTY_MINUTES = 30 * 60 * 1000;
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 1 week
 
-describe("DiscoveryStreamFeed", () => {
+describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
   let DiscoveryStreamFeed;
   let feed;
   let sandbox;
@@ -78,6 +78,7 @@ describe("DiscoveryStreamFeed", () => {
     sandbox.stub(feed, "_maybeUpdateCachedData").resolves();
 
     globals = new GlobalOverrider();
+    globals.set("setTimeout", callback => { callback(); });
     fakeNewTabUtils = {
       blockedLinks: {
         links: [],
@@ -879,6 +880,35 @@ describe("DiscoveryStreamFeed", () => {
     });
   });
 
+  describe("#retryFeed", () => {
+    it("should retry a feed fetch", async () => {
+      sandbox.stub(feed, "getComponentFeed").returns(Promise.resolve({}));
+      sandbox.stub(feed, "filterRecommendations").returns({});
+      sandbox.spy(feed.store, "dispatch");
+
+      await feed.retryFeed({url: "https://feed.com"});
+
+      assert.calledOnce(feed.getComponentFeed);
+      assert.calledOnce(feed.filterRecommendations);
+      assert.calledTwice(feed.store.dispatch);
+      assert.equal(feed.store.dispatch.firstCall.args[0].type, "DISCOVERY_STREAM_FEED_UPDATE");
+      assert.deepEqual(feed.store.dispatch.firstCall.args[0].data, {
+        feed: {
+          url: "https://feed.com",
+          data: {
+            status: "waiting",
+          },
+        },
+        url: "https://feed.com",
+      });
+      assert.equal(feed.store.dispatch.secondCall.args[0].type, "DISCOVERY_STREAM_FEED_UPDATE");
+      assert.deepEqual(feed.store.dispatch.secondCall.args[0].data, {
+        feed: {},
+        url: "https://feed.com",
+      });
+    });
+  });
+
   describe("#recordCampaignImpression", () => {
     it("should return false if time based cap is hit", () => {
       sandbox.stub(feed, "readImpressionsPref").returns({});
@@ -1204,6 +1234,15 @@ describe("DiscoveryStreamFeed", () => {
         },
         type: at.SET_PREF,
       });
+    });
+  });
+
+  describe("#onAction: DISCOVERY_STREAM_RETRY_FEED", async () => {
+    it("should call retryFeed", async () => {
+      sandbox.spy(feed, "retryFeed");
+      feed.onAction({type: at.DISCOVERY_STREAM_RETRY_FEED, data: {feed: {url: "https://feed.com"}}});
+      assert.calledOnce(feed.retryFeed);
+      assert.calledWith(feed.retryFeed, {url: "https://feed.com"});
     });
   });
 
