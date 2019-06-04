@@ -158,7 +158,7 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
     it("should allow POST and with other options", async () => {
       await feed.fetchFromEndpoint("https://getpocket.cdn.mozilla.net/dummy", {
         method: "POST",
-        body: "{}"
+        body: "{}",
       });
 
       assert.calledWithMatch(fetchStub, "https://getpocket.cdn.mozilla.net/dummy", {
@@ -170,10 +170,10 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
   });
 
   describe("#getOrCreateImpressionId", () => {
-    it.only("should create impression id in constructor", async () => {
+    it("should create impression id in constructor", async () => {
       assert.equal(feed._impressionId, FAKE_UUID);
     });
-    it.only("should create impression id if none exists", async () => {
+    it("should create impression id if none exists", async () => {
       sandbox.stub(global.Services.prefs, "setCharPref").returns();
 
       const result = feed.getOrCreateImpressionId();
@@ -181,7 +181,7 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       assert.equal(result, FAKE_UUID);
       assert.calledOnce(global.Services.prefs.setCharPref);
     });
-    it.only("should use impression id if exists", async () => {
+    it("should use impression id if exists", async () => {
       sandbox.stub(global.Services.prefs, "getCharPref").returns("from get");
 
       const result = feed.getOrCreateImpressionId();
@@ -253,7 +253,7 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       await feed.loadLayout(feed.store.dispatch);
 
       assert.notCalled(feed.fetchLayout);
-      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey");
+      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs");
     });
     it("should fetch local layout for invalid layout endpoint or when fetch layout fails", async () => {
       feed.config.hardcoded_layout = false;
@@ -262,7 +262,7 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       await feed.loadLayout(feed.store.dispatch, true);
 
       assert.calledOnce(fetchStub);
-      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey");
+      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs");
     });
   });
 
@@ -488,6 +488,11 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
 
   describe("#loadSpocs", () => {
     beforeEach(() => {
+      feed._prefCache = {
+        config: {
+          api_key_pref: "",
+        },
+      };
       Object.defineProperty(feed, "showSpocs", {get: () => true});
     });
     it("should not fetch or update cache if no spocs endpoint is defined", async () => {
