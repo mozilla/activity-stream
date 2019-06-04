@@ -73,6 +73,22 @@ export class ContextMenuItem extends React.PureComponent {
           this.props.hideContext();
         }
         break;
+      case "ArrowUp":
+        event.preventDefault()
+        if (event.target.parentNode.previousSibling.firstElementChild) {
+          event.target.parentNode.previousSibling.firstElementChild.focus();
+        } else {
+          event.target.parentNode.previousSibling.previousSibling.firstElementChild.focus();
+        }
+        break;
+      case "ArrowDown":
+        event.preventDefault()
+        if (event.target.parentNode.nextSibling.firstElementChild) {
+          event.target.parentNode.nextSibling.firstElementChild.focus();
+        } else {
+          event.target.parentNode.nextSibling.nextSibling.firstElementChild.focus();
+        }
+        break;
       case "Enter":
         this.props.hideContext();
         option.onClick();
