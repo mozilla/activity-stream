@@ -406,11 +406,15 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
         const headers = new Headers();
         headers.append("content-type", "application/json");
 
+        const apiKeyPref = this._prefCache.config.api_key_pref;
+        const apiKey = Services.prefs.getCharPref(apiKeyPref, "");
+
         const spocsResponse = await this.fetchFromEndpoint(endpoint, {
           method: "POST",
           headers,
           body: JSON.stringify({
             pocket_id: this._impressionId,
+            consumer_key: apiKey,
           }),
         });
 
@@ -1041,7 +1045,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
 defaultLayoutResp = {
   "spocs": {
-    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey",
+    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs",
     "spocs_per_domain": 1,
   },
   "layout": [
