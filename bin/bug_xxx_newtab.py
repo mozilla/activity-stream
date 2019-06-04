@@ -56,6 +56,8 @@ def migrate(ctx):
         transforms_from("""
 
 newtab-page-title = { COPY(from_path, "newtab_page_title") }
+newtab-settings-button =
+    .title = { COPY(from_path, "settings_pane_button_label") }
 
 newtab-search-box-search-text = { COPY(from_path, "search_button") }
 newtab-search-box-search-button =
