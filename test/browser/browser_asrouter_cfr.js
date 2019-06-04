@@ -377,9 +377,17 @@ add_task(async function test_matchPattern() {
   let count = 0;
   const triggerHandler = () => ++count;
   const frequentVisitsTrigger = ASRouterTriggerListeners.get("frequentVisits");
-  frequentVisitsTrigger.init(triggerHandler, [], ["*://*.example.com/"]);
+  await frequentVisitsTrigger.init(triggerHandler, [], ["*://*.example.com/"]);
 
   const browser = gBrowser.selectedBrowser;
+  // Add a background tab that matches the pattern but shouldn't trigger the handler
+  const backgroundTab = BrowserTestUtils.addTab(gBrowser, "http://example.com");
+  gBrowser.removeTab(backgroundTab);
+
+  // No visits should be registered
+  Assert.ok(!frequentVisitsTrigger._visits.get("www.example.com"));
+  Assert.ok(!frequentVisitsTrigger._visits.get("example.com"));
+
   await BrowserTestUtils.loadURI(browser, "http://example.com/");
   await BrowserTestUtils.browserLoaded(browser, false, "http://example.com/");
 
@@ -400,6 +408,11 @@ add_task(async function test_matchPattern() {
 
   await BrowserTestUtils.waitForCondition(() => frequentVisitsTrigger._visits.get("www.example.com").length === 1, "www.example.com is a different host that also matches the pattern.");
   await BrowserTestUtils.waitForCondition(() => frequentVisitsTrigger._visits.get("example.com").length === 1, "www.example.com is a different host that also matches the pattern.");
+
+  Assert.equal(frequentVisitsTrigger._visits.get("www.example.com").length, 1);
+  Assert.equal(frequentVisitsTrigger._visits.get("example.com").length, 1);
+
+  frequentVisitsTrigger.uninit();
 });
 
 add_task(async function test_providerNames() {

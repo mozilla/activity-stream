@@ -214,9 +214,9 @@ describe("ASRouterTriggerListeners", () => {
           const newTriggerHandler = sinon.stub();
           await trigger.init(newTriggerHandler, hosts);
 
-          const browser = {};
           const webProgress = {isTopLevel: true};
           const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+          const browser = {ownerGlobal: {gBrowser: {currentURI: aLocationURI}}};
           const aRequest = {
             QueryInterface: sandbox.stub().returns({
               originalURI: {spec: "www.mozilla.org", host: "www.mozilla.org"},
@@ -231,9 +231,9 @@ describe("ASRouterTriggerListeners", () => {
         const newTriggerHandler = sinon.stub();
         await openURLListener.init(newTriggerHandler, hosts);
 
-        const browser = {};
         const webProgress = {isTopLevel: true};
         const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+        const browser = {ownerGlobal: {gBrowser: {currentURI: aLocationURI}}};
         const aRequest = {
           QueryInterface: sandbox.stub().returns({
             originalURI: {spec: "www.mozilla.org", host: "www.mozilla.org"},
@@ -247,9 +247,9 @@ describe("ASRouterTriggerListeners", () => {
           const newTriggerHandler = sinon.stub();
           await trigger.init(newTriggerHandler, hosts);
 
-          const browser = {};
           const webProgress = {isTopLevel: true};
           const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+          const browser = {ownerGlobal: {gBrowser: {currentURI: aLocationURI}}};
           const aRequest = {
             QueryInterface: sandbox.stub().returns({
               originalURI: {spec: "www.mozilla.org", host: "www.mozilla.org"},
@@ -289,6 +289,21 @@ describe("ASRouterTriggerListeners", () => {
         };
         openURLListener.onLocationChange(browser, webProgress, aRequest, aLocationURI);
         assert.calledOnce(aRequest.QueryInterface);
+        assert.notCalled(newTriggerHandler);
+      });
+      it("should not call triggerHandler if the tab opened is not focused", async () => {
+        const newTriggerHandler = sinon.stub();
+        await frequentVisitsListener.init(newTriggerHandler, hosts);
+
+        const webProgress = {isTopLevel: true};
+        const aLocationURI = {host: "subdomain.mozilla.org", spec: "subdomain.mozilla.org"};
+        const browser = {ownerGlobal: {gBrowser: {currentURI: {spec: "different location"}}}};
+        const aRequest = {
+          QueryInterface: sandbox.stub().returns({
+            originalURI: {spec: "www.mozilla.org", host: "www.mozilla.org"},
+          }),
+        };
+        frequentVisitsListener.onLocationChange(browser, webProgress, aRequest, aLocationURI);
         assert.notCalled(newTriggerHandler);
       });
     });

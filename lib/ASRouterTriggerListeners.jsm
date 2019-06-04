@@ -36,7 +36,7 @@ async function checkStartupFinished(win) {
  */
 function isFocusedTab(aBrowser, aLocationURI) {
   try {
-    if (aBrowser.ownerGlobal.gBrowser.currentURI.spec === aLocationURI.aLocationURI.spec) {
+    if (aBrowser.ownerGlobal.gBrowser.currentURI.spec === aLocationURI.spec) {
       return true;
     }
   } catch (e) {} // nsIURI.host can throw for non-nsStandardURL nsIURIs
