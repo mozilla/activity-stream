@@ -890,19 +890,9 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
 
       assert.calledOnce(feed.getComponentFeed);
       assert.calledOnce(feed.filterRecommendations);
-      assert.calledTwice(feed.store.dispatch);
+      assert.calledOnce(feed.store.dispatch);
       assert.equal(feed.store.dispatch.firstCall.args[0].type, "DISCOVERY_STREAM_FEED_UPDATE");
       assert.deepEqual(feed.store.dispatch.firstCall.args[0].data, {
-        feed: {
-          url: "https://feed.com",
-          data: {
-            status: "waiting",
-          },
-        },
-        url: "https://feed.com",
-      });
-      assert.equal(feed.store.dispatch.secondCall.args[0].type, "DISCOVERY_STREAM_FEED_UPDATE");
-      assert.deepEqual(feed.store.dispatch.secondCall.args[0].data, {
         feed: {},
         url: "https://feed.com",
       });

@@ -619,33 +619,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
   async retryFeed(feed) {
     const {url} = feed;
-
-    // First trigger a waiting update so UI knows to update the button status.
-    this.store.dispatch(ac.BroadcastToContent({
-      type: at.DISCOVERY_STREAM_FEED_UPDATE,
-      data: {
-        feed: {
-          ...feed,
-          data: {
-            ...feed.data,
-            status: "waiting",
-          },
-        },
-        url,
-      },
-    }));
-
-    const feedPromise = await this.getComponentFeed(url);
-
-    // Setting a mild timeout to ensure that fast retries that result in another fail show some sort of UI feedback that something changed.
-    // Otherwise, fast retries that fail result in what looks like an unresponsive button.
-    // With this, you see a button waiting update for 300ms before it either fails or succeeds again.
-    await Promise.all([
-      new Promise(resolve => setTimeout(resolve, 300)),
-      feedPromise,
-    ]);
-
-    const result = await feedPromise;
+    const result = await this.getComponentFeed(url);
     const newFeed = this.filterRecommendations(result);
     this.store.dispatch(ac.BroadcastToContent({
       type: at.DISCOVERY_STREAM_FEED_UPDATE,

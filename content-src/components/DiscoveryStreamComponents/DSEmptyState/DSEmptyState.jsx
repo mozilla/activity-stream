@@ -5,16 +5,47 @@ export class DSEmptyState extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onReset = this.onReset.bind(this);
+    this.state = {};
+  }
+
+  componentWillUnmount() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
   }
 
   onReset() {
     if (this.props.dispatch && this.props.feed) {
-      this.props.dispatch(ac.OnlyToMain({type: at.DISCOVERY_STREAM_RETRY_FEED, data: {feed: this.props.feed}}));
+      const {feed} = this.props;
+      const {url} = feed;
+      this.props.dispatch({
+        type: at.DISCOVERY_STREAM_FEED_UPDATE,
+        data: {
+          feed: {
+            ...feed,
+            data: {
+              ...feed.data,
+              status: "waiting",
+            },
+          },
+          url,
+        },
+      });
+
+      this.setState({waiting: true});
+      this.timeout = setTimeout(() => {
+        this.timeout = null;
+        this.setState({
+          waiting: false,
+        });
+      }, 300);
+
+      this.props.dispatch(ac.OnlyToMain({type: at.DISCOVERY_STREAM_RETRY_FEED, data: {feed}}));
     }
   }
 
   renderButton() {
-    if (this.props.status === "waiting") {
+    if (this.props.status === "waiting" || this.state.waiting) {
       return (
         <button className="try-again-button waiting">Loading...</button>
       );

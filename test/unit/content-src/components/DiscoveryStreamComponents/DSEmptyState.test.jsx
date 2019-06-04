@@ -33,12 +33,17 @@ describe("<DSEmptyState>", () => {
   it("should dispatch DISCOVERY_STREAM_RETRY_FEED on failed state button click", () => {
     const dispatch = sinon.spy();
 
-    wrapper = shallowWithIntl(<DSEmptyState status="failed" dispatch={dispatch} feed="https://foo.com" />);
+    wrapper = shallowWithIntl(<DSEmptyState status="failed" dispatch={dispatch} feed={{url: "https://foo.com", data: {}}} />);
     wrapper.find("button.try-again-button").simulate("click");
 
-    assert.calledOnce(dispatch);
-    const [action] = dispatch.firstCall.args;
+    assert.calledTwice(dispatch);
+    let [action] = dispatch.firstCall.args;
+    assert.equal(action.type, "DISCOVERY_STREAM_FEED_UPDATE");
+    assert.deepEqual(action.data.feed, {url: "https://foo.com", data: {status: "waiting"}});
+
+    [action] = dispatch.secondCall.args;
+
     assert.equal(action.type, "DISCOVERY_STREAM_RETRY_FEED");
-    assert.equal(action.data.feed, "https://foo.com");
+    assert.deepEqual(action.data.feed, {url: "https://foo.com", data: {}});
   });
 });
