@@ -111,6 +111,7 @@ export class Hero extends React.PureComponent {
       <List
         recStartingPoint={1}
         data={this.props.data}
+        feed={this.props.feed}
         hasImages={true}
         hasBorders={this.props.border === `border`}
         items={this.props.items - 1}
@@ -144,7 +145,9 @@ export class Hero extends React.PureComponent {
       <div>
         <div className="ds-header">{this.props.title}</div>
         {isEmpty ?
-          <div className="ds-hero empty"><DSEmptyState /></div> :
+          <div className="ds-hero empty">
+            <DSEmptyState status={data.status} dispatch={this.props.dispatch} feed={this.props.feed} />
+          </div> :
           this.renderHero()
         }
       </div>

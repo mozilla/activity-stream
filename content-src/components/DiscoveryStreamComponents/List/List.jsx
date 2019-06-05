@@ -126,19 +126,21 @@ export function _List(props) {
     );
   };
 
-  const feed = props.data;
-  if (!feed || !feed.recommendations) {
+  const {data} = props;
+  if (!data || !data.recommendations) {
     return null;
   }
 
   // Handle the case where a user has dismissed all recommendations
-  const isEmpty = feed.recommendations.length === 0;
+  const isEmpty = data.recommendations.length === 0;
 
   return (
     <div>
       {props.header && props.header.title ? <div className="ds-header">{props.header.title}</div> : null }
       {isEmpty ?
-        <div className="ds-list empty"><DSEmptyState /></div> :
+        <div className="ds-list empty">
+          <DSEmptyState status={data.status} dispatch={props.dispatch} feed={props.feed} />
+        </div> :
         renderList()
       }
     </div>
