@@ -83,7 +83,6 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
 
     sandbox.stub(feed, "_maybeUpdateCachedData").resolves();
 
-    globals = new GlobalOverrider();
     globals.set("setTimeout", callback => { callback(); });
 
     fakeNewTabUtils = {
