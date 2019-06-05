@@ -19,3 +19,20 @@ newtab-search-box-search-the-web-text = Search the Web
 newtab-search-box-search-the-web-input =
     .placeholder = Search the Web
     .title = Search the Web
+
+## Top Sites form dialog
+
+newtab_topsites_add_header = New Top Site
+newtab_topsites_edit_header = Edit Top Site
+newtab_topsites_title_label = Title
+newtab_topsites_title_placeholder =
+    .placeholder = Enter a title
+
+newtab_topsites_url_label = URL
+newtab_topsites_url_placeholder =
+    .placeholder = Type or paste a URL
+newtab_topsites_url_validation = Valid URL required
+
+newtab_topsites_image_url_label = Custom Image URL
+newtab_topsites_use_image_link = Use a custom image…
+newtab_topsites_image_validation = Image failed to load. Try a different URL.

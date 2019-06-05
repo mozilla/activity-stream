@@ -1,4 +1,3 @@
-import {FormattedMessage} from "react-intl";
 import React from "react";
 
 export class TopSiteFormInput extends React.PureComponent {
@@ -60,13 +59,14 @@ export class TopSiteFormInput extends React.PureComponent {
     const {typeUrl} = this.props;
     const {validationError} = this.state;
 
-    return (<label><FormattedMessage id={this.props.titleId} />
+    return (<label>
+      <span data-l10n-id={this.props.titleId} />
       <div className={`field ${typeUrl ? "url" : ""}${validationError ? " invalid" : ""}`}>
         <input type="text"
           value={this.props.value}
           ref={this.onMount}
           onChange={this.onChange}
-          placeholder={this.props.intl.formatMessage({id: this.props.placeholderId})}
+          data-l10n-id={this.props.placeholderId}
           // Set focus on error if the url field is valid or when the input is first rendered and is empty
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus={this.props.shouldFocus}
@@ -74,7 +74,7 @@ export class TopSiteFormInput extends React.PureComponent {
         {this.renderLoadingOrCloseButton()}
         {validationError &&
           <aside className="error-tooltip">
-            <FormattedMessage id={this.props.errorMessageId} />
+            <span data-l10n-id={this.props.errorMessageId} />
           </aside>}
       </div>
     </label>);

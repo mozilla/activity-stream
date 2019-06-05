@@ -164,13 +164,12 @@ export class TopSiteForm extends React.PureComponent {
       customScreenshotUrl && this.props.previewUrl === this.cleanUrl(customScreenshotUrl);
 
     if (!this.state.showCustomScreenshotForm) {
-      return (<A11yLinkButton onClick={this.onEnableScreenshotUrlForm} className="enable-custom-image-input">
-                <FormattedMessage id="topsites_form_use_image_link" />
-              </A11yLinkButton>);
+      return (<A11yLinkButton onClick={this.onEnableScreenshotUrlForm} className="enable-custom-image-input"
+          data-l10n-id="newtab_topsites_use_image_link" />);
     }
     return (<div className="custom-image-input-container">
       <TopSiteFormInput
-        errorMessageId={requestFailed ? "topsites_form_image_validation" : "topsites_form_url_validation"}
+        errorMessageId={requestFailed ? "newtab_topsites_image_validation" : "newtab_topsites_url_validation"}
         loading={isLoading}
         onChange={this.onCustomScreenshotUrlChange}
         onClear={this.onClearScreenshotInput}
@@ -178,9 +177,8 @@ export class TopSiteForm extends React.PureComponent {
         typeUrl={true}
         value={customScreenshotUrl}
         validationError={validationError}
-        titleId="topsites_form_image_url_label"
-        placeholderId="topsites_form_url_placeholder"
-        intl={this.props.intl} />
+        titleId="newtab_topsites_image_url_label"
+        placeholderId="newtab_topsites_url_placeholder" />
     </div>);
   }
 
@@ -205,25 +203,23 @@ export class TopSiteForm extends React.PureComponent {
       <form className="topsite-form" onSubmit={onSubmit}>
         <div className="form-input-container">
           <h3 className="section-title">
-            <FormattedMessage id={showAsAdd ? "topsites_form_add_header" : "topsites_form_edit_header"} />
+            <span data-l10n-id={showAsAdd ? "newtab_topsites_add_header" : "newtab_topsites_edit_header"} />
           </h3>
           <div className="fields-and-preview">
             <div className="form-wrapper">
               <TopSiteFormInput onChange={this.onLabelChange}
                 value={this.state.label}
-                titleId="topsites_form_title_label"
-                placeholderId="topsites_form_title_placeholder"
-                intl={this.props.intl} />
+                titleId="newtab_topsites_title_label"
+                placeholderId="newtab_topsites_title_placeholder" />
               <TopSiteFormInput onChange={this.onUrlChange}
                 shouldFocus={this.state.validationError && !this.validateUrl(this.state.url)}
                 value={this.state.url}
                 onClear={this.onClearUrlClick}
                 validationError={this.state.validationError && !this.validateUrl(this.state.url)}
-                titleId="topsites_form_url_label"
+                titleId="newtab_topsites_url_label"
                 typeUrl={true}
-                placeholderId="topsites_form_url_placeholder"
-                errorMessageId="topsites_form_url_validation"
-                intl={this.props.intl} />
+                placeholderId="newtab_topsites_url_placeholder"
+                errorMessageId="newtab_topsites_url_validation" />
               {this._renderCustomScreenshotInput()}
             </div>
             <TopSiteLink link={previewLink}
