@@ -1,5 +1,5 @@
 $top-sites-size: $grid-unit;
-$top-sites-border-radius: 6px;
+$top-sites-border-radius: 4px;
 $top-sites-title-height: 30px;
 $top-sites-vertical-space: 8px;
 $screenshot-size: cover;
@@ -109,10 +109,6 @@ $hover-transition-duration: 150ms;
 .top-site-outer {
   padding: 0 $half-base-gutter;
   display: inline-block;
-
-  .top-site-icon.rich-icon {
-    border-radius: 4px;
-  }
 
   // container for context menu
   .top-site-inner {
