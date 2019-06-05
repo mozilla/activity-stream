@@ -38,8 +38,8 @@ export class ContextMenu extends React.PureComponent {
 
   render() {
     // Disabling focus on the menu span allows the first tab to focus on the first menu item instead of the wrapper.
-    // eslint-disable-next-line jsx-a11y/interactive-supports-focus
     return (
+      // eslint-disable-next-line jsx-a11y/interactive-supports-focus
       <span
         role="menu"
         className="context-menu"

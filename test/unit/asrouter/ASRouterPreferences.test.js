@@ -94,10 +94,11 @@ describe("ASRouterPreferences", () => {
     it("should clear cached values for ._initialized, .devtoolsEnabled", () => {
       ASRouterPreferences.init();
       // trigger caching
-      const result = [
+      // eslint-disable-next-line no-unused-vars
+      const _ = [
         ASRouterPreferences.providers,
         ASRouterPreferences.devtoolsEnabled,
-      ]; // eslint-disable-line no-unused-vars
+      ];
       assert.isNotNull(
         ASRouterPreferences._providers,
         "providers should not be null"

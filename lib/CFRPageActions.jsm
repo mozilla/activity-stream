@@ -483,9 +483,10 @@ class PageAction {
         });
 
       primaryActionCallback = async () => {
+        // eslint-disable-next-line no-use-before-define
         primary.action.data.url = await CFRPageActions._fetchLatestAddonVersion(
           content.addon.id
-        ); // eslint-disable-line no-use-before-define
+        );
         this._blockMessage(id);
         this.dispatchUserAction(primary.action);
         this.hideAddressBarNotifier();

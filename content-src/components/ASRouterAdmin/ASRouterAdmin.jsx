@@ -596,10 +596,11 @@ export class ASRouterAdminInner extends React.PureComponent {
     if (!this.state.providers) {
       return null;
     }
-    // eslint-disable-next-line jsx-a11y/no-onchange
     return (
       <p>
+        {/* eslint-disable-next-line prettier/prettier */}
         Show messages from{" "}
+        {/* eslint-disable-next-line jsx-a11y/no-onchange */}
         <select
           value={this.state.messageFilter}
           onChange={this.onChangeMessageFilter}

@@ -78,10 +78,11 @@ export class SubmitFormSnippet extends React.PureComponent {
         id: "NEWTAB_FOOTER_BAR_CONTENT",
       });
     } else {
+      // eslint-disable-next-line no-console
       console.error(
         "There was a problem submitting the form",
         json || "[No JSON response]"
-      ); // eslint-disable-line no-console
+      );
       this.setState({ signupSuccess: false, signupSubmitted: true });
       this.props.sendUserActionTelemetry({
         event: "CLICK_BUTTON",

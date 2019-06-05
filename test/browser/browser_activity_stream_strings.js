@@ -15,8 +15,9 @@ add_task(async function test_activity_stream_fetch_strings() {
     aboutNewTabService.activityStreamLocale
   }/activity-stream-strings.js`;
   const strings = JSON.parse(
+    // eslint-disable-next-line fetch-options/no-fetch-credentials
     (await (await fetch(file)).text()).match(/{[^]*}/)[0]
-  ); // eslint-disable-line fetch-options/no-fetch-credentials
+  );
   const ids = Object.keys(strings);
 
   info(`Got string ids: ${ids}`);
