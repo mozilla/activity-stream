@@ -245,10 +245,8 @@ export class _Card extends React.PureComponent {
           </div>
         </div>
       </a>
-      {!props.placeholder && <button className="context-menu-button icon" title={this.props.intl.formatMessage({id: "context_menu_title"})}
-        onClick={this.onMenuButtonClick}>
-        <span className="sr-only">{`Open context menu for ${link.title}`}</span>
-      </button>}
+      {!props.placeholder && <button aria-haspopup="true" aria-label={`Open context menu for ${link.title}`} className="context-menu-button icon" title={this.props.intl.formatMessage({id: "context_menu_title"})}
+        onClick={this.onMenuButtonClick} />}
       {isContextMenuOpen &&
         <LinkMenu
           dispatch={dispatch}

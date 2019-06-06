@@ -130,9 +130,7 @@ export class _Search extends React.PureComponent {
           id="searchSubmit"
           className="search-button"
           data-l10n-id="newtab-search-box-search-button"
-          onClick={this.onSearchClick}>
-          <span className="sr-only" data-l10n-id="newtab-search-box-search-text" />
-        </button>
+          onClick={this.onSearchClick} />
       </div>
       }
       {this.props.handoffEnabled &&
@@ -144,7 +142,7 @@ export class _Search extends React.PureComponent {
             onClick={this.onSearchHandoffClick}
             tabIndex="-1">
             <div className="fake-textbox" data-l10n-id="newtab-search-box-search-the-web-text" />
-            <input type="search" className="fake-editable" tabIndex="-1" aria-hidden="true" onDrop={this.onSearchHandoffDrop} onPaste={this.onSearchHandoffPaste} />
+              <input type="search" className="fake-editable" tabIndex="-1" aria-hidden="true" onDrop={this.onSearchHandoffDrop} onPaste={this.onSearchHandoffPaste} />
             <div className="fake-caret" />
           </button>
           {/*
