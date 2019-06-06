@@ -68,5 +68,20 @@ newtab-search-box-search-the-web-input =
     .placeholder = { COPY(from_path, "search_web_placeholder") }
     .title = { COPY(from_path, "search_web_placeholder") }
 
+newtab-topsites-add-header = { COPY(from_path, "topsites_form_add_header") }
+newtab-topsites-edit-header = { COPY(from_path, "topsites_form_edit_header") }
+newtab-topsites-title-label = { COPY(from_path, "topsites_form_title_label") }
+newtab-topsites-title-input =
+    .placeholder = { COPY(from_path, "topsites_form_title_placeholder") }
+
+newtab-topsites-url-label = { COPY(from_path, "topsites_form_url_label") }
+newtab-topsites-url-input =
+    .placeholder = { COPY(from_path, "topsites_form_url_placeholder") }
+newtab-topsites-url-validation = { COPY(from_path, "topsites_form_url_validation") }
+
+newtab-topsites-image-url-label = { COPY(from_path, "topsites_form_image_url_label") }
+newtab-topsites-use-image-link = { COPY(from_path, "topsites_form_use_image_link") }
+newtab-topsites-image-validation = { COPY(from_path, "topsites_form_image_validation") }
+
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     )
