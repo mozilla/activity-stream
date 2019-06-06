@@ -64,4 +64,8 @@ describe("<DSCard>", () => {
   it("should render DSLinkMenu", () => {
     assert.equal(wrapper.children().at(1).type(), DSLinkMenu);
   });
+
+  it("should start with no .active class", () => {
+    assert.equal(wrapper.find(".active").length, 0);
+  });
 });
