@@ -73,9 +73,8 @@ export class TopSiteFormInput extends React.PureComponent {
           disabled={this.props.loading} />
         {this.renderLoadingOrCloseButton()}
         {validationError &&
-          <aside className="error-tooltip">
-            <span data-l10n-id={this.props.errorMessageId} />
-          </aside>}
+          <aside className="error-tooltip" data-l10n-id={this.props.errorMessageId} />
+          }
       </div>
     </label>);
   }

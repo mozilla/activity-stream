@@ -45,6 +45,7 @@ module.exports = {
       "files": [
         "content-src/asrouter/templates/OnboardingMessage/**",
         "content-src/asrouter/templates/Trailhead/**",
+        "content-src/components/TopSites/**",
       ],
       "rules": {
         "jsx-a11y/anchor-has-content": 0,
