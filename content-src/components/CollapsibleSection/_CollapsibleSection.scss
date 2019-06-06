@@ -9,6 +9,7 @@
     font-weight: bold;
     margin: 0;
 
+    &.grey-title,
     span {
       color: var(--newtab-section-header-text-color);
       display: inline-block;
