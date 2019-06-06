@@ -807,7 +807,7 @@ describe("<TopSiteForm>", () => {
       assert.ok(wrapper.find(TopSiteForm).exists());
     });
     it("should have the correct header", () => {
-      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab_topsites_add_header").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-add-header").length, 1);
     });
     it("should have the correct button text", () => {
       assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_save_button").length, 0);
@@ -880,7 +880,7 @@ describe("<TopSiteForm>", () => {
       assert.ok(wrapper.find(TopSiteForm).exists());
     });
     it("should have the correct header", () => {
-      assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab_topsites_edit_header").length, 1);
+      assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab-topsites-edit-header").length, 1);
     });
     it("should have the correct button text", () => {
       assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 0);
@@ -1193,16 +1193,16 @@ describe("#TopSiteFormInput", () => {
     beforeEach(() => {
       onChangeStub = sinon.stub();
 
-      wrapper = mountWithIntl(<TopSiteFormInput titleId="newtab_topsites_title_label"
-        placeholderId="newtab_topsites_title_placeholder"
-        errorMessageId="newtab_topsites_url_validation"
+      wrapper = mountWithIntl(<TopSiteFormInput titleId="newtab-topsites-title-label"
+        placeholderId="newtab-topsites-title-input"
+        errorMessageId="newtab-topsites-url-validation"
         onChange={onChangeStub}
         value="foo" />);
     });
 
     it("should render the provided title", () => {
       const title = wrapper.find("span");
-      assert.propertyVal(title.props(), "data-l10n-id", "newtab_topsites_title_label");
+      assert.propertyVal(title.props(), "data-l10n-id", "newtab-topsites-title-label");
     });
 
     it("should render the provided value", () => {
@@ -1239,16 +1239,16 @@ describe("#TopSiteFormInput", () => {
     beforeEach(() => {
       onChangeStub = sinon.stub();
 
-      wrapper = mountWithIntl(<TopSiteFormInput titleId="newtab_topsites_title_label"
-        placeholderId="newtab_topsites_title_placeholder"
+      wrapper = mountWithIntl(<TopSiteFormInput titleId="newtab-topsites-title-label"
+        placeholderId="newtab-topsites-title-input"
         onChange={onChangeStub}
         validationError={true}
-        errorMessageId="newtab_topsites_url_validation"
+        errorMessageId="newtab-topsites-url-validation"
         value="foo" />);
     });
 
     it("should render the error message", () => {
-      assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab_topsites_url_validation").length, 1);
+      assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab-topsites-url-validation").length, 1);
     });
 
     it("should reset the error state on value change", () => {

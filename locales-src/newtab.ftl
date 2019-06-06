@@ -22,17 +22,17 @@ newtab-search-box-search-the-web-input =
 
 ## Top Sites form dialog
 
-newtab_topsites_add_header = New Top Site
-newtab_topsites_edit_header = Edit Top Site
-newtab_topsites_title_label = Title
-newtab_topsites_title_placeholder =
+newtab-topsites-add-header = New Top Site
+newtab-topsites-edit-header = Edit Top Site
+newtab-topsites-title-label = Title
+newtab-topsites-title-input =
     .placeholder = Enter a title
 
-newtab_topsites_url_label = URL
-newtab_topsites_url_placeholder =
+newtab-topsites-url-label = URL
+newtab-topsites-url-input =
     .placeholder = Type or paste a URL
-newtab_topsites_url_validation = Valid URL required
+newtab-topsites-url-validation = Valid URL required
 
-newtab_topsites_image_url_label = Custom Image URL
-newtab_topsites_use_image_link = Use a custom image…
-newtab_topsites_image_validation = Image failed to load. Try a different URL.
+newtab-topsites-image-url-label = Custom Image URL
+newtab-topsites-use-image-link = Use a custom image…
+newtab-topsites-image-validation = Image failed to load. Try a different URL.

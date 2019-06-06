@@ -68,20 +68,20 @@ newtab-search-box-search-the-web-input =
     .placeholder = { COPY(from_path, "search_web_placeholder") }
     .title = { COPY(from_path, "search_web_placeholder") }
 
-newtab_topsites_add_header = { COPY(from_path, "topsites_form_add_header") }
-newtab_topsites_edit_header = { COPY(from_path, "topsites_form_edit_header") }
-newtab_topsites_title_label = { COPY(from_path, "topsites_form_title_label") }
-newtab_topsites_title_placeholder =
+newtab-topsites-add-header = { COPY(from_path, "topsites_form_add_header") }
+newtab-topsites-edit-header = { COPY(from_path, "topsites_form_edit_header") }
+newtab-topsites-title-label = { COPY(from_path, "topsites_form_title_label") }
+newtab-topsites-title-input =
     .placeholder = { COPY(from_path, "topsites_form_title_placeholder") }
 
-newtab_topsites_url_label = { COPY(from_path, "topsites_form_url_label") }
-newtab_topsites_url_placeholder =
+newtab-topsites-url-label = { COPY(from_path, "topsites_form_url_label") }
+newtab-topsites-url-input =
     .placeholder = { COPY(from_path, "topsites_form_url_placeholder") }
-newtab_topsites_url_validation = { COPY(from_path, "topsites_form_url_validation") }
+newtab-topsites-url-validation = { COPY(from_path, "topsites_form_url_validation") }
 
-newtab_topsites_image_url_label = { COPY(from_path, "topsites_form_image_url_label") }
-newtab_topsites_use_image_link = { COPY(from_path, "topsites_form_use_image_link") }
-newtab_topsites_image_validation = { COPY(from_path, "topsites_form_image_validation") }
+newtab-topsites-image-url-label = { COPY(from_path, "topsites_form_image_url_label") }
+newtab-topsites-use-image-link = { COPY(from_path, "topsites_form_use_image_link") }
+newtab-topsites-image-validation = { COPY(from_path, "topsites_form_image_validation") }
 
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     )
