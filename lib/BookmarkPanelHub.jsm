@@ -281,9 +281,13 @@ class _BookmarkPanelHub {
     const win = target.browser.ownerGlobal.window;
     // Bookmark the page to force the panel to show and
     // remove the bookmark when the panel is hidden
-    win.StarUI.panel.addEventListener("popupshown", () => {
-      win.StarUI._removeBookmarksOnPopupHidden = true;
-    }, {once: true});
+    win.StarUI.panel.addEventListener(
+      "popupshown",
+      () => {
+        win.StarUI._removeBookmarksOnPopupHidden = true;
+      },
+      { once: true }
+    );
     await win.PlacesCommandHook.bookmarkPage();
 
     const doc = target.browser.ownerGlobal.gBrowser.ownerDocument;

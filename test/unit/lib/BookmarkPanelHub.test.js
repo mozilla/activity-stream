@@ -67,6 +67,13 @@ describe("BookmarkPanelHub", () => {
       MozXULElement: { insertFTLIfNeeded: sandbox.stub() },
       document,
       requestAnimationFrame: x => x(),
+      StarUI: {
+        panel: {
+          addEventListener: sandbox.stub(),
+        },
+        _removeBookmarksOnPopupHidden: false,
+      },
+      PlacesCommandHook: { bookmarkPage: sandbox.stub().resolves() },
     };
     fakeTarget = {
       document,
@@ -432,11 +439,11 @@ describe("BookmarkPanelHub", () => {
     });
   });
   describe("#_forceShowMessage", () => {
-    it("should call showMessage with the correct args", () => {
+    it("should call showMessage with the correct args", async () => {
       sandbox.spy(instance, "showMessage");
       sandbox.stub(instance, "removeMessage");
 
-      instance._forceShowMessage(fakeTarget, { content: fakeMessage });
+      await instance._forceShowMessage(fakeTarget, { content: fakeMessage });
 
       assert.calledOnce(instance.showMessage);
       assert.calledOnce(instance.removeMessage);
@@ -447,14 +454,14 @@ describe("BookmarkPanelHub", () => {
         fakeMessage
       );
     });
-    it("should insert required fluent files", () => {
+    it("should insert required fluent files", async () => {
       sandbox.stub(instance, "showMessage");
 
-      instance._forceShowMessage(fakeTarget, { content: fakeMessage });
+      await instance._forceShowMessage(fakeTarget, { content: fakeMessage });
 
       assert.calledTwice(fakeWindow.MozXULElement.insertFTLIfNeeded);
     });
-    it("should insert a message you can collapse", () => {
+    it("should insert a message you can collapse", async () => {
       sandbox.spy(instance, "showMessage");
       sandbox.stub(instance, "toggleRecommendation");
       sandbox.stub(instance, "sendUserEventTelemetry");
@@ -464,7 +471,7 @@ describe("BookmarkPanelHub", () => {
         .withArgs("editBookmarkPanelRecommendation")
         .returns(fakeContainer);
 
-      instance._forceShowMessage(fakeTarget, { content: fakeMessage });
+      await instance._forceShowMessage(fakeTarget, { content: fakeMessage });
 
       assert.calledTwice(fakeContainer.addEventListener);
 
@@ -478,6 +485,22 @@ describe("BookmarkPanelHub", () => {
       eventListenerCb({ stopPropagation: sandbox.stub() });
 
       assert.calledWithExactly(instance.toggleRecommendation, target, false);
+    });
+    it("should open the bookmark panel when force showing the message", async () => {
+      sandbox.stub(instance, "showMessage");
+      sandbox.stub(instance, "removeMessage");
+
+      await instance._forceShowMessage(fakeTarget, { content: fakeMessage });
+      const [
+        ,
+        popupshownCb,
+      ] = fakeWindow.StarUI.panel.addEventListener.firstCall.args;
+
+      assert.isFalse(fakeWindow.StarUI._removeBookmarksOnPopupHidden);
+      // call the event listener
+      popupshownCb();
+
+      assert.isTrue(fakeWindow.StarUI._removeBookmarksOnPopupHidden);
     });
   });
   describe("#sendImpression", () => {
