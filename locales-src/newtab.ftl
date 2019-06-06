@@ -36,3 +36,16 @@ newtab-topsites-url-validation = Valid URL required
 newtab-topsites-image-url-label = Custom Image URL
 newtab-topsites-use-image-link = Use a custom image…
 newtab-topsites-image-validation = Image failed to load. Try a different URL.
+
+newtab-topsites-cancel-button = Cancel
+newtab-topsites-delete-history-button = Delete from History
+newtab-topsites-save-button = Save
+newtab-topsites-preview-button = Preview
+newtab-topsites-add-button = Add
+
+newtab-confirm-delete-history-p1 = Are you sure you want to delete every instance of this page from your history?
+# LOCALIZATION NOTE (newtab-confirm-delete-history-p2): This string is displayed in the same dialog
+# as newtab-confirm-delete-history-p1. "This action" refers to deleting a page from history.
+newtab-confirm-delete-history-p2 = This action cannot be undone.
+
+newtab-topsites-add-search-engine = Add Search Engine
