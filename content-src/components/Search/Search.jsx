@@ -119,6 +119,7 @@ export class _Search extends React.PureComponent {
       {!this.props.handoffEnabled &&
       <div className="search-inner-wrapper">
         <label htmlFor="newtab-search-text" className="search-label">
+          {/* Remove this sr-only span? */}
           <span className="sr-only"><FormattedMessage id="search_web_placeholder" /></span>
         </label>
         <input
@@ -132,9 +133,8 @@ export class _Search extends React.PureComponent {
           id="searchSubmit"
           className="search-button"
           onClick={this.onSearchClick}
-          title={this.props.intl.formatMessage({id: "search_button"})}>
-          <span className="sr-only"><FormattedMessage id="search_button" /></span>
-        </button>
+          title={this.props.intl.formatMessage({id: "search_button"})}
+          aria-label={this.props.intl.formatMessage({id: "search_button"})} />
       </div>
       }
       {this.props.handoffEnabled &&
