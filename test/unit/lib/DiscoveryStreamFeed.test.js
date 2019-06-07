@@ -12,6 +12,8 @@ const REC_IMPRESSION_TRACKING_PREF = "discoverystream.rec.impressions";
 const THIRTY_MINUTES = 30 * 60 * 1000;
 const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 1 week
 
+const FAKE_UUID = "{foo-123-foo}";
+
 describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
   let DiscoveryStreamFeed;
   let feed;
@@ -61,7 +63,11 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       DiscoveryStreamFeed,
     } = injector({
       "lib/UserDomainAffinityProvider.jsm": {UserDomainAffinityProvider: FakeUserDomainAffinityProvider},
+      "lib/TelemetryFeed.jsm": {PREF_IMPRESSION_ID: "fake-pref-impression-id"},
     }));
+
+    globals = new GlobalOverrider();
+    globals.set("gUUIDGenerator", {generateUUID: () => FAKE_UUID});
 
     // Feed
     feed = new DiscoveryStreamFeed();
@@ -77,8 +83,8 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
 
     sandbox.stub(feed, "_maybeUpdateCachedData").resolves();
 
-    globals = new GlobalOverrider();
     globals.set("setTimeout", callback => { callback(); });
+
     fakeNewTabUtils = {
       blockedLinks: {
         links: [],
@@ -148,6 +154,40 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
 
       assert.calledWithMatch(fetchStub, "https://getpocket.cdn.mozilla.net/dummy?consumer_key=replaced", {credentials: "omit"});
     });
+    it("should allow POST and with other options", async () => {
+      await feed.fetchFromEndpoint("https://getpocket.cdn.mozilla.net/dummy", {
+        method: "POST",
+        body: "{}",
+      });
+
+      assert.calledWithMatch(fetchStub, "https://getpocket.cdn.mozilla.net/dummy", {
+        credentials: "omit",
+        method: "POST",
+        body: "{}",
+      });
+    });
+  });
+
+  describe("#getOrCreateImpressionId", () => {
+    it("should create impression id in constructor", async () => {
+      assert.equal(feed._impressionId, FAKE_UUID);
+    });
+    it("should create impression id if none exists", async () => {
+      sandbox.stub(global.Services.prefs, "setCharPref").returns();
+
+      const result = feed.getOrCreateImpressionId();
+
+      assert.equal(result, FAKE_UUID);
+      assert.calledOnce(global.Services.prefs.setCharPref);
+    });
+    it("should use impression id if exists", async () => {
+      sandbox.stub(global.Services.prefs, "getCharPref").returns("from get");
+
+      const result = feed.getOrCreateImpressionId();
+
+      assert.equal(result, "from get");
+      assert.calledOnce(global.Services.prefs.getCharPref);
+    });
   });
 
   describe("#loadLayout", () => {
@@ -212,7 +252,7 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       await feed.loadLayout(feed.store.dispatch);
 
       assert.notCalled(feed.fetchLayout);
-      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey");
+      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs");
     });
     it("should fetch local layout for invalid layout endpoint or when fetch layout fails", async () => {
       feed.config.hardcoded_layout = false;
@@ -221,7 +261,7 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       await feed.loadLayout(feed.store.dispatch, true);
 
       assert.calledOnce(fetchStub);
-      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey");
+      assert.equal(feed.store.getState().DiscoveryStream.spocs.spocs_endpoint, "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs");
     });
   });
 
@@ -447,6 +487,11 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
 
   describe("#loadSpocs", () => {
     beforeEach(() => {
+      feed._prefCache = {
+        config: {
+          api_key_pref: "",
+        },
+      };
       Object.defineProperty(feed, "showSpocs", {get: () => true});
     });
     it("should not fetch or update cache if no spocs endpoint is defined", async () => {

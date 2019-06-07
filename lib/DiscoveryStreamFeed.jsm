@@ -13,6 +13,11 @@ const {UserDomainAffinityProvider} = ChromeUtils.import("resource://activity-str
 
 const {actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {PersistentCache} = ChromeUtils.import("resource://activity-stream/lib/PersistentCache.jsm");
+const {PREF_IMPRESSION_ID} = ChromeUtils.import("resource://activity-stream/lib/TelemetryFeed.jsm");
+
+XPCOMUtils.defineLazyServiceGetters(this, {
+  gUUIDGenerator: ["@mozilla.org/uuid-generator;1", "nsIUUIDGenerator"],
+});
 
 const CACHE_KEY = "discovery_stream";
 const LAYOUT_UPDATE_TIME = 30 * 60 * 1000; // 30 minutes
@@ -39,8 +44,18 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
     // Persistent cache for remote endpoint data.
     this.cache = new PersistentCache(CACHE_KEY, true);
+    this._impressionId = this.getOrCreateImpressionId();
     // Internal in-memory cache for parsing json prefs.
     this._prefCache = {};
+  }
+
+  getOrCreateImpressionId() {
+    let impressionId = Services.prefs.getCharPref(PREF_IMPRESSION_ID, "");
+    if (!impressionId) {
+      impressionId = String(gUUIDGenerator.generateUUID());
+      Services.prefs.setCharPref(PREF_IMPRESSION_ID, impressionId);
+    }
+    return impressionId;
   }
 
   /**
@@ -117,7 +132,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
     this._prefCache = {};
   }
 
-  async fetchFromEndpoint(rawEndpoint) {
+  async fetchFromEndpoint(rawEndpoint, options = {}) {
     if (!rawEndpoint) {
       Cu.reportError("Tried to fetch endpoint but none was configured.");
       return null;
@@ -140,7 +155,12 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
       const controller = new AbortController();
       const {signal} = controller;
-      const fetchPromise = fetch(endpoint, {credentials: "omit", signal});
+
+      const fetchPromise = fetch(endpoint, {
+        ...options,
+        credentials: "omit",
+        signal,
+      });
       // istanbul ignore next
       const timeoutId = setTimeout(() => { controller.abort(); }, FETCH_TIMEOUT);
 
@@ -382,7 +402,22 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       if (this.isExpired({cachedData, key: "spocs", isStartup})) {
         const endpoint = this.store.getState().DiscoveryStream.spocs.spocs_endpoint;
         const start = perfService.absNow();
-        const spocsResponse = await this.fetchFromEndpoint(endpoint);
+
+        const headers = new Headers();
+        headers.append("content-type", "application/json");
+
+        const apiKeyPref = this._prefCache.config.api_key_pref;
+        const apiKey = Services.prefs.getCharPref(apiKeyPref, "");
+
+        const spocsResponse = await this.fetchFromEndpoint(endpoint, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            pocket_id: this._impressionId,
+            consumer_key: apiKey,
+          }),
+        });
+
         if (spocsResponse) {
           this.spocsRequestTime = Math.round(perfService.absNow() - start);
           spocs = {
@@ -1010,7 +1045,7 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
 
 defaultLayoutResp = {
   "spocs": {
-    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs?consumer_key=$apiKey",
+    "url": "https://getpocket.cdn.mozilla.net/v3/firefox/unique-spocs",
     "spocs_per_domain": 1,
   },
   "layout": [
