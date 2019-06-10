@@ -1,6 +1,5 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {A11yLinkButton} from "content-src/components/A11yLinkButton/A11yLinkButton";
-import {FormattedMessage} from "react-intl";
 import React from "react";
 import {TOP_SITES_SOURCE} from "./TopSitesConstants";
 import {TopSiteFormInput} from "./TopSiteFormInput";
@@ -226,16 +225,13 @@ export class TopSiteForm extends React.PureComponent {
           </div>
         </div>
         <section className="actions">
-          <button className="cancel" type="button" onClick={this.onCancelButtonClick} >
-            <FormattedMessage id="topsites_form_cancel_button" />
-          </button>
+          <button className="cancel" type="button" onClick={this.onCancelButtonClick}
+            data-l10n-id="newtab-topsites-cancel-button" />
           {previewMode ?
-            <button className="done preview" type="submit" >
-              <FormattedMessage id="topsites_form_preview_button" />
-            </button> :
-            <button className="done" type="submit" >
-              <FormattedMessage id={showAsAdd ? "topsites_form_add_button" : "topsites_form_save_button"} />
-            </button>}
+            <button className="done preview" type="submit" data-l10n-id="newtab-topsites-preview-button" /> :
+            <button className="done" type="submit"
+              data-l10n-id={showAsAdd ? "newtab-topsites-add-button" : "newtab-topsites-save-button"} />
+          }
         </section>
       </form>
     );

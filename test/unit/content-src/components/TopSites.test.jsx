@@ -810,8 +810,8 @@ describe("<TopSiteForm>", () => {
       assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-add-header").length, 1);
     });
     it("should have the correct button text", () => {
-      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_save_button").length, 0);
-      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_add_button").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-save-button").length, 0);
+      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-add-button").length, 1);
     });
     it("should not render a preview button", () => {
       assert.equal(0, wrapper.find(".custom-image-input-container").length);
@@ -883,8 +883,8 @@ describe("<TopSiteForm>", () => {
       assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab-topsites-edit-header").length, 1);
     });
     it("should have the correct button text", () => {
-      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_add_button").length, 0);
-      assert.equal(wrapper.findWhere(n => n.props().id === "topsites_form_save_button").length, 1);
+      assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab-topsites-add-button").length, 0);
+      assert.equal(wrapper.findWhere(n => n.prop("data-l10n-id") === "newtab-topsites-save-button").length, 1);
     });
     it("should call onClose if Cancel button is clicked", () => {
       wrapper.find(".cancel").simulate("click");
@@ -986,19 +986,19 @@ describe("<TopSiteForm>", () => {
     it("should transition from save to preview", () => {
       wrapper.setProps({site: {url: "https://foo.bar", customScreenshotURL: "baz"}, index: 7});
 
-      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_save_button").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-save-button").length, 1);
 
       wrapper.setState({customScreenshotUrl: "foo"});
 
-      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_preview_button").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-preview-button").length, 1);
     });
 
     it("should transition from add to preview", () => {
-      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_add_button").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-add-button").length, 1);
 
       wrapper.setState({customScreenshotUrl: "foo"});
 
-      assert.equal(wrapper.findWhere(n => n.length && n.props().id === "topsites_form_preview_button").length, 1);
+      assert.equal(wrapper.findWhere(n => n.length && n.prop("data-l10n-id") === "newtab-topsites-preview-button").length, 1);
     });
   });
 
