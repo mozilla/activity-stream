@@ -66,6 +66,9 @@ export class ContextMenuItem extends React.PureComponent {
   focusSibling(target, key) {
     const parent = target.parentNode;
     const closestSiblingSelector = (key === "ArrowUp") ? "previousSibling" : "nextSibling";
+    if (!parent[closestSiblingSelector]) {
+      return;
+    }
     if (parent[closestSiblingSelector].firstElementChild) {
       parent[closestSiblingSelector].firstElementChild.focus();
     } else {
