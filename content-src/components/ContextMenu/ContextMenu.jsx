@@ -105,7 +105,7 @@ export class ContextMenuItem extends React.PureComponent {
       <li role="menuitem" className="context-menu-item" >
         <button className={option.disabled ? "disabled" : ""} tabIndex="0" onClick={this.onClick} onKeyDown={this.onKeyDown}>
           {option.icon && <span className={`icon icon-spacer icon-${option.icon}`} />}
-          {option.label}
+          <span data-l10n-id={option.string_id || option.id} />
         </button>
       </li>);
   }

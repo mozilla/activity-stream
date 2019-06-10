@@ -1,7 +1,7 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 
 const _OpenInPrivateWindow = site => ({
-  id: "menu_action_open_private_window",
+  id: "newtab-menu-open-new-private-window",
   icon: "new-window-private",
   action: ac.OnlyToMain({
     type: at.OPEN_PRIVATE_WINDOW,
@@ -13,13 +13,13 @@ const _OpenInPrivateWindow = site => ({
 export const GetPlatformString = platform => {
   switch (platform) {
     case "win":
-      return "menu_action_show_file_windows";
+      return "newtab-menu-show-file-windows";
     case "macosx":
-      return "menu_action_show_file_mac_os";
+      return "newtab-menu-show-file-mac";
     case "linux":
-      return "menu_action_show_file_linux";
+      return "newtab-menu-show-file-linux";
     default:
-      return "menu_action_show_file_default";
+      return "newtab-menu-show-file-default";
   }
 };
 
@@ -32,7 +32,7 @@ export const LinkMenuOptions = {
   Separator: () => ({type: "separator"}),
   EmptyItem: () => ({type: "empty"}),
   RemoveBookmark: site => ({
-    id: "menu_action_remove_bookmark",
+    id: "newtab-menu-remove-bookmark",
     icon: "bookmark-added",
     action: ac.AlsoToMain({
       type: at.DELETE_BOOKMARK_BY_ID,
@@ -41,7 +41,7 @@ export const LinkMenuOptions = {
     userEvent: "BOOKMARK_DELETE",
   }),
   AddBookmark: site => ({
-    id: "menu_action_bookmark",
+    id: "newtab-menu-bookmark",
     icon: "bookmark-hollow",
     action: ac.AlsoToMain({
       type: at.BOOKMARK_URL,
@@ -50,7 +50,7 @@ export const LinkMenuOptions = {
     userEvent: "BOOKMARK_ADD",
   }),
   OpenInNewWindow: site => ({
-    id: "menu_action_open_new_window",
+    id: "newtab-menu-open-new-window",
     icon: "new-window",
     action: ac.AlsoToMain({
       type: at.OPEN_NEW_WINDOW,
@@ -63,7 +63,7 @@ export const LinkMenuOptions = {
     userEvent: "OPEN_NEW_WINDOW",
   }),
   BlockUrl: (site, index, eventSource) => ({
-    id: "menu_action_dismiss",
+    id: "newtab-menu-dismiss",
     icon: "dismiss",
     action: ac.AlsoToMain({
       type: at.BLOCK_URL,
@@ -81,7 +81,7 @@ export const LinkMenuOptions = {
   // memory and notify the web extenion, rather than using the built-in block list.
   WebExtDismiss: (site, index, eventSource) => ({
     id: "menu_action_webext_dismiss",
-    string_id: "menu_action_dismiss",
+    string_id: "newtab-menu-dismiss",
     icon: "dismiss",
     action: ac.WebExtEvent(at.WEBEXT_DISMISS, {
       source: eventSource,
@@ -90,7 +90,7 @@ export const LinkMenuOptions = {
     }),
   }),
   DeleteUrl: (site, index, eventSource, isEnabled, siteInfo) => ({
-    id: "menu_action_delete",
+    id: "newtab-menu-delete-history",
     icon: "delete",
     action: {
       type: at.DIALOG_OPEN,
@@ -117,7 +117,7 @@ export const LinkMenuOptions = {
     }),
   }),
   OpenFile: site => ({
-    id: "menu_action_open_file",
+    id: "newtab-menu-open-file",
     icon: "open-file",
     action: ac.OnlyToMain({
       type: at.OPEN_DOWNLOAD_FILE,
@@ -125,7 +125,7 @@ export const LinkMenuOptions = {
     }),
   }),
   CopyDownloadLink: site => ({
-    id: "menu_action_copy_download_link",
+    id: "newtab-menu-copy-download-link",
     icon: "copy",
     action: ac.OnlyToMain({
       type: at.COPY_DOWNLOAD_LINK,
@@ -133,7 +133,7 @@ export const LinkMenuOptions = {
     }),
   }),
   GoToDownloadPage: site => ({
-    id: "menu_action_go_to_download_page",
+    id: "newtab-menu-go-to-download-page",
     icon: "download",
     action: ac.OnlyToMain({
       type: at.OPEN_LINK,
@@ -142,7 +142,7 @@ export const LinkMenuOptions = {
     disabled: !site.referrer,
   }),
   RemoveDownload: site => ({
-    id: "menu_action_remove_download",
+    id: "newtab-menu-remove-download",
     icon: "delete",
     action: ac.OnlyToMain({
       type: at.REMOVE_DOWNLOAD_FILE,
@@ -150,7 +150,7 @@ export const LinkMenuOptions = {
     }),
   }),
   PinTopSite: ({url, searchTopSite, label}, index) => ({
-    id: "menu_action_pin",
+    id: "newtab-menu-pin",
     icon: "pin",
     action: ac.AlsoToMain({
       type: at.TOP_SITES_PIN,
@@ -165,7 +165,7 @@ export const LinkMenuOptions = {
     userEvent: "PIN",
   }),
   UnpinTopSite: site => ({
-    id: "menu_action_unpin",
+    id: "newtab-menu-pin",
     icon: "unpin",
     action: ac.AlsoToMain({
       type: at.TOP_SITES_UNPIN,
@@ -174,7 +174,7 @@ export const LinkMenuOptions = {
     userEvent: "UNPIN",
   }),
   SaveToPocket: (site, index, eventSource) => ({
-    id: "menu_action_save_to_pocket",
+    id: "newtab-menu-save-to-pocket",
     icon: "pocket-save",
     action: ac.AlsoToMain({
       type: at.SAVE_TO_POCKET,
@@ -188,7 +188,7 @@ export const LinkMenuOptions = {
     userEvent: "SAVE_TO_POCKET",
   }),
   DeleteFromPocket: site => ({
-    id: "menu_action_delete_pocket",
+    id: "newtab-menu-delete-pocket",
     icon: "pocket-delete",
     action: ac.AlsoToMain({
       type: at.DELETE_FROM_POCKET,
@@ -197,7 +197,7 @@ export const LinkMenuOptions = {
     userEvent: "DELETE_FROM_POCKET",
   }),
   ArchiveFromPocket: site => ({
-    id: "menu_action_archive_pocket",
+    id: "newtab-menu-archive-pocket",
     icon: "pocket-archive",
     action: ac.AlsoToMain({
       type: at.ARCHIVE_FROM_POCKET,
@@ -206,7 +206,7 @@ export const LinkMenuOptions = {
     userEvent: "ARCHIVE_FROM_POCKET",
   }),
   EditTopSite: (site, index) => ({
-    id: "edit_topsites_button_text",
+    id: "newtab-menu-edit-topsites",
     icon: "edit",
     action: {
       type: at.TOP_SITES_EDIT,
