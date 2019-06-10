@@ -44,12 +44,13 @@ export class _DSLinkMenu extends React.PureComponent {
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     const TOP_STORIES_CONTEXT_MENU_OPTIONS = ["CheckBookmarkOrArchive", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"];
     const type = this.props.type || "DISCOVERY_STREAM";
+    const title = this.props.title; // eslint-disable-line prefer-destructuring
 
     return (<div>
       <button ref={this.contextMenuButtonRef}
               className="context-menu-button icon"
-              title={this.props.intl.formatMessage({id: "context_menu_title"})}
-              aria-label={this.props.intl.formatMessage({id: "context_menu_title"})}
+              title={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
+              aria-label={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
               onClick={this.onMenuButtonClick} />
       {isContextMenuOpen &&
         <LinkMenu

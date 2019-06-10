@@ -281,7 +281,11 @@ export class TopSite extends React.PureComponent {
     const title = link.label || link.hostname;
     return (<TopSiteLink {...props} onClick={this.onLinkClick} onDragEvent={this.props.onDragEvent} className={`${props.className || ""}${isContextMenuOpen ? " active" : ""}`} title={title}>
         <div>
-          <button aria-haspopup="true" className="context-menu-button icon" aria-label={this.props.intl.formatMessage({id: "context_menu_title"})} title={this.props.intl.formatMessage({id: "context_menu_title"})} onClick={this.onMenuButtonClick} />
+          <button aria-haspopup="true"
+          className="context-menu-button icon"
+          aria-label={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
+          title={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
+          onClick={this.onMenuButtonClick} />
           {isContextMenuOpen &&
             <LinkMenu
               dispatch={props.dispatch}
