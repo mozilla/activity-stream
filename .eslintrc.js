@@ -14,11 +14,11 @@ module.exports = {
   "plugins": [
     "import", // require("eslint-plugin-import")
     "react", // require("eslint-plugin-react")
-    "jsx-a11y" // require("eslint-plugin-jsx-a11y")
+    "jsx-a11y", // require("eslint-plugin-jsx-a11y")
 
     // Temporarily disabled since they aren't vendored into in mozilla central yet
     // "react-hooks", // require("react-hooks")
-    // "fetch-options", // require("eslint-plugin-fetch-options")
+    "fetch-options", // require("eslint-plugin-fetch-options")
   ],
   "settings": {
     "react": {
@@ -38,6 +38,7 @@ module.exports = {
     // Remove this when m-c updates their eslint: See https://github.com/mozilla/activity-stream/pull/4219
     "RPMSendAsyncMessage": true,
     "NewTabPagePreloading": true,
+    "DOMLocalization": true,
   },
   "overrides": [
     {
@@ -68,7 +69,7 @@ module.exports = {
   "rules": {
     // "react-hooks/rules-of-hooks": 2,
 
-    // "fetch-options/no-fetch-credentials": 2,
+    "fetch-options/no-fetch-credentials": 2,
 
     "react/jsx-boolean-value": [2, "always"],
     "react/jsx-closing-bracket-location": [2, "after-props"],
