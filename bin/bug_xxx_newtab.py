@@ -78,10 +78,21 @@ newtab-topsites-url-label = { COPY(from_path, "topsites_form_url_label") }
 newtab-topsites-url-input =
     .placeholder = { COPY(from_path, "topsites_form_url_placeholder") }
 newtab-topsites-url-validation = { COPY(from_path, "topsites_form_url_validation") }
+newtab-topsites-delete-history-button = { COPY(from_path, "menu_action_delete") }
 
 newtab-topsites-image-url-label = { COPY(from_path, "topsites_form_image_url_label") }
 newtab-topsites-use-image-link = { COPY(from_path, "topsites_form_use_image_link") }
 newtab-topsites-image-validation = { COPY(from_path, "topsites_form_image_validation") }
+
+newtab-topsites-cancel-button = { COPY(from_path, "topsites_form_cancel_button") }
+newtab-topsites-save-button = { COPY(from_path, "topsites_form_save_button") }
+newtab-topsites-preview-button = { COPY(from_path, "topsites_form_preview_button") }
+newtab-topsites-add-button = { COPY(from_path, "topsites_form_add_button") }
+
+newtab-confirm-delete-history-p1 = { COPY(from_path, "confirm_history_delete_p1") }
+newtab-confirm-delete-history-p2 = { COPY(from_path, "confirm_history_delete_notice_p2") }
+
+newtab-topsites-add-search-engine = { COPY(from_path, "section_menu_action_add_search_engine") }
 
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     )
