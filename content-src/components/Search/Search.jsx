@@ -117,9 +117,6 @@ export class _Search extends React.PureComponent {
       }
       {!this.props.handoffEnabled &&
       <div className="search-inner-wrapper">
-        <label htmlFor="newtab-search-text" className="search-label">
-          <span className="sr-only" data-l10n-id="newtab-search-box-search-the-web-text" />
-        </label>
         <input
           id="newtab-search-text"
           data-l10n-id="newtab-search-box-search-the-web-input"
