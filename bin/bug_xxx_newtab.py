@@ -116,10 +116,14 @@ newtab-menu-copy-download-link = { COPY(from_path, "menu_action_copy_download_li
 newtab-menu-go-to-download-page = { COPY(from_path, "menu_action_go_to_download_page") }
 newtab-menu-remove-download = { COPY(from_path, "menu_action_remove_download") }
 
-newtab-menu-show-file-mac = { COPY(from_path, "menu_action_show_file_mac_os") }
-newtab-menu-show-file-windows = { COPY(from_path, "menu_action_show_file_windows") }
-newtab-menu-show-file-linux = { COPY(from_path, "menu_action_show_file_linux") }
-newtab-menu-show-file-default = { COPY(from_path, "menu_action_show_file_default") }
+
+newtab-menu-show-file =
+    { PLATFORM() ->
+      [macos] { COPY(from_path, "menu_action_show_file_mac_os") }
+      [windows] { COPY(from_path, "menu_action_show_file_windows") }
+      [linux] { COPY(from_path, "menu_action_show_file_linux") }
+       *[other] { COPY(from_path, "menu_action_show_file_default") }
+    }
 newtab-menu-open-file = { COPY(from_path, "menu_action_open_file") }
 
 newtab-card-tooltip =

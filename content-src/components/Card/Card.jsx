@@ -1,7 +1,6 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
 import {cardContextTypes} from "./types";
 import {connect} from "react-redux";
-import {GetPlatformString} from "content-src/lib/link-menu-options";
 import {LinkMenu} from "content-src/components/LinkMenu/LinkMenu";
 import React from "react";
 import {ScreenshotUtils} from "content-src/lib/screenshot-utils";
@@ -221,7 +220,7 @@ export class _Card extends React.PureComponent {
             }
           </div>
           <div className="card-details">
-            {link.type === "download" && <div className="card-host-name alternate"><span data-l10n-id={GetPlatformString(this.props.platform)} /></div>}
+            {link.type === "download" && <div className="card-host-name alternate"><span data-l10n-id="newtab-menu-show-file" /></div>}
             {link.hostname &&
               <div className="card-host-name">
                 {link.hostname.slice(0, 100)}{link.type === "download" && `  \u2014 ${link.description}`}

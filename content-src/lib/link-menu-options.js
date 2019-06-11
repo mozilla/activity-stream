@@ -10,19 +10,6 @@ const _OpenInPrivateWindow = site => ({
   userEvent: "OPEN_PRIVATE_WINDOW",
 });
 
-export const GetPlatformString = platform => {
-  switch (platform) {
-    case "win":
-      return "newtab-menu-show-file-windows";
-    case "macosx":
-      return "newtab-menu-show-file-mac";
-    case "linux":
-      return "newtab-menu-show-file-linux";
-    default:
-      return "newtab-menu-show-file-default";
-  }
-};
-
 /**
  * List of functions that return items that can be included as menu options in a
  * LinkMenu. All functions take the site as the first parameter, and optionally
@@ -108,8 +95,8 @@ export const LinkMenuOptions = {
     },
     userEvent: "DIALOG_OPEN",
   }),
-  ShowFile: (site, index, eventSource, isEnabled, siteInfo, platform) => ({
-    id: GetPlatformString(platform),
+  ShowFile: site => ({
+    id: "newtab-menu-show-file",
     icon: "search",
     action: ac.OnlyToMain({
       type: at.SHOW_DOWNLOAD_FILE,

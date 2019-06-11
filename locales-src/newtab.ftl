@@ -73,9 +73,9 @@ newtab-menu-save-to-pocket = Save to Pocket
 newtab-menu-delete-pocket = Delete from Pocket
 newtab-menu-archive-pocket = Archive in Pocket
 
-## Context Menu - Bookmarks.
-## Note: Bookmark is a noun in "Remove bookmark" but when it is stand alone, just "Bookmark", it is a verb.
+# Note: Bookmark is a noun in this case, "Remove bookmark".
 newtab-menu-remove-bookmark = Remove Bookmark
+# Note: Bookmark is a verb here.
 newtab-menu-bookmark = Bookmark
 
 ## Context Menu - Downloaded Menu: In (newtab-menu-copy-download-link, newtab-menu-go-to-download-page), 
@@ -87,10 +87,13 @@ newtab-menu-remove-download = Remove from History
 ## Context Menu - Download Menu: These are platform specific strings found in the context menu of an item that has
 ## been downloaded. The intention behind "this action" is that it will show where the downloaded file exists on the file
 ## system for each operating system.
-newtab-menu-show-file-mac = Show in Finder
-newtab-menu-show-file-windows = Open Containing Folder
-newtab-menu-show-file-linux = Open Containing Folder
-newtab-menu-show-file-default = Show File
+newtab-menu-show-file =
+    { PLATFORM() ->
+        [macos] Show in Finder
+        [windows] Open Containing Folder
+        [linux] Open Containing Folder
+       *[other] Show File
+    }
 newtab-menu-open-file = Open File
 
 ## Card Tooltip: Action tooltip to open a context menu
