@@ -38,7 +38,6 @@ module.exports = {
     // Remove this when m-c updates their eslint: See https://github.com/mozilla/activity-stream/pull/4219
     "RPMSendAsyncMessage": true,
     "NewTabPagePreloading": true,
-    "DOMLocalization": true,
   },
   "overrides": [
     {
