@@ -122,5 +122,14 @@ newtab-menu-show-file-linux = { COPY(from_path, "menu_action_show_file_linux") }
 newtab-menu-show-file-default = { COPY(from_path, "menu_action_show_file_default") }
 newtab-menu-open-file = { COPY(from_path, "menu_action_open_file") }
 
+newtab-card-tooltip =
+    .title = { COPY(from_path, "context_menu_title") }
+newtab-label-title = { COPY(from_path, "context_menu_title") }
+newtab-label-visited = { COPY(from_path, "type_label_visited") }
+newtab-label-bookmarked = { COPY(from_path, "type_label_bookmarked") }
+newtab-label-recommended = { COPY(from_path, "type_label_recommended") }
+newtab-label-saved = { COPY(from_path, "type_label_pocket") }
+newtab-label-download = { COPY(from_path, "type_label_downloaded") }
+
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     )

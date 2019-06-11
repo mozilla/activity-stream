@@ -1,7 +1,6 @@
 import {actionCreators as ac} from "common/Actions.jsm";
 import {connect} from "react-redux";
 import {ContextMenu} from "content-src/components/ContextMenu/ContextMenu";
-import {injectIntl} from "react-intl";
 import {LinkMenuOptions} from "content-src/lib/link-menu-options";
 import React from "react";
 
@@ -53,4 +52,4 @@ export class _LinkMenu extends React.PureComponent {
 }
 
 const getState = state => ({isPrivateBrowsingEnabled: state.Prefs.values.isPrivateBrowsingEnabled, platform: state.Prefs.values.platform});
-export const LinkMenu = connect(getState)(injectIntl(_LinkMenu));
+export const LinkMenu = connect(getState)(_LinkMenu);

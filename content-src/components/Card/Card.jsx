@@ -1,5 +1,4 @@
 import {actionCreators as ac, actionTypes as at} from "common/Actions.jsm";
-import {FormattedMessage, injectIntl} from "react-intl";
 import {cardContextTypes} from "./types";
 import {connect} from "react-redux";
 import {GetPlatformString} from "content-src/lib/link-menu-options";
@@ -203,7 +202,7 @@ export class _Card extends React.PureComponent {
     const title = link.title || link.hostname;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     // Display "now" as "trending" until we have new strings #3402
-    const {icon, intlID} = cardContextTypes[link.type === "now" ? "trending" : link.type] || {};
+    const {icon, fluentID} = cardContextTypes[link.type === "now" ? "trending" : link.type] || {};
     const hasImage = this.state.cardImage || link.hasImage;
     const imageStyle = {backgroundImage: this.state.cardImage ? `url(${this.state.cardImage.url})` : "none"};
     const outerClassName = [
@@ -222,7 +221,7 @@ export class _Card extends React.PureComponent {
             }
           </div>
           <div className="card-details">
-            {link.type === "download" && <div className="card-host-name alternate"><FormattedMessage id={GetPlatformString(this.props.platform)} /></div>}
+            {link.type === "download" && <div className="card-host-name alternate"><span data-l10n-id={GetPlatformString(this.props.platform)} /></div>}
             {link.hostname &&
               <div className="card-host-name">
                 {link.hostname.slice(0, 100)}{link.type === "download" && `  \u2014 ${link.description}`}
@@ -238,9 +237,9 @@ export class _Card extends React.PureComponent {
               <p className="card-description" dir="auto">{link.description}</p>
             </div>
             <div className="card-context">
-              {icon && !link.context && <span aria-haspopup="true" className={`card-context-icon icon icon-${icon}`} />}
-              {link.icon && link.context && <span aria-haspopup="true" className="card-context-icon icon" style={{backgroundImage: `url('${link.icon}')`}} />}
-              {intlID && !link.context && <div className="card-context-label"><FormattedMessage id={intlID} defaultMessage="Visited" /></div>}
+              {icon && !link.context && <span className={`card-context-icon icon icon-${icon}`} />}
+              {link.icon && link.context && <span className="card-context-icon icon" style={{backgroundImage: `url('${link.icon}')`}} />}
+              {fluentID && !link.context && <div className="card-context-label"><span data-l10n-id={fluentID} defaultMessage="Visited" /></div>}
               {link.context && <div className="card-context-label">{link.context}</div>}
             </div>
           </div>
@@ -266,5 +265,5 @@ export class _Card extends React.PureComponent {
   }
 }
 _Card.defaultProps = {link: {}};
-export const Card = connect(state => ({platform: state.Prefs.values.platform}))(injectIntl(_Card));
+export const Card = connect(state => ({platform: state.Prefs.values.platform}))(_Card);
 export const PlaceholderCard = props => <Card placeholder={true} className={props.className} />;

@@ -54,7 +54,7 @@ newtab-confirm-delete-history-p2 = This action cannot be undone.
 newtab-topsites-add-search-engine = Add Search Engine
 
 ## Top Site - Action Tooltips.
-# Tooltip to open the context menu for a given page.
+# Tooltip to open the context menu for a given top site.
 newtab-topsites-tooltip =
     .title = Open menu
 # Tooltip on an empty topsite box to open the New Top Site dialog.
@@ -92,3 +92,16 @@ newtab-menu-show-file-windows = Open Containing Folder
 newtab-menu-show-file-linux = Open Containing Folder
 newtab-menu-show-file-default = Show File
 newtab-menu-open-file = Open File
+
+## Card Tooltip: Action tooltip to open a context menu
+newtab-card-tooltip =
+    .title = Open menu
+
+## Card Labels: These labels are associated to pages to give
+## context on how the element is related to the user, e.g. type indicates that
+## the page is bookmarked, or is currently open on another device
+newtab-label-visited = Visited
+newtab-label-bookmarked = Bookmarked
+newtab-label-recommended = Trending
+newtab-label-saved = Saved to Pocket
+newtab-label-download = Downloaded
