@@ -38,7 +38,7 @@ $excerpt-line-height: 20;
     }
   }
 
-  &:hover .ds-card-link {
+  &:not(.placeholder):hover .ds-card-link {
     @include ds-fade-in($grey-30);
 
     @include dark-theme-only {
