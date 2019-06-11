@@ -69,9 +69,9 @@ newtab-menu-dismiss = Dismiss
 newtab-menu-pin = Pin
 newtab-menu-unpin = Unpin
 newtab-menu-delete-history = Delete from History
-newtab-menu-save-to-pocket = Save to Pocket
-newtab-menu-delete-pocket = Delete from Pocket
-newtab-menu-archive-pocket = Archive in Pocket
+newtab-menu-save-to-pocket = Save to { -pocket-brand-name }
+newtab-menu-delete-pocket = Delete from { -pocket-brand-name }
+newtab-menu-archive-pocket = Archive in { -pocket-brand-name }
 
 # Note: Bookmark is a noun in this case, "Remove bookmark".
 newtab-menu-remove-bookmark = Remove Bookmark
@@ -106,5 +106,5 @@ newtab-card-tooltip =
 newtab-label-visited = Visited
 newtab-label-bookmarked = Bookmarked
 newtab-label-recommended = Trending
-newtab-label-saved = Saved to Pocket
+newtab-label-saved = Saved to { -pocket-brand-name }
 newtab-label-download = Downloaded

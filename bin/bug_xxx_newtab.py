@@ -4,10 +4,10 @@
 # http://creativecommons.org/publicdomain/zero/1.0/
 
 from __future__ import absolute_import
-# import fluent.syntax.ast as FTL
+import fluent.syntax.ast as FTL
 from fluent.migrate.helpers import transforms_from
-# from fluent.migrate.helpers import MESSAGE_REFERENCE, TERM_REFERENCE
-# from fluent.migrate import COPY, CONCAT, REPLACE
+from fluent.migrate.helpers import MESSAGE_REFERENCE, TERM_REFERENCE
+from fluent.migrate import COPY, CONCAT, REPLACE
 
 TARGET_FILE = 'browser/browser/newtab/newtab.ftl'
 SOURCE_FILE = TARGET_FILE
@@ -106,9 +106,6 @@ newtab-menu-dismiss = { COPY(from_path, "menu_action_dismiss") }
 newtab-menu-pin = { COPY(from_path, "menu_action_pin") }
 newtab-menu-unpin = { COPY(from_path, "menu_action_unpin") }
 newtab-menu-delete-history = { COPY(from_path, "menu_action_delete") }
-newtab-menu-save-to-pocket = { COPY(from_path, "menu_action_save_to_pocket") }
-newtab-menu-delete-pocket = { COPY(from_path, "menu_action_delete_pocket") }
-newtab-menu-archive-pocket = { COPY(from_path, "menu_action_archive_pocket") }
 newtab-menu-remove-bookmark = { COPY(from_path, "menu_action_remove_bookmark") }
 newtab-menu-bookmark = { COPY(from_path, "menu_action_bookmark") }
 
@@ -128,12 +125,56 @@ newtab-menu-open-file = { COPY(from_path, "menu_action_open_file") }
 
 newtab-card-tooltip =
     .title = { COPY(from_path, "context_menu_title") }
-newtab-label-title = { COPY(from_path, "context_menu_title") }
 newtab-label-visited = { COPY(from_path, "type_label_visited") }
 newtab-label-bookmarked = { COPY(from_path, "type_label_bookmarked") }
 newtab-label-recommended = { COPY(from_path, "type_label_recommended") }
-newtab-label-saved = { COPY(from_path, "type_label_pocket") }
 newtab-label-download = { COPY(from_path, "type_label_downloaded") }
 
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
+    ),
+    ctx.add_transforms(
+        TARGET_FILE,
+        SOURCE_FILE,
+        [
+            FTL.Message(
+                id=FTL.Identifier("newtab-menu-save-to-pocket"),
+                value=REPLACE(
+                    "browser/chrome/browser/activity-stream/newtab.properties",
+                    "menu_action_save_to_pocket",
+                    {
+                        "Pocket": TERM_REFERENCE("pocket-brand-name")
+                    },
+                )
+            ),
+            FTL.Message(
+                id=FTL.Identifier("newtab-menu-archive-pocket"),
+                value=REPLACE(
+                    "browser/chrome/browser/activity-stream/newtab.properties",
+                    "menu_action_archive_pocket",
+                    {
+                        "Pocket": TERM_REFERENCE("pocket-brand-name")
+                    },
+                )
+            ),
+            FTL.Message(
+                id=FTL.Identifier("newtab-menu-delete-pocket"),
+                value=REPLACE(
+                    "browser/chrome/browser/activity-stream/newtab.properties",
+                    "menu_action_delete_pocket",
+                    {
+                        "Pocket": TERM_REFERENCE("pocket-brand-name")
+                    },
+                )
+            ),      
+            FTL.Message(
+                id=FTL.Identifier("newtab-label-saved"),
+                value=REPLACE(
+                    "browser/chrome/browser/activity-stream/newtab.properties",
+                    "type_label_pocket",
+                    {
+                        "Pocket": TERM_REFERENCE("pocket-brand-name")
+                    },
+                )
+            ), 
+        ]
     )
