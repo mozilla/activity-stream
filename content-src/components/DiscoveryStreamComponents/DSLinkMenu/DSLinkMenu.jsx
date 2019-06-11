@@ -49,8 +49,8 @@ export class _DSLinkMenu extends React.PureComponent {
     return (<div>
       <button ref={this.contextMenuButtonRef}
               className="context-menu-button icon"
-              title={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
-              aria-label={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
+              title={this.props.intl.formatMessage({id: "context_menu_title"}, {title})}
+              aria-label={this.props.intl.formatMessage({id: "context_menu_title"}, {title})}
               onClick={this.onMenuButtonClick} />
       {isContextMenuOpen &&
         <LinkMenu
