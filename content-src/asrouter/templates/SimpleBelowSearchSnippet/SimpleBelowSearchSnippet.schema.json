@@ -31,7 +31,7 @@
     },
     "icon_alt_text": {
       "type": "string",
-      "description": "Alt text for accessibility",
+      "description": "Alt text describing icon for screen readers",
       "default": ""
     },
     "block_button_text": {

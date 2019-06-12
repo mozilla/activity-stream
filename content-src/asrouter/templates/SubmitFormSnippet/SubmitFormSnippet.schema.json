@@ -61,7 +61,7 @@
     },
     "scene1_icon_alt_text": {
       "type": "string",
-      "description": "Alt text for accessibility",
+      "description": "Alt text describing scene1 icon for screen readers",
       "default": ""
     },
     "scene1_title_icon": {
@@ -74,7 +74,7 @@
     },
     "scene1_title_icon_alt_text": {
       "type": "string",
-      "description": "Alt text for accessibility",
+      "description": "Alt text describing scene1 title icon for screen readers",
       "default": ""
     },
     "form_action": {
@@ -127,7 +127,7 @@
     },
     "scene2_icon_alt_text": {
       "type": "string",
-      "description": "Alt text for accessibility",
+      "description": "Alt text describing scene2 icon for screen readers",
       "default": ""
     },
     "scene2_newsletter": {

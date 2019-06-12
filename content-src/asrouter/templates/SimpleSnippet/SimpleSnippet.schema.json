@@ -41,7 +41,7 @@
     },
     "icon_alt_text": {
       "type": "string",
-      "description": "Alt text for accessibility",
+      "description": "Alt text describing icon for screen readers",
       "default": ""
     },
     "title_icon": {
@@ -54,7 +54,7 @@
     },
     "title_icon_alt_text": {
       "type": "string",
-      "description": "Alt text for accessibility",
+      "description": "Alt text describing title icon for screen readers",
       "default": ""
     },
     "button_action": {
