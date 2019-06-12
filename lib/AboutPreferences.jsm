@@ -100,10 +100,6 @@ this.AboutPreferences = class AboutPreferences {
     // Deep copy object to not modify original Sections state in store
     let sectionsCopy = JSON.parse(JSON.stringify(sections));
     sectionsCopy.forEach(obj => {
-      if (obj.id === "highlights") {
-        obj.shouldHidePref = true;
-      }
-
       if (obj.id === "topstories") {
         obj.rowsPref = "";
       }

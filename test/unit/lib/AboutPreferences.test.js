@@ -83,22 +83,6 @@ describe("AboutPreferences Feed", () => {
       assert.deepEqual(stub.firstCall.args[1], instance._strings);
       assert.include(stub.firstCall.args[2], Sections[0]);
     });
-    it("Hide highlights in sections if discovery stream is enabled", async () => {
-      const stub = sandbox.stub(instance, "renderPreferences");
-      instance._strings = {};
-      const titleString = "title";
-
-      Sections.push({pref: {titleString}, id: "highlights"});
-      DiscoveryStream = {config: {enabled: true}};
-
-      await instance.observe(window, PREFERENCES_LOADED_EVENT);
-
-      assert.calledOnce(stub);
-      assert.equal(stub.firstCall.args[2][0].id, "search");
-      assert.equal(stub.firstCall.args[2][1].id, "topsites");
-      assert.equal(stub.firstCall.args[2][2].id, "highlights");
-      assert.isTrue(stub.firstCall.args[2][2].shouldHidePref);
-    });
     it("Hide topstories rows select in sections if discovery stream is enabled", async () => {
       const stub = sandbox.stub(instance, "renderPreferences");
       instance._strings = {};
