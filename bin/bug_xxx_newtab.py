@@ -6,8 +6,8 @@
 from __future__ import absolute_import
 import fluent.syntax.ast as FTL
 from fluent.migrate.helpers import transforms_from
-from fluent.migrate.helpers import MESSAGE_REFERENCE, TERM_REFERENCE, VARIABLE_REFERENCE
-from fluent.migrate import COPY, CONCAT, REPLACE
+from fluent.migrate.helpers import TERM_REFERENCE, VARIABLE_REFERENCE
+from fluent.migrate import REPLACE
 
 TARGET_FILE = 'browser/browser/newtab/newtab.ftl'
 SOURCE_FILE = TARGET_FILE
@@ -136,7 +136,8 @@ newtab-section-menu-expand-section = { COPY(from_path, "section_menu_action_expa
 newtab-section-menu-manage-section = { COPY(from_path, "section_menu_action_manage_section") }
 newtab-section-menu-manage-webext = { COPY(from_path, "section_menu_action_manage_webext") }
 newtab-section-menu-add-topsite = { COPY(from_path, "section_menu_action_add_topsite") }
-newtab-section-menu-add-search-engine = { COPY(from_path, "section_menu_action_add_search_engine") }
+newtab-section-menu-add-search-engine = { 
+    COPY(from_path, "section_menu_action_add_search_engine") }
 newtab-section-menu-move-up = { COPY(from_path, "section_menu_action_move_up") }
 newtab-section-menu-move-down = { COPY(from_path, "section_menu_action_move_down") }
 newtab-section-menu-privacy-notice = { COPY(from_path, "section_menu_action_privacy_notice") }
@@ -177,7 +178,7 @@ newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
                         "Pocket": TERM_REFERENCE("pocket-brand-name")
                     },
                 )
-            ),      
+            ),   
             FTL.Message(
                 id=FTL.Identifier("newtab-label-saved"),
                 value=REPLACE(
@@ -187,7 +188,7 @@ newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
                         "Pocket": TERM_REFERENCE("pocket-brand-name")
                     },
                 )
-            ), 
+            ),
             FTL.Message(
                 id=FTL.Identifier("newtab-empty-section-topstories"),
                 value=REPLACE(
@@ -197,6 +198,6 @@ newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
                         "{provider}": VARIABLE_REFERENCE("provider")
                     },
                 )
-            ), 
+            ),
         ]
     )

@@ -237,8 +237,8 @@ export class _Card extends React.PureComponent {
               <p className="card-description" dir="auto">{link.description}</p>
             </div>
             <div className="card-context">
-              {icon && !link.context && <span className={`card-context-icon icon icon-${icon}`} />}
-              {link.icon && link.context && <span className="card-context-icon icon" style={{backgroundImage: `url('${link.icon}')`}} />}
+              {icon && !link.context && <span aria-haspopup="true" className={`card-context-icon icon icon-${icon}`} />}
+              {link.icon && link.context && <span aria-haspopup="true" className="card-context-icon icon" style={{backgroundImage: `url('${link.icon}')`}} />}
               {fluentID && !link.context && <div className="card-context-label"><span data-l10n-id={fluentID} defaultMessage="Visited" /></div>}
               {link.context && <div className="card-context-label">{link.context}</div>}
             </div>
