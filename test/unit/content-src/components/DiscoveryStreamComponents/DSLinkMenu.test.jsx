@@ -45,6 +45,22 @@ describe("<DSLinkMenu>", () => {
       wrapper.update();
       assert.equal(parentNode.className, "last-item active");
     });
+
+    it("should remove .active and .last-item classes from the parent component", () => {
+      const instance = wrapper.instance();
+      const remove = sinon.stub();
+      instance.contextMenuButtonRef = {current: {parentElement: {parentElement: {classList: {remove}}}}};
+      instance.onMenuUpdate();
+      assert.calledOnce(remove);
+    });
+
+    it("should add .active and .last-item classes to the parent component", () => {
+      const instance = wrapper.instance();
+      const add = sinon.stub();
+      instance.contextMenuButtonRef = {current: {parentElement: {parentElement: {classList: {add}}}}};
+      instance.onMenuShow();
+      assert.calledOnce(add);
+    });
   });
 
   describe("DS context menu options", () => {
