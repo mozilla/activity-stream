@@ -185,12 +185,9 @@ export class _CollapsibleSection extends React.PureComponent {
               aria-haspopup="true"
               className="context-menu-button icon"
               title={this.props.intl.formatMessage({id: "context_menu_title"})}
+              aria-label={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
               onClick={this.onMenuButtonClick}
-              ref={this.setContextMenuButtonRef}>
-              <span className="sr-only">
-                <FormattedMessage id="section_context_menu_button_sr" />
-              </span>
-            </button>
+              ref={this.setContextMenuButtonRef} />
             {showContextMenu &&
               <SectionMenu
                 id={id}

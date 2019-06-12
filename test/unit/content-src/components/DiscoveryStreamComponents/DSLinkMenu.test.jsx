@@ -30,10 +30,19 @@ describe("<DSLinkMenu>", () => {
     ["dispatch", "onUpdate", "onShow", "site", "index", "options", "source", "shouldSendImpressionStats"].forEach(prop => assert.property(linkMenuProps, prop));
   });
 
-  it("should pass through the correct menu options to LinkMenu", () => {
-    wrapper.find(".context-menu-button").simulate("click", {preventDefault: () => {}});
-    const linkMenuProps = wrapper.find(LinkMenu).props();
-    assert.deepEqual(linkMenuProps.options,
-      ["CheckBookmarkOrArchive", "CheckSavedToPocket", "Separator", "OpenInNewWindow", "OpenInPrivateWindow", "Separator", "BlockUrl"]);
+  it("should remove .active and .last-item classes from the parent component", () => {
+    const instance = wrapper.instance();
+    const remove = sinon.stub();
+    instance.contextMenuButtonRef = {current: {parentElement: {parentElement: {classList: {remove}}}}};
+    instance.onMenuUpdate();
+    assert.calledOnce(remove);
+  });
+
+  it("should add .active and .last-item classes to the parent component", () => {
+    const instance = wrapper.instance();
+    const add = sinon.stub();
+    instance.contextMenuButtonRef = {current: {parentElement: {parentElement: {classList: {add}}}}};
+    instance.onMenuShow();
+    assert.calledOnce(add);
   });
 });
