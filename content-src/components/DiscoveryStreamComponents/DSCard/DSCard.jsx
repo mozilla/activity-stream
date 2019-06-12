@@ -26,7 +26,7 @@ export class DSCard extends React.PureComponent {
         tiles: [{
           id: this.props.id,
           pos: this.props.pos,
-          ...(this.props.shim ? {shim: this.props.shim} : {}),
+          ...(this.props.shim && this.props.shim.click ? {shim: this.props.shim.click} : {}),
         }],
       }));
     }
@@ -58,7 +58,7 @@ export class DSCard extends React.PureComponent {
             rows={[{
               id: this.props.id,
               pos: this.props.pos,
-              ...(this.props.shim ? {shim: this.props.shim} : {}),
+              ...(this.props.shim && this.props.shim.impression ? {shim: this.props.shim.impression} : {}),
             }]}
             dispatch={this.props.dispatch}
             source={this.props.type} />
