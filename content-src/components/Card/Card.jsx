@@ -200,6 +200,7 @@ export class _Card extends React.PureComponent {
   render() {
     const {index, className, link, dispatch, contextMenuOptions, eventSource, shouldSendImpressionStats} = this.props;
     const {props} = this;
+    const title = link.title || link.hostname;
     const isContextMenuOpen = this.state.showContextMenu && this.state.activeCard === index;
     // Display "now" as "trending" until we have new strings #3402
     const {icon, intlID} = cardContextTypes[link.type === "now" ? "trending" : link.type] || {};
@@ -245,10 +246,11 @@ export class _Card extends React.PureComponent {
           </div>
         </div>
       </a>
-      {!props.placeholder && <button aria-haspopup="true" className="context-menu-button icon" title={this.props.intl.formatMessage({id: "context_menu_title"})}
-        onClick={this.onMenuButtonClick}>
-        <span aria-haspopup="true" className="sr-only">{`Open context menu for ${link.title}`}</span>
-      </button>}
+      {!props.placeholder && <button aria-haspopup="true"
+        aria-label={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
+        className="context-menu-button icon"
+        title={this.props.intl.formatMessage({id: "context_menu_title"})}
+        onClick={this.onMenuButtonClick} />}
       {isContextMenuOpen &&
         <LinkMenu
           dispatch={dispatch}

@@ -11,14 +11,15 @@ newtab-settings-button =
 ## Search box component
 
 # "Search" is a verb/action
-newtab-search-box-search-text = Search
 newtab-search-box-search-button =
     .title = Search
+    .aria-label = Search
 
 newtab-search-box-search-the-web-text = Search the Web
 newtab-search-box-search-the-web-input =
     .placeholder = Search the Web
     .title = Search the Web
+    .aria-label = Search the Web
 
 ## Top Sites - General form dialog
 
