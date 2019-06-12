@@ -108,3 +108,22 @@ newtab-label-bookmarked = Bookmarked
 newtab-label-recommended = Trending
 newtab-label-saved = Saved to { -pocket-brand-name }
 newtab-label-download = Downloaded
+
+## Section Menu: These strings are displayed in the section context menu and are 
+## meant as a call to action for the given section.
+newtab-section-menu-remove-section = Remove Section
+newtab-section-menu-collapse-section = Collapse Section
+newtab-section-menu-expand-section = Expand Section
+newtab-section-menu-manage-section = Manage Section
+newtab-section-menu-manage-webext = Manage Extension
+newtab-section-menu-add-topsite = Add Top Site
+newtab-section-menu-add-search-engine = Add Search Engine
+newtab-section-menu-move-up = Move Up
+newtab-section-menu-move-down = Move Down
+newtab-section-menu-privacy-notice = Privacy Notice
+
+## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story reccomendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-highlights = Start browsing, and we’ll show some of the great articles, videos, and other pages you’ve recently visited or bookmarked here.
+# Variables:
+#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+newtab-empty-section-topstories = You’ve caught up. Check back later for more top stories from { $provider }. Can’t wait? Select a popular topic to find more great stories from around the web.

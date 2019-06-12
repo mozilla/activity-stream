@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 import fluent.syntax.ast as FTL
 from fluent.migrate.helpers import transforms_from
-from fluent.migrate.helpers import MESSAGE_REFERENCE, TERM_REFERENCE
+from fluent.migrate.helpers import MESSAGE_REFERENCE, TERM_REFERENCE, VARIABLE_REFERENCE
 from fluent.migrate import COPY, CONCAT, REPLACE
 
 TARGET_FILE = 'browser/browser/newtab/newtab.ftl'
@@ -130,6 +130,18 @@ newtab-label-bookmarked = { COPY(from_path, "type_label_bookmarked") }
 newtab-label-recommended = { COPY(from_path, "type_label_recommended") }
 newtab-label-download = { COPY(from_path, "type_label_downloaded") }
 
+newtab-section-menu-remove-section = { COPY(from_path, "section_menu_action_remove_section") }
+newtab-section-menu-collapse-section = { COPY(from_path, "section_menu_action_collapse_section") }
+newtab-section-menu-expand-section = { COPY(from_path, "section_menu_action_expand_section") }
+newtab-section-menu-manage-section = { COPY(from_path, "section_menu_action_manage_section") }
+newtab-section-menu-manage-webext = { COPY(from_path, "section_menu_action_manage_webext") }
+newtab-section-menu-add-topsite = { COPY(from_path, "section_menu_action_add_topsite") }
+newtab-section-menu-add-search-engine = { COPY(from_path, "section_menu_action_add_search_engine") }
+newtab-section-menu-move-up = { COPY(from_path, "section_menu_action_move_up") }
+newtab-section-menu-move-down = { COPY(from_path, "section_menu_action_move_down") }
+newtab-section-menu-privacy-notice = { COPY(from_path, "section_menu_action_privacy_notice") }
+newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
+
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
     ),
     ctx.add_transforms(
@@ -173,6 +185,16 @@ newtab-label-download = { COPY(from_path, "type_label_downloaded") }
                     "type_label_pocket",
                     {
                         "Pocket": TERM_REFERENCE("pocket-brand-name")
+                    },
+                )
+            ), 
+            FTL.Message(
+                id=FTL.Identifier("newtab-empty-section-topstories"),
+                value=REPLACE(
+                    "browser/chrome/browser/activity-stream/newtab.properties",
+                    "topstories_empty_state",
+                    {
+                        "{provider}": VARIABLE_REFERENCE("provider")
                     },
                 )
             ), 
