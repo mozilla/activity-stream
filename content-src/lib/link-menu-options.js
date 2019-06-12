@@ -152,7 +152,7 @@ export const LinkMenuOptions = {
     userEvent: "PIN",
   }),
   UnpinTopSite: site => ({
-    id: "newtab-menu-pin",
+    id: "newtab-menu-unpin",
     icon: "unpin",
     action: ac.AlsoToMain({
       type: at.TOP_SITES_UNPIN,
