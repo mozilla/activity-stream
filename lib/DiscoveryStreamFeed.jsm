@@ -13,7 +13,6 @@ const {UserDomainAffinityProvider} = ChromeUtils.import("resource://activity-str
 
 const {actionTypes: at, actionCreators: ac} = ChromeUtils.import("resource://activity-stream/common/Actions.jsm");
 const {PersistentCache} = ChromeUtils.import("resource://activity-stream/lib/PersistentCache.jsm");
-const {PREF_IMPRESSION_ID} = ChromeUtils.import("resource://activity-stream/lib/TelemetryFeed.jsm");
 
 XPCOMUtils.defineLazyServiceGetters(this, {
   gUUIDGenerator: ["@mozilla.org/uuid-generator;1", "nsIUUIDGenerator"],
@@ -31,6 +30,7 @@ const DEFAULT_MAX_HISTORY_QUERY_RESULTS = 1000;
 const FETCH_TIMEOUT = 45 * 1000;
 const PREF_CONFIG = "discoverystream.config";
 const PREF_ENDPOINTS = "discoverystream.endpoints";
+const PREF_IMPRESSION_ID = "browser.newtabpage.activity-stream.impressionId";
 const PREF_SHOW_SPONSORED = "showSponsored";
 const PREF_SPOC_IMPRESSIONS = "discoverystream.spoc.impressions";
 const PREF_REC_IMPRESSIONS = "discoverystream.rec.impressions";
