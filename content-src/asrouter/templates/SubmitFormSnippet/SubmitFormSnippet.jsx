@@ -5,7 +5,7 @@ import {safeURI} from "../../template-utils";
 import {SimpleSnippet} from "../SimpleSnippet/SimpleSnippet";
 import {SnippetBase} from "../../components/SnippetBase/SnippetBase";
 
-// Alt text placeholder in case the prop from the server isn't available; See bug 1551711
+// Alt text placeholder in case the prop from the server isn't available
 const ICON_ALT_TEXT = "";
 
 export class SubmitFormSnippet extends React.PureComponent {
