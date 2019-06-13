@@ -282,9 +282,9 @@ export class TopSite extends React.PureComponent {
     return (<TopSiteLink {...props} onClick={this.onLinkClick} onDragEvent={this.props.onDragEvent} className={`${props.className || ""}${isContextMenuOpen ? " active" : ""}`} title={title}>
         <div>
           <button aria-haspopup="true"
-            aria-label={this.props.intl.formatMessage({id: "context_menu_button_sr"}, {title})}
             className="context-menu-button icon"
-            title={this.props.intl.formatMessage({id: "context_menu_title"})}
+            data-l10n-id="newtab-menu-content-tooltip"
+            data-l10n-args={`{ "title": "${title}" }`}
             onClick={this.onMenuButtonClick} />
           {isContextMenuOpen &&
             <LinkMenu
@@ -319,8 +319,7 @@ export class TopSitePlaceholder extends React.PureComponent {
   render() {
     return (<TopSiteLink {...this.props} className={`placeholder ${this.props.className || ""}`} isDraggable={false}>
       <button aria-haspopup="true" className="context-menu-button edit-button icon"
-       title={this.props.intl.formatMessage({id: "edit_topsites_edit_button"})}
-       aria-label={this.props.intl.formatMessage({id: "edit_topsites_edit_button"})}
+       data-l10n-id="newtab-menu-topsites-placeholder-tooltip"
        onClick={this.onEditButtonClick} />
     </TopSiteLink>);
   }

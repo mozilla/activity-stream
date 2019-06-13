@@ -7,7 +7,7 @@ from __future__ import absolute_import
 import fluent.syntax.ast as FTL
 from fluent.migrate.helpers import transforms_from
 from fluent.migrate.helpers import TERM_REFERENCE, VARIABLE_REFERENCE
-from fluent.migrate import REPLACE
+from fluent.migrate import COPY, REPLACE
 
 TARGET_FILE = 'browser/browser/newtab/newtab.ftl'
 SOURCE_FILE = TARGET_FILE
@@ -94,6 +94,10 @@ newtab-confirm-delete-history-p1 = { COPY(from_path, "confirm_history_delete_p1"
 newtab-confirm-delete-history-p2 = { COPY(from_path, "confirm_history_delete_notice_p2") }
 
 newtab-topsites-add-search-engine = { COPY(from_path, "section_menu_action_add_search_engine") }
+newtab-menu-section-tooltip =
+    .title = { COPY(from_path, "context_menu_title") }
+    .aria-label = { COPY(from_path, "context_menu_title") }
+
 newtab-topsites-tooltip =
     .title = { COPY(from_path, "context_menu_title") }
 newtab-topsites-placeholder-tooltip =
@@ -144,7 +148,8 @@ newtab-section-menu-privacy-notice = { COPY(from_path, "section_menu_action_priv
 newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
 
         """, from_path='browser/chrome/browser/activity-stream/newtab.properties')
-    ),
+    )
+
     ctx.add_transforms(
         TARGET_FILE,
         SOURCE_FILE,
@@ -178,6 +183,47 @@ newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
                         "Pocket": TERM_REFERENCE("pocket-brand-name")
                     },
                 )
+            ),
+            FTL.Message(
+                id=FTL.Identifier("newtab-menu-topsites-placeholder-tooltip"),
+                attributes=[
+                    FTL.Attribute(
+                        id=FTL.Identifier("title"),
+                        value=COPY(
+                            "browser/chrome/browser/activity-stream/newtab.properties",
+                            "edit_topsites_edit_button"
+                        )
+                    ),
+                    FTL.Attribute(
+                        id=FTL.Identifier("aria-label"),
+                        value=COPY(
+                            "browser/chrome/browser/activity-stream/newtab.properties",
+                            "edit_topsites_edit_button"
+                        )
+                    ),
+                ]
+            ),
+            FTL.Message(
+                id=FTL.Identifier("newtab-menu-content-tooltip"),
+                attributes=[
+                    FTL.Attribute(
+                        id=FTL.Identifier("title"),
+                        value=COPY(
+                            "browser/chrome/browser/activity-stream/newtab.properties",
+                            "context_menu_title"
+                        )
+                    ),
+                    FTL.Attribute(
+                        id=FTL.Identifier("aria-label"),
+                        value=REPLACE(
+                            "browser/chrome/browser/activity-stream/newtab.properties",
+                            "context_menu_button_sr",
+                            {
+                                "{title}": VARIABLE_REFERENCE("title")
+                            },
+                        )
+                    ),
+                ]
             ),
             FTL.Message(
                 id=FTL.Identifier("newtab-label-saved"),
