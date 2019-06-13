@@ -63,7 +63,6 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       DiscoveryStreamFeed,
     } = injector({
       "lib/UserDomainAffinityProvider.jsm": {UserDomainAffinityProvider: FakeUserDomainAffinityProvider},
-      "lib/TelemetryFeed.jsm": {PREF_IMPRESSION_ID: "fake-pref-impression-id"},
     }));
 
     globals = new GlobalOverrider();
