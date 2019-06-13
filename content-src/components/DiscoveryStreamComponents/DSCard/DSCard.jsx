@@ -73,6 +73,7 @@ export class DSCard extends React.PureComponent {
           source={this.props.source}
           type={this.props.type}
           pocket_id={this.props.pocket_id}
+          shim={this.props.shim}
           bookmarkGuid={this.props.bookmarkGuid} />}
       </div>
     );

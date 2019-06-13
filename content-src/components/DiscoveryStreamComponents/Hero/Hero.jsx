@@ -111,6 +111,7 @@ export class Hero extends React.PureComponent {
             source={heroRec.domain}
             type={this.props.type}
             pocket_id={heroRec.pocket_id}
+            shim={heroRec.shim}
             bookmarkGuid={heroRec.bookmarkGuid} />
         </div>
       );
