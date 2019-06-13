@@ -147,7 +147,7 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD_1",
     template: "trailhead",
-    targeting: "trailheadInterrupt == 'join'",
+    targeting: "trailheadInterrupt == 'join' && attributionData.campaign != 'non-fx-button' && attributionData.source != 'addons.mozilla.org'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     utm_term: "trailhead-join",
@@ -177,7 +177,7 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD_2",
     template: "trailhead",
-    targeting: "trailheadInterrupt == 'sync'",
+    targeting: "trailheadInterrupt == 'sync' && attributionData.campaign != 'non-fx-button' && attributionData.source != 'addons.mozilla.org'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     utm_term: "trailhead-sync",
@@ -202,7 +202,7 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD_3",
     template: "trailhead",
-    targeting: "trailheadInterrupt == 'cards'",
+    targeting: "trailheadInterrupt == 'cards' && attributionData.campaign != 'non-fx-button' && attributionData.source != 'addons.mozilla.org'",
     trigger: {id: "firstRun"},
     includeBundle: {length: 3, template: "onboarding", trigger: {id: "showOnboarding"}},
     utm_term: "trailhead-cards",
@@ -210,7 +210,7 @@ const ONBOARDING_MESSAGES = async () => ([
   {
     id: "TRAILHEAD_4",
     template: "trailhead",
-    targeting: "trailheadInterrupt == 'nofirstrun'",
+    targeting: "trailheadInterrupt == 'nofirstrun' && attributionData.campaign != 'non-fx-button' && attributionData.source != 'addons.mozilla.org'",
     trigger: {id: "firstRun"},
   },
   {
