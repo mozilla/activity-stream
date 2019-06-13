@@ -6,7 +6,7 @@ import {safeURI} from "../../template-utils";
 import {SnippetBase} from "../../components/SnippetBase/SnippetBase";
 
 const DEFAULT_ICON_PATH = "chrome://branding/content/icon64.png";
-// Alt text placeholder in case the prop from the server isn't available; See bug 1551711
+// Alt text placeholder in case the prop from the server isn't available
 const ICON_ALT_TEXT = "";
 
 export class SimpleSnippet extends React.PureComponent {
