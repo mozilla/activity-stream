@@ -184,6 +184,7 @@ describe("AboutPreferences Feed", () => {
         addEventListener: sandbox.stub(),
         classList: {add: sandbox.stub(), remove: sandbox.stub()},
         cloneNode: sandbox.stub().returnsThis(),
+        getAttribute: sandbox.stub(),
         insertAdjacentElement: sandbox.stub().returnsArg(1),
         setAttribute: sandbox.stub(),
         remove: sandbox.stub(),
@@ -249,6 +250,25 @@ describe("AboutPreferences Feed", () => {
         testRender();
 
         assert.notCalled(Preferences.add);
+      });
+    });
+    describe("checkbox", () => {
+      beforeEach(() => {
+        const titleString = "the_title";
+        prefStructure = [{pref: {nestedPrefs: [{titleString}]}}];
+      });
+      it("should add a click event", () => {
+        testRender();
+
+        assert.calledOnce(node.addEventListener);
+        assert.calledWith(node.addEventListener, "click");
+      });
+      it("should", async () => {
+        testRender();
+
+        await node.addEventListener.firstCall.args[1]();
+        assert.calledOnce(node.getAttribute);
+        assert.calledWith(node.getAttribute, "checked");
       });
     });
     describe("pref icon", () => {

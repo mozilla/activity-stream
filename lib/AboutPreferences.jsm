@@ -279,6 +279,11 @@ this.AboutPreferences = class AboutPreferences {
         subcheck.classList.add("indent");
         subcheck.setAttribute("label", formatString(nested.titleString));
         linkPref(subcheck, nested.name, "bool");
+
+        subcheck.disabled = !sectionData.enabled;
+        checkbox.addEventListener("click", () => {
+          subcheck.disabled = !checkbox.getAttribute("checked");
+        });
       });
     });
 
