@@ -136,8 +136,8 @@ newtab-section-menu-expand-section = { COPY(from_path, "section_menu_action_expa
 newtab-section-menu-manage-section = { COPY(from_path, "section_menu_action_manage_section") }
 newtab-section-menu-manage-webext = { COPY(from_path, "section_menu_action_manage_webext") }
 newtab-section-menu-add-topsite = { COPY(from_path, "section_menu_action_add_topsite") }
-newtab-section-menu-add-search-engine = { 
-    COPY(from_path, "section_menu_action_add_search_engine") }
+newtab-section-menu-add-search-engine =
+    { COPY(from_path, "section_menu_action_add_search_engine") }
 newtab-section-menu-move-up = { COPY(from_path, "section_menu_action_move_up") }
 newtab-section-menu-move-down = { COPY(from_path, "section_menu_action_move_down") }
 newtab-section-menu-privacy-notice = { COPY(from_path, "section_menu_action_privacy_notice") }
@@ -178,7 +178,7 @@ newtab-empty-section-highlights = { COPY(from_path, "highlights_empty_state") }
                         "Pocket": TERM_REFERENCE("pocket-brand-name")
                     },
                 )
-            ),   
+            ),
             FTL.Message(
                 id=FTL.Identifier("newtab-label-saved"),
                 value=REPLACE(
