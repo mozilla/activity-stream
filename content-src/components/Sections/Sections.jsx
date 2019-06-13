@@ -21,7 +21,7 @@ function getFormattedMessage(message) {
     <span
       data-l10n-id={message.id}
       data-l10n-args={
-        message.values && `{'provider'}': ${message.values.provider}}`
+        !message.values ? "{}" : `{ "provider": "${message.values.provider}" }`
       } />
   );
 }
