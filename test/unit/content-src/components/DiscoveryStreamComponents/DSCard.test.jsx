@@ -1,5 +1,5 @@
+import {DSCard, PlaceholderDSCard} from "content-src/components/DiscoveryStreamComponents/DSCard/DSCard";
 import {actionCreators as ac} from "common/Actions.jsm";
-import {DSCard} from "content-src/components/DiscoveryStreamComponents/DSCard/DSCard";
 import {DSLinkMenu} from "content-src/components/DiscoveryStreamComponents/DSLinkMenu/DSLinkMenu";
 import React from "react";
 import {SafeAnchor} from "content-src/components/DiscoveryStreamComponents/SafeAnchor/SafeAnchor";
@@ -34,6 +34,10 @@ describe("<DSCard>", () => {
     assert.propertyVal(wrapper.children().at(0).props(), "onLinkClick", wrapper.instance().onLinkClick);
   });
 
+  it("should render DSLinkMenu", () => {
+    assert.equal(wrapper.children().at(1).type(), DSLinkMenu);
+  });
+
   describe("onLinkClick", () => {
     let dispatch;
 
@@ -60,8 +64,36 @@ describe("<DSCard>", () => {
       }));
     });
   });
+});
 
-  it("should render DSLinkMenu", () => {
-    assert.equal(wrapper.children().at(1).type(), DSLinkMenu);
+describe("<PlaceholderDSCard> component", () => {
+  it("should have placeholder prop", () => {
+    const wrapper = shallowWithIntl(<PlaceholderDSCard />);
+    const card = wrapper.find(DSCard);
+    assert.lengthOf(card, 1);
+
+    const placeholder = wrapper.find(DSCard).prop("placeholder");
+    assert.isTrue(placeholder);
+  });
+
+  it("should contain placeholder div", () => {
+    const wrapper = shallowWithIntl(<DSCard placeholder={true} />);
+    const card = wrapper.find("div.ds-card.placeholder");
+    assert.lengthOf(card, 1);
+  });
+
+  it("should not be clickable", () => {
+    const wrapper = shallowWithIntl(<DSCard placeholder={true} />);
+    const anchor = wrapper.find("SafeAnchor.ds-card-link");
+    assert.lengthOf(anchor, 1);
+
+    const linkClick = anchor.prop("onLinkClick");
+    assert.isUndefined(linkClick);
+  });
+
+  it("should not have context menu", () => {
+    const wrapper = shallowWithIntl(<DSCard placeholder={true} />);
+    const linkMenu = wrapper.find(DSLinkMenu);
+    assert.lengthOf(linkMenu, 0);
   });
 });
