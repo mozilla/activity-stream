@@ -66,7 +66,8 @@ export class SubmitFormSnippet extends React.PureComponent {
       }
       this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "subscribe-success", id: "NEWTAB_FOOTER_BAR_CONTENT"});
     } else {
-      console.error("There was a problem submitting the form", json || "[No JSON response]"); // eslint-disable-line no-console
+      // eslint-disable-next-line no-console
+      console.error("There was a problem submitting the form", json || "[No JSON response]");
       this.setState({signupSuccess: false, signupSubmitted: true});
       this.props.sendUserActionTelemetry({event: "CLICK_BUTTON", value: "subscribe-error", id: "NEWTAB_FOOTER_BAR_CONTENT"});
     }

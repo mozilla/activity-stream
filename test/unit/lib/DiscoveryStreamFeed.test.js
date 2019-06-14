@@ -14,7 +14,8 @@ const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 1 week
 
 const FAKE_UUID = "{foo-123-foo}";
 
-describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
+// eslint-disable-next-line max-statements
+describe("DiscoveryStreamFeed", () => {
   let DiscoveryStreamFeed;
   let feed;
   let sandbox;
