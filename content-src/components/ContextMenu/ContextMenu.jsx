@@ -6,6 +6,7 @@ export class ContextMenu extends React.PureComponent {
     this.hideContext = this.hideContext.bind(this);
     this.onShow = this.onShow.bind(this);
     this.onClick = this.onClick.bind(this);
+    this.focusFirst = this.focusFirst.bind(this);
   }
 
   hideContext() {
@@ -18,11 +19,18 @@ export class ContextMenu extends React.PureComponent {
     }
   }
 
+  focusFirst() {
+    let contextMenu = document.getElementsByClassName("context-menu-list")[0];
+    let listItem = contextMenu.firstElementChild;
+    listItem.firstElementChild.focus();
+  }
+
   componentDidMount() {
     this.onShow();
     setTimeout(() => {
       global.addEventListener("click", this.hideContext);
     }, 0);
+    this.focusFirst();
   }
 
   componentWillUnmount() {
@@ -43,7 +51,7 @@ export class ContextMenu extends React.PureComponent {
       <ul className="context-menu-list">
         {this.props.options.map((option, i) => (option.type === "separator" ?
           (<li key={i} className="separator" />) :
-          (option.type !== "empty" && <ContextMenuItem key={i} option={option} hideContext={this.hideContext} tabIndex="0" />)
+          (option.type !== "empty" && <ContextMenuItem key={i} id={i} option={option} hideContext={this.hideContext} tabIndex="0" />)
         ))}
       </ul>
     </span>);
