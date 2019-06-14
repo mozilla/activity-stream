@@ -63,6 +63,31 @@ describe("<DSCard>", () => {
         tiles: [{id: "fooidx", pos: 1}],
       }));
     });
+
+    it("should call dispatch with a shim", () => {
+      wrapper.setProps({
+        id: "fooidx",
+        pos: 1,
+        type: "foo",
+        shim: {
+          click: "click shim",
+        },
+      });
+
+      wrapper.instance().onLinkClick();
+
+      assert.calledTwice(dispatch);
+      assert.calledWith(dispatch, ac.UserEvent({
+        event: "CLICK",
+        source: "FOO",
+        action_position: 1,
+      }));
+      assert.calledWith(dispatch, ac.ImpressionStats({
+        click: 0,
+        source: "FOO",
+        tiles: [{id: "fooidx", pos: 1, shim: "click shim"}],
+      }));
+    });
   });
 });
 
