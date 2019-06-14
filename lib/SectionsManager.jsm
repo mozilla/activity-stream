@@ -19,7 +19,7 @@ const BUILT_IN_SECTIONS = {
   "feeds.section.topstories": options => ({
     id: "topstories",
     pref: {
-      titleString: {id: "header_recommended_by", values: {provider: options.provider_name}},
+      titleString: {id: "newtab-section-header-pocket", values: {provider: options.provider_name}},
       descString: {id: "prefs_topstories_description2"},
       nestedPrefs: options.show_spocs ? [{
         name: "showSponsored",
@@ -30,11 +30,11 @@ const BUILT_IN_SECTIONS = {
     shouldHidePref: options.hidden,
     eventSource: "TOP_STORIES",
     icon: options.provider_icon,
-    title: {id: "header_recommended_by", values: {provider: options.provider_name}},
+    title: {id: "newtab-section-header-pocket", values: {provider: options.provider_name}},
     learnMore: {
       link: {
         href: "https://getpocket.com/firefox/new_tab_learn_more",
-        id: "pocket_how_it_works",
+        id: "newtab-pocket-how-it-works",
       },
     },
     privacyNoticeURL: "https://www.mozilla.org/privacy/firefox/#suggest-relevant-content",
@@ -71,7 +71,7 @@ const BUILT_IN_SECTIONS = {
     shouldHidePref:  false,
     eventSource: "HIGHLIGHTS",
     icon: "highlights",
-    title: {id: "header_highlights"},
+    title: {id: "newtab-section-header-highlights"},
     compactCards: true,
     rowsPref: "section.highlights.rows",
     maxRows: 4,
