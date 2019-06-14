@@ -31,6 +31,8 @@ const FETCH_TIMEOUT = 45 * 1000;
 const PREF_CONFIG = "discoverystream.config";
 const PREF_ENDPOINTS = "discoverystream.endpoints";
 const PREF_IMPRESSION_ID = "browser.newtabpage.activity-stream.impressionId";
+const PREF_TOPSTORIES = "feeds.section.topstories";
+const PREF_SPOCS_CLEAR_ENDPOINT = "discoverystream.endpointSpocsClear";
 const PREF_SHOW_SPONSORED = "showSponsored";
 const PREF_SPOC_IMPRESSIONS = "discoverystream.spoc.impressions";
 const PREF_REC_IMPRESSIONS = "discoverystream.rec.impressions";
@@ -453,6 +455,23 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
       },
     });
     this._sendSpocsFill({...filtered, frequency_cap: frequencyCapped}, true);
+  }
+
+  async clearSpocs() {
+    const endpoint = this.store.getState().Prefs.values[PREF_SPOCS_CLEAR_ENDPOINT];
+    if (!endpoint) {
+      return;
+    }
+    const headers = new Headers();
+    headers.append("content-type", "application/json");
+
+    await this.fetchFromEndpoint(endpoint, {
+      method: "DELETE",
+      headers,
+      body: JSON.stringify({
+        pocket_id: this._impressionId,
+      }),
+    });
   }
 
   async loadAffinityScoresCache() {
@@ -1033,8 +1052,18 @@ this.DiscoveryStreamFeed = class DiscoveryStreamFeed {
               data: this.config,
             }));
             break;
+          case PREF_TOPSTORIES:
+            if (!action.data.value) {
+              // Ensure we delete any remote data potentially related to spocs.
+              this.clearSpocs();
+            }
+            break;
           // Check if spocs was disabled. Remove them if they were.
           case PREF_SHOW_SPONSORED:
+            if (!action.data.value) {
+              // Ensure we delete any remote data potentially related to spocs.
+              this.clearSpocs();
+            }
             await this.loadSpocs(update => this.store.dispatch(ac.BroadcastToContent(update)));
             break;
         }

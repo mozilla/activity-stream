@@ -247,6 +247,10 @@ const PREFS_CONFIG = new Map([
     skipBroadcast: true,
     value: "{}",
   }],
+  ["discoverystream.endpointSpocsClear", {
+    title: "Endpoint for when a user opts-out of sponsored content to delete the user's data from the ad server.",
+    value: "",
+  }],
   ["discoverystream.rec.impressions", {
     title: "Track rec impressions",
     skipBroadcast: true,

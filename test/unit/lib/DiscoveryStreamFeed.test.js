@@ -569,6 +569,36 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
     });
   });
 
+  describe("#clearSpocs", () => {
+    it("should not fail with no endpoint", async () => {
+      sandbox.stub(feed.store, "getState").returns({
+        Prefs: {
+          values: {"discoverystream.endpointSpocsClear": null},
+        },
+      });
+      sandbox.stub(feed, "fetchFromEndpoint").resolves(null);
+
+      await feed.clearSpocs();
+
+      assert.notCalled(feed.fetchFromEndpoint);
+    });
+    it("should call DELETE with endpoint", async () => {
+      sandbox.stub(feed.store, "getState").returns({
+        Prefs: {
+          values: {"discoverystream.endpointSpocsClear": "https://spocs/user"},
+        },
+      });
+      sandbox.stub(feed, "fetchFromEndpoint").resolves(null);
+      feed._impressionId = "1234";
+
+      await feed.clearSpocs();
+
+      assert.equal(feed.fetchFromEndpoint.firstCall.args[0], "https://spocs/user");
+      assert.equal(feed.fetchFromEndpoint.firstCall.args[1].method, "DELETE");
+      assert.equal(feed.fetchFromEndpoint.firstCall.args[1].body, "{\"pocket_id\":\"1234\"}");
+    });
+  });
+
   describe("#rotate", () => {
     it("should move seen first story to the back of the response", () => {
       const recsExpireTime = 5600;
@@ -1366,6 +1396,20 @@ describe("DiscoveryStreamFeed", () => { // eslint-disable-line max-statements
       await feed.onAction({type: at.PREF_CHANGED, data: {name: "showSponsored"}});
 
       assert.calledOnce(feed.loadSpocs);
+    });
+    it("should call clearSpocs when sponsored content is turned off", async () => {
+      sandbox.stub(feed, "clearSpocs").returns(Promise.resolve());
+
+      await feed.onAction({type: at.PREF_CHANGED, data: {name: "showSponsored", value: false}});
+
+      assert.calledOnce(feed.clearSpocs);
+    });
+    it("should call clearSpocs when top stories is turned off", async () => {
+      sandbox.stub(feed, "clearSpocs").returns(Promise.resolve());
+
+      await feed.onAction({type: at.PREF_CHANGED, data: {name: "feeds.section.topstories", value: false}});
+
+      assert.calledOnce(feed.clearSpocs);
     });
   });
 
