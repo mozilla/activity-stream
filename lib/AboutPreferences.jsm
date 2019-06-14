@@ -273,16 +273,24 @@ this.AboutPreferences = class AboutPreferences {
         }
       }
 
+      const subChecks = [];
+      const fullName = `browser.newtabpage.activity-stream.${sectionData.pref.feed}`;
+      const pref = Preferences.get(fullName);
+
       // Add a checkbox pref for any nested preferences
       nestedPrefs.forEach(nested => {
         const subcheck = createAppend("checkbox", detailVbox);
         subcheck.classList.add("indent");
         subcheck.setAttribute("label", formatString(nested.titleString));
         linkPref(subcheck, nested.name, "bool");
+        subChecks.push(subcheck);
+        subcheck.disabled = !pref._value;
+      });
 
-        subcheck.disabled = !sectionData.enabled;
-        checkbox.addEventListener("click", () => {
-          subcheck.disabled = !checkbox.getAttribute("checked");
+      // Disable any nested checkboxes if the parent pref is not enabled.
+      pref.on("change", () => {
+        subChecks.forEach(subcheck => {
+          subcheck.disabled = !pref._value;
         });
       });
     });
