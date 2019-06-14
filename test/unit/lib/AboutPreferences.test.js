@@ -184,7 +184,6 @@ describe("AboutPreferences Feed", () => {
         addEventListener: sandbox.stub(),
         classList: {add: sandbox.stub(), remove: sandbox.stub()},
         cloneNode: sandbox.stub().returnsThis(),
-        getAttribute: sandbox.stub(),
         insertAdjacentElement: sandbox.stub().returnsArg(1),
         setAttribute: sandbox.stub(),
         remove: sandbox.stub(),
@@ -194,7 +193,9 @@ describe("AboutPreferences Feed", () => {
       prefStructure = [];
       Preferences = {
         add: sandbox.stub(),
-        get: sandbox.stub().returns({}),
+        get: sandbox.stub().returns({
+          on: sandbox.stub(),
+        }),
       };
       gHomePane = {toggleRestoreDefaultsBtn: sandbox.stub()};
     });
@@ -238,7 +239,7 @@ describe("AboutPreferences Feed", () => {
     });
     describe("#linkPref", () => {
       it("should add a pref to the global", () => {
-        prefStructure = [{}];
+        prefStructure = [{pref: {feed: "feed"}}];
 
         testRender();
 
@@ -252,35 +253,16 @@ describe("AboutPreferences Feed", () => {
         assert.notCalled(Preferences.add);
       });
     });
-    describe("checkbox", () => {
-      beforeEach(() => {
-        const titleString = "the_title";
-        prefStructure = [{pref: {nestedPrefs: [{titleString}]}}];
-      });
-      it("should add a click event", () => {
-        testRender();
-
-        assert.calledOnce(node.addEventListener);
-        assert.calledWith(node.addEventListener, "click");
-      });
-      it("should", async () => {
-        testRender();
-
-        await node.addEventListener.firstCall.args[1]();
-        assert.calledOnce(node.getAttribute);
-        assert.calledWith(node.getAttribute, "checked");
-      });
-    });
     describe("pref icon", () => {
       it("should default to webextension icon", () => {
-        prefStructure = [{}];
+        prefStructure = [{pref: {feed: "feed"}}];
 
         testRender();
 
         assert.calledWith(node.setAttribute, "src", "resource://activity-stream/data/content/assets/glyph-webextension-16.svg");
       });
       it("should use desired glyph icon", () => {
-        prefStructure = [{icon: "highlights"}];
+        prefStructure = [{icon: "highlights", pref: {feed: "feed"}}];
 
         testRender();
 
@@ -288,7 +270,7 @@ describe("AboutPreferences Feed", () => {
       });
       it("should use specified chrome icon", () => {
         const icon = "chrome://the/icon.svg";
-        prefStructure = [{icon}];
+        prefStructure = [{icon, pref: {feed: "feed"}}];
 
         testRender();
 
@@ -306,7 +288,7 @@ describe("AboutPreferences Feed", () => {
       });
       it("should add a link for top stories", () => {
         const href = "https://disclaimer/";
-        prefStructure = [{learnMore: {link: {href}}, id: "topstories"}];
+        prefStructure = [{learnMore: {link: {href}}, id: "topstories", pref: {feed: "feed"}}];
 
         testRender();
         assert.calledWith(node.setAttribute, "href", href);
@@ -332,13 +314,61 @@ describe("AboutPreferences Feed", () => {
       });
     });
     describe("nested prefs", () => {
-      it("should render a nested pref", () => {
-        const titleString = "im_nested";
+      const titleString = "im_nested";
+      beforeEach(() => {
         prefStructure = [{pref: {nestedPrefs: [{titleString}]}}];
-
+      });
+      it("should render a nested pref", () => {
         testRender();
 
         assert.calledWith(node.setAttribute, "label", titleString);
+      });
+      it("should add a change event", () => {
+        testRender();
+
+        assert.calledOnce(Preferences.get().on);
+        assert.calledWith(Preferences.get().on, "change");
+      });
+      it("should default node disabled to false", async () => {
+        Preferences.get = sandbox.stub().returns({
+          on: sandbox.stub(),
+          _value: true,
+        });
+
+        testRender();
+
+        assert.isFalse(node.disabled);
+      });
+      it("should default node disabled to true", async () => {
+        testRender();
+
+        assert.isTrue(node.disabled);
+      });
+      it("should set node disabled to true", async () => {
+        const pref = {
+          on: sandbox.stub(),
+          _value: true,
+        };
+        Preferences.get = sandbox.stub().returns(pref);
+
+        testRender();
+        pref._value = !pref._value;
+        await Preferences.get().on.firstCall.args[1]();
+
+        assert.isTrue(node.disabled);
+      });
+      it("should set node disabled to false", async () => {
+        const pref = {
+          on: sandbox.stub(),
+          _value: false,
+        };
+        Preferences.get = sandbox.stub().returns(pref);
+
+        testRender();
+        pref._value = !pref._value;
+        await Preferences.get().on.firstCall.args[1]();
+
+        assert.isFalse(node.disabled);
       });
     });
     describe("restore defaults btn", () => {
